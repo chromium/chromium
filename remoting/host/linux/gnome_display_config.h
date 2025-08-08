@@ -9,9 +9,11 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "remoting/host/linux/scoped_glib.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
 
@@ -53,6 +55,10 @@ struct GnomeDisplayConfig {
     double scale = 1.0;
     bool is_primary = false;
   };
+
+  // Computes the screen ID for the given monitor name. The monitor name should
+  // be the key of `monitors`.
+  static webrtc::ScreenId GetScreenId(std::string_view monitor_name);
 
   GnomeDisplayConfig();
   GnomeDisplayConfig(const GnomeDisplayConfig&);

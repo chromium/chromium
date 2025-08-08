@@ -5,37 +5,13 @@
 #include "remoting/host/linux/gnome_desktop_display_info_monitor.h"
 
 #include "base/functional/bind.h"
-#include "base/hash/hash.h"
 #include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
 
 namespace remoting {
 
 namespace {
 
 constexpr int kDefaultDPI = 96;
-
-webrtc::ScreenId GetScreenId(std::string_view monitor_name) {
-  static_assert(sizeof(webrtc::ScreenId) == sizeof(int64_t));
-  // Mutter backend is hardcoded to return `Meta-$virtualId` as the monitor
-  // name, where $virtualId is sequentially numbered starting at 0 and recycled
-  // after the pipewire stream is destroyed.
-  // See:
-  // https://gitlab.gnome.org/GNOME/mutter/-/blob/51a3c7e8d3cce425a7617aee22c47b4e8c238871/src/backends/native/meta-output-virtual.c#L46
-  constexpr std::string_view kMetaPrefix = "Meta-";
-  if (monitor_name.starts_with(kMetaPrefix)) {
-    int64_t screen_id;
-    if (base::StringToInt64(monitor_name.substr(kMetaPrefix.length()),
-                            &screen_id)) {
-      return screen_id;
-    }
-  }
-  // If in any case it doesn't match the pattern, we just use the hash of the
-  // monitor name as the screen ID. We add 1<<32 so that it doesn't conflict
-  // with the Meta- displays. The hash value is 32-bit while the screen ID is 64
-  // bit so there won't be overflow issues.
-  return base::PersistentHash(monitor_name) + (1ULL << 32);
-}
 
 }  // namespace
 
@@ -86,10 +62,10 @@ void GnomeDesktopDisplayInfoMonitor::OnGnomeDisplayConfigReceived(
                    << " ignored because it has no current mode";
       continue;
     }
-    info.AddDisplay(DisplayGeometry(GetScreenId(name), monitor.x, monitor.y,
-                                    current_mode->width, current_mode->height,
-                                    kDefaultDPI * monitor.scale, /*bpp=*/24,
-                                    monitor.is_primary, name));
+    info.AddDisplay(DisplayGeometry(
+        GnomeDisplayConfig::GetScreenId(name), monitor.x, monitor.y,
+        current_mode->width, current_mode->height, kDefaultDPI * monitor.scale,
+        /*bpp=*/24, monitor.is_primary, name));
   }
   callback_list_.Notify(info);
 }

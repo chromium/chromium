@@ -48,6 +48,7 @@
 #include "remoting/host/linux/gnome_input_injector.h"
 #include "remoting/host/linux/gnome_keyboard_layout_monitor.h"
 #include "remoting/host/linux/gnome_local_input_monitor.h"
+#include "remoting/host/linux/pipewire_capture_stream.h"
 #include "remoting/host/linux/pipewire_desktop_capturer.h"
 #include "remoting/host/linux/pipewire_mouse_cursor_monitor.h"
 #include "remoting/proto/action.pb.h"
@@ -120,8 +121,8 @@ std::unique_ptr<InputInjector> GnomeInteractionStrategy::CreateInputInjector() {
 
   // Passing exclusive ownership to the input-injector allows it to use the EI
   // session on a different thread.
-  return std::make_unique<GnomeInputInjector>(std::move(ei_session_),
-                                              capture_stream_.mapping_id());
+  return std::make_unique<GnomeInputInjector>(
+      std::move(ei_session_), capture_stream_manager_.GetWeakPtr());
 }
 
 std::unique_ptr<DesktopResizer>
@@ -132,14 +133,27 @@ GnomeInteractionStrategy::CreateDesktopResizer() {
 std::unique_ptr<DesktopCapturer> GnomeInteractionStrategy::CreateVideoCapturer(
     webrtc::ScreenId id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::make_unique<PipewireDesktopCapturer>(
-      capture_stream_.GetWeakPtr());
+  // `stream` will only be non-null after the AddStreamCallback of a newly added
+  // stream is called. This is currently not a problem for the initial stream,
+  // since `init_callback_` is called after the AddStreamCallback of the initial
+  // stream is called. However, this may be racy when additional streams are
+  // being added.
+  // TODO(crbug.com/432217140): Refactor PipewireDesktopCapturer so that
+  // PipewireCaptureStream can be provided after it is constructed.
+  base::WeakPtr<PipewireCaptureStream> stream =
+      capture_stream_manager_.GetStream(id);
+  if (!stream) {
+    LOG(ERROR) << "Cannot find pipewire stream for screen ID: " << id;
+    return nullptr;
+  }
+  return std::make_unique<PipewireDesktopCapturer>(std::move(stream));
 }
+
 std::unique_ptr<webrtc::MouseCursorMonitor>
 GnomeInteractionStrategy::CreateMouseCursorMonitor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<PipewireMouseCursorMonitor>(
-      capture_stream_.GetWeakPtr());
+      capture_stream_manager_.GetWeakPtr());
 }
 
 std::unique_ptr<KeyboardLayoutMonitor>
@@ -327,86 +341,14 @@ void GnomeInteractionStrategy::OnEiSession(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ei_session_ = std::move(ei_session);
 
-  // Include the cursor in the Pipewire stream metadata.
-  constexpr std::uint32_t kCursorModeMetadata = 2;
-
-  connection_.Call<org_gnome_Mutter_ScreenCast_Session::RecordVirtual>(
-      kScreenCastBusName, screencast_session_path_,
-      std::tuple{std::array{
-          std::pair{"cursor-mode", GVariantFrom(Boxed{kCursorModeMetadata})},
-          std::pair{"is-platform", GVariantFrom(Boxed{true})}}},
-      CheckResultAndContinue(&GnomeInteractionStrategy::OnStreamCreated,
-                             "Failed to record virtual monitor"));
-}
-
-void GnomeInteractionStrategy::OnStreamCreated(
-    std::tuple<gvariant::ObjectPath> args) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  HOST_LOG << "Starting initial monitor stream";
-  std::tie(stream_path_) = args;
-
-  connection_.GetProperty<org_gnome_Mutter_ScreenCast_Stream::Parameters>(
-      kScreenCastBusName, stream_path_,
-      CheckResultAndContinue(&GnomeInteractionStrategy::OnStreamParameters,
-                             "Failed to retrieve stream parameters"));
-}
-
-void GnomeInteractionStrategy::OnStreamParameters(
-    GVariantRef<"a{sv}"> parameters) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  gchar* param_str = g_variant_print(parameters.raw(), true);
-  HOST_LOG << "Stream parameters: " << param_str;
-  g_free(param_str);
-
-  auto maybe_boxed_mapping_id = parameters.LookUp("mapping-id");
-  if (!maybe_boxed_mapping_id.has_value()) {
-    std::move(init_callback_)
-        .Run(base::unexpected("mapping-id stream parameter not present"));
-    return;
-  }
-  std::string mapping_id;
-  auto destructure_result = maybe_boxed_mapping_id->TryDestructure(mapping_id);
-  if (!destructure_result.has_value()) {
-    std::move(init_callback_)
-        .Run(base::unexpected(
-            base::StrCat({" Failed to retrieve mapping-id stream parameter: ",
-                          destructure_result.error().ToString()})));
-    return;
-  }
-  // Note that both OnStreamStarted and OnPipeWireStreamAdded may invoke
-  // init_callback_, but the former only does so on error and the latter
-  // unsubscribes from the signal, meaning that it is guaranteed only to
-  // be called once.
-  stream_added_signal_ = connection_.SignalSubscribe<
-      org_gnome_Mutter_ScreenCast_Stream::PipeWireStreamAdded>(
-      kScreenCastBusName, stream_path_,
-      base::BindRepeating(&GnomeInteractionStrategy::OnPipeWireStreamAdded,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          std::move(mapping_id)));
-  connection_.Call<org_gnome_Mutter_ScreenCast_Stream::Start>(
-      kScreenCastBusName, stream_path_, std::tuple(),
-      CheckResultAndContinue(&GnomeInteractionStrategy::OnStreamStarted,
-                             "Failed to start monitor stream"));
-}
-
-void GnomeInteractionStrategy::OnStreamStarted(std::tuple<> args) {
-  // Do nothing. Still need to wait for PipeWire-stream-added signal.
-}
-
-void GnomeInteractionStrategy::OnPipeWireStreamAdded(
-    std::string mapping_id,
-    std::tuple<std::uint32_t> args) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Ensure method is only run this once.
-  stream_added_signal_.release();
-
-  capture_stream_.SetPipeWireStream(get<0>(args), kInitialResolution,
-                                    mapping_id, webrtc::kInvalidPipeWireFd);
-  // Start capturing now, which creates the virtual monitor and allows the
-  // video capturer to be created.
-  capture_stream_.StartVideoCapture();
-
-  std::move(init_callback_).Run(base::ok());
+  capture_stream_manager_.Init(&connection_,
+                               display_config_client_.GetWeakPtr(),
+                               screencast_session_path_);
+  capture_stream_manager_.AddStream(
+      base::BindOnce([](base::expected<webrtc::ScreenId, std::string> result) {
+        // Transform the value to void, while keeping the error unchanged.
+        return result.transform([](webrtc::ScreenId screen_id) { return; });
+      }).Then(std::move(init_callback_)));
 }
 
 GnomeInteractionStrategyFactory::GnomeInteractionStrategyFactory(

@@ -6,11 +6,42 @@
 
 #include <algorithm>
 
+#include "base/hash/hash.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "remoting/base/logging.h"
 #include "third_party/webrtc/modules/portal/scoped_glib.h"
 
 namespace remoting {
+
+// static
+webrtc::ScreenId GnomeDisplayConfig::GetScreenId(
+    std::string_view monitor_name) {
+  // Mutter backend is hardcoded to return `Meta-$virtualId` as the monitor
+  // name, where $virtualId is sequentially numbered starting at 0 and recycled
+  // after the pipewire stream is destroyed.
+  // See:
+  // https://gitlab.gnome.org/GNOME/mutter/-/blob/51a3c7e8d3cce425a7617aee22c47b4e8c238871/src/backends/native/meta-output-virtual.c#L46
+  constexpr std::string_view kMetaPrefix = "Meta-";
+  if (monitor_name.starts_with(kMetaPrefix)) {
+    int64_t screen_id;
+    if (base::StringToInt64(monitor_name.substr(kMetaPrefix.length()),
+                            &screen_id)) {
+      return screen_id;
+    }
+  }
+  // If in any case it doesn't match the pattern, we just use the hash of the
+  // monitor name as the screen ID. We add 1<<32 so that it doesn't conflict
+  // with the Meta- displays. On 64-bit machines, the hash value is 32-bit while
+  // the screen ID is 64 bit so there won't be overflow issues. On 32-bit
+  // machines, we can't do this trick, but the likelihood of a collision is
+  // still pretty low.
+  webrtc::ScreenId screen_id_adjustment = 0;
+  if constexpr (sizeof(webrtc::ScreenId) >= sizeof(int64_t)) {
+    screen_id_adjustment = 1ULL << 32;
+  }
+  return base::PersistentHash(monitor_name) + screen_id_adjustment;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // GnomeDisplayConfig::MonitorInfo
