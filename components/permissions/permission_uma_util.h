@@ -47,19 +47,6 @@ enum class ActivityIndicatorState {
   kMaxValue = kBlockedOnSystemLevel,
 };
 
-// Used for UMA histograms to record model execution stats for the different
-// models we use for a permission prediction.
-// LINT.IfChange(PredictionModelType)
-enum class PredictionModelType {
-  kUnknown = 0,
-  kServerSideCpssV3Model = 1,
-  kOnDeviceCpssV1Model = 2,
-  kOnDeviceAiV1Model = 3,
-  kOnDeviceAiV3Model = 4,
-  kOnDeviceAiV4Model = 5,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/histograms.xml:PredictionModels)
-
 // Used for UMA to record the types of permission prompts shown.
 // When updating, you also need to update:
 //   1) The PermissionRequestType enum in
@@ -883,6 +870,9 @@ class PermissionUmaUtil {
       bool success,
       base::TimeTicks snapshot_inquire_start_time,
       PredictionModelType model_type);
+
+  // Records the status of language detection during the Aiv4 workflow.
+  static void RecordLanguageDetectionStatus(LanguageDetectionStatus status);
 
   // Records if the browser was active at the time the prompt started displaying
   static void RecordPromptShownInActiveBrowser(

@@ -1,6 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #ifndef CHROME_BROWSER_PERMISSIONS_PREDICTION_SERVICE_LANGUAGE_DETECTION_OBSERVER_H_
 #define CHROME_BROWSER_PERMISSIONS_PREDICTION_SERVICE_LANGUAGE_DETECTION_OBSERVER_H_
 
@@ -33,22 +34,30 @@ namespace permissions {
 class LanguageDetectionObserver
     : public translate::TranslateDriver::LanguageDetectionObserver {
  public:
-  LanguageDetectionObserver(content::WebContents* web_contents,
-                            base::OnceCallback<void()> on_english_detected,
-                            base::OnceCallback<void()> on_fallback);
+  LanguageDetectionObserver();
   ~LanguageDetectionObserver() override;
 
   // The timeout for the language detection in seconds. If the language
   // detection takes longer than this, the fallback callback will be invoked.
   static const int kLanguageDetectionTimeout = 1;
 
- private:
+  // Virtual for testing.
+  virtual void Init(content::WebContents* web_contents,
+                    base::OnceCallback<void()> on_english_detected,
+                    base::OnceCallback<void()> on_fallback);
+
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
 
+  void Reset();
+
+  bool WaitingForLanguageDetection();
+
+ protected:
   void OnTimeout();
 
-  void RemoveAsObserver();
+  // Virtual for testing.
+  virtual void RemoveAsObserver();
 
   ChromeTranslateClient* chrome_translate_client();
 
@@ -68,4 +77,5 @@ class LanguageDetectionObserver
   base::WeakPtrFactory<LanguageDetectionObserver> weak_ptr_factory_{this};
 };
 }  // namespace permissions
+
 #endif  // CHROME_BROWSER_PERMISSIONS_PREDICTION_SERVICE_LANGUAGE_DETECTION_OBSERVER_H_

@@ -53,6 +53,7 @@
 namespace {
 using ComputePassagesEmbeddingsCallback =
     ::passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback;
+using ::permissions::LanguageDetectionObserver;
 using ::permissions::PermissionRequest;
 using ::permissions::PermissionRequestRelevance;
 using ::permissions::PermissionsAiv1Handler;
@@ -132,7 +133,9 @@ PredictionBasedPermissionUiSelector::ModelExecutionData::ModelExecutionData(
 
 PredictionBasedPermissionUiSelector::PredictionBasedPermissionUiSelector(
     Profile* profile)
-    : profile_(profile) {
+    : profile_(profile),
+      language_detection_observer_(
+          std::make_unique<LanguageDetectionObserver>()) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kPredictionServiceMockLikelihood)) {
     auto mock_likelihood = ParsePredictionServiceMockLikelihood(
@@ -236,9 +239,9 @@ void PredictionBasedPermissionUiSelector::
                      weak_ptr_factory_.GetWeakPtr(),
                      web_contents->GetRenderWidgetHostView()));
 
-  language_detection_observer_.emplace(
+  language_detection_observer_->Init(
       web_contents, std::move(language_detected_cbk),
-      /*timeout_cbk=*/
+      /*on_fallback=*/
       base::BindOnce(&PredictionBasedPermissionUiSelector::InquireServerModel,
                      weak_ptr_factory_.GetWeakPtr(), std::move(features),
                      std::move(request_metadata)));
@@ -301,7 +304,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   last_request_grant_likelihood_ = std::nullopt;
   cpss_v1_model_holdback_probability_ = std::nullopt;
   was_decision_held_back_ = std::nullopt;
-  language_detection_observer_ = std::nullopt;
+  language_detection_observer_->Reset();
 
   bool is_tflite_available = true;
   // BUILD_WITH_TFLITE_LIB should be enabled for most of the devices on all
@@ -429,6 +432,7 @@ void PredictionBasedPermissionUiSelector::Cancel() {
   request_.reset();
   callback_.Reset();
   passage_embeddings_task_id_ = std::nullopt;
+  language_detection_observer_->Reset();
 }
 
 bool PredictionBasedPermissionUiSelector::IsPermissionRequestSupported(
@@ -722,6 +726,14 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
 
   VLOG(1) << "[CPSS] GetPredictionTypeToUse NoCpssModel";
   return PredictionSource::kNoCpssModel;
+}
+
+void PredictionBasedPermissionUiSelector::
+    set_language_detection_observer_for_testing(
+        std::unique_ptr<permissions::LanguageDetectionObserver>
+            language_detection_observer) {
+  CHECK_IS_TEST();
+  language_detection_observer_ = std::move(language_detection_observer);
 }
 
 void PredictionBasedPermissionUiSelector::set_inner_text_for_testing(

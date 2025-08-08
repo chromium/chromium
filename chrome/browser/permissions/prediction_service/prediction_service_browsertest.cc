@@ -15,9 +15,11 @@
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/permissions/prediction_service/language_detection_observer.h"
 #include "chrome/browser/permissions/prediction_service/permissions_aiv1_handler.h"
 #include "chrome/browser/permissions/prediction_service/prediction_based_permission_ui_selector.h"
 #include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider.h"
@@ -72,6 +74,7 @@ using ::base::test::FeatureRefAndParams;
 using ::optimization_guide::proto::OptimizationTarget;
 using ::passage_embeddings::ComputeEmbeddingsStatus;
 using ::permissions::GeneratePredictionsResponse;
+using ::permissions::LanguageDetectionStatus;
 using ::permissions::PermissionRequestRelevance;
 using ::permissions::PermissionsAiv3Handler;
 using ::permissions::PredictionRequestFeatures;
@@ -90,6 +93,7 @@ using ::testing::Invoke;
 using ::testing::Truly;
 using ::testing::ValuesIn;
 using ::testing::WithArg;
+using ::translate::LanguageDetectionDetails;
 using ExperimentId = PredictionRequestFeatures::ExperimentId;
 
 constexpr OptimizationTarget kCpssV1OptTargetNotification =
@@ -166,6 +170,8 @@ constexpr char kAIv4GeolocationHoldbackResponseHistogram[] =
     "Permissions.AIv4.Response.Geolocation";
 constexpr char kAIv4NotificationsHoldbackResponseHistogram[] =
     "Permissions.AIv4.Response.Notifications";
+constexpr char kAiv4LanguageDetectionStatusHistogram[] =
+    "Permissions.AIv4.LanguageDetectionStatus";
 
 // A CPSSv1 model that returns a constant value of 0.5;
 // its meaning is defined by the max_likely threshold we use in the
@@ -200,6 +206,28 @@ base::FilePath ModelFilePath(std::string_view file_name) {
       .AppendASCII("permissions")
       .AppendASCII(file_name);
 }
+
+class LanguageDetectionObserverFake : public LanguageDetectionObserver {
+ public:
+  LanguageDetectionObserverFake() = default;
+
+  void Init(content::WebContents* web_contents,
+            base::OnceCallback<void()> on_english_detected,
+            base::OnceCallback<void()> on_fallback) override {
+    LanguageDetectionObserver::Init(
+        web_contents, std::move(on_english_detected), std::move(on_fallback));
+    // Prevent real OnLanguageDetected events from messing with tests.
+    LanguageDetectionObserver::RemoveAsObserver();
+    init_run_loop_for_testing_.Quit();
+  }
+
+  void RemoveAsObserver() override {}
+
+  void RunLoop() { init_run_loop_for_testing_.Run(); }
+
+ private:
+  base::RunLoop init_run_loop_for_testing_;
+};
 
 class PredictionServiceMock : public PredictionService {
  public:
@@ -281,7 +309,6 @@ GeneratePredictionsResponse BuildPredictionServiceResponse(
       ->set_discretized_likelihood(likelihood);
   return prediction_service_response;
 }
-
 }  // namespace
 
 class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
@@ -302,7 +329,7 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    PermissionRequestManager* manager = GetPermissionRequestManager();
+    PermissionRequestManager* manager = permission_request_manager();
     mock_permission_prompt_factory_ =
         std::make_unique<MockPermissionPromptFactory>(manager);
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -320,11 +347,11 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  content::RenderFrameHost* GetActiveMainFrame() {
+  content::RenderFrameHost* primary_main_frame() {
     return web_contents()->GetPrimaryMainFrame();
   }
 
-  PermissionRequestManager* GetPermissionRequestManager() {
+  PermissionRequestManager* permission_request_manager() {
     return PermissionRequestManager::FromWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
   }
@@ -340,7 +367,7 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
   PredictionBasedPermissionUiSelector*
   prediction_based_permission_ui_selector() {
     return static_cast<PredictionBasedPermissionUiSelector*>(
-        GetPermissionRequestManager()
+        permission_request_manager()
             ->get_permission_ui_selectors_for_testing()
             .back()
             .get());
@@ -390,16 +417,17 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
       std::optional<PermissionUiSelector::PredictionGrantLikelihood>
           expected_prediction_likelihood,
       std::string translate_source_language = "en") {
-    auto* manager = GetPermissionRequestManager();
+    auto* manager = permission_request_manager();
     GURL url = embedded_test_server()->GetURL(test_url, "/title1.html");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     SetTranslateSourceLanguage(translate_source_language);
 
     auto req = std::make_unique<MockPermissionRequest>(request_type());
-    manager->AddRequest(GetActiveMainFrame(), std::move(req));
-    bubble_factory()->WaitForPermissionBubble();
+    manager->AddRequest(primary_main_frame(), std::move(req));
 
     WaitForModelExecutionIfNecessary();
+
+    bubble_factory()->WaitForPermissionBubble();
 
     EXPECT_EQ(should_expect_quiet_ui,
               manager->ShouldCurrentRequestUseQuietUI());
@@ -1006,6 +1034,15 @@ class Aiv4ModelPredictionServiceBrowserTestBase
                                               }, /*disabled_features=*/
                                               {}) {}
 
+  void SetUpOnMainThread() override {
+    AivXModelPredictionServiceBrowserTest<
+        PermissionsAiv4HandlerFake>::SetUpOnMainThread();
+
+    // Required to preprocess the inner_text string as input for AIv4.
+    model_handler_provider()->set_passage_embedder_for_testing(
+        &passage_embedder_);
+  }
+
   RequestType request_type() const override {
     return RequestType::kNotifications;
   }
@@ -1027,6 +1064,9 @@ class Aiv4ModelPredictionServiceBrowserTestBase
   void set_model_handler(PermissionsAiv4HandlerFake* handler) override {
     aiv4_model_handler_ = handler;
   }
+
+ private:
+  PassageEmbedderMock passage_embedder_;
 };
 
 IN_PROC_BROWSER_TEST_F(Aiv4ModelPredictionServiceBrowserTestBase,
@@ -1037,8 +1077,150 @@ IN_PROC_BROWSER_TEST_F(Aiv4ModelPredictionServiceBrowserTestBase,
   EXPECT_TRUE(aiv4_model_handler());
 }
 
+struct Aiv4ModelLanguageDetectionTestCase {
+  std::string test_name;
+  std::string immediate_page_language;
+  std::string delayed_page_language;
+  LanguageDetectionStatus expected_status;
+  std::optional<PermissionRequestRelevance> expected_relevance;
+};
+
+class Aiv4ModelLanguageDetectionBrowserTest
+    : public Aiv4ModelPredictionServiceBrowserTestBase,
+      public testing::WithParamInterface<Aiv4ModelLanguageDetectionTestCase> {
+ public:
+  Aiv4ModelLanguageDetectionBrowserTest() = default;
+
+  void SetUpOnMainThread() override {
+    Aiv4ModelPredictionServiceBrowserTestBase::SetUpOnMainThread();
+    auto language_detection_observer =
+        std::make_unique<LanguageDetectionObserverFake>();
+    language_detection_observer_ = language_detection_observer.get();
+    prediction_based_permission_ui_selector()
+        ->set_language_detection_observer_for_testing(
+            std::move(language_detection_observer));
+  }
+
+  void TearDownOnMainThread() override {
+    Aiv4ModelPredictionServiceBrowserTestBase::TearDownOnMainThread();
+    // Avoid dangling ptr warning.
+    language_detection_observer_ = nullptr;
+  }
+
+  void WaitForModelExecutionIfNecessary() override {
+    language_detection_observer_->RunLoop();
+    if (language_detection_observer_->WaitingForLanguageDetection() &&
+        !GetParam().delayed_page_language.empty()) {
+      LanguageDetectionDetails details;
+      details.adopted_language = GetParam().delayed_page_language;
+      language_detection_observer_->OnLanguageDetermined(details);
+    }
+
+    if (GetParam().expected_relevance != std::nullopt) {
+      aiv4_model_handler_->WaitForModelExecutionForTesting();
+    }
+  }
+  raw_ptr<LanguageDetectionObserverFake> language_detection_observer_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    Aiv4ModelLanguageDetectionTest,
+    Aiv4ModelLanguageDetectionBrowserTest,
+    ValuesIn<Aiv4ModelLanguageDetectionTestCase>(
+        {{
+             /*test_name=*/"TimeoutDuringLanguageDetection",
+             /*immediate_page_language=*/"",
+             /*delayed_page_language=*/"",
+             /*expected_status=*/LanguageDetectionStatus::kNoResultDueToTimeout,
+             /*expected_relevance=*/std::nullopt,
+         },
+         {
+             /*test_name=*/"EnglishDetectedImmediately",
+             /*immediate_page_language=*/"en",
+             /*delayed_page_language=*/"",
+             /*expected_status=*/
+             LanguageDetectionStatus::kImmediatelyAvailableEnglish,
+             /*expected_relevance=*/PermissionRequestRelevance::kVeryHigh,
+         },
+         {
+             /*test_name=*/"NoEnglishDetectedImmediately",
+             /*immediate_page_language=*/"de-DE",
+             /*delayed_page_language=*/"",
+             /*expected_status=*/
+             LanguageDetectionStatus::kImmediatelyAvailableNotEnglish,
+             /*expected_relevance=*/std::nullopt,
+         },
+         {
+             /*test_name=*/"NoEnglishDetectedDelayed",
+             /*immediate_page_language=*/"",
+             /*delayed_page_language=*/"de-DE",
+             /*expected_status=*/
+             LanguageDetectionStatus::kDelayedDetectedNotEnglish,
+             /*expected_relevance=*/std::nullopt,
+         },
+         {
+             /*test_name=*/"EnglishDetectedDelayed",
+             /*immediate_page_language=*/"",
+             /*delayed_page_language=*/"en-GB",
+             /*expected_status=*/
+             LanguageDetectionStatus::kDelayedDetectedEnglish,
+             /*expected_relevance=*/PermissionRequestRelevance::kVeryHigh,
+         }}),
+    /*name_generator=*/
+    [](const testing::TestParamInfo<
+        Aiv4ModelLanguageDetectionBrowserTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
+IN_PROC_BROWSER_TEST_P(Aiv4ModelLanguageDetectionBrowserTest,
+                       CheckLanguageDetectionHistogramStatus) {
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+
+  ASSERT_TRUE(aiv4_model_handler());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  PushModelFileToModelExecutor(ModelFilePath(kOneReturnAiv4Model));
+
+  GeneratePredictionsResponse prediction_service_response =
+      BuildPredictionServiceResponse(kLikelihoodVeryUnlikely);
+
+  EXPECT_CALL(prediction_service(), StartLookup(_, _, _))
+      .WillRepeatedly(WithArg<2>(Invoke(
+          [&](PredictionService::LookupResponseCallback response_callback) {
+            std::move(response_callback)
+                .Run(/*lookup_successful=*/true,
+                     /*response_from_cache=*/true, prediction_service_response);
+          })));
+
+  set_dummy_screenshot_for_testing();
+  set_dummy_inner_text_for_testing();
+  PassageEmbedderMock passage_embedder;
+  passage_embedder.set_status(
+      passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
+  model_handler_provider()->set_passage_embedder_for_testing(&passage_embedder);
+
+  TriggerPromptAndVerifyUi(
+      /*test_url=*/"test.a", PermissionAction::DISMISSED,
+      /*should_expect_quiet_ui=*/true, GetParam().expected_relevance,
+      /*expected_prediction_likelihood=*/kLikelihoodVeryUnlikely,
+      /*translate_source_language=*/
+      GetParam().immediate_page_language);
+
+  // This will speed up the test in case of a timeout.
+  task_runner->FastForwardBy(
+      base::Seconds(LanguageDetectionObserver::kLanguageDetectionTimeout));
+
+  histogram_tester().ExpectBucketCount(kAiv4LanguageDetectionStatusHistogram,
+                                       /*sample=*/GetParam().expected_status,
+                                       /*expected_count=*/1);
+
+  // Avoid dangling raw_ptr warning:
+  model_handler_provider()->set_passage_embedder_for_testing(nullptr);
+}
+
 struct Aiv4ModelFailureTestCase {
   std::string test_name;
+  std::string page_language;
   std::string inner_text;
   SkBitmap snapshot;
   ComputeEmbeddingsStatus compute_embeddings_status;
@@ -1056,30 +1238,35 @@ class Aiv4ModelFailureBrowserTest
   }
 };
 
-// Each of the testcases targets a different point of failure and we want all
-// of them to get handled gracefully by skipping on-device model execution and
-// just calling CPSSv3 server side model without permission relevance calculated
-// by the on-device model.
+// Each of the testcases targets a different point of failure and we
+// want all of them to get handled gracefully by skipping on-device
+// model execution and just calling CPSSv3 server side model without
+// permission relevance calculated by the on-device model.
 INSTANTIATE_TEST_SUITE_P(
     Aiv4ModelFailureTest,
     Aiv4ModelFailureBrowserTest,
     ValuesIn<Aiv4ModelFailureTestCase>({
         {
             /*test_name=*/"NoScreenshotAvailable",
+            /*page_language=*/"en",
             /*inner_text=*/"some valid text for aiv4 model",
             /*snapshot=*/SkBitmap(),
-            /*compute_embeddings_status=*/ComputeEmbeddingsStatus::kSuccess,
+            /*compute_embeddings_status=*/
+            ComputeEmbeddingsStatus::kSuccess,
             /*passage_embedder=*/PassageEmbedderMock(),
         },
         {
             /*test_name=*/"EmptyInnerText",
+            /*page_language=*/"en-GB",
             /*inner_text=*/"",
             /*snapshot=*/BuildBitmap(64, 64, kDefaultColor),
-            /*compute_embeddings_status=*/ComputeEmbeddingsStatus::kSuccess,
+            /*compute_embeddings_status=*/
+            ComputeEmbeddingsStatus::kSuccess,
             /*passage_embedder=*/PassageEmbedderMock(),
         },
         {
             /*test_name=*/"EmbedderModelFails",
+            /*page_language=*/"en-US",
             /*inner_text=*/"some valid text for aiv4 model",
             /*snapshot=*/BuildBitmap(64, 64, kDefaultColor),
             /*compute_embeddings_status=*/
@@ -1088,11 +1275,21 @@ INSTANTIATE_TEST_SUITE_P(
         },
         {
             /*test_name=*/"EmbedderModelDoesNotExist",
+            /*page_language=*/"en-VU",
             /*inner_text=*/"some valid text for aiv4 model",
             /*snapshot=*/BuildBitmap(64, 64, kDefaultColor),
             /*compute_embeddings_status=*/
             ComputeEmbeddingsStatus::kSuccess,
             /*passage_embedder=*/std::nullopt,
+        },
+        {
+            /*test_name=*/"PageIsNotInEnglish",
+            /*page_language=*/"de-DE",
+            /*inner_text=*/"some valid text for aiv4 model",
+            /*snapshot=*/BuildBitmap(64, 64, kDefaultColor),
+            /*compute_embeddings_status=*/
+            ComputeEmbeddingsStatus::kSuccess,
+            /*passage_embedder=*/PassageEmbedderMock(),
         },
     }), /*name_generator=*/
     [](const testing::TestParamInfo<Aiv4ModelFailureBrowserTest::ParamType>&
@@ -1137,8 +1334,10 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelFailureBrowserTest,
 
   TriggerPromptAndVerifyUi(
       /*test_url=*/"test.a", PermissionAction::DISMISSED,
-      /*should_expect_quiet_ui=*/true, /*expected_relevance=*/std::nullopt,
-      /*expected_prediction_likelihood=*/kLikelihoodVeryUnlikely);
+      /*should_expect_quiet_ui=*/true,
+      /*expected_relevance=*/std::nullopt,
+      /*expected_prediction_likelihood=*/kLikelihoodVeryUnlikely,
+      /*translate_source_language=*/GetParam().page_language);
 
   // Avoid dangling raw_ptr warning:
   model_handler_provider()->set_passage_embedder_for_testing(nullptr);
@@ -1162,8 +1361,8 @@ std::vector<ModelMetadata> aiv4_model_data_testcase = {
         /*success_count_model_execution=*/1,
     },
     {
-        /*test_name=*/"OnDeviceVeryLowAndServerSideVeryUnlikelyResponse"
-                      "ReturnsQuietUI",
+        /*test_name=*/"OnDeviceVeryLowAndServerSideVeryUnlikelyRespons"
+                      "eReturnsQuietUI",
         /*model_name=*/kZeroReturnAiv4Model,
         /*expected_relevance=*/PermissionRequestRelevance::kVeryLow,
         /*prediction_service_likelihood=*/kLikelihoodVeryUnlikely,
@@ -1171,8 +1370,8 @@ std::vector<ModelMetadata> aiv4_model_data_testcase = {
         /*success_count_model_execution=*/1,
     },
     {
-        /*test_name=*/"OnDeviceVeryHighAndServerSideUnspecifiedResponse"
-                      "ReturnsDefaultUI",
+        /*test_name=*/"OnDeviceVeryHighAndServerSideUnspecifiedRespons"
+                      "eReturnsDefaultUI",
         /*model_name=*/kOneReturnAiv4Model,
         /*expected_relevance=*/PermissionRequestRelevance::kVeryHigh,
         /*prediction_service_likelihood=*/kLikelihoodUnspecified,
@@ -1180,8 +1379,8 @@ std::vector<ModelMetadata> aiv4_model_data_testcase = {
         /*success_count_model_execution=*/1,
     },
     {
-        /*test_name=*/"OnDeviceVeryHighAndServerSideVeryUnlikelyResponse"
-                      "ReturnsQuietUI",
+        /*test_name=*/"OnDeviceVeryHighAndServerSideVeryUnlikelyRespon"
+                      "seReturnsQuietUI",
         /*model_name=*/kOneReturnAiv4Model,
         /*expected_relevance=*/PermissionRequestRelevance::kVeryHigh,
         /*prediction_service_likelihood=*/kLikelihoodVeryUnlikely,
@@ -1192,7 +1391,8 @@ std::vector<ModelMetadata> aiv4_model_data_testcase = {
         /*test_name=*/"FailingAiv3ModelStillResultsInValid"
                       "ServerSideExecution",
         /*model_name=*/kNotExistingModel,
-        /*expected_relevance=*/PermissionRequestRelevance::kUnspecified,
+        /*expected_relevance=*/
+        PermissionRequestRelevance::kUnspecified,
         /*prediction_service_likelihood=*/kLikelihoodVeryUnlikely,
         /*should_expect_quiet_ui=*/true,
         /*success_count_model_execution=*/0,
@@ -1214,17 +1414,6 @@ class Aiv4ModelPredictionServiceBrowserTest
   OptimizationTarget optimization_target() override {
     return get<1>(GetParam()).optimization_target;
   }
-
-  void SetUpOnMainThread() override {
-    Aiv4ModelPredictionServiceBrowserTestBase::SetUpOnMainThread();
-
-    // Required to preprocess the inner_text string as input for AIv4
-    model_handler_provider()->set_passage_embedder_for_testing(
-        &passage_embedder_);
-  }
-
- private:
-  PassageEmbedderMock passage_embedder_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
