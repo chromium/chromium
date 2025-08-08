@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace autofill {
 
@@ -23,10 +24,17 @@ namespace autofill {
 // (create, update, remove) `kAccountNameEmail` profile. In code
 // `AccountNameEmailStore` is owned by and has the same lifetime as
 // `AddressDataManager`.
-class AccountNameEmailStore {
+class AccountNameEmailStore : public signin::IdentityManager::Observer {
  public:
   AccountNameEmailStore(AddressDataManager& address_data_manager,
+                        signin::IdentityManager& identity_manager,
                         PrefService& pref_service);
+  ~AccountNameEmailStore() override;
+
+  // IdentityManager::Observer:
+  // Called when the account's extended information (e.g., full name) is
+  // updated. Used to keep the `kAccountNameEmail` profile up to date.
+  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
   // Updates the `kAccountNameEmail` autofill profile with the newest signed-in
   // account `info`. If the `kAccountNameEmail` profile doesn't exist, it is
@@ -40,7 +48,15 @@ class AccountNameEmailStore {
   std::string HashAccountInfo(const AccountInfo& info) const;
 
   const raw_ref<AddressDataManager> address_data_manager_;
+  const raw_ref<signin::IdentityManager> identity_manager_;
   const raw_ref<PrefService> pref_service_;
+
+  // Used to update the `kAccountNameEmail` profile when the account name
+  // changes.
+  // TODO(crbug.com/356845298): Handle sign-out.
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observer_{this};
 };
 
 }  // namespace autofill

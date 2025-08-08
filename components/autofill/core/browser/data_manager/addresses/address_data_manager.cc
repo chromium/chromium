@@ -122,9 +122,10 @@ AddressDataManager::AddressDataManager(
         alternative_state_name_map_updater_.get());
 
     if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForNameAndEmail)) {
-      account_name_email_store_ =
-          std::make_unique<AccountNameEmailStore>(*this, *pref_service_);
+            features::kAutofillEnableSupportForNameAndEmail) &&
+        identity_manager) {
+      account_name_email_store_ = std::make_unique<AccountNameEmailStore>(
+          *this, *identity_manager, *pref_service_);
     }
   }
 }

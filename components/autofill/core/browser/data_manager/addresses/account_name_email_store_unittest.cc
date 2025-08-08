@@ -4,8 +4,10 @@
 
 #include "components/autofill/core/browser/data_manager/addresses/account_name_email_store.h"
 
+#include <memory>
 #include <string_view>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/addresses/account_name_email_store_test_api.h"
@@ -14,37 +16,56 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
+using testing::ContainerEq;
+using testing::Contains;
 using testing::ElementsAre;
+using testing::IsEmpty;
+using testing::Not;
 using testing::Property;
 
 constexpr std::string_view kTestName1 = "George Washington";
 constexpr std::string_view kTestEmailAddress1 = "george.washington@gmail.com";
 constexpr std::string_view kTestName2 = "Thomas Jefferson";
 constexpr std::string_view kTestEmailAddress2 = "thomas.jefferson@gmail.com";
+constexpr GaiaId::Literal kFakeGaiaId("1234567890");
 
 class AccountNameEmailStoreTest : public testing::Test {
  public:
   AccountNameEmailStoreTest()
-      : prefs_(test::PrefServiceForTesting()), store_(test_adm_, *prefs_) {}
+      : prefs_(test::PrefServiceForTesting()),
+        identity_manager_(identity_test_env_.identity_manager()),
+        store_(test_adm_, *identity_manager_, *prefs_) {}
 
+  void OnAccountUpdated(const AccountInfo& info) {
+    signin::UpdateAccountInfoForAccount(identity_manager_.get(), info);
+  }
+
+  AccountNameEmailStore& account_name_email_store() { return store_; }
   AddressDataManager& address_data_manager() { return test_adm_; }
   PrefService& pref_service() { return *prefs_; }
-
-  AccountNameEmailStore* account_name_email_store() { return &store_; }
+  signin::IdentityTestEnvironment& identity_test_env() {
+    return identity_test_env_;
+  }
 
  private:
   base::test::ScopedFeatureList feature_{
       features::kAutofillEnableSupportForNameAndEmail};
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PrefService> prefs_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  // `identity_manager_` is owned by `identity_test_env_`
+  raw_ptr<signin::IdentityManager> identity_manager_;
   TestAddressDataManager test_adm_;
   AccountNameEmailStore store_;
 };
@@ -52,8 +73,8 @@ class AccountNameEmailStoreTest : public testing::Test {
 // Tests that a new `kAccountNameEmail` profile isn't created when an empty
 // `AccountInfo` is passed into the `UpdateOrCreateAccountNameEmail` method.
 TEST_F(AccountNameEmailStoreTest, EmptyAccountInfoCreation) {
-  account_name_email_store()->UpdateOrCreateAccountNameEmail({});
-  EXPECT_THAT(address_data_manager().GetProfiles(), testing::IsEmpty());
+  account_name_email_store().UpdateOrCreateAccountNameEmail({});
+  EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
 }
 
 // Check whether the passed in `AutofillProfile` has the correct NAME_FULL and
@@ -71,7 +92,7 @@ TEST_F(AccountNameEmailStoreTest, SpecificInfoCreationUpdate) {
   info.full_name = kTestName1;
   info.email = kTestEmailAddress1;
 
-  account_name_email_store()->UpdateOrCreateAccountNameEmail(info);
+  account_name_email_store().UpdateOrCreateAccountNameEmail(info);
 
   EXPECT_THAT(address_data_manager().GetProfiles(),
               ElementsAre(IsCorrectNameEmailInfo(
@@ -85,11 +106,11 @@ TEST_F(AccountNameEmailStoreTest, HashPrefSaving) {
   AccountInfo info;
   info.full_name = kTestName1;
   info.email = kTestEmailAddress1;
-  account_name_email_store()->UpdateOrCreateAccountNameEmail(info);
+  account_name_email_store().UpdateOrCreateAccountNameEmail(info);
 
   EXPECT_EQ(
       pref_service().GetString(prefs::kAutofillNameAndEmailProfileSignature),
-      test_api(account_name_email_store()).HashAccountInfo(info));
+      test_api(&account_name_email_store()).HashAccountInfo(info));
 }
 
 // Tests that the `UpdateOrCreateAccountNameEmail` returns early (does nothing)
@@ -100,10 +121,10 @@ TEST_F(AccountNameEmailStoreTest, EarlyReturnWhenHashesAreEqual) {
   info.email = kTestEmailAddress1;
 
   const std::string hash =
-      test_api(account_name_email_store()).HashAccountInfo(info);
+      test_api(&account_name_email_store()).HashAccountInfo(info);
 
   pref_service().SetString(prefs::kAutofillNameAndEmailProfileSignature, hash);
-  account_name_email_store()->UpdateOrCreateAccountNameEmail(info);
+  account_name_email_store().UpdateOrCreateAccountNameEmail(info);
 
   EXPECT_EQ(hash, pref_service().GetString(
                       prefs::kAutofillNameAndEmailProfileSignature));
@@ -120,14 +141,76 @@ TEST_F(AccountNameEmailStoreTest, RemovingProfile) {
   info2.full_name = kTestName2;
   info2.email = kTestEmailAddress2;
 
-  account_name_email_store()->UpdateOrCreateAccountNameEmail(info1);
-  account_name_email_store()->UpdateOrCreateAccountNameEmail(info2);
+  account_name_email_store().UpdateOrCreateAccountNameEmail(info1);
+  account_name_email_store().UpdateOrCreateAccountNameEmail(info2);
+
+  EXPECT_THAT(
+      address_data_manager().GetProfiles(),
+      Contains(IsCorrectNameEmailInfo(base::UTF8ToUTF16(kTestName1),
+                                      base::UTF8ToUTF16(kTestEmailAddress1)))
+          .Times(0));
+}
+
+// Tests that the `OnExtendedAccountInfoUpdated` method will create the
+// `kAccountNameEmail` profile on signin
+TEST_F(AccountNameEmailStoreTest, OnExtendedAccountInfoUpdated_CreatePath) {
+  ASSERT_THAT(address_data_manager().GetProfiles(), IsEmpty());
+
+  // This call should trigger OnExtendedAccountInfoUpdated and create an Account
+  // Name Email Profile
+  AccountInfo info = identity_test_env().MakePrimaryAccountAvailable(
+      kTestEmailAddress1.data(), signin::ConsentLevel::kSignin);
+  EXPECT_THAT(
+      address_data_manager().GetProfiles(),
+      ElementsAre(Property(&AutofillProfile::record_type,
+                           AutofillProfile::RecordType::kAccountNameEmail)));
+}
+
+// Tests that the `OnExtendedAccountInfoUpdated` method will update the already
+// existing `kAccountNameEmail` profile
+TEST_F(AccountNameEmailStoreTest, OnExtendedAccountInfoUpdated_UpdatePath) {
+  AccountInfo info = identity_test_env().MakePrimaryAccountAvailable(
+      kTestEmailAddress1.data(), signin::ConsentLevel::kSignin);
+
+  ASSERT_THAT(address_data_manager().GetProfiles(),
+              Not(ElementsAre(IsCorrectNameEmailInfo(
+                  base::UTF8ToUTF16(kTestName2),
+                  base::UTF8ToUTF16(kTestEmailAddress2)))));
+
+  info.full_name = kTestName2;
+  info.email = kTestEmailAddress2;
+  // This call should trigger OnExtendedAccountInfoUpdated and update the
+  // `kAccountNameEmail` profile with new info.
+  OnAccountUpdated(info);
 
   EXPECT_THAT(address_data_manager().GetProfiles(),
-              testing::Contains(
-                  IsCorrectNameEmailInfo(base::UTF8ToUTF16(kTestName1),
-                                         base::UTF8ToUTF16(kTestEmailAddress1)))
-                  .Times(0));
+              ElementsAre(IsCorrectNameEmailInfo(
+                  base::UTF8ToUTF16(kTestName2),
+                  base::UTF8ToUTF16(kTestEmailAddress2))));
+}
+
+// Tests that the `OnExtendedAccountInfoUpdated` method will not update
+// `kAccountNameEmail` autofill profile if primary account info and passed in
+// info have different `GaiaId`s
+TEST_F(AccountNameEmailStoreTest, OnExtendedAccountInfoUpdated_WrongGaiaId) {
+  AccountInfo info1 = identity_test_env().MakePrimaryAccountAvailable(
+      kTestEmailAddress1.data(), signin::ConsentLevel::kSignin);
+  info1.full_name = kTestName1;
+  info1.email = kTestEmailAddress1;
+  OnAccountUpdated(info1);
+
+  const std::vector<const AutofillProfile*> profiles_before_update =
+      address_data_manager().GetProfiles();
+  ASSERT_THAT(profiles_before_update,
+              ElementsAre(IsCorrectNameEmailInfo(
+                  base::UTF8ToUTF16(kTestName1),
+                  base::UTF8ToUTF16(kTestEmailAddress1))));
+
+  const AccountInfo info2 = identity_test_env().MakeAccountAvailable(
+      kTestEmailAddress2, {std::nullopt, false, kFakeGaiaId});
+  OnAccountUpdated(info2);
+  EXPECT_THAT(profiles_before_update,
+              ContainerEq(address_data_manager().GetProfiles()));
 }
 
 }  // namespace

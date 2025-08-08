@@ -10,7 +10,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace autofill {
 
@@ -20,9 +22,26 @@ constexpr std::string_view kSeparator = "|";
 
 AccountNameEmailStore::AccountNameEmailStore(
     AddressDataManager& address_data_manager,
+    signin::IdentityManager& identity_manager,
     PrefService& pref_service)
     : address_data_manager_(address_data_manager),
-      pref_service_(pref_service) {}
+      identity_manager_(identity_manager),
+      pref_service_(pref_service) {
+  identity_manager_observer_.Observe(&identity_manager);
+}
+
+AccountNameEmailStore::~AccountNameEmailStore() = default;
+
+void AccountNameEmailStore::OnExtendedAccountInfoUpdated(
+    const AccountInfo& info) {
+  const std::optional<CoreAccountInfo>& primary_info =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (!primary_info.has_value() ||
+      (!primary_info->IsEmpty() && info.gaia != primary_info->gaia)) {
+    return;
+  }
+  UpdateOrCreateAccountNameEmail(info);
+}
 
 void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(
     const AccountInfo& info) {

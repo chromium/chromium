@@ -1693,6 +1693,7 @@ source_set("unit_tests") {
     "//components/resources",
     "//components/search",
     "//components/security_state/core",
+    "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/strings",
     "//components/sync",
