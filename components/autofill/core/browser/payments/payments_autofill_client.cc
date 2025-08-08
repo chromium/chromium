@@ -309,4 +309,8 @@ bool PaymentsAutofillClient::IsTabModalPopupDeprecated() const {
   return false;
 }
 
+BnplStrategy* PaymentsAutofillClient::GetBnplStrategy() {
+  return nullptr;
+}
+
 }  // namespace autofill::payments

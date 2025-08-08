@@ -59,6 +59,7 @@ enum class WebauthnDialogCallbackType;
 namespace payments {
 
 struct BnplIssuerContext;
+class BnplStrategy;
 class MandatoryReauthManager;
 class MultipleRequestPaymentsNetworkInterface;
 class PaymentsNetworkInterface;
@@ -664,6 +665,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Checks if the browser popup is a tab modal popup.
   virtual bool IsTabModalPopupDeprecated() const;
+
+  // Gets the BnplStrategy instance associated with the client. Helps determines
+  // the next step in the BNPL flow depending on the platform.
+  virtual BnplStrategy* GetBnplStrategy();
 };
 
 }  // namespace payments
