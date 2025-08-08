@@ -4,12 +4,17 @@
 
 source_set("ui") {
   sources = [
+    "aim_image_cell.h",
+    "aim_image_cell.mm",
+    "aim_input_item.h",
+    "aim_input_item.mm",
     "aim_prototype_consumer.h",
     "aim_prototype_mutator.h",
     "aim_prototype_view_controller.h",
     "aim_prototype_view_controller.mm",
   ]
   deps = [
+    "//base",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",

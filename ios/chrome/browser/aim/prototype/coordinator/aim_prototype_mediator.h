@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#import "components/omnibox/composebox/ios/composebox_file_upload_observer_bridge.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_consumer.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_mutator.h"
 
@@ -22,7 +23,8 @@ class UrlLoadingBrowserAgent;
 @end
 
 // Mediator for the AIM prototype.
-@interface AIMPrototypeMediator : NSObject <AIMPrototypeMutator>
+@interface AIMPrototypeMediator
+    : NSObject <AIMPrototypeMutator, ComposeboxFileUploadObserver>
 
 @property(nonatomic, weak) id<AIMPrototypeConsumer> consumer;
 @property(nonatomic, weak) id<AIMPrototypeMediatorDelegate> delegate;
@@ -32,8 +34,11 @@ class UrlLoadingBrowserAgent;
                      composeboxQueryController:
                          (std::unique_ptr<ComposeboxQueryControllerIOS>)
                              composeboxQueryController;
-- (void)processImage:(UIImage*)image;
+
 - (void)disconnect;
+
+// Processes the given `itemProvider` for an image.
+- (void)processImageItemProvider:(NSItemProvider*)itemProvider;
 
 @end
 

@@ -98,16 +98,7 @@
   }
 
   NSItemProvider* provider = results.firstObject.itemProvider;
-  if ([provider canLoadObjectOfClass:[UIImage class]]) {
-    __weak AIMPrototypeMediator* weakMediator = _mediator;
-    [provider loadObjectOfClass:[UIImage class]
-              completionHandler:^(__kindof id<NSItemProviderReading> object,
-                                  NSError* error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                  [weakMediator processImage:(UIImage*)object];
-                });
-              }];
-  }
+  [_mediator processImageItemProvider:provider];
 }
 
 #pragma mark - AIMPrototypeMediatorDelegate

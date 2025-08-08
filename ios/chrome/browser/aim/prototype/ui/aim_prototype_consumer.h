@@ -7,9 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/aim/prototype/ui/aim_input_item.h"
+
 // Consumer for the AIM prototype.
 @protocol AIMPrototypeConsumer
-- (void)setImages:(NSArray<UIImage*>*)images;
+// Sets the current list of items to be displayed.
+- (void)setItems:(NSArray<AIMInputItem*>*)items;
+
+// Updates the state for the item with the given token.
+- (void)updateState:(AIMInputItemState)state
+    forItemWithToken:(const base::UnguessableToken&)token;
 @end
 
 #endif  // IOS_CHROME_BROWSER_AIM_PROTOTYPE_UI_AIM_PROTOTYPE_CONSUMER_H_

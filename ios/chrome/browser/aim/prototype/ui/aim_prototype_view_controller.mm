@@ -4,25 +4,38 @@
 
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_view_controller.h"
 
+#import "base/strings/sys_string_conversions.h"
+#import "base/unguessable_token.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_image_cell.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_input_item.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
-NSString* const kImageCellReuseIdentifier = @"ImageCellReuseIdentifier";
+/// The reuse identifier for the image cells in the carousel.
+NSString* const kImageCellReuseIdentifier = @"AIMImageCell";
+/// The maximum number of lines for the text view before it starts scrolling.
 const int kMaxLines = 5;
+/// The identifier for the main section of the collection view.
+NSString* const kMainSectionIdentifier = @"MainSection";
 }
 
-@interface AIMPrototypeViewController () <UICollectionViewDataSource,
-                                          UITextViewDelegate>
+@interface AIMPrototypeViewController () <UITextViewDelegate>
 @end
 
 @implementation AIMPrototypeViewController {
+  /// The collection view to display the selected images.
   UICollectionView* _carouselView;
-  NSArray<UIImage*>* _images;
+  /// The diffable data source for the carousel view.
+  UICollectionViewDiffableDataSource<NSString*, AIMInputItem*>* _dataSource;
+  /// The label used as a placeholder for the text view.
   UILabel* _placeholderLabel;
+  /// The constraint for the height of the text view.
   NSLayoutConstraint* _textViewHeightConstraint;
+  /// The text view for user input.
   UITextView* _textView;
+  /// The button to send the user's query.
   UIButton* _sendButton;
 }
 
@@ -89,12 +102,13 @@ const int kMaxLines = 5;
   layout.minimumLineSpacing = 12;
   _carouselView = [[UICollectionView alloc] initWithFrame:CGRectZero
                                      collectionViewLayout:layout];
-  _carouselView.dataSource = self;
   _carouselView.translatesAutoresizingMaskIntoConstraints = NO;
   _carouselView.hidden = YES;
   _carouselView.backgroundColor = [UIColor colorNamed:kGrey100Color];
-  [_carouselView registerClass:[UICollectionViewCell class]
+  [_carouselView registerClass:[AIMImageCell class]
       forCellWithReuseIdentifier:kImageCellReuseIdentifier];
+  _dataSource = [self createDataSource];
+  _carouselView.dataSource = _dataSource;
   [_carouselView.heightAnchor constraintEqualToConstant:48].active = YES;
   _carouselView.showsHorizontalScrollIndicator = NO;
 
@@ -181,32 +195,37 @@ const int kMaxLines = 5;
 
 #pragma mark - AIMPrototypeConsumer
 
-- (void)setImages:(NSArray<UIImage*>*)images {
-  _images = images;
-  _carouselView.hidden = _images.count == 0;
-  [_carouselView reloadData];
+- (void)setItems:(NSArray<AIMInputItem*>*)items {
+  _carouselView.hidden = items.count == 0;
+  NSDiffableDataSourceSnapshot<NSString*, AIMInputItem*>* snapshot =
+      [[NSDiffableDataSourceSnapshot alloc] init];
+  [snapshot appendSectionsWithIdentifiers:@[ kMainSectionIdentifier ]];
+  [snapshot appendItemsWithIdentifiers:items];
+  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
   [self updateSendButtonState];
 }
 
-#pragma mark - UICollectionViewDataSource
+- (void)updateState:(AIMInputItemState)state
+    forItemWithToken:(const base::UnguessableToken&)token {
+  NSDiffableDataSourceSnapshot<NSString*, AIMInputItem*>* currentSnapshot =
+      _dataSource.snapshot;
+  AIMInputItem* itemToUpdate;
+  for (AIMInputItem* item in currentSnapshot.itemIdentifiers) {
+    if (item.fileToken == token) {
+      itemToUpdate = item;
+      break;
+    }
+  }
 
-- (NSInteger)collectionView:(UICollectionView*)collectionView
-     numberOfItemsInSection:(NSInteger)section {
-  return _images.count;
-}
+  if (!itemToUpdate) {
+    return;
+  }
 
-- (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
-                 cellForItemAtIndexPath:(NSIndexPath*)indexPath {
-  UICollectionViewCell* cell = [collectionView
-      dequeueReusableCellWithReuseIdentifier:kImageCellReuseIdentifier
-                                forIndexPath:indexPath];
-  UIImageView* imageView =
-      [[UIImageView alloc] initWithImage:_images[indexPath.row]];
-  imageView.contentMode = UIViewContentModeScaleAspectFill;
-  cell.backgroundView = imageView;
-  cell.layer.cornerRadius = 16;
-  cell.clipsToBounds = YES;
-  return cell;
+  itemToUpdate.state = state;
+  NSDiffableDataSourceSnapshot<NSString*, AIMInputItem*>* newSnapshot =
+      [currentSnapshot copy];
+  [newSnapshot reloadItemsWithIdentifiers:@[ itemToUpdate ]];
+  [_dataSource applySnapshot:newSnapshot animatingDifferences:YES];
 }
 
 #pragma mark - UITextViewDelegate
@@ -251,8 +270,25 @@ const int kMaxLines = 5;
 
 #pragma mark - Private
 
+- (UICollectionViewDiffableDataSource<NSString*, AIMInputItem*>*)
+    createDataSource {
+  return [[UICollectionViewDiffableDataSource alloc]
+      initWithCollectionView:_carouselView
+                cellProvider:^UICollectionViewCell*(
+                    UICollectionView* collectionView, NSIndexPath* indexPath,
+                    AIMInputItem* item) {
+                  AIMImageCell* cell = (AIMImageCell*)[collectionView
+                      dequeueReusableCellWithReuseIdentifier:
+                          kImageCellReuseIdentifier
+                                                forIndexPath:indexPath];
+                  [cell configureWithItem:item];
+                  return cell;
+                }];
+}
+
 - (void)updateSendButtonState {
-  _sendButton.enabled = _textView.hasText || _images.count > 0;
+  _sendButton.enabled =
+      _textView.hasText || _dataSource.snapshot.numberOfItems > 0;
 }
 
 - (UIButton*)createButtonWithImage:(UIImage*)image {

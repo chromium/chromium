@@ -4,6 +4,8 @@
 
 source_set("ios") {
   sources = [
+    "composebox_file_upload_observer_bridge.h",
+    "composebox_file_upload_observer_bridge.mm",
     "composebox_image_helper_ios.h",
     "composebox_image_helper_ios.mm",
     "composebox_query_controller_ios.h",
