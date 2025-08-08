@@ -365,6 +365,28 @@ std::optional<int> CheckInvariants(const EnclaveLocalState::User& user) {
   return std::nullopt;
 }
 
+// Parses the wrapped_pin value from an enclave CBOR response.
+std::optional<std::string> ParseWrappedPinFromCbor(
+    const cbor::Value& response) {
+  const cbor::Value::MapValue& response_map = response.GetArray()[0].GetMap();
+  const cbor::Value& ok_response =
+      response_map.find(cbor::Value(enclave::kResponseSuccessKey))->second;
+  if (!ok_response.is_map()) {
+    FIDO_LOG(ERROR) << "PIN change response is not a map: "
+                    << cbor::DiagnosticWriter::Write(response);
+    return std::nullopt;
+  }
+  const cbor::Value::MapValue& ok_response_map = ok_response.GetMap();
+  const auto wrapped_pin_value =
+      ok_response_map.find(cbor::Value(enclave::kWrappedPinKey));
+  if (wrapped_pin_value == ok_response_map.end() ||
+      !wrapped_pin_value->second.is_bytestring()) {
+    FIDO_LOG(ERROR) << "Wrapped PIN was not a bytestring";
+    return std::nullopt;
+  }
+  return VecToString(wrapped_pin_value->second.GetBytestring());
+}
+
 // Build an enclave request that registers a new device and requests a new
 // wrapped asymmetric key which will be used to join the security domain.
 cbor::Value BuildRegistrationMessage(
@@ -1049,29 +1071,6 @@ std::pair<int32_t, std::vector<uint8_t>> GetCurrentWrappedSecretForUser(
     }
   }
   return std::make_pair(*max_version, ToVector(*max_wrapped_secret));
-}
-
-std::vector<uint8_t> EncryptWrappedPIN(
-    base::span<const uint8_t> security_domain_secret,
-    base::span<const uint8_t> cbor_bytes) {
-  // This is "KeychainApplicationKey:chrome:GPM PIN data wrapping key".
-  static constexpr uint8_t kKeyPurposePinDataKey[] = {
-      0x4b, 0x65, 0x79, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x41, 0x70, 0x70,
-      0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4b, 0x65, 0x79,
-      0x3a, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x3a, 0x47, 0x50, 0x4d,
-      0x20, 0x50, 0x49, 0x4e, 0x20, 0x64, 0x61, 0x74, 0x61, 0x20, 0x77,
-      0x72, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x20, 0x6b, 0x65, 0x79};
-  const std::array<uint8_t, 32> derived_key = crypto::HkdfSha256<32>(
-      security_domain_secret, /*salt=*/base::span<const uint8_t>(),
-      kKeyPurposePinDataKey);
-  crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
-  aead.Init(derived_key);
-  uint8_t nonce[12];
-  crypto::RandBytes(nonce);
-  std::vector<uint8_t> wrapped_pin = aead.Seal(
-      cbor_bytes, nonce, /*additional_data=*/base::span<const uint8_t>());
-  wrapped_pin.insert(wrapped_pin.begin(), std::begin(nonce), std::end(nonce));
-  return wrapped_pin;
 }
 
 // Parse a Vault and security domain member keys from a CBOR map. These maps
@@ -2484,24 +2483,11 @@ class EnclaveManager::StateMachine {
       return;
     }
 
-    const cbor::Value::MapValue& response_map = response.GetArray()[0].GetMap();
-    const cbor::Value& ok_response =
-        response_map.find(cbor::Value(enclave::kResponseSuccessKey))->second;
-    if (!ok_response.is_map()) {
-      FIDO_LOG(ERROR) << "PIN change response is not a map: "
-                      << cbor::DiagnosticWriter::Write(response);
+    std::optional<std::string> wrapped_pin = ParseWrappedPinFromCbor(response);
+    if (!wrapped_pin) {
       return;
     }
-    const cbor::Value::MapValue& ok_response_map = ok_response.GetMap();
-    const auto wrapped_pin_value =
-        ok_response_map.find(cbor::Value(enclave::kWrappedPinKey));
-    if (wrapped_pin_value == ok_response_map.end() ||
-        !wrapped_pin_value->second.is_bytestring()) {
-      FIDO_LOG(ERROR) << "Wrapped PIN was not a bytestring";
-      return;
-    }
-    wrapped_pin_proto_->set_wrapped_pin(
-        VecToString(wrapped_pin_value->second.GetBytestring()));
+    wrapped_pin_proto_->set_wrapped_pin(std::move(*wrapped_pin));
 
     UploadVaultAndMemberFromResponse(hashed_pin_->metadata,
                                      response.GetArray()[0]);
@@ -2527,9 +2513,19 @@ class EnclaveManager::StateMachine {
       return;
     }
 
-    // The new wrapped PIN is the same as the current one.
+    // The PIN hash and claim keys haven't changed...
     wrapped_pin_proto_ =
         std::make_unique<EnclaveLocalState::WrappedPIN>(user_->wrapped_pin());
+    if (base::FeatureList::IsEnabled(device::kWebAuthnWrapCohortData)) {
+      // ...but the wrapped PIN may contain new Vault cohort details so we need
+      // to update that.
+      std::optional<std::string> wrapped_pin =
+          ParseWrappedPinFromCbor(response);
+      if (!wrapped_pin) {
+        return;
+      }
+      wrapped_pin_proto_->set_wrapped_pin(std::move(*wrapped_pin));
+    }
 
     UploadVaultAndMemberFromResponse(
         PinMetadata::FromProto(*wrapped_pin_proto_), response.GetArray()[0]);
@@ -3547,6 +3543,14 @@ EnclaveManager::GetWrappedPIN() {
       user_->wrapped_pin());
 }
 
+void EnclaveManager::SetWrappedPINDataForTesting(
+    std::vector<uint8_t> wrapped_pin_data) {
+  CHECK(has_wrapped_pin());
+  const_cast<webauthn_pb::EnclaveLocalState_User&>(*user_)
+      .mutable_wrapped_pin()
+      ->set_wrapped_pin(VecToString(wrapped_pin_data));
+}
+
 EnclaveManager::UvKeyState EnclaveManager::uv_key_state(
     bool platform_has_biometrics) const {
   CHECK(is_ready());
@@ -3745,6 +3749,30 @@ std::string EnclaveManager::MakeWrappedPINForTesting(
   wrapped_pin->set_wrapped_pin(
       VecToString(EncryptWrappedPIN(security_domain_secret, cbor_bytes)));
   return wrapped_pin->SerializeAsString();
+}
+
+// static
+std::vector<uint8_t> EnclaveManager::EncryptWrappedPIN(
+    base::span<const uint8_t> security_domain_secret,
+    base::span<const uint8_t> cbor_bytes) {
+  // This is "KeychainApplicationKey:chrome:GPM PIN data wrapping key".
+  static constexpr uint8_t kKeyPurposePinDataKey[] = {
+      0x4b, 0x65, 0x79, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x41, 0x70, 0x70,
+      0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4b, 0x65, 0x79,
+      0x3a, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x3a, 0x47, 0x50, 0x4d,
+      0x20, 0x50, 0x49, 0x4e, 0x20, 0x64, 0x61, 0x74, 0x61, 0x20, 0x77,
+      0x72, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x20, 0x6b, 0x65, 0x79};
+  const std::array<uint8_t, 32> derived_key = crypto::HkdfSha256<32>(
+      security_domain_secret, /*salt=*/base::span<const uint8_t>(),
+      kKeyPurposePinDataKey);
+  crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
+  aead.Init(derived_key);
+  uint8_t nonce[12];
+  crypto::RandBytes(nonce);
+  std::vector<uint8_t> wrapped_pin = aead.Seal(
+      cbor_bytes, nonce, /*additional_data=*/base::span<const uint8_t>());
+  wrapped_pin.insert(wrapped_pin.begin(), std::begin(nonce), std::end(nonce));
+  return wrapped_pin;
 }
 
 // Observes the `IdentityManager` and tells the `EnclaveManager` when the

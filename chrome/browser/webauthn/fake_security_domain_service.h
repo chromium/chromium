@@ -74,6 +74,9 @@ class FakeSecurityDomainService {
   // Updates the public key of the PIN member.
   virtual void SetPinMemberPublicKey(std::string public_key) = 0;
 
+  // Updates the PIN member metadata wrapped PIN.
+  virtual void SetPinMemberWrappedPin(std::string wrapped_pin) = 0;
+
   virtual size_t num_physical_members() const = 0;
   virtual size_t num_pin_members() const = 0;
   virtual std::string GetPinMemberPublicKey() const = 0;

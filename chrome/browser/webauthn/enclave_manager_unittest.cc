@@ -47,6 +47,7 @@
 #include "chrome/browser/webauthn/test_util.h"
 #include "chrome/browser/webauthn/unexportable_key_utils.h"
 #include "components/cbor/reader.h"
+#include "components/cbor/writer.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -1221,6 +1222,77 @@ TEST_F(EnclaveManagerTest, RenewPIN) {
   CHECK(security_domain_secret.has_value());
   EXPECT_EQ(manager_.TakeSecret()->second, *security_domain_secret);
   EXPECT_TRUE(*LastPINRenewalTime() > *initial_time);
+}
+
+// Tests that renewing a PIN that didn't have cohort details (because it was
+// wrapped on an older version of Chrome) results in the enclave re-wrapping it
+// with the details.
+TEST_F(EnclaveManagerTest, RenewPINAddsCohortDetails) {
+  // Set up with a PIN.
+  ASSERT_TRUE(Register());
+  const std::string pin = "123456";
+  BoolFuture setup_future;
+  manager_.SetupWithPIN(pin, setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+  ASSERT_TRUE(manager_.is_ready());
+  ASSERT_TRUE(manager_.has_wrapped_pin());
+
+  const std::vector<uint8_t> security_domain_secret =
+      manager_.TakeSecret()->second;
+  {
+    // Delete the wrapped PIN cohort details from the enclave manager and
+    // security domain service, simulating an older version of Chrome.
+    std::unique_ptr<webauthn_pb::EnclaveLocalState_WrappedPIN>
+        wrapped_pin_proto = manager_.GetWrappedPIN();
+    std::vector<uint8_t> wrapped_pin =
+        DecryptWrappedPin(security_domain_secret,
+                          base::as_byte_span(wrapped_pin_proto->wrapped_pin()));
+    std::optional<cbor::Value> cbor = cbor::Reader::Read(wrapped_pin);
+    cbor::Value::MapValue& wrapped_pin_cbor =
+        const_cast<cbor::Value::MapValue&>(cbor->GetMap());
+    wrapped_pin_cbor.erase(wrapped_pin_cbor.find(cbor::Value(6)));
+    wrapped_pin_cbor.erase(wrapped_pin_cbor.find(cbor::Value(7)));
+    std::vector<uint8_t> encrypted_pin = EnclaveManager::EncryptWrappedPIN(
+        security_domain_secret,
+        *cbor::Writer::Write(cbor::Value(wrapped_pin_cbor)));
+    wrapped_pin_proto->set_wrapped_pin(
+        std::string(base::as_string_view(encrypted_pin)));
+    security_domain_service_->SetPinMemberWrappedPin(
+        wrapped_pin_proto->SerializeAsString());
+    manager_.SetWrappedPINDataForTesting(std::move(encrypted_pin));
+  }
+
+  // Renew the PIN.
+  BoolFuture renew_future;
+  manager_.RenewPIN(renew_future.GetCallback());
+  EXPECT_TRUE(renew_future.Wait());
+  EXPECT_TRUE(renew_future.Get());
+
+  // Verify that the wrapped PIN that is now present in the security domain
+  // service contains the cohort details.
+  webauthn_pb::EnclaveLocalState_WrappedPIN wrapped_pin_proto;
+  wrapped_pin_proto.ParseFromString(security_domain_service_->GetPinMetadata()
+                                        .usable_pin_metadata->wrapped_pin);
+  std::vector<uint8_t> wrapped_pin =
+      DecryptWrappedPin(security_domain_secret,
+                        base::as_byte_span(wrapped_pin_proto.wrapped_pin()));
+
+  std::optional<cbor::Value> cbor = cbor::Reader::Read(wrapped_pin);
+  const cbor::Value::MapValue& wrapped_pin_cbor = cbor->GetMap();
+
+  auto cert_xml_serial_number_it = wrapped_pin_cbor.find(cbor::Value(6));
+  ASSERT_NE(cert_xml_serial_number_it, wrapped_pin_cbor.end());
+  ASSERT_TRUE(cert_xml_serial_number_it->second.is_integer());
+  int cert_xml_serial_number = cert_xml_serial_number_it->second.GetInteger();
+  EXPECT_EQ(cert_xml_serial_number, FakeRecoveryKeyStore::kTestSerialNumber);
+
+  auto cohort_public_key_it = wrapped_pin_cbor.find(cbor::Value(7));
+  ASSERT_NE(cohort_public_key_it, wrapped_pin_cbor.end());
+  ASSERT_TRUE(cohort_public_key_it->second.is_bytestring());
+  const std::vector<uint8_t> cohort_public_key =
+      cohort_public_key_it->second.GetBytestring();
+  EXPECT_EQ(cohort_public_key,
+            recovery_key_store_->endpoint_public_key_bytes());
 }
 
 // Regression test for crbug.com/403218779.
