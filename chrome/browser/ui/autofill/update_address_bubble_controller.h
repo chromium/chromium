@@ -36,6 +36,10 @@ class UpdateAddressBubbleController : public content::WebContentsObserver {
   // profile.
   virtual std::u16string GetWindowTitle(bool has_empty_original_values) const;
   virtual std::u16string GetFooterMessage() const;
+  virtual std::u16string GetPositiveButtonText(
+      bool has_empty_original_values) const;
+  virtual std::u16string GetNegativeButtonText(
+      bool has_empty_original_values) const;
   virtual const AutofillProfile& GetProfileToSave() const;
   virtual const AutofillProfile& GetOriginalProfile() const;
 

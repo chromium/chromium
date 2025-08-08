@@ -36,6 +36,14 @@ class MockUpdateAddressBubbleController : public UpdateAddressBubbleController {
               (bool has_non_empty_original_values),
               (const, override));
   MOCK_METHOD(std::u16string, GetFooterMessage, (), (const, override));
+  MOCK_METHOD(std::u16string,
+              GetPositiveButtonText,
+              (bool has_non_empty_original_values),
+              (const, override));
+  MOCK_METHOD(std::u16string,
+              GetNegativeButtonText,
+              (bool has_non_empty_original_values),
+              (const, override));
   MOCK_METHOD(const AutofillProfile&, GetProfileToSave, (), (const, override));
   MOCK_METHOD(const AutofillProfile&,
               GetOriginalProfile,

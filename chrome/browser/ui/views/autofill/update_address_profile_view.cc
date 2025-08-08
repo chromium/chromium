@@ -194,20 +194,10 @@ UpdateAddressProfileView::UpdateAddressProfileView(
   SetTitle(controller_->GetWindowTitle(has_empty_original_values_));
   SetButtonLabel(
       ui::mojom::DialogButton::kOk,
-      l10n_util::GetStringUTF16(
-          has_empty_original_values_ &&
-                  base::FeatureList::IsEnabled(
-                      features::kAutofillEnableSupportForHomeAndWork)
-              ? IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_OK_BUTTON_LABEL
-              : IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL));
+      controller_->GetPositiveButtonText(has_empty_original_values_));
   SetButtonLabel(
       ui::mojom::DialogButton::kCancel,
-      l10n_util::GetStringUTF16(
-          has_empty_original_values_ &&
-                  base::FeatureList::IsEnabled(
-                      features::kAutofillEnableSupportForHomeAndWork)
-              ? IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_CANCEL_BUTTON_LABEL
-              : IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL));
+      controller_->GetNegativeButtonText(has_empty_original_values_));
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)

@@ -504,6 +504,9 @@
   <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user to save a new address.">
     Save
   </message>
+  <message name="IDS_AUTOFILL_SAVE_ADDRESS_WITH_MORE_INFO_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to save a new address which is an extented version of an already existing home or work address.">
+      Save address with more info
+    </message>
   <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_MIGRATION_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user to migrate a new address to their Google account.">
     Save in account
   </message>
@@ -559,9 +562,6 @@
   <if expr="is_android">
     <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to save a new address.">
       Save address?
-    </message>
-    <message name="IDS_AUTOFILL_SAVE_ADDRESS_WITH_MORE_INFO_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to save a new address which is an extented version of an already existing home or work address.">
-      Save address with more info
     </message>
     <message name="IDS_AUTOFILL_SAVE_ADDRESS_MIGRATION_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to migrate a new address in their Google Account.">
       Save in account?
