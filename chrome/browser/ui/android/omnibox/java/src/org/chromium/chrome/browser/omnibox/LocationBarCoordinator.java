@@ -84,6 +84,8 @@ import java.util.function.BooleanSupplier;
 public class LocationBarCoordinator
         implements LocationBar, NativeInitObserver, AutocompleteDelegate {
 
+    private final DeferredIMEWindowInsetApplicationCallback
+            mDeferredIMEWindowInsetApplicationCallback;
     private OmniboxSuggestionsDropdownEmbedderImpl mOmniboxDropdownEmbedderImpl;
 
     /** Identifies coordinators with methods specific to a device type. */
@@ -205,7 +207,7 @@ public class LocationBarCoordinator
         Context context = mLocationBarLayout.getContext();
         OneshotSupplierImpl<TemplateUrlService> templateUrlServiceSupplier =
                 new OneshotSupplierImpl<>();
-        DeferredIMEWindowInsetApplicationCallback deferredIMEWindowInsetApplicationCallback =
+        mDeferredIMEWindowInsetApplicationCallback =
                 new DeferredIMEWindowInsetApplicationCallback(
                         () -> mOmniboxDropdownEmbedderImpl.recalculateOmniboxAlignment());
         mOmniboxDropdownEmbedderImpl =
@@ -215,7 +217,11 @@ public class LocationBarCoordinator
                         mLocationBarLayout,
                         uiOverrides.isForcedPhoneStyleOmnibox(),
                         baseChromeLayout,
-                        deferredIMEWindowInsetApplicationCallback::getCurrentKeyboardHeight,
+                        () ->
+                                mBrowserControlsStateProvider == null
+                                        ? ControlsPosition.TOP
+                                        : mBrowserControlsStateProvider.getControlsPosition(),
+                        mDeferredIMEWindowInsetApplicationCallback::getCurrentKeyboardHeight,
                         bottomWindowPaddingSupplier);
 
         mUrlBar = mLocationBarLayout.findViewById(R.id.url_bar);
@@ -276,7 +282,7 @@ public class LocationBarCoordinator
                         mActivityLifecycleDispatcher,
                         uiOverrides.isForcedPhoneStyleOmnibox(),
                         windowAndroid,
-                        deferredIMEWindowInsetApplicationCallback);
+                        mDeferredIMEWindowInsetApplicationCallback);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator =
                 new StatusCoordinator(

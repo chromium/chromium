@@ -28,6 +28,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder.OmniboxAlignment;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -72,6 +73,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     private OmniboxSuggestionsDropdownEmbedderImpl mImpl;
     private WeakReference<Context> mContextWeakRef;
     private int mBottomWindowPadding;
+    private @ControlsPosition int mControlsPosition = ControlsPosition.TOP;
 
     @Before
     public void setUp() {
@@ -99,6 +101,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                         mHorizontalAlignmentView,
                         false,
                         mContentView,
+                        () -> mControlsPosition,
                         () -> 0,
                         () -> mBottomWindowPadding);
     }
@@ -190,6 +193,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                         mHorizontalAlignmentView,
                         false,
                         mIntermediateView,
+                        () -> mControlsPosition,
                         () -> 0,
                         () -> 0);
         impl.recalculateOmniboxAlignment();
@@ -240,6 +244,19 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                         0,
                         0,
                         0),
+                alignment);
+    }
+
+    @Test
+    public void testRecalculateOmniboxAlignment_bottomControlsPosition() {
+        mControlsPosition = ControlsPosition.BOTTOM;
+        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
+        doReturn(60).when(mHorizontalAlignmentView).getTop();
+        mImpl.recalculateOmniboxAlignment();
+        OmniboxAlignment alignment = mImpl.getCurrentAlignment();
+        assertEquals(
+                new OmniboxAlignment(
+                        0, 0, ANCHOR_WIDTH, getExpectedHeight(0) - ANCHOR_HEIGHT, 0, 0, 0),
                 alignment);
     }
 

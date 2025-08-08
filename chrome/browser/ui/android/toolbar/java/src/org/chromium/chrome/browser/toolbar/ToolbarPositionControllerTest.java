@@ -16,11 +16,13 @@ import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Insets;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 
@@ -251,6 +253,7 @@ public class ToolbarPositionControllerTest {
     @Mock private View mProgressBarContainer;
     @Mock private ViewGroup mProgressBarParent;
     @Mock private TopInsetCoordinator mTopInsetCoordinator;
+    @Mock private View mRootView;
 
     private Context mContext;
     private final ObservableSupplierImpl<Boolean> mIsNtpShowing =
@@ -990,6 +993,23 @@ public class ToolbarPositionControllerTest {
         mControlContainerHeightSupplier.set(15);
         assertEquals(15, mBottomControlsStacker.getTotalHeight());
         assertEquals(15, mHairlineLayoutParams.bottomMargin);
+    }
+
+    @Test
+    @Config(qualifiers = "sw400dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
+    public void testBottomAnchoredFocusedOmnibox() {
+        doReturn(mRootView).when(mControlContainerView).getRootView();
+        WindowInsets rootViewInsets =
+                new WindowInsets.Builder()
+                        .setInsets(WindowInsets.Type.ime(), Insets.of(0, 0, 0, 450))
+                        .setTappableElementInsets(Insets.of(0, 0, 0, 50))
+                        .build();
+        doReturn(rootViewInsets).when(mControlContainerView).getRootWindowInsets();
+
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
+        mIsOmniboxFocused.set(true);
+        assertControlsAtBottom();
     }
 
     @Test

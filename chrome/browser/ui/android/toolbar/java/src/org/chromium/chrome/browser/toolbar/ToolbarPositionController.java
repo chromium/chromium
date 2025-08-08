@@ -18,6 +18,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
@@ -565,10 +566,12 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             boolean doesUserPreferTopToolbar,
             @ControlsPosition int currentPosition) {
         boolean miniOriginBarEnabled = ChromeFeatureList.sMiniOriginBar.isEnabled();
+        boolean allowBottomAnchoredFocusedOmnibox =
+                ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled();
         @ControlsPosition int newControlsPosition;
         if (ntpShowing
                 || tabSwitcherShowing
-                || isOmniboxFocused
+                || (isOmniboxFocused && !allowBottomAnchoredFocusedOmnibox)
                 || isFindInPageShowing
                 || (isFormFieldFocusedWithKeyboardVisible && !miniOriginBarEnabled)
                 || doesUserPreferTopToolbar) {
@@ -624,6 +627,23 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         boolean chinVisibleWithAccessory = keyboardAccessoryHeight > 0 && chinHeight > 0;
         if (chinVisibleWithAccessory) {
             layerYOffset += chinHeight;
+        }
+
+        if (mIsOmniboxFocusedSupplier.get()
+               && assumeNonNull(mCurrentPosition.get()) == ControlsPosition.BOTTOM) {
+            WindowInsetsCompat windowInsetsCompat =
+                    WindowInsetsCompat.toWindowInsetsCompat(
+                            mControlContainer.getView().getRootWindowInsets(),
+                            mControlContainer.getView().getRootView());
+
+            int keyboardHeight =
+                    Math.max(
+                            0,
+                            windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime()).bottom
+                                    - windowInsetsCompat.getInsets(
+                                                    WindowInsetsCompat.Type.tappableElement())
+                                            .bottom);
+            layerYOffset -= keyboardHeight;
         }
 
         viewForLayer.setTranslationY(layerYOffset);
