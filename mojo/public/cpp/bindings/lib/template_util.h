@@ -33,7 +33,7 @@ struct AlwaysFalse {
 };
 
 template <typename T>
-using IsAbslOptional = IsSpecializationOf<std::optional, std::decay_t<T>>;
+using IsStdOptional = IsSpecializationOf<std::optional, std::decay_t<T>>;
 
 template <typename T>
 using IsOptionalAsPointer =

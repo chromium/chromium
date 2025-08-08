@@ -225,7 +225,7 @@ struct ArraySerializer<
   using Element = typename MojomType::Element;
   using Traits = ArrayTraits<UserType>;
 
-  static_assert(IsAbslOptional<typename Traits::Element>::value,
+  static_assert(IsStdOptional<typename Traits::Element>::value,
                 "Output type should be optional");
   static_assert(sizeof(Element) == sizeof(DataElement),
                 "Incorrect array serializer");
