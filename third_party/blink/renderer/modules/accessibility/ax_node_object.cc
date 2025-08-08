@@ -3299,7 +3299,9 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
       const AtomicString& action =
           button->FastGetAttribute(html_names::kCommandAttr);
       bool is_valid_popover_command = command_for->IsValidBuiltinPopoverCommand(
-          *button, HTMLButtonElement::GetCommandEventType(action));
+          *button,
+          HTMLButtonElement::GetCommandEventType(
+              action, command_for->GetDocument().GetExecutionContext()));
       bool is_child = button->IsDescendantOrShadowDescendantOf(command_for);
       // Buttons for popovers should indicate the expanded/collapsed state.
       if (is_valid_popover_command && !is_child) {

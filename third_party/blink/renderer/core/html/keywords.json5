@@ -84,6 +84,8 @@
     "open",
     // command for input and select
     "show-picker",
+    // command for interest invokers (`interestfor`)
+    "toggle-interest",
     // command for number input
     "step-up",
     "step-down",

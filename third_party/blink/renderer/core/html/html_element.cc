@@ -2115,37 +2115,66 @@ const HTMLElement* NearestTargetPopoverForInvoker(
         PopoverAncestorOptionsSet()) {
   return NearestMatchingAncestor(
       node, ancestor_options, [](const Node* test_node) -> const HTMLElement* {
-        // First, see if `test_node` is a menu item element pointing to a
-        // popover (likely a menu list, but it could be any HTMLElement).
-        auto* menu_item = DynamicTo<HTMLMenuItemElement>(test_node);
-        auto* menu_target =
-            menu_item ? DynamicTo<HTMLElement>(menu_item->commandForElement())
-                      : nullptr;
-        if (menu_target) {
-          return menu_target;
-        }
+        // This code should return the *target popover* for several kinds of
+        // potential invokers:
 
-        // Next, see if `test_node` is a form control or button element.
-        auto* form_element =
-            DynamicTo<HTMLFormControlElement>(const_cast<Node*>(test_node));
-        if (!form_element) {
-          if (auto* html_element = DynamicTo<HTMLElement>(test_node);
-              html_element &&
-              RuntimeEnabledFeatures::ElementInternalsDotTypeEnabled() &&
-              html_element->IsCustomButton()) {
-            return HTMLFormControlElement::popoverTargetElement(
-                       *const_cast<HTMLElement*>(html_element))
-                .popover.Get();
+        // Case 1. A <menuitem> element with the `commandfor` attribute.
+        if (auto* menu_item = DynamicTo<HTMLMenuItemElement>(test_node)) {
+          if (auto* target =
+                  DynamicTo<HTMLElement>(menu_item->commandForElement());
+              target && target->IsPopover()) {
+            return target;
           }
-          return nullptr;
         }
-        auto* button_element = DynamicTo<HTMLButtonElement>(form_element);
-        auto* target_element =
-            button_element ? button_element->commandForElement() : nullptr;
 
-        return target_element
-                   ? DynamicTo<HTMLElement>(target_element)
-                   : form_element->popoverTargetElement().popover.Get();
+        // Case 2. A <button> element with the `commandfor` attribute.
+        if (auto* button = DynamicTo<HTMLButtonElement>(test_node)) {
+          if (auto* target =
+                  DynamicTo<HTMLElement>(button->commandForElement());
+              target && target->IsPopover()) {
+            return target;
+          }
+        }
+
+        // Case 3. An HTMLFormControlElement with the `popovertarget` attribute.
+        if (auto* form_element = DynamicTo<HTMLFormControlElement>(
+                const_cast<Node*>(test_node))) {
+          if (auto* target =
+                  form_element->popoverTargetElement().popover.Get()) {
+            return target;
+          }
+        }
+
+        // Case 4. A custom element button with `ElementInternals.type=button`
+        // with the `popovertarget` attribute or the `commandfor` attribute.
+        if (auto* html_element = DynamicTo<HTMLElement>(test_node);
+            html_element &&
+            RuntimeEnabledFeatures::ElementInternalsDotTypeEnabled() &&
+            html_element->IsCustomButton()) {
+          if (auto* target = HTMLFormControlElement::popoverTargetElement(
+                                 *const_cast<HTMLElement*>(html_element))
+                                 .popover.Get()) {
+            return target;
+          }
+        }
+
+        // Case 5. A <button> with the `commandfor` attribute pointing to an
+        // element with the `interestfor` attribute pointing to a popover.
+        if (auto* button = DynamicTo<HTMLButtonElement>(test_node)) {
+          if (auto* first_target =
+                  DynamicTo<HTMLElement>(button->commandForElement())) {
+            if (auto* second_target =
+                    DynamicTo<HTMLElement>(first_target->InterestForElement());
+                second_target && second_target->IsPopover()) {
+              CHECK(RuntimeEnabledFeatures::
+                        HTMLCommandActionToggleInterestEnabled(
+                            test_node->GetDocument().GetExecutionContext()));
+              return second_target;
+            }
+          }
+        }
+
+        return nullptr;
       });
 }
 
@@ -2386,7 +2415,10 @@ bool HTMLElement::IsValidBuiltinCommand(HTMLElement& invoker,
          (RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled() &&
           (command == CommandEventType::kToggleFullscreen ||
            command == CommandEventType::kRequestFullscreen ||
-           command == CommandEventType::kExitFullscreen));
+           command == CommandEventType::kExitFullscreen)) ||
+         (RuntimeEnabledFeatures::HTMLCommandActionToggleInterestEnabled(
+              invoker.GetDocument().GetExecutionContext()) &&
+          command == CommandEventType::kToggleInterest);
 }
 
 bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
@@ -2401,7 +2433,10 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
                               command == CommandEventType::kRequestFullscreen ||
                               command == CommandEventType::kExitFullscreen;
 
-  if (PopoverType() == PopoverValueType::kNone && !is_fullscreen_action) {
+  bool is_show_interest = command == CommandEventType::kToggleInterest;
+
+  if (PopoverType() == PopoverValueType::kNone && !is_fullscreen_action &&
+      (!is_show_interest || !InterestForElement())) {
     return false;
   }
 
@@ -2450,13 +2485,23 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
     return true;
   }
 
-  if (!RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled()) {
+  if (!RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled() &&
+      !RuntimeEnabledFeatures::HTMLCommandActionToggleInterestEnabled(
+          document.GetExecutionContext())) {
     return false;
   }
 
   LocalFrame* frame = document.GetFrame();
 
-  if (command == CommandEventType::kToggleFullscreen) {
+  if (is_show_interest && InterestForElement()) {
+    if (GetInterestState() == InterestState::kNoInterest) {
+      ShowInterestNow();
+    } else {
+      CHECK_EQ(GetInterestState(), InterestState::kFullInterest);
+      LoseInterestNow();
+    }
+    return true;
+  } else if (command == CommandEventType::kToggleFullscreen) {
     if (Fullscreen::IsFullscreenElement(*this)) {
       Fullscreen::ExitFullscreen(document);
       return true;

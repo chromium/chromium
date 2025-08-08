@@ -2780,7 +2780,9 @@ AXObject* AXObject::GetCommandForElement() const {
     const AtomicString& action =
         button_element->FastGetAttribute(html_names::kCommandAttr);
     if (!command_for->IsValidBuiltinPopoverCommand(
-            *button_element, HTMLButtonElement::GetCommandEventType(action))) {
+            *button_element,
+            HTMLButtonElement::GetCommandEventType(
+                action, command_for->GetDocument().GetExecutionContext()))) {
       return nullptr;
     }
 

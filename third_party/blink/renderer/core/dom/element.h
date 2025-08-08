@@ -232,6 +232,8 @@ enum class CommandEventType {
   // kClose
   // Input / Select
   kShowPicker,
+  // Interest invokers (`interestfor`)
+  kToggleInterest,
   // Number Input
   kStepUp,
   kStepDown,

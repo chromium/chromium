@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/events/command_event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
@@ -200,7 +201,7 @@ void HTMLButtonElement::setCommand(const AtomicString& type) {
 
 AtomicString HTMLButtonElement::command() const {
   const AtomicString& action = FastGetAttribute(html_names::kCommandAttr);
-  CommandEventType type = GetCommandEventType(action);
+  CommandEventType type = GetCommandEventType(action, GetExecutionContext());
   switch (type) {
     case CommandEventType::kNone:
       return g_empty_atom;
@@ -208,7 +209,7 @@ AtomicString HTMLButtonElement::command() const {
       return action;
     default: {
       const AtomicString& lower_action = action.LowerASCII();
-      DCHECK_EQ(GetCommandEventType(lower_action), type);
+      DCHECK_EQ(GetCommandEventType(lower_action, GetExecutionContext()), type);
       return lower_action;
     }
   }
@@ -216,7 +217,8 @@ AtomicString HTMLButtonElement::command() const {
 
 // static
 CommandEventType HTMLButtonElement::GetCommandEventType(
-    const AtomicString& action) {
+    const AtomicString& action,
+    ExecutionContext* execution_context) {
   if (action.IsNull() || action.empty()) {
     return CommandEventType::kNone;
   }
@@ -261,6 +263,15 @@ CommandEventType HTMLButtonElement::GetCommandEventType(
     if (EqualIgnoringASCIICase(action, keywords::kHideMenu)) {
       return CommandEventType::kHideMenu;
     }
+  }
+
+  // Just the toggle-interest command (behind the
+  // HTMLCommandActionToggleInterest flag) go below this point
+
+  if (EqualIgnoringASCIICase(action, keywords::kToggleInterest) &&
+      RuntimeEnabledFeatures::HTMLCommandActionToggleInterestEnabled(
+          execution_context)) {
+    return CommandEventType::kToggleInterest;
   }
 
   // V2 commands go below this point
@@ -375,8 +386,8 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
             mojom::blink::ConsoleMessageLevel::kWarning,
             "popovertarget is ignored on elements with commandfor.");
       }
-      auto action =
-          GetCommandEventType(FastGetAttribute(html_names::kCommandAttr));
+      auto action = GetCommandEventType(
+          FastGetAttribute(html_names::kCommandAttr), GetExecutionContext());
       bool is_valid_builtin =
           command_target->IsValidBuiltinCommand(*this, action);
       if (is_valid_builtin || action == CommandEventType::kCustom) {

@@ -2582,6 +2582,15 @@
       name: "HTMLCommandActionsV2",
       status: "test",
     },
+    // Adds support for `command=toggle-interest`, for use by the command
+    // invokers API, targeting an interest invoker (with `interestfor`). This is
+    // a sub-feature of the HTMLInterestForAttribute feature.
+    // https://open-ui.org/components/interest-invokers.explainer/
+    {
+      name: "HTMLCommandActionToggleInterest",
+      status: "experimental",
+      depends_on: ["HTMLInterestForAttribute"],
+    },
     // Adds support for the 'request-close' command.
     // https://open-ui.org/components/invokers.explainer/
     {
