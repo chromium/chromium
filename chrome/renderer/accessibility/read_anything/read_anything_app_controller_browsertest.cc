@@ -361,6 +361,15 @@ TEST_F(ReadAnythingAppControllerTest, OnDeviceLocked_OnlyLogsIfSpeechPlaying) {
       ReadAloudAppModel::ReadAloudStopSource::kLockChromeosDevice, 1);
 }
 
+TEST_F(ReadAnythingAppControllerTest, OnDeviceLocked_LogsWordsSeen) {
+  base::HistogramTester histogram_tester;
+  controller().UpdateWordsSeen(123);
+  controller().OnDeviceLocked();
+
+  histogram_tester.ExpectUniqueSample(
+      ReadAnythingAppController::kWordsSeenHistogramName, 123, 1);
+}
+
 TEST_F(ReadAnythingAppControllerTest, OnDeviceLocked_ResetsWordsSeen) {
   controller().UpdateWordsSeen(123);
   controller().OnDeviceLocked();
@@ -396,6 +405,15 @@ TEST_F(ReadAnythingAppControllerTest,
       ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode, 1);
 }
 
+TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_LogsWordsSeen) {
+  base::HistogramTester histogram_tester;
+  controller().UpdateWordsSeen(123);
+  controller().OnReadingModeHidden();
+
+  histogram_tester.ExpectUniqueSample(
+      ReadAnythingAppController::kWordsSeenHistogramName, 123, 1);
+}
+
 TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_ResetsWordsSeen) {
   controller().UpdateWordsSeen(123);
   controller().OnReadingModeHidden();
@@ -420,6 +438,15 @@ TEST_F(ReadAnythingAppControllerTest, OnTabWillDetach_OnlyLogsIfSpeechPlaying) {
   histogram_tester.ExpectUniqueSample(
       ReadAloudAppModel::kSpeechStopSourceHistogramName,
       ReadAloudAppModel::ReadAloudStopSource::kCloseTabOrWindow, 1);
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnTabWillDetach_LogsWordsSeen) {
+  base::HistogramTester histogram_tester;
+  controller().UpdateWordsSeen(123456);
+  controller().OnTabWillDetach();
+
+  histogram_tester.ExpectUniqueSample(
+      ReadAnythingAppController::kWordsSeenHistogramName, 123456, 1);
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnTabWillDetach_ResetsWordsSeen) {
@@ -3874,6 +3901,31 @@ TEST_F(ReadAnythingAppControllerTest, UpdateWordsSeen_ReplacesWordsSeen) {
   EXPECT_EQ(54, model().words_seen());
   controller().UpdateWordsSeen(746);
   EXPECT_EQ(746, model().words_seen());
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged_LogsWordsSeen) {
+  base::HistogramTester histogram_tester;
+  auto const id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().UpdateWordsSeen(2468);
+
+  controller().OnActiveAXTreeIDChanged(id, ukm::kInvalidSourceId, false);
+
+  histogram_tester.ExpectUniqueSample(
+      ReadAnythingAppController::kWordsSeenHistogramName, 2468, 1);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnActiveAXTreeIDChanged_NoPreviousTree_DoesNotLogWordsSeen) {
+  auto const id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(),
+                                       ukm::kInvalidSourceId, false);
+  controller().UpdateWordsSeen(2468);
+
+  base::HistogramTester histogram_tester;
+  controller().OnActiveAXTreeIDChanged(id, ukm::kInvalidSourceId, false);
+
+  histogram_tester.ExpectTotalCount(
+      ReadAnythingAppController::kWordsSeenHistogramName, 0);
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged_ResetsWordsSeen) {

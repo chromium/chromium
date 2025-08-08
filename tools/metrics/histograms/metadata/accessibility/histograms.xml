@@ -3246,6 +3246,18 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.WordsSeen" units="count"
+    expires_after="2026-08-01">
+  <owner>ammedina@google.com</owner>
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records an estimate of how many words were seen in the Reading mode panel
+    before switching pages or closing Reading mode. Currently works only for
+    languages that separate words with whitespace.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Reliability.Tree.UnserializeError"
     enum="AccessibilityTreeUnserializeError" expires_after="2026-06-01">
   <owner>aleventhal@chromium.org</owner>

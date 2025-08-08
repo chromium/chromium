@@ -81,6 +81,9 @@ class ReadAnythingAppController
  public:
   static gin::WrapperInfo kWrapperInfo;
 
+  static constexpr char kWordsSeenHistogramName[] =
+      "Accessibility.ReadAnything.WordsSeen";
+
   ReadAnythingAppController(const ReadAnythingAppController&) = delete;
   ReadAnythingAppController& operator=(const ReadAnythingAppController&) =
       delete;

@@ -741,8 +741,8 @@ void ReadAnythingAppController::RecordNumSelections() {
 }
 
 void ReadAnythingAppController::RecordEstimatedWordsSeen() {
-  // TODO(crbug.com/c/372890165): Actually log this with UMA.
   VLOG(1) << "Words seen: " << model_.words_seen();
+  base::UmaHistogramCounts100000(kWordsSeenHistogramName, model_.words_seen());
   model_.set_words_seen(0);
 }
 
