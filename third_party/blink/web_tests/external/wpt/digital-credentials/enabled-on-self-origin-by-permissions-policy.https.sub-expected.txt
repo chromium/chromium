@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Permissions-Policy header digital-credentials-create=(self) allows the top-level document.
-  promise_test: Unhandled rejection with value: object "ReferenceError: makeCreateOptions is not defined"
-Harness: the test ran to completion.
-

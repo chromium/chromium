@@ -2708,6 +2708,7 @@ crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/bidi/input/perform_
 crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_touch.py [ Skip Timeout ]
 
 # ====== Test expectations added to unblock wpt-importer ======
+external/wpt/webdriver/tests/bidi/network/get_data/disown.py [ Failure ]   # Flaky request number
 crbug.com/437034328 external/wpt/html/semantics/embedded-content/the-img-element/animated-webp-update.tentative.html [ Failure ]
 crbug.com/431542979 [ Android ] external/wpt/speech-api/idlharness.window.html [ Failure ]
 crbug.com/431542979 [ Linux ] external/wpt/speech-api/idlharness.window.html [ Failure ]
