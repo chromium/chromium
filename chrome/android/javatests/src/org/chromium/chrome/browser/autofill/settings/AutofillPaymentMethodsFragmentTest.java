@@ -32,8 +32,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
-
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 
@@ -69,6 +67,7 @@ import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.GoogleWalletLauncher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
+import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -112,7 +111,7 @@ import java.util.concurrent.TimeoutException;
 })
 @Batch(Batch.PER_CLASS)
 public class AutofillPaymentMethodsFragmentTest {
-    @Rule public final AutofillTestRule rule = new AutofillTestRule();
+    @Rule public final AutofillTestRule mAutofillTestRule = new AutofillTestRule();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
@@ -752,11 +751,11 @@ public class AutofillPaymentMethodsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
         // Now mReauthenticatorMock simulate success auth, which will open local card dialog
         // afterwards. Wait for the new dialog to be rendered.
-        rule.waitForFragmentToBeShown();
+        mAutofillTestRule.waitForFragmentToBeShown();
 
         verify(mReauthenticatorMock).reauthenticate(notNull());
         // Verify that the local card edit dialog was shown.
-        assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
+        assertTrue(mAutofillTestRule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
         editCardReauthHistogram.assertExpected();
     }
 
@@ -801,7 +800,7 @@ public class AutofillPaymentMethodsFragmentTest {
 
         verify(mReauthenticatorMock).reauthenticate(notNull());
         // Verify that the local card edit dialog was NOT shown.
-        assertNull(rule.getLastestShownFragment());
+        assertNull(mAutofillTestRule.getLastestShownFragment());
         editCardReauthHistogram.assertExpected();
     }
 
@@ -840,11 +839,11 @@ public class AutofillPaymentMethodsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
         // Now mReauthenticatorMock simulate success auth, which will open local card dialog
         // afterwards. Wait for the new dialog to be rendered.
-        rule.waitForFragmentToBeShown();
+        mAutofillTestRule.waitForFragmentToBeShown();
 
         verify(mReauthenticatorMock).reauthenticate(notNull());
         // Verify that the local card edit dialog was shown.
-        assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
+        assertTrue(mAutofillTestRule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
         editCardReauthHistogram.assertExpected();
     }
 
@@ -876,11 +875,11 @@ public class AutofillPaymentMethodsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
         // Since reauth pref is disabled, we will directly open local card dialog. Wait for the new
         // dialog to be rendered.
-        rule.waitForFragmentToBeShown();
+        mAutofillTestRule.waitForFragmentToBeShown();
 
         verify(mReauthenticatorMock, never()).reauthenticate(notNull());
         // Verify that the local card edit dialog was shown.
-        assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
+        assertTrue(mAutofillTestRule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
     }
 
     @Test
@@ -917,13 +916,13 @@ public class AutofillPaymentMethodsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
         // Now mReauthenticatorMock simulate success auth, which will open local card dialog
         // afterwards. Wait for the new dialog to be rendered.
-        rule.waitForFragmentToBeShown();
+        mAutofillTestRule.waitForFragmentToBeShown();
 
         // Verify there were 2 biometric authentication attempts, once for enabling mandatory
         // reauth, and another time for opening the local card edit page.
         verify(mReauthenticatorMock, times(2)).reauthenticate(notNull());
         // Verify that the local card edit dialog was shown.
-        assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
+        assertTrue(mAutofillTestRule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
     }
 
     @Test
@@ -961,14 +960,14 @@ public class AutofillPaymentMethodsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
         // Since reauth pref is disabled, we will directly open local card dialog. Wait for the new
         // dialog to be rendered.
-        rule.waitForFragmentToBeShown();
+        mAutofillTestRule.waitForFragmentToBeShown();
 
         // Verify there was only 1 biometric authentication attempt, for disabling mandatory reauth.
         // After disabling, biometric authentication challenge should not be presented to open the
         // local card edit page.
         verify(mReauthenticatorMock, times(1)).reauthenticate(notNull());
         // Verify that the local card edit dialog was shown.
-        assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
+        assertTrue(mAutofillTestRule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
     }
 
     @Test
@@ -1201,10 +1200,10 @@ public class AutofillPaymentMethodsFragmentTest {
 
         // Simulate click on the Add Iban button.
         ThreadUtils.runOnUiThreadBlocking(addIbanPreference::performClick);
-        rule.waitForFragmentToBeShown();
+        mAutofillTestRule.waitForFragmentToBeShown();
 
         // Verify that the local IBAN editor was opened.
-        assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalIbanEditor);
+        assertTrue(mAutofillTestRule.getLastestShownFragment() instanceof AutofillLocalIbanEditor);
     }
 
     @Test
@@ -1457,10 +1456,12 @@ public class AutofillPaymentMethodsFragmentTest {
 
         // Simulate click on the preference.
         ThreadUtils.runOnUiThreadBlocking(otherFinancialAccountsPref::performClick);
-        rule.waitForFragmentToBeShown();
+        mAutofillTestRule.waitForFragmentToBeShown();
 
         // Verify that the financial accounts management fragment is opened.
-        assertTrue(rule.getLastestShownFragment() instanceof FinancialAccountsManagementFragment);
+        assertTrue(
+                mAutofillTestRule.getLastestShownFragment()
+                        instanceof FinancialAccountsManagementFragment);
     }
 
     @Test
@@ -1478,10 +1479,12 @@ public class AutofillPaymentMethodsFragmentTest {
 
         // Simulate click on the preference/.
         ThreadUtils.runOnUiThreadBlocking(otherFinancialAccountsPref::performClick);
-        rule.waitForFragmentToBeShown();
+        mAutofillTestRule.waitForFragmentToBeShown();
 
         // Verify that the financial accounts management fragment is opened.
-        assertTrue(rule.getLastestShownFragment() instanceof FinancialAccountsManagementFragment);
+        assertTrue(
+                mAutofillTestRule.getLastestShownFragment()
+                        instanceof FinancialAccountsManagementFragment);
     }
 
     @Test
@@ -1707,11 +1710,12 @@ public class AutofillPaymentMethodsFragmentTest {
 
         // Simulate click on the preference.
         ThreadUtils.runOnUiThreadBlocking(nonCardPaymentMethodsPref::performClick);
-        rule.waitForFragmentToBeShown();
+        mAutofillTestRule.waitForFragmentToBeShown();
 
         // Verify that the financial accounts management fragment is opened.
         assertTrue(
-                rule.getLastestShownFragment() instanceof NonCardPaymentMethodsManagementFragment);
+                mAutofillTestRule.getLastestShownFragment()
+                        instanceof NonCardPaymentMethodsManagementFragment);
     }
 
     @Test
@@ -1735,10 +1739,12 @@ public class AutofillPaymentMethodsFragmentTest {
 
         // Simulate click on the preference.
         ThreadUtils.runOnUiThreadBlocking(nonCardPaymentMethodsPref::performClick);
-        rule.waitForFragmentToBeShown();
+        mAutofillTestRule.waitForFragmentToBeShown();
 
         // Verify that the financial accounts management fragment is opened.
-        assertTrue(rule.getLastestShownFragment() instanceof FinancialAccountsManagementFragment);
+        assertTrue(
+                mAutofillTestRule.getLastestShownFragment()
+                        instanceof FinancialAccountsManagementFragment);
     }
 
     @Test
@@ -1769,7 +1775,7 @@ public class AutofillPaymentMethodsFragmentTest {
         onView(withId(R.id.card_button)).perform(scrollTo(), click());
 
         // Verify that the local card editor fragment is opened.
-        assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
+        assertTrue(mAutofillTestRule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
     }
 
     @Test
@@ -1851,9 +1857,7 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN
-    })
+    @EnableFeatures({ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN})
     public void testSettingsState_SaveAndFillPaymentMethodsDisabledInThirdPartyMode()
             throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
@@ -2172,9 +2176,7 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN
-    })
+    @EnableFeatures({ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN})
     public void testDisabledSettingsText_linksToAutofillOptionsPage() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -2183,14 +2185,23 @@ public class AutofillPaymentMethodsFragmentTest {
                 });
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        String disabledSettingsText =
-                mSettingsActivityTestRule
-                        .getActivity()
-                        .getResources()
-                        .getString(R.string.autofill_disable_settings_explanation);
-        String matcherText = disabledSettingsText.replaceAll("<link>|</link>", "");
-        onView(withText(matcherText)).check(matches(isDisplayed()));
-        onView(withText(matcherText)).perform(clickOnClickableSpan(0));
+        CardWithButtonPreference disabled_settings_info_pref =
+                getPreferenceScreen(activity)
+                        .findPreference(AutofillPaymentMethodsFragment.DISABLED_SETTINGS_INFO);
+        String title = disabled_settings_info_pref.getTitle().toString();
+        assertThat(title)
+                .isEqualTo(
+                        activity.getString(R.string.autofill_disable_settings_explanation_title));
+        String summary = disabled_settings_info_pref.getSummary().toString();
+        assertThat(summary)
+                .isEqualTo(activity.getString(R.string.autofill_disable_settings_explanation));
+
+        onView(withId(R.id.card_button))
+                .check(matches(withText(R.string.autofill_disable_settings_button_label)))
+                .perform(scrollTo(), click());
+
+        // Verify that the Autofill options fragment is opened.
+        assertTrue(mAutofillTestRule.getLastestShownFragment() instanceof AutofillOptionsFragment);
     }
 
     private void setUpBiometricAuthenticationResult(boolean success) {
