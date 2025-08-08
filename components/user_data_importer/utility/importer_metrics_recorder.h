@@ -33,7 +33,7 @@ enum class BookmarksImportError {
   kOther = 4,
   kMaxValue = kOther,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/user_data_importer/enums.xml:UserDataImportBookmarksError)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/user_data_importer/enums.xml:UserDataImportBookmarksReadingListError)
 
 // Helper function to convert from the parser's error enum to the metrics enum.
 BookmarksImportError ConvertBookmarkError(
@@ -114,6 +114,7 @@ class ImporterMetricsRecorder {
   enum class Source {
     kOsMigration = 0,
     kSafari = 1,
+    kStablePortabilityData = 2,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/user_data_importer/histograms.xml:ImportSource)
 
@@ -135,6 +136,7 @@ class ImporterMetricsRecorder {
 
   // Log specific failure cases, as documented in the respective enums above.
   void LogBookmarksError(BookmarksImportError error);
+  void LogReadingListError(BookmarksImportError error);
   void LogPasswordsError(PasswordsImportError error);
 
  private:

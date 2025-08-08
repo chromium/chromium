@@ -24,9 +24,9 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<!-- LINT.IfChange(UserDataImportBookmarksError) -->
+<!-- LINT.IfChange(UserDataImportBookmarksReadingListError) -->
 
-<enum name="UserDataImportBookmarksError">
+<enum name="UserDataImportBookmarksReadingListError">
   <int value="0" label="Failed to Read"/>
   <int value="1" label="Input Too Big"/>
   <int value="2" label="Parsing Failed"/>

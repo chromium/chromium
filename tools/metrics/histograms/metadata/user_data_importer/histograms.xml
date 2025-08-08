@@ -40,12 +40,14 @@ chromium-metrics-reviews@google.com.
 <variants name="ImportSource">
   <variant name="OSMigration" summary="Data import from an OS migration."/>
   <variant name="Safari" summary="Importing data exported by Safari."/>
+  <variant name="StablePortabilityData"
+      summary="Importing data in the stable portability data format."/>
 </variants>
 
 <!-- LINT.ThenChange(//components/user_data_importer/utility/importer_metrics_recorder.h:ImportSource) -->
 
 <histogram name="UserDataImporter.{ImportSource}.Bookmarks.Error"
-    enum="UserDataImportBookmarksError" expires_after="2026-01-28">
+    enum="UserDataImportBookmarksReadingListError" expires_after="2026-01-28">
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
@@ -77,6 +79,18 @@ chromium-metrics-reviews@google.com.
     indicating an issue with parsing. This is independent of other data types;
     it's possible for this to fail but another data type to subsequently be
     imported.
+  </summary>
+  <token key="ImportSource" variants="ImportSource"/>
+</histogram>
+
+<histogram name="UserDataImporter.{ImportSource}.ReadingList.Error"
+    enum="UserDataImportBookmarksReadingListError" expires_after="2026-01-28">
+  <owner>tmartino@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the specific error encountered when parsing reading list items. This
+    is independent of other data types; it's possible for this to fail but
+    another data type to subsequently be imported.
   </summary>
   <token key="ImportSource" variants="ImportSource"/>
 </histogram>

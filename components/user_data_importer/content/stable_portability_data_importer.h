@@ -11,6 +11,7 @@
 #include "components/user_data_importer/content/content_bookmark_parser.h"
 #include "components/user_data_importer/utility/bookmark_parser.h"
 #include "components/user_data_importer/utility/history_callback_from_rust.h"
+#include "components/user_data_importer/utility/importer_metrics_recorder.h"
 
 namespace base {
 class File;
@@ -104,7 +105,7 @@ class StablePortabilityDataImporter {
     TransferHistoryCallback transfer_history_callback_;
     user_data_importer::StablePortabilityDataImporter::ImportCallback
         done_callback_;
-    size_t total_imported_count_ = 0;
+    size_t parsed_history_entries_count_ = 0;
   };
 
   // Encapsulates work which must occur in the background thread.
@@ -137,19 +138,39 @@ class StablePortabilityDataImporter {
   void TransferHistoryEntries(
       std::vector<StablePortabilityHistoryEntry> history_entries);
 
-  // Receives the result of parsing bookmarks, stores them for later use, and
-  // invokes `bookmarks_callback` with the number of parsed bookmarks.
+  // Logs metrics related to history importing and invokes `history_callback`
+  // with the number of history entries imported. A negative
+  // `parsed_history_entries_count` is interpreted as an error having occurred
+  // during the importing.
+  void OnHistoryImportCompleted(ImportCallback history_callback,
+                                int parsed_history_entries_count);
+
+  // Receives the result of parsing bookmarks, and invokes `bookmarks_callback`
+  // with the number of parsed bookmarks.
   void OnBookmarksParsed(ImportCallback bookmarks_callback,
                          BookmarkParser::BookmarkParsingResult result);
 
-  // Receives the result of parsing the reading list, stores them for later use,
-  // and invokes `callback` with the number of parsed reading list items.
+  // Logs an error and invokes `bookmarks_callback` with -1, indicating an
+  // error occurred.
+  void OnBookmarksParsingError(ImportCallback bookmarks_callback,
+                               BookmarkParser::BookmarkParsingError error);
+
+  // Receives the result of parsing the reading list, and invokes
+  // `reading_list_callback` with the number of parsed reading list items.
   void OnReadingListParsed(ImportCallback reading_list_callback,
                            BookmarkParser::BookmarkParsingResult result);
+
+  // Logs an error and invokes `reading_list_callback` with -1, indicating an
+  // error occurred.
+  void OnReadingListParsingError(ImportCallback reading_list_callback,
+                                 BookmarkParser::BookmarkParsingError error);
 
   // Posts a task on `origin_sequence_task_runner` to call the provided
   // callbacks in `StablePortabilityDataImporter::Import`
   void PostCallback(auto callback, auto results);
+
+  // Number of URLs imported during the history import process.
+  size_t imported_history_entries_count_ = 0;
 
   // Service used to import history URLs.
   const raw_ptr<history::HistoryService> history_service_;
@@ -159,6 +180,9 @@ class StablePortabilityDataImporter {
 
   // Service used to import reading list items.
   const raw_ptr<ReadingListModel> reading_list_model_;
+
+  // Helper object which logs metrics about the import flow.
+  ImporterMetricsRecorder metrics_recorder_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

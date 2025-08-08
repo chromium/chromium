@@ -69,11 +69,11 @@ void StablePortabilityDataImporter::
         std::unique_ptr<std::vector<StablePortabilityHistoryEntry>>
             history_entries,
         bool completed) {
-  total_imported_count_ += history_entries->size();
+  parsed_history_entries_count_ += history_entries->size();
   transfer_history_callback_.Run(std::move(*history_entries));
 
   if (completed && done_callback_) {
-    std::move(done_callback_).Run(total_imported_count_);
+    std::move(done_callback_).Run(parsed_history_entries_count_);
   }
 }
 
@@ -115,6 +115,8 @@ StablePortabilityDataImporter::StablePortabilityDataImporter(
     : history_service_(history_service),
       bookmark_model_(bookmark_model),
       reading_list_model_(reading_list_model),
+      metrics_recorder_(
+          ImporterMetricsRecorder::Source::kStablePortabilityData),
       origin_sequence_task_runner_(
           base::SequencedTaskRunner::GetCurrentDefault()),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -130,7 +132,11 @@ void StablePortabilityDataImporter::ImportBookmarks(
     ImportCallback bookmarks_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  metrics_recorder_.bookmark_metrics().OnPreparationStarted();
+
   if (!file.IsValid()) {
+    metrics_recorder_.bookmark_metrics().LogOutcome(
+        DataTypeMetrics::ImportOutcome::kNotPresent);
     PostCallback(std::move(bookmarks_callback), -1);
     return;
   }
@@ -156,7 +162,11 @@ void StablePortabilityDataImporter::ImportReadingList(
     ImportCallback reading_list_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  metrics_recorder_.reading_list_metrics().OnPreparationStarted();
+
   if (!file.IsValid()) {
+    metrics_recorder_.reading_list_metrics().LogOutcome(
+        DataTypeMetrics::ImportOutcome::kNotPresent);
     PostCallback(std::move(reading_list_callback), -1);
     return;
   }
@@ -184,7 +194,18 @@ void StablePortabilityDataImporter::ImportHistory(
     const size_t import_batch_size) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  metrics_recorder_.history_metrics().OnImportStarted();
+
   if (!file.IsValid()) {
+    metrics_recorder_.history_metrics().LogOutcome(
+        DataTypeMetrics::ImportOutcome::kNotPresent);
+    PostCallback(std::move(history_callback), -1);
+    return;
+  }
+
+  if (!history_service_) {
+    metrics_recorder_.history_metrics().LogOutcome(
+        DataTypeMetrics::ImportOutcome::kFailure);
     PostCallback(std::move(history_callback), -1);
     return;
   }
@@ -194,14 +215,21 @@ void StablePortabilityDataImporter::ImportHistory(
       base::BindRepeating(
           &StablePortabilityDataImporter::TransferHistoryEntries,
           weak_factory_.GetWeakPtr()));
-  auto callback =
+
+  auto done_callback =
+      base::BindOnce(&StablePortabilityDataImporter::OnHistoryImportCompleted,
+                     weak_factory_.GetWeakPtr(), std::move(history_callback));
+  auto done_callback_on_thread = base::BindPostTask(
+      origin_sequence_task_runner_, std::move(done_callback));
+
+  auto rust_history_callback =
       std::make_unique<RustHistoryCallbackForStablePortabilityFormat>(
           std::move(transfer_history_entries_callback),
-          base::BindPostTask(origin_sequence_task_runner_,
-                             std::move(history_callback)));
+          std::move(done_callback_on_thread));
 
   background_worker_.AsyncCall(&BackgroundWorker::ParseHistory)
-      .WithArgs(std::move(file), std::move(callback), import_batch_size);
+      .WithArgs(std::move(file), std::move(rust_history_callback),
+                import_batch_size);
 }
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
@@ -209,6 +237,7 @@ void StablePortabilityDataImporter::TransferHistoryEntries(
     std::vector<StablePortabilityHistoryEntry> history_entries) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(history_service_);
 
   history::URLRows url_rows;
   url_rows.reserve(history_entries.size());
@@ -222,7 +251,25 @@ void StablePortabilityDataImporter::TransferHistoryEntries(
   if (!url_rows.empty()) {
     history_service_->AddPagesWithDetails(
         url_rows, history::SOURCE_OS_MIGRATION_IMPORTED);
+    imported_history_entries_count_ += url_rows.size();
   }
+}
+
+void StablePortabilityDataImporter::OnHistoryImportCompleted(
+    ImportCallback history_callback,
+    int parsed_history_entries_count) {
+  if (parsed_history_entries_count < 0) {
+    metrics_recorder_.history_metrics().LogOutcome(
+        DataTypeMetrics::ImportOutcome::kFailure);
+    PostCallback(std::move(history_callback), parsed_history_entries_count);
+    return;
+  }
+
+  metrics_recorder_.history_metrics().OnImportFinished(
+      imported_history_entries_count_);
+  metrics_recorder_.history_metrics().LogOutcome(
+      DataTypeMetrics::ImportOutcome::kSuccess);
+  PostCallback(std::move(history_callback), imported_history_entries_count_);
 }
 
 void StablePortabilityDataImporter::OnBookmarksParsed(
@@ -232,15 +279,19 @@ void StablePortabilityDataImporter::OnBookmarksParsed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!bookmark_model_) {
+    metrics_recorder_.bookmark_metrics().LogOutcome(
+        DataTypeMetrics::ImportOutcome::kFailure);
     PostCallback(std::move(bookmarks_callback), -1);
     return;
   }
 
   ASSIGN_OR_RETURN(BookmarkParser::ParsedBookmarks value, std::move(result),
-                   [this, &bookmarks_callback](auto) {
-                     // TODO(crbug.com/414604427): Log error to UMA.
-                     PostCallback(std::move(bookmarks_callback), -1);
-                   });
+                   &StablePortabilityDataImporter::OnBookmarksParsingError,
+                   this, std::move(bookmarks_callback));
+
+  metrics_recorder_.bookmark_metrics().OnPreparationFinished(
+      value.bookmarks.size());
+  metrics_recorder_.bookmark_metrics().OnImportStarted();
 
   // Add the parsed bookmarks to the user's storage.
   size_t imported_count = ::user_data_importer::ImportBookmarks(
@@ -248,6 +299,18 @@ void StablePortabilityDataImporter::OnBookmarksParsed(
       l10n_util::GetStringUTF16(IDS_IMPORTED_FOLDER));
 
   PostCallback(std::move(bookmarks_callback), imported_count);
+  metrics_recorder_.bookmark_metrics().OnImportFinished(imported_count);
+  metrics_recorder_.bookmark_metrics().LogOutcome(
+      DataTypeMetrics::ImportOutcome::kSuccess);
+}
+
+void StablePortabilityDataImporter::OnBookmarksParsingError(
+    ImportCallback bookmarks_callback,
+    BookmarkParser::BookmarkParsingError error) {
+  metrics_recorder_.LogBookmarksError(ConvertBookmarkError(error));
+  metrics_recorder_.bookmark_metrics().LogOutcome(
+      DataTypeMetrics::ImportOutcome::kFailure);
+  PostCallback(std::move(bookmarks_callback), -1);
 }
 
 void StablePortabilityDataImporter::OnReadingListParsed(
@@ -257,21 +320,37 @@ void StablePortabilityDataImporter::OnReadingListParsed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!reading_list_model_) {
+    metrics_recorder_.reading_list_metrics().LogOutcome(
+        DataTypeMetrics::ImportOutcome::kFailure);
     PostCallback(std::move(reading_list_callback), -1);
     return;
   }
 
   ASSIGN_OR_RETURN(BookmarkParser::ParsedBookmarks value, std::move(result),
-                   [this, &reading_list_callback](auto) {
-                     // TODO(crbug.com/414604427): Log error to UMA.
-                     PostCallback(std::move(reading_list_callback), -1);
-                   });
+                   &StablePortabilityDataImporter::OnReadingListParsingError,
+                   this, std::move(reading_list_callback));
+
+  metrics_recorder_.reading_list_metrics().OnPreparationFinished(
+      value.bookmarks.size());
+  metrics_recorder_.reading_list_metrics().OnImportStarted();
 
   // Add the parsed reading list entries to the user's storage.
   size_t imported_count = ::user_data_importer::ImportReadingList(
       reading_list_model_, std::move(value.bookmarks));
 
+  metrics_recorder_.reading_list_metrics().OnImportFinished(imported_count);
+  metrics_recorder_.reading_list_metrics().LogOutcome(
+      DataTypeMetrics::ImportOutcome::kSuccess);
   PostCallback(std::move(reading_list_callback), imported_count);
+}
+
+void StablePortabilityDataImporter::OnReadingListParsingError(
+    ImportCallback reading_list_callback,
+    BookmarkParser::BookmarkParsingError error) {
+  metrics_recorder_.LogReadingListError(ConvertBookmarkError(error));
+  metrics_recorder_.reading_list_metrics().LogOutcome(
+      DataTypeMetrics::ImportOutcome::kFailure);
+  PostCallback(std::move(reading_list_callback), -1);
 }
 
 void StablePortabilityDataImporter::PostCallback(auto callback, auto results) {

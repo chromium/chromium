@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -53,6 +54,8 @@ using testing::IsEmpty;
 using testing::UnorderedElementsAre;
 
 namespace user_data_importer {
+
+const std::string kHistogramPrefix = "UserDataImporter.StablePortabilityData.";
 
 MATCHER_P(URLResultEq, expected, "") {
   if (arg.url() != expected.url()) {
@@ -331,6 +334,8 @@ class StablePortabilityDataImporterTest : public testing::Test {
 
 // Tests parsing a simple HTML file with two bookmarks.
 TEST_F(StablePortabilityDataImporterTest, Bookmarks_Basic) {
+  base::HistogramTester histogram_tester;
+
   const base::Time import_start_time = base::Time::Now();
   ImportBookmarks(R"(
       <!DOCTYPE NETSCAPE-Bookmark-file-1>
@@ -357,6 +362,15 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_Basic) {
                   u"Chromium", GURL("https://www.chromium.org/"),
                   import_start_time, import_end_time)))));
   EXPECT_EQ(GetReadingListModel().size(), 0u);
+
+  // Check that the histograms are recorded correctly.
+  histogram_tester.ExpectUniqueSample(kHistogramPrefix + "Bookmarks.Outcome",
+                                      DataTypeMetrics::ImportOutcome::kSuccess,
+                                      1);
+  histogram_tester.ExpectBucketCount(
+      kHistogramPrefix + "Bookmarks.PreparedCount", 2, 1);
+  histogram_tester.ExpectBucketCount(
+      kHistogramPrefix + "Bookmarks.ImportedCount", 2, 1);
 }
 
 // Identical to the above test, but without the top-level <DL> tag enclosing it.
@@ -438,6 +452,7 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_Folders) {
 
 // Tests parsing a simple HTML file with three reading list items.
 TEST_F(StablePortabilityDataImporterTest, ReadingList) {
+  base::HistogramTester histogram_tester;
   const base::Time import_start_time = base::Time::Now();
   ImportReadingList(
       R"(<!DOCTYPE NETSCAPE-Bookmark-file-1>
@@ -477,6 +492,15 @@ TEST_F(StablePortabilityDataImporterTest, ReadingList) {
               "Brian Wilson",
               GURL("https://en.wikipedia.org/wiki/Brian_Wilson"),
               import_start_time, import_end_time)));
+
+  // Check that the histograms are recorded correctly.
+  histogram_tester.ExpectUniqueSample(kHistogramPrefix + "ReadingList.Outcome",
+                                      DataTypeMetrics::ImportOutcome::kSuccess,
+                                      1);
+  histogram_tester.ExpectBucketCount(
+      kHistogramPrefix + "ReadingList.PreparedCount", 3, 1);
+  histogram_tester.ExpectBucketCount(
+      kHistogramPrefix + "ReadingList.ImportedCount", 3, 1);
 }
 
 // Tests parsing an HTML with several not valid formats. The parser should still
@@ -530,17 +554,37 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_MiscJunk) {
 }
 
 TEST_F(StablePortabilityDataImporterTest, Bookmarks_EmptyInput) {
+  base::HistogramTester histogram_tester;
+
   ImportBookmarks("");
   // Empty input data is considered an error. (In practice, this could also
   // happen if the file read fails for some reason.)
   EXPECT_EQ(GetNumberOfBookmarksImported(), -1);
+
+  // Check that the histograms are recorded correctly.
+  histogram_tester.ExpectUniqueSample(kHistogramPrefix + "Bookmarks.Outcome",
+                                      DataTypeMetrics::ImportOutcome::kFailure,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      kHistogramPrefix + "Bookmarks.Error",
+      user_data_importer::BookmarksImportError::kFailedToRead, 1);
 }
 
 TEST_F(StablePortabilityDataImporterTest, ReadingList_EmptyInput) {
+  base::HistogramTester histogram_tester;
+
   ImportReadingList("");
   // Empty input data is considered an error. (In practice, this could also
   // happen if the file read fails for some reason.)
   EXPECT_EQ(GetNumberOfReadingListImported(), -1);
+
+  // Check that the histograms are recorded correctly.
+  histogram_tester.ExpectUniqueSample(kHistogramPrefix + "ReadingList.Outcome",
+                                      DataTypeMetrics::ImportOutcome::kFailure,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      kHistogramPrefix + "ReadingList.Error",
+      user_data_importer::BookmarksImportError::kFailedToRead, 1);
 }
 
 // History parsing is only implemented on Posix systems for now, because the
@@ -549,6 +593,8 @@ TEST_F(StablePortabilityDataImporterTest, ReadingList_EmptyInput) {
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // Tests parsing a simple JSON file with two history entries.
 TEST_F(StablePortabilityDataImporterTest, History_Basic) {
+  base::HistogramTester histogram_tester;
+
   const char kHistoryJson[] = R"({
     "metadata": {
       "data_type": "history_visits"
@@ -594,11 +640,19 @@ TEST_F(StablePortabilityDataImporterTest, History_Basic) {
 
   EXPECT_THAT(results, UnorderedElementsAre(URLResultEq(expected_row1),
                                             URLResultEq(expected_row2)));
+
+  // Check that the histograms are recorded correctly.
+  histogram_tester.ExpectUniqueSample(kHistogramPrefix + "History.Outcome",
+                                      DataTypeMetrics::ImportOutcome::kSuccess,
+                                      1);
+  histogram_tester.ExpectBucketCount(kHistogramPrefix + "History.ImportedCount",
+                                     2, 1);
 }
 
 // Tests parsing an invalid JSON file.
 // TODO(crbug.com/435652239): Fully cover test plan.
 TEST_F(StablePortabilityDataImporterTest, History_InvalidJson) {
+  base::HistogramTester histogram_tester;
   const char kHistoryJson[] = R"({
     "metadata": {
       "data_type": "history_visits"
@@ -610,6 +664,10 @@ TEST_F(StablePortabilityDataImporterTest, History_InvalidJson) {
   })";  // Invalid JSON, missing closing brackets.
   ImportHistory(kHistoryJson);
   EXPECT_EQ(GetNumberOfHistoryImported(), -1);
+
+  histogram_tester.ExpectUniqueSample(kHistogramPrefix + "History.Outcome",
+                                      DataTypeMetrics::ImportOutcome::kFailure,
+                                      1);
 }
 
 // Tests parsing a valid JSON file with no history entries.
@@ -714,18 +772,29 @@ TEST_F(StablePortabilityDataImporterTest, History_MixedValidAndInvalid) {
 
 // Tests importing invalid files that do not exist.
 TEST_F(StablePortabilityDataImporterTest, CallbacksAreCalled) {
+  base::HistogramTester histogram_tester;
   ImportBookmarksFile(
       base::FilePath(FILE_PATH_LITERAL("/invalid/path/to/bookmarks/file")));
   EXPECT_EQ(GetNumberOfBookmarksImported(), -1);
+  histogram_tester.ExpectUniqueSample(
+      kHistogramPrefix + "Bookmarks.Outcome",
+      DataTypeMetrics::ImportOutcome::kNotPresent, 1);
 
   ImportReadingListFile(
       base::FilePath(FILE_PATH_LITERAL("/invalid/path/to/reading_list/file")));
   EXPECT_EQ(GetNumberOfReadingListImported(), -1);
+  histogram_tester.ExpectUniqueSample(
+      kHistogramPrefix + "ReadingList.Outcome",
+      DataTypeMetrics::ImportOutcome::kNotPresent, 1);
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   ImportHistoryFile(
       base::FilePath(FILE_PATH_LITERAL("/invalid/path/to/history/file")));
   EXPECT_EQ(GetNumberOfHistoryImported(), -1);
+
+  histogram_tester.ExpectUniqueSample(
+      kHistogramPrefix + "History.Outcome",
+      DataTypeMetrics::ImportOutcome::kNotPresent, 1);
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 }
 
