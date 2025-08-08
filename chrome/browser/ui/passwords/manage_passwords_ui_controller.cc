@@ -290,6 +290,13 @@ void ManagePasswordsUIController::OnUpdatePasswordSubmitted(
   DestroyPopups();
   save_fallback_timer_.Stop();
   passwords_data_.OnUpdatePassword(std::move(form_manager));
+
+  // Trigger `passwords_data_` updates so the state is correct after password
+  // change, but do not display any bubbles.
+  if (IsPasswordChangeOngoing()) {
+    return;
+  }
+
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   UpdateBubbleAndIconVisibility();
 }

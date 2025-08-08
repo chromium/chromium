@@ -2476,3 +2476,32 @@ TEST_F(ManagePasswordsUIControllerTest, ShowChangePasswordBubble) {
   controller()->OnBubbleHidden();
   ExpectIconAndControllerStateIs(password_manager::ui::INACTIVE_STATE);
 }
+
+TEST_F(ManagePasswordsUIControllerTest,
+       UpdatePasswordBubbleSuppressedDuringPasswordChange) {
+  PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindLambdaForTesting([](content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+        return std::make_unique<MockPasswordChangeService>();
+      }));
+  auto* password_change_service = static_cast<MockPasswordChangeService*>(
+      PasswordChangeServiceFactory::GetForProfile(profile()));
+
+  // Emulate password change flow has started.
+  PasswordChangeDelegateMock mock_delegate;
+  EXPECT_CALL(mock_delegate, GetCurrentState)
+      .WillRepeatedly(
+          Return(PasswordChangeDelegate::State::kWaitingForChangePasswordForm));
+  EXPECT_CALL(*password_change_service, GetPasswordChangeDelegate)
+      .WillRepeatedly(Return(&mock_delegate));
+  ASSERT_EQ(controller()->GetState(), password_manager::ui::INACTIVE_STATE);
+
+  // Simulate update password form submitted. Bubble and icon should not be
+  // updated.
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility).Times(0);
+  std::vector<PasswordForm> best_matches;
+  controller()->OnUpdatePasswordSubmitted(
+      CreateFormManagerWithBestMatches(best_matches, &submitted_form()));
+  EXPECT_EQ(controller()->GetState(), password_manager::ui::INACTIVE_STATE);
+}
