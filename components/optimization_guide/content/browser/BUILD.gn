@@ -10,6 +10,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 static_library("browser") {
   sources = [
+    "media_transcript_provider.cc",
+    "media_transcript_provider.h",
     "page_content_metadata_observer.cc",
     "page_content_metadata_observer.h",
     "page_content_proto_provider.cc",
@@ -60,6 +62,18 @@ static_library("page_context_eligibility") {
       "//components/optimization_guide/internal:optimization_guide_internal",
     ]
   }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_media_transcript_provider.cc",
+    "mock_media_transcript_provider.h",
+  ]
+  public_deps = [
+    ":browser",
+    "//testing/gmock",
+  ]
 }
 
 source_set("unit_tests") {

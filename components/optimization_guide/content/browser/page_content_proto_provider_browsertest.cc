@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/optimization_guide/content/browser/mock_media_transcript_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/media_session.h"
@@ -1223,6 +1224,15 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestMediaData,
       *content::MediaSession::Get(web_contents()));
   LoadPage(https_server()->GetURL("/media_data/video.html"), nullptr);
 
+  auto mock_provider = std::make_unique<MockMediaTranscriptProvider>();
+  proto::MediaTranscript transcript;
+  transcript.set_text("foo");
+  transcript.set_start_timestamp_milliseconds(1000);
+  EXPECT_CALL(*mock_provider, GetTranscriptsForFrame)
+      .WillOnce(
+          testing::Return(std::vector<proto::MediaTranscript>{transcript}));
+  MediaTranscriptProvider::SetFor(web_contents(), std::move(mock_provider));
+
   WaitForMediaPlaybackStart(web_contents());
   ASSERT_EQ(base::Value(), content::EvalJs(web_contents(), "setupPosition()"));
   media_session::MediaPosition position(
@@ -1238,6 +1248,9 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestMediaData,
             optimization_guide::proto::MediaDataType::MEDIA_DATA_TYPE_VIDEO);
   EXPECT_EQ(media_data.duration_milliseconds(), 10000);
   EXPECT_TRUE(media_data.is_playing());
+  EXPECT_EQ(media_data.transcripts().size(), 1);
+  EXPECT_EQ(media_data.transcripts(0).text(), "foo");
+  EXPECT_EQ(media_data.transcripts(0).start_timestamp_milliseconds(), 1000);
 
   // The metadata title is default to the page title if not set.
   EXPECT_EQ(media_data.title(), "Test page showing a video");
@@ -1274,6 +1287,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestMediaData,
   EXPECT_EQ(media_data.title(), "test title");
   EXPECT_EQ(media_data.artist(), "test artist");
   EXPECT_EQ(media_data.album(), "test album");
+  EXPECT_EQ(media_data.transcripts().size(), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestMediaData,
@@ -1304,6 +1318,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestMediaData,
             optimization_guide::proto::MediaDataType::MEDIA_DATA_TYPE_VIDEO);
   EXPECT_EQ(media_data.duration_milliseconds(), 10000);
   EXPECT_TRUE(media_data.is_playing());
+  EXPECT_EQ(media_data.transcripts().size(), 0);
 }
 
 }  // namespace

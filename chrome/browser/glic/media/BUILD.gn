@@ -16,6 +16,8 @@ source_set("media") {
     "glic_media_link_helper.h",
     "glic_media_page_cache.cc",
     "glic_media_page_cache.h",
+    "media_transcript_provider_impl.cc",
+    "media_transcript_provider_impl.h",
   ]
   deps = [
     "//base",
@@ -25,6 +27,7 @@ source_set("media") {
     "//components/live_caption",
     "//components/live_caption:constants",
     "//components/live_caption:utils",
+    "//components/optimization_guide/content/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/public/browser",
   ]
@@ -37,6 +40,7 @@ source_set("unit_tests") {
     "glic_media_integration_unittest.cc",
     "glic_media_link_helper_unittest.cc",
     "glic_media_page_cache_unittest.cc",
+    "media_transcript_provider_impl_unittest.cc",
   ]
   deps = [
     ":media",
@@ -46,6 +50,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/live_caption",
     "//components/live_caption:constants",
+    "//components/optimization_guide/content/browser",
     "//testing/gmock",
     "//testing/gtest",
   ]

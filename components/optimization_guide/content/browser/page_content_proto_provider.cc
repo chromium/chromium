@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/optimization_guide/content/browser/media_transcript_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/media_session.h"
@@ -82,9 +83,6 @@ bool ValidateMediaSession(
 
 // Find the media data from the web contents for the given render frame host if
 // there is an active media session in the web page, otherwise return nullopt.
-// TODO(crbug.com/409427125): Add transcripts from the glic media integration.
-// TODO(crbug.com/409427125): Add last_updated_time for current_position so that
-// we can calculate a more precise position.
 std::optional<optimization_guide::proto::MediaData> ComputeMediaData(
     content::RenderFrameHost* render_frame_host) {
   CHECK(render_frame_host);
@@ -115,9 +113,9 @@ std::optional<optimization_guide::proto::MediaData> ComputeMediaData(
   media_data.set_is_playing(media_session_info->playback_state ==
                             media_session::mojom::MediaPlaybackState::kPlaying);
   media_data.set_duration_milliseconds(
-      media_position->duration().InMillisecondsRoundedUp());
+      media_position->duration().InMilliseconds());
   media_data.set_current_position_milliseconds(
-      media_position->GetPosition().InMillisecondsRoundedUp());
+      media_position->GetPosition().InMilliseconds());
 
   // Find the media data type via the audio video states in the media session
   // info. If there are multiple media in the frame which is rare, select the
@@ -143,6 +141,15 @@ std::optional<optimization_guide::proto::MediaData> ComputeMediaData(
   media_data.set_title(base::UTF16ToUTF8(media_metadata.title));
   media_data.set_artist(base::UTF16ToUTF8(media_metadata.artist));
   media_data.set_album(base::UTF16ToUTF8(media_metadata.album));
+
+  // Add media transcripts if they exist.
+  if (auto* media_transcript_provider =
+          MediaTranscriptProvider::GetFor(web_contents)) {
+    auto transcripts =
+        media_transcript_provider->GetTranscriptsForFrame(render_frame_host);
+    media_data.mutable_transcripts()->Add(transcripts.begin(),
+                                          transcripts.end());
+  }
 
   return media_data;
 }

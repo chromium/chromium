@@ -1114,6 +1114,7 @@ if (use_blink) {
       "//components/metrics:content",
       "//components/network_session_configurator/common",
       "//components/optimization_guide/content/browser",
+      "//components/optimization_guide/content/browser:test_support",
       "//components/optimization_guide/content/renderer",
       "//components/paint_preview/renderer",
       "//components/password_manager/content/browser",
