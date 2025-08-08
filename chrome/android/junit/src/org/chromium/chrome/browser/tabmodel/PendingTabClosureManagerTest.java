@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -108,6 +109,11 @@ public class PendingTabClosureManagerTest {
 
         @Override
         public void notifyOnCancelingTabClosure(@NonNull Runnable undoRunnable) {}
+
+        @Override
+        public List<Tab> getAllTabs() {
+            return new ArrayList<>(mTabModel.mTabs);
+        }
     }
 
     FakeTabModel mTabModel;

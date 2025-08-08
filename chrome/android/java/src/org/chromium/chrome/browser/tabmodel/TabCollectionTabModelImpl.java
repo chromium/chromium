@@ -199,6 +199,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 undoRunnable.run();
             }
         }
+
+        @Override
+        public List<Tab> getAllTabs() {
+            return TabCollectionTabModelImpl.this.getAllTabs();
+        }
     }
 
     /** Holds a tab and its index in the tab collection. */

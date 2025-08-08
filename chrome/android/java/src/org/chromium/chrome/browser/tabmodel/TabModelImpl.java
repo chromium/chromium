@@ -157,6 +157,11 @@ public class TabModelImpl extends TabModelJniBridge {
                 undoRunnable.run();
             }
         }
+
+        @Override
+        public List<Tab> getAllTabs() {
+            return TabModelImpl.this.getAllTabs();
+        }
     }
 
     public TabModelImpl(

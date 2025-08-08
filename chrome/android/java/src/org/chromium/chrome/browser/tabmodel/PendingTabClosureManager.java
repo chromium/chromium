@@ -53,9 +53,12 @@ public class PendingTabClosureManager {
         /**
          * Called when a TabClosureEvent is completely cancelled and about to be removed.
          *
-         * @param event The event that's been cancelled.
+         * @param undoRunnable The runnable to run if the event was undone.
          */
         void notifyOnCancelingTabClosure(@Nullable Runnable undoRunnable);
+
+        /** Returns all tabs in the model. */
+        List<Tab> getAllTabs();
     }
 
     /** Represents a set of tabs closed together. */
@@ -178,10 +181,7 @@ public class PendingTabClosureManager {
          */
         public void resetRewoundState() {
             mRewoundTabs.clear();
-
-            for (int i = 0; i < mTabModel.getCount(); i++) {
-                mRewoundTabs.add(mTabModel.getTabAt(i));
-            }
+            mRewoundTabs.addAll(mDelegate.getAllTabs());
         }
 
         /**
@@ -455,10 +455,11 @@ public class PendingTabClosureManager {
         // mRewoundTabs 0 1 2 3 4 5
         int prevIndex = -1;
         final int stopIndex = mRewoundList.indexOf(tab);
+        List<Tab> tabs = mDelegate.getAllTabs();
         for (int rewoundIndex = 0; rewoundIndex < stopIndex; rewoundIndex++) {
             Tab rewoundTab = mRewoundList.getTabAt(rewoundIndex);
-            if (prevIndex == mTabModel.getCount() - 1) break;
-            if (rewoundTab == mTabModel.getTabAt(prevIndex + 1)) prevIndex++;
+            if (prevIndex == tabs.size() - 1) break;
+            if (rewoundTab == tabs.get(prevIndex + 1)) prevIndex++;
         }
 
         // Figure out where to insert the tab. Just add one to prevIndex, as -1 represents the
