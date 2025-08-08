@@ -169,6 +169,10 @@ user-education-whats-new-internals-card {
   margin-block: 0;
 }
 
+#ntpPromoPreferences h3 {
+  margin-inline: var(--cr-section-padding);
+}
+
 #left h2 {
   border-bottom: 1px solid var(--cr-separator-color);
   margin: 0 0 12px 0;

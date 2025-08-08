@@ -958,3 +958,51 @@ void UserEducationInternalsPageHandlerImpl::ClearNtpPromoData(
   storage_service->ResetNtpPromoData(id);
   std::move(callback).Run(std::string());
 }
+
+void UserEducationInternalsPageHandlerImpl::GetNtpPromoPreferences(
+    GetNtpPromoPreferencesCallback callback) {
+  std::vector<FeaturePromoDemoPageDataPtr> data;
+
+  auto* const storage_service = GetStorageService(profile_);
+  if (storage_service) {
+    const base::Time now = storage_service->GetCurrentTime();
+    const auto preferences = storage_service->ReadNtpPromoPreferences();
+
+    const auto mode = user_education::features::GetNtpBrowserPromoType();
+    std::string state;
+    switch (mode) {
+      case user_education::features::NtpBrowserPromoType::kNone:
+        state = "Disabled";
+        break;
+      case user_education::features::NtpBrowserPromoType::kSimple:
+        state = "Simple (single promo)";
+        break;
+      case user_education::features::NtpBrowserPromoType::kSetupList:
+        state = "Setup List";
+        break;
+    }
+    data.emplace_back(FormatDemoPageData("NTP promo mode", state));
+    data.emplace_back(
+        FormatDemoPageData("NTP promos disabled?", preferences.disabled));
+    const auto snoozed_until =
+        preferences.last_snoozed +
+        user_education::features::GetNtpSetupListSnoozeTime();
+    if (now < snoozed_until) {
+      data.emplace_back(
+          FormatDemoPageData("NTP promos snoozed until", snoozed_until));
+    }
+  }
+
+  return std::move(callback).Run(std::move(data));
+}
+
+void UserEducationInternalsPageHandlerImpl::ClearNtpPromoPreferences(
+    ClearNtpPromoPreferencesCallback callback) {
+  auto* const storage_service = GetStorageService(profile_);
+  if (!storage_service) {
+    std::move(callback).Run(std::string("No storage service."));
+    return;
+  }
+  storage_service->ResetNtpPromoPreferences();
+  std::move(callback).Run(std::string());
+}

@@ -61,6 +61,9 @@ class UserEducationInternalsPageHandlerImpl
   void GetNtpPromos(GetNtpPromosCallback callback) override;
   void ClearNtpPromoData(const std::string& id,
                          ClearNtpPromoDataCallback callback) override;
+  void GetNtpPromoPreferences(GetNtpPromoPreferencesCallback callback) override;
+  void ClearNtpPromoPreferences(
+      ClearNtpPromoPreferencesCallback callback) override;
 
  private:
   void OnFeaturePromoShowResult(user_education::FeaturePromoResult show_result);

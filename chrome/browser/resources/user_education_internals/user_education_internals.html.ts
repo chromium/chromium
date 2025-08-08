@@ -103,6 +103,28 @@ export function getHtml(this: UserEducationInternalsElement) {
       <div id="ntpPromos">
         <a name="ntpPromos"></a>
         <h2>NTP Promos</h2>
+        <div id="ntpPromoPreferences">
+          <cr-expand-button
+              ?expanded="${this.ntpPromoPreferencesExpanded_}"
+              @expanded-changed="${this.onNtpPromoPreferencesExpandedChanged_}">
+            <div id="label"><h3>NTP Promo Preferences</h3></div>
+          </cr-expand-button>
+          <div id="ntpPromoPrefData"
+              ?hidden="${!this.ntpPromoPreferencesExpanded_}">
+            ${this.ntpPromoPreferences_.map(item => html`
+              <p><b>${item.name}</b> ${item.value}</p>`)}
+            <p>
+              Clicking the button below will reset all NTP promo preferences
+              not tied to feature flags. These changes may not be reflected on
+              NTP tabs that are already open.
+            </p>
+            <cr-button
+                id="clearNtpPromoPreferences"
+                @click="${this.clearNtpPromoPreferences_}">
+              Clear All
+            </cr-button>
+          </div>
+        </div>
         ${this.ntpPromos_.map(item => html`
           <user-education-internals-card
               id="${item.internalName}"
