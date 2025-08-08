@@ -5,6 +5,7 @@
 #include "chrome/browser/passage_embeddings/page_embeddings_service.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/check.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
@@ -490,6 +491,106 @@ TEST_F(PageEmbeddingsServiceTest, TasksReprioritized) {
   EXPECT_CALL(embedder_mock(), ReprioritizeTasks(kPassive, ElementsAre(2)));
 
   page_embeddings_service().RemoveObserver(&observer_urgent);
+}
+
+// Validates that ScopedPriority raises and lowers the priority as expected.
+TEST_F(PageEmbeddingsServiceTest, ScopedPriority) {
+  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
+
+  ObserverMock observer;
+  EXPECT_CALL(observer, GetDefaultPriority)
+      .WillRepeatedly(Return(PageEmbeddingsService::kUrgent));
+
+  EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(AnyNumber());
+  EXPECT_CALL(embedder_mock(), TryCancel).Times(AnyNumber());
+  EXPECT_CALL(embedder_mock(), ReprioritizeTasks).Times(AnyNumber());
+
+  const auto set_priority_expectation =
+      [this](PassagePriority expected_priority) {
+        ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
+            .WillByDefault(
+                [expected_priority](
+                    PassagePriority priority, std::vector<std::string> passages,
+                    Embedder::ComputePassagesEmbeddingsCallback callback) {
+                  EXPECT_EQ(expected_priority, priority);
+                  return 1;
+                });
+      };
+
+  // Adding the observer raises the priority to kUrgent.
+  page_embeddings_service().AddObserver(&observer);
+
+  // Establishing the ScopedPriority should further raise the priority.
+  std::optional<PageEmbeddingsService::ScopedPriority> scoped_priority =
+      page_embeddings_service().RaisePriority(
+          &observer, PageEmbeddingsService::kUserBlocking);
+
+  set_priority_expectation(kUserInitiated);
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents->GetPrimaryPage(),
+      optimization_guide::proto::AnnotatedPageContent());
+
+  // Destroying the ScopedPriority should revert to the lower priority.
+  scoped_priority.reset();
+  set_priority_expectation(kUrgent);
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents->GetPrimaryPage(),
+      optimization_guide::proto::AnnotatedPageContent());
+
+  page_embeddings_service().RemoveObserver(&observer);
+}
+
+// Validates that ScopedPriority doesn't affect the priority if a higher
+// priority observer is present.
+TEST_F(PageEmbeddingsServiceTest, ScopedPriorityWithHigherPriorityObserver) {
+  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
+
+  ObserverMock observer_default;
+  EXPECT_CALL(observer_default, GetDefaultPriority)
+      .WillRepeatedly(Return(PageEmbeddingsService::kDefault));
+
+  ObserverMock observer_user_blocking;
+  EXPECT_CALL(observer_user_blocking, GetDefaultPriority)
+      .WillRepeatedly(Return(PageEmbeddingsService::kUserBlocking));
+
+  EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(AnyNumber());
+  EXPECT_CALL(embedder_mock(), TryCancel).Times(AnyNumber());
+  EXPECT_CALL(embedder_mock(), ReprioritizeTasks).Times(AnyNumber());
+
+  const auto set_priority_expectation =
+      [this](PassagePriority expected_priority) {
+        ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
+            .WillByDefault(
+                [expected_priority](
+                    PassagePriority priority, std::vector<std::string> passages,
+                    Embedder::ComputePassagesEmbeddingsCallback callback) {
+                  EXPECT_EQ(expected_priority, priority);
+                  return 1;
+                });
+      };
+
+  page_embeddings_service().AddObserver(&observer_default);
+  page_embeddings_service().AddObserver(&observer_user_blocking);
+
+  // Establishing the ScopedPriority should not affect the priority.
+  std::optional<PageEmbeddingsService::ScopedPriority> scoped_priority =
+      page_embeddings_service().RaisePriority(&observer_default,
+                                              PageEmbeddingsService::kUrgent);
+
+  set_priority_expectation(kUserInitiated);
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents->GetPrimaryPage(),
+      optimization_guide::proto::AnnotatedPageContent());
+
+  // Destroying the ScopedPriority should not affect the priority.
+  scoped_priority.reset();
+  set_priority_expectation(kUserInitiated);
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents->GetPrimaryPage(),
+      optimization_guide::proto::AnnotatedPageContent());
+
+  page_embeddings_service().RemoveObserver(&observer_user_blocking);
+  page_embeddings_service().RemoveObserver(&observer_default);
 }
 
 }  // namespace passage_embeddings

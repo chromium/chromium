@@ -45,6 +45,56 @@ void WebContentsDestructionObserver::WebContentsDestroyed() {
   std::move(destroyed_callback_).Run(web_contents());
 }
 
+PageEmbeddingsService::ScopedPriority::ScopedPriority(
+    PageEmbeddingsService* service,
+    Observer* observer,
+    Priority priority)
+    : service_(service), observer_(observer) {
+  // Only one scoped priority per observer is supported.
+  DCHECK_EQ(0u, service_->temporary_priority_.count(observer));
+
+  // We only support raising the priority.
+  DCHECK_LT(priority, observer->GetDefaultPriority());
+
+  service_->temporary_priority_[observer] = priority;
+
+  if (priority < service_->current_priority_) {
+    service_->current_priority_ = priority;
+    service_->UpdateTaskPriorities(service_->current_priority_);
+  }
+}
+
+PageEmbeddingsService::ScopedPriority::~ScopedPriority() {
+  if (!service_) {
+    // The object has been moved-from.
+    return;
+  }
+
+  service_->temporary_priority_.erase(observer_);
+
+  Priority next_priority =
+      GetActivePriority(service_->observers_, service_->temporary_priority_);
+  if (next_priority != service_->current_priority_) {
+    service_->current_priority_ = next_priority;
+    service_->UpdateTaskPriorities(service_->current_priority_);
+  }
+}
+
+PageEmbeddingsService::ScopedPriority::ScopedPriority(ScopedPriority&& other) {
+  *this = std::move(other);
+}
+
+PageEmbeddingsService::ScopedPriority&
+PageEmbeddingsService::ScopedPriority::operator=(ScopedPriority&& other) {
+  service_ = other.service_;
+  observer_ = other.observer_;
+
+  other.service_ = nullptr;
+  other.observer_ = nullptr;
+
+  return *this;
+}
+
 PageEmbeddingsService::PageEmbeddingsService(
     EmbeddingCandidatesGenerator candidates_generator,
     page_content_annotations::PageContentExtractionService*
@@ -57,13 +107,19 @@ PageEmbeddingsService::~PageEmbeddingsService() = default;
 void PageEmbeddingsService::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 
-  UpdateTaskPriorities(GetActivePriority(observers_));
+  UpdateTaskPriorities(GetActivePriority(observers_, temporary_priority_));
 }
 
 void PageEmbeddingsService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 
-  UpdateTaskPriorities(GetActivePriority(observers_));
+  UpdateTaskPriorities(GetActivePriority(observers_, temporary_priority_));
+}
+
+PageEmbeddingsService::ScopedPriority PageEmbeddingsService::RaisePriority(
+    Observer* observer,
+    Priority priority) {
+  return ScopedPriority(this, observer, priority);
 }
 
 std::vector<PassageEmbedding> PageEmbeddingsService::GetEmbeddings(
@@ -153,11 +209,20 @@ void PageEmbeddingsService::OnWebContentsDestroyed(
 
 // static
 PageEmbeddingsService::Priority PageEmbeddingsService::GetActivePriority(
-    const base::ObserverList<Observer>& observers) {
-  return std::transform_reduce(
+    const base::ObserverList<Observer>& observers,
+    const std::map<Observer*, Priority>& temporary_priority) {
+  const Priority highest_default_priority = std::transform_reduce(
       observers.begin(), observers.end(), kDefault,
       [](Priority p1, Priority p2) { return std::min(p1, p2); },
       [](const Observer& observer) { return observer.GetDefaultPriority(); });
+
+  return std::transform_reduce(
+      temporary_priority.begin(), temporary_priority.end(),
+      highest_default_priority,
+      [](Priority p1, Priority p2) { return std::min(p1, p2); },
+      [](const std::map<Observer*, Priority>::value_type& pair) {
+        return pair.second;
+      });
 }
 
 void PageEmbeddingsService::UpdateTaskPriorities(Priority priority) {

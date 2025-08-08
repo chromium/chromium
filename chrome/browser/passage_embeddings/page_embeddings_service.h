@@ -75,6 +75,28 @@ class PageEmbeddingsService
     }
   };
 
+  // ScopedPriority allows observers to temporarily raise the priority of the
+  // embeddings computation for the lifetime of the object. This can be useful,
+  // for example, if embeddings are anticipated to be needed urgently to drive
+  // UI features.
+  class ScopedPriority {
+   public:
+    ScopedPriority(PageEmbeddingsService* service,
+                   Observer* observer,
+                   Priority priority);
+    ~ScopedPriority();
+
+    ScopedPriority(ScopedPriority& other) = delete;
+    ScopedPriority& operator=(ScopedPriority& other) = delete;
+
+    ScopedPriority(ScopedPriority&& other);
+    ScopedPriority& operator=(ScopedPriority&& other);
+
+   private:
+    raw_ptr<PageEmbeddingsService> service_;
+    raw_ptr<PageEmbeddingsService::Observer> observer_;
+  };
+
   // A callback to produce the passages for a page for which to generate
   // embeddings. This is responsible for generating chunked passages from the
   // AnnotatedPageContent and filtering to the top passages_to_generate most
@@ -92,6 +114,8 @@ class PageEmbeddingsService
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  ScopedPriority RaisePriority(Observer* observer, Priority priority);
 
   // Retrieves the embeddings for web_content. Returns the empty vector if
   // embeddings have not yet been computed.
@@ -114,7 +138,8 @@ class PageEmbeddingsService
   void OnWebContentsDestroyed(content::WebContents* web_contents);
 
   static Priority GetActivePriority(
-      const base::ObserverList<Observer>& observers);
+      const base::ObserverList<Observer>& observers,
+      const std::map<Observer*, Priority>& temporary_priority);
 
   void UpdateTaskPriorities(Priority priority);
 
@@ -137,6 +162,7 @@ class PageEmbeddingsService
       page_content_extraction_observation_{this};
 
   base::ObserverList<Observer> observers_;
+  std::map<Observer*, Priority> temporary_priority_;
 
   Priority current_priority_ = kDefault;
 
