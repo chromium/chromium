@@ -33,18 +33,27 @@ gfx::Size GetPreferredSize(const gfx::Size& original_size,
                            int target_width,
                            int target_height);
 
+// Outputs image processing data to the client logs for the encode phase,
+// including the encoded image size.
+void AddClientLogsForEncode(
+    scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs,
+    scoped_refptr<base::RefCountedBytes> output_bytes);
+
+// Outputs image processing data to the client logs for the downscale phase,
+// including the original and downscaled image sizes.
+void AddClientLogsForDownscale(
+    scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs,
+    const gfx::Size& original_pixel_size,
+    const gfx::Size& downscaled_pixel_size);
+
+#if !BUILDFLAG(IS_IOS)
+
 // Outputs image processing data to the client logs for the downscale phase,
 // including the original and downscaled image sizes.
 void AddClientLogsForDownscale(
     scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs,
     const SkBitmap& original_image,
     const SkBitmap& downscaled_image);
-
-// Outputs image processing data to the client logs for the encode phase,
-// including the encoded image size.
-void AddClientLogsForEncode(
-  scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs,
-  scoped_refptr<base::RefCountedBytes> output_bytes);
 
 // Downscales the image to the target width and height. Outputs image processing
 // data to the client logs.
@@ -69,6 +78,8 @@ bool EncodeImageMaybeWithTransparency(
     int compression_quality,
     scoped_refptr<base::RefCountedBytes> output,
     scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs);
+
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace lens
 

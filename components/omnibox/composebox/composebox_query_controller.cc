@@ -133,28 +133,6 @@ void CreateFileUploadRequestProtoWithPayloadAndContinue(
   std::move(callback).Run(request, /*error_type=*/std::nullopt);
 }
 
-#if !BUILDFLAG(IS_IOS)
-// Creates the server request proto for the image file upload request. Called
-// on the main thread after the image data is ready.
-void CreateFileUploadRequestProtoWithImageDataAndContinue(
-    lens::LensOverlayRequestId request_id,
-    lens::LensOverlayClientContext client_context,
-    scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs,
-    RequestBodyProtoCreatedCallback callback,
-    lens::ImageData image_data) {
-  lens::LensOverlayServerRequest request;
-  auto* objects_request = request.mutable_objects_request();
-  objects_request->mutable_request_context()->mutable_request_id()->CopyFrom(
-      request_id);
-  objects_request->mutable_request_context()
-      ->mutable_client_context()
-      ->CopyFrom(client_context);
-  objects_request->mutable_image_data()->CopyFrom(image_data);
-  request.mutable_client_logs()->CopyFrom(client_logs->client_logs());
-  std::move(callback).Run(request, /*error_type=*/std::nullopt);
-}
-#endif  // !BUILDFLAG(IS_IOS)
-
 // Returns true if the file upload status is valid to include in the multimodal
 // request.
 bool IsValidFileUploadStatusForMultimodalRequest(
@@ -293,6 +271,26 @@ bool ComposeboxQueryController::DeleteFile(
 
 void ComposeboxQueryController::ClearFiles() {
   active_files_.clear();
+}
+
+// static
+void ComposeboxQueryController::
+    CreateFileUploadRequestProtoWithImageDataAndContinue(
+        lens::LensOverlayRequestId request_id,
+        lens::LensOverlayClientContext client_context,
+        scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs,
+        RequestBodyProtoCreatedCallback callback,
+        lens::ImageData image_data) {
+  lens::LensOverlayServerRequest request;
+  auto* objects_request = request.mutable_objects_request();
+  objects_request->mutable_request_context()->mutable_request_id()->CopyFrom(
+      request_id);
+  objects_request->mutable_request_context()
+      ->mutable_client_context()
+      ->CopyFrom(client_context);
+  objects_request->mutable_image_data()->CopyFrom(image_data);
+  request.mutable_client_logs()->CopyFrom(client_logs->client_logs());
+  std::move(callback).Run(std::move(request), /*error_type=*/std::nullopt);
 }
 
 std::unique_ptr<EndpointFetcher>
@@ -538,11 +536,35 @@ void ComposeboxQueryController::ProcessDecodedImageAndContinue(
       FROM_HERE,
       base::BindOnce(&composebox::DownscaleAndEncodeBitmap, bitmap,
                      ref_counted_logs, image_options),
-      base::BindOnce(&CreateFileUploadRequestProtoWithImageDataAndContinue,
+      base::BindOnce(&ComposeboxQueryController::
+                         CreateFileUploadRequestProtoWithImageDataAndContinue,
                      request_id, CreateClientContext(), ref_counted_logs,
                      std::move(callback)));
 }
 #endif  // !BUILDFLAG(IS_IOS)
+
+void ComposeboxQueryController::CreateImageUploadRequest(
+    const base::UnguessableToken& file_token,
+    scoped_refptr<base::RefCountedBytes> file_data,
+    std::optional<composebox::ImageEncodingOptions> image_options,
+    RequestBodyProtoCreatedCallback callback) {
+#if !BUILDFLAG(IS_IOS)
+  FileInfo* file_info = GetFileInfo(file_token);
+  if (!file_info) {
+    return;
+  }
+
+  CHECK(image_options.has_value());
+  data_decoder::DecodeImageIsolated(
+      file_data->as_vector(), data_decoder::mojom::ImageCodec::kDefault,
+      /*shrink_to_fit=*/false,
+      /*max_size_in_bytes=*/std::numeric_limits<int64_t>::max(),
+      /*desired_image_frame_size=*/gfx::Size(),
+      base::BindOnce(&ComposeboxQueryController::ProcessDecodedImageAndContinue,
+                     weak_ptr_factory_.GetWeakPtr(), *file_info->request_id_,
+                     image_options.value(), std::move(callback)));
+#endif  // !BUILDFLAG(IS_IOS)
+}
 
 void ComposeboxQueryController::CreateFileUploadRequestBodyAndContinue(
     const base::UnguessableToken& file_token,
@@ -565,20 +587,11 @@ void ComposeboxQueryController::CreateFileUploadRequestBodyAndContinue(
                          *file_info->request_id_, CreateClientContext(),
                          std::move(callback)));
       break;
-    case lens::MimeType::kImage:
-#if !BUILDFLAG(IS_IOS)
-      CHECK(image_options.has_value());
-      data_decoder::DecodeImageIsolated(
-          file_data->as_vector(), data_decoder::mojom::ImageCodec::kDefault,
-          /*shrink_to_fit=*/false,
-          /*max_size_in_bytes=*/std::numeric_limits<int64_t>::max(),
-          /*desired_image_frame_size=*/gfx::Size(),
-          base::BindOnce(
-              &ComposeboxQueryController::ProcessDecodedImageAndContinue,
-              weak_ptr_factory_.GetWeakPtr(), *file_info->request_id_,
-              image_options.value(), std::move(callback)));
-#endif  // !BUILDFLAG(IS_IOS)
+    case lens::MimeType::kImage: {
+      CreateImageUploadRequest(file_token, std::move(file_data),
+                               std::move(image_options), std::move(callback));
       break;
+    }
     default:
       UpdateFileUploadStatus(file_info->file_token_,
                              FileUploadStatus::kValidationFailed,

@@ -26,6 +26,10 @@
 #include "third_party/lens_server_proto/lens_overlay_surface.pb.h"
 #include "url/gurl.h"
 
+namespace lens {
+class RefCountedLensOverlayClientLogs;
+}  // namespace lens
+
 class TemplateURLService;
 
 #if !BUILDFLAG(IS_IOS)
@@ -138,6 +142,7 @@ class ComposeboxQueryController {
 
    private:
     friend class ComposeboxQueryController;
+    friend class ComposeboxQueryControllerIOS;
 
     // Default to kNotUploaded, until UploadFile() is called.
     // Do not modify this field directly, use UpdateFileUploadStatus() instead.
@@ -215,6 +220,23 @@ class ComposeboxQueryController {
   virtual FileInfo* GetFileInfo(const base::UnguessableToken& file_token);
 
  protected:
+  // Creates the request body proto for an image and calls the callback with the
+  // request.
+  static void CreateFileUploadRequestProtoWithImageDataAndContinue(
+      lens::LensOverlayRequestId request_id,
+      lens::LensOverlayClientContext client_context,
+      scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs,
+      RequestBodyProtoCreatedCallback callback,
+      lens::ImageData image_data);
+
+  // Creates the request body proto for an image and calls the callback with the
+  // request.
+  virtual void CreateImageUploadRequest(
+      const base::UnguessableToken& file_token,
+      scoped_refptr<base::RefCountedBytes> file_data,
+      std::optional<composebox::ImageEncodingOptions> options,
+      RequestBodyProtoCreatedCallback callback);
+
   // Returns the EndpointFetcher to use with the given params. Protected to
   // allow overriding in tests to mock server responses.
   virtual std::unique_ptr<endpoint_fetcher::EndpointFetcher>
@@ -251,6 +273,9 @@ class ComposeboxQueryController {
   // The map of active files, keyed by the file token.
   // Protected to allow tests to access the files.
   std::map<base::UnguessableToken, std::unique_ptr<FileInfo>> active_files_;
+
+  // Task runner used to create the file upload request proto asynchronously.
+  scoped_refptr<base::TaskRunner> create_request_task_runner_;
 
  private:
   // Fetches the OAuth headers and calls the callback with the headers. If the
@@ -352,9 +377,6 @@ class ComposeboxQueryController {
 
   // The observer list, managed via AddObserver() and RemoveObserver().
   base::ObserverList<FileUploadStatusObserver> observers_;
-
-  // Task runner used to create the file upload request proto asynchronously.
-  scoped_refptr<base::TaskRunner> create_request_task_runner_;
 
   // Owned by the Profile, and thus guaranteed to outlive this instance.
   const raw_ptr<TemplateURLService> template_url_service_;

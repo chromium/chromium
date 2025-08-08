@@ -60,16 +60,14 @@ static_library("lens") {
   ]
   public_deps = [ ":features" ]
 
-  if (!is_ios) {
-    sources += [
-      "lens_bitmap_processing.cc",
-      "lens_bitmap_processing.h",
-    ]
-    deps += [
-      "//skia",
-      "//ui/gfx",
-    ]
-  }
+  sources += [
+    "lens_bitmap_processing.cc",
+    "lens_bitmap_processing.h",
+  ]
+  deps += [
+    "//skia",
+    "//ui/gfx",
+  ]
 }
 
 component("features") {
