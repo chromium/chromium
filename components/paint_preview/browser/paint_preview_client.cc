@@ -23,6 +23,7 @@
 #include "components/paint_preview/common/capture_result.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-forward.h"
 #include "components/paint_preview/common/proto_validator.h"
+#include "components/paint_preview/common/serialized_recording.h"
 #include "components/paint_preview/common/version.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -146,14 +147,10 @@ void CloseFile(base::File file) {
   file.Close();
 }
 
-using RecordingRequestParamsReadyCallback =
-    base::OnceCallback<void(mojom::PaintPreviewStatus,
-                            mojom::PaintPreviewCaptureParamsPtr)>;
-
 void OnSerializedRecordingFileCreated(
     const RecordingParams& capture_params,
     const base::FilePath& filename,
-    RecordingRequestParamsReadyCallback callback,
+    PaintPreviewClient::RecordingRequestParamsReadyCallback callback,
     base::File file) {
   if (!file.IsValid()) {
     DLOG(ERROR) << "File create failed: " << file.error_details();
@@ -170,27 +167,6 @@ void OnSerializedRecordingFileCreated(
         mojom::PaintPreviewStatus::kOk,
         CreateRecordingRequestParams(RecordingPersistence::kFileSystem,
                                      capture_params, std::move(file)));
-  }
-}
-
-// Prepare the PaintPreviewRecorder mojo params request object. If |persistence|
-// is |RecordingPersistence::kFileSystem|, this will create the file that will
-// act as the sink for the recording.
-void PrepareRecordingRequestParams(
-    RecordingPersistence persistence,
-    const base::FilePath& frame_filepath,
-    const RecordingParams& capture_params,
-    RecordingRequestParamsReadyCallback callback) {
-  if (persistence == RecordingPersistence::kFileSystem) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(&CreateOrOverwriteFileForWriting, frame_filepath),
-        base::BindOnce(&OnSerializedRecordingFileCreated, capture_params,
-                       frame_filepath, std::move(callback)));
-  } else {
-    std::move(callback).Run(
-        mojom::PaintPreviewStatus::kOk,
-        CreateRecordingRequestParams(persistence, capture_params, {}));
   }
 }
 
@@ -234,8 +210,28 @@ PaintPreviewClient::InProgressDocumentCaptureState::
 
 base::FilePath
 PaintPreviewClient::InProgressDocumentCaptureState::FilePathForFrame(
-    const base::UnguessableToken& frame_guid) {
+    const base::UnguessableToken& frame_guid) const {
+  CHECK_EQ(persistence, RecordingPersistence::kFileSystem);
   return root_dir.AppendASCII(base::StrCat({frame_guid.ToString(), ".skp"}));
+}
+
+void PaintPreviewClient::InProgressDocumentCaptureState::
+    PrepareRecordingRequestParams(
+        const RecordingParams& capture_params,
+        const base::UnguessableToken& frame_guid,
+        RecordingRequestParamsReadyCallback ready_callback) const {
+  if (persistence == RecordingPersistence::kFileSystem) {
+    const base::FilePath frame_filepath = FilePathForFrame(frame_guid);
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&CreateOrOverwriteFileForWriting, frame_filepath),
+        base::BindOnce(&OnSerializedRecordingFileCreated, capture_params,
+                       frame_filepath, std::move(ready_callback)));
+  } else {
+    std::move(ready_callback)
+        .Run(mojom::PaintPreviewStatus::kOk,
+             CreateRecordingRequestParams(persistence, capture_params, {}));
+  }
 }
 
 void PaintPreviewClient::InProgressDocumentCaptureState::RecordSuccessfulFrame(
@@ -359,7 +355,8 @@ void PaintPreviewClient::CapturePaintPreview(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("paint_preview",
                                     "PaintPreviewClient::CapturePaintPreview",
                                     TRACE_ID_LOCAL(&document_data_it->second));
-  CapturePaintPreviewInternal(params.inner, render_frame_host);
+  CapturePaintPreviewInternal(params.inner, render_frame_host,
+                              document_data_it->second);
 }
 
 void PaintPreviewClient::CaptureSubframePaintPreview(
@@ -383,7 +380,7 @@ void PaintPreviewClient::CaptureSubframePaintPreview(
   params.max_decoded_image_size_bytes =
       document_data->max_decoded_image_size_bytes;
   params.skip_accelerated_content = document_data->skip_accelerated_content;
-  CapturePaintPreviewInternal(params, render_subframe_host);
+  CapturePaintPreviewInternal(params, render_subframe_host, *document_data);
 }
 
 void PaintPreviewClient::RenderFrameDeleted(
@@ -430,7 +427,8 @@ void PaintPreviewClient::RenderFrameDeleted(
 
 void PaintPreviewClient::CapturePaintPreviewInternal(
     const RecordingParams& params,
-    content::RenderFrameHost* render_frame_host) {
+    content::RenderFrameHost* render_frame_host,
+    const InProgressDocumentCaptureState& document_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Use a frame's embedding token as its GUID.
   auto token = render_frame_host->GetEmbeddingToken();
@@ -443,29 +441,22 @@ void PaintPreviewClient::CapturePaintPreviewInternal(
     return;
   }
 
-  auto* document_data =
-      base::FindOrNull(all_document_data_, params.document_guid);
-  if (!document_data) {
-    return;
-  }
-
   // The embedding token should be in the list of tokens in the tree when
   // capture was started. If this is not the case then the frame may have
   // navigated. This is unsafe to capture.
   base::UnguessableToken frame_guid = token.value();
-  if (!base::Contains(document_data->accepted_tokens, frame_guid)) {
+  if (!base::Contains(document_data.accepted_tokens, frame_guid)) {
     return;
   }
 
   // Deduplicate data if a subframe is required multiple times.
-  if (base::Contains(document_data->awaiting_subframes, frame_guid) ||
-      base::Contains(document_data->finished_subframes, frame_guid)) {
+  if (base::Contains(document_data.awaiting_subframes, frame_guid) ||
+      base::Contains(document_data.finished_subframes, frame_guid)) {
     return;
   }
 
-  PrepareRecordingRequestParams(
-      document_data->persistence, document_data->FilePathForFrame(frame_guid),
-      params,
+  document_data.PrepareRecordingRequestParams(
+      params, frame_guid,
       base::BindOnce(&PaintPreviewClient::RequestCaptureOnUIThread,
                      weak_ptr_factory_.GetWeakPtr(), frame_guid, params,
                      content::GlobalRenderFrameHostId(

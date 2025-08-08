@@ -42,6 +42,10 @@ class PaintPreviewClient
                               mojom::PaintPreviewStatus,
                               std::unique_ptr<CaptureResult>)>;
 
+  using RecordingRequestParamsReadyCallback =
+      base::OnceCallback<void(mojom::PaintPreviewStatus,
+                              mojom::PaintPreviewCaptureParamsPtr)>;
+
   // Augmented version of mojom::PaintPreviewServiceParams.
   struct PaintPreviewParams {
     explicit PaintPreviewParams(RecordingPersistence persistence);
@@ -154,7 +158,16 @@ class PaintPreviewClient
 
     // Generates a file path based off |root_dir| and |frame_guid|. Will be in
     // the form "{hexadecimal}.skp".
-    base::FilePath FilePathForFrame(const base::UnguessableToken& frame_guid);
+    base::FilePath FilePathForFrame(
+        const base::UnguessableToken& frame_guid) const;
+
+    // Prepares the PaintPreviewRecorder mojo params request object. If
+    // |persistence| is |RecordingPersistence::kFileSystem|, this will create
+    // the file that will act as the sink for the recording.
+    void PrepareRecordingRequestParams(
+        const RecordingParams& capture_params,
+        const base::UnguessableToken& frame_guid,
+        RecordingRequestParamsReadyCallback ready_callback) const;
 
     // Record a successful recording into this capture state.
     void RecordSuccessfulFrame(const base::UnguessableToken& frame_guid,
@@ -179,8 +192,10 @@ class PaintPreviewClient
 
   // Sets up for a capture of a frame on |render_frame_host| according to
   // |params|.
-  void CapturePaintPreviewInternal(const RecordingParams& params,
-                                   content::RenderFrameHost* render_frame_host);
+  void CapturePaintPreviewInternal(
+      const RecordingParams& params,
+      content::RenderFrameHost* render_frame_host,
+      const InProgressDocumentCaptureState& document_data);
 
   // Initiates capture via the PaintPreviewRecorder associated with
   // |render_frame_host| using |params| to configure the request. |frame_guid|
