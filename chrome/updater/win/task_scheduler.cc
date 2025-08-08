@@ -859,6 +859,14 @@ class TaskSchedulerV2 final : public TaskScheduler {
                   << std::hex << hr;
       return nullptr;
     }
+
+    // TODO(crbug.com/434269515) : remove logging when the bug is closed.
+    VLOG(2) << "Current user: " << [] {
+      base::win::ScopedBstr user_name;
+      return GetCurrentUser(user_name) ? std::wstring(user_name.Get())
+                                       : std::wstring();
+    }();
+
     hr = task_service->Connect(base::win::ScopedVariant::kEmptyVariant,
                                base::win::ScopedVariant::kEmptyVariant,
                                base::win::ScopedVariant::kEmptyVariant,
