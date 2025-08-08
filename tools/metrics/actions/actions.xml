@@ -24165,6 +24165,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiResponseReceived">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Reported when the user receives any response from BWG (Gemini) on iOS.
+    Tracks overall conversation engagement and response volume per session.
+  </description>
+</action>
+
 <action name="MobileGeminiSettingsBack">
   <owner>joemerramos@google.com</owner>
   <description>

@@ -85,4 +85,7 @@ void RecordFirstResponseReceived();
 // Records that the user submitted their first prompt and how it was submitted.
 void RecordFirstPromptSubmission(IOSGeminiFirstPromptSubmissionMethod method);
 
+// Records that the user received any response from BWG.
+void RecordBWGResponseReceived();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_

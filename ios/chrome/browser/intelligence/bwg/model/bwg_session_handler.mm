@@ -94,6 +94,8 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
     _hasReceivedFirstResponse = YES;
     RecordFirstResponseReceived();
   }
+  // Track all responses for conversation engagement.
+  RecordBWGResponseReceived();
 }
 
 - (void)didTapBWGSettingsButton {

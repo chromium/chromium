@@ -78,3 +78,7 @@ void RecordFirstPromptSubmission(IOSGeminiFirstPromptSubmissionMethod method) {
       base::UserMetricsAction("MobileGeminiFirstPromptSubmitted"));
   base::UmaHistogramEnumeration(kFirstPromptSubmissionMethodHistogram, method);
 }
+
+void RecordBWGResponseReceived() {
+  base::RecordAction(base::UserMetricsAction("MobileGeminiResponseReceived"));
+}
