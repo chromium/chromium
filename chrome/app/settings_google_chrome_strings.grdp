@@ -328,7 +328,7 @@ Chrome understands forms better and can autofill them faster for you. This setti
     When signing into Google services like Gmail or Youtube with <ph name="USER_EMAIL">$1<ex>foo@example.com</ex></ph>, you can automatically sign in to Chrome with the same account
   </message>
 
-  <!-- Sync Page -->
+  <!-- Sync Page / Account Settings Page -->
   <message name="IDS_SETTINGS_SYNC_DATA_ENCRYPTED_TEXT" desc="Text alerting the user that synced data is encrypted.">
     For added security, Google Chrome will encrypt your data
   </message>
@@ -370,6 +370,9 @@ Chrome understands forms better and can autofill them faster for you. This setti
   </message>
   <message name="IDS_SETTINGS_SIGN_OUT" desc="The text label of the Sign out of Chrome button in the settings page.">
     Sign out of Chrome
+  </message>
+  <message name="IDS_SETTINGS_ACCOUNT_DATA_DASHBOARD" desc="This string is found in the Account settings page in Chrome settings to let a user manage the Chrome data that they've saved in their Google Account. It is important that it is consistent with the destination's title 'Chrome data in your account' (TC ID 2983573066282140756).">
+    Chrome data in your account
   </message>
 
 

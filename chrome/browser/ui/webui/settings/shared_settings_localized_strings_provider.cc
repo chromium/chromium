@@ -203,8 +203,6 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
       {"syncLoading", IDS_SETTINGS_SYNC_LOADING},
       {"syncDataEncryptedText", IDS_SETTINGS_SYNC_DATA_ENCRYPTED_TEXT},
       {"sync", IDS_SETTINGS_SYNC},
-      {"manageSyncedDataTitle",
-       IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT},
       {"syncAdvancedBrowserPageTitle",
        IDS_SETTINGS_NEW_SYNC_ADVANCED_BROWSER_PAGE_TITLE},
       {"enterPassphraseLabel", IDS_SYNC_ENTER_PASSPHRASE_BODY},
@@ -249,6 +247,18 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
 #endif
 
   html_source->AddString("syncErrorsHelpUrl", chrome::kSyncErrorsHelpURL);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  html_source->AddLocalizedString(
+      "manageSyncedDataTitle",
+      IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT);
+#else
+  html_source->AddLocalizedString(
+      "manageSyncedDataTitle",
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? IDS_SETTINGS_ACCOUNT_DATA_DASHBOARD
+          : IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT);
+#endif
 }
 
 void AddSecureDnsStrings(content::WebUIDataSource* html_source) {
