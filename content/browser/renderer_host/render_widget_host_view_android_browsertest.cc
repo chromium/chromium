@@ -84,7 +84,9 @@ IN_PROC_BROWSER_TEST_F(InputOnVizBrowserTest, TransfersStateOnTouchDown) {
   ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0,
                                     tool_type);
   JNIEnv* env = base::android::AttachCurrentThread();
-  auto time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
+  auto event_time = ui::EventTimeForNow();
+  auto down_time_ms =
+      base::TimeTicks::FromUptimeMillis(event_time.ToUptimeMillis());
   auto action = ui::MotionEvent::Action::DOWN;
 
   base::android::ScopedJavaLocalRef<jobject> obj =
@@ -97,7 +99,9 @@ IN_PROC_BROWSER_TEST_F(InputOnVizBrowserTest, TransfersStateOnTouchDown) {
       /*ticks_x=*/0,
       /*ticks_y=*/0,
       /*tick_multiplier=*/0,
-      /*oldest_event_time=*/base::TimeTicks::FromJavaNanoTime(time_ns),
+      /*oldest_event_time=*/event_time,
+      /*latest_event_time=*/event_time,
+      /*down_time_ms=*/down_time_ms,
       /*android_action=*/ui::MotionEventAndroid::GetAndroidAction(action),
       /*pointer_count=*/1,
       /*history_size=*/0,
@@ -109,7 +113,8 @@ IN_PROC_BROWSER_TEST_F(InputOnVizBrowserTest, TransfersStateOnTouchDown) {
       /*raw_offset_y_pixels=*/0,
       /*for_touch_handle=*/false,
       /*pointer0=*/&p,
-      /*pointer1=*/nullptr);
+      /*pointer1=*/nullptr,
+      /*is_latest_event_time_resampled=*/false);
 
   int successfully_transferred =
       static_cast<int>(TransferInputToVizResult::kSuccessfullyTransferred);
