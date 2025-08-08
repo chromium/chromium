@@ -31,7 +31,7 @@ ProcessLock ProcessLock::CreateAllowAnySite(
       agent_cluster_key,
       /*site_url=*/GURL(), /*process_lock_url=*/GURL(),
       /*requires_origin_keyed_process=*/false,
-      /*requires_origin_keyed_process_by_default=*/false,
+      AgentClusterKey::OACStatus::kSiteKeyedByDefault,
       /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       storage_partition_config, web_exposed_isolation_info,
       web_exposed_isolation_level, /*is_guest=*/false,

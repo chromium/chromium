@@ -181,10 +181,9 @@ SiteInfo SiteInfo::CreateForErrorPage(
       agent_cluster_key, GetErrorPageSiteAndLockURL() /* site_url */,
       GetErrorPageSiteAndLockURL() /* process_lock_url */,
       false /* requires_origin_keyed_process */,
-      false /* requires_origin_keyed_process_by_default */,
-      false /* is_sandboxed */, UrlInfo::kInvalidUniqueSandboxId,
-      storage_partition_config, web_exposed_isolation_info,
-      web_exposed_isolation_level, is_guest,
+      AgentClusterKey::OACStatus::kSiteKeyedByDefault, false /* is_sandboxed */,
+      UrlInfo::kInvalidUniqueSandboxId, storage_partition_config,
+      web_exposed_isolation_info, web_exposed_isolation_level, is_guest,
       false /* does_site_request_dedicated_process_for_coop */,
       false /* is_jit_disabled */, false /* are_v8_optimizations_disabled */,
       false /* is_pdf */, is_fenced);
@@ -223,7 +222,7 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
                   /*site_url=*/SiteInstanceImpl::GetDefaultSiteURL(),
                   /*process_lock_url=*/SiteInstanceImpl::GetDefaultSiteURL(),
                   /*requires_origin_keyed_process=*/false,
-                  /*requires_origin_keyed_process_by_default=*/false,
+                  AgentClusterKey::OACStatus::kSiteKeyedByDefault,
                   /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
                   storage_partition_config, web_exposed_isolation_info,
                   web_exposed_isolation_level, isolation_context.is_guest(),
@@ -247,7 +246,7 @@ SiteInfo SiteInfo::CreateForGuest(
       AgentClusterKey(),
       /*site_url=*/GURL(), /*process_lock_url=*/GURL(),
       /*requires_origin_keyed_process=*/false,
-      /*requires_origin_keyed_process_by_default=*/false,
+      AgentClusterKey::OACStatus::kSiteKeyedByDefault,
       /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       partition_config, WebExposedIsolationInfo::CreateNonIsolated(),
       WebExposedIsolationLevel::kNotIsolated,
@@ -321,7 +320,7 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
                 !RequiresDedicatedProcessInternal(
                     site_url, isolation_context, browser_context,
                     url_info.requests_coop_isolation(),
-                    url_info.requests_default_origin_agent_cluster_isolation(),
+                    !url_info.oac_header_request.has_value(),
                     site_url == GetErrorPageSiteAndLockURL(),
                     url_info.is_sandboxed, url_info.is_pdf)
             ? GURL()
@@ -353,31 +352,25 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
         /*is_fenced=*/isolation_context.is_fenced(), web_exposed_isolation_info,
         web_exposed_isolation_level, url_info.cross_origin_isolation_key);
   }
-  // We should only set |requires_origin_keyed_process| if we are actually
-  // creating separate SiteInstances for OAC isolation. When we use site-keyed
-  // processes for OAC, we don't do that at present.
-  // TODO(wjmaclean): Once SiteInstanceGroups are fully implemented, we should
-  // be able to give all OAC origins their own SiteInstance.
-  // https://crbug.com/1195535
-  OriginAgentClusterIsolationState requested_isolation_state =
-      isolation_context.default_isolation_state();
-  if (!url_info.requests_default_origin_agent_cluster_isolation()) {
-    // In this case, url_info is not using OAC by default, so we only need to
-    // check the by_header() functions to determine the isolation state.
-    // (RequestsOriginKeyedProcess(isolation_context) only behaves differently
-    // in the non-header / by-default case.)
-    requested_isolation_state =
-        url_info.requests_origin_agent_cluster_by_header()
-            ? OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
-                  url_info.requests_origin_keyed_process_by_header())
-            : OriginAgentClusterIsolationState::CreateNonIsolated();
-  }
-  // An origin-keyed process can only be used for origin-keyed agent clusters.
-  CHECK(!requested_isolation_state.requires_origin_keyed_process() ||
-        requested_isolation_state.is_origin_agent_cluster());
 
-  bool requires_origin_keyed_process = false;
+  // Compute what the OAC isolation state should be for the site info, starting
+  // with the requested state stored in the URLInfo (that is based on the OAC
+  // headers for the navigation). If there were no OAC headers, there is no OAC
+  // request in the URLInfo. In this case, we use the current default isolation
+  // state for the IsolationContext. This default isolation state might differ
+  // from what OriginAgentClusterIsolationState::CreateForDefaultIsolation
+  // returns when enterprise policies dynamically modify whether origin
+  // isolation by default is enabled or not. An existing BrowsingInstance's
+  // default OAC isolation state is not updated to reflect the new policy and
+  // will keep the old policy.
+  OriginAgentClusterIsolationState oac_isolation_state =
+      url_info.oac_header_request.value_or(
+          isolation_context.default_isolation_state());
 
+  // Now check if the requested isolation state should be overridden by an OAC
+  // isolation state already stored for the BrowsingInstance. This happens when
+  // the origin has already requested an opt-in or an opt-out for origin
+  // isolation in a previous navigation in the BrowsingInstance.
   if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
     auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
     url::Origin origin;
@@ -387,21 +380,26 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
       origin =
           GetPossiblyOverriddenOriginFromUrl(url_info.url, url_info.origin);
     }
-    requires_origin_keyed_process =
-        policy
-            ->DetermineOriginAgentClusterIsolation(isolation_context, origin,
-                                                   requested_isolation_state)
-            .requires_origin_keyed_process();
+    oac_isolation_state = policy->DetermineOriginAgentClusterIsolation(
+        isolation_context, origin, oac_isolation_state);
   }
-  // If after the call to `DetermineOriginAgentClusterIsolation` the returned
-  // isolation state has `requires_origin_keyed_process() == true`, and if the
-  // requested `url_info` was for default isolation, then we know that
-  // `requires_origin_keyed_process` is true by default; we track that in
-  // `requires_origin_keyed_process_by_default` so that later we know not to
-  // add the isolation state to the per-BrowsingInstance tracking.
-  bool requires_origin_keyed_process_by_default =
-      requires_origin_keyed_process &&
-      url_info.requests_default_origin_agent_cluster_isolation();
+
+  // Here, we're only interested in OAC isolation when it results in actual
+  // process isolation.
+  // TODO(crbug.com/40176090): Once SiteInstanceGroups are fully implemented, we
+  // should be able to give all OAC origins their own SiteInstance.
+  AgentClusterKey::OACStatus oac_status =
+      oac_isolation_state.process_isolation_oac_status();
+
+  bool requires_origin_keyed_process =
+      oac_status == AgentClusterKey::OACStatus::kOriginKeyedByHeader ||
+      oac_status == AgentClusterKey::OACStatus::kOriginKeyedByDefault;
+
+  // We should only set |requires_origin_keyed_process| if we are actually
+  // creating separate SiteInstances for OAC isolation. When we use site-keyed
+  // processes for OAC, we don't do that at present.
+  CHECK(!requires_origin_keyed_process ||
+        SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled());
 
   // If there is a COOP isolation request, propagate it to SiteInfo.
   // This will be used later when determining a suitable SiteInstance
@@ -446,8 +444,7 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
   // appropriate to disregard WebExposedIsolationInfo and override it manually
   // to what they expect the other value to be.
   return SiteInfo(agent_cluster_key, site_url, lock_url,
-                  requires_origin_keyed_process,
-                  requires_origin_keyed_process_by_default,
+                  requires_origin_keyed_process, oac_status,
                   url_info.is_sandboxed, url_info.unique_sandbox_id,
                   storage_partition_config.value(), web_exposed_isolation_info,
                   web_exposed_isolation_level, isolation_context.is_guest(),
@@ -466,7 +463,7 @@ SiteInfo::SiteInfo(const AgentClusterKey& agent_cluster_key,
                    const GURL& site_url,
                    const GURL& process_lock_url,
                    bool requires_origin_keyed_process,
-                   bool requires_origin_keyed_process_by_default,
+                   AgentClusterKey::OACStatus oac_status,
                    bool is_sandboxed,
                    int unique_sandbox_id,
                    const StoragePartitionConfig storage_partition_config,
@@ -482,8 +479,7 @@ SiteInfo::SiteInfo(const AgentClusterKey& agent_cluster_key,
       agent_cluster_key_(agent_cluster_key),
       process_lock_url_(process_lock_url),
       requires_origin_keyed_process_(requires_origin_keyed_process),
-      requires_origin_keyed_process_by_default_(
-          requires_origin_keyed_process_by_default),
+      oac_status_(oac_status),
       is_sandboxed_(is_sandboxed),
       unique_sandbox_id_(unique_sandbox_id),
       storage_partition_config_(storage_partition_config),
@@ -498,7 +494,8 @@ SiteInfo::SiteInfo(const AgentClusterKey& agent_cluster_key,
       is_fenced_(is_fenced) {
   DCHECK(is_sandboxed_ ||
          unique_sandbox_id_ == UrlInfo::kInvalidUniqueSandboxId);
-  DCHECK(!requires_origin_keyed_process_by_default_ ||
+  DCHECK((oac_status_ != AgentClusterKey::OACStatus::kOriginKeyedByHeader &&
+          oac_status_ != AgentClusterKey::OACStatus::kOriginKeyedByDefault) ||
          requires_origin_keyed_process_);
 }
 SiteInfo::SiteInfo(const SiteInfo& rhs) = default;
@@ -510,7 +507,7 @@ SiteInfo::SiteInfo(BrowserContext* browser_context)
                /*site_url=*/GURL(),
                /*process_lock_url=*/GURL(),
                /*requires_origin_keyed_process=*/false,
-               /*requires_origin_keyed_process_by_default=*/false,
+               AgentClusterKey::OACStatus::kSiteKeyedByDefault,
                /*is_sandboxed*/ false,
                UrlInfo::kInvalidUniqueSandboxId,
                StoragePartitionConfig::CreateDefault(browser_context),

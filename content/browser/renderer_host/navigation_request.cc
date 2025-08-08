@@ -3798,29 +3798,38 @@ void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {
 
 void NavigationRequest::AddOriginAgentClusterStateIfNecessary(
     const IsolationContext& isolation_context) {
-  // Normally for explicit opt-ins the origin is tracked when we create the
-  // SiteInstance, but there are two cases where that fails. (1) If process-
-  // isolation for OAC is not enabled we need to track opt-in here (used for
-  // origin-agent-cluster-by-default), and (2) if origin-keyed processes by
-  // default is enabled, then it's possible we got here due to using a
-  // speculative RenderFrameHost. In this latter case, the opt-in header had not
-  // arrived when the SiteInstance was created, so the origin was not tracked
-  // earlier.
-  bool is_opt_in_requested = IsOriginAgentClusterOptInRequested();
-  bool explicitly_requests_origin_keyed_process =
-      is_opt_in_requested &&
-      SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled();
+  std::optional<OriginAgentClusterIsolationState> oac_isolation_state;
+  if (IsOriginAgentClusterOptInRequested()) {
+    // Normally for explicit opt-ins the origin is tracked when we create the
+    // SiteInstance, but there are two cases where that fails. (1) If process-
+    // isolation for OAC is not enabled we need to track opt-in here (used for
+    // origin-agent-cluster-by-default), and (2) if origin-keyed processes by
+    // default is enabled, then it's possible we got here due to using a
+    // speculative RenderFrameHost. In this latter case, the opt-in header had
+    // not arrived when the SiteInstance was created, so the origin was not
+    // tracked earlier.
+    oac_isolation_state =
+        OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
+            /*had_oac_request=*/true,
+            SiteIsolationPolicy::
+                IsProcessIsolationForOriginAgentClusterEnabled());
+  } else if (IsOriginAgentClusterOptOutRequested()) {
+    // Since opt-outs are asking not to have OAC or
+    // requires_origin_keyed_process, they don't get their own SiteInstance, and
+    // so we must register their opt-out here.
+    oac_isolation_state =
+        OriginAgentClusterIsolationState::CreateNonIsolatedByHeader();
+  }
 
-  // Since opt-outs are asking not to have OAC or requires_origin_keyed_process,
-  // they don't get their own SiteInstance, and so we must register their
-  // opt-out here.
-  bool is_opt_out_requested = IsOriginAgentClusterOptOutRequested();
+  if (!oac_isolation_state.has_value()) {
+    return;
+  }
 
   // We never register isolation state here unless it's explicitly requested.
-  if (!is_opt_in_requested && !is_opt_out_requested)
-    return;
-
-  bool should_isolate_origin = is_opt_in_requested;
+  CHECK(oac_isolation_state->logical_oac_status() ==
+            AgentClusterKey::OACStatus::kSiteKeyedByHeader ||
+        oac_isolation_state->logical_oac_status() ==
+            AgentClusterKey::OACStatus::kOriginKeyedByHeader);
 
   // Note: we don't handle IsIsolationImplied() cases here, since those only
   // occur when OAC-by-default is enabled, and in that case we only pro-actively
@@ -3840,10 +3849,8 @@ void NavigationRequest::AddOriginAgentClusterStateIfNecessary(
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   // If there is already a state registered for `origin` in `isolation_context`,
   // then the following call does nothing.
-  policy->AddOriginIsolationStateForBrowsingInstance(
-      isolation_context, origin,
-      should_isolate_origin /* is_origin_agent_cluster */,
-      explicitly_requests_origin_keyed_process);
+  policy->AddOriginAgentClusterStateForBrowsingInstance(
+      isolation_context, origin, oac_isolation_state.value());
 }
 
 bool NavigationRequest::IsOriginAgentClusterOptInRequested() {
@@ -3909,20 +3916,20 @@ void NavigationRequest::DetermineOriginAgentClusterEndResult() {
   const IsolationContext& isolation_context =
       GetRenderFrameHost()->GetSiteInstance()->GetIsolationContext();
 
-  bool is_requested = IsOriginAgentClusterOptInRequested();
-  bool expects_origin_agent_cluster = is_requested || IsIsolationImplied();
-  bool is_origin_keyed_process_implied =
-      IsIsolationImplied() &&
-      SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault();
-  bool requires_origin_keyed_process =
-      (is_requested || is_origin_keyed_process_implied) &&
-      SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled();
-
   OriginAgentClusterIsolationState requested_isolation_state =
-      expects_origin_agent_cluster
-          ? OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
-                requires_origin_keyed_process)
-          : OriginAgentClusterIsolationState::CreateNonIsolated();
+      OriginAgentClusterIsolationState::CreateForDefaultIsolation(
+          frame_tree_node_->navigator().controller().GetBrowserContext());
+
+  if (IsOriginAgentClusterOptInRequested()) {
+    requested_isolation_state =
+        OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
+            /*had_oac_request=*/true,
+            SiteIsolationPolicy::
+                IsProcessIsolationForOriginAgentClusterEnabled());
+  } else if (IsOriginAgentClusterOptOutRequested()) {
+    requested_isolation_state =
+        OriginAgentClusterIsolationState::CreateNonIsolatedByHeader();
+  }
 
   const bool got_origin_agent_cluster =
       policy
@@ -3970,7 +3977,8 @@ void NavigationRequest::DetermineOriginAgentClusterEndResult() {
   } else {
     // When OAC is not enabled by default, report enum values that only indicate
     // if OAC was requested or not vs whether it took effect.
-    if (is_requested) {
+    if (requested_isolation_state.logical_oac_status() ==
+        AgentClusterKey::OACStatus::kOriginKeyedByHeader) {
       origin_agent_cluster_end_result_ =
           got_origin_agent_cluster
               ? OriginAgentClusterEndResult::kRequestedAndOriginKeyed
@@ -4149,42 +4157,34 @@ bool NavigationRequest::ShouldRequestSiteIsolationForCOOP() {
 }
 
 UrlInfo NavigationRequest::GetUrlInfo() {
-  // Compute the isolation request flags.  Note that multiple requests could be
-  // active simultaneously for the same navigation.
-  // We start by assuming that the default isolation will be used, and only
-  // change it if an explicit opt-in or opt-out request is seen. Depending on
-  // the value of OriginAgentClusterIsolationState::CreateForDefaultIsolation,
-  // default isolation could potentially be non-isolated, origin-agent-cluster,
-  // or origin-agent-cluster in an origin-keyed process. Note: the
-  // IsOriginIsolationImplied() case is handled via kDefault. It is the only
-  // case where the `Origin-Agent-Cluster` header is absent.
-  uint32_t isolation_flags = UrlInfo::OriginIsolationRequest::kDefault;
-
+  // If the navigation has an OAC header, pass along an
+  // OriginAgentClusterIsolationState request that represents the origin
+  // isolation requested by the OAC header (either opt-in or opt-out). If there
+  // is no OAC header, a final OAC state will be computed when creating the
+  // SiteInfo for this URLInfo based on the default state for the chosen
+  // BrowsingInstance.
+  std::optional<OriginAgentClusterIsolationState> oac_header_request;
   if (IsOriginAgentClusterOptOutRequested()) {
-    isolation_flags = UrlInfo::OriginIsolationRequest::kNone;
+    oac_header_request =
+        OriginAgentClusterIsolationState::CreateNonIsolatedByHeader();
   } else if (IsOriginAgentClusterOptInRequested()) {
     // An origin-keyed agent cluster is used if explicitly requested by header.
-    isolation_flags =
-        UrlInfo::OriginIsolationRequest::kOriginAgentClusterByHeader;
-    if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
-      // An origin-keyed process is used if requested by header.
-      isolation_flags |=
-          UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcessByHeader;
-    }
+    oac_header_request =
+        OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
+            /*had_oac_request=*/true,
+            SiteIsolationPolicy::
+                IsProcessIsolationForOriginAgentClusterEnabled());
   }
 
   // Compute the CrossOriginIsolationKey for the navigation.
   std::optional<AgentClusterKey::CrossOriginIsolationKey>
       cross_origin_isolation_key = ComputeCrossOriginIsolationKey();
 
-  auto isolation_request =
-      static_cast<UrlInfo::OriginIsolationRequest>(isolation_flags);
-
   // Compute the WebExposedIsolationInfo that will be bundled into UrlInfo.
   auto web_exposed_isolation_info = ComputeWebExposedIsolationInfo();
 
   UrlInfoInit url_info_init(GetURL());
-  url_info_init.WithOriginIsolationRequest(isolation_request)
+  url_info_init.WithOACHeaderRequest(oac_header_request)
       .WithCOOPSiteIsolation(ShouldRequestSiteIsolationForCOOP())
       .WithWebExposedIsolationInfo(web_exposed_isolation_info)
       .WithCrossOriginIsolationKey(cross_origin_isolation_key)

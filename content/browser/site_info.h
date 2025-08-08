@@ -190,7 +190,7 @@ class CONTENT_EXPORT SiteInfo {
            const GURL& site_url,
            const GURL& process_lock_url,
            bool requires_origin_keyed_process,
-           bool requires_origin_keyed_process_by_default,
+           AgentClusterKey::OACStatus oac_status,
            bool is_sandboxed,
            int unique_sandbox_id,
            const StoragePartitionConfig storage_partition_config,
@@ -264,12 +264,22 @@ class CONTENT_EXPORT SiteInfo {
     return requires_origin_keyed_process_;
   }
 
-  // If requires_origin_keyed_process() is true, this function indicates if the
-  // origin-keyed process is being used by default (e.g., via
-  // kOriginKeyedProcessesByDefault), rather than due to an opt-in OAC header.
-  bool requires_origin_keyed_process_by_default() const {
-    return requires_origin_keyed_process_by_default_;
-  }
+  // The status of the Origin-Agent-Cluster header request for this SiteInfo.
+  // This is mainly used to distinguish between SiteInfos that received process
+  // isolation for their origin due to an explicit OAC opt-in via header
+  // (kOriginKeyedByHeader) from the SiteInfos that received process isolation
+  // due to features::kOriginKeyedProcessesByDefault (kOriginKeyedByDefault).
+  // The former must be tracked per BrowsingInstance to maintain a consistent
+  // OAC state, while the later do not need to do so.
+  // Note that this only applies to OAC that is backed by process isolation. OAC
+  // can also be logical, in which case it will only apply in the renderer
+  // process and is not tracked in the SiteInfo.
+  // Also note that having an |oac_status_| of kOriginKeyedByHeader or
+  // kOriginKeyedByDefault will make the |agent_cluster_key_| origin-keyed, the
+  // reverse is not true. It is possible for the |agent_cluster_key_| to be
+  // origin-keyed and |oac_status_| to be kSiteKeyedByDefault, for example in
+  // the case of a cross-origin isolated document with DocumentIsolationPolicy.
+  AgentClusterKey::OACStatus oac_status() const { return oac_status_; }
 
   // The following accessor is for the `is_sandboxed` flag, which is true when
   // this SiteInfo is for an origin-restricted-sandboxed iframe.
@@ -457,14 +467,19 @@ class CONTENT_EXPORT SiteInfo {
   // navigation, this is redundant with the AgentClusterKey. Remove it.
   bool requires_origin_keyed_process_ = false;
 
-  // When true, indicates that `requires_origin_keyed_process_` is true because
-  // this SiteInfo was created using origin-keyed processes by default, and not
-  // due to an opt-in header.
-  // Note: This is stored as a separate boolean instead of making
-  // requires_origin_keyed_process_ an enum due to complexity from std::tie
-  // comparisons, since we want two SiteInfos to be considered equivalent even
-  // if they differ in this boolean.
-  bool requires_origin_keyed_process_by_default_ = false;
+  // Tracks the status of the OAC header opt-in request for this SiteInfo.
+  // Note: this is not taken into account in
+  // SiteInfo::MakeSecurityPrincipalKey() because we want to consider a document
+  // with OAC: 1? to have the same security principal as a document that got
+  // origin isolation through other means
+  // (features::kOriginKeyedProcessesByDefault,
+  // cross-origin isolation provided the cross-origin isolation status
+  // match...). Origin isolation is taken into account in
+  // SiteInfo::MakeSecurityPrincipalKey() through the AgentClusterKey, which can
+  // be origin-keyed or site-keyed. Origin-keyed and site-keyed AgentClusterKeys
+  // are never equivalent.
+  AgentClusterKey::OACStatus oac_status_ =
+      AgentClusterKey::OACStatus::kSiteKeyedByDefault;
 
   // When true, indicates this SiteInfo is for a origin-restricted-sandboxed
   // iframe.

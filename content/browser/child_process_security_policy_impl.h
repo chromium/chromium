@@ -286,33 +286,19 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // Registers |origin| isolation state in the BrowsingInstance associated
   // with |isolation_context|.
   //
-  // |is_origin_agent_cluster| is used to indicate |origin| will receive (at
-  // least) logical isolation via OriginAgentCluster in the renderer. If it is
-  // false, then |requires_origin_keyed_process| must also be false.
-  //
-  // If |requires_origin_keyed_process| is true, then |origin| will be
-  // registered as an origin-keyed process; that is, subdomains of |origin|
-  // won't be automatically grouped with |origin|. In particular, this can be
-  // used for cases using the Origin-Agent-Cluster header.
-  //
-  // If |requires_origin_keyed_process| is false, then subdomains of |origin|
-  // will be grouped together with |origin| in the same process. |origin| is
-  // required to be a site (scheme and eTLD+1) in this case.
-  //
-  // If this function is called with differing values of
-  // |requires_origin_keyed_process| for
-  // the same IsolationContext and origin, then origin-keyed process isolation
-  // takes precedence for |origin|, though site-keyed process isolation will
-  // still be used for subdomains of |origin|.
+  // |oac_isolation_state| is the Origin-Agent-Cluster to register for the
+  // origin. It contains values describing both the logical isolation (i.e.
+  // agent cluster separation in the renderer process) and the process isolation
+  // that can be triggered by the Origin-Agent-Cluster header, the
+  // kOriginKeyedProcessesByDefault feature and the
+  // kOriginAgentClusterDefaultEnabled feature.
   //
   // If |origin| has already been registered as isolated for the same
-  // BrowsingInstance amd the same value of |requires_origin_keyed_process|,
-  // then nothing will be changed by this call.
-  void AddOriginIsolationStateForBrowsingInstance(
+  // BrowsingInstance, then nothing will be changed by this call.
+  void AddOriginAgentClusterStateForBrowsingInstance(
       const IsolationContext& isolation_context,
       const url::Origin& origin,
-      bool is_origin_agent_cluster,
-      bool requires_origin_keyed_process);
+      const OriginAgentClusterIsolationState& oac_isolation_state);
 
   // Adds `origin` to the IsolatedOrigins list for only the BrowsingInstance of
   // `isolation_context`, without isolating all subdomains. For use when the

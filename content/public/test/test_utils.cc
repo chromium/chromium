@@ -197,7 +197,7 @@ bool AreAllSitesIsolatedForTesting() {
 bool IsOriginAgentClusterEnabledForOrigin(SiteInstance* site_instance,
                                           const url::Origin& origin) {
   OriginAgentClusterIsolationState origin_requests_isolation(
-      OriginAgentClusterIsolationState::CreateNonIsolated());
+      OriginAgentClusterIsolationState::CreateNonIsolatedByDefault());
 
   return static_cast<ChildProcessSecurityPolicyImpl*>(
              ChildProcessSecurityPolicy::GetInstance())

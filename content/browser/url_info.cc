@@ -21,7 +21,7 @@ UrlInfo::UrlInfo(const UrlInfo& other) = default;
 
 UrlInfo::UrlInfo(const UrlInfoInit& init)
     : url(init.url_),
-      origin_isolation_request(init.origin_isolation_request_),
+      oac_header_request(init.oac_header_request_),
       is_coop_isolation_requested(init.requests_coop_isolation_),
       is_prefetch_with_cross_site_contamination(
           init.is_prefetch_with_cross_site_contamination_),
@@ -32,11 +32,6 @@ UrlInfo::UrlInfo(const UrlInfoInit& init)
       web_exposed_isolation_info(init.web_exposed_isolation_info_),
       is_pdf(init.is_pdf_),
       cross_origin_isolation_key(init.cross_origin_isolation_key_) {
-  // An origin-keyed process can only be used for origin-keyed agent clusters.
-  // We can check this for the explicit header case here, and it is checked more
-  // generally (including implicit cases) in SiteInfo::CreateInternal().
-  DCHECK(!requests_origin_keyed_process_by_header() ||
-         requests_origin_agent_cluster_by_header());
   DCHECK(init.is_sandboxed_ ||
          init.unique_sandbox_id_ == kInvalidUniqueSandboxId);
 }
@@ -71,9 +66,9 @@ bool UrlInfo::RequestsOriginKeyedProcess(
   // (2) the UrlInfo would have used an origin agent cluster based on the lack
   // of header, and the given IsolationContext is in a mode that uses
   // origin-keyed processes by default (i.e., kOriginKeyedProcessesByDefault).
-  return (origin_isolation_request &
-          OriginIsolationRequest::kRequiresOriginKeyedProcessByHeader) ||
-         (requests_default_origin_agent_cluster_isolation() &&
+  return (oac_header_request.has_value() &&
+          oac_header_request->requires_origin_keyed_process()) ||
+         (!oac_header_request.has_value() &&
           context.default_isolation_state().requires_origin_keyed_process());
 }
 
@@ -85,6 +80,18 @@ void UrlInfo::WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const {
   proto->set_is_sandboxed(is_sandboxed);
   proto->set_is_pdf(is_pdf);
   proto->set_is_coop_isolation_requested(is_coop_isolation_requested);
+  int origin_isolation_request = 0;
+  if (oac_header_request &&
+      oac_header_request->logical_oac_status() ==
+          AgentClusterKey::OACStatus::kSiteKeyedByHeader) {
+    origin_isolation_request = (1 << 0);
+  } else if (oac_header_request &&
+             oac_header_request->is_origin_agent_cluster()) {
+    origin_isolation_request = (1 << 1);
+    if (oac_header_request->requires_origin_keyed_process()) {
+      origin_isolation_request += (1 << 2);
+    }
+  }
   proto->set_origin_isolation_request(origin_isolation_request);
   proto->set_is_prefetch_with_cross_site_contamination(
       is_prefetch_with_cross_site_contamination);
@@ -105,7 +112,7 @@ UrlInfoInit::UrlInfoInit(const GURL& url) : url_(url) {}
 
 UrlInfoInit::UrlInfoInit(const UrlInfo& base)
     : url_(base.url),
-      origin_isolation_request_(base.origin_isolation_request),
+      oac_header_request_(base.oac_header_request),
       requests_coop_isolation_(base.is_coop_isolation_requested),
       origin_(base.origin),
       is_sandboxed_(base.is_sandboxed),
@@ -117,9 +124,9 @@ UrlInfoInit::UrlInfoInit(const UrlInfo& base)
 
 UrlInfoInit::~UrlInfoInit() = default;
 
-UrlInfoInit& UrlInfoInit::WithOriginIsolationRequest(
-    UrlInfo::OriginIsolationRequest origin_isolation_request) {
-  origin_isolation_request_ = origin_isolation_request;
+UrlInfoInit& UrlInfoInit::WithOACHeaderRequest(
+    std::optional<OriginAgentClusterIsolationState> oac_header_request) {
+  oac_header_request_ = oac_header_request;
   return *this;
 }
 

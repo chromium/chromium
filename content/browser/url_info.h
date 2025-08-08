@@ -9,6 +9,7 @@
 
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "content/browser/agent_cluster_key.h"
+#include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -33,8 +34,8 @@ namespace content {
 //   response headers), and
 // * outside of a navigation.
 //
-// If UrlInfo::origin_isolation_request is kNone, that does *not* imply that
-// the URL's origin will not be isolated, and vice versa.  The isolation
+// If UrlInfo::origin_isolation_state_request is nullopt, that does *not* imply
+// that the URL's origin will not be isolated, and vice versa.  The isolation
 // decision involves both response headers and consistency within a
 // BrowsingInstance, and once we decide on the isolation outcome for an origin,
 // it won't change for the lifetime of the BrowsingInstance.
@@ -43,7 +44,8 @@ namespace content {
 // SiteInfo::RequiresDedicatedProcess() on its SiteInstance's SiteInfo.  To
 // check whether a frame ends up being origin-isolated in a separate process
 // (e.g., due to the Origin-Agent-Cluster header), use
-// SiteInfo::requires_origin_keyed_process().
+// SiteInfo::agent_cluster_key()::IsOriginKeyed(). To check whether the
+// origin-isolation is due to OAC specifically, check SiteInfo::oac_status().
 //
 // Note: it is not expected that this struct will be exposed in content/public.
 class IsolationContext;
@@ -51,26 +53,6 @@ class UrlInfoInit;
 
 struct CONTENT_EXPORT UrlInfo {
  public:
-  // Bitmask representing one or more isolation requests.
-  enum OriginIsolationRequest {
-    // No isolation has been requested, so the default isolation state for the
-    // current BrowsingInstance should be used.
-    kDefault = 0,
-    // Explicitly requests no isolation.
-    kNone = (1 << 0),
-    // The Origin-Agent-Cluster header is requesting OAC isolation for `url`'s
-    // origin in the renderer. If granted, this is tracked for consistency in
-    // ChildProcessSecurityPolicyImpl. If kRequiresOriginKeyedProcessByHeader is
-    // not set, then this only affects the renderer.
-    kOriginAgentClusterByHeader = (1 << 1),
-    // If kOriginAgentClusterByHeader is set, the following bit triggers an
-    // origin-keyed process for `url`'s origin. If
-    // kRequiresOriginKeyedProcessByHeader is not set and
-    // kOriginAgentClusterByHeader is, then OAC will be logical only, i.e.
-    // implemented in the renderer via a separate AgentCluster.
-    kRequiresOriginKeyedProcessByHeader = (1 << 2),
-  };
-
   // For isolated sandboxed iframes, when per-document mode is used, we
   // assign each sandboxed SiteInstance a unique identifier to prevent other
   // same-site/same-origin frames from re-using the same SiteInstance. This
@@ -87,29 +69,6 @@ struct CONTENT_EXPORT UrlInfo {
   static UrlInfo CreateForTesting(const GURL& url_in,
                                   std::optional<StoragePartitionConfig>
                                       storage_partition_config = std::nullopt);
-
-  // Depending on enabled features (some of which can change at runtime),
-  // default can be no isolation, requests origin agent cluster only, or
-  // requests origin agent cluster with origin keyed process. BrowsingInstances
-  // store a copy of the default isolation state at the time of their creation
-  // to make sure the default value stays constant over the lifetime of the
-  // BrowsingInstance.
-  bool requests_default_origin_agent_cluster_isolation() const {
-    return origin_isolation_request == OriginIsolationRequest::kDefault;
-  }
-  // Returns whether this UrlInfo is requesting an origin-keyed agent cluster
-  // for `url`'s origin due to the OriginAgentCluster header.
-  bool requests_origin_agent_cluster_by_header() const {
-    return (origin_isolation_request &
-            OriginIsolationRequest::kOriginAgentClusterByHeader);
-  }
-
-  // Returns whether this UrlInfo is requesting an origin-keyed process for
-  // `url`'s origin due to the OriginAgentCluster header.
-  bool requests_origin_keyed_process_by_header() const {
-    return (origin_isolation_request &
-            OriginIsolationRequest::kRequiresOriginKeyedProcessByHeader);
-  }
 
   // Returns whether this UrlInfo is requesting an origin-keyed process for
   // `url`'s origin due to the OriginAgentCluster header, or whether it should
@@ -132,14 +91,13 @@ struct CONTENT_EXPORT UrlInfo {
 
   GURL url;
 
-  // This field indicates whether the URL is requesting additional process
-  // isolation during the current navigation (e.g., via OriginAgentCluster).  If
-  // URL did not explicitly request any isolation, this will be set to kDefault.
-  // This field is only relevant (1) during a navigation request, (2) up to the
-  // point where the origin is placed into a SiteInstance.  Other than these
-  // cases, this should be set to kDefault.
-  OriginIsolationRequest origin_isolation_request =
-      OriginIsolationRequest::kDefault;
+  // This field tracks the desired OriginAgentClusterIsolationState requested
+  // by the document. The OriginAgentClusterIsolationState tracks whether
+  // the document should be given an origin-keyed agent cluster in the renderer
+  // process (logical isolation), and whether this logical isolation should be
+  // backed by actual process isolation. This is only set when the document has
+  // an actual OAC header.
+  std::optional<OriginAgentClusterIsolationState> oac_header_request;
 
   // True if the Cross-Origin-Opener-Policy header has triggered a hint to turn
   // on site isolation for `url`'s site.
@@ -224,8 +182,8 @@ class CONTENT_EXPORT UrlInfoInit {
 
   UrlInfoInit& operator=(const UrlInfoInit&) = delete;
 
-  UrlInfoInit& WithOriginIsolationRequest(
-      UrlInfo::OriginIsolationRequest origin_isolation_request);
+  UrlInfoInit& WithOACHeaderRequest(
+      std::optional<OriginAgentClusterIsolationState> oac_header_request);
   UrlInfoInit& WithCOOPSiteIsolation(bool requests_coop_isolation);
   UrlInfoInit& WithCrossSitePrefetchContamination(bool contaminated);
   UrlInfoInit& WithOrigin(const url::Origin& origin);
@@ -248,8 +206,7 @@ class CONTENT_EXPORT UrlInfoInit {
   friend UrlInfo;
 
   GURL url_;
-  UrlInfo::OriginIsolationRequest origin_isolation_request_ =
-      UrlInfo::OriginIsolationRequest::kDefault;
+  std::optional<OriginAgentClusterIsolationState> oac_header_request_;
   bool requests_coop_isolation_ = false;
   bool is_prefetch_with_cross_site_contamination_ = false;
   std::optional<url::Origin> origin_;

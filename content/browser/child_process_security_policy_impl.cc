@@ -2168,12 +2168,13 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
     //
     // At this point, any origin opt-in isolation requests should be complete,
     // so to avoid the possibility of opting something set
-    // |origin_isolation_request| to kNone below (this happens by default in
-    // UrlInfoInit's ctor).  Note: We might need to revisit this if
-    // CanAccessDataForOrigin() needs to be called while a SiteInstance is being
-    // determined for a navigation, i.e. during
-    // GetSiteInstanceForNavigationRequest().  If this happens, we'd need to
-    // plumb UrlInfo::origin_isolation_request value from the ongoing
+    // |origin_isolation_state_request| to nullopt. This is done in the
+    // constructor. If the navigation requested an OAC opt-in or opt-out, it has
+    // already been registered and will be picked up when creating the SiteInfo.
+    // Note: We might ned to revisit this if CanAccessDataForOrigin() needs to
+    // be called while a SiteInstance is being determined for a navigation, i.e.
+    // during GetSiteInstanceForNavigationRequest().  If this happens, we'd need
+    // to plumb UrlInfo::origin_isolation_state_request value from the ongoing
     // NavigationRequest into here. Also, we would likely need to attach the
     // BrowsingInstanceID to UrlInfo once the SiteInstance has been determined
     // in case the RenderProcess has multiple BrowsingInstances in it.
@@ -2296,6 +2297,11 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
 
       // TODO(crbug.com/326251583): Log additional information for diagnosing
       // the bug. Remove once the investigation is complete.
+      bool requires_origin_keyed_process =
+          site_info.oac_status() ==
+              AgentClusterKey::OACStatus::kOriginKeyedByHeader ||
+          site_info.oac_status() ==
+              AgentClusterKey::OACStatus::kOriginKeyedByDefault;
       if (site_info.RequiresDedicatedProcess(isolation_context)) {
         out_failure_reason += "dedicated ";
         if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
@@ -2304,7 +2310,7 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
         if (site_info.does_site_request_dedicated_process_for_coop()) {
           out_failure_reason += "coop ";
         }
-        if (site_info.requires_origin_keyed_process()) {
+        if (requires_origin_keyed_process) {
           out_failure_reason += "oac ";
         }
         if (site_info.is_sandboxed()) {
@@ -2318,7 +2324,7 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
         }
         if (IsIsolatedOrigin(isolation_context,
                              url::Origin::Create(site_info.site_url()),
-                             site_info.requires_origin_keyed_process())) {
+                             requires_origin_keyed_process)) {
           out_failure_reason += "io ";
         }
       }
@@ -2757,7 +2763,7 @@ bool ChildProcessSecurityPolicyImpl::IsGloballyIsolatedOriginForTesting(
   IsolationContext isolation_context(
       null_browsing_instance_id, no_browser_context, /*is_guest=*/false,
       /*is_fenced=*/false,
-      OriginAgentClusterIsolationState::CreateNonIsolated());
+      OriginAgentClusterIsolationState::CreateNonIsolatedByDefault());
   return IsIsolatedOrigin(isolation_context, origin, false);
 }
 
@@ -2872,8 +2878,9 @@ bool ChildProcessSecurityPolicyImpl::GetMatchingProcessIsolatedOrigin(
     OriginAgentClusterIsolationState oac_isolation_state_request =
         requests_origin_keyed_process
             ? OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
+                  true /* has_oac_request */,
                   true /* requires_origin_keyed_process */)
-            : OriginAgentClusterIsolationState::CreateNonIsolated();
+            : OriginAgentClusterIsolationState::CreateNonIsolatedByDefault();
     OriginAgentClusterIsolationState oac_isolation_state_result =
         DetermineOriginAgentClusterIsolation(isolation_context, origin,
                                              oac_isolation_state_request);
@@ -2953,7 +2960,7 @@ ChildProcessSecurityPolicyImpl::DetermineOriginAgentClusterIsolation(
     const url::Origin& origin,
     const OriginAgentClusterIsolationState& requested_isolation_state) {
   if (!IsolatedOriginUtil::IsValidOriginForOptInIsolation(origin)) {
-    return OriginAgentClusterIsolationState::CreateNonIsolated();
+    return OriginAgentClusterIsolationState::CreateNonIsolatedByDefault();
   }
 
   // See if the same origin exists in the BrowsingInstance already, and if so
@@ -3182,23 +3189,27 @@ void ChildProcessSecurityPolicyImpl::AddCoopIsolatedOriginForBrowsingInstance(
       false /* isolate_all_subdomains */, source);
 }
 
-void ChildProcessSecurityPolicyImpl::AddOriginIsolationStateForBrowsingInstance(
-    const IsolationContext& isolation_context,
-    const url::Origin& origin,
-    bool is_origin_agent_cluster,
-    bool requires_origin_keyed_process) {
+void ChildProcessSecurityPolicyImpl::
+    AddOriginAgentClusterStateForBrowsingInstance(
+        const IsolationContext& isolation_context,
+        const url::Origin& origin,
+        const OriginAgentClusterIsolationState& oac_isolation_state) {
   // This can only be called from the UI thread, as it reads state that's only
   // available (and is only safe to be retrieved) on the UI thread, such as
-  // BrowsingInstance IDs.
+  // BrowserContext.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(
-      is_origin_agent_cluster ||
-      SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
-          isolation_context.browser_or_resource_context().ToBrowserContext()));
+  DCHECK(oac_isolation_state.logical_oac_status() ==
+             AgentClusterKey::OACStatus::kOriginKeyedByHeader ||
+         (oac_isolation_state.logical_oac_status() ==
+              AgentClusterKey::OACStatus::kSiteKeyedByHeader &&
+          SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
+              isolation_context.browser_or_resource_context()
+                  .ToBrowserContext())));
 
   // We ought to have validated the origin prior to getting here.  If the
   // origin isn't valid at this point, something has gone wrong.
-  CHECK((is_origin_agent_cluster &&
+  CHECK((oac_isolation_state.logical_oac_status() ==
+             AgentClusterKey::OACStatus::kOriginKeyedByHeader &&
          IsolatedOriginUtil::IsValidOriginForOptInIsolation(origin)) ||
         // The second part of this check is specific to OAC-by-default, and is
         // required to allow explicit opt-outs for HTTP schemed origins. See
@@ -3226,12 +3237,7 @@ void ChildProcessSecurityPolicyImpl::AddOriginIsolationStateForBrowsingInstance(
   // lifetime of a BrowsingInstance, then this will need to be updated.
   if (!base::Contains(it->second, origin,
                       &OriginAgentClusterOptInEntry::origin)) {
-    it->second.emplace_back(
-        is_origin_agent_cluster
-            ? OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
-                  requires_origin_keyed_process)
-            : OriginAgentClusterIsolationState::CreateNonIsolated(),
-        origin);
+    it->second.emplace_back(oac_isolation_state, origin);
   }
 }
 

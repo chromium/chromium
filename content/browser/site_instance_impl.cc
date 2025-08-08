@@ -652,8 +652,9 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
   // BrowsingInstance can script each other.
   browsing_instance_->RegisterSiteInstance(this);
 
-  if (site_info_.requires_origin_keyed_process() &&
-      !site_info_.requires_origin_keyed_process_by_default()) {
+  if (site_info_.oac_status() ==
+      AgentClusterKey::OACStatus::kOriginKeyedByHeader) {
+    CHECK(site_info_.agent_cluster_key().IsOriginKeyed());
     // Track this origin's isolation in the current BrowsingInstance, if it has
     // received an origin-keyed process due to an explicit opt-in. This is
     // needed to consistently isolate future navigations to this origin in this
@@ -667,10 +668,11 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
     // This site handles the case where OAC isolation gets a separate process.
     // In future, when SiteInstance Groups are complete, this may revert to
     // being the only call site.
-    policy->AddOriginIsolationStateForBrowsingInstance(
+    policy->AddOriginAgentClusterStateForBrowsingInstance(
         browsing_instance_->isolation_context(), origin,
-        true /* is_origin_agent_cluster */,
-        true /* requires_origin_keyed_process */);
+        OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
+            true /* had_oac_request */,
+            true /* requires_origin_keyed_process */));
   }
 
   if (site_info_.does_site_request_dedicated_process_for_coop()) {

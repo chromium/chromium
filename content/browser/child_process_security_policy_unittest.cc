@@ -3135,12 +3135,12 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
   // Create a SiteInstance for sub.foo.com in a new BrowsingInstance.
   TestBrowserContext context;
   {
-    auto origin_isolation_request = static_cast<
-        UrlInfo::OriginIsolationRequest>(
-        UrlInfo::OriginIsolationRequest::kOriginAgentClusterByHeader |
-        UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcessByHeader);
-    UrlInfo url_info(UrlInfoInit(foo.GetURL())
-                         .WithOriginIsolationRequest(origin_isolation_request));
+    auto oac_header_request =
+        OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
+            /*had_oac_request=*/true,
+            /*requires_origin_keyed_process=*/true);
+    UrlInfo url_info(
+        UrlInfoInit(foo.GetURL()).WithOACHeaderRequest(oac_header_request));
     scoped_refptr<SiteInstanceImpl> foo_instance =
         SiteInstanceImpl::CreateForUrlInfo(
             &context, url_info,
@@ -3160,10 +3160,11 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
 
     EXPECT_TRUE(ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo())
                     .is_origin_keyed_process());
-    EXPECT_TRUE(p->DetermineOriginAgentClusterIsolation(
-                     foo_instance->GetIsolationContext(), foo,
-                     OriginAgentClusterIsolationState::CreateNonIsolated())
-                    .requires_origin_keyed_process());
+    EXPECT_TRUE(
+        p->DetermineOriginAgentClusterIsolation(
+             foo_instance->GetIsolationContext(), foo,
+             OriginAgentClusterIsolationState::CreateNonIsolatedByDefault())
+            .requires_origin_keyed_process());
   }
   // At this point foo_instance has gone away, and all BrowsingInstanceIDs
   // associated with kRendererID have been cleaned up.
@@ -3222,10 +3223,11 @@ TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
 
     EXPECT_FALSE(ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo())
                      .is_origin_keyed_process());
-    EXPECT_FALSE(p->DetermineOriginAgentClusterIsolation(
-                      foo_instance->GetIsolationContext(), sub_foo_origin,
-                      OriginAgentClusterIsolationState::CreateNonIsolated())
-                     .requires_origin_keyed_process());
+    EXPECT_FALSE(
+        p->DetermineOriginAgentClusterIsolation(
+             foo_instance->GetIsolationContext(), sub_foo_origin,
+             OriginAgentClusterIsolationState::CreateNonIsolatedByDefault())
+            .requires_origin_keyed_process());
   }
   // At this point foo_instance has gone away, and all BrowsingInstanceIDs
   // associated with kRendererID have been cleaned up.
