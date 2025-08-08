@@ -59,20 +59,20 @@ config("winver") {
 }
 
 config("builtin_modulemap") {
-  cflags = [ clang_arg_prefix + "-fbuiltin-module-map" ]
+  cflags_cc = [ clang_arg_prefix + "-fbuiltin-module-map" ]
 }
 
 config("libcxx_modulemap") {
-  cflags = [ "-fmodule-map-file=" + rebase_path(
+  cflags_cc = [ "-fmodule-map-file=" + rebase_path(
                  "${root_build_dir}/gen/third_party/libc++/src/include/module.modulemap",
                  root_build_dir) ]
 }
 
 if (use_clang_modules) {
   config("sysroot_modulemaps") {
-    cflags = []
+    cflags_cc = []
     foreach(modulemap, sysroot_modulemaps) {
-      cflags +=
+      cflags_cc +=
           [ "-fmodule-map-file=" + rebase_path(modulemap, root_build_dir) ]
     }
   }
