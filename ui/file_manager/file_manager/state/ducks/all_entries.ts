@@ -21,7 +21,7 @@ import type {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import type {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {isDebugStoreEnabled, Slice} from '../../lib/base_store.js';
 import {keepLatest, keyedKeepLatest} from '../../lib/concurrency_models.js';
-import {type CurrentDirectory, EntryType, type FileData, type MaterializedView, PropStatus, type State, type Volume, type VolumeMap} from '../../state/state.js';
+import {type CurrentDirectory, EntryType, type FileData, PropStatus, type State, type Volume, type VolumeMap} from '../../state/state.js';
 import type {FileKey} from '../file_key.js';
 import {getEntry, getFileData, getStore, getVolume} from '../store.js';
 
@@ -107,10 +107,6 @@ function clearCachedEntriesReducer(state: State): State {
         entriesToKeep.add(child);
       }
     }
-  }
-
-  for (const view of state.materializedViews) {
-    entriesToKeep.add(view.key);
   }
 
   const isDebugStore = isDebugStoreEnabled();
@@ -257,28 +253,6 @@ function isVolumeSlowToScan(volume?: Volume|VolumeInfo|null): boolean {
       volume.volumeType === VolumeType.SMB;
 }
 
-function convertViewToFileData(view: MaterializedView): FileData {
-  const metadata: MetadataItem = {};
-  const fileData: FileData = {
-    key: view.key,
-    fullPath: new URL(view.key).pathname,
-    icon: view.icon,
-    type: EntryType.MATERIALIZED_VIEW,
-    isDirectory: true,
-    label: view.label,
-    volumeId: null,
-    rootType: null,
-    metadata,
-    expanded: false,
-    disabled: false,
-    isRootEntry: view.isRoot,
-    canExpand: true,
-    isEjectable: false,
-    children: [],
-  };
-  return fileData;
-}
-
 /**
  * Converts the entry to the Store representation of an Entry: FileData.
  */
@@ -335,25 +309,6 @@ export function convertEntryToFileData(entry: Entry|FilesAppEntry): FileData {
   // avoid scanning to determine if it has sub-directories.
   fileData.canExpand = isVolumeSlowToScan(volumeInfo);
   return fileData;
-}
-
-function appendView(state: State, view: MaterializedView) {
-  const allEntries = state.allEntries || {};
-  const key = view.key;
-  const fileData = convertViewToFileData(view)!;
-  const existingFileData: Partial<FileData> = allEntries[key] || {};
-
-  allEntries[key] = {
-    ...fileData,
-    expanded: existingFileData.expanded ?? fileData.expanded,
-    isEjectable: existingFileData.isEjectable ?? fileData.isEjectable,
-    canExpand: existingFileData.canExpand ?? fileData.canExpand,
-    // Keep children to prevent sudden removal of the children items on the UI.
-    children: existingFileData.children ?? fileData.children,
-    key,
-  };
-
-  state.allEntries = allEntries;
 }
 
 /**
@@ -452,15 +407,6 @@ export function cacheEntries(
     appendEntry(currentState, entry);
   }
 }
-
-export function cacheMaterializedViews(
-    currentState: State, views: MaterializedView[]) {
-  scheduleClearCachedEntries();
-  for (const entry of views) {
-    appendView(currentState, entry);
-  }
-}
-
 
 function getEntryType(entry: Entry|FilesAppEntry): EntryType {
   // Entries from FilesAppEntry have the `typeName` property.

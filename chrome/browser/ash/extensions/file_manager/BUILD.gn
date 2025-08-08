@@ -38,8 +38,6 @@ static_library("file_manager") {
     "private_api_guest_os.h",
     "private_api_holding_space.cc",
     "private_api_holding_space.h",
-    "private_api_materialized_views.cc",
-    "private_api_materialized_views.h",
     "private_api_media_parser.cc",
     "private_api_media_parser.h",
     "private_api_media_parser_util.cc",

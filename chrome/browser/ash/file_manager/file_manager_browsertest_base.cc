@@ -2476,12 +2476,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     }
   }
 
-  if (options.enable_materialized_views) {
-    enabled_features.push_back(ash::features::kFilesMaterializedViews);
-  } else {
-    disabled_features.push_back(ash::features::kFilesMaterializedViews);
-  }
-
   if (options.enable_skyvault) {
     enabled_features.push_back(features::kSkyVault);
     enabled_features.push_back(features::kSkyVaultV2);

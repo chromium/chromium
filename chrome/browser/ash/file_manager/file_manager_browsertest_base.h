@@ -221,9 +221,6 @@ class FileManagerBrowserTestBase
     // Whether to enable jellybean UI elements.
     bool enable_cros_components = false;
 
-    // Whether to enable the materialized views feature.
-    bool enable_materialized_views = false;
-
     // Whether test should enable the SkyVault feature.
     bool enable_skyvault = false;
 

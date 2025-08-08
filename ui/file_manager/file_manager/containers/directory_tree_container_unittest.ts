@@ -14,7 +14,6 @@ import {str} from '../common/js/translations.js';
 import {waitForElementUpdate} from '../common/js/unittest_util.js';
 import {RootType, VolumeType} from '../common/js/volume_manager_types.js';
 import {addAndroidApps} from '../state/ducks/android_apps.js';
-import {updateMaterializedViews} from '../state/ducks/materialized_views.js';
 import {addUiEntry} from '../state/ducks/ui_entries.js';
 import {addVolume, removeVolume} from '../state/ducks/volumes.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore} from '../state/for_tests.js';
@@ -956,40 +955,6 @@ export async function testAriaDescription() {
   // Now the aria-description on Drive should have value.
   assertEquals(ariaDescription, driveItem.getAttribute('aria-description'));
   assertFalse(myFilesItem.hasAttribute('aria-description'));
-}
-
-/**
- * Test adding a materialized view causes it to display in the tree.
- */
-export async function testAddMaterializedView() {
-  const directoryTree = directoryTreeContainer.tree;
-  const store = getStore();
-
-  // Add MyFiles and Drive to the store.
-  await addMyFilesAndDriveVolumes();
-
-  // At top level, MyFiles and Drive should be listed.
-  await waitUntil(() => directoryTree.items.length === 2);
-  assertEquals(directoryTree.items[0]!.label, 'Downloads');
-  assertEquals(directoryTree.items[1]!.label, 'Google Drive');
-
-  // Add a view.
-  store.dispatch(updateMaterializedViews(
-      {materializedViews: [{viewId: 1, name: 'test view'}]}));
-
-  // The container should refresh the navigation roots and display the new
-  // materialized view.
-  await waitUntil(() => directoryTree.items.length === 3);
-
-  assertEquals(directoryTree.items[0]!.label, 'test view');
-  assertEquals(directoryTree.items[1]!.label, 'Downloads');
-  assertEquals(directoryTree.items[2]!.label, 'Google Drive');
-
-  // Remove view should remove from the tree.
-  store.dispatch(updateMaterializedViews({materializedViews: []}));
-  await waitUntil(() => directoryTree.items.length === 2);
-  assertEquals(directoryTree.items[0]!.label, 'Downloads');
-  assertEquals(directoryTree.items[1]!.label, 'Google Drive');
 }
 
 /**

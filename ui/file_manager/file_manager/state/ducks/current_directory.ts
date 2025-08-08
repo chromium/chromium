@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getFileTasks, readMaterializedView} from '../../common/js/api.js';
+import {getFileTasks} from '../../common/js/api.js';
 import {getNativeEntry} from '../../common/js/entry_utils.js';
 import {annotateTasks, getDefaultTask, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR} from '../../common/js/file_tasks.js';
 import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
@@ -14,7 +14,7 @@ import type {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {isInvalidationError, Slice} from '../../lib/base_store.js';
 import {keyedKeepFirst} from '../../lib/concurrency_models.js';
 import {combine1Selector} from '../../lib/selector.js';
-import {type CurrentDirectory, DialogType, type DirectoryContent, EntryType, type FileData, type FileKey, type FileTask, type FileTasks, PropStatus, type Selection, type State} from '../../state/state.js';
+import {type CurrentDirectory, DialogType, type DirectoryContent, type FileData, type FileKey, type FileTask, type FileTasks, PropStatus, type Selection, type State} from '../../state/state.js';
 import {getFileData, getStore} from '../store.js';
 
 import {cacheEntries} from './all_entries.js';
@@ -131,31 +131,23 @@ function changeDirectoryReducer(currentState: State, payload: {
   // At the end of the change directory, DirectoryContents will send an Action
   // with the Entry to be cached.
   if (fileData) {
-    if (fileData.type === EntryType.MATERIALIZED_VIEW) {
-      currentDirectory.pathComponents = [{
-        name: fileData.label,
-        label: fileData.label,
-        key: fileData.key,
-      }];
+    const {volumeManager} = window.fileManager;
+    if (!volumeManager) {
+      debug(`VolumeManager not available yet.`);
+      currentDirectory = currentState.currentDirectory || currentDirectory;
     } else {
-      const {volumeManager} = window.fileManager;
-      if (!volumeManager) {
-        debug(`VolumeManager not available yet.`);
-        currentDirectory = currentState.currentDirectory || currentDirectory;
-      } else {
-        const components = PathComponent.computeComponentsFromEntry(
-            fileData.entry!, volumeManager);
-        currentDirectory.pathComponents = components.map(c => {
-          return {
-            name: c.name,
-            label: c.name,
-            key: c.getKey(),
-          };
-        });
+      const components = PathComponent.computeComponentsFromEntry(
+          fileData.entry!, volumeManager);
+      currentDirectory.pathComponents = components.map(c => {
+        return {
+          name: c.name,
+          label: c.name,
+          key: c.getKey(),
+        };
+      });
 
-        const locationInfo = volumeManager.getLocationInfo(fileData.entry!);
-        currentDirectory.rootType = locationInfo?.rootType;
-      }
+      const locationInfo = volumeManager.getLocationInfo(fileData.entry!);
+      currentDirectory.rootType = locationInfo?.rootType;
     }
   }
 
@@ -448,12 +440,7 @@ export async function*
     }
 
     // NOTE: Only implemented for Materialized view for now.
-    if (fileData.type !== EntryType.MATERIALIZED_VIEW) {
-      throw new Error(`Fetch not supported for entry type: ${fileData.type}`);
-    }
-
-    const entries = await readMaterializedView(fileKey);
-    yield updateDirectoryContent({entries, status: PropStatus.SUCCESS});
+    throw new Error(`Fetch not supported for entry type: ${fileData.type}`);
   } catch (error: any) {
     if (isInvalidationError(error)) {
       // Not an actual error, just stopping the actions producer.

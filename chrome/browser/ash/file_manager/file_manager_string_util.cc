@@ -1394,9 +1394,6 @@ void AddFileManagerFeatureStrings(
 
   dict->Set("CROS_COMPONENTS", chromeos::features::IsCrosComponentsEnabled());
 
-  dict->Set("MATERIALIZED_VIEWS", base::FeatureList::IsEnabled(
-                                      ash::features::kFilesMaterializedViews));
-
   if (base::FeatureList::IsEnabled(
           features::kDataLeakPreventionFilesRestriction)) {
     policy::DlpRulesManager* rules_manager =

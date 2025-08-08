@@ -1289,12 +1289,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("pluginVmFileDropFailErrorDialog")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
-    MaterializedViews, /* materialized_views.ts */
-    FilesAppBrowserTest,
-    ::testing::Values(TestCase("mvDisplayInTree").EnableMaterializedViews(),
-                      TestCase("mvScanner").EnableMaterializedViews()));
-
-WRAPPED_INSTANTIATE_TEST_SUITE_P(
     MyFiles, /* my_files.ts */
     FilesAppBrowserTest,
     ::testing::Values(

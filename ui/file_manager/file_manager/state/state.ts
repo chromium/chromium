@@ -28,9 +28,6 @@ export enum EntryType {
 
   // Root for the Recent.
   RECENT = 'RECENT',
-
-  // A folder-like that doesn't have an entry linked to it.
-  MATERIALIZED_VIEW = 'MATERIALIZED_VIEW',
 }
 
 /**
@@ -290,8 +287,6 @@ export enum NavigationType {
   DRIVE = 'drive',
   ANDROID_APPS = 'android_apps',
   TRASH = 'trash',
-  // Materialized view is used for Recent and in the future for Search.
-  MATERIALIZED_VIEW = 'materialized_view',
 }
 
 /**
@@ -392,19 +387,6 @@ export interface AndroidApp {
 }
 
 /**
- * A view behaves like a folder, as in, it's a collection of FileData.
- *
- * Its content comes from the File Index.
- */
-export interface MaterializedView {
-  id: string;
-  key: FileKey;
-  label: string;
-  icon: string;
-  isRoot: boolean;
-}
-
-/**
  * Files app's state.
  */
 export interface State {
@@ -421,5 +403,4 @@ export interface State {
   androidApps: Record<string, AndroidApp>;
   bulkPinning?: chrome.fileManagerPrivate.BulkPinProgress;
   preferences?: chrome.fileManagerPrivate.Preferences;
-  materializedViews: MaterializedView[];
 }
