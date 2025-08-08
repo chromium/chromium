@@ -90,6 +90,7 @@ class MockIdentityRequestDialogController
               RequestIdPRegistrationPermision,
               (const url::Origin&, base::OnceCallback<void(bool accepted)>),
               (override));
+  MOCK_METHOD(bool, DidShowUi, (), (const override));
 };
 
 }  // namespace content

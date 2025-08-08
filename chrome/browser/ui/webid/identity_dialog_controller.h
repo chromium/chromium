@@ -115,6 +115,10 @@ class IdentityDialogController
       DismissCallback dismiss_callback) override;
   void CloseModalDialog() override;
   content::WebContents* GetRpWebContents() override;
+  void RequestIdPRegistrationPermision(
+      const url::Origin& origin,
+      base::OnceCallback<void(bool accepted)> callback) override;
+  bool DidShowUi() const override;
 
   // AccountSelectionView::Delegate:
   void OnAccountSelected(
@@ -128,11 +132,6 @@ class IdentityDialogController
   void OnAccountsDisplayed() override;
   gfx::NativeView GetNativeView() override;
   content::WebContents* GetWebContents() override;
-
-  // Request the IdP Registration permission.
-  void RequestIdPRegistrationPermision(
-      const url::Origin& origin,
-      base::OnceCallback<void(bool accepted)> callback) override;
 
   // Allows setting a mock AccountSelectionView for testing purposes.
   void SetAccountSelectionViewForTesting(
@@ -168,6 +167,9 @@ class IdentityDialogController
   AccountsDisplayedCallback on_accounts_displayed_;
   raw_ptr<content::WebContents> rp_web_contents_{nullptr};
   blink::mojom::RpMode rp_mode_;
+  // Whether we show any FedCM UI or not. Excludes the loading dialog since that
+  // one is not something that modifies user state or is actionable by the user.
+  bool did_show_ui_ = false;
 
   // Request ID associated with a |GetClassificationResult| call to
   // |segmentation_platform_service_|. This is nullopt when the

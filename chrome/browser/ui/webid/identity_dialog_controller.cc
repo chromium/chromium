@@ -119,8 +119,10 @@ bool IdentityDialogController::ShowAccountsDialog(
     rp_data.rp_icon = favicon_driver->GetFavicon();
   }
 
-  return account_view_->Show(rp_data, identity_provider_data, accounts, rp_mode,
-                             new_accounts);
+  bool did_show = account_view_->Show(rp_data, identity_provider_data, accounts,
+                                      rp_mode, new_accounts);
+  did_show_ui_ |= did_show;
+  return did_show;
 }
 
 bool IdentityDialogController::ShowFailureDialog(
@@ -141,8 +143,10 @@ bool IdentityDialogController::ShowFailureDialog(
   //   TODO: If the failure dialog is already being shown, notify user that
   //   sign-in attempt failed.
 
-  return account_view_->ShowFailureDialog(rp_data, idp_for_display, rp_context,
-                                          rp_mode, idp_metadata);
+  bool did_show = account_view_->ShowFailureDialog(
+      rp_data, idp_for_display, rp_context, rp_mode, idp_metadata);
+  did_show_ui_ |= did_show;
+  return did_show;
 }
 
 bool IdentityDialogController::ShowErrorDialog(
@@ -159,8 +163,11 @@ bool IdentityDialogController::ShowErrorDialog(
   if (!TrySetAccountView()) {
     return false;
   }
-  return account_view_->ShowErrorDialog(rp_data, idp_for_display, rp_context,
-                                        rp_mode, idp_metadata, error);
+
+  bool did_show = account_view_->ShowErrorDialog(
+      rp_data, idp_for_display, rp_context, rp_mode, idp_metadata, error);
+  did_show_ui_ |= did_show;
+  return did_show;
 }
 
 bool IdentityDialogController::ShowLoadingDialog(
@@ -173,6 +180,9 @@ bool IdentityDialogController::ShowLoadingDialog(
   if (!TrySetAccountView()) {
     return false;
   }
+  // Because the loading dialog is not interactable, we do not count it for
+  // did_show_ui_, as it is not useful for IDPs in calculating a click-through
+  // rate.
   return account_view_->ShowLoadingDialog(rp_data, idp_for_display, rp_context,
                                           rp_mode);
 }
@@ -189,8 +199,10 @@ bool IdentityDialogController::ShowVerifyingDialog(
   if (!TrySetAccountView()) {
     return false;
   }
-  return account_view_->ShowVerifyingDialog(rp_data, idp_data, account,
-                                            sign_in_mode, rp_mode);
+  bool did_show = account_view_->ShowVerifyingDialog(rp_data, idp_data, account,
+                                                     sign_in_mode, rp_mode);
+  did_show_ui_ |= did_show;
+  return did_show;
 }
 
 void IdentityDialogController::OnLoginToIdP(const GURL& idp_config_url,
@@ -242,11 +254,13 @@ void IdentityDialogController::OnDismiss(DismissReason dismiss_reason) {
     return;
   }
 
-  if (dismiss_reason == DismissReason::kCloseButton ||
-      dismiss_reason == DismissReason::kSwipe) {
-    CollectTrainingData(UserAction::kClosed);
-  } else {
-    CollectTrainingData(UserAction::kIgnored);
+  if (did_show_ui_) {
+    if (dismiss_reason == DismissReason::kCloseButton ||
+        dismiss_reason == DismissReason::kSwipe) {
+      CollectTrainingData(UserAction::kClosed);
+    } else {
+      CollectTrainingData(UserAction::kIgnored);
+    }
   }
 
   on_account_selection_.Reset();
@@ -288,6 +302,7 @@ content::WebContents* IdentityDialogController::ShowModalDialog(
     return nullptr;
   }
 
+  did_show_ui_ = true;
   return account_view_->ShowModalDialog(url, rp_mode);
 }
 
@@ -325,6 +340,10 @@ void IdentityDialogController::RequestIdPRegistrationPermision(
       rp_web_contents_->GetPrimaryMainFrame(),
       std::make_unique<IdentityProviderPermissionRequest>(origin,
                                                           std::move(callback)));
+}
+
+bool IdentityDialogController::DidShowUi() const {
+  return did_show_ui_;
 }
 
 void IdentityDialogController::SetAccountSelectionViewForTesting(
