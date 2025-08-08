@@ -96,11 +96,7 @@ clang_plugin("find_bad_constructs") {
     # The plugin is built directly into clang, so there's no need to load it
     # dynamically.
     plugin = "find-bad-constructs"
-    plugin_arguments = [
-      "raw-ref-template-as-trivial-member",
-      "raw-span-template-as-trivial-member",
-      "check-stack-allocated",
-    ]
+    plugin_arguments = [ "check-stack-allocated" ]
 
     if (is_linux || is_chromeos || is_android || is_fuchsia) {
       plugin_arguments += [ "check-ipc" ]
