@@ -18,6 +18,14 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "content/public/browser/page_user_data.h"
 
+// Convenience macro for emitting OPTIMIZATION_GUIDE_LOGs where
+// optimization_keyed_service_ is defined.
+#define MODEL_EXECUTION_LOG(message)                                   \
+  OPTIMIZATION_GUIDE_LOG(                                              \
+      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,    \
+      optimization_guide_keyed_service_->GetOptimizationGuideLogger(), \
+      (message))
+
 class OptimizationGuideKeyedService;
 
 namespace content_extraction {

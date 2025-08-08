@@ -86,12 +86,9 @@ ZeroStateSuggestionsPageData::ZeroStateSuggestionsPageData(content::Page& page)
   page_content_extraction_service_ = page_content_annotations::
       PageContentExtractionServiceFactory::GetForProfile(profile);
 
-  OPTIMIZATION_GUIDE_LOG(
-      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-      base::StringPrintf(
-          "ZeroStateSuggestionsPageData: Creating page data for %s.",
-          web_contents->GetLastCommittedURL().spec()));
+  MODEL_EXECUTION_LOG(base::StringPrintf(
+      "ZeroStateSuggestionsPageData: Creating page data for %s.",
+      web_contents->GetLastCommittedURL().spec()));
 
   base::TimeDelta initiate_page_content_extraction_delay;
   if (auto* helper = ContextualCueingHelper::FromWebContents(web_contents)) {
@@ -128,12 +125,9 @@ ZeroStateSuggestionsPageData::ZeroStateSuggestionsPageData(content::Page& page)
 }
 
 ZeroStateSuggestionsPageData::~ZeroStateSuggestionsPageData() {
-  OPTIMIZATION_GUIDE_LOG(
-      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-      base::StringPrintf(
-          "ZeroStateSuggestionsPageData: Destructing page data for %s.",
-          GetUrl().spec()));
+  MODEL_EXECUTION_LOG(base::StringPrintf(
+      "ZeroStateSuggestionsPageData: Destructing page data for %s.",
+      GetUrl().spec()));
 }
 
 void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
@@ -141,9 +135,7 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
 
   if (content_extraction_initiated_) {
     // Do not re-fetch content.
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+    MODEL_EXECUTION_LOG(
         base::StringPrintf("ZeroStateSuggestionsPageData: Content extraction "
                            "already initiated for %s. Not trying again",
                            url.spec()));
@@ -171,9 +163,7 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
     // Wait for signal from tab helper to initiate content extraction if not
     // loaded yet.
 
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+    MODEL_EXECUTION_LOG(
         base::StringPrintf("ZeroStateSuggestionsPageData: Page not "
                            "sufficiently loaded for %s. Waiting until ready",
                            url.spec()));
@@ -182,9 +172,7 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
   content_extraction_initiated_ = true;
   page_context_begin_time_ = base::TimeTicks::Now();
 
-  OPTIMIZATION_GUIDE_LOG(
-      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+  MODEL_EXECUTION_LOG(
       base::StringPrintf("ZeroStateSuggestionsPageData: Initiating page "
                          "content extraction for %s.",
                          url.spec()));
@@ -241,9 +229,7 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
     OnReceivedInnerText(/*result=*/nullptr);
   }
 
-  OPTIMIZATION_GUIDE_LOG(
-      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+  MODEL_EXECUTION_LOG(
       base::StringPrintf("ZeroStateSuggestionsPageData: Starting request for "
                          "optimization metadata for %s.",
                          url.spec()));
@@ -335,9 +321,7 @@ void ZeroStateSuggestionsPageData::OnReceivedOptimizationMetadata(
 }
 
 void ZeroStateSuggestionsPageData::OnTimeout() {
-  OPTIMIZATION_GUIDE_LOG(
-      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+  MODEL_EXECUTION_LOG(
       base::StringPrintf("ZeroStateSuggestionsPageData: Timed out waiting for "
                          "annotated page content from %s.",
                          GetUrl().spec()));

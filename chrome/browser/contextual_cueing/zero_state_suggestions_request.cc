@@ -28,13 +28,10 @@ ZeroStateSuggestionsRequest::ZeroStateSuggestionsRequest(
       pending_base_request_(pending_base_request),
       requested_tabs_(requested_tabs),
       optimization_guide_keyed_service_(optimization_guide_keyed_service) {
-  OPTIMIZATION_GUIDE_LOG(
-      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-      base::StringPrintf(
-          "ZeroStateSuggestionsRequest: Creating new zero state suggestions "
-          "request for %llu tabs",
-          requested_tabs.size()));
+  MODEL_EXECUTION_LOG(base::StringPrintf(
+      "ZeroStateSuggestionsRequest: Creating new zero state suggestions "
+      "request for %llu tabs",
+      requested_tabs.size()));
   auto barrier_callback = base::BarrierCallback<
       std::optional<optimization_guide::proto::ZeroStatePageContext>>(
       requested_tabs.size(),
@@ -69,9 +66,7 @@ ZeroStateSuggestionsRequest::ZeroStateSuggestionsRequest(
 }
 
 ZeroStateSuggestionsRequest::~ZeroStateSuggestionsRequest() {
-  OPTIMIZATION_GUIDE_LOG(
-      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+  MODEL_EXECUTION_LOG(
       "ZeroStateSuggestionsRequest: Destructing zero state suggestions "
       "request");
 }
@@ -118,9 +113,7 @@ void ZeroStateSuggestionsRequest::OnAllPageContextExtracted(
 
   // No content to generate suggestions. Return empty.
   if (filtered_page_contexts.empty()) {
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+    MODEL_EXECUTION_LOG(
         "ZeroStateSuggestionsRequest: No page context to fetch suggestions "
         "for.");
     CacheFocusedTabSuggestions({});
@@ -141,13 +134,10 @@ void ZeroStateSuggestionsRequest::OnAllPageContextExtracted(
   }
 
   // Initiate model execution fetch.
-  OPTIMIZATION_GUIDE_LOG(
-      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-      base::StringPrintf(
-          "ZeroStateSuggestionsRequest: Starting fetch for "
-          "suggestions. Is-mulitab request: %s",
-          pending_base_request_.has_page_context_list() ? "true" : "false"));
+  MODEL_EXECUTION_LOG(base::StringPrintf(
+      "ZeroStateSuggestionsRequest: Starting fetch for "
+      "suggestions. Is-mulitab request: %s",
+      pending_base_request_.has_page_context_list() ? "true" : "false"));
   optimization_guide_keyed_service_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions,
       pending_base_request_,
@@ -165,9 +155,7 @@ void ZeroStateSuggestionsRequest::OnModelExecutionResponse(
 
   base::TimeDelta suggestions_duration = base::TimeTicks::Now() - begin_time_;
   if (!result.response.has_value()) {
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+    MODEL_EXECUTION_LOG(
         base::StringPrintf("ZeroStateSuggestionsRequest: Failed to get "
                            "suggestions after %ld ms. Error: %d",
                            suggestions_duration.InMilliseconds(),
@@ -178,9 +166,7 @@ void ZeroStateSuggestionsRequest::OnModelExecutionResponse(
     return;
   }
 
-  OPTIMIZATION_GUIDE_LOG(
-      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+  MODEL_EXECUTION_LOG(
       base::StringPrintf("ZeroStateSuggestionsRequest: Received valid "
                          "suggestions after %ld ms.",
                          suggestions_duration.InMilliseconds()));
@@ -190,10 +176,7 @@ void ZeroStateSuggestionsRequest::OnModelExecutionResponse(
           optimization_guide::proto::ZeroStateSuggestionsResponse>(
           result.response.value());
   if (!response) {
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-        "ZeroStateSuggestionsRequest: No response available.");
+    MODEL_EXECUTION_LOG("ZeroStateSuggestionsRequest: No response available.");
     pending_callbacks_.Notify(std::vector<std::string>({}));
     // Treat this as a transient error that server returned bad data
     // momentarily. Do not cache.
@@ -203,9 +186,7 @@ void ZeroStateSuggestionsRequest::OnModelExecutionResponse(
   std::vector<std::string> suggestions;
   for (int i = 0; i < response->suggestions_size(); ++i) {
     suggestions.push_back(response->suggestions(i).label());
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+    MODEL_EXECUTION_LOG(
         base::StringPrintf("ZeroStateSuggestionsRequest: Suggestion %d: %s",
                            i + 1, response->suggestions(i).label()));
   }
