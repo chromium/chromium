@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_FILE_SYSTEM_ACCESS_CLOUD_IDENTIFIER_CLOUD_IDENTIFIER_UTIL_ASH_H_
 
 #include "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 
 namespace base {
 class FilePath;
@@ -17,7 +18,7 @@ namespace cloud_identifier {
 // given file from DriveFS or provided file systems.
 void GetCloudIdentifier(
     const base::FilePath& url,
-    crosapi::mojom::HandleType handle_type,
+    content::FileSystemAccessPermissionContext::HandleType handle_type,
     crosapi::mojom::FileSystemAccessCloudIdentifierProvider::
         GetCloudIdentifierCallback callback);
 }  // namespace cloud_identifier

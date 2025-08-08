@@ -13,16 +13,6 @@
 
 namespace {
 
-crosapi::mojom::HandleType TranslateHandleType(
-    content::FileSystemAccessPermissionContext::HandleType handle_type) {
-  switch (handle_type) {
-    case content::FileSystemAccessPermissionContext::HandleType::kFile:
-      return crosapi::mojom::HandleType::kFile;
-    case content::FileSystemAccessPermissionContext::HandleType::kDirectory:
-      return crosapi::mojom::HandleType::kDirectory;
-  }
-}
-
 blink::mojom::FileSystemAccessErrorPtr FileSystemAccessErrorOk() {
   return blink::mojom::FileSystemAccessError::New(
       blink::mojom::FileSystemAccessStatus::kOk, base::File::FILE_OK, "");
@@ -65,7 +55,7 @@ void GetCloudIdentifierFromAsh(
     return;
   }
 
-  GetCloudIdentifier(url.virtual_path(), TranslateHandleType(handle_type),
+  GetCloudIdentifier(url.virtual_path(), handle_type,
                      base::BindOnce(&OnCrosApiResult, std::move(callback)));
 }
 

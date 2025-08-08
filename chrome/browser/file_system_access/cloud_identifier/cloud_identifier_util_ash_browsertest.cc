@@ -29,7 +29,7 @@ namespace {
 // this browsertest.
 crosapi::mojom::FileSystemAccessCloudIdentifierPtr GetCloudIdentifierBlocking(
     const base::FilePath& virtual_path,
-    crosapi::mojom::HandleType handle_type) {
+    content::FileSystemAccessPermissionContext::HandleType handle_type) {
   base::test::TestFuture<crosapi::mojom::FileSystemAccessCloudIdentifierPtr>
       future;
   cloud_identifier::GetCloudIdentifier(virtual_path, handle_type,
@@ -83,15 +83,17 @@ IN_PROC_BROWSER_TEST_F(GetLocalCloudIdentifierBrowserTest,
   const base::FilePath file_path = CreateTestFile();
   const base::FilePath file_virtual_path = GetVirtualPath(file_path);
   crosapi::mojom::FileSystemAccessCloudIdentifierPtr file_result =
-      GetCloudIdentifierBlocking(file_virtual_path,
-                                 crosapi::mojom::HandleType::kFile);
+      GetCloudIdentifierBlocking(
+          file_virtual_path,
+          content::FileSystemAccessPermissionContext::HandleType::kFile);
   EXPECT_TRUE(file_result.is_null());
 
   const base::FilePath dir_path = CreateTestDir();
   const base::FilePath dir_virtual_path = GetVirtualPath(dir_path);
   crosapi::mojom::FileSystemAccessCloudIdentifierPtr dir_result =
-      GetCloudIdentifierBlocking(dir_virtual_path,
-                                 crosapi::mojom::HandleType::kDirectory);
+      GetCloudIdentifierBlocking(
+          dir_virtual_path,
+          content::FileSystemAccessPermissionContext::HandleType::kDirectory);
   EXPECT_TRUE(dir_result.is_null());
 }
 
@@ -125,11 +127,13 @@ IN_PROC_BROWSER_TEST_F(GetDriveFsCloudIdentifierBrowserTest, GetHandleSuccess) {
   const base::FilePath file_2_virtual_path = GetVirtualPath(file_2_path);
 
   crosapi::mojom::FileSystemAccessCloudIdentifierPtr file_1_result =
-      GetCloudIdentifierBlocking(file_1_virtual_path,
-                                 crosapi::mojom::HandleType::kFile);
+      GetCloudIdentifierBlocking(
+          file_1_virtual_path,
+          content::FileSystemAccessPermissionContext::HandleType::kFile);
   crosapi::mojom::FileSystemAccessCloudIdentifierPtr file_2_result =
-      GetCloudIdentifierBlocking(file_2_virtual_path,
-                                 crosapi::mojom::HandleType::kFile);
+      GetCloudIdentifierBlocking(
+          file_2_virtual_path,
+          content::FileSystemAccessPermissionContext::HandleType::kFile);
   ASSERT_FALSE(file_1_result.is_null());
   ASSERT_FALSE(file_2_result.is_null());
 
@@ -152,8 +156,9 @@ IN_PROC_BROWSER_TEST_F(GetDriveFsCloudIdentifierBrowserTest, GetHandleError) {
   const base::FilePath file_path = AddDriveFsFile(file_item_id);
   const base::FilePath file_virtual_path = GetVirtualPath(file_path);
   crosapi::mojom::FileSystemAccessCloudIdentifierPtr file_result =
-      GetCloudIdentifierBlocking(file_virtual_path,
-                                 crosapi::mojom::HandleType::kDirectory);
+      GetCloudIdentifierBlocking(
+          file_virtual_path,
+          content::FileSystemAccessPermissionContext::HandleType::kDirectory);
   EXPECT_TRUE(file_result.is_null());
 
   // Files that have not been synced (prefixed with "local") should fail.
@@ -162,16 +167,18 @@ IN_PROC_BROWSER_TEST_F(GetDriveFsCloudIdentifierBrowserTest, GetHandleError) {
   const base::FilePath local_file_virtual_path =
       GetVirtualPath(local_file_path);
   crosapi::mojom::FileSystemAccessCloudIdentifierPtr local_fileresult =
-      GetCloudIdentifierBlocking(local_file_virtual_path,
-                                 crosapi::mojom::HandleType::kFile);
+      GetCloudIdentifierBlocking(
+          local_file_virtual_path,
+          content::FileSystemAccessPermissionContext::HandleType::kFile);
   EXPECT_TRUE(local_fileresult.is_null());
 
   // Non-existent files should fail.
   const base::FilePath non_existant_file_virtual_path =
       file_virtual_path.DirName().Append("does-not-exist");
   crosapi::mojom::FileSystemAccessCloudIdentifierPtr non_existant_file_result =
-      GetCloudIdentifierBlocking(non_existant_file_virtual_path,
-                                 crosapi::mojom::HandleType::kFile);
+      GetCloudIdentifierBlocking(
+          non_existant_file_virtual_path,
+          content::FileSystemAccessPermissionContext::HandleType::kFile);
   EXPECT_TRUE(non_existant_file_result.is_null());
 }
 
@@ -201,14 +208,17 @@ IN_PROC_BROWSER_TEST_F(GetProvidedFsCloudIdentifierBrowserTest,
   const base::FilePath dir_virtual_path = GetVirtualPath(dir_path);
 
   crosapi::mojom::FileSystemAccessCloudIdentifierPtr file_1_result =
-      GetCloudIdentifierBlocking(file_1_virtual_path,
-                                 crosapi::mojom::HandleType::kFile);
+      GetCloudIdentifierBlocking(
+          file_1_virtual_path,
+          content::FileSystemAccessPermissionContext::HandleType::kFile);
   crosapi::mojom::FileSystemAccessCloudIdentifierPtr file_2_result =
-      GetCloudIdentifierBlocking(file_2_virtual_path,
-                                 crosapi::mojom::HandleType::kFile);
+      GetCloudIdentifierBlocking(
+          file_2_virtual_path,
+          content::FileSystemAccessPermissionContext::HandleType::kFile);
   crosapi::mojom::FileSystemAccessCloudIdentifierPtr dir_result =
-      GetCloudIdentifierBlocking(dir_virtual_path,
-                                 crosapi::mojom::HandleType::kDirectory);
+      GetCloudIdentifierBlocking(
+          dir_virtual_path,
+          content::FileSystemAccessPermissionContext::HandleType::kDirectory);
   ASSERT_FALSE(file_1_result.is_null());
   ASSERT_FALSE(file_2_result.is_null());
   ASSERT_FALSE(dir_result.is_null());
@@ -241,16 +251,18 @@ IN_PROC_BROWSER_TEST_F(GetProvidedFsCloudIdentifierBrowserTest,
       fsp_volume->mount_path().AppendASCII("readonly.txt");
   const base::FilePath file_1_virtual_path = GetVirtualPath(file_1_path);
   crosapi::mojom::FileSystemAccessCloudIdentifierPtr file_1_result =
-      GetCloudIdentifierBlocking(file_1_virtual_path,
-                                 crosapi::mojom::HandleType::kDirectory);
+      GetCloudIdentifierBlocking(
+          file_1_virtual_path,
+          content::FileSystemAccessPermissionContext::HandleType::kDirectory);
   EXPECT_TRUE(file_1_result.is_null());
 
   // Unexpected type (expect file for dir) should fail.
   base::FilePath dir_path = fsp_volume->mount_path();
   const base::FilePath dir_virtual_path = GetVirtualPath(dir_path);
   crosapi::mojom::FileSystemAccessCloudIdentifierPtr dir_result =
-      GetCloudIdentifierBlocking(dir_virtual_path,
-                                 crosapi::mojom::HandleType::kFile);
+      GetCloudIdentifierBlocking(
+          dir_virtual_path,
+          content::FileSystemAccessPermissionContext::HandleType::kFile);
   EXPECT_TRUE(dir_result.is_null());
 
   // readonly.png has no cloud identifier.
@@ -258,16 +270,18 @@ IN_PROC_BROWSER_TEST_F(GetProvidedFsCloudIdentifierBrowserTest,
       fsp_volume->mount_path().AppendASCII("readonly.png");
   const base::FilePath file_2_virtual_path = GetVirtualPath(file_2_path);
   crosapi::mojom::FileSystemAccessCloudIdentifierPtr file_2_result =
-      GetCloudIdentifierBlocking(file_2_virtual_path,
-                                 crosapi::mojom::HandleType::kFile);
+      GetCloudIdentifierBlocking(
+          file_2_virtual_path,
+          content::FileSystemAccessPermissionContext::HandleType::kFile);
   EXPECT_TRUE(file_2_result.is_null());
 
   // Non-existent files should fail.
   const base::FilePath non_existant_file_virtual_path =
       file_1_virtual_path.DirName().Append("does-not-exist");
   crosapi::mojom::FileSystemAccessCloudIdentifierPtr non_existant_file_result =
-      GetCloudIdentifierBlocking(non_existant_file_virtual_path,
-                                 crosapi::mojom::HandleType::kFile);
+      GetCloudIdentifierBlocking(
+          non_existant_file_virtual_path,
+          content::FileSystemAccessPermissionContext::HandleType::kFile);
   EXPECT_TRUE(non_existant_file_result.is_null());
 }
 

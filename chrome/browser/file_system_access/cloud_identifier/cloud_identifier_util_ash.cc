@@ -34,33 +34,30 @@ constexpr char kDriveFsProviderName[] = "drive.google.com";
 // http://google3/apps/drive/cello/common/item_util.h
 constexpr char kDriveFsLocalPrefix[] = "local-";
 
-bool MatchesExpectedDriveFsType(crosapi::mojom::HandleType expected_handle_type,
-                                drivefs::mojom::FileMetadata::Type type) {
+bool MatchesExpectedDriveFsType(
+    content::FileSystemAccessPermissionContext::HandleType expected_handle_type,
+    drivefs::mojom::FileMetadata::Type type) {
   switch (expected_handle_type) {
-    case crosapi::mojom::HandleType::kUnknown:
-      return false;
-    case crosapi::mojom::HandleType::kFile:
+    case content::FileSystemAccessPermissionContext::HandleType::kFile:
       return drivefs::IsAFile(type);
-    case crosapi::mojom::HandleType::kDirectory:
+    case content::FileSystemAccessPermissionContext::HandleType::kDirectory:
       return drivefs::IsADirectory(type);
   }
 }
 
 bool MatchesExpectedProvidedFsType(
-    crosapi::mojom::HandleType expected_handle_type,
+    content::FileSystemAccessPermissionContext::HandleType expected_handle_type,
     bool is_directory) {
   switch (expected_handle_type) {
-    case crosapi::mojom::HandleType::kUnknown:
-      return false;
-    case crosapi::mojom::HandleType::kFile:
+    case content::FileSystemAccessPermissionContext::HandleType::kFile:
       return !is_directory;
-    case crosapi::mojom::HandleType::kDirectory:
+    case content::FileSystemAccessPermissionContext::HandleType::kDirectory:
       return is_directory;
   }
 }
 
 void DidGetDriveFSMetadata(
-    crosapi::mojom::HandleType expected_handle_type,
+    content::FileSystemAccessPermissionContext::HandleType expected_handle_type,
     crosapi::mojom::FileSystemAccessCloudIdentifierProvider::
         GetCloudIdentifierCallback callback,
     drive::FileError error,
@@ -81,7 +78,7 @@ void DidGetDriveFSMetadata(
 }
 
 void DidGetProvidedFilesystemMetada(
-    crosapi::mojom::HandleType expected_handle_type,
+    content::FileSystemAccessPermissionContext::HandleType expected_handle_type,
     crosapi::mojom::FileSystemAccessCloudIdentifierProvider::
         GetCloudIdentifierCallback callback,
     std::unique_ptr<ash::file_system_provider::EntryMetadata> metadata,
@@ -109,7 +106,7 @@ namespace cloud_identifier {
 
 void GetCloudIdentifier(
     const base::FilePath& virtual_path,
-    crosapi::mojom::HandleType handle_type,
+    content::FileSystemAccessPermissionContext::HandleType handle_type,
     crosapi::mojom::FileSystemAccessCloudIdentifierProvider::
         GetCloudIdentifierCallback callback) {
   Profile* profile =
