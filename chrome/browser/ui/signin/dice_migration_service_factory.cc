@@ -10,8 +10,19 @@
 #include "chrome/browser/ui/signin/dice_migration_service.h"
 #include "components/signin/public/base/signin_switches.h"
 
+namespace {
+
+ProfileSelections BuildDiceMigrationServiceProfileSelections() {
+  return base::FeatureList::IsEnabled(switches::kOfferMigrationToDiceUsers)
+             ? ProfileSelections::BuildForRegularProfile()
+             : ProfileSelections::BuildNoProfilesSelected();
+}
+
+}  // namespace
+
 DiceMigrationServiceFactory::DiceMigrationServiceFactory()
-    : ProfileKeyedServiceFactory("DiceMigrationService") {
+    : ProfileKeyedServiceFactory("DiceMigrationService",
+                                 BuildDiceMigrationServiceProfileSelections()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
 }
@@ -41,6 +52,9 @@ DiceMigrationServiceFactory* DiceMigrationServiceFactory::GetInstance() {
 std::unique_ptr<KeyedService>
 DiceMigrationServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!base::FeatureList::IsEnabled(switches::kOfferMigrationToDiceUsers)) {
+    return nullptr;
+  }
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<DiceMigrationService>(profile);
 }
