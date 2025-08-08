@@ -5,6 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_
 
+#import <Foundation/Foundation.h>
+
+typedef NS_ENUM(NSInteger, BWGInputType);
+
 namespace base {
 class TimeDelta;
 }  // namespace base
@@ -49,6 +53,22 @@ extern const char kStartupTimeNoFREHistogram[];
 // UMA histogram key for IOS.Gemini.Session.Time.
 extern const char kBWGSessionTimeHistogram[];
 
+// Enum for the IOS.Gemini.FirstPrompt.SubmissionMethod histogram.
+// LINT.IfChange(IOSGeminiFirstPromptSubmissionMethod)
+enum class IOSGeminiFirstPromptSubmissionMethod {
+  kText = 0,
+  kSummarize = 1,
+  kCheckThisSite = 2,
+  kFindRelatedSites = 3,
+  kAskAboutPage = 4,
+  kUnknown = 5,
+  kMaxValue = kUnknown,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFirstPromptSubmissionMethod)
+
+// UMA histogram key for IOS.Gemini.FirstPrompt.SubmissionMethod.
+extern const char kFirstPromptSubmissionMethodHistogram[];
+
 // Records the duration of a Gemini session.
 void RecordBWGSessionTime(base::TimeDelta session_duration);
 
@@ -61,5 +81,8 @@ void RecordFREShown();
 
 // Records user action for first response received.
 void RecordFirstResponseReceived();
+
+// Records that the user submitted their first prompt and how it was submitted.
+void RecordFirstPromptSubmission(IOSGeminiFirstPromptSubmissionMethod method);
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_

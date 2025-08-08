@@ -36,6 +36,9 @@ const char kStartupTimeNoFREHistogram[] = "IOS.Gemini.StartupTime.NotFirstRun";
 
 const char kBWGSessionTimeHistogram[] = "IOS.Gemini.Session.Time";
 
+const char kFirstPromptSubmissionMethodHistogram[] =
+    "IOS.Gemini.FirstPrompt.SubmissionMethod";
+
 void RecordFREPromoAction(IOSGeminiFREAction action) {
   base::UmaHistogramEnumeration(kPromoActionHistogram, action);
 }
@@ -68,4 +71,10 @@ void RecordFREShown() {
 void RecordFirstResponseReceived() {
   base::RecordAction(
       base::UserMetricsAction("MobileGeminiFirstResponseReceived"));
+}
+
+void RecordFirstPromptSubmission(IOSGeminiFirstPromptSubmissionMethod method) {
+  base::RecordAction(
+      base::UserMetricsAction("MobileGeminiFirstPromptSubmitted"));
+  base::UmaHistogramEnumeration(kFirstPromptSubmissionMethodHistogram, method);
 }
