@@ -16,6 +16,7 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {contentSettingGroups} from './content_settings_groups.js';
 import {ContentSettingsType} from './content_settings_types.mojom-webui.js';
 import type {CrFrameListElement} from './cr_frame_list.js';
+import {highlight, unhighlight} from './highlight_utils.js';
 import {getTemplate} from './internals_page.html.js';
 import type {PrivacySandboxInternalsPrefPageConfig} from './pref_page.js';
 import type {PrivacySandboxInternalsPref} from './privacy_sandbox_internals.mojom-webui.js';
@@ -162,13 +163,22 @@ export class InternalsPage extends CustomElement implements RouteObserver {
       }
 
       // Now that data is guaranteed to be loaded, proceed with filtering.
-      const searchBar =
-          activePanel.querySelector<SearchBarElement>('search-bar');
-      if (searchBar) {
-        searchBar.setQuery(query || '');
-        this.filterContent(query);
-        if (query) {
-          searchBar.focusInput();
+      if (activePanel) {
+        // If the data for this page hasn't been loaded yet, load it now.
+        if (!this.loadedPages_.has(pageName)) {
+          await this.loadDataForPage(pageName);
+          this.loadedPages_.add(pageName);
+        }
+
+        // Now that data is guaranteed to be loaded, proceed with filtering.
+        const searchBar =
+            activePanel.querySelector<SearchBarElement>('search-bar');
+        if (searchBar) {
+          searchBar.setQuery(query || '');
+          this.filterAndHighlightContent(query);
+          if (query) {
+            searchBar.focusInput();
+          }
         }
       }
     }
@@ -198,13 +208,25 @@ export class InternalsPage extends CustomElement implements RouteObserver {
     return ContentSettingsType[upperCaseName as keyof typeof ContentSettingsType];
   }
 
-  private filterContent(query: string|null) {
+  // Filters items by visibility and applies highlighting.
+  private filterAndHighlightContent(query: string|null) {
     const lowerCaseQuery = query ? query.toLowerCase().trim() : '';
     const activeItems = this.cachedItems_.get(this.activePageName_!) || [];
 
     for (const item of activeItems) {
       const isMatch = !lowerCaseQuery || item.content.includes(lowerCaseQuery);
+
+      // First, remove any previous highlights from this item.
+      unhighlight(item.element);
+
+      // Determine if the item's content matches the search query.
+      // Hide the element if it's not a match.
       item.element.hidden = !isMatch;
+
+      // If it's a match and there's a search query, apply highlighting.
+      if (isMatch && lowerCaseQuery) {
+        highlight(item.element, lowerCaseQuery);
+      }
     }
   }
 

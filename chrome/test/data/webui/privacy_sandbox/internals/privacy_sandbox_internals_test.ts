@@ -156,6 +156,34 @@ suite('PrivacySandboxInternalsSearchTest', function() {
         tpPanel.querySelectorAll('pref-display:not([hidden])').length > 1,
         'Clearing search should restore multiple prefs.');
   });
+
+  test('highlightsMatchingTextInPrefs', async () => {
+    await navigateTo('tracking-protection');
+    const searchTerm = 'fingerprinting';
+    await typeInSearch(searchTerm);
+
+    const tpPanel =
+        await waitForElement(shadowRoot, '#tracking-protection-prefs-panel');
+    const matchingElement =
+        await waitForElement(tpPanel, 'pref-display:not([hidden])') as
+        PrefDisplayElement;
+    const highlightElement = await waitForElement(
+        matchingElement.shadowRoot!, '.search-highlight-hit');
+
+    assertTrue(
+        !!highlightElement,
+        'A <span class="search-highlight-hit"> element should be present for highlights.');
+    assertEquals(
+        highlightElement.textContent, searchTerm,
+        'The highlighted text should match the search term.');
+    await typeInSearch('');
+
+    const noHighlightElement =
+        matchingElement.shadowRoot!.querySelector('.search-highlight-hit');
+    assertFalse(
+        !!noHighlightElement,
+        'The highlight element should be removed after clearing the search.');
+  });
 });
 
 // Test suite for the Search Bar UI.
