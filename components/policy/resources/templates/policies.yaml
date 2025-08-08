@@ -1386,6 +1386,7 @@ policies:
   1385: DeviceLoginScreenSecurityKeyPermitAttestation
   1386: RestrictCoreSharingOnRenderer
   1387: OriginKeyedProcessesEnabled
+  1388: NTPShortcuts
 atomic_groups:
   1: Homepage
   2: RemoteAccess
