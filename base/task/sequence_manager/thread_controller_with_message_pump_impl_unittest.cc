@@ -15,11 +15,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump.h"
+#include "base/rand_util.h"
+#include "base/strings/strcat.h"
+#include "base/synchronization/lock_metrics_recorder.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/thread_controller_power_monitor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_features.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -222,6 +226,7 @@ class ThreadControllerWithMessagePumpTestBase : public testing::Test {
       bool can_run_tasks_by_batches)
       : settings_(SequenceManager::Settings::Builder()
                       .SetTickClock(&clock_)
+                      .SetShouldReportLockMetrics(true)
                       .SetCanRunTasksByBatches(can_run_tasks_by_batches)
                       .Build()),
         thread_controller_(
@@ -254,6 +259,7 @@ class ThreadControllerWithMessagePumpTestBase : public testing::Test {
   ThreadControllerForTest thread_controller_;
   raw_ptr<MockMessagePump> message_pump_;
   FakeSequencedTaskSource task_source_;
+  MetricsSubSampler::ScopedNeverSampleForTesting never_sample_;
 };
 
 class ThreadControllerWithMessagePumpTest
@@ -2212,6 +2218,42 @@ TEST_F(ThreadControllerWithMessagePumpTest, WorkIdIncrementedDelegateRun) {
   testing::Mock::VerifyAndClearExpectations(message_pump_);
   // Delegate::Run() itself will increment work id to account for pump overhead.
   EXPECT_EQ(work_id_provider->GetWorkId(), 1u);
+}
+
+TEST_F(ThreadControllerWithMessagePumpTest, LockMetricsReportedOnIdle) {
+  constexpr TimeDelta test_sample1 = Microseconds(42);
+  constexpr TimeDelta test_sample2 = Milliseconds(42);
+  const std::string histogram_name =
+      StrCat({"Scheduling.ContendedLockAcquisitionTime.BaseLock.",
+              PlatformThread::GetName()});
+
+  SingleThreadTaskRunner::CurrentDefaultHandle handle(
+      MakeRefCounted<FakeTaskRunner>());
+  ASSERT_TRUE(LockMetricsRecorder::Get()->IsCurrentThreadTarget());
+
+  HistogramTester histogram_tester;
+
+  LockMetricsRecorder::Get()->RecordLockAcquisitionTime(test_sample1);
+  LockMetricsRecorder::Get()->RecordLockAcquisitionTime(test_sample2);
+  LockMetricsRecorder::Get()->RecordLockAcquisitionTime(test_sample2);
+
+  EXPECT_CALL(*message_pump_, Run(_))
+      .WillOnce([&](MessagePump::Delegate* delegate) {
+        histogram_tester.ExpectBucketCount(histogram_name,
+                                           test_sample1.InMicroseconds(), 0);
+        histogram_tester.ExpectBucketCount(histogram_name,
+                                           test_sample2.InMicroseconds(), 0);
+
+        thread_controller_.DoIdleWork();
+
+        histogram_tester.ExpectBucketCount(histogram_name,
+                                           test_sample1.InMicroseconds(), 1);
+        histogram_tester.ExpectBucketCount(histogram_name,
+                                           test_sample2.InMicroseconds(), 2);
+      });
+
+  RunLoop().Run();
+  testing::Mock::VerifyAndClearExpectations(message_pump_);
 }
 
 }  // namespace base::sequence_manager::internal

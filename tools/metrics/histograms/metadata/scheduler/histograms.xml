@@ -44,6 +44,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Scheduling.ContendedLockAcquisitionTime.BaseLock.{ThreadName}"
+    units="microseconds" expires_after="2026-07-01">
+  <owner>anandrv@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    The time it takes to acquire a contended base::Lock on {ThreadName}. This is
+    recorded with probability 1/1000 when acquisitiion of the lock is likely to
+    cause the thread to wait in the kernel.
+
+    Note: The metric is reported for only clients with high-resolution clocks (a
+    subset of Windows clients won't report it, see the
+    Windows.HasHighResolutionTimeTicks histogram).
+  </summary>
+  <token key="ThreadName">
+    <variant name="CrBrowserMain" summary="the browser main thread"/>
+    <variant name="CrRendererMain" summary="the renderer main thread"/>
+  </token>
+</histogram>
+
 <histogram name="Scheduling.DBusSchedQoS.PidReusedOnSetProcessState"
     enum="PidReuseResult" expires_after="2025-10-26">
   <owner>kawasin@google.com</owner>

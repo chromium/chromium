@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <memory>
 #include <optional>
 #include <utility>
 
@@ -17,6 +18,9 @@
 #include "base/message_loop/message_pump.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
+#include "base/synchronization/lock.h"
+#include "base/synchronization/lock_metrics_recorder.h"
 #include "base/task/sequence_manager/tasks.h"
 #include "base/task/task_features.h"
 #include "base/threading/hang_watcher.h"
@@ -81,7 +85,11 @@ ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
     : ThreadController(settings.clock),
       work_deduplicator_(associated_thread_),
       can_run_tasks_by_batches_(settings.can_run_tasks_by_batches),
-      is_main_thread_(settings.is_main_thread) {}
+      is_main_thread_(settings.is_main_thread) {
+  if (settings.should_report_lock_metrics) {
+    LockMetricsRecorder::Get()->SetTargetCurrentThread();
+  }
+}
 
 ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
     std::unique_ptr<MessagePump> message_pump,
@@ -565,6 +573,8 @@ void ThreadControllerWithMessagePumpImpl::DoIdleWork() {
     }
   }
 #endif  // BUILDFLAG(IS_WIN)
+
+  LockMetricsRecorder::Get()->ReportLockAcquisitionTimes();
 
   if (main_thread_only().task_source->OnIdle()) {
     work_id_provider_->IncrementWorkId();

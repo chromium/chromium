@@ -33,6 +33,7 @@ WebThreadScheduler::CreateMainThreadScheduler(
                       .SetAddQueueTimeToTasks(true)
                       .SetPrioritySettings(CreatePrioritySettings())
                       .SetIsMainThread(true)
+                      .SetShouldReportLockMetrics(true)
                       .Build();
   auto sequence_manager =
       message_pump
