@@ -314,6 +314,9 @@ public class ModalDialogProperties {
      */
     public static final WritableBooleanPropertyKey BLOCK_INPUTS = new WritableBooleanPropertyKey();
 
+    /** Disable the scrim overlay under the dialog. <b>Only allowed on Android XR.</b> */
+    public static final ReadableBooleanPropertyKey DISABLE_SCRIM = new ReadableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 NAME,
@@ -351,6 +354,7 @@ public class ModalDialogProperties {
                 HORIZONTAL_MARGIN,
                 VERTICAL_MARGIN,
                 PADDING,
-                BLOCK_INPUTS
+                BLOCK_INPUTS,
+                DISABLE_SCRIM
             };
 }

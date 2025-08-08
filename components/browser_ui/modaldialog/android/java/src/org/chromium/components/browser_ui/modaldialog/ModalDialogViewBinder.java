@@ -162,6 +162,8 @@ public class ModalDialogViewBinder
         } else if (ModalDialogProperties.CHANGE_CUSTOM_VIEW_OR_BUTTONS == propertyKey) {
             // Intentionally left empty since this is a property used for switching button group to
             // default buttons, or switching custom view.
+        } else if (ModalDialogProperties.DISABLE_SCRIM == propertyKey) {
+            // Intentionally left empty since this is a property used for the dialog container.
         } else {
             assert false : "Unhandled property detected in ModalDialogViewBinder!";
         }
