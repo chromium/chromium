@@ -12,9 +12,9 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/config/gpu_info.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
@@ -30,7 +30,7 @@ class ImageDecodeAcceleratorWorker {
   struct DecodeResult {
     gfx::GpuMemoryBufferHandle handle;
     gfx::Size visible_size;
-    gfx::BufferFormat buffer_format;
+    viz::SharedImageFormat si_format;
     size_t buffer_byte_size;
     SkYUVColorSpace yuv_color_space;
   };

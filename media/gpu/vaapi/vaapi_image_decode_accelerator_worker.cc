@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_image_decoder.h"
@@ -191,7 +192,8 @@ void VaapiImageDecodeAcceleratorWorker::DecodeTask(
       std::make_unique<gpu::ImageDecodeAcceleratorWorker::DecodeResult>();
   result->handle = gfx::GpuMemoryBufferHandle(std::move(pixmap_handle));
   result->visible_size = exported_pixmap->pixmap->GetBufferSize();
-  result->buffer_format = exported_pixmap->pixmap->GetBufferFormat();
+  result->si_format =
+      viz::GetSharedImageFormat(exported_pixmap->pixmap->GetBufferFormat());
   result->buffer_byte_size = exported_pixmap->byte_size;
   result->yuv_color_space = decoder->GetYUVColorSpace();
   std::move(scoped_decode_callback).Run(std::move(result));

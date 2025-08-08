@@ -53,8 +53,6 @@
 #include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
-#include "ui/gfx/buffer_format_util.h"
-#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
@@ -251,9 +249,10 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
   std::vector<sk_sp<SkImage>> plane_sk_images;
   std::optional<base::ScopedClosureRunner> notify_gl_state_changed;
 #if BUILDFLAG(IS_CHROMEOS)
-  DCHECK_EQ(
-      gfx::NumberOfPlanesForLinearBufferFormat(completed_decode->buffer_format),
-      completed_decode->handle.native_pixmap_handle().planes.size());
+  const size_t num_planes =
+      completed_decode->handle.native_pixmap_handle().planes.size();
+  DCHECK_EQ(completed_decode->si_format.NumberOfPlanes(),
+            static_cast<int>(num_planes));
   // We should notify the SharedContextState that we or Skia may have modified
   // the driver's GL state. We put this in a ScopedClosureRunner so that if we
   // return early, the SharedContextState ends up in a consistent state.
@@ -265,22 +264,18 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
       },
       shared_context_state));
 
-  const size_t num_planes =
-      completed_decode->handle.native_pixmap_handle().planes.size();
   plane_sk_images.resize(num_planes);
 
   // Right now, we only support YUV 4:2:0 for the output of the decoder (either
   // as YV12 or NV12).
-  CHECK(completed_decode->buffer_format == gfx::BufferFormat::YVU_420 ||
-        completed_decode->buffer_format == gfx::BufferFormat::YUV_420_BIPLANAR);
-  const auto format =
-      viz::GetSharedImageFormat(completed_decode->buffer_format);
+  CHECK(completed_decode->si_format == viz::MultiPlaneFormat::kYV12 ||
+        completed_decode->si_format == viz::MultiPlaneFormat::kNV12);
   const gfx::Size shared_image_size = completed_decode->visible_size;
   const gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   if (!channel_->shared_image_stub()->CreateSharedImage(
-          mailbox, std::move(completed_decode->handle), format,
-          shared_image_size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-          kOpaque_SkAlphaType,
+          mailbox, std::move(completed_decode->handle),
+          completed_decode->si_format, shared_image_size, gfx::ColorSpace(),
+          kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
           SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_OOP_RASTERIZATION,
           "ImageDecodeAccelerator")) {
     DLOG(ERROR) << "Could not create SharedImage";
@@ -375,7 +370,7 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
                         base::strict_cast<int32_t>(channel_->client_id()));
     DCHECK(shared_context_state->transfer_cache());
     SkYUVAInfo::PlaneConfig plane_config =
-        completed_decode->buffer_format == gfx::BufferFormat::YVU_420
+        completed_decode->si_format == viz::MultiPlaneFormat::kYV12
             ? SkYUVAInfo::PlaneConfig::kY_V_U
             : SkYUVAInfo::PlaneConfig::kY_UV;
     // TODO(andrescj): |params.target_color_space| is not needed because Skia
