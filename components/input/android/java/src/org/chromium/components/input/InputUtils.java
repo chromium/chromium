@@ -4,6 +4,7 @@
 
 package org.chromium.components.input;
 
+import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
@@ -27,6 +28,11 @@ public class InputUtils {
             sIsTransferInputToVizSupported = InputUtilsJni.get().isTransferInputToVizSupported();
         }
         return sIsTransferInputToVizSupported;
+    }
+
+    @CalledByNative
+    private static void runGarbageCollection() {
+        System.gc();
     }
 
     @NativeMethods

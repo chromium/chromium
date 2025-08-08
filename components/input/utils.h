@@ -20,6 +20,8 @@ class COMPONENT_EXPORT(INPUT) InputUtils {
   // only on Android V+ which contain security fix for `CVE-2025-0097`.
   static bool IsTransferInputToVizSupported();
 #if BUILDFLAG(IS_ANDROID)
+  static void RunGarbageCollection();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(UtilsTest,
                            InputToVizNotSupportedOnOlderSecurityPatchLevel);

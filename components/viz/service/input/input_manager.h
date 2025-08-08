@@ -198,6 +198,12 @@ class VIZ_SERVICE_EXPORT InputManager
 
   AndroidStateTransferHandler android_state_transfer_handler_;
 
+  // There's a platform bug on Android 16 which keeps the input surface control
+  // lingering around unless the app explicitly does a `System.gc()` call to
+  // clean it up : https://crbug.com/436302937#comment5.
+  // Since the the input surface control doesn't have any associate buffers
+  // `System.gc()` is called on every 100th destruction.
+  int pending_surface_controls_ = 0;
   std::unique_ptr<input::InputReceiverData> receiver_data_;
 
   // Allow cancelling the creation task, since it's possible for
