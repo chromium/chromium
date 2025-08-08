@@ -4,7 +4,7 @@
 
 #include "chrome/browser/actor/ui/actor_overlay_view_controller.h"
 
-#include "chrome/browser/actor/ui/mock_actor_ui_tab_controller.h"
+#include "chrome/browser/actor/ui/mocks/mock_actor_ui_tab_controller.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

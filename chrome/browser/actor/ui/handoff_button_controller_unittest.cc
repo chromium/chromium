@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "chrome/browser/actor/ui/mock_actor_ui_tab_controller.h"
+#include "chrome/browser/actor/ui/mocks/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/tabs/public/mock_tab_interface.h"

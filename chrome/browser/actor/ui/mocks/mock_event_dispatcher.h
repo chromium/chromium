@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_UI_MOCK_EVENT_DISPATCHER_H_
-#define CHROME_BROWSER_ACTOR_UI_MOCK_EVENT_DISPATCHER_H_
+#ifndef CHROME_BROWSER_ACTOR_UI_MOCKS_MOCK_EVENT_DISPATCHER_H_
+#define CHROME_BROWSER_ACTOR_UI_MOCKS_MOCK_EVENT_DISPATCHER_H_
 
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -47,4 +47,4 @@ std::unique_ptr<UiEventDispatcher> NewMockUiEventDispatcher();
 }  // namespace ui
 }  // namespace actor
 
-#endif  // CHROME_BROWSER_ACTOR_UI_MOCK_EVENT_DISPATCHER_H_
+#endif  // CHROME_BROWSER_ACTOR_UI_MOCKS_MOCK_EVENT_DISPATCHER_H_

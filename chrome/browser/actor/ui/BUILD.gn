@@ -99,16 +99,16 @@ source_set("event_dispatcher") {
 
 source_set("test_support") {
   sources = [
-    "mock_actor_overlay_view_controller.cc",
-    "mock_actor_overlay_view_controller.h",
-    "mock_actor_ui_state_manager.cc",
-    "mock_actor_ui_state_manager.h",
-    "mock_actor_ui_tab_controller.cc",
-    "mock_actor_ui_tab_controller.h",
-    "mock_event_dispatcher.cc",
-    "mock_event_dispatcher.h",
-    "mock_handoff_button_controller.cc",
-    "mock_handoff_button_controller.h",
+    "mocks/mock_actor_overlay_view_controller.cc",
+    "mocks/mock_actor_overlay_view_controller.h",
+    "mocks/mock_actor_ui_state_manager.cc",
+    "mocks/mock_actor_ui_state_manager.h",
+    "mocks/mock_actor_ui_tab_controller.cc",
+    "mocks/mock_actor_ui_tab_controller.h",
+    "mocks/mock_event_dispatcher.cc",
+    "mocks/mock_event_dispatcher.h",
+    "mocks/mock_handoff_button_controller.cc",
+    "mocks/mock_handoff_button_controller.h",
   ]
   testonly = true
   public_deps = [

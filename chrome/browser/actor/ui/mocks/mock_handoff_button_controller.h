@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_UI_MOCK_HANDOFF_BUTTON_CONTROLLER_H_
-#define CHROME_BROWSER_ACTOR_UI_MOCK_HANDOFF_BUTTON_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ACTOR_UI_MOCKS_MOCK_HANDOFF_BUTTON_CONTROLLER_H_
+#define CHROME_BROWSER_ACTOR_UI_MOCKS_MOCK_HANDOFF_BUTTON_CONTROLLER_H_
 
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,4 +24,4 @@ class MockHandoffButtonController : public HandoffButtonController {
 
 }  // namespace actor::ui
 
-#endif  // CHROME_BROWSER_ACTOR_UI_MOCK_HANDOFF_BUTTON_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ACTOR_UI_MOCKS_MOCK_HANDOFF_BUTTON_CONTROLLER_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_UI_MOCK_ACTOR_UI_TAB_CONTROLLER_H_
-#define CHROME_BROWSER_ACTOR_UI_MOCK_ACTOR_UI_TAB_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ACTOR_UI_MOCKS_MOCK_ACTOR_UI_TAB_CONTROLLER_H_
+#define CHROME_BROWSER_ACTOR_UI_MOCKS_MOCK_ACTOR_UI_TAB_CONTROLLER_H_
 
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -68,4 +68,4 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
 
 }  // namespace actor::ui
 
-#endif  // CHROME_BROWSER_ACTOR_UI_MOCK_ACTOR_UI_TAB_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ACTOR_UI_MOCKS_MOCK_ACTOR_UI_TAB_CONTROLLER_H_
