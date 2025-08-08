@@ -9,7 +9,6 @@ import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
-import("//content/browser/devtools/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 import("//ui/base/ui_features.gni")
@@ -275,11 +274,6 @@ template("chrome_extra_paks") {
         sources += [ "$root_gen_dir/chrome/settings_shared_resources.pak" ]
         deps += [ "//chrome/browser/resources/settings_shared:resources" ]
       }
-    }
-    if (enable_devtools_frontend) {
-      sources +=
-          [ "$root_gen_dir/content/browser/devtools/devtools_resources.pak" ]
-      deps += [ "//content/browser/devtools:devtools_resources" ]
     }
     if (is_chromeos) {
       sources += [

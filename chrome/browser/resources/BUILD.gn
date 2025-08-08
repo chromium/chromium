@@ -6,6 +6,7 @@ import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//content/browser/devtools/features.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//third_party/closure_compiler/compile_js.gni")
@@ -338,6 +339,10 @@ group("dev_ui_resources") {
   if (enable_session_service) {
     public_deps += [ "tab_strip_internals:resources" ]
   }
+
+  if (enable_devtools_frontend) {
+    public_deps += [ "//content/browser/devtools:devtools_resources" ]
+  }
 }
 
 repack("dev_ui_paks") {
@@ -406,6 +411,11 @@ repack("dev_ui_paks") {
 
   if (enable_session_service) {
     sources += [ "$root_gen_dir/chrome/tab_strip_internals_resources.pak" ]
+  }
+
+  if (enable_devtools_frontend) {
+    sources +=
+        [ "$root_gen_dir/content/browser/devtools/devtools_resources.pak" ]
   }
 
   deps = [ ":dev_ui_resources" ]
