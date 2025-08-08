@@ -192,7 +192,7 @@ TEST_F(ChangePasswordFormFinderTest, ExecuteModelModelFailedWhenFormNotFound) {
 
   ASSERT_TRUE(form_finder->form_waiter());
   static_cast<content::WebContentsObserver*>(form_finder->form_waiter())
-      ->DocumentOnLoadCompletedInPrimaryMainFrame();
+      ->DidStopLoading();
 
   // Simulate ExecuteModel responds with failure.
   EXPECT_CALL(*optimization_service(), ExecuteModel)
@@ -231,7 +231,7 @@ TEST_F(ChangePasswordFormFinderTest, ExecuteModelOpenFormRequestHasArgs) {
 
   ASSERT_TRUE(form_finder->form_waiter());
   static_cast<content::WebContentsObserver*>(form_finder->form_waiter())
-      ->DocumentOnLoadCompletedInPrimaryMainFrame();
+      ->DidStopLoading();
 
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .WillOnce(
@@ -277,7 +277,7 @@ TEST_F(ChangePasswordFormFinderTest, ButtonClickRequestedButFailed) {
 
   ASSERT_TRUE(form_finder->form_waiter());
   static_cast<content::WebContentsObserver*>(form_finder->form_waiter())
-      ->DocumentOnLoadCompletedInPrimaryMainFrame();
+      ->DidStopLoading();
   ASSERT_FALSE(form_finder->click_helper());
 
   EXPECT_CALL(*optimization_service(), ExecuteModel)
@@ -317,7 +317,7 @@ TEST_F(ChangePasswordFormFinderTest, FailsCapturingAnnotatedPageContent) {
       completion_callback.Get(), capture_annotated_page_content.Get());
   ASSERT_TRUE(form_finder->form_waiter());
   static_cast<content::WebContentsObserver*>(form_finder->form_waiter())
-      ->DocumentOnLoadCompletedInPrimaryMainFrame();
+      ->DidStopLoading();
 
   EXPECT_CALL(*optimization_service(), ExecuteModel).Times(0);
   task_environment()->FastForwardBy(
@@ -341,7 +341,7 @@ TEST_F(ChangePasswordFormFinderTest, ButtonClickRequestedAndSucceeded) {
 
   ASSERT_TRUE(form_finder->form_waiter());
   static_cast<content::WebContentsObserver*>(form_finder->form_waiter())
-      ->DocumentOnLoadCompletedInPrimaryMainFrame();
+      ->DidStopLoading();
   ASSERT_FALSE(form_finder->click_helper());
 
   EXPECT_CALL(*optimization_service(), ExecuteModel)
