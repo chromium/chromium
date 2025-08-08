@@ -26,6 +26,7 @@ using ::autofill::test::CreateFieldPrediction;
 using ::autofill::test::EqualsPrediction;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Property;
 using ::testing::UnorderedElementsAre;
 
 constexpr FieldTypeSet kMLSupportedTypesForTesting = {
@@ -158,14 +159,14 @@ TEST_F(AutofillFieldTest, GroupsOfHtmlTypes) {
   }
 }
 
-// Tests how server type predictions influence AutofillField::Type().
+// Tests that if multiple server types are set, AutofillField::Type().GetTypes()
+// contains the first and perhaps also the subsequent ones.
 TEST_F(AutofillFieldTest, UnionTypesFromServerTypes) {
-  // Returns the AutofillType::GetTypes() computed by AutofillField from server
-  // given `field_types_predicted_by_server`.
-  auto f = [](auto... field_types_predicted_by_server) {
+  // Returns the AutofillType::GetTypes() computed by AutofillField from the
+  // given server types.
+  auto f = [](auto... server_types) {
     AutofillField field;
-    field.set_server_predictions(
-        {CreateFieldPrediction(field_types_predicted_by_server)...});
+    field.set_server_predictions({CreateFieldPrediction(server_types)...});
     return field.Type().GetTypes();
   };
 
@@ -248,6 +249,100 @@ TEST_F(AutofillFieldTest, UnionTypesFromServerTypes) {
           DRIVERS_LICENSE_REGION, VEHICLE_LICENSE_PLATE, VEHICLE_PLATE_STATE),
         UnorderedElementsAre(ADDRESS_HOME_COUNTRY, DRIVERS_LICENSE_NUMBER));
   }
+}
+
+// Tests that if a heuristic type is set, additional server types may influence
+// the union type.
+TEST_F(AutofillFieldTest, UnionTypesFromHeuristicAndServerTypes) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillAiWithDataSchema);
+
+  // Returns the AutofillType::GetTypes() computed by AutofillField from the
+  // given heuristic types and server types.
+  auto f = [](FieldType heuristic_type, auto... server_types) {
+    AutofillField field;
+    field.set_heuristic_type(HeuristicSource::kRegexes, heuristic_type);
+    field.set_server_predictions({CreateFieldPrediction(server_types)...});
+    return field.Type().GetTypes();
+  };
+
+  EXPECT_THAT(f(UNKNOWN_TYPE), ElementsAre(UNKNOWN_TYPE));
+
+  EXPECT_THAT(f(ADDRESS_HOME_ZIP), ElementsAre(ADDRESS_HOME_ZIP));
+  EXPECT_THAT(f(PASSWORD), ElementsAre(PASSWORD));
+
+  // The heuristic prediction loses against the server type.
+  EXPECT_THAT(f(NAME_FIRST, USERNAME), ElementsAre(USERNAME));
+  EXPECT_THAT(f(NAME_FIRST, USERNAME, PASSPORT_NUMBER),
+              ElementsAre(USERNAME, PASSPORT_NUMBER));
+
+  // The heuristic type CC_NAME_FULL trumps NAME_FULL.
+  EXPECT_THAT(f(CREDIT_CARD_NAME_FULL, NAME_FULL),
+              ElementsAre(CREDIT_CARD_NAME_FULL));
+
+  // The heuristic type CC_NAME_FULL trumps NAME_FULL.
+  // `PASSPORT_NUMBER` is added to the union type.
+  EXPECT_THAT(f(CREDIT_CARD_NAME_FULL, NAME_FULL, PASSPORT_NUMBER),
+              ElementsAre(CREDIT_CARD_NAME_FULL, PASSPORT_NUMBER));
+
+  // `PASSPORT_NUMBER` trumps the heuristic prediction.
+  EXPECT_THAT(f(CREDIT_CARD_NAME_FULL, PASSPORT_NUMBER, NAME_FULL),
+              ElementsAre(PASSPORT_NUMBER));
+}
+
+// Tests that if an HTML type is set, additional server types may influence the
+// union type.
+TEST_F(AutofillFieldTest, UnionTypesFromHtmlAndServerTypes) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillAiWithDataSchema);
+
+  // Returns the AutofillType computed by AutofillField from the given HTML and
+  // server types.
+  auto f = [](HtmlFieldType html_type, auto... server_types) {
+    AutofillField field;
+    field.SetHtmlType(html_type, HtmlFieldMode::kNone);
+    field.set_server_predictions({CreateFieldPrediction(server_types)...});
+    return field.Type();
+  };
+
+  auto is_type = [](FieldTypeSet types, bool is_country_code = false) {
+    return AllOf(Property(&AutofillType::GetTypes, types),
+                 Property(&AutofillType::is_country_code, is_country_code));
+  };
+
+  using enum HtmlFieldType;
+
+  EXPECT_THAT(f(kUnrecognized, ADDRESS_HOME_ZIP), is_type({ADDRESS_HOME_ZIP}));
+
+  EXPECT_THAT(f(kCountryName), is_type({ADDRESS_HOME_COUNTRY}, false));
+  EXPECT_THAT(f(kCountryCode), is_type({ADDRESS_HOME_COUNTRY}, true));
+
+  // `PASSPORT_NUMBER` is added to the union type.
+  EXPECT_THAT(f(kCountryName, PASSPORT_NUMBER),
+              is_type({ADDRESS_HOME_COUNTRY, PASSPORT_NUMBER}, false));
+  EXPECT_THAT(f(kCountryCode, PASSPORT_NUMBER),
+              is_type({ADDRESS_HOME_COUNTRY, PASSPORT_NUMBER}, true));
+
+  // `ADDRESS_HOME_ZIP` is not added to the union type because it is not an
+  // Autofill AI type.
+  EXPECT_THAT(f(kCountryName, ADDRESS_HOME_ZIP),
+              is_type({ADDRESS_HOME_COUNTRY}, false));
+  EXPECT_THAT(f(kCountryCode, ADDRESS_HOME_ZIP),
+              is_type({ADDRESS_HOME_COUNTRY}, true));
+
+  // `PASSPORT_NUMBER` is added to the union type.
+  // `ADDRESS_HOME_ZIP` is ignored because it is not an Autofill AI type.
+  EXPECT_THAT(f(kCountryName, PASSPORT_NUMBER, ADDRESS_HOME_ZIP),
+              is_type({ADDRESS_HOME_COUNTRY, PASSPORT_NUMBER}, false));
+  EXPECT_THAT(f(kCountryCode, PASSPORT_NUMBER, ADDRESS_HOME_ZIP),
+              is_type({ADDRESS_HOME_COUNTRY, PASSPORT_NUMBER}, true));
+
+  // `PASSPORT_NUMBER` is added to the union type.
+  // `ADDRESS_HOME_ZIP` is ignored because it is not an Autofill AI type.
+  EXPECT_THAT(f(kCountryName, ADDRESS_HOME_ZIP, PASSPORT_NUMBER),
+              is_type({ADDRESS_HOME_COUNTRY, PASSPORT_NUMBER}, false));
+  EXPECT_THAT(f(kCountryCode, ADDRESS_HOME_ZIP, PASSPORT_NUMBER),
+              is_type({ADDRESS_HOME_COUNTRY, PASSPORT_NUMBER}, true));
 }
 
 constexpr HeuristicSource kRegexSource = HeuristicSource::kRegexes;
