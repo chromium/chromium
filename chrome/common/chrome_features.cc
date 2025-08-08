@@ -420,6 +420,9 @@ const base::FeatureParam<base::TimeDelta> kGlicActorKeyUpDuration{
     &kGlicActorIncrementalTyping,
     "glic-actor-incremental-typing-key-up-duration", base::Milliseconds(5)};
 
+const base::FeatureParam<bool> kGlicActorScrollTargetIntoView{
+    &kGlicActor, "scroll-target-into-view", true};
+
 #if BUILDFLAG(ENABLE_GLIC)
 // Controls whether the Glic feature is enabled.
 BASE_FEATURE(kGlic, "Glic", base::FEATURE_DISABLED_BY_DEFAULT);

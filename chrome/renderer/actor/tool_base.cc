@@ -11,14 +11,17 @@
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
+#include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_hit_test_result.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace actor {
 
+using blink::WebElement;
 using blink::WebNode;
 
 base::TimeDelta ToolBase::ExecutionObservationDelay() const {
@@ -81,6 +84,26 @@ ToolBase::ValidateAndResolveTarget() const {
   }
 
   return ValidateTimeOfUse(resolved_target);
+}
+
+void ToolBase::EnsureTargetInView() {
+  if (!target_) {
+    return;
+  }
+
+  // Scrolling a target into view is only supported for node_id targets since
+  // TOCTOU checks cannot be applied to the APC captured at the old scroll
+  // offset.
+  if (target_->is_coordinate()) {
+    return;
+  }
+
+  int32_t dom_node_id = target_->get_dom_node_id();
+  WebElement node =
+      GetNodeFromId(frame_.get(), dom_node_id).DynamicTo<WebElement>();
+  if (node && !InteractionPointFromWebNode(node).has_value()) {
+    node.ScrollIntoViewIfNeeded();
+  }
 }
 
 base::expected<ToolBase::ResolvedTarget, mojom::ActionResultPtr>

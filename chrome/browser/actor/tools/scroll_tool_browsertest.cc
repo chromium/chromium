@@ -164,11 +164,15 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_NonScrollable) {
   }
 }
 
-// Test scrolling over a non-scrollable element returns failure.
+// Test scrolling a scroller that's currently offscreen. It will first be
+// scrolled into view then scroll applied.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_OffscreenScrollable) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Page starts unscrolled
+  ASSERT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
 
   int scroll_offset_y = 80;
 
@@ -180,11 +184,11 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_OffscreenScrollable) {
                           /*scroll_offset_x=*/0, scroll_offset_y);
     TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
-    ExpectErrorResult(result, mojom::ActionResultCode::kElementOffscreen);
-    EXPECT_EQ(0,
+    ExpectOkResult(result);
+    EXPECT_EQ(scroll_offset_y,
               EvalJs(web_contents(),
                      "document.getElementById('offscreenscroller').scrollTop"));
-    EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
+    EXPECT_GT(EvalJs(web_contents(), "window.scrollY"), 0);
   }
 }
 

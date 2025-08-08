@@ -251,6 +251,9 @@ extern const base::FeatureParam<base::TimeDelta>(
     kGlicActorPageStabilityInvokeCallbackDelay);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool> kGlicActorScrollTargetIntoView;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActorIncrementalTyping);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta> kGlicActorKeyDownDuration;

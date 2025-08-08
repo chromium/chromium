@@ -175,6 +175,9 @@ class BLINK_EXPORT WebElement : public WebNode {
   // cannot scroll (e.g. it's not rendered, no scroll extent).
   bool SetScrollOffset(const gfx::Vector2dF& offset);
 
+  // Scrolls the element into view if it isn't already visible.
+  void ScrollIntoViewIfNeeded();
+
   // Returns true if this element has scroll-behavior: smooth style, meaning
   // that programmatic scrolls will animate rather than instantly jumping to the
   // specified scroll offset.

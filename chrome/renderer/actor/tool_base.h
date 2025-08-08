@@ -61,6 +61,11 @@ class ToolBase {
   // may happen asynchronously outside of the injected events.
   virtual base::TimeDelta ExecutionObservationDelay() const;
 
+  // Scrolls the target element into view if it's not already. If the target is
+  // a coordinate, the coordinate is updated to reflect the new location after
+  // scrolling.
+  virtual void EnsureTargetInView();
+
  protected:
   // Raw ref since this is owned by ToolExecutor whose lifetime is tied to
   // RenderFrame.

@@ -30,6 +30,7 @@
 
 #include "third_party/blink/public/web/web_element.h"
 
+#include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/web/web_label_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
@@ -57,6 +58,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -390,6 +392,36 @@ gfx::Vector2dF WebElement::GetScrollOffset() const {
 bool WebElement::SetScrollOffset(const gfx::Vector2dF& offset) {
   Element* element = Unwrap<Element>();
   return element->SetScrollOffset(offset);
+}
+
+void WebElement::ScrollIntoViewIfNeeded() {
+  LayoutBox* box = GetScrollingBox();
+  if (!box) {
+    return;
+  }
+
+  mojom::blink::ScrollIntoViewParamsPtr params =
+      mojom::blink::ScrollIntoViewParams::New();
+  // Match ScrollAlignment::CenterIfNeeded().
+  params->align_x = mojom::blink::ScrollAlignment::New();
+  params->align_x->rect_visible =
+      mojom::blink::ScrollAlignment::Behavior::kNoScroll;
+  params->align_x->rect_hidden =
+      mojom::blink::ScrollAlignment::Behavior::kCenter;
+  params->align_x->rect_partial =
+      mojom::blink::ScrollAlignment::Behavior::kClosestEdge;
+  params->align_y = mojom::blink::ScrollAlignment::New();
+  params->align_y->rect_visible =
+      mojom::blink::ScrollAlignment::Behavior::kNoScroll;
+  params->align_y->rect_hidden =
+      mojom::blink::ScrollAlignment::Behavior::kCenter;
+  params->align_y->rect_partial =
+      mojom::blink::ScrollAlignment::Behavior::kClosestEdge;
+  params->behavior = blink::mojom::ScrollBehavior::kInstant;
+  // User scrolling to ensure only user scrollable scrollers are affected.
+  params->type = mojom::blink::ScrollType::kUser;
+  scroll_into_view_util::ScrollRectToVisible(
+      *box, box->AbsoluteBoundingBoxRectForScrollIntoView(), std::move(params));
 }
 
 bool WebElement::HasScrollBehaviorSmooth() const {

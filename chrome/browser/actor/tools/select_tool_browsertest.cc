@@ -77,11 +77,13 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_OptionSelected) {
             "last");
 }
 
-// Test that attempting to select a value that does not exist in the <option>
-// list fails and does not change the current selection.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_OffscreenFails) {
+// Test that attempting to select in an offscreen <select> succeeds.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_Offscreen) {
   const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Page starts unscrolled.
+  ASSERT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
 
   const std::string offscreen_select_id = "#offscreenSelect";
   int32_t offscreen_select_dom_node_id =
@@ -90,15 +92,17 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_OffscreenFails) {
   const std::string initial_value =
       GetSelectElementCurrentValue(web_contents(), offscreen_select_id);
   ASSERT_EQ(initial_value, "alpha");
+  const std::string new_value = "beta";
 
   std::unique_ptr<ToolRequest> action =
-      MakeSelectRequest(*main_frame(), offscreen_select_dom_node_id, "beta");
+      MakeSelectRequest(*main_frame(), offscreen_select_dom_node_id, new_value);
   TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kElementOffscreen);
+  ExpectOkResult(result);
 
+  EXPECT_GT(EvalJs(web_contents(), "window.scrollY"), 0);
   EXPECT_EQ(GetSelectElementCurrentValue(web_contents(), offscreen_select_id),
-            initial_value);
+            new_value);
 }
 
 // Test that the SelectTool causes the change and input events to fire on the

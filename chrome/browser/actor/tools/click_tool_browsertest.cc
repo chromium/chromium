@@ -105,12 +105,15 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_DisabledElement) {
   EXPECT_EQ("", EvalJs(web_contents(), "mouse_event_log.join(',')"));
 }
 
-// Sending a click to an element that's not in the viewport should fail without
-// dispatching events.
+// Sending a click to an element that's not in the viewport should cause it to
+// first be scrolled into view then clicked.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_OffscreenElement) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Page starts unscrolled
+  ASSERT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
 
   std::optional<int> button_id =
       GetDOMNodeId(*main_frame(), "button#offscreen");
@@ -118,12 +121,18 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_OffscreenElement) {
 
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*main_frame(), button_id.value());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_fail;
-  actor_task().Act(ToRequestList(action), result_fail.GetCallback());
-  ExpectErrorResult(result_fail, mojom::ActionResultCode::kElementOffscreen);
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
 
+  // Page is now scrolled.
+  ASSERT_GT(EvalJs(web_contents(), "window.scrollY"), 0);
   // The page should not have received any events.
-  EXPECT_EQ("", EvalJs(web_contents(), "mouse_event_log.join(',')"));
+  EXPECT_EQ(
+      "mousedown[BUTTON#offscreen],"
+      "mouseup[BUTTON#offscreen],"
+      "click[BUTTON#offscreen]",
+      EvalJs(web_contents(), "mouse_event_log.join(',')"));
 }
 
 // Ensure clicks can be sent to elements that are only partially onscreen.

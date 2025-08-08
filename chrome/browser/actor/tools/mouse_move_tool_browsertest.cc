@@ -77,35 +77,18 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_Events) {
       EvalJs(web_contents(), "event_log.join(',')"));
 }
 
-// Test mouse move returns failure if a target is offscreen.
+// Test mouse move causes scrolling if the target is offscreen.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_TargetOutsideViewport) {
   const GURL url = embedded_test_server()->GetURL("/actor/mouse_log.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Log starts empty.
   ASSERT_EQ("", EvalJs(web_contents(), "event_log.join(',')"));
+  // Page starts unscrolled
+  ASSERT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
 
-  // Move mouse over #offscreen DIV. This should fail since #offscreen is
-  // outside the viewport.
-  {
-    std::optional<int> offscreen_id = GetDOMNodeId(*main_frame(), "#offscreen");
-    std::unique_ptr<ToolRequest> action =
-        MakeMouseMoveRequest(*main_frame(), offscreen_id.value());
-
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
-    actor_task().Act(ToRequestList(action), result.GetCallback());
-    ExpectErrorResult(result, mojom::ActionResultCode::kElementOffscreen);
-  }
-
-  // The action should fail without generating any events.
-  EXPECT_EQ("", EvalJs(web_contents(), "event_log.join(',')"));
-
-  // Scroll the element into the viewport.
-  ASSERT_TRUE(ExecJs(web_contents(),
-                     "document.getElementById('offscreen').scrollIntoView()"));
-
-  // Try moving the mouse over #offscreen again. This time it should succeed
-  // since it was scrolled into the viewport.
+  // Move mouse over #offscreen DIV. It should succeed since it is first
+  // scrolled into the viewport.
   {
     std::optional<int> offscreen_id = GetDOMNodeId(*main_frame(), "#offscreen");
     std::unique_ptr<ToolRequest> action =
@@ -116,6 +99,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_TargetOutsideViewport) {
     ExpectOkResult(result);
   }
 
+  EXPECT_GT(EvalJs(web_contents(), "window.scrollY"), 0);
   EXPECT_EQ("mouseenter[DIV#offscreen],mousemove[DIV#offscreen]",
             EvalJs(web_contents(), "event_log.join(',')"));
 }

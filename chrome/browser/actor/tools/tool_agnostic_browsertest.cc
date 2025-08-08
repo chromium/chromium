@@ -13,6 +13,7 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 using base::test::TestFuture;
 using content::ChildFrameAt;
@@ -92,5 +93,126 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, InvokeToolSameSiteSubframe) {
   EXPECT_EQ(true, EvalJs(subframe, "button_clicked"));
 }
 
+// Sending an action to an offscreen element on a page should succeed by
+// scrolling it into view first.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, OffscreenElement) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_EQ(EvalJs(web_contents(), "offscreen_button_clicked"), false);
+
+  std::optional<int> button_id =
+      GetDOMNodeId(*main_frame(), "button#offscreen");
+  ASSERT_TRUE(button_id);
+
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), button_id.value());
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+  EXPECT_EQ(EvalJs(web_contents(), "offscreen_button_clicked"), true);
+}
+
+// Sending an action to an offscreen coordinate should fail.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, OffscreenCoordinate) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  {
+    ASSERT_EQ(EvalJs(web_contents(), "offscreen_button_clicked"), false);
+    gfx::Point click_point = gfx::ToFlooredPoint(
+        GetCenterCoordinatesOfElementWithId(web_contents(), "offscreen"));
+    // The point is offscreen.
+    ASSERT_GT(click_point.y(), web_contents()->GetSize().height());
+
+    std::unique_ptr<ToolRequest> action =
+        MakeClickRequest(*active_tab(), click_point);
+    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectErrorResult(result, mojom::ActionResultCode::kCoordinatesOutOfBounds);
+    EXPECT_EQ(EvalJs(web_contents(), "offscreen_button_clicked"), false);
+  }
+}
+
+// Sending an action to a coordinate that's outside the document bounds (i.e.
+// cannot be scrolled to) should fail.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, InvalidCoordinate) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  {
+    ASSERT_EQ(EvalJs(web_contents(), "window.scrollY"), 0);
+    // A negative coordinate cannot be scrolled to.
+    gfx::Point click_point(-1, -10);
+
+    std::unique_ptr<ToolRequest> action =
+        MakeClickRequest(*active_tab(), click_point);
+    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectErrorResult(result, mojom::ActionResultCode::kCoordinatesOutOfBounds);
+  }
+
+  {
+    ASSERT_EQ(EvalJs(web_contents(), "window.scrollY"), 0);
+    // y-coordinate is outside the document bounds.
+    gfx::Point click_point(1, 10000000);
+
+    std::unique_ptr<ToolRequest> action =
+        MakeClickRequest(*active_tab(), click_point);
+    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectErrorResult(result, mojom::ActionResultCode::kCoordinatesOutOfBounds);
+  }
+}
+
+// Sending an action to an offscreen element on a page that cannot be scrolled
+// should fail.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, OffscreenElementNonScrollablePage) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "document.documentElement.style.overflow = 'hidden';"));
+
+  // Page starts unscrolled
+  ASSERT_EQ(EvalJs(web_contents(), "window.scrollY"), 0);
+
+  std::optional<int> button_id =
+      GetDOMNodeId(*main_frame(), "button#offscreen");
+  ASSERT_TRUE(button_id);
+
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), button_id.value());
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kElementOffscreen);
+
+  EXPECT_EQ(EvalJs(web_contents(), "window.scrollY"), 0);
+}
+
+// Sending an action to an offscreen fixed position element should fail.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, OffscreenFixedElement) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Page starts unscrolled
+  ASSERT_EQ(EvalJs(web_contents(), "window.scrollY"), 0);
+
+  std::optional<int> button_id =
+      GetDOMNodeId(*main_frame(), "button#offscreenfixed");
+  ASSERT_TRUE(button_id);
+
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), button_id.value());
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kElementOffscreen);
+
+  EXPECT_EQ(EvalJs(web_contents(), "window.scrollY"), 0);
+}
 }  // namespace
 }  // namespace actor

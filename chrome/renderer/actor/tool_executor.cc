@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/click_tool.h"
 #include "chrome/renderer/actor/drag_and_release_tool.h"
 #include "chrome/renderer/actor/journal.h"
@@ -135,6 +136,10 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
   }
 
   page_stability_monitor_ = std::make_unique<PageStabilityMonitor>(*frame_);
+
+  if (features::kGlicActorScrollTargetIntoView.Get()) {
+    tool_->EnsureTargetInView();
+  }
 
   execute_journal_entry_ = journal_->CreatePendingAsyncEntry(
       invocation->task_id, "ExecuteTool", tool_->DebugString());
