@@ -13761,7 +13761,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "InputOnVizEnabled",
                     "enable_features": [
                         "InputOnViz"
                     ]
