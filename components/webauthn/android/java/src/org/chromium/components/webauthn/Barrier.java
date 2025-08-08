@@ -138,8 +138,16 @@ public class Barrier {
     }
 
     public void onFido2ApiCancelled() {
+        onFido2ApiCancelled(AuthenticatorStatus.ABORT_ERROR);
+    }
+
+    /**
+     * The same as the method above but allows a custom @AuthenticatorStatus rather than the default
+     * ABORT_ERROR.
+     */
+    public void onFido2ApiCancelled(int error) {
         if (mCredManStatus == Status.NONE || mCredManCancelled) {
-            mErrorCallback.onResult(AuthenticatorStatus.ABORT_ERROR);
+            mErrorCallback.onResult(error);
             mCredManCancelled = false;
             return;
         }

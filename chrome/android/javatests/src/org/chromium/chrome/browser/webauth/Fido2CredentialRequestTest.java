@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.webauth;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -117,6 +120,7 @@ import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.mojo_base.mojom.String16;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
+import org.chromium.ui.util.RunnableTimer;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -2416,7 +2420,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    public void testGetAssertion_ImmediateWithPasskeysOnly_success() {
+    public void testGetAssertion_immediateWithPasskeysOnly_success() {
         Fido2ApiTestHelper.mockClientDataJson();
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
         mMockBrowserBridge.setExpectedCredentialDetailsList(
@@ -2445,7 +2449,9 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    public void testGetAssertion_ImmediateWithNonEmptyAllowList_notAllowedError() {
+    public void testGetAssertion_immediateWithNonEmptyAllowList_notAllowedError() {
+        WebauthnBrowserBridge mockedBrowserBridge = Mockito.mock(WebauthnBrowserBridge.class);
+        mRequest.overrideBrowserBridgeForTesting(mockedBrowserBridge);
         mRequestOptions.mediation = Mediation.IMMEDIATE;
         mRequestOptions.requestedCredentialTypeFlags |= CredentialTypeFlags.PASSWORD;
 
@@ -2461,11 +2467,16 @@ public class Fido2CredentialRequestTest {
         Assert.assertEquals(
                 Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR), mCallback.getStatus());
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+        Mockito.verify(mockedBrowserBridge, never())
+                .onCredentialsDetailsListReceived(
+                        any(), any(), anyInt(), any(), any(), any(), any());
     }
 
     @Test
     @SmallTest
-    public void testGetAssertion_ImmediateWithNoPasskeysFound_notAllowedError() {
+    public void testGetAssertion_immediateWithNoPasskeysFound_notAllowedError() {
+        WebauthnBrowserBridge mockedBrowserBridge = Mockito.mock(WebauthnBrowserBridge.class);
+        mRequest.overrideBrowserBridgeForTesting(mockedBrowserBridge);
         mFido2ApiCallHelper.setReturnedCredentialDetails(new ArrayList<>());
         mMockBrowserBridge.setExpectedCredentialDetailsList(new ArrayList<>());
 
@@ -2484,11 +2495,14 @@ public class Fido2CredentialRequestTest {
         Assert.assertEquals(
                 Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR), mCallback.getStatus());
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+        Mockito.verify(mockedBrowserBridge, never())
+                .onCredentialsDetailsListReceived(
+                        any(), any(), anyInt(), any(), any(), any(), any());
     }
 
     @Test
     @SmallTest
-    public void testGetAssertion_ImmediateWithNoPasskeysButPasswordReturned_success() {
+    public void testGetAssertion_immediateWithNoPasskeysButPasswordReturned_success() {
         mMockBrowserBridge.setInvokeCallbackImmediately(
                 MockBrowserBridge.CallbackInvocationType.IMMEDIATE_PASSWORD);
         mMockBrowserBridge.setExpectedCredentialDetailsList(new ArrayList<>());
@@ -2518,8 +2532,9 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    public void testGetAssertion_ImmediateInIncognito_notAllowedError() {
+    public void testGetAssertion_immediateInIncognito_notAllowedError() {
         mWebContents = new MockIncognitoWebContents();
+        WebauthnBrowserBridge mockedBrowserBridge = Mockito.mock(WebauthnBrowserBridge.class);
         mAuthenticationContextProvider =
                 new AuthenticationContextProvider() {
                     @Override
@@ -2544,6 +2559,7 @@ public class Fido2CredentialRequestTest {
                 };
         mRequest = new Fido2CredentialRequest(mAuthenticationContextProvider);
         AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mRequest);
+        mRequest.overrideBrowserBridgeForTesting(mockedBrowserBridge);
 
         mRequestOptions.mediation = Mediation.IMMEDIATE;
         mRequestOptions.requestedCredentialTypeFlags |= CredentialTypeFlags.PASSWORD;
@@ -2561,6 +2577,48 @@ public class Fido2CredentialRequestTest {
         Assert.assertEquals(
                 Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR), mCallback.getStatus());
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+        Mockito.verify(mockedBrowserBridge, never())
+                .onCredentialsDetailsListReceived(
+                        any(), any(), anyInt(), any(), any(), any(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_immediateTimesOut_notAllowedError() {
+        WebauthnBrowserBridge mockedBrowserBridge = Mockito.mock(WebauthnBrowserBridge.class);
+        RunnableTimer timer = Mockito.mock(RunnableTimer.class);
+        mRequest.setImmediateTimerForTesting(timer);
+
+        doAnswer(
+                        answer -> {
+                            Runnable runnable = answer.getArgument(1);
+                            runnable.run();
+                            return null;
+                        })
+                .when(timer)
+                .startTimer(anyLong(), any(Runnable.class));
+
+        // Prevent credentials from being returned.
+        mFido2ApiCallHelper.setInvokeCallbackImmediately(false);
+
+        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
+        mRequestOptions.mediation = Mediation.IMMEDIATE;
+        mRequestOptions.requestedCredentialTypeFlags |= CredentialTypeFlags.PASSWORD;
+
+        mRequest.handleGetCredentialRequest(
+                mRequestOptions,
+                mOrigin,
+                mOrigin,
+                /* payment= */ null,
+                mCallback::onSignResponse,
+                mCallback::onError,
+                mCallback::onRequestOutcome);
+        mCallback.blockUntilCalled();
+        Assert.assertEquals(
+                Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR), mCallback.getStatus());
+        Mockito.verify(mockedBrowserBridge, never())
+                .onCredentialsDetailsListReceived(
+                        any(), any(), anyInt(), any(), any(), any(), any());
     }
 
     @Test

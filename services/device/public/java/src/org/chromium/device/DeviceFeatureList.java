@@ -40,6 +40,10 @@ public abstract class DeviceFeatureList {
             sGmsCoreLocationRequestParamOverride.newIntParam(
                     "location_request_max_location_age_mills",
                     (int) (5 * DateUtils.SECOND_IN_MILLIS));
+    public static final MutableFlagWithSafeDefault sWebAuthnImmediateGet =
+            newMutableFlagWithSafeDefault(WEBAUTHN_IMMEDIATE_GET, false);
+    public static final MutableIntParamWithSafeDefault sWebAuthnImmmediateTimeoutMs =
+            sWebAuthnImmediateGet.newIntParam("timeout_ms", 500);
 
     private static MutableFlagWithSafeDefault newMutableFlagWithSafeDefault(
             String featureName, boolean defaultValue) {

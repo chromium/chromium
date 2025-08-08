@@ -57,7 +57,9 @@ import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.device.DeviceFeatureList;
 import org.chromium.net.GURLUtils;
+import org.chromium.ui.util.RunnableTimer;
 import org.chromium.url.Origin;
 
 import java.nio.ByteBuffer;
@@ -103,6 +105,7 @@ public class Fido2CredentialRequest
     private @GetAssertionOutcome int mGetAssertionErrorOutcome = GetAssertionOutcome.OTHER_FAILURE;
     private @MakeCredentialOutcome int mMakeCredentialErrorOutcome =
             MakeCredentialOutcome.OTHER_FAILURE;
+    private RunnableTimer mImmediateTimer = new RunnableTimer();
 
     // Some modes do credential enumeration in advance of calling a platform API to get a passkey
     // assertion. In these cases a cancellation before the final request is sent can prevent
@@ -172,6 +175,7 @@ public class Fido2CredentialRequest
 
     private void returnErrorAndResetCallback(int error) {
         recordOutcomeMetric();
+        mImmediateTimer.cancelTimer();
         assert mErrorCallback != null;
         if (mErrorCallback == null) return;
         mErrorCallback.onError(error);
@@ -689,6 +693,9 @@ public class Fido2CredentialRequest
             } else {
                 reason = GmsCoreGetCredentialsHelper.Reason.GET_ASSERTION_NON_GOOGLE;
             }
+            if (options.mediation == Mediation.IMMEDIATE) {
+                startImmediateTimer();
+            }
             GmsCoreGetCredentialsHelper.getInstance()
                     .getCredentials(
                             mAuthenticationContextProvider,
@@ -856,6 +863,10 @@ public class Fido2CredentialRequest
         mBarrier = barrier;
     }
 
+    public void setImmediateTimerForTesting(RunnableTimer timer) {
+        mImmediateTimer = timer;
+    }
+
     private void onWebauthnCredentialDetailsListReceived(
             PublicKeyCredentialRequestOptions options,
             String callerOriginString,
@@ -877,6 +888,8 @@ public class Fido2CredentialRequest
             mCancellableUiState = CancellableUiState.NONE;
             return;
         }
+
+        mImmediateTimer.cancelTimer();
 
         List<WebauthnCredentialDetails> discoverableCredentials = new ArrayList<>();
         for (WebauthnCredentialDetails credential : credentials) {
@@ -927,9 +940,10 @@ public class Fido2CredentialRequest
                 mediationType = AssertionMediationType.IMMEDIATE_WITH_PASSWORDS;
                 passwordCallback =
                         (passwordCredential) -> {
-                            assumeNonNull(mGetCredentialCallback);
-                            mGetCredentialCallback.onCredentialResponse(
-                                    /* assertionResponse= */ null, passwordCredential);
+                            if (mGetCredentialCallback != null) {
+                                mGetCredentialCallback.onCredentialResponse(
+                                        /* assertionResponse= */ null, passwordCredential);
+                            }
                         };
             } else {
                 if (discoverableCredentials.isEmpty()) {
@@ -1525,6 +1539,21 @@ public class Fido2CredentialRequest
         }
         messageDigest.update(mClientDataJson);
         return messageDigest.digest();
+    }
+
+    private void startImmediateTimer() {
+        mImmediateTimer.startTimer(
+                DeviceFeatureList.sWebAuthnImmmediateTimeoutMs.getValue(),
+                this::onImmediateTimeout);
+    }
+
+    private void onImmediateTimeout() {
+        if (mGetCredentialCallback == null) {
+            return;
+        }
+        logError(TAG, "Timed out waiting for immediate request");
+        mBarrier.onFido2ApiCancelled(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+        mCancellableUiState = CancellableUiState.CANCEL_PENDING;
     }
 
     @Override
