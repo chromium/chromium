@@ -112,6 +112,29 @@ bool ClientSideDetectionIntelligentScanDelegateDesktop::
   return on_device_model_available_;
 }
 
+bool ClientSideDetectionIntelligentScanDelegateDesktop::ShouldShowScamWarning(
+    std::optional<IntelligentScanVerdict> verdict) {
+  if (!verdict.has_value() ||
+      *verdict ==
+          IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_UNSPECIFIED ||
+      *verdict == IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE) {
+    return false;
+  }
+
+  return (base::FeatureList::IsEnabled(
+              kClientSideDetectionShowScamVerdictWarning) &&
+          *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1) ||
+         (base::FeatureList::IsEnabled(
+              kClientSideDetectionShowLlamaScamVerdictWarning) &&
+          *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2) ||
+         ((base::FeatureList::IsEnabled(
+               kClientSideDetectionShowScamVerdictWarning) ||
+           base::FeatureList::IsEnabled(
+               kClientSideDetectionShowLlamaScamVerdictWarning)) &&
+          *verdict ==
+              IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
+}
+
 void ClientSideDetectionIntelligentScanDelegateDesktop::OnPrefsUpdated() {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     return;

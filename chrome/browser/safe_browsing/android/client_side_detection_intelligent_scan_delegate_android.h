@@ -32,6 +32,8 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
   void InquireOnDeviceModel(std::string rendered_texts,
                             InquireOnDeviceModelDoneCallback callback) override;
   bool ResetOnDeviceSession() override;
+  bool ShouldShowScamWarning(
+      std::optional<IntelligentScanVerdict> verdict) override;
 
  private:
   const raw_ref<PrefService> pref_;

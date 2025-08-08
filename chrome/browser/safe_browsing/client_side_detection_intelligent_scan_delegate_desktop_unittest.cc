@@ -40,7 +40,9 @@ class ClientSideDetectionIntelligentScanDelegateDesktopTest
   ClientSideDetectionIntelligentScanDelegateDesktopTest() {
     feature_list_.InitWithFeatures(
         {kClientSideDetectionBrandAndIntentForScamDetection,
-         kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
+         kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
+         kClientSideDetectionShowScamVerdictWarning,
+         kClientSideDetectionShowLlamaScamVerdictWarning},
         {kClientSideDetectionKillswitch});
     RegisterProfilePrefs(pref_service_.registry());
   }
@@ -772,6 +774,24 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_FALSE(delegate_->IsSessionAliveForTesting());
 }
 
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       ShouldShowScamWarning) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(std::nullopt));
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE));
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_UNSPECIFIED));
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_TELEMETRY));
+  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1));
+  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2));
+  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT));
+}
+
 class
     ClientSideDetectionIntelligentScanDelegateDesktopTestBrandAndIntentDisabled
     : public ClientSideDetectionIntelligentScanDelegateDesktopTest {
@@ -896,6 +916,84 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTestKillSwitchEnabled,
 
   EXPECT_FALSE(delegate_->IsOnDeviceModelAvailable(
       /*log_failed_eligibility_reason=*/true));
+}
+
+class
+    ClientSideDetectionIntelligentScanDelegateDesktopTestShowScamWarningDisabled
+    : public ClientSideDetectionIntelligentScanDelegateDesktopTest {
+ public:
+  ClientSideDetectionIntelligentScanDelegateDesktopTestShowScamWarningDisabled() {
+    feature_list_.InitWithFeatures(
+        {kClientSideDetectionShowLlamaScamVerdictWarning},
+        {kClientSideDetectionShowScamVerdictWarning});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(
+    ClientSideDetectionIntelligentScanDelegateDesktopTestShowScamWarningDisabled,
+    ShouldShowScamWarning) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1));
+  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2));
+  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT));
+}
+
+class
+    ClientSideDetectionIntelligentScanDelegateDesktopTestShowLlamaWarningDisabled
+    : public ClientSideDetectionIntelligentScanDelegateDesktopTest {
+ public:
+  ClientSideDetectionIntelligentScanDelegateDesktopTestShowLlamaWarningDisabled() {
+    feature_list_.InitWithFeatures(
+        {kClientSideDetectionShowScamVerdictWarning},
+        {kClientSideDetectionShowLlamaScamVerdictWarning});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(
+    ClientSideDetectionIntelligentScanDelegateDesktopTestShowLlamaWarningDisabled,
+    ShouldShowScamWarning) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1));
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2));
+  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT));
+}
+
+class
+    ClientSideDetectionIntelligentScanDelegateDesktopTestShowAllWarningDisabled
+    : public ClientSideDetectionIntelligentScanDelegateDesktopTest {
+ public:
+  ClientSideDetectionIntelligentScanDelegateDesktopTestShowAllWarningDisabled() {
+    feature_list_.InitWithFeatures(
+        {}, {kClientSideDetectionShowScamVerdictWarning,
+             kClientSideDetectionShowLlamaScamVerdictWarning});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(
+    ClientSideDetectionIntelligentScanDelegateDesktopTestShowAllWarningDisabled,
+    ShouldShowScamWarning) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1));
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2));
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT));
 }
 
 }  // namespace safe_browsing

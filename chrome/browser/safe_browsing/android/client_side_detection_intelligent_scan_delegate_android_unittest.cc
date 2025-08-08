@@ -94,6 +94,24 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
       /*log_failed_eligibility_reason=*/false));
 }
 
+TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
+       ShouldShowScamWarning) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(std::nullopt));
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE));
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_UNSPECIFIED));
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_TELEMETRY));
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1));
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2));
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT));
+}
+
 class ClientSideDetectionIntelligentScanDelegateAndroidTestWithFeatureDisabled
     : public ClientSideDetectionIntelligentScanDelegateAndroidTest {
  public:

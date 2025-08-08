@@ -228,28 +228,6 @@ void LogLlamaForcedTriggerInfoFields(
   }
 }
 
-bool ShouldShowScamWarning(std::optional<IntelligentScanVerdict> verdict) {
-  if (!verdict.has_value() ||
-      *verdict ==
-          IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_UNSPECIFIED ||
-      *verdict == IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE) {
-    return false;
-  }
-
-  return (base::FeatureList::IsEnabled(
-              kClientSideDetectionShowScamVerdictWarning) &&
-          *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1) ||
-         (base::FeatureList::IsEnabled(
-              kClientSideDetectionShowLlamaScamVerdictWarning) &&
-          *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2) ||
-         ((base::FeatureList::IsEnabled(
-               kClientSideDetectionShowScamVerdictWarning) ||
-           base::FeatureList::IsEnabled(
-               kClientSideDetectionShowLlamaScamVerdictWarning)) &&
-          *verdict ==
-              IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
-}
-
 safe_browsing::ThreatSubtype GetThreatSubtype(
     IntelligentScanVerdict intelligent_scan_verdict) {
   switch (intelligent_scan_verdict) {
@@ -1497,7 +1475,8 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
   }
 
   bool should_show_scam_warning =
-      ShouldShowScamWarning(intelligent_scan_verdict);
+      intelligent_scan_delegate_->ShouldShowScamWarning(
+          intelligent_scan_verdict);
 
   // We will only show the warning if |is_phishing| is true, or while the
   // feature is enabled, the intelligent scan verdict matches the corresponding

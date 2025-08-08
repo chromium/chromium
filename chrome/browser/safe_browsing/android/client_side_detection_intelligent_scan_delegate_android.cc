@@ -46,4 +46,9 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::ResetOnDeviceSession() {
   return false;
 }
 
+bool ClientSideDetectionIntelligentScanDelegateAndroid::ShouldShowScamWarning(
+    std::optional<IntelligentScanVerdict> verdict) {
+  return false;
+}
+
 }  // namespace safe_browsing

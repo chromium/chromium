@@ -38,6 +38,8 @@ class ClientSideDetectionIntelligentScanDelegateDesktop
   void InquireOnDeviceModel(std::string rendered_texts,
                             InquireOnDeviceModelDoneCallback callback) override;
   bool ResetOnDeviceSession() override;
+  bool ShouldShowScamWarning(
+      std::optional<IntelligentScanVerdict> verdict) override;
 
   // KeyedService implementation.
   void Shutdown() override;

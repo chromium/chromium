@@ -194,6 +194,7 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
       delete;
 
   MOCK_METHOD1(DisplayBlockingPage, void(const UnsafeResource& resource));
+
  protected:
   ~MockSafeBrowsingUIManager() override = default;
 };
@@ -274,6 +275,10 @@ class MockIntelligentScanDelegate
               (std::string, InquireOnDeviceModelDoneCallback),
               (override));
   MOCK_METHOD(bool, ResetOnDeviceSession, (), (override));
+  MOCK_METHOD(bool,
+              ShouldShowScamWarning,
+              (std::optional<IntelligentScanVerdict>),
+              (override));
 };
 
 }  // namespace
@@ -3049,7 +3054,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
 TEST_F(
     ClientSideDetectionHostScamDetectionTest,
-    ScamExperimentVerdictOnClientPhishingResponseButDoesntShowBlockingPageDueToDisabledFlag) {
+    ScamExperimentVerdictOnClientPhishingResponseButDoesntShowBlockingPageDueToDisabledDelegate) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
@@ -3064,6 +3069,10 @@ TEST_F(
       /*returned_is_phishing=*/false,
       /*returned_intelligent_scan_verdict=*/
       IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1);
+  EXPECT_CALL(*intelligent_scan_delegate_,
+              ShouldShowScamWarning(std::optional<IntelligentScanVerdict>(
+                  IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1)))
+      .WillOnce(Return(false));
   // We do not expect the blocking page to pop up because
   // kClientSideDetectionShowScamVerdictWarning is disabled.
   EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
@@ -3099,6 +3108,10 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       /*returned_is_phishing=*/false,
       /*returned_intelligent_scan_verdict=*/
       IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1);
+  EXPECT_CALL(*intelligent_scan_delegate_,
+              ShouldShowScamWarning(std::optional<IntelligentScanVerdict>(
+                  IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1)))
+      .WillOnce(Return(true));
   // Now we run the callback to receive a server response. We do expect the
   // blocking page to pop up on a non-phishy response with the scam experiment
   // verdict because the feature is now enabled despite the is_phishy field is
@@ -3147,6 +3160,10 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       /*returned_is_phishing=*/false,
       /*returned_intelligent_scan_verdict=*/
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+  EXPECT_CALL(*intelligent_scan_delegate_,
+              ShouldShowScamWarning(std::optional<IntelligentScanVerdict>(
+                  IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE)))
+      .WillOnce(Return(false));
 
   // Although the phishing detection done is set to TRIGGER_MODELS, it will
   // eventually switch to FORCE_REQUEST because the verdict cache manager
@@ -3424,6 +3441,10 @@ TEST_F(
       /*returned_is_phishing=*/false,
       /*returned_intelligent_scan_verdict=*/
       IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2);
+  EXPECT_CALL(*intelligent_scan_delegate_,
+              ShouldShowScamWarning(std::optional<IntelligentScanVerdict>(
+                  IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2)))
+      .WillOnce(Return(true));
 
   UnsafeResource resource;
   resource.threat_subtype = ThreatSubtype::SCAM_EXPERIMENT_VERDICT_2;
@@ -3434,55 +3455,6 @@ TEST_F(
   EXPECT_CALL(*ui_manager_.get(),
               DisplayBlockingPage(HasScamThreatSubtype(resource)))
       .Times(1);
-
-  // Although the phishing detection done is set to TRIGGER_MODELS, it will
-  // eventually switch to FORCE_REQUEST because the verdict cache manager
-  // contains a suspicious RTLookupResponse.
-  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.8f,
-                        ClientSideDetectionType::TRIGGER_MODELS,
-                        /*did_match_high_confidence_allowlist=*/false);
-
-  VerifyExpectedCalls();
-  VerifyGeneralScamDetectionHistograms(
-      /*expected_request_type=*/ClientSideDetectionType::FORCE_REQUEST,
-      /*is_on_device_model_available=*/true,
-      /*model_has_successful_response=*/true,
-      /*intelligent_scan_verdict=*/
-      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2);
-  VerifyForcedTriggerScamDetectionHistograms(
-      /*force_request=*/true, /*has_llama_forced_trigger_info=*/true,
-      /*intelligent_scan=*/true,
-      /*redirect_chain_contains_llama_forced_trigger_info=*/std::nullopt);
-}
-
-TEST_F(
-    ClientSideDetectionHostScamDetectionTest,
-    RTLookupResponseLlamaForcedTriggerInfoTriggersOnDeviceLLMButNotShowWarningDueToDisabledStudy) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
-  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo,
-               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
-              {kClientSideDetectionShowLlamaScamVerdictWarning});
-
-  CacheForcedTriggerInfo(
-      /*has_llama_forced_trigger_info=*/true,
-      /*intelligent_scan=*/true,
-      /*cache_expression=*/example_url_.GetContent());
-  SetInquireOnDeviceModelCallback(/*should_return_response=*/true);
-  SetSendClientReportPhishingRequestCallback(
-      /*has_expected_brand_and_intent=*/true,
-      /*expected_no_info_reason=*/std::nullopt,
-      /*expected_llama_forced_trigger_info_trigger_url=*/
-      example_url_.GetContent(),
-      /*returned_is_phishing=*/false,
-      /*returned_intelligent_scan_verdict=*/
-      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2);
-  // Now we run the callback to receive a server response. Because the study is
-  // disabled, we do NOT expect the blocking page to pop up on a non-phishy
-  // response with the scam experiment verdict.
-  EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
 
   // Although the phishing detection done is set to TRIGGER_MODELS, it will
   // eventually switch to FORCE_REQUEST because the verdict cache manager
@@ -3525,6 +3497,11 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       /*returned_is_phishing=*/false,
       /*returned_intelligent_scan_verdict=*/
       IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_TELEMETRY);
+  EXPECT_CALL(*intelligent_scan_delegate_,
+              ShouldShowScamWarning(std::optional<IntelligentScanVerdict>(
+                  IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_TELEMETRY)))
+      .WillOnce(Return(false));
+
   // Because the callback responds with the catch all verdict, we will not show
   // a warning.
   EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
@@ -3548,45 +3525,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 }
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
-       CatchAllEnforcementScamExperimentVerdictDoesNotShowWarningDueToStudies) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
-  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection},
-              {kClientSideDetectionSendLlamaForcedTriggerInfo,
-               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
-               kClientSideDetectionShowScamVerdictWarning,
-               kClientSideDetectionShowLlamaScamVerdictWarning});
-  SetInquireOnDeviceModelCallback(/*should_return_response=*/true);
-  SetSendClientReportPhishingRequestCallback(
-      /*has_expected_brand_and_intent=*/true,
-      /*expected_no_info_reason=*/std::nullopt,
-      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
-      /*returned_is_phishing=*/false,
-      /*returned_intelligent_scan_verdict=*/
-      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
-
-  // Now we run the callback to receive a server response. Because the callback
-  // responds with the catch all enforcement verdict, but the studies are
-  // disabled, we will NOT show a warning.
-  EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
-
-  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.8f,
-                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
-                        /*did_match_high_confidence_allowlist=*/false);
-
-  VerifyExpectedCalls();
-  VerifyGeneralScamDetectionHistograms(
-      /*expected_request_type=*/ClientSideDetectionType::
-          KEYBOARD_LOCK_REQUESTED,
-      /*is_on_device_model_available=*/true,
-      /*model_has_successful_response=*/true,
-      /*intelligent_scan_verdict=*/
-      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
-}
-
-TEST_F(ClientSideDetectionHostScamDetectionTest,
        CatchAllEnforcementScamExperimentVerdictDoesShowWarning) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
@@ -3606,6 +3544,11 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       /*returned_is_phishing=*/false,
       /*returned_intelligent_scan_verdict=*/
       IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
+  EXPECT_CALL(
+      *intelligent_scan_delegate_,
+      ShouldShowScamWarning(std::optional<IntelligentScanVerdict>(
+          IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT)))
+      .WillOnce(Return(true));
 
   UnsafeResource resource;
   resource.threat_subtype =

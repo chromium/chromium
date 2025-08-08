@@ -135,6 +135,10 @@ class ClientSideDetectionHost
     // the session was reset. Does nothing and returns false if there is no
     // session.
     virtual bool ResetOnDeviceSession() = 0;
+    // Determines if a scam warning should be shown based on the intelligent
+    // scan verdict.
+    virtual bool ShouldShowScamWarning(
+        std::optional<IntelligentScanVerdict> verdict) = 0;
   };
 
   // The caller keeps ownership of the tab object and is responsible for
