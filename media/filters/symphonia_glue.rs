@@ -141,8 +141,8 @@ mod ffi {
     enum SymphoniaDecodeStatus {
         /// The packet was successfully decoded.
         Ok,
-        /// The end of the audio stream has been reached. This is not an error.
-        EndOfStream,
+        /// The audio stream ended unexpectedly.
+        UnexpectedEndOfStream,
         /// The decoder is in an invalid state (e.g., initialization failed).
         InvalidDecoderState,
         /// A generic, non-specific error occurred within Symphonia.
@@ -173,7 +173,8 @@ mod ffi {
         status: SymphoniaDecodeStatus,
         /// A descriptive error message if decoding failed.
         error_str: String,
-        /// On success, a `Box` containing the decoded audio data.
+        /// A `Box` containing the decoded audio data. If the end of the stream
+        /// has been reached, the buffer will be empty.
         buffer: Box<SymphoniaAudioBuffer>,
     }
 
@@ -455,7 +456,7 @@ impl From<&Error> for ffi::SymphoniaDecodeStatus {
         match err {
             Error::DecodeError(_) => ffi::SymphoniaDecodeStatus::DecodeError,
             Error::IoError(io_err) if io_err.kind() == std::io::ErrorKind::UnexpectedEof => {
-                ffi::SymphoniaDecodeStatus::EndOfStream
+                ffi::SymphoniaDecodeStatus::UnexpectedEndOfStream
             }
             Error::IoError(_) => ffi::SymphoniaDecodeStatus::IoError,
             Error::ResetRequired => ffi::SymphoniaDecodeStatus::ResetRequired,

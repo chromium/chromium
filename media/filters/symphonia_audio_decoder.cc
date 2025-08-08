@@ -238,10 +238,19 @@ bool SymphoniaAudioDecoder::SymphoniaDecode(const DecoderBuffer& buffer) {
   SymphoniaDecodeResult result = symphonia_decoder_.value()->decode(
       ToSymphoniaPacket(buffer, first_frame_timestamp_.value()));
 
-  if (result.status == SymphoniaDecodeStatus::EndOfStream) {
-    // No buffer to process.
+  // The Symphonia glue will return an empty buffer if end of stream is reached.
+  if (result.buffer->data.empty()) {
+    // The stream end was unexpected, which is not as severe of an error as the
+    // other potential cases logged below.
+    if (result.status == SymphoniaDecodeStatus::UnexpectedEndOfStream) {
+      MEDIA_LOG(WARNING, media_log_) << "Reached an unexpected end of stream.";
+    }
     return true;
   }
+  // Sanity check: if Symphonia thinks things are OK and returned a valid
+  // buffer, then the input buffer should definitely not have been end of
+  // stream.
+  CHECK(!buffer.end_of_stream());
 
   if (result.status != SymphoniaDecodeStatus::Ok) {
     MEDIA_LOG(ERROR, media_log_)
