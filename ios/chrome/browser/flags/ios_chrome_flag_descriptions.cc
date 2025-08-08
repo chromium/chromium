@@ -1581,12 +1581,6 @@ const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";
 
-const char kSyncTrustedVaultInfobarImprovementsName[] =
-    "Trusted vault infobar UI improvements";
-const char kSyncTrustedVaultInfobarImprovementsDescription[] =
-    "Enabled improvements to the UI of the trusted vault error infobar (e.g. "
-    "displaying it on pages with password forms).";
-
 const char kSyncTrustedVaultInfobarMessageImprovementsName[] =
     "Trusted vault infobar message improvements";
 const char kSyncTrustedVaultInfobarMessageImprovementsDescription[] =
