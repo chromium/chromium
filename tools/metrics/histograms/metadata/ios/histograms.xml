@@ -2092,7 +2092,8 @@ chromium-metrics-reviews@google.com.
   <owner>sebsg@chromium.org</owner>
   <owner>bling-alchemy@google.com</owner>
   <summary>
-    Records the user's selection on the Gemini FRE consent screen.
+    Records the user's selection on the Gemini FRE consent screen, including
+    accept/dismiss decisions and link clicks for additional information.
   </summary>
 </histogram>
 

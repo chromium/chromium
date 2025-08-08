@@ -34,7 +34,8 @@ extern const char kConsentActionHistogram[];
 enum class IOSGeminiFREAction {
   kAccept = 0,
   kDismiss = 1,
-  kMaxValue = kDismiss,
+  kLinkClick = 2,
+  kMaxValue = kLinkClick,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFREAction)
 
@@ -87,5 +88,21 @@ void RecordFirstPromptSubmission(IOSGeminiFirstPromptSubmissionMethod method);
 
 // Records that the user received any response from BWG.
 void RecordBWGResponseReceived();
+
+// Records that the user tapped the "Get Started" button on the BWG FRE promo
+// screen.
+void RecordFREPromoAccept();
+
+// Records that the user tapped the "Cancel" button on the BWG FRE promo screen.
+void RecordFREPromoDismiss();
+
+// Records that the user accepted the BWG FRE consent.
+void RecordFREConsentAccept();
+
+// Records that the user dismissed the BWG FRE consent.
+void RecordFREConsentDismiss();
+
+// Records that the user clicked a link on the BWG FRE consent screen.
+void RecordFREConsentLinkClick();
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_

@@ -40,11 +40,34 @@ const char kFirstPromptSubmissionMethodHistogram[] =
     "IOS.Gemini.FirstPrompt.SubmissionMethod";
 
 void RecordFREPromoAction(IOSGeminiFREAction action) {
+  switch (action) {
+    case IOSGeminiFREAction::kAccept:
+      RecordFREPromoAccept();
+      break;
+    case IOSGeminiFREAction::kDismiss:
+      RecordFREPromoDismiss();
+      break;
+    default:
+      break;
+  }
   base::UmaHistogramEnumeration(kPromoActionHistogram, action);
 }
 
 void RecordFREConsentAction(IOSGeminiFREAction action) {
-  base::UmaHistogramEnumeration(kPromoActionHistogram, action);
+  switch (action) {
+    case IOSGeminiFREAction::kAccept:
+      RecordFREConsentAccept();
+      break;
+    case IOSGeminiFREAction::kDismiss:
+      RecordFREConsentDismiss();
+      break;
+    case IOSGeminiFREAction::kLinkClick:
+      RecordFREConsentLinkClick();
+      break;
+    default:
+      break;
+  }
+  base::UmaHistogramEnumeration(kConsentActionHistogram, action);
 }
 
 void RecordBWGSessionTime(base::TimeDelta session_duration) {
@@ -81,4 +104,25 @@ void RecordFirstPromptSubmission(IOSGeminiFirstPromptSubmissionMethod method) {
 
 void RecordBWGResponseReceived() {
   base::RecordAction(base::UserMetricsAction("MobileGeminiResponseReceived"));
+}
+
+void RecordFREPromoAccept() {
+  base::RecordAction(base::UserMetricsAction("MobileGeminiFREPromoCancel"));
+}
+
+void RecordFREPromoDismiss() {
+  base::RecordAction(base::UserMetricsAction("MobileGeminiFREPromoAccept"));
+}
+
+void RecordFREConsentAccept() {
+  base::RecordAction(base::UserMetricsAction("MobileGeminiFREConsentAccept"));
+}
+
+void RecordFREConsentDismiss() {
+  base::RecordAction(base::UserMetricsAction("MobileGeminiFREConsentDismiss"));
+}
+
+void RecordFREConsentLinkClick() {
+  base::RecordAction(
+      base::UserMetricsAction("MobileGeminiFREConsentLinkClick"));
 }

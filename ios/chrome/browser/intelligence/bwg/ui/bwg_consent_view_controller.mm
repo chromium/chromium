@@ -532,6 +532,8 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
   if (!textItem.link) {
     return nil;
   }
+
+  RecordFREConsentAction(IOSGeminiFREAction::kLinkClick);
   if ([textItem.link.absoluteString isEqualToString:kFirstFootnoteLinkAction]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {

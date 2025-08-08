@@ -596,6 +596,7 @@ chromium-metrics-reviews@google.com.
 <enum name="IOSGeminiFREAction">
   <int value="0" label="Accept"/>
   <int value="1" label="Dismiss"/>
+  <int value="2" label="Link Click"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h:IOSGeminiFREAction) -->
