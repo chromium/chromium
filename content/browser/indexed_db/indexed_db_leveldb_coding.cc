@@ -16,6 +16,7 @@
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
@@ -495,47 +496,59 @@ bool MaybeEncodeIDBKey(const IndexedDBKey& value, std::string* into) {
   return EncodeIDBKeyRecursively(value, into, 0);
 }
 
-void EncodeSortableIDBKeyRecursively(const IndexedDBKey& value,
-                                     std::string* into) {
-  size_t previous_size = into->size();
-  switch (value.type()) {
-    case blink::mojom::IDBKeyType::Array: {
-      EncodeByte(kOrderedArrayTypeByte, into);
-      for (const IndexedDBKey& key : value.array()) {
-        EncodeSortableIDBKeyRecursively(key, into);
-      }
-      EncodeByte(kSentinel, into);
-      DCHECK_GT(into->size(), previous_size);
-      return;
-    }
-    case blink::mojom::IDBKeyType::Binary:
-      EncodeByte(kOrderedBinaryTypeByte, into);
-      EncodeBinaryWithSentinel(value.binary(), into);
-      return;
-    case blink::mojom::IDBKeyType::String:
-      EncodeByte(kOrderedStringTypeByte, into);
-      EncodeStringWithSentinel(value.string(), into);
-      return;
-    case blink::mojom::IDBKeyType::Date:
-      EncodeByte(kOrderedDateTypeByte, into);
-      EncodeSortableDouble(value.date(), into);
-      return;
-    case blink::mojom::IDBKeyType::Number:
-      EncodeByte(kOrderedNumberTypeByte, into);
-      EncodeSortableDouble(value.number(), into);
-      return;
-    case blink::mojom::IDBKeyType::None:
-    case blink::mojom::IDBKeyType::Invalid:
-    case blink::mojom::IDBKeyType::Min:
-    default:
-      NOTREACHED();
-  }
-}
-
 std::string EncodeSortableIDBKey(const IndexedDBKey& value) {
-  std::string encoded;
-  EncodeSortableIDBKeyRecursively(value, &encoded);
-  return encoded;
+  CHECK(value.IsValid());
+  std::string into;
+
+  std::list<const IndexedDBKey*> keys;
+  keys.push_back(&value);
+
+  while (!keys.empty()) {
+    const IndexedDBKey* key = keys.back();
+    keys.pop_back();
+
+    if (!key) {
+      // This value pushed by an Array case (see below).
+      EncodeByte(kSentinel, &into);
+      continue;
+    }
+
+    switch (key->type()) {
+      case blink::mojom::IDBKeyType::Array: {
+        EncodeByte(kOrderedArrayTypeByte, &into);
+
+        // Used to indicate that a sentinel should be inserted later.
+        keys.push_back(nullptr);
+        for (const IndexedDBKey& subkey : base::Reversed(key->array())) {
+          keys.push_back(&subkey);
+        }
+
+        continue;
+      }
+      case blink::mojom::IDBKeyType::Binary:
+        EncodeByte(kOrderedBinaryTypeByte, &into);
+        EncodeBinaryWithSentinel(key->binary(), &into);
+        continue;
+      case blink::mojom::IDBKeyType::String:
+        EncodeByte(kOrderedStringTypeByte, &into);
+        EncodeStringWithSentinel(key->string(), &into);
+        continue;
+      case blink::mojom::IDBKeyType::Date:
+        EncodeByte(kOrderedDateTypeByte, &into);
+        EncodeSortableDouble(key->date(), &into);
+        continue;
+      case blink::mojom::IDBKeyType::Number:
+        EncodeByte(kOrderedNumberTypeByte, &into);
+        EncodeSortableDouble(key->number(), &into);
+        continue;
+      case blink::mojom::IDBKeyType::None:
+      case blink::mojom::IDBKeyType::Invalid:
+      case blink::mojom::IDBKeyType::Min:
+        NOTREACHED();
+    }
+  }
+
+  return into;
 }
 
 #define COMPILE_ASSERT_MATCHING_VALUES(a, b)                          \
