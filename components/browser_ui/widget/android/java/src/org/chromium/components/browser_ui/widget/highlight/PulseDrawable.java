@@ -21,6 +21,7 @@ import androidx.annotation.Px;
 import androidx.core.view.animation.PathInterpolatorCompat;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -36,6 +37,7 @@ import org.chromium.ui.interpolators.Interpolators;
 public class PulseDrawable extends Drawable implements Animatable {
     private static final long PULSE_DURATION_MS = 2500;
     private static final long FRAME_RATE = 60;
+    private static @Nullable Long sFrameRateForTesting;
 
     /**
      * Informs the PulseDrawable about whether it can continue pulsing, and specifies a callback to
@@ -255,7 +257,7 @@ public class PulseDrawable extends Drawable implements Animatable {
                 public void run() {
                     stepPulse();
                     if (mRunning) {
-                        scheduleSelf(mNextFrame, SystemClock.uptimeMillis() + 1000 / FRAME_RATE);
+                        scheduleSelf(mNextFrame, calculateNextFrameTime());
                     }
                 }
             };
@@ -326,7 +328,7 @@ public class PulseDrawable extends Drawable implements Animatable {
     public void start() {
         if (mRunning) {
             unscheduleSelf(mNextFrame);
-            scheduleSelf(mNextFrame, SystemClock.uptimeMillis() + 1000 / FRAME_RATE);
+            scheduleSelf(mNextFrame, calculateNextFrameTime());
         } else {
             mRunning = true;
             if (mState.startTime == 0) {
@@ -485,5 +487,17 @@ public class PulseDrawable extends Drawable implements Animatable {
         public int getChangingConfigurations() {
             return 0;
         }
+    }
+
+    public static void setFrameRateForTesting(long frameRateForTesting) {
+        sFrameRateForTesting = frameRateForTesting;
+        ResettersForTesting.register(() -> sFrameRateForTesting = null);
+    }
+
+    private static long calculateNextFrameTime() {
+        if (sFrameRateForTesting != null) {
+            return SystemClock.uptimeMillis() + 1000 / sFrameRateForTesting;
+        }
+        return SystemClock.uptimeMillis() + 1000 / FRAME_RATE;
     }
 }

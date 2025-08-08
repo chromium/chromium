@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
+import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.infobars.InfoBar;
@@ -80,6 +81,7 @@ import java.util.concurrent.atomic.AtomicReference;
  *   <li>Sets up an {@link EmbeddedTestServer}.
  *   <li>Disables the offline indicator.
  *   <li>Disables IPH (In-Product Help).
+ *   <li>Slows down PulseDrawable animations.
  * </ul>
  *
  * @param <T> The {@link Activity} class under test.
@@ -107,6 +109,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
 
         disableOfflineIndicator();
         disableIph();
+        slowDownPulseDrawableAnimations();
     }
 
     private void disableOfflineIndicator() {
@@ -128,6 +131,13 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         Tracker tracker = Mockito.mock(Tracker.class);
         when(tracker.shouldTriggerHelpUi(anyString())).thenReturn(false);
         TrackerFactory.setTrackerForTests(tracker);
+    }
+
+    private void slowDownPulseDrawableAnimations() {
+        // Reduce PulseDrawable frame rate to keep UI Thread MessageQueue from being busy most of
+        // the time, which causes Espresso's ViewInteraction#check() and #perform() to fail with
+        // AppNotIdleException since they wait for the UI Thread to be clear.
+        PulseDrawable.setFrameRateForTesting(2);
     }
 
     /**
