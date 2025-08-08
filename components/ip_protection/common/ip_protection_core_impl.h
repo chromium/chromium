@@ -24,6 +24,7 @@ namespace net {
 
 class NetworkAnonymizationKey;
 class ProxyChain;
+class SchemefulSite;
 
 }  // namespace net
 
@@ -83,10 +84,9 @@ class IpProtectionCoreImpl
       ProxyLayer proxy_layer);
   IpProtectionProxyConfigManager* GetIpProtectionProxyConfigManagerForTesting();
 
-  bool IsProbabilisticRevealTokenAvailable() override;
   std::optional<std::string> GetProbabilisticRevealToken(
-      const std::string& top_level,
-      const std::string& third_party) override;
+      const GURL& url,
+      const net::SchemefulSite& top_frame_site) override;
 
   // `NetworkChangeNotifier::NetworkChangeObserver` implementation.
   void OnNetworkChanged(

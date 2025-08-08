@@ -29,7 +29,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
@@ -39,6 +38,7 @@
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
+#include "url/gurl.h"
 
 namespace ip_protection {
 
@@ -370,19 +370,11 @@ net::ProxyList IpProtectionProxyDelegate::MergeProxyRules(
 std::optional<std::string> IpProtectionProxyDelegate::GetPRTHeaderValue(
     const GURL& url,
     const net::SchemefulSite& top_frame_site) const {
-  if (!ip_protection_core_->IsProbabilisticRevealTokenAvailable() ||
-      !ip_protection_core_->ShouldRequestIncludeProbabilisticRevealToken(url)) {
+  if (!ip_protection_core_->ShouldRequestIncludeProbabilisticRevealToken(url)) {
     return std::nullopt;
   }
-  const std::string top_level =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          top_frame_site.GetURL(),
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  const std::string third_party =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   const std::optional<std::string> prt =
-      ip_protection_core_->GetProbabilisticRevealToken(top_level, third_party);
+      ip_protection_core_->GetProbabilisticRevealToken(url, top_frame_site);
   if (!prt.has_value()) {
     return std::nullopt;
   }

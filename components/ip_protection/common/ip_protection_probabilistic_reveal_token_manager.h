@@ -17,6 +17,14 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
+class GURL;
+
+namespace net {
+
+class SchemefulSite;
+
+}  // namespace net
+
 namespace ip_protection {
 
 class IpProtectionProbabilisticRevealTokenCrypter;
@@ -40,21 +48,23 @@ class IpProtectionProbabilisticRevealTokenManager {
   // Returns true if there are tokens in cache.
   virtual bool IsTokenAvailable();
 
-  // Get a PRT for a given first and third party pair.
-  // `top_level` and `third_party` are eTLD + 1.
+  // Get a PRT for a given destination url and top_frame_site.
+  // Tokens are stored for (top-frame, destination) pairs, such that:
+  // `top-frame` is the eTLD+1 of `top_frame_site`, and
+  // `destination` is the eTLD+1 of `url`.
   //
   // * If crypter_ is null or does not have tokens return null.
-  // * If there is already a token associated for the first and
-  //   third party pair in `token_map_` return it.
-  // * If there is a token associated with first party, that means
-  //   we are seeing this third party for the first time, randomize
-  //   the token associated with first party and return it.
-  // * Else, seeing the first party for the first time, pick a
+  // * If there is already a token associated for the top-frame and
+  //   destination pair in `token_map_` return it.
+  // * If there is a token associated with top-frame, that means
+  //   we are seeing this destination for the first time, randomize
+  //   the token associated with top-frame and return it.
+  // * Else, seeing the top-frame for the first time, pick a
   //   token stored in crypter randomly, and randomize it,
   //   and return it.
   virtual std::optional<std::string> GetToken(
-      const std::string& top_level,
-      const std::string& third_party);
+      const GURL& url,
+      const net::SchemefulSite& top_frame_site);
 
   // Request new batch of tokens.
   virtual void RequestTokens();
@@ -100,13 +110,13 @@ class IpProtectionProbabilisticRevealTokenManager {
   // Epoch id of the current batch of tokens.
   std::string epoch_id_;
 
-  // Map for tokens associated with a first and third party pair.
-  // Keys are first party eTLD+1, and values are pairs of,
-  // - index of the token (in crypter) for the first party for the
+  // Map for tokens associated with a top-frame and destination pair.
+  // Keys are top-frame eTLD+1, and values are pairs of,
+  // - index of the token (in crypter) for the top-frame for the
   //   current epoch,
-  // - maps, where keys are third party eTLD+1 and values are
+  // - maps, where keys are destination eTLD+1 and values are
   //   the randomized version of the token at index (in crypter) for the
-  //   first/third party pair for the current epoch.
+  //   top-frame/destination pair for the current epoch.
   std::map<std::string,
            std::pair<std::size_t, /*index of token in crypter*/
                      std::map<std::string, ProbabilisticRevealToken>>>

@@ -28,6 +28,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
+#include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
 
@@ -100,8 +101,9 @@ IpProtectionCoreImpl::IpProtectionCoreImpl(
                                                : MdlType::kRegularBrowsing)
                     : MdlType::kIncognito) {
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
-  bool should_request_prts = ip_protection_incognito ||
-       !net::features::kProbabilisticRevealTokensOnlyInIncognito.Get();
+  bool should_request_prts =
+      ip_protection_incognito ||
+      !net::features::kProbabilisticRevealTokensOnlyInIncognito.Get();
   if (ipp_prt_manager_ && should_request_prts) {
     ipp_prt_manager_->RequestTokens();
   }
@@ -185,16 +187,12 @@ std::optional<BlindSignedAuthToken> IpProtectionCoreImpl::GetAuthToken(
 }
 
 std::optional<std::string> IpProtectionCoreImpl::GetProbabilisticRevealToken(
-    const std::string& top_level,
-    const std::string& third_party) {
+    const GURL& url,
+    const net::SchemefulSite& top_frame_site) {
   if (!ipp_prt_manager_) {
     return std::nullopt;
   }
-  return ipp_prt_manager_->GetToken(top_level, third_party);
-}
-
-bool IpProtectionCoreImpl::IsProbabilisticRevealTokenAvailable() {
-  return (ipp_prt_manager_ && ipp_prt_manager_->IsTokenAvailable());
+  return ipp_prt_manager_->GetToken(url, top_frame_site);
 }
 
 IpProtectionTokenManager*

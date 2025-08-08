@@ -25,9 +25,12 @@
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_data_storage.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -196,8 +199,8 @@ bool IpProtectionProbabilisticRevealTokenManager::IsTokenAvailable() {
 
 std::optional<std::string>
 IpProtectionProbabilisticRevealTokenManager::GetToken(
-    const std::string& top_level,
-    const std::string& third_party) {
+    const GURL& url,
+    const net::SchemefulSite& top_frame_site) {
   ClearTokensIfExpired();
 
   bool is_token_available = IsTokenAvailable();
@@ -208,33 +211,43 @@ IpProtectionProbabilisticRevealTokenManager::GetToken(
   if (!is_token_available) {
     return std::nullopt;
   }
+
+  // Get the eTLD+1 of the top frame site and the destination URL.
+  const std::string top_frame_domain =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          top_frame_site.GetURL(),
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  const std::string destination_domain =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
   // Manager has tokens, crypter_ is not null from here on and
   // crypter_->NumTokens() > 0 holds.
-  auto outer_iterator = token_map_.find(top_level);
+  auto outer_iterator = token_map_.find(top_frame_domain);
   if (outer_iterator != token_map_.end()) {
-    // First party already has an associated token.
+    // Top-frame already has an associated token.
     std::size_t token_index = outer_iterator->second.first;
     std::map<std::string, ProbabilisticRevealToken>& inner_map =
         outer_iterator->second.second;
 
-    const auto inner_iterator = inner_map.find(third_party);
+    const auto inner_iterator = inner_map.find(destination_domain);
     if (inner_iterator != inner_map.end()) {
       // The pair already has a randomized token.
       return SerializePrt(inner_iterator->second);
     }
 
-    // Seeing this third party for the first time in this top level.
-    // Randomize top level's token and return.
+    // Seeing this destination for the first time in this top frame.
+    // Randomize top-frame's token and return.
     base::expected<ProbabilisticRevealToken, absl::Status>
         maybe_randomized_token = crypter_->Randomize(token_index);
     if (!maybe_randomized_token.has_value()) {
       // Should not happen in theory, might happen with corrupted crypter.
       return std::nullopt;
     }
-    inner_map[third_party] = std::move(maybe_randomized_token.value());
-    return SerializePrt(inner_map[third_party]);
+    inner_map[destination_domain] = std::move(maybe_randomized_token.value());
+    return SerializePrt(inner_map[destination_domain]);
   }
-  // Seeing first party for the first time.
+  // Seeing top-frame for the first time.
   std::size_t token_selected = base::RandGenerator(crypter_->NumTokens());
   base::expected<ProbabilisticRevealToken, absl::Status>
       maybe_randomized_token = crypter_->Randomize(token_selected);
@@ -242,8 +255,8 @@ IpProtectionProbabilisticRevealTokenManager::GetToken(
     // Should not happen in theory, might happen with corrupted crypter.
     return std::nullopt;
   }
-  token_map_[top_level] = {token_selected,
-                           {{third_party, maybe_randomized_token.value()}}};
+  token_map_[top_frame_domain] = {
+      token_selected, {{destination_domain, maybe_randomized_token.value()}}};
   return SerializePrt(std::move(maybe_randomized_token).value());
 }
 
