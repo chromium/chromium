@@ -423,8 +423,12 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
         linked_bnpl_issuers_.clear();
         for (sync_pb::PaymentInstrument& payment_instrument :
              payment_instruments) {
-          CacheIfEwalletPaymentInstrument(payment_instrument);
-          CacheIfLinkedBnplPaymentInstrument(payment_instrument);
+          if (AreEwalletAccountsSupported()) {
+            CacheIfEwalletPaymentInstrument(payment_instrument);
+          }
+          if (AreBnplIssuersSupported()) {
+            CacheIfLinkedBnplPaymentInstrument(payment_instrument);
+          }
         }
         OnPaymentInstrumentsRefreshed(payment_instruments);
         break;
@@ -2329,8 +2333,10 @@ void PaymentsDataManager::OnPaymentInstrumentCreationOptionsRefreshed(
   for (const sync_pb::PaymentInstrumentCreationOption&
            payment_instrument_creation_option :
        payment_instrument_creation_options) {
-    CacheIfBnplPaymentInstrumentCreationOption(
-        payment_instrument_creation_option);
+    if (AreBnplIssuersSupported()) {
+      CacheIfBnplPaymentInstrumentCreationOption(
+          payment_instrument_creation_option);
+    }
   }
 }
 
