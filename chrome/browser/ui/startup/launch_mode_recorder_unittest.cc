@@ -209,7 +209,8 @@ TEST_F(LaunchModeRecorderTest, Other) {
 
 #else  // IS_MAC
 
-TEST_F(LaunchModeRecorderTest, Mac) {
+// TODO(crbug.com/437351384): Flaky
+TEST_F(LaunchModeRecorderTest, DISABLED_Mac) {
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
   ComputeLaunchModeAndVerify(cmd_line, LaunchMode::kMacUndockedDiskLaunch);
 }
