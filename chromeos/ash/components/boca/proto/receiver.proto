@@ -14,7 +14,7 @@ message ReceiverConnection {
 
   UserDeviceInfo initiator = 2;
 
-  string connection_code = 3;
+  ConnectionParameter connection_code = 3;
 
   ReceiverState state = 4;
 
