@@ -755,6 +755,40 @@ TEST_F(BookmarkBarViewTest, ButtonSeparatorViewAccessibleProperties) {
             l10n_util::GetStringUTF8(IDS_ACCNAME_SEPARATOR));
 }
 
+TEST_F(BookmarkBarViewTest, AllBookmarksButtonVisibilityWithExtensiveChanges) {
+  // Initially no "All bookmarks" button should be visible
+  EXPECT_FALSE(bookmark_bar_view()->all_bookmarks_button()->GetVisible());
+
+  model()->BeginExtensiveChanges();
+
+  // Add bookmarks to the bookmark bar and other bookmarks folder
+  model()->AddFolder(model()->bookmark_bar_node(), 0, u"f1");
+  model()->AddURL(model()->other_node(), 0, u"other_bookmark",
+                  GURL("https://www.example.com"));
+
+  model()->EndExtensiveChanges();
+
+  // After extensive changes end, the "All bookmarks" button should be visible
+  // since there are bookmarks in the "Other Bookmarks" folder
+  EXPECT_TRUE(bookmark_bar_view()->all_bookmarks_button()->GetVisible());
+
+  // Now test removing all bookmarks from "Other Bookmarks" folder during
+  // extensive changes
+  model()->BeginExtensiveChanges();
+
+  // Remove all bookmarks from the "Other Bookmarks" folder
+  while (model()->other_node()->children().size() > 0) {
+    model()->Remove(model()->other_node()->children()[0].get(),
+                    bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  }
+
+  model()->EndExtensiveChanges();
+
+  // After extensive changes end, the "All bookmarks" button should no longer be
+  // visible since there are no bookmarks in the "Other Bookmarks" folder
+  EXPECT_FALSE(bookmark_bar_view()->all_bookmarks_button()->GetVisible());
+}
+
 TEST_F(BookmarkBarViewInWidgetTest, UpdateTooltipText) {
   widget()->Show();
 

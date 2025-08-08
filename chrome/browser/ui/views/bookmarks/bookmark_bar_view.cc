@@ -1337,6 +1337,8 @@ void BookmarkBarView::ExtensiveBookmarkChangesEnded() {
     // so that the next layout creates the buttons in the expected order.
     RemoveAllBookmarkButtons();
 
+    UpdateOtherAndManagedButtonsVisibility();
+
     LayoutAndPaint();
     drop_weak_ptr_factory_.InvalidateWeakPtrs();
   }
