@@ -36,11 +36,11 @@
  * Hide everything that should not display when the composebox is open
  * so they are not tabbable.
  */
-:host([show-composebox_]) cr-most-visited,
-:host([show-composebox_]) ntp-middle-slot-promo,
-:host([show-composebox_]) ntp-modules,
-:host([show-composebox_]) #backgroundImageAttribution,
-:host([show-composebox_]) ntp-customize-buttons {
+:host([show-composebox_]:not[closing-composebox]) cr-most-visited,
+:host([show-composebox_]:not[closing-composebox]) ntp-middle-slot-promo,
+:host([show-composebox_]:not[closing-composebox]) ntp-modules,
+:host([show-composebox_]:not[closing-composebox]) #backgroundImageAttribution,
+:host([show-composebox_]:not[closing-composebox]) ntp-customize-buttons {
   display: none;
 }
 
@@ -275,6 +275,10 @@ ntp-composebox {
       var(--color-new-tab-page-composebox-background);
 }
 
+ntp-composebox.fade-out {
+  opacity: 0;
+}
+
 ntp-composebox,
 ntp-lens-upload-dialog {
   left: 0;
@@ -285,10 +289,26 @@ ntp-lens-upload-dialog {
 }
 
 #composeboxScrim {
+  animation: background-fade-in 1s ease;
   background: var(--color-new-tab-page-composebox-scrim-background);
   inset: 0;
+  opacity: 1;
   position: fixed;
   z-index: 1;
+  transition: opacity 1s ease-out;
+}
+
+@keyframes background-fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+#composeboxScrim.fade-out {
+  opacity: 0;
 }
 
 #webstoreToast {
