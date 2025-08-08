@@ -236,6 +236,10 @@ android_library("chrome_java_transit") {
     "javatests/src/org/chromium/chrome/test/transit/ui/MessageFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/ui/ModalDialogFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/ui/SnackbarFacility.java",
+    "javatests/src/org/chromium/chrome/test/transit/webapps/PwaRestoreCarryOn.java",
+    "javatests/src/org/chromium/chrome/test/transit/webapps/PwaRestoreHiddenCarryOn.java",
+    "javatests/src/org/chromium/chrome/test/transit/webapps/PwaReviewAppEntryCarryOn.java",
+    "javatests/src/org/chromium/chrome/test/transit/webapps/PwaReviewCarryOn.java",
   ]
 
   deps = [
@@ -288,6 +292,7 @@ android_library("chrome_java_transit") {
     "//components/omnibox/browser:junit_test_support",
     "//components/omnibox/common:features_java",
     "//components/tab_groups:tab_groups_java",
+    "//components/webapps/browser/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//content/public/test/android:content_transit_java",
