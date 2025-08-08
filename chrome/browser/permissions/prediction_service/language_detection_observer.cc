@@ -1,0 +1,70 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+#include "chrome/browser/permissions/prediction_service/language_detection_observer.h"
+
+#include "chrome/browser/translate/chrome_translate_client.h"
+#include "components/translate/core/browser/language_state.h"
+
+namespace permissions {
+LanguageDetectionObserver::LanguageDetectionObserver(
+    content::WebContents* web_contents,
+    base::OnceCallback<void()> on_english_detected,
+    base::OnceCallback<void()> on_fallback)
+    : web_contents_(web_contents),
+      on_english_detected_callback_(std::move(on_english_detected)),
+      fallback_callback_(std::move(on_fallback)) {
+  std::string_view source_language =
+      chrome_translate_client()->GetLanguageState().source_language();
+
+  if (source_language.starts_with("en")) {
+    std::move(on_english_detected_callback_).Run();
+  } else if (source_language.empty()) {
+    chrome_translate_client()
+        ->GetTranslateDriver()
+        ->AddLanguageDetectionObserver(this);
+    // We start a timer here, in case language detection takes more than
+    // |kLanguageDetectionTimeout| seconds. It will call the fallback callback
+    // if the language detection doesn't converge during the timeout interval.
+    timeout_timer_.Start(FROM_HERE, base::Seconds(kLanguageDetectionTimeout),
+                         base::BindOnce(&LanguageDetectionObserver::OnTimeout,
+                                        weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    std::move(fallback_callback_).Run();
+  }
+}
+
+LanguageDetectionObserver::~LanguageDetectionObserver() {
+  RemoveAsObserver();
+}
+
+ChromeTranslateClient* LanguageDetectionObserver::chrome_translate_client() {
+  return ChromeTranslateClient::FromWebContents(web_contents_);
+}
+
+void LanguageDetectionObserver::RemoveAsObserver() {
+  chrome_translate_client()
+      ->GetTranslateDriver()
+      ->RemoveLanguageDetectionObserver(this);
+}
+
+void LanguageDetectionObserver::OnTimeout() {
+  if (on_english_detected_callback_) {
+    std::move(fallback_callback_).Run();
+  }
+  RemoveAsObserver();
+}
+
+void LanguageDetectionObserver::OnLanguageDetermined(
+    const translate::LanguageDetectionDetails& details) {
+  if (details.adopted_language.starts_with("en") &&
+      on_english_detected_callback_) {
+    std::move(on_english_detected_callback_).Run();
+  } else if (on_english_detected_callback_) {
+    std::move(fallback_callback_).Run();
+  }
+  timeout_timer_.Stop();
+  RemoveAsObserver();
+}
+}  // namespace permissions
