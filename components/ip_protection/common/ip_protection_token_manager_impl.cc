@@ -73,7 +73,14 @@ IpProtectionTokenManagerImpl::IpProtectionTokenManagerImpl(
   }
 }
 
-IpProtectionTokenManagerImpl::~IpProtectionTokenManagerImpl() = default;
+IpProtectionTokenManagerImpl::~IpProtectionTokenManagerImpl() {
+  // Record orphaned (unspent, unexpired) tokens.
+  RemoveExpiredTokens();
+  for (const auto& [geo_id, cache] : cache_by_geo_) {
+    Telemetry().RecordTokenCountEvent(
+        proxy_layer_, IpProtectionTokenCountEvent::kOrphaned, cache.size());
+  }
+}
 
 bool IpProtectionTokenManagerImpl::IsAuthTokenAvailable() {
   return IsAuthTokenAvailable(current_geo_id_);
