@@ -62,29 +62,50 @@ void CSSColorInterpolationType::EnsureInterpolableStyleColor(
 }
 
 /* static */
+void CSSColorInterpolationType::EnsureInterpolableStyleColor(
+    InterpolableValue*& value) {
+  BaseInterpolableColor& base = To<BaseInterpolableColor>(*value);
+  if (!base.IsStyleColor()) {
+    value = InterpolableStyleColor::Create(&base);
+  }
+}
+
+/* static */
+void CSSColorInterpolationType::EnsureCompatibleInterpolableColorTypes(
+    InterpolableValue*& a,
+    InterpolableValue*& b) {
+  if (a->IsStyleColor() != b->IsStyleColor()) {
+    // If either value is a style color then both must be.
+    EnsureInterpolableStyleColor(a);
+    EnsureInterpolableStyleColor(b);
+  }
+
+  DCHECK_EQ(a->IsStyleColor(), b->IsStyleColor());
+  DCHECK_EQ(a->IsColor(), b->IsColor());
+
+  if (a->IsColor()) {
+    auto& a_color = To<InterpolableColor>(*a);
+    auto& b_color = To<InterpolableColor>(*b);
+    if (a_color.GetColor().GetColorSpace() !=
+        b_color.GetColor().GetColorSpace()) {
+      InterpolableColor::SetupColorInterpolationSpaces(a_color, b_color);
+    }
+  }
+}
+
+/* static */
 void CSSColorInterpolationType::EnsureCompatibleInterpolableColorTypes(
     InterpolableList& list_a,
     InterpolableList& list_b) {
   CHECK_EQ(list_a.length(), list_b.length());
-  for (wtf_size_t i = 0; i < list_a.length(); i++) {
-    auto& underlying = list_a.GetMutable(i);
-    auto& other = list_b.GetMutable(i);
+  for (wtf_size_t i = 0; i < list_a.length(); ++i) {
+    InterpolableValue* a = list_a.GetMutable(i);
+    InterpolableValue* b = list_b.GetMutable(i);
 
-    if (underlying->IsStyleColor() != other->IsStyleColor()) {
-      // If either value is a style color then both must be.
-      EnsureInterpolableStyleColor(list_a, i);
-      EnsureInterpolableStyleColor(list_b, i);
-    }
-    DCHECK_EQ(underlying->IsStyleColor(), other->IsStyleColor());
-    DCHECK_EQ(underlying->IsColor(), other->IsColor());
+    EnsureCompatibleInterpolableColorTypes(a, b);
 
-    if (underlying->IsColor() && other->IsColor()) {
-      auto& a = To<InterpolableColor>(*underlying);
-      auto& b = To<InterpolableColor>(*other);
-      if (a.GetColor().GetColorSpace() != b.GetColor().GetColorSpace()) {
-        InterpolableColor::SetupColorInterpolationSpaces(a, b);
-      }
-    }
+    list_a.Set(i, a);
+    list_b.Set(i, b);
   }
 }
 

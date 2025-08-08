@@ -1834,7 +1834,7 @@ StyleHyphenateLimitChars StyleBuilderConverter::ConvertHyphenateLimitChars(
   return StyleHyphenateLimitChars(values[0], values[1], values[2]);
 }
 
-int StyleBuilderConverter::ConvertBorderWidth(StyleResolverState& state,
+int StyleBuilderConverter::ConvertBorderWidth(const StyleResolverState& state,
                                               const CSSValue& value) {
   double result = 0;
 
@@ -2394,13 +2394,13 @@ LengthSize StyleBuilderConverter::ConvertRadius(const StyleResolverState& state,
 }
 
 template <typename T>
-T ConvertGapDecorationPropertyValue(StyleResolverState& state,
+T ConvertGapDecorationPropertyValue(const StyleResolverState& state,
                                     const CSSValue& value,
                                     bool for_visited_link = false);
 
 template <>
 StyleColor ConvertGapDecorationPropertyValue<StyleColor>(
-    StyleResolverState& state,
+    const StyleResolverState& state,
     const CSSValue& value,
     bool for_visited_link) {
   return StyleBuilderConverter::ConvertStyleColor(state, value,
@@ -2408,7 +2408,7 @@ StyleColor ConvertGapDecorationPropertyValue<StyleColor>(
 }
 
 template <>
-int ConvertGapDecorationPropertyValue<int>(StyleResolverState& state,
+int ConvertGapDecorationPropertyValue<int>(const StyleResolverState& state,
                                            const CSSValue& value,
                                            bool for_visited_link) {
   return ClampTo<uint16_t>(
@@ -2417,14 +2417,14 @@ int ConvertGapDecorationPropertyValue<int>(StyleResolverState& state,
 
 template <>
 EBorderStyle ConvertGapDecorationPropertyValue<EBorderStyle>(
-    StyleResolverState& state,
+    const StyleResolverState& state,
     const CSSValue& value,
     bool for_visited_link) {
   return To<CSSIdentifierValue>(value).ConvertTo<blink::EBorderStyle>();
 }
 
 template <typename T>
-GapDataList<T> ConvertGapDecorationDataList(StyleResolverState& state,
+GapDataList<T> ConvertGapDecorationDataList(const StyleResolverState& state,
                                             const CSSValue& value,
                                             bool for_visited_link = false) {
   // The `value` will not be a list in two scenarios:
@@ -2493,7 +2493,7 @@ GapDataList<T> ConvertGapDecorationDataList(StyleResolverState& state,
 
 GapDataList<StyleColor>
 StyleBuilderConverter::ConvertGapDecorationColorDataList(
-    StyleResolverState& state,
+    const StyleResolverState& state,
     const CSSValue& value,
     bool for_visited_link) {
   return ConvertGapDecorationDataList<blink::StyleColor>(state, value,
@@ -2501,14 +2501,14 @@ StyleBuilderConverter::ConvertGapDecorationColorDataList(
 }
 
 GapDataList<int> StyleBuilderConverter::ConvertGapDecorationWidthDataList(
-    StyleResolverState& state,
+    const StyleResolverState& state,
     const CSSValue& value) {
   return ConvertGapDecorationDataList<int>(state, value);
 }
 
 GapDataList<EBorderStyle>
 StyleBuilderConverter::ConvertGapDecorationStyleDataList(
-    StyleResolverState& state,
+    const StyleResolverState& state,
     const CSSValue& value) {
   return ConvertGapDecorationDataList<EBorderStyle>(state, value);
 }
@@ -2824,9 +2824,10 @@ StyleColor ResolveColorValue(const CSSValue& value,
   return result;
 }
 
-StyleColor StyleBuilderConverter::ConvertStyleColor(StyleResolverState& state,
-                                                    const CSSValue& value,
-                                                    bool for_visited_link) {
+StyleColor StyleBuilderConverter::ConvertStyleColor(
+    const StyleResolverState& state,
+    const CSSValue& value,
+    bool for_visited_link) {
   mojom::blink::ColorScheme color_scheme =
       state.StyleBuilder().UsedColorScheme();
   auto& document = state.GetDocument();

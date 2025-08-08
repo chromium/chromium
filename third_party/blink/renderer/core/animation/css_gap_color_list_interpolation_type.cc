@@ -7,12 +7,58 @@
 #include "third_party/blink/renderer/core/animation/color_property_functions.h"
 #include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/interpolable_color.h"
+#include "third_party/blink/renderer/core/animation/interpolable_gap_data_repeater.h"
 #include "third_party/blink/renderer/core/animation/list_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
+#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/style/gap_data_list.h"
 
 namespace blink {
+
+namespace {
+
+InterpolationValue GetInterpolationValueFromGapData(
+    const GapData<StyleColor>& data,
+    const CSSProperty& property,
+    const ComputedStyle* style,
+    const ui::ColorProvider* color_provider = nullptr,
+    const CSSValue* value = nullptr,
+    const StyleResolverState* state = nullptr) {
+  CHECK(style);
+  if (data.IsRepeaterData()) {
+    return InterpolationValue(
+        InterpolableGapColorRepeater::Create(data.GetValueRepeater(), *style));
+  }
+
+  if (value) {
+    CHECK(state);
+    InterpolableColor* interpolable_color =
+        CSSColorInterpolationType::MaybeCreateInterpolableColor(*value, state);
+    if (!interpolable_color) {
+      return InterpolationValue(nullptr);
+    }
+
+    return InterpolationValue(interpolable_color);
+  }
+
+  return InterpolationValue(
+      CSSColorInterpolationType::CreateBaseInterpolableColor(
+          data.GetValue(), style->UsedColorScheme(), color_provider));
+}
+
+bool IsCompatible(const InterpolableValue& a, const InterpolableValue& b) {
+  if (a.IsGapColorRepeater() != b.IsGapColorRepeater()) {
+    return false;
+  }
+  if (!a.IsGapColorRepeater()) {
+    return true;  // colors are compatible.
+  }
+  return To<InterpolableGapColorRepeater>(a).IsCompatibleWith(
+      To<InterpolableGapColorRepeater>(b));
+}
+
+}  // namespace
 
 class UnderlyingGapColorListChecker final
     : public CSSInterpolationType::CSSConversionChecker {
@@ -43,17 +89,8 @@ CSSGapColorListInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
   const GapDataList<StyleColor>::GapDataVector& values = list.GetGapDataList();
   return ListInterpolationFunctions::CreateList(
       values.size(), [this, &style, &values](wtf_size_t i) {
-        // TODO(javiercon): Handle the case where the gap data is a repeater.
-        if (values[i].IsRepeaterData()) {
-          return InterpolationValue(nullptr);
-        }
-
-        return InterpolationValue(
-            CSSColorInterpolationType::CreateBaseInterpolableColor(
-                ColorPropertyFunctions::GetUnvisitedColor(CssProperty(), style)
-                    .value(),
-                style.UsedColorScheme(),
-                /*color_provider=*/nullptr));
+        return GetInterpolationValueFromGapData(values[i], CssProperty(),
+                                                &style);
       });
 }
 
@@ -67,13 +104,28 @@ void CSSGapColorListInterpolationType::Composite(
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
       ListInterpolationFunctions::InterpolableValuesKnownCompatible,
       ListInterpolationFunctions::VerifyNoNonInterpolableValues,
-      [](UnderlyingValue& underlying_value, double fraction,
-         const InterpolableValue& interpolable_value,
-         const NonInterpolableValue*) {
-        auto& underlying = To<BaseInterpolableColor>(
+      [this, &owner, &value](UnderlyingValue& underlying_value, double fraction,
+                             const InterpolableValue& interpolable_value,
+                             const NonInterpolableValue*) {
+        if (!IsCompatible(underlying_value.MutableInterpolableValue(),
+                          interpolable_value)) {
+          owner.Set(this, value);
+          return;
+        }
+
+        if (underlying_value.MutableInterpolableValue().IsGapColorRepeater()) {
+          To<InterpolableGapColorRepeater>(
+              underlying_value.MutableInterpolableValue())
+              .Composite(To<InterpolableGapColorRepeater>(interpolable_value),
+                         fraction);
+          return;
+        }
+
+        auto& underlying_color = To<BaseInterpolableColor>(
             underlying_value.MutableInterpolableValue());
-        auto& other = To<BaseInterpolableColor>(interpolable_value);
-        underlying.Composite(other, fraction);
+        auto& other_color = To<BaseInterpolableColor>(interpolable_value);
+
+        underlying_color.Composite(other_color, fraction);
       });
 }
 
@@ -89,7 +141,12 @@ void CSSGapColorListInterpolationType::ApplyStandardPropertyValue(
   DCHECK_EQ(non_interpolable_list.length(), length);
   GapDataList<StyleColor> result(length);
   for (wtf_size_t i = 0; i < length; i++) {
-    // TODO(javiercon): Handle the case where the gap data is a repeater.
+    if (auto* repeater =
+            DynamicTo<InterpolableGapColorRepeater>(interpolable_list.Get(i))) {
+      result.AddGapData(repeater->CreateGapData(state));
+      continue;
+    }
+
     result.AddGapData(
         StyleColor(CSSColorInterpolationType::ResolveInterpolableColor(
             To<InterpolableColor>(*interpolable_list.Get(i)), state,
@@ -199,12 +256,11 @@ InterpolationValue CSSGapColorListInterpolationType::MaybeConvertInherit(
 
   return ListInterpolationFunctions::CreateList(
       inherited_gap_data_vector.size(),
-      [&inherited_gap_data_vector, &color_scheme,
+      [this, &inherited_gap_data_vector, &state,
        &color_provider](wtf_size_t index) {
-        return InterpolationValue(
-            CSSColorInterpolationType::CreateBaseInterpolableColor(
-                inherited_gap_data_vector[index].GetValue(), color_scheme,
-                color_provider));
+        return GetInterpolationValueFromGapData(
+            inherited_gap_data_vector[index], CssProperty(), state.CloneStyle(),
+            color_provider);
       });
 }
 
@@ -215,25 +271,26 @@ InterpolationValue CSSGapColorListInterpolationType::MaybeConvertValue(
   const auto* list = DynamicTo<CSSValueList>(value);
   wtf_size_t length = list ? list->length() : 1;
 
+  GapDataList<StyleColor> gap_data_list =
+      StyleBuilderConverter::ConvertGapDecorationColorDataList(state, value);
+  const GapDataList<StyleColor>::GapDataVector& gap_data_vector =
+      gap_data_list.GetGapDataList();
+  CHECK_EQ(gap_data_vector.size(), length);
   return ListInterpolationFunctions::CreateList(
-      length, [list, &state, &value](wtf_size_t index) {
+      length, [this, list, &state, &value, &gap_data_vector](wtf_size_t index) {
         const CSSValue& element = list ? list->Item(index) : value;
+        const ComputedStyle* style = state.CloneStyle();
+        CHECK(style);
 
-        InterpolableColor* interpolable_color =
-            CSSColorInterpolationType::MaybeCreateInterpolableColor(element,
-                                                                    &state);
-        if (!interpolable_color) {
-          return InterpolationValue(nullptr);
-        }
-
-        return InterpolationValue(interpolable_color);
+        return GetInterpolationValueFromGapData(
+            gap_data_vector[index], CssProperty(), style,
+            /* color_provider= */ nullptr, &element, &state);
       });
 }
 
 PairwiseInterpolationValue CSSGapColorListInterpolationType::MaybeMergeSingles(
     InterpolationValue&& start,
     InterpolationValue&& end) const {
-  // TODO(crbug.com/357648037): Once repeaters are supported, adjust logic
   InterpolableList& start_list =
       To<InterpolableList>(*start.interpolable_value);
   InterpolableList& end_list = To<InterpolableList>(*end.interpolable_value);
@@ -243,13 +300,30 @@ PairwiseInterpolationValue CSSGapColorListInterpolationType::MaybeMergeSingles(
     return PairwiseInterpolationValue(nullptr);
   }
 
-  CSSColorInterpolationType::EnsureCompatibleInterpolableColorTypes(start_list,
-                                                                    end_list);
-
   return ListInterpolationFunctions::MaybeMergeSingles(
       std::move(start), std::move(end),
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
       [](InterpolationValue&& start_item, InterpolationValue&& end_item) {
+        if (!IsCompatible(*start_item.interpolable_value,
+                          *end_item.interpolable_value)) {
+          return PairwiseInterpolationValue(nullptr);
+        }
+
+        if (start_item.interpolable_value->IsGapDataRepeater()) {
+          return PairwiseInterpolationValue(
+              std::move(start_item.interpolable_value),
+              std::move(end_item.interpolable_value));
+        }
+
+        InterpolableValue* start_val = start_item.interpolable_value.Get();
+        InterpolableValue* end_val = end_item.interpolable_value.Get();
+
+        CSSColorInterpolationType::EnsureCompatibleInterpolableColorTypes(
+            start_val, end_val);
+
+        start_item.interpolable_value = start_val;
+        end_item.interpolable_value = end_val;
+
         InterpolableColor& start_color =
             To<InterpolableColor>(*start_item.interpolable_value);
         InterpolableColor& end_color =

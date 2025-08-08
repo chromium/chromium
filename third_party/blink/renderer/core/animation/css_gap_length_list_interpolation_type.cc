@@ -130,19 +130,18 @@ void CSSGapLengthListInterpolationType::ApplyStandardPropertyValue(
   DCHECK_EQ(non_interpolable_list.length(), length);
   GapDataList<int> result(length);
   for (wtf_size_t i = 0; i < length; i++) {
+    Length::ValueRange value_range =
+        LengthListPropertyFunctions::GetValueRange(CssProperty());
     if (auto* repeater = DynamicTo<InterpolableGapLengthRepeater>(
             interpolable_list.Get(i))) {
       result.AddGapData(repeater->CreateGapData(
-          state.CssToLengthConversionData(),
-          LengthListPropertyFunctions::GetValueRange(CssProperty())));
+          state.CssToLengthConversionData(), value_range));
       continue;
     }
 
     result.AddGapData(
         To<InterpolableLength>(*interpolable_list.Get(i))
-            .CreateLength(
-                state.CssToLengthConversionData(),
-                LengthListPropertyFunctions::GetValueRange(CssProperty())));
+            .CreateLength(state.CssToLengthConversionData(), value_range));
   }
 
   if (CssProperty().PropertyID() == CSSPropertyID::kColumnRuleWidth) {
@@ -248,8 +247,7 @@ InterpolationValue CSSGapLengthListInterpolationType::MaybeConvertValue(
   const auto& list = To<CSSValueList>(value);
 
   GapDataList<int> gap_data_list =
-      StyleBuilderConverter::ConvertGapDecorationWidthDataList(
-          const_cast<StyleResolverState&>(state), value);
+      StyleBuilderConverter::ConvertGapDecorationWidthDataList(state, value);
   const GapDataList<int>::GapDataVector& gap_data_vector =
       gap_data_list.GetGapDataList();
   return ListInterpolationFunctions::CreateList(

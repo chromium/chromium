@@ -137,6 +137,14 @@ const ComputedStyle* StyleResolverState::TakeStyle() {
   return style_builder_->TakeStyle();
 }
 
+const ComputedStyle* StyleResolverState::CloneStyle() const {
+  if (had_no_matched_properties_ &&
+      pseudo_request_type_ == StyleRequest::kForRenderer) {
+    return nullptr;
+  }
+  return style_builder_->CloneStyle();
+}
+
 void StyleResolverState::UpdateLengthConversionData() {
   css_to_length_conversion_data_ = CSSToLengthConversionData(
       *style_builder_, ParentStyle(), RootElementStyle(),
