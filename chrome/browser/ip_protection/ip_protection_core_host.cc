@@ -64,30 +64,19 @@ bool IsLikelyDogfoodClient() {
 
 }  // namespace
 IpProtectionCoreHost::IpProtectionCoreHost(
+    signin::IdentityManager* identity_manager,
     privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
     PrefService* pref_service,
     Profile* profile)
-    : tracking_protection_settings_(tracking_protection_settings),
+    : identity_manager_(identity_manager),
+      tracking_protection_settings_(tracking_protection_settings),
       pref_service_(pref_service),
       profile_(profile) {
+  CHECK(identity_manager);
+  identity_manager_->AddObserver(this);
   CHECK(tracking_protection_settings);
   CHECK(pref_service_);
   tracking_protection_settings_->AddObserver(this);
-}
-
-void IpProtectionCoreHost::RegisterWithIdentityManager(
-    signin::IdentityManager* identity_manager) {
-  CHECK(!identity_manager_);
-  CHECK(!is_shutting_down_);
-  if (identity_manager) {
-    identity_manager_ = identity_manager;
-    identity_manager_->AddObserver(this);
-
-    // Handle the case where the account is already available.
-    if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-      AccountStatusChanged(true);
-    }
-  }
 }
 
 void IpProtectionCoreHost::SetUp() {
@@ -360,10 +349,9 @@ void IpProtectionCoreHost::Shutdown() {
     return;
   }
   is_shutting_down_ = true;
-  if (identity_manager_) {
-    identity_manager_->RemoveObserver(this);
-    identity_manager_ = nullptr;
-  }
+  CHECK(identity_manager_);
+  identity_manager_->RemoveObserver(this);
+  identity_manager_ = nullptr;
   CHECK(tracking_protection_settings_);
   tracking_protection_settings_->RemoveObserver(this);
   tracking_protection_settings_ = nullptr;
@@ -459,9 +447,6 @@ void IpProtectionCoreHost::OnErrorStateOfRefreshTokenUpdatedForAccount(
 
 bool IpProtectionCoreHost::CanRequestOAuthToken() {
   if (is_shutting_down_) {
-    return false;
-  }
-  if (!identity_manager_) {
     return false;
   }
 

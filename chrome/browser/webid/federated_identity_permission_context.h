@@ -51,18 +51,6 @@ class FederatedIdentityPermissionContext
   // KeyedService:
   void Shutdown() override;
 
-  // Starts observing the IdentityManager.
-  //
-  // Note: Per crbug.com/436208345, the `FederatedIdentityPermissionContext`
-  // service is created before the profile services are created and this affects
-  // tests that override the identity manager. Until this is fixed, registering
-  // with the identity manager requires an explicit call to this method. It is
-  // not allowed to use the identity manager before this call is made.
-  //
-  // TODO(crbug.com/436825597) Remove this method and start using the identity
-  // manager in the constructor once crbug.com/436825597 is fixed.
-  void RegisterWithIdentityManager(signin::IdentityManager* identity_manager);
-
   // content::FederatedIdentityPermissionContextDelegate:
   void AddIdpSigninStatusObserver(IdpSigninStatusObserver* observer) override;
   void RemoveIdpSigninStatusObserver(

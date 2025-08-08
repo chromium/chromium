@@ -55,23 +55,12 @@ class IpProtectionCoreHost
       public ip_protection::IpProtectionTokenDirectFetcher::Delegate {
  public:
   IpProtectionCoreHost(
+      signin::IdentityManager* identity_manager,
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       PrefService* pref_service,
       Profile* profile);
 
   ~IpProtectionCoreHost() override;
-
-  // Starts using and observing the IdentityManager.
-  //
-  // Note: Per crbug.com/436208345, the `IpProtectionCoreHost` service is
-  // created before the profile services are created and this affects tests that
-  // override the identity manager. Until this is fixed, registering with the
-  // identity manager requires an explicit call to this method. It is not
-  // allowed to use the identity manager before this call is made.
-  //
-  // TODO(crbug.com/436825597) Remove this method and start using the identity
-  // manager in the constructor once crbug.com/436825597 is fixed.
-  void RegisterWithIdentityManager(signin::IdentityManager* identity_manager);
 
   // CoreHost implementation:
 

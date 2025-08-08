@@ -28,18 +28,19 @@ FederatedIdentityPermissionContext::FederatedIdentityPermissionContext(
               browser_context)),
       idp_registration_context_(
           new FederatedIdentityIdentityProviderRegistrationContext(
-              browser_context)) {}
+              browser_context)) {
+  if (!browser_context->IsOffTheRecord()) {
+    Profile* profile = Profile::FromBrowserContext(browser_context);
+    signin::IdentityManager* mgr =
+        IdentityManagerFactory::GetForProfile(profile);
+    if (mgr) {
+      obs_.Observe(mgr);
+    }
+  }
+}
 
 FederatedIdentityPermissionContext::~FederatedIdentityPermissionContext() =
     default;
-
-void FederatedIdentityPermissionContext::RegisterWithIdentityManager(
-    signin::IdentityManager* identity_manager) {
-  CHECK(!obs_.IsObserving());
-  if (identity_manager) {
-    obs_.Observe(identity_manager);
-  }
-}
 
 void FederatedIdentityPermissionContext::Shutdown() {
   obs_.Reset();

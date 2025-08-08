@@ -65,8 +65,6 @@
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
-#include "chrome/browser/ip_protection/ip_protection_core_host.h"
-#include "chrome/browser/ip_protection/ip_protection_core_host_factory.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
@@ -875,27 +873,6 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   tpcd::trial::TpcdTrialServiceFactory::GetForProfile(this);
   tpcd::trial::TopLevelTrialServiceFactory::GetForProfile(this);
   tpcd::trial::OriginTrialServiceFactory::GetForProfile(this);
-
-  // At this point, it is safe to register the services used by the
-  // ProfileNetworkContextService with the identity manager.
-  // This must be done explicitly, rather than relying on them being initialized
-  // at service creation time since the ProfileNetworkContextService is created
-  // on Android before the profile-keyed services are created
-  // (see crbug.com/436208345).
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(this);
-  if (identity_manager) {
-    FederatedIdentityPermissionContext* fedcm_context =
-        FederatedIdentityPermissionContextFactory::GetForProfile(this);
-    if (fedcm_context) {
-      fedcm_context->RegisterWithIdentityManager(identity_manager);
-    }
-    IpProtectionCoreHost* ipp_core_host =
-        IpProtectionCoreHostFactory::GetForProfile(this);
-    if (ipp_core_host) {
-      ipp_core_host->RegisterWithIdentityManager(identity_manager);
-    }
-  }
 }
 
 base::FilePath ProfileImpl::last_selected_directory() {
@@ -1170,10 +1147,17 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
 
   SimpleDependencyManager::GetInstance()->CreateServices(GetProfileKey());
 
+#if !BUILDFLAG(IS_ANDROID)
   // Check that the IdentityManager was not created before the browser context
   // services were created. This ensures that browser tests can override the
   // IdentityManager with a fake.
+
+  // TODO(msarda): This invariant is violated on Android. Remove this check
+  // once the IdentityManager is no longer created as part of the initialization
+  // of the storage partition on Android.
   CHECK(!IdentityManagerFactory::GetForProfileIfExists(this));
+#endif
+
   BrowserContextDependencyManager::GetInstance()->CreateBrowserContextServices(
       this);
 
