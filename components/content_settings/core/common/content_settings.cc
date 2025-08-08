@@ -165,3 +165,11 @@ std::ostream& operator<<(std::ostream& os, const PermissionSetting& it) {
              it);
   return os;
 }
+
+std::ostream& operator<<(std::ostream& os,
+                         const std::optional<PermissionSetting>& it) {
+  if (!it) {
+    return os << "<empty setting>";
+  }
+  return os << *it;
+}

@@ -31,7 +31,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -370,18 +369,14 @@ public class PageInfoController
      *
      * @param name The title of the permission to display to the user.
      * @param nameMidSentence The title of the permission to display to the user when used
-     *         mid-sentence.
+     *     mid-sentence.
      * @param type The ContentSettingsType of the permission.
-     * @param currentSettingValue The ContentSetting value of the currently selected setting.
+     * @param allowed Whether the permission is allowed.
      */
     @CalledByNative
     private void addPermissionSection(
-            String name,
-            String nameMidSentence,
-            int type,
-            @ContentSettingValues int currentSettingValue) {
-        mPermissionParamsListBuilder.addPermissionEntry(
-                name, nameMidSentence, type, currentSettingValue);
+            String name, String nameMidSentence, int type, boolean allowed) {
+        mPermissionParamsListBuilder.addPermissionEntry(name, nameMidSentence, type, allowed);
     }
 
     /** Update the permissions view based on the contents of mDisplayedPermissions. */

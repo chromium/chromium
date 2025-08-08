@@ -452,7 +452,7 @@ TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
   // has been recently changed.
   expected_visible_permissions.insert(ContentSettingsType::MEDIASTREAM_CAMERA);
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_CAMERA,
-                                       CONTENT_SETTING_DEFAULT,
+                                       std::nullopt,
                                        /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   ExpectPermissionInfoList(expected_visible_permissions,
@@ -460,7 +460,7 @@ TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
 
   // Set the Javascript setting to default should keep it shown.
   page_info()->OnSitePermissionChanged(ContentSettingsType::JAVASCRIPT,
-                                       CONTENT_SETTING_DEFAULT,
+                                       /*value=*/std::nullopt,
                                        /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   ExpectPermissionInfoList(expected_visible_permissions,
@@ -663,7 +663,7 @@ TEST_F(PageInfoTest, IncognitoPermissionsDontShowAsk) {
 
   // Switching a permission back to default should not hide the permission.
   incognito_page_info()->OnSitePermissionChanged(
-      ContentSettingsType::GEOLOCATION, CONTENT_SETTING_DEFAULT,
+      ContentSettingsType::GEOLOCATION, /*value=*/std::nullopt,
       /*requesting_origin=*/std::nullopt,
       /*is_one_time=*/false);
   ExpectPermissionInfoList(expected_incognito_permissions,
@@ -1379,11 +1379,11 @@ TEST_F(PageInfoTest, SuppressInfobarWhenMediaChangedToDefault) {
   page_info()->SetSubscribedToPermissionChangeForTesting();
 
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_CAMERA,
-                                       CONTENT_SETTING_DEFAULT,
+                                       std::nullopt,
                                        /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
   page_info()->OnSitePermissionChanged(ContentSettingsType::MEDIASTREAM_MIC,
-                                       CONTENT_SETTING_DEFAULT,
+                                       std::nullopt,
                                        /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
 
@@ -1458,7 +1458,7 @@ TEST_F(PageInfoTest, ShowInfobarWhenGeolocationChangedToDefault) {
   page_info()->SetSubscribedToPermissionChangeForTesting();
 
   page_info()->OnSitePermissionChanged(ContentSettingsType::GEOLOCATION,
-                                       CONTENT_SETTING_DEFAULT,
+                                       /*value=*/std::nullopt,
                                        /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
 
@@ -2131,6 +2131,11 @@ TEST_F(UnifiedAutoplaySoundSettingsPageInfoTest, NotSoundSetting_Noop) {
 class PageInfoToggleStatesUnitTest : public ::testing::Test {
 };
 
+// Helper to compare std::optional<PermissionSetting> with a ContentSetting.
+#define EXPECT_CONTENT_SETTING_EQ(val1, val2)                                 \
+  EXPECT_EQ(std::get<ContentSetting>(val1.value_or(CONTENT_SETTING_DEFAULT)), \
+            val2)
+
 // Testing all possible state transitions for a permission that doesn't
 // support allow once.
 TEST_F(PageInfoToggleStatesUnitTest,
@@ -2144,11 +2149,11 @@ TEST_F(PageInfoToggleStatesUnitTest,
 
   // Allow -> Block
   PageInfoUI::ToggleBetweenAllowAndBlock(camera_permission);
-  EXPECT_EQ(camera_permission.setting, CONTENT_SETTING_BLOCK);
+  EXPECT_CONTENT_SETTING_EQ(camera_permission.setting, CONTENT_SETTING_BLOCK);
 
   // Block -> Allow
   PageInfoUI::ToggleBetweenAllowAndBlock(camera_permission);
-  EXPECT_EQ(camera_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_CONTENT_SETTING_EQ(camera_permission.setting, CONTENT_SETTING_ALLOW);
 }
 
 TEST_F(PageInfoToggleStatesUnitTest,
@@ -2162,20 +2167,20 @@ TEST_F(PageInfoToggleStatesUnitTest,
 
   // Allow -> Block
   PageInfoUI::ToggleBetweenAllowAndBlock(camera_permission);
-  EXPECT_EQ(camera_permission.setting, CONTENT_SETTING_BLOCK);
+  EXPECT_CONTENT_SETTING_EQ(camera_permission.setting, CONTENT_SETTING_BLOCK);
 
   // Block -> Allow
   PageInfoUI::ToggleBetweenAllowAndBlock(camera_permission);
-  EXPECT_EQ(camera_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_CONTENT_SETTING_EQ(camera_permission.setting, CONTENT_SETTING_ALLOW);
 
   // Allow -> Block
   PageInfoUI::ToggleBetweenAllowAndBlock(camera_permission);
-  EXPECT_EQ(camera_permission.setting, CONTENT_SETTING_BLOCK);
+  EXPECT_CONTENT_SETTING_EQ(camera_permission.setting, CONTENT_SETTING_BLOCK);
 
   // Block (default) -> Allow
   camera_permission.setting = CONTENT_SETTING_DEFAULT;
   PageInfoUI::ToggleBetweenAllowAndBlock(camera_permission);
-  EXPECT_EQ(camera_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_CONTENT_SETTING_EQ(camera_permission.setting, CONTENT_SETTING_ALLOW);
 }
 
 // Testing all possible state transitions for a permission that supports
@@ -2191,20 +2196,20 @@ TEST_F(PageInfoToggleStatesUnitTest,
 
   // Allow -> Block
   PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
-  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_BLOCK);
+  EXPECT_CONTENT_SETTING_EQ(location_permission.setting, CONTENT_SETTING_BLOCK);
 
   // Block -> Allow
   PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
-  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_CONTENT_SETTING_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
 
   // Allow -> Allow once
   PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
-  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_CONTENT_SETTING_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
   EXPECT_EQ(location_permission.is_one_time, true);
 
   // Allow once -> Allow
   PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
-  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_CONTENT_SETTING_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
   EXPECT_EQ(location_permission.is_one_time, false);
 }
 
@@ -2214,38 +2219,38 @@ TEST_F(PageInfoToggleStatesUnitTest,
        TogglePermissionWithAllowOnceDefaultBlockTest) {
   PageInfo::PermissionInfo location_permission;
   location_permission.type = ContentSettingsType::GEOLOCATION;
-  location_permission.setting = CONTENT_SETTING_DEFAULT;
+  location_permission.setting = std::nullopt;
   location_permission.default_setting = CONTENT_SETTING_BLOCK;
   location_permission.source = SettingSource::kUser;
   location_permission.is_one_time = false;
 
   // Block (default) -> Allow once
   PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
-  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_CONTENT_SETTING_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
   EXPECT_EQ(location_permission.is_one_time, true);
 
   // Allow once -> Allow
   PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
-  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_CONTENT_SETTING_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
   EXPECT_EQ(location_permission.is_one_time, false);
 
   // Allow -> Block
   PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
-  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_BLOCK);
+  EXPECT_CONTENT_SETTING_EQ(location_permission.setting, CONTENT_SETTING_BLOCK);
 
   // Block -> Allow
   PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
-  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_CONTENT_SETTING_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
   EXPECT_EQ(location_permission.is_one_time, false);
 
   // Allow -> Allow once
   PageInfoUI::ToggleBetweenRememberAndForget(location_permission);
-  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_CONTENT_SETTING_EQ(location_permission.setting, CONTENT_SETTING_ALLOW);
   EXPECT_EQ(location_permission.is_one_time, true);
 
   // Allow once -> Block
   PageInfoUI::ToggleBetweenAllowAndBlock(location_permission);
-  EXPECT_EQ(location_permission.setting, CONTENT_SETTING_BLOCK);
+  EXPECT_CONTENT_SETTING_EQ(location_permission.setting, CONTENT_SETTING_BLOCK);
   EXPECT_EQ(location_permission.is_one_time, false);
 }
 
@@ -2254,22 +2259,22 @@ TEST_F(PageInfoToggleStatesUnitTest,
 TEST_F(PageInfoToggleStatesUnitTest, TogglePermissionDefaultAllowTest) {
   PageInfo::PermissionInfo images_permission;
   images_permission.type = ContentSettingsType::IMAGES;
-  images_permission.setting = CONTENT_SETTING_DEFAULT;
+  images_permission.setting = std::nullopt;
   images_permission.default_setting = CONTENT_SETTING_ALLOW;
   images_permission.source = SettingSource::kUser;
   images_permission.is_one_time = false;
 
   // Allow (default) -> Block
   PageInfoUI::ToggleBetweenAllowAndBlock(images_permission);
-  EXPECT_EQ(images_permission.setting, CONTENT_SETTING_BLOCK);
+  EXPECT_CONTENT_SETTING_EQ(images_permission.setting, CONTENT_SETTING_BLOCK);
 
   // Block -> Allow
   PageInfoUI::ToggleBetweenAllowAndBlock(images_permission);
-  EXPECT_EQ(images_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_CONTENT_SETTING_EQ(images_permission.setting, CONTENT_SETTING_ALLOW);
 
   // Allow -> Block
   PageInfoUI::ToggleBetweenAllowAndBlock(images_permission);
-  EXPECT_EQ(images_permission.setting, CONTENT_SETTING_BLOCK);
+  EXPECT_CONTENT_SETTING_EQ(images_permission.setting, CONTENT_SETTING_BLOCK);
 }
 
 // Testing all possible state transitions for a content settings with a default
@@ -2277,24 +2282,24 @@ TEST_F(PageInfoToggleStatesUnitTest, TogglePermissionDefaultAllowTest) {
 TEST_F(PageInfoToggleStatesUnitTest, TogglePermissionDefaultBlockTest) {
   PageInfo::PermissionInfo popups_permission;
   popups_permission.type = ContentSettingsType::POPUPS;
-  popups_permission.setting = CONTENT_SETTING_DEFAULT;
+  popups_permission.setting = std::nullopt;
   popups_permission.default_setting = CONTENT_SETTING_BLOCK;
   popups_permission.source = SettingSource::kUser;
   popups_permission.is_one_time = false;
 
   // Block (default) -> Allow
   PageInfoUI::ToggleBetweenAllowAndBlock(popups_permission);
-  EXPECT_EQ(popups_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_CONTENT_SETTING_EQ(popups_permission.setting, CONTENT_SETTING_ALLOW);
 
   // Allow -> Block
   // The page info always creates a site exception even if the target setting
   // matches the default.
   PageInfoUI::ToggleBetweenAllowAndBlock(popups_permission);
-  EXPECT_EQ(popups_permission.setting, CONTENT_SETTING_BLOCK);
+  EXPECT_CONTENT_SETTING_EQ(popups_permission.setting, CONTENT_SETTING_BLOCK);
 
   // Block -> Allow
   PageInfoUI::ToggleBetweenAllowAndBlock(popups_permission);
-  EXPECT_EQ(popups_permission.setting, CONTENT_SETTING_ALLOW);
+  EXPECT_CONTENT_SETTING_EQ(popups_permission.setting, CONTENT_SETTING_ALLOW);
 }
 
 // Testing all possible state transitions for a guard content settings with a
@@ -2302,24 +2307,24 @@ TEST_F(PageInfoToggleStatesUnitTest, TogglePermissionDefaultBlockTest) {
 TEST_F(PageInfoToggleStatesUnitTest, ToggleGuardPermissionDefaultAskTest) {
   PageInfo::PermissionInfo usb_guard;
   usb_guard.type = ContentSettingsType::USB_GUARD;
-  usb_guard.setting = CONTENT_SETTING_DEFAULT;
+  usb_guard.setting = std::nullopt;
   usb_guard.default_setting = CONTENT_SETTING_ASK;
   usb_guard.source = SettingSource::kUser;
   usb_guard.is_one_time = false;
 
   // Ask (default) -> Block
   PageInfoUI::ToggleBetweenAllowAndBlock(usb_guard);
-  EXPECT_EQ(usb_guard.setting, CONTENT_SETTING_BLOCK);
+  EXPECT_CONTENT_SETTING_EQ(usb_guard.setting, CONTENT_SETTING_BLOCK);
 
   // Block -> Ask
   // The page info always creates a site exception even if the target setting
   // matches the default.
   PageInfoUI::ToggleBetweenAllowAndBlock(usb_guard);
-  EXPECT_EQ(usb_guard.setting, CONTENT_SETTING_ASK);
+  EXPECT_CONTENT_SETTING_EQ(usb_guard.setting, CONTENT_SETTING_ASK);
 
   // Ask -> Block
   PageInfoUI::ToggleBetweenAllowAndBlock(usb_guard);
-  EXPECT_EQ(usb_guard.setting, CONTENT_SETTING_BLOCK);
+  EXPECT_CONTENT_SETTING_EQ(usb_guard.setting, CONTENT_SETTING_BLOCK);
 }
 
 // Testing all possible state transitions for a guard content settings with a
@@ -2327,24 +2332,24 @@ TEST_F(PageInfoToggleStatesUnitTest, ToggleGuardPermissionDefaultAskTest) {
 TEST_F(PageInfoToggleStatesUnitTest, ToggleGuardPermissionDefaultBlockTest) {
   PageInfo::PermissionInfo hid_guard;
   hid_guard.type = ContentSettingsType::HID_GUARD;
-  hid_guard.setting = CONTENT_SETTING_DEFAULT;
+  hid_guard.setting = std::nullopt;
   hid_guard.default_setting = CONTENT_SETTING_BLOCK;
   hid_guard.source = SettingSource::kUser;
   hid_guard.is_one_time = false;
 
   // Block (default) -> Ask
   PageInfoUI::ToggleBetweenAllowAndBlock(hid_guard);
-  EXPECT_EQ(hid_guard.setting, CONTENT_SETTING_ASK);
+  EXPECT_CONTENT_SETTING_EQ(hid_guard.setting, CONTENT_SETTING_ASK);
 
   // Ask -> Block
   // The page info always creates a site exception even if the target setting
   // matches the default.
   PageInfoUI::ToggleBetweenAllowAndBlock(hid_guard);
-  EXPECT_EQ(hid_guard.setting, CONTENT_SETTING_BLOCK);
+  EXPECT_CONTENT_SETTING_EQ(hid_guard.setting, CONTENT_SETTING_BLOCK);
 
   // Block -> Ask
   PageInfoUI::ToggleBetweenAllowAndBlock(hid_guard);
-  EXPECT_EQ(hid_guard.setting, CONTENT_SETTING_ASK);
+  EXPECT_CONTENT_SETTING_EQ(hid_guard.setting, CONTENT_SETTING_ASK);
 }
 
 TEST_F(PageInfoTest, WithoutPageSpecificContentSettings) {

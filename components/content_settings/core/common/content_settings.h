@@ -62,6 +62,8 @@ using PermissionSetting = std::variant<ContentSetting, GeolocationSetting>;
 
 std::ostream& operator<<(std::ostream& os, const GeolocationSetting& it);
 std::ostream& operator<<(std::ostream& os, const PermissionSetting& it);
+std::ostream& operator<<(std::ostream& os,
+                         const std::optional<PermissionSetting>& it);
 
 // Range-checked conversion of an int to a ContentSetting, for use when reading
 // prefs off disk.

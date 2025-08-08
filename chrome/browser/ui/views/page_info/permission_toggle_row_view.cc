@@ -283,7 +283,7 @@ void PermissionToggleRowView::InitForManagedSource(
 
 void PermissionToggleRowView::UpdateUiOnPermissionChanged() {
   if (blocked_on_system_level_label_) {
-    if (permission_.setting == CONTENT_SETTING_DEFAULT) {
+    if (!permission_.setting) {
       permission_blocked_on_system_level_ = false;
       blocked_on_system_level_label_->SetVisible(false);
     } else {
@@ -304,8 +304,7 @@ void PermissionToggleRowView::UpdateUiOnPermissionChanged() {
 
   // Reset |state_label_|, readd it after if needed.
   if (state_label_) {
-    delete state_label_;
-    state_label_ = nullptr;
+    row_view_->RemoveChildView(std::exchange(state_label_, nullptr));
   }
 
   // Add explanation for the user-managed permission state if needed. This would
@@ -330,7 +329,7 @@ void PermissionToggleRowView::UpdateUiOnPermissionChanged() {
 }
 
 void PermissionToggleRowView::ResetPermission() {
-  permission_.setting = CONTENT_SETTING_DEFAULT;
+  permission_.setting.reset();
   permission_.is_one_time = false;
   permission_.is_in_use = false;
   PermissionChanged();

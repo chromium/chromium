@@ -2,24 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <variant>
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "components/page_info/page_info_ui.h"
 
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/page_info.h"
+#include "components/page_info/page_info_ui.h"
 #include "components/page_info/page_info_ui_delegate.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
@@ -54,6 +57,7 @@
 
 namespace {
 
+using content_settings::PermissionSettingsRegistry;
 using content_settings::SettingSource;
 
 const int kInvalidResourceID = -1;
@@ -210,24 +214,30 @@ CreateSecurityDescriptionForSafetyTip(
 }
 
 // Gets the actual setting for a ContentSettingsType.
-ContentSetting GetEffectiveSetting(ContentSettingsType type,
-                                   ContentSetting setting,
-                                   ContentSetting default_setting) {
-  ContentSetting effective_setting = setting;
-  if (effective_setting == CONTENT_SETTING_DEFAULT)
-    effective_setting = default_setting;
-
-  return effective_setting;
+PermissionSetting GetEffectiveSetting(
+    ContentSettingsType type,
+    const std::optional<PermissionSetting>& setting,
+    const PermissionSetting& default_setting) {
+  // Check that we are passing nullopt instead of CONTENT_SETTING_DEFAULT.
+  CHECK(!setting || !std::holds_alternative<ContentSetting>(*setting) ||
+        std::get<ContentSetting>(*setting) != CONTENT_SETTING_DEFAULT);
+  return setting.value_or(default_setting);
 }
 
 void CreateOppositeToDefaultSiteException(
     PageInfo::PermissionInfo& permission,
     ContentSetting opposite_to_block_setting) {
+  if (!std::holds_alternative<ContentSetting>(permission.default_setting)) {
+    NOTIMPLEMENTED();
+  }
+
+  ContentSetting default_setting =
+      std::get<ContentSetting>(permission.default_setting);
   // For Automatic Picture-in-Picture, we show the toggle in the "on" position
   // while the setting is ASK, so the opposite to the default when the default
   // is ASK should be BLOCK instead of ALLOW.
   if (permission.type == ContentSettingsType::AUTO_PICTURE_IN_PICTURE) {
-    permission.setting = permission.default_setting == CONTENT_SETTING_BLOCK
+    permission.setting = default_setting == CONTENT_SETTING_BLOCK
                              ? CONTENT_SETTING_ALLOW
                              : CONTENT_SETTING_BLOCK;
     return;
@@ -235,7 +245,7 @@ void CreateOppositeToDefaultSiteException(
 
   // For guard content settings opposite to block setting is ask, for the
   // rest opposite is allow.
-  permission.setting = permission.default_setting == opposite_to_block_setting
+  permission.setting = default_setting == opposite_to_block_setting
                            ? CONTENT_SETTING_BLOCK
                            : opposite_to_block_setting;
 }
@@ -596,20 +606,22 @@ std::u16string PageInfoUI::PermissionStateToUIString(
     PageInfoUiDelegate* delegate,
     const PageInfo::PermissionInfo& permission) {
   int message_id = kInvalidResourceID;
-  ContentSetting effective_setting = GetEffectiveSetting(
+
+  auto* info = PermissionSettingsRegistry::GetInstance()->Get(permission.type);
+  CHECK(info);
+
+  const PermissionSetting effective_setting = GetEffectiveSetting(
       permission.type, permission.setting, permission.default_setting);
-  switch (effective_setting) {
-    case CONTENT_SETTING_ALLOW:
+  if (info->delegate().IsAnyPermissionAllowed(effective_setting)) {
 #if !BUILDFLAG(IS_ANDROID)
-      if (permission.type == ContentSettingsType::SOUND &&
-          delegate->IsBlockAutoPlayEnabled() &&
-          permission.setting == CONTENT_SETTING_DEFAULT) {
-        message_id = IDS_PAGE_INFO_BUTTON_TEXT_AUTOMATIC_BY_DEFAULT;
-        break;
-      }
+    if (permission.type == ContentSettingsType::SOUND &&
+        delegate->IsBlockAutoPlayEnabled() && !permission.setting) {
+      return l10n_util::GetStringUTF16(
+          IDS_PAGE_INFO_BUTTON_TEXT_AUTOMATIC_BY_DEFAULT);
+    }
 #endif
-      if (permission.setting == CONTENT_SETTING_DEFAULT) {
-        message_id = IDS_PAGE_INFO_STATE_TEXT_ALLOWED_BY_DEFAULT;
+    if (!permission.setting) {
+      message_id = IDS_PAGE_INFO_STATE_TEXT_ALLOWED_BY_DEFAULT;
 #if !BUILDFLAG(IS_ANDROID)
       } else if (permission.is_one_time) {
         DCHECK_EQ(permission.source, SettingSource::kUser);
@@ -620,30 +632,25 @@ std::u16string PageInfoUI::PermissionStateToUIString(
       } else {
         message_id = IDS_PAGE_INFO_STATE_TEXT_ALLOWED;
       }
-      break;
-    case CONTENT_SETTING_BLOCK:
-      if (permission.setting == CONTENT_SETTING_DEFAULT) {
+  } else if (info->delegate().IsUndecided(effective_setting)) {
+    return GetPermissionAskStateString(permission.type);
+  } else {
+    if (!permission.setting) {
 #if !BUILDFLAG(IS_ANDROID)
         if (permission.type == ContentSettingsType::SOUND) {
-          message_id = IDS_PAGE_INFO_BUTTON_TEXT_MUTED_BY_DEFAULT;
-          break;
+          return l10n_util::GetStringUTF16(
+              IDS_PAGE_INFO_BUTTON_TEXT_MUTED_BY_DEFAULT);
         }
 #endif
         message_id = IDS_PAGE_INFO_STATE_TEXT_NOT_ALLOWED_BY_DEFAULT;
-      } else {
+    } else {
 #if !BUILDFLAG(IS_ANDROID)
         if (permission.type == ContentSettingsType::SOUND) {
-          message_id = IDS_PAGE_INFO_STATE_TEXT_MUTED;
-          break;
+          return l10n_util::GetStringUTF16(IDS_PAGE_INFO_STATE_TEXT_MUTED);
         }
 #endif
         message_id = IDS_PAGE_INFO_STATE_TEXT_NOT_ALLOWED;
-      }
-      break;
-    case CONTENT_SETTING_ASK:
-      return GetPermissionAskStateString(permission.type);
-    default:
-      NOTREACHED();
+    }
   }
 
   return l10n_util::GetStringUTF16(message_id);
@@ -658,8 +665,11 @@ std::u16string PageInfoUI::PermissionMainPageStateToUIString(
   if (!auto_blocked_text.empty())
     return auto_blocked_text;
 
-  if (permission.is_one_time || permission.setting == CONTENT_SETTING_DEFAULT ||
-      permission.setting == CONTENT_SETTING_ASK) {
+  auto* info = PermissionSettingsRegistry::GetInstance()->Get(permission.type);
+  CHECK(info);
+
+  if (permission.is_one_time || !permission.setting ||
+      info->delegate().IsUndecided(*permission.setting)) {
     return PermissionStateToUIString(delegate, permission);
   }
 
@@ -667,7 +677,7 @@ std::u16string PageInfoUI::PermissionMainPageStateToUIString(
     return l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_USING_NOW);
   }
 
-  if (permission.setting != CONTENT_SETTING_ALLOW ||
+  if (!info->delegate().IsAnyPermissionAllowed(*permission.setting) ||
       permission.last_used == base::Time()) {
     return std::u16string();
   }
@@ -713,7 +723,9 @@ std::u16string PageInfoUI::PermissionAutoBlockedToUIString(
   int message_id = kInvalidResourceID;
   // TODO(crbug.com/40123120): PageInfo::PermissionInfo should be modified
   // to contain all needed information regarding Automatically Blocked flag.
-  if (permission.setting == CONTENT_SETTING_BLOCK &&
+  auto* info = PermissionSettingsRegistry::GetInstance()->Get(permission.type);
+  CHECK(info);
+  if (permission.setting && !info->delegate().IsBlocked(*permission.setting) &&
       permissions::PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
           permission.type)) {
     content::PermissionResult permission_result(
@@ -749,11 +761,17 @@ std::u16string PageInfoUI::PermissionAutoBlockedToUIString(
 // static
 void PageInfoUI::ToggleBetweenAllowAndBlock(
     PageInfo::PermissionInfo& permission) {
+  if (!std::holds_alternative<ContentSetting>(permission.default_setting)) {
+    NOTIMPLEMENTED();
+  }
+
   auto opposite_to_block_setting =
       permissions::PermissionUtil::IsGuardContentSetting(permission.type)
           ? CONTENT_SETTING_ASK
           : CONTENT_SETTING_ALLOW;
-  switch (permission.setting) {
+  ContentSetting setting = std::get<ContentSetting>(
+      permission.setting.value_or(CONTENT_SETTING_DEFAULT));
+  switch (setting) {
     case CONTENT_SETTING_ALLOW:
       DCHECK_EQ(opposite_to_block_setting, CONTENT_SETTING_ALLOW);
       permission.setting = CONTENT_SETTING_BLOCK;
@@ -791,7 +809,13 @@ void PageInfoUI::ToggleBetweenAllowAndBlock(
 void PageInfoUI::ToggleBetweenRememberAndForget(
     PageInfo::PermissionInfo& permission) {
   DCHECK(permissions::PermissionUtil::IsPermission(permission.type));
-  switch (permission.setting) {
+  if (!std::holds_alternative<ContentSetting>(permission.default_setting)) {
+    NOTIMPLEMENTED();
+  }
+
+  ContentSetting setting = std::get<ContentSetting>(
+      permission.setting.value_or(CONTENT_SETTING_DEFAULT));
+  switch (setting) {
     case CONTENT_SETTING_ALLOW: {
       // If one-time permissions are supported, toggle is_one_time.
       // Otherwise, go directly to default.
@@ -799,7 +823,7 @@ void PageInfoUI::ToggleBetweenRememberAndForget(
               permission.type)) {
         permission.is_one_time = !permission.is_one_time;
       } else {
-        permission.setting = CONTENT_SETTING_DEFAULT;
+        permission.setting.reset();
       }
       break;
     }
@@ -807,19 +831,23 @@ void PageInfoUI::ToggleBetweenRememberAndForget(
       // TODO(olesiamarukhno): If content setting is in the blocklist, setting
       // it to default, doesn't do anything. Fix this before introducing
       // subpages for content settings (not permissions).
-      permission.setting = CONTENT_SETTING_DEFAULT;
+      permission.setting.reset();
       permission.is_one_time = false;
       break;
-    case CONTENT_SETTING_DEFAULT:
+    case CONTENT_SETTING_DEFAULT: {
       // When user checks the checkbox to remember the permission setting,
       // it should go to the "allow" state, only if default setting is
       // explicitly allow.
-      if (permission.default_setting == CONTENT_SETTING_ALLOW) {
+
+      ContentSetting default_setting =
+          std::get<ContentSetting>(permission.default_setting);
+      if (default_setting == CONTENT_SETTING_ALLOW) {
         permission.setting = CONTENT_SETTING_ALLOW;
       } else {
         permission.setting = CONTENT_SETTING_BLOCK;
       }
       break;
+    }
     default:
       NOTREACHED();
   }
@@ -827,19 +855,24 @@ void PageInfoUI::ToggleBetweenRememberAndForget(
 
 // static
 bool PageInfoUI::IsToggleOn(const PageInfo::PermissionInfo& permission) {
-  ContentSetting effective_setting = GetEffectiveSetting(
+  PermissionSetting effective_setting = GetEffectiveSetting(
       permission.type, permission.setting, permission.default_setting);
 
   // Since Automatic Picture-in-Picture is essentially allowed while in the ASK
   // state, we display the toggle as on for either ASK or ALLOW.
   if (permission.type == ContentSettingsType::AUTO_PICTURE_IN_PICTURE) {
-    return (effective_setting == CONTENT_SETTING_ASK ||
-            effective_setting == CONTENT_SETTING_ALLOW);
+    ContentSetting effective_content_setting =
+        std::get<ContentSetting>(effective_setting);
+    return effective_content_setting == CONTENT_SETTING_ASK ||
+           effective_content_setting == CONTENT_SETTING_ALLOW;
   }
 
+  auto* info = PermissionSettingsRegistry::GetInstance()->Get(permission.type);
+  CHECK(info);
   return permissions::PermissionUtil::IsGuardContentSetting(permission.type)
-             ? effective_setting == CONTENT_SETTING_ASK
-             : effective_setting == CONTENT_SETTING_ALLOW;
+             ? std::get<ContentSetting>(effective_setting) ==
+                   CONTENT_SETTING_ASK
+             : info->delegate().IsAnyPermissionAllowed(effective_setting);
 }
 
 // static

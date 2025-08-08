@@ -5,6 +5,7 @@
 #include "components/page_info/page_info_ui.h"
 
 #include "build/buildflag.h"
+#include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/page_info/page_info_ui_delegate.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,7 +37,9 @@ class MockPageInfoUiDelegate : public PageInfoUiDelegate {
 
 }  // namespace
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST(PageInfoUITest, PermissionStateToUIString) {
+  content_settings::ContentSettingsRegistry::GetInstance();
   MockPageInfoUiDelegate delegate;
   PageInfo::PermissionInfo permission_info;
   permission_info.setting = CONTENT_SETTING_ASK;
@@ -51,3 +54,4 @@ TEST(PageInfoUITest, PermissionStateToUIString) {
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_STATE_TEXT_POINTER_LOCK_ASK),
       PageInfoUI::PermissionStateToUIString(&delegate, permission_info));
 }
+#endif

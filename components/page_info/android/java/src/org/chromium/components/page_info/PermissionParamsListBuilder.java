@@ -13,7 +13,6 @@ import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.page_info.PageInfoPermissionsController.PermissionObject;
@@ -47,9 +46,8 @@ public class PermissionParamsListBuilder {
         mEntries = new ArrayList<>();
     }
 
-    public void addPermissionEntry(
-            String name, String nameMidSentence, int type, @ContentSettingValues int value) {
-        mEntries.add(new PageInfoPermissionEntry(name, nameMidSentence, type, value));
+    public void addPermissionEntry(String name, String nameMidSentence, int type, boolean allowed) {
+        mEntries.add(new PageInfoPermissionEntry(name, nameMidSentence, type, allowed));
     }
 
     public void clearPermissionEntries() {
@@ -67,9 +65,10 @@ public class PermissionParamsListBuilder {
     private PermissionObject createPermissionParams(
             PermissionParamsListBuilder.PageInfoPermissionEntry permission) {
         @StringRes int warningTextResource = 0;
-        if (permission.setting == ContentSettingValues.ALLOW) {
+        if (permission.allowed) {
             LocationUtils locationUtils = LocationUtils.getInstance();
-            if (permission.type == ContentSettingsType.GEOLOCATION
+            if ((permission.type == ContentSettingsType.GEOLOCATION
+                            || permission.type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS)
                     && !locationUtils.isSystemLocationSettingEnabled()) {
                 warningTextResource = R.string.page_info_android_location_blocked;
             } else if (permission.type == ContentSettingsType.NFC
@@ -86,13 +85,6 @@ public class PermissionParamsListBuilder {
                     warningTextResource = R.string.page_info_android_permission_blocked;
                 }
             }
-        } else {
-            assert permission.setting == ContentSettingValues.ASK
-                            || permission.setting == ContentSettingValues.BLOCK
-                    : "Invalid setting "
-                            + permission.setting
-                            + " for permission "
-                            + permission.type;
         }
 
         SpannableString nameString = new SpannableString(permission.name);
@@ -103,12 +95,11 @@ public class PermissionParamsListBuilder {
         nameStringMidSentence.setSpan(
                 span, 0, nameStringMidSentence.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
 
-        boolean allowed = permission.setting != ContentSettingValues.BLOCK;
         return new PermissionObject(
                 /* type= */ permission.type,
                 /* name= */ nameString,
                 /* nameMidSentence= */ nameStringMidSentence,
-                /* allowed= */ allowed,
+                /* allowed= */ permission.allowed,
                 /* warningTextResource= */ warningTextResource);
     }
 
@@ -120,14 +111,13 @@ public class PermissionParamsListBuilder {
         public final String name;
         public final String nameMidSentence;
         public final int type;
-        public final @ContentSettingValues int setting;
+        public final boolean allowed;
 
-        PageInfoPermissionEntry(
-                String name, String nameMidSentence, int type, @ContentSettingValues int setting) {
+        PageInfoPermissionEntry(String name, String nameMidSentence, int type, boolean allowed) {
             this.name = name;
             this.nameMidSentence = nameMidSentence;
             this.type = type;
-            this.setting = setting;
+            this.allowed = allowed;
         }
 
         @Override

@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -27,6 +28,8 @@
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_info.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -71,6 +74,7 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -246,6 +250,26 @@ const PageInfo::ChooserUIInfo kChooserUIInfo[] = {
      IDS_PAGE_INFO_DELETE_BLUETOOTH_DEVICE_WITH_NAME},
 };
 
+// Converts a permission setting to a ContentSetting. This conversion looses
+// information in case of complex permission settings and should only be used
+// for metric recording.
+ContentSetting ToContentSettingForMetrics(
+    const content_settings::PermissionSettingsInfo* info,
+    const std::optional<PermissionSetting>& setting) {
+  CHECK(info);
+  if (!setting) {
+    return CONTENT_SETTING_DEFAULT;
+  }
+  if (info->delegate().IsAnyPermissionAllowed(*setting)) {
+    return CONTENT_SETTING_ALLOW;
+  }
+  if (info->delegate().IsUndecided(*setting)) {
+    return CONTENT_SETTING_ASK;
+  }
+  CHECK(info->delegate().IsBlocked(*setting));
+  return CONTENT_SETTING_BLOCK;
+}
+
 void LogTimeOpenHistogram(const std::string& name, base::TimeTicks start_time) {
   base::UmaHistogramCustomTimes(name, base::TimeTicks::Now() - start_time,
                                 base::Milliseconds(1), base::Hours(1), 100);
@@ -403,22 +427,26 @@ void PageInfo::OnTrackingProtectionButtonPressed() {
 }
 
 // static
-bool PageInfo::IsPermissionFactoryDefault(const PermissionInfo& info,
+bool PageInfo::IsPermissionFactoryDefault(const PermissionInfo& permission,
                                           bool is_incognito) {
-  const ContentSetting factory_default_setting =
-      content_settings::ContentSettingsRegistry::GetInstance()
-          ->Get(info.type)
+  auto* info = content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+      permission.type);
+
+  const PermissionSetting factory_default_setting =
+      content_settings::PermissionSettingsRegistry::GetInstance()
+          ->Get(permission.type)
           ->GetInitialDefaultSetting();
 
   // Settings that are granted in regular mode get reduced to ASK in incognito
   // mode. These settings should not be displayed either.
   const bool is_incognito_default =
-      is_incognito && info.setting == CONTENT_SETTING_ASK &&
-      factory_default_setting == CONTENT_SETTING_ASK;
+      is_incognito && permission.setting &&
+      info->delegate().IsUndecided(*permission.setting) &&
+      info->delegate().IsUndecided(factory_default_setting);
 
-  return info.source == content_settings::SettingSource::kUser &&
-         factory_default_setting == info.default_setting &&
-         (info.setting == CONTENT_SETTING_DEFAULT || is_incognito_default);
+  return permission.source == content_settings::SettingSource::kUser &&
+         factory_default_setting == permission.default_setting &&
+         (!permission.setting || is_incognito_default);
 }
 
 // static
@@ -630,20 +658,26 @@ void PageInfo::UpdatePermissions() {
 
 void PageInfo::OnSitePermissionChanged(
     ContentSettingsType type,
-    ContentSetting setting,
+    std::optional<PermissionSetting> setting,
     std::optional<url::Origin> requesting_origin,
     bool is_one_time) {
+  // Check that we are passing nullopt instead of CONTENT_SETTING_DEFAULT.
+  CHECK(!setting || !std::holds_alternative<ContentSetting>(*setting) ||
+        std::get<ContentSetting>(*setting) != CONTENT_SETTING_DEFAULT);
   ContentSettingChangedViaPageInfo(type);
+
+  auto* info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(type);
 
   // Count how often a permission for a specific content type is changed using
   // the Page Info UI.
   content_settings_uma_util::RecordContentSettingsHistogram(
       "WebsiteSettings.OriginInfo.PermissionChanged", type);
 
-  if (setting == ContentSetting::CONTENT_SETTING_ALLOW) {
+  if (setting && info->delegate().IsAnyPermissionAllowed(*setting)) {
     content_settings_uma_util::RecordContentSettingsHistogram(
         "WebsiteSettings.OriginInfo.PermissionChanged.Allowed", type);
-  } else if (setting == ContentSetting::CONTENT_SETTING_BLOCK) {
+  } else if (setting && info->delegate().IsBlocked(*setting)) {
     content_settings_uma_util::RecordContentSettingsHistogram(
         "WebsiteSettings.OriginInfo.PermissionChanged.Blocked", type);
   }
@@ -656,9 +690,8 @@ void PageInfo::OnSitePermissionChanged(
   if (type == ContentSettingsType::SOUND) {
     ContentSetting default_setting =
         map->GetDefaultContentSetting(ContentSettingsType::SOUND, nullptr);
-    bool mute = (setting == CONTENT_SETTING_BLOCK) ||
-                (setting == CONTENT_SETTING_DEFAULT &&
-                 default_setting == CONTENT_SETTING_BLOCK);
+    bool mute = (setting && info->delegate().IsBlocked(*setting)) ||
+                (!setting && default_setting == CONTENT_SETTING_BLOCK);
     if (mute) {
       base::RecordAction(
           base::UserMetricsAction("SoundContentSetting.MuteBy.PageInfo"));
@@ -668,7 +701,7 @@ void PageInfo::OnSitePermissionChanged(
     }
   }
 
-  DCHECK(web_contents_);
+  CHECK(web_contents_);
 
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(
@@ -691,7 +724,7 @@ void PageInfo::OnSitePermissionChanged(
     if (entry.has_value() && (base::TimeTicks::Now() - entry->second <=
                               kRecordPageInfoPermissionChangeWindow)) {
       permissions::PermissionUmaUtil::RecordPageInfoPermissionChangeWithin1m(
-          type, entry->first, setting);
+          type, entry->first, ToContentSettingForMetrics(info, setting));
     }
   }
 
@@ -707,7 +740,7 @@ void PageInfo::OnSitePermissionChanged(
 
   // The permission may have been blocked due to being under embargo, so if it
   // was changed away from BLOCK, clear embargo status if it exists.
-  if (setting != CONTENT_SETTING_BLOCK) {
+  if (setting && !info->delegate().IsBlocked(*setting)) {
     delegate_->GetPermissionDecisionAutoblocker()->RemoveEmbargoAndResetCounts(
         site_url_, type);
   }
@@ -748,7 +781,8 @@ void PageInfo::OnSitePermissionChanged(
         is_subscribed_to_permission_change_for_testing;
 
     permissions::PermissionUmaUtil::RecordPageInfoPermissionChange(
-        type, setting_old, setting, is_subscribed_to_permission_change_event);
+        type, setting_old, ToContentSettingForMetrics(info, setting),
+        is_subscribed_to_permission_change_event);
   }
 
   // Show the infobar only if permission's status is not handled by an origin.
@@ -765,7 +799,8 @@ void PageInfo::OnSitePermissionChanged(
         permissions::PermissionRecoverySuccessRateTracker::FromWebContents(
             web_contents_.get());
 
-    permission_tracker->PermissionStatusChanged(type, setting, show_info_bar_);
+    permission_tracker->PermissionStatusChanged(
+        type, ToContentSettingForMetrics(info, setting), show_info_bar_);
   }
 
   // Refresh the UI to reflect the new setting.
@@ -1248,7 +1283,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
 void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
                                       HostContentSettingsMap* content_settings,
                                       const content_settings::SettingInfo& info,
-                                      ContentSetting setting) const {
+                                      PermissionSetting setting) const {
   DCHECK(permission_info.type != ContentSettingsType::DEFAULT);
   permission_info.setting = setting;
 
@@ -1257,8 +1292,13 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
       (info.metadata.session_model() ==
        content_settings::mojom::SessionModel::ONE_TIME);
 
+  auto* setting_info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+          permission_info.type);
+
   auto* page_specific_content_settings = GetPageSpecificContentSettings();
-  if (page_specific_content_settings && setting == CONTENT_SETTING_ALLOW) {
+  if (page_specific_content_settings &&
+      setting_info->delegate().IsAnyPermissionAllowed(CONTENT_SETTING_ALLOW)) {
     permission_info.is_in_use =
         page_specific_content_settings->IsInUse(permission_info.type);
 
@@ -1268,18 +1308,18 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
 
   if (info.primary_pattern == ContentSettingsPattern::Wildcard() &&
       info.secondary_pattern == ContentSettingsPattern::Wildcard()) {
-    permission_info.default_setting = permission_info.setting;
-    permission_info.setting = CONTENT_SETTING_DEFAULT;
+    permission_info.default_setting = *permission_info.setting;
+    permission_info.setting.reset();
   } else {
     permission_info.default_setting =
-        content_settings->GetDefaultContentSetting(permission_info.type,
-                                                   nullptr);
+        content_settings->GetDefaultPermissionSetting(permission_info.type,
+                                                      nullptr);
   }
 
   // Check embargo status if the content setting supports embargo.
   if (permissions::PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
           permission_info.type) &&
-      permission_info.setting == CONTENT_SETTING_DEFAULT &&
+      !permission_info.setting &&
       permission_info.source == content_settings::SettingSource::kUser) {
     content::PermissionResult permission_result(
         PermissionStatus::ASK, content::PermissionStatusSource::UNSPECIFIED);

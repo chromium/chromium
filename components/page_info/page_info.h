@@ -143,9 +143,9 @@ class PageInfo : private content_settings::CookieControlsObserver,
     // Site permission |type|.
     ContentSettingsType type = ContentSettingsType::DEFAULT;
     // The current value for the permission |type| (e.g. ALLOW or BLOCK).
-    ContentSetting setting = CONTENT_SETTING_DEFAULT;
+    std::optional<PermissionSetting> setting;
     // The global default settings for this permission |type|.
-    ContentSetting default_setting = CONTENT_SETTING_DEFAULT;
+    PermissionSetting default_setting;
     // The settings source e.g. user, extensions, policy, ... .
     content_settings::SettingSource source =
         content_settings::SettingSource::kNone;
@@ -209,7 +209,7 @@ class PageInfo : private content_settings::CookieControlsObserver,
 
   // This method is called when ever a permission setting is changed.
   void OnSitePermissionChanged(ContentSettingsType type,
-                               ContentSetting value,
+                               std::optional<PermissionSetting> value,
                                std::optional<url::Origin> requesting_origin,
                                bool is_one_time);
 
@@ -340,7 +340,7 @@ class PageInfo : private content_settings::CookieControlsObserver,
   void PopulatePermissionInfo(PermissionInfo& permission_info,
                               HostContentSettingsMap* content_settings,
                               const content_settings::SettingInfo& info,
-                              ContentSetting setting) const;
+                              PermissionSetting setting) const;
 
   // Returns whether |info| should be displayed in the UI.
   bool ShouldShowPermission(const PageInfo::PermissionInfo& info) const;

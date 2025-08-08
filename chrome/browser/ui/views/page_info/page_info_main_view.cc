@@ -376,8 +376,7 @@ void PageInfoMainView::UpdateResetButton(
         permission.source == content_settings::SettingSource::kUser &&
         (ui_delegate_->ShouldShowAllow(permission.type) ||
          ui_delegate_->ShouldShowAsk(permission.type));
-    if (is_permission_user_managed &&
-        permission.setting != CONTENT_SETTING_DEFAULT) {
+    if (is_permission_user_managed && permission.setting) {
       reset_button_->SetEnabled(true);
       reset_button_->SetVisible(true);
     }
