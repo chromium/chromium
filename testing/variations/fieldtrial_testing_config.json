@@ -3555,6 +3555,24 @@
             ]
         }
     ],
+    "BackgroundThreadPoolPISupported": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledBoth_20250805",
+                    "params": {
+                        "config": "4"
+                    },
+                    "enable_features": [
+                        "BackgroundThreadPoolFieldTrial"
+                    ]
+                }
+            ]
+        }
+    ],
     "BatchNativeEventsInMessagePumpEpoll": [
         {
             "platforms": [
