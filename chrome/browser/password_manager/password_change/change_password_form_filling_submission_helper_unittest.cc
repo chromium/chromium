@@ -398,6 +398,17 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, SavePassword) {
       ->NotifyFetchCompleted();
 
   verifier->OnPasswordFormSubmission(web_contents());
+  EXPECT_TRUE(base::test::RunUntil([&verifier]() {
+    EXPECT_TRUE(verifier->submission_verifier());
+    return verifier->submission_verifier()->capturer() != nullptr;
+  }));
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(
+          WithArg<3>(Invoke(&PostResponseForSubmissionVerification<true>)));
+  verifier->submission_verifier()->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
+  task_environment()->RunUntilIdle();
+
   base::RunLoop save_run_loop;
   EXPECT_CALL(*profile_password_store(), UpdateLogin)
       .WillOnce(DoAll(Invoke(&save_run_loop, &base::RunLoop::Quit),
@@ -440,6 +451,17 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
       ->NotifyFetchCompleted();
 
   verifier->OnPasswordFormSubmission(web_contents());
+  EXPECT_TRUE(base::test::RunUntil([&verifier]() {
+    EXPECT_TRUE(verifier->submission_verifier());
+    return verifier->submission_verifier()->capturer() != nullptr;
+  }));
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(
+          WithArg<3>(Invoke(&PostResponseForSubmissionVerification<true>)));
+  verifier->submission_verifier()->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
+  task_environment()->RunUntilIdle();
+
   base::RunLoop save_run_loop;
   EXPECT_CALL(*profile_password_store(), UpdateLogin)
       .WillOnce(DoAll(Invoke(&save_run_loop, &base::RunLoop::Quit),
@@ -842,12 +864,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
           WithArg<3>(Invoke(&PostResponseForSubmissionButtonClick<false>)));
   run_loop.Run();
 
-  verifier->OnPasswordFormSubmission(web_contents());
-
-  task_environment()->RunUntilIdle();
-
   EXPECT_FALSE(verifier->click_helper());
-  EXPECT_FALSE(verifier->submission_verifier());
 
   EXPECT_FALSE(completion_future.Get());
 
