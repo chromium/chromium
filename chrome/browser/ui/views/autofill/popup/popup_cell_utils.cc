@@ -109,10 +109,9 @@ constexpr SkColor kMonochromeIconBgColor = SkColorSetARGB(255, 237, 242, 250);
 // The text color of the letter monochrome icons.
 constexpr SkColor kMonochromeIconTextColor = SkColorSetARGB(255, 71, 71, 71);
 
-// Returns the name of the network for payment method icons, empty string
-// otherwise.
+// Returns the name of the network for payment method icons, for home/work
+// address a11y labels and empty string otherwise.
 std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
-  // Networks for which icons are currently shown.
   switch (icon) {
     case Suggestion::Icon::kCardAmericanExpress:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_AMEX);
@@ -141,6 +140,12 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GENERIC);
     case Suggestion::Icon::kIban:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_IBAN_GENERIC);
+    case Suggestion::Icon::kHome:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_HOME_PROFILE_ICON_ACCESSIBILITY_LABEL);
+    case Suggestion::Icon::kWork:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_WORK_PROFILE_ICON_ACCESSIBILITY_LABEL);
     case Suggestion::Icon::kAccount:
     case Suggestion::Icon::kBnpl:
     case Suggestion::Icon::kClear:
@@ -159,7 +164,6 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kGooglePay:
     case Suggestion::Icon::kGoogleWallet:
     case Suggestion::Icon::kGoogleWalletMonochrome:
-    case Suggestion::Icon::kHome:
     case Suggestion::Icon::kHttpsInvalid:
     case Suggestion::Icon::kHttpWarning:
     case Suggestion::Icon::kIdCard:
@@ -179,7 +183,6 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kSettings:
     case Suggestion::Icon::kSettingsAndroid:
     case Suggestion::Icon::kUndo:
-    case Suggestion::Icon::kWork:
     case Suggestion::Icon::kAndroidMessages:
       return std::u16string();
   }
