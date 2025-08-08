@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.3.2](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v7.3.1...chromium-bidi-v7.3.2) (2025-08-08)
+
+
+### Features
+
+* allow for empty headers in `network.setExtraHeaders` ([#3636](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3636)) ([510f2e9](https://github.com/GoogleChromeLabs/chromium-bidi/commit/510f2e9750f192cde46c28fa70e609c28935df04))
+
 ## [7.3.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v7.3.0...chromium-bidi-v7.3.1) (2025-08-07)
 
 
