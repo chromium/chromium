@@ -4171,7 +4171,6 @@ if (!is_android) {
       sources += [
         "../browser/browser_process_platform_part_ash_browsertest.cc",
         "../browser/download/notification/download_notification_browsertest.cc",
-        "../browser/file_system_access/cloud_identifier/cloud_identifier_util_cros_browsertest.cc",
         "../browser/net/network_annotation_monitor_browsertest.cc",
       ]
     }

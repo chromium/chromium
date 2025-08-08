@@ -519,7 +519,7 @@
 #include "base/debug/leak_annotations.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 #include "chrome/browser/chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h"
-#include "chrome/browser/file_system_access/cloud_identifier/cloud_identifier_util_cros.h"
+#include "chrome/browser/file_system_access/cloud_identifier/cloud_identifier_util_ash.h"
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_usage_indicator_service.h"
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_usage_indicator_service_factory.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
@@ -8191,8 +8191,7 @@ void ChromeContentBrowserClient::GetCloudIdentifiers(
     content::FileSystemAccessPermissionContext::HandleType handle_type,
     GetCloudIdentifiersCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS)
-  cloud_identifier::GetCloudIdentifierFromAsh(url, handle_type,
-                                              std::move(callback));
+  cloud_identifier::GetCloudIdentifier(url, handle_type, std::move(callback));
 #else   // BUILDFLAG(IS_CHROMEOS)
   return ContentBrowserClient::GetCloudIdentifiers(url, handle_type,
                                                    std::move(callback));

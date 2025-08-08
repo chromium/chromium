@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/drive/drive_integration_service_browser_test_base.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/ui/browser.h"
@@ -19,6 +20,7 @@
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "content/public/test/browser_test.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_context.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 
@@ -30,14 +32,13 @@ namespace {
 std::tuple<blink::mojom::FileSystemAccessErrorPtr,
            std::vector<blink::mojom::FileSystemAccessCloudIdentifierPtr>>
 GetCloudIdentifierBlocking(
-    const base::FilePath& virtual_path,
+    const storage::FileSystemURL& url,
     content::FileSystemAccessPermissionContext::HandleType handle_type) {
   base::test::TestFuture<
       blink::mojom::FileSystemAccessErrorPtr,
       std::vector<blink::mojom::FileSystemAccessCloudIdentifierPtr>>
       future;
-  cloud_identifier::GetCloudIdentifier(virtual_path, handle_type,
-                                       future.GetCallback());
+  cloud_identifier::GetCloudIdentifier(url, handle_type, future.GetCallback());
   return future.Take();
 }
 
@@ -47,6 +48,15 @@ base::FilePath GetVirtualPath(const base::FilePath& absolute_path) {
   EXPECT_TRUE(storage::ExternalMountPoints::GetSystemInstance()->GetVirtualPath(
       absolute_path, &virtual_path));
   return virtual_path;
+}
+
+storage::FileSystemURL GetFileSystemURL(
+    content::BrowserContext* browser_context,
+    const base::FilePath& virtual_path) {
+  storage::FileSystemContext* file_system_context =
+      file_manager::util::GetFileManagerFileSystemContext(browser_context);
+  return file_system_context->CreateCrackedFileSystemURL(
+      blink::StorageKey(), storage::kFileSystemTypeExternal, virtual_path);
 }
 
 // Tests the `GetCloudIdentifier()` for local files.
@@ -86,20 +96,24 @@ IN_PROC_BROWSER_TEST_F(GetLocalCloudIdentifierBrowserTest,
                        NoHandleForLocalFileOrFolder) {
   {
     const base::FilePath file_path = CreateTestFile();
-    const base::FilePath file_virtual_path = GetVirtualPath(file_path);
+    const storage::FileSystemURL file_url =
+        GetFileSystemURL(GetProfile(), GetVirtualPath(file_path));
     auto [error, handles] = GetCloudIdentifierBlocking(
-        file_virtual_path,
+        file_url,
         content::FileSystemAccessPermissionContext::HandleType::kFile);
-    EXPECT_NE(error->status, blink::mojom::FileSystemAccessStatus::kOk);
+    EXPECT_EQ(error->status, blink::mojom::FileSystemAccessStatus::kOk);
+    EXPECT_TRUE(handles.empty());
   }
 
   {
     const base::FilePath dir_path = CreateTestDir();
-    const base::FilePath dir_virtual_path = GetVirtualPath(dir_path);
+    const storage::FileSystemURL dir_url =
+        GetFileSystemURL(GetProfile(), GetVirtualPath(dir_path));
     auto [error, handles] = GetCloudIdentifierBlocking(
-        dir_virtual_path,
+        dir_url,
         content::FileSystemAccessPermissionContext::HandleType::kDirectory);
-    EXPECT_NE(error->status, blink::mojom::FileSystemAccessStatus::kOk);
+    EXPECT_EQ(error->status, blink::mojom::FileSystemAccessStatus::kOk);
+    EXPECT_TRUE(handles.empty());
   }
 }
 
@@ -129,14 +143,16 @@ IN_PROC_BROWSER_TEST_F(GetDriveFsCloudIdentifierBrowserTest, GetHandleSuccess) {
   const base::FilePath file_1_path = AddDriveFsFile(file_1_item_id);
   const base::FilePath file_2_path = AddDriveFsFile(file_2_item_id);
 
-  const base::FilePath file_1_virtual_path = GetVirtualPath(file_1_path);
-  const base::FilePath file_2_virtual_path = GetVirtualPath(file_2_path);
+  const storage::FileSystemURL file_1_url =
+      GetFileSystemURL(GetProfile(), GetVirtualPath(file_1_path));
+  const storage::FileSystemURL file_2_url =
+      GetFileSystemURL(GetProfile(), GetVirtualPath(file_2_path));
 
   auto [file_1_error, file_1_handles] = GetCloudIdentifierBlocking(
-      file_1_virtual_path,
+      file_1_url,
       content::FileSystemAccessPermissionContext::HandleType::kFile);
   auto [file_2_error, file_2_handles] = GetCloudIdentifierBlocking(
-      file_2_virtual_path,
+      file_2_url,
       content::FileSystemAccessPermissionContext::HandleType::kFile);
 
   ASSERT_EQ(file_1_error->status, blink::mojom::FileSystemAccessStatus::kOk);
@@ -159,26 +175,28 @@ IN_PROC_BROWSER_TEST_F(GetDriveFsCloudIdentifierBrowserTest, GetHandleError) {
   // Unexpected type (expect dir for file) should fail.
   const std::string file_item_id = "file-item-id";
   const base::FilePath file_path = AddDriveFsFile(file_item_id);
-  const base::FilePath file_virtual_path = GetVirtualPath(file_path);
+  const storage::FileSystemURL file_url =
+      GetFileSystemURL(GetProfile(), GetVirtualPath(file_path));
   auto [file_error, file_handles] = GetCloudIdentifierBlocking(
-      file_virtual_path,
+      file_url,
       content::FileSystemAccessPermissionContext::HandleType::kDirectory);
   EXPECT_NE(file_error->status, blink::mojom::FileSystemAccessStatus::kOk);
 
   // Files that have not been synced (prefixed with "local") should fail.
   const std::string local_file_item_id = "local-item-id";
   const base::FilePath local_file_path = AddDriveFsFile(local_file_item_id);
-  const base::FilePath local_file_virtual_path =
-      GetVirtualPath(local_file_path);
+  const storage::FileSystemURL local_file_url =
+      GetFileSystemURL(GetProfile(), GetVirtualPath(local_file_path));
   auto [local_file_error, local_file_handles] = GetCloudIdentifierBlocking(
-      local_file_virtual_path,
+      local_file_url,
       content::FileSystemAccessPermissionContext::HandleType::kFile);
   EXPECT_NE(local_file_error->status,
             blink::mojom::FileSystemAccessStatus::kOk);
 
   // Non-existent files should fail.
-  const base::FilePath non_existant_file_virtual_path =
-      file_virtual_path.DirName().Append("does-not-exist");
+  const storage::FileSystemURL non_existant_file_virtual_path =
+      GetFileSystemURL(GetProfile(), GetVirtualPath(file_path).DirName().Append(
+                                         "does-not-exist"));
   auto [non_existant_file_error, non_existant_file_handles] =
       GetCloudIdentifierBlocking(
           non_existant_file_virtual_path,
@@ -208,18 +226,21 @@ IN_PROC_BROWSER_TEST_F(GetProvidedFsCloudIdentifierBrowserTest,
       fsp_volume->mount_path().AppendASCII("readwrite.gif");
   base::FilePath dir_path = fsp_volume->mount_path();
 
-  const base::FilePath file_1_virtual_path = GetVirtualPath(file_1_path);
-  const base::FilePath file_2_virtual_path = GetVirtualPath(file_2_path);
-  const base::FilePath dir_virtual_path = GetVirtualPath(dir_path);
+  const storage::FileSystemURL file_1_url =
+      GetFileSystemURL(GetProfile(), GetVirtualPath(file_1_path));
+  const storage::FileSystemURL file_2_url =
+      GetFileSystemURL(GetProfile(), GetVirtualPath(file_2_path));
+  const storage::FileSystemURL dir_url =
+      GetFileSystemURL(GetProfile(), GetVirtualPath(dir_path));
 
   auto [file_1_error, file_1_handles] = GetCloudIdentifierBlocking(
-      file_1_virtual_path,
+      file_1_url,
       content::FileSystemAccessPermissionContext::HandleType::kFile);
   auto [file_2_error, file_2_handles] = GetCloudIdentifierBlocking(
-      file_2_virtual_path,
+      file_2_url,
       content::FileSystemAccessPermissionContext::HandleType::kFile);
   auto [dir_error, dir_handles] = GetCloudIdentifierBlocking(
-      dir_virtual_path,
+      dir_url,
       content::FileSystemAccessPermissionContext::HandleType::kDirectory);
   ASSERT_EQ(file_1_error->status, blink::mojom::FileSystemAccessStatus::kOk);
   ASSERT_EQ(file_2_error->status, blink::mojom::FileSystemAccessStatus::kOk);
@@ -252,38 +273,44 @@ IN_PROC_BROWSER_TEST_F(GetProvidedFsCloudIdentifierBrowserTest,
   // Unexpected type (expect dir for file) should fail.
   base::FilePath file_1_path =
       fsp_volume->mount_path().AppendASCII("readonly.txt");
-  const base::FilePath file_1_virtual_path = GetVirtualPath(file_1_path);
+  const storage::FileSystemURL file_1_url =
+      GetFileSystemURL(GetProfile(), GetVirtualPath(file_1_path));
   auto [file_1_error, file_1_handles] = GetCloudIdentifierBlocking(
-      file_1_virtual_path,
+      file_1_url,
       content::FileSystemAccessPermissionContext::HandleType::kDirectory);
   EXPECT_NE(file_1_error->status, blink::mojom::FileSystemAccessStatus::kOk);
 
   // Unexpected type (expect file for dir) should fail.
   base::FilePath dir_path = fsp_volume->mount_path();
-  const base::FilePath dir_virtual_path = GetVirtualPath(dir_path);
+  const storage::FileSystemURL dir_url =
+      GetFileSystemURL(GetProfile(), GetVirtualPath(dir_path));
   auto [dir_error, dir_handles] = GetCloudIdentifierBlocking(
-      dir_virtual_path,
-      content::FileSystemAccessPermissionContext::HandleType::kFile);
+      dir_url, content::FileSystemAccessPermissionContext::HandleType::kFile);
   EXPECT_NE(dir_error->status, blink::mojom::FileSystemAccessStatus::kOk);
 
   // readonly.png has no cloud identifier.
   base::FilePath file_2_path =
       fsp_volume->mount_path().AppendASCII("readonly.png");
-  const base::FilePath file_2_virtual_path = GetVirtualPath(file_2_path);
+  const storage::FileSystemURL file_2_url =
+      GetFileSystemURL(GetProfile(), GetVirtualPath(file_2_path));
   auto [file_2_error, file_2_handles] = GetCloudIdentifierBlocking(
-      file_2_virtual_path,
+      file_2_url,
       content::FileSystemAccessPermissionContext::HandleType::kFile);
   EXPECT_NE(file_2_error->status, blink::mojom::FileSystemAccessStatus::kOk);
 
   // Non-existent files should fail.
-  const base::FilePath non_existant_file_virtual_path =
-      file_1_virtual_path.DirName().Append("does-not-exist");
+  const storage::FileSystemURL non_existant_file_url = GetFileSystemURL(
+      GetProfile(),
+      GetVirtualPath(file_1_path).DirName().Append("does-not-exist"));
   auto [non_existant_file_error, non_existant_file_handles] =
       GetCloudIdentifierBlocking(
-          non_existant_file_virtual_path,
+          non_existant_file_url,
           content::FileSystemAccessPermissionContext::HandleType::kFile);
   EXPECT_NE(non_existant_file_error->status,
             blink::mojom::FileSystemAccessStatus::kOk);
 }
+
+// TODO(crbug.com/434161032): Add end-to-end integration test calling JavaScript
+// APIs.
 
 }  // namespace

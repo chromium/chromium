@@ -4883,8 +4883,6 @@ static_library("browser") {
       "exo_parts.h",
       "file_system_access/cloud_identifier/cloud_identifier_util_ash.cc",
       "file_system_access/cloud_identifier/cloud_identifier_util_ash.h",
-      "file_system_access/cloud_identifier/cloud_identifier_util_cros.cc",
-      "file_system_access/cloud_identifier/cloud_identifier_util_cros.h",
       "hid/hid_pinned_notification.cc",
       "hid/hid_pinned_notification.h",
       "icon_loader_chromeos.cc",

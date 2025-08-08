@@ -8,8 +8,8 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 
-namespace base {
-class FilePath;
+namespace storage {
+class FileSystemURL;
 }
 
 namespace cloud_identifier {
@@ -17,7 +17,7 @@ namespace cloud_identifier {
 // Ash-chrome specific implementation that retrieves the cloud identifiers for a
 // given file from DriveFS or provided file systems.
 void GetCloudIdentifier(
-    const base::FilePath& url,
+    const storage::FileSystemURL& url,
     content::FileSystemAccessPermissionContext::HandleType handle_type,
     content::ContentBrowserClient::GetCloudIdentifiersCallback callback);
 }  // namespace cloud_identifier

@@ -6,13 +6,12 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/files/file.h"
-#include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -23,7 +22,7 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
 #include "content/public/browser/browser_thread.h"
-#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 
@@ -117,22 +116,15 @@ void DidGetProvidedFilesystemMetada(
 namespace cloud_identifier {
 
 void GetCloudIdentifier(
-    const base::FilePath& virtual_path,
+    const storage::FileSystemURL& url,
     content::FileSystemAccessPermissionContext::HandleType handle_type,
     content::ContentBrowserClient::GetCloudIdentifiersCallback callback) {
-  Profile* profile =
-      g_browser_process->profile_manager()->GetActiveUserProfile();
-  CHECK(profile);
-  storage::FileSystemContext* file_system_context =
-      file_manager::util::GetFileManagerFileSystemContext(profile);
-  CHECK(file_system_context);
-
-  const storage::FileSystemURL url =
-      file_system_context->CreateCrackedFileSystemURL(
-          blink::StorageKey(), storage::kFileSystemTypeExternal, virtual_path);
-  CHECK(url.is_valid());
-
   if (url.type() == storage::kFileSystemTypeDriveFs) {
+    // TODO(crbug.com/434161032): Pass correct Profile via a param.
+    Profile* profile =
+        g_browser_process->profile_manager()->GetActiveUserProfile();
+    CHECK(profile);
+
     auto* drive_integration_service =
         drive::util::GetIntegrationServiceByProfile(profile);
     drive_integration_service->GetMetadata(
@@ -161,8 +153,9 @@ void GetCloudIdentifier(
     return;
   }
 
-  // Unsupported file system type.
-  std::move(callback).Run(FileSystemAccessErrorFailed(), {});
+  // Only `kFileSystemTypeDriveFs` and `kFileSystemTypeProvided` can be cloud
+  // handled on ChromeOS.
+  std::move(callback).Run(FileSystemAccessErrorOk(), {});
 }
 
 }  // namespace cloud_identifier
