@@ -117,6 +117,11 @@ void ReaderModeContentTabHelper::WebStateDestroyed() {
 void ReaderModeContentTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
+  if (!web_state->GetLastCommittedURL().EqualsIgnoringRef(content_url_)) {
+    // If the loaded page does not have the same URL as the one passed into
+    // `LoadContent()`, ignore it.
+    return;
+  }
   if (delegate_) {
     delegate_->ReaderModeContentDidLoadData(this);
   }

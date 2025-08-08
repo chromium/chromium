@@ -167,3 +167,30 @@ TEST_F(ReaderModeContentTabHelperTest, AllowsContentURLRequestForNonMainFrame) {
   EXPECT_TRUE(policy_decision);
   EXPECT_TRUE(policy_decision->ShouldAllowNavigation());
 }
+
+// Tests that the delegate is notified only when the loaded page URL matches the
+// content URL.
+TEST_F(ReaderModeContentTabHelperTest, DelegateNotifiedForContentURLOnly) {
+  const GURL content_url("https://test.url/");
+  const GURL other_url("about:blank");
+  std::string content = "<div>Hello world</div>";
+  NSData* data = [NSData dataWithBytes:content.data() length:content.length()];
+
+  // Load the content.
+  tab_helper()->LoadContent(content_url, data);
+
+  // The delegate should not be notified if the loaded page is not the content
+  // page.
+  web_state_->SetCurrentURL(other_url);
+  EXPECT_CALL(*delegate_, ReaderModeContentDidLoadData(tab_helper())).Times(0);
+  tab_helper()->PageLoaded(web_state_.get(),
+                           web::PageLoadCompletionStatus::SUCCESS);
+  testing::Mock::VerifyAndClearExpectations(delegate_.get());
+
+  // The delegate should be notified when the content page is loaded.
+  web_state_->SetCurrentURL(content_url);
+  EXPECT_CALL(*delegate_, ReaderModeContentDidLoadData(tab_helper()));
+  tab_helper()->PageLoaded(web_state_.get(),
+                           web::PageLoadCompletionStatus::SUCCESS);
+  testing::Mock::VerifyAndClearExpectations(delegate_.get());
+}
