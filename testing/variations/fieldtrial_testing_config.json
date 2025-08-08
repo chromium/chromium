@@ -7645,6 +7645,7 @@
                 {
                     "name": "EnabledWithbase_60_30_30_30__20250507",
                     "params": {
+                        "FallbackInLowPowerMode": "false",
                         "IdleTimeoutInSeconds": "60",
                         "MaxPreconnectRetryInterval": "30",
                         "MaxShortSessionThreshold": "30s",

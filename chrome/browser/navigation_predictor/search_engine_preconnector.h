@@ -135,6 +135,9 @@ class SearchEnginePreconnector
   FRIEND_TEST_ALL_PREFIXES(
       SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
       PreconnectSearchAfterOnConnect);
+  FRIEND_TEST_ALL_PREFIXES(
+      SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
+      CheckConnectionKeepAliveConfig);
 
   // Enum to represent the preconnect triggering event. This is used to record
   // the histogram.
@@ -172,11 +175,17 @@ class SearchEnginePreconnector
   // back-to-back connections.
   bool IsShortSession() const;
 
+  bool ShouldSavePower() const;
+
   // Invoked when the mojo pipe to the reconnect observer is disconnected.
   void OnReconnectObserverPipeDisconnected();
 
   void RecordPreconnectAttemptHistogram(base::TimeDelta delay,
                                         PreconnectTriggerEvent event);
+
+  // Returns the connection keepalive config to be used for preconnect. The
+  // returned config will change when the device is in low power mode.
+  net::ConnectionKeepAliveConfig GetConnectionKeepAliveConfig();
 
   base::WeakPtr<SearchEnginePreconnector> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
