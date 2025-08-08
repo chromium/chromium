@@ -65,9 +65,22 @@ using CredentialsOrError =
 using CredentialsOrErrorReply = base::OnceCallback<void(CredentialsOrError)>;
 
 enum class LoginStatusResult {
+  // Either there was only a username field in the form, or only
+  // the username field was filled successfully.
+  kSuccessUsernameFilled,
+  // Either there was only a password ield in the form, or only
+  // the password field was filled successfully.
+  kSuccessPasswordFilled,
+  // Both username and password fields were filled successfully.
   kSuccessUsernameAndPasswordFilled,
+  // The page has no signin form. Note: Cross-origin iframes aren't
+  // supported.
   kErrorNoSigninForm,
+  // The provided credential is not a saved match for the site on which
+  // login was triggered.
   kErrorInvalidCredential,
+  // Neither the username, nor the password field could be filled.
+  kErrorNoFillableFields,
 };
 
 using LoginStatusResultOrError =

@@ -60,10 +60,16 @@ enum FieldPropertiesFlags : uint32_t {
   // Whether a change password filled was autofilled as part of change password
   // process. Filling happens on page-load although it's initiated by a user.
   kAutofilledChangePasswordFormOnPageLoad = 1u << 7,
+  // Whether a username or password field was autofilled as a result
+  // of a request to the actor login component.
+  kAutofilledActorLogin = 1u << 8,
   // A value was autofilled on any of the triggers.
   kAutofilled = kAutofilledOnUserTrigger | kAutofilledOnPageLoad |
                 kAutofilledPasswordFormFilledViaManualFallback |
-                kAutofilledChangePasswordFormOnPageLoad,
+                kAutofilledChangePasswordFormOnPageLoad | kAutofilledActorLogin
+
+  // IMPORTANT: Make sure to keep this enum in sync with the server-side enum
+  // with the same name in classification_utils.h.
 };
 
 // FieldPropertiesMask is used to contain combinations of FieldPropertiesFlags

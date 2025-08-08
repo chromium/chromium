@@ -182,6 +182,40 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
   EXPECT_EQ(u"username2", mock_login_service().last_credential_used().username);
 }
 
+IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, OnlyUsernameFilled) {
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  mock_login_service().SetCredentials(
+      std::vector{MakeTestCredential(u"username1", url,
+                                     /*immediately_available_to_login=*/true)});
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kSuccessUsernameFilled);
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, OnlyPasswordFilled) {
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  mock_login_service().SetCredentials(
+      std::vector{MakeTestCredential(u"username1", url,
+                                     /*immediately_available_to_login=*/true)});
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kSuccessPasswordFilled);
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+}
+
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoSigninForm) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");

@@ -182,6 +182,9 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Compose dialog lost focus"/>
   <int value="16" label="Compose delayed proactive nudge"/>
   <int value="17" label="Password manager processed focused field"/>
+  <int value="18" label="Autofill AI"/>
+  <int value="19" label="Plus address update in browser process"/>
+  <int value="20" label="Proactive password recovery"/>
 </enum>
 
 <enum name="AutoSigninFirstRun">

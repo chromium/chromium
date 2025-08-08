@@ -38,13 +38,18 @@ mojom::ActionResultCode LoginErrorToActorError(
 
 mojom::ActionResultCode LoginResultToActorResult(
     actor_login::LoginStatusResult login_result) {
+  // TODO(crbug.com/427817201): Re-assess whether all success statuses should
+  // map to kOk or if differentiation is needed.
   switch (login_result) {
     case actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled:
+    case actor_login::LoginStatusResult::kSuccessUsernameFilled:
+    case actor_login::LoginStatusResult::kSuccessPasswordFilled:
       return mojom::ActionResultCode::kOk;
     // TODO(crbug.com/427817201):Define ActionResultCode errors specific to
     // actor login errors.
     case actor_login::LoginStatusResult::kErrorNoSigninForm:
     case actor_login::LoginStatusResult::kErrorInvalidCredential:
+    case actor_login::LoginStatusResult::kErrorNoFillableFields:
       return mojom::ActionResultCode::kError;
   }
 }
