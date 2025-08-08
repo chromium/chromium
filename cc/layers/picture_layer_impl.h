@@ -202,6 +202,10 @@ class CC_EXPORT PictureLayerImpl
   using TileUpdateSet = std::map<float, std::set<TileIndex>>;
   TileUpdateSet TakeUpdatedTiles();
 
+  // This is called in TreesInViz mode after context lost and all tiles need
+  // to be re-wired to viz.
+  TileUpdateSet TakeAllTiles();
+
   bool IsDirectlyCompositedImage() const;
   bool nearest_neighbor() const { return nearest_neighbor_; }
 

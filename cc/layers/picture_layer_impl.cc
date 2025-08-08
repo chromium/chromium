@@ -2198,6 +2198,30 @@ PictureLayerImpl::TileUpdateSet PictureLayerImpl::TakeUpdatedTiles() {
   return updates;
 }
 
+PictureLayerImpl::TileUpdateSet PictureLayerImpl::TakeAllTiles() {
+  DCHECK(layer_tree_impl()->settings().TreesInVizInClientProcess());
+  DCHECK(layer_tree_impl()->IsActiveTree());
+
+  updated_tiles_.clear();
+
+  TileUpdateSet updates;
+  for (size_t ii = 0; ii < tilings_->num_tilings(); ++ii) {
+    PictureLayerTiling::TileIterator iter(tilings_->tiling_at(ii));
+    for (; !iter.AtEnd(); iter.Next()) {
+      Tile* tile = iter.GetCurrent();
+      updates[tile->contents_scale_key()].emplace(tile->tiling_i_index(),
+                                                  tile->tiling_j_index());
+    }
+  }
+
+  // Reset this flag since the tile updates are now being serialized to viz. All
+  // future tile updates can be sent immediately as a part of active tree tile
+  // update via LayerTreeHostImpl::UpdateDisplayTile() rather than batching
+  // them.
+  should_batch_updated_tiles_ = false;
+  return updates;
+}
+
 gfx::ContentColorUsage PictureLayerImpl::GetContentColorUsage() const {
   auto display_item_list = raster_source_->GetDisplayItemList();
   if (!display_item_list)
