@@ -123,12 +123,12 @@ class AudioInputTest : public testing::TestWithParam<bool> {
     // The only parameter is used to enable/disable AAudio.
     should_use_aaudio_ = GetParam();
     if (should_use_aaudio_) {
-      features_.InitAndEnableFeature(features::kUseAAudioInput);
-
       if (__builtin_available(android AAUDIO_MIN_API, *)) {
         aaudio_is_supported_ = true;
       }
     }
+    features_.InitWithFeatureState(features::kUseAAudioInput,
+                                   should_use_aaudio_);
 #endif
     base::RunLoop().RunUntilIdle();
   }

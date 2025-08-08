@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/audio/audio_device_info_accessor_for_tests.h"
+#include "media/audio/audio_features.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/audio_unittest_util.h"
@@ -49,6 +50,8 @@ class AudioOutputTest : public testing::TestWithParam<bool> {
         aaudio_is_supported_ = true;
       }
     }
+    features_.InitWithFeatureState(features::kUseAAudioDriver,
+                                   should_use_aaudio_);
 #endif
     base::RunLoop().RunUntilIdle();
   }
@@ -82,8 +85,12 @@ class AudioOutputTest : public testing::TestWithParam<bool> {
   std::unique_ptr<AudioDeviceInfoAccessorForTests> audio_manager_device_info_;
   AudioParameters stream_params_;
   raw_ptr<AudioOutputStream, DanglingUntriaged> stream_ = nullptr;
+
   bool should_use_aaudio_ = false;
   bool aaudio_is_supported_ = false;
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList features_;
+#endif
 };
 
 // Test that can it be created and closed.
