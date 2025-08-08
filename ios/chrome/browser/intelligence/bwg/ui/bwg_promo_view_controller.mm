@@ -235,6 +235,8 @@ const CGFloat kBaselineAdjustment = 10.0;
   mainTitleLabel.attributedText = attributedString;
 #endif
 
+  mainTitleLabel.accessibilityLabel = mainTitleString;
+  mainTitleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
   return mainTitleLabel;
 }
 
@@ -373,6 +375,7 @@ const CGFloat kBaselineAdjustment = 10.0;
   titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   titleLabel.numberOfLines = 0;
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
 
   UILabel* bodyLabel = [[UILabel alloc] init];
   bodyLabel.text = bodyText;

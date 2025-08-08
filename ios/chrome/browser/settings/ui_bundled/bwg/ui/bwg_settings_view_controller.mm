@@ -208,6 +208,7 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
       l10n_util::GetNSString(IDS_IOS_BWG_SETTINGS_APP_ACTIVITY_TITLE);
   BWGAppActivityItem.accessorySymbol =
       TableViewDetailTextCellAccessorySymbolExternalLink;
+  BWGAppActivityItem.accessibilityTraits = UIAccessibilityTraitLink;
   return BWGAppActivityItem;
 }
 
