@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
@@ -332,6 +333,43 @@ TEST_F(ActorUiTabControllerTest,
 
   tab_controller()->SetHandoffButtonHoverStatus(true);
   Debounce();
+}
+
+TEST_F(ActorUiTabControllerTest,
+       OnUiTabStateChange_SameStateRunsCallbackOnceAndDoesNotUpdateState) {
+  ActorOverlayState actor_overlay_state(
+      /*is_active=*/true, /*mouse_down=*/false, /*mouse_target=*/std::nullopt);
+  HandoffButtonState handoff_button_state(
+      /*is_active=*/true,
+      /*control_ownership=*/HandoffButtonState::ControlOwnership::kActor);
+  UiTabState ui_tab_state(actor_overlay_state, handoff_button_state);
+
+  // Set the tab's activation status
+  tab_controller()->OnTabActiveStatusChanged(true, &mock_tab());
+  Debounce();
+
+  // On first call, the callback should be run and the state should be updated.
+  EXPECT_CALL(*tab_controller_factory()->overlay_controller(),
+              UpdateState(actor_overlay_state, /*is_visible=*/true));
+  EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
+              UpdateState(handoff_button_state, /*is_visible=*/false));
+
+  base::test::TestFuture<bool> future1;
+  tab_controller()->OnUiTabStateChange(ui_tab_state, future1.GetCallback());
+  EXPECT_TRUE(future1.Get());
+
+  // On second call, the callback should be run and the state shouldn't be
+  // updated.
+  EXPECT_CALL(*tab_controller_factory()->overlay_controller(),
+              UpdateState(actor_overlay_state, /*is_visible=*/true))
+      .Times(0);
+  EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
+              UpdateState(handoff_button_state, /*is_visible=*/false))
+      .Times(0);
+
+  base::test::TestFuture<bool> future2;
+  tab_controller()->OnUiTabStateChange(ui_tab_state, future2.GetCallback());
+  EXPECT_TRUE(future2.Get());
 }
 
 using UiTabStateActivationParams =
