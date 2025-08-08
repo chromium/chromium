@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
+#include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/accessibility/reading/distillable_pages.h"
 #include "components/language/core/browser/language_model.h"
@@ -249,7 +250,11 @@ void ReadAnythingSidePanelController::TabWillDetach(
   // not create a SidePanelCoordinator. This block will be unnecessary once that
   // changes.
   if (!coordinator) {
-    CHECK_IS_TEST();
+    // TODO(webium): create a SidePanelCoordinator for WebUIBrowser.
+    // This is a temporary solution to avoid a crash.
+    if (!webui_browser::IsWebUIBrowserEnabled()) {
+      CHECK_IS_TEST();
+    }
     return;  // IN-TEST
   }
   if (coordinator->IsSidePanelEntryShowing(

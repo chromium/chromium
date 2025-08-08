@@ -4,15 +4,21 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+assert(!is_android)
+
+source_set("feature_flag") {
+  sources = [ "webui_browser.h" ]
+}
+
 source_set("webui_browser") {
   sources = [
-    "webui_browser.h",
     "webui_browser_ui.h",
     "webui_browser_window.h",
     "webui_location_bar.h",
   ]
   public_deps = [
     ":browser_mojo_bindings",
+    ":feature_flag",
     "//base",
     "//chrome/browser/ui/location_bar",
     "//chrome/browser/ui/views/side_panel",
@@ -70,4 +76,21 @@ mojom("browser_mojo_bindings") {
     "//url/mojom:url_mojom_gurl",
   ]
   webui_module_path = "/"
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "webui_browser_browsertest.cc" ]
+
+  deps = [
+    ":impl",
+    ":webui_browser",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+  ]
 }

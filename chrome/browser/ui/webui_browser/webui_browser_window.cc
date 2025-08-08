@@ -9,6 +9,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_client_view.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_web_contents_delegate.h"
@@ -73,6 +74,8 @@ WebUIBrowserWindow::WebUIBrowserWindow(std::unique_ptr<Browser> browser)
   params.bounds = gfx::Rect(0, 0, 800, 600);
   params.delegate = widget_delegate_.get();
   widget_->Init(std::move(params));
+  widget_->MakeCloseSynchronous(base::BindRepeating(
+      &WebUIBrowserWindow::OnWindowCloseRequested, base::Unretained(this)));
   auto web_view = std::make_unique<views::WebView>(browser_->profile());
 
   auto* ui_web_contents = web_view->GetWebContents();
@@ -126,7 +129,15 @@ void WebUIBrowserWindow::SetBounds(const gfx::Rect& bounds) {
 }
 
 void WebUIBrowserWindow::Close() {
-  NOTIMPLEMENTED();
+  widget_->Close();
+
+  // This will not close the window immediately.
+  // Instead, we send the close request to the OS, then the OS notifies us that
+  // such a request has been made. This results in the invocation of
+  // OnWindowCloseRequested(), which gives unload handlers
+  // a chance to stop the closing. When all unload handlers are clear, Close()
+  // will be called again. This time the close request will go through and the
+  // window will be actually closed.
 }
 
 void WebUIBrowserWindow::Activate() {
@@ -768,7 +779,36 @@ void WebUIBrowserWindow::Restore() {
 }
 
 void WebUIBrowserWindow::DestroyBrowser() {
-  NOTIMPLEMENTED();
+  web_view_ = nullptr;
+  widget_.reset();
+  // Defer destroy so that Browser and TabStripModel outlive WebContents.
+  // During shutdown WebContents might need access to them.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                this);
+}
+
+void WebUIBrowserWindow::OnWindowCloseRequested(
+    views::Widget::ClosedReason close_reason) {
+  // TODO(webium): don't close a window during tab dragging.
+
+  // Give beforeunload handlers, the user, or policy the chance to cancel the
+  // close before we hide the window below.
+  if (const auto closing_status = browser_->HandleBeforeClose();
+      closing_status != BrowserClosingStatus::kPermitted) {
+    BrowserList::NotifyBrowserCloseCancelled(browser_.get(), closing_status);
+    return;
+  }
+
+  browser_->OnWindowClosing();
+  if (!browser_->tab_strip_model()->empty()) {
+    // Tab strip isn't empty.  Hide the frame (so it appears to have closed
+    // immediately) and close all the tabs, allowing the renderers to shut
+    // down. When the tab strip is empty we'll be called back again.
+    widget_->Hide();
+    return;
+  }
+
+  DestroyBrowser();
 }
 
 WebUIBrowserWindow::WidgetDelegate::WidgetDelegate(
