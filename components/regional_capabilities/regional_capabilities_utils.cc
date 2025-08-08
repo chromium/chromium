@@ -74,6 +74,15 @@ std::optional<SearchEngineCountryOverride> GetSearchEngineCountryOverride() {
   if (country_id == switches::kEeaListCountryOverride) {
     return SearchEngineCountryListOverride::kEeaAll;
   }
+  if (country_id == switches::kTaiyakiProgramOverride) {
+    if (!IsClientCompatibleWithProgram(Program::kTaiyaki)) {
+      // The unsupported flag is overriding the country to "invalid country".
+      return country_codes::CountryId();
+    }
+
+    return RegionalProgramOverride::kTaiyaki;
+  }
+
   return country_codes::CountryId(country_id);
 }
 

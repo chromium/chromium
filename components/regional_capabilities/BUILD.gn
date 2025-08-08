@@ -38,7 +38,6 @@ static_library("regional_capabilities") {
     "//third_party/abseil-cpp:absl",
     "//third_party/search_engines_data:prepopulated_engines",
     "//third_party/search_engines_data:regional_settings",
-    "//ui/base",
   ]
 
   if (is_android) {
@@ -87,6 +86,7 @@ source_set("data") {
   deps = [
     "//base",
     "//components/country_codes",
+    "//ui/base",
   ]
 }
 

@@ -14,17 +14,28 @@ namespace switches {
 
 // Overrides the profile country (which is among other things used for search
 // engine choice region checks for example).
-// Intended for testing. Expects 2-letter country codes.
+// Intended for testing. Parameter can be one of 3 things:
+// - 2-letter country codes => Will override the profile country
+// - A program name => Will override the country and the program
+// - A specific list override => Will override the program, but instead of
+// overriding the country, will use special values to force the search engine
+// list to some preset testing ones.
 inline constexpr char kSearchEngineChoiceCountry[] =
     "search-engine-choice-country";
 
-// `kDefaultListCountryOverride` and `kEeaRegionCountryOverrideString` are
-// special values for `kSearchEngineChoiceCountry`.
-// `kDefaultListCountryOverride` will override the list of search engines to
-// display the default set.
-// `kEeaListCountryOverride` will override the list
-// of search engines to display list of all EEA engines.
+// Special value for the `kSearchEngineChoiceCountry` command-line flag. Enables
+// the Taiyaki program. On unsupported platform / build types, will fall back to
+// default program / unknown country.
+inline constexpr char kTaiyakiProgramOverride[] = "TAIYAKI";
+
+// Special value for the `kSearchEngineChoiceCountry` command-line flag. Enables
+// the Waffle program and overrides the list of search engines to display the
+// default set.
 inline constexpr char kDefaultListCountryOverride[] = "DEFAULT_EEA";
+
+// Special value for the `kSearchEngineChoiceCountry` command-line flag. Enables
+// the Waffle program and overrides the list of search engines to display the
+// list of all EEA engines.
 inline constexpr char kEeaListCountryOverride[] = "EEA_ALL";
 
 #if BUILDFLAG(IS_ANDROID)

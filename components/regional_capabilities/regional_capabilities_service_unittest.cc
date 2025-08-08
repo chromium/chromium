@@ -8,8 +8,10 @@
 #include <optional>
 
 #include "base/check_deref.h"
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/country_codes/country_codes.h"
@@ -25,10 +27,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/device_form_factor.h"
 
-using ::country_codes::CountryId;
-
 namespace regional_capabilities {
 namespace {
+
+using ::country_codes::CountryId;
+using ::testing::get;
+
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+const ui::DeviceFormFactorSet kPhoneFormFactors{
+    ui::DEVICE_FORM_FACTOR_PHONE, ui::DEVICE_FORM_FACTOR_FOLDABLE};
+const ui::DeviceFormFactorSet kNonPhoneFormFactors =
+    base::Difference(ui::DeviceFormFactorSet::All(), kPhoneFormFactors);
+#endif
 
 class AsyncRegionalCapabilitiesServiceClient
     : public RegionalCapabilitiesService::Client {
@@ -83,21 +93,6 @@ constexpr CountryId kBelgiumCountryId = CountryId("BE");
 
 CountryId GetCountryId(RegionalCapabilitiesService& service) {
   return service.GetCountryId().GetForTesting();
-}
-
-// Helper function to concatenate multiple `std::vector`s, intended for the
-// parameterized test params.
-template <typename Vec, typename... Vecs>
-Vec Concatenate(const Vec& first, const Vecs&... rest) {
-  Vec result;
-  // Reserve space in the result vector to avoid multiple reallocations.
-  result.reserve(first.size() + (rest.size() + ... + 0));
-
-  // Insert the first vector, then a fold expression for the rest.
-  result.insert(result.end(), first.begin(), first.end());
-  (result.insert(result.end(), rest.begin(), rest.end()), ...);
-
-  return result;
 }
 
 class RegionalCapabilitiesServiceTest : public ::testing::Test {
@@ -175,35 +170,94 @@ class RegionalCapabilitiesServiceTest : public ::testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
-template <typename T>
-class RegionalCapabilitiesServiceTestWithParam
-    : public RegionalCapabilitiesServiceTest,
-      public testing::WithParamInterface<T> {
- public:
-  static std::string GetTestName(const testing::TestParamInfo<T>& info) {
-    return info.param.test_name;
-  }
-};
-
 struct ActiveProgramFromOverrideTestParam {
   std::string test_name;
   std::string country_override;
   Program expected_program;
+  ui::DeviceFormFactorSet run_only_on;
 };
 
-using RegionalCapabilitiesServiceActiveProgramFromOverrideTest =
-    RegionalCapabilitiesServiceTestWithParam<
-        ActiveProgramFromOverrideTestParam>;
+using TestParamWithTaiyakiFeatureState =
+    ::testing::tuple<ActiveProgramFromOverrideTestParam, bool>;
+
+auto WithCompatibleTaiyakiFeatureState(
+    std::vector<ActiveProgramFromOverrideTestParam> params_to_combine) {
+  return ::testing::Combine(
+      ::testing::ValuesIn(params_to_combine),
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+      ::testing::Bool()  // All feature states are supported
+#else
+      ::testing::Values(
+          false)  // The feature is not supported, consider it only disabled.
+#endif
+  );
+}
+
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+auto WithTaiyakiFeatureState(
+    std::vector<ActiveProgramFromOverrideTestParam> params_for_enabled,
+    std::vector<ActiveProgramFromOverrideTestParam> params_for_disabled) {
+  std::vector<TestParamWithTaiyakiFeatureState> output;
+  for (auto& param : params_for_enabled) {
+    output.emplace_back(param, true);
+  }
+  for (auto& param : params_for_disabled) {
+    output.emplace_back(param, false);
+  }
+  return ::testing::ValuesIn(output);
+}
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+
+class RegionalCapabilitiesServiceActiveProgramFromOverrideTest
+    : public RegionalCapabilitiesServiceTest,
+      public testing::WithParamInterface<TestParamWithTaiyakiFeatureState> {
+ public:
+  RegionalCapabilitiesServiceActiveProgramFromOverrideTest() {
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+    scoped_feature_list_.InitWithFeatureState(switches::kTaiyaki,
+                                              GetTaiyakiFeatureEnabled());
+#else
+    EXPECT_FALSE(GetTaiyakiFeatureEnabled());
+    scoped_feature_list_.Init();
+#endif
+  }
+
+  static std::string GetTestName(
+      const testing::TestParamInfo<TestParamWithTaiyakiFeatureState>& info) {
+    return base::StrCat(
+        {get<0>(info.param).test_name,
+         get<1>(info.param) ? "_taiyaki_enabled" : "_taiyaki_disabled"});
+  }
+
+  void SetUp() override {
+    if (auto run_only_on = GetTestParam().run_only_on;
+        !run_only_on.empty() && !run_only_on.Has(ui::GetDeviceFormFactor())) {
+      GTEST_SKIP();
+    }
+  }
+
+  ActiveProgramFromOverrideTestParam GetTestParam() {
+    return get<0>(GetParam());
+  }
+
+  bool GetTaiyakiFeatureEnabled() { return get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 TEST_P(RegionalCapabilitiesServiceActiveProgramFromOverrideTest, Run) {
   std::unique_ptr<RegionalCapabilitiesService> service = InitService();
 
-  SetCommandLineCountry(GetParam().country_override);
-  EXPECT_EQ(GetParam().expected_program, service->GetActiveProgramForTesting());
+  SetCommandLineCountry(GetTestParam().country_override);
+  EXPECT_EQ(GetTestParam().expected_program,
+            service->GetActiveProgramForTesting());
 }
 
-const std::vector<ActiveProgramFromOverrideTestParam>
-    kActiveProgramFromOverrideCommonTestCases = {
+INSTANTIATE_TEST_SUITE_P(
+    Common,
+    RegionalCapabilitiesServiceActiveProgramFromOverrideTest,
+    WithCompatibleTaiyakiFeatureState({
         ActiveProgramFromOverrideTestParam{
             .test_name = "fr_to_waffle",
             .country_override = "FR",
@@ -229,63 +283,78 @@ const std::vector<ActiveProgramFromOverrideTestParam>
             .country_override = switches::kEeaListCountryOverride,
             .expected_program = Program::kWaffle,
         },
-
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    RegionalCapabilitiesServiceActiveProgramFromOverrideTest,
-    ::testing::ValuesIn(
-        Concatenate(kActiveProgramFromOverrideCommonTestCases,
-                    std::vector<ActiveProgramFromOverrideTestParam>{
-                        ActiveProgramFromOverrideTestParam{
-                            .test_name = "jp_to_default",
-                            .country_override = "JP",
-                            .expected_program = Program::kDefault,
-                        },
-                    })),
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+        ActiveProgramFromOverrideTestParam{
+            .test_name = "taiyaki",
+            .country_override = switches::kTaiyakiProgramOverride,
+            .expected_program = Program::kDefault,
+        },
+        ActiveProgramFromOverrideTestParam{
+            .test_name = "jp_to_default",
+            .country_override = "JP",
+            .expected_program = Program::kDefault,
+        },
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+    }),
     &RegionalCapabilitiesServiceActiveProgramFromOverrideTest::GetTestName);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-bool IsIPhone() {
-#if BUILDFLAG(IS_IOS)
-  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
-#else
-  return false;
-#endif
-}
-
-class RegionalCapabilitiesServiceActiveProgramFromOverrideTaiyakiForcedTest
-    : public RegionalCapabilitiesServiceTestWithParam<
-          ActiveProgramFromOverrideTestParam> {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{switches::kTaiyaki};
-};
-
-TEST_P(RegionalCapabilitiesServiceActiveProgramFromOverrideTaiyakiForcedTest,
-       Run) {
-  std::unique_ptr<RegionalCapabilitiesService> service = InitService();
-
-  SetCommandLineCountry(GetParam().country_override);
-  EXPECT_EQ(GetParam().expected_program, service->GetActiveProgramForTesting());
-}
-
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(
-    ,
-    RegionalCapabilitiesServiceActiveProgramFromOverrideTaiyakiForcedTest,
-    ::testing::ValuesIn(
-        Concatenate(kActiveProgramFromOverrideCommonTestCases,
-                    std::vector<ActiveProgramFromOverrideTestParam>{
-                        ActiveProgramFromOverrideTestParam{
-                            .test_name = "jp_to_taiyaki",
-                            .country_override = "JP",
-                            .expected_program = IsIPhone() ? Program::kTaiyaki
-                                                           : Program::kDefault,
-                        },
-                    })),
-    &RegionalCapabilitiesServiceActiveProgramFromOverrideTaiyakiForcedTest::
-        GetTestName);
-#endif
+    FeatureStateSpecific,
+    RegionalCapabilitiesServiceActiveProgramFromOverrideTest,
+    WithTaiyakiFeatureState(
+        /*params_for_enabled=*/
+        {
+            ActiveProgramFromOverrideTestParam{
+                .test_name = "taiyaki_phone",
+                .country_override = switches::kTaiyakiProgramOverride,
+                .expected_program = Program::kTaiyaki,
+                .run_only_on = kPhoneFormFactors,
+            },
+            ActiveProgramFromOverrideTestParam{
+                .test_name = "taiyaki_non_phone",
+                .country_override = switches::kTaiyakiProgramOverride,
+                .expected_program = Program::kDefault,
+                .run_only_on = kNonPhoneFormFactors,
+            },
+#if BUILDFLAG(IS_IOS)
+            ActiveProgramFromOverrideTestParam{
+                .test_name = "jp_to_taiyaki",
+                .country_override = "JP",
+                .expected_program = Program::kTaiyaki,
+                .run_only_on = kPhoneFormFactors,
+            },
+            ActiveProgramFromOverrideTestParam{
+                .test_name = "jp_to_default_non_phone",
+                .country_override = "JP",
+                .expected_program = Program::kDefault,
+                .run_only_on = kNonPhoneFormFactors,
+            },
+#else
+
+            ActiveProgramFromOverrideTestParam{
+                .test_name = "jp_to_default",
+                .country_override = "JP",
+                .expected_program = Program::kDefault,
+                .run_only_on = kNonPhoneFormFactors,
+            },
+#endif  // BUILDFLAG(IS_IOS)
+        },
+        /*params_for_disabled=*/
+        {
+            ActiveProgramFromOverrideTestParam{
+                .test_name = "taiyaki_to_default",
+                .country_override = switches::kTaiyakiProgramOverride,
+                .expected_program = Program::kDefault,
+            },
+            ActiveProgramFromOverrideTestParam{
+                .test_name = "jp_to_default",
+                .country_override = "JP",
+                .expected_program = Program::kDefault,
+            },
+        }),
+    &RegionalCapabilitiesServiceActiveProgramFromOverrideTest::GetTestName);
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
 TEST_F(RegionalCapabilitiesServiceTest, GetCountryIdCommandLineOverride) {
   // The command line value bypasses the country ID cache and does not

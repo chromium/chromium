@@ -27,7 +27,6 @@
 #include "regional_capabilities_metrics.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
-#include "ui/base/device_form_factor.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -163,43 +162,48 @@ std::pair<CountryId, LoadedCountrySource> SelectCountryId(
           LoadedCountrySource::kPersistedPreferredOverFallback};
 }
 
-const ProgramSettings* CountryIdToProgram(CountryId country_id) {
-#if BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/423883216): Update logic to support Android.
-  if (IsInProgramRegion(Program::kTaiyaki, country_id)) {
-    switch (ui::GetDeviceFormFactor()) {
-      case ui::DEVICE_FORM_FACTOR_PHONE:
-      case ui::DEVICE_FORM_FACTOR_FOLDABLE:
-        if (base::FeatureList::IsEnabled(switches::kTaiyaki)) {
-          return &kTaiyakiSettings;
-        }
-        break;
-      case ui::DEVICE_FORM_FACTOR_DESKTOP:
-      case ui::DEVICE_FORM_FACTOR_TABLET:
-      case ui::DEVICE_FORM_FACTOR_TV:
-      case ui::DEVICE_FORM_FACTOR_AUTOMOTIVE:
-        break;
-    }
-  }
-#endif  // BUILDFLAG(IS_IOS)
-
-  if (IsInProgramRegion(Program::kWaffle, country_id)) {
-    return &kWaffleSettings;
-  }
-
-  return &kDefaultSettings;
+bool CanUseTaiyakiProgram() {
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+  return IsClientCompatibleWithProgram(Program::kTaiyaki) &&
+         base::FeatureList::IsEnabled(switches::kTaiyaki);
+#else
+  return false;
+#endif
 }
 
-const ProgramSettings* CountryOverrideToProgram(
-    SearchEngineCountryOverride country_override) {
+Program CountryIdToProgram(const CountryId& country_id) {
+#if BUILDFLAG(IS_IOS)
+  // Only iOS can derive Taiyaki scope directly from the country.
+  if (IsInProgramRegion(Program::kTaiyaki, country_id) &&
+      CanUseTaiyakiProgram()) {
+    return Program::kTaiyaki;
+  }
+#endif
+
+  if (IsInProgramRegion(Program::kWaffle, country_id)) {
+    return Program::kWaffle;
+  }
+
+  return Program::kDefault;
+}
+
+Program CountryOverrideToProgram(SearchEngineCountryOverride country_override) {
   return std::visit(
       absl::Overload{
           [](CountryId country_id) { return CountryIdToProgram(country_id); },
+          [](RegionalProgramOverride program_override) {
+            switch (program_override) {
+              case RegionalProgramOverride::kTaiyaki:
+                CHECK(IsClientCompatibleWithProgram(Program::kTaiyaki));
+                return CanUseTaiyakiProgram() ? Program::kTaiyaki
+                                              : Program::kDefault;
+            }
+          },
           [](SearchEngineCountryListOverride list_override) {
             switch (list_override) {
               case SearchEngineCountryListOverride::kEeaAll:
               case SearchEngineCountryListOverride::kEeaDefault:
-                return &kWaffleSettings;
+                return Program::kWaffle;
             }
           },
       },
@@ -210,6 +214,16 @@ CountryId CountryOverrideToCountryId(
     SearchEngineCountryOverride country_override) {
   return std::visit(absl::Overload{
                         [](CountryId country_id) { return country_id; },
+                        [](RegionalProgramOverride program_override) {
+                          const ProgramSettings& settings =
+                              GetSettingsForProgram(
+                                  CountryOverrideToProgram(program_override));
+                          // For programs allowing to be overridden this way,
+                          // they should be configured to be able to be resolved
+                          // to a specific country.
+                          CHECK(!settings.associated_countries.empty());
+                          return settings.associated_countries.front();
+                        },
                         [](SearchEngineCountryListOverride list_override) {
                           return CountryId();
                         },
@@ -275,7 +289,8 @@ const ProgramSettings& RegionalCapabilitiesService::GetActiveProgramSettings() {
   if (std::optional<SearchEngineCountryOverride> country_override =
           GetSearchEngineCountryOverride();
       country_override.has_value()) {
-    return CHECK_DEREF(CountryOverrideToProgram(country_override.value()));
+    return GetSettingsForProgram(
+        CountryOverrideToProgram(country_override.value()));
   }
 
   EnsureRegionalScopeCacheInitialized();
@@ -337,7 +352,7 @@ void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
 
   country_id_cache_ = selected_country_and_source.first;
   program_settings_cache_ =
-      CHECK_DEREF(CountryIdToProgram(country_id_cache_.value()));
+      GetSettingsForProgram(CountryIdToProgram(country_id_cache_.value()));
 
   RecordLoadedCountrySource(selected_country_and_source.second);
 }
