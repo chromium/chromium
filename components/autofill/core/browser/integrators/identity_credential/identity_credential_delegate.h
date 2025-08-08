@@ -47,6 +47,8 @@ class IdentityCredentialDelegate {
   // 2. Accounts information that is required for federated logins. e.g. name,
   // email, avatar, phone number etc. Depending on which types of suggestions,
   // the strings and UI affordances can be different.
+  // The given `field_type` must be one of the Identity Credentials types
+  // supported by AutofillType::GetIdentityCredentialType(), or UNKNOWN_TYPE.
   virtual std::vector<Suggestion> GetVerifiedAutofillSuggestions(
       const FieldType& field_type) const = 0;
 

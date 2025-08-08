@@ -132,7 +132,7 @@ TEST_F(ContentIdentityCredentialDelegateTest, UnsupportedFieldType) {
   EXPECT_CALL(mock, GetAutofillSuggestions).WillOnce(Return(accounts));
 
   std::vector<Suggestion> suggestions =
-      delegate.GetVerifiedAutofillSuggestions(IBAN_VALUE);
+      delegate.GetVerifiedAutofillSuggestions(UNKNOWN_TYPE);
   ASSERT_EQ(0ul, suggestions.size());
 }
 

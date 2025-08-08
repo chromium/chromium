@@ -178,9 +178,15 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
         suggestions.emplace_back(CreatePasswordSuggestion(account));
         break;
       }
-      default:
+      case UNKNOWN_TYPE: {
         // Unsupported field type.
         return {};
+      }
+      default: {
+        // The given `field_type` must be one of the Identity Credentials types
+        // in the co-domain of AutofillType::GetIdentityCredentialType().
+        NOTREACHED();
+      }
     }
   }
 
