@@ -208,7 +208,8 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
 
   void ReplaceSelectionAfterDragging(DocumentFragment*,
                                      InsertMode,
-                                     DragSourceType);
+                                     DragSourceType,
+                                     DataTransfer* = nullptr);
 
   // Return false if frame was destroyed by event handler, should stop executing
   // remaining actions.

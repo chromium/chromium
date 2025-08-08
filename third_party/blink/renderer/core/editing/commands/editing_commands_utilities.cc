@@ -630,7 +630,7 @@ static void DispatchInputEvent(Element* target,
   // If the parent node is a textarea or input, we should not use dataTransfer
   // but data as defined on spec.
   // https://www.w3.org/TR/input-events-1/#overview
-  bool use_data_transfer = data_transfer && !target->IsTextControl();
+  bool use_data_transfer = data_transfer && !EnclosingTextControl(target);
   InputEvent* const input_event =
       use_data_transfer
           ? InputEvent::CreateInput(input_type, data_transfer, is_composing,

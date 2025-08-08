@@ -334,7 +334,8 @@ void Editor::ReplaceSelectionWithText(const String& text,
 
 void Editor::ReplaceSelectionAfterDragging(DocumentFragment* fragment,
                                            InsertMode insert_mode,
-                                           DragSourceType drag_source_type) {
+                                           DragSourceType drag_source_type,
+                                           DataTransfer* data_transfer) {
   ReplaceSelectionCommand::CommandOptions options =
       ReplaceSelectionCommand::kSelectReplacement |
       ReplaceSelectionCommand::kPreventNesting;
@@ -345,7 +346,7 @@ void Editor::ReplaceSelectionAfterDragging(DocumentFragment* fragment,
   DCHECK(GetFrame().GetDocument());
   MakeGarbageCollected<ReplaceSelectionCommand>(
       *GetFrame().GetDocument(), fragment, options,
-      InputEvent::InputType::kInsertFromDrop)
+      InputEvent::InputType::kInsertFromDrop, data_transfer)
       ->Apply();
 }
 
@@ -410,9 +411,14 @@ bool Editor::ReplaceSelectionAfterDraggingWithEvents(
   if (frame_->GetInputMethodController().GetActiveEditContext())
     return true;
 
-  if (should_insert && drop_target->isConnected())
-    ReplaceSelectionAfterDragging(fragment, insert_mode, drag_source_type);
-
+  if (should_insert && drop_target->isConnected()) {
+    if (RuntimeEnabledFeatures::InputEventDataTransferForInsertCmdEnabled()) {
+      ReplaceSelectionAfterDragging(fragment, insert_mode, drag_source_type,
+                                    data_transfer);
+    } else {
+      ReplaceSelectionAfterDragging(fragment, insert_mode, drag_source_type);
+    }
+  }
   return true;
 }
 
