@@ -218,9 +218,6 @@ class ExtensionInstallPrompt {
     // webstore.
     bool has_webstore_data_;
 
-    std::vector<base::FilePath> retained_files_;
-    std::vector<std::u16string> retained_device_messages_;
-
     base::ObserverList<Observer> observers_;
   };
 
