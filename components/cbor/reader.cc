@@ -405,10 +405,11 @@ std::optional<Value> Reader::ReadMapContent(
 
   Value::MapValue map;
   map.reserve(cbor_map.size());
-  // TODO(crbug.com/40205788): when Chromium switches to C++17, this code can be
-  // optimized using std::map::extract().
-  for (auto& it : cbor_map)
-    map.emplace_hint(map.end(), it.first.Clone(), std::move(it.second));
+  while (!cbor_map.empty()) {
+    auto node = cbor_map.extract(cbor_map.begin());
+    map.emplace_hint(map.end(), std::move(node.key()),
+                     std::move(node.mapped()));
+  }
   return Value(std::move(map));
 }
 
