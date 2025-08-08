@@ -128,6 +128,7 @@
 #import "ios/chrome/browser/promos_manager/ui_bundled/utils.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_main_coordinator.h"
+#import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_delegate.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
@@ -2492,17 +2493,26 @@ using UserFeedbackDataCallback =
     return;
   }
   CHECK(ShouldShowSafariImportWorkflow());
+  BOOL presentOverSettings = self.settingsNavigationController &&
+                             entryPoint == SafariDataImportEntryPoint::kSetting;
+  UIViewController* baseViewController = presentOverSettings
+                                             ? self.settingsNavigationController
+                                             : self.activeViewController;
   SafariDataImportMainCoordinator* safariDataImportCoordinator =
       [[SafariDataImportMainCoordinator alloc]
               initFromEntryPoint:entryPoint
-          withBaseViewController:self.activeViewController
+          withBaseViewController:baseViewController
                          browser:self.currentInterface.browser];
   safariDataImportCoordinator.delegate = self;
   safariDataImportCoordinator.UIHandler = UIHandler;
-  [self closePresentedViews:YES
-                 completion:^{
-                   [safariDataImportCoordinator start];
-                 }];
+  if (presentOverSettings) {
+    [safariDataImportCoordinator start];
+  } else {
+    [self closePresentedViews:YES
+                   completion:^{
+                     [safariDataImportCoordinator start];
+                   }];
+  }
   _safariImportCoordinator = safariDataImportCoordinator;
 }
 

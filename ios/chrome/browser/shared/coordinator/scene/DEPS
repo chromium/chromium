@@ -37,6 +37,7 @@ include_rules = [
   "+ios/chrome/browser/promos_manager/ui_bundled",
   "+ios/chrome/browser/reading_list/model",
   "+ios/chrome/browser/safari_data_import/coordinator",
+  "+ios/chrome/browser/safari_data_import/public",
   "+ios/chrome/browser/scoped_ui_blocker/ui_bundled",
   "+ios/chrome/browser/screenshot/model",
   "+ios/chrome/browser/sessions/model",
