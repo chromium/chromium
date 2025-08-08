@@ -229,8 +229,11 @@ class MultiplexRouter::InterfaceEndpoint
     sync_watcher_ =
         std::make_unique<SequenceLocalSyncEventWatcher>(base::BindRepeating(
             &InterfaceEndpoint::OnSyncEventSignaled, base::Unretained(this)));
-    if (sync_message_event_signaled_)
+    // If peer_closed_ is true, we'll never be signalled again, so immediately
+    // signal the watcher event to make sure we don't hang indefinitely.
+    if (sync_message_event_signaled_ || peer_closed_) {
       sync_watcher_->SignalEvent();
+    }
   }
 
   // ---------------------------------------------------------------------------

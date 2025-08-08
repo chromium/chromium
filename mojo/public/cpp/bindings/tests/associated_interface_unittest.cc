@@ -1235,8 +1235,9 @@ class TestSyncPrimaryImpl : public TestSyncPrimary, public TestSync {
       : receiver_(this, std::move(receiver)), test_sync_receiver_(this) {}
   ~TestSyncPrimaryImpl() override = default;
 
-  static constexpr int32_t kReceivedPing = 0b01;
-  static constexpr int32_t kSyncCallWasAborted = 0b10;
+  static constexpr int32_t kReceivedPing = 0b001;
+  static constexpr int32_t kSyncCallWasAborted = 0b010;
+  static constexpr int32_t kSyncCall2WasAborted = 0b100;
 
   void Ping(PingCallback callback) override {
     result_ |= kReceivedPing;
@@ -1261,6 +1262,12 @@ class TestSyncPrimaryImpl : public TestSyncPrimary, public TestSync {
       if (!call_result) {
         result_ |= kSyncCallWasAborted;
       }
+      // Make a second sync call to make sure that one gets correctly aborted as
+      // well.
+      call_result = test_sync_remote_->Echo(456, &reply);
+      if (!call_result) {
+        result_ |= kSyncCall2WasAborted;
+      }
     }
   }
 
@@ -1271,9 +1278,10 @@ class TestSyncPrimaryImpl : public TestSyncPrimary, public TestSync {
   int32_t result_ = 0;
 };
 
-// Regression test for https://crbug.com/435493653. Verifies that a sync call
-// made on an associated remote is correctly aborted if the receiver endpoint
-// is closed even if other messages are queued on the same message pipe first.
+// Regression test for https://crbug.com/435493653 and
+// https://crbug.com/436965298. Verifies that sync calls made on an associated
+// remote are correctly aborted if the receiver endpoint is closed even if other
+//  messages are queued on the same message pipe first.
 TEST_F(AssociatedInterfaceTest, TestHangOnDisconnect) {
   Remote<TestSyncPrimary> primary_remote;
   base::SequenceBound<TestSyncPrimaryImpl> primary_impl(
@@ -1294,7 +1302,8 @@ TEST_F(AssociatedInterfaceTest, TestHangOnDisconnect) {
   base::test::TestFuture<int32_t> result;
   primary_remote->Echo(0, result.GetCallback());
   EXPECT_EQ(TestSyncPrimaryImpl::kReceivedPing |
-                TestSyncPrimaryImpl::kSyncCallWasAborted,
+                TestSyncPrimaryImpl::kSyncCallWasAborted |
+                TestSyncPrimaryImpl::kSyncCall2WasAborted,
             result.Get());
 
   primary_impl.SynchronouslyResetForTest();
