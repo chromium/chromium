@@ -173,16 +173,14 @@ ManagedInstallationMode ExtensionManagement::GetInstallationMode(
 
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 bool ExtensionManagement::ExtensionsEnabledForDesktopAndroid() const {
-  if (enterprise_util::IsBrowserManaged(profile_)) {
-    // Disable extensions only for specific managed accounts.
-    // This check keeps many tests from failing.
-    std::string user_name = profile_->GetProfileUserName();
-    // Crude check to avoid passing invalid strings to `ExtractDomainName`.
-    if (base::Contains(user_name, "@")) {
-      std::string domain = gaia::ExtractDomainName(user_name);
-      if (domain == "google.com" || domain == "managedchrome.com") {
-        return false;
-      }
+  // Disable extensions only for specific domains.
+  // This check keeps many tests from failing.
+  std::string user_name = profile_->GetProfileUserName();
+  // Crude check to avoid passing invalid strings to `ExtractDomainName`.
+  if (base::Contains(user_name, "@")) {
+    std::string domain = gaia::ExtractDomainName(user_name);
+    if (domain == "google.com" || domain == "managedchrome.com") {
+      return false;
     }
   }
   return true;
