@@ -147,11 +147,13 @@ OnDeviceModelServiceController::OnDeviceModelServiceController(
     base::SafeRef<PerformanceClassifier> performance_classifier,
     base::WeakPtr<OnDeviceModelComponentStateManager>
         on_device_component_state_manager,
+    UsageTracker& usage_tracker,
     base::SafeRef<on_device_model::ServiceClient> service_client)
     : access_controller_(std::move(access_controller)),
       performance_classifier_(std::move(performance_classifier)),
       on_device_component_state_manager_(
           std::move(on_device_component_state_manager)),
+      usage_tracker_(usage_tracker),
       service_client_(std::move(service_client)),
       safety_client_(service_client_->GetWeakPtr()) {
   base_model_controller_.emplace(weak_ptr_factory_.GetSafeRef(), nullptr);
@@ -185,9 +187,7 @@ OnDeviceModelServiceController::CreateSession(
   auto reason = solution.error_or(OnDeviceModelEligibilityReason::kSuccess);
   LogEligibilityReason(feature, reason);
 
-  if (on_device_component_state_manager_) {
-    on_device_component_state_manager_->OnDeviceEligibleFeatureUsed(feature);
-  }
+  usage_tracker_->OnDeviceEligibleFeatureUsed(feature);
 
   // Return if we cannot do anything more for right now.
   if (reason != OnDeviceModelEligibilityReason::kSuccess) {
@@ -434,7 +434,7 @@ void OnDeviceModelServiceController::SubscribeInternal(
     mojo::PendingRemote<mojom::ModelSubscriber> subscriber) {
   auto feature = ToModelBasedCapabilityKey(opts->id);
   if (opts->mark_used && on_device_component_state_manager_) {
-    on_device_component_state_manager_->OnDeviceEligibleFeatureUsed(feature);
+    usage_tracker_->OnDeviceEligibleFeatureUsed(feature);
   }
   GetSolutionProvider(feature).AddSubscriber(std::move(subscriber));
 }

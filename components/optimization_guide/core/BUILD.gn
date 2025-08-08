@@ -294,6 +294,8 @@ source_set("model_execution") {
       "model_execution/simple_response_parser.h",
       "model_execution/substitution.cc",
       "model_execution/substitution.h",
+      "model_execution/usage_tracker.cc",
+      "model_execution/usage_tracker.h",
       "model_execution/value_converter.cc",
       "model_execution/value_converter.h",
       output_proto_descriptors_cc_file,

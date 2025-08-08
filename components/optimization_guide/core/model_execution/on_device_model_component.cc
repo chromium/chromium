@@ -24,6 +24,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
+#include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -36,18 +37,6 @@
 
 namespace optimization_guide {
 namespace {
-
-bool WasAnyOnDeviceEligibleFeatureRecentlyUsed(const PrefService& local_state) {
-  for (const ModelBasedCapabilityKey key : kAllModelBasedCapabilityKeys) {
-    if (!features::internal::GetOptimizationTargetForCapability(key)) {
-      continue;
-    }
-    if (WasOnDeviceEligibleFeatureRecentlyUsed(key, local_state)) {
-      return true;
-    }
-  }
-  return false;
-}
 
 void LogInstallCriteria(std::string_view event_name,
                         std::string_view criteria_name,
@@ -232,31 +221,6 @@ OnDeviceModelComponentStateManager::GetDebugState() {
   return debug;
 }
 
-void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
-    ModelBasedCapabilityKey feature) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!WasOnDeviceEligibleFeatureRecentlyUsed(feature, *local_state_)) {
-    // This is the first time usage of the feature.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&OnDeviceModelComponentStateManager::
-                                      NotifyOnDeviceEligibleFeatureFirstUsed,
-                                  GetWeakPtr(), feature));
-  }
-
-  model_execution::prefs::RecordFeatureUsage(local_state_, feature);
-
-  base::UmaHistogramEnumeration(
-      "OptimizationGuide.ModelExecution.OnDeviceModelStatusAtUseTime",
-      GetOnDeviceModelStatus());
-
-  if (registration_criteria_) {
-    LogInstallCriteria(*registration_criteria_, "AtAttemptedUse");
-  }
-
-  BeginUpdateRegistration();
-}
-
 void OnDeviceModelComponentStateManager::OnPerformanceClassAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BeginUpdateRegistration();
@@ -356,6 +320,21 @@ void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
   }
 }
 
+void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
+    ModelBasedCapabilityKey feature) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.ModelExecution.OnDeviceModelStatusAtUseTime",
+      GetOnDeviceModelStatus());
+
+  if (registration_criteria_) {
+    LogInstallCriteria(*registration_criteria_, "AtAttemptedUse");
+  }
+
+  BeginUpdateRegistration();
+}
+
 OnDeviceModelComponentStateManager::RegistrationCriteria
 OnDeviceModelComponentStateManager::ComputeRegistrationCriteria(
     int64_t disk_space_free_bytes) {
@@ -367,7 +346,7 @@ OnDeviceModelComponentStateManager::ComputeRegistrationCriteria(
       IsFreeDiskSpaceSufficientForOnDeviceModelInstall(disk_space_free_bytes);
   result.device_capable = performance_classifier_->IsDeviceCapable();
   result.on_device_feature_recently_used =
-      WasAnyOnDeviceEligibleFeatureRecentlyUsed(*local_state_);
+      usage_tracker_->WasAnyOnDeviceEligibleFeatureRecentlyUsed();
   result.enabled_by_feature = features::IsOnDeviceExecutionEnabled();
   result.enabled_by_enterprise_policy =
       GetGenAILocalFoundationalModelEnterprisePolicySettings(local_state_) ==
@@ -392,11 +371,14 @@ OnDeviceModelComponentStateManager::ComputeRegistrationCriteria(
 OnDeviceModelComponentStateManager::OnDeviceModelComponentStateManager(
     PrefService* local_state,
     base::SafeRef<PerformanceClassifier> performance_classifier,
+    UsageTracker& usage_tracker,
     std::unique_ptr<Delegate> delegate)
     : local_state_(local_state),
       performance_classifier_(std::move(performance_classifier)),
-      delegate_(std::move(delegate)) {
+      delegate_(std::move(delegate)),
+      usage_tracker_(usage_tracker) {
   CHECK(local_state);  // Useful to catch poor test setup.
+  usage_tracker_observation_.Observe(&usage_tracker);
   pref_change_registrar_.Init(local_state);
   pref_change_registrar_.Add(
       model_execution::prefs::localstate::
@@ -462,14 +444,6 @@ void OnDeviceModelComponentStateManager::NotifyStateChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& o : observers_) {
     o.StateChanged(GetState());
-  }
-}
-
-void OnDeviceModelComponentStateManager::NotifyOnDeviceEligibleFeatureFirstUsed(
-    ModelBasedCapabilityKey feature) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& o : observers_) {
-    o.OnDeviceEligibleFeatureFirstUsed(feature);
   }
 }
 

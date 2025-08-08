@@ -318,6 +318,10 @@ class OptimizationGuideKeyedService
     return prediction_manager_.get();
   }
 
+  optimization_guide::OptimizationGuideGlobalState& GetGlobalState() {
+    return *optimization_guide_global_state_;
+  }
+
   optimization_guide::OnDeviceModelComponentStateManager*
   GetComponentManager() {
     return &optimization_guide_global_state_->component_state_manager();
@@ -411,6 +415,10 @@ class OptimizationGuideKeyedService
   // prediction models.
   std::unique_ptr<optimization_guide::PredictionManager> prediction_manager_;
 
+  // Provides assets to optimization_guide_global_state_ from
+  // prediction_manager_. This *MUST* be destroyed before
+  // `optimization_guide_global_state_`, because it holds raw_ptrs to some of
+  // it's members.
   std::unique_ptr<optimization_guide::OnDeviceAssetManager>
       on_device_asset_manager_;
 

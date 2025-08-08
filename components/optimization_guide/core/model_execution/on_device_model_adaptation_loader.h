@@ -16,6 +16,7 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
+#include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
@@ -106,7 +107,8 @@ using MaybeAdaptationMetadata =
 // base model changes.
 class OnDeviceModelAdaptationLoader
     : public OptimizationTargetModelObserver,
-      public OnDeviceModelComponentStateManager::Observer {
+      public OnDeviceModelComponentStateManager::Observer,
+      public UsageTracker::Observer {
  public:
   using OnLoadFn = base::RepeatingCallback<void(MaybeAdaptationMetadata)>;
 
@@ -115,6 +117,7 @@ class OnDeviceModelAdaptationLoader
       OptimizationGuideModelProvider* model_provider,
       base::WeakPtr<OnDeviceModelComponentStateManager>
           on_device_component_state_manager,
+      UsageTracker& usage_tracker,
       PrefService* local_state,
       OnLoadFn on_load_fn);
   ~OnDeviceModelAdaptationLoader() override;
@@ -136,6 +139,8 @@ class OnDeviceModelAdaptationLoader
 
   // OnDeviceModelComponentStateManager::Observer.
   void StateChanged(const OnDeviceModelComponentState* state) final;
+
+  // UsageTracker::Observer:
   void OnDeviceEligibleFeatureFirstUsed(ModelBasedCapabilityKey feature) final;
 
   // Registers for adaptation model download, if the conditions are right.
@@ -149,12 +154,16 @@ class OnDeviceModelAdaptationLoader
   raw_ptr<OptimizationGuideModelProvider> model_provider_;
   base::WeakPtr<OnDeviceModelComponentStateManager>
       on_device_component_state_manager_;
+  raw_ref<UsageTracker> usage_tracker_;
   raw_ptr<PrefService> local_state_;
   OnLoadFn on_load_fn_;
 
   base::ScopedObservation<OnDeviceModelComponentStateManager,
                           OnDeviceModelComponentStateManager::Observer>
       component_state_manager_observation_{this};
+
+  base::ScopedObservation<UsageTracker, UsageTracker::Observer>
+      usage_tracker_observation_{this};
 
   // The compatibility spec that we've registered for adaptations with.
   std::optional<OnDeviceBaseModelSpec> registered_spec_;

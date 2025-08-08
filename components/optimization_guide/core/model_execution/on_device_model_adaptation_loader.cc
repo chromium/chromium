@@ -18,6 +18,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -167,6 +168,7 @@ OnDeviceModelAdaptationLoader::OnDeviceModelAdaptationLoader(
     OptimizationGuideModelProvider* model_provider,
     base::WeakPtr<OnDeviceModelComponentStateManager>
         on_device_component_state_manager,
+    UsageTracker& usage_tracker,
     PrefService* local_state,
     OnLoadFn on_load_fn)
     : feature_(feature),
@@ -174,6 +176,7 @@ OnDeviceModelAdaptationLoader::OnDeviceModelAdaptationLoader(
           *features::internal::GetOptimizationTargetForCapability(feature_)),
       model_provider_(model_provider),
       on_device_component_state_manager_(on_device_component_state_manager),
+      usage_tracker_(usage_tracker),
       local_state_(local_state),
       on_load_fn_(on_load_fn),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -182,6 +185,7 @@ OnDeviceModelAdaptationLoader::OnDeviceModelAdaptationLoader(
     return;
   }
 
+  usage_tracker_observation_.Observe(&usage_tracker);
   component_state_manager_observation_.Observe(
       on_device_component_state_manager.get());
   if (auto* state = on_device_component_state_manager->GetState()) {
@@ -203,7 +207,7 @@ void OnDeviceModelAdaptationLoader::Unregister() {
 void OnDeviceModelAdaptationLoader::StateChanged(
     const OnDeviceModelComponentState* state) {
   MaybeRegisterModelDownload(
-      state, WasOnDeviceEligibleFeatureRecentlyUsed(feature_, *local_state_));
+      state, usage_tracker_->WasOnDeviceEligibleFeatureRecentlyUsed(feature_));
 }
 
 void OnDeviceModelAdaptationLoader::MaybeRegisterModelDownload(
@@ -262,7 +266,7 @@ void OnDeviceModelAdaptationLoader::OnDeviceEligibleFeatureFirstUsed(
   }
   MaybeRegisterModelDownload(
       on_device_component_state_manager_->GetState(),
-      WasOnDeviceEligibleFeatureRecentlyUsed(feature_, *local_state_));
+      usage_tracker_->WasOnDeviceEligibleFeatureRecentlyUsed(feature_));
 }
 
 void OnDeviceModelAdaptationLoader::OnModelUpdated(

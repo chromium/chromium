@@ -131,14 +131,14 @@ class OnDeviceModelAdaptationLoaderTest : public testing::Test {
                                OnDeviceModelPerformanceClass::kHigh);
     model_broker_state_.Init();
 
-    model_broker_state_.component_state_manager().OnDeviceEligibleFeatureUsed(
+    model_broker_state_.usage_tracker().OnDeviceEligibleFeatureUsed(
         ModelBasedCapabilityKey::kTest);
     task_environment_.RunUntilIdle();
 
     adaptation_loader_ = std::make_unique<OnDeviceModelAdaptationLoader>(
         ModelBasedCapabilityKey::kTest, &model_provider_,
         model_broker_state_.component_state_manager().GetWeakPtr(),
-        &local_state_,
+        model_broker_state_.usage_tracker(), &local_state_,
         base::BindRepeating(
             &OnDeviceModelAdaptationLoaderTest::OnModelAdaptationLoaded,
             base::Unretained(this)));

@@ -21,6 +21,7 @@
 
 namespace optimization_guide {
 
+class UsageTracker;
 class OnDeviceModelAdaptationLoader;
 class OnDeviceModelServiceController;
 class OptimizationGuideModelProvider;
@@ -32,6 +33,7 @@ class OnDeviceAssetManager final
  public:
   OnDeviceAssetManager(
       PrefService* local_state,
+      UsageTracker& usage_tracker,
       base::WeakPtr<OnDeviceModelServiceController> service_controller,
       base::WeakPtr<OnDeviceModelComponentStateManager> component_state_manager,
       raw_ptr<OptimizationGuideModelProvider> model_provider);

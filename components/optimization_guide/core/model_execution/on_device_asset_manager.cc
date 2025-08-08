@@ -17,6 +17,7 @@ namespace {
 std::map<ModelBasedCapabilityKey, OnDeviceModelAdaptationLoader>
 GetRequiredModelAdaptationLoaders(
     OptimizationGuideModelProvider* model_provider,
+    UsageTracker& usage_tracker,
     base::WeakPtr<OnDeviceModelComponentStateManager>
         on_device_component_state_manager,
     PrefService* local_state,
@@ -31,7 +32,7 @@ GetRequiredModelAdaptationLoaders(
         std::piecewise_construct, std::forward_as_tuple(feature),
         std::forward_as_tuple(
             feature, model_provider, on_device_component_state_manager,
-            local_state,
+            usage_tracker, local_state,
             base::BindRepeating(
                 &OnDeviceModelServiceController::MaybeUpdateModelAdaptation,
                 on_device_model_service_controller, feature)));
@@ -43,6 +44,7 @@ GetRequiredModelAdaptationLoaders(
 
 OnDeviceAssetManager::OnDeviceAssetManager(
     PrefService* local_state,
+    UsageTracker& usage_tracker,
     base::WeakPtr<OnDeviceModelServiceController> service_controller,
     base::WeakPtr<OnDeviceModelComponentStateManager> component_state_manager,
     raw_ptr<OptimizationGuideModelProvider> model_provider)
@@ -51,6 +53,7 @@ OnDeviceAssetManager::OnDeviceAssetManager(
       model_provider_(model_provider),
       model_adaptation_loaders_(
           GetRequiredModelAdaptationLoaders(model_provider,
+                                            usage_tracker,
                                             on_device_component_state_manager_,
                                             local_state,
                                             service_controller)) {

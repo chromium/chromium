@@ -31,6 +31,8 @@ class OptimizationGuideGlobalState final
   // Retrieves or creates the instance.
   static scoped_refptr<OptimizationGuideGlobalState> CreateOrGet();
 
+  UsageTracker& usage_tracker() { return model_broker_state_.usage_tracker(); }
+
   OnDeviceModelComponentStateManager& component_state_manager() {
     return model_broker_state_.component_state_manager();
   }

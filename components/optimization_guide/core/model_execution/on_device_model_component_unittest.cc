@@ -498,7 +498,8 @@ TEST_F(OnDeviceModelComponentTest, InstallAfterEligibleFeatureWasUsed) {
   EnsurePerformanceClassAvailable();
   ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
 
-  manager().OnDeviceEligibleFeatureUsed(ModelBasedCapabilityKey::kCompose);
+  model_broker_state_->usage_tracker().OnDeviceEligibleFeatureUsed(
+      ModelBasedCapabilityKey::kCompose);
   EXPECT_TRUE(WaitUntilInstallerRegistered());
 }
 
@@ -509,7 +510,8 @@ TEST_F(OnDeviceModelComponentTest, LogsStatusOnUse) {
   EnsurePerformanceClassAvailable();
   EXPECT_TRUE(WaitUntilInstallerRegistered());
 
-  manager().OnDeviceEligibleFeatureUsed(ModelBasedCapabilityKey::kCompose);
+  model_broker_state_->usage_tracker().OnDeviceEligibleFeatureUsed(
+      ModelBasedCapabilityKey::kCompose);
 
   histograms_.ExpectBucketCount(
       "OptimizationGuide.ModelExecution.OnDeviceModelStatusAtUseTime",

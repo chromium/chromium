@@ -80,6 +80,7 @@ class OnDeviceModelServiceController final : public mojom::ModelBroker {
       base::SafeRef<PerformanceClassifier> performance_classifier,
       base::WeakPtr<OnDeviceModelComponentStateManager>
           on_device_component_state_manager,
+      UsageTracker& usage_tracker,
       base::SafeRef<on_device_model::ServiceClient> service_client);
   ~OnDeviceModelServiceController() override;
 
@@ -351,6 +352,7 @@ class OnDeviceModelServiceController final : public mojom::ModelBroker {
   base::SafeRef<PerformanceClassifier> performance_classifier_;
   base::WeakPtr<OnDeviceModelComponentStateManager>
       on_device_component_state_manager_;
+  base::raw_ref<UsageTracker> usage_tracker_;
 
   base::SafeRef<on_device_model::ServiceClient> service_client_;
   SafetyClient safety_client_;

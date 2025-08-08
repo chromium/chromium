@@ -41,12 +41,4 @@ ReadOnDeviceModelExecutionConfig(const base::FilePath& config_path) {
   return config;
 }
 
-bool WasOnDeviceEligibleFeatureRecentlyUsed(ModelBasedCapabilityKey feature,
-                                            const PrefService& local_state) {
-  if (!features::internal::GetOptimizationTargetForCapability(feature)) {
-    return false;
-  }
-  return model_execution::prefs::WasFeatureRecentlyUsed(&local_state, feature);
-}
-
 }  // namespace optimization_guide

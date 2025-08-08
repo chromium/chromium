@@ -11,6 +11,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
+#include "components/optimization_guide/core/model_execution/usage_tracker.h"
 
 namespace optimization_guide {
 
@@ -31,6 +32,8 @@ class ModelBrokerState {
   PerformanceClassifier& performance_classifier() {
     return performance_classifier_;
   }
+
+  UsageTracker& usage_tracker() { return usage_tracker_; }
 
   OnDeviceModelComponentStateManager& component_state_manager() {
     return component_state_manager_;
@@ -56,6 +59,7 @@ class ModelBrokerState {
  private:
   raw_ptr<PrefService> local_state_;
   on_device_model::ServiceClient service_client_;
+  UsageTracker usage_tracker_;
   PerformanceClassifier performance_classifier_;
   OnDeviceModelComponentStateManager component_state_manager_;
   std::unique_ptr<OnDeviceModelServiceController> service_controller_;

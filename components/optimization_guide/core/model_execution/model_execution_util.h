@@ -27,10 +27,6 @@ GetGenAILocalFoundationalModelEnterprisePolicySettings(
 std::unique_ptr<proto::OnDeviceModelExecutionConfig>
 ReadOnDeviceModelExecutionConfig(const base::FilePath& config_path);
 
-// Returns whether the `feature` was recently used.
-bool WasOnDeviceEligibleFeatureRecentlyUsed(ModelBasedCapabilityKey feature,
-                                            const PrefService& local_state);
-
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_UTIL_H_
