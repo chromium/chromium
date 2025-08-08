@@ -419,7 +419,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
                         : untappedEntrypointColor;
 
   // Separator visibility.
-  _separator.hidden = !shouldAccountForVisibleInfobarBadges;
+  _separator.hidden = !_infobarBadgesCurrentlyShown;
 }
 
 // Applies the correct color to the entrypoint (highlighted blue when the
