@@ -26,7 +26,10 @@ import {getTemplate} from './sync_controls.html.js';
 
 // <if expr="not is_chromeos">
 import {loadTimeData} from '../i18n_setup.js';
+import type {Route} from '../router.js';
+import {RouteObserverMixin} from '../router.js';
 // </if>
+
 // clang-format on
 
 /**
@@ -43,7 +46,13 @@ enum RadioButtonNames {
  * 'settings-sync-controls' contains all sync data type controls.
  */
 
+// <if expr="not is_chromeos">
+const SettingsSyncControlsElementBase =
+    RouteObserverMixin(WebUiListenerMixin(PolymerElement));
+// </if>
+// <if expr="is_chromeos">
 const SettingsSyncControlsElementBase = WebUiListenerMixin(PolymerElement);
+// </if>
 
 export class SettingsSyncControlsElement extends
     SettingsSyncControlsElementBase {
@@ -61,7 +70,8 @@ export class SettingsSyncControlsElement extends
         type: Boolean,
         value: false,
         computed: 'syncControlsHidden_(' +
-            'syncStatus.signedIn, syncStatus.disabled, syncStatus.hasError)',
+            'syncStatus.signedIn, syncStatus.disabled, ' +
+            'syncStatus.hasError, isAccountSettingsPage_)',
         reflectToAttribute: true,
       },
 
@@ -94,6 +104,16 @@ export class SettingsSyncControlsElement extends
         computed: 'computeShowSyncDisabledInformation_(syncStatus.disabled)',
         reflectToAttribute: true,
       },
+
+      /**
+       * Returns whether this element is currently displayed on the account
+       * settings page. Always false on ChromeOS and with
+       * `replaceSyncPromosWithSignInPromos` disabled.
+       */
+      isAccountSettingsPage_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -103,6 +123,7 @@ export class SettingsSyncControlsElement extends
   private browserProxy_: SyncBrowserProxy = SyncBrowserProxyImpl.getInstance();
   private cachedSyncPrefs_: {[key: string]: any}|null;
   declare showSyncDisabledInformation: boolean;
+  declare private isAccountSettingsPage_: boolean;
 
   constructor() {
     super();
@@ -124,12 +145,6 @@ export class SettingsSyncControlsElement extends
     if (router.getCurrentRoute() === routes.SYNC_ADVANCED) {
       this.browserProxy_.didNavigateToSyncPage();
     }
-
-    // <if expr="not is_chromeos">
-    if (this.isAccountSettingsPage_()) {
-      this.browserProxy_.didNavigateToAccountSettingsPage();
-    }
-    // </if>
   }
   /**
    * Handler for when the sync preferences are updated.
@@ -160,22 +175,19 @@ export class SettingsSyncControlsElement extends
     }
   }
 
-  /**
-   * Returns whether this element is currently displayed on the account settings
-   * page. Always false on ChromeOS and with `replaceSyncPromosWithSignInPromos`
-   * disabled.
-   */
-  private isAccountSettingsPage_(): boolean {
-    // <if expr="is_chromeos">
-    return false;
-    // </if>
-    // <if expr="not is_chromeos">
-    return loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') &&
-        Router.getInstance().getCurrentRoute() === routes.ACCOUNT;
-    // </if>
+  // <if expr="not is_chromeos">
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+    if (!loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) {
+      return;
+    }
+
+    this.isAccountSettingsPage_ = newRoute === routes.ACCOUNT;
+
+    if (this.isAccountSettingsPage_ && oldRoute !== routes.ACCOUNT) {
+      this.browserProxy_.didNavigateToAccountSettingsPage();
+    }
   }
 
-  // <if expr="not is_chromeos">
   private mergedHistoryTabsToggleDisabled_(
       syncStatus: SyncStatus, tabsManaged: boolean,
       historyManaged: boolean): boolean {
@@ -195,11 +207,10 @@ export class SettingsSyncControlsElement extends
         syncPrefs.savedTabGroupsSynced;
   }
 
-  private onMergedHistoryTabsToggleChanged_(_event?: Event) {
-    assert(this.isAccountSettingsPage_());
-    assert(_event);
+  private onMergedHistoryTabsToggleChanged_(event: Event) {
+    assert(this.isAccountSettingsPage_);
 
-    const toggle = _event?.target as CrToggleElement;
+    const toggle = event.target as CrToggleElement;
 
     this.browserProxy_.setSyncDatatype(
         UserSelectableType.HISTORY, toggle.checked);
@@ -238,7 +249,7 @@ export class SettingsSyncControlsElement extends
    */
   private onSingleSyncDataTypeChanged_(_event?: Event) {
     // <if expr="not is_chromeos">
-    if (this.isAccountSettingsPage_()) {
+    if (this.isAccountSettingsPage_) {
       assert(_event);
 
       const toggle = _event?.target as CrToggleElement;
@@ -260,7 +271,7 @@ export class SettingsSyncControlsElement extends
     // Toggles should be disabled on the account settings page if sync is
     // disabled, or if the sync prefs are undefined, which is the case e.g.
     // right after startup.
-    if (this.isAccountSettingsPage_()) {
+    if (this.isAccountSettingsPage_) {
       return !syncStatus || syncStatus.disabled || !this.syncPrefs ||
           dataTypeManaged;
     }
@@ -275,7 +286,7 @@ export class SettingsSyncControlsElement extends
     // already deactivated. In the sync settings page, the toggles are hidden if
     // sync is disabled (see `syncControlsHidden_()`), so we do not need to
     // specify whether we show the indicator or not.
-    if (this.isAccountSettingsPage_()) {
+    if (this.isAccountSettingsPage_) {
       return !!syncStatus && !syncStatus.disabled && dataTypeManaged;
     }
 
@@ -283,7 +294,7 @@ export class SettingsSyncControlsElement extends
   }
 
   private computeShowSyncDisabledInformation_(syncDisabled: boolean): boolean {
-    return this.isAccountSettingsPage_() && syncDisabled;
+    return this.isAccountSettingsPage_ && syncDisabled;
   }
 
   // <if expr="is_chromeos">
@@ -325,7 +336,7 @@ export class SettingsSyncControlsElement extends
     // state here. However, the controls should be hidden if there is a
     // passphrase error.
     // <if expr="not is_chromeos">
-    if (this.isAccountSettingsPage_()) {
+    if (this.isAccountSettingsPage_) {
       return !!this.syncStatus.hasError ||
           this.syncStatus.statusAction === StatusAction.ENTER_PASSPHRASE;
     }
