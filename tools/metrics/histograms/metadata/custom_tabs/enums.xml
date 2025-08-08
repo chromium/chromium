@@ -157,12 +157,6 @@ chromium-metrics-reviews@google.com.
 
 <!--LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsFeatureUsage.java:CustomTabsFeature) -->
 
-<enum name="CustomTabsMinimizedEvents">
-  <int value="0" label="Minimized into PiP"/>
-  <int value="1" label="Maximized from PiP"/>
-  <int value="2" label="PiP dismissed or destroyed"/>
-</enum>
-
 <enum name="CustomTabsMinimizedFeatureAvailability">
   <int value="0" label="Available"/>
   <int value="1"

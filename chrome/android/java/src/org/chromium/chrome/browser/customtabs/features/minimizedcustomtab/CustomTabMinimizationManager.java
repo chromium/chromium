@@ -253,10 +253,6 @@ public class CustomTabMinimizationManager
             showMinimizedCard(/* fromSavedState= */ false);
             updateTabForMinimization(tab);
             CustomTabsConnection.getInstance().onMinimized(mIntentData.getSession());
-            RecordHistogram.recordEnumeratedHistogram(
-                    "CustomTabs.MinimizedEvents",
-                    MinimizationEvents.MINIMIZE,
-                    MinimizationEvents.COUNT);
         } else {
             mActivity.removeOnPictureInPictureModeChangedListener(this);
             notifyObservers(false);
@@ -265,10 +261,6 @@ public class CustomTabMinimizationManager
             // before destruction. In that case, the state will be CREATED.
             var state = mActivity.getLifecycle().getCurrentState();
             if (state == State.CREATED || state == State.DESTROYED) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        "CustomTabs.MinimizedEvents",
-                        MinimizationEvents.DESTROY,
-                        MinimizationEvents.COUNT);
                 mCloseTabRunnable.run();
                 return;
             }
@@ -276,10 +268,6 @@ public class CustomTabMinimizationManager
             mMinimized = false;
             updateTabForMaximization(tab);
             CustomTabsConnection.getInstance().onUnminimized(mIntentData.getSession());
-            RecordHistogram.recordEnumeratedHistogram(
-                    "CustomTabs.MinimizedEvents",
-                    MinimizationEvents.MAXIMIZE,
-                    MinimizationEvents.COUNT);
         }
     }
 

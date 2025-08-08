@@ -48,7 +48,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -136,10 +135,6 @@ public class CustomTabMinimizationManagerUnitTest {
 
     @Test
     public void testMinimize() {
-        var minimizationEventsWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "CustomTabs.MinimizedEvents",
-                        CustomTabMinimizationManager.MinimizationEvents.MINIMIZE);
         mManager.minimize();
         verify(mActivity).enterPictureInPictureMode(any(PictureInPictureParams.class));
         verify(mFeatureEngagementDelegate).notifyUserEngaged();
@@ -153,9 +148,6 @@ public class CustomTabMinimizationManagerUnitTest {
         verify(mTab).hide(eq(TabHidingType.ACTIVITY_HIDDEN));
         verify(mWebContents).suspendAllMediaPlayers();
         verify(mWebContents).setAudioMuted(eq(true));
-
-        minimizationEventsWatcher.assertExpected(
-                "CustomTabs.MinimizedEvents.MINIMIZE should be recorded once");
 
         assertEquals(TITLE, ((TextView) mActivity.findViewById(R.id.title)).getText());
         assertEquals(HOST, ((TextView) mActivity.findViewById(R.id.url)).getText());
