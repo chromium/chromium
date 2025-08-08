@@ -271,8 +271,9 @@
 
   [sharedDefaults setBool:IsChromeLikelyDefaultBrowser()
                    forKey:app_group::kChromeLikelyDefaultBrowser];
+  NSDate* now = base::Time::Now().ToNSDate();
   [sharedDefaults
-      setObject:[NSDate date]
+      setObject:now
          forKey:app_group::kChromeLikelyDefaultBrowserUpdateTimestamp];
 }
 

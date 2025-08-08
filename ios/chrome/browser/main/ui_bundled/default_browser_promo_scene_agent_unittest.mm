@@ -5,12 +5,15 @@
 #import "ios/chrome/browser/main/ui_bundled/default_browser_promo_scene_agent.h"
 
 #import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
+#import "base/time/time_override.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment/features.h"
@@ -35,6 +38,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -69,9 +73,16 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
  public:
   DefaultBrowserPromoSceneAgentTest() : PlatformTest() {}
 
+  static base::Time NowOverride() { return now_override_; }
+
+  static void SetNowOverride(base::Time now_override) {
+    now_override_ = now_override;
+  }
+
  protected:
   void SetUp() override {
     ClearDefaultBrowserPromoData();
+    ClearSharedUserDefaults();
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -125,6 +136,7 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
     [scene_state_ shutdown];
     scene_state_ = nil;
     ClearDefaultBrowserPromoData();
+    ClearSharedUserDefaults();
     ResetDeviceRestoreDataForTesting();
   }
 
@@ -215,6 +227,13 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
         .Times(1);
   }
 
+  void ClearSharedUserDefaults() {
+    NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
+    [sharedDefaults removeObjectForKey:app_group::kChromeLikelyDefaultBrowser];
+    [sharedDefaults removeObjectForKey:
+                        app_group::kChromeLikelyDefaultBrowserUpdateTimestamp];
+  }
+
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -227,7 +246,10 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
   web::FakeWebState web_state_;
   std::unique_ptr<ReaderModeMetricsHelper> metrics_helper_;
   raw_ptr<dom_distiller::DistilledPagePrefs> distilled_page_prefs_;
+  static base::Time now_override_;
 };
+
+base::Time DefaultBrowserPromoSceneAgentTest::now_override_;
 
 // Tests that DefaultBrowser was registered with the promo manager when user is
 // likely not a default browser user.
@@ -607,4 +629,46 @@ TEST_F(DefaultBrowserPromoSceneAgentTest,
 
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   Mock::VerifyAndClearExpectations(promos_manager_.get());
+}
+
+// Test that the default status is correctly set to true with the right
+// timestamp.
+TEST_F(DefaultBrowserPromoSceneAgentTest, ShareDefaultStatusIsDefault) {
+  scoped_feature_list_.InitAndEnableFeature(kShareDefaultBrowserStatus);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &DefaultBrowserPromoSceneAgentTest::NowOverride, nullptr, nullptr);
+  base::Time now_override = base::Time::FromNSDate([NSDate date]);
+  SetNowOverride(now_override);
+
+  LogOpenHTTPURLFromExternalURL();
+
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
+  EXPECT_TRUE(
+      [sharedDefaults boolForKey:app_group::kChromeLikelyDefaultBrowser]);
+  NSDate* timestamp = [sharedDefaults
+      objectForKey:app_group::kChromeLikelyDefaultBrowserUpdateTimestamp];
+  EXPECT_TRUE(timestamp);
+  EXPECT_EQ(base::Time::FromNSDate(timestamp), now_override);
+}
+
+// Test that the default status is correctly set to false with the right
+// timestamp.
+TEST_F(DefaultBrowserPromoSceneAgentTest, ShareDefaultStatusIsNotDefault) {
+  scoped_feature_list_.InitAndEnableFeature(kShareDefaultBrowserStatus);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &DefaultBrowserPromoSceneAgentTest::NowOverride, nullptr, nullptr);
+  base::Time now_override = base::Time::FromNSDate([NSDate date]);
+  SetNowOverride(now_override);
+
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
+  EXPECT_FALSE(
+      [sharedDefaults boolForKey:app_group::kChromeLikelyDefaultBrowser]);
+  NSDate* timestamp = [sharedDefaults
+      objectForKey:app_group::kChromeLikelyDefaultBrowserUpdateTimestamp];
+  EXPECT_TRUE(timestamp);
+  EXPECT_EQ(base::Time::FromNSDate(timestamp), now_override);
 }
