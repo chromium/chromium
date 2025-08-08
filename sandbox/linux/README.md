@@ -85,4 +85,6 @@ exercising any code paths that could lead to syscalls.
 ## landlock(7)
 
 We currently don't use Landlock, but we'd like to:
-[345514921](https://issues.chromium.org/issues/345514921).
+[Assess landlock(7) for sandboxing](https://issues.chromium.org/issues/345514921)
+and
+[Landlock GPU Policy](https://source.chromium.org/chromium/chromium/src/+/main:sandbox/policy/linux/landlock_gpu_policy_android.cc).
