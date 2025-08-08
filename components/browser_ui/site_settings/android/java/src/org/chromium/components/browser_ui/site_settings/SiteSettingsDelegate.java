@@ -240,6 +240,11 @@ public interface SiteSettingsDelegate {
      */
     boolean isPermissionAutorevocationEnabled();
 
+    /**
+     * @return whether the related website sets UI is enabled.
+     */
+    boolean isRelatedWebsiteSetsUiEnabled();
+
     /** Enable/Disable unused site permission autorevocation. */
     void setPermissionAutorevocationEnabled(boolean isEnabled);
 }

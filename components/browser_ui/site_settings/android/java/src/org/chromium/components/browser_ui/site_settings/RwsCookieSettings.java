@@ -67,7 +67,8 @@ public class RwsCookieSettings extends BaseSiteSettingsFragment
         int pageState = getArguments().getInt(RwsCookieSettings.EXTRA_COOKIE_PAGE_STATE);
         if (pageState == CookieControlsMode.BLOCK_THIRD_PARTY) {
             setupAllowRwsPreference();
-            mAllowRwsPreference.setVisible(true);
+            mAllowRwsPreference.setVisible(
+                    getSiteSettingsDelegate().isRelatedWebsiteSetsUiEnabled());
             mSubtitle.setTitle(
                     R.string.website_settings_category_cookie_block_third_party_subtitle);
             if (getSiteSettingsDelegate().isAlwaysBlock3pcsIncognitoEnabled()) {
