@@ -39,12 +39,20 @@ PipeControlMessageHandler::IsPeerAssociatedEndpointClosedEvent(
   if (message.name() != pipe_control::kRunOrClosePipeMessageId) {
     return std::nullopt;
   }
+  // The APIs to deserialize a mojo::Message need a non-const message, since
+  // they may need to take ownership of things like embedded handles. In this
+  // case we don't want to modify the Message, so only deserialize the payload.
+  // This works since the only messages we're interested in don't contain any
+  // handles.
   pipe_control::RunOrClosePipeMessageParamsPtr params_ptr;
   if (!pipe_control::RunOrClosePipeMessageParams::Deserialize(
           message.payload(), message.payload_num_bytes(), &params_ptr)) {
     return std::nullopt;
   }
-  if (!params_ptr->input->is_peer_associated_endpoint_closed_event()) {
+  // Deserialize will report success for an empty payload, so explicitly check
+  // if we actually deserialized parameters.
+  if (!params_ptr ||
+      !params_ptr->input->is_peer_associated_endpoint_closed_event()) {
     return std::nullopt;
   }
   const auto& event =
