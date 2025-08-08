@@ -249,7 +249,8 @@ void IconManagerWriteGeneratedIcons(
     WebAppIconManager& icon_manager,
     const webapps::AppId& app_id,
     const std::vector<GeneratedIconsInfo>& icons_info) {
-  IconBitmaps icon_bitmaps;
+  IconBitmaps manifest_icon_bitmaps;
+  IconBitmaps trusted_icon_bitmaps;
 
   for (const GeneratedIconsInfo& info : icons_info) {
     DCHECK_EQ(info.sizes_px.size(), info.colors.size());
@@ -259,12 +260,14 @@ void IconManagerWriteGeneratedIcons(
     for (size_t i = 0; i < info.sizes_px.size(); ++i)
       AddGeneratedIcon(&generated_bitmaps, info.sizes_px[i], info.colors[i]);
 
-    icon_bitmaps.SetBitmapsForPurpose(info.purpose,
-                                      std::move(generated_bitmaps));
+    manifest_icon_bitmaps.SetBitmapsForPurpose(info.purpose, generated_bitmaps);
+    trusted_icon_bitmaps.SetBitmapsForPurpose(info.purpose,
+                                              std::move(generated_bitmaps));
   }
 
   base::RunLoop run_loop;
-  icon_manager.WriteData(app_id, std::move(icon_bitmaps), {}, {}, {},
+  icon_manager.WriteData(app_id, std::move(manifest_icon_bitmaps),
+                         std::move(trusted_icon_bitmaps), {}, {},
                          base::BindLambdaForTesting([&](bool success) {
                            DCHECK(success);
                            run_loop.Quit();

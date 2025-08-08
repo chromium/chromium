@@ -88,11 +88,7 @@ class ShortcutSubManagerTestBase : public WebAppTest {
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     info->icon_bitmaps.any = icon_map;
     if (!skip_trusted_icons) {
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-      info->trusted_icon_bitmaps.maskable = icon_map;
-#else
       info->trusted_icon_bitmaps.any = icon_map;
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
     }
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         result;
@@ -287,11 +283,7 @@ class ShortcutSubManagerExecuteTest
     updated_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
     updated_info->icon_bitmaps.any = updated_icons;
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-    updated_info->trusted_icon_bitmaps.maskable = updated_icons;
-#else
     updated_info->trusted_icon_bitmaps.any = updated_icons;
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         update_future;
@@ -313,11 +305,7 @@ class ShortcutSubManagerExecuteTest
     info->title = u"Test App";
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     info->icon_bitmaps.any = icon_map;
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-    info->trusted_icon_bitmaps.maskable = icon_map;
-#else
     info->trusted_icon_bitmaps.any = icon_map;
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         result;
