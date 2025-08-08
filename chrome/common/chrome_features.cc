@@ -737,6 +737,14 @@ BASE_FEATURE(kGlicPanelResetSizeAndLocationOnOpen,
 BASE_FEATURE(kGlicRecordActorJournal,
              "GlicRecordActorJournal",
              base::FEATURE_ENABLED_BY_DEFAULT);
+extern const base::FeatureParam<int> kGlicRecordActorJournalFeedbackProductId{
+    &kGlicRecordActorJournal, "glic-record-actor-journal-feedback-product-id",
+    5320395};
+extern const base::FeatureParam<std::string>
+    kGlicRecordActorJournalFeedbackCategoryTag{
+        &kGlicRecordActorJournal,
+        "glic-record-actor-journal-feedback-category-tag",
+        "gemini_in_chrome_actor_tt_df"};
 
 BASE_FEATURE(kGlicWebClientUnresponsiveMetrics,
              "GlicWebClientUnresponsiveMetrics",

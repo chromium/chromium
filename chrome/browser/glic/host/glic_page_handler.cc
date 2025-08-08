@@ -62,7 +62,6 @@
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/feedback/content/content_tracing_manager.h"
-#include "components/feedback/feedback_constants.h"
 #include "components/feedback/feedback_data.h"
 #include "components/feedback/feedback_uploader.h"
 #include "components/metrics/metrics_service.h"
@@ -417,9 +416,10 @@ class JournalHandler {
     // TODO(b/430054430): Fetch and include system data to the feedback.
     feedback_data->set_description(
         reason + " - " + base::Uuid::GenerateRandomV4().AsLowercaseString());
-    feedback_data->set_product_id(feedback::kGeminiWebProductId);
+    feedback_data->set_product_id(
+        features::kGlicRecordActorJournalFeedbackProductId.Get());
     feedback_data->set_category_tag(
-        std::string(feedback::kGeminiWebJournalCategoryTag));
+        features::kGlicRecordActorJournalFeedbackCategoryTag.Get());
     feedback_data->set_is_offensive_or_unsafe(false);
     feedback_data->AddFile("actor-journal", journal);
 

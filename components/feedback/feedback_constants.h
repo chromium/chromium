@@ -23,10 +23,6 @@ inline constexpr int kLobsterFeedbackProductId = 5342213;
 inline constexpr int kScannerFeedbackProductId = 5349584;
 inline constexpr int kCoralFeedbackProductId = 5352311;
 
-inline constexpr int kGeminiWebProductId = 5295044;
-inline constexpr std::string_view kGeminiWebJournalCategoryTag =
-    "gemini_chrome_journal";
-
 }  // namespace feedback
 
 #endif  // COMPONENTS_FEEDBACK_FEEDBACK_CONSTANTS_H_

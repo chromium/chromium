@@ -426,6 +426,11 @@ BASE_DECLARE_FEATURE(kGlicPanelResetSizeAndLocationOnOpen);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicRecordActorJournal);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int> kGlicRecordActorJournalFeedbackProductId;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string>
+    kGlicRecordActorJournalFeedbackCategoryTag;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicWebClientUnresponsiveMetrics);
