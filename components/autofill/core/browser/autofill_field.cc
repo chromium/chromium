@@ -191,6 +191,10 @@ bool PreferHeuristicOverHtml(FieldType heuristic_type,
 bool PreferHeuristicOverServer(FieldType heuristic_type,
                                FieldType server_type,
                                FieldType password_ml_classification_type) {
+  if (server_type == NO_SERVER_DATA) {
+    return true;
+  }
+
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableEmailOrLoyaltyCardsFilling) &&
       heuristic_type == EMAIL_OR_LOYALTY_MEMBERSHIP_ID &&
@@ -198,15 +202,17 @@ bool PreferHeuristicOverServer(FieldType heuristic_type,
     return true;
   }
 
-  // Until we gain confidence in the precision of AutofillAI predictions, they
-  // should not overrule local heuristics. The kill switch below is meant to
-  // experiment with removing this logic.
   if (base::Contains(kAutofillHeuristicsVsServerOverrides,
-                     std::make_pair(heuristic_type, server_type)) ||
-      (heuristic_type != UNKNOWN_TYPE &&
-       GroupTypeOfFieldType(server_type) == FieldTypeGroup::kAutofillAi &&
-       !base::FeatureList::IsEnabled(
-           features::kAutofillAiPreferModelResponseOverHeuristics))) {
+                     std::make_pair(heuristic_type, server_type))) {
+    return true;
+  }
+
+  // AutofillAI predictions overrule local heuristics unless
+  // kAutofillAiPreferModelResponseOverHeuristics is disabled.
+  if (heuristic_type != UNKNOWN_TYPE &&
+      GroupTypeOfFieldType(server_type) == FieldTypeGroup::kAutofillAi &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillAiPreferModelResponseOverHeuristics)) {
     return true;
   }
 
@@ -215,8 +221,8 @@ bool PreferHeuristicOverServer(FieldType heuristic_type,
   // decision to prefer the heuristics in these cases, but it looks like
   // it might be better to fix this server-side.
   // See http://crbug.com/429236 for background.
-  if ((server_type == NAME_FULL && heuristic_type == CREDIT_CARD_NAME_FULL) ||
-      (server_type == CREDIT_CARD_NAME_FULL && heuristic_type == NAME_FULL) ||
+  if ((server_type == CREDIT_CARD_NAME_FULL && heuristic_type == NAME_FULL) ||
+      (server_type == NAME_FULL && heuristic_type == CREDIT_CARD_NAME_FULL) ||
       (server_type == NAME_FIRST && heuristic_type == CREDIT_CARD_NAME_FIRST) ||
       (server_type == NAME_LAST && heuristic_type == CREDIT_CARD_NAME_LAST)) {
     return true;
@@ -706,8 +712,7 @@ AutofillField::PredictionResult AutofillField::GetComputedPredictionResult()
     return {type, AutofillPredictionSource::kAutocomplete};
   }
 
-  if (server_type_local != NO_SERVER_DATA &&
-      !PreferHeuristicOverServer(heuristic_type_local, server_type_local,
+  if (!PreferHeuristicOverServer(heuristic_type_local, server_type_local,
                                  password_ml_classification_type_local)) {
     return {MakeAutofillType(server_type_local),
             AutofillPredictionSource::kServerCrowdsourcing};
