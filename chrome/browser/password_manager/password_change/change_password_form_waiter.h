@@ -19,33 +19,25 @@ namespace content {
 class WebContents;
 }
 
-// Helper object which waits for form password parsing, invokes callback on
-// completion. Invokes callback with change password form immediately when
-// detected. Login form or empty result is invoked after
-// `kChangePasswordFormWaitingTimeout`. Timeout starts only after the page has
-// finished loading.
-class PasswordFormWaiter : public password_manager::PasswordFormManagerObserver,
-                           public content::WebContentsObserver {
+// Helper object which waits for change password parsing, invokes callback on
+// completion. If form isn't found withing
+// `kChangePasswordFormWaitingTimeout` after WebContents finished loading
+// callback is invoked with nullptr.
+class ChangePasswordFormWaiter
+    : public password_manager::PasswordFormManagerObserver,
+      public content::WebContentsObserver {
  public:
   // Timeout for change password form await time after the page is loaded.
   static constexpr base::TimeDelta kChangePasswordFormWaitingTimeout =
       base::Seconds(2);
+  using PasswordFormFoundCallback =
+      base::OnceCallback<void(password_manager::PasswordFormManager*)>;
 
-  struct Result {
-    raw_ptr<password_manager::PasswordFormManager>
-        change_password_form_manager = nullptr;
-    raw_ptr<password_manager::PasswordFormManager> login_form_manager = nullptr;
+  ChangePasswordFormWaiter(content::WebContents* web_contents,
+                           password_manager::PasswordManagerClient* client,
+                           PasswordFormFoundCallback callback);
 
-    bool operator==(const Result&) const = default;
-  };
-
-  using PasswordFormFoundCallback = base::OnceCallback<void(Result)>;
-
-  PasswordFormWaiter(content::WebContents* web_contents,
-                     password_manager::PasswordManagerClient* client,
-                     PasswordFormFoundCallback callback);
-
-  ~PasswordFormWaiter() override;
+  ~ChangePasswordFormWaiter() override;
 
  private:
   // password_manager::PasswordFormManagerObserver Impl
@@ -62,9 +54,7 @@ class PasswordFormWaiter : public password_manager::PasswordFormManagerObserver,
   const raw_ptr<password_manager::PasswordManagerClient> client_;
   PasswordFormFoundCallback callback_;
 
-  raw_ptr<password_manager::PasswordFormManager> login_form_manager_;
-
-  base::WeakPtrFactory<PasswordFormWaiter> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ChangePasswordFormWaiter> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_CHANGE_PASSWORD_FORM_WAITER_H_

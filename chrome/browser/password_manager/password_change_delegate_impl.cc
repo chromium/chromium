@@ -15,6 +15,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_filling_submission_helper.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_finder.h"
+#include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/cross_origin_navigation_observer.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change/otp_detection_helper.h"
@@ -247,10 +248,8 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
           weak_ptr_factory_.GetWeakPtr()));
   logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(executor_.get());
   form_finder_ = std::make_unique<ChangePasswordFormFinder>(
-      executor_.get(), client, logs_uploader_.get(), change_password_url_,
+      executor_.get(), client, logs_uploader_.get(),
       base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormFound,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&PasswordChangeDelegateImpl::OnLoginFormFound,
                      weak_ptr_factory_.GetWeakPtr()));
   otp_observation_.Observe(client->GetOtpManager());
 }
@@ -302,10 +301,6 @@ void PasswordChangeDelegateImpl::OnPasswordChangeFormFound(
   submission_verifier_->FillChangePasswordForm(
       form_manager, username_, original_password_, generated_password_);
   UpdateState(State::kChangingPassword);
-}
-
-void PasswordChangeDelegateImpl::OnLoginFormFound() {
-  UpdateState(State::kLoginFormDetected);
 }
 
 void PasswordChangeDelegateImpl::OnTabWillDetach(
