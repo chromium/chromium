@@ -2523,15 +2523,25 @@ BrowserAccessibilityAndroid::ComputeAndroidNameTo() const {
     return name_to_cache_.value();
   }
 
+  ax::mojom::NameFrom name_from = GetNameFrom();
+  const bool is_from_attribute_or_css =
+      name_from == ax::mojom::NameFrom::kAttribute ||
+      name_from == ax::mojom::NameFrom::kCssAltText;
+
   // 1. If the accessible name comes from the node's content (e.g., inner text)
   //    and not a specific attribute (like aria-label), it's considered part of
   //    the main text.
   // TODO(accessibility): Revisit the logic of mapping attributes to text. For
   // example, relatedElement's name may not be appropriate for the text property
   // and needs to be fixed.
-  if (!HasIntAttribute(ax::mojom::IntAttribute::kNameFrom) ||
-      GetNameFrom() != ax::mojom::NameFrom::kAttribute) {
+  if (!is_from_attribute_or_css) {
     name_to_cache_ = AndroidNameTo::kText;
+    return name_to_cache_.value();
+  }
+
+  // Handle kCssAltText as a special case.
+  if (name_from == ax::mojom::NameFrom::kCssAltText) {
+    name_to_cache_ = AndroidNameTo::kContentDescription;
     return name_to_cache_.value();
   }
 
