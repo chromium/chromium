@@ -113,6 +113,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   AppLaunchConfiguration config;
   config.features_enabled_and_params.push_back(
       {kExplainGeminiEditMenu, {{{kExplainGeminiEditMenuParams, "2"}}}});
+  config.features_enabled_and_params.push_back(
+      {kBWGPromoConsent, {{{kBWGPromoConsentParams, "3"}}}});
   if ([self
           isRunningTest:@selector(MAYBE_testExplainWithGeminiInReadingMode)]) {
     config.features_enabled_and_params.push_back({kEnableReaderMode, {}});
