@@ -16,6 +16,7 @@
 #include "components/omnibox/browser/location_bar_model_delegate.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_window_delegate.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 struct NavigateParams;
 
@@ -40,6 +41,7 @@ class TabModelObserver;
 // with Android's Tabs and Tab Model.
 class TabModel : public TabListInterface {
  public:
+  DECLARE_USER_DATA(TabModel);
   // LINT.IfChange(TabLaunchType)
   // Various ways tabs can be launched.
   // Values must be numbered from 0 and can't have gaps.

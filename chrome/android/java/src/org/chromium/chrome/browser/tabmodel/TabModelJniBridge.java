@@ -51,6 +51,9 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     /** Native TabModelJniBridge pointer, which will be set by {@link #initializeNative()}. */
     private long mNativeTabModelJniBridge;
 
+    /** Native AndroidBrowserWindow pointer. */
+    private long mNativeAndroidBrowserWindow;
+
     /**
      * @param profile The profile this TabModel belongs to.
      */
@@ -117,6 +120,17 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @Override
     public Profile getProfile() {
         return mProfile;
+    }
+
+    @Override
+    public void associateWithBrowserWindow(long nativeAndroidBrowserWindow) {
+        // Ensure this isn't set multiple times.
+        assert mNativeAndroidBrowserWindow == 0;
+        mNativeAndroidBrowserWindow = nativeAndroidBrowserWindow;
+
+        assert nativeAndroidBrowserWindow != 0;
+        TabModelJniBridgeJni.get()
+                .associateWithBrowserWindow(mNativeTabModelJniBridge, nativeAndroidBrowserWindow);
     }
 
     @CalledByNative
@@ -530,5 +544,8 @@ public abstract class TabModelJniBridge implements TabModelInternal {
 
         void duplicateTabForTesting( // IN-TEST
                 long nativeTabModelJniBridge, @JniType("TabAndroid*") Tab tab);
+
+        void associateWithBrowserWindow(
+                long nativeTabModelJniBridge, long nativeAndroidBrowserWindow);
     }
 }

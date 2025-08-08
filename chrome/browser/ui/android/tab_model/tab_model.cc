@@ -13,9 +13,11 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 using chrome::android::ActivityType;
 
@@ -31,6 +33,8 @@ sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate(Profile* profile) {
   return service->GetOpenTabsUIDelegate();
 }
 }  // namespace
+
+DEFINE_USER_DATA(TabModel);
 
 TabModel::TabModel(Profile* profile, ActivityType activity_type)
     : profile_(profile),
@@ -133,8 +137,6 @@ void TabModel::RecordActualSyncedTabsHistogram() {
 // From //chrome/browser/ui/tabs/tab_list_interface.h
 TabListInterface* TabListInterface::From(
     BrowserWindowInterface* browser_window_interface) {
-  // TODO(https://crbug.com/415961057): Implement this once AndroidBrowserWindow
-  // has a get-able UnownedUserDataHost.
-  NOTIMPLEMENTED();
-  return nullptr;
+  return ui::ScopedUnownedUserData<TabModel>::Get(
+      browser_window_interface->GetUnownedUserDataHost());
 }

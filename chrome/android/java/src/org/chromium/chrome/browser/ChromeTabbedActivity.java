@@ -1246,6 +1246,11 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
             var chromeAndroidTask = chromeAndroidTaskTracker.obtainTask(activityWindowAndroid);
 
+            mTabModelSelector
+                    .getCurrentModel()
+                    .associateWithBrowserWindow(
+                            chromeAndroidTask.getOrCreateNativeBrowserWindowPtr());
+
             var extensionWindowControllerBridge =
                     ExtensionWindowControllerBridgeFactory.create(chromeAndroidTask);
             if (extensionWindowControllerBridge == null) {

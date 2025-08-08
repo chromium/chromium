@@ -25,6 +25,14 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
     /** Returns the profile associated with the current model. */
     @Nullable Profile getProfile();
 
+    /**
+     * Associates this tab model with a browser window. This should be called shortly after startup
+     * to associate the tab model with a AndroidBrowserWindow.
+     *
+     * @param nativeAndroidBrowserWindow The native AndroidBrowserWindow pointer.
+     */
+    void associateWithBrowserWindow(long nativeAndroidBrowserWindow);
+
     /** Returns the matching tab that has the given id, or null if there is none. */
     @Nullable Tab getTabById(@TabId int tabId);
 

@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <utility>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -22,8 +24,10 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer_jni_bridge.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/resource_request_body_android.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/android/gurl_android.h"
 
@@ -75,6 +79,16 @@ TabModelJniBridge::TabModelJniBridge(JNIEnv* env,
 
 void TabModelJniBridge::Destroy(JNIEnv* env) {
   delete this;
+}
+
+void TabModelJniBridge::AssociateWithBrowserWindow(
+    JNIEnv* env,
+    long native_android_browser_window) {
+  BrowserWindowInterface* android_browser_window =
+      reinterpret_cast<BrowserWindowInterface*>(native_android_browser_window);
+  scoped_unowned_user_data_ =
+      std::make_unique<ui::ScopedUnownedUserData<TabModel>>(
+          android_browser_window->GetUnownedUserDataHost(), *this);
 }
 
 void TabModelJniBridge::TabAddedToModel(JNIEnv* env,

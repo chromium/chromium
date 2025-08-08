@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
 
 class TabAndroid;
@@ -44,10 +45,9 @@ class TabModelJniBridge : public TabModel {
 
   ~TabModelJniBridge() override;
 
-  // Called by JNI
+  void AssociateWithBrowserWindow(JNIEnv* env,
+                                  long native_android_browser_window);
   void TabAddedToModel(JNIEnv* env, TabAndroid* tab);
-
-  // Called by JNI
   void DuplicateTabForTesting(JNIEnv* env, TabAndroid* tab);
 
   // TabModel::
@@ -131,6 +131,10 @@ class TabModelJniBridge : public TabModel {
   std::unique_ptr<TabModelObserverJniBridge> observer_bridge_;
 
   bool is_archived_tab_model_;
+  // Cannot use a conventional member variable because this is initialized after
+  // the constructor.
+  std::unique_ptr<ui::ScopedUnownedUserData<TabModel>>
+      scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_JNI_BRIDGE_H_

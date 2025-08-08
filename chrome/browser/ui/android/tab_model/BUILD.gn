@@ -27,6 +27,7 @@ source_set("tab_model") {
     "//components/sync_sessions",
     "//components/tab_groups",
     "//components/tabs:public",
+    "//ui/base/unowned_user_data",
     "//url",
   ]
 }
@@ -54,6 +55,7 @@ source_set("impl") {
     "//chrome/browser/sessions",
     "//chrome/browser/sync",
     "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/browser_window",
     "//content/public/browser",
     "//content/public/common",
     "//ui/base:types",
