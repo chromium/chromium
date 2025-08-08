@@ -128,7 +128,7 @@ class SoftwareImageDecodeCacheUtils {
   class CC_EXPORT CacheEntry {
    public:
     CacheEntry();
-    CacheEntry(const SkImageInfo& info,
+    CacheEntry(sk_sp<SkImage> image,
                std::unique_ptr<base::DiscardableMemory> memory,
                const SkSize& src_rect_offset);
     ~CacheEntry();
@@ -170,7 +170,6 @@ class SoftwareImageDecodeCacheUtils {
     std::unique_ptr<base::DiscardableMemory> memory;
 
    private:
-    SkImageInfo image_info_;
     sk_sp<SkImage> image_;
     SkSize src_rect_offset_;
     uint64_t tracing_id_;
