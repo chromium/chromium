@@ -4245,6 +4245,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_OVERSCROLL_RELOAD_LABEL" desc="The text to use for the tooltip for the overscroll reload action. [Length: 20em] [iOS only]">
         Reload
       </message>
+      <message name="IDS_IOS_PAGE_ACTION_MENU_TITLE" desc="The title of the page action menu.">
+        Page tools
+      </message>
       <message name="IDS_IOS_PAGE_INFO_ABOUT_THIS_PAGE" desc="Title of the button opening the About This Page (in page info)">
         About this page
       </message>

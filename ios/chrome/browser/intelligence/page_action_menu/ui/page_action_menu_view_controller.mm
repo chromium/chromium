@@ -246,6 +246,8 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
   [appearance configureWithTransparentBackground];
   navigationBar.standardAppearance = appearance;
 
+  self.title = l10n_util::GetNSString(IDS_IOS_PAGE_ACTION_MENU_TITLE);
+
   // Add the dismiss button.
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemClose
