@@ -40,6 +40,8 @@ source_set("permissions") {
     "permission_revocation_request.h",
     "prediction_service/language_detection_observer.cc",
     "prediction_service/language_detection_observer.h",
+    "prediction_service/passage_embedder_delegate.cc",
+    "prediction_service/passage_embedder_delegate.h",
     "prediction_service/permissions_aiv1_handler.cc",
     "prediction_service/permissions_aiv1_handler.h",
     "prediction_service/prediction_based_permission_ui_selector.cc",
