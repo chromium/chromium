@@ -465,9 +465,9 @@ class PDFiumEngine : public DocumentLoader::Client,
   // `point` must be in device coordinates. Virtual to support testing.
   virtual bool ExtendSelectionByPoint(const gfx::PointF& point);
 
-  // Returns all current text selection rects in screen coordinates. Virtual to
-  // support testing.
-  virtual std::vector<gfx::Rect> GetSelectionRects();
+  // Returns all current text selection rects in screen coordinates, indexed by
+  // their page indices. Virtual to support testing.
+  virtual std::map<int, std::vector<gfx::Rect>> GetSelectionRectMap();
 
   // Returns whether `point` is within a selectable text area or within a link
   // area, excluding form fields. `point` must be in device coordinates. Virtual

@@ -1115,14 +1115,14 @@ PdfInkModule::GetTextSelectionHighlightStrokeData(
 std::map<int, std::vector<ink::Stroke>>
 PdfInkModule::GetTextSelectionAsStrokes() {
   std::map<int, std::vector<ink::Stroke>> result;
-  for (const gfx::Rect& selection_rect : client_->GetSelectionRects()) {
-    int page_index =
-        client_->PageIndexFromPoint(gfx::PointF(selection_rect.origin()));
-    // A selection rect's origin should always be on a page.
-    CHECK_GE(page_index, 0);
-
-    result[page_index].push_back(
-        {GetHighlightStrokeFromSelectionRect(selection_rect)});
+  for (const auto& [page_index, selection_rects] :
+       client_->GetSelectionRectMap()) {
+    auto& page_result = result[page_index];
+    page_result.reserve(selection_rects.size());
+    for (const auto& selection_rect : selection_rects) {
+      page_result.push_back(
+          {GetHighlightStrokeFromSelectionRect(selection_rect)});
+    }
   }
   return result;
 }

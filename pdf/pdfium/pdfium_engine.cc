@@ -4739,15 +4739,16 @@ bool PDFiumEngine::ExtendSelectionByPoint(const gfx::PointF& point) {
   return ExtendSelection(point_data.page_index, point_data.char_index);
 }
 
-std::vector<gfx::Rect> PDFiumEngine::GetSelectionRects() {
-  std::vector<gfx::Rect> selection_rects;
+std::map<int, std::vector<gfx::Rect>> PDFiumEngine::GetSelectionRectMap() {
+  std::map<int, std::vector<gfx::Rect>> results;
   for (auto& selection : selection_) {
+    auto& page_results = results[selection.page_index()];
     std::vector<gfx::Rect> screen_rects = selection.GetScreenRects(
         GetVisibleRect().origin(), current_zoom_, GetCurrentOrientation());
-    selection_rects.insert(selection_rects.end(), screen_rects.begin(),
-                           screen_rects.end());
+    page_results.insert(page_results.end(), screen_rects.begin(),
+                        screen_rects.end());
   }
-  return selection_rects;
+  return results;
 }
 
 bool PDFiumEngine::IsSelectableTextOrLinkArea(const gfx::PointF& point) {

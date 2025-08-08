@@ -6,6 +6,7 @@
 #define PDF_PDF_INK_MODULE_CLIENT_H_
 
 #include <map>
+#include <vector>
 
 #include "pdf/buildflags.h"
 #include "pdf/page_orientation.h"
@@ -43,6 +44,10 @@ class PdfInkModuleClient {
   // Value: Map of shapes on the page.
   using DocumentV2InkPathShapesMap = std::map<int, PageV2InkPathShapesMap>;
 
+  // Key: 0-based page index.
+  // Value: Selections on the page, in device coordinates.
+  using SelectionRectMap = std::map<int, std::vector<gfx::Rect>>;
+
   virtual ~PdfInkModuleClient() = default;
 
   // Notifies the client to clear the current text selection.
@@ -72,7 +77,7 @@ class PdfInkModuleClient {
   virtual gfx::SizeF GetPageSizeInPoints(int page_index) = 0;
 
   // Returns all current text selection rects in device coordinates.
-  virtual std::vector<gfx::Rect> GetSelectionRects() = 0;
+  virtual SelectionRectMap GetSelectionRectMap() = 0;
 
   // Gets the thumbnail size for `page_index`. The size must be non-empty for
   // any valid page index.

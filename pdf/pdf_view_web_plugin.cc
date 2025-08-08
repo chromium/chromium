@@ -335,10 +335,10 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     return plugin_->engine_->GetPageSizeInPoints(page_index).value();
   }
 
-  std::vector<gfx::Rect> GetSelectionRects() override {
+  PdfInkModuleClient::SelectionRectMap GetSelectionRectMap() override {
     // Screen coordinates in PDFiumEngine is equivalent to device coordinates in
     // PdfInkModuleClient.
-    return plugin_->engine_->GetSelectionRects();
+    return plugin_->engine_->GetSelectionRectMap();
   }
 
   gfx::Size GetThumbnailSize(int page_index) override {

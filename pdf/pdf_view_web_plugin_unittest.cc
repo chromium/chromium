@@ -3125,12 +3125,13 @@ TEST_P(PdfViewWebPluginInkTest, GetPageSizeInPoints) {
                 /*page_index=*/0));
 }
 
-TEST_P(PdfViewWebPluginInkTest, GetSelectionRects) {
-  const std::vector<gfx::Rect> selection_rects = {gfx::Rect(10, 20, 30, 40)};
-  ON_CALL(*engine_ptr_, GetSelectionRects)
-      .WillByDefault(Return(selection_rects));
-  EXPECT_THAT(plugin_->ink_module_client_for_testing()->GetSelectionRects(),
-              ElementsAre(gfx::Rect(10, 20, 30, 40)));
+TEST_P(PdfViewWebPluginInkTest, GetSelectionRectMap) {
+  static constexpr gfx::Rect kRect(10, 20, 30, 40);
+  PdfInkModuleClient::SelectionRectMap selection_map{{0, {kRect}}};
+  ON_CALL(*engine_ptr_, GetSelectionRectMap)
+      .WillByDefault(Return(selection_map));
+  EXPECT_THAT(plugin_->ink_module_client_for_testing()->GetSelectionRectMap(),
+              ElementsAre(Pair(0, ElementsAre(kRect))));
 }
 
 TEST_P(PdfViewWebPluginInkTest, GetThumbnailSize) {
@@ -3342,9 +3343,10 @@ class PdfViewWebPluginInkTextHighlightTest : public PdfViewWebPluginInkTest {
                 OnTextOrLinkAreaClick(gfx::PointF(5.0f, 60.0f), 1));
     EXPECT_CALL(*engine_ptr_,
                 ExtendSelectionByPoint(gfx::PointF(25.0f, 65.0f)));
-    std::vector<gfx::Rect> mock_selection_rects = {gfx::Rect(5, 60, 20, 5)};
-    ON_CALL(*engine_ptr_, GetSelectionRects())
-        .WillByDefault(Return(mock_selection_rects));
+    PdfInkModuleClient::SelectionRectMap mock_selection_rect_map{
+        {0, {gfx::Rect(5, 60, 20, 5)}}};
+    ON_CALL(*engine_ptr_, GetSelectionRectMap())
+        .WillByDefault(Return(mock_selection_rect_map));
     ON_CALL(*engine_ptr_, IsSelectableTextOrLinkArea(_))
         .WillByDefault(Return(true));
   }

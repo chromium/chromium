@@ -74,6 +74,7 @@ using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
+using ::testing::Pair;
 using ::testing::Return;
 using ::testing::StrictMock;
 
@@ -2222,7 +2223,7 @@ TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByPoint) {
   engine->PluginSizeUpdated({1024, 4096});
 
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-  EXPECT_THAT(engine->GetSelectionRects(), IsEmpty());
+  EXPECT_THAT(engine->GetSelectionRectMap(), IsEmpty());
 
   engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/1);
 
@@ -2237,7 +2238,8 @@ TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByPoint) {
 #else
   constexpr gfx::Rect kExpectedRect{32, 116, 64, 26};
 #endif  // BUILDFLAG(IS_WIN)
-  EXPECT_THAT(engine->GetSelectionRects(), ElementsAre(kExpectedRect));
+  EXPECT_THAT(engine->GetSelectionRectMap(),
+              ElementsAre(Pair(0, ElementsAre(kExpectedRect))));
 }
 
 TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByPointMultiPage) {
@@ -2250,7 +2252,7 @@ TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByPointMultiPage) {
   engine->PluginSizeUpdated({1024, 4096});
 
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-  EXPECT_THAT(engine->GetSelectionRects(), IsEmpty());
+  EXPECT_THAT(engine->GetSelectionRectMap(), IsEmpty());
 
   engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/1);
 
@@ -2271,8 +2273,9 @@ TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByPointMultiPage) {
 #else
   constexpr gfx::Rect kExpectedRectPage1{32, 468, 40, 19};
 #endif  // BUILDFLAG(IS_WIN)
-  EXPECT_THAT(engine->GetSelectionRects(),
-              ElementsAre(kGoodbyeWorldExpectedRectPage0, kExpectedRectPage1));
+  EXPECT_THAT(engine->GetSelectionRectMap(),
+              ElementsAre(Pair(0, ElementsAre(kGoodbyeWorldExpectedRectPage0)),
+                          Pair(1, ElementsAre(kExpectedRectPage1))));
 }
 
 TEST_P(PDFiumEngineInkTextSelectionTest, OnTextOrLinkAreaClickWithDoubleClick) {
@@ -2285,7 +2288,7 @@ TEST_P(PDFiumEngineInkTextSelectionTest, OnTextOrLinkAreaClickWithDoubleClick) {
   engine->PluginSizeUpdated({1024, 4096});
 
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-  EXPECT_THAT(engine->GetSelectionRects(), IsEmpty());
+  EXPECT_THAT(engine->GetSelectionRectMap(), IsEmpty());
 
   engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/2);
 
@@ -2297,7 +2300,8 @@ TEST_P(PDFiumEngineInkTextSelectionTest, OnTextOrLinkAreaClickWithDoubleClick) {
 #else
   constexpr gfx::Rect kExpectedRect{32, 116, 87, 26};
 #endif  // BUILDFLAG(IS_WIN)
-  EXPECT_THAT(engine->GetSelectionRects(), ElementsAre(kExpectedRect));
+  EXPECT_THAT(engine->GetSelectionRectMap(),
+              ElementsAre(Pair(0, ElementsAre(kExpectedRect))));
 }
 
 TEST_P(PDFiumEngineInkTextSelectionTest, IsSelectableTextOrLinkAreaText) {
@@ -2342,13 +2346,14 @@ TEST_P(PDFiumEngineInkTextSelectionTest, OnTextOrLinkAreaClickWithTripleClick) {
   engine->PluginSizeUpdated({1024, 4096});
 
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-  EXPECT_THAT(engine->GetSelectionRects(), IsEmpty());
+  EXPECT_THAT(engine->GetSelectionRectMap(), IsEmpty());
 
   engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/3);
 
   EXPECT_EQ("Goodbye, world!", engine->GetSelectedText());
-  EXPECT_THAT(engine->GetSelectionRects(),
-              ElementsAre(kGoodbyeWorldExpectedRectPage0));
+  EXPECT_THAT(
+      engine->GetSelectionRectMap(),
+      ElementsAre(Pair(0, ElementsAre(kGoodbyeWorldExpectedRectPage0))));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

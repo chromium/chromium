@@ -139,7 +139,10 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(bool, ExtendSelectionByPoint, (const gfx::PointF&), (override));
 
-  MOCK_METHOD(std::vector<gfx::Rect>, GetSelectionRects, (), (override));
+  MOCK_METHOD((std::map<int, std::vector<gfx::Rect>>),
+              GetSelectionRectMap,
+              (),
+              (override));
 
   MOCK_METHOD(bool,
               IsSelectableTextOrLinkArea,
