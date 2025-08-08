@@ -42,6 +42,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -72,7 +73,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "extensions/browser/api/management/management_api.h"
 #endif
 
@@ -960,15 +960,9 @@ void WebstorePrivateBeginInstallWithManifest3Function::
     return;
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   ShowExtensionInstallBlockedDialog(extension->id(), extension->name(),
                                     blocked_by_policy_error_message_, image,
                                     contents, std::move(done_callback));
-#else
-  LOG(ERROR) << "Install blocked. Dialog not supported on Android. Extension: "
-             << extension->name()
-             << ", message: " << blocked_by_policy_error_message_;
-#endif
 }
 
 WebstorePrivateCompleteInstallFunction::
