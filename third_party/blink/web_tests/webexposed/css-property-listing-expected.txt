@@ -217,7 +217,7 @@ All changes to this list should go through Blink's feature review process: http:
     font-variation-settings
     font-weight
     forced-color-adjust
-    gap-rule-paint-order
+    gap-rule-overlap
     grid-auto-columns
     grid-auto-flow
     grid-auto-rows

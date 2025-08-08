@@ -232,7 +232,7 @@ fontVariationSettings
 fontWeight
 forcedColorAdjust
 gap
-gapRulePaintOrder
+gapRuleOverlap
 getPropertyPriority
 getPropertyValue
 grid

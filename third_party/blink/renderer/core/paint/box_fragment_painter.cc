@@ -1414,11 +1414,11 @@ void BoxFragmentPainter::PaintGapDecorations(
   DrawingRecorder recorder(final_paint_info->context, *background_client,
                            DisplayItem::kColumnRules, visual_rect);
 
-  EGapRulePaintOrder paint_order = box_fragment_.Style().GapRulePaintOrder();
-  // `gap-rule-paint-order` dictates whether to paint the columns over the
+  EGapRuleOverlap paint_order = box_fragment_.Style().GapRuleOverlap();
+  // `gap-rule-overlap` dictates whether to paint the columns over the
   // rows, or the rows over the columns. The default is to paint the rows over
   // the columns.
-  if (paint_order == EGapRulePaintOrder::kColumnOverRow) {
+  if (paint_order == EGapRuleOverlap::kColumnOverRow) {
     PaintGaps(kForRows, *final_paint_info, paint_rect, *gap_geometry);
     PaintGaps(kForColumns, *final_paint_info, paint_rect, *gap_geometry);
     return;

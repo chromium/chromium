@@ -903,7 +903,7 @@ enum CSSSampleId {
     kCornerShape = 842,
     kScrollTargetGroup = 843,
     kRowRuleStyle = 844,
-    kGapRulePaintOrder = 845,
+    kGapRuleOverlap = 845,
     kRowRuleWidth = 846,
     kRowRuleColor = 847,
     kPrintColorAdjust = 848,

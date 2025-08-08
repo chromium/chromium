@@ -8348,12 +8348,12 @@ const CSSValue* RowGap::CSSValueFromComputedStyleInternal(
   return ComputedStyleUtils::ValueForGapLength(style.RowGap(), style);
 }
 
-const CSSValue* GapRulePaintOrder::CSSValueFromComputedStyleInternal(
+const CSSValue* GapRuleOverlap::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return CSSIdentifierValue::Create(style.GapRulePaintOrder());
+  return CSSIdentifierValue::Create(style.GapRuleOverlap());
 }
 
 const CSSValue* Rx::ParseSingleValue(CSSParserTokenStream& stream,
