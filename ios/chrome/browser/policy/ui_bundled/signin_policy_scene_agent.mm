@@ -202,7 +202,9 @@
   }
   // Skip prompting to sign-in when there is already a primary account
   // signed in.
-  return !authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(self.mainBrowser->GetProfile());
+  return !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 // Handle the policy sign-in prompts if the scene UI is available to show

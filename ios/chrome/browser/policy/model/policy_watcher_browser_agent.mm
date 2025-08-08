@@ -19,6 +19,7 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/base/pref_names.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
@@ -30,6 +31,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/thread/web_task_traits.h"
 
 PolicyWatcherBrowserAgent::PolicyWatcherBrowserAgent(Browser* browser)
@@ -54,6 +56,10 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
   DCHECK(!handler_);
   DCHECK(handler);
   handler_ = handler;
+
+  identity_manager_ =
+      IdentityManagerFactory::GetForProfile(browser_->GetProfile());
+  CHECK(identity_manager_);
 
   auth_service_ =
       AuthenticationServiceFactory::GetForProfile(browser_->GetProfile());
@@ -108,7 +114,7 @@ void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
     for (auto& observer : observers_) {
       observer.OnSignInDisallowed(this);
     }
-    if (auth_service_->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
       sign_out_in_progress_ = true;
       base::UmaHistogramBoolean("Enterprise.BrowserSigninIOS.SignedOutByPolicy",
                                 true);
