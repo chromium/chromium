@@ -426,6 +426,10 @@ public class AutofillProfile {
                 || getRecordType() == RecordType.ACCOUNT_WORK;
     }
 
+    public boolean isNameEmailProfile() {
+        return getRecordType() == RecordType.ACCOUNT_NAME_EMAIL;
+    }
+
     /** Used by ArrayAdapter in credit card settings. */
     @Override
     public @Nullable String toString() {

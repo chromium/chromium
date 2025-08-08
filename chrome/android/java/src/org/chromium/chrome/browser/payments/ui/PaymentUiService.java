@@ -1188,6 +1188,11 @@ public class PaymentUiService
                 PersonalDataManagerFactory.getForProfile(Profile.fromWebContents(mWebContents));
         for (int i = 0; i < mAutofillProfiles.size(); i++) {
             AutofillProfile profile = mAutofillProfiles.get(i);
+            // We intentionally hide Home, Work and Name+Email profiles to prevent their potential
+            // editing.
+            if (profile.isHomeOrWorkProfile() || profile.isNameEmailProfile()) {
+                continue;
+            }
             mAddressEditor.addPhoneNumberIfValid(
                     profile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER));
 
