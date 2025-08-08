@@ -5,6 +5,8 @@
 #include "services/on_device_model/android/model_downloader_android.h"
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
+#include "base/types/expected.h"
 #include "services/on_device_model/android/on_device_model_bridge.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -31,26 +33,37 @@ void ModelDownloaderAndroid::StartDownload(
       env, java_downloader_, reinterpret_cast<intptr_t>(this));
 }
 
-void ModelDownloaderAndroid::OnAvailable() {
-  std::move(on_download_complete_callback_).Run(true);
+void ModelDownloaderAndroid::OnAvailable(
+    const std::string& base_model_name,
+    const std::string& base_model_version) {
+  std::move(on_download_complete_callback_)
+      .Run(BaseModelSpec{.name = base_model_name,
+                         .version = base_model_version});
 }
 
-void ModelDownloaderAndroid::OnUnavailable() {
-  std::move(on_download_complete_callback_).Run(false);
+void ModelDownloaderAndroid::OnUnavailable(
+    DownloadFailureReason failure_reason) {
+  std::move(on_download_complete_callback_)
+      .Run(base::unexpected(failure_reason));
 }
 
 void JNI_AiCoreModelDownloaderWrapper_OnAvailable(
     JNIEnv* env,
-    jlong model_downloader_android) {
+    jlong model_downloader_android,
+    const jni_zero::JavaParamRef<jstring>& j_name,
+    const jni_zero::JavaParamRef<jstring>& j_version) {
   reinterpret_cast<ModelDownloaderAndroid*>(model_downloader_android)
-      ->OnAvailable();
+      ->OnAvailable(base::android::ConvertJavaStringToUTF8(env, j_name),
+                    base::android::ConvertJavaStringToUTF8(env, j_version));
 }
 
 void JNI_AiCoreModelDownloaderWrapper_OnUnavailable(
     JNIEnv* env,
-    jlong model_downloader_android) {
+    jlong model_downloader_android,
+    jint j_reason) {
   reinterpret_cast<ModelDownloaderAndroid*>(model_downloader_android)
-      ->OnUnavailable();
+      ->OnUnavailable(
+          static_cast<ModelDownloaderAndroid::DownloadFailureReason>(j_reason));
 }
 
 }  // namespace on_device_model

@@ -8,6 +8,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "services/on_device_model/android/backend_session_impl_android.h"
+#include "services/on_device_model/android/model_downloader_android.h"
 
 namespace on_device_model {
 
@@ -31,8 +32,10 @@ class OnDeviceModelBridgeNativeUnitTestHelper {
   void SetCompleteAsync();
   void ResumeOnCompleteCallback();
 
-  void TriggerDownloaderOnUnavailable();
-  void TriggerDownloaderOnAvailable();
+  void TriggerDownloaderOnUnavailable(
+      ModelDownloaderAndroid::DownloadFailureReason reason);
+  void TriggerDownloaderOnAvailable(const std::string& name,
+                                    const std::string& version);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_helper_;

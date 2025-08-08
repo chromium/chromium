@@ -4,7 +4,6 @@
 
 #include "services/on_device_model/android/model_downloader_android.h"
 
-#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -13,6 +12,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace on_device_model {
+
+using DownloadFailureReason = ModelDownloaderAndroid::DownloadFailureReason;
+using BaseModelSpec = ModelDownloaderAndroid::BaseModelSpec;
+
 namespace {
 
 constexpr optimization_guide::proto::ModelExecutionFeature kFeature =
@@ -30,33 +33,39 @@ class ModelDownloaderAndroidTest : public testing::Test {
 };
 
 TEST_F(ModelDownloaderAndroidTest, DefaultDownloader) {
-  base::MockCallback<ModelDownloaderAndroid::OnDownloadCompleteCallback>
-      on_download_complete_callback;
-  EXPECT_CALL(on_download_complete_callback, Run(false)).Times(1);
+  base::test::TestFuture<base::expected<BaseModelSpec, DownloadFailureReason>>
+      future;
   auto downloader = std::make_unique<ModelDownloaderAndroid>(kFeature);
-  downloader->StartDownload(on_download_complete_callback.Get());
+  downloader->StartDownload(future.GetCallback());
+  EXPECT_EQ(future.Get(),
+            base::unexpected(DownloadFailureReason::kApiNotAvailable));
 }
 
 TEST_F(ModelDownloaderAndroidTest, DownloadAvailable) {
   java_helper_.SetMockAiCoreFactory();
 
-  base::MockCallback<ModelDownloaderAndroid::OnDownloadCompleteCallback>
-      on_download_complete_callback;
-  EXPECT_CALL(on_download_complete_callback, Run(true)).Times(1);
+  base::test::TestFuture<base::expected<BaseModelSpec, DownloadFailureReason>>
+      future;
   auto downloader = std::make_unique<ModelDownloaderAndroid>(kFeature);
-  downloader->StartDownload(on_download_complete_callback.Get());
-  java_helper_.TriggerDownloaderOnAvailable();
+  downloader->StartDownload(future.GetCallback());
+  java_helper_.TriggerDownloaderOnAvailable("test_model", "123");
+  auto result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->name, "test_model");
+  EXPECT_EQ(result->version, "123");
 }
 
 TEST_F(ModelDownloaderAndroidTest, DownloadUnavailable) {
   java_helper_.SetMockAiCoreFactory();
 
-  base::MockCallback<ModelDownloaderAndroid::OnDownloadCompleteCallback>
-      on_download_complete_callback;
-  EXPECT_CALL(on_download_complete_callback, Run(false)).Times(1);
+  base::test::TestFuture<base::expected<BaseModelSpec, DownloadFailureReason>>
+      future;
   auto downloader = std::make_unique<ModelDownloaderAndroid>(kFeature);
-  downloader->StartDownload(on_download_complete_callback.Get());
-  java_helper_.TriggerDownloaderOnUnavailable();
+  downloader->StartDownload(future.GetCallback());
+  java_helper_.TriggerDownloaderOnUnavailable(
+      DownloadFailureReason::kUnknownError);
+  EXPECT_EQ(future.Get(),
+            base::unexpected(DownloadFailureReason::kUnknownError));
 }
 
 TEST_F(ModelDownloaderAndroidTest, NativeDownloaderDeletionIsSafe) {
@@ -67,7 +76,7 @@ TEST_F(ModelDownloaderAndroidTest, NativeDownloaderDeletionIsSafe) {
   // Delete the native session manually and ensure async completion doesn't
   // cause a crash.
   downloader.reset();
-  java_helper_.TriggerDownloaderOnAvailable();
+  java_helper_.TriggerDownloaderOnAvailable("test_model", "123");
 }
 
 }  // namespace

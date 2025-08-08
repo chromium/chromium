@@ -7,6 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 
 namespace on_device_model {
@@ -16,11 +17,21 @@ namespace on_device_model {
 // download request (i.e. call StartDownload() only once).
 class ModelDownloaderAndroid {
  public:
-  // The bool indicates whether the download is successful.
-  // TODO(crbug.com/crbug.com/425408635): Return base::expected instead.
-  // On failure, return the failure reason. On success, return the base model
-  // name and version.
-  using OnDownloadCompleteCallback = base::OnceCallback<void(bool)>;
+  // Specification of the base model.
+  struct BaseModelSpec {
+    std::string name;
+    std::string version;
+  };
+
+  // The reason for a download failure.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.on_device_model
+  enum class DownloadFailureReason {
+    kUnknownError = 0,
+    kApiNotAvailable = 1,
+  };
+
+  using OnDownloadCompleteCallback = base::OnceCallback<void(
+      base::expected<BaseModelSpec, DownloadFailureReason>)>;
 
   explicit ModelDownloaderAndroid(
       optimization_guide::proto::ModelExecutionFeature feature);
@@ -32,10 +43,9 @@ class ModelDownloaderAndroid {
   void StartDownload(OnDownloadCompleteCallback on_download_complete_callback);
 
   // Methods called from Java.
-  // TODO(crbug.com/425408635): Return the base model name and version.
-  void OnAvailable();
-  // TODO(crbug.com/425408635): Return an error code.
-  void OnUnavailable();
+  void OnAvailable(const std::string& base_model_name,
+                   const std::string& base_model_version);
+  void OnUnavailable(DownloadFailureReason failure_reason);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_downloader_;

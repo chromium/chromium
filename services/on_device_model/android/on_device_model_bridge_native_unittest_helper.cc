@@ -5,6 +5,7 @@
 #include "services/on_device_model/android/on_device_model_bridge_native_unittest_helper.h"
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "services/on_device_model/android/native_j_unittests_jni_headers/OnDeviceModelBridgeNativeUnitTestHelper_jni.h"
 
 namespace on_device_model {
@@ -59,16 +60,23 @@ void OnDeviceModelBridgeNativeUnitTestHelper::ResumeOnCompleteCallback() {
       env, java_helper_);
 }
 
-void OnDeviceModelBridgeNativeUnitTestHelper::TriggerDownloaderOnUnavailable() {
+void OnDeviceModelBridgeNativeUnitTestHelper::TriggerDownloaderOnUnavailable(
+    ModelDownloaderAndroid::DownloadFailureReason reason) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_OnDeviceModelBridgeNativeUnitTestHelper_triggerDownloaderOnUnavailable(
-      env, java_helper_);
+      env, java_helper_, static_cast<int>(reason));
 }
 
-void OnDeviceModelBridgeNativeUnitTestHelper::TriggerDownloaderOnAvailable() {
+void OnDeviceModelBridgeNativeUnitTestHelper::TriggerDownloaderOnAvailable(
+    const std::string& name,
+    const std::string& version) {
   JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jstring> j_name =
+      base::android::ConvertUTF8ToJavaString(env, name);
+  base::android::ScopedJavaLocalRef<jstring> j_version =
+      base::android::ConvertUTF8ToJavaString(env, version);
   Java_OnDeviceModelBridgeNativeUnitTestHelper_triggerDownloaderOnAvailable(
-      env, java_helper_);
+      env, java_helper_, j_name, j_version);
 }
 
 }  // namespace on_device_model

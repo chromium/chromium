@@ -109,5 +109,8 @@ generate_jni("native_j_unittests_jni_headers") {
 }
 
 java_cpp_enum("java_enum_srcjar") {
-  sources = [ "backend_session_impl_android.h" ]
+  sources = [
+    "backend_session_impl_android.h",
+    "model_downloader_android.h",
+  ]
 }

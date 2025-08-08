@@ -12,16 +12,12 @@ public interface DownloaderResponder {
     /**
      * Called when the download has completed and the status has become available. Called at most
      * once. Not called if onUnavailable is called.
-     *
-     * <p>TODO(crbug.com/425408635): Return the base model name and version.
      */
-    void onAvailable();
+    void onAvailable(String baseModelName, String baseModelVersion);
 
     /**
      * Called when the model is unavailable. Called at most once. Not called if onAvailable is
      * called.
-     *
-     * <p>TODO(crbug.com/425408635): Return the error reason.
      */
-    void onUnavailable();
+    void onUnavailable(@DownloadFailureReason int downloadFailureReason);
 }

@@ -32,15 +32,18 @@ class AiCoreModelDownloaderWrapper {
         DownloaderResponder responder =
                 new DownloaderResponder() {
                     @Override
-                    public void onAvailable() {
+                    public void onAvailable(String baseModelName, String baseModelVersion) {
                         AiCoreModelDownloaderWrapperJni.get()
-                                .onAvailable(nativeModelDownloaderAndroid);
+                                .onAvailable(
+                                        nativeModelDownloaderAndroid,
+                                        baseModelName,
+                                        baseModelVersion);
                     }
 
                     @Override
-                    public void onUnavailable() {
+                    public void onUnavailable(@DownloadFailureReason int downloadFailureReason) {
                         AiCoreModelDownloaderWrapperJni.get()
-                                .onUnavailable(nativeModelDownloaderAndroid);
+                                .onUnavailable(nativeModelDownloaderAndroid, downloadFailureReason);
                     }
                 };
         mBackend.startDownload(responder);
@@ -54,8 +57,10 @@ class AiCoreModelDownloaderWrapper {
 
     @NativeMethods
     interface Natives {
-        void onAvailable(long modelDownloaderAndroid);
+        void onAvailable(
+                long modelDownloaderAndroid, String baseModelName, String baseModelVersion);
 
-        void onUnavailable(long modelDownloaderAndroid);
+        void onUnavailable(
+                long modelDownloaderAndroid, @DownloadFailureReason int downloadFailureReason);
     }
 }

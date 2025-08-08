@@ -98,7 +98,7 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
      * A mock implementation of AiCoreModelDownloaderBackend. Call onAvailable() or onUnavailable()
      * to simulate the download status change.
      */
-    public static class MockAiCoreModelDownloader implements AiCoreModelDownloaderBackend {
+    public static class MockAiCoreModelDownloaderBackend implements AiCoreModelDownloaderBackend {
         private DownloaderResponder mResponder;
         private boolean mNativeDestroyed;
 
@@ -112,15 +112,15 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
             mNativeDestroyed = true;
         }
 
-        public void onAvailable() {
+        public void onAvailable(String name, String version) {
             if (!mNativeDestroyed) {
-                mResponder.onAvailable();
+                mResponder.onAvailable(name, version);
             }
         }
 
-        public void onUnavailable() {
+        public void onUnavailable(@DownloadFailureReason int reason) {
             if (!mNativeDestroyed) {
-                mResponder.onUnavailable();
+                mResponder.onUnavailable(reason);
             }
         }
     }
@@ -128,7 +128,7 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
     /** A mock implementation of AiCoreFactory. */
     public static class MockAiCoreFactory implements AiCoreFactory {
         MockAiCoreSessionBackend mSessionBackend;
-        MockAiCoreModelDownloader mDownloader;
+        MockAiCoreModelDownloaderBackend mDownloaderBackend;
 
         public MockAiCoreFactory() {}
 
@@ -141,8 +141,8 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
 
         @Override
         public AiCoreModelDownloaderBackend createModelDownloader(ModelExecutionFeature feature) {
-            mDownloader = new MockAiCoreModelDownloader();
-            return mDownloader;
+            mDownloaderBackend = new MockAiCoreModelDownloaderBackend();
+            return mDownloaderBackend;
         }
     }
 
@@ -190,12 +190,12 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
     }
 
     @CalledByNative
-    public void triggerDownloaderOnAvailable() {
-        mMockAiCoreFactory.mDownloader.onAvailable();
+    public void triggerDownloaderOnAvailable(String name, String version) {
+        mMockAiCoreFactory.mDownloaderBackend.onAvailable(name, version);
     }
 
     @CalledByNative
-    public void triggerDownloaderOnUnavailable() {
-        mMockAiCoreFactory.mDownloader.onUnavailable();
+    public void triggerDownloaderOnUnavailable(int reason) {
+        mMockAiCoreFactory.mDownloaderBackend.onUnavailable(reason);
     }
 }
