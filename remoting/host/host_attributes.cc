@@ -8,7 +8,6 @@
 #include <type_traits>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/check_op.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"

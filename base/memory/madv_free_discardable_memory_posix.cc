@@ -17,7 +17,6 @@
 
 #include <atomic>
 
-#include "base/atomicops.h"
 #include "base/bits.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"

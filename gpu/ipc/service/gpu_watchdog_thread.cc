@@ -13,7 +13,6 @@
 #include <string>
 #include <utility>
 
-#include "base/atomicops.h"
 #include "base/bit_cast.h"
 #include "base/command_line.h"
 #include "base/debug/alias.h"
