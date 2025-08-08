@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_FILE_SYSTEM_ACCESS_CLOUD_IDENTIFIER_CLOUD_IDENTIFIER_UTIL_CROS_H_
 #define CHROME_BROWSER_FILE_SYSTEM_ACCESS_CLOUD_IDENTIFIER_CLOUD_IDENTIFIER_UTIL_CROS_H_
 
-#include "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom-forward.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 

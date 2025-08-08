@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_FILE_SYSTEM_ACCESS_CLOUD_IDENTIFIER_CLOUD_IDENTIFIER_UTIL_ASH_H_
 #define CHROME_BROWSER_FILE_SYSTEM_ACCESS_CLOUD_IDENTIFIER_CLOUD_IDENTIFIER_UTIL_ASH_H_
 
-#include "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 
 namespace base {
@@ -19,8 +19,7 @@ namespace cloud_identifier {
 void GetCloudIdentifier(
     const base::FilePath& url,
     content::FileSystemAccessPermissionContext::HandleType handle_type,
-    crosapi::mojom::FileSystemAccessCloudIdentifierProvider::
-        GetCloudIdentifierCallback callback);
+    content::ContentBrowserClient::GetCloudIdentifiersCallback callback);
 }  // namespace cloud_identifier
 
 #endif  // CHROME_BROWSER_FILE_SYSTEM_ACCESS_CLOUD_IDENTIFIER_CLOUD_IDENTIFIER_UTIL_ASH_H_
