@@ -475,6 +475,9 @@
         parseSendCommandParams(params) {
             return params;
         }
+        parseSetForcedColorsModeThemeOverrideParams(params) {
+            return params;
+        }
         parseSetGeolocationOverrideParams(params) {
             return params;
         }
@@ -547,7 +550,10 @@
         parseRemoveInterceptParams(params) {
             return params;
         }
-        parseSetCacheBehavior(params) {
+        parseSetCacheBehaviorParams(params) {
+            return params;
+        }
+        parseSetExtraHeadersParams(params) {
             return params;
         }
         parseSetPermissionsParams(params) {
@@ -595,12 +601,12 @@
     class BrowserProcessor {
         #browserCdpClient;
         #browsingContextStorage;
+        #configStorage;
         #userContextStorage;
-        #mapperOptionsStorage;
-        constructor(browserCdpClient, browsingContextStorage, mapperOptionsStorage, userContextStorage) {
+        constructor(browserCdpClient, browsingContextStorage, configStorage, userContextStorage) {
             this.#browserCdpClient = browserCdpClient;
             this.#browsingContextStorage = browsingContextStorage;
-            this.#mapperOptionsStorage = mapperOptionsStorage;
+            this.#configStorage = configStorage;
             this.#userContextStorage = userContextStorage;
         }
         close() {
@@ -610,8 +616,9 @@
         async createUserContext(params) {
             const w3cParams = params;
             if (w3cParams.acceptInsecureCerts !== undefined) {
+                const globalConfig = this.#configStorage.getGlobalConfig();
                 if (w3cParams.acceptInsecureCerts === false &&
-                    this.#mapperOptionsStorage.mapperOptions?.acceptInsecureCerts === true)
+                    globalConfig.acceptInsecureCerts === true)
                     throw new UnknownErrorException(`Cannot set user context's "acceptInsecureCerts" to false, when a capability "acceptInsecureCerts" is set to true`);
             }
             const request = {};
@@ -634,8 +641,10 @@
                 }
             }
             const context = await this.#browserCdpClient.sendCommand('Target.createBrowserContext', request);
-            this.#userContextStorage.getConfig(context.browserContextId).acceptInsecureCerts = params['acceptInsecureCerts'];
-            this.#userContextStorage.getConfig(context.browserContextId).userPromptHandler = params['unhandledPromptBehavior'];
+            this.#configStorage.updateUserContextConfig(context.browserContextId, {
+                acceptInsecureCerts: params['acceptInsecureCerts'],
+                userPromptHandler: params['unhandledPromptBehavior'],
+            });
             return {
                 userContext: context.browserContextId,
             };
@@ -790,9 +799,11 @@
     class BrowsingContextProcessor {
         #browserCdpClient;
         #browsingContextStorage;
+        #contextConfigStorage;
         #eventManager;
         #userContextStorage;
-        constructor(browserCdpClient, browsingContextStorage, userContextStorage, eventManager) {
+        constructor(browserCdpClient, browsingContextStorage, userContextStorage, contextConfigStorage, eventManager) {
+            this.#contextConfigStorage = contextConfigStorage;
             this.#userContextStorage = userContextStorage;
             this.#browserCdpClient = browserCdpClient;
             this.#browsingContextStorage = browsingContextStorage;
@@ -881,15 +892,19 @@
             return await context.print(params);
         }
         async setViewport(params) {
+            const config = {};
+            if (params.devicePixelRatio !== undefined) {
+                config.devicePixelRatio = params.devicePixelRatio;
+            }
+            if (params.viewport !== undefined) {
+                config.viewport = params.viewport;
+            }
             const impactedTopLevelContexts = await this.#getRelatedTopLevelBrowsingContexts(params.context, params.userContexts);
             for (const userContextId of params.userContexts ?? []) {
-                const userContextConfig = this.#userContextStorage.getConfig(userContextId);
-                if (params.devicePixelRatio !== undefined) {
-                    userContextConfig.devicePixelRatio = params.devicePixelRatio;
-                }
-                if (params.viewport !== undefined) {
-                    userContextConfig.viewport = params.viewport;
-                }
+                this.#contextConfigStorage.updateUserContextConfig(userContextId, config);
+            }
+            if (params.context !== undefined) {
+                this.#contextConfigStorage.updateBrowsingContextConfig(params.context, config);
             }
             await Promise.all(impactedTopLevelContexts.map((context) => context.setViewport(params.viewport, params.devicePixelRatio)));
             return {};
@@ -1023,9 +1038,11 @@
     class EmulationProcessor {
         #userContextStorage;
         #browsingContextStorage;
-        constructor(browsingContextStorage, userContextStorage) {
+        #contextConfigStorage;
+        constructor(browsingContextStorage, userContextStorage, contextConfigStorage) {
             this.#userContextStorage = userContextStorage;
             this.#browsingContextStorage = browsingContextStorage;
+            this.#contextConfigStorage = contextConfigStorage;
         }
         async setGeolocationOverride(params) {
             if ('coordinates' in params && 'error' in params) {
@@ -1049,11 +1066,17 @@
                 throw new InvalidArgumentException(`Coordinates or error should be set`);
             }
             const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(params.contexts, params.userContexts);
-            for (const userContextId of params.userContexts ?? []) {
-                const userContextConfig = this.#userContextStorage.getConfig(userContextId);
-                userContextConfig.geolocation = geolocation;
+            for (const browsingContextId of params.contexts ?? []) {
+                this.#contextConfigStorage.updateBrowsingContextConfig(browsingContextId, {
+                    geolocation,
+                });
             }
-            await Promise.all(browsingContexts.map(async (context) => await context.cdpTarget.setGeolocationOverride(geolocation)));
+            for (const userContextId of params.userContexts ?? []) {
+                this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+                    geolocation,
+                });
+            }
+            await Promise.all(browsingContexts.map(async (context) => await context.setGeolocationOverride(geolocation)));
             return {};
         }
         async setLocaleOverride(params) {
@@ -1062,20 +1085,32 @@
                 throw new InvalidArgumentException(`Invalid locale "${locale}"`);
             }
             const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(params.contexts, params.userContexts);
-            for (const userContextId of params.userContexts ?? []) {
-                const userContextConfig = this.#userContextStorage.getConfig(userContextId);
-                userContextConfig.locale = locale;
+            for (const browsingContextId of params.contexts ?? []) {
+                this.#contextConfigStorage.updateBrowsingContextConfig(browsingContextId, {
+                    locale,
+                });
             }
-            await Promise.all(browsingContexts.map(async (context) => await context.cdpTarget.setLocaleOverride(locale)));
+            for (const userContextId of params.userContexts ?? []) {
+                this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+                    locale,
+                });
+            }
+            await Promise.all(browsingContexts.map(async (context) => await context.setLocaleOverride(locale)));
             return {};
         }
         async setScreenOrientationOverride(params) {
             const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(params.contexts, params.userContexts);
-            for (const userContextId of params.userContexts ?? []) {
-                const userContextConfig = this.#userContextStorage.getConfig(userContextId);
-                userContextConfig.screenOrientation = params.screenOrientation;
+            for (const browsingContextId of params.contexts ?? []) {
+                this.#contextConfigStorage.updateBrowsingContextConfig(browsingContextId, {
+                    screenOrientation: params.screenOrientation,
+                });
             }
-            await Promise.all(browsingContexts.map(async (context) => await context.cdpTarget.setScreenOrientationOverride(params.screenOrientation)));
+            for (const userContextId of params.userContexts ?? []) {
+                this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+                    screenOrientation: params.screenOrientation,
+                });
+            }
+            await Promise.all(browsingContexts.map(async (context) => await context.setScreenOrientationOverride(params.screenOrientation)));
             return {};
         }
         async #getRelatedTopLevelBrowsingContexts(browsingContextIds, userContextIds) {
@@ -1121,11 +1156,17 @@
                 timezone = `GMT${timezone}`;
             }
             const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(params.contexts, params.userContexts);
-            for (const userContextId of params.userContexts ?? []) {
-                const userContextConfig = this.#userContextStorage.getConfig(userContextId);
-                userContextConfig.timezone = timezone;
+            for (const browsingContextId of params.contexts ?? []) {
+                this.#contextConfigStorage.updateBrowsingContextConfig(browsingContextId, {
+                    timezone,
+                });
             }
-            await Promise.all(browsingContexts.map(async (context) => await context.cdpTarget.setTimezoneOverride(timezone)));
+            for (const userContextId of params.userContexts ?? []) {
+                this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+                    timezone,
+                });
+            }
+            await Promise.all(browsingContexts.map(async (context) => await context.setTimezoneOverride(timezone)));
             return {};
         }
     }
@@ -3360,10 +3401,12 @@
         #browsingContextStorage;
         #networkStorage;
         #userContextStorage;
-        constructor(browsingContextStorage, networkStorage, userContextStorage) {
+        #contextConfigStorage;
+        constructor(browsingContextStorage, networkStorage, userContextStorage, contextConfigStorage) {
             this.#userContextStorage = userContextStorage;
             this.#browsingContextStorage = browsingContextStorage;
             this.#networkStorage = networkStorage;
+            this.#contextConfigStorage = contextConfigStorage;
         }
         async addIntercept(params) {
             this.#browsingContextStorage.verifyTopLevelContextsList(params.contexts);
@@ -3703,6 +3746,45 @@
             this.#networkStorage.disownData(params);
             return {};
         }
+        async setExtraHeaders(params) {
+            if (params.userContexts !== undefined && params.contexts !== undefined) {
+                throw new InvalidArgumentException('contexts and userContexts are mutually exclusive');
+            }
+            const cdpExtraHeaders = parseBiDiHeaders(params.headers);
+            const affectedCdpTargets = new Set();
+            if (params.userContexts === undefined && params.contexts === undefined) {
+                this.#contextConfigStorage.updateGlobalConfig({
+                    extraHeaders: cdpExtraHeaders,
+                });
+                this.#browsingContextStorage
+                    .getAllContexts()
+                    .forEach((c) => affectedCdpTargets.add(c.cdpTarget));
+            }
+            if (params.userContexts !== undefined) {
+                await this.#userContextStorage.verifyUserContextIdList(params.userContexts);
+                params.userContexts.forEach((userContext) => {
+                    this.#contextConfigStorage.updateUserContextConfig(userContext, {
+                        extraHeaders: cdpExtraHeaders,
+                    });
+                    this.#browsingContextStorage
+                        .getAllContexts()
+                        .filter((c) => c.userContext === userContext)
+                        .forEach((c) => affectedCdpTargets.add(c.cdpTarget));
+                });
+            }
+            if (params.contexts !== undefined) {
+                this.#browsingContextStorage.verifyTopLevelContextsList(params.contexts);
+                params.contexts.forEach((browsingContextId) => {
+                    this.#contextConfigStorage.updateBrowsingContextConfig(browsingContextId, { extraHeaders: cdpExtraHeaders });
+                    affectedCdpTargets.add(this.#browsingContextStorage.getContext(browsingContextId).cdpTarget);
+                    this.#browsingContextStorage
+                        .getContext(browsingContextId)
+                        .allChildren.forEach((c) => affectedCdpTargets.add(c.cdpTarget));
+                });
+            }
+            await Promise.all(Array.from(affectedCdpTargets).map((cdpTarget) => cdpTarget.setExtraHeaders(cdpExtraHeaders)));
+            return {};
+        }
     }
     function unescapeURLPattern(pattern) {
         const forbidden = new Set(['(', ')', '*', '{', '}']);
@@ -3722,6 +3804,24 @@
             isEscaped = false;
         }
         return result;
+    }
+    function parseBiDiHeaders(headers) {
+        const parsedHeaders = {};
+        for (const bidiHeader of headers) {
+            if (bidiHeader.value.type === 'string') {
+                if (parsedHeaders[bidiHeader.name] === undefined) {
+                    parsedHeaders[bidiHeader.name] = bidiHeader.value.value;
+                }
+                else {
+                    parsedHeaders[bidiHeader.name] =
+                        `${parsedHeaders[bidiHeader.name]}, ${bidiHeader.value.value}`;
+                }
+            }
+            else {
+                throw new UnsupportedOperationException('Only string headers values are supported');
+            }
+        }
+        return parsedHeaders;
     }
 
     /**
@@ -4619,18 +4719,18 @@
         #webExtensionProcessor;
         #parser;
         #logger;
-        constructor(cdpConnection, browserCdpClient, eventManager, browsingContextStorage, realmStorage, preloadScriptStorage, networkStorage, mapperOptionsStorage, bluetoothProcessor, userContextStorage, parser = new BidiNoOpParser(), initConnection, logger) {
+        constructor(cdpConnection, browserCdpClient, eventManager, browsingContextStorage, realmStorage, preloadScriptStorage, networkStorage, contextConfigStorage, bluetoothProcessor, userContextStorage, parser = new BidiNoOpParser(), initConnection, logger) {
             super();
             this.#browserCdpClient = browserCdpClient;
             this.#parser = parser;
             this.#logger = logger;
             this.#bluetoothProcessor = bluetoothProcessor;
-            this.#browserProcessor = new BrowserProcessor(browserCdpClient, browsingContextStorage, mapperOptionsStorage, userContextStorage);
-            this.#browsingContextProcessor = new BrowsingContextProcessor(browserCdpClient, browsingContextStorage, userContextStorage, eventManager);
+            this.#browserProcessor = new BrowserProcessor(browserCdpClient, browsingContextStorage, contextConfigStorage, userContextStorage);
+            this.#browsingContextProcessor = new BrowsingContextProcessor(browserCdpClient, browsingContextStorage, userContextStorage, contextConfigStorage, eventManager);
             this.#cdpProcessor = new CdpProcessor(browsingContextStorage, realmStorage, cdpConnection, browserCdpClient);
-            this.#emulationProcessor = new EmulationProcessor(browsingContextStorage, userContextStorage);
+            this.#emulationProcessor = new EmulationProcessor(browsingContextStorage, userContextStorage, contextConfigStorage);
             this.#inputProcessor = new InputProcessor(browsingContextStorage);
-            this.#networkProcessor = new NetworkProcessor(browsingContextStorage, networkStorage, userContextStorage);
+            this.#networkProcessor = new NetworkProcessor(browsingContextStorage, networkStorage, userContextStorage, contextConfigStorage);
             this.#permissionsProcessor = new PermissionsProcessor(browserCdpClient);
             this.#scriptProcessor = new ScriptProcessor(eventManager, browsingContextStorage, realmStorage, preloadScriptStorage, userContextStorage, logger);
             this.#sessionProcessor = new SessionProcessor(eventManager, browserCdpClient, initConnection);
@@ -4706,6 +4806,9 @@
                     return this.#cdpProcessor.resolveRealm(this.#parser.parseResolveRealmParams(command.params));
                 case 'goog:cdp.sendCommand':
                     return await this.#cdpProcessor.sendCommand(this.#parser.parseSendCommandParams(command.params));
+                case 'emulation.setForcedColorsModeThemeOverride':
+                    this.#parser.parseSetForcedColorsModeThemeOverrideParams(command.params);
+                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
                 case 'emulation.setGeolocationOverride':
                     return await this.#emulationProcessor.setGeolocationOverride(this.#parser.parseSetGeolocationOverrideParams(command.params));
                 case 'emulation.setLocaleOverride':
@@ -4743,7 +4846,9 @@
                 case 'network.removeIntercept':
                     return await this.#networkProcessor.removeIntercept(this.#parser.parseRemoveInterceptParams(command.params));
                 case 'network.setCacheBehavior':
-                    return await this.#networkProcessor.setCacheBehavior(this.#parser.parseSetCacheBehavior(command.params));
+                    return await this.#networkProcessor.setCacheBehavior(this.#parser.parseSetCacheBehaviorParams(command.params));
+                case 'network.setExtraHeaders':
+                    return await this.#networkProcessor.setExtraHeaders(this.#parser.parseSetExtraHeadersParams(command.params));
                 case 'permissions.setPermission':
                     return await this.#permissionsProcessor.setPermissions(this.#parser.parseSetPermissionsParams(command.params));
                 case 'script.addPreloadScript':
@@ -4825,27 +4930,6 @@
                 }
             }
         }
-    }
-
-    /*
-     *  Copyright 2025 Google LLC.
-     *  Copyright (c) Microsoft Corporation.
-     *
-     *  Licensed under the Apache License, Version 2.0 (the "License");
-     *  you may not use this file except in compliance with the License.
-     *  You may obtain a copy of the License at
-     *
-     *      http://www.apache.org/licenses/LICENSE-2.0
-     *
-     *  Unless required by applicable law or agreed to in writing, software
-     *  distributed under the License is distributed on an "AS IS" BASIS,
-     *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     *  See the License for the specific language governing permissions and
-     *  limitations under the License.
-     *
-     */
-    class MapperOptionsStorage {
-        mapperOptions;
     }
 
     /**
@@ -5245,18 +5329,68 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    class UserContextConfig {
-        userContextId;
+    class ContextConfig {
         acceptInsecureCerts;
         viewport;
         devicePixelRatio;
+        extraHeaders;
         geolocation;
         locale;
+        prerenderingDisabled;
         screenOrientation;
         timezone;
         userPromptHandler;
-        constructor(userContextId) {
-            this.userContextId = userContextId;
+        static merge(...configs) {
+            const result = new ContextConfig();
+            for (const config of configs) {
+                if (!config) {
+                    continue;
+                }
+                for (const key in config) {
+                    const value = config[key];
+                    if (value !== undefined) {
+                        result[key] = value;
+                    }
+                }
+            }
+            return result;
+        }
+    }
+
+    /*
+     * Copyright 2025 Google LLC.
+     * Copyright (c) Microsoft Corporation.
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *     http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+    class ContextConfigStorage {
+        #global = new ContextConfig();
+        #userContextConfigs = new Map();
+        #browsingContextConfigs = new Map();
+        updateGlobalConfig(config) {
+            this.#global = ContextConfig.merge(this.#global, config);
+        }
+        updateBrowsingContextConfig(browsingContextId, config) {
+            this.#browsingContextConfigs.set(browsingContextId, ContextConfig.merge(this.#browsingContextConfigs.get(browsingContextId), config));
+        }
+        updateUserContextConfig(userContext, config) {
+            this.#userContextConfigs.set(userContext, ContextConfig.merge(this.#userContextConfigs.get(userContext), config));
+        }
+        getGlobalConfig() {
+            return this.#global;
+        }
+        getActiveConfig(topLevelBrowsingContextId, userContext) {
+            return ContextConfig.merge(this.#global, this.#userContextConfigs.get(userContext), this.#browsingContextConfigs.get(topLevelBrowsingContextId));
         }
     }
 
@@ -5278,7 +5412,6 @@
      */
     class UserContextStorage {
         #browserClient;
-        #userConfigMap = new Map();
         constructor(browserClient) {
             this.#browserClient = browserClient;
         }
@@ -5294,12 +5427,6 @@
                     };
                 }),
             ];
-        }
-        getConfig(userContextId) {
-            const userContextConfig = this.#userConfigMap.get(userContextId) ??
-                new UserContextConfig(userContextId);
-            this.#userConfigMap.set(userContextId, userContextConfig);
-            return userContextConfig;
         }
         async verifyUserContextIdList(userContextIds) {
             const foundContexts = new Set();
@@ -6358,11 +6485,9 @@
         #logger;
         #navigationTracker;
         #realmStorage;
-        #unhandledPromptBehavior;
-        #userContextConfig;
+        #configStorage;
         #lastUserPromptType;
-        constructor(id, parentId, userContext, userContextConfig, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, originalOpener, unhandledPromptBehavior, logger) {
-            this.#userContextConfig = userContextConfig;
+        constructor(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, configStorage, url, originalOpener, logger) {
             this.#cdpTarget = cdpTarget;
             this.#id = id;
             this.#parentId = parentId;
@@ -6370,14 +6495,14 @@
             this.#eventManager = eventManager;
             this.#browsingContextStorage = browsingContextStorage;
             this.#realmStorage = realmStorage;
-            this.#unhandledPromptBehavior = unhandledPromptBehavior;
+            this.#configStorage = configStorage;
             this.#logger = logger;
             this.#originalOpener = originalOpener;
             this.#realmStorage.hiddenSandboxes.add(this.#hiddenSandbox);
             this.#navigationTracker = new NavigationTracker(url, id, eventManager, logger);
         }
-        static create(id, parentId, userContext, userContextConfig, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, originalOpener, unhandledPromptBehavior, logger) {
-            const context = new _a$5(id, parentId, userContext, userContextConfig, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, originalOpener, unhandledPromptBehavior, logger);
+        static create(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, configStorage, url, originalOpener, logger) {
+            const context = new _a$5(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, configStorage, url, originalOpener, logger);
             context.#initListeners();
             browsingContextStorage.addContext(context);
             if (!context.isTopLevelContext()) {
@@ -6842,30 +6967,23 @@
         }
         #getPromptHandler(promptType) {
             const defaultPromptHandler = "dismiss" ;
+            const contextConfig = this.#configStorage.getActiveConfig(this.top.id, this.userContext);
             switch (promptType) {
                 case "alert" :
-                    return (this.#userContextConfig.userPromptHandler?.alert ??
-                        this.#userContextConfig.userPromptHandler?.default ??
-                        this.#unhandledPromptBehavior?.alert ??
-                        this.#unhandledPromptBehavior?.default ??
+                    return (contextConfig.userPromptHandler?.alert ??
+                        contextConfig.userPromptHandler?.default ??
                         defaultPromptHandler);
                 case "beforeunload" :
-                    return (this.#userContextConfig.userPromptHandler?.beforeUnload ??
-                        this.#userContextConfig.userPromptHandler?.default ??
-                        this.#unhandledPromptBehavior?.beforeUnload ??
-                        this.#unhandledPromptBehavior?.default ??
+                    return (contextConfig.userPromptHandler?.beforeUnload ??
+                        contextConfig.userPromptHandler?.default ??
                         "accept" );
                 case "confirm" :
-                    return (this.#userContextConfig.userPromptHandler?.confirm ??
-                        this.#userContextConfig.userPromptHandler?.default ??
-                        this.#unhandledPromptBehavior?.confirm ??
-                        this.#unhandledPromptBehavior?.default ??
+                    return (contextConfig.userPromptHandler?.confirm ??
+                        contextConfig.userPromptHandler?.default ??
                         defaultPromptHandler);
                 case "prompt" :
-                    return (this.#userContextConfig.userPromptHandler?.prompt ??
-                        this.#userContextConfig.userPromptHandler?.default ??
-                        this.#unhandledPromptBehavior?.prompt ??
-                        this.#unhandledPromptBehavior?.default ??
+                    return (contextConfig.userPromptHandler?.prompt ??
+                        contextConfig.userPromptHandler?.default ??
                         defaultPromptHandler);
             }
         }
@@ -7200,8 +7318,9 @@
                             const locateNodesUsingCss = (element) => {
                                 if (!(element instanceof HTMLElement ||
                                     element instanceof Document ||
-                                    element instanceof DocumentFragment)) {
-                                    throw new Error('startNodes in css selector should be HTMLElement, Document or DocumentFragment');
+                                    element instanceof DocumentFragment ||
+                                    element instanceof SVGElement)) {
+                                    throw new Error('startNodes in css selector should be HTMLElement, SVGElement or Document or DocumentFragment');
                                 }
                                 return [...element.querySelectorAll(cssSelector)];
                             };
@@ -7453,8 +7572,8 @@
                     throw new InvalidSelectorException(`Not valid selector ${typeof locator.value === 'string' ? locator.value : JSON.stringify(locator.value)}`);
                 }
                 if (locatorResult.exceptionDetails.text ===
-                    'Error: startNodes in css selector should be HTMLElement, Document or DocumentFragment') {
-                    throw new InvalidArgumentException('startNodes in css selector should be HTMLElement, Document or DocumentFragment');
+                    'Error: startNodes in css selector should be HTMLElement, SVGElement or Document or DocumentFragment') {
+                    throw new InvalidArgumentException('startNodes in css selector should be HTMLElement, SVGElement or Document or DocumentFragment');
                 }
                 throw new UnknownErrorException(`Unexpected error in selector script: ${locatorResult.exceptionDetails.text}`);
             }
@@ -7468,6 +7587,24 @@
                 return value;
             });
             return { nodes };
+        }
+        #getAllRelatedCdpTargets() {
+            const targets = new Set();
+            targets.add(this.cdpTarget);
+            this.allChildren.forEach((c) => targets.add(c.cdpTarget));
+            return Array.from(targets);
+        }
+        async setTimezoneOverride(timezone) {
+            await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setTimezoneOverride(timezone)));
+        }
+        async setLocaleOverride(locale) {
+            await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setLocaleOverride(locale)));
+        }
+        async setGeolocationOverride(geolocation) {
+            await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setGeolocationOverride(geolocation)));
+        }
+        async setScreenOrientationOverride(screenOrientation) {
+            await this.#cdpTarget.setScreenOrientationOverride(screenOrientation);
         }
     }
     _a$5 = BrowsingContextImpl;
@@ -7934,6 +8071,7 @@
 
     class CdpTarget {
         #id;
+        #userContext;
         #cdpClient;
         #browserCdpClient;
         #parentCdpClient;
@@ -7941,11 +8079,9 @@
         #eventManager;
         #preloadScriptStorage;
         #browsingContextStorage;
-        #prerenderingDisabled;
         #networkStorage;
-        #userContextConfig;
+        contextConfigStorage;
         #unblocked = new Deferred();
-        #unhandledPromptBehavior;
         #logger;
         #previousDeviceMetricsOverride = {
             width: 0,
@@ -7962,15 +8098,15 @@
             response: false,
             auth: false,
         };
-        static create(targetId, cdpClient, browserCdpClient, parentCdpClient, realmStorage, eventManager, preloadScriptStorage, browsingContextStorage, networkStorage, prerenderingDisabled, userContextConfig, unhandledPromptBehavior, logger) {
-            const cdpTarget = new CdpTarget(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, networkStorage, prerenderingDisabled, userContextConfig, unhandledPromptBehavior, logger);
+        static create(targetId, cdpClient, browserCdpClient, parentCdpClient, realmStorage, eventManager, preloadScriptStorage, browsingContextStorage, networkStorage, configStorage, userContext, logger) {
+            const cdpTarget = new CdpTarget(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, configStorage, networkStorage, userContext, logger);
             LogManager.create(cdpTarget, realmStorage, eventManager, logger);
             cdpTarget.#setEventListeners();
             void cdpTarget.#unblock();
             return cdpTarget;
         }
-        constructor(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, networkStorage, prerenderingDisabled, userContextConfig, unhandledPromptBehavior, logger) {
-            this.#userContextConfig = userContextConfig;
+        constructor(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, configStorage, networkStorage, userContext, logger) {
+            this.#userContext = userContext;
             this.#id = targetId;
             this.#cdpClient = cdpClient;
             this.#browserCdpClient = browserCdpClient;
@@ -7980,8 +8116,7 @@
             this.#preloadScriptStorage = preloadScriptStorage;
             this.#networkStorage = networkStorage;
             this.#browsingContextStorage = browsingContextStorage;
-            this.#prerenderingDisabled = prerenderingDisabled;
-            this.#unhandledPromptBehavior = unhandledPromptBehavior;
+            this.contextConfigStorage = configStorage;
             this.#logger = logger;
         }
         get unblocked() {
@@ -8030,12 +8165,6 @@
                         enabled: true,
                     }),
                     this.#cdpClient
-                        .sendCommand('Page.setPrerenderingAllowed', {
-                        isAllowed: !this.#prerenderingDisabled,
-                    })
-                        .catch(() => {
-                    }),
-                    this.#cdpClient
                         .sendCommand('Network.enable')
                         .then(() => this.toggleNetworkIfNeeded()),
                     this.#cdpClient.sendCommand('Target.setAutoAttach', {
@@ -8078,7 +8207,7 @@
             }
             if (maybeContext === undefined && frame.parentId !== undefined) {
                 const parentBrowsingContext = this.#browsingContextStorage.getContext(frame.parentId);
-                BrowsingContextImpl.create(frame.id, frame.parentId, parentBrowsingContext.userContext, this.#userContextConfig, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, frame.url, undefined, this.#unhandledPromptBehavior, this.#logger);
+                BrowsingContextImpl.create(frame.id, frame.parentId, this.#userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.contextConfigStorage, frame.url, undefined, this.#logger);
             }
             frameTree.childFrames?.map((frameTree) => this.#restoreFrameTreeState(frameTree));
         }
@@ -8308,27 +8437,38 @@
         }
         async #setUserContextConfig() {
             const promises = [];
-            if (this.#userContextConfig.viewport !== undefined ||
-                this.#userContextConfig.devicePixelRatio !== undefined) {
-                promises.push(this.setViewport(this.#userContextConfig.viewport, this.#userContextConfig.devicePixelRatio));
+            const config = this.contextConfigStorage.getActiveConfig(this.topLevelId, this.#userContext);
+            promises.push(this.#cdpClient
+                .sendCommand('Page.setPrerenderingAllowed', {
+                isAllowed: !config.prerenderingDisabled,
+            })
+                .catch(() => {
+            }));
+            if (config.viewport !== undefined ||
+                config.devicePixelRatio !== undefined) {
+                promises.push(this.setViewport(config.viewport, config.devicePixelRatio).catch(() => {
+                }));
             }
-            if (this.#userContextConfig.geolocation !== undefined &&
-                this.#userContextConfig.geolocation !== null) {
-                promises.push(this.setGeolocationOverride(this.#userContextConfig.geolocation));
+            if (config.screenOrientation !== undefined &&
+                config.screenOrientation !== null) {
+                promises.push(this.setScreenOrientationOverride(config.screenOrientation).catch(() => {
+                }));
             }
-            if (this.#userContextConfig.screenOrientation !== undefined &&
-                this.#userContextConfig.screenOrientation !== null) {
-                promises.push(this.setScreenOrientationOverride(this.#userContextConfig.screenOrientation));
+            if (config.geolocation !== undefined && config.geolocation !== null) {
+                promises.push(this.setGeolocationOverride(config.geolocation));
             }
-            if (this.#userContextConfig.locale !== undefined) {
-                promises.push(this.setLocaleOverride(this.#userContextConfig.locale));
+            if (config.locale !== undefined) {
+                promises.push(this.setLocaleOverride(config.locale));
             }
-            if (this.#userContextConfig.timezone !== undefined) {
-                promises.push(this.setTimezoneOverride(this.#userContextConfig.timezone));
+            if (config.timezone !== undefined) {
+                promises.push(this.setTimezoneOverride(config.timezone));
             }
-            if (this.#userContextConfig.acceptInsecureCerts !== undefined) {
+            if (config.extraHeaders !== undefined) {
+                promises.push(this.setExtraHeaders(config.extraHeaders));
+            }
+            if (config.acceptInsecureCerts !== undefined) {
                 promises.push(this.cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
-                    ignore: this.#userContextConfig.acceptInsecureCerts,
+                    ignore: config.acceptInsecureCerts,
                 }));
             }
             await Promise.all(promises);
@@ -8340,8 +8480,9 @@
             return this.#eventManager.subscriptionManager.isSubscribedTo(moduleOrEvent, this.topLevelId);
         }
         #ignoreFileDialog() {
-            return ((this.#unhandledPromptBehavior?.file ??
-                this.#unhandledPromptBehavior?.default ??
+            const config = this.contextConfigStorage.getActiveConfig(this.topLevelId, this.#userContext);
+            return ((config.userPromptHandler?.file ??
+                config.userPromptHandler?.default ??
                 "ignore" ) ===
                 "ignore" );
         }
@@ -8459,6 +8600,11 @@
                 });
             }
         }
+        async setExtraHeaders(headers) {
+            await this.cdpClient.sendCommand('Network.setExtraHTTPHeaders', {
+                headers,
+            });
+        }
     }
 
     const cdpToBidiTargetTypes = {
@@ -8474,16 +8620,13 @@
         #eventManager;
         #browsingContextStorage;
         #networkStorage;
-        #userContextStorage;
         #bluetoothProcessor;
         #preloadScriptStorage;
         #realmStorage;
+        #configStorage;
         #defaultUserContextId;
         #logger;
-        #unhandledPromptBehavior;
-        #prerenderingDisabled;
-        constructor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, userContextStorage, realmStorage, networkStorage, bluetoothProcessor, preloadScriptStorage, defaultUserContextId, prerenderingDisabled, unhandledPromptBehavior, logger) {
-            this.#userContextStorage = userContextStorage;
+        constructor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, realmStorage, networkStorage, configStorage, bluetoothProcessor, preloadScriptStorage, defaultUserContextId, logger) {
             this.#cdpConnection = cdpConnection;
             this.#browserCdpClient = browserCdpClient;
             this.#targetKeysToBeIgnoredByAutoAttach.add(selfTargetId);
@@ -8492,11 +8635,10 @@
             this.#browsingContextStorage = browsingContextStorage;
             this.#preloadScriptStorage = preloadScriptStorage;
             this.#networkStorage = networkStorage;
+            this.#configStorage = configStorage;
             this.#bluetoothProcessor = bluetoothProcessor;
             this.#realmStorage = realmStorage;
             this.#defaultUserContextId = defaultUserContextId;
-            this.#prerenderingDisabled = prerenderingDisabled;
-            this.#unhandledPromptBehavior = unhandledPromptBehavior;
             this.#logger = logger;
             this.#setEventListeners(browserCdpClient);
         }
@@ -8515,8 +8657,8 @@
         #handleFrameAttachedEvent(params) {
             const parentBrowsingContext = this.#browsingContextStorage.findContext(params.parentFrameId);
             if (parentBrowsingContext !== undefined) {
-                BrowsingContextImpl.create(params.frameId, params.parentFrameId, parentBrowsingContext.userContext, this.#userContextStorage.getConfig(parentBrowsingContext.userContext), parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage,
-                'about:blank', undefined, this.#unhandledPromptBehavior, this.#logger);
+                BrowsingContextImpl.create(params.frameId, params.parentFrameId, parentBrowsingContext.userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#configStorage,
+                'about:blank', undefined, this.#logger);
             }
         }
         #handleFrameSubtreeWillBeDetached(params) {
@@ -8567,8 +8709,8 @@
                     }
                     else {
                         const parentId = this.#findFrameParentId(targetInfo, parentSessionCdpClient.sessionId);
-                        BrowsingContextImpl.create(targetInfo.targetId, parentId, userContext, this.#userContextStorage.getConfig(userContext), cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage,
-                        targetInfo.url === '' ? 'about:blank' : targetInfo.url, targetInfo.openerFrameId ?? targetInfo.openerId, this.#unhandledPromptBehavior, this.#logger);
+                        BrowsingContextImpl.create(targetInfo.targetId, parentId, userContext, cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#configStorage,
+                        targetInfo.url === '' ? 'about:blank' : targetInfo.url, targetInfo.openerFrameId ?? targetInfo.openerId, this.#logger);
                     }
                     return;
                 }
@@ -8610,7 +8752,7 @@
         #createCdpTarget(targetCdpClient, parentCdpClient, targetInfo, userContext) {
             this.#setEventListeners(targetCdpClient);
             this.#preloadScriptStorage.onCdpTargetCreated(targetInfo.targetId, userContext);
-            const target = CdpTarget.create(targetInfo.targetId, targetCdpClient, this.#browserCdpClient, parentCdpClient, this.#realmStorage, this.#eventManager, this.#preloadScriptStorage, this.#browsingContextStorage, this.#networkStorage, this.#prerenderingDisabled, this.#userContextStorage.getConfig(userContext), this.#unhandledPromptBehavior, this.#logger);
+            const target = CdpTarget.create(targetInfo.targetId, targetCdpClient, this.#browserCdpClient, parentCdpClient, this.#realmStorage, this.#eventManager, this.#preloadScriptStorage, this.#browsingContextStorage, this.#networkStorage, this.#configStorage, userContext, this.#logger);
             this.#networkStorage.onCdpTargetCreated(target);
             this.#bluetoothProcessor.onCdpTargetCreated(target);
             return target;
@@ -10580,17 +10722,21 @@
             this.#messageQueue = new ProcessingQueue(this.#processOutgoingMessage, this.#logger);
             this.#transport = bidiTransport;
             this.#transport.setOnMessage(this.#handleIncomingMessage);
+            const contextConfigStorage = new ContextConfigStorage();
             const userContextStorage = new UserContextStorage(browserCdpClient);
             this.#eventManager = new EventManager(this.#browsingContextStorage, userContextStorage);
             const networkStorage = new NetworkStorage(this.#eventManager, this.#browsingContextStorage, browserCdpClient, logger);
-            const mapperOptionsStorage = new MapperOptionsStorage();
             this.#bluetoothProcessor = new BluetoothProcessor(this.#eventManager, this.#browsingContextStorage);
-            this.#commandProcessor = new CommandProcessor(cdpConnection, browserCdpClient, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#preloadScriptStorage, networkStorage, mapperOptionsStorage, this.#bluetoothProcessor, userContextStorage, parser, async (options) => {
-                mapperOptionsStorage.mapperOptions = options;
+            this.#commandProcessor = new CommandProcessor(cdpConnection, browserCdpClient, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#preloadScriptStorage, networkStorage, contextConfigStorage, this.#bluetoothProcessor, userContextStorage, parser, async (options) => {
                 await browserCdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
                     ignore: options.acceptInsecureCerts ?? false,
                 });
-                new CdpTargetManager(cdpConnection, browserCdpClient, selfTargetId, this.#eventManager, this.#browsingContextStorage, userContextStorage, this.#realmStorage, networkStorage, this.#bluetoothProcessor, this.#preloadScriptStorage, defaultUserContextId, options?.['goog:prerenderingDisabled'] ?? false, options?.unhandledPromptBehavior, logger);
+                contextConfigStorage.updateGlobalConfig({
+                    acceptInsecureCerts: options.acceptInsecureCerts ?? false,
+                    userPromptHandler: options.unhandledPromptBehavior,
+                    prerenderingDisabled: options?.['goog:prerenderingDisabled'] ?? false,
+                });
+                new CdpTargetManager(cdpConnection, browserCdpClient, selfTargetId, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, networkStorage, contextConfigStorage, this.#bluetoothProcessor, this.#preloadScriptStorage, defaultUserContextId, logger);
                 await browserCdpClient.sendCommand('Target.setDiscoverTargets', {
                     discover: true,
                 });
@@ -16190,12 +16336,32 @@
         }));
     })(BrowsingContext$1 || (BrowsingContext$1 = {}));
     const EmulationCommandSchema = z.lazy(() => z.union([
+        Emulation$1.SetForcedColorsModeThemeOverrideSchema,
         Emulation$1.SetGeolocationOverrideSchema,
         Emulation$1.SetLocaleOverrideSchema,
         Emulation$1.SetScreenOrientationOverrideSchema,
         Emulation$1.SetTimezoneOverrideSchema,
     ]));
     var Emulation$1;
+    (function (Emulation) {
+        Emulation.SetForcedColorsModeThemeOverrideSchema = z.lazy(() => z.object({
+            method: z.literal('emulation.setForcedColorsModeThemeOverride'),
+            params: Emulation.SetForcedColorsModeThemeOverrideParametersSchema,
+        }));
+    })(Emulation$1 || (Emulation$1 = {}));
+    (function (Emulation) {
+        Emulation.SetForcedColorsModeThemeOverrideParametersSchema = z.lazy(() => z.object({
+            theme: z.union([Emulation.ForcedColorsModeThemeSchema, z.null()]),
+            contexts: z
+                .array(BrowsingContext$1.BrowsingContextSchema)
+                .min(1)
+                .optional(),
+            userContexts: z.array(Browser$1.UserContextSchema).min(1).optional(),
+        }));
+    })(Emulation$1 || (Emulation$1 = {}));
+    (function (Emulation) {
+        Emulation.ForcedColorsModeThemeSchema = z.lazy(() => z.enum(['light', 'dark']));
+    })(Emulation$1 || (Emulation$1 = {}));
     (function (Emulation) {
         Emulation.SetGeolocationOverrideSchema = z.lazy(() => z.object({
             method: z.literal('emulation.setGeolocationOverride'),
@@ -16321,6 +16487,7 @@
         Network$1.RemoveDataCollectorSchema,
         Network$1.RemoveInterceptSchema,
         Network$1.SetCacheBehaviorSchema,
+        Network$1.SetExtraHeadersSchema,
     ]));
     const NetworkEventSchema = z.lazy(() => z.union([
         Network$1.AuthRequiredSchema,
@@ -16708,6 +16875,22 @@
                 .array(BrowsingContext$1.BrowsingContextSchema)
                 .min(1)
                 .optional(),
+        }));
+    })(Network$1 || (Network$1 = {}));
+    (function (Network) {
+        Network.SetExtraHeadersSchema = z.lazy(() => z.object({
+            method: z.literal('network.setExtraHeaders'),
+            params: Network.SetExtraHeadersParametersSchema,
+        }));
+    })(Network$1 || (Network$1 = {}));
+    (function (Network) {
+        Network.SetExtraHeadersParametersSchema = z.lazy(() => z.object({
+            headers: z.array(Network.HeaderSchema).min(1),
+            contexts: z
+                .array(BrowsingContext$1.BrowsingContextSchema)
+                .min(1)
+                .optional(),
+            userContexts: z.array(Browser$1.UserContextSchema).min(1).optional(),
         }));
     })(Network$1 || (Network$1 = {}));
     const ScriptEventSchema = z.lazy(() => z.union([
@@ -17927,6 +18110,10 @@
             return parseObject(params, Network$1.ContinueWithAuthParametersSchema);
         }
         Network.parseContinueWithAuthParameters = parseContinueWithAuthParameters;
+        function parseDisownDataParameters(params) {
+            return parseObject(params, Network$1.DisownDataParametersSchema);
+        }
+        Network.parseDisownDataParameters = parseDisownDataParameters;
         function parseFailRequestParameters(params) {
             return parseObject(params, Network$1.FailRequestParametersSchema);
         }
@@ -17935,10 +18122,6 @@
             return parseObject(params, Network$1.GetDataParametersSchema);
         }
         Network.parseGetDataParameters = parseGetDataParameters;
-        function parseDisownDataParameters(params) {
-            return parseObject(params, Network$1.DisownDataParametersSchema);
-        }
-        Network.parseDisownDataParameters = parseDisownDataParameters;
         function parseProvideResponseParameters(params) {
             return parseObject(params, Network$1.ProvideResponseParametersSchema);
         }
@@ -17951,37 +18134,41 @@
             return parseObject(params, Network$1.RemoveInterceptParametersSchema);
         }
         Network.parseRemoveInterceptParameters = parseRemoveInterceptParameters;
-        function parseSetCacheBehavior(params) {
+        function parseSetCacheBehaviorParameters(params) {
             return parseObject(params, Network$1.SetCacheBehaviorParametersSchema);
         }
-        Network.parseSetCacheBehavior = parseSetCacheBehavior;
+        Network.parseSetCacheBehaviorParameters = parseSetCacheBehaviorParameters;
+        function parseSetExtraHeadersParameters(params) {
+            return parseObject(params, Network$1.SetExtraHeadersParametersSchema);
+        }
+        Network.parseSetExtraHeadersParameters = parseSetExtraHeadersParameters;
     })(Network || (Network = {}));
     var Script;
     (function (Script) {
-        function parseGetRealmsParams(params) {
-            return parseObject(params, Script$1.GetRealmsParametersSchema);
-        }
-        Script.parseGetRealmsParams = parseGetRealmsParams;
-        function parseEvaluateParams(params) {
-            return parseObject(params, Script$1.EvaluateParametersSchema);
-        }
-        Script.parseEvaluateParams = parseEvaluateParams;
-        function parseDisownParams(params) {
-            return parseObject(params, Script$1.DisownParametersSchema);
-        }
-        Script.parseDisownParams = parseDisownParams;
         function parseAddPreloadScriptParams(params) {
             return parseObject(params, Script$1.AddPreloadScriptParametersSchema);
         }
         Script.parseAddPreloadScriptParams = parseAddPreloadScriptParams;
-        function parseRemovePreloadScriptParams(params) {
-            return parseObject(params, Script$1.RemovePreloadScriptParametersSchema);
-        }
-        Script.parseRemovePreloadScriptParams = parseRemovePreloadScriptParams;
         function parseCallFunctionParams(params) {
             return parseObject(params, Script$1.CallFunctionParametersSchema);
         }
         Script.parseCallFunctionParams = parseCallFunctionParams;
+        function parseDisownParams(params) {
+            return parseObject(params, Script$1.DisownParametersSchema);
+        }
+        Script.parseDisownParams = parseDisownParams;
+        function parseEvaluateParams(params) {
+            return parseObject(params, Script$1.EvaluateParametersSchema);
+        }
+        Script.parseEvaluateParams = parseEvaluateParams;
+        function parseGetRealmsParams(params) {
+            return parseObject(params, Script$1.GetRealmsParametersSchema);
+        }
+        Script.parseGetRealmsParams = parseGetRealmsParams;
+        function parseRemovePreloadScriptParams(params) {
+            return parseObject(params, Script$1.RemovePreloadScriptParametersSchema);
+        }
+        Script.parseRemovePreloadScriptParams = parseRemovePreloadScriptParams;
     })(Script || (Script = {}));
     var BrowsingContext;
     (function (BrowsingContext) {
@@ -17989,42 +18176,22 @@
             return parseObject(params, BrowsingContext$1.ActivateParametersSchema);
         }
         BrowsingContext.parseActivateParams = parseActivateParams;
-        function parseGetTreeParams(params) {
-            return parseObject(params, BrowsingContext$1.GetTreeParametersSchema);
-        }
-        BrowsingContext.parseGetTreeParams = parseGetTreeParams;
-        function parseNavigateParams(params) {
-            return parseObject(params, BrowsingContext$1.NavigateParametersSchema);
-        }
-        BrowsingContext.parseNavigateParams = parseNavigateParams;
-        function parseReloadParams(params) {
-            return parseObject(params, BrowsingContext$1.ReloadParametersSchema);
-        }
-        BrowsingContext.parseReloadParams = parseReloadParams;
-        function parseCreateParams(params) {
-            return parseObject(params, BrowsingContext$1.CreateParametersSchema);
-        }
-        BrowsingContext.parseCreateParams = parseCreateParams;
-        function parseCloseParams(params) {
-            return parseObject(params, BrowsingContext$1.CloseParametersSchema);
-        }
-        BrowsingContext.parseCloseParams = parseCloseParams;
         function parseCaptureScreenshotParams(params) {
             return parseObject(params, BrowsingContext$1.CaptureScreenshotParametersSchema);
         }
         BrowsingContext.parseCaptureScreenshotParams = parseCaptureScreenshotParams;
-        function parsePrintParams(params) {
-            return parseObject(params, BrowsingContext$1.PrintParametersSchema);
+        function parseCloseParams(params) {
+            return parseObject(params, BrowsingContext$1.CloseParametersSchema);
         }
-        BrowsingContext.parsePrintParams = parsePrintParams;
-        function parseSetViewportParams(params) {
-            return parseObject(params, BrowsingContext$1.SetViewportParametersSchema);
+        BrowsingContext.parseCloseParams = parseCloseParams;
+        function parseCreateParams(params) {
+            return parseObject(params, BrowsingContext$1.CreateParametersSchema);
         }
-        BrowsingContext.parseSetViewportParams = parseSetViewportParams;
-        function parseTraverseHistoryParams(params) {
-            return parseObject(params, BrowsingContext$1.TraverseHistoryParametersSchema);
+        BrowsingContext.parseCreateParams = parseCreateParams;
+        function parseGetTreeParams(params) {
+            return parseObject(params, BrowsingContext$1.GetTreeParametersSchema);
         }
-        BrowsingContext.parseTraverseHistoryParams = parseTraverseHistoryParams;
+        BrowsingContext.parseGetTreeParams = parseGetTreeParams;
         function parseHandleUserPromptParameters(params) {
             return parseObject(params, BrowsingContext$1.HandleUserPromptParametersSchema);
         }
@@ -18033,6 +18200,26 @@
             return parseObject(params, BrowsingContext$1.LocateNodesParametersSchema);
         }
         BrowsingContext.parseLocateNodesParams = parseLocateNodesParams;
+        function parseNavigateParams(params) {
+            return parseObject(params, BrowsingContext$1.NavigateParametersSchema);
+        }
+        BrowsingContext.parseNavigateParams = parseNavigateParams;
+        function parsePrintParams(params) {
+            return parseObject(params, BrowsingContext$1.PrintParametersSchema);
+        }
+        BrowsingContext.parsePrintParams = parsePrintParams;
+        function parseReloadParams(params) {
+            return parseObject(params, BrowsingContext$1.ReloadParametersSchema);
+        }
+        BrowsingContext.parseReloadParams = parseReloadParams;
+        function parseSetViewportParams(params) {
+            return parseObject(params, BrowsingContext$1.SetViewportParametersSchema);
+        }
+        BrowsingContext.parseSetViewportParams = parseSetViewportParams;
+        function parseTraverseHistoryParams(params) {
+            return parseObject(params, BrowsingContext$1.TraverseHistoryParametersSchema);
+        }
+        BrowsingContext.parseTraverseHistoryParams = parseTraverseHistoryParams;
     })(BrowsingContext || (BrowsingContext = {}));
     var Session;
     (function (Session) {
@@ -18050,6 +18237,10 @@
     })(Session || (Session = {}));
     var Emulation;
     (function (Emulation) {
+        function parseSetForcedColorsModeThemeOverrideParams(params) {
+            return parseObject(params, Emulation$1.SetForcedColorsModeThemeOverrideParametersSchema);
+        }
+        Emulation.parseSetForcedColorsModeThemeOverrideParams = parseSetForcedColorsModeThemeOverrideParams;
         function parseSetGeolocationOverrideParams(params) {
             if ('coordinates' in params && 'error' in params) {
                 throw new InvalidArgumentException('Coordinates and error cannot be set at the same time');
@@ -18087,6 +18278,10 @@
     })(Input || (Input = {}));
     var Storage;
     (function (Storage) {
+        function parseDeleteCookiesParams(params) {
+            return parseObject(params, Storage$1.DeleteCookiesParametersSchema);
+        }
+        Storage.parseDeleteCookiesParams = parseDeleteCookiesParams;
         function parseGetCookiesParams(params) {
             return parseObject(params, Storage$1.GetCookiesParametersSchema);
         }
@@ -18095,28 +18290,20 @@
             return parseObject(params, Storage$1.SetCookieParametersSchema);
         }
         Storage.parseSetCookieParams = parseSetCookieParams;
-        function parseDeleteCookiesParams(params) {
-            return parseObject(params, Storage$1.DeleteCookiesParametersSchema);
-        }
-        Storage.parseDeleteCookiesParams = parseDeleteCookiesParams;
     })(Storage || (Storage = {}));
     var Cdp;
     (function (Cdp) {
-        const SendCommandRequestSchema = objectType({
-            method: stringType(),
-            params: objectType({}).passthrough().optional(),
-            session: stringType().optional(),
-        });
         const GetSessionRequestSchema = objectType({
             context: BrowsingContext$1.BrowsingContextSchema,
         });
         const ResolveRealmRequestSchema = objectType({
             realm: Script$1.RealmSchema,
         });
-        function parseSendCommandRequest(params) {
-            return parseObject(params, SendCommandRequestSchema);
-        }
-        Cdp.parseSendCommandRequest = parseSendCommandRequest;
+        const SendCommandRequestSchema = objectType({
+            method: stringType(),
+            params: objectType({}).passthrough().optional(),
+            session: stringType().optional(),
+        });
         function parseGetSessionRequest(params) {
             return parseObject(params, GetSessionRequestSchema);
         }
@@ -18125,6 +18312,10 @@
             return parseObject(params, ResolveRealmRequestSchema);
         }
         Cdp.parseResolveRealmRequest = parseResolveRealmRequest;
+        function parseSendCommandRequest(params) {
+            return parseObject(params, SendCommandRequestSchema);
+        }
+        Cdp.parseSendCommandRequest = parseSendCommandRequest;
     })(Cdp || (Cdp = {}));
     var Permissions;
     (function (Permissions) {
@@ -18138,6 +18329,10 @@
     })(Permissions || (Permissions = {}));
     var Bluetooth;
     (function (Bluetooth) {
+        function parseDisableSimulationParameters(params) {
+            return parseObject(params, Bluetooth$1.DisableSimulationParametersSchema);
+        }
+        Bluetooth.parseDisableSimulationParameters = parseDisableSimulationParameters;
         function parseHandleRequestDevicePromptParams(params) {
             return parseObject(params, Bluetooth$1
                 .HandleRequestDevicePromptParametersSchema);
@@ -18147,10 +18342,6 @@
             return parseObject(params, Bluetooth$1.SimulateAdapterParametersSchema);
         }
         Bluetooth.parseSimulateAdapterParams = parseSimulateAdapterParams;
-        function parseDisableSimulationParameters(params) {
-            return parseObject(params, Bluetooth$1.DisableSimulationParametersSchema);
-        }
-        Bluetooth.parseDisableSimulationParameters = parseDisableSimulationParameters;
         function parseSimulateAdvertisementParams(params) {
             return parseObject(params, Bluetooth$1.SimulateAdvertisementParametersSchema);
         }
@@ -18297,6 +18488,9 @@
         parseSendCommandParams(params) {
             return Cdp.parseSendCommandRequest(params);
         }
+        parseSetForcedColorsModeThemeOverrideParams(params) {
+            return Emulation.parseSetForcedColorsModeThemeOverrideParams(params);
+        }
         parseSetGeolocationOverrideParams(params) {
             return Emulation.parseSetGeolocationOverrideParams(params);
         }
@@ -18351,8 +18545,11 @@
         parseRemoveInterceptParams(params) {
             return Network.parseRemoveInterceptParameters(params);
         }
-        parseSetCacheBehavior(params) {
-            return Network.parseSetCacheBehavior(params);
+        parseSetCacheBehaviorParams(params) {
+            return Network.parseSetCacheBehaviorParameters(params);
+        }
+        parseSetExtraHeadersParams(params) {
+            return Network.parseSetExtraHeadersParameters(params);
         }
         parseSetPermissionsParams(params) {
             return Permissions.parseSetPermissionsParams(params);
