@@ -1619,8 +1619,6 @@ source_set("platform_browser_tests") {
     ]
     deps += [
       ":test_support",
-      "//chrome/browser/devtools",
-      "//chrome/browser/devtools:test_support",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/extensions/api/bookmarks/test:test_support",
@@ -1698,6 +1696,7 @@ source_set("platform_browser_tests") {
     deps += [
       ":sync_integration_test_support",
       "//chrome/browser/data_saver",
+      "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/preloading:prefs",
       "//chrome/browser/ui/autofill",

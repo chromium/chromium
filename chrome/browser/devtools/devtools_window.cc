@@ -77,7 +77,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
-#include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
 #include "net/cert/x509_certificate.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -93,6 +92,10 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 
 #include "base/win/windows_h_disallowed.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/view_type_utils.h"
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -1178,8 +1181,10 @@ DevToolsWindow::DevToolsWindow(FrontendType frontend_type,
     Observe(inspected_web_contents);
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extensions::SetViewType(main_web_contents_,
                           extensions::mojom::ViewType::kDeveloperTools);
+#endif
 
   // Initialize docked page to be of the right size.
   if (can_dock_ && inspected_web_contents) {

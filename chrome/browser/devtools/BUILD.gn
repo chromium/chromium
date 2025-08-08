@@ -23,7 +23,7 @@ _protocol_generated = [
   "protocol/target.h",
 ]
 
-if (!is_android || is_desktop_android) {
+if (enable_devtools_frontend) {
   _protocol_generated += [
     "protocol/autofill.cc",
     "protocol/autofill.h",

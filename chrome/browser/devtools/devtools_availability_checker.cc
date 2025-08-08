@@ -8,8 +8,11 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/web_app.h"
@@ -51,6 +54,7 @@ policy::DeveloperToolsPolicyHandler::Availability GetDevToolsAvailability(
 bool IsInspectionAllowed(Profile* profile, content::WebContents* web_contents) {
   const extensions::Extension* extension = nullptr;
   if (web_contents) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     if (auto* process_manager = extensions::ProcessManager::Get(
             web_contents->GetBrowserContext())) {
       extension = process_manager->GetExtensionForWebContents(web_contents);
@@ -58,6 +62,7 @@ bool IsInspectionAllowed(Profile* profile, content::WebContents* web_contents) {
     if (extension) {
       return IsInspectionAllowed(profile, extension);
     }
+#endif
 #if !BUILDFLAG(IS_ANDROID)
     if (!web_app::AreWebAppsEnabled(profile)) {
       return IsInspectionAllowed(profile, extension);
@@ -94,6 +99,7 @@ bool IsInspectionAllowed(Profile* profile,
     case Availability::kAllowed:
       return true;
     case Availability::kDisallowedForForceInstalledExtensions:
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
       if (!extension) {
         return true;
       }
@@ -106,6 +112,7 @@ bool IsInspectionAllowed(Profile* profile,
           profile->GetProfilePolicyConnector()->IsManaged()) {
         return false;
       }
+#endif
       return true;
     default:
       NOTREACHED() << "Unknown developer tools policy";
