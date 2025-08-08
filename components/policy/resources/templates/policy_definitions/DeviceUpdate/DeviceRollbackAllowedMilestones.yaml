@@ -1,21 +1,25 @@
-caption: Number of milestones rollback is allowed
+caption: Number of milestones kernel key increments are held back
 default: 4
 desc: |-
-  Specifies the minimum number of <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> milestones rollback should be allowed starting from the stable version at any time.
+  Depending on the board and critical vulnerability patches, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> milestones may include kernel key increments that are incompatible with earlier milestones.
 
-  Default is 0 for consumer, 4 (approx. half a year) for enterprise enrolled devices.
+  On consumer devices, these increments are applied as soon as a release with the increment is installed. In verified mode, this prevents rollback to older versions that do not have the increment.
 
-  Setting this policy prevents rollback protection to apply for at least this number of milestones.
+  On enrolled devices, this policy controls when the increment is applied: the increment can be held back for up to 4 milestones (approximately 4 months) after the first milestone with the increment was released on the Stable channel. This allows enterprises to postpone rollback protection for this duration.
 
-  Setting this policy to a lower value has a permanent effect: the device MAY not be able to roll back to earlier versions even after the policy is reset to a larger value.
+  Default is 4 for enrolled devices.
 
-  Actual rollback possibilities may also depend on the board and critical vulnerability patches.
+  Setting the value to 0 enforces the same behavior as in consumer devices.
+
+  Setting this policy to a lower value can have a permanent effect: Once the increment is applied on the device, the device cannot rollback to milestone with lower kernel key version.
+
+  This cannot be undone by setting the policy to a larger value afterwards.
 device_only: true
 example_value: 4
 features:
   dynamic_refresh: true
 owners:
-- mpolzer@google.com
+- rbock@google.com
 - chromeos-commercial-remote-management@google.com
 schema:
   maximum: 4
