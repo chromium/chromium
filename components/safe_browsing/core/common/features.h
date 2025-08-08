@@ -87,6 +87,11 @@ BASE_DECLARE_FEATURE(kClientSideDetectionRedirectChainKillswitch);
 // preclassification check conditions pass.
 BASE_DECLARE_FEATURE(kClientSideDetectionSamplePing);
 
+#if BUILDFLAG(IS_ANDROID)
+// Send IntelligentScanInfo in CSD pings on Android.
+BASE_DECLARE_FEATURE(kClientSideDetectionSendIntelligentScanInfoAndroid);
+#endif
+
 // Show a warning to the user based on the
 // IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2.
 BASE_DECLARE_FEATURE(kClientSideDetectionShowLlamaScamVerdictWarning);

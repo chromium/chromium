@@ -52,12 +52,14 @@ std::unique_ptr<KeyedService>
 ClientSideDetectionIntelligentScanDelegateFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
-#if BUILDFLAG(IS_ANDROID)
-  return std::make_unique<ClientSideDetectionIntelligentScanDelegateAndroid>();
-#else
   Profile* profile = Profile::FromBrowserContext(context);
-  auto* opt_guide = OptimizationGuideKeyedServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(context));
+#if BUILDFLAG(IS_ANDROID)
+
+  return std::make_unique<ClientSideDetectionIntelligentScanDelegateAndroid>(
+      *profile->GetPrefs());
+#else
+  auto* opt_guide =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
 
   if (!opt_guide) {
     return nullptr;
