@@ -636,8 +636,16 @@ clang::SourceRange GetExprRange(const clang::Expr& expr,
   }
 
   // Somehow single token expressions do not have the expected end location.
-  assert(expr.getBeginLoc() == expr.getEndLoc() &&
-         "Defaults to a single token expr.");
+  const clang::SourceLocation begin_location = expr.getBeginLoc();
+  const clang::SourceLocation end_location = expr.getEndLoc();
+  if (begin_location != end_location) {
+    llvm::errs() << "Error: expected token with unhelpful `SourceLocation`s, "
+                    "but got:\n  "
+                 << begin_location.printToString(source_manager) << "\nand\n  "
+                 << end_location.printToString(source_manager) << "\n";
+    assert(false && "Defaults to a single token expr.");
+  }
+
   clang::SourceLocation begin_loc = ToSpellingLoc(expr.getBeginLoc());
   size_t token_length =
       clang::Lexer::MeasureTokenLength(begin_loc, source_manager, lang_opts);
