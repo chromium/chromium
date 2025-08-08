@@ -2558,7 +2558,7 @@ TEST_F(StorageAccessHeadersCorsURLLoaderTest,
        ResourceRequestParamsActivateAccess) {
   ResetFactoryParams factory_params;
   factory_params.is_trusted = true;
-  url::Origin initiator = url::Origin::Create(GURL("https://sub.example.com"));
+  url::Origin initiator = url::Origin::Create(kUrl);
   ResetFactory(initiator, kRendererProcessId, factory_params);
   network_context()->cookie_manager()->BlockThirdPartyCookies(true);
   base::test::TestFuture<void> future;
@@ -2584,8 +2584,8 @@ TEST_F(StorageAccessHeadersCorsURLLoaderTest,
   // The status is active because this is a cross-site context, cross-site
   // cookies are blocked, there's a matching STORAGE_ACCESS grant that could
   // allow access, the caller is opting to use that permission via
-  // `storage_access_api_status`, *and* the request initiator is same-site with
-  // the target URL.
+  // `storage_access_api_status`, *and* the request initiator is same-origin
+  // with the target URL.
   ASSERT_EQ(ComputeStorageAccessStatus(request),
             net::cookie_util::StorageAccessStatus::kActive);
 
