@@ -215,53 +215,60 @@ bool PreferHeuristicOverServer(FieldType heuristic_type,
   // decision to prefer the heuristics in these cases, but it looks like
   // it might be better to fix this server-side.
   // See http://crbug.com/429236 for background.
-  bool believe_server =
-      !(server_type == NAME_FULL && heuristic_type == CREDIT_CARD_NAME_FULL) &&
-      !(server_type == CREDIT_CARD_NAME_FULL && heuristic_type == NAME_FULL) &&
-      !(server_type == NAME_FIRST &&
-        heuristic_type == CREDIT_CARD_NAME_FIRST) &&
-      !(server_type == NAME_LAST && heuristic_type == CREDIT_CARD_NAME_LAST);
+  if ((server_type == NAME_FULL && heuristic_type == CREDIT_CARD_NAME_FULL) ||
+      (server_type == CREDIT_CARD_NAME_FULL && heuristic_type == NAME_FULL) ||
+      (server_type == NAME_FIRST && heuristic_type == CREDIT_CARD_NAME_FIRST) ||
+      (server_type == NAME_LAST && heuristic_type == CREDIT_CARD_NAME_LAST)) {
+    return true;
+  }
 
   // Either way, retain a preference for the CVC heuristic over the
   // server's password predictions (http://crbug.com/469007)
-  believe_server =
-      believe_server &&
-      !(GroupTypeOfFieldType(server_type) == FieldTypeGroup::kPasswordField &&
-        heuristic_type == CREDIT_CARD_VERIFICATION_CODE);
+  if (GroupTypeOfFieldType(server_type) == FieldTypeGroup::kPasswordField &&
+      heuristic_type == CREDIT_CARD_VERIFICATION_CODE) {
+    return true;
+  }
 
   // For structured last name tokens the heuristic predictions get precedence
   // over the server predictions.
-  believe_server = believe_server && heuristic_type != NAME_LAST_SECOND &&
-                   heuristic_type != NAME_LAST_FIRST;
+  if (heuristic_type == NAME_LAST_SECOND || heuristic_type == NAME_LAST_FIRST) {
+    return true;
+  }
 
   // For structured address tokens the heuristic predictions get precedence
   // over the server predictions.
-  believe_server = believe_server &&
-                   heuristic_type != ADDRESS_HOME_STREET_NAME &&
-                   heuristic_type != ADDRESS_HOME_HOUSE_NUMBER;
+  if (heuristic_type == ADDRESS_HOME_STREET_NAME ||
+      heuristic_type == ADDRESS_HOME_HOUSE_NUMBER) {
+    return true;
+  }
 
   // For merchant promo code fields the heuristic predictions get precedence
   // over the server predictions.
-  believe_server = believe_server && (heuristic_type != MERCHANT_PROMO_CODE);
+  if (heuristic_type == MERCHANT_PROMO_CODE) {
+    return true;
+  }
 
   // For international bank account number (IBAN) fields the heuristic
   // predictions get precedence over the server predictions.
-  believe_server = believe_server && (heuristic_type != IBAN_VALUE);
+  if (heuristic_type == IBAN_VALUE) {
+    return true;
+  }
 
   // For loyalty card fields the heuristic predictions get precedence over
   // `UNKNOWN_TYPE` server prediction.
-  believe_server =
-      believe_server &&
-      !(heuristic_type == LOYALTY_MEMBERSHIP_ID && server_type == UNKNOWN_TYPE);
+  if (heuristic_type == LOYALTY_MEMBERSHIP_ID && server_type == UNKNOWN_TYPE) {
+    return true;
+  }
 
   // Password server predictions are ignored when the field is parsed to
   // be an OTP field with the clientside model, as incorrect server
   // password predictions are common in this case.
-  believe_server =
-      believe_server &&
-      !(password_ml_classification_type == ONE_TIME_CODE &&
-        GroupTypeOfFieldType(server_type) == FieldTypeGroup::kPasswordField);
-  return !believe_server;
+  if (password_ml_classification_type == ONE_TIME_CODE &&
+      GroupTypeOfFieldType(server_type) == FieldTypeGroup::kPasswordField) {
+    return true;
+  }
+
+  return false;
 }
 
 // Util function for `ComputedType`. Returns the values of HtmlFieldType that
