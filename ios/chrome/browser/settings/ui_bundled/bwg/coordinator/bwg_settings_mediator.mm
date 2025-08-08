@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
@@ -77,6 +78,10 @@
 
 - (void)setPageContentSharingPref:(BOOL)value {
   _prefService->SetBoolean(prefs::kIOSBWGPageContentSetting, value);
+  ios::provider::BWGPageContextAttachmentState attachmentState =
+      value ? ios::provider::BWGPageContextAttachmentState::kAttached
+            : ios::provider::BWGPageContextAttachmentState::kUserDisabled;
+  ios::provider::UpdatePageAttachmentState(attachmentState);
 }
 
 #pragma mark - BooleanObserver
