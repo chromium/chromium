@@ -440,6 +440,17 @@ enum WebDXFeature {
   kLogicalAssignments = 378,
   kNullishCoalescing = 379,
   kCrashReportStorageAPIInitialize = 380,
+  kExtTextureCompressionBptc = 381,
+  kExtTextureCompressionRgtc = 382,
+  kExtTextureNorm16 = 383,
+  kOesFboRenderMipmap = 384,
+  kWebglColorManagement = 385,
+  kWebglCompressedTexturePvrtc = 386,
+  kWebglDesynchronized = 387,
+  kWebglMultiDraw = 388,
+  kWebglOesDrawBuffersIndexed = 389,
+  kWebgl2ColorManagement = 390,
+  kWebgl2Desynchronized = 391,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

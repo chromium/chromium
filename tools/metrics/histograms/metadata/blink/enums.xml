@@ -8384,6 +8384,17 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="378" label="LogicalAssignments"/>
   <int value="379" label="NullishCoalescing"/>
   <int value="380" label="CrashReportStorageAPIInitialize"/>
+  <int value="381" label="ExtTextureCompressionBptc"/>
+  <int value="382" label="ExtTextureCompressionRgtc"/>
+  <int value="383" label="ExtTextureNorm16"/>
+  <int value="384" label="OesFboRenderMipmap"/>
+  <int value="385" label="WebglColorManagement"/>
+  <int value="386" label="WebglCompressedTexturePvrtc"/>
+  <int value="387" label="WebglDesynchronized"/>
+  <int value="388" label="WebglMultiDraw"/>
+  <int value="389" label="WebglOesDrawBuffersIndexed"/>
+  <int value="390" label="Webgl2ColorManagement"/>
+  <int value="391" label="Webgl2Desynchronized"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
