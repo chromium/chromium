@@ -197,11 +197,12 @@ class GlicMetricsTest : public testing::Test {
 TEST_F(GlicMetricsTest, Basic) {
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics_->OnResponseStarted();
-  metrics_->OnResponseStopped();
+  metrics_->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
   metrics_->OnResponseRated(/*positive=*/true);
   metrics_->OnSessionTerminated();
 
   histogram_tester_.ExpectTotalCount("Glic.Response.StopTime", 1);
+  histogram_tester_.ExpectTotalCount("Glic.Response.StopTime.UnknownCause", 1);
   histogram_tester_.ExpectUniqueSample(
       "Glic.Session.InputSubmit.BrowserActiveState", 5 /*kBrowserHidden*/, 1);
   histogram_tester_.ExpectUniqueSample(
@@ -213,6 +214,8 @@ TEST_F(GlicMetricsTest, Basic) {
   EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponseInputSubmit"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponseStart"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponseStop"), 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponseStopUnknownCause"),
+            1);
   EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponse"), 0);
 }
 
@@ -224,7 +227,7 @@ TEST_F(GlicMetricsTest, BasicVisible) {
                              mojom::InvocationSource::kOsButton);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics_->OnResponseStarted();
-  metrics_->OnResponseStopped();
+  metrics_->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
   metrics_->OnResponseRated(/*positive=*/true);
   metrics_->OnSessionTerminated();
   metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
@@ -245,7 +248,7 @@ TEST_F(GlicMetricsTest, BasicUkm) {
   for (int i = 0; i < 2; ++i) {
     metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
     metrics_->OnResponseStarted();
-    metrics_->OnResponseStopped();
+    metrics_->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
   }
 
   {
@@ -299,7 +302,7 @@ TEST_F(GlicMetricsTest, BasicUkmWithTarget) {
   metrics_->OnGlicWindowOpen(/*attached=*/false, mojom::InvocationSource::kFre);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics_->OnResponseStarted();
-  metrics_->OnResponseStopped();
+  metrics_->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
 
   ukm::SourceId ukm_id =
       web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -320,7 +323,38 @@ TEST_F(GlicMetricsTest, BasicUkmWithTarget) {
 
   delegate_->SetWebContents(nullptr);
 }
+TEST_F(GlicMetricsTest, BasicStopReasonOther) {
+  delegate_->showing_ = true;
+  delegate_->attached_ = true;
 
+  metrics_->OnGlicWindowOpen(/*attached=*/true,
+                             mojom::InvocationSource::kOsButton);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_->OnResponseStarted();
+  metrics_->OnResponseStopped(mojom::ResponseStopCause::kOther);
+  metrics_->OnSessionTerminated();
+  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
+
+  histogram_tester_.ExpectTotalCount("Glic.Response.StopTime.Other", 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponseStopOther"), 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponseStop"), 1);
+}
+TEST_F(GlicMetricsTest, BasicStopReasonByUser) {
+  delegate_->showing_ = true;
+  delegate_->attached_ = true;
+
+  metrics_->OnGlicWindowOpen(/*attached=*/true,
+                             mojom::InvocationSource::kOsButton);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_->OnResponseStarted();
+  metrics_->OnResponseStopped(mojom::ResponseStopCause::kUser);
+  metrics_->OnSessionTerminated();
+  metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
+
+  histogram_tester_.ExpectTotalCount("Glic.Response.StopTime.ByUser", 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponseStopByUser"), 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponse"), 1);
+}
 TEST_F(GlicMetricsTest, SegmentationOsButtonAttachedText) {
   delegate_->showing_ = true;
   delegate_->attached_ = true;
@@ -329,7 +363,7 @@ TEST_F(GlicMetricsTest, SegmentationOsButtonAttachedText) {
                              mojom::InvocationSource::kOsButton);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics_->OnResponseStarted();
-  metrics_->OnResponseStopped();
+  metrics_->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
   metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
 
   histogram_tester_.ExpectTotalCount("Glic.Response.Segmentation", 1);
@@ -346,7 +380,7 @@ TEST_F(GlicMetricsTest, Segmentation3DotsMenuDetachedAudio) {
                              mojom::InvocationSource::kThreeDotsMenu);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
   metrics_->OnResponseStarted();
-  metrics_->OnResponseStopped();
+  metrics_->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
   metrics_->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
 
   histogram_tester_.ExpectTotalCount("Glic.Response.Segmentation", 1);

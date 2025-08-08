@@ -687,7 +687,7 @@ interface WebClientHandler {
   OnResponseStarted();
 
   // Called when the web client stops responding.
-  OnResponseStopped();
+  OnResponseStopped(OnResponseStoppedDetails details);
 
   // Called when the session is terminated.
   OnSessionTerminated();
@@ -841,6 +841,18 @@ enum WebClientModel {
   [Default] kDefault = 0,
   // Actor operation mode.
   kActor = 1,
+};
+
+[Stable, Extensible]
+enum ResponseStopCause {
+  [Default] kUnknown = 0,
+  kUser = 1,
+  kOther = 2
+};
+
+// Details of response stop event.
+struct OnResponseStoppedDetails {
+  ResponseStopCause cause;
 };
 
 // Carries back to the browser information on how to configure the panel being

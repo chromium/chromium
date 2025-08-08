@@ -338,7 +338,7 @@ void GlicMetrics::OnResponseStarted() {
       .Record(ukm::UkmRecorder::Get());
 }
 
-void GlicMetrics::OnResponseStopped() {
+void GlicMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
   // The client may call "stopped" without "started" for very short responses.
   // We synthetically call it ourselves in this case.
   if (!input_submitted_time_.is_null() && !response_started_) {
@@ -346,14 +346,36 @@ void GlicMetrics::OnResponseStopped() {
   }
 
   base::RecordAction(base::UserMetricsAction("GlicResponseStop"));
+  std::string_view cause_suffix;
+  switch (cause) {
+    case mojom::ResponseStopCause::kUser:
+      cause_suffix = ".ByUser";
+      base::RecordAction(base::UserMetricsAction("GlicResponseStopByUser"));
+      break;
+    case mojom::ResponseStopCause::kOther:
+      cause_suffix = ".Other";
+      base::RecordAction(base::UserMetricsAction("GlicResponseStopOther"));
+      break;
+    case mojom::ResponseStopCause::kUnknown:
+      cause_suffix = ".UnknownCause";
+      base::RecordAction(
+          base::UserMetricsAction("GlicResponseStopUnknownCause"));
+      break;
+  }
 
   if (input_submitted_time_.is_null()) {
     base::UmaHistogramEnumeration("Glic.Metrics.Error",
                                   Error::kResponseStopWithoutInput);
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Glic.Metrics.Error", cause_suffix}),
+        Error::kResponseStopWithoutInput);
   } else {
     base::TimeTicks now = base::TimeTicks::Now();
     base::UmaHistogramMediumTimes("Glic.Response.StopTime",
                                   now - input_submitted_time_);
+    base::UmaHistogramMediumTimes(
+        base::StrCat({"Glic.Response.StopTime", cause_suffix}),
+        now - input_submitted_time_);
   }
 
   // Reset all times.

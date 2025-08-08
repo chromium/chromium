@@ -1092,8 +1092,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->metrics()->OnResponseStarted();
   }
 
-  void OnResponseStopped() override {
-    glic_service_->metrics()->OnResponseStopped();
+  void OnResponseStopped(mojom::OnResponseStoppedDetailsPtr details) override {
+    mojom::ResponseStopCause cause = mojom::ResponseStopCause::kUnknown;
+    if (details) {
+      cause = details->cause;
+    }
+    glic_service_->metrics()->OnResponseStopped(cause);
   }
 
   void OnSessionTerminated() override {

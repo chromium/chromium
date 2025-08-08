@@ -1241,7 +1241,7 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
       ScrollToAsyncWithDocumentId(ExactTextSelector("does not matter")),
       WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived), Do([&]() {
         glic_metrics->OnResponseStarted();
-        glic_metrics->OnResponseStopped();
+        glic_metrics->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
       }),
       Do([&]() {
         fake_service()->NotifyAttachment(
@@ -1260,7 +1260,7 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
       ScrollToAsyncWithDocumentId(ExactTextSelector("does not matter")),
       WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived), Do([&]() {
         glic_metrics->OnResponseStarted();
-        glic_metrics->OnResponseStopped();
+        glic_metrics->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
       }),
       Do([&]() {
         fake_service()->NotifyAttachment(

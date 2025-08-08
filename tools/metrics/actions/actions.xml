@@ -13058,6 +13058,34 @@ should be able to be added at any place in this file.
   <description>Tracks a single response stop in glic.</description>
 </action>
 
+<action name="GlicResponseStopByUser">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Tracks a single response stop in glic, initiated by the user.
+  </description>
+</action>
+
+<action name="GlicResponseStopOther" not_user_triggered="true">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Tracks a single response stop in glic, initiated by a non-user cause (could
+    be normal completion).
+  </description>
+</action>
+
+<action name="GlicResponseStopUnknownCause">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Tracks a single response stop in glic, the cause is unspecified.
+  </description>
+</action>
+
 <action name="GlicSessionBegin">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>

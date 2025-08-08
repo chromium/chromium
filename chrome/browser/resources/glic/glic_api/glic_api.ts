@@ -716,7 +716,7 @@ export declare interface GlicBrowserHostMetrics {
    * Called when the response was completed, cancelled, or paused for the first
    * time.
    */
-  onResponseStopped?(): void;
+  onResponseStopped?(details?: OnResponseStoppedDetails): void;
 
   /** Called when a session terminates. */
   onSessionTerminated?(): void;
@@ -750,6 +750,19 @@ export enum WebClientModel {
 
   /** Actor model. */
   ACTOR = 1,
+}
+
+export enum ResponseStopCause {
+  /** User cancelled response. */
+  USER = 0,
+
+  /** System cancelled response for another reason. */
+  OTHER = 1,
+}
+
+/** Details for metrics recording purposes. */
+export declare interface OnResponseStoppedDetails {
+  cause?: ResponseStopCause;
 }
 
 /** An encoded journal. */
