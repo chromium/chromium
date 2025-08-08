@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/dom/tree_ordered_list.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -42,15 +43,36 @@
 namespace blink {
 
 class MediaQueryEvaluator;
+class Node;
 class StyleSheet;
 class StyleEngine;
-class RuleSetDiff;
 
+// StyleSheetCollection is responsible for keeping track of which style sheets
+// are relevant for a given tree scope. Style sheets may be relevant for either
+// or both of:
+//
+//  - DOM visibility purposes (the “style sheet list”), or
+//  - Style calculation (“active style sheets”)
+//
+// The style sheets are collected from places like <link> nodes, <style> nodes,
+// adopted style sheets, inspector-added style sheets and so on. (You tell the
+// collection about relevant DOM nodes by calling AddStyleSheetCandidateNode()
+// and RemoveStyleSheetCandidateNode().)
+//
+// The precise logic for which sheets are in which list (e.g., are adopted
+// style sheets visible to the DOM or not?) will depend on what kind of
+// tree scope you are interested in; the actual collection logic lies in
+// subclasses DocumentStyleSheetCollection and ShadowTreeStyleSheetCollection.
+//
+// Note, however, that even ShadowTreeStyleSheetCollection only considers
+// the list of stylesheets for _one_ tree scope, not any parent tree scopes.
+// Thus, ScopedStyleResolver also needs to consider StyleSheetCollections
+// for parent tree scopes (for nodes in Shadow DOM), since style sheets
+// there may be relevant for ::host, ::part() and similar.
 class CORE_EXPORT StyleSheetCollection
     : public GarbageCollected<StyleSheetCollection>,
       public NameClient {
  public:
-  StyleSheetCollection();
   StyleSheetCollection(const StyleSheetCollection&) = delete;
   StyleSheetCollection& operator=(const StyleSheetCollection&) = delete;
   ~StyleSheetCollection() override = default;
@@ -61,35 +83,48 @@ class CORE_EXPORT StyleSheetCollection
   const HeapVector<Member<StyleSheet>>& StyleSheetsForStyleSheetList() const {
     return style_sheets_for_style_sheet_list_;
   }
-  const HeapVector<Member<RuleSetDiff>>& RuleSetDiffs() const {
-    return rule_set_diffs_;
-  }
 
-  void Swap(StyleSheetCollection&);
-  void SwapSheetsForSheetList(HeapVector<Member<StyleSheet>>&);
-  void AppendActiveStyleSheet(CSSStyleSheet*);
-  void AppendSheetForList(StyleSheet*);
-  void AppendRuleSetDiff(Member<RuleSetDiff>);
   void MarkSheetListDirty() { sheet_list_dirty_ = true; }
-
-  // Creates RuleSets for everything in active_style_sheets_.
-  // This is done as a separate pass, because we do not know what mixins
-  // we have (which is required to create RuleSets) before we've seen
-  // all stylesheets.
-  //
-  // Can only be called once.
-  void CreateRuleSets(const StyleEngine& engine,
-                      const MediaQueryEvaluator& medium);
 
   virtual void Trace(Visitor*) const;
   const char* GetHumanReadableName() const override {
     return "StyleSheetCollection";
   }
 
+  void AddStyleSheetCandidateNode(Node&);
+  void RemoveStyleSheetCandidateNode(Node& node) {
+    style_sheet_candidate_nodes_.Remove(&node);
+  }
+  bool HasStyleSheetCandidateNodes() const {
+    return !style_sheet_candidate_nodes_.IsEmpty();
+  }
+
+  virtual bool IsShadowTreeStyleSheetCollection() const { return false; }
+  void UpdateStyleSheetList();
+
  protected:
+  friend class StyleCascadeTest;  // For ReplaceActiveStyleSheets().
+
+  explicit StyleSheetCollection(TreeScope&);
+
+  // Called by child classes after collecting a new set of style sheets.
+  // Creates RuleSets, notifies the StyleEngine and moves the new values into
+  // place.
+  void ReplaceActiveStyleSheets(
+      const MediaQueryEvaluator& medium,
+      ActiveStyleSheetVector new_active_style_sheets,
+      HeapVector<Member<StyleSheet>> new_style_sheets_for_style_sheet_list);
+
+  Document& GetDocument() const { return GetTreeScope().GetDocument(); }
+  TreeScope& GetTreeScope() const { return *tree_scope_; }
+
+  // TODO(sesse): We should not have protected data members.
+  TreeOrderedList<Node> style_sheet_candidate_nodes_;
+
+ private:
+  Member<TreeScope> tree_scope_;
   HeapVector<Member<StyleSheet>> style_sheets_for_style_sheet_list_;
   ActiveStyleSheetVector active_style_sheets_;
-  HeapVector<Member<RuleSetDiff>> rule_set_diffs_;
   bool sheet_list_dirty_ = true;
 };
 

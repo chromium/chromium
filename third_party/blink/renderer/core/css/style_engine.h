@@ -108,7 +108,7 @@ class StyleSheet;
 class StyleSheetContents;
 class StyleInitialData;
 class TextTrack;
-class TreeScopeStyleSheetCollection;
+class StyleSheetCollection;
 class ViewportStyleResolver;
 class SelectorFilter;
 struct LogicalSize;
@@ -787,8 +787,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
            dirty_tree_scopes_.size() || user_style_dirty_;
   }
 
-  TreeScopeStyleSheetCollection& EnsureStyleSheetCollectionFor(TreeScope&);
-  TreeScopeStyleSheetCollection* StyleSheetCollectionFor(TreeScope&);
+  StyleSheetCollection& EnsureStyleSheetCollectionFor(TreeScope&);
+  StyleSheetCollection* StyleSheetCollectionFor(TreeScope&);
   bool ShouldUpdateDocumentStyleSheetCollection() const;
   bool ShouldUpdateShadowTreeStyleSheetCollection() const;
 

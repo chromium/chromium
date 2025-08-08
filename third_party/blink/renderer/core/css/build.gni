@@ -792,8 +792,6 @@ blink_core_sources_css = [
   "style_traversal_root.h",
   "successful_position_fallback.cc",
   "successful_position_fallback.h",
-  "tree_scope_style_sheet_collection.cc",
-  "tree_scope_style_sheet_collection.h",
   "try_tactic_transform.h",
   "try_value_flips.cc",
   "try_value_flips.h",

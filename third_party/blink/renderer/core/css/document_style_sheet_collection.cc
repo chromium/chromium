@@ -44,13 +44,21 @@ namespace blink {
 
 DocumentStyleSheetCollection::DocumentStyleSheetCollection(
     TreeScope& tree_scope)
-    : TreeScopeStyleSheetCollection(tree_scope) {
+    : StyleSheetCollection(tree_scope) {
   DCHECK_EQ(tree_scope.RootNode(), tree_scope.RootNode().GetDocument());
 }
 
-void DocumentStyleSheetCollection::CollectStyleSheetsFromCandidates(
+void DocumentStyleSheetCollection::UpdateActiveStyleSheets(
     const StyleEngine& engine,
-    StyleSheetCollection& collection) {
+    const MediaQueryEvaluator& medium) {
+  HeapVector<Member<StyleSheet>> new_style_sheets_for_style_sheet_list;
+  ActiveStyleSheetVector new_active_style_sheets;
+
+  for (auto& sheet :
+       GetDocument().GetStyleEngine().InjectedAuthorStyleSheets()) {
+    new_active_style_sheets.push_back(std::pair(sheet.second, nullptr));
+  }
+
   for (Node* n : style_sheet_candidate_nodes_) {
     StyleSheetCandidate candidate(*n);
 
@@ -64,55 +72,35 @@ void DocumentStyleSheetCollection::CollectStyleSheetsFromCandidates(
       continue;
     }
 
-    collection.AppendSheetForList(sheet);
-    if (!candidate.CanBeActivated(
+    new_style_sheets_for_style_sheet_list.push_back(sheet);
+    if (candidate.CanBeActivated(
             GetDocument().GetStyleEngine().PreferredStylesheetSetName())) {
-      continue;
+      CSSStyleSheet* css_sheet = To<CSSStyleSheet>(sheet);
+      new_active_style_sheets.push_back(std::pair(css_sheet, nullptr));
     }
-
-    CSSStyleSheet* css_sheet = To<CSSStyleSheet>(sheet);
-    collection.AppendActiveStyleSheet(css_sheet);
   }
 
   const TreeScope& tree_scope = GetTreeScope();
-  if (!tree_scope.HasAdoptedStyleSheets()) {
-    return;
-  }
-
-  for (CSSStyleSheet* sheet : *tree_scope.AdoptedStyleSheets()) {
-    if (!sheet ||
-        !sheet->CanBeActivated(
-            GetDocument().GetStyleEngine().PreferredStylesheetSetName())) {
-      continue;
+  if (tree_scope.HasAdoptedStyleSheets()) {
+    for (CSSStyleSheet* sheet : *tree_scope.AdoptedStyleSheets()) {
+      if (!sheet ||
+          !sheet->CanBeActivated(
+              GetDocument().GetStyleEngine().PreferredStylesheetSetName())) {
+        continue;
+      }
+      DCHECK_EQ(GetDocument(), sheet->ConstructorDocument());
+      new_style_sheets_for_style_sheet_list.push_back(sheet);
+      new_active_style_sheets.push_back(std::pair(sheet, nullptr));
     }
-    DCHECK_EQ(GetDocument(), sheet->ConstructorDocument());
-    collection.AppendSheetForList(sheet);
-    collection.AppendActiveStyleSheet(sheet);
   }
-}
 
-void DocumentStyleSheetCollection::CollectStyleSheets(
-    const StyleEngine& engine,
-    const MediaQueryEvaluator& medium,
-    StyleSheetCollection& collection) {
-  for (auto& sheet :
-       GetDocument().GetStyleEngine().InjectedAuthorStyleSheets()) {
-    collection.AppendActiveStyleSheet(sheet.second);
-  }
-  CollectStyleSheetsFromCandidates(engine, collection);
   for (CSSStyleSheet* inspector_sheet :
        GetDocument().GetStyleEngine().InspectorStyleSheets()) {
-    collection.AppendActiveStyleSheet(inspector_sheet);
+    new_active_style_sheets.push_back(std::pair(inspector_sheet, nullptr));
   }
-  collection.CreateRuleSets(engine, medium);
-}
 
-void DocumentStyleSheetCollection::UpdateActiveStyleSheets(
-    const StyleEngine& engine,
-    const MediaQueryEvaluator& medium) {
-  auto* collection = MakeGarbageCollected<StyleSheetCollection>();
-  CollectStyleSheets(engine, medium, *collection);
-  ApplyActiveStyleSheetChanges(*collection);
+  ReplaceActiveStyleSheets(medium, std::move(new_active_style_sheets),
+                           std::move(new_style_sheets_for_style_sheet_list));
 }
 
 }  // namespace blink

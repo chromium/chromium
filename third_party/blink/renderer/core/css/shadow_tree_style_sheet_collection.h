@@ -31,7 +31,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SHADOW_TREE_STYLE_SHEET_COLLECTION_H_
 
 #include "third_party/blink/renderer/core/css/style_rule.h"
-#include "third_party/blink/renderer/core/css/tree_scope_style_sheet_collection.h"
+#include "third_party/blink/renderer/core/css/style_sheet_collection.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -40,8 +40,7 @@ class ShadowRoot;
 class StyleEngine;
 class StyleSheetCollection;
 
-class ShadowTreeStyleSheetCollection final
-    : public TreeScopeStyleSheetCollection {
+class ShadowTreeStyleSheetCollection final : public StyleSheetCollection {
  public:
   explicit ShadowTreeStyleSheetCollection(ShadowRoot&);
   ShadowTreeStyleSheetCollection(const ShadowTreeStyleSheetCollection&) =
@@ -51,18 +50,11 @@ class ShadowTreeStyleSheetCollection final
 
   void UpdateActiveStyleSheets(const StyleEngine&, const MediaQueryEvaluator&);
   bool IsShadowTreeStyleSheetCollection() const final { return true; }
-
-  void Trace(Visitor* visitor) const override {
-    TreeScopeStyleSheetCollection::Trace(visitor);
-  }
-
- private:
-  void CollectStyleSheets(const StyleEngine&, StyleSheetCollection&);
 };
 
 template <>
 struct DowncastTraits<ShadowTreeStyleSheetCollection> {
-  static bool AllowFrom(const TreeScopeStyleSheetCollection& value) {
+  static bool AllowFrom(const StyleSheetCollection& value) {
     return value.IsShadowTreeStyleSheetCollection();
   }
 };

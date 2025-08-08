@@ -28,31 +28,42 @@
 
 #include "third_party/blink/renderer/core/css/style_sheet_collection.h"
 
+#include "third_party/blink/renderer/core/css/active_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/rule_set_diff.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_rule_import.h"
+#include "third_party/blink/renderer/core/css/style_sheet_candidate.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/html/html_link_element.h"
+#include "third_party/blink/renderer/core/html/html_style_element.h"
 
 namespace blink {
 
-StyleSheetCollection::StyleSheetCollection() = default;
+static void CreateRuleSets(const StyleEngine& engine,
+                           const MediaQueryEvaluator& medium,
+                           ActiveStyleSheetVector& active_style_sheets,
+                           HeapVector<Member<RuleSetDiff>>& rule_set_diffs);
 
-void StyleSheetCollection::Swap(StyleSheetCollection& other) {
-  swap(style_sheets_for_style_sheet_list_,
-       other.style_sheets_for_style_sheet_list_);
-  active_style_sheets_.swap(other.active_style_sheets_);
+void StyleSheetCollection::ReplaceActiveStyleSheets(
+    const MediaQueryEvaluator& medium,
+    ActiveStyleSheetVector new_active_style_sheets,
+    HeapVector<Member<StyleSheet>> new_style_sheets_for_style_sheet_list) {
+  HeapVector<Member<RuleSetDiff>> rule_set_diffs;
+  CreateRuleSets(GetDocument().GetStyleEngine(), medium,
+                 new_active_style_sheets, rule_set_diffs);
+
+  GetDocument().GetStyleEngine().ApplyRuleSetChanges(
+      GetTreeScope(), active_style_sheets_, new_active_style_sheets,
+      rule_set_diffs);
+
+  active_style_sheets_ = std::move(new_active_style_sheets);
+  style_sheets_for_style_sheet_list_ =
+      std::move(new_style_sheets_for_style_sheet_list);
   sheet_list_dirty_ = false;
-}
-
-void StyleSheetCollection::SwapSheetsForSheetList(
-    HeapVector<Member<StyleSheet>>& sheets) {
-  swap(style_sheets_for_style_sheet_list_, sheets);
-  sheet_list_dirty_ = false;
-}
-
-void StyleSheetCollection::AppendActiveStyleSheet(CSSStyleSheet* sheet) {
-  active_style_sheets_.push_back(std::pair(sheet, nullptr));
 }
 
 // FIXME(sesse): Store this somewhere (including the two-level Eval() form),
@@ -86,10 +97,18 @@ static void ExtractMixinsFromRules(
   }
 }
 
-void StyleSheetCollection::CreateRuleSets(const StyleEngine& engine,
-                                          const MediaQueryEvaluator& medium) {
+// Creates RuleSets for everything in active_style_sheets.
+// This is done as a separate pass, because we do not know what mixins
+// we have (which is required to create RuleSets) before we've seen
+// all stylesheets.
+//
+// Can only be called once.
+static void CreateRuleSets(const StyleEngine& engine,
+                           const MediaQueryEvaluator& medium,
+                           ActiveStyleSheetVector& active_style_sheets,
+                           HeapVector<Member<RuleSetDiff>>& rule_set_diffs) {
   MixinMap mixins;
-  for (auto& [css_sheet, rule_set] : active_style_sheets_) {
+  for (auto& [css_sheet, rule_set] : active_style_sheets) {
     ExtractMixinsFromRules(css_sheet->Contents()->ChildRules(), medium, mixins);
   }
 
@@ -97,9 +116,9 @@ void StyleSheetCollection::CreateRuleSets(const StyleEngine& engine,
   // StyleSheetContents sharing; RuleSets should not be shared
   // between two equal sheets with @layer rules, since anonymous
   // layers need to be unique.
-  HeapHashSet<Member<const RuleSet>> layer_rule_sets_;
+  HeapHashSet<Member<const RuleSet>> layer_rule_sets;
 
-  for (auto& [css_sheet, rule_set] : active_style_sheets_) {
+  for (auto& [css_sheet, rule_set] : active_style_sheets) {
     CHECK_EQ(rule_set, nullptr);
     rule_set = engine.RuleSetForSheet(*css_sheet, mixins);
 
@@ -117,7 +136,7 @@ void StyleSheetCollection::CreateRuleSets(const StyleEngine& engine,
     // standard, though.
     if (rule_set && rule_set->HasCascadeLayers() &&
         !css_sheet->Contents()->HasSingleOwnerNode() &&
-        !layer_rule_sets_.insert(rule_set).is_new_entry) {
+        !layer_rule_sets.insert(rule_set).is_new_entry) {
       // The condition above is met for a stylesheet with cascade layers which
       // shares StyleSheetContents with another stylesheet in this TreeScope.
       // WillMutateRules() creates a unique StyleSheetContents for this sheet to
@@ -130,24 +149,52 @@ void StyleSheetCollection::CreateRuleSets(const StyleEngine& engine,
     }
 
     if (css_sheet->Contents()->GetRuleSetDiff()) {
-      AppendRuleSetDiff(css_sheet->Contents()->GetRuleSetDiff());
+      rule_set_diffs.push_back(css_sheet->Contents()->GetRuleSetDiff());
       css_sheet->Contents()->ClearRuleSetDiff();
     }
   }
 }
 
-void StyleSheetCollection::AppendSheetForList(StyleSheet* sheet) {
-  style_sheets_for_style_sheet_list_.push_back(sheet);
-}
-
-void StyleSheetCollection::AppendRuleSetDiff(Member<RuleSetDiff> diff) {
-  rule_set_diffs_.push_back(diff);
-}
-
 void StyleSheetCollection::Trace(Visitor* visitor) const {
   visitor->Trace(active_style_sheets_);
   visitor->Trace(style_sheets_for_style_sheet_list_);
-  visitor->Trace(rule_set_diffs_);
+  visitor->Trace(tree_scope_);
+  visitor->Trace(style_sheet_candidate_nodes_);
+}
+
+StyleSheetCollection::StyleSheetCollection(TreeScope& tree_scope)
+    : tree_scope_(tree_scope) {}
+
+void StyleSheetCollection::AddStyleSheetCandidateNode(Node& node) {
+  if (node.isConnected()) {
+    style_sheet_candidate_nodes_.Add(&node);
+  }
+}
+
+// FIXME(sesse): This overwrites the list from UpdateActiveStyleSheets()
+// with a different one (it doesn't e.g. include adopted style sheets,
+// but DocumentStyleSheetCollection::UpdateActiveStyleSheets() does);
+// do we really want this? Why do we have a separate function for this
+// at all; cannot one call the other?
+void StyleSheetCollection::UpdateStyleSheetList() {
+  if (!sheet_list_dirty_) {
+    return;
+  }
+
+  HeapVector<Member<StyleSheet>> new_list;
+  for (Node* node : style_sheet_candidate_nodes_) {
+    StyleSheetCandidate candidate(*node);
+    DCHECK(!candidate.IsXSL());
+    if (candidate.IsEnabledAndLoading()) {
+      continue;
+    }
+    if (StyleSheet* sheet = candidate.Sheet()) {
+      new_list.push_back(sheet);
+    }
+  }
+
+  style_sheets_for_style_sheet_list_ = std::move(new_list);
+  sheet_list_dirty_ = false;
 }
 
 }  // namespace blink

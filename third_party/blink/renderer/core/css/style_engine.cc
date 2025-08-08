@@ -275,7 +275,7 @@ StyleEngine::StyleEngine(Document& document)
 
 StyleEngine::~StyleEngine() = default;
 
-TreeScopeStyleSheetCollection& StyleEngine::EnsureStyleSheetCollectionFor(
+StyleSheetCollection& StyleEngine::EnsureStyleSheetCollectionFor(
     TreeScope& tree_scope) {
   if (tree_scope == document_) {
     return GetDocumentStyleSheetCollection();
@@ -291,7 +291,7 @@ TreeScopeStyleSheetCollection& StyleEngine::EnsureStyleSheetCollectionFor(
   return *result.stored_value->value.Get();
 }
 
-TreeScopeStyleSheetCollection* StyleEngine::StyleSheetCollectionFor(
+StyleSheetCollection* StyleEngine::StyleSheetCollectionFor(
     TreeScope& tree_scope) {
   if (tree_scope == document_) {
     return &GetDocumentStyleSheetCollection();
@@ -308,8 +308,7 @@ TreeScopeStyleSheetCollection* StyleEngine::StyleSheetCollectionFor(
 const HeapVector<Member<StyleSheet>>& StyleEngine::StyleSheetsForStyleSheetList(
     TreeScope& tree_scope) {
   DCHECK(document_);
-  TreeScopeStyleSheetCollection& collection =
-      EnsureStyleSheetCollectionFor(tree_scope);
+  StyleSheetCollection& collection = EnsureStyleSheetCollectionFor(tree_scope);
   if (document_->IsActive()) {
     collection.UpdateStyleSheetList();
   }
@@ -466,8 +465,7 @@ void StyleEngine::RemoveStyleSheetCandidateNode(
                 "The ShadowRoot must be subclass of TreeScope.");
   TreeScope& tree_scope =
       shadow_root ? static_cast<TreeScope&>(*shadow_root) : GetDocument();
-  TreeScopeStyleSheetCollection* collection =
-      StyleSheetCollectionFor(tree_scope);
+  StyleSheetCollection* collection = StyleSheetCollectionFor(tree_scope);
   // After detaching document, collection could be null. In the case,
   // we should not update anything. Instead, just return.
   if (!collection) {
@@ -785,7 +783,7 @@ const ActiveStyleSheetVector StyleEngine::ActiveStyleSheetsForInspector() {
   active_style_sheets.AppendVector(
       GetDocumentStyleSheetCollection().ActiveStyleSheets());
   for (TreeScope* tree_scope : active_tree_scopes_) {
-    if (TreeScopeStyleSheetCollection* collection =
+    if (StyleSheetCollection* collection =
             style_sheet_collection_map_.at(tree_scope)) {
       active_style_sheets.AppendVector(collection->ActiveStyleSheets());
     }
@@ -1058,7 +1056,7 @@ void StyleEngine::MarkTreeScopeDirty(TreeScope& scope) {
     return;
   }
 
-  TreeScopeStyleSheetCollection* collection = StyleSheetCollectionFor(scope);
+  StyleSheetCollection* collection = StyleSheetCollectionFor(scope);
   DCHECK(collection);
   collection->MarkSheetListDirty();
   dirty_tree_scopes_.insert(&scope);

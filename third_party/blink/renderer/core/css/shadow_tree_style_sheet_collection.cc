@@ -44,11 +44,14 @@ namespace blink {
 
 ShadowTreeStyleSheetCollection::ShadowTreeStyleSheetCollection(
     ShadowRoot& shadow_root)
-    : TreeScopeStyleSheetCollection(shadow_root) {}
+    : StyleSheetCollection(shadow_root) {}
 
-void ShadowTreeStyleSheetCollection::CollectStyleSheets(
+void ShadowTreeStyleSheetCollection::UpdateActiveStyleSheets(
     const StyleEngine& engine,
-    StyleSheetCollection& collection) {
+    const MediaQueryEvaluator& medium) {
+  HeapVector<Member<StyleSheet>> new_style_sheets_for_style_sheet_list;
+  ActiveStyleSheetVector new_active_style_sheets;
+
   for (Node* n : style_sheet_candidate_nodes_) {
     StyleSheetCandidate candidate(*n);
     DCHECK(!candidate.IsXSL());
@@ -58,34 +61,26 @@ void ShadowTreeStyleSheetCollection::CollectStyleSheets(
       continue;
     }
 
-    collection.AppendSheetForList(sheet);
+    new_style_sheets_for_style_sheet_list.push_back(sheet);
     if (candidate.CanBeActivated(g_null_atom)) {
       CSSStyleSheet* css_sheet = To<CSSStyleSheet>(sheet);
-      collection.AppendActiveStyleSheet(css_sheet);
+      new_active_style_sheets.push_back(std::pair(css_sheet, nullptr));
     }
   }
 
   const TreeScope& tree_scope = GetTreeScope();
-  if (!tree_scope.HasAdoptedStyleSheets()) {
-    return;
-  }
-
-  for (CSSStyleSheet* sheet : *tree_scope.AdoptedStyleSheets()) {
-    if (!sheet || !sheet->CanBeActivated(g_null_atom)) {
-      continue;
+  if (tree_scope.HasAdoptedStyleSheets()) {
+    for (CSSStyleSheet* sheet : *tree_scope.AdoptedStyleSheets()) {
+      if (!sheet || !sheet->CanBeActivated(g_null_atom)) {
+        continue;
+      }
+      DCHECK_EQ(GetTreeScope().GetDocument(), sheet->ConstructorDocument());
+      new_active_style_sheets.push_back(std::pair(sheet, nullptr));
     }
-    DCHECK_EQ(GetTreeScope().GetDocument(), sheet->ConstructorDocument());
-    collection.AppendActiveStyleSheet(sheet);
   }
-}
 
-void ShadowTreeStyleSheetCollection::UpdateActiveStyleSheets(
-    const StyleEngine& engine,
-    const MediaQueryEvaluator& medium) {
-  auto* collection = MakeGarbageCollected<StyleSheetCollection>();
-  CollectStyleSheets(engine, *collection);
-  collection->CreateRuleSets(engine, medium);
-  ApplyActiveStyleSheetChanges(*collection);
+  ReplaceActiveStyleSheets(medium, std::move(new_active_style_sheets),
+                           std::move(new_style_sheets_for_style_sheet_list));
 }
 
 }  // namespace blink
