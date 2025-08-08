@@ -1,0 +1,94 @@
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="oobe-dialog-host-styles assistant-common-styles">
+  :host-context([orientation=vertical]) oobe-adaptive-dialog {
+    --oobe-adaptive-dialog-content-top-padding: 0;
+  }
+
+  .subtitle-text {
+    color: var(--cros-text-color-primary);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+
+  .subtitle-message-text {
+    padding: 0 8px 16px 0;
+  }
+
+  .subtitle-message-text-minor {
+    color: var(--cros-text-color-primary);
+    padding: 0 8px 16px 0;
+  }
+
+  .username-text {
+    padding-bottom: 30px;
+  }
+
+  #footer-text {
+    padding-top: 16px;
+  }
+
+  #overlay-text {
+    box-sizing: border-box;
+    font-size: 13px;
+    margin: auto;
+    min-height: 200px;
+    padding: 16px;
+    width: 100%;
+  }
+
+  #overlay-title-text {
+    font-size: 15px;
+  }
+
+  #overlay-additional-info-text {
+    color: var(--cros-text-color-disabled);
+    line-height: 20px;
+    padding-top: 20px;
+  }
+</style>
+<oobe-adaptive-dialog id="value-prop-dialog" role="dialog">
+  <iron-icon slot="icon" icon="assistant-32:assistant"
+      aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
+  </iron-icon>
+  <h1 slot="title" id="title-text"></h1>
+  <div id="animation-container">
+    <webview id="value-prop-view" tabindex="-1"></webview>
+  </div>
+  <div slot="content" id="content-container"
+      class="landscape-vertical-centered">
+    <div class="content" id="subtitle-container"></div>
+    <div class="line" hidden$="[[isMinorMode_]]"></div>
+    <div id="consents-container"></div>
+    <div class="content" id="footer-text" hidden$="[[isMinorMode_]]"></div>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="skip-button" on-click="onSkipTap_"
+        disabled="[[buttonsDisabled]]">
+      <div id="skip-button-text" slot="text"></div>
+    </oobe-text-button>
+    <oobe-text-button id="next-button" inverse="[[!equalWeightButtons_]]"
+        on-click="onNextTap_" disabled="[[buttonsDisabled]]">
+      <div id="next-button-text" slot="text"></div>
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<cr-dialog id="learn-more-overlay">
+  <div slot="body">
+    <div id="overlay-text">
+      <div id="overlay-title-text"></div>
+      <div id="overlay-additional-info-text"></div>
+    </div>
+  </div>
+  <div slot="button-container">
+    <oobe-text-button inverse id="overlay-close-button">
+      <div id="overlay-close-button-text" slot="text"></div>
+    </oobe-text-button>
+  </div>
+</cr-dialog>

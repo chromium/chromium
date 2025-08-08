@@ -1,0 +1,103 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="oobe-dialog-host-styles assistant-common-styles">
+  #content-container .content {
+    padding-bottom: 16px;
+  }
+
+  .example-text {
+    color: var(--cros-text-color-primary);
+    font-family: var(--oobe-header-font-family);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 22px;
+    max-width: 330px;
+  }
+
+  #relatedInfoImg {
+    height: 100%;
+    width: 100%;
+  }
+
+  #subtitle-container div:not(:last-child) {
+    padding-bottom: 16px;
+  }
+
+  :host-context([orientation=vertical]) oobe-adaptive-dialog {
+    --oobe-adaptive-dialog-content-top-padding: 0;
+  }
+</style>
+<oobe-adaptive-dialog id="relatedInfoDialog" role="dialog" hide-shadow
+    aria-label$=
+        "[[getDialogTitle_(locale, skipActivityControl_, childName_)]]">
+  <iron-icon slot="icon" icon="assistant-32:assistant"
+      aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
+  </iron-icon>
+  <h1 slot="title">
+    [[getDialogTitle_(locale, skipActivityControl_, childName_)]]
+  </h1>
+  <div slot="subtitle" id="subtitle-container"
+      hidden$="[[skipActivityControl_]]">
+    <div hidden="[[childName_]]">
+      [[i18nDynamic(locale, 'assistantScreenContextDesc')]]
+    </div>
+    <div hidden="[[!childName_]]">
+      [[i18nDynamic(
+          locale, 'assistantScreenContextDescForChild', childName_)]]
+    </div>
+    <div>[[i18nDynamic(locale, 'assistantRelatedInfoMessage')]]</div>
+  </div>
+  <div id="animation-container" hidden$="[[!skipActivityControl_]]">
+    <webview id="assistant-animation-webview" tabindex="-1"></webview>
+  </div>
+  <div slot="content" class="flex layout vertical center center-justified"
+      hidden$="[[skipActivityControl_]]">
+    <div class="example-text" hidden="[[childName_]]">
+      [[i18nDynamic(locale, 'assistantRelatedInfoExample')]]
+    </div>
+    <div class="example-text" hidden="[[!childName_]]">
+      [[i18nDynamic(locale, 'assistantRelatedInfoExampleForChild')]]
+    </div>
+    <iron-icon id="relatedInfoImg" icon="assistant-illo:related_info">
+    </iron-icon>
+  </div>
+  <div slot="content" id="content-container" class="landscape-header-aligned"
+      hidden$="[[!skipActivityControl_]]">
+    <div class="content" hidden="[[childName_]]">
+      [[i18nDynamic(locale, 'assistantRelatedInfoReturnedUserMessage')]]
+    </div>
+    <div class="content" hidden="[[!childName_]]">
+      [[i18nDynamic(locale,
+          'assistantRelatedInfoReturnedUserMessageForChild', childName_)]]
+    </div>
+    <div class="line"></div>
+    <setting-zippy id="zippy">
+      <iron-media-query query="(prefers-color-scheme: dark)"
+          query-matches="{{isDarkModeActive_}}">
+      </iron-media-query>
+      <div slot="title">
+        [[i18nDynamic(locale, 'assistantScreenContextTitle')]]
+      </div>
+      <div slot="content" hidden="[[childName_]]">
+        [[i18nDynamic(locale, 'assistantScreenContextDesc')]]
+      </div>
+      <div slot="content" hidden="[[!childName_]]">
+        [[i18nDynamic(locale,
+            'assistantScreenContextDescForChild', childName_)]]
+      </div>
+    </setting-zippy>
+  </div>
+  <div slot="bottom-buttons" class="layout horizontal end-justified">
+    <oobe-text-button id="skip-button" disabled="[[loading]]"
+        text-key="assistantOptinNoThanksButton" on-click="onSkipTap_">
+    </oobe-text-button>
+    <oobe-text-button id="next-button" inverse="[[!equalWeightButtons_]]"
+        disabled="[[loading]]" text-key="assistantOptinAgreeButton"
+        on-click="onNextTap_">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>

@@ -1,0 +1,102 @@
+/* Copyright 2018 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #css_wrapper_metadata_end */
+
+a {
+  color: var(--cros-link-color);
+  font-weight: 400;
+  text-decoration: none;
+}
+
+oobe-dialog {
+  height: 100%;
+}
+
+cr-dialog::part(dialog)  {
+  max-width: 640px;
+  min-width: 512px;
+  width: calc(100% - var(--oobe-dialog-content-padding) * 2);
+}
+
+oobe-adaptive-dialog {
+  --oobe-dialog-header-padding-top: calc(var(--oobe-dialog-content-padding) -
+          var(--caption-bar-height));
+}
+
+oobe-adaptive-dialog,
+oobe-content-dialog {
+  --oobe-adaptive-dialog-back-button-vertical-padding:
+      calc(var(--oobe-adaptive-dialog-buttons-vertical-padding) -
+          var(--caption-bar-height) / 2);
+}
+
+:host-context([orientation=vertical]:not([screen=oobe])) oobe-adaptive-dialog {
+  --oobe-adaptive-dialog-content-padding: 64px;
+}
+
+webview {
+  user-select: none;
+}
+
+.line {
+  background-color: var(--cros-button-icon-color-primary);
+  height: 1px;
+  margin: 8px 0 8px 0;
+}
+
+.content {
+  color: var(--cros-color-secondary);
+  font: 13px Roboto, sans-serif;
+  line-height: 16px;
+}
+
+#next-button {
+  margin-inline-end: 0;
+}
+
+:host-context([orientation=horizontal]) #animation-container {
+  height: 240px;
+  transform: translate(-40px, -12px);
+  width: 340px;
+}
+
+:host-context([orientation=horizontal][screen=oobe]) #animation-container {
+  transform: translate(-48px, -12px);
+}
+
+:host-context([orientation=vertical]) #animation-container {
+  min-height: 280px;
+  padding-bottom: 20px;
+  transform: translateX(-8px);
+  width: 100%;
+}
+
+@media screen and (max-height: 1040px) {
+  :host-context([orientation=vertical][screen=oobe]) #animation-container {
+    display: none;
+  }
+
+  :host-context([orientation=vertical][screen=oobe])
+      oobe-adaptive-dialog {
+    --oobe-adaptive-dialog-content-top-padding:
+        var(--oobe-adaptive-dialog-header-top-padding);
+  }
+}
+
+@media screen and (max-height: 825px) {
+  :host-context([orientation=vertical]:not([screen=oobe]))
+      #animation-container {
+    display: none;
+  }
+
+  :host-context([orientation=vertical]:not([screen=oobe]))
+      oobe-adaptive-dialog {
+    --oobe-adaptive-dialog-content-top-padding:
+        var(--oobe-adaptive-dialog-header-top-padding);
+  }
+}

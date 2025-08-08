@@ -1292,6 +1292,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeJellyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeJellyModalEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBootAnimationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeAiIntroEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeSkipAssistantEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobePersonalizedOnboardingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobePreConsentMetricsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeSoftwareUpdateEnabled();

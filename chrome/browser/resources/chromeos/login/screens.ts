@@ -11,6 +11,7 @@ import './screens/common/add_child.js';
 import './screens/common/ai_intro.js';
 import './screens/common/app_downloading.js';
 import './screens/common/app_launch_splash.js';
+import './screens/common/assistant_optin.js';
 import './screens/common/categories_selection.js';
 import './screens/common/choobe.js';
 import './screens/common/consolidated_consent.js';
@@ -98,6 +99,11 @@ export const commonScreensList: OobeTypes.ScreensList = [
   },
   {tag: 'app-downloading-element', id: 'app-downloading'},
   {tag: 'app-launch-splash-element', id: 'app-launch-splash'},
+  {
+    tag: 'assistant-optin-element',
+    id: 'assistant-optin-flow',
+    condition: 'isOobeAssistantEnabled',
+  },
   {
     tag: 'apply-online-password-element',
     id: 'apply-online-password',

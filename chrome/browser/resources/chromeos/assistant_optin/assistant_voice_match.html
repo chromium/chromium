@@ -1,0 +1,139 @@
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="oobe-dialog-host-styles assistant-common-styles">
+  #voice-match-animation {
+    height: 170px;
+  }
+
+  #ready-img {
+    height: 95%;
+    max-height: 95%;
+    max-width: 95%;
+    width: 95%;
+  }
+
+  @media screen and (max-height: 736px) {
+    #voice-match-animation {
+      height: 150px;
+    }
+  }
+
+  #loading-animation {
+    margin: 80px auto;
+    width: 100px;
+  }
+
+  #loading-spinner {
+    height: 100px;
+    width: 100px;
+  }
+</style>
+<oobe-adaptive-dialog id="voiceMatchIntroDialog" role="dialog"
+    aria-label$="[[getDialogTitle_(locale, uiStep, childName_)]]"
+    hide-shadow for-step="intro">
+  <iron-icon slot="icon" icon="assistant-32:assistant"
+      aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
+  </iron-icon>
+  <h1 slot="title">
+    [[getDialogTitle_(locale, uiStep, childName_)]]
+  </h1>
+  <div slot="subtitle" id="voice-match-animation">
+    <oobe-cr-lottie id="voice-match-lottie"
+        animation-url="[[getVoiceMatchAnimationUrl_(isTabletMode_)]]">
+    </oobe-cr-lottie>
+  </div>
+  <div slot="content" class="landscape-vertical-centered">
+    <div inner-h-t-m-l=
+        "[[getSubtitleMessage_(locale, uiStep, childName_)]]">
+    </div>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="skip-button" on-click="onSkipTap_"
+        disabled="[[buttonsDisabled]]"
+        text-key="assistantOptinNoThanksButton">
+    </oobe-text-button>
+    <oobe-text-button id="agree-button" inverse="[[!equalWeightButtons_]]"
+        on-click="onAgreeTap_" disabled="[[buttonsDisabled]]"
+        text-key="assistantOptinAgreeButton">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<oobe-adaptive-dialog id="voiceMatchRecordingDialog" role="dialog"
+    aria-label$="[[getDialogTitle_(locale, uiStep, childName_)]]"
+    hide-shadow for-step="recording, completed">
+  <iron-icon slot="icon" icon="assistant-32:assistant"
+      aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
+  </iron-icon>
+  <h1 slot="title">
+    [[getDialogTitle_(locale, uiStep, childName_)]]
+  </h1>
+  <div slot="subtitle" hidden="[[childName_]]">
+    [[i18nDynamic(locale, 'assistantVoiceMatchFooter')]]
+  </div>
+  <div slot="subtitle" hidden="[[!childName_]]"
+      inner-h-t-m-l="[[getSubtitleMessage_(locale, uiStep, childName_)]]">
+  </div>
+  <div slot="content" class="landscape-header-aligned
+      portrait-horizontal-centered">
+    <div id="voice-match-entries">
+      <voice-match-entry id="voice-entry-0">
+        <div slot="entry-content">
+          [[i18nDynamic(locale, 'assistantVoiceMatchInstruction0')]]
+        </div>
+      </voice-match-entry>
+      <voice-match-entry id="voice-entry-1">
+        <div slot="entry-content">
+          [[i18nDynamic(locale, 'assistantVoiceMatchInstruction1')]]
+        </div>
+      </voice-match-entry>
+      <voice-match-entry id="voice-entry-2">
+        <div slot="entry-content">
+          [[i18nDynamic(locale, 'assistantVoiceMatchInstruction2')]]
+        </div>
+      </voice-match-entry>
+      <voice-match-entry id="voice-entry-3">
+        <div slot="entry-content">
+          [[i18nDynamic(locale, 'assistantVoiceMatchInstruction3')]]
+        </div>
+      </voice-match-entry>
+    </div>
+    <div id="loading-animation" hidden>
+      <paper-spinner-lite id="loading-spinner" active>
+      </paper-spinner-lite>
+    </div>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="later-button" class="focus-on-show"
+        on-click="onSkipTap_" disabled="[[buttonsDisabled]]"
+        text-key="assistantOptinSkipButton">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<oobe-adaptive-dialog id="voiceMatchAlreadySetupDialog" role="dialog"
+    aria-label$=
+        "[[i18nDynamic(locale, 'assistantVoiceMatchAlreadySetupTitle')]]"
+    hide-shadow for-step="already-setup">
+  <iron-icon slot="icon" icon="assistant-32:assistant"
+      aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
+  </iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'assistantVoiceMatchAlreadySetupTitle')]]
+  </h1>
+  <div slot="subtitle" hidden="[[childName_]]">
+    [[i18nDynamic(locale, 'assistantVoiceMatchAlreadySetupMessage')]]
+  </div>
+  <div slot="subtitle" hidden="[[!childName_]]">
+    [[i18nDynamic(locale,
+        'assistantVoiceMatchAlreadySetupMessageForChild', childName_)]]
+  </div>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <iron-icon id="ready-img" icon="assistant-illo:ready">
+    </iron-icon>
+  </div>
+</oobe-adaptive-dialog>

@@ -1,0 +1,81 @@
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="oobe-common-styles assistant-common-styles">
+  #container {
+    align-items: center;
+    height: 56px;
+  }
+
+  .icon {
+    min-width: 48px;
+  }
+
+  .dot {
+    background-color: var(--cros-icon-color-secondary);
+    border-radius: 50%;
+    height: 8px;
+    margin-left: 8px;
+    width: 8px;
+  }
+
+  #active-icon {
+    height: 24px;
+    width: 24px;
+  }
+
+  #completed-icon {
+    color: var(--cros-icon-color-blue);
+  }
+
+  #default-icon[active],
+  #default-icon[completed],
+  #active-icon,
+  #completed-icon {
+    display: none;
+  }
+
+  #active-icon[active],
+  #completed-icon[completed] {
+    display: block;
+  }
+
+  #entry-text {
+    font-size: 15px;
+  }
+
+  #active-text {
+    color: var(--cros-text-color-primary);
+  }
+
+  #active-text,
+  #completed-text {
+    display: none;
+  }
+
+  #active-text[active],
+  #completed-text[completed] {
+    display: block;
+  }
+</style>
+<div class="flex layout horizontal center" id="container">
+  <div class="icon">
+    <div id="default-icon" class="dot" active$="[[active]]"
+        completed$="[[completed]]"></div>
+    <paper-spinner-lite id="active-icon" active$="[[active]]">
+    </paper-spinner-lite>
+    <iron-icon id="completed-icon" icon="cr:check"
+        completed$="[[completed]]"></iron-icon>
+  </div>
+  <div id="entry-text" class="content">
+    <div id="active-text" active$="[[active]]">
+      <slot name="entry-content"></slot>
+    </div>
+    <div id="completed-text" completed$="[[completed]]">
+      [[i18nDynamic(locale, 'assistantVoiceMatchComplete')]]
+    </div>
+  </div>
+</div>

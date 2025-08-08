@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/assistant_optin_flow_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/auto_enrollment_check_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/categories_selection_screen_handler.h"
@@ -139,6 +140,8 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/assistant_optin_resources.h"
+#include "chrome/grit/assistant_optin_resources_map.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/component_extension_resources.h"
@@ -147,6 +150,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/oobe_resources.h"
 #include "chrome/grit/oobe_resources_map.h"
+#include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
@@ -230,7 +234,7 @@ void AddSyncConsentResources(content::WebUIDataSource* source) {
 #endif
 }
 
-// Adds resources for ARC-dependent screens (PlayStore ToS, etc...)
+// Adds resources for ARC-dependent screens (PlayStore ToS, Assistant, etc...)
 void AddArcScreensResources(content::WebUIDataSource* source) {
   // Required for postprocessing of Goolge PlayStore Terms and Overlay help.
   source->AddResourcePath(kArcOverlayCSSPath, IDR_ARC_SUPPORT_OVERLAY_CSS);
@@ -238,6 +242,13 @@ void AddArcScreensResources(content::WebUIDataSource* source) {
   source->AddResourcePath(kArcPlaystoreJSPath, IDR_ARC_SUPPORT_PLAYSTORE_JS);
   source->AddResourcePath(kArcPlaystoreLogoPath,
                           IDR_ARC_SUPPORT_PLAYSTORE_LOGO);
+}
+
+void AddAssistantScreensResources(content::WebUIDataSource* source) {
+  source->AddResourcePaths(kAssistantOptinResources);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc,
+      "worker-src blob: chrome://resources 'self';");
 }
 
 void AddMultiDeviceSetupResources(content::WebUIDataSource* source) {
@@ -319,6 +330,8 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
                      features::IsOobeJellyModalEnabled());
   source->AddBoolean("isBootAnimationEnabled",
                      features::IsBootAnimationEnabled());
+  source->AddBoolean("isOobeAssistantEnabled",
+                     !features::IsOobeSkipAssistantEnabled());
   source->AddBoolean("isChoobeEnabled", features::IsOobeChoobeEnabled());
   source->AddBoolean("isSoftwareUpdateEnabled",
                      features::IsOobeSoftwareUpdateEnabled());
@@ -368,6 +381,7 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   quick_unlock::AddFingerprintResources(source);
   AddSyncConsentResources(source);
   AddArcScreensResources(source);
+  AddAssistantScreensResources(source);
   AddMultiDeviceSetupResources(source);
 
   AddDebuggerResources(source);
@@ -522,6 +536,9 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<ManagementTransitionScreenHandler>());
 
   AddScreenHandler(std::make_unique<UpdateRequiredScreenHandler>());
+
+  AddScreenHandler(
+      std::make_unique<AssistantOptInFlowScreenHandler>(/*is_oobe=*/true));
 
   AddScreenHandler(std::make_unique<MultiDeviceSetupScreenHandler>());
 

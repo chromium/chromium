@@ -2138,6 +2138,11 @@ BASE_FEATURE(kFeatureManagementOobeSimon,
              "FeatureManagementOobeSimon",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Skipping the assistant setup screen in OOBE.
+BASE_FEATURE(kOobeSkipAssistant,
+             "OobeSkipAssistant",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables or disables the OOBE QuickStart flow on the login screen.
 BASE_FEATURE(kOobeQuickStartOnLoginScreen,
              "OobeQuickStartOnLoginScreen",
@@ -4129,6 +4134,10 @@ bool IsBootAnimationEnabled() {
 
 bool IsOobeAddUserDuringEnrollmentEnabled() {
   return base::FeatureList::IsEnabled(kOobeAddUserDuringEnrollment);
+}
+
+bool IsOobeSkipAssistantEnabled() {
+  return base::FeatureList::IsEnabled(kOobeSkipAssistant);
 }
 
 bool IsOobeChoobeEnabled() {

@@ -1,0 +1,52 @@
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="oobe-dialog-host-styles assistant-common-styles">
+  #retry-button {
+    margin-inline-end: 0;
+  }
+
+  paper-progress {
+    --paper-progress-active-color: var(--cros-slider-color-active);
+    --paper-progress-container-color: var(--cros-slider-track-color-active);
+    --paper-progress-secondary-color: var(--cros-slider-color-active);
+    display: block;
+    height: 4px;
+    padding: 12px 0 0 0;
+    width: 100%;
+  }
+</style>
+<oobe-content-dialog id="loading-dialog" role="dialog" for-step="loading"
+    no-buttons>
+  <div slot="content" class="flex layout vertical center-justified">
+    <div id="loading-content" class="content">
+      <div>
+        [[i18nDynamic(locale, 'assistantOptinLoading')]]
+      </div>
+      <paper-progress class="slow" indeterminate></paper-progress>
+    </div>
+  </div>
+</oobe-content-dialog>
+<oobe-adaptive-dialog id="error-dialog" role="dialog" hide-shadow
+    for-step="error">
+  <iron-icon slot="icon" icon="assistant-32:assistant"
+      aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
+  </iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'assistantOptinLoadErrorTitle')]]
+  </h1>
+  <div slot="subtitle">
+    [[i18nDynamic(locale, 'assistantOptinLoadErrorMessage')]]
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="skip-button" on-click="onSkipTap_"
+        disabled="[[buttonsDisabled]]" text-key="assistantOptinSkipButton">
+    </oobe-text-button>
+    <oobe-text-button id="retry-button" inverse on-click="onRetryTap_"
+        disabled="[[buttonsDisabled]]" text-key="assistantOptinRetryButton">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
