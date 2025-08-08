@@ -10,7 +10,6 @@
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_decode_target_indication.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"

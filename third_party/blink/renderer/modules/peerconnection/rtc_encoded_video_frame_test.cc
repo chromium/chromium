@@ -24,6 +24,7 @@
 #include "third_party/webrtc/api/units/time_delta.h"
 
 using testing::_;
+using testing::Eq;
 using testing::NiceMock;
 using testing::Return;
 using testing::ReturnRef;
@@ -126,8 +127,8 @@ TEST_F(RTCEncodedVideoFrameTest, GetMetadataReturnsMetadata) {
   EXPECT_EQ(1, retrieved_metadata->dependencies()[0]);
   EXPECT_EQ(800, retrieved_metadata->width());
   EXPECT_EQ(600, retrieved_metadata->height());
-  EXPECT_EQ(3, retrieved_metadata->spatialIndex());
-  EXPECT_EQ(4, retrieved_metadata->temporalIndex());
+  EXPECT_EQ(3u, retrieved_metadata->spatialIndex());
+  EXPECT_EQ(4u, retrieved_metadata->temporalIndex());
   ASSERT_EQ(1u, retrieved_metadata->contributingSources().size());
   EXPECT_EQ(6u, retrieved_metadata->contributingSources()[0]);
   EXPECT_EQ(17u, retrieved_metadata->rtpTimestamp());
@@ -273,8 +274,10 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataWithFeatureAllowsModifications) {
   EXPECT_EQ(actual_dependencies, new_metadata->dependencies());
   EXPECT_EQ(actual_metadata.GetWidth(), new_metadata->width());
   EXPECT_EQ(actual_metadata.GetHeight(), new_metadata->height());
-  EXPECT_EQ(actual_metadata.GetSpatialIndex(), new_metadata->spatialIndex());
-  EXPECT_EQ(actual_metadata.GetTemporalIndex(), new_metadata->temporalIndex());
+  EXPECT_THAT(actual_metadata.GetSpatialIndex(),
+              Eq(new_metadata->spatialIndex()));
+  EXPECT_THAT(actual_metadata.GetTemporalIndex(),
+              Eq(new_metadata->temporalIndex()));
   EXPECT_EQ(actual_metadata.GetSsrc(), new_metadata->synchronizationSource());
   Vector<uint32_t> actual_csrcs;
   for (const auto& dependency : actual_metadata.GetCsrcs()) {
@@ -441,10 +444,10 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorPreservesVP9CodecSpecifics) {
             webrtc_metadata.GetWidth());
   EXPECT_EQ(new_frame->getMetadata(execution_context)->height(),
             webrtc_metadata.GetHeight());
-  EXPECT_EQ(new_frame->getMetadata(execution_context)->spatialIndex(),
-            webrtc_metadata.GetSpatialIndex());
-  EXPECT_EQ(new_frame->getMetadata(execution_context)->temporalIndex(),
-            webrtc_metadata.GetTemporalIndex());
+  EXPECT_THAT(new_frame->getMetadata(execution_context)->spatialIndex(),
+              Eq(webrtc_metadata.GetSpatialIndex()));
+  EXPECT_THAT(new_frame->getMetadata(execution_context)->temporalIndex(),
+              Eq(webrtc_metadata.GetTemporalIndex()));
   EXPECT_EQ(new_frame->getMetadata(execution_context)->synchronizationSource(),
             webrtc_metadata.GetSsrc());
   std::vector<uint32_t> actual_csrcs;

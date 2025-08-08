@@ -593,6 +593,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_metadata.idl",
   "//third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame.idl",
   "//third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_options.idl",
+  "//third_party/blink/renderer/modules/peerconnection/rtc_encoded_frame_metadata.idl",
   "//third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_metadata.idl",
   "//third_party/blink/renderer/modules/peerconnection/rtc_encoding_options.idl",
   "//third_party/blink/renderer/modules/peerconnection/rtc_error.idl",
