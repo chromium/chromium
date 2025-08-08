@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -64,6 +65,7 @@
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/drop_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
@@ -72,8 +74,11 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_test_helper.h"
+#include "ui/base/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/point.h"
 #include "url/url_constants.h"
 
 #if defined(USE_AURA)
@@ -843,6 +848,39 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest,
       active_contents_container_view()->GetDevtoolsWebView()->GetVisible());
   EXPECT_FALSE(
       inactive_contents_container_view()->GetDevtoolsWebView()->GetVisible());
+}
+
+// TODO(crbug.com/425715421): Re-enable when wayland supports drag and drop
+#if !BUILDFLAG(IS_OZONE_WAYLAND)
+#define MAYBE_DragNotSupportedInFullscreen DragNotSupportedInFullscreen
+#else
+#define MAYBE_DragNotSupportedInFullscreen DISABLED_DragNotSupportedInFullscreen
+#endif
+IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest,
+                       MAYBE_DragNotSupportedInFullscreen) {
+  // Add enough tabs to create two split views.
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  // Add tabs to splits.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Make fullscreen
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+
+  // Attempt to start a drag
+  content::DropData drop_data;
+  drop_data.url = GURL("https://mail.google.com");
+  const gfx::Rect bounds = browser_view()->GetBoundsInScreen();
+  const gfx::PointF point(bounds.left_center().x() + 10,
+                          bounds.left_center().y());
+  browser_view()->PreHandleDragUpdate(drop_data, point);
+
+  EXPECT_FALSE(browser_view()
+                   ->multi_contents_view()
+                   ->drop_target_controller()
+                   .IsDropTimerRunningForTesting());
 }
 
 #if BUILDFLAG(IS_MAC)

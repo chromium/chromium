@@ -51,6 +51,8 @@ class MultiContentsViewDropTargetController final : public TabDragDelegate {
   void OnWebContentsDragExit();
   void OnWebContentsDragEnded();
 
+  bool IsDropTimerRunningForTesting();
+
  private:
   // Represents a timer for delaying when a specific drop target view is shown.
   struct DropTargetShowTimer {

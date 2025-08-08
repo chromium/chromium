@@ -248,6 +248,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/drop_data.h"
 #include "extensions/common/command.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -3509,8 +3510,13 @@ void BrowserView::PreHandleDragUpdate(const content::DropData& drop_data,
                                       const gfx::PointF& point) {
   if (multi_contents_view_ &&
       multi_contents_view_->is_drag_and_drop_enabled()) {
+    // Read the split state from the active tab because when BrowserView is in
+    // full screen it may not be rendering a split, even though the active tab
+    // is in a split.
+    const bool is_in_split_view =
+        browser_->tab_strip_model()->GetActiveTab()->IsSplit();
     multi_contents_view_->drop_target_controller().OnWebContentsDragUpdate(
-        drop_data, point, IsInSplitView());
+        drop_data, point, is_in_split_view);
   }
 }
 

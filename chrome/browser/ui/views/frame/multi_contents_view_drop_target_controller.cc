@@ -102,6 +102,11 @@ void MultiContentsViewDropTargetController::OnWebContentsDragEnded() {
   drop_target_view_->Hide();
 }
 
+bool MultiContentsViewDropTargetController::IsDropTimerRunningForTesting() {
+  return show_drop_target_timer_.has_value() &&
+         show_drop_target_timer_->timer.IsRunning();
+}
+
 void MultiContentsViewDropTargetController::HandleDragUpdate(
     const gfx::PointF& point_in_view) {
   CHECK_LE(0, point_in_view.x());
