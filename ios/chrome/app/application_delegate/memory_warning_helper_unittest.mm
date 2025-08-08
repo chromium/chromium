@@ -6,7 +6,6 @@
 
 #import "base/functional/bind.h"
 #import "base/memory/memory_pressure_listener.h"
-#import "base/run_loop.h"
 #import "base/test/task_environment.h"
 #import "base/threading/thread.h"
 #import "components/previous_session_info/previous_session_info.h"
@@ -25,8 +24,7 @@ class MemoryWarningHelperTest : public PlatformTest {
     // Set up `memory_pressure_listener_` to invoke `OnMemoryPressure` which
     // will store the memory pressure level sent to the callback in
     // `memory_pressure_level_` so that tests can verify the level is correct.
-    memory_pressure_listener_.reset(new base::MemoryPressureListener(
-        FROM_HERE,
+    memory_pressure_listener_.reset(new base::SyncMemoryPressureListener(
         base::BindRepeating(&MemoryWarningHelperTest::OnMemoryPressure,
                             base::Unretained(this))));
     memory_pressure_level_ =
@@ -48,16 +46,12 @@ class MemoryWarningHelperTest : public PlatformTest {
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
     memory_pressure_level_ = memory_pressure_level;
-    run_loop_.QuitWhenIdle();
   }
-
-  void RunMessageLoop() { run_loop_.Run(); }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::RunLoop run_loop_;
   base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level_;
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::SyncMemoryPressureListener> memory_pressure_listener_;
   MemoryWarningHelper* memory_helper_;
 };
 
@@ -79,7 +73,6 @@ TEST_F(MemoryWarningHelperTest, VerifyForegroundMemoryWarningCountReset) {
 // callback (i.e. MainControllerTest::OnMemoryPressure) is invoked.
 TEST_F(MemoryWarningHelperTest, VerifyApplicationDidReceiveMemoryWarning) {
   [GetMemoryHelper() handleMemoryPressure];
-  RunMessageLoop();
   EXPECT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL,
             GetMemoryPressureLevel());
 }
