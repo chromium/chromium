@@ -107,7 +107,8 @@ NSString* GetErrorMessageForPasswordImportStatus(PasswordImportStatus status) {
       GetInvalidPasswordsTableViewAccessibilityIdentifier();
   self.tableView.delegate = self;
   self.tableView.allowsSelection = NO;
-  self.tableView.separatorInset = GetSafariDataImportSeparatorInset();
+  self.tableView.separatorInset =
+      GetSafariDataImportSeparatorInset(/*multiSelectionMode=*/NO);
   /// Register cells.
   RegisterTableViewCell<TableViewURLCell>(self.tableView);
   RegisterTableViewHeaderFooter<TableViewAttributedStringHeaderFooterView>(

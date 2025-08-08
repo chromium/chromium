@@ -71,7 +71,8 @@ const CGFloat kLabelSpacing = 4;
       IDS_IOS_SAFARI_IMPORT_PASSWORD_CONFLICT_RESOLUTION_TITLE);
   [self setupBarButtons];
   /// Sets up table view properties.
-  self.tableView.separatorInset = GetSafariDataImportSeparatorInset();
+  self.tableView.separatorInset =
+      GetSafariDataImportSeparatorInset(/*multiSelectionMode=*/YES);
   self.tableView.accessibilityIdentifier =
       GetPasswordConflictResolutionTableViewAccessibilityIdentifier();
   self.tableView.delegate = self;
