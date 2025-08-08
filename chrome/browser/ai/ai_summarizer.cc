@@ -201,9 +201,9 @@ void AISummarizer::ModelExecutionCallback(
   }
 
   auto response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::StringValue>(result.response->response);
-  if (response->has_value()) {
-    responder->OnStreaming(response->value());
+      optimization_guide::proto::SummarizeResponse>(result.response->response);
+  if (response->has_output()) {
+    responder->OnStreaming(response->output());
   }
   if (result.response->is_complete) {
     responder->OnCompletion(/*context_info=*/nullptr);

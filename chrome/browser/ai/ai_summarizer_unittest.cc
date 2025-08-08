@@ -63,8 +63,8 @@ class MockCreateSummarizerClient
 
 optimization_guide::OptimizationGuideModelStreamingExecutionResult
 CreateExecutionResult(std::string_view output, bool is_complete) {
-  optimization_guide::proto::StringValue response;
-  *response.mutable_value() = output;
+  optimization_guide::proto::SummarizeResponse response;
+  *response.mutable_output() = output;
   return optimization_guide::OptimizationGuideModelStreamingExecutionResult(
       optimization_guide::StreamingResponse{
           .response = optimization_guide::AnyWrapProto(response),
