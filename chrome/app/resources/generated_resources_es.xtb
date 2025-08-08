@@ -4725,7 +4725,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4276856098224910511">No se puede realizar la instalación porque hay una actualización del SO pendiente. Instala las actualizaciones pendientes del SO, reinicia y vuelve a intentarlo. El código de error es <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Fuente de configuración de XMLs</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Permisos quitados de 1 sitio}other{Permisos quitados de {NUM_SITES} sitios}}</translation>
-<translation id="4278390842282768270">Concedido</translation>
+<translation id="4278390842282768270">Permitido</translation>
 <translation id="4278498748067682896">Usarás una Licencia de Kiosco y Señalización, que solo permite que el dispositivo funcione en modo Kiosco o en modo Señalización. Si quieres que los usuarios inicien sesión en el dispositivo, vuelve atrás y regístrate usando una Licencia de Chrome Enterprise.</translation>
 <translation id="4278779213160967034">Este proceso puede tardar unos minutos. Descargando archivos.</translation>
 <translation id="4279129444466079448">Puedes instalar hasta <ph name="PROFILE_LIMIT" /> perfiles de eSIM en este dispositivo. Para añadir otro perfil, quita primero uno que ya esté creado.</translation>

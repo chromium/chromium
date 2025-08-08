@@ -1031,7 +1031,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4371834685492830207">PIN darf nur gültige Zeichen enthalten</translation>
 <translation id="4375482231364171368">In Adressleiste suchen</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, Signalstärke <ph name="SIGNAL_STRENGTH" /> %</translation>
-<translation id="4378551569595875038">Verbindung...</translation>
+<translation id="4378551569595875038">Verbinden...</translation>
 <translation id="4379531060876907730">Dies sind deine Eingabestift-Tools</translation>
 <translation id="4381031910344220229">Dies erlaubt den Mikrofonzugriff für <ph name="APP_NAME" /> sowie alle Apps und Websites mit der Mikrofonberechtigung</translation>
 <translation id="4382340674111381977">Zurück zur vorherigen Seite</translation>
@@ -1898,7 +1898,7 @@ Neuinstallation</translation>
 <translation id="7126996685418858413">In der letzten Woche geöffnet</translation>
 <translation id="7130207228079676353">HOHE WAHRSCHEINLICHKEIT</translation>
 <translation id="7131634465328662194">Du wirst automatisch abgemeldet.</translation>
-<translation id="7143207342074048698">Verbindung...</translation>
+<translation id="7143207342074048698">Verbinden...</translation>
 <translation id="7144942256906679589">Akkustand</translation>
 <translation id="7145639536026937076">Der Akkustand ist <ph name="PERCENTAGE" /> %. Der Akku wird aufgeladen. Der Energiesparmodus ist aktiviert.</translation>
 <translation id="7147587499155271409">Kein Browserverlauf</translation>

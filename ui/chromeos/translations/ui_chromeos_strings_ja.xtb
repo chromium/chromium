@@ -989,7 +989,7 @@
 <translation id="8492972329130824181">ホーム ネットワークは使用できません。接続するには、モバイルデータ ローミングを有効にする必要があります。</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> 件のアイテムを抽出しています...</translation>
 <translation id="8502913769543567768"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" />、デバイスのセットアップ後に有効化、管理者によって管理</translation>
-<translation id="8512483403832814140">常時</translation>
+<translation id="8512483403832814140">全期間</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">フランス語（フランス）</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
