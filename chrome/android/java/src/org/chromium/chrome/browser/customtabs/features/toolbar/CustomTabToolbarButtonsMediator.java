@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -167,17 +168,25 @@ class CustomTabToolbarButtonsMediator
         // By now inflation/positioning already has been done with OPTIONAL_BUTTON_VISIBLE as true.
         // If the visibility is false, it should be because the toolbar width is not big enough to
         // show it.
+        int buttonVariant = buttonData.getButtonSpec().getButtonVariant();
         if (assumeNonNull(mView.getOptionalButton()).getVisibility() == View.GONE) {
             // See if we should show an indicator (a dot) if optional button cannot be shown.
             // This check needs to be invoked _after_ optional button initialization is
             // attempted, in order to determine its visibility in case it gets hidden due to
             // toolbar width/button count constraints.
-            maybeShowActionMenuIndicator(buttonData.getButtonSpec().getButtonVariant());
+            maybeShowActionMenuIndicator(buttonVariant);
+            RecordHistogram.recordEnumeratedHistogram(
+                    "CustomTabs.AdaptiveToolbarButton.HiddenReason",
+                    CustomTabMtbHiddenReason.TOOLBAR_WIDTH_LIMIT,
+                    CustomTabMtbHiddenReason.COUNT);
         } else {
-            // TODO(crbug.com//428261559): Record histogram "CustomTabs.AdaptiveToolbarButton.Shown"
             mOptionalButtonCoordinator.updateButton(buttonData, mModel.get(IS_INCOGNITO));
             updateOptionalButtonColors(
                     mView.getBackground().getColor(), mView.getBrandedColorScheme());
+            RecordHistogram.recordEnumeratedHistogram(
+                    "CustomTabs.AdaptiveToolbarButton.Shown",
+                    buttonVariant,
+                    AdaptiveToolbarButtonVariant.MAX_VALUE);
         }
     }
 
@@ -185,9 +194,17 @@ class CustomTabToolbarButtonsMediator
         assert mOptionalButtonCoordinator == null;
 
         if (getCustomActionButtonCount() >= 2) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "CustomTabs.AdaptiveToolbarButton.HiddenReason",
+                    CustomTabMtbHiddenReason.NO_BUTTON_SPACE,
+                    CustomTabMtbHiddenReason.COUNT);
             return false;
         }
         if (mModel.get(OMNIBOX_ENABLED)) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "CustomTabs.AdaptiveToolbarButton.HiddenReason",
+                    CustomTabMtbHiddenReason.OMNIBOX_ENABLED,
+                    CustomTabMtbHiddenReason.COUNT);
             return false;
         }
         View optionalButton = mView.ensureOptionalButtonInflated();
