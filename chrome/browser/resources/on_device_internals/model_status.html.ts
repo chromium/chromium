@@ -35,6 +35,12 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
             File path:
             <span class="value">${baseInfo.filePath}</value>
           </div>
+          <div>
+            File size:
+            <span class="value">
+              ${baseInfo.fileSize.toLocaleString('en-US')} Bytes
+            </value>
+          </div>
         </div>` : html``}
       </div>
     </div>

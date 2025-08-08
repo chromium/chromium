@@ -48,6 +48,8 @@ struct BaseModelInfo {
   string component_version;
   // The file path to the base model.
   string file_path;
+  // Size of the weights file.
+  uint64 file_size;
   // The name of the base model.
   string name;
   // The version of the base model.
