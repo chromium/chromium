@@ -98,6 +98,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
@@ -413,6 +414,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                         mIntentDataProvider.get()))
                         : null;
 
+        Supplier<AppMenuHandler> appMenuHandler =
+                () -> mAppMenuCoordinator != null ? mAppMenuCoordinator.getAppMenuHandler() : null;
+
         if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
             CustomTabToolbar toolbar = mActivity.findViewById(R.id.toolbar);
             mToolbarButtonsCoordinator =
@@ -422,6 +426,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             mIntentDataProvider.get(),
                             params -> mToolbarCoordinator.get().onCustomButtonClick(params),
                             mMinimizeDelegateSupplier.get(),
+                            appMenuHandler,
                             omniboxParams,
                             mActivityLifecycleDispatcher,
                             mActivityTabProvider);
@@ -454,10 +459,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mToolbarCoordinator.get().onToolbarInitialized(mToolbarManager, null);
 
         CustomTabToolbar toolbar = mActivity.findViewById(R.id.toolbar);
-        toolbar.initVisibilityRule(
-                mActivity,
-                () -> mAppMenuCoordinator != null ? mAppMenuCoordinator.getAppMenuHandler() : null,
-                mIntentDataProvider.get());
+        toolbar.initVisibilityRule(mActivity, appMenuHandler, mIntentDataProvider.get());
         var cpac = getContextualPageActionController();
         if (cpac != null) cpac.setButtonVisibilitySupplier(toolbar.getShowOptionalButton());
         View coordinator = mActivity.findViewById(R.id.coordinator);

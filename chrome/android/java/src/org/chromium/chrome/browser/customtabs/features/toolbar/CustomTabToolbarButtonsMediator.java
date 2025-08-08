@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.CUSTOM_ACTION_BUTTONS;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.CUSTOM_ACTION_BUTTONS_VISIBLE;
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator.TransitionType;
@@ -128,6 +130,7 @@ class CustomTabToolbarButtonsMediator
                     && mOptionalButtonCoordinator.getViewVisibility() != View.GONE) {
                 mOptionalButtonCoordinator.hideButton();
             }
+            mModel.set(OPTIONAL_BUTTON_VISIBLE, false);
             return;
         }
 
@@ -139,7 +142,15 @@ class CustomTabToolbarButtonsMediator
         // triggers another round of toolbar positioning job that could interfere with
         // the button chip animation if done synchronously.
         new Handler().post(() -> updateOptionalButton(buttonData));
-        mModel.set(OPTIONAL_BUTTON_VISIBLE, buttonData != null && buttonData.canShow());
+        mModel.set(OPTIONAL_BUTTON_VISIBLE, buttonData.canShow());
+    }
+
+    // Display a (blue) dot on the overflow menu icon for the optional button that cannot be
+    // shown on the toolbar to indicate that the action is available through the menu.
+    private void maybeShowActionMenuIndicator(@AdaptiveToolbarButtonVariant int buttonVariant) {
+        if (mModel.get(OMNIBOX_ENABLED)) return;
+
+        mView.setUpOptionalButtonFallbackUi(buttonVariant);
     }
 
     private int getCustomActionButtonCount() {
@@ -148,8 +159,22 @@ class CustomTabToolbarButtonsMediator
                 : 0;
     }
 
-    private void updateOptionalButton(@Nullable ButtonData buttonData) {
-        if (mOptionalButtonCoordinator != null) {
+    private void updateOptionalButton(ButtonData buttonData) {
+        assertNonNull(mOptionalButtonCoordinator);
+
+        if (!mModel.get(OPTIONAL_BUTTON_VISIBLE)) return;
+
+        // By now inflation/positioning already has been done with OPTIONAL_BUTTON_VISIBLE as true.
+        // If the visibility is false, it should be because the toolbar width is not big enough to
+        // show it.
+        if (assumeNonNull(mView.getOptionalButton()).getVisibility() == View.GONE) {
+            // See if we should show an indicator (a dot) if optional button cannot be shown.
+            // This check needs to be invoked _after_ optional button initialization is
+            // attempted, in order to determine its visibility in case it gets hidden due to
+            // toolbar width/button count constraints.
+            maybeShowActionMenuIndicator(buttonData.getButtonSpec().getButtonVariant());
+        } else {
+            // TODO(crbug.com//428261559): Record histogram "CustomTabs.AdaptiveToolbarButton.Shown"
             mOptionalButtonCoordinator.updateButton(buttonData, mModel.get(IS_INCOGNITO));
             updateOptionalButtonColors(
                     mView.getBackground().getColor(), mView.getBrandedColorScheme());
