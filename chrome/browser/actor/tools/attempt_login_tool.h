@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_LOGIN_TOOL_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_LOGIN_TOOL_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
@@ -31,6 +33,8 @@ class AttemptLoginTool : public Tool {
 
  private:
   void OnGetCredentials(actor_login::CredentialsOrError credentials);
+  void OnCredentialSelected(
+      const std::optional<actor_login::Credential>& credential);
   void OnAttemptLogin(actor_login::LoginStatusResultOrError login_status);
 
   actor_login::ActorLoginService& GetActorLoginService();

@@ -112,9 +112,27 @@ void AttemptLoginTool::OnGetCredentials(
     return;
   }
 
-  // TODO(crbug.com/427817882): Ask the client to choose the credential.
+  tool_delegate().PromptToSelectCredential(
+      creds, base::BindOnce(&AttemptLoginTool::OnCredentialSelected,
+                            weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AttemptLoginTool::OnCredentialSelected(
+    const std::optional<actor_login::Credential>& selected_credential) {
+  if (!selected_credential.has_value()) {
+    PostResponseTask(std::move(invoke_callback_),
+                     MakeResult(mojom::ActionResultCode::kError));
+    return;
+  }
+
+  tabs::TabInterface* tab = tab_handle_.Get();
+  if (!tab) {
+    PostResponseTask(std::move(invoke_callback_),
+                     MakeResult(mojom::ActionResultCode::kTabWentAway));
+    return;
+  }
   GetActorLoginService().AttemptLogin(
-      tab, creds.front(),
+      tab, *selected_credential,
       base::BindOnce(&AttemptLoginTool::OnAttemptLogin,
                      weak_ptr_factory_.GetWeakPtr()));
 }

@@ -16,6 +16,9 @@
 #include "content/public/test/browser_test_utils.h"
 
 using base::test::TestFuture;
+using ::testing::_;
+using ::testing::Return;
+using ::testing::ReturnRef;
 
 namespace actor {
 
@@ -76,6 +79,22 @@ class MockActorLoginService : public actor_login::ActorLoginService {
   actor_login::Credential last_credential_used_;
 };
 
+class MockExecutionEngine : public ExecutionEngine {
+ public:
+  explicit MockExecutionEngine(Profile* profile) : ExecutionEngine(profile) {}
+  ~MockExecutionEngine() override = default;
+
+  MOCK_METHOD(void,
+              PromptToSelectCredential,
+              (const std::vector<actor_login::Credential>&,
+               ToolDelegate::CredentialSelectedCallback),
+              (override));
+  MOCK_METHOD(actor_login::ActorLoginService&,
+              GetActorLoginService,
+              (),
+              (override));
+};
+
 class ActorAttemptLoginToolTest : public ActorToolsTest {
  public:
   ActorAttemptLoginToolTest() = default;
@@ -83,14 +102,32 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
 
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
-    execution_engine().SetActorLoginServiceForTesting(
-        std::make_unique<MockActorLoginService>());
+
+    ON_CALL(mock_execution_engine(), GetActorLoginService())
+        .WillByDefault(ReturnRef(mock_login_service_));
+
+    // Returns the first credential by default.
+    ON_CALL(mock_execution_engine(), PromptToSelectCredential(_, _))
+        .WillByDefault(
+            [](const std::vector<actor_login::Credential>& credentials,
+               ToolDelegate::CredentialSelectedCallback callback) {
+              std::move(callback).Run(credentials[0]);
+            });
   }
 
-  MockActorLoginService& mock_login_service() {
-    return static_cast<MockActorLoginService&>(
-        execution_engine().GetActorLoginService());
+  std::unique_ptr<ExecutionEngine> CreateExecutionEngine(
+      Profile* profile) override {
+    return std::make_unique<::testing::NiceMock<MockExecutionEngine>>(profile);
   }
+
+  MockActorLoginService& mock_login_service() { return mock_login_service_; }
+
+  MockExecutionEngine& mock_execution_engine() {
+    return static_cast<MockExecutionEngine&>(execution_engine());
+  }
+
+ protected:
+  MockActorLoginService mock_login_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, Basic) {
@@ -121,7 +158,8 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoCredentials) {
   ExpectErrorResult(result, mojom::ActionResultCode::kError);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, MultipleCredentials) {
+IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
+                       MultipleCredentialsSelectFirst) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -137,10 +175,36 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, MultipleCredentials) {
   TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
-  // TODO(crbug.com/427817882): We currently just choose the first credential.
-  // This test should be updated once the ability to select the credential is
-  // implemented.
+
   EXPECT_EQ(u"username1", mock_login_service().last_credential_used().username);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
+                       MultipleCredentialsSelectSecond) {
+  ON_CALL(mock_execution_engine(), PromptToSelectCredential(_, _))
+      .WillByDefault(
+          [](const std::vector<actor_login::Credential>& credentials,
+             ToolDelegate::CredentialSelectedCallback callback) {
+            std::move(callback).Run(credentials[1]);
+          });
+
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const bool immediately_available_to_login = true;
+  mock_login_service().SetCredentials(std::vector{
+      MakeTestCredential(u"username1", url, immediately_available_to_login),
+      MakeTestCredential(u"username2", url, immediately_available_to_login)});
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(u"username2", mock_login_service().last_credential_used().username);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoAvailableCredentials) {

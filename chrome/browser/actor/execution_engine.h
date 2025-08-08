@@ -118,9 +118,9 @@ class ExecutionEngine : public ToolDelegate {
   // ToolDelegate:
   AggregatedJournal& GetJournal() override;
   actor_login::ActorLoginService& GetActorLoginService() override;
-
-  void SetActorLoginServiceForTesting(
-      std::unique_ptr<actor_login::ActorLoginService> test_service);
+  void PromptToSelectCredential(
+      const std::vector<actor_login::Credential>& credentials,
+      ToolDelegate::CredentialSelectedCallback callback) override;
 
   static std::string StateToString(State state);
 

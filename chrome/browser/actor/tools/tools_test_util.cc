@@ -45,8 +45,7 @@ void ActorToolsTest::SetUpOnMainThread() {
   host_resolver()->AddRule("*", "127.0.0.1");
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(embedded_https_test_server().Start());
-  auto execution_engine =
-      std::make_unique<ExecutionEngine>(browser()->profile());
+  auto execution_engine = CreateExecutionEngine(browser()->profile());
   auto event_dispatcher = ui::NewUiEventDispatcher(
       ActorKeyedService::Get(browser()->profile())->GetActorUiStateManager());
   auto actor_task = std::make_unique<ActorTask>(browser()->profile(),
@@ -108,6 +107,11 @@ ExecutionEngine& ActorToolsTest::execution_engine() {
 ActorTask& ActorToolsTest::actor_task() const {
   CHECK(task_id_);
   return *ActorKeyedService::Get(browser()->profile())->GetTask(task_id_);
+}
+
+std::unique_ptr<ExecutionEngine> ActorToolsTest::CreateExecutionEngine(
+    Profile* profile) {
+  return std::make_unique<ExecutionEngine>(profile);
 }
 
 }  // namespace actor

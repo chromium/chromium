@@ -50,6 +50,9 @@ class ActorToolsTest : public InProcessBrowserTest {
   ActorTask& actor_task() const;
 
  protected:
+  virtual std::unique_ptr<ExecutionEngine> CreateExecutionEngine(
+      Profile* profile);
+
   TaskId task_id_;
 
  private:

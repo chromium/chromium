@@ -448,9 +448,12 @@ actor_login::ActorLoginService& ExecutionEngine::GetActorLoginService() {
   return *actor_login_service_;
 }
 
-void ExecutionEngine::SetActorLoginServiceForTesting(
-    std::unique_ptr<actor_login::ActorLoginService> test_service) {
-  actor_login_service_ = std::move(test_service);
+void ExecutionEngine::PromptToSelectCredential(
+    const std::vector<actor_login::Credential>& credentials,
+    ToolDelegate::CredentialSelectedCallback callback) {
+  CHECK(!credentials.empty());
+  // TODO(crbug.com/427817882): Wire this up to the WebClient.
+  std::move(callback).Run(credentials.front());
 }
 
 const ToolRequest& ExecutionEngine::GetNextAction() const {
