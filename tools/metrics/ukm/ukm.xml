@@ -18940,6 +18940,31 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PasswordManager.ChangeFlowOutcome" singular="True">
+  <owner>otara@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Metrics related to the outcome of the password change flow. Recorded when
+    the flow is stopped.
+  </summary>
+  <metric name="CoarseFinalPasswordChangeStatus"
+      enum="CoarseFinalPasswordChangeState">
+    <summary>
+      Records the state at which the password change flow was stopped, either
+      successful, failed or interrupted.
+
+      This mirrors CoarseFinalPasswordChangeStatus in UMA.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="PasswordManager.ChangeRecovery" singular="True">
   <owner>otara@google.com</owner>
   <owner>vsemeniuk@google.com</owner>

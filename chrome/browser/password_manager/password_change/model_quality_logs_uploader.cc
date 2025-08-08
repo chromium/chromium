@@ -141,9 +141,15 @@ bool IsSuccessfulLoginAttempt(
         kBackupPasswordSucceeded:
     case password_manager::LogInWithChangedPasswordOutcome::
         kPrimaryPasswordSucceeded:
-      // TODO(crbug.com/425927757): Add Unknown case.
+    case password_manager::LogInWithChangedPasswordOutcome::
+        kUnknownPasswordSucceeded:
       return true;
-    default:
+    case password_manager::LogInWithChangedPasswordOutcome::
+        kBackupPasswordFailed:
+    case password_manager::LogInWithChangedPasswordOutcome::
+        kPrimaryPasswordFailed:
+    case password_manager::LogInWithChangedPasswordOutcome::
+        kUnknownPasswordFailed:
       return false;
   }
 }
@@ -161,7 +167,10 @@ LoginPasswordType GetLoginAttemptPasswordType(
     case password_manager::LogInWithChangedPasswordOutcome::
         kBackupPasswordSucceeded:
       return LoginPasswordType::LoginAttemptOutcome_PasswordType_BACKUP;
-    default:
+    case password_manager::LogInWithChangedPasswordOutcome::
+        kUnknownPasswordFailed:
+    case password_manager::LogInWithChangedPasswordOutcome::
+        kUnknownPasswordSucceeded:
       return LoginPasswordType::LoginAttemptOutcome_PasswordType_UNKNOWN;
   }
 }

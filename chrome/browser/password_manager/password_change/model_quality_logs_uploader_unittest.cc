@@ -700,3 +700,15 @@ TEST_F(ModelQualityLogsUploaderTest, RecordLogBackupPassword) {
       "url.com", LoginPasswordType::LoginAttemptOutcome_PasswordType_BACKUP,
       false);
 }
+
+TEST_F(ModelQualityLogsUploaderTest, RecordLogUnknownPassword) {
+  const GURL url("http://www.url.com");
+  NavigateAndCommit(url);
+  ModelQualityLogsUploader::RecordLoginAttemptQuality(
+      mqls_uploader_service(), url,
+      password_manager::LogInWithChangedPasswordOutcome::
+          kUnknownPasswordFailed);
+  VerifyUniqueLoginAttemptLog(
+      "url.com", LoginPasswordType::LoginAttemptOutcome_PasswordType_UNKNOWN,
+      false);
+}
