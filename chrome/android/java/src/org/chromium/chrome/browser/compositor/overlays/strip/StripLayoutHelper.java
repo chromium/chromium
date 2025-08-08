@@ -848,7 +848,6 @@ public class StripLayoutHelper
     public void getVirtualViews(List<VirtualView> views) {
         for (int i = 0; i < mStripViews.length; i++) {
             final StripLayoutView view = mStripViews[i];
-            if (view == null) continue; // Handle drag-reordering.
             view.getVirtualViews(views);
         }
         if (mNewTabButton.isVisible()) mNewTabButton.getVirtualViews(views);
