@@ -1904,7 +1904,7 @@ export namespace Network {
 export namespace Network {
   export const SetExtraHeadersParametersSchema = z.lazy(() =>
     z.object({
-      headers: z.array(Network.HeaderSchema).min(1),
+      headers: z.array(Network.HeaderSchema),
       contexts: z
         .array(BrowsingContext.BrowsingContextSchema)
         .min(1)
