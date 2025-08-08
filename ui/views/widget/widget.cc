@@ -395,8 +395,7 @@ Widget::Widgets Widget::GetAllOwnedWidgets(gfx::NativeView native_view) {
 // static
 void Widget::ForEachOwnedWidget(gfx::NativeView native_view,
                                 base::FunctionRef<void(Widget*)> on_widget) {
-  WidgetEnumerator widget_iterator(
-      internal::NativeWidgetPrivate::GetAllOwnedWidgets(native_view));
+  WidgetEnumerator widget_iterator(GetAllOwnedWidgets(native_view));
   while (!widget_iterator.IsEmpty()) {
     on_widget(widget_iterator.Next());
   }
