@@ -81,7 +81,7 @@ PaintImage PaintImageBuilder::TakePaintImage() {
     DCHECK(!paint_image_.gainmap_paint_image_generator_);
   }
 
-  if (paint_image_.HasGainmap()) {
+  if (paint_image_.HasGainmapInfo()) {
     DCHECK(paint_image_.paint_image_generator_ ||
            paint_image_.gainmap_sk_image_);
   }

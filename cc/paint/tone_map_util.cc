@@ -215,15 +215,6 @@ sk_sp<SkColorFilter> GetAgtmFilter(const gfx::HdrMetadataAgtmParsed& params,
 
 }  // namespace
 
-bool ToneMapUtil::UseGainmapShader(const PaintImage& image) {
-  if (image.gainmap_sk_image_) {
-    DCHECK(image.cached_sk_image_);
-    DCHECK(image.gainmap_info_.has_value());
-    return true;
-  }
-  return false;
-}
-
 bool ToneMapUtil::UseGlobalToneMapFilter(const SkImage* image,
                                          const SkColorSpace* dst_color_space) {
   if (!image) {

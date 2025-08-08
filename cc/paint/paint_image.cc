@@ -354,7 +354,7 @@ gfx::ContentColorUsage PaintImage::GetContentColorUsage() const {
   }
 
   // Gainmap images are always HDR.
-  if (HasGainmap()) {
+  if (HasGainmapInfo()) {
     return gfx::ContentColorUsage::kHDR;
   }
 
@@ -461,7 +461,7 @@ std::string PaintImage::ToString() const {
       << " completion_state_: " << static_cast<int>(completion_state_)
       << " is_multipart_: " << is_multipart_
       << " may_be_lcp_candidate_: " << may_be_lcp_candidate_
-      << " has gainmap: " << HasGainmap() << " is YUV: "
+      << " has gainmap: " << HasGainmapInfo() << " is YUV: "
       << IsYuv(SkYUVAPixmapInfo::SupportedDataTypes::All(), AuxImage::kDefault);
   return str.str();
 }

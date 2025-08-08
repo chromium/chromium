@@ -526,17 +526,6 @@ std::optional<SkYUVAPixmapInfo> GetYUVADecodeInfo(
   return original_yuva_pixmap_info;
 }
 
-bool NeedsToneMapping(sk_sp<SkColorSpace> image_color_space, bool has_gainmap) {
-  if (has_gainmap) {
-    return true;
-  }
-  if (image_color_space &&
-      gfx::ColorSpace(*image_color_space).IsToneMappedByDefault()) {
-    return true;
-  }
-  return false;
-}
-
 }  // namespace
 
 // Extract the information to uniquely identify a DrawImage for the purposes of
@@ -2483,7 +2472,7 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
     base::AutoUnlock unlock(lock_);
     for (auto aux_image : kAllAuxImages) {
       if (aux_image == AuxImage::kGainmap) {
-        if (!draw_image.paint_image().HasGainmap()) {
+        if (!draw_image.paint_image().HasGainmapInfo()) {
           continue;
         }
       }
@@ -2660,10 +2649,10 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
       UploadImageIfNecessary_TransferCache_HardwareDecode(
           draw_image, image_data, target_color_space);
     } else {
-      // Do not color convert images that are YUV or need tone mapping.
+      // Do not color convert images that are YUV or might be tone mapped.
       if (image_data->info.yuva.has_value() ||
-          NeedsToneMapping(decoded_color_space,
-                           draw_image.paint_image().HasGainmap())) {
+          draw_image.paint_image().HasGainmapInfo() ||
+          ToneMapUtil::UseGlobalToneMapFilter(decoded_color_space.get())) {
         target_color_space = nullptr;
       }
       const std::optional<gfx::HDRMetadata> hdr_metadata =
@@ -2962,7 +2951,7 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
 
   // Extract ImageInfo and SkImageInfo for the gainmap image, if it exists,
   // assuming software decoindg to RGBA.
-  const bool has_gainmap = draw_image.paint_image().HasGainmap();
+  const bool has_gainmap = draw_image.paint_image().HasGainmapInfo();
   SkImageInfo gainmap_sk_image_info;
   ImageInfo gainmap_info;
   if (has_gainmap) {

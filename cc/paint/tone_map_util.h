@@ -19,16 +19,10 @@ struct HDRMetadata;
 
 namespace cc {
 
-class PaintImage;
-
 // Helper class for applying tone mapping on the fly in DrawImage and
 // DrawImageRect.
 class CC_PAINT_EXPORT ToneMapUtil {
  public:
-  // Return true if the specified PaintImage should be drawn using a gainmap
-  // shader.
-  static bool UseGainmapShader(const PaintImage& image);
-
   // Return true if the specified SkImage should be drawn using a tone mapping
   // shader. The `dst_color_space` parameter is used only as a workaround to
   // disable tone mapping (see comments in the source).

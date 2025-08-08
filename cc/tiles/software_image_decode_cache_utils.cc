@@ -200,7 +200,7 @@ SoftwareImageDecodeCacheUtils::CacheKey::FromDrawImage(const DrawImage& image,
   //   results (and only ever cache one tone mapping for a given image).
   TargetColorParams target_color_params = image.target_color_params();
   target_color_params.hdr_headroom = std::nullopt;
-  if (ToneMapUtil::UseGainmapShader(paint_image) ||
+  if (paint_image.HasGainmapInfo() ||
       ToneMapUtil::UseGlobalToneMapFilter(paint_image.color_space())) {
     if (paint_image.color_space()) {
       target_color_params.color_space =
