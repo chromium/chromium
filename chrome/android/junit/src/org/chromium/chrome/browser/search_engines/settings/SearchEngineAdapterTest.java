@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.search_engines.R;
@@ -263,5 +264,74 @@ public class SearchEngineAdapterTest {
         verify(c1, atLeastOnce()).getShortName();
         assertEquals(View.VISIBLE, v.findViewById(R.id.url).getVisibility());
         assertThat(v.findViewById(R.id.logo), notNullValue());
+    }
+
+    @Test
+    public void refreshData_unknownDseAddedToRecents() {
+        // Avoid JavaExceptionReporter misfires on bots that test official builds.
+        if (VersionInfo.isOfficialBuild()) return;
+        long lastVisitedTime = System.currentTimeMillis();
+        TemplateUrl p1 = buildMockTemplateUrl("prepopulated1", 1, lastVisitedTime);
+        TemplateUrl p2 = buildMockTemplateUrl("prepopulated2", 2, lastVisitedTime);
+        TemplateUrl unknownDse = buildMockTemplateUrl("unknown", 0, lastVisitedTime);
+
+        doReturn(true).when(mTemplateUrlService).isLoaded();
+        doReturn(new ArrayList<>(List.of(p1, p2))).when(mTemplateUrlService).getTemplateUrls();
+        doReturn(unknownDse).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+
+        // Test for non-EEA country.
+        doReturn(false).when(mRegionalCapabilities).isInEeaCountry();
+        RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
+
+        var adapter = new SearchEngineAdapter(mContext, mProfile);
+        adapter.start();
+
+        // The adapter will show 2 prepopulated engines, a divider, and the unknown DSE.
+        assertEquals(4, adapter.getCount());
+        assertEquals(p1, adapter.getItem(0));
+        assertEquals(p2, adapter.getItem(1));
+        // Item 2 is a divider.
+        assertEquals(unknownDse, adapter.getItem(3));
+
+        // Test for EEA country.
+        doReturn(true).when(mRegionalCapabilities).isInEeaCountry();
+        RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
+
+        adapter = new SearchEngineAdapter(mContext, mProfile);
+        adapter.start();
+
+        // The adapter will show 2 prepopulated engines, a divider, and the unknown DSE.
+        assertEquals(4, adapter.getCount());
+        assertEquals(p1, adapter.getItem(0));
+        assertEquals(p2, adapter.getItem(1));
+        // Item 2 is a divider.
+        assertEquals(unknownDse, adapter.getItem(3));
+    }
+
+    @Test
+    public void refreshData_dseSuppressedByPolicy() {
+        // Avoid JavaExceptionReporter misfires on bots that test official builds.
+        if (VersionInfo.isOfficialBuild()) return;
+        long lastVisitedTime = System.currentTimeMillis();
+        TemplateUrl p1 = buildMockTemplateUrl("prepopulated1", 1, lastVisitedTime);
+        TemplateUrl p2 = buildMockTemplateUrl("prepopulated2", 2, lastVisitedTime);
+
+        doReturn(true).when(mTemplateUrlService).isLoaded();
+        doReturn(new ArrayList<>(List.of(p1, p2))).when(mTemplateUrlService).getTemplateUrls();
+        doReturn(null).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+
+        // Test for non-EEA country.
+        doReturn(false).when(mRegionalCapabilities).isInEeaCountry();
+        RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
+
+        var adapter = new SearchEngineAdapter(mContext, mProfile);
+        adapter.start();
+
+        // The adapter will show 2 prepopulated engines, a divider, and the unknown DSE.
+        assertEquals(2, adapter.getCount());
+        assertEquals(p1, adapter.getItem(0));
+        assertEquals(p2, adapter.getItem(1));
     }
 }

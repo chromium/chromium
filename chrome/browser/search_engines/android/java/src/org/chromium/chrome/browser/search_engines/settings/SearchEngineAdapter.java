@@ -25,7 +25,9 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -54,6 +56,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /** A custom adapter for listing search engines. */
 @NullMarked
@@ -215,9 +218,11 @@ public class SearchEngineAdapter extends BaseAdapter
         RegionalCapabilitiesService regionalCapabilities =
                 RegionalCapabilitiesServiceFactory.getForProfile(mProfile);
         List<TemplateUrl> templateUrls = templateUrlService.getTemplateUrls();
-        TemplateUrl defaultSearchEngineTemplateUrl =
+
+        // Note: DSE may be null if explicitly blocked by policy.
+        @Nullable TemplateUrl defaultSearchEngineTemplateUrl =
                 templateUrlService.getDefaultSearchEngineTemplateUrl();
-        assert defaultSearchEngineTemplateUrl != null;
+
         sortAndFilterUnnecessaryTemplateUrl(
                 templateUrls,
                 defaultSearchEngineTemplateUrl,
@@ -245,26 +250,55 @@ public class SearchEngineAdapter extends BaseAdapter
         // Convert the TemplateUrl index into an index of mSearchEngines.
         mSelectedSearchEnginePosition = -1;
         for (int i = 0; i < mPrepopulatedSearchEngines.size(); ++i) {
-            if (mPrepopulatedSearchEngines.get(i).equals(defaultSearchEngineTemplateUrl)) {
+            if (Objects.equals(mPrepopulatedSearchEngines.get(i), defaultSearchEngineTemplateUrl)) {
                 mSelectedSearchEnginePosition = i;
             }
         }
 
         for (int i = 0; i < mRecentSearchEngines.size(); ++i) {
-            if (mRecentSearchEngines.get(i).equals(defaultSearchEngineTemplateUrl)) {
+            if (Objects.equals(mRecentSearchEngines.get(i), defaultSearchEngineTemplateUrl)) {
                 // Add one to offset the title for the recent search engine list.
                 mSelectedSearchEnginePosition = i + computeStartIndexForRecentSearchEngines();
             }
         }
 
         if (mSelectedSearchEnginePosition == -1) {
-            throw new IllegalStateException(
-                    String.format(
-                            "Default search engine is not found in available search engines:"
-                                    + " DSE is valid=%b, is managed=%b",
-                            defaultSearchEngineTemplateUrl != null,
-                            TemplateUrlServiceFactory.getForProfile(mProfile)
-                                    .isDefaultSearchManaged()));
+            if (defaultSearchEngineTemplateUrl != null) {
+                mRecentSearchEngines.add(defaultSearchEngineTemplateUrl);
+                mSelectedSearchEnginePosition = mRecentSearchEngines.size() - 1;
+            }
+
+            if (VersionInfo.isOfficialBuild()) {
+                // TODO(crbug.com/437052188): address exceptions linked to search engine choice
+                // program and remove the diagnostics logic.
+                // It's very likely this is impacting users who have selected a search engine in a
+                // country where SEC program is in effect and have moved/relocated.
+                // If true, these engines should not be suppressed/removed, but appended to recents.
+                var knownEngines = new StringBuilder();
+                for (var engine : mPrepopulatedSearchEngines) {
+                    if (!knownEngines.isEmpty()) knownEngines.append(", ");
+                    knownEngines.append(engine.getShortName());
+                }
+                for (var engine : mRecentSearchEngines) {
+                    if (!knownEngines.isEmpty()) knownEngines.append(", ");
+                    knownEngines.append(engine.getShortName());
+                }
+                var report =
+                        new IllegalStateException(
+                                String.format(
+                                        "Default search engine is not found in available search"
+                                                + " engines: DSE is valid=%b (%s), is managed=%b,"
+                                                + " known=%d [%s]",
+                                        defaultSearchEngineTemplateUrl != null,
+                                        defaultSearchEngineTemplateUrl != null
+                                                ? defaultSearchEngineTemplateUrl.getShortName()
+                                                : "<null>",
+                                        TemplateUrlServiceFactory.getForProfile(mProfile)
+                                                .isDefaultSearchManaged(),
+                                        mRecentSearchEngines.size(),
+                                        knownEngines.toString()));
+                JavaExceptionReporter.reportException(report);
+            }
         }
 
         mInitialEnginePosition = mSelectedSearchEnginePosition;
@@ -275,7 +309,7 @@ public class SearchEngineAdapter extends BaseAdapter
     @VisibleForTesting
     public static void sortAndFilterUnnecessaryTemplateUrl(
             List<TemplateUrl> templateUrls,
-            TemplateUrl defaultSearchEngine,
+            @Nullable TemplateUrl defaultSearchEngine,
             boolean isEeaChoiceCountry) {
         // In the EEA and when the new settings design is shown, we want to avoid re-sorting, to
         // stick to the order of prepopulated engines provided by the service.
@@ -305,7 +339,7 @@ public class SearchEngineAdapter extends BaseAdapter
      * the current user selections.
      */
     private static Comparator<TemplateUrl> templateUrlsComparatorWith(
-            TemplateUrl defaultSearchEngine, boolean sortPrepopulatedEngines) {
+            @Nullable TemplateUrl defaultSearchEngine, boolean sortPrepopulatedEngines) {
         return (TemplateUrl templateUrl1, TemplateUrl templateUrl2) -> {
             // Don't change the order for duplicates.
             if (templateUrl1.getNativePtr() == templateUrl2.getNativePtr()) {
@@ -329,9 +363,9 @@ public class SearchEngineAdapter extends BaseAdapter
             }
 
             // A custom DSE should be displayed right after the prepopulated ones.
-            if (templateUrl1.equals(defaultSearchEngine)) {
+            if (Objects.equals(templateUrl1, defaultSearchEngine)) {
                 return -1;
-            } else if (templateUrl2.equals(defaultSearchEngine)) {
+            } else if (Objects.equals(templateUrl2, defaultSearchEngine)) {
                 return 1;
             }
 
@@ -342,10 +376,11 @@ public class SearchEngineAdapter extends BaseAdapter
     }
 
     private static @TemplateUrlSourceType int getSearchEngineSourceType(
-            TemplateUrl templateUrl, TemplateUrl defaultSearchEngine) {
+            TemplateUrl templateUrl, @Nullable TemplateUrl defaultSearchEngine) {
         if (templateUrl.getIsPrepopulated()) {
             return TemplateUrlSourceType.PREPOPULATED;
-        } else if (templateUrl.getNativePtr() == defaultSearchEngine.getNativePtr()) {
+        } else if (defaultSearchEngine != null
+                && templateUrl.getNativePtr() == defaultSearchEngine.getNativePtr()) {
             return TemplateUrlSourceType.DEFAULT;
         } else {
             return TemplateUrlSourceType.RECENT;
