@@ -102,6 +102,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.AutomaticPasskeyUpgrade.Result"
+    enum="PasskeyUpgradeResult" expires_after="2026-08-01">
+  <owner>martinkr@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the outcome of a WebAuthn conditional create (aka automatic passkey
+    upgrade) request on Desktop, including a breakdown of failure conditions.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.CableV2.TunnelEvent"
     enum="WebAuthenticationCableV2TunnelEvent" expires_after="2025-12-31">
   <owner>agl@chromium.org</owner>

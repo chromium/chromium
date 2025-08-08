@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/webauthn/passkey_upgrade_request_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
@@ -624,8 +625,6 @@ bool IsMechanismEnclaveCredential(
   return false;
 }
 
-// EnclaveAuthenticatorBrowserTest now inherits from
-// EnclaveAuthenticatorTestBase
 class EnclaveAuthenticatorBrowserTest : public EnclaveAuthenticatorTestBase {
  public:
   class DelegateObserver
@@ -912,6 +911,7 @@ class EnclaveAuthenticatorBrowserTest : public EnclaveAuthenticatorTestBase {
   std::unique_ptr<DelegateObserver> delegate_observer_;
   std::unique_ptr<ModelObserver> model_observer_;
   raw_ptr<ChromeAuthenticatorRequestDelegate> request_delegate_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Parses the string resulting from the Javascript snippets that exercise the
@@ -3783,6 +3783,11 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
       ParseCredentialId(script_result);
   EXPECT_TRUE(cred_id);
 
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.AutomaticPasskeyUpgrade.Result",
+      /*sample=*/PasskeyUpgradeResult::kSuccess,
+      /*expected_bucket_count=*/1);
+
   // The request should not have instantiated non-enclave discoveries.
   ASSERT_TRUE(
       delegate_observer()->on_transport_availability_enumerated_called());
@@ -3808,6 +3813,11 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
   std::string script_result;
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_THAT(script_result, testing::HasSubstr("NotAllowedError"));
+
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.AutomaticPasskeyUpgrade.Result",
+      /*sample=*/PasskeyUpgradeResult::kOptOut,
+      /*expected_bucket_count=*/1);
 }
 
 // Regression test for crbug.com/414750307.
@@ -3831,29 +3841,11 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
   std::string script_result;
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_THAT(script_result, testing::HasSubstr("NotAllowedError"));
-}
 
-// Regression test for crbug.com/414750307.
-IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
-                       ConditionalCreate_FailsWithGPMPasskeysDisabledByPolicy) {
-  // Disabling GPM passkeys via policy should cause upgrade requests to fail.
-  browser()->profile()->GetPrefs()->SetBoolean(
-      password_manager::prefs::kCredentialsEnablePasskeys, false);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
-
-  InjectPassword(base::Time::Now());
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::DOMMessageQueue message_queue(web_contents);
-  content::ExecuteScriptAsync(web_contents, kMakeCredentialConditionalCreate);
-  delegate_observer()->WaitForUI();
-
-  std::string script_result;
-  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
-  EXPECT_THAT(script_result, testing::HasSubstr("NotAllowedError"));
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.AutomaticPasskeyUpgrade.Result",
+      /*sample=*/PasskeyUpgradeResult::kGpmDisabled,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
@@ -3872,6 +3864,11 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
   std::string script_result;
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_THAT(script_result, testing::HasSubstr("NotAllowedError"));
+
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.AutomaticPasskeyUpgrade.Result",
+      /*sample=*/PasskeyUpgradeResult::kEnclaveNotInitialized,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
@@ -3890,6 +3887,11 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
   std::string script_result;
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_THAT(script_result, testing::HasSubstr("NotAllowedError"));
+
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.AutomaticPasskeyUpgrade.Result",
+      /*sample=*/PasskeyUpgradeResult::kNoMatchingPassword,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
@@ -3918,12 +3920,24 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_THAT(script_result, testing::HasSubstr("NotAllowedError"));
 
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.AutomaticPasskeyUpgrade.Result",
+      /*sample=*/PasskeyUpgradeResult::kNoMatchingPassword,
+      /*expected_bucket_count=*/1);
+
   // With an upgrade eligible password, we signal the exclude list match with an
   // InvalidStateError.
   InjectPassword(base::Time::Now());
   content::ExecuteScriptAsync(web_contents, script);
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_THAT(script_result, testing::HasSubstr("InvalidStateError"));
+
+  // PasskeyUpgradeRequestController does not directly observe the authenticator
+  // request result, such as the authenticator error that indicates the exclude
+  // list match. Hence, no additional histogram value should have been emitted
+  // for the second request.
+  histogram_tester_.ExpectTotalCount(
+      "WebAuthentication.AutomaticPasskeyUpgrade.Result", 1);
 }
 
 class EnclaveAuthenticatorImmediateMediationBrowserTest
@@ -3937,7 +3951,6 @@ class EnclaveAuthenticatorImmediateMediationBrowserTest
 IN_PROC_BROWSER_TEST_F(
     EnclaveAuthenticatorImmediateMediationBrowserTest,
     GivenOnlyOneGpmPasskeyWithBiometricsEnabled_WhenImmediateRequestWithUv_TouchIdShown) {
-  base::HistogramTester histogram_tester;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::DOMMessageQueue message_queue(web_contents);
@@ -3992,7 +4005,7 @@ IN_PROC_BROWSER_TEST_F(
   // At this point, step should be kGPMTouchID
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMTouchID);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "WebAuthentication.GetAssertion.Immediate.EnclaveReady",
       /*sample=*/true,
       /*expected_bucket_count=*/1);
@@ -4002,7 +4015,6 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorImmediateMediationBrowserTest,
                        ImmediateRequest_EnclaveNotReady_NoPasskeys) {
-  base::HistogramTester histogram_tester;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::DOMMessageQueue message_queue(web_contents);
@@ -4021,7 +4033,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorImmediateMediationBrowserTest,
   std::string script_result;
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_THAT(script_result, testing::HasSubstr("NotAllowedError"));
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "WebAuthentication.GetAssertion.Immediate.EnclaveReady",
       /*sample=*/false,
       /*expected_bucket_count=*/1);
@@ -4055,8 +4067,6 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        GetAssertion_LargeBlobWriteThenRead) {
-  base::HistogramTester histogram_tester;
-
   // New empty vault.
   SetTrustedVaultEmpty();
 
@@ -4103,7 +4113,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   std::string write_js = base::ReplaceStringPlaceholders(
       kGetAssertionWriteLargeBlob, {cred_id_b64}, nullptr);
   EXPECT_EQ(run_get_and_confirm(write_js), "\"write ok\"");
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectBucketCount(
       "WebAuthentication.GPM.GetAssertion.LargeBlobSucceeded.Write",
       /*sample=*/true, /*expected_count=*/1);
 
@@ -4111,7 +4121,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   std::string read_js = base::ReplaceStringPlaceholders(
       kGetAssertionReadLargeBlob, {cred_id_b64}, nullptr);
   EXPECT_EQ(run_get_and_confirm(read_js), "\"read hello world\"");
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectBucketCount(
       "WebAuthentication.GPM.GetAssertion.LargeBlobSucceeded.Read",
       /*sample=*/true, /*expected_count=*/1);
 

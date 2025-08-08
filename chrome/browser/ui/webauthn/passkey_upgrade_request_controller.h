@@ -27,6 +27,26 @@ class EnclaveManager;
 class GPMEnclaveTransaction;
 class Profile;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(PasskeyUpgradeResult)
+enum class PasskeyUpgradeResult {
+  kSuccess = 0,
+  kGpmDisabled = 1,
+  kOptOut = 2,
+  kEnclaveNotInitialized = 3,
+  kPasswordStoreError = 4,
+  kNoMatchingPassword = 5,
+  kNoRecentlyUsedPassword = 6,
+  kEnclaveError = 7,
+  kMaxValue = kEnclaveError,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:PasskeyUpgradeResult)
+
+// Record a UMA histogram for the outcome of a passkey upgrade request.
+void RecordPasskeyUpgradeResultHistogram(PasskeyUpgradeResult);
+
 // PasskeyUpgradeRequestController is responsible for handling a request to
 // silently create a passkey in GPM, effectively upgrading an existing password.
 // This is also known as conditionalCreate in WebAuthn.
@@ -59,7 +79,6 @@ class PasskeyUpgradeRequestController
                                    Delegate* delegate);
 
  private:
-  enum class RequestError;
   enum class EnclaveState;
 
   // password_manager::PasswordStoreConsumer:
@@ -81,7 +100,7 @@ class PasskeyUpgradeRequestController
 
   void OnEnclaveLoaded();
   void ContinuePendingUpgradeRequest();
-  void SignalRequestFailure(RequestError error);
+  void FinishRequest(PasskeyUpgradeResult error);
 
   const content::GlobalRenderFrameHostId frame_host_id_;
 

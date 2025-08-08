@@ -119,6 +119,21 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Failure dialog shown"/>
 </enum>
 
+<!-- LINT.IfChange(PasskeyUpgradeResultEnum) -->
+
+<enum name="PasskeyUpgradeResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="GPM disabled"/>
+  <int value="2" label="Passkey upgrades disabled"/>
+  <int value="3" label="GPM Enclave not initialized"/>
+  <int value="4" label="Password store error"/>
+  <int value="5" label="No password with matching username found"/>
+  <int value="6" label="Matching password was not recently used"/>
+  <int value="7" label="GPM Enclave error"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webauthn/passkey_upgrade_request_controller.h:PasskeyUpgradeResult) -->
+
 <!-- LINT.IfChange(SignalAllAcceptedCredentialsResultEnum) -->
 
 <enum name="SignalAllAcceptedCredentialsResult">
