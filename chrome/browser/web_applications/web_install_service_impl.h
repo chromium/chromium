@@ -29,6 +29,46 @@ class AppLock;
 struct WebAppInstallInfo;
 class WebAppProvider;
 
+// Result codes for Web Install API results.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(WebInstallApiResult)
+enum class WebInstallApiResult {
+  kSuccess = 0,
+  kSuccessAlreadyInstalled = 1,
+  kUnexpectedFailure = 2,
+  kPermissionDenied = 3,
+  kUnsupportedProfile = 4,
+  kCanceledByUser = 5,
+  kInstallCommandFailed = 6,
+  kNoCustomManifestId = 7,
+  kManifestIdMismatch = 8,
+  // Insert new values above this line.
+  kMaxValue = kManifestIdMismatch,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebInstallApiResult)
+
+// Install types for the Web Install API.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(WebInstallApiType)
+enum class WebInstallApiType {
+  kCurrentDocument = 0,
+  kBackgroundDocument = 1,
+  // Insert new values above this line.
+  kMaxValue = kBackgroundDocument,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebInstallApiType)
+
+// Used to coordinate running the `InstallCallback` from `Install()` with firing
+// the appropriate Uma result.
+using InstallCallbackWithMetrics =
+    base::OnceCallback<void(web_app::WebInstallApiResult,
+                            blink::mojom::WebInstallServiceResult,
+                            webapps::ManifestId)>;
+
 // Service side implementation for the Blink Web Install API. Takes the
 // parameters from the API call in the form of `InstallOptionsPtr`, and decides
 // whether to install the current document or a background document.
@@ -54,21 +94,25 @@ class WebInstallServiceImpl
       mojo::PendingReceiver<blink::mojom::WebInstallService> receiver);
   ~WebInstallServiceImpl() override;
 
-  void OnInstallNotSupportedDialogClosed(InstallCallback callback);
+  void OnInstallNotSupportedDialogClosed(
+      InstallCallbackWithMetrics callback_with_metrics);
 
-  void TryInstallCurrentDocument(InstallCallback callback);
+  void TryInstallCurrentDocument(
+      InstallCallbackWithMetrics callback_with_metrics);
 
-  void CheckForInstalledAppMaybeLaunch(content::WebContents* web_contents,
-                                       InstallCallback callback,
-                                       AppLock& lock,
-                                       base::Value::Dict& debug_value);
+  void CheckForInstalledAppMaybeLaunch(
+      content::WebContents* web_contents,
+      InstallCallbackWithMetrics callback_with_metrics,
+      AppLock& lock,
+      base::Value::Dict& debug_value);
 
-  void OnIntentPickerMaybeLaunched(InstallCallback callback,
-                                   webapps::AppId app_id,
-                                   bool user_chose_to_open);
+  void OnIntentPickerMaybeLaunched(
+      InstallCallbackWithMetrics callback_with_metrics,
+      webapps::AppId app_id,
+      bool user_chose_to_open);
 
   void OnDidRetrieveManifestForCurrentDocumentInstall(
-      InstallCallback callback,
+      InstallCallbackWithMetrics callback_with_metrics,
       WebAppProvider* provider,
       blink::mojom::ManifestPtr opt_manifest,
       bool valid_manifest_for_web_app,
@@ -79,25 +123,26 @@ class WebInstallServiceImpl
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback);
 
   void OnPermissionDecided(
-      InstallCallback callback,
+      InstallCallbackWithMetrics callback_with_metrics,
       const std::vector<blink::mojom::PermissionStatus>& permission_status);
 
   // `install_info` was fetched from an install url and is used to populate the
   // background launch dialog.
   void OnInstallInfoFromInstallUrlFetched(
-      InstallCallback callback,
+      InstallCallbackWithMetrics callback_with_metrics,
       webapps::AppId app_id,
       const GURL& manifest_id,
       std::unique_ptr<WebAppInstallInfo> install_info);
 
   // Used by the launch dialog to report whether the user accepted the launch.
-  void OnBackgroundAppLaunchDialogClosed(InstallCallback callback,
-                                         const GURL& manifest_id,
-                                         bool accepted);
+  void OnBackgroundAppLaunchDialogClosed(
+      InstallCallbackWithMetrics callback_with_metrics,
+      const GURL& manifest_id,
+      bool accepted);
 
   // Used by web app install dialog code as the WebAppInstalledCallback.
   // Reports install success or failure back to Blink via `callback`.
-  void OnAppInstalled(InstallCallback callback,
+  void OnAppInstalled(InstallCallbackWithMetrics callback_with_metrics,
                       const webapps::AppId& app_id,
                       webapps::InstallResultCode code);
 

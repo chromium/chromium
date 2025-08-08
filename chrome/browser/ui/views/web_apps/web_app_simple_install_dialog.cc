@@ -51,6 +51,7 @@ namespace web_app {
 
 namespace {
 bool g_auto_accept_pwa_for_testing = false;
+bool g_auto_decline_pwa_for_testing = false;
 bool g_dont_close_on_deactivate = false;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -158,10 +159,17 @@ void ShowSimpleInstallDialogForWebApps(
   if (g_auto_accept_pwa_for_testing) {
     dialog_delegate->AcceptDialog();
   }
+  if (g_auto_decline_pwa_for_testing) {
+    dialog_delegate->CancelDialog();
+  }
 }
 
 base::AutoReset<bool> SetAutoAcceptPWAInstallConfirmationForTesting() {
   return base::AutoReset<bool>(&g_auto_accept_pwa_for_testing, true);
+}
+
+base::AutoReset<bool> SetAutoDeclinePWAInstallConfirmationForTesting() {
+  return base::AutoReset<bool>(&g_auto_decline_pwa_for_testing, true);
 }
 
 base::AutoReset<bool> SetDontCloseOnDeactivateForTesting() {

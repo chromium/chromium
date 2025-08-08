@@ -186,6 +186,10 @@ void ShowWebAppDetailedInstallDialog(
 // without any user interaction.
 base::AutoReset<bool> SetAutoAcceptPWAInstallConfirmationForTesting();
 
+// Sets whether |ShowSimpleInstallDialogForWebApps| should decline immediately
+// without any user interaction.
+base::AutoReset<bool> SetAutoDeclinePWAInstallConfirmationForTesting();
+
 // Sets whether |ShowDiyInstallDialogForWebApps| should accept immediately
 // without any user interaction.
 void SetAutoAcceptDiyAppsInstallDialogForTesting(bool auto_accept);

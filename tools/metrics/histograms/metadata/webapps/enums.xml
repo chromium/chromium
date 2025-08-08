@@ -584,6 +584,31 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="FailedErrorPageLoaded"/>
 </enum>
 
+<!-- LINT.IfChange(WebInstallApiResult) -->
+
+<enum name="WebInstallApiResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Success Already Installed"/>
+  <int value="2" label="Unexpected failure"/>
+  <int value="3" label="Permission denied"/>
+  <int value="4" label="Unsupported profile/context"/>
+  <int value="5" label="Canceled by user (via the install dialog)"/>
+  <int value="6" label="Install command failed"/>
+  <int value="7" label="No custom id field in manifest"/>
+  <int value="8" label="Manifest id mismatch"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/web_applications/web_install_service_impl.h:WebInstallApiResult) -->
+
+<!-- LINT.IfChange(WebInstallApiType) -->
+
+<enum name="WebInstallApiType">
+  <int value="0" label="Current Document"/>
+  <int value="1" label="Background Document"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/web_applications/web_install_service_impl.h:WebInstallApiType) -->
+
 <enum name="WinRegistryErrorCode">
   <int value="0" label="ERROR_OTHER"/>
   <int value="1" label="ERROR_SUCCESS"/>

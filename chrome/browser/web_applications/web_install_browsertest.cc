@@ -38,6 +38,7 @@
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
+#include "web_install_service_impl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -52,6 +53,8 @@ constexpr char kAbortError[] = "AbortError";
 constexpr char kDataError[] = "DataError";
 constexpr char kNotAllowedError[] = "NotAllowedError";
 constexpr char kTypeError[] = "TypeError";
+constexpr char kInstallResultUma[] = "WebApp.WebInstallApi.Result";
+constexpr char kInstallTypeUma[] = "WebApp.WebInstallApi.InstallType";
 }  // namespace
 
 namespace web_app {
@@ -178,6 +181,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest, Install_NoParams) {
                                blink::mojom::WebDXFeature::kDRAFT_WebInstallAPI,
                                1);
 
+  // Validate browser results.
   histograms.ExpectUniqueSample("WebApp.Install.Source.Success", kInstallSource,
                                 1);
   // Current document installs launch via reparenting.
@@ -185,6 +189,11 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest, Install_NoParams) {
                                 apps::LaunchSource::kFromReparenting, 1);
   histograms.ExpectUniqueSample("WebApp.NewCraftedAppInstalled.ByUser",
                                 /*sample=*/true, 1);
+
+  histograms.ExpectBucketCount(kInstallResultUma,
+                               web_app::WebInstallApiResult::kSuccess, 1);
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               web_app::WebInstallApiType::kCurrentDocument, 1);
 
   // TODO(crbug.com/402806158): Log the correct InstallMetrics for current
   // document installs. Until we refactor all the commands, just verify that
@@ -202,6 +211,33 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest, Install_NoParams) {
                       ".FetchManifestAndInstall", ".Crafted"),
                   base::BucketsAre(base::Bucket(
                       webapps::WebappInstallSource::WEB_INSTALL, 1))));
+}
+
+IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
+                       UserDeclinesInstallDialog) {
+  GURL current_doc_url =
+      https_server()->GetURL("/banners/manifest_with_id_test_page.html");
+
+  NavigateAndConfigureCurrentDocumentForInstall(current_doc_url);
+  // Simulate the user declining the install dialog.
+  auto auto_decline_pwa_install_confirmation =
+      SetAutoDeclinePWAInstallConfirmationForTesting();
+  base::HistogramTester histograms;
+
+  ASSERT_TRUE(TryInstallApp());
+
+  // Validate JS results.
+  EXPECT_FALSE(ResultExists());
+  EXPECT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kAbortError);
+
+  // Validate browser results.
+  histograms.ExpectUniqueSample("WebApp.Install.Source.Failure", kInstallSource,
+                                1);
+  histograms.ExpectBucketCount(
+      kInstallResultUma, web_app::WebInstallApiResult::kCanceledByUser, 1);
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               web_app::WebInstallApiType::kCurrentDocument, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
@@ -243,8 +279,14 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   EXPECT_TRUE(ResultExists(launched_app_web_contents));
   EXPECT_FALSE(ErrorExists(launched_app_web_contents));
 
+  // Validate browser results.
   histograms.ExpectUniqueSample("WebApp.LaunchSource",
                                 apps::LaunchSource::kFromReparenting, 2);
+  histograms.ExpectBucketCount(
+      kInstallResultUma, web_app::WebInstallApiResult::kSuccessAlreadyInstalled,
+      1);
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               web_app::WebInstallApiType::kCurrentDocument, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
@@ -275,6 +317,13 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   // Validate JS results.
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
+
+  // Validate browser results.
+  histograms.ExpectBucketCount(
+      kInstallResultUma, web_app::WebInstallApiResult::kSuccessAlreadyInstalled,
+      1);
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               web_app::WebInstallApiType::kCurrentDocument, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
@@ -324,6 +373,13 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
   EXPECT_EQ(GetErrorName(), kAbortError);
+
+  // Validate browser results.
+  histograms.ExpectBucketCount(
+      kInstallResultUma, web_app::WebInstallApiResult::kSuccessAlreadyInstalled,
+      1);
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               web_app::WebInstallApiType::kCurrentDocument, 1);
 }
 
 // Tests for WebAppInstallNotSupportedDialog appearing in Incognito and Guest
@@ -341,6 +397,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
       views::test::AnyWidgetTestPasskey{}, "WebAppInstallNotSupportedDialog");
   content::WebContents* incognito_web_contents =
       incognito_browser->tab_strip_model()->GetActiveWebContents();
+
+  base::HistogramTester histograms;
 
   // Trigger the Install Not Supported dialog by initiating an install request.
   ExecuteScriptAsync(incognito_web_contents,
@@ -369,6 +427,11 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   EXPECT_FALSE(ResultExists(incognito_web_contents));
   EXPECT_TRUE(ErrorExists(incognito_web_contents));
   EXPECT_EQ(GetErrorName(incognito_web_contents), kAbortError);
+
+  histograms.ExpectBucketCount(
+      kInstallResultUma, web_app::WebInstallApiResult::kUnsupportedProfile, 1);
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               web_app::WebInstallApiType::kCurrentDocument, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
@@ -382,6 +445,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
       views::test::AnyWidgetTestPasskey{}, "WebAppInstallNotSupportedDialog");
   content::WebContents* incognito_web_contents =
       incognito_browser->tab_strip_model()->GetActiveWebContents();
+
+  base::HistogramTester histograms;
 
   // Trigger the Install Not Supported dialog by initiating an install request.
   ExecuteScriptAsync(incognito_web_contents,
@@ -403,6 +468,11 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   EXPECT_FALSE(ResultExists(incognito_web_contents));
   EXPECT_TRUE(ErrorExists(incognito_web_contents));
   EXPECT_EQ(GetErrorName(incognito_web_contents), kAbortError);
+
+  histograms.ExpectBucketCount(
+      kInstallResultUma, web_app::WebInstallApiResult::kUnsupportedProfile, 1);
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               web_app::WebInstallApiType::kCurrentDocument, 1);
 }
 
 class WebInstallGuestModeTest : public WebInstallCurrentDocumentBrowserTest {
@@ -442,6 +512,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallGuestModeTest, NotSupportedDialogInGuestMode) {
   content::WebContents* guest_web_contents =
       guest_browser->tab_strip_model()->GetActiveWebContents();
 
+  base::HistogramTester histograms;
+
   // Trigger the Install Not Supported dialog by initiating an install request.
   ExecuteScriptAsync(guest_web_contents,
                      "navigator.install()"
@@ -469,6 +541,11 @@ IN_PROC_BROWSER_TEST_F(WebInstallGuestModeTest, NotSupportedDialogInGuestMode) {
   EXPECT_FALSE(ResultExists(guest_web_contents));
   EXPECT_TRUE(ErrorExists(guest_web_contents));
   EXPECT_EQ(GetErrorName(guest_web_contents), kAbortError);
+
+  histograms.ExpectBucketCount(
+      kInstallResultUma, web_app::WebInstallApiResult::kUnsupportedProfile, 1);
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               web_app::WebInstallApiType::kCurrentDocument, 1);
 }
 
 // Manifest validation for current document installs.
@@ -481,12 +558,18 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTestManifestErrors,
       https_server()->GetURL("/banners/no_manifest_test_page.html");
 
   NavigateAndConfigureCurrentDocumentForInstall(current_doc_url);
+  base::HistogramTester histograms;
 
   ASSERT_TRUE(TryInstallApp());
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
   EXPECT_EQ(GetErrorName(), kAbortError);
+  histograms.ExpectBucketCount(
+      kInstallResultUma, web_app::WebInstallApiResult::kInstallCommandFailed,
+      1);
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               web_app::WebInstallApiType::kCurrentDocument, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTestManifestErrors,
@@ -494,15 +577,21 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTestManifestErrors,
   GURL current_doc_url = GetInstallableAppURL();
 
   NavigateAndConfigureCurrentDocumentForInstall(current_doc_url);
+  base::HistogramTester histograms;
 
   ASSERT_TRUE(TryInstallApp());
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
   EXPECT_EQ(GetErrorName(), kDataError);
+  histograms.ExpectBucketCount(
+      kInstallResultUma, web_app::WebInstallApiResult::kNoCustomManifestId, 1);
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               web_app::WebInstallApiType::kCurrentDocument, 1);
 }
 
-// Implementation-generic tests for bad JavaScript API inputs.
+// Implementation-generic tests for bad JavaScript API inputs. This failure
+// handling is on the blink side, so there aren't any browser results to verify.
 using WebInstallServiceImplBrowserTestBadInput =
     WebInstallCurrentDocumentBrowserTest;
 
