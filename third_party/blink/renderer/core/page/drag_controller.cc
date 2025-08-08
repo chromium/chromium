@@ -85,6 +85,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
@@ -250,7 +251,9 @@ void DragController::DragExited(DragData* drag_data, LocalFrame& local_root) {
   file_input_element_under_mouse_ = nullptr;
 }
 
-void DragController::PerformDrag(DragData* drag_data, LocalFrame& local_root) {
+void DragController::PerformDrag(DragData* drag_data,
+                                 LocalFrame& local_root,
+                                 const Operation& browser_drag_operation) {
   DCHECK(drag_data);
   document_under_mouse_ = local_root.DocumentAtPoint(
       PhysicalOffset::FromPointFRound(drag_data->ClientPosition()));
@@ -267,6 +270,10 @@ void DragController::PerformDrag(DragData* drag_data, LocalFrame& local_root) {
       // Sending an event can result in the destruction of the view and part.
       DataTransfer* data_transfer = CreateDraggingDataTransfer(
           DataTransferAccessPolicy::kReadable, drag_data);
+      if (RuntimeEnabledFeatures::PreserveDropEffectEnabled()) {
+        data_transfer->SetDestinationOperation(
+            browser_drag_operation.operation);
+      }
       data_transfer->SetSourceOperation(
           drag_data->DraggingSourceOperationMask());
       EventHandler& event_handler = local_root.GetEventHandler();

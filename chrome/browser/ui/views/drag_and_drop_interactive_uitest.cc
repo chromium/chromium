@@ -1107,12 +1107,20 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropTextFromOutside) {
 
   // Drop into the right frame.
   {
+    // Setup drop event expectations (dropEffect changes to "copy" during drop).
+    DOMDragEventVerifier expected_drop_event_data;
+    expected_drop_event_data.set_expected_client_position("(155, 150)");
+    expected_drop_event_data.set_expected_drop_effect("copy");
+    expected_drop_event_data.set_expected_effect_allowed("all");
+    expected_drop_event_data.set_expected_mime_types("text/plain");
+    expected_drop_event_data.set_expected_page_position("(155, 150)");
+
     DOMDragEventWaiter drop_waiter("drop", GetRightFrame());
     ASSERT_TRUE(SimulateDropInRightFrame());
 
     std::string drop_event;
     ASSERT_TRUE(drop_waiter.WaitForNextMatchingEvent(&drop_event));
-    EXPECT_THAT(drop_event, expected_dom_event_data.Matches());
+    EXPECT_THAT(drop_event, expected_drop_event_data.Matches());
   }
 }
 
@@ -1756,10 +1764,18 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step3(
     DragAndDropBrowserTest::DragImageBetweenFrames_TestState* state) {
   // Verify drop DOM event.
   {
+    // Create separate expectations for drop event since dropEffect changes to
+    // "copy"
+    DOMDragEventVerifier expected_drop_event_data;
+    expected_drop_event_data.set_expected_client_position("(155, 150)");
+    expected_drop_event_data.set_expected_drop_effect("copy");
+    expected_drop_event_data.set_expected_effect_allowed("copy");
+    expected_drop_event_data.set_expected_page_position("(155, 150)");
+
     // File contents is sent in drop event.
-    state->expected_dom_event_data.set_expected_file_names(
+    expected_drop_event_data.set_expected_file_names(
         state->expect_image_accessible ? "cors-allowed.jpg" : "");
-    state->expected_dom_event_data.set_expected_mime_types(
+    expected_drop_event_data.set_expected_mime_types(
         state->expect_image_accessible
             ? "Files,text/html,text/plain,text/uri-list"
             : "text/html,text/plain,text/uri-list");
@@ -1768,7 +1784,7 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step3(
     EXPECT_TRUE(
         state->drop_event_waiter->WaitForNextMatchingEvent(&drop_event));
     state->drop_event_waiter.reset();
-    EXPECT_THAT(drop_event, state->expected_dom_event_data.Matches());
+    EXPECT_THAT(drop_event, expected_drop_event_data.Matches());
   }
 
   // Verify dragend DOM event.
@@ -1933,11 +1949,21 @@ void DragAndDropBrowserTest::DragImageFromDisappearingFrame_Step3(
     DragAndDropBrowserTest::DragImageFromDisappearingFrame_TestState* state) {
   // Verify drop DOM event.
   {
+    // Create separate expectations for drop event since dropEffect changes to
+    // "copy"
+    DOMDragEventVerifier expected_drop_event_data;
+    expected_drop_event_data.set_expected_client_position("(155, 150)");
+    expected_drop_event_data.set_expected_drop_effect("copy");
+    expected_drop_event_data.set_expected_effect_allowed("copy");
+    expected_drop_event_data.set_expected_mime_types(
+        "Files,text/html,text/plain,text/uri-list");
+    expected_drop_event_data.set_expected_page_position("(155, 150)");
+
     std::string drop_event;
     EXPECT_TRUE(
         state->drop_event_waiter->WaitForNextMatchingEvent(&drop_event));
     state->drop_event_waiter.reset();
-    EXPECT_THAT(drop_event, state->expected_dom_event_data.Matches());
+    EXPECT_THAT(drop_event, expected_drop_event_data.Matches());
   }
 }
 
@@ -2352,11 +2378,20 @@ void DragAndDropBrowserTest::CrossTabDrag_Step3(
     DragAndDropBrowserTest::CrossTabDrag_TestState* state) {
   // Verify drop DOM event.
   {
+    // Setup drop event expectations (dropEffect changes to "copy" during drop).
+    DOMDragEventVerifier expected_drop_event_data;
+    expected_drop_event_data.set_expected_client_position("(155, 150)");
+    expected_drop_event_data.set_expected_drop_effect("copy");
+    expected_drop_event_data.set_expected_effect_allowed("copy");
+    expected_drop_event_data.set_expected_mime_types(
+        "Files,text/html,text/plain,text/uri-list");
+    expected_drop_event_data.set_expected_page_position("(155, 150)");
+
     std::string drop_event;
     EXPECT_TRUE(
         state->drop_event_waiter->WaitForNextMatchingEvent(&drop_event));
     state->drop_event_waiter.reset();
-    EXPECT_THAT(drop_event, state->expected_dom_event_data.Matches());
+    EXPECT_THAT(drop_event, expected_drop_event_data.Matches());
   }
 
   // Verify dragend DOM event.

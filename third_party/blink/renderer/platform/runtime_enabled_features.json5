@@ -3714,6 +3714,12 @@
       base_feature: "none",
     },
     {
+      // When enabled, preserves dropEffect in drag event set during dragover
+      // events.
+      name: "PreserveDropEffect",
+      status: "stable",
+    },
+    {
       // When enabled, prevents undo to be applied if the enclosing block
       // is not editable
       name: "PreventUndoIfNotEditable",

@@ -630,8 +630,8 @@ void WebFrameWidgetImpl::DragTargetDrop(const WebDragData& web_drag_data,
   DragData drag_data(current_drag_data_.Get(),
                      ViewportToRootFrame(point_in_viewport), screen_point,
                      operations_allowed_, web_drag_data.ForceDefaultAction());
-  GetPage()->GetDragController().PerformDrag(&drag_data,
-                                             *local_root_->GetFrame());
+  GetPage()->GetDragController().PerformDrag(
+      &drag_data, *local_root_->GetFrame(), drag_operation_);
 }
 
 void WebFrameWidgetImpl::DragSourceEndedAt(const gfx::PointF& point_in_viewport,

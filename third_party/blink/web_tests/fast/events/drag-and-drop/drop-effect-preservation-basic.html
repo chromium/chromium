@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Basic dropEffect preservation from dragover to drop</title>
+  <script src="../../../resources/testharness.js"></script>
+  <script src="../../../resources/testharnessreport.js"></script>
+  <style>
+    #source {
+      width: 100px;
+      height: 100px;
+      background: blue;
+      color: white;
+      text-align: center;
+      line-height: 100px;
+      -webkit-user-drag: element;
+      user-select: none;
+    }
+
+    #target {
+      width: 200px;
+      height: 200px;
+      border: 2px dashed #ccc;
+      text-align: center;
+      line-height: 200px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="source" draggable="true">Drag me</div>
+  <div id="target">Drop here</div>
+
+  <script>
+    // Helper function to perform drag and drop automation
+    function performDragDrop() {
+      return new Promise((resolve) => {
+        if (window.eventSender && window.testRunner) {
+          const sourceRect = document.getElementById('source').getBoundingClientRect();
+          const targetRect = document.getElementById('target').getBoundingClientRect();
+
+          const startX = sourceRect.left + sourceRect.width / 2;
+          const startY = sourceRect.top + sourceRect.height / 2;
+          const endX = targetRect.left + targetRect.width / 2;
+          const endY = targetRect.top + targetRect.height / 2;
+
+          eventSender.mouseMoveTo(startX, startY);
+          eventSender.mouseDown();
+          eventSender.leapForward(100);
+          eventSender.mouseMoveTo(endX, endY);
+          eventSender.leapForward(100);
+          eventSender.mouseUp();
+
+          // Give time for events to propagate
+          setTimeout(resolve, 50);
+        } else {
+          resolve();
+        }
+      });
+    }
+
+    // Helper function to clear all event listeners
+    function clearEventListeners() {
+      const source = document.getElementById('source');
+      const target = document.getElementById('target');
+
+      // Clone and replace elements to remove all listeners
+      const newSource = source.cloneNode(true);
+      const newTarget = target.cloneNode(true);
+
+      source.parentNode.replaceChild(newSource, source);
+      target.parentNode.replaceChild(newTarget, target);
+    }
+
+    // Test 1: Copy operation
+    promise_test(async function (t) {
+      clearEventListeners();
+
+      const source = document.getElementById('source');
+      const target = document.getElementById('target');
+
+      let dragoverDropEffect = null;
+      let dropDropEffect = null;
+      let dropEventReceived = false;
+
+      return new Promise(async (resolve, reject) => {
+        const timeout = setTimeout(() => reject(new Error('Test timeout')), 5000);
+
+        target.addEventListener('dragover', function (e) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'copy';
+          dragoverDropEffect = e.dataTransfer.dropEffect;
+        });
+
+        target.addEventListener('drop', function (e) {
+          e.preventDefault();
+          dropDropEffect = e.dataTransfer.dropEffect;
+          dropEventReceived = true;
+
+          clearTimeout(timeout);
+
+          try {
+            assert_equals(dragoverDropEffect, 'copy', 'dragover dropEffect should be copy');
+            assert_equals(dropDropEffect, 'copy', 'drop dropEffect should preserve copy value from dragover');
+            resolve();
+          } catch (error) {
+            reject(error);
+          }
+        });
+
+        await performDragDrop();
+
+        if (!window.eventSender) {
+          reject(new Error('This test requires EventSender for automation'));
+        }
+      });
+    }, 'dropEffect copy operation should be preserved from dragover to drop');
+
+    // Test 2: Move operation
+    promise_test(async function (t) {
+      clearEventListeners();
+
+      const source = document.getElementById('source');
+      const target = document.getElementById('target');
+
+      let dragoverDropEffect = null;
+      let dropDropEffect = null;
+
+      return new Promise(async (resolve, reject) => {
+        const timeout = setTimeout(() => reject(new Error('Test timeout')), 5000);
+
+        target.addEventListener('dragover', function (e) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          dragoverDropEffect = e.dataTransfer.dropEffect;
+        });
+
+        target.addEventListener('drop', function (e) {
+          e.preventDefault();
+          dropDropEffect = e.dataTransfer.dropEffect;
+
+          clearTimeout(timeout);
+
+          try {
+            assert_equals(dragoverDropEffect, 'move', 'dragover dropEffect should be move');
+            assert_equals(dropDropEffect, 'move', 'drop dropEffect should preserve move value from dragover');
+            resolve();
+          } catch (error) {
+            reject(error);
+          }
+        });
+
+        await performDragDrop();
+
+        if (!window.eventSender) {
+          reject(new Error('This test requires EventSender for automation'));
+        }
+      });
+    }, 'dropEffect move operation should be preserved from dragover to drop');
+
+    // Test 3: Link operation
+    promise_test(async function (t) {
+      clearEventListeners();
+
+      const source = document.getElementById('source');
+      const target = document.getElementById('target');
+
+      let dragoverDropEffect = null;
+      let dropDropEffect = null;
+
+      return new Promise(async (resolve, reject) => {
+        const timeout = setTimeout(() => reject(new Error('Test timeout')), 5000);
+
+        target.addEventListener('dragover', function (e) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'link';
+          dragoverDropEffect = e.dataTransfer.dropEffect;
+        });
+
+        target.addEventListener('drop', function (e) {
+          e.preventDefault();
+          dropDropEffect = e.dataTransfer.dropEffect;
+
+          clearTimeout(timeout);
+
+          try {
+            assert_equals(dragoverDropEffect, 'link', 'dragover dropEffect should be link');
+            assert_equals(dropDropEffect, 'link', 'drop dropEffect should preserve link value from dragover');
+            resolve();
+          } catch (error) {
+            reject(error);
+          }
+        });
+
+        await performDragDrop();
+
+        if (!window.eventSender) {
+          reject(new Error('This test requires EventSender for automation'));
+        }
+      });
+    }, 'dropEffect link operation should be preserved from dragover to drop');
+
+  </script>
+</body>
+
+</html>
