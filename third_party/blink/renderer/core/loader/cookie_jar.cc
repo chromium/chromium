@@ -181,12 +181,12 @@ String CookieJar::Cookies() {
     return String();
 
   base::ElapsedTimer timer;
+
+  // This can affect the result of the IPCNeeded() call below, so needs to be
+  // done first.
   RequestRestrictedCookieManagerIfNeeded();
 
   String value = g_empty_string;
-  base::ReadOnlySharedMemoryRegion new_mapped_region;
-  const bool get_version_shared_memory =
-      !shared_memory_version_client_.has_value();
 
   // Store the latest cookie version to update |last_version_| after attempting
   // to get the string. Will get updated once more by GetCookiesString() if an
@@ -196,6 +196,10 @@ String CookieJar::Cookies() {
   const bool ipc_needed = IPCNeeded(should_apply_devtools_overrides);
   base::UmaHistogramBoolean("Blink.Experimental.Cookies.IpcNeeded", ipc_needed);
   if (ipc_needed) {
+    base::ReadOnlySharedMemoryRegion new_mapped_region;
+    const bool get_version_shared_memory =
+        !shared_memory_version_client_.has_value();
+
     bool is_ad_tagged =
         document_->GetFrame() && document_->GetFrame()->IsAdFrame();
 
@@ -214,9 +218,9 @@ String CookieJar::Cookies() {
       return g_empty_string;
     }
     last_cookies_ = value;
-  }
-  if (new_mapped_region.IsValid()) {
-    shared_memory_version_client_.emplace(std::move(new_mapped_region));
+    if (new_mapped_region.IsValid()) {
+      shared_memory_version_client_.emplace(std::move(new_mapped_region));
+    }
   }
 
   base::TimeDelta elapsed = timer.Elapsed();
