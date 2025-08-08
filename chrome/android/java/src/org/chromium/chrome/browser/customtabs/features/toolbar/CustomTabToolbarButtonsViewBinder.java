@@ -26,7 +26,6 @@ import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabT
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.support.annotation.DrawableRes;
 import android.util.Pair;
 import android.util.SparseBooleanArray;
@@ -518,7 +517,6 @@ public class CustomTabToolbarButtonsViewBinder
                 getDimensionPx(button, R.dimen.custom_tabs_adaptive_button_bg_padding_vert);
         View background = button.findViewById(R.id.swappable_icon_secondary_background);
         background.setPaddingRelative(paddingStart, paddingVert, paddingEnd, paddingVert);
-        setOptionalButtonBackgroundInset(button);
 
         // Optional button is end aligned. Offset it by the total width of the buttons we've
         // previously placed.
@@ -561,18 +559,6 @@ public class CustomTabToolbarButtonsViewBinder
         int horizontalGravity = isEndAligned ? Gravity.END : Gravity.START;
         lp.gravity = Gravity.CENTER_VERTICAL | horizontalGravity;
         view.setLayoutParams(lp);
-    }
-
-    // Modify the inset of the optional background drawable to match that of the icon secondary
-    // background.
-    private static void setOptionalButtonBackgroundInset(View optionalButton) {
-        View button = optionalButton.findViewById(R.id.optional_toolbar_button);
-        LayerDrawable backgroundDrawable = (LayerDrawable) button.getBackground();
-        int height = getDimensionPx(button, R.dimen.custom_tabs_adaptive_button_bg_height);
-        int left = getDimensionPx(button, R.dimen.custom_tabs_adaptive_button_bg_padding_start);
-        int right = getDimensionPx(button, R.dimen.custom_tabs_adaptive_button_bg_padding_end);
-        backgroundDrawable.setLayerHeight(/* index= */ 0, height);
-        backgroundDrawable.setLayerInset(/* index= */ 0, left, /* t= */ 0, right, /* b= */ 0);
     }
 
     private static void maybeSwapCustomActionAndOptionalButtonPosition(CustomTabToolbar view) {

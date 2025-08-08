@@ -183,6 +183,7 @@ class CustomTabToolbarButtonsMediator
             mOptionalButtonCoordinator.updateButton(buttonData, mModel.get(IS_INCOGNITO));
             updateOptionalButtonColors(
                     mView.getBackground().getColor(), mView.getBrandedColorScheme());
+            mView.setOptionalButtonBackgroundInset();
             RecordHistogram.recordEnumeratedHistogram(
                     "CustomTabs.AdaptiveToolbarButton.Shown",
                     buttonVariant,
