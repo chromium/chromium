@@ -463,7 +463,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Accelerators.Actions.{ActionName}" units="Shortcuts"
     expires_after="2026-05-11">
-  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -515,7 +514,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Accelerators.TogglePicker.Action"
     enum="TogglePickerAction" expires_after="2026-05-11">
-  <owner>dpad@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>Action triggered by pressing toggle picker accelerator.</summary>
 </histogram>
@@ -6963,7 +6962,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.PowerNotification.CriticalNotificationOutcome"
     enum="CriticalNotificationOutcome" expires_after="2026-05-01">
-  <owner>dpad@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -6974,7 +6973,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.PowerNotification.CriticalNotificationToOutcomeDuration.{Outcome}"
     units="seconds" expires_after="2026-05-01">
-  <owner>dpad@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -6987,7 +6986,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.PowerNotification.TimeToEmptyForCritialState"
     units="seconds" expires_after="2026-05-01">
-  <owner>dpad@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -6999,7 +6998,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.PowerNotification.TimeToEmptyPluggedIn" units="seconds"
     expires_after="2026-05-01">
-  <owner>dpad@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>

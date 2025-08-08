@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bluetooth.ChromeOS.ConnectionToastShownIn24Hours.Count"
     units="count" expires_after="2026-04-13">
   <owner>longbowei@google.com</owner>
-  <owner>dpad@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record the number of times the connection toast is shown to user in the
@@ -1739,7 +1739,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bluetooth.ChromeOS.TimeIntervalBetweenConnections" units="ms"
     expires_after="2026-01-14">
   <owner>longbowei@google.com</owner>
-  <owner>dpad@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the time interval between consecutive Bluetooth connections. Fires
