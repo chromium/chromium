@@ -39,6 +39,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/common/content_features.h"
+#include "media/audio/audio_features.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -185,6 +186,9 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // implemented.
   feature_overrides.EnableFeature(
       blink::features::kWebAudioBypassOutputBuffering);
+  // TODO(crbug.com/437004266): Remove when the feature is stable.
+  feature_overrides.EnableFeature(
+      features::kAlwaysUseAudioManagerOutputFramesPerBuffer);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
