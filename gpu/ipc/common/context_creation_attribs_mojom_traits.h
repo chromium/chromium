@@ -87,10 +87,6 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<
     return attribs.enable_gles2_interface;
   }
 
-  static bool enable_grcontext(const gpu::ContextCreationAttribs& attribs) {
-    return attribs.enable_grcontext;
-  }
-
   static bool enable_raster_interface(
       const gpu::ContextCreationAttribs& attribs) {
     return attribs.enable_raster_interface;

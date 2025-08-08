@@ -889,7 +889,6 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
   // RasterContextProvider and now we use RasterInterface in
   // VideoResourceUpdater.
   attributes.enable_gles2_interface = false;
-  attributes.enable_grcontext = false;
   attributes.enable_raster_interface = true;
   attributes.enable_gpu_rasterization = false;
 

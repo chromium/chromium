@@ -107,7 +107,6 @@ gpu::ContextCreationAttribs GetCompositorContextAttributes() {
   gpu::ContextCreationAttribs attributes;
   attributes.enable_raster_interface = true;
   attributes.enable_gles2_interface = false;
-  attributes.enable_grcontext = false;
 
   return attributes;
 }

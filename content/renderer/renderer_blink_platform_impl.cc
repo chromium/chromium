@@ -750,7 +750,6 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
   attributes.enable_raster_interface = web_attributes.enable_raster_interface;
   attributes.enable_gpu_rasterization = attributes.enable_raster_interface;
   attributes.enable_gles2_interface = !attributes.enable_gpu_rasterization;
-  attributes.enable_grcontext = false;
 
   attributes.gpu_preference = web_attributes.prefer_low_power_gpu
                                   ? gl::GpuPreference::kLowPower

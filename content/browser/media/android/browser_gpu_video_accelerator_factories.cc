@@ -27,7 +27,6 @@ void OnGpuChannelEstablished(
   attributes.enable_raster_interface = true;
   attributes.enable_gpu_rasterization = true;
   attributes.enable_gles2_interface = false;
-  attributes.enable_grcontext = false;
 
   int32_t stream_id = kGpuStreamIdDefault;
   gpu::SchedulingPriority stream_priority = kGpuStreamPriorityUI;

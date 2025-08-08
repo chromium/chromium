@@ -294,7 +294,6 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateOffscreenContext(
   attributes.lose_context_when_out_of_memory = true;
   attributes.enable_gles2_interface = support_gles2_interface;
   attributes.enable_raster_interface = support_raster_interface;
-  attributes.enable_grcontext = false;
   // Using RasterDecoder for OOP-R backend, so we need support_raster_interface
   // and !support_gles2_interface.
   attributes.enable_gpu_rasterization = support_gpu_rasterization &&

@@ -28,6 +28,7 @@
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
+#include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/client/gles2_trace_implementation.h"
 #include "gpu/command_buffer/client/gpu_switches.h"
 #include "gpu/command_buffer/client/implementation_base.h"
@@ -43,7 +44,6 @@
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
-#include "gpu/skia_bindings/gles2_implementation_with_grcontext_support.h"
 #include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
 #include "services/viz/public/cpp/gpu/command_buffer_metrics.h"
 #include "skia/buildflags.h"
@@ -196,8 +196,7 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
     transfer_buffer_ = std::move(transfer_buffer);
     helper_ = std::move(webgpu_helper);
   } else if (attributes_.enable_raster_interface &&
-             !attributes_.enable_gles2_interface &&
-             !attributes_.enable_grcontext) {
+             !attributes_.enable_gles2_interface) {
     // The raster helper writes the command buffer protocol.
     auto raster_helper =
         std::make_unique<gpu::raster::RasterCmdHelper>(command_buffer_.get());
@@ -259,23 +258,11 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
     // gpu::ContextSupport interface.
     constexpr bool support_client_side_arrays = false;
 
-    std::unique_ptr<gpu::gles2::GLES2Implementation> gles2_impl;
-    if (attributes_.enable_grcontext) {
-      // GLES2ImplementationWithGrContextSupport adds a bit of overhead, so
-      // we only use it if grcontext_support was requested.
-      gles2_impl = std::make_unique<
-          skia_bindings::GLES2ImplementationWithGrContextSupport>(
-          gles2_helper.get(), /*share_group=*/nullptr, transfer_buffer.get(),
-          /*bind_generates_resource=*/false,
-          attributes_.lose_context_when_out_of_memory,
-          support_client_side_arrays, command_buffer_.get());
-    } else {
-      gles2_impl = std::make_unique<gpu::gles2::GLES2Implementation>(
-          gles2_helper.get(), /*share_group=*/nullptr, transfer_buffer.get(),
-          /*bind_generates_resource=*/false,
-          attributes_.lose_context_when_out_of_memory,
-          support_client_side_arrays, command_buffer_.get());
-    }
+    auto gles2_impl = std::make_unique<gpu::gles2::GLES2Implementation>(
+        gles2_helper.get(), /*share_group=*/nullptr, transfer_buffer.get(),
+        /*bind_generates_resource=*/false,
+        attributes_.lose_context_when_out_of_memory, support_client_side_arrays,
+        command_buffer_.get());
     bind_result_ = gles2_impl->Initialize(memory_limits_);
     if (bind_result_ != gpu::ContextResult::kSuccess) {
       DLOG(ERROR) << "Failed to initialize GLES2Implementation.";
@@ -401,52 +388,7 @@ gpu::ContextSupport* ContextProviderCommandBuffer::ContextSupport() {
 class GrDirectContext* ContextProviderCommandBuffer::GrContext() {
   DCHECK(bind_tried_);
   DCHECK_EQ(bind_result_, gpu::ContextResult::kSuccess);
-  if (!attributes_.enable_grcontext ||
-      !ContextSupport()->HasGrContextSupport()) {
-    return nullptr;
-  }
-  CheckValidSequenceOrLockAcquired();
-
-  if (gr_context_) {
-    return gr_context_->get();
-  }
-
-  if (attributes_.enable_gpu_rasterization) {
-    return nullptr;
-  }
-
-  if (attributes_.context_type == gpu::CONTEXT_TYPE_WEBGPU) {
-    return nullptr;
-  }
-
-  // TODO(vmiura): crbug.com/793508 Disable access to GrContext if
-  // enable_gles2_interface is disabled, after removing any dependencies on
-  // GrContext in OOP-Raster.
-
-  size_t max_resource_cache_bytes;
-  size_t max_glyph_cache_texture_bytes;
-  gpu::DetermineGrCacheLimitsFromAvailableMemory(
-      &max_resource_cache_bytes, &max_glyph_cache_texture_bytes);
-
-  gpu::gles2::GLES2Interface* gl_interface;
-  if (trace_impl_) {
-    gl_interface = trace_impl_.get();
-  } else {
-    gl_interface = gles2_impl_.get();
-  }
-
-  gr_context_ = std::make_unique<skia_bindings::GrContextForGLES2Interface>(
-      gl_interface, ContextSupport(), ContextCapabilities(),
-      max_resource_cache_bytes, max_glyph_cache_texture_bytes);
-  cache_controller_->SetGrContext(gr_context_->get());
-
-  // If GlContext is already lost, also abandon the new GrContext.
-  if (gr_context_->get() &&
-      gles2_impl_->GetGraphicsResetStatusKHR() != GL_NO_ERROR) {
-    gr_context_->get()->abandonContext();
-  }
-
-  return gr_context_->get();
+  return nullptr;
 }
 
 gpu::SharedImageInterface*
