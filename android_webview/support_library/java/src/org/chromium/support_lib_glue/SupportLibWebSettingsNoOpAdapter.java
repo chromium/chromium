@@ -245,4 +245,9 @@ class SupportLibWebSettingsNoOpAdapter implements WebSettingsBoundaryInterface {
         recordApiCall(ApiCall.GET_INCLUDE_COOKIES_ON_INTERCEPT);
         return false;
     }
+
+    @Override
+    public void setHyperlinkContextMenuItems(@HyperlinkContextMenuItems int items) {
+        recordApiCall(ApiCall.SET_HYPERLINK_CONTEXT_MENU_ITEMS);
+    }
 }

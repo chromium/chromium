@@ -4,6 +4,9 @@
 
 package org.chromium.android_webview.contextmenu;
 
+import static org.chromium.android_webview.AwSettings.HyperlinkContextMenuItems.COPY_LINK_ADDRESS;
+import static org.chromium.android_webview.AwSettings.HyperlinkContextMenuItems.COPY_LINK_TEXT;
+import static org.chromium.android_webview.AwSettings.HyperlinkContextMenuItems.OPEN_LINK;
 import static org.chromium.android_webview.contextmenu.AwContextMenuItemProperties.ICON_DRAWABLE;
 import static org.chromium.android_webview.contextmenu.AwContextMenuItemProperties.MENU_ID;
 import static org.chromium.android_webview.contextmenu.AwContextMenuItemProperties.TEXT;
@@ -16,6 +19,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
+import org.chromium.android_webview.AwSettings.HyperlinkContextMenuItems;
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.contextmenu.AwContextMenuCoordinator.ListItemType;
 import org.chromium.build.annotations.NullMarked;
@@ -39,6 +43,7 @@ public class AwContextMenuPopulator implements ContextMenuPopulator {
     private final ContextMenuItemDelegate mItemDelegate;
     private final ContextMenuParams mParams;
     private final boolean mUsePopupWindow;
+    private final @HyperlinkContextMenuItems int mMenuItems;
 
     /**
      * Builds a {@link AwContextMenuPopulator}.
@@ -53,12 +58,14 @@ public class AwContextMenuPopulator implements ContextMenuPopulator {
             Activity activity,
             WebContents webContents,
             ContextMenuParams params,
-            boolean usePopupWindow) {
+            boolean usePopupWindow,
+            @HyperlinkContextMenuItems int menuItems) {
         mContext = context;
         mParams = params;
         mUsePopupWindow = usePopupWindow;
 
         mItemDelegate = new AwContextMenuItemDelegate(activity, webContents);
+        mMenuItems = menuItems;
     }
 
     @Override
@@ -67,25 +74,31 @@ public class AwContextMenuPopulator implements ContextMenuPopulator {
 
         ModelList items = new ModelList();
 
-        items.add(
-                createListItem(
-                        R.id.contextmenu_copy_link_address,
-                        R.string.context_menu_copy_link_address,
-                        mUsePopupWindow ? R.drawable.ic_link : 0));
+        if ((mMenuItems & COPY_LINK_ADDRESS) != 0) {
+            items.add(
+                    createListItem(
+                            R.id.contextmenu_copy_link_address,
+                            R.string.context_menu_copy_link_address,
+                            mUsePopupWindow ? R.drawable.ic_link : 0));
+        }
+        if ((mMenuItems & COPY_LINK_TEXT) != 0) {
+            items.add(
+                    createListItem(
+                            R.id.contextmenu_copy_link_text,
+                            R.string.context_menu_copy_link_text,
+                            mUsePopupWindow ? R.drawable.ic_content_copy : 0));
+        }
+        if ((mMenuItems & OPEN_LINK) != 0) {
+            items.add(
+                    createListItem(
+                            R.id.contextmenu_open_link_id,
+                            R.string.context_menu_open_link,
+                            mUsePopupWindow ? R.drawable.ic_open_in_new : 0));
+        }
 
-        items.add(
-                createListItem(
-                        R.id.contextmenu_copy_link_text,
-                        R.string.context_menu_copy_link_text,
-                        mUsePopupWindow ? R.drawable.ic_content_copy : 0));
-
-        items.add(
-                createListItem(
-                        R.id.contextmenu_open_link_id,
-                        R.string.context_menu_open_link,
-                        mUsePopupWindow ? R.drawable.ic_open_in_new : 0));
-
-        groupedItems.add(items);
+        if (!items.isEmpty()) {
+            groupedItems.add(items);
+        }
 
         return groupedItems;
     }

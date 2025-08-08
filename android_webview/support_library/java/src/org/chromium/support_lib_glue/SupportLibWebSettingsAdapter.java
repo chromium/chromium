@@ -574,4 +574,26 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
             return mAwSettings.getIncludeCookiesOnIntercept();
         }
     }
+
+    @Override
+    public void setHyperlinkContextMenuItems(@HyperlinkContextMenuItems int hyperlinkMenuItems) {
+        try (TraceEvent ignored =
+                TraceEvent.scoped("WebView.APICall.AndroidX.SET_HYPERLINK_CONTEXT_MENU_ITEMS")) {
+            recordApiCall(ApiCall.SET_HYPERLINK_CONTEXT_MENU_ITEMS);
+
+            int awMenuItems = AwSettings.HyperlinkContextMenuItems.DISABLED;
+
+            if ((hyperlinkMenuItems & HyperlinkContextMenuItems.COPY_LINK_ADDRESS) != 0) {
+                awMenuItems |= AwSettings.HyperlinkContextMenuItems.COPY_LINK_ADDRESS;
+            }
+            if ((hyperlinkMenuItems & HyperlinkContextMenuItems.COPY_LINK_TEXT) != 0) {
+                awMenuItems |= AwSettings.HyperlinkContextMenuItems.COPY_LINK_TEXT;
+            }
+            if ((hyperlinkMenuItems & HyperlinkContextMenuItems.OPEN_LINK) != 0) {
+                awMenuItems |= AwSettings.HyperlinkContextMenuItems.OPEN_LINK;
+            }
+
+            mAwSettings.setHyperlinkContextMenuItems(awMenuItems);
+        }
+    }
 }

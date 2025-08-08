@@ -376,4 +376,7 @@ public class Features {
 
     // Profile.preconnect
     public static final String PRECONNECT = "PRECONNECT";
+
+    // WebSettingsCompat#setHyperlinkContextMenuItems
+    public static final String HYPERLINK_CONTEXT_MENU_ITEMS = "HYPERLINK_CONTEXT_MENU_ITEMS";
 }
