@@ -17,11 +17,6 @@
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "chromeos/ash/components/file_manager/indexing/file_index.h"
-#include "chromeos/ash/components/file_manager/indexing/file_index_service.h"
-#include "chromeos/ash/components/file_manager/indexing/file_index_service_registry.h"
-#include "chromeos/ash/components/file_manager/indexing/file_info.h"
-#include "chromeos/ash/components/file_manager/indexing/term.h"
 #include "components/user_manager/user_manager.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -105,18 +100,6 @@ FileManagerPrivateGetHoldingSpaceStateFunction::Run() {
   }
 
   return RespondNow(ArgumentList(
-      api::file_manager_private::GetHoldingSpaceState::Results::Create(
-          holding_space_state)));
-}
-
-void FileManagerPrivateGetHoldingSpaceStateFunction::OnSearchResult(
-    ::ash::file_manager::SearchResults result) {
-  api::file_manager_private::HoldingSpaceState holding_space_state;
-  for (const auto& m : result.matches) {
-    holding_space_state.item_urls.push_back(m.file_info.file_url.spec());
-  }
-
-  Respond(ArgumentList(
       api::file_manager_private::GetHoldingSpaceState::Results::Create(
           holding_space_state)));
 }

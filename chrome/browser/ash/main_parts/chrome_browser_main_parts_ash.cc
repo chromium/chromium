@@ -211,7 +211,6 @@
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs_launcher_client.h"
-#include "chromeos/ash/components/file_manager/indexing/file_index_service_registry.h"
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -1248,10 +1247,6 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
           std::make_unique<ash::HatsBluetoothRevampTriggerImpl>();
     }
 
-    file_index_service_registry_ =
-        std::make_unique<::ash::file_manager::FileIndexServiceRegistry>(
-            user_manager::UserManager::Get());
-
     // Initialize the NetworkHealth aggregator.
     network_health::NetworkHealthManager::GetInstance();
 
@@ -1637,10 +1632,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   }
   bluetooth_pref_state_observer_.reset();
   auth_events_recorder_.reset();
-  if (file_index_service_registry_) {
-    file_index_service_registry_->Shutdown();
-    file_index_service_registry_.reset();
-  }
 
   // Detach D-Bus clients before DBusThreadManager is shut down.
   idle_action_warning_observer_.reset();
