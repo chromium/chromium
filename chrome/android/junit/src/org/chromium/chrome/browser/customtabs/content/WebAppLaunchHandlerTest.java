@@ -45,12 +45,11 @@ import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVeri
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.BooleanSupplier;
 
 /** Tests for {@link WebAppLaunchHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -66,10 +65,9 @@ public class WebAppLaunchHandlerTest {
     public static final String TEST_PACKAGE_NAME = "com.test";
     private FileHandlingData mFileHandlingData;
     private String[] mExpectedFileList = new String[0];
-    private BooleanSupplier mIsPageLoading = () -> true;
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
-    @Mock WebContents mWebContentsMock;
+    @Mock MockWebContents mWebContentsMock;
     @Mock CustomTabActivityNavigationController mNavigationControllerMock;
     @Mock Verifier mVerifierMock;
     @Mock CurrentPageVerifier mCurrentPageVerifierMock;
@@ -107,13 +105,17 @@ public class WebAppLaunchHandlerTest {
     }
 
     private WebAppLaunchHandler createWebAppLaunchHandler() {
-        return WebAppLaunchHandler.create(
-                mVerifierMock,
-                mCurrentPageVerifierMock,
-                mNavigationControllerMock,
-                mWebContentsMock,
-                mActivityMock,
-                mIsPageLoading);
+        WebAppLaunchHandler handler =
+                WebAppLaunchHandler.create(
+                        mVerifierMock,
+                        mCurrentPageVerifierMock,
+                        mNavigationControllerMock,
+                        mWebContentsMock,
+                        mActivityMock);
+
+        handler.didStartNavigationInPrimaryMainFrame(null);
+
+        return handler;
     }
 
     private CustomTabIntentDataProvider createIntentDataProvider(
@@ -420,8 +422,9 @@ public class WebAppLaunchHandlerTest {
      */
     @Test
     public void navigationFinishedBeforeVerification() {
-        mIsPageLoading = () -> false;
         WebAppLaunchHandler launchHandler = createWebAppLaunchHandler();
+
+        launchHandler.didFinishNavigationInPrimaryMainFrame(null);
 
         CustomTabIntentDataProvider dataProvider =
                 createIntentDataProvider(LaunchHandlerClientMode.FOCUS_EXISTING, INITIAL_URL);

@@ -32,18 +32,19 @@ import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandlerHistogr
 import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandlerHistogram.FailureReasonAction;
 import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandlerHistogram.FileHandlingAction;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BooleanSupplier;
 
 /**
  * Manages web application launch configurations based on client mode. Provides methods to process
  * client mode and work with launch queue.
  */
 @JNINamespace("webapps")
-public class WebAppLaunchHandler {
+public class WebAppLaunchHandler extends WebContentsObserver {
     private static final String TAG = "WebAppLaunchHandler";
     private static final @ClientMode int DEFAULT_CLIENT_MODE = NAVIGATE_EXISTING;
     private final WebContents mWebContents;
@@ -51,7 +52,12 @@ public class WebAppLaunchHandler {
     private final Verifier mVerifier;
     private final CurrentPageVerifier mCurrentPageVerifier;
     private final Activity mActivity;
-    private final BooleanSupplier mIsPageLoading;
+
+    // Tracks the WebContents top-level frame loading state to resolve a race condition between URL
+    // verification and navigation completion. LaunchParams are stashed if verification finishes
+    // before the page has loaded. They are dispatched to the JS LaunchQueue once loading is
+    // complete.
+    private boolean mIsPageLoading;
 
     /**
      * Retrieves the ClientMode enum value from a given AndroidX enum. Defaults to
@@ -78,7 +84,6 @@ public class WebAppLaunchHandler {
      *     navigation within the Custom Tab.
      * @param webContents The {@link WebContents} associated with the tab.
      * @param activity The {@link Activity} associated with the tab.
-     * @param isPageLoading The {@link BooleanSupplier} that returns if the tab is loading.
      * @return A new {@link WebAppLaunchHandler} instance.
      */
     public static WebAppLaunchHandler create(
@@ -86,15 +91,10 @@ public class WebAppLaunchHandler {
             CurrentPageVerifier currentPageVerifier,
             CustomTabActivityNavigationController navigationController,
             WebContents webContents,
-            Activity activity,
-            BooleanSupplier isPageLoading) {
+            Activity activity) {
+
         return new WebAppLaunchHandler(
-                verifier,
-                currentPageVerifier,
-                navigationController,
-                webContents,
-                activity,
-                isPageLoading);
+                verifier, currentPageVerifier, navigationController, webContents, activity);
     }
 
     private WebAppLaunchHandler(
@@ -102,14 +102,12 @@ public class WebAppLaunchHandler {
             CurrentPageVerifier currentPageVerifier,
             CustomTabActivityNavigationController navigationController,
             WebContents webContents,
-            Activity activity,
-            BooleanSupplier isPageLoading) {
+            Activity activity) {
         mWebContents = webContents;
         mNavigationController = navigationController;
         mVerifier = verifier;
         mCurrentPageVerifier = currentPageVerifier;
         mActivity = activity;
-        mIsPageLoading = isPageLoading;
     }
 
     /**
@@ -294,10 +292,13 @@ public class WebAppLaunchHandler {
             return;
         }
 
+        observe(mWebContents);
         mVerifier
                 .verify(launchParams.targetUrl)
                 .then(
                         (verified) -> {
+                            observe(null);
+
                             if (!verified) {
                                 WebAppLaunchHandlerHistogram.logFailureReason(
                                         FailureReasonAction.TARGET_URL_VERIFICATION_FAILED);
@@ -308,11 +309,21 @@ public class WebAppLaunchHandler {
                             WebAppLaunchHandlerJni.get()
                                     .notifyLaunchQueue(
                                             mWebContents,
-                                            mIsPageLoading.getAsBoolean(),
+                                            mIsPageLoading,
                                             launchParams.targetUrl,
                                             launchParams.packageName,
                                             launchParams.fileUris);
                         });
+    }
+
+    @Override
+    public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigationHandle) {
+        mIsPageLoading = true;
+    }
+
+    @Override
+    public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigationHandle) {
+        mIsPageLoading = false;
     }
 
     /**
