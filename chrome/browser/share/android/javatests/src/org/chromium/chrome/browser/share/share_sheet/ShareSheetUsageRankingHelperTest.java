@@ -95,7 +95,7 @@ public class ShareSheetUsageRankingHelperTest {
         mShareSheetUsageRankingHelper =
                 new ShareSheetUsageRankingHelper(
                         mBottomSheetController,
-                        mBottomSheet,
+                        () -> mBottomSheet,
                         /* shareStartTime= */ 1234,
                         mLinkGenerationStatusForMetrics,
                         mLinkToggleMetricsDetails,

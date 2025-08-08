@@ -21,6 +21,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -57,6 +59,7 @@ import java.util.Set;
 
 /** Coordinator for displaying the share sheet. */
 // TODO(crbug.com/40106499): Should be package-protected once modularization is complete.
+@NullMarked
 public class ShareSheetCoordinator
         implements ActivityStateObserver,
                 ChromeOptionShareCallback,
@@ -78,13 +81,13 @@ public class ShareSheetCoordinator
     private Set<Integer> mContentTypes;
     private Activity mActivity;
     private @Nullable ActivityLifecycleDispatcher mLifecycleDispatcher;
-    private ChromeProvidedSharingOptionsProvider mChromeProvidedSharingOptionsProvider;
+    private @Nullable ChromeProvidedSharingOptionsProvider mChromeProvidedSharingOptionsProvider;
     private ShareParams mShareParams;
     private ShareSheetBottomSheetContent mBottomSheet;
     private @Nullable WindowAndroid mWindowAndroid;
     private ChromeShareExtras mChromeShareExtras;
-    private LinkToTextCoordinator mLinkToTextCoordinator;
-    private ShareSheetLinkToggleCoordinator mShareSheetLinkToggleCoordinator;
+    private @Nullable LinkToTextCoordinator mLinkToTextCoordinator;
+    private @Nullable ShareSheetLinkToggleCoordinator mShareSheetLinkToggleCoordinator;
     private final ShareSheetUsageRankingHelper mShareSheetUsageRankingHelper;
     private @LinkGeneration int mLinkGenerationStatusForMetrics = LinkGeneration.MAX;
     private LinkToggleMetricsDetails mLinkToggleMetricsDetails =
@@ -151,7 +154,7 @@ public class ShareSheetCoordinator
         mShareSheetUsageRankingHelper =
                 new ShareSheetUsageRankingHelper(
                         mBottomSheetController,
-                        mBottomSheet,
+                        () -> mBottomSheet,
                         mShareStartTime,
                         mLinkGenerationStatusForMetrics,
                         mLinkToggleMetricsDetails,
@@ -159,6 +162,7 @@ public class ShareSheetCoordinator
                         mProfile);
     }
 
+    @SuppressWarnings("NullAway")
     protected void destroy() {
         if (mShareParams != null) {
             ShareParams.TargetChosenCallback callback = mShareParams.getCallback();
@@ -181,17 +185,24 @@ public class ShareSheetCoordinator
 
     // TODO(crbug.com/40106499): Should be package-protected once modularization is complete.
     @Override
+    @Initializer
     public void showShareSheet(
             ShareParams params, ChromeShareExtras chromeShareExtras, long shareStartTime) {
         mShareParams = params;
         mChromeShareExtras = chromeShareExtras;
-        mActivity = params.getWindow().getActivity().get();
-        if (!shouldShowLinkToText(chromeShareExtras)) {
+        if (!shouldShowLinkToText(chromeShareExtras) && mShareSheetLinkToggleCoordinator != null) {
             mShareSheetLinkToggleCoordinator.setShareParamsAndExtras(params, chromeShareExtras);
             mShareParams = mShareSheetLinkToggleCoordinator.getDefaultShareParams();
         }
-        if (mActivity == null) return;
+        @Nullable Activity activity = params.getWindow().getActivity().get();
+        if (activity == null) return;
+        finishInitializationWithActivity(activity, params, shareStartTime);
+    }
 
+    @Initializer
+    private void finishInitializationWithActivity(
+            Activity activity, ShareParams params, long shareStartTime) {
+        mActivity = activity;
         if (mWindowAndroid == null) {
             mWindowAndroid = params.getWindow();
             if (mWindowAndroid != null) {
@@ -226,8 +237,8 @@ public class ShareSheetCoordinator
         }
 
         mShareParams =
-                mShareSheetLinkToggleCoordinator.getShareParams(
-                        linkToggleMetricsDetails.mLinkToggleState);
+                assumeNonNull(mShareSheetLinkToggleCoordinator)
+                        .getShareParams(linkToggleMetricsDetails.mLinkToggleState);
         mBottomSheet.updateShareParams(mShareParams);
         mLinkGenerationStatusForMetrics = linkGenerationState;
         mLinkToggleMetricsDetails = linkToggleMetricsDetails;
@@ -236,6 +247,7 @@ public class ShareSheetCoordinator
     }
 
     @VisibleForTesting
+    @Initializer
     void updateShareSheet(boolean saveLastUsed, @Nullable Runnable onUpdateFinished) {
         List<PropertyModel> firstPartyApps =
                 createFirstPartyPropertyModels(
@@ -268,7 +280,7 @@ public class ShareSheetCoordinator
                 mContentTypes,
                 mShareParams.getFileContentType(),
                 mChromeShareExtras.getDetailedContentType(),
-                mShareSheetLinkToggleCoordinator);
+                assumeNonNull(mShareSheetLinkToggleCoordinator));
         if (onUpdateFinished != null) {
             onUpdateFinished.run();
         }
@@ -307,14 +319,14 @@ public class ShareSheetCoordinator
                             chromeShareExtras,
                             shareStartTime,
                             getUrlToShare(params, chromeShareExtras),
-                            params.getText(),
+                            assumeNonNull(params.getText()),
                             /* includeOriginInTitle= */ false);
         }
         mShareSheetLinkToggleCoordinator =
                 new ShareSheetLinkToggleCoordinator(
                         params, chromeShareExtras, mLinkToTextCoordinator);
         if (shouldShowLinkToText(chromeShareExtras)) {
-            mLinkToTextCoordinator.shareLinkToText();
+            assumeNonNull(mLinkToTextCoordinator).shareLinkToText();
         } else {
             showShareSheet(params, chromeShareExtras, shareStartTime);
         }
@@ -382,7 +394,7 @@ public class ShareSheetCoordinator
             boolean saveLastUsed,
             Callback<List<PropertyModel>> callback) {
         if (params == null) {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, callback.bind(null));
+            PostTask.postTask(TaskTraits.UI_DEFAULT, callback.bind(List.of()));
             return;
         }
 
@@ -445,7 +457,7 @@ public class ShareSheetCoordinator
             return shareParams.getUrl();
         } else if (!chromeShareExtras.getImageSrcUrl().isEmpty()) {
             return chromeShareExtras.getImageSrcUrl().getSpec();
-        } else if (mTabProvider.hasValue() && mTabProvider.get().isInitialized()) {
+        } else if (mTabProvider.get() != null && mTabProvider.get().isInitialized()) {
             return mTabProvider.get().getUrl().getSpec();
         }
         return "";
@@ -479,10 +491,11 @@ public class ShareSheetCoordinator
 
         mIsMultiWindow = isMultiWindow;
         mBottomSheet.createFirstPartyRecyclerViews(
-                mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        mContentTypes,
-                        mChromeShareExtras.getDetailedContentType(),
-                        mIsMultiWindow));
+                assumeNonNull(mChromeProvidedSharingOptionsProvider)
+                        .getPropertyModels(
+                                mContentTypes,
+                                mChromeShareExtras.getDetailedContentType(),
+                                mIsMultiWindow));
         mBottomSheetController.requestShowContent(mBottomSheet, /* animate= */ false);
     }
 

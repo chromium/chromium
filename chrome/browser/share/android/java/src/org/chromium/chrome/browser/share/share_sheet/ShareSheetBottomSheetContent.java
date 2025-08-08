@@ -4,6 +4,8 @@
 //
 package org.chromium.chrome.browser.share.share_sheet;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -33,6 +35,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -69,9 +72,11 @@ import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /** Bottom sheet content to display a 2-row custom share sheet. */
+@NullMarked
 class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickListener {
     private static final int SHARE_SHEET_ITEM = 0;
 
@@ -84,7 +89,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     private ShareParams mParams;
     private ScrollView mContentScrollableView;
     private @LinkGeneration int mLinkGenerationState;
-    private @LinkToggleState Integer mLinkToggleState;
+    private @LinkToggleState @Nullable Integer mLinkToggleState;
     private @Nullable Toast mToast;
 
     /**
@@ -176,7 +181,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
                 new ScrollEventReporter("SharingHubAndroid.ThirdPartyAppsScrolled"));
     }
 
-    void createFirstPartyRecyclerViews(List<PropertyModel> firstPartyModels) {
+    void createFirstPartyRecyclerViews(@Nullable List<PropertyModel> firstPartyModels) {
         RecyclerView firstPartyRow =
                 this.getContentView().findViewById(R.id.share_sheet_chrome_apps);
         if (firstPartyModels != null && firstPartyModels.size() > 0) {
@@ -368,7 +373,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
 
     private void updateLinkToggleState(@DetailedContentType int detailedContentType) {
         int toastMessage;
-        if (mLinkToggleState == LinkToggleState.NO_LINK) {
+        if (Objects.equals(mLinkToggleState, LinkToggleState.NO_LINK)) {
             mLinkToggleState = LinkToggleState.LINK;
             toastMessage = R.string.link_toggle_include_link;
         } else {
@@ -406,7 +411,9 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         RecordUserAction.record(userAction);
         mShareSheetCoordinator.updateShareSheetForLinkToggle(
                 new LinkToggleMetricsDetails(
-                        mLinkToggleState, DetailedContentType.HIGHLIGHTED_TEXT),
+                        // Assume mLinkToggleState is set above, because LINK, TEXT, and FAILURE are
+                        // the only options for LinkGeneration enum.
+                        assumeNonNull(mLinkToggleState), DetailedContentType.HIGHLIGHTED_TEXT),
                 mLinkGenerationState);
     }
 
@@ -435,7 +442,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         int contentDescription;
         @ColorRes int skillColor;
 
-        if (mLinkToggleState == LinkToggleState.LINK) {
+        if (Objects.equals(mLinkToggleState, LinkToggleState.LINK)) {
             drawable = R.drawable.link;
             skillColor = R.color.default_icon_color_accent1_tint_list;
             contentDescription = R.string.link_toggle_include_link;
@@ -466,7 +473,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         linkToggleView.setContentDescription(
                 mActivity.getResources().getString(contentDescription));
         centerIcon(linkToggleView);
-        if (mLinkToggleState == LinkToggleState.NO_LINK) {
+        if (Objects.equals(mLinkToggleState, LinkToggleState.NO_LINK)) {
             maybeShowToggleIph();
         }
 
@@ -574,7 +581,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     }
 
     private String getFileType(@Nullable String mimeType) {
-        if (!mimeType.contains("/")) {
+        if (TextUtils.isEmpty(mimeType) || !mimeType.contains("/")) {
             return "";
         }
         String supertype = mimeType.split("/", 2)[0];

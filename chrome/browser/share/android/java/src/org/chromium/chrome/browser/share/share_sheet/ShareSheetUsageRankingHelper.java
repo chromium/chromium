@@ -12,8 +12,10 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -36,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Helper class for ShareSheetCoordinator that hold Usage Ranking functions. */
+@NullMarked
 public class ShareSheetUsageRankingHelper {
     // Knobs to allow for overriding the layout behavior of the share sheet row,
     // as used for deciding how to rank share targets. These are here to allow
@@ -69,7 +72,7 @@ public class ShareSheetUsageRankingHelper {
     private final ShareSheetPropertyModelBuilder mPropertyModelBuilder;
     private final Profile mProfile;
 
-    private final ShareSheetBottomSheetContent mBottomSheet;
+    private final Supplier<ShareSheetBottomSheetContent> mBottomSheetSupplier;
     private final long mShareStartTime;
     private final @LinkGeneration int mLinkGenerationStatusForMetrics;
     private final LinkToggleMetricsDetails mLinkToggleMetricsDetails;
@@ -82,7 +85,7 @@ public class ShareSheetUsageRankingHelper {
      * Constructs a new ShareSheetUsageRankingHelper.
      *
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
-     * @param bottomSheet The bottomSheet for the current activity.
+     * @param bottomSheetSupplier Supplies the bottomSheet for the current activity.
      * @param shareStartTime The start time of the current share.
      * @param linkGenerationStatusForMetrics User action of sharing text from failed link-to-text
      *     generation, sharing text from successful link-to-text generation, or sharing
@@ -94,7 +97,7 @@ public class ShareSheetUsageRankingHelper {
      */
     ShareSheetUsageRankingHelper(
             BottomSheetController bottomSheetController,
-            ShareSheetBottomSheetContent bottomSheet,
+            Supplier<ShareSheetBottomSheetContent> bottomSheetSupplier,
             long shareStartTime,
             int linkGenerationStatusForMetrics,
             LinkToggleMetricsDetails linkToggleMetricsDetails,
@@ -103,7 +106,7 @@ public class ShareSheetUsageRankingHelper {
         mBottomSheetController = bottomSheetController;
         mPropertyModelBuilder = propertyModelBuilder;
         mProfile = profile;
-        mBottomSheet = bottomSheet;
+        mBottomSheetSupplier = bottomSheetSupplier;
         mShareStartTime = shareStartTime;
         mLinkGenerationStatusForMetrics = linkGenerationStatusForMetrics;
         mLinkToggleMetricsDetails = linkToggleMetricsDetails;
@@ -253,14 +256,14 @@ public class ShareSheetUsageRankingHelper {
         // Build PropertyModels for all the ResolveInfos that correspond to
         // actual targets, in the order that we're going to show them.
         List<PropertyModel> models = new ArrayList<>();
-        for (String target : targets) {
+        for (String target : (targets == null ? new ArrayList<String>() : targets)) {
             if (target.equals(MORE_TARGET_NAME)) {
                 models.add(createMorePropertyModel(activity, params, saveLastUsed));
             } else if (!target.equals("")) {
                 assert resolveInfos.get(target) != null;
                 models.add(
                         mPropertyModelBuilder.buildThirdPartyAppModel(
-                                mBottomSheet,
+                                mBottomSheetSupplier.get(),
                                 params,
                                 resolveInfos.get(target),
                                 saveLastUsed,
@@ -287,7 +290,7 @@ public class ShareSheetUsageRankingHelper {
                             mLinkToggleMetricsDetails,
                             mShareStartTime,
                             mProfile);
-                    mBottomSheetController.hideContent(mBottomSheet, true);
+                    mBottomSheetController.hideContent(mBottomSheetSupplier.get(), true);
                     ShareHelper.shareWithSystemShareSheetUi(params, mProfile, saveLastUsed);
                     // Reset callback to prevent cancel() being called when the custom sheet is
                     // closed. The callback will be called by ShareHelper on actions from the
