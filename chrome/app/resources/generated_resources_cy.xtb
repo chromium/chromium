@@ -5926,6 +5926,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764">Tynnu <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Agor y grŵp mewn ffenestr newydd</translation>
+<translation id="511147239888121455">Creu copïau wrth gefn o'ch pethau?</translation>
 <translation id="5111646998522066203">Gadael y Modd Anhysbys</translation>
 <translation id="5111692334209731439">&amp;Rheolwr Nodau Tudalen</translation>
 <translation id="5111794652433847656">Does dim codau pas ar gyfer <ph name="APP_NAME" /> ar y ddyfais hon</translation>
@@ -6061,6 +6062,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5201945335223486172">Ar gyfer <ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">Yn gallu golygu ffeiliau neu ffolderi ar eich dyfais</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Cliciwch i weld yr estyniad}zero{Cliciwch i weld yr estyniadau hyn}two{Cliciwch i weld yr estyniadau hyn}few{Cliciwch i weld yr estyniadau hyn}many{Cliciwch i weld yr estyniadau hyn}other{Cliciwch i weld yr estyniadau hyn}}</translation>
+<translation id="5204282224596194174">Cyfrinair adfer ar gyfer <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">Defnyddiwch Powerwash ar y ddyfais a rhowch gynnig arall arni.</translation>
 <translation id="5204967432542742771">Rhowch eich cyfrinair</translation>
 <translation id="5205484256512407285">Peidiwch byth â defnyddio data symudol i drosglwyddo</translation>
@@ -8224,6 +8226,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
     <ph name="BEGIN_PARAGRAPH3" />Am ragor o fanylion ar ddata y gall <ph name="DEVICE_OS" /> eu rhannu â Google, a sut mae'n cael eu defnyddio, ewch i g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Mae'n gwella diogelwch i chi a phawb ar y we</translation>
 <translation id="6771503742377376720">Yn Awdurdod Ardystio</translation>
+<translation id="6772103682557559072">Rhagor o opsiynau ar gyfer cyfeiriad gwaith <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Agor a golygu</translation>
 <translation id="6773595613448852535">Storfa Tystysgrifau Chrome</translation>
 <translation id="677394079035748956">Mae angen cyfrinair untro ar y wefan</translation>
@@ -10050,6 +10053,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8025151549289123443">Clo sgrîn a mewngofnodi</translation>
 <translation id="8025291188699172126">Ynghylch Diweddariadau</translation>
 <translation id="8026471514777758216">Eich holl ddyfeisiau</translation>
+<translation id="8026700655446696031">Rhagor o opsiynau ar gyfer cyfeiriad cartref <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="8026784703228858744">Cadw eich nodau tudalen a rhagor gyda chysoni</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Ymwelwyd 0 diwrnodau yn ôl}=1{Ymwelwyd 1 diwrnod yn ôl}two{Ymwelwyd # ddiwrnod yn ôl}few{Ymwelwyd # diwrnod yn ôl}many{Ymwelwyd # diwrnod yn ôl}other{Ymwelwyd # diwrnod yn ôl}}</translation>
 <translation id="8028060951694135607">Allwedd Adfer Microsoft</translation>
@@ -10198,6 +10202,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8121537075864592453">Sgrîn lawn wedi'i hanalluogi</translation>
 <translation id="8121750884985440809">Rydych yn castio'ch sgrîn ar hyn o bryd</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Gwnewch gopi wrth gefn o'ch cyfrineiriau, nodau tudalen, a rhagor, fel y gallwch eu cael yn hawdd ar eich holl ddyfeisiau</translation>
 <translation id="81238879832906896">Blodyn melyn a gwyn</translation>
 <translation id="8123975449645947908">Sgrolio'n ôl</translation>
 <translation id="8124313775439841391">ONC a Reolir</translation>
@@ -11577,6 +11582,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="9057354806206861646">Amserlen diweddaru</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Tua 1 hysbysiad y dydd}zero{Tua {NUM_NOTIFICATION} hysbysiad y dydd}two{Tua {NUM_NOTIFICATION} hysbysiad y dydd}few{Tua {NUM_NOTIFICATION} hysbysiad y dydd}many{Tua {NUM_NOTIFICATION} hysbysiad y dydd}other{Tua {NUM_NOTIFICATION} hysbysiad y dydd}}</translation>
 <translation id="9058760336383947367">Gweld argraffydd PPD</translation>
+<translation id="9061521313218438086">Os bydd Chrome yn dod o hyd i un o'ch cyfrineiriau mewn tor data cyhoeddus, gall Rheolwr Cyfrineiriau Google gynnig newid eich cyfrinair ar eich rhan os ydych chi wedi mewngofnodi.</translation>
 <translation id="9061694916020926968">Mae angen i chi fod wedi mewngofnodi i Gyfrif Google i ddefnyddio Steam ar gyfer Chromebook (Beta). Mewngofnodwch a rhowch gynnig arall arni.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Bu gwall o'r llinell <ph name="ERROR_LINE_START" /> i <ph name="ERROR_LINE_END" /></translation>

@@ -208,6 +208,7 @@
 <translation id="17906873777101817">Få tilbudt at gemme adgangskoder og adgangsnøgler</translation>
 <translation id="1794893174442046596">Fanegruppe</translation>
 <translation id="1807893857950749072">Tillad notifikationer om prissporing…</translation>
+<translation id="1809929083618343438">Denne handling fjerner de valgte oplysninger fra Chrome, men sletter ikke oplysningerne fra din Google-konto.</translation>
 <translation id="1810976980198522421">Annuller</translation>
 <translation id="1812514023095547458">Vælg farve</translation>
 <translation id="1815941218935345331">Adgangskode</translation>
@@ -311,6 +312,7 @@
 <translation id="2161446265348023004">Skift til åbent vindue</translation>
 <translation id="2164946989711475905">Log ind…</translation>
 <translation id="2175927920773552910">QR-kode</translation>
+<translation id="2180338296831857171">Slet adresser</translation>
 <translation id="218350106843433823">Udfyld adgangskoder og adgangsnøgler automatisk</translation>
 <translation id="2184272387334793084">Log ind for at få adgang til dine adgangskoder og meget mere på alle dine enheder</translation>
 <translation id="2186206192313702726">Google Lens</translation>
@@ -357,6 +359,7 @@
 <translation id="2326302612031521902">Enhedsvælger</translation>
 <translation id="2330607597130465898">Ingen beskyttelse</translation>
 <translation id="233375395665273385">Slet, og log ud</translation>
+<translation id="2350463587705616331">Sepia baggrundsfarve</translation>
 <translation id="2351097562818989364">Dine oversættelsesindstillinger er nulstillet.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Du kan gemme din adgangskode til {DOMAIN_ONE} på din Google-konto, {EMAIL}.}=2{Du kan gemme dine adgangskoder til {DOMAIN_ONE} og {DOMAIN_TWO} på din Google-konto, {EMAIL}.}=3{Du kan gemme dine adgangskoder til {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} anden på din Google-konto, {EMAIL}.}one{Du kan gemme dine adgangskoder til {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} anden på din Google-konto, {EMAIL}.}other{Du kan gemme dine adgangskoder til {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} andre på din Google-konto, {EMAIL}}}</translation>
 <translation id="2353953000228441783">Websitets standardvisning</translation>
@@ -385,6 +388,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2434405374328098816">Du har allerede gemt en adgangskode for "<ph name="USERNAME" />" på <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Du kan rulle til venstre for at browse i inkognito.</translation>
 <translation id="2435457462613246316">Vis adgangskode</translation>
+<translation id="2458827363789845126">{count,plural, =1{{count} historikelement}one{{count} historikelement}other{{count} historikelementer}}</translation>
 <translation id="2461070143328828326">Adgangskodeindstillinger</translation>
 <translation id="2462736546165239215">Du kan se hele din browserhistorik her.</translation>
 <translation id="2466518891828668184">Gem dine adgangskoder for nemt at logge ind på websites og i apps.</translation>
@@ -543,6 +547,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3081338492074632642">Sørg for, at den adgangskode, du gemmer, er den samme som din adgangskode til <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Bund</translation>
 <translation id="309710370695886264">Du har 1 genbrugt adgangskode. Løs problemet nu for at forblive beskyttet.</translation>
+<translation id="3099402981545350675">Denne handling sletter adresser, der er gemt på denne enhed. Den fjerner også de valgte oplysninger fra Chrome, men sletter ikke disse oplysninger fra din Google-konto.</translation>
 <translation id="3106258548858559536">Deaktiver Læsetilstand</translation>
 <translation id="3106690631878101882">Skjul Oversæt</translation>
 <translation id="310900540163454140">Vil du slette adgangskoden til <ph name="WEBSITE" />?</translation>
@@ -741,6 +746,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3962326069546168954">Gem</translation>
 <translation id="3967327056943561740">Bogmærker</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
+<translation id="3973560090698854095">Denne handling sletter adresser, der er gemt på din Google-konto <ph name="USER_EMAIL" />.</translation>
 <translation id="3982893814825393515">Rapportér et problem…</translation>
 <translation id="398604237578616937">Logget ind som <ph name="USER_EMAIL" />. Åbn kontomenu.</translation>
 <translation id="3986739045730058129">Gå til fane</translation>
@@ -1021,6 +1027,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5039804452771397117">Tillad</translation>
 <translation id="5050810143224996149">Del adgangskode</translation>
 <translation id="5055015094595227120">Præcis lokation</translation>
+<translation id="5055551113846164633">Denne handling sletter adresser, der er gemt på denne enhed. Den sletter også adresser, der er gemt på din Google-konto <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Der blev registreret problemer <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installer Google Drev</translation>
@@ -1232,6 +1239,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Synkroniserer…</translation>
 <translation id="583923961930319521">Brug adgangskoder på alle dine enheder</translation>
+<translation id="5843013299019689749">Sort baggrundsfarve</translation>
 <translation id="5844284118433003733">Når du er logget ind, knyttes disse data til din Google-konto for at beskytte dig i Google-tjenester, f.eks. ved at øge beskyttelsen i Gmail efter en sikkerhedshændelse.</translation>
 <translation id="5854790677617711513">Ældre end 30 dage</translation>
 <translation id="5857770089550859117">Angiv adgangssætningen for at påbegynde synkroniseringen.</translation>
@@ -1484,6 +1492,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="6682680306647339111">Påmindelsen er fjernet</translation>
 <translation id="6684262542644248484">Log ind på et website</translation>
 <translation id="6685259053455152195">Genveje til hurtigt at ændre indstillinger og bruge funktioner via adresselinjen.</translation>
+<translation id="6689342293888598653">Hvid baggrundsfarve</translation>
 <translation id="6689685206615181381">Kun inkognitotilstand er tilgængelig</translation>
 <translation id="6708501134077648845">Indstillinger til adgangskode</translation>
 <translation id="6709964700841491574">Funktionen Låsning</translation>
@@ -1507,6 +1516,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="6791425686608802741">Tryk på "Føj fane til ny gruppe"</translation>
 <translation id="6794476726485507147">Vælg en dato og et tidspunkt for at få en notifikation med en påmindelse om at vende tilbage til denne side</translation>
 <translation id="6795481620482106033">Ugyldige data</translation>
+<translation id="6797543908718012274">Aktivér Læsetilstand</translation>
 <translation id="6807287147325542056">Adgangskoder i andre apps</translation>
 <translation id="681368974849482173">Elementet blev oprettet</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bogmærket er gemt på din Google-konto, {email}}one{{count} bogmærke er gemt på din Google-konto, {email}}other{{count} bogmærker er gemt på din Google-konto, {email}}}</translation>
@@ -1591,6 +1601,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="714291438898585119">Stjernemarkeret</translation>
 <translation id="7146301801400584641">Tilgængelig kalenderfil</translation>
 <translation id="7149893636342594995">De seneste 24 timer</translation>
+<translation id="7154417656353909837">Fjern adresser</translation>
 <translation id="7161230316646448869">Synkroniser dine adgangskoder, din historik og meget mere på alle enheder</translation>
 <translation id="7173114856073700355">Åbn Indstillinger</translation>
 <translation id="7173721738069475737">{count,plural, =1{Bogmærket er gemt}one{{count} bogmærke er gemt}other{{count} bogmærker er gemt}}</translation>
@@ -1660,6 +1671,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7458706065921255639">Personlig tilpasning og tilknytning</translation>
 <translation id="745899714366929493">Hele dagen</translation>
 <translation id="7460698861522306757">Anmod om mobilwebsite</translation>
+<translation id="7464143666517313304">Denne handling sletter adresser, der er gemt på denne enhed.</translation>
 <translation id="7468373585447318060">Hold dig opdateret om prisfald på alle de produkter, du holder øje med.</translation>
 <translation id="746872191028309255">Køb det, du ser, ved hjælp af dit kamera eller billedgalleri.</translation>
 <translation id="7471557245617580330">Opret ny fane</translation>
@@ -1711,6 +1723,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7646772052135772216">Synkronisering af adgangskoder fungerer ikke</translation>
 <translation id="764827086632467055">Tryk på Standardapp til browsing</translation>
 <translation id="7649070708921625228">Hjælp</translation>
+<translation id="765555660695722850">Denne handling sletter adresser, der er gemt på denne enhed. Den sletter også visse oplysninger fra din Google-konto, men ikke grundlæggende oplysninger som f.eks. dit navn eller din hjemmeadresse.</translation>
 <translation id="765631330137769217">Tryk på "Gem" for nemt at få adgang til denne adgangskode, næste gang du logger ind</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7662316065255305764">Websiteoplysninger</translation>
@@ -2056,6 +2069,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8891031436559779793">Du får besked, hvis prisen falder på et website.</translation>
 <translation id="8893208530912252670">Videoer</translation>
 <translation id="8898822736010347272">Sender webadresser på visse sider, du besøger, begrænsede systemoplysninger og indhold fra visse sider til Google med henblik på at opdage nye trusler og beskytte brugerne på nettet.</translation>
+<translation id="8900845556227858314">Browserapp</translation>
 <translation id="890565330728586731">Tilbage</translation>
 <translation id="8907722425137681851">Find på siden…</translation>
 <translation id="8909135823018751308">Del…</translation>

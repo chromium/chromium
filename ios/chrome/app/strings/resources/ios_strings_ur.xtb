@@ -208,6 +208,7 @@
 <translation id="17906873777101817">پاس ورڈز اور پاس کیز محفوظ کرنے کی پیشکش</translation>
 <translation id="1794893174442046596">ٹیب گروپ</translation>
 <translation id="1807893857950749072">قیمت کی ٹریکنگ سے متعلق اطلاعات کی اجازت دیں…</translation>
+<translation id="1809929083618343438">‏اس سے Chrome سے منتخب کردہ معلومات ہٹ جاتی ہیں، لیکن اس سے آپ کے Google اکاؤنٹ سے یہ معلومات حذف نہیں ہوتی ہے۔</translation>
 <translation id="1810976980198522421">منسوخ کریں</translation>
 <translation id="1812514023095547458">رنگ منتخب کریں</translation>
 <translation id="1815941218935345331">پاس کوڈ</translation>
@@ -311,6 +312,7 @@
 <translation id="2161446265348023004">کھلی ہوئی ونڈو پر سوئچ کریں</translation>
 <translation id="2164946989711475905">سائن ان کریں…</translation>
 <translation id="2175927920773552910">‏QR کوڈ</translation>
+<translation id="2180338296831857171">پتوں کو حذف کریں</translation>
 <translation id="218350106843433823">پاس ورڈز اور پاس کیز کو آٹو فل کریں</translation>
 <translation id="2184272387334793084">اپنے تمام آلات پر اپنے پاس ورڈز وغیرہ حاصل کرنے کے لیے سائن ان کریں</translation>
 <translation id="2186206192313702726">‏Google لینز</translation>
@@ -357,6 +359,7 @@
 <translation id="2326302612031521902">یونٹ کا منتخب کنندہ</translation>
 <translation id="2330607597130465898">کوئی تحفظ نہیں</translation>
 <translation id="233375395665273385">حذف کریں اور سائن آؤٹ کریں</translation>
+<translation id="2350463587705616331">گہرا بھوراگہرا بھورا پس منظر کا رنگ</translation>
 <translation id="2351097562818989364">ترجمہ کی آپ کی ترتیبات دوبارہ ترتیب دی گئیں ہیں۔</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{‏آپ اپنے Google اکاؤنٹ {EMAIL} میں {DOMAIN_ONE} کے لیے اپنا پاس ورڈ محفوظ کر سکتے ہیں۔}=2{‏آپ اپنے Google اکاؤنٹ {EMAIL} میں {DOMAIN_ONE} اور {DOMAIN_TWO} کے لیے اپنے پاس ورڈز محفوظ کر سکتے ہیں۔}=3{‏آپ اپنے Google اکاؤنٹ {EMAIL} میں {DOMAIN_ONE}، {DOMAIN_TWO} اور {OTHER_DOMAINS_COUNT} دیگر کے لیے اپنے پاس ورڈز محفوظ کر سکتے ہیں۔}other{‏آپ اپنے Google اکاؤنٹ {EMAIL} میں {DOMAIN_ONE}، {DOMAIN_TWO} اور {OTHER_DOMAINS_COUNT} دیگر کے لیے اپنے پاس ورڈز محفوظ کر سکتے ہیں۔}}</translation>
 <translation id="2353953000228441783">ڈیفالٹ سائٹ منظر</translation>
@@ -543,6 +546,7 @@
 <translation id="3081338492074632642">اس بات کو یقینی بنائیں کہ آپ جو پاس ورڈ محفوظ کر رہے ہیں وہ آپ کے <ph name="WEBSITE" /> کے پاس ورڈ سے مماثل ہے</translation>
 <translation id="3087734570205094154">نیچے</translation>
 <translation id="309710370695886264">آپ کے پاس 1 دوبارہ استعمال کردہ پاس ورڈ ہے۔ محفوظ رہنے کے لیے اسے ابھی صحیح کریں۔</translation>
+<translation id="3099402981545350675">‏اس سے اس آلہ پر محفوظ کردہ پتے حذف ہو جاتے ہیں۔ اس سے Chrome سے منتخب کردہ معلومات بھی حذف ہو جاتی ہیں، لیکن اس سے آپ کے Google اکاؤنٹ سے یہ معلومات حذف نہیں ہوتی ہے۔</translation>
 <translation id="3106258548858559536">ریڈنگ موڈ آف کریں</translation>
 <translation id="3106690631878101882">ترجمہ کریں کو چھپائیں</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" /> کا پاس ورڈ حذف کریں؟</translation>
@@ -741,6 +745,7 @@
 <translation id="3962326069546168954">محفوظ کریں</translation>
 <translation id="3967327056943561740">بُک مارکس</translation>
 <translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
+<translation id="3973560090698854095">‏اس سے آپ کے Google اکاؤنٹ <ph name="USER_EMAIL" /> میں محفوظ کردہ پتے حذف ہو جاتے ہیں۔</translation>
 <translation id="3982893814825393515">ایک مسئلہ کی اطلاع دیں…</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> کے بطور سائن ان کردہ۔ اکاؤنٹ مینیو کھولیں۔</translation>
 <translation id="3986739045730058129">ٹیب پر جائیں</translation>
@@ -1021,6 +1026,7 @@
 <translation id="5039804452771397117">اجازت دیں</translation>
 <translation id="5050810143224996149">پاس ورڈ کا اشتراک کریں</translation>
 <translation id="5055015094595227120">قطعی مقام</translation>
+<translation id="5055551113846164633">‏اس سے اس آلہ پر محفوظ کردہ پتے حذف ہو جاتے ہیں۔ اس سے آپ کے Google اکاؤنٹ <ph name="USER_EMAIL" /> میں محفوظ کردہ پتے بھی حذف ہو جاتے ہیں۔</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> مسائل کا پتا چلا۔</translation>
 <translation id="5059136629401106827">ٹھیک ہے</translation>
 <translation id="5062321486222145940">‏Google Drive انسٹال کریں</translation>
@@ -1232,6 +1238,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">سِنک ہو رہا ہے…</translation>
 <translation id="583923961930319521">اپنے تمام آلات پر پاس ورڈز استعمال کریں</translation>
+<translation id="5843013299019689749">پس منظر کا سیاہ رنگ</translation>
 <translation id="5844284118433003733">‏آپ کے سائن ان ہونے پر یہ ڈیٹا آپ کے Google اکاؤنٹ سے لنک ہو جاتا ہے تاکہ آپ کو تمام Google سروسز پر تحفظ فراہم کیا جا سکے، مثال کے طور پر سیکیورٹی کے واقعے کے بعد Gmail میں تحفظ میں اضافہ کرنا۔</translation>
 <translation id="5854790677617711513">30 دن سے زیادہ پرانا</translation>
 <translation id="5857770089550859117">مطابقت پذیری شروع کرنے کیلئے پاس فریز درکار ہے۔</translation>
@@ -1484,6 +1491,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6682680306647339111">یاد دہانی ہٹا دی گئی</translation>
 <translation id="6684262542644248484">ویب سائٹ میں سائن ان کریں</translation>
 <translation id="6685259053455152195">ترتیبات میں تیزی سے ترمیم کرنے اور ایڈریس بار سے خصوصیات کو استعمال کرنے کے لیے شارٹ کٹس۔</translation>
+<translation id="6689342293888598653">سفید پس منظر کا رنگ</translation>
 <translation id="6689685206615181381">صرف پوشیدگی وضع دستیاب ہے</translation>
 <translation id="6708501134077648845">پاس ورڈ کے اختیارات</translation>
 <translation id="6709964700841491574">لاک ڈاؤن وضع</translation>
@@ -1591,6 +1599,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="714291438898585119">ستارہ لگا ہوا</translation>
 <translation id="7146301801400584641">کیلنڈر فائل دستیاب ہے</translation>
 <translation id="7149893636342594995">آخری 72 گھنٹے</translation>
+<translation id="7154417656353909837">پتے ہٹا دیں</translation>
 <translation id="7161230316646448869">سبھی آلات پر اپنے بُک مارکس اور سرگزشت وغیرہ سنک کریں</translation>
 <translation id="7173114856073700355">ترتیبات کھولیں</translation>
 <translation id="7173721738069475737">{count,plural, =1{بُک مارک محفوظ ہو گیا}other{‫{count} بُک مارکس محفوظ ہو گئے}}</translation>
@@ -1660,6 +1669,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7458706065921255639">ذاتی نوعیت سازی اور لنک کرنا</translation>
 <translation id="745899714366929493">پورا دن</translation>
 <translation id="7460698861522306757">موبائل سائٹ کی درخواست کریں</translation>
+<translation id="7464143666517313304">اس سے اس آلہ پر محفوظ کردہ پتے حذف ہو جاتے ہیں۔</translation>
 <translation id="7468373585447318060">آپ جن پروڈکٹس کو ٹریک کرتے ہیں ان کی قیمتوں میں کمی سے باخبر رہیں۔</translation>
 <translation id="746872191028309255">نظر آنے والی چیزوں کو اپنے کیمرا اور تصویری گیلری کے ساتھ انہیں خریدیں۔</translation>
 <translation id="7471557245617580330">نیا ٹیب بنائیں</translation>
@@ -1711,6 +1721,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7646772052135772216">پاس ورڈ کی مطابقت پذیری کام نہیں کر رہی ہے</translation>
 <translation id="764827086632467055">ڈیفالٹ براؤزر ایپ تھپتھپائیں</translation>
 <translation id="7649070708921625228">مدد</translation>
+<translation id="765555660695722850">‏اس سے اس آلہ پر محفوظ کردہ پتے حذف ہو جاتے ہیں۔ اس سے آپ کے Google اکاؤنٹ سے کچھ معلومات بھی حذف ہو جاتی ہیں لیکن آپ کے نام یا گھر کا پتہ جیسی بنیادی معلومات نہیں۔</translation>
 <translation id="765631330137769217">"محفوظ کریں" پر تھپتھپائیں تاکہ اگلی بار سائن ان کرتے وقت آپ کو آسانی سے یہ پاس ورڈ دستیاب ہو</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7662316065255305764">سائٹ کی معلومات</translation>
@@ -2056,6 +2067,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8891031436559779793">کسی بھی سائٹ پر قیمت کم ہونے پر آپ کو مطلع کر دیا جائے گا۔</translation>
 <translation id="8893208530912252670">ویڈیوز</translation>
 <translation id="8898822736010347272">‏آپ کے ملاحظہ کئے جانے والے چند صفحات کے URLs، سسٹم کی محدود معلومات اور صفحے کا کچھ مواد Google کو بھیجتا ہے تاکہ نئے خطرات کا پتا لگانے اور ویب پر موجود سبھی کی حفاظت میں مدد مل سکے۔</translation>
+<translation id="8900845556227858314">براؤزر ایپ</translation>
 <translation id="890565330728586731">پیچھے</translation>
 <translation id="8907722425137681851">صفحہ میں تلاش کریں…</translation>
 <translation id="8909135823018751308">اشتراک کریں…</translation>

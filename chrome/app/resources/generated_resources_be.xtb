@@ -5909,6 +5909,7 @@
 <translation id="5109044022078737958">Мія</translation>
 <translation id="5109816792918100764">Выдаліць наступную мову: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Адкрыць групу ў новым акне</translation>
+<translation id="511147239888121455">Стварыць рэзервовую копію даных?</translation>
 <translation id="5111646998522066203">Выйсці з рэжыму інкогніта</translation>
 <translation id="5111692334209731439">&amp;Менеджар закладак</translation>
 <translation id="5111794652433847656">Для сайта <ph name="APP_NAME" /> на гэтай прыладзе няма ключоў доступу</translation>
@@ -6044,6 +6045,7 @@
 <translation id="5201945335223486172">Для дамена <ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">Файлы, якім дазволена змяняць файлы і папкі на прыладзе</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Каб паглядзець гэта пашырэнне, націсніце тут}one{Каб паглядзець гэтыя пашырэнні, націсніце тут}few{Каб паглядзець гэтыя пашырэнні, націсніце тут}many{Каб паглядзець гэтыя пашырэнні, націсніце тут}other{Каб паглядзець гэтыя пашырэнні, націсніце тут}}</translation>
+<translation id="5204282224596194174">Пароль для аднаўлення для адраса электроннай пошты <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">Скіньце налады прылады з дапамогай функцыі Powewash і паўтарыце спробу.</translation>
 <translation id="5204967432542742771">Увядзіце пароль</translation>
 <translation id="5205484256512407285">Ніколі не выкарыстоўваць мабільную перадачу даных</translation>
@@ -8204,6 +8206,7 @@
     <ph name="BEGIN_PARAGRAPH3" />Падрабязную інфармацыю пра даныя, якія <ph name="DEVICE_OS" /> можа абагульваць з Google, і іх выкарыстанне глядзіце на старонцы g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Павышае бяспеку для вас і іншых карыстальнікаў у інтэрнэце</translation>
 <translation id="6771503742377376720">З’яўляецца цэнтрам сертыфікацыі</translation>
+<translation id="6772103682557559072">Дадатковыя дзеянні з працоўным адрасам "<ph name="ADDRESS_SUMMARY" />"</translation>
 <translation id="6772974422346500939">Адкрыць і змяніць</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">Для сайта патрэбны аднаразовы пароль</translation>
@@ -10030,6 +10033,7 @@
 <translation id="8025151549289123443">Экран блакіроўкі і ўваход</translation>
 <translation id="8025291188699172126">Пра абнаўленні</translation>
 <translation id="8026471514777758216">Усе вашы прылады</translation>
+<translation id="8026700655446696031">Дадатковыя дзеянні з хатнім адрасам "<ph name="ADDRESS_SUMMARY" />"</translation>
 <translation id="8026784703228858744">Захаванне закладак і іншых даных з дапамогай сінхранізацыі</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Наведана 0 дзён таму}=1{Наведана 1 дзень таму}one{Наведана # дзень таму}few{Наведана # дні таму}many{Наведана # дзён таму}other{Наведана # дня таму}}</translation>
 <translation id="8028060951694135607">Аднаўленне ключоў Microsoft</translation>
@@ -10178,6 +10182,7 @@
 <translation id="8121537075864592453">Поўнаэкранны рэжым адключаны</translation>
 <translation id="8121750884985440809">Вы цяпер трансліруеце свой экран</translation>
 <translation id="8122898034710982882">Тэлефонны цэнтр, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Стварайце рэзервовыя копіі пароляў, закладак і іншых даных, каб лёгка атрымліваць доступ да іх на ўсіх вашых прыладах</translation>
 <translation id="81238879832906896">Жоўта-белая кветка</translation>
 <translation id="8123975449645947908">Прагартаць назад</translation>
 <translation id="8124313775439841391">ONC пад кіраваннем</translation>
@@ -11556,6 +11561,7 @@
 <translation id="9057354806206861646">Абнавіць расклад</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Прыкладна 1 апавяшчэнне ў дзень}one{Прыкладна {NUM_NOTIFICATION} апавяшчэнне ў дзень}few{Прыкладна {NUM_NOTIFICATION} апавяшчэнні ў дзень}many{Прыкладна {NUM_NOTIFICATION} апавяшчэнняў у дзень}other{Прыкладна {NUM_NOTIFICATION} апавяшчэння ў дзень}}</translation>
 <translation id="9058760336383947367">Паглядзець файл PPD для прынтара</translation>
+<translation id="9061521313218438086">Калі Chrome выявіць, што адзін з вашых пароляў аказаўся сярод агульнадаступных даных у выніку ўцечкі, Менеджар пароляў Google можа прапанаваць вам змяніць яго, калі вы выканалі ўваход.</translation>
 <translation id="9061694916020926968">Каб выкарыстоўваць Steam для Chromebook (бэта), увайдзіце ва Уліковы запіс Google і паўтарыце спробу.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Памылка з радка <ph name="ERROR_LINE_START" /> па <ph name="ERROR_LINE_END" /></translation>

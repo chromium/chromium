@@ -5921,6 +5921,7 @@
 <translation id="5109044022078737958">మియా</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" />‌ను తీసివేస్తుంది</translation>
 <translation id="5111326646107464148">కొత్త విండోలో గ్రూప్‌ను తెరవండి</translation>
+<translation id="511147239888121455">మీ కంటెంట్‌ను బ్యాకప్ చేయాలా?</translation>
 <translation id="5111646998522066203">అజ్ఞాత మోడ్‌ని విడిచిపెట్టు</translation>
 <translation id="5111692334209731439">&amp;బుక్‌మార్క్ సంచాలకులు</translation>
 <translation id="5111794652433847656">ఈ పరికరంలో <ph name="APP_NAME" /> కోసం పాస్-కీలు ఏవీ లేవు</translation>
@@ -8211,6 +8212,7 @@
     <ph name="BEGIN_PARAGRAPH3" />Googleతో <ph name="DEVICE_OS" /> షేర్ చేసే డేటా గురించి, అలాగే ఆ డేటా ఎలా ఉపయోగించబడుతుంది అనే దాని గురించి మరిన్ని వివరాల కోసం g.co/flex/HWDataCollection కు వెళ్లండి.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">మీకు, వెబ్‌లోని ప్రతిఒక్కరికీ సెక్యూరిటీని మెరుగుపరుస్తుంది</translation>
 <translation id="6771503742377376720">ప్రమాణపత్ర అధికారం</translation>
+<translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" /> వర్క్ ప్లేస్ అడ్రస్ కోసం మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="6772974422346500939">తెరిచి, ఎడిట్ చేయండి</translation>
 <translation id="6773595613448852535">Chrome రూట్ స్టోర్</translation>
 <translation id="677394079035748956">సైట్‌కు ఒకసారి ఉపయోగించగల పాస్‌వర్డ్ కావాలి</translation>
@@ -10035,6 +10037,7 @@
 <translation id="8025151549289123443">లాక్ స్క్రీన్ మరియు సైన్ ఇన్</translation>
 <translation id="8025291188699172126">అప్‌డేట్‌ల గురించి</translation>
 <translation id="8026471514777758216">మీ అన్ని పరికరాలు</translation>
+<translation id="8026700655446696031"><ph name="ADDRESS_SUMMARY" /> ఇంటి అడ్రస్ కోసం మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="8026784703228858744">సింక్‌ను ఉపయోగించి మీ బుక్‌మార్క్‌లు, మరిన్నింటిని సేవ్ చేయండి</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 రోజుల క్రితం యాక్సెస్ చేశారు}=1{1 రోజు క్రితం యాక్సెస్ చేశారు}other{# రోజుల క్రితం యాక్సెస్ చేశారు}}</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
@@ -10183,6 +10186,7 @@
 <translation id="8121537075864592453">ఫుల్ స్క్రీన్ డిజేబుల్ అయ్యింది</translation>
 <translation id="8121750884985440809">మీరు ప్రస్తుతం మీ స్క్రీన్‌ను ప్రసారం చేస్తున్నారు</translation>
 <translation id="8122898034710982882">ఫోన్ హబ్, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">మీ పాస్‌వర్డ్‌లు, బుక్‌మార్క్‌లు, ఇంకా మరిన్నింటిని బ్యాకప్ చేయండి, తద్వారా మీరు వాటిని మీ అన్ని డివైజ్‌లలో సులభంగా పొందవచ్చు</translation>
 <translation id="81238879832906896">పసుపు మరియు తెలుపు రంగు పుష్పం</translation>
 <translation id="8123975449645947908">వెనుకకు స్క్రోల్ చేయి</translation>
 <translation id="8124313775439841391">నిర్వహిత ONC</translation>

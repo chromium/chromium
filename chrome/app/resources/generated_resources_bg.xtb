@@ -5920,6 +5920,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5109044022078737958">Мия</translation>
 <translation id="5109816792918100764">Премахване на <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Отваряне на групата в нов прозорец</translation>
+<translation id="511147239888121455">Да се създадат ли резервни копия на нещата ви?</translation>
 <translation id="5111646998522066203">Изход от режим „инкогнито“</translation>
 <translation id="5111692334209731439">&amp;Диспечер на отметките</translation>
 <translation id="5111794652433847656">На това устройство няма кодове за достъп за <ph name="APP_NAME" /></translation>
@@ -6055,6 +6056,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5201945335223486172">За <ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">Може да редактира файловете и папките на устройството ви</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Кликнете, за да го прегледате}other{Кликнете, за да ги прегледате}}</translation>
+<translation id="5204282224596194174">Парола за възстановяване за <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">Моля, извършете Powerwash на устройството и опитайте отново.</translation>
 <translation id="5204967432542742771">Въведете парола</translation>
 <translation id="5205484256512407285">За прехвърлянето никога няма да се използват мобилни данни</translation>
@@ -8211,6 +8213,7 @@ Chrome Root Program има доверие, и постоянно се подла
     <ph name="BEGIN_PARAGRAPH3" />За повече подробности относно данните, които <ph name="DEVICE_OS" /> може да споделя с Google, и начините, по които се използват, посетете g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Подобрява сигурността за вас и всички потребители в мрежата</translation>
 <translation id="6771503742377376720">Е сертифициращ орган</translation>
+<translation id="6772103682557559072">Още опции за служебния адрес <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Отваряне и редактиране</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">За сайта е необходима еднократна парола</translation>
@@ -10039,6 +10042,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8025151549289123443">Заключен екран и влизане в профила</translation>
 <translation id="8025291188699172126">Информация за актуализациите</translation>
 <translation id="8026471514777758216">Всички ваши устройства</translation>
+<translation id="8026700655446696031">Още опции за домашния адрес <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="8026784703228858744">Запазвайте своите отметки и др. с функцията за синхронизиране</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Посетено преди 0 дни}=1{Посетено преди 1 ден}other{Посетено преди # дни}}</translation>
 <translation id="8028060951694135607">Възстановяване на ключ от Microsoft</translation>
@@ -10187,6 +10191,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8121537075864592453">Режимът на цял екран е деактивиран</translation>
 <translation id="8121750884985440809">Предавате съдържанието на екрана си</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Създайте резервни копия на паролите, отметките си и др., за да можете лесно да ги получавате на всичките си устройства</translation>
 <translation id="81238879832906896">Жълто-бяло цвете</translation>
 <translation id="8123975449645947908">Превъртане назад</translation>
 <translation id="8124313775439841391">Управлявано ONC</translation>
@@ -11562,6 +11567,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9057354806206861646">График на актуализациите</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Около 1 известие на ден}other{Около {NUM_NOTIFICATION} известия на ден}}</translation>
 <translation id="9058760336383947367">Прегледайте PPD файла за принтера</translation>
+<translation id="9061521313218438086">В случай че Chrome открие една от паролите ви при обществено нарушение на сигурността на данните, Google Мениджър на пароли може да предложи да я промени вместо вас, ако сте влезли в профила си.</translation>
 <translation id="9061694916020926968">За да използвате бета-версията на Steam за Chromebook, трябва да сте влезли в профил в Google. Влезте в профила си и опитайте отново.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Грешка от ред <ph name="ERROR_LINE_START" /> до ред <ph name="ERROR_LINE_END" /></translation>

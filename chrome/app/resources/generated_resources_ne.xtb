@@ -5905,6 +5905,7 @@
 <translation id="5109044022078737958">मिया</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> भाषा हटाउनुहोस्</translation>
 <translation id="5111326646107464148">यो ट्याब समूह नयाँ विन्डोमा खोल्नुहोस्</translation>
+<translation id="511147239888121455">आफ्नो सामग्री ब्याकअप गर्ने हो?</translation>
 <translation id="5111646998522066203">इन्कोग्निटो मोडबाट बाहिर निस्कनुहोस्</translation>
 <translation id="5111692334209731439">&amp;बुकमार्क व्यवस्थापक</translation>
 <translation id="5111794652433847656">यो डिभाइसमा <ph name="APP_NAME" /> को कुनै पनि पासकी छैन</translation>
@@ -6040,6 +6041,7 @@
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /> को</translation>
 <translation id="5203035663139409780">यसले तपाईंको डिभाइसमा भएका फाइल वा फोल्डरहरू परिवर्तन गर्न सक्छ</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{यो एक्स्टेन्सन हेर्न क्लिक गर्नुहोस्}other{यी एक्स्टेन्सनहरू हेर्न क्लिक गर्नुहोस्}}</translation>
+<translation id="5204282224596194174"><ph name="USER_EMAIL" /> को रिकभरी पासवर्ड</translation>
 <translation id="5204673965307125349">कृपया यन्त्रलाई पावरवास गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="5204967432542742771">पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="5205484256512407285">फाइल ट्रान्सफर गर्नका लागि कहिल्यै पनि मोबाइल डेटा प्रयोग नगर्नुहोस्</translation>
@@ -8194,6 +8196,7 @@
     <ph name="BEGIN_PARAGRAPH3" />तपाईं <ph name="DEVICE_OS" /> ले Google मा पठाउन सक्ने डेटा र सो डेटा प्रयोग गरिने तरिकाका बारेमा थप जान्न g.co/flex/HWDataCollection मा जानुहोस्।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">तपाईं र वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई झन् सुरक्षित राख्छ</translation>
 <translation id="6771503742377376720">एउटा प्रमाणीकरण अधिकार हो</translation>
+<translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" /> को कार्यस्थलको ठेगानासम्बन्धी थप विकल्पहरू</translation>
 <translation id="6772974422346500939">खोल्नुहोस् र सम्पादन गर्नुहोस्</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">यो साइटमा एक पटके पासवर्ड हाल्नु पर्ने हुन्छ</translation>
@@ -10020,6 +10023,7 @@
 <translation id="8025151549289123443">लक स्क्रिन र साइन इन</translation>
 <translation id="8025291188699172126">अपडेटका बारेमा जानकारी</translation>
 <translation id="8026471514777758216">तपाईंका सबै डिभाइसहरू</translation>
+<translation id="8026700655446696031"><ph name="ADDRESS_SUMMARY" /> को घरको ठेगानासम्बन्धी थप विकल्पहरू</translation>
 <translation id="8026784703228858744">सिंक गर्ने सुविधाका सहायताले आफ्ना बुकमार्क र अन्य कुराहरू सेभ गर्नुहोस्</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{० दिनअघि खोलिएको}=1{१ दिनअघि खोलिएको}other{# दिनअघि खोलिएको}}</translation>
 <translation id="8028060951694135607">Microsoft कुञ्जी पुन: प्राप्ति</translation>
@@ -10168,6 +10172,7 @@
 <translation id="8121537075864592453">फुल स्क्रिन मोड अफ गरिएको छ</translation>
 <translation id="8121750884985440809">तपाईं अहिले आफ्नो स्क्रिन कास्ट गर्दै हुनुहुन्छ</translation>
 <translation id="8122898034710982882">फोन हब, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">आफ्ना पासवर्ड, बुकमार्क र थप कुराहरू आफ्ना डिभाइसहरूमा सजिलैसँग प्राप्त गर्न सकियोस् भन्नाका लागि तिनलाई ब्याकअप गर्नुहोस्</translation>
 <translation id="81238879832906896">पहेँलो र सेतो फुल</translation>
 <translation id="8123975449645947908">पछाडितिर स्क्रोल गर्नुहोस्</translation>
 <translation id="8124313775439841391">व्यवस्थित ONC</translation>
@@ -11543,6 +11548,7 @@
 <translation id="9057354806206861646">अद्यावधिक तालिका</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{एक दिनमा लगभग एउटा सूचना}other{एक दिनमा लगभग {NUM_NOTIFICATION} वटा सूचना}}</translation>
 <translation id="9058760336383947367">प्रिन्टर PPD हेर्नुहोस्</translation>
+<translation id="9061521313218438086">Chrome ले तपाईंको कुनै पासवर्ड चोरी भएको डेटाको सार्वजनिक सङ्ग्रहमा भेट्टाएका खण्डमा Google पासवर्ड म्यानेजरले तपाईं साइन इन अवस्थामा भएका बेला तपाईंका तर्फबाट तपाईंको पासवर्ड परिवर्तन गरिदिने प्रस्ताव गर्न सक्छ।</translation>
 <translation id="9061694916020926968">Steam for Chromebook (बिटा) प्रयोग गर्न तपाईं Google खातामा साइन इन हुनु पर्छ। साइन इन गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="9062468308252555888">१४ गुणा</translation>
 <translation id="9063208415146866933">हरफ <ph name="ERROR_LINE_START" /> देखि हरफ <ph name="ERROR_LINE_END" /> सम्म त्रुटि छ</translation>

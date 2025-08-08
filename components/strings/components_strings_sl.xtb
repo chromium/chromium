@@ -363,6 +363,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="159274626729231974">Filmski festivali</translation>
 <translation id="1593359183944365958">270-stopinjsko</translation>
 <translation id="1594030484168838125">Izberi</translation>
+<translation id="1595731774593926493">Izbris kontrolne številke</translation>
 <translation id="1597307423671074806">Videoposnetek WebM</translation>
 <translation id="159800670740560023">Povezava z nasveti za Chrome, pritisnite Enter, če želite odpreti <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
 <translation id="1599199147673445968">Nova kartica? <ph name="BEGIN_LINK" />Vnesite podrobnosti o kartici<ph name="END_LINK" /></translation>
@@ -755,6 +756,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2233745931693710080">Compact Disc</translation>
 <translation id="2235344399760031203">Piškotki tretjih oseb so blokirani</translation>
 <translation id="2239100178324503013">Pošlji</translation>
+<translation id="224130779555573777">Dodaj kontrolno številko</translation>
 <translation id="2241693394036365668">Datoteka je prenesena</translation>
 <translation id="2242389809734574253">Shranjevanje številke IBAN je zaprto.</translation>
 <translation id="2246264294482514010">10 x 12 palcev</translation>
@@ -2933,6 +2935,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5886961930368713749">Pošljite povratne informacije o primerjavi</translation>
 <translation id="5887400589839399685">Kartica je shranjena</translation>
 <translation id="5887687176710214216">Nazadnje obiskano včeraj</translation>
+<translation id="5890248301649767931">Želite shraniti kontrolno številko?</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
 <translation id="5895187275912066135">Izdano dne</translation>
 <translation id="5898767305816764989">Gumb za Všeč mi je pritisnite Enter, če želite poslati povratne informacije, ki so vam všeč, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -3554,6 +3557,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6905163627763043954">Preizkusite</translation>
 <translation id="6907458757809079309">Fitnes</translation>
 <translation id="691024665142758461">prenesti več datotek.</translation>
+<translation id="691046363691324218">Kontrolna številka</translation>
 <translation id="6915804003454593391">Uporabnik:</translation>
 <translation id="6916193791494646625">Navedite razlog za prenos (obvezno)</translation>
 <translation id="6917795328362592458">Geslo, ki ste ga pravkar uporabili, je bilo najdeno v podatkovni kršitvi. Zaradi zavarovanja računov Upravitelj gesel priporoča, da preverite shranjena gesla.</translation>
@@ -4500,6 +4504,7 @@ Dodatne podrobnosti:
 <translation id="8457125768502047971">Neomejeno</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Vklopi</translation>
+<translation id="8461289985785035071">Urejanje kontrolne številke</translation>
 <translation id="8461694314515752532">Šifriranje sinhroniziranih podatkov z vašim geslom za sinhronizacijo</translation>
 <translation id="8461973047386722744">Najdeno ni bilo nobeno geslo</translation>
 <translation id="8467494337615822642">V nastavitvah odprite stran za varnostno preverjanje v Chromu</translation>
@@ -4807,6 +4812,7 @@ Dodatne podrobnosti:
 <translation id="9026253329950610248">Google Spletna mesta</translation>
 <translation id="9027020981272345766">Preizkusite Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Če želite zapreti celozaslonski način, pridržite |<ph name="ACCELERATOR" />|</translation>
+<translation id="9031426777610376427">Želite posodobiti kontrolno številko?</translation>
 <translation id="9035022520814077154">Varnostna napaka</translation>
 <translation id="9035824888276246493">Shrani varnostne kode</translation>
 <translation id="9036306139374661733">Želite odobriti dostop do mikrofona?</translation>

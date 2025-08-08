@@ -5912,6 +5912,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5109044022078737958">Atleta</translation>
 <translation id="5109816792918100764">Quitar <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Abrir o grupo nunha ventá nova</translation>
+<translation id="511147239888121455">Queres facer unha copia de seguranza dos teus datos?</translation>
 <translation id="5111646998522066203">Saír do modo de incógnito</translation>
 <translation id="5111692334209731439">&amp;Xestor de marcadores</translation>
 <translation id="5111794652433847656">Non hai claves de acceso para <ph name="APP_NAME" /> neste dispositivo</translation>
@@ -6047,6 +6048,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5201945335223486172">Para <ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">Permiso para editar os ficheiros ou os cartafoles do teu dispositivo</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Fai clic para ver a extensión}other{Fai clic para ver estas extensións}}</translation>
+<translation id="5204282224596194174">Contrasinal de recuperación de <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">Leva a cabo un Powerwash do dispositivo e téntao de novo.</translation>
 <translation id="5204967432542742771">Introduce o contrasinal</translation>
 <translation id="5205484256512407285">Non utilizar nunca os datos móbiles para realizar transferencias</translation>
@@ -8199,6 +8201,7 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
     <ph name="BEGIN_PARAGRAPH3" />Se queres obter máis información sobre os datos que pode compartir <ph name="DEVICE_OS" /> con Google e o uso que se lles dá, visita g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Mellora a túa seguranza e a do resto dos usuarios da Web</translation>
 <translation id="6771503742377376720">É unha autoridade de certificación</translation>
+<translation id="6772103682557559072">Máis opción para o enderezo do traballo de <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Abrir e editar</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">O sitio necesita un contrasinal dun só uso</translation>
@@ -10025,6 +10028,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8025151549289123443">Pantalla de bloqueo e inicio de sesión</translation>
 <translation id="8025291188699172126">Acerca das actualizacións</translation>
 <translation id="8026471514777758216">Todos os teus dispositivos</translation>
+<translation id="8026700655446696031">Máis opcións para o enderezo particular de <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="8026784703228858744">Garda os teus marcadores e moitas outras cousas grazas á sincronización</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Acceso hai 0 días}=1{Acceso hai 1 día}other{Acceso hai # días}}</translation>
 <translation id="8028060951694135607">Recuperación de claves de Microsoft</translation>
@@ -10173,6 +10177,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8121537075864592453">Pantalla completa desactivada</translation>
 <translation id="8121750884985440809">Estás emitindo a pantalla</translation>
 <translation id="8122898034710982882">O meu teléfono, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Fai unha copia de seguranza dos teus contrasinais e marcadores, entre outros detalles, para poder acceder a eles en todos os teus dispositivos</translation>
 <translation id="81238879832906896">Flor branca e amarela</translation>
 <translation id="8123975449645947908">Desprazarse cara atrás</translation>
 <translation id="8124313775439841391">ONC xestionado</translation>
@@ -11548,6 +11553,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="9057354806206861646">Programa de actualización</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Arredor de 1 notificación ao día}other{Arredor de {NUM_NOTIFICATION} notificacións ao día}}</translation>
 <translation id="9058760336383947367">Ver PPD da impresora</translation>
+<translation id="9061521313218438086">Se Chrome detecta un dos teus contrasinais nunha violación da seguranza dos datos, o xestor de contrasinais de Google pode ofrecerche a opción de cambialo por ti se tes a sesión iniciada.</translation>
 <translation id="9061694916020926968">Para poder usar Steam para Chromebook (beta), debes ter a sesión iniciada nunha Conta de Google. Inicia sesión e téntao de novo.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Produciuse un erro da liña <ph name="ERROR_LINE_START" /> á <ph name="ERROR_LINE_END" /></translation>

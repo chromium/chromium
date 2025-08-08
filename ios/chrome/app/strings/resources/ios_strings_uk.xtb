@@ -208,6 +208,7 @@
 <translation id="17906873777101817">Пропонувати зберігати паролі й ключі доступу</translation>
 <translation id="1794893174442046596">Група вкладок</translation>
 <translation id="1807893857950749072">Дозволити сповіщення про відстеження цін…</translation>
+<translation id="1809929083618343438">Вибрану інформацію буде видалено з Chrome, але не з облікового запису Google.</translation>
 <translation id="1810976980198522421">Скасувати</translation>
 <translation id="1812514023095547458">Вибрати колір</translation>
 <translation id="1815941218935345331">Код доступу</translation>
@@ -311,6 +312,7 @@
 <translation id="2161446265348023004">Перейти у відкрите вікно</translation>
 <translation id="2164946989711475905">Увійти…</translation>
 <translation id="2175927920773552910">QR-код</translation>
+<translation id="2180338296831857171">Видалити адреси</translation>
 <translation id="218350106843433823">Автозаповнення паролів і ключів доступу</translation>
 <translation id="2184272387334793084">Увійдіть в обліковий запис, щоб отримати доступ до паролів і інших даних на всіх пристроях</translation>
 <translation id="2186206192313702726">Google Об’єктив</translation>
@@ -357,6 +359,7 @@
 <translation id="2326302612031521902">Засіб вибору одиниць</translation>
 <translation id="2330607597130465898">Захист вимкнено</translation>
 <translation id="233375395665273385">Видалити й вийти</translation>
+<translation id="2350463587705616331">Колір фону "Сепія"</translation>
 <translation id="2351097562818989364">Налаштування перекладу скинуто.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Ви можете зберегти пароль для веб-сайту {DOMAIN_ONE} у своєму обліковому записі Google ({EMAIL}).}=2{Ви можете зберегти паролі для веб-сайтів {DOMAIN_ONE} і {DOMAIN_TWO} у своєму обліковому записі Google ({EMAIL}).}=3{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайту в обліковому записі Google ({EMAIL}).}one{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайту в обліковому записі Google ({EMAIL}).}few{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайтів в обліковому записі Google ({EMAIL}).}many{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайтів в обліковому записі Google ({EMAIL}).}other{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайту в обліковому записі Google ({EMAIL}).}}</translation>
 <translation id="2353953000228441783">Режим перегляду сайту за умовчанням</translation>
@@ -543,6 +546,7 @@
 <translation id="3081338492074632642">Переконайтеся, що новий пароль збігається з паролем для веб-сайту <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Низ</translation>
 <translation id="309710370695886264">У вас є 1 повторно використаний пароль. Змініть його, щоб захистити свої дані.</translation>
+<translation id="3099402981545350675">Буде видалено адреси, збережені на цьому пристрої. Вибрану інформацію також буде видалено з Chrome, однак вона залишиться в обліковому записі Google.</translation>
 <translation id="3106258548858559536">Вимкнути режим читання</translation>
 <translation id="3106690631878101882">Сховати опцію "Перекласти"</translation>
 <translation id="310900540163454140">Видалити пароль для вебсайту <ph name="WEBSITE" />?</translation>
@@ -741,6 +745,7 @@
 <translation id="3962326069546168954">Зберегти</translation>
 <translation id="3967327056943561740">Закладки</translation>
 <translation id="3967822245660637423">Завантажено</translation>
+<translation id="3973560090698854095">Буде видалено адреси, збережені у вашому обліковому записі Google <ph name="USER_EMAIL" />.</translation>
 <translation id="3982893814825393515">Повідомити про проблему…</translation>
 <translation id="398604237578616937">Ви ввійшли як <ph name="USER_EMAIL" />. Відкрити меню облікового запису.</translation>
 <translation id="3986739045730058129">Перейти на вкладку</translation>
@@ -1021,6 +1026,7 @@
 <translation id="5039804452771397117">Дозволити</translation>
 <translation id="5050810143224996149">Поділитися паролем</translation>
 <translation id="5055015094595227120">Точне місцезнаходження</translation>
+<translation id="5055551113846164633">Буде видалено адреси, збережені на цьому пристрої, а також у вашому обліковому записі Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Проблеми виявлено <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Установити Google Диск</translation>
@@ -1232,6 +1238,7 @@
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Синхронізація…</translation>
 <translation id="583923961930319521">Використовуйте паролі на всіх пристроях</translation>
+<translation id="5843013299019689749">Чорний колір фону</translation>
 <translation id="5844284118433003733">Якщо ви ввійшли у свій обліковий запис Google, ці дані зв’язуються з ним. Завдяки цьому ми можемо захищати вас у всіх сервісах Google, наприклад підвищити захист у Gmail після інциденту безпеки.</translation>
 <translation id="5854790677617711513">Понад 30 днів тому</translation>
 <translation id="5857770089550859117">Введіть парольну фразу, щоб почати синхронізацію.</translation>
@@ -1484,6 +1491,7 @@
 <translation id="6682680306647339111">Нагадування вилучено</translation>
 <translation id="6684262542644248484">Увійдіть в обліковий запис на потрібному вебсайті</translation>
 <translation id="6685259053455152195">Швидкі команди, за допомогою яких можна змінювати налаштування й використовувати функції з адресного рядка.</translation>
+<translation id="6689342293888598653">Білий колір фону</translation>
 <translation id="6689685206615181381">Доступний лише анонімний режим</translation>
 <translation id="6708501134077648845">Параметри паролів</translation>
 <translation id="6709964700841491574">Режим блокування входу</translation>
@@ -1591,6 +1599,7 @@
 <translation id="714291438898585119">Із зірочкою</translation>
 <translation id="7146301801400584641">Доступний файл календаря</translation>
 <translation id="7149893636342594995">Останні 24 години</translation>
+<translation id="7154417656353909837">Видалити адреси</translation>
 <translation id="7161230316646448869">Синхронізуйте свої закладки, історію тощо на всіх пристроях</translation>
 <translation id="7173114856073700355">Відкрити налаштування</translation>
 <translation id="7173721738069475737">{count,plural, =1{Закладку збережено}one{{count} закладку збережено}few{{count} закладки збережено}many{{count} закладок збережено}other{{count} закладки збережено}}</translation>
@@ -1660,6 +1669,7 @@
 <translation id="7458706065921255639">Персоналізація і зв’язування</translation>
 <translation id="745899714366929493">Увесь день</translation>
 <translation id="7460698861522306757">Мобільна версія сайту</translation>
+<translation id="7464143666517313304">Буде видалено адреси, збережені на цьому пристрої.</translation>
 <translation id="7468373585447318060">Дізнавайтеся про зниження цін на всі товари, які відстежуєте.</translation>
 <translation id="746872191028309255">Купуйте товари, які бачите у видошукачі камери або фотогалереї.</translation>
 <translation id="7471557245617580330">Створити нову вкладку</translation>
@@ -1711,6 +1721,7 @@
 <translation id="7646772052135772216">Синхронізація паролів не працює</translation>
 <translation id="764827086632467055">Натисніть "Веб-переглядач за умовчанням"</translation>
 <translation id="7649070708921625228">Довідка</translation>
+<translation id="765555660695722850">Буде видалено адреси, збережені на цьому пристрої, а також деяку інформацію з вашого облікового запису Google, але не основні дані, такі як ім’я або домашня адреса.</translation>
 <translation id="765631330137769217">Натисніть "Зберегти", щоб легко отримати доступ до цього пароля під час наступного входу</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7662316065255305764">Інформація про сайт</translation>
@@ -2056,6 +2067,7 @@
 <translation id="8891031436559779793">Якщо на якомусь сайті знизиться ціна, ви отримаєте сповіщення.</translation>
 <translation id="8893208530912252670">Відео</translation>
 <translation id="8898822736010347272">Надсилає в Google URL-адреси відвіданих сторінок, обмежену системну інформацію та вміст деяких сторінок, щоб виявляти нові загрози та захищати всіх користувачів в Інтернеті.</translation>
+<translation id="8900845556227858314">Вебпереглядач</translation>
 <translation id="890565330728586731">Назад</translation>
 <translation id="8907722425137681851">Знайти на сторінці…</translation>
 <translation id="8909135823018751308">Надіслати…</translation>

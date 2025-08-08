@@ -363,6 +363,7 @@
 <translation id="159274626729231974">פסטיבלי סרטים</translation>
 <translation id="1593359183944365958">270 מעלות</translation>
 <translation id="1594030484168838125">בחירה</translation>
+<translation id="1595731774593926493">מחיקת מספר הפנייה לערעור</translation>
 <translation id="1597307423671074806">‏סרטון WebM</translation>
 <translation id="159800670740560023">‏קישור לטיפ ל-Chrome, אפשר ללחוץ על Enter כדי לפתוח <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
 <translation id="1599199147673445968">כרטיס חדש? <ph name="BEGIN_LINK" />להזנת פרטי הכרטיס<ph name="END_LINK" /></translation>
@@ -755,6 +756,7 @@
 <translation id="2233745931693710080">Compact Disc</translation>
 <translation id="2235344399760031203">‏קובצי cookie של צד שלישי חסומים</translation>
 <translation id="2239100178324503013">שליחה</translation>
+<translation id="224130779555573777">הוספת מספר פנייה לערעור</translation>
 <translation id="2241693394036365668">הורדת קובץ</translation>
 <translation id="2242389809734574253">‏הודעת שמירת מספר ה-IBAN נסגרה.</translation>
 <translation id="2246264294482514010">‏10x12 אינץ'</translation>
@@ -1388,7 +1390,7 @@
 <translation id="33073482541490531">הסיסמה שבה השתמשת עכשיו אותרה בפרצה באבטחת מידע. לפי מנהל הסיסמאות, מומלץ לשנות את הסיסמה הזו עכשיו.</translation>
 <translation id="3307649904964670439">‏הכפתור להתאמה אישית של Chrome, מפעילים אותו כדי להתאים אישית את מראה הדפדפן</translation>
 <translation id="3308006649705061278">‏יחידה ארגונית (OU)</translation>
-<translation id="3312952471765023168">ההעלאה הושלמה בהצלחה</translation>
+<translation id="3312952471765023168">ההעלאה הושלמה</translation>
 <translation id="3318016344440038475">תוכניות קומיות בטלוויזיה</translation>
 <translation id="3324687287337751929">‏4x6 אינץ'</translation>
 <translation id="3324983252691184275">ארגמן</translation>
@@ -2939,6 +2941,7 @@ Del</translation>
 <translation id="5886961930368713749">שליחת משוב להשוואה</translation>
 <translation id="5887400589839399685">הכרטיס נשמר</translation>
 <translation id="5887687176710214216">הכניסה האחרונה בוצעה אתמול</translation>
+<translation id="5890248301649767931">לשמור את מספר הפנייה לערעור?</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
 <translation id="5895187275912066135">הונפק בתאריך</translation>
 <translation id="5898767305816764989">‏כפתור 'אהבתי', לוחצים על Enter כדי לשלוח משוב שאהבת את <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -3560,6 +3563,7 @@ Del</translation>
 <translation id="6905163627763043954">נסה זאת</translation>
 <translation id="6907458757809079309">כושר גופני</translation>
 <translation id="691024665142758461">להוריד מספר קבצים</translation>
+<translation id="691046363691324218">מספר הפנייה לערעור</translation>
 <translation id="6915804003454593391">משתמש:</translation>
 <translation id="6916193791494646625">יש לציין את הסיבה להורדה (חובה)</translation>
 <translation id="6917795328362592458">הסיסמה שבה השתמשת עכשיו אותרה בפרצה באבטחת מידע. כדי להגן על החשבונות שלך, לפי מנהל הסיסמאות, מומלץ לבדוק את הסיסמאות השמורות שלך.</translation>
@@ -3649,7 +3653,7 @@ Del</translation>
 <translation id="7044081119134178347">יש אישור לשימוש חד-פעמי במצלמה</translation>
 <translation id="7048095965575426564">‏8.5x12 אינץ' (Fanfold – אירופה)</translation>
 <translation id="7050187094878475250">ניסית להגיע אל <ph name="DOMAIN" />, אך השרת הציג אישור שתקופת התוקף שלו ארוכה מדי ולכן אינו מהימן.</translation>
-<translation id="7050877504983265321">Known Traveler Number</translation>
+<translation id="7050877504983265321">‏Known Traveler Number (מספר KTN)</translation>
 <translation id="7053983685419859001">חסימה</translation>
 <translation id="7054717457611655239">מעכשיו אפשר לשמור את הקבצים ב-<ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> אימת ש-<ph name="ISSUER" /> הנפיק את האישור של האתר הזה.</translation>
@@ -4506,6 +4510,7 @@ Del</translation>
 <translation id="8457125768502047971">ללא הגבלת זמן</translation>
 <translation id="8458202188076138974">‏9.5x12 אינץ' (Letter Extra)</translation>
 <translation id="8460854335417802511">להפעלת ההגדרה</translation>
+<translation id="8461289985785035071">עריכת מספר הפנייה לערעור</translation>
 <translation id="8461694314515752532">הצפנת נתונים מסונכרנים בעזרת ביטוי סיסמה אישי לסנכרון</translation>
 <translation id="8461973047386722744">לא נמצאו סיסמאות</translation>
 <translation id="8467494337615822642">‏מעבר לדף בדיקת האבטחה ב-Chrome בהגדרות</translation>
@@ -4813,6 +4818,7 @@ Del</translation>
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">‏רוצה לנסות את Chrome Enterprise Core?</translation>
 <translation id="9027531288681624875">כדי לצאת מהמסך המלא, צריך ללחוץ לחיצה ארוכה על |<ph name="ACCELERATOR" />|</translation>
+<translation id="9031426777610376427">לעדכן את מספר הפנייה לערעור?</translation>
 <translation id="9035022520814077154">שגיאת אבטחה</translation>
 <translation id="9035824888276246493">שמירת קודי האבטחה</translation>
 <translation id="9036306139374661733">לאפשר את הגישה למיקרופון?</translation>

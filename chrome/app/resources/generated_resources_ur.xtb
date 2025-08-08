@@ -5909,6 +5909,7 @@
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> ہٹائیں</translation>
 <translation id="5111326646107464148">نئی ونڈو میں گروپ کھولیں</translation>
+<translation id="511147239888121455">اپنے مواد کا بیک اپ لیں؟</translation>
 <translation id="5111646998522066203">پوشیدگی وضع سے باہر نکلیں</translation>
 <translation id="5111692334209731439">&amp;بک مارک مینیجر</translation>
 <translation id="5111794652433847656">اس آلے پر <ph name="APP_NAME" /> کے لیے کوئی پاس کی نہیں ہے۔</translation>
@@ -6044,6 +6045,7 @@
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /> کیلئے</translation>
 <translation id="5203035663139409780">آپ کے آلے پر فائلز یا فولڈر میں ترمیم کر سکتے ہیں</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{ایکسٹینشن دیکھنے کے لیے کلک کریں}other{ایکسٹینشنز دیکھنے کے لیے کلک کریں}}</translation>
+<translation id="5204282224596194174">بازیابی پاس ورڈ برائے <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">براہ کرم آلہ کو پاور واش کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="5204967432542742771">پاس ورڈ درج کریں</translation>
 <translation id="5205484256512407285">منتقلی کے لیے کبھی بھی موبائل ڈیٹا کا استعمال نہ کریں</translation>
@@ -8197,6 +8199,7 @@
     <ph name="BEGIN_PARAGRAPH3" />ڈیٹا کے بارے میں مزید تفصیلات کے لیے <ph name="DEVICE_OS" /> Google کے ساتھ اشتراک کر سکتا ہے اور اس کے استعمال کے طریقے کے لیے g.co/flex/HWDataCollection ملاحظہ کریں۔<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">آپ کے لیے اور ویب پر سبھی کے لیے سیکیورٹی کو بہتر بناتی ہے</translation>
 <translation id="6771503742377376720">ایک سرٹیفیکیشن ادارہ ہے</translation>
+<translation id="6772103682557559072">‫<ph name="ADDRESS_SUMMARY" /> کام کے پتے کے لیے مزید اختیارات</translation>
 <translation id="6772974422346500939">کھولیں اور ترمیم کریں</translation>
 <translation id="6773595613448852535">‏‫Chrome روٹ اسٹور</translation>
 <translation id="677394079035748956">سائٹ کو ون ٹائم پاس ورڈ کی ضرورت ہے</translation>
@@ -10023,6 +10026,7 @@
 <translation id="8025151549289123443">مقفل اسکرین اور سائن ان</translation>
 <translation id="8025291188699172126">اپ ڈیٹس کے بارے میں</translation>
 <translation id="8026471514777758216">آپ کے تمام آلات</translation>
+<translation id="8026700655446696031">‫<ph name="ADDRESS_SUMMARY" /> گھر کے پتے کے لیے مزید اختیارات</translation>
 <translation id="8026784703228858744">مطابقت پذیری کے ساتھ اپنے بُک مارکس پاس ورڈز اور بہت کچھ کو اسٹور کریں</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{‫0 دن قبل ملاحظہ کیا گیا}=1{‫1 دن قبل ملاحظہ کیا گیا}other{‫# دن قبل ملاحظہ کیا گیا}}</translation>
 <translation id="8028060951694135607">‏Microsoft کلید کی بازیابی</translation>
@@ -10171,6 +10175,7 @@
 <translation id="8121537075864592453">فُل اسکرین کو غیر فعال کیا گیا</translation>
 <translation id="8121750884985440809">فی الحال آپ اپنی اسکرین کو کاسٹ کر رہے ہیں</translation>
 <translation id="8122898034710982882">فون ہب، <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">اپنے پاس ورڈز، بُک مارکس وغیرہ کا بیک اپ لیں، تاکہ آپ انہیں اپنے تمام آلات پر آسانی سے حاصل کر سکیں</translation>
 <translation id="81238879832906896">زرد اور سفید پھول</translation>
 <translation id="8123975449645947908">پیچھے اسکرول کریں</translation>
 <translation id="8124313775439841391">‏نظم کردہ ONC</translation>
@@ -11546,6 +11551,7 @@
 <translation id="9057354806206861646">شیڈول اپ ڈیٹ کریں</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{تقریباً 1 اطلاع ایک دن میں}other{تقریباً {NUM_NOTIFICATION} اطلاعات ایک دن میں}}</translation>
 <translation id="9058760336383947367">‏پرنٹر PPD دیکھیں</translation>
+<translation id="9061521313218438086">‏اگر Chrome کو عوامی ڈیٹا کی خلاف ورزی میں آپ کے پاس ورڈز میں سے کوئی ایک مل جاتا ہے تو آپ کے سائن ان ہونے پر Google پاس ورڈ مینیجر آپ کے لیے آپ کا پاس ورڈ تبدیل کرنے کی پیشکش کر سکتا ہے۔</translation>
 <translation id="9061694916020926968">‏Steam برائے Chromebook (بی ٹا) استعمال کرنے کے لیے آپ کو Google اکاؤنٹ میں سائن ان ہونے کی ضرورت ہے۔ سائن ان کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">لائن <ph name="ERROR_LINE_START" /> سے <ph name="ERROR_LINE_END" /> تک خرابی</translation>

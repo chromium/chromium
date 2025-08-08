@@ -208,6 +208,7 @@
 <translation id="17906873777101817">Proposer d'enregistrer les mots de passe et les clés d'accès</translation>
 <translation id="1794893174442046596">Groupe d'onglets</translation>
 <translation id="1807893857950749072">Autoriser les notifications de Suivi des prix…</translation>
+<translation id="1809929083618343438">Cette action retire les renseignements sélectionnés de Chrome, mais ne les supprime pas de votre compte Google.</translation>
 <translation id="1810976980198522421">Annuler</translation>
 <translation id="1812514023095547458">Sélectionner une couleur</translation>
 <translation id="1815941218935345331">Mot de passe</translation>
@@ -311,6 +312,7 @@
 <translation id="2161446265348023004">Retourner à la fenêtre ouverte</translation>
 <translation id="2164946989711475905">Se connecter…</translation>
 <translation id="2175927920773552910">Code QR</translation>
+<translation id="2180338296831857171">Supprimer les adresses</translation>
 <translation id="218350106843433823">Remplissage automatique des mots de passe et des clés d'accès</translation>
 <translation id="2184272387334793084">Connectez-vous pour accéder à vos mots de passe et plus encore sur tous vos appareils</translation>
 <translation id="2186206192313702726">Lentille Google</translation>
@@ -357,6 +359,7 @@
 <translation id="2326302612031521902">Sélecteur d'unité</translation>
 <translation id="2330607597130465898">Aucune protection</translation>
 <translation id="233375395665273385">Supprimer et se déconnecter</translation>
+<translation id="2350463587705616331">Couleur d'arrière-plan sépia</translation>
 <translation id="2351097562818989364">Les paramètres de traduction ont été réinitialisés.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Vous pouvez enregistrer votre mot de passe pour {DOMAIN_ONE} dans votre compte Google, {EMAIL}.}=2{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE} et {DOMAIN_TWO} dans votre compte Google, {EMAIL}.}=3{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE}, {DOMAIN_TWO} et pour {OTHER_DOMAINS_COUNT} autres dans votre compte Google, {EMAIL}.}one{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE}, {DOMAIN_TWO} et pour {OTHER_DOMAINS_COUNT} autre dans votre compte Google, {EMAIL}.}other{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE}, {DOMAIN_TWO} et pour {OTHER_DOMAINS_COUNT} autres dans votre compte Google, {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Affichage du site par défaut</translation>
@@ -543,6 +546,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3081338492074632642">Assurez-vous que le mot de passe que vous enregistrez correspond à celui pour <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Bas</translation>
 <translation id="309710370695886264">Vous avez 1 mot de passe réutilisé. Réglez ce problème maintenant pour rester en sécurité.</translation>
+<translation id="3099402981545350675">Cette action supprime les adresses enregistrées sur cet appareil. Elle retire également les renseignements sélectionnés de Chrome, mais ne les supprime pas de votre compte Google.</translation>
 <translation id="3106258548858559536">Désactiver le mode Lecture</translation>
 <translation id="3106690631878101882">Masquer Traduction</translation>
 <translation id="310900540163454140">Supprimer le mot de passe pour <ph name="WEBSITE" />?</translation>
@@ -741,6 +745,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3962326069546168954">Enregistrer</translation>
 <translation id="3967327056943561740">Favoris</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
+<translation id="3973560090698854095">Cette action supprime les adresses enregistrées dans votre compte Google <ph name="USER_EMAIL" />.</translation>
 <translation id="3982893814825393515">Signaler un problème…</translation>
 <translation id="398604237578616937">Connecté en tant que <ph name="USER_EMAIL" />. Ouvrez le menu du compte.</translation>
 <translation id="3986739045730058129">Accéder à l'onglet</translation>
@@ -1021,6 +1026,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5050810143224996149">Partager le mot de passe</translation>
 <translation id="5055015094595227120">Position exacte</translation>
+<translation id="5055551113846164633">Cette action supprime les adresses enregistrées sur cet appareil. Elle supprime également les adresses enregistrées dans votre compte Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> problèmes trouvés.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installer Google Disque</translation>
@@ -1232,6 +1238,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Synchronisation en cours…</translation>
 <translation id="583923961930319521">Utiliser des mots de passe sur tous vos appareils</translation>
+<translation id="5843013299019689749">Couleur d'arrière-plan noire</translation>
 <translation id="5844284118433003733">Lorsque vous êtes connecté, ces données sont associées à votre compte Google pour vous protéger dans l'ensemble des services Google. Elles permettent, par exemple, de renforcer la protection dans Gmail à la suite d'un incident de sécurité.</translation>
 <translation id="5854790677617711513">Datant de plus de 30 jours</translation>
 <translation id="5857770089550859117">Une phrase de passe est requise pour commencer la synchronisation.</translation>
@@ -1484,6 +1491,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6682680306647339111">Rappel retiré</translation>
 <translation id="6684262542644248484">Connectez-vous à un site Web</translation>
 <translation id="6685259053455152195">Des raccourcis pour modifier rapidement les paramètres et pour utiliser les fonctionnalités de la barre d'adresse.</translation>
+<translation id="6689342293888598653">Couleur d'arrière-plan blanche</translation>
 <translation id="6689685206615181381">Seul le mode Navigation privée est proposé</translation>
 <translation id="6708501134077648845">Options de mot de passe</translation>
 <translation id="6709964700841491574">Mode Verrouillage</translation>
@@ -1591,6 +1599,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="714291438898585119">Marqués d'une étoile</translation>
 <translation id="7146301801400584641">Un fichier d'agenda est disponible</translation>
 <translation id="7149893636342594995">24 dernières heures</translation>
+<translation id="7154417656353909837">Retirer les adresses</translation>
 <translation id="7161230316646448869">Synchroniser vos favoris, votre historique et plus encore sur tous vos appareils</translation>
 <translation id="7173114856073700355">Ouvrir les paramètres</translation>
 <translation id="7173721738069475737">{count,plural, =1{Favori enregistré}one{{count} favori enregistré}other{{count} favoris enregistrés}}</translation>
@@ -1660,6 +1669,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7458706065921255639">Personnalisation, association</translation>
 <translation id="745899714366929493">Toute la journée</translation>
 <translation id="7460698861522306757">Voir le site pour appareils mobiles</translation>
+<translation id="7464143666517313304">Cette action supprime les adresses enregistrées sur cet appareil.</translation>
 <translation id="7468373585447318060">Tenez-vous au courant des baisses de prix sur tous les produits que vous suivez.</translation>
 <translation id="746872191028309255">Magasinez ce que vous voyez avec votre appareil photo ou dans votre galerie de photos.</translation>
 <translation id="7471557245617580330">Créer un onglet</translation>
@@ -1711,6 +1721,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7646772052135772216">La synchronisation des mots de passe ne fonctionne pas</translation>
 <translation id="764827086632467055">Toucher Navigateur par défaut</translation>
 <translation id="7649070708921625228">Aide</translation>
+<translation id="765555660695722850">Cette action supprime les adresses enregistrées sur cet appareil. Elle supprime également certains renseignements de votre compte Google, mais pas les renseignements de base comme votre nom ou votre adresse personnelle.</translation>
 <translation id="765631330137769217">Touchez « Enregistrer » pour accéder facilement à ce mot de passe lors de votre prochaine connexion</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7662316065255305764">Renseignements sur le site</translation>
@@ -2056,6 +2067,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8891031436559779793">Vous serez averti si le prix baisse sur n'importe quel site.</translation>
 <translation id="8893208530912252670">Vidéos</translation>
 <translation id="8898822736010347272">Envoie à Google des URL de certaines pages que vous visitez, certaines données système et des échantillons de contenu des pages afin d'aider à découvrir de nouvelles menaces et de protéger tous les internautes.</translation>
+<translation id="8900845556227858314">Appli de navigation</translation>
 <translation id="890565330728586731">Retour</translation>
 <translation id="8907722425137681851">Rechercher dans la page…</translation>
 <translation id="8909135823018751308">Partager...</translation>

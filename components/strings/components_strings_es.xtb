@@ -260,6 +260,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="14222610277930434">Lo visitas a menudo</translation>
 <translation id="1422795627423046860">La fecha no es válida</translation>
 <translation id="1422930527989633628">Puede pedir permiso para buscar dispositivos Bluetooth cercanos</translation>
+<translation id="142559998533702194">Subida no completada</translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="1427192966110103169">Piscinas, saunas y spas domésticos</translation>
 <translation id="1428146450423315676">Apilador 7</translation>
@@ -722,6 +723,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2188375229972301266">Perforado múltiple en la parte inferior</translation>
 <translation id="218940509700321686">Valores separados por comas</translation>
 <translation id="2194856509914051091">Notas importantes</translation>
+<translation id="2198215508485017216">Se ha producido un error inesperado. <ph name="BEGIN_LINK" />Más información sobre las subidas a Drive<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Botón No me gusta. Pulsa Intro para abrir un formulario y enviar comentarios detallados sobre por qué no te gusta esta sugerencia.</translation>
 <translation id="2202627062836089804">reverso</translation>
 <translation id="2204482073374652408">La actualización ha finalizado.</translation>
@@ -737,6 +739,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2215539479425228550">Escalada y montañismo</translation>
 <translation id="2215727959747642672">Edición de archivos</translation>
 <translation id="2215963164070968490">Perros</translation>
+<translation id="2218089682233901164">Añadir número de viajero conocido</translation>
 <translation id="2219376942605837404">Añadir pestaña a la tabla comparativa</translation>
 <translation id="2219658597883514593">Reiniciar tutorial</translation>
 <translation id="2219735899272417925">Es necesario restablecer el dispositivo</translation>
@@ -858,6 +861,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="239429038616798445">Este método de envío no está disponible. Selecciona otro.</translation>
 <translation id="2395840535409704129">Deportes acuáticos</translation>
 <translation id="2396249848217231973">&amp;Deshacer eliminación</translation>
+<translation id="239708975263889666">Editar número de viajero conocido</translation>
 <translation id="2399344929880464793">Este IBAN se ha guardado en tu cuenta de Google para que la puedas usar en todos los servicios de Google.</translation>
 <translation id="2399868464369312507">Google Chrome está intentando editar los métodos de pago.</translation>
 <translation id="2400263725572336749">Añadir pasaporte</translation>
@@ -886,6 +890,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2451201933352935301"><ph name="URL" /> quiere gestionar las ventanas en todas tus pantallas</translation>
 <translation id="2451607499823206582">Seguimiento</translation>
 <translation id="2452098632681057184">Ecología y medioambiente</translation>
+<translation id="2452689005240417488">¿Guardar número de viajero conocido?</translation>
 <translation id="2452837234288608067">No hemos podido ayudarte con eso. Inténtalo de nuevo.</translation>
 <translation id="2453045048779611513">Tu organización limita lo que puedes guardar</translation>
 <translation id="2456755709261364512">El nivel de carga de la batería debe ser superior al <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
@@ -995,6 +1000,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2634124572758952069">No se ha podido encontrar la dirección IP del servidor de <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">Escribe @ para buscar en <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Estado:</translation>
+<translation id="2644219706149911059">Subiendo a Google Drive...</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Tela (semibrillante)</translation>
 <translation id="264810637653812429">No se han podido encontrar dispositivos compatibles.</translation>
@@ -1126,6 +1132,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2904180982022726666">Tu organización limita lo que puedes compartir</translation>
 <translation id="2905107382358353958">Alerta sobre nueva configuración de pago</translation>
 <translation id="2909946352844186028">Se ha detectado un cambio de red.</translation>
+<translation id="2910062169995917863">Tiempo de espera de la sesión agotado</translation>
 <translation id="2911255567212929079">Aprendizaje automático e inteligencia artificial</translation>
 <translation id="2911973620368911614">ID de usuario de contabilidad de tareas</translation>
 <translation id="2913421697249863476">Barbacoas y parrillas</translation>
@@ -1383,6 +1390,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="33073482541490531">La contraseña que acabas de usar se ha encontrado en una brecha de seguridad de datos. El gestor de contraseñas te recomienda que cambies esa contraseña ahora.</translation>
 <translation id="3307649904964670439">Botón Personalizar Chrome: actívalo para personalizar el aspecto de tu navegador</translation>
 <translation id="3308006649705061278">Unidad organizativa (OU)</translation>
+<translation id="3312952471765023168">Subida completada</translation>
 <translation id="3318016344440038475">Comedias de televisión</translation>
 <translation id="3324687287337751929">4x6 pulgadas</translation>
 <translation id="3324983252691184275">Carmesí</translation>
@@ -1760,6 +1768,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3927538228901078312">No hay tablas de comparación</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3927932062596804919">Denegar</translation>
+<translation id="3928806096717999469">Editar (se abre en una ventana nueva)</translation>
 <translation id="3930260846839546333">Bolsos y carteras</translation>
 <translation id="3937834511546249636">Industria de defensa</translation>
 <translation id="3939773374150895049">¿Usar WebAuthn en lugar de CVC?</translation>
@@ -1989,7 +1998,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4277529130885813215">Usar otro dispositivo</translation>
 <translation id="4277937682389409325">Dirección local</translation>
 <translation id="4278090321534187713">Las tarjetas que no acepta este comercio están inhabilitadas</translation>
-<translation id="4278390842282768270">Concedido</translation>
+<translation id="4278390842282768270">Permitido</translation>
 <translation id="4281245629646759298">Amarillo claro</translation>
 <translation id="4281998142035485137">{0,plural, =1{¿Abrir archivo confidencial?}other{¿Abrir archivos confidenciales?}}</translation>
 <translation id="4282280603030594840">Compra de vehículos</translation>
@@ -2192,6 +2201,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4652266463001779298">No permitido</translation>
 <translation id="4652440160515225514">Tu organización ha bloqueado este sitio porque infringe una política.</translation>
 <translation id="4658638640878098064">Grapado en la parte superior izquierda</translation>
+<translation id="4660592918803576381">Abrir en Drive</translation>
 <translation id="4661556981531699496">Animales y mascotas</translation>
 <translation id="4661868874067696603">Buscar más opciones de compra</translation>
 <translation id="4663373278480897665">Cámara permitida</translation>
@@ -3167,6 +3177,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6272088941196661550">Reanuda tu recorrido para ver la actividad relevante de tu historial de Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive y OneDrive</translation>
+<translation id="6279228081537458128">Pagar más tarde</translation>
 <translation id="6280223929691119688">Los pedidos no se pueden entregar en esta dirección. Selecciona otra.</translation>
 <translation id="6284292079994426700">26x38 pulgadas</translation>
 <translation id="6284449872909111707">Mensajería instantánea y de texto</translation>
@@ -3200,6 +3211,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6327065120806001832">acceso a la red local</translation>
 <translation id="6328639280570009161">Prueba a inhabilitar la predicción de red</translation>
 <translation id="6329815962353376655">&lt;Escribe una pregunta&gt;</translation>
+<translation id="633348045801643466">Muestra las opciones de <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />pago aplazado<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> al tramitar la compra</translation>
 <translation id="6335029926534404762">Calzado deportivo</translation>
 <translation id="6336948221660696475">Realidad virtual no permitida</translation>
 <translation id="6337133576188860026">Libera menos de <ph name="SIZE" />. Algunos sitios pueden tardar más en cargarse la próxima vez que accedas a ellos.</translation>
@@ -3525,6 +3537,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6880941331070119097">Opción de precio alto</translation>
 <translation id="6881240511396774766">Crea un documento de Google rápidamente</translation>
 <translation id="6882210908253838664">Si un sitio no funciona, puedes probar a darle permiso temporal para usar cookies de terceros. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="6883120223439653449">¿Actualizar número de viajero conocido?</translation>
 <translation id="6883221904761970440">La hoja de autenticación de credenciales de pago seguras está cerrada</translation>
 <translation id="6883745783646124431">dirección de trabajo</translation>
 <translation id="6884662655240309489">Tamaño 1</translation>
@@ -3635,6 +3648,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7044081119134178347">Cámara permitida esta vez</translation>
 <translation id="7048095965575426564">Continuo europeo</translation>
 <translation id="7050187094878475250">Has intentado acceder a <ph name="DOMAIN" />, pero el servidor ha presentado un certificado cuyo periodo de validez es demasiado largo para que se considere de confianza.</translation>
+<translation id="7050877504983265321">Número de viajero conocido</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7054717457611655239">A partir de ahora, guarda tus archivos en <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> ha verificado que <ph name="ISSUER" /> emitió el certificado de este sitio web.</translation>
@@ -3905,6 +3919,7 @@ Más información:
 <translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> comprobará si cumples los requisitos (esto no afectará a tu calificación crediticia). Si es así, <ph name="BNPL_ISSUER_NAME" /> te ofrecerá varios planes de pagos entre los que elegir, y podrás completar tu compra.</translation>
 <translation id="7489392576326061356">Champús y acondicionadores</translation>
+<translation id="7489919936111034362">Tu almacenamiento en Google Drive está lleno</translation>
 <translation id="7495528107193238112">Este contenido está bloqueado. Para solucionar el problema, ponte en contacto con el propietario del sitio web.</translation>
 <translation id="749865518782565832">Fontanería</translation>
 <translation id="7499188644237027195">Cuando hagas compras en Chrome, verás tu cartera electrónica y Pix como opciones</translation>
@@ -3963,6 +3978,7 @@ Más información:
 <translation id="7569983096843329377">Negro</translation>
 <translation id="7571813784389228510">Modo IA de Google</translation>
 <translation id="7574998639136359461">Equipamiento de deportes de invierno</translation>
+<translation id="7575130707299232096">Eliminar número de viajero conocido</translation>
 <translation id="7575207903026901870">Botón Eliminar sugerencia, pulsa Intro para eliminar esta sugerencia</translation>
 <translation id="7575800019233204241">"La conexión no es privada" o "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" o "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" o "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" o "Error de certificado SSL"</translation>
 <translation id="7575887283389198269">Teléfonos móviles</translation>
@@ -4001,6 +4017,7 @@ Más información:
 <translation id="7631072086707140121">La URL debe ser https.</translation>
 <translation id="7631527008834753063">Concursos televisivos</translation>
 <translation id="7633909222644580952">Datos de rendimiento e informes sobre fallos</translation>
+<translation id="7634963626477752453">Guardado en la carpeta <ph name="FOLDER_NAME" /></translation>
 <translation id="7636346903338549690">Sitios que pueden usar cookies de terceros</translation>
 <translation id="7637571805876720304">¿Quitar tarjeta de crédito de Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Ninguna}=1{1 contraseña en tu cuenta (de <ph name="DOMAIN_LIST" />)}other{# contraseñas en tu cuenta (de <ph name="DOMAIN_LIST" />)}}</translation>

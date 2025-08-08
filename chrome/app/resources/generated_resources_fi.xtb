@@ -5919,6 +5919,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764">Poista <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Avaa ryhmä uudessa ikkunassa</translation>
+<translation id="511147239888121455">Varmuuskopioidaanko sisältö?</translation>
 <translation id="5111646998522066203">Poistu incognito-tilasta</translation>
 <translation id="5111692334209731439">&amp;Kirjanmerkkien hallinta</translation>
 <translation id="5111794652433847656">Tällä laitteella ei ole <ph name="APP_NAME" />-avainkoodeja</translation>
@@ -6054,6 +6055,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">Saa muokata laitteen tiedostoja tai kansioita</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Klikkaa katsellaksesi laajennusta}other{Klikkaa katsellaksesi näitä laajennuksia}}</translation>
+<translation id="5204282224596194174">Palautussalasana: <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">Suorita powerwash ja yritä uudelleen.</translation>
 <translation id="5204967432542742771">Lisää salasana</translation>
 <translation id="5205484256512407285">Älä koskaan käytä mobiilidataa siirtoihin</translation>
@@ -8209,6 +8211,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
     <ph name="BEGIN_PARAGRAPH3" />Lisätietoa datasta, jota <ph name="DEVICE_OS" /> voi jakaa Googlelle, ja sen käytöstä saat osoitteesta g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Parantaa sinun ja kaikkien verkon käyttäjien suojausta</translation>
 <translation id="6771503742377376720">On varmenteen myöntäjä</translation>
+<translation id="6772103682557559072">Lisää vaihtoehtoja työpaikan osoitteelle (<ph name="ADDRESS_SUMMARY" />)</translation>
 <translation id="6772974422346500939">Avaa ja muokkaa</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">Sivusto tarvitsee kertakäyttöisen salasanan</translation>
@@ -10036,6 +10039,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8025151549289123443">Lukitusnäyttö ja sisäänkirjautuminen</translation>
 <translation id="8025291188699172126">Tietoa päivityksistä</translation>
 <translation id="8026471514777758216">Kaikki laitteet</translation>
+<translation id="8026700655446696031">Lisää vaihtoehtoja kotiosoitteelle (<ph name="ADDRESS_SUMMARY" />)</translation>
 <translation id="8026784703228858744">Tallenna esimerkiksi kirjanmerkit synkronoimalla</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Avattu 0 päivää sitten}=1{Avattu 1 päivä sitten}other{Avattu # päivää sitten}}</translation>
 <translation id="8028060951694135607">Microsoftin avaimen palautus</translation>
@@ -10184,6 +10188,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8121537075864592453">Koko näytön tila ei käytössä</translation>
 <translation id="8121750884985440809">Striimaat näyttöäsi</translation>
 <translation id="8122898034710982882">Puhelinhubi, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Varmuuskopioi salasanat, kirjanmerkit ja muut tiedot, niin voit käyttää niitä helposti kaikilla laitteilla</translation>
 <translation id="81238879832906896">Kelta-valkoinen kukka</translation>
 <translation id="8123975449645947908">Vieritä taaksepäin</translation>
 <translation id="8124313775439841391">Hallinnoitu ONC</translation>
@@ -11559,6 +11564,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="9057354806206861646">Päivitysaikataulu</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Noin 1 ilmoitus päivässä}other{Noin {NUM_NOTIFICATION} ilmoitusta päivässä}}</translation>
 <translation id="9058760336383947367">Näytä tulostimen PPD</translation>
+<translation id="9061521313218438086">Jos Chrome löytää yhden salasanoistasi julkisesta tietosuojaloukkauksesta, Google Salasanat voi tarjota salasanan vaihtamista ollessasi sisäänkirjautuneena.</translation>
 <translation id="9061694916020926968">Sinun on oltava kirjautuneena Google-tilille, jotta voit käyttää Steam for Chrombeookia (beta). Kirjaudu sisään ja yritä uudelleen.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Virhe riveillä <ph name="ERROR_LINE_START" />–<ph name="ERROR_LINE_END" /></translation>

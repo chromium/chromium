@@ -5923,6 +5923,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764">Ta bort <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Öppna gruppen i ett nytt fönster</translation>
+<translation id="511147239888121455">Vill du säkerhetskopiera?</translation>
 <translation id="5111646998522066203">Avsluta inkognitoläget</translation>
 <translation id="5111692334209731439">&amp;Bokmärkeshanteraren</translation>
 <translation id="5111794652433847656">Det finns inga nycklar för <ph name="APP_NAME" /> på den här enheten</translation>
@@ -6058,6 +6059,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5201945335223486172">För <ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">Kan redigera filer eller mappar på enheten</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Klicka för att visa tillägget}other{Klicka för att visa dessa tillägg}}</translation>
+<translation id="5204282224596194174">Återställningslösenord för <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">Gör en powerwash på enheten och försök igen.</translation>
 <translation id="5204967432542742771">Ange lösenord</translation>
 <translation id="5205484256512407285">Överför aldrig via mobildata</translation>
@@ -8213,6 +8215,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
     <ph name="BEGIN_PARAGRAPH3" />Om du vill läsa mer om vilken data som <ph name="DEVICE_OS" /> kan dela med Google och hur den delas besöker du g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Förbättrar säkerheten för dig och alla andra på webben</translation>
 <translation id="6771503742377376720">Är en certifikatutfärdare</translation>
+<translation id="6772103682557559072">Fler alternativ för jobbadressen <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Öppna och redigera</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">Webbplatsen behöver ett engångslösenord</translation>
@@ -10041,6 +10044,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8025151549289123443">Låsskärm och inloggning</translation>
 <translation id="8025291188699172126">Om uppdateringar</translation>
 <translation id="8026471514777758216">Alla dina enheter</translation>
+<translation id="8026700655446696031">Fler alternativ för hemadressen <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="8026784703228858744">Spara dina bokmärken och annat med synkronisering</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Besöktes för 0 dagar sedan}=1{Besöktes för 1 dag sedan}other{Besöktes för # dagar sedan}}</translation>
 <translation id="8028060951694135607">Microsofts nyckelåterställning</translation>
@@ -10189,6 +10193,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8121537075864592453">Helskärmsläget har inaktiverats</translation>
 <translation id="8121750884985440809">Du castar för närvarande skärmen</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Säkerhetskopiera dina lösenord, bokmärken med mera så att du enkelt kan använda dem på alla dina enheter</translation>
 <translation id="81238879832906896">Gul och vit blomma</translation>
 <translation id="8123975449645947908">Scrolla bakåt</translation>
 <translation id="8124313775439841391">Hanterad ONC</translation>
@@ -11564,6 +11569,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="9057354806206861646">Uppdateringsschema</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Cirka 1 avisering om dagen}other{Cirka {NUM_NOTIFICATION} aviseringar om dagen}}</translation>
 <translation id="9058760336383947367">Se skrivarens PPD-fil</translation>
+<translation id="9061521313218438086">Om Chrome upptäcker att ett av dina lösenord har läckt ut i ett offentligt dataintrång kan Google Lösenordshantering erbjuda att ändra lösenordet åt dig om du är inloggad.</translation>
 <translation id="9061694916020926968">Du måste vara inloggad på ett Google-konto för att använda Steam för Chromebook (beta). Logga in och försök igen.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Fel på rad <ph name="ERROR_LINE_START" /> till och med <ph name="ERROR_LINE_END" /></translation>

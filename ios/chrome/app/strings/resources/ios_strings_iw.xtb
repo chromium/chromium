@@ -388,7 +388,7 @@
 <translation id="2434405374328098816">כבר שמרת סיסמה עבור המשתמש "<ph name="USERNAME" />" לאתר <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">כדי לגלוש במצב פרטי, אפשר לגלול שמאלה.</translation>
 <translation id="2435457462613246316">הצגת סיסמה</translation>
-<translation id="2458827363789845126">{count,plural, =1{פריט אחד ({count}) בהיסטוריה}one{‫{count} פריטים בהיסטוריה}two{‫{count} פריטים בהיסטוריה}other{‫{count} פריטים בהיסטוריה}}</translation>
+<translation id="2458827363789845126">{count,plural, =1{פריט אחד ({count}) מההיסטוריה}one{‫{count} פריטים מההיסטוריה}two{‫{count} פריטים מההיסטוריה}other{‫{count} פריטים מההיסטוריה}}</translation>
 <translation id="2461070143328828326">הגדרות סיסמה</translation>
 <translation id="2462736546165239215">כאן אפשר למצוא את כל היסטוריית הגלישה.</translation>
 <translation id="2466518891828668184">עם הסיסמאות השמורות אפשר להיכנס בקלות לאתרים ולאפליקציות.</translation>
@@ -547,7 +547,7 @@
 <translation id="3081338492074632642">יש לוודא שהסיסמה שנשמרת זהה לסיסמה שלך עבור <ph name="WEBSITE" />.</translation>
 <translation id="3087734570205094154">תחתית</translation>
 <translation id="309710370695886264">יש לך סיסמה אחת בשימוש חוזר. עליך לשפר אותה עכשיו כדי לשמור על הבטיחות.</translation>
-<translation id="3099402981545350675">‏הפעולה הזו תמחק את הכתובות ששמורות במכשיר הזה. הפעולה הזו גם מסירה מידע נבחר מ-Chrome, אבל המידע הזה לא נמחק מהחשבון שלך ב-Google.</translation>
+<translation id="3099402981545350675">‏הפעולה הזו תמחק את הכתובות ששמורות במכשיר הזה. הפעולה הזו גם תסיר מידע נבחר מ-Chrome, אבל המידע הזה לא יימחק מהחשבון שלך ב-Google.</translation>
 <translation id="3106258548858559536">השבתת מצב הקריאה</translation>
 <translation id="3106690631878101882">‏הסתרה של Translate</translation>
 <translation id="310900540163454140">למחוק את הסיסמה של <ph name="WEBSITE" />?</translation>
@@ -1027,7 +1027,7 @@
 <translation id="5039804452771397117">זה בסדר</translation>
 <translation id="5050810143224996149">שיתוף הסיסמה</translation>
 <translation id="5055015094595227120">מיקום מדויק</translation>
-<translation id="5055551113846164633">‏הפעולה הזו תמחק את הכתובות ששמורות במכשיר הזה. הפעולה הזו גם מוחקת את הכתובות ששמורות בחשבון שלך ב-Google <ph name="USER_EMAIL" />.</translation>
+<translation id="5055551113846164633">‏הפעולה הזו תמחק את הכתובות ששמורות במכשיר הזה. הפעולה הזו גם תמחק את הכתובות ששמורות בחשבון שלך ב-Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">נמצאו בעיות <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">אישור</translation>
 <translation id="5062321486222145940">‏התקנת Google Drive</translation>
@@ -1723,7 +1723,7 @@
 <translation id="7646772052135772216">סנכרון הסיסמאות לא פועל</translation>
 <translation id="764827086632467055">לוחצים על אפליקציית הדפדפן שמוגדרת כברירת מחדל</translation>
 <translation id="7649070708921625228">עזרה</translation>
-<translation id="765555660695722850">‏הפעולה הזו תמחק את הכתובות ששמורות במכשיר הזה. הפעולה הזו גם מוחקת מידע מסוים מחשבון שלך ב-Google, אבל לא מידע בסיסי כמו השם או כתובת המגורים.</translation>
+<translation id="765555660695722850">‏הפעולה הזו תמחק את הכתובות ששמורות במכשיר הזה. הפעולה הזו גם תמחק מידע מסוים מהחשבון שלך ב-Google, אבל לא מידע בסיסי כמו השם או כתובת המגורים.</translation>
 <translation id="765631330137769217">כדי לקבל גישה נוחה לסיסמה הזו בכניסה הבאה לחשבון, צריך ללחוץ על "שמירת הסיסמה"</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7662316065255305764">פרטי האתר</translation>

@@ -4750,7 +4750,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4276856098224910511">No se puede realizar la instalación porque hay una actualización del SO pendiente. Instala las actualizaciones pendientes del SO, reinicia y vuelve a intentarlo. El código de error es <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Fuente de configuración de XMLs</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Permisos quitados de 1 sitio}other{Permisos quitados de {NUM_SITES} sitios}}</translation>
-<translation id="4278390842282768270">Concedido</translation>
+<translation id="4278390842282768270">Permitido</translation>
 <translation id="4278498748067682896">Usarás una Licencia de Kiosco y Señalización, que solo permite que el dispositivo funcione en modo Kiosco o en modo Señalización. Si quieres que los usuarios inicien sesión en el dispositivo, vuelve atrás y regístrate usando una Licencia de Chrome Enterprise.</translation>
 <translation id="4278779213160967034">Este proceso puede tardar unos minutos. Descargando archivos.</translation>
 <translation id="4279129444466079448">Puedes instalar hasta <ph name="PROFILE_LIMIT" /> perfiles de eSIM en este dispositivo. Para añadir otro perfil, quita primero uno que ya esté creado.</translation>
@@ -5909,6 +5909,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5109044022078737958">Atleta</translation>
 <translation id="5109816792918100764">Quitar <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Abrir grupo en una ventana nueva</translation>
+<translation id="511147239888121455">¿Crear una copia de seguridad de tus cosas?</translation>
 <translation id="5111646998522066203">Salir del modo Incógnito</translation>
 <translation id="5111692334209731439">&amp;Administrador de marcadores</translation>
 <translation id="5111794652433847656">No hay claves de acceso disponibles para <ph name="APP_NAME" /> en este dispositivo</translation>
@@ -8199,6 +8200,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
     <ph name="BEGIN_PARAGRAPH3" />Para consultar más información sobre los datos que <ph name="DEVICE_OS" /> podría compartir con Google y cómo se usan, visita g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Mejora tu seguridad y la de todos los usuarios en la Web</translation>
 <translation id="6771503742377376720">Es una entidad emisora de certificados.</translation>
+<translation id="6772103682557559072">Más opciones para la dirección de trabajo <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Abrir y editar</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">El sitio necesita una contraseña de un solo uso</translation>
@@ -10027,6 +10029,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8025151549289123443">Pantalla de bloqueo e inicio de sesión</translation>
 <translation id="8025291188699172126">Información sobre actualizaciones</translation>
 <translation id="8026471514777758216">Todos tus dispositivos</translation>
+<translation id="8026700655446696031">Más opciones para la dirección de casa <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="8026784703228858744">Guarda tus marcadores y más con la sincronización</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Visitada hace 0 días}=1{Visitada hace 1 día}other{Visitada hace # días}}</translation>
 <translation id="8028060951694135607">Recuperación de claves de Microsoft</translation>
@@ -10175,6 +10178,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8121537075864592453">Pantalla completa inhabilitada</translation>
 <translation id="8121750884985440809">Estás enviando tu pantalla</translation>
 <translation id="8122898034710982882">Mi teléfono, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Crea una copia de seguridad de tus contraseñas y marcadores, entre otros, para poder acceder a ellos fácilmente en todos tus dispositivos</translation>
 <translation id="81238879832906896">Flor blanca y amarilla</translation>
 <translation id="8123975449645947908">Desplazar atrás</translation>
 <translation id="8124313775439841391">ONC administrado</translation>

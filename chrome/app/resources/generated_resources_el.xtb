@@ -5923,6 +5923,7 @@
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764">Κατάργηση <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Άνοιγμα ομάδας σε νέο παράθυρο</translation>
+<translation id="511147239888121455">Δημιουργία αντιγράφων ασφαλείας του περιεχομένου σας;</translation>
 <translation id="5111646998522066203">Έξοδος από ανώνυμη περιήγηση</translation>
 <translation id="5111692334209731439">&amp;Διαχείριση Σελιδοδεικτών</translation>
 <translation id="5111794652433847656">Δεν υπάρχουν κλειδιά πρόσβασης για την εφαρμογή <ph name="APP_NAME" /> σε αυτήν τη συσκευή</translation>
@@ -6058,6 +6059,7 @@
 <translation id="5201945335223486172">Για το <ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">Μπορεί να επεξεργάζεται αρχεία ή φακέλους στη συσκευή σας</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Κάντε κλικ, για να δείτε την επέκταση}other{Κάντε κλικ, για να δείτε αυτές τις επεκτάσεις}}</translation>
+<translation id="5204282224596194174">Κωδικός πρόσβασης ανάκτησης για τη διεύθυνση ηλεκτρονικού ταχυδρομείου <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">Κάντε powerwash στη συσκευή και δοκιμάστε ξανά.</translation>
 <translation id="5204967432542742771">Εισαγωγή κωδικού πρόσβασης</translation>
 <translation id="5205484256512407285">Να μην χρησιμοποιούνται ποτέ δεδομένα κινητής τηλεφωνίας για μεταφορά.</translation>
@@ -8214,6 +8216,7 @@
     <ph name="BEGIN_PARAGRAPH3" />Για περισσότερες λεπτομέρειες σχετικά με τα δεδομένα που η συσκευή <ph name="DEVICE_OS" /> ενδέχεται να κοινοποιήσει στην Google και τον τρόπο χρήσης τους, επισκεφτείτε τη διεύθυνση g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Βελτιώνει την ασφάλεια τη δική σας και όλων των ατόμων στον ιστό.</translation>
 <translation id="6771503742377376720">Είναι Αρχή πιστοποίησης</translation>
+<translation id="6772103682557559072">Περισσότερες επιλογές για τη διεύθυνση εργασίας του χρήστη <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Άνοιγμα και επεξεργασία</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">Ο ιστότοπος χρειάζεται κωδικό πρόσβασης μίας χρήσης</translation>
@@ -10042,6 +10045,7 @@
 <translation id="8025151549289123443">Οθόνη κλειδώματος και σύνδεση</translation>
 <translation id="8025291188699172126">Σχετικά με τις ενημερώσεις</translation>
 <translation id="8026471514777758216">Όλες οι συσκευές σας</translation>
+<translation id="8026700655446696031">Περισσότερες επιλογές για τη διεύθυνση σπιτιού του χρήστη <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="8026784703228858744">Αποθηκεύστε τους σελιδοδείκτες σας και πολλά άλλα χρησιμοποιώντας τον συγχρονισμό</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Επίσκεψη πριν από 0 ημέρες}=1{Επίσκεψη πριν από 1 ημέρα}other{Επίσκεψη πριν από # ημέρες}}</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
@@ -10190,6 +10194,7 @@
 <translation id="8121537075864592453">Η πλήρης οθόνη είναι απενεργοποιημένη</translation>
 <translation id="8121750884985440809">Μεταδίδετε την οθόνη σας</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Δημιουργήστε αντίγραφα ασφαλείας για τους κωδικούς πρόσβασης, τους σελιδοδείκτες και άλλα στοιχεία, ώστε να μπορείτε να τα έχετε εύκολα σε όλες τις συσκευές σας</translation>
 <translation id="81238879832906896">Κίτρινο και λευκό λουλούδι</translation>
 <translation id="8123975449645947908">Κύλιση προς τα πίσω</translation>
 <translation id="8124313775439841391">ONC με ιδιότητες διαχείρισης</translation>
@@ -11563,6 +11568,7 @@
 <translation id="9057354806206861646">Ενημέρωση χρονοδιαγράμματος</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Περίπου 1 ειδοποίηση την ημέρα}other{Περίπου {NUM_NOTIFICATION} ειδοποιήσεις την ημέρα}}</translation>
 <translation id="9058760336383947367">Δείτε το PPD του εκτυπωτή</translation>
+<translation id="9061521313218438086">Εάν το Chrome εντοπίσει έναν από τους κωδικούς πρόσβασής σας σε μια παραβίαση δημόσιων δεδομένων, η Διαχείριση κωδικών πρόσβασης Google μπορεί να σας προτείνει να αλλάξει τον κωδικό πρόσβασης για εσάς, εφόσον είστε συνδεδεμένοι.</translation>
 <translation id="9061694916020926968">Θα πρέπει να συνδεθείτε σε έναν Λογαριασμό Google για να χρησιμοποιήσετε το Steam για Chromebook (Beta). Συνδεθείτε και δοκιμάστε ξανά.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Σφάλμα από τη γραμμή <ph name="ERROR_LINE_START" /> έως <ph name="ERROR_LINE_END" /></translation>

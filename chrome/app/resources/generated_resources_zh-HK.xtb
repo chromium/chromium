@@ -5916,6 +5916,7 @@
 <translation id="5109044022078737958">咪咪</translation>
 <translation id="5109816792918100764">移除<ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">在新視窗中開啟分頁群組</translation>
+<translation id="511147239888121455">要備份資料嗎？</translation>
 <translation id="5111646998522066203">結束無痕模式</translation>
 <translation id="5111692334209731439">書籤管理員(&amp;B)</translation>
 <translation id="5111794652433847656">此裝置上沒有「<ph name="APP_NAME" />」的任何密鑰</translation>
@@ -8203,6 +8204,7 @@
     <ph name="BEGIN_PARAGRAPH3" />如要進一步瞭解 <ph name="DEVICE_OS" /> 可能與 Google 分享的資料，以及這些資料的用途，請前往 g.co/flex/HWDataCollection。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">為您和網絡上的所有使用者提高安全性</translation>
 <translation id="6771503742377376720">這是憑證授權單位</translation>
+<translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" /> 公司地址嘅其他選項</translation>
 <translation id="6772974422346500939">開啟並編輯</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">網站需要一次性密碼</translation>
@@ -10028,6 +10030,7 @@
 <translation id="8025151549289123443">上鎖畫面和登入</translation>
 <translation id="8025291188699172126">關於更新</translation>
 <translation id="8026471514777758216">您的所有裝置</translation>
+<translation id="8026700655446696031"><ph name="ADDRESS_SUMMARY" /> 住宅地址嘅其他選項</translation>
 <translation id="8026784703228858744">透過同步處理功能儲存書籤和其他資料</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 天前瀏覽過}=1{1 天前瀏覽過}other{# 天前瀏覽過}}</translation>
 <translation id="8028060951694135607">Microsoft 金鑰復原</translation>
@@ -10176,6 +10179,7 @@
 <translation id="8121537075864592453">已停用全螢幕</translation>
 <translation id="8121750884985440809">您目前正在投放螢幕畫面</translation>
 <translation id="8122898034710982882">Phone Hub，<ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">備份密碼、書籤等內容，輕鬆在你的所有裝置上取用</translation>
 <translation id="81238879832906896">黃色和白色的花</translation>
 <translation id="8123975449645947908">向後捲動</translation>
 <translation id="8124313775439841391">管理 ONC</translation>

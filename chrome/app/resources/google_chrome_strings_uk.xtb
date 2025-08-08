@@ -400,6 +400,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="5980111191913430208">Розширення, додатки й теми з невідомих джерел можуть зашкодити вашому пристрою. Рекомендоване джерело встановлень у Chrome – <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Завантаження… Залишилося: <ph name="HOURS" /> год.</translation>
 <translation id="6008161919456049856">Ваші паролі, способи оплати й адреси, збережені в обліковому записі Google, буде вилучено із цього пристрою. Щоб знову використовувати їх у Chrome, увійдіть в обліковий запис.</translation>
+<translation id="6009821354356307391">Введіть додатковий запит</translation>
 <translation id="6014316319780893079">Безпечно переглядайте веб-сторінки й керуйте налаштуваннями завдяки <ph name="BEGIN_LINK" />інструментам від Chrome<ph name="END_LINK" /></translation>
 <translation id="6022659036123304283">Ваш персональний Chrome</translation>
 <translation id="6025087594896450715">Google Chrome перезапуститься через <ph name="REMAINING_TIME" /></translation>

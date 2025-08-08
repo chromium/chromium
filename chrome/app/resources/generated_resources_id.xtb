@@ -5923,6 +5923,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5109044022078737958">Susanti</translation>
 <translation id="5109816792918100764">Hapus <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111326646107464148">Buka grup di jendela baru</translation>
+<translation id="511147239888121455">Cadangkan data Anda?</translation>
 <translation id="5111646998522066203">Keluar dari Mode Samaran</translation>
 <translation id="5111692334209731439">Pengelola &amp;Bookmark</translation>
 <translation id="5111794652433847656">Tidak ada kunci sandi untuk <ph name="APP_NAME" /> di perangkat ini</translation>
@@ -6058,6 +6059,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5201945335223486172">Untuk <ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">Dapat mengedit file atau folder di perangkat Anda</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Klik untuk melihat ekstensi}other{Klik untuk melihat ekstensi}}</translation>
+<translation id="5204282224596194174">Sandi pemulihan untuk <ph name="USER_EMAIL" /></translation>
 <translation id="5204673965307125349">Harap powerwash perangkat, lalu coba lagi.</translation>
 <translation id="5204967432542742771">Masukkan sandi</translation>
 <translation id="5205484256512407285">Jangan gunakan data seluler untuk mentransfer</translation>
@@ -8213,6 +8215,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
     <ph name="BEGIN_PARAGRAPH3" />Untuk detail selengkapnya terkait data yang mungkin dibagikan <ph name="DEVICE_OS" /> kepada Google dan cara data tersebut digunakan, buka g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">Meningkatkan keamanan untuk Anda dan semua orang di web</translation>
 <translation id="6771503742377376720">Adalah Otoritas Sertifikasi</translation>
+<translation id="6772103682557559072">Opsi lainnya untuk alamat kantor <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Buka dan edit</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
 <translation id="677394079035748956">Situs ini memerlukan sandi sekali pakai</translation>
@@ -10040,6 +10043,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8025151549289123443">Layar kunci dan login</translation>
 <translation id="8025291188699172126">Tentang Update</translation>
 <translation id="8026471514777758216">Semua perangkat Anda</translation>
+<translation id="8026700655446696031">Opsi lainnya untuk alamat rumah <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="8026784703228858744">Simpan bookmark Anda dan yang lainnya dengan sinkronisasi</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Dikunjungi 0 hari lalu}=1{Dikunjungi 1 hari lalu}other{Dikunjungi # hari lalu}}</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
@@ -10188,6 +10192,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8121537075864592453">Layar penuh dinonaktifkan</translation>
 <translation id="8121750884985440809">Anda sedang mentransmisikan layar</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">Cadangkan sandi, bookmark, dan lainnya, sehingga Anda dapat dengan mudah mendapatkannya di semua perangkat Anda</translation>
 <translation id="81238879832906896">Bunga kuning dan putih</translation>
 <translation id="8123975449645947908">Scroll mundur</translation>
 <translation id="8124313775439841391">ONC yang dikelola</translation>
@@ -11563,6 +11568,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="9057354806206861646">Update jadwal</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Sekitar 1 notifikasi sehari}other{Sekitar {NUM_NOTIFICATION} notifikasi sehari}}</translation>
 <translation id="9058760336383947367">Lihat PPD printer</translation>
+<translation id="9061521313218438086">Jika Chrome menemukan salah satu sandi Anda dalam pelanggaran data publik, Pengelola Sandi Google dapat menawarkan untuk mengubah sandi Anda jika Anda sedang login.</translation>
 <translation id="9061694916020926968">Anda harus login ke Akun Google untuk menggunakan Steam untuk Chromebook (Beta). Login, lalu coba lagi.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Error dari baris <ph name="ERROR_LINE_START" /> ke <ph name="ERROR_LINE_END" /></translation>

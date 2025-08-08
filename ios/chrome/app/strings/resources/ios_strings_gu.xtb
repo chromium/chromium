@@ -208,6 +208,7 @@
 <translation id="17906873777101817">પાસવર્ડ અને પાસકી સાચવવાની ઑફર આપો</translation>
 <translation id="1794893174442046596">ટૅબનું ગ્રૂપ</translation>
 <translation id="1807893857950749072">કિંમતને ટ્રૅક કરવા સંબંધિત નોટિફિકેશનને મંજૂરી આપો…</translation>
+<translation id="1809929083618343438">આનાથી Chromeમાંથી પસંદ કરેલી માહિતી કાઢી નાખવામાં આવે છે, પણ તેનાથી તમારા Google એકાઉન્ટમાંથી આ માહિતી ડિલીટ કરવામાં આવતી નથી.</translation>
 <translation id="1810976980198522421">રદ કરો</translation>
 <translation id="1812514023095547458">રંગ પસંદ કરો</translation>
 <translation id="1815941218935345331">પાસકોડ</translation>
@@ -311,6 +312,7 @@
 <translation id="2161446265348023004">ખુલ્લી વિન્ડો પર સ્વિચ કરો</translation>
 <translation id="2164946989711475905">સાઇન ઇન કરો…</translation>
 <translation id="2175927920773552910">QR કોડ</translation>
+<translation id="2180338296831857171">સરનામું ડિલીટ કરો</translation>
 <translation id="218350106843433823">પાસવર્ડ અને પાસકી ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="2184272387334793084">તમારા બધા ડિવાઇસ પર પાસવર્ડ અને બીજું ઘણું મેળવવા સાઇન ઇન કરો</translation>
 <translation id="2186206192313702726">Google Lens</translation>
@@ -357,6 +359,7 @@
 <translation id="2326302612031521902">એકમ પસંદગીકર્તા</translation>
 <translation id="2330607597130465898">સુરક્ષા વિના</translation>
 <translation id="233375395665273385">ડિલીટ કરો અને સાઇન આઉટ કરો</translation>
+<translation id="2350463587705616331">બૅકગ્રાઉન્ડનો સિપિઆ રંગ</translation>
 <translation id="2351097562818989364">તમારા અનુવાદ સેટિંગ રીસેટ કરવામાં આવ્યા છે.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{તમે તમારા Google એકાઉન્ટ, {EMAIL}માં {DOMAIN_ONE} માટે તમારો પાસવર્ડ સાચવી શકો છો.}=2{તમે તમારા Google એકાઉન્ટ, {EMAIL}માં {DOMAIN_ONE} અને {DOMAIN_TWO} માટે તમારા પાસવર્ડ સાચવી શકો છો.}=3{તમે તમારા Google એકાઉન્ટ, {EMAIL}માં {DOMAIN_ONE}, {DOMAIN_TWO} અને અન્ય {OTHER_DOMAINS_COUNT} માટે તમારા પાસવર્ડ સાચવી શકો છો.}one{તમે તમારા Google એકાઉન્ટ, {EMAIL}માં {DOMAIN_ONE}, {DOMAIN_TWO} અને અન્ય {OTHER_DOMAINS_COUNT} માટે તમારા પાસવર્ડ સાચવી શકો છો.}other{તમે તમારા Google એકાઉન્ટ, {EMAIL}માં {DOMAIN_ONE}, {DOMAIN_TWO} અને અન્ય {OTHER_DOMAINS_COUNT} માટે તમારા પાસવર્ડ સાચવી શકો છો.}}</translation>
 <translation id="2353953000228441783">ડિફૉલ્ટ સાઇટ વ્યૂ</translation>
@@ -385,6 +388,7 @@
 <translation id="2434405374328098816">તમે <ph name="WEBSITE" /> પર "<ph name="USERNAME" />" માટેનો પાસવર્ડ પહેલેથી સાચવ્યો છે</translation>
 <translation id="2434918313224755415">છૂપા મોડમાં બ્રાઉઝ કરવા માટે તમે ડાબી તરફ સ્ક્રોલ કરી શકો છો.</translation>
 <translation id="2435457462613246316">પાસવર્ડ બતાવો</translation>
+<translation id="2458827363789845126">{count,plural, =1{ઇતિહાસની {count} આઇટમ}one{ઇતિહાસની {count} આઇટમ}other{ઇતિહાસની {count} આઇટમ}}</translation>
 <translation id="2461070143328828326">પાસવર્ડ સેટિંગ</translation>
 <translation id="2462736546165239215">તમે તમારો તમામ બ્રાઉઝિંગ ઇતિહાસ અહીં મેળવી શકો છો.</translation>
 <translation id="2466518891828668184">સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરવા માટે તમારા પાસવર્ડ સાચવો.</translation>
@@ -543,6 +547,7 @@
 <translation id="3081338492074632642"><ph name="WEBSITE" /> માટેના તમારા પાસવર્ડ સાથે, તમે સાચવી રહ્યાં છો તે પાસવર્ડ મેળ ખાતો હોવાની ખાતરી કરો</translation>
 <translation id="3087734570205094154">તળિયું</translation>
 <translation id="309710370695886264">તમારી પાસે 1 એવો પાસવર્ડ છે જેનો તમે વારંવાર ઉપયોગ કરો છો. સલામત રહેવા માટે હમણાં જ તેને ઠીક કરો.</translation>
+<translation id="3099402981545350675">આનાથી આ ડિવાઇસ પર સાચવેલા સરનામા ડિલીટ કરવામાં આવે છે. તે Chromeમાંથી પસંદ કરેલી માહિતી પણ ડિલીટ કરે છે, પણ તેનાથી તમારા Google એકાઉન્ટમાંથી આ માહિતી ડિલીટ કરવામાં આવતી નથી.</translation>
 <translation id="3106258548858559536">વાંચન મોડ બંધ કરો</translation>
 <translation id="3106690631878101882">'અનુવાદ કરો' છુપાવો</translation>
 <translation id="310900540163454140">શું <ph name="WEBSITE" /> માટેનો પાસવર્ડ ડિલીટ કરીએ?</translation>
@@ -741,6 +746,7 @@
 <translation id="3962326069546168954">સાચવો</translation>
 <translation id="3967327056943561740">બુકમાર્ક</translation>
 <translation id="3967822245660637423">ડાઉનલોડ પૂર્ણ</translation>
+<translation id="3973560090698854095">આનાથી તમારા Google એકાઉન્ટ <ph name="USER_EMAIL" />માં સાચવેલા સરનામા ડિલીટ કરવામાં આવે છે.</translation>
 <translation id="3982893814825393515">સમસ્યાની જાણ કરો…</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> તરીકે સાઇન ઇન થયા. એકાઉન્ટ મેનૂ ખોલો.</translation>
 <translation id="3986739045730058129">ટૅબ પર જાઓ</translation>
@@ -1021,6 +1027,7 @@
 <translation id="5039804452771397117">મંજૂરી આપો</translation>
 <translation id="5050810143224996149">પાસવર્ડ શેર કરો</translation>
 <translation id="5055015094595227120">સચોટ લોકેશન</translation>
+<translation id="5055551113846164633">આનાથી આ ડિવાઇસ પર સાચવેલા સરનામા ડિલીટ કરવામાં આવે છે. તે તમારા <ph name="USER_EMAIL" /> Google એકાઉન્ટમાં સાચવેલા સરનામા પણ ડિલીટ કરે છે.</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> સમસ્યાઓ મળી.</translation>
 <translation id="5059136629401106827">ઓકે</translation>
 <translation id="5062321486222145940">Google ડ્રાઇવ ઇન્સ્ટોલ કરો</translation>
@@ -1232,6 +1239,7 @@
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">સિંક થાય છે…</translation>
 <translation id="583923961930319521">તમારા બધા ડિવાઇસ પર પાસવર્ડનો ઉપયોગ કરો</translation>
+<translation id="5843013299019689749">બૅકગ્રાઉન્ડનો કાળો રંગ</translation>
 <translation id="5844284118433003733">તમે સાઇન ઇન હો ત્યારે, સમગ્ર Googleની સેવાઓમાં તમને સંરક્ષિત કરવા માટે આ ડેટા તમારા Google એકાઉન્ટ સાથે લિંક કરવામાં આવે છે, ઉદાહરણ તરીકે કોઈ સુરક્ષા સંબંધી બનાવ બાદ Gmailમાં સુરક્ષા વધારવી.</translation>
 <translation id="5854790677617711513">30 દિવસ કરતા જૂનો</translation>
 <translation id="5857770089550859117">સમન્વયનને પ્રારંભ કરવા માટે પાસફ્રેઝ આવશ્યક.</translation>
@@ -1484,6 +1492,7 @@
 <translation id="6682680306647339111">રિમાઇન્ડર કાઢી નાખ્યું</translation>
 <translation id="6684262542644248484">વેબસાઇટ પર સાઇન ઇન કરો</translation>
 <translation id="6685259053455152195">સેટિંગમાં ઝડપથી ફેરફાર કરવા અને ઍડ્રેસ બારમાંથી સુવિધાઓનો ઉપયોગ કરવા માટે શૉર્ટકટ.</translation>
+<translation id="6689342293888598653">બૅકગ્રાઉન્ડનો સફેદ રંગ</translation>
 <translation id="6689685206615181381">ફક્ત છૂપો મોડ ઉપલબ્ધ છે</translation>
 <translation id="6708501134077648845">પાસવર્ડના વિકલ્પો</translation>
 <translation id="6709964700841491574">લૉકડાઉન મોડ</translation>
@@ -1507,6 +1516,7 @@
 <translation id="6791425686608802741">"નવા ગ્રૂપમાં ટૅબ ઉમેરો" પર ટૅપ કરો</translation>
 <translation id="6794476726485507147">આ પેજની ફરી મુલાકાત લેવા માટે, રિમાઇન્ડર નોટિફિકેશન મેળવવા માટે તારીખ અને સમય પસંદ કરો</translation>
 <translation id="6795481620482106033">અમાન્ય ડેટા</translation>
+<translation id="6797543908718012274">વાંચન મોડ ચાલુ કરો</translation>
 <translation id="6807287147325542056">અન્ય ઍપમાંના પાસવર્ડ</translation>
 <translation id="681368974849482173">આઇટમ બનાવી</translation>
 <translation id="6825078212112407882">{count,plural, =1{તમારા Google એકાઉન્ટ, {email}માં બુકમાર્ક સાચવવામાં આવ્યું}one{તમારા Google એકાઉન્ટ, {email}માં {count} બુકમાર્ક સાચવવામાં આવ્યું}other{તમારા Google એકાઉન્ટ, {email}માં {count} બુકમાર્ક સાચવવામાં આવ્યા}}</translation>
@@ -1591,6 +1601,7 @@
 <translation id="714291438898585119">સ્ટાર આપેલું</translation>
 <translation id="7146301801400584641">કૅલેન્ડર ફાઇલ ઉપલબ્ધ છે</translation>
 <translation id="7149893636342594995">છેલ્લા 24 કલાક</translation>
+<translation id="7154417656353909837">સરનામા કાઢી નાખો</translation>
 <translation id="7161230316646448869">બધા ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ અને વધુ સિંક કરો</translation>
 <translation id="7173114856073700355">સેટિંગ ખોલો</translation>
 <translation id="7173721738069475737">{count,plural, =1{બુકમાર્ક સાચવ્યું}one{{count} બુકમાર્ક સાચવ્યું}other{{count} બુકમાર્ક સાચવ્યા}}</translation>
@@ -1660,6 +1671,7 @@
 <translation id="7458706065921255639">મનગમતું બનાવવું અને લિંક કરવું</translation>
 <translation id="745899714366929493">આખો દિવસ</translation>
 <translation id="7460698861522306757">મોબાઇલ સાઇટ માટે વિનંતી કરો</translation>
+<translation id="7464143666517313304">આનાથી આ ડિવાઇસ પર સાચવેલા સરનામા ડિલીટ કરવામાં આવે છે.</translation>
 <translation id="7468373585447318060">તમે ટ્રૅક કરો છો તે બધી પ્રોડક્ટની કિંમતમાં ઘટાડા અંગે માહિતગાર રહો.</translation>
 <translation id="746872191028309255">તમે તમારા કૅમેરા વડે કે ફોટો ગૅલરીમાં જે જુઓ, તેને ખરીદો.</translation>
 <translation id="7471557245617580330">નવું ટેબ બનાવો</translation>
@@ -1711,6 +1723,7 @@
 <translation id="7646772052135772216">પાસવર્ડ સિંક કાર્ય કરતું નથી</translation>
 <translation id="764827086632467055">ડિફૉલ્ટ બ્રાઉઝર ઍપ પર ટૅપ કરો</translation>
 <translation id="7649070708921625228">સહાય</translation>
+<translation id="765555660695722850">આનાથી આ ડિવાઇસ પર સાચવેલા સરનામા ડિલીટ કરવામાં આવે છે. તે તમારા Google એકાઉન્ટમાંથી પણ કેટલીક માહિતી ડિલીટ કરે છે, પણ ઘરના સરનામા જેવી મૂળભૂત માહિતી નહીં.</translation>
 <translation id="765631330137769217">આગામી વખતે જ્યારે તમે સાઇન ઇન કરો, ત્યારે સરળતાથી આ પાસવર્ડ ઍક્સેસ કરવા માટે "સાચવો" પર ટૅપ કરો</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7662316065255305764">સાઇટની માહિતી</translation>
@@ -2056,6 +2069,7 @@
 <translation id="8891031436559779793">જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો તમને નોટિફિકેશન મળશે.</translation>
 <translation id="8893208530912252670">વીડિયો</translation>
 <translation id="8898822736010347272">વેબ પરના નવા જોખમો શોધી કાઢવા અને દરેક વ્યક્તિની સુરક્ષિતતામાં સહાય કરવા માટે, તમે મુલાકાત લેતા અમુક પેજના URLs, સિસ્ટમની મર્યાદિત માહિતી અને પેજનું અમુક કન્ટેન્ટ Googleને મોકલે છે.</translation>
+<translation id="8900845556227858314">બ્રાઉઝર ઍપ</translation>
 <translation id="890565330728586731">પાછળ</translation>
 <translation id="8907722425137681851">પેજમાં શોધો…</translation>
 <translation id="8909135823018751308">શેર કરો…</translation>

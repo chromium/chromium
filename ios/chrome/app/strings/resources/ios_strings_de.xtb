@@ -208,6 +208,7 @@
 <translation id="17906873777101817">Speichern von Passwörtern und Passkeys anbieten</translation>
 <translation id="1794893174442046596">Tabgruppe</translation>
 <translation id="1807893857950749072">Benachrichtigungen zum Preis-Tracking erlauben…</translation>
+<translation id="1809929083618343438">Dadurch werden ausgewählte Informationen aus Chrome entfernt, aber nicht aus deinem Google-Konto gelöscht.</translation>
 <translation id="1810976980198522421">Abbrechen</translation>
 <translation id="1812514023095547458">Farbe auswählen</translation>
 <translation id="1815941218935345331">Sicherheitscode</translation>
@@ -311,6 +312,7 @@
 <translation id="2161446265348023004">Zu offenem Fenster wechseln</translation>
 <translation id="2164946989711475905">Anmelden…</translation>
 <translation id="2175927920773552910">QR-Code</translation>
+<translation id="2180338296831857171">Adressen löschen</translation>
 <translation id="218350106843433823">Passwörter und Passkeys automatisch ausfüllen lassen</translation>
 <translation id="2184272387334793084">Melde dich an, um Passwörter und mehr auf allen Geräten abzurufen</translation>
 <translation id="2186206192313702726">Google Lens</translation>
@@ -357,6 +359,7 @@
 <translation id="2326302612031521902">Auswahl der Einheit</translation>
 <translation id="2330607597130465898">Kein Safe Browsing</translation>
 <translation id="233375395665273385">Löschen und abmelden</translation>
+<translation id="2350463587705616331">Hintergrund in Sepia</translation>
 <translation id="2351097562818989364">Übersetzungseinstellungen zurückgesetzt</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Du kannst dein Passwort für {DOMAIN_ONE} in deinem Google-Konto ({EMAIL}) speichern.}=2{Du kannst deine Passwörter für {DOMAIN_ONE} und {DOMAIN_TWO} in deinem Google-Konto ({EMAIL}) speichern.}=3{Du kannst deine Passwörter für {DOMAIN_ONE}, {DOMAIN_TWO} und {OTHER_DOMAINS_COUNT} weitere Domain in deinem Google-Konto {EMAIL} speichern.}other{Du kannst deine Passwörter für {DOMAIN_ONE}, {DOMAIN_TWO} und {OTHER_DOMAINS_COUNT} weitere Domains in deinem Google-Konto ({EMAIL}) speichern}}</translation>
 <translation id="2353953000228441783">Standardansicht für Websites</translation>
@@ -543,6 +546,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3081338492074632642">Das Passwort, das du speicherst, muss mit dem Passwort für <ph name="WEBSITE" /> übereinstimmen</translation>
 <translation id="3087734570205094154">Unten</translation>
 <translation id="309710370695886264">Du nutzt 1 mehrfach verwendetes Passwort. Ändere es jetzt, um dich bestmöglich zu schützen.</translation>
+<translation id="3099402981545350675">Dadurch werden auf diesem Gerät gespeicherte Adressen gelöscht. Außerdem werden ausgewählte Informationen aus Chrome entfernt, aber nicht aus deinem Google-Konto gelöscht.</translation>
 <translation id="3106258548858559536">Lesemodus deaktivieren</translation>
 <translation id="3106690631878101882">„Übersetzen“ ausblenden</translation>
 <translation id="310900540163454140">Passwort für <ph name="WEBSITE" /> löschen?</translation>
@@ -741,6 +745,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3962326069546168954">Speichern</translation>
 <translation id="3967327056943561740">Lesezeichen</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
+<translation id="3973560090698854095">Dadurch werden Adressen gelöscht, die in deinem Google-Konto <ph name="USER_EMAIL" /> gespeichert sind.</translation>
 <translation id="3982893814825393515">Problem melden…</translation>
 <translation id="398604237578616937">Angemeldet als <ph name="USER_EMAIL" />. Öffne das Kontomenü.</translation>
 <translation id="3986739045730058129">Zum Tab</translation>
@@ -1021,6 +1026,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5039804452771397117">Zulassen</translation>
 <translation id="5050810143224996149">Passwort teilen</translation>
 <translation id="5055015094595227120">Genauer Standort</translation>
+<translation id="5055551113846164633">Dadurch werden auf diesem Gerät gespeicherte Adressen gelöscht. Außerdem werden Adressen gelöscht, die in deinem Google-Konto <ph name="USER_EMAIL" /> gespeichert sind.</translation>
 <translation id="5056446788882570708">Probleme <ph name="TIME" /> gefunden.</translation>
 <translation id="5059136629401106827">Ok</translation>
 <translation id="5062321486222145940">Google Drive installieren</translation>
@@ -1232,6 +1238,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Wird synchronisiert…</translation>
 <translation id="583923961930319521">Passwörter auf allen deinen Geräten verwenden</translation>
+<translation id="5843013299019689749">Hintergrund in Schwarz</translation>
 <translation id="5844284118433003733">Wenn du angemeldet bist, werden diese Daten mit deinem Google-Konto verknüpft, um dich in allen Google-Diensten besser zu schützen, beispielsweise durch erhöhten Schutz in Gmail nach einem Sicherheitsvorfall.</translation>
 <translation id="5854790677617711513">Älter als 30 Tage</translation>
 <translation id="5857770089550859117">Gib deine Passphrase ein, um die Synchronisierung zu starten.</translation>
@@ -1484,6 +1491,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6682680306647339111">Erinnerung entfernt</translation>
 <translation id="6684262542644248484">Melde dich auf einer Website an</translation>
 <translation id="6685259053455152195">Verknüpfungen zum schnellen Anpassen der Einstellungen oder Zugreifen auf Funktionen über die Adressleiste.</translation>
+<translation id="6689342293888598653">Hintergrund in Weiß</translation>
 <translation id="6689685206615181381">Nur der Inkognitomodus ist verfügbar</translation>
 <translation id="6708501134077648845">Passwortoptionen</translation>
 <translation id="6709964700841491574">Sperrmodus</translation>
@@ -1591,6 +1599,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="714291438898585119">Markiert</translation>
 <translation id="7146301801400584641">Kalenderdatei verfügbar</translation>
 <translation id="7149893636342594995">Letzte 24 Stunden</translation>
+<translation id="7154417656353909837">Adressen entfernen</translation>
 <translation id="7161230316646448869">Lesezeichen, Verlauf und mehr auf allen Geräten synchronisieren</translation>
 <translation id="7173114856073700355">Einstellungen öffnen</translation>
 <translation id="7173721738069475737">{count,plural, =1{Lesezeichen gespeichert}other{{count} Lesezeichen gespeichert}}</translation>
@@ -1660,6 +1669,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7458706065921255639">Personalisierung &amp; Verknüpfung</translation>
 <translation id="745899714366929493">Ganztägig</translation>
 <translation id="7460698861522306757">Mobile Website anfordern</translation>
+<translation id="7464143666517313304">Dadurch werden auf diesem Gerät gespeicherte Adressen gelöscht.</translation>
 <translation id="7468373585447318060">Du wirst über Preissenkungen für alle Produkte informiert, die du beobachtest.</translation>
 <translation id="746872191028309255">Du kannst ganz einfach kaufen, was du mit deiner Kamera oder in der Fotogalerie siehst.</translation>
 <translation id="7471557245617580330">Neuen Tab erstellen</translation>
@@ -1711,6 +1721,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7646772052135772216">Passwortsynchronisierung funktioniert nicht</translation>
 <translation id="764827086632467055">Tippe auf „Standardbrowser-App“</translation>
 <translation id="7649070708921625228">Hilfe</translation>
+<translation id="765555660695722850">Dadurch werden auf diesem Gerät gespeicherte Adressen gelöscht. Außerdem werden einige Informationen aus deinem Google-Konto gelöscht, aber keine grundlegenden Informationen wie dein Name oder deine Privatadresse.</translation>
 <translation id="765631330137769217">Tippe auf „Speichern“, um bei der nächsten Anmeldung einfach auf dieses Passwort zuzugreifen</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7662316065255305764">Websitein­formationen</translation>
@@ -2056,6 +2067,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8891031436559779793">Du wirst benachrichtigt, wenn der Preis auf einer Website sinkt.</translation>
 <translation id="8893208530912252670">Videos</translation>
 <translation id="8898822736010347272">URLs einiger von dir besuchter Seiten, eingeschränkte Systemdaten und manche Seiteninhalte werden an Google gesendet, um die Erkennung neuer Bedrohungen zu verbessern und Nutzer im Internet zu schützen.</translation>
+<translation id="8900845556227858314">Browser-App</translation>
 <translation id="890565330728586731">Zurück</translation>
 <translation id="8907722425137681851">Auf Seite suchen…</translation>
 <translation id="8909135823018751308">Teilen...</translation>

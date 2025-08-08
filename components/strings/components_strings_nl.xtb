@@ -236,7 +236,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1382194467192730611">USB-apparaat toegestaan door je beheerder</translation>
 <translation id="1384725838384960382">Blad voor beveiligde verificatie van betalingsgegevens</translation>
 <translation id="1386623374109090026">Annotaties</translation>
-<translation id="138810468159004008">Toestaan tijdens het bezoeken van de site</translation>
+<translation id="138810468159004008">Toestaan tijdens websitebezoek</translation>
 <translation id="139161720020179799">Donkergrijs 1</translation>
 <translation id="1391625539203220400">IBAN opslaan op dit apparaat?</translation>
 <translation id="1392813880755413602">OpenDocument-presentatie</translation>
@@ -363,6 +363,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="159274626729231974">Filmfestivals</translation>
 <translation id="1593359183944365958">270 graden</translation>
 <translation id="1594030484168838125">Kiezen</translation>
+<translation id="1595731774593926493">Redress number verwijderen</translation>
 <translation id="1597307423671074806">WebM-video</translation>
 <translation id="159800670740560023">Link voor Chrome-tip, druk op Enter om <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /> te openen</translation>
 <translation id="1599199147673445968">Nieuwe pas? <ph name="BEGIN_LINK" />Kaartgegevens invullen<ph name="END_LINK" /></translation>
@@ -755,6 +756,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2233745931693710080">Compact disc</translation>
 <translation id="2235344399760031203">Cookies van derden worden geblokkeerd</translation>
 <translation id="2239100178324503013">Nu verzenden</translation>
+<translation id="224130779555573777">Redress number toevoegen</translation>
 <translation id="2241693394036365668">Bestand wordt gedownload</translation>
 <translation id="2242389809734574253">IBAN opslaan gesloten.</translation>
 <translation id="2246264294482514010">10 x 12 inch</translation>
@@ -1761,6 +1763,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3927538228901078312">Geen vergelijkingstabellen</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3927932062596804919">Weigeren</translation>
+<translation id="3928806096717999469">Bewerken, hiermee wordt een nieuw venster geopend</translation>
 <translation id="3930260846839546333">Handtassen en damestassen</translation>
 <translation id="3937834511546249636">Wapenindustrie</translation>
 <translation id="3939773374150895049">WebAuthn gebruiken in plaats van CVC?</translation>
@@ -2927,6 +2930,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5886961930368713749">Feedback sturen voor vergelijken</translation>
 <translation id="5887400589839399685">Kaart opgeslagen</translation>
 <translation id="5887687176710214216">Laatst bezocht: gisteren</translation>
+<translation id="5890248301649767931">Redress number opslaan?</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
 <translation id="5895187275912066135">Verleend op</translation>
 <translation id="5898767305816764989">Knop Leuk, druk op Enter om feedback te geven dat je <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> leuk vindt</translation>
@@ -3547,6 +3551,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6905163627763043954">Uitproberen</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="691024665142758461">Meerdere bestanden downloaden</translation>
+<translation id="691046363691324218">Redress number</translation>
 <translation id="6915804003454593391">Gebruiker:</translation>
 <translation id="6916193791494646625">Waarom wil je dit downloaden? (vereist)</translation>
 <translation id="6917795328362592458">Het wachtwoord dat je net hebt gebruikt, is gevonden bij een gegevenslek. Wachtwoordmanager raadt je aan je opgeslagen wachtwoorden te checken om je accounts te beveiligen.</translation>
@@ -4493,6 +4498,7 @@ Aanvullende informatie:
 <translation id="8457125768502047971">Onbepaalde tijd</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Aanzetten</translation>
+<translation id="8461289985785035071">Redress number bewerken</translation>
 <translation id="8461694314515752532">Gesynchroniseerde gegevens versleutelen met een eigen wachtwoordzin</translation>
 <translation id="8461973047386722744">Geen wachtwoorden gevonden</translation>
 <translation id="8467494337615822642">Naar de pagina voor de Chrome-veiligheidscheck in de instellingen gaan</translation>
@@ -4800,6 +4806,7 @@ Aanvullende informatie:
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core proberen</translation>
 <translation id="9027531288681624875">Houd |<ph name="ACCELERATOR" />| ingedrukt om het volledige scherm te sluiten</translation>
+<translation id="9031426777610376427">Redress number updaten?</translation>
 <translation id="9035022520814077154">Beveiligingsfout</translation>
 <translation id="9035824888276246493">Beveiligingscodes opslaan</translation>
 <translation id="9036306139374661733">Microfoon toestaan?</translation>

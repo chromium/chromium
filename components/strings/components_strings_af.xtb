@@ -363,6 +363,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="159274626729231974">Filmfeeste</translation>
 <translation id="1593359183944365958">270 grade</translation>
 <translation id="1594030484168838125">Kies</translation>
+<translation id="1595731774593926493">Vee regstelnommer uit</translation>
 <translation id="1597307423671074806">WebM-video</translation>
 <translation id="159800670740560023">Chrome-wenkskakel; druk Enter om <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /> oop te maak</translation>
 <translation id="1599199147673445968">Nuwe kaart? <ph name="BEGIN_LINK" />Voer kaartbesonderhede in<ph name="END_LINK" /></translation>
@@ -755,6 +756,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2233745931693710080">Laserskyf</translation>
 <translation id="2235344399760031203">Derdepartywebkoekies word geblokkeer</translation>
 <translation id="2239100178324503013">Stuur nou</translation>
+<translation id="224130779555573777">Voeg regstelnommer by</translation>
 <translation id="2241693394036365668">Lêer is afgelaai</translation>
 <translation id="2242389809734574253">Stoor IBAN het toegemaak.</translation>
 <translation id="2246264294482514010">10x12 dm.</translation>
@@ -2933,6 +2935,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5886961930368713749">Stuur terugvoer oor Vergelyk</translation>
 <translation id="5887400589839399685">Kaart is gestoor</translation>
 <translation id="5887687176710214216">Gister laas besoek</translation>
+<translation id="5890248301649767931">Stoor regstelnommer?</translation>
 <translation id="5895138241574237353">Herbegin</translation>
 <translation id="5895187275912066135">Uitgereik op</translation>
 <translation id="5898767305816764989">Opduimknoppie; druk Enter om terugvoer in te dien dat jy van <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> hou</translation>
@@ -3554,6 +3557,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6905163627763043954">Probeer dit</translation>
 <translation id="6907458757809079309">Fiksheid</translation>
 <translation id="691024665142758461">Veelvuldige lêers aflaai</translation>
+<translation id="691046363691324218">Regstelnommer</translation>
 <translation id="6915804003454593391">Gebruiker:</translation>
 <translation id="6916193791494646625">Verskaf rede vir aflaai (vereis)</translation>
 <translation id="6917795328362592458">Die wagwoord wat jy sopas gebruik het, is in ’n dataskending gekry. Wagwoordbestuurder beveel aan dat jy jou gestoorde wagwoorde nagaan om jou rekeninge te beveilig.</translation>
@@ -4499,6 +4503,7 @@ Bykomende besonderhede:
 <translation id="8457125768502047971">Onbepaald</translation>
 <translation id="8458202188076138974">Brief Ekstra</translation>
 <translation id="8460854335417802511">Skakel dit aan</translation>
+<translation id="8461289985785035071">Wysig regstelnommer</translation>
 <translation id="8461694314515752532">Enkripteer gesinkroniseerde data met jou eie sinkroniseringwagfrase</translation>
 <translation id="8461973047386722744">Geen wagwoorde gekry nie</translation>
 <translation id="8467494337615822642">Gaan na Chrome-veiligheidskontrolebladsy in instellings</translation>
@@ -4806,6 +4811,7 @@ Bykomende besonderhede:
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Probeer Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Druk en hou |<ph name="ACCELERATOR" />| om uit volskerm te gaan</translation>
+<translation id="9031426777610376427">Dateer regstelnommer op?</translation>
 <translation id="9035022520814077154">Sekuriteitsfout</translation>
 <translation id="9035824888276246493">Stoor sekuriteitskodes</translation>
 <translation id="9036306139374661733">Laat mikrofoon toe?</translation>

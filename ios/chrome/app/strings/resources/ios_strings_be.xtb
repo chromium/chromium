@@ -208,6 +208,7 @@
 <translation id="17906873777101817">Прапаноўваць захоўваць паролі і ключы доступу</translation>
 <translation id="1794893174442046596">Група ўкладак</translation>
 <translation id="1807893857950749072">Дазволіць апавяшчэнні аб змяненні цаны…</translation>
+<translation id="1809929083618343438">Выбраная інфармацыя будзе выдалена з Chrome, але не з вашага Уліковага запісу Google.</translation>
 <translation id="1810976980198522421">Скасаваць</translation>
 <translation id="1812514023095547458">Выбраць колер</translation>
 <translation id="1815941218935345331">Код доступу</translation>
@@ -311,6 +312,7 @@
 <translation id="2161446265348023004">Пераключыцца на адкрытае акно</translation>
 <translation id="2164946989711475905">Увайсці…</translation>
 <translation id="2175927920773552910">QR-код</translation>
+<translation id="2180338296831857171">Выдаліць адрасы</translation>
 <translation id="218350106843433823">Аўтазапаўненне пароляў і ключоў доступу</translation>
 <translation id="2184272387334793084">Увайдзіце, каб атрымаць доступ да пароляў і іншых даных на ўсіх сваіх прыладах</translation>
 <translation id="2186206192313702726">Google Аб’ектыў</translation>
@@ -357,6 +359,7 @@
 <translation id="2326302612031521902">Інструмент выбару адзінак</translation>
 <translation id="2330607597130465898">Без абароны</translation>
 <translation id="233375395665273385">Выдаліць і выйсці</translation>
+<translation id="2350463587705616331">Колер фону "Сепія"</translation>
 <translation id="2351097562818989364">Налады перакладу скінуты.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Вы можаце захаваць пароль для {DOMAIN_ONE} ва Уліковым запісе Google {EMAIL}.}=2{Вы можаце захаваць паролі для {DOMAIN_ONE} і {DOMAIN_TWO} ва Уліковым запісе Google {EMAIL}.}=3{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} дамена ва Уліковым запісе Google {EMAIL}.}one{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} дамена ва Уліковым запісе Google {EMAIL}.}few{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} даменаў ва Уліковым запісе Google {EMAIL}.}many{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} даменаў ва Уліковым запісе Google {EMAIL}.}other{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} дамена ва Уліковым запісе Google {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Стандартны рэжым паказу сайтаў</translation>
@@ -544,6 +547,7 @@
 <translation id="3081338492074632642">Праверце, ці супадае пароль, які вы захоўваеце, з паролем для сайта <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Знізу</translation>
 <translation id="309710370695886264">У вас ёсць 1 ужыты раней пароль. У мэтах бяспекі выправіце гэта.</translation>
+<translation id="3099402981545350675">Будуць выдалены адрасы, захаваныя на гэтай прыладзе. Таксама выбраная інфармацыя будзе выдалена з Chrome, але не з вашага Уліковага запісу Google.</translation>
 <translation id="3106258548858559536">Выключыць рэжым чытання</translation>
 <translation id="3106690631878101882">Схаваць пункт "Перакласці"</translation>
 <translation id="310900540163454140">Выдаліць пароль для вэб-сайта <ph name="WEBSITE" />?</translation>
@@ -742,6 +746,7 @@
 <translation id="3962326069546168954">Захаваць</translation>
 <translation id="3967327056943561740">Закладкі</translation>
 <translation id="3967822245660637423">Спампоўка завершана</translation>
+<translation id="3973560090698854095">Будуць выдалены адрасы, захаваныя ў вашым Уліковым запісе Google <ph name="USER_EMAIL" />.</translation>
 <translation id="3982893814825393515">Паведаміць аб праблеме…</translation>
 <translation id="398604237578616937">Вы ўвайшлі як <ph name="USER_EMAIL" />. Адкрыйце меню ўліковага запісу.</translation>
 <translation id="3986739045730058129">Перайсці на ўкладку</translation>
@@ -1022,6 +1027,7 @@
 <translation id="5039804452771397117">Дазволіць</translation>
 <translation id="5050810143224996149">Абагульванне пароля</translation>
 <translation id="5055015094595227120">Дакладнае месцазнаходжанне</translation>
+<translation id="5055551113846164633">Будуць выдалены адрасы, захаваныя на гэтай прыладзе. Таксама будуць выдалены адрасы, захаваныя ў вашым Уліковым запісы Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Праблемы знойдзены <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Усталяваць Google Дыск</translation>
@@ -1233,6 +1239,7 @@
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Сінхранізацыя…</translation>
 <translation id="583923961930319521">Выкарыстоўвайце паролі на ўсіх сваіх прыладах</translation>
+<translation id="5843013299019689749">Чорны колер фону</translation>
 <translation id="5844284118433003733">Даныя будуць звязаны з Уліковым запісам Google, у які вы ўвайшлі. Гэта дазволіць абараніць вас у сэрвісах Google (напрыклад, узмацніць абарону ў Gmail пасля парушэння бяспекі).</translation>
 <translation id="5854790677617711513">Даныя, старэйшыя за 30 дзён</translation>
 <translation id="5857770089550859117">Фраза-пароль для запуску сінхранізацыі.</translation>
@@ -1485,6 +1492,7 @@
 <translation id="6682680306647339111">Напамін выдалены</translation>
 <translation id="6684262542644248484">Увайдзіце на сайт.</translation>
 <translation id="6685259053455152195">Спалучэнні клавіш, з дапамогай якіх можна хутка змяняць налады і выкарыстоўваць функцыі з адраснага радка.</translation>
+<translation id="6689342293888598653">Белы колер фону</translation>
 <translation id="6689685206615181381">Даступны толькі рэжым інкогніта</translation>
 <translation id="6708501134077648845">Налады пароляў</translation>
 <translation id="6709964700841491574">Рэжым блакіроўкі</translation>
@@ -1593,6 +1601,7 @@
 <translation id="714291438898585119">Пазначаныя зоркай</translation>
 <translation id="7146301801400584641">Даступны файл календара</translation>
 <translation id="7149893636342594995">За апошнія 24 гадзіны</translation>
+<translation id="7154417656353909837">Выдаліць адрасы</translation>
 <translation id="7161230316646448869">Сінхранізуйце закладкі, гісторыю і іншыя даныя на ўсіх прыладах</translation>
 <translation id="7173114856073700355">Адкрыць Налады</translation>
 <translation id="7173721738069475737">{count,plural, =1{Закладка захавана}one{{count} закладка захавана}few{{count} закладкі захавана}many{{count} закладак захавана}other{{count} закладкі захавана}}</translation>
@@ -1662,6 +1671,7 @@
 <translation id="7458706065921255639">Персаналізацыя і звязванне</translation>
 <translation id="745899714366929493">Цэлы дзень</translation>
 <translation id="7460698861522306757">Запытаць мабільны сайт</translation>
+<translation id="7464143666517313304">Будуць выдалены адрасы, захаваныя на гэтай прыладзе.</translation>
 <translation id="7468373585447318060">Не прапусціце зніжэнне цаны на тыя тавары, якія вы адсочваеце.</translation>
 <translation id="746872191028309255">Выкарыстоўвайце камеру ці фотагалерэю для пошуку тавараў.</translation>
 <translation id="7471557245617580330">Стварыць новую ўкладку</translation>
@@ -1713,6 +1723,7 @@
 <translation id="7646772052135772216">Сінхранізацыя пароляў не працуе</translation>
 <translation id="764827086632467055">Націсніце Default Browser App ("Стандартны браўзер")</translation>
 <translation id="7649070708921625228">Даведка</translation>
+<translation id="765555660695722850">Будуць выдалены адрасы, захаваныя на гэтай прыладзе. Таксама будзе выдалена некаторая інфармацыя з вашага Уліковага запісу Google, але асноўныя звесткі, напрыклад ваша імя або хатні адрас, застануцца.</translation>
 <translation id="765631330137769217">Націсніце "Захаваць", каб лёгка скарыстаць гэты пароль пры наступным уваходзе ў сістэму.</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7662316065255305764">Звесткі пра сайт</translation>
@@ -2058,6 +2069,7 @@
 <translation id="8891031436559779793">Пры зніжэнні цаны на сайтах вы будзеце атрымліваць апавяшчэнні.</translation>
 <translation id="8893208530912252670">Відэа</translation>
 <translation id="8898822736010347272">Адпраўляе URL-адрасы некаторых наведаных вамі старонак, пэўную сістэмную інфармацыю і фрагменты змесціва старонак у сэрвісы Google, каб дапамагаць выяўляць новыя кіберпагрозы і абараняць усіх у інтэрнэце.</translation>
+<translation id="8900845556227858314">Праграма "Браўзер"</translation>
 <translation id="890565330728586731">Назад</translation>
 <translation id="8907722425137681851">Пошук на старонцы…</translation>
 <translation id="8909135823018751308">Абагуліць…</translation>

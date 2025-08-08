@@ -363,6 +363,7 @@
 <translation id="159274626729231974">เทศกาลภาพยนตร์</translation>
 <translation id="1593359183944365958">270 องศา</translation>
 <translation id="1594030484168838125">เลือก</translation>
+<translation id="1595731774593926493">ลบเลขประจำตัวผู้ที่อยู่ในกลุ่มเสี่ยง</translation>
 <translation id="1597307423671074806">วิดีโอ WebM</translation>
 <translation id="159800670740560023">ลิงก์เคล็ดลับสำหรับ Chrome กด Enter เพื่อเปิด <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
 <translation id="1599199147673445968">บัตรใหม่ใช่ไหม <ph name="BEGIN_LINK" />ป้อนรายละเอียดบัตร<ph name="END_LINK" /></translation>
@@ -755,6 +756,7 @@
 <translation id="2233745931693710080">แผ่นซีดี</translation>
 <translation id="2235344399760031203">บล็อกคุกกี้ของบุคคลที่สามอยู่</translation>
 <translation id="2239100178324503013">ส่งเลย</translation>
+<translation id="224130779555573777">เพิ่มเลขประจำตัวผู้ที่อยู่ในกลุ่มเสี่ยง</translation>
 <translation id="2241693394036365668">มีการดาวน์โหลดไฟล์</translation>
 <translation id="2242389809734574253">ปิดข้อความแจ้งให้บันทึก IBAN แล้ว</translation>
 <translation id="2246264294482514010">10 x 12 นิ้ว</translation>
@@ -2933,6 +2935,7 @@
 <translation id="5886961930368713749">ส่งความคิดเห็นสำหรับการเปรียบเทียบ</translation>
 <translation id="5887400589839399685">บันทึกการ์ดแล้ว</translation>
 <translation id="5887687176710214216">เข้าชมล่าสุดเมื่อวาน</translation>
+<translation id="5890248301649767931">บันทึกเลขประจำตัวผู้ที่อยู่ในกลุ่มเสี่ยงไหม</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
 <translation id="5895187275912066135">ออกเมื่อ</translation>
 <translation id="5898767305816764989">ปุ่มชอบ กด Enter เพื่อส่งความคิดเห็นว่าคุณชอบ<ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -3554,6 +3557,7 @@
 <translation id="6905163627763043954">ลอง</translation>
 <translation id="6907458757809079309">ฟิตเนส</translation>
 <translation id="691024665142758461">ดาวน์โหลดหลายไฟล์</translation>
+<translation id="691046363691324218">เลขประจำตัวผู้ที่อยู่ในกลุ่มเสี่ยง</translation>
 <translation id="6915804003454593391">ผู้ใช้:</translation>
 <translation id="6916193791494646625">ระบุเหตุผลในการดาวน์โหลด (ต้องระบุ)</translation>
 <translation id="6917795328362592458">ระบบพบว่ารหัสผ่านที่คุณเพิ่งใช้มีการรั่วไหลในการละเมิดข้อมูลครั้งหนึ่ง เพื่อรักษาความปลอดภัยของบัญชี เครื่องมือจัดการรหัสผ่านแนะนำให้ตรวจสอบรหัสผ่านที่บันทึกไว้</translation>
@@ -4500,6 +4504,7 @@
 <translation id="8457125768502047971">ไม่จำกัด</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">เปิด</translation>
+<translation id="8461289985785035071">แก้ไขเลขประจำตัวผู้ที่อยู่ในกลุ่มเสี่ยง</translation>
 <translation id="8461694314515752532">เข้ารหัสข้อมูลที่ซิงค์ด้วยรหัสผ่านการซิงค์ของคุณเอง</translation>
 <translation id="8461973047386722744">ไม่พบรหัสผ่าน</translation>
 <translation id="8467494337615822642">ไปที่หน้าการตรวจสอบความปลอดภัยของ Chrome ในการตั้งค่า</translation>
@@ -4808,6 +4813,7 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">ทดลองใช้ Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">หากต้องการออกจากโหมดเต็มหน้าจอ ให้กด |<ph name="ACCELERATOR" />| ค้างไว้</translation>
+<translation id="9031426777610376427">อัปเดตเลขประจำตัวผู้ที่อยู่ในกลุ่มเสี่ยงไหม</translation>
 <translation id="9035022520814077154">ข้อผิดพลาดของการรักษาความปลอดภัย</translation>
 <translation id="9035824888276246493">บันทึกรหัสความปลอดภัย</translation>
 <translation id="9036306139374661733">อนุญาตให้เข้าถึงไมโครโฟนไหม</translation>

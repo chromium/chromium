@@ -5917,6 +5917,7 @@
 <translation id="5109044022078737958">ሚያ</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" />ን ያስወግዱ</translation>
 <translation id="5111326646107464148">ቡድንን በአዲስ መስኮት ክፈት</translation>
+<translation id="511147239888121455">የእርስዎ ነገሮች ምትኬ ይቀመጥ?</translation>
 <translation id="5111646998522066203">ማንነትን ከማያሳውቅ ይውጡ</translation>
 <translation id="5111692334209731439">&amp;ዕልባት አቀናባሪ</translation>
 <translation id="5111794652433847656">በዚህ መሣሪያ ላይ ለ<ph name="APP_NAME" /> ምንም የይለፍ ቁልፎች የሉም</translation>
@@ -6052,6 +6053,7 @@
 <translation id="5201945335223486172">ለ<ph name="EXAMPLE_DOMAIN_1" /></translation>
 <translation id="5203035663139409780">በመሣሪያዎ ላይ ፋይሎች ወይም አቃፊዎችን ማርትዕ ይቻላል</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{ቅጥያውን ለመመልከት ጠቅ ያድርጉ}one{እነዚህን ቅጥያዎች ለመመልከት ጠቅ ያድርጉ}other{እነዚህን ቅጥያዎች ለመመልከት ጠቅ ያድርጉ}}</translation>
+<translation id="5204282224596194174">የ<ph name="USER_EMAIL" /> መልሶ ማግኛ የይለፍ ቃል</translation>
 <translation id="5204673965307125349">እባክዎ መሣሪያን ፓወርዋሽ ያድርጉትና እንደገና ይሞክሩ።</translation>
 <translation id="5204967432542742771">የይለፍ ቃል ያስገቡ</translation>
 <translation id="5205484256512407285">ለማስተላለፍ የተንቀሳቃሽ ስልክ ውሂብን በጭራሽ አይጠቀሙ</translation>
@@ -8209,6 +8211,7 @@
     <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> ለGoogle ሊያጋራ ስለሚችለው ውሂብ እና እንዴት ሥራ ላይ እንደሚውል ተጨማሪ ዝርዝሮችን ለማግኘት g.co/flex/HWDataCollection ይጎብኙ።<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770602306803890733">ለእርስዎ እና ለማናቸውም በድር ላይ ያለ ሁሉም ሰው ደህንነትን ያሻሽላል</translation>
 <translation id="6771503742377376720">የእውቅና ማረጋገጫ ባለስልጣን ነው</translation>
+<translation id="6772103682557559072">የ<ph name="ADDRESS_SUMMARY" /> የሥራ አድራሻ ተጨማሪ አማራጮች</translation>
 <translation id="6772974422346500939">ክፈት እና አርትዕ</translation>
 <translation id="6773595613448852535">የChrome Root መደብር</translation>
 <translation id="677394079035748956">ጣቢያው የአንድ ጊዜ ብቻ የይለፍ ቃል ያስፈልገዋል</translation>
@@ -8439,7 +8442,7 @@
 <translation id="6911734910326569517">የማህደረ ትውስታ አሻራ</translation>
 <translation id="6912007319859991306">የተንቀሳቃሽ ስልክ ሲም ፒን</translation>
 <translation id="6912380255120084882">የተለየ መሣሪያ ይሞክሩ</translation>
-<translation id="691289340230098384">የመግለጫ ጽሁፍ ምርጫዎች</translation>
+<translation id="691289340230098384">የመግለጫ ጽሑፍ ምርጫዎች</translation>
 <translation id="6913051485529944333">ከእንግዲህ በዚህ ገጽ ላይ Google ቀን መቁጠሪያን አያዩም</translation>
 <translation id="6914812290245989348">ደህንነታቸው ያልተጠበቁ ወደሆኑ ጣቢያዎች ከመሄድዎ በፊት ምንም አይነት ማስጠንቀቂያዎችን አይመልከቱ</translation>
 <translation id="6916590542764765824">ቅጥያዎችን አስተዳድር</translation>
@@ -10042,6 +10045,7 @@ nil</translation>
 <translation id="8025151549289123443">ማያ ገፅ መቆለፊያ እና በመለያ መግባት</translation>
 <translation id="8025291188699172126">ስለዝማኔዎች</translation>
 <translation id="8026471514777758216">ሁሉም መሣሪያዎችዎ</translation>
+<translation id="8026700655446696031">የ<ph name="ADDRESS_SUMMARY" /> የቤት አድራሻ ተጨማሪ አማራጮች</translation>
 <translation id="8026784703228858744">በስምረት እልባቶችዎን እና ሌሎችንም ያስቀምጡ</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{ከ0 ቀናት በፊት ተጎብኝቷል}=1{ከ1 ቀን በፊት ተጎብኝቷል}one{ከ# ቀን በፊት ተጎብኝቷል}other{ከ# ቀናት በፊት ተጎብኝቷል}}</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
@@ -10190,6 +10194,7 @@ nil</translation>
 <translation id="8121537075864592453">ሙሉ ገፅ ዕይታ ተሰናክሏል</translation>
 <translation id="8121750884985440809">እርስዎ በአሁኑ ጊዜ የማያ ገጽዎን cast እያደረጉ ነው</translation>
 <translation id="8122898034710982882">የስልክ ሃብ፣ <ph name="FEATURE_NAME" /></translation>
+<translation id="8123087650856503231">በሁሉም መሣሪያዎችዎ ላይ በቀላሉ ማግኘት እንዲችሉ የእርስዎን የይለፍ ቃላት፣ ዕልባቶች እና ሌሎችንም ምትኬ ያስቀምጡ</translation>
 <translation id="81238879832906896">ቢጫ እና ነጭ አበባ</translation>
 <translation id="8123975449645947908">ወደ ኋላ ያሸብልሉ</translation>
 <translation id="8124313775439841391">የሚቀናበር ONC</translation>
@@ -11566,6 +11571,7 @@ nil</translation>
 <translation id="9057354806206861646">መርሐግብርን አዘምን</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{በቀን 1 ያህል ማሳወቂያ}one{በቀን {NUM_NOTIFICATION} ያህል ማሳወቂያ}other{በቀን {NUM_NOTIFICATION} ያህል ማሳወቂያዎች}}</translation>
 <translation id="9058760336383947367">የማተሚያ PPDን ይመልከቱ</translation>
+<translation id="9061521313218438086">Chrome ከእርስዎ የይለፍ ቃላት ላይ አንዱን በይፋዊ ውሂብ ጥሰት ውስጥ ካገኘ፣ Google የይለፍ ቃል አስተዳዳሪ በመለያ ገብተው ከሆነ ለእርስዎ የይለፍ ቃልዎን ለመለወጥ ሊያቀርብ ይችላል።</translation>
 <translation id="9061694916020926968">Steam for Chromebook (ቅድመ ይሁንታ) ለመጠቀም ወደ Google መለያ መግባት አለብዎት። በመለያ ይግቡ እና እንደገና ይሞክሩ።</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">ከመስመር <ph name="ERROR_LINE_START" /> እስከ <ph name="ERROR_LINE_END" /> ስህተት</translation>
