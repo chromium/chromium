@@ -4,11 +4,21 @@
 
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_coordinator.h"
 
+#import "components/application_locale_storage/application_locale_storage.h"
+#import "components/omnibox/composebox/ios/composebox_query_controller_ios.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_mediator.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_view_controller.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/variations/model/client/variations_client_service.h"
+#import "ios/chrome/browser/variations/model/client/variations_client_service_factory.h"
+#import "ios/chrome/common/channel_info.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 @interface AIMPrototypeCoordinator () <AIMPrototypeMediatorDelegate>
 @end
@@ -27,9 +37,20 @@
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForProfile(self.profile);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(self.profile);
+  auto composeboxQueryController =
+      std::make_unique<ComposeboxQueryControllerIOS>(
+          identityManager, GetApplicationContext()->GetSharedURLLoaderFactory(),
+          ::GetChannel(),
+          GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
+          templateURLService,
+          VariationsClientServiceFactory::GetForProfile(self.profile),
+          /*send_lns_surface=*/false);
+
   _mediator = [[AIMPrototypeMediator alloc]
       initWithUrlLoadingBrowserAgent:urlLoadingBrowserAgent
-                  templateURLService:templateURLService];
+           composeboxQueryController:std::move(composeboxQueryController)];
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _viewController.mutator = _mediator;

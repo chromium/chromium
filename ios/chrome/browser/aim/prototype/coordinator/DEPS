@@ -1,3 +1,6 @@
 include_rules = [
+  "+components/omnibox/composebox",
   "+ios/chrome/browser/search_engines",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/variations/model/client",
 ]

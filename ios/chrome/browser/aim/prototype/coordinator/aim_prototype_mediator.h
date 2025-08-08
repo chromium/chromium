@@ -7,11 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+#include <memory>
+
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_consumer.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_mutator.h"
 
+class ComposeboxQueryControllerIOS;
 @class AIMPrototypeMediator;
-class TemplateURLService;
 class UrlLoadingBrowserAgent;
 
 // Delegate for the AIM prototype mediator.
@@ -27,8 +29,9 @@ class UrlLoadingBrowserAgent;
 
 - (instancetype)initWithUrlLoadingBrowserAgent:
                     (UrlLoadingBrowserAgent*)urlLoadingBrowserAgent
-                            templateURLService:
-                                (TemplateURLService*)templateURLService;
+                     composeboxQueryController:
+                         (std::unique_ptr<ComposeboxQueryControllerIOS>)
+                             composeboxQueryController;
 - (void)processImage:(UIImage*)image;
 - (void)disconnect;
 

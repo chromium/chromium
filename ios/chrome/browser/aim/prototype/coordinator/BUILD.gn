@@ -10,12 +10,19 @@ source_set("coordinator") {
     "aim_prototype_mediator.mm",
   ]
   deps = [
+    "//components/application_locale_storage",
+    "//components/omnibox/composebox/ios",
     "//components/search_engines",
     "//ios/chrome/browser/aim/prototype/ui",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
+    "//ios/chrome/browser/variations/model/client",
+    "//ios/chrome/common",
     "//ui/base",
   ]
 }
