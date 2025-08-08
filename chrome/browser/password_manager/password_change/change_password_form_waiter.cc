@@ -9,6 +9,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_manager_interface.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {

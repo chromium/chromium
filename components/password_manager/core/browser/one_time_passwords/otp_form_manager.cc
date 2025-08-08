@@ -29,7 +29,7 @@ OtpSource DetermineWhereOtpWasLikelySent(FieldInfoManager* field_info_manager,
   }
 
   std::vector<FieldInfo> field_info =
-      field_info_manager->GetFieldInfo(GetSignonRealm(url));
+      field_info_manager->GetFieldInfo(password_manager_util::GetSignonRealm(url));
 
   // FieldInfoManager sorts cached fields from oldest to newest. Iterate in
   // the reverse order to check the last interacted field first.

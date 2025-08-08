@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/signin/public/base/consent_level.h"

@@ -13,8 +13,10 @@
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/form_fetcher_impl.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
+#import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/sync/base/data_type.h"
@@ -469,7 +471,7 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
 - (std::unique_ptr<password_manager::FormFetcherImpl>)createFormFetcher {
   password_manager::PasswordFormDigest formDigest(
       password_manager::PasswordForm::Scheme::kHtml,
-      password_manager::GetSignonRealm(_URL), _URL);
+      password_manager_util::GetSignonRealm(_URL), _URL);
 
   PasswordTabHelper* tabHelper = PasswordTabHelper::FromWebState(_webState);
   if (!tabHelper) {

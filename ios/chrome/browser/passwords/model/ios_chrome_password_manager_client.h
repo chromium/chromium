@@ -14,6 +14,7 @@
 #import "components/autofill/core/common/language_code.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/core/browser/password_feature_manager_impl.h"
+#import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/password_manager_client_helper.h"
 #import "components/password_manager/core/browser/password_manager_metrics_recorder.h"

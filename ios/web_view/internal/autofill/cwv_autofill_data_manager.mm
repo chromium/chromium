@@ -21,6 +21,7 @@
 #import "components/password_manager/core/browser/password_store/password_store_change.h"
 #import "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "components/password_manager/core/browser/password_store/password_store_util.h"
 #import "components/password_manager/core/browser/ui/passwords_grouper.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"

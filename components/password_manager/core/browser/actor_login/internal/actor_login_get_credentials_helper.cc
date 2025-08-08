@@ -40,7 +40,7 @@ ActorLoginGetCredentialsHelper::ActorLoginGetCredentialsHelper(
     : callback_(std::move(callback)) {
   password_manager::PasswordFormDigest form_digest(
       password_manager::PasswordForm::Scheme::kHtml,
-      password_manager::GetSignonRealm(url), url);
+      password_manager_util::GetSignonRealm(url), url);
   form_fetcher_ = std::make_unique<password_manager::FormFetcherImpl>(
       std::move(form_digest), client,
       /*should_migrate_http_passwords=*/false);

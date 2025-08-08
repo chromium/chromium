@@ -22,7 +22,6 @@
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_cross_domain_confirmation_popup_controller.h"
-#include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/undo_password_change_controller.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
@@ -106,6 +105,7 @@ class FieldInfoManager;
 class FirstCctPageLoadPasswordsUkmRecorder;
 #endif  // BUILDFLAG(IS_ANDROID)
 class HttpAuthManager;
+enum class LeakDetectionInitiator;
 class OtpManager;
 class PasswordChangeServiceInterface;
 class PasswordFeatureManager;
