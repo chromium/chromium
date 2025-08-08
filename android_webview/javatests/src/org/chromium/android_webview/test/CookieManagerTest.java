@@ -35,7 +35,7 @@ import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.test.util.CookieUtils;
 import org.chromium.android_webview.test.util.CookieUtils.TestCallback;
 import org.chromium.android_webview.test.util.JSUtils;
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -2295,8 +2295,7 @@ public class CookieManagerTest extends AwParameterizedTest {
                                         }
                                 }]
                         """,
-                        BuildInfo.getInstance().hostPackageName,
-                        BuildInfo.getInstance().getHostSigningCertSha256()),
+                        ApkInfo.getHostPackageName(), ApkInfo.getHostSigningCertSha256()),
                 null);
     }
 

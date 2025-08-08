@@ -27,7 +27,7 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.test.util.CommonResources;
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
@@ -367,15 +367,14 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
     @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
     public void testAutoGrantSAA_trusted() throws Exception {
         String result;
-        var buildInfo = BuildInfo.getInstance();
 
         // We add an asset statement to always trust the test app for auto granting.
         mTestWebServer.setResponse(
                 ASSET_STATEMENT_PATH,
                 String.format(
                         ASSET_STATEMENT_TEMPLATE,
-                        buildInfo.hostPackageName,
-                        buildInfo.getHostSigningCertSha256()),
+                        ApkInfo.getHostPackageName(),
+                        ApkInfo.getHostSigningCertSha256()),
                 null);
 
         try (var histogramWatcher =
@@ -402,13 +401,12 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
     })
     public void testAutoGrantSAA_trustedViaInclude() throws Exception {
         // We add an asset statement to always trust the test app for auto granting.
-        var buildInfo = BuildInfo.getInstance();
         mTestWebServer.setResponse(
                 ASSET_STATEMENT_PATH,
                 String.format(
                         ASSET_STATEMENT_TEMPLATE,
-                        buildInfo.hostPackageName,
-                        buildInfo.getHostSigningCertSha256()),
+                        ApkInfo.getHostPackageName(),
+                        ApkInfo.getHostSigningCertSha256()),
                 null);
         String result;
 
@@ -449,15 +447,13 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
         "enable-features=" + AwFeatures.WEBVIEW_DIGITAL_ASSET_LINKS_LOAD_INCLUDES
     })
     public void testAutoGrantSAA_untrustedDomain() throws Exception {
-        var buildInfo = BuildInfo.getInstance();
-
         // We add an asset statement to always trust the test app for auto granting.
         mTestWebServer.setResponse(
                 ASSET_STATEMENT_PATH,
                 String.format(
                         ASSET_STATEMENT_TEMPLATE,
-                        buildInfo.hostPackageName,
-                        buildInfo.getHostSigningCertSha256()),
+                        ApkInfo.getHostPackageName(),
+                        ApkInfo.getHostSigningCertSha256()),
                 null);
 
         try (var histogramWatcher =

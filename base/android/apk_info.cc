@@ -127,4 +127,8 @@ int target_sdk_version() {
   return get_apk_info().targetSdkVersion;
 }
 
+std::string host_signing_cert_sha256() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_ApkInfo_getHostSigningCertSha256(env);
+}
 }  // namespace base::android::apk_info

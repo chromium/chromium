@@ -42,7 +42,7 @@
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/common/devtools_instrumentation.h"
 #include "android_webview/common/mojom/frame.mojom.h"
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
@@ -820,8 +820,8 @@ void AwContents::GrantRequestStorageAccessIfOriginIsAppDefined(
   asset_link_handler_->CheckDigitalAssetLinkRelationshipForAndroidApp(
       top_level_origin, kRelationship,
       std::vector<std::string>{
-          base::android::BuildInfo::GetInstance()->host_signing_cert_sha256()},
-      base::android::BuildInfo::GetInstance()->host_package_name(),
+          base::android::apk_info::host_signing_cert_sha256()},
+      base::android::apk_info::host_package_name(),
       base::BindOnce(
           [](base::TimeTicks time_requested, PermissionCallback callback,
              content_relationship_verification::RelationshipCheckResult

@@ -95,10 +95,6 @@ class BASE_EXPORT BuildInfo {
   // that owns this particular instance of the SDK Runtime.
   const std::string& host_package_label() const { return host_package_label_; }
 
-  // The SHA256 of the public certificate used to sign the host application.
-  // This will default to an empty string if we were unable to retrieve it.
-  const std::string host_signing_cert_sha256();
-
   const std::string& package_version_code() const {
     return package_version_code_;
   }

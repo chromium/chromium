@@ -158,6 +158,28 @@ public class PackageUtils {
         return fingerprints;
     }
 
+    public static @Nullable String computeCertSignatureSha256ForPackage(String packageName) {
+        PackageInfo pi = getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES);
+
+        if (pi == null || pi.signingInfo == null) {
+            return null;
+        }
+        Signature[] signatures = pi.signingInfo.getSigningCertificateHistory();
+        if (signatures == null || signatures.length == 0) {
+            return null;
+        }
+
+        try {
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+            // The current signing certificate is always the last one in the list.
+            byte[] digest = messageDigest.digest(signatures[signatures.length - 1].toByteArray());
+            return byteArrayToHexString(digest);
+        } catch (NoSuchAlgorithmException e) {
+            Log.w(TAG, "Unable to hash host app signature", e);
+        }
+        return null;
+    }
+
     /**
      * Gets the package name of the default assistant app (e.g. com.example.app).
      *

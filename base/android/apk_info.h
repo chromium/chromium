@@ -24,31 +24,33 @@ namespace base::android::apk_info {
 // name of the app that owns this particular instance of the SDK Runtime will
 // also be included. e.g.
 // com.google.android.sdksandbox:com:com.example.myappwithads
-const std::string& host_package_name();
+BASE_EXPORT const std::string& host_package_name();
 
 // The application name (e.g. "Chrome"). For WebView, this is name of the
 // embedding app. In the context of the SDK Runtime, this is the name of the
 // app that owns this particular instance of the SDK Runtime.
-const std::string& host_version_code();
+BASE_EXPORT const std::string& host_version_code();
 
 // By default: same as versionCode. For WebView: versionCode of the embedding
 // app. In the context of the SDK Runtime, this is the versionCode of the app
 // that owns this particular instance of the SDK Runtime.
-const std::string& host_package_label();
+BASE_EXPORT const std::string& host_package_label();
 
-const std::string& package_version_code();
+BASE_EXPORT const std::string& package_version_code();
 
-const std::string& package_version_name();
+BASE_EXPORT const std::string& package_version_name();
 
-const std::string& package_name();
+BASE_EXPORT const std::string& package_name();
 
-const std::string& resources_version();
+BASE_EXPORT const std::string& resources_version();
 
-const std::string& installer_package_name();
+BASE_EXPORT const std::string& installer_package_name();
 
-bool is_debug_app();
+BASE_EXPORT bool is_debug_app();
 
-int target_sdk_version();
+BASE_EXPORT int target_sdk_version();
+
+BASE_EXPORT std::string host_signing_cert_sha256();
 
 BASE_EXPORT void Set(const IApkInfo& info);
 }  // namespace base::android::apk_info

@@ -6,24 +6,14 @@ package org.chromium.base;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.os.Build;
 import android.os.Process;
 
-import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.build.BuildConfig;
 import org.chromium.build.NativeLibraries;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
-import org.chromium.build.annotations.Nullable;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import javax.annotation.concurrent.GuardedBy;
 
 /**
  * BuildInfo is a utility class providing easy access to {@link PackageInfo} information. This is
@@ -97,22 +87,8 @@ public class BuildInfo {
      */
     public final int vulkanDeqpLevel;
 
-    /**
-     * The SHA256 of the public certificate used to sign the host application. This will default to
-     * an empty string if we were unable to retrieve it.
-     */
-    @GuardedBy("mCertLock")
-    private @Nullable String mHostSigningCertSha256;
-
-    private final Object mCertLock = new Object();
-
     private static class Holder {
         private static final BuildInfo INSTANCE = new BuildInfo();
-    }
-
-    @CalledByNative
-    private static @JniType("std::string") String lazyGetHostSigningCertSha256() {
-        return BuildInfo.getInstance().getHostSigningCertSha256();
     }
 
     public static void setGmsVersionCodeForTest(@JniType("std::string") String gmsVersionCode) {
@@ -212,57 +188,5 @@ public class BuildInfo {
      */
     public static boolean isDebugAndroidOrApp() {
         return isDebugAndroid() || isDebugApp();
-    }
-
-    @NullUnmarked
-    public String getHostSigningCertSha256() {
-        // We currently only make use of this certificate for calls from the storage access API
-        // within WebView. So we rather lazy load this value to avoid impacting app startup.
-        synchronized (mCertLock) {
-            if (mHostSigningCertSha256 == null) {
-                String certificate = "";
-
-                PackageInfo pi =
-                        PackageUtils.getPackageInfo(
-                                ContextUtils.getApplicationContext().getPackageName(),
-                                getPackageInfoFlags());
-
-                Signature[] signatures = getPackageSignatures(pi);
-                if (signatures != null) {
-                    try {
-                        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-                        // The current signing certificate is always the last one in the list.
-                        byte[] digest =
-                                messageDigest.digest(
-                                        signatures[signatures.length - 1].toByteArray());
-                        certificate = PackageUtils.byteArrayToHexString(digest);
-                    } catch (NoSuchAlgorithmException e) {
-                        Log.w(TAG, "Unable to hash host app signature", e);
-                    }
-                }
-
-                mHostSigningCertSha256 = certificate;
-            }
-
-            return mHostSigningCertSha256;
-        }
-    }
-
-    private int getPackageInfoFlags() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            return PackageManager.GET_SIGNING_CERTIFICATES;
-        }
-        return PackageManager.GET_SIGNATURES;
-    }
-
-    private Signature @Nullable [] getPackageSignatures(PackageInfo pi) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            if (pi.signingInfo == null) {
-                return null;
-            }
-            return pi.signingInfo.getSigningCertificateHistory();
-        }
-
-        return pi.signatures;
     }
 }

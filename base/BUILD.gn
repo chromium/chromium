@@ -5173,7 +5173,6 @@ if (is_android) {
   generate_jni("build_info_jni") {
     sources = [
       "android/java/src/org/chromium/base/ApkInfo.java",
-      "android/java/src/org/chromium/base/BuildInfo.java",
       "android/java/src/org/chromium/base/DeviceInfo.java",
     ]
   }

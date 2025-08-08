@@ -18,9 +18,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/build_info_jni/BuildInfo_jni.h"
-
 namespace base {
 namespace android {
 
@@ -79,11 +76,6 @@ const std::string& BuildInfo::gms_version_code() const {
 void BuildInfo::set_gms_version_code_for_test(
     const std::string& gms_version_code) {
   device_info::set_gms_version_code_for_test(gms_version_code);
-}
-
-const std::string BuildInfo::host_signing_cert_sha256() {
-  JNIEnv* env = AttachCurrentThread();
-  return Java_BuildInfo_lazyGetHostSigningCertSha256(env);
 }
 
 // static
