@@ -1164,6 +1164,40 @@ TEST(CreditCardTest, CompareCardInfoRetrievalEnrollmentState) {
   EXPECT_EQ(0, a.Compare(b));
 }
 
+TEST(CreditCardTest, CompareCardCreationSource) {
+  CreditCard a(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+               std::string());
+  CreditCard b(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+               std::string());
+
+  // Empty cards are the same.
+  EXPECT_EQ(0, a.Compare(b));
+
+  a.set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceChromePayments);
+  b.set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceNonChromePayments);
+  EXPECT_NE(0, a.Compare(b));
+
+  a.set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceUnspecified);
+  b.set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceChromePayments);
+  EXPECT_NE(0, a.Compare(b));
+
+  a.set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceUnspecified);
+  b.set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceUnspecified);
+  EXPECT_EQ(0, a.Compare(b));
+
+  a.set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceChromePayments);
+  b.set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceChromePayments);
+  EXPECT_EQ(0, a.Compare(b));
+}
+
 // Test we get the correct icon for each card type.
 TEST(CreditCardTest, IconResourceId_NewFopDisplayOff) {
   base::test::ScopedFeatureList scoped_feature_list;

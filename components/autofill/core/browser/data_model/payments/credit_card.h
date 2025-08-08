@@ -152,6 +152,19 @@ class CreditCard : public FormGroup {
     kRetrievalUnenrolledAndEligible = 3,
   };
 
+  // The source of the card creation, indicating whether the card was added
+  // through a Chrome-related service, or through an external service (which
+  // includes Android Autofill). This must stay in sync with the proto enum in
+  // autofill_specifics.proto.
+  enum class CardCreationSource {
+    // State unspecified. This is the default value of this enum.
+    kCreationSourceUnspecified = 0,
+    // The card was added through Chrome.
+    kCreationSourceChromePayments = 1,
+    // The card was added outside of Chrome.
+    kCreationSourceNonChromePayments = 2,
+  };
+
   // Creates a copy of the passed in credit card, and sets its `record_type` to
   // `CreditCard::RecordType::kVirtualCard`. This is used to differentiate
   // virtual cards from their real counterpart on the UI layer.
@@ -571,6 +584,13 @@ class CreditCard : public FormGroup {
         card_info_retrieval_enrollment_state;
   }
 
+  CardCreationSource card_creation_source() const {
+    return card_creation_source_;
+  }
+  void set_card_creation_source(CardCreationSource card_creation_source) {
+    card_creation_source_ = card_creation_source;
+  }
+
   UsageHistoryInformation& usage_history();
   const UsageHistoryInformation& usage_history() const;
 
@@ -713,6 +733,12 @@ class CreditCard : public FormGroup {
   // card issuer including card number, expiry and CVC.
   CardInfoRetrievalEnrollmentState card_info_retrieval_enrollment_state_ =
       CardInfoRetrievalEnrollmentState::kRetrievalUnspecified;
+
+  // The source of the card creation, indicating whether the card was added
+  // through a Chrome-related service, or through an external service (which
+  // includes Android Autofill).
+  CardCreationSource card_creation_source_ =
+      CardCreationSource::kCreationSourceUnspecified;
 
   UsageHistoryInformation usage_history_information_;
 

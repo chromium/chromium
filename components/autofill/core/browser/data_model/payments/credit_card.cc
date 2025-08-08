@@ -828,6 +828,15 @@ int CreditCard::Compare(const CreditCard& credit_card) const {
       static_cast<int>(credit_card.card_info_retrieval_enrollment_state_)) {
     return 1;
   }
+
+  if (static_cast<int>(card_creation_source_) <
+      static_cast<int>(credit_card.card_creation_source_)) {
+    return -1;
+  }
+  if (static_cast<int>(card_creation_source_) >
+      static_cast<int>(credit_card.card_creation_source_)) {
+    return 1;
+  }
   return 0;
 }
 
@@ -1332,7 +1341,8 @@ std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card) {
             << credit_card.product_terms_url().spec() << " "
             << credit_card.benefit_source() << " " << credit_card.cvc() << " "
             << base::to_underlying(
-                   credit_card.card_info_retrieval_enrollment_state());
+                   credit_card.card_info_retrieval_enrollment_state())
+            << " " << base::to_underlying(credit_card.card_creation_source());
 }
 
 void CreditCard::SetNameOnCardFromSeparateParts() {
