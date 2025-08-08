@@ -94,8 +94,6 @@ std::vector<tabs::TabAlert> GetTabAlertStatesForTab(
 
   if (auto* actor_controller = tab->GetTabFeatures()->actor_ui_tab_controller();
       actor_controller && actor_controller->ShouldShowActorTabIndicator()) {
-    // TODO(crbug.com/422538779) Create a new Alert for the Actor code instead
-    // of relying on the GLIC_ACCESSING alert.
     states.push_back(tabs::TabAlert::ACTOR_ACCESSING);
   }
 
@@ -185,6 +183,8 @@ std::u16string GetTabAlertStateText(const tabs::TabAlert alert_state) {
     case tabs::TabAlert::VR_PRESENTING_IN_HEADSET:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_VR_PRESENTING);
+    // TODO(crbug.com/422538779) Create new resources for ACTOR_ACCESSING of
+    // relying on GLIC_ACCESSING resources below.
     case tabs::TabAlert::ACTOR_ACCESSING:
     case tabs::TabAlert::GLIC_ACCESSING:
 #if BUILDFLAG(ENABLE_GLIC)

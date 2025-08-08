@@ -122,16 +122,25 @@ bool ActorUiTabController::ShouldShowActorTabIndicator() {
          should_show_actor_tab_indicator_;
 }
 
+base::CallbackListSubscription
+ActorUiTabController::RegisterActorTabIndicatorStateChangedCallback(
+    ActorTabIndicatorStateChangedCallback callback) {
+  return on_actor_tab_indicator_changed_callbacks_.Add(std::move(callback));
+}
+
 void ActorUiTabController::SetActorTabIndicatorVisibility(
     bool should_show_tab_indicator) {
   // When GLIC isn't enabled, we never set the tab indicator.
-  // TODO(crbug.com/422538779) remove GLIC dependency once the tab
-  // alert migrates away from the GLIC_ACCESSING alert.
+  // TODO(crbug.com/422538779) remove GLIC dependency once the ACTOR_ACCESSING
+  // alert migrates away from the GLIC_ACCESSING resources.
 #if BUILDFLAG(ENABLE_GLIC)
   if (should_show_actor_tab_indicator_ == should_show_tab_indicator) {
     return;
   }
   should_show_actor_tab_indicator_ = should_show_tab_indicator;
+  on_actor_tab_indicator_changed_callbacks_.Notify(
+      should_show_actor_tab_indicator_);
+  // Notify tab strip model of state change.
   tab_->GetBrowserWindowInterface()->GetTabStripModel()->NotifyTabChanged(
       base::to_address(tab_), TabChangeType::kAll);
 #endif

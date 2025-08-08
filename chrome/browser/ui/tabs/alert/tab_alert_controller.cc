@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
@@ -83,6 +84,14 @@ TabAlertController::TabAlertController(
           ->RegisterRecentlyAudibleChangedCallback(base::BindRepeating(
               &TabAlertController::OnRecentlyAudibleStateChanged,
               base::Unretained(this)));
+  if (auto* actor_ui_tab_controller =
+          tab.GetTabFeatures()->actor_ui_tab_controller()) {
+    callback_subscriptions_.emplace_back(
+        actor_ui_tab_controller->RegisterActorTabIndicatorStateChangedCallback(
+            base::BindRepeating(
+                &TabAlertController::OnActorTabIndicatorStateChanged,
+                base::Unretained(this))));
+  }
 
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic_keyed_service) {
@@ -249,6 +258,10 @@ void TabAlertController::OnGlicTabPinningChanged(
   }
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
+
+void TabAlertController::OnActorTabIndicatorStateChanged(bool is_accessing) {
+  UpdateAlertState(TabAlert::ACTOR_ACCESSING, is_accessing);
+}
 
 void TabAlertController::OnRecentlyAudibleStateChanged(bool was_audible) {
   UpdateAlertState(TabAlert::AUDIO_PLAYING, was_audible);

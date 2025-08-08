@@ -57,6 +57,9 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   void BindActorOverlay(
       mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) override;
 
+  base::CallbackListSubscription RegisterActorTabIndicatorStateChangedCallback(
+      ActorTabIndicatorStateChangedCallback callback) override;
+
  private:
   // Called only once on startup to initialize tab subscriptions.
   void RegisterTabSubscriptions();
@@ -114,6 +117,12 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   const raw_ref<tabs::TabInterface> tab_;
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
+
+  using ActorTabIndicatorStateChangedCallbackList =
+      base::RepeatingCallbackList<void(bool)>;
+  ActorTabIndicatorStateChangedCallbackList
+      on_actor_tab_indicator_changed_callbacks_;
+
   // The Actor Keyed Service for the associated profile.
   raw_ptr<ActorKeyedService> actor_keyed_service_ = nullptr;
 

@@ -88,6 +88,12 @@ class ActorUiTabControllerInterface {
 
   // Sets a callback to run when the controller is idle, for tests.
   virtual void SetCallbackForTesting(base::OnceClosure callback) = 0;
+
+  using ActorTabIndicatorStateChangedCallback =
+      base::RepeatingCallback<void(bool)>;
+  virtual base::CallbackListSubscription
+  RegisterActorTabIndicatorStateChangedCallback(
+      ActorTabIndicatorStateChangedCallback callback) = 0;
 };
 
 }  // namespace actor::ui

@@ -99,6 +99,7 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
                                bool is_sharing);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
+  void OnActorTabIndicatorStateChanged(bool is_accessing);
   void OnRecentlyAudibleStateChanged(bool was_audible);
 
   // Adds `alert` to the set of already active alerts for this tab if it isn't
