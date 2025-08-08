@@ -10,6 +10,7 @@
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/cells/autofill_credit_card_edit_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_view_controller_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
@@ -41,6 +42,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeExpirationYear,
   ItemTypeCardNickname,
   ItemTypeCardCvc,
+  ItemTypeUseCameraButton,
 };
 
 }  // namespace
@@ -157,6 +159,44 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [model addItem:cardCvcItem
         toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
   }
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillCreditCardScannerIos)) {
+    TableViewTextItem* cameraButtonItem =
+        [[TableViewTextItem alloc] initWithType:ItemTypeUseCameraButton];
+    cameraButtonItem.textColor = [UIColor colorNamed:kBlueColor];
+    cameraButtonItem.text = l10n_util::GetNSString(
+        IDS_IOS_AUTOFILL_ADD_CREDIT_CARD_OPEN_CAMERA_BUTTON_LABEL);
+    cameraButtonItem.textAlignment = NSTextAlignmentCenter;
+    cameraButtonItem.accessibilityTraits |= UIAccessibilityTraitButton;
+
+    [model addSectionWithIdentifier:SectionIdentifierCameraButton];
+    [model addItem:cameraButtonItem
+        toSectionWithIdentifier:SectionIdentifierCameraButton];
+  }
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
+          ItemTypeUseCameraButton &&
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillCreditCardScannerIos)) {
+    [self.presentationDelegate
+        addCreditCardViewControllerRequestedCameraScan:self];
+  }
+  [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (NSIndexPath*)tableView:(UITableView*)tableView
+    willSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
+      ItemTypeUseCameraButton) {
+    return indexPath;
+  }
+  return [super tableView:tableView willSelectRowAtIndexPath:indexPath];
 }
 
 #pragma mark - TableViewTextEditItemDelegate
@@ -198,6 +238,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;
   }
 
+  CHECK_NE(tableViewTextEditItem.type, ItemTypeUseCameraButton);
   switch (tableViewTextEditItem.type) {
     case ItemTypeCardNumber:
       tableViewTextEditItem.hasValidText =
@@ -260,6 +301,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeCardNickname:
     case ItemTypeCardCvc:
       return YES;
+    case ItemTypeUseCameraButton:
+      return NO;
   }
   NOTREACHED();
 }

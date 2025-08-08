@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_mediator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -20,6 +21,7 @@
 
 @interface AutofillAddCreditCardCoordinator () <
     AddCreditCardMediatorDelegate,
+    AddCreditCardViewControllerPresentationDelegate,
     UIAdaptivePresentationControllerDelegate>
 
 @end
@@ -51,6 +53,7 @@
 
   _addCreditCardViewController =
       [[AutofillAddCreditCardViewController alloc] initWithDelegate:_mediator];
+  _addCreditCardViewController.presentationDelegate = self;
 
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:_addCreditCardViewController];
@@ -96,6 +99,13 @@
   [self
       showAlertWithMessage:l10n_util::GetNSString(
                                IDS_IOS_ADD_CREDIT_CARD_INVALID_NICKNAME_ALERT)];
+}
+
+#pragma mark - AddCreditCardViewControllerPresentationDelegate
+
+- (void)addCreditCardViewControllerRequestedCameraScan:
+    (AutofillAddCreditCardViewController*)viewController {
+  // TODO(crbug.com/435324025): Create and start credit card scanner.
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

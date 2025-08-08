@@ -711,6 +711,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "autofill-credit-card-scanner-ios",
+    "owners": [ "smcgruer@chromium.org", "chrome-payments-eng@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "autofill-disable-default-save-card-fix-flow-detection",
     "owners": [ "kavitasoni@google.com", "chrome-payments-eng@google.com" ],
     "expiry_milestone": 141

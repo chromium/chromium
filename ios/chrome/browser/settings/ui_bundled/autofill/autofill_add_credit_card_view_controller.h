@@ -17,6 +17,7 @@ extern NSString* const kSettingsAddCreditCardButtonID;
 extern NSString* const kSettingsAddCreditCardCancelButtonID;
 
 @protocol AddCreditCardViewControllerDelegate;
+@protocol AddCreditCardViewControllerPresentationDelegate;
 
 // The view controller for adding new credit card.
 @interface AutofillAddCreditCardViewController : AutofillEditTableViewController
@@ -30,6 +31,9 @@ extern NSString* const kSettingsAddCreditCardCancelButtonID;
 // Returns "YES" if any of tableview cells has user input.
 @property(nonatomic, getter=tableViewHasUserInput, readonly)
     BOOL tableViewHasUserInput;
+
+@property(nonatomic, weak) id<AddCreditCardViewControllerPresentationDelegate>
+    presentationDelegate;
 
 @end
 

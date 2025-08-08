@@ -43,6 +43,12 @@ extern const char kAutofillAcrossIframesDescription[] =
     "When enabled, Autofill will fill and save information on forms that "
     "spread across multiple iframes.";
 
+const char kAutofillCreditCardScannerIosName[] =
+    "Enable the credit card scanner for Autofill";
+const char kAutofillCreditCardScannerIosDescription[] =
+    "When enabled, users are offered the ability to use their phone camera to "
+    "scan their credit card when adding it to Chrome Autofill";
+
 const char kAutofillCreditCardUploadName[] =
     "Offers uploading Autofilled credit cards";
 const char kAutofillCreditCardUploadDescription[] =

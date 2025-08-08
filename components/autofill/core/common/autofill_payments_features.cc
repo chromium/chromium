@@ -7,6 +7,12 @@
 namespace autofill::features {
 
 #if BUILDFLAG(IS_IOS)
+// When enabled, users are given the option to use their phone camera to scan
+// their credit card when adding it via Autofill iOS settings.
+BASE_FEATURE(kAutofillCreditCardScannerIos,
+             "AutofillCreditCardScannerIos",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, save card fix flow values for missing cardholder name and
 // expiry date won't be defaulted as detected on iOS.
 BASE_FEATURE(kAutofillDisableDefaultSaveCardFixFlowDetection,
