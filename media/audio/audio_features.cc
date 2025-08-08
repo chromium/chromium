@@ -70,6 +70,17 @@ BASE_FEATURE(kWebAudioRemoveAudioDestinationResampler,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_MAC)
+// Enabling this feature will allow AudioManagerMac to generate AVFoundation
+// AudioOutputStreams instead of AUHALStreams in cases of multichannel audio.
+// MacOS will then "Spatialize" the audio for users on compatible Airpods. The
+// end result will give users the option to change modes on their Airpods (Off,
+// Fixed, Head Tracking).
+BASE_FEATURE(kMacAVFoundationPlayback,
+             "MacAVFoundationPlayback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace features
 
 namespace media {
