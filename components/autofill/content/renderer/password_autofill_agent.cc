@@ -986,10 +986,9 @@ void PasswordAutofillAgent::PreviewField(FieldRendererId field_id,
       /*is_password=*/input.FormControlTypeForAutofill() == kInputPassword);
 }
 
-void PasswordAutofillAgent::FillField(
-    FieldRendererId field_id,
-    const std::u16string& value,
-    AutofillSuggestionTriggerSource suggestion_source) {
+void PasswordAutofillAgent::FillField(FieldRendererId field_id,
+                                      const std::u16string& value,
+                                      FieldPropertiesMask field_properties) {
   WebFormControlElement form_control =
       form_util::GetFormControlByRendererId(field_id);
   WebInputElement input_element = form_control.DynamicTo<WebInputElement>();
@@ -997,7 +996,7 @@ void PasswordAutofillAgent::FillField(
     // Early return for non-input fields such as textarea.
     return;
   }
-  DoFillField(input_element, value, GetFieldFlags(suggestion_source));
+  DoFillField(input_element, value, field_properties);
 }
 
 void PasswordAutofillAgent::FillChangePasswordForm(
@@ -1097,33 +1096,19 @@ void PasswordAutofillAgent::DoPreviewField(WebInputElement input,
 
 void PasswordAutofillAgent::DoFillField(WebInputElement input,
                                         const std::u16string& credential,
-                                        FieldPropertiesFlags flag) {
+                                        FieldPropertiesMask field_properties) {
   CHECK(input);
   input.SetAutofillValue(WebString::FromUTF16(credential));
   field_data_manager().UpdateFieldDataMap(form_util::GetFieldRendererId(input),
-                                          credential, flag);
+                                          credential, field_properties);
 
-  switch (flag) {
-    case kAutofilledOnUserTrigger:
-    case kAutofilledPasswordFormFilledViaManualFallback:
-      // Notify password manager when the user is modifying field values by
-      // manually filling the form.
-      NotifyPasswordManagerAboutUserFieldModification(
-          input, FieldModificationType::kFillingOnUserTrigger);
-      break;
-    case kAutofilledOnPageLoad:
-    case kAutofilledChangePasswordFormOnPageLoad:
-      // Autofilling on pageload is not initiated by the user.
-      break;
-    case kNoFlags:
-    case kUserTyped:
-    case kHadFocus:
-    case kErrorOccurred:
-    case kKnownValue:
-    case kAutofilled:
-      NOTREACHED();
+  if ((field_properties & kAutofilledOnUserTrigger) ||
+      (field_properties & kAutofilledPasswordFormFilledViaManualFallback)) {
+    // Notify password manager when the user is modifying field values by
+    // manually filling the form.
+    NotifyPasswordManagerAboutUserFieldModification(
+        input, FieldModificationType::kFillingOnUserTrigger);
   }
-
   TrackAutofilledElement(input);
 }
 

@@ -151,11 +151,11 @@ interface PasswordAutofillAgent {
   PreviewField(FieldRendererId field_id, mojo_base.mojom.String16 value);
 
   // Fills the given `value` into the field identified by `field_id`.
-  // `suggestion_source` specified how the user has interacted with
-  // PWM suggestions, such as manual fallback. Used to update the
-  // `FieldPropertiesMask` of the filled fields.
+  // `field_properties` will be used to update the field data map with
+  // metadata about filling. See `FieldPropertiesFlags` for potential
+  // values.
   FillField(FieldRendererId field_id, mojo_base.mojom.String16 value,
-    AutofillSuggestionTriggerSource suggestion_source);
+    uint32 field_properties);
 
   // Fills a given change password form, specifically `password_element_id` with
   // `old_password` and `new_password_element_id`, `confirm_password_element_id`

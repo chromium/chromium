@@ -301,10 +301,9 @@ class FakePasswordAutofillAgent
                             const std::u16string& credential) override {}
   void PreviewField(autofill::FieldRendererId field_id,
                     const std::u16string& value) override {}
-  void FillField(
-      autofill::FieldRendererId field_id,
-      const std::u16string& value,
-      autofill::AutofillSuggestionTriggerSource suggestion_source) override {}
+  void FillField(autofill::FieldRendererId field_id,
+                 const std::u16string& value,
+                 autofill::FieldPropertiesMask field_properties) override {}
   void FillChangePasswordForm(
       FieldRendererId password_element_id,
       FieldRendererId new_password_element_id,

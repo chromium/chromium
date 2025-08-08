@@ -26,6 +26,7 @@
 #include "components/autofill/content/renderer/html_based_username_detector.h"
 #include "components/autofill/content/renderer/synchronous_form_cache.h"
 #include "components/autofill/core/common/field_data_manager.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
@@ -137,7 +138,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
                     const std::u16string& value) override;
   void FillField(FieldRendererId field_id,
                  const std::u16string& value,
-                 AutofillSuggestionTriggerSource suggestion_source) override;
+                 FieldPropertiesMask field_properties) override;
   void FillChangePasswordForm(FieldRendererId password_element_id,
                               FieldRendererId new_password_element_id,
                               FieldRendererId confirm_password_element_id,
@@ -485,10 +486,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // Checks that a given input field is valid before filling the given `input`
   // with the given `credential` and marking the field as auto-filled.
-  // Uses `flags` to set appropriate `FieldPropertiesMask` for a filled field.
+  // `field_properties` will be set for a filled field.
   void DoFillField(blink::WebInputElement input,
                    const std::u16string& credential,
-                   FieldPropertiesFlags flags);
+                   FieldPropertiesMask field_properties);
 
   // Given `username_element` and `password_element`, previews `username` and
   // `password` respectively into them.

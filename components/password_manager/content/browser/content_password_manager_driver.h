@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
@@ -73,10 +74,9 @@ class ContentPasswordManagerDriver final
       const std::u16string& password) override;
   void GeneratedPasswordRejected() override;
   void FocusNextFieldAfterPasswords() override;
-  void FillField(
-      autofill::FieldRendererId triggering_field_id,
-      const std::u16string& value,
-      autofill::AutofillSuggestionTriggerSource suggestion_source) override;
+  void FillField(autofill::FieldRendererId triggering_field_id,
+                 const std::u16string& value,
+                 autofill::FieldPropertiesFlags field_properties) override;
   void TriggerPasswordRecoverySuggestions(
       autofill::FieldRendererId field_id) override;
   void FillChangePasswordForm(

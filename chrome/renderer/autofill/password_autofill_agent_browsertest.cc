@@ -2233,7 +2233,7 @@ TEST_F(PasswordAutofillAgentTest, FillIntoReadonlyTextField) {
   SetElementReadOnly(username_element_, true);
   password_autofill_agent_->FillField(
       form_util::GetFieldRendererId(username_element_), kAliceUsername16,
-      AutofillSuggestionTriggerSource::kUnspecified);
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
   CheckTextFieldsDOMState(
       /*username=*/std::string(), /*username_autofilled=*/false,
       /*password=*/std::string(), /*password_autofilled=*/false);
@@ -2248,7 +2248,7 @@ TEST_F(PasswordAutofillAgentTest, FillIntoUsernameField) {
 
   password_autofill_agent_->FillField(
       form_util::GetFieldRendererId(username_element_), kAliceUsername16,
-      AutofillSuggestionTriggerSource::kUnspecified);
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
   CheckTextFieldsDOMState(
       /*username=*/kAliceUsername, /*username_autofilled=*/true,
       /*password=*/std::string(), /*password_autofilled=*/false);
@@ -2263,7 +2263,7 @@ TEST_F(PasswordAutofillAgentTest, FillIntoPasswordField) {
 
   password_autofill_agent_->FillField(
       form_util::GetFieldRendererId(password_element_), kAlicePassword16,
-      AutofillSuggestionTriggerSource::kUnspecified);
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
   CheckTextFieldsDOMState(
       /*username=*/std::string(), /*username_autofilled=*/false,
       /*password=*/kAlicePassword, /*password_autofilled=*/true);
@@ -2278,7 +2278,7 @@ TEST_F(PasswordAutofillAgentTest, FillIntoRandomField) {
 
   password_autofill_agent_->FillField(
       form_util::GetFieldRendererId(random_element), kAliceUsername16,
-      AutofillSuggestionTriggerSource::kUnspecified);
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
   EXPECT_EQ(kAliceUsername, random_element.Value().Utf8());
 }
 
@@ -2294,7 +2294,7 @@ TEST_F(PasswordAutofillAgentTest, FillIntoNonExistingField) {
 
   password_autofill_agent_->FillField(
       FieldRendererId(), kAliceUsername16,
-      AutofillSuggestionTriggerSource::kUnspecified);
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
   // Neither field should be autocompleted.
   CheckTextFieldsDOMState(
       /*username=*/std::string(), /*username_autofilled=*/false,

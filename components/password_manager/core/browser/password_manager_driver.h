@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -89,16 +90,17 @@ class PasswordManagerDriver {
   virtual void FocusNextFieldAfterPasswords() {}
 
   // Tells the renderer to fill the given `value` into the triggering field.
-  // Also includes the `suggestion_source`, used to update the
+  // Also includes the `FieldPropertiesFlags` used to update the
   // `FieldPropertiesMask` of the filled field.
-  virtual void FillField(
-      autofill::FieldRendererId triggering_field_id,
-      const std::u16string& value,
-      autofill::AutofillSuggestionTriggerSource suggestion_source) {}
+  virtual void FillField(autofill::FieldRendererId triggering_field_id,
+                         const std::u16string& value,
+                         autofill::FieldPropertiesFlags field_flags) {}
+
   // Tells the renderer to open the suggestions popup on the login field
   // specified in `field_id`.
   virtual void TriggerPasswordRecoverySuggestions(
       autofill::FieldRendererId field_id) {}
+
   // Tells the renderer to fill and submit a change password form, specifically
   // `password_element_id` with `old_password` and `new_password_element_id`,
   // `confirm_password_element_id` with `new_password`. Upon completion
