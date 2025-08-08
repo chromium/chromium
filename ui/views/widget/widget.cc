@@ -939,6 +939,8 @@ void Widget::CloseWithReason(ClosedReason closed_reason) {
   if (override_close_) {
     base::WeakPtr<Widget> weak_this = weak_ptr_factory_.GetWeakPtr();
     std::move(override_close_).Run(closed_reason);
+    // Ensure that `this` was destroyed.
+    CHECK(!weak_this);
     return;
   }
 

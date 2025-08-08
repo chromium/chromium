@@ -36,12 +36,14 @@ class WebUIBrowserWebContentsDelegate : public content::WebContentsDelegate,
   void DraggableRegionsChanged(
       const std::vector<blink::mojom::DraggableRegionPtr>& regions,
       content::WebContents* contents) override;
+  void CloseContents(content::WebContents* source) override;
 
   // WebContentsObserver implementation.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
 
   void EnableDraggableRegions();
 
+  raw_ptr<content::WebContents> ui_web_contents_ = nullptr;
   base::ObserverList<Observer> observers_;
 };
 

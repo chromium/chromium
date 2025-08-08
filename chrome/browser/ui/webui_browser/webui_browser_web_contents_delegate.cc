@@ -16,8 +16,9 @@ WebUIBrowserWebContentsDelegate::~WebUIBrowserWebContentsDelegate() = default;
 
 void WebUIBrowserWebContentsDelegate::SetUIWebContents(
     content::WebContents* ui_web_contents) {
-  CHECK(!web_contents());
-  Observe(ui_web_contents);
+  CHECK(!ui_web_contents_);
+  ui_web_contents_ = ui_web_contents;
+  Observe(ui_web_contents_);
 }
 
 void WebUIBrowserWebContentsDelegate::AddObserver(Observer* observer) {
@@ -32,7 +33,7 @@ void WebUIBrowserWebContentsDelegate::DraggableRegionsChanged(
     const std::vector<blink::mojom::DraggableRegionPtr>& regions,
     content::WebContents* contents) {
   // We expect to be used for only the WebUI WebContents.
-  CHECK_EQ(contents, web_contents());
+  CHECK_EQ(contents, ui_web_contents_);
   observers_.Notify(&Observer::DraggableRegionsChanged, regions);
 }
 
@@ -42,9 +43,18 @@ void WebUIBrowserWebContentsDelegate::RenderFrameCreated(
 }
 
 void WebUIBrowserWebContentsDelegate::EnableDraggableRegions() {
-  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+  content::RenderFrameHost* rfh = ui_web_contents_->GetPrimaryMainFrame();
   CHECK(rfh);
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> client;
   rfh->GetRemoteAssociatedInterfaces()->GetInterface(&client);
   client->SetSupportsDraggableRegions(true);
+}
+
+void WebUIBrowserWebContentsDelegate::CloseContents(
+    content::WebContents* source) {
+  // We expect to be used for only the WebUI WebContents.
+  CHECK_EQ(source, ui_web_contents_);
+
+  // Don't dangle.
+  ui_web_contents_ = nullptr;
 }

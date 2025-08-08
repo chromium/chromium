@@ -12,7 +12,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_source.h"
-#include "ui/views/widget/widget.h"
 
 namespace views {
 class WebView;
@@ -234,8 +233,6 @@ class WebUIBrowserWindow : public BrowserWindow,
 
  private:
   class WidgetDelegate;
-
-  void OnWindowCloseRequested(views::Widget::ClosedReason close_reason);
 
   std::unique_ptr<WebUIBrowserWebContentsDelegate> web_contents_delegate_;
   std::unique_ptr<WidgetDelegate> widget_delegate_;
