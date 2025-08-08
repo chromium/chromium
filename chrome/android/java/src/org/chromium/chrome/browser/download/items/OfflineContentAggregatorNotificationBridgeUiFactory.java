@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.download.items;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadNotifier;
 import org.chromium.chrome.browser.offlinepages.downloads.OfflinePageDownloadBridge;
@@ -14,8 +16,9 @@ import org.chromium.components.offline_items_collection.OfflineContentProvider;
  * A factory meant to hold a singleton bridge between the notification UI and an
  * {@link OfflineContentProvider}.
  */
+@NullMarked
 public class OfflineContentAggregatorNotificationBridgeUiFactory {
-    private static OfflineContentAggregatorNotificationBridgeUi sBridgeUi;
+    private static @Nullable OfflineContentAggregatorNotificationBridgeUi sBridgeUi;
 
     /**
      * @return An {@link OfflineContentAggregatorNotificationBridgeUi} instance singleton.  If one

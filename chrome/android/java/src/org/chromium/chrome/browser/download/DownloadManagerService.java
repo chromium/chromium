@@ -364,11 +364,13 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                 removeFromDownloadProgressMap = notificationUpdateScheduled;
                 break;
             case DownloadStatus.FAILED:
+                assumeNonNull(info);
                 // TODO(cmsy): Use correct FailState.
                 mDownloadNotifier.notifyDownloadFailed(info);
                 Log.w(TAG, "Download failed: " + info.getFilePath());
                 break;
             case DownloadStatus.IN_PROGRESS:
+                assumeNonNull(info);
                 if (info.isPaused()) {
                     mDownloadNotifier.notifyDownloadPaused(info);
                 } else {
@@ -381,6 +383,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                 mDownloadNotifier.notifyDownloadCanceled(item.getContentId());
                 break;
             case DownloadStatus.INTERRUPTED:
+                assertNonNull(info);
                 mDownloadNotifier.notifyDownloadInterrupted(
                         info, progress.mIsAutoResumable, PendingState.PENDING_NETWORK);
                 removeFromDownloadProgressMap = !progress.mIsAutoResumable;
@@ -409,7 +412,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                     public Boolean doInBackground() {
                         boolean canResolve =
                                 MimeUtils.isOMADownloadDescription(
-                                                item.getDownloadInfo().getMimeType())
+                                                assumeNonNull(item.getDownloadInfo()).getMimeType())
                                         || canResolveDownloadItem(item, isSupportedMimeType);
                         return canResolve;
                     }
@@ -417,6 +420,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                     @Override
                     protected void onPostExecute(Boolean result) {
                         DownloadInfo info = item.getDownloadInfo();
+                        assertNonNull(info);
                         mDownloadNotifier.notifyDownloadSuccessful(
                                 info, item.getSystemDownloadId(), result, isSupportedMimeType);
                         broadcastDownloadSuccessful(info);
@@ -434,7 +438,8 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
     @CalledByNative
     private void handleOMADownload(DownloadItem download, long systemDownloadId) {
-        mOMADownloadHandler.handleOMADownload(download.getDownloadInfo(), systemDownloadId);
+        mOMADownloadHandler.handleOMADownload(
+                assertNonNull(download.getDownloadInfo()), systemDownloadId);
     }
 
     /**
@@ -444,7 +449,8 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
      * @param download A download item.
      */
     private void handleAutoOpenAfterDownload(DownloadItem download) {
-        if (MimeUtils.isOMADownloadDescription(download.getDownloadInfo().getMimeType())) {
+        if (MimeUtils.isOMADownloadDescription(
+                assumeNonNull(download.getDownloadInfo()).getMimeType())) {
             mOMADownloadHandler.handleOMADownload(
                     download.getDownloadInfo(), download.getSystemDownloadId());
             return;
@@ -495,12 +501,13 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
             DownloadItem downloadItem, @DownloadStatus int downloadStatus) {
         boolean isSupportedMimeType =
                 downloadStatus == DownloadStatus.COMPLETE
-                        && isSupportedMimeType(downloadItem.getDownloadInfo().getMimeType());
+                        && isSupportedMimeType(
+                                assumeNonNull(downloadItem.getDownloadInfo()).getMimeType());
         String id = downloadItem.getId();
         assertNonNull(id);
         DownloadProgress progress = mDownloadProgressMap.get(id);
         if (progress == null) {
-            if (!downloadItem.getDownloadInfo().isPaused()) {
+            if (!assumeNonNull(downloadItem.getDownloadInfo()).isPaused()) {
                 long startTime = System.currentTimeMillis();
                 progress =
                         new DownloadProgress(
@@ -540,7 +547,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                 updateNotification(progress);
                 break;
             case DownloadStatus.IN_PROGRESS:
-                if (downloadItem.getDownloadInfo().isPaused()) {
+                if (assumeNonNull(downloadItem.getDownloadInfo()).isPaused()) {
                     updateNotification(progress);
                 }
                 break;
@@ -557,7 +564,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         }
 
         DownloadEnqueueRequest request = new DownloadEnqueueRequest();
-        request.url = item.getDownloadInfo().getUrl().getSpec();
+        request.url = assumeNonNull(item.getDownloadInfo()).getUrl().getSpec();
         request.fileName = item.getDownloadInfo().getFileName();
         request.description = item.getDownloadInfo().getDescription();
         request.mimeType = item.getDownloadInfo().getMimeType();
@@ -581,7 +588,8 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         }
 
         DownloadMessageUiController messageUiController =
-                getMessageUiController(downloadItem.getDownloadInfo().getOtrProfileId());
+                getMessageUiController(
+                        assumeNonNull(downloadItem.getDownloadInfo()).getOtrProfileId());
         if (messageUiController != null) messageUiController.onDownloadStarted();
     }
 
@@ -695,7 +703,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         assert !ThreadUtils.runningOnUiThread();
         Intent intent =
                 getLaunchIntentForDownload(
-                        download.getDownloadInfo().getFilePath(),
+                        assumeNonNull(download.getDownloadInfo()).getFilePath(),
                         download.getSystemDownloadId(),
                         isSupportedMimeType,
                         null,
@@ -788,7 +796,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     protected void onDownloadFailed(DownloadItem item, int reason) {
         String failureMessage =
                 getDownloadFailureMessage(
-                        assertNonNull(item.getDownloadInfo().getFileName()), reason);
+                        assertNonNull(assumeNonNull(item.getDownloadInfo()).getFileName()), reason);
 
         if (mDownloadSnackbarController.getSnackbarManager() != null) {
             mDownloadSnackbarController.onDownloadFailed(
@@ -829,12 +837,12 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         DownloadProgress progress = mDownloadProgressMap.get(item.getId());
         if (progress != null
                 && progress.mDownloadStatus == DownloadStatus.IN_PROGRESS
-                && !progress.mDownloadItem.getDownloadInfo().isPaused()) {
+                && !assumeNonNull(progress.mDownloadItem.getDownloadInfo()).isPaused()) {
             // Download already in progress, do nothing
             return;
         }
         if (progress == null) {
-            assert !item.getDownloadInfo().isPaused();
+            assert item.getDownloadInfo() != null && !item.getDownloadInfo().isPaused();
             // If the download was not resumed before, the browser must have been killed while the
             // download is active.
             if (!sFirstSeenDownloadIds.contains(item.getId())) {
@@ -856,9 +864,10 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         clearDownloadRetryCount(item.getId(), true);
 
         // Downloads started from incognito mode should not be resumed in reduced mode.
-        if (!ProfileManager.isInitialized() && item.getDownloadInfo().isOffTheRecord()) return;
+        if (!ProfileManager.isInitialized()
+                && assumeNonNull(item.getDownloadInfo()).isOffTheRecord()) return;
 
-        OtrProfileId otrProfileId = item.getDownloadInfo().getOtrProfileId();
+        OtrProfileId otrProfileId = assumeNonNull(item.getDownloadInfo()).getOtrProfileId();
         DownloadManagerServiceJni.get()
                 .resumeDownload(
                         getNativeDownloadManagerService(),
@@ -883,7 +892,8 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         DownloadProgress progress = mDownloadProgressMap.get(id.id);
         if (progress != null) {
             DownloadInfo info =
-                    DownloadInfo.Builder.fromDownloadInfo(progress.mDownloadItem.getDownloadInfo())
+                    DownloadInfo.Builder.fromDownloadInfo(
+                                    assertNonNull(progress.mDownloadItem.getDownloadInfo()))
                             .build();
             onDownloadCancelled(info);
             removeDownloadProgress(id.id);
@@ -914,7 +924,8 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                 && (progress.mDownloadStatus == DownloadStatus.INTERRUPTED
                         || progress.mDownloadStatus == DownloadStatus.IN_PROGRESS)) {
             DownloadInfo info =
-                    DownloadInfo.Builder.fromDownloadInfo(progress.mDownloadItem.getDownloadInfo())
+                    DownloadInfo.Builder.fromDownloadInfo(
+                                    assertNonNull(progress.mDownloadItem.getDownloadInfo()))
                             .setIsPaused(true)
                             .setBytesReceived(UNKNOWN_BYTES_RECEIVED)
                             .build();
@@ -1058,19 +1069,21 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                         protected Boolean doInBackground() {
                             return canResolveDownloadItem(
                                     item,
-                                    isSupportedMimeType(item.getDownloadInfo().getMimeType()));
+                                    isSupportedMimeType(
+                                            assumeNonNull(item.getDownloadInfo()).getMimeType()));
                         }
 
                         @Override
                         protected void onPostExecute(Boolean canResolve) {
                             if (MimeUtils.canAutoOpenMimeType(result.mimeType)
-                                    && item.getDownloadInfo().hasUserGesture()
+                                    && assumeNonNull(item.getDownloadInfo()).hasUserGesture()
                                     && canResolve) {
                                 handleAutoOpenAfterDownload(item);
                             } else {
                                 DownloadMessageUiController infoBarController =
                                         getMessageUiController(
-                                                item.getDownloadInfo().getOtrProfileId());
+                                                assumeNonNull(item.getDownloadInfo())
+                                                        .getOtrProfileId());
                                 if (infoBarController != null) {
                                     infoBarController.onItemUpdated(
                                             DownloadItem.createOfflineItem(item), null);
@@ -1164,7 +1177,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                         appContext,
                         action,
                         LegacyHelpers.buildLegacyContentId(false, downloadItem.getId()),
-                        downloadItem.getDownloadInfo().getOtrProfileId());
+                        assumeNonNull(downloadItem.getDownloadInfo()).getOtrProfileId());
         appContext.startService(intent);
     }
 
@@ -1236,7 +1249,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                     for (DownloadItem item : list) {
                         boolean missingOnSDCard =
                                 isFilePathOnMissingExternalDrive(
-                                        item.getDownloadInfo().getFilePath(),
+                                        assumeNonNull(item.getDownloadInfo()).getFilePath(),
                                         externalStorageDir,
                                         dirs);
                         if (!isUnresumableOrCancelled(item) && missingOnSDCard) {
@@ -1259,7 +1272,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
      * @return              Whether the item is unresumable or cancelled.
      */
     private boolean isUnresumableOrCancelled(DownloadItem downloadItem) {
-        @DownloadState int state = downloadItem.getDownloadInfo().state();
+        @DownloadState int state = assumeNonNull(downloadItem.getDownloadInfo()).state();
         return (state == DownloadState.INTERRUPTED && !downloadItem.getDownloadInfo().isResumable())
                 || state == DownloadState.CANCELLED;
     }
@@ -1321,6 +1334,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     @CalledByNative
     private void openDownloadItem(DownloadItem downloadItem, @DownloadOpenSource int source) {
         DownloadInfo downloadInfo = downloadItem.getDownloadInfo();
+        assumeNonNull(downloadInfo);
         boolean canOpen =
                 DownloadUtils.openFile(
                         assertNonNull(downloadInfo.getFilePath()),
@@ -1360,13 +1374,15 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
      * @param downloadItem The download item to be opened.
      */
     public void checkIfDownloadWillAutoOpen(DownloadItem downloadItem, Callback<Boolean> callback) {
-        assert (downloadItem.getDownloadInfo().state() == DownloadState.COMPLETE);
+        assert (downloadItem.getDownloadInfo() != null
+                && downloadItem.getDownloadInfo().state() == DownloadState.COMPLETE);
 
         AsyncTask<Boolean> task =
                 new AsyncTask<>() {
                     @Override
                     public Boolean doInBackground() {
                         DownloadInfo info = downloadItem.getDownloadInfo();
+                        assumeNonNull(info);
                         boolean isSupportedMimeType = isSupportedMimeType(info.getMimeType());
                         boolean canResolve =
                                 MimeUtils.isOMADownloadDescription(info.getMimeType())
