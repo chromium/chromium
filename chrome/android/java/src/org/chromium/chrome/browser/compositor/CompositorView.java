@@ -65,7 +65,7 @@ public class CompositorView extends FrameLayout
 
     private CompositorSurfaceManager mCompositorSurfaceManager;
     private boolean mOverlayVideoEnabled;
-    private boolean mAlwaysTranslucent;
+    private boolean mLowMemDevice;
     private boolean mIsXrFullSpaceMode;
 
     // Are we waiting to hide the outgoing surface until the foreground has something to display?
@@ -315,7 +315,7 @@ public class CompositorView extends FrameLayout
         mTabContentManager = tabContentManager;
 
         mNativeCompositorView =
-                CompositorViewJni.get().init(this, lowMemDevice, windowAndroid, tabContentManager);
+                CompositorViewJni.get().init(this, windowAndroid, tabContentManager);
 
         // compositor_impl_android.cc will use 565 EGL surfaces if and only if we're using a low
         // memory device, and no alpha channel is desired.  Otherwise, it will use 8888.  Since
@@ -324,10 +324,10 @@ public class CompositorView extends FrameLayout
         // surface (and the memory it requires) in the low memory case.  The output buffer will
         // either have an alpha channel or not, depending on whether the compositor needs it.  We
         // can keep the surface translucent all the times without worrying about the impact on power
-        // usage during SurfaceFlinger composition. We might also want to set |mAlwaysTranslucent|
+        // usage during SurfaceFlinger composition. We might also want to set |mLowMemDevice|
         // on non-low memory devices, if we are running on hardware that implements efficient alpha
         // blending.
-        mAlwaysTranslucent = lowMemDevice;
+        mLowMemDevice = lowMemDevice;
 
         // In case we changed the requested format due to |lowMemDevice|,
         // re-request the surface now.
@@ -393,7 +393,7 @@ public class CompositorView extends FrameLayout
     }
 
     private int getSurfacePixelFormat() {
-        if (mOverlayVideoEnabled || mAlwaysTranslucent || mIsXrFullSpaceMode) {
+        if (mOverlayVideoEnabled || mLowMemDevice || mIsXrFullSpaceMode) {
             return PixelFormat.TRANSLUCENT;
         }
 
@@ -412,7 +412,7 @@ public class CompositorView extends FrameLayout
     }
 
     private boolean canUseSurfaceControl() {
-        if (mSelectionHandlesActive) {
+        if (mSelectionHandlesActive || mLowMemDevice) {
             return false;
         }
         boolean xrUsesSurfaceControl =
@@ -799,7 +799,6 @@ public class CompositorView extends FrameLayout
     interface Natives {
         long init(
                 CompositorView self,
-                boolean lowMemDevice,
                 WindowAndroid windowAndroid,
                 TabContentManager tabContentManager);
 

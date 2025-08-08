@@ -52,8 +52,6 @@ bool ShouldEnableAndroidSurfaceControl(const base::CommandLine& cmd_line) {
 #if !BUILDFLAG(IS_ANDROID)
   return false;
 #else
-  if (viz::PreferRGB565ResourcesForDisplay())
-    return false;
   return features::IsAndroidSurfaceControlEnabled();
 #endif
 }

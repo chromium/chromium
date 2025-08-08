@@ -41,7 +41,6 @@ class CompositorView : public content::CompositorClient,
  public:
   CompositorView(JNIEnv* env,
                  const base::android::JavaRef<jobject>& obj,
-                 jboolean low_mem_device,
                  ui::WindowAndroid* window_android,
                  TabContentManager* tab_content_manager);
 

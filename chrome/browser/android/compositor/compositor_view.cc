@@ -49,7 +49,6 @@ namespace android {
 jlong JNI_CompositorView_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    jboolean low_mem_device,
     const JavaParamRef<jobject>& jwindow_android,
     const JavaParamRef<jobject>& jtab_content_manager) {
   CompositorView* view;
@@ -61,8 +60,7 @@ jlong JNI_CompositorView_Init(
   DCHECK(tab_content_manager);
 
   // TODO(clholgat): Remove the compositor tabstrip flag.
-  view = new CompositorView(env, obj, low_mem_device, window_android,
-                            tab_content_manager);
+  view = new CompositorView(env, obj, window_android, tab_content_manager);
 
   if (tab_content_manager) {
     tab_content_manager->SetUIResourceProvider(view->GetUIResourceProvider());
@@ -73,7 +71,6 @@ jlong JNI_CompositorView_Init(
 
 CompositorView::CompositorView(JNIEnv* env,
                                const base::android::JavaRef<jobject>& obj,
-                               jboolean low_mem_device,
                                ui::WindowAndroid* window_android,
                                TabContentManager* tab_content_manager)
     : tab_content_manager_(tab_content_manager),

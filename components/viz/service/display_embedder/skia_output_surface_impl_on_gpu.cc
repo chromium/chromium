@@ -21,6 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/common/task_annotator.h"
 #include "base/threading/thread_checker.h"
@@ -1980,7 +1981,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
     if (!presenter_) {
       gl::GLSurfaceFormat format;
 #if BUILDFLAG(IS_ANDROID)
-      if (PreferRGB565ResourcesForDisplay() &&
+      if (base::SysInfo::IsLowEndDevice() &&
           !renderer_settings_.requires_alpha_channel) {
         format.SetRGB565();
       }

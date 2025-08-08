@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/base/math_util.h"
@@ -31,12 +30,6 @@
 #endif
 
 namespace viz {
-
-#if BUILDFLAG(IS_ANDROID)
-bool PreferRGB565ResourcesForDisplay() {
-  return base::SysInfo::AmountOfPhysicalMemoryMB() <= 512;
-}
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
 bool AlwaysUseWideColorGamut() {
