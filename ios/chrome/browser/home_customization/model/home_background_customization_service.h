@@ -86,12 +86,16 @@ class HomeBackgroundCustomizationService : public KeyedService {
   // Clears the current user-uploaded background.
   void ClearCurrentUserUploadedBackground();
 
+  // Stores the current theme to disk.
+  void StoreCurrentTheme();
+
+  // Reloads the theme from disk and restores it as the current NTP
+  // background.
+  void RestoreCurrentTheme();
+
  private:
   // Alerts observers when the background changes.
   void NotifyObserversOfBackgroundChange();
-
-  // Stores the current theme to disk.
-  void StoreCurrentTheme();
 
   // Loads the theme data from disk.
   void LoadCurrentTheme();

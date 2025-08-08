@@ -16,11 +16,6 @@
 - (void)applyBackgroundForConfiguration:
     (id<BackgroundCustomizationConfiguration>)backgroundConfiguration;
 
-// Adds the given background configuration to the list of recently used
-// backgrounds.
-- (void)addBackgroundToRecentlyUsed:
-    (id<BackgroundCustomizationConfiguration>)backgroundConfiguration;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_PICKER_ACTION_SHEET_MUTATOR_H_

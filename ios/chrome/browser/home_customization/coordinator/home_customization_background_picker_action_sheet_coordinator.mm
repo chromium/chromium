@@ -65,9 +65,6 @@ CGFloat const kSheetCornerRadius = 30;
 
   // The main view controller presented by the base view controller.
   UIViewController* _mainViewController;
-
-  // Stores the most recently applied background configuration.
-  id<BackgroundCustomizationConfiguration> _lastAppliedBackgroundConfiguration;
 }
 
 @end
@@ -96,6 +93,7 @@ CGFloat const kSheetCornerRadius = 30;
   _mediator = [[HomeCustomizationBackgroundPickerActionSheetMediator alloc]
       initWithHomeBackgroundCustomizationService:
           homeBackgroundCustomizationService];
+  _mediator.delegate = self;
   _backgroundColorPickerMediator =
       [[HomeCustomizationBackgroundColorPickerMediator alloc]
           initWithBackgroundCustomizationService:
@@ -178,8 +176,11 @@ CGFloat const kSheetCornerRadius = 30;
 
 - (void)applyBackgroundForConfiguration:
     (id<BackgroundCustomizationConfiguration>)backgroundConfiguration {
-  _lastAppliedBackgroundConfiguration = backgroundConfiguration;
   [_mediator applyBackgroundForConfiguration:backgroundConfiguration];
+}
+
+- (void)backgroundPickerActionSheetDidRequestDismissal {
+  [self dismissMenu];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -214,11 +215,13 @@ CGFloat const kSheetCornerRadius = 30;
     case HomeCustomizationBackgroundStyle::kColor:
       _mainViewController = [self createColorPickerViewController];
       _backgroundColorPickerMediator.consumer = (id)_mainViewController;
+      _mediator.consumer = (id)_mainViewController;
       [_backgroundColorPickerMediator configureColorPalettes];
       break;
     case HomeCustomizationBackgroundStyle::kPreset:
       _mainViewController = [self createPresetGalleryPickerViewController];
       _backgroundPresetGalleryPickerMediator.consumer = (id)_mainViewController;
+      _mediator.consumer = (id)_mainViewController;
       [_backgroundPresetGalleryPickerMediator loadBackgroundConfigurations];
       break;
     case HomeCustomizationBackgroundStyle::kUserUploaded:
@@ -307,13 +310,6 @@ CGFloat const kSheetCornerRadius = 30;
 - (void)dismissMenu {
   if (!_mainViewController) {
     return;
-  }
-
-  // Add the last applied background to the recently used list only when the
-  // main view controller is dismissed. This avoids adding every background
-  // the user tapped and instead keeps only the final selection.
-  if (_lastAppliedBackgroundConfiguration) {
-    [_mediator addBackgroundToRecentlyUsed:_lastAppliedBackgroundConfiguration];
   }
 
   [_mainViewController dismissViewControllerAnimated:YES completion:nil];

@@ -151,6 +151,7 @@
     (HomeCustomizationImageFramingViewController*)controller {
   // Dismiss the framing view controller.
   __weak __typeof(self) weakSelf = self;
+  [_mediator discardBackground];
   [controller
       dismissViewControllerAnimated:YES
                          completion:^{

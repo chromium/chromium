@@ -23,6 +23,9 @@ class HomeBackgroundCustomizationService;
                    (HomeBackgroundCustomizationService*)backgroundService;
 - (instancetype)init NS_UNAVAILABLE;
 
+// Discards customization changes.
+- (void)discardBackground;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_COORDINATOR_HOME_CUSTOMIZATION_BACKGROUND_PHOTO_FRAMING_MEDIATOR_H_

@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_mutator.h"
 
 class HomeBackgroundCustomizationService;
+@protocol HomeCustomizationBackgroundPickerActionSheetConsumer;
+@protocol HomeCustomizationBackgroundPickerActionSheetPresentationDelegate;
 
 // Mediator responsible for managing the background customization action sheet,
 // which allows the user to pick a background option.
@@ -23,6 +25,16 @@ class HomeBackgroundCustomizationService;
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// presentation delegate for the background picker's action sheet.
+@property(nonatomic, weak)
+    id<HomeCustomizationBackgroundPickerActionSheetPresentationDelegate>
+        delegate;
+
+// The consumer for the background picker's action sheet.
+@property(nonatomic, weak)
+    id<HomeCustomizationBackgroundPickerActionSheetConsumer>
+        consumer;
 
 @end
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_COORDINATOR_HOME_CUSTOMIZATION_BACKGROUND_PICKER_ACTION_SHEET_MEDIATOR_H_

@@ -82,6 +82,10 @@ base::FilePath SaveImageToDirectory(const base::FilePath& directory_path,
   return self;
 }
 
+- (void)discardBackground {
+  _backgroundService->RestoreCurrentTheme();
+}
+
 #pragma mark - HomeCustomizationBackgroundPhotoFramingMutator
 
 - (void)saveImage:(UIImage*)image
@@ -117,6 +121,7 @@ base::FilePath SaveImageToDirectory(const base::FilePath& directory_path,
   if (!imagePath.empty() && _backgroundService) {
     _backgroundService->SetCurrentUserUploadedBackground(
         imagePath.value(), [coordinates toFramingCoordinates]);
+    _backgroundService->StoreCurrentTheme();
   }
   std::move(completion).Run();
 }
