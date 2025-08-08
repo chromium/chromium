@@ -125,9 +125,14 @@ enum class DefaultBrowserSettingsPageUsage {
 
 // Adds default browser video instructions view as a background view.
 - (void)addDefaultBrowserVideoInstructionsView {
-  BOOL useDefaultAppsDestination =
-      self.source == DefaultBrowserSettingsPageSource::kTipsNotification &&
-      base::FeatureList::IsEnabled(kIOSOneTimeDefaultBrowserNotification);
+  BOOL useDefaultAppsDestination = NO;
+#if defined(__IPHONE_18_3) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_3
+  if (@available(iOS 18.3, *)) {
+    useDefaultAppsDestination =
+        self.source == DefaultBrowserSettingsPageSource::kTipsNotification &&
+        base::FeatureList::IsEnabled(kIOSOneTimeDefaultBrowserNotification);
+  }
+#endif
   _instructionsViewController =
       [[DefaultBrowserInstructionsViewController alloc]
               initWithDismissButton:NO
