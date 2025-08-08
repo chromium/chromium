@@ -9496,6 +9496,9 @@ crbug.com/417921517 [ Win11-arm64 ] external/wpt/css/css-ruby/ruby-text-combine-
 crbug.com/418572857 external/wpt/background-fetch/fetch.https.window.html [ Failure Pass Timeout ]
 crbug.com/418362694 [ Linux ] external/wpt/geolocation/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Crash Timeout ]
 
+# Flaky on headless_shell_wpt_tests
+crbug.com/420130712 external/wpt/client-hints/meta-equiv-delegate-ch-malformed-header.https.html [ Failure Pass ]
+
 # Gardener 2025-06-02
 crbug.com/421782213 [ Mac14 ] fast/inline/vertical-align-with-fallback-fonts.html [ Failure ]
 crbug.com/421782213 [ Mac14-arm64 ] fast/inline/vertical-align-with-fallback-fonts.html [ Failure ]
