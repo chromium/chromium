@@ -24735,6 +24735,21 @@
             ]
         }
     ],
+    "ToolbarSnapshotRefactor": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ToolbarSnapshotRefactor"
+                    ]
+                }
+            ]
+        }
+    ],
     "TopControlsRefactor": [
         {
             "platforms": [
