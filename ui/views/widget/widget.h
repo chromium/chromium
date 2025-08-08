@@ -881,9 +881,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void CloseWithReason(ClosedReason closed_reason);
 
   // This method is used by clients to intercept calls to Close() from other
-  // code in //ui such as DialogDelegate. The only valid use case is to allow
-  // clients to implement a synchronous version of Close() by resetting the
-  // unique_ptr.
+  // code in //ui such as DialogDelegate. The callback is called when Close()
+  // is called, or when the user clicks the close button.
+  //
+  // Typically the client should reset the
+  // unique_ptr<Widget> in the callback.
   //
   //  widget_->MakeCloseSynchronous(
   //      base::BindOnce(&Client::CloseWidget, this));
@@ -899,6 +901,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   //  Client::ClientCloseWidget() {
   //    CloseWidget(CloseReason::kUnspecified);
   //  }
+  //
+  // It is OK to not reset the Widget in the callback. This blocks the window
+  // from closing. Used for example in web page unload handlers that shows a
+  // dialog to the user to confirm whether to discard changes.
   void MakeCloseSynchronous(
       base::OnceCallback<void(ClosedReason)> override_close);
 
