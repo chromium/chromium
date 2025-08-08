@@ -279,7 +279,6 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateOffscreenContext(
     bool support_gles2_interface,
     bool support_raster_interface,
     bool support_gpu_rasterization,
-    bool support_grcontext,
     bool automatic_flushes,
     viz::command_buffer_metrics::ContextType type,
     int32_t stream_id,
@@ -295,7 +294,7 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateOffscreenContext(
   attributes.lose_context_when_out_of_memory = true;
   attributes.enable_gles2_interface = support_gles2_interface;
   attributes.enable_raster_interface = support_raster_interface;
-  attributes.enable_grcontext = support_grcontext;
+  attributes.enable_grcontext = false;
   // Using RasterDecoder for OOP-R backend, so we need support_raster_interface
   // and !support_gles2_interface.
   attributes.enable_gpu_rasterization = support_gpu_rasterization &&
@@ -1022,13 +1021,11 @@ media::GpuVideoAcceleratorFactories* RenderThreadImpl::GetGpuFactories() {
   bool support_gles2_interface = true;
   bool support_raster_interface = false;
   bool support_oop_rasterization = false;
-  bool support_grcontext = false;
   bool automatic_flushes = false;
   scoped_refptr<viz::ContextProviderCommandBuffer> media_context_provider =
       CreateOffscreenContext(gpu_channel_host, limits, support_locking,
                              support_gles2_interface, support_raster_interface,
-                             support_oop_rasterization, support_grcontext,
-                             automatic_flushes,
+                             support_oop_rasterization, automatic_flushes,
                              viz::command_buffer_metrics::ContextType::MEDIA,
                              kGpuStreamIdMedia, kGpuStreamPriorityMedia);
 
@@ -1114,12 +1111,10 @@ RenderThreadImpl::GetVideoFrameCompositorContextProvider(
   bool support_gles2_interface = false;
   bool support_raster_interface = true;
   bool support_oop_rasterization = false;
-  bool support_grcontext = false;
   bool automatic_flushes = false;
   video_frame_compositor_context_provider_ = CreateOffscreenContext(
       gpu_channel_host, limits, support_locking, support_gles2_interface,
-      support_raster_interface, support_oop_rasterization, support_grcontext,
-      automatic_flushes,
+      support_raster_interface, support_oop_rasterization, automatic_flushes,
       viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR,
       kGpuStreamIdMedia, kGpuStreamPriorityMedia);
   return video_frame_compositor_context_provider_;
@@ -1174,7 +1169,6 @@ RenderThreadImpl::SharedMainThreadContextProvider() {
   const bool support_raster_interface = true;
   const bool support_oop_rasterization = true;
   const bool support_gles2_interface = false;
-  const bool support_grcontext = false;
   // Enable automatic flushes to improve canvas throughput.
   // See https://crbug.com/880901
   const bool automatic_flushes = true;
@@ -1182,7 +1176,7 @@ RenderThreadImpl::SharedMainThreadContextProvider() {
   shared_main_thread_contexts_ = CreateOffscreenContext(
       std::move(gpu_channel_host), gpu::SharedMemoryLimits(), support_locking,
       support_gles2_interface, support_raster_interface,
-      support_oop_rasterization, support_grcontext, automatic_flushes,
+      support_oop_rasterization, automatic_flushes,
       viz::command_buffer_metrics::ContextType::RENDERER_MAIN_THREAD,
       kGpuStreamIdDefault, kGpuStreamPriorityDefault);
   auto result = shared_main_thread_contexts_->BindToCurrentSequence();
@@ -1676,7 +1670,6 @@ RenderThreadImpl::SharedCompositorWorkerContextProvider(
 
   bool support_gles2_interface = false;
   bool support_raster_interface = true;
-  bool support_grcontext = false;
   bool automatic_flushes = false;
   auto shared_memory_limits =
       support_gpu_rasterization ? gpu::SharedMemoryLimits::ForOOPRasterContext()
@@ -1684,7 +1677,7 @@ RenderThreadImpl::SharedCompositorWorkerContextProvider(
   shared_worker_context_provider_ = CreateOffscreenContext(
       std::move(gpu_channel_host), shared_memory_limits, support_locking,
       support_gles2_interface, support_raster_interface,
-      support_gpu_rasterization, support_grcontext, automatic_flushes,
+      support_gpu_rasterization, automatic_flushes,
       viz::command_buffer_metrics::ContextType::RENDER_WORKER,
       kGpuStreamIdWorker, kGpuStreamPriorityWorker);
 
