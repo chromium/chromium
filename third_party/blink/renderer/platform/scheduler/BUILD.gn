@@ -194,9 +194,7 @@ source_set("test_support") {
   testonly = true
 
   sources = [
-    "test/fake_agent_group_scheduler_scheduler.h",
     "test/fake_frame_scheduler.h",
-    "test/fake_page_scheduler.h",
     "test/fake_task_runner.cc",
     "test/fake_task_runner.h",
     "test/fake_widget_scheduler.cc",
@@ -204,7 +202,6 @@ source_set("test_support") {
     "test/recording_task_time_observer.cc",
     "test/recording_task_time_observer.h",
     "test/renderer_scheduler_test_support.cc",
-    "test/web_fake_thread_scheduler.cc",
     "test/web_scheduling_test_helper.cc",
     "test/web_scheduling_test_helper.h",
   ]

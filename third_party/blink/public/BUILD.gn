@@ -107,7 +107,6 @@ source_set("test_headers") {
     "common/interest_group/test_interest_group_builder.h",
     "common/origin_trials/scoped_test_origin_trial_policy.h",
     "platform/scheduler/test/renderer_scheduler_test_support.h",
-    "platform/scheduler/test/web_fake_thread_scheduler.h",
     "platform/scheduler/test/web_mock_thread_scheduler.h",
     "test/frame_widget_test_helper.h",
     "test/test_web_frame_content_dumper.h",
