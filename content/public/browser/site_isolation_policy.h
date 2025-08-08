@@ -99,6 +99,10 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   // their cached value.
   static void DisableFlagCachingForTesting();
 
+  // Forces AreOriginKeyedProcessesEnabledByDefault() to not let command line or
+  // enterprise overrides bypass the memory checks.
+  static void IgnoreOriginKeyedProcessOverridesForTesting();
+
   // Returns true when process-isolation of fenced frames from their embedders
   // is enabled.
   static bool IsProcessIsolationForFencedFramesEnabled();

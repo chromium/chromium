@@ -34,6 +34,7 @@ namespace content {
 namespace {
 
 bool g_disable_flag_caching_for_tests = false;
+bool g_ignore_origin_keyed_process_overrides_for_testing = false;
 
 bool IsDisableSiteIsolationFlagPresent() {
   static const bool site_isolation_disabled =
@@ -206,11 +207,24 @@ bool SiteIsolationPolicy::IsOriginAgentClusterEnabled() {
 
 // static
 bool SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault() {
-  // Note: this is expected to be the only place
-  // features::kOriginKeyedProcessesByDefault is checked outside of tests.
+  if (!UseDedicatedProcessesForAllSites()) {
+    return false;
+  }
+
+  // Check if the feature is explicitly overridden by the user or enterprise
+  // policy. This will ignore memory limits.
+  std::optional<bool> overridden_value =
+      GetContentClient()->browser()->GetOverrideValueForOriginKeyedProcesses();
+  if (overridden_value.has_value() &&
+      !g_ignore_origin_keyed_process_overrides_for_testing) {
+    return overridden_value.value();
+  }
+
+  // Note: This function and GetOverrideValueForOriginKeyedProcesses() are
+  // expected to be the only places features::kOriginKeyedProcessesByDefault is
+  // checked outside of tests.
   return base::FeatureList::IsEnabled(
              features::kOriginKeyedProcessesByDefault) &&
-         UseDedicatedProcessesForAllSites() &&
          !GetContentClient()->browser()->ShouldDisableOriginIsolation();
 }
 
@@ -331,6 +345,11 @@ bool SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
 // static
 void SiteIsolationPolicy::DisableFlagCachingForTesting() {
   g_disable_flag_caching_for_tests = true;
+}
+
+// static
+void SiteIsolationPolicy::IgnoreOriginKeyedProcessOverridesForTesting() {
+  g_ignore_origin_keyed_process_overrides_for_testing = true;
 }
 
 // static

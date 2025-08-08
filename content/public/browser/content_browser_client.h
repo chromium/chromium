@@ -731,6 +731,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   // See also https://crbug.com/825369
   virtual bool ShouldEnableStrictSiteIsolation();
 
+  // Determines whether Origin Isolation is overridden by either a user choice
+  // or enterprise policy. Note that returning true here will override the
+  // return value from ShouldDisableOriginIsolation(). Returns std::nullopt if
+  // there is no overridden value.
+  virtual std::optional<bool> GetOverrideValueForOriginKeyedProcesses();
+
   // Allows the embedder to programmatically control whether Site Isolation
   // should be disabled.  Note that this takes precedence over
   // ShouldEnableStrictSiteIsolation() if both return true.
@@ -743,8 +749,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldDisableSiteIsolation(
       SiteIsolationMode site_isolation_mode);
 
-  // Allows the embedder to programmatically control whether Origin Isolation
-  // should be disabled.
+  // Allows the embedder to programmatically control whether the origin-keyed
+  // processes by default feature should be disabled. Note that this is ignored
+  // if GetOverrideValueForOriginKeyedProcesses() returns true.
   virtual bool ShouldDisableOriginIsolation();
 
   // Retrieves names of any additional site isolation modes from the embedder.
