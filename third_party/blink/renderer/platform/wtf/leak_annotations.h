@@ -40,7 +40,7 @@
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #endif
 
-namespace WTF {
+namespace blink {
 
 #if defined(LEAK_SANITIZER)
 class LeakSanitizerDisabler {
@@ -59,8 +59,8 @@ class LeakSanitizerDisabler {
 //
 // TODO(sof): once layering rules allow wtf/ to make use of the Oilpan
 // infrastructure, remove this macro.
-#define WTF_INTERNAL_LEAK_SANITIZER_DISABLED_SCOPE  \
-  WTF::LeakSanitizerDisabler leakSanitizerDisabler; \
+#define WTF_INTERNAL_LEAK_SANITIZER_DISABLED_SCOPE    \
+  blink::LeakSanitizerDisabler leakSanitizerDisabler; \
   static_cast<void>(0)
 
 // LEAK_SANITIZER_IGNORE_OBJECT(X): the heap object referenced by pointer X
@@ -77,6 +77,6 @@ class LeakSanitizerDisabler {
 #define LEAK_SANITIZER_IGNORE_OBJECT(X) ((void)0)
 #endif  // defined(LEAK_SANITIZER)
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_LEAK_ANNOTATIONS_H_
