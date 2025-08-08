@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
+import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.toolbar.BrowserServicesThemeColorProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
@@ -112,6 +113,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
 
     @Mock private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private ActivityTabProvider mTabProvider;
+    @Mock private CustomTabActivityTabProvider mCustomTabProvider;
     @Mock private ObservableSupplier<Profile> mProfileSupplier;
     @Mock private ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     @Mock private ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
@@ -188,6 +190,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                         mActivity,
                         mShareDelegateSupplier,
                         mTabProvider,
+                        mCustomTabProvider,
                         mProfileSupplier,
                         mBookmarkModelSupplier,
                         mTabBookmarkerSupplier,

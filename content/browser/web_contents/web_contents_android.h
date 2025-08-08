@@ -247,6 +247,10 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   void SetLongPressLinkSelectText(JNIEnv* env, jboolean enabled);
 
+  void SetCanAcceptLoadDrops(JNIEnv* env, jboolean enabled);
+
+  bool GetCanAcceptLoadDropsForTesting(JNIEnv* env);
+
   void SetSupportsForwardTransitionAnimation(JNIEnv* env, jboolean enabled);
 
   jboolean HasOpener(JNIEnv* env);

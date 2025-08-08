@@ -345,6 +345,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         this,
                         getShareDelegateSupplier(),
                         getActivityTabProvider(),
+                        getCustomTabActivityTabProvider(),
                         mTabModelProfileSupplier,
                         mBookmarkModelSupplier,
                         mTabBookmarkerSupplier,

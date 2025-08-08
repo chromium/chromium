@@ -3112,4 +3112,13 @@ public class CustomTabActivityTest {
                     displayManager.getActiveStrategyType());
         }
     }
+
+    @Test
+    @MediumTest
+    public void testDisableLoadDrops() {
+        Intent intent = createMinimalCustomTabIntent();
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        var tab = getActivity().getActivityTab();
+        assertFalse(tab.getWebContents().getCanAcceptLoadDropsForTesting());
+    }
 }

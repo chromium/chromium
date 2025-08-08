@@ -370,10 +370,14 @@ class CONTENT_EXPORT WebContentsImpl
   // A notification is then propagated to observers.
   void DidCapturedSurfaceControl();
 
+#if BUILDFLAG(IS_ANDROID)
   // Let long press on links select the link text instead of triggering
   // the context menu.
-#if BUILDFLAG(IS_ANDROID)
   void SetLongPressLinkSelectText(bool enabled);
+
+  // Allow drag-drop of files such as an image to load and replace contents.
+  void SetCanAcceptLoadDrops(bool enabled);
+  bool GetCanAcceptLoadDropsForTesting();
 #endif
 
   // WebContents ------------------------------------------------------

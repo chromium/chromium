@@ -382,6 +382,14 @@ public class MockWebContents implements WebContents, WebContentsObserver.Observa
     public void setLongPressLinkSelectText(boolean enabled) {}
 
     @Override
+    public void setCanAcceptLoadDrops(boolean enabled) {}
+
+    @Override
+    public boolean getCanAcceptLoadDropsForTesting() {
+        return true;
+    }
+
+    @Override
     public void updateOffsetTagDefinitions(
             BrowserControlsOffsetTagDefinitions offsetTagDefinitions) {}
 

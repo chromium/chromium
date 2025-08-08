@@ -12228,6 +12228,19 @@ void WebContentsImpl::SetLongPressLinkSelectText(bool enabled) {
   long_press_link_select_text_ = enabled;
   NotifyPreferencesChanged();
 }
+
+void WebContentsImpl::SetCanAcceptLoadDrops(bool enabled) {
+  if (renderer_preferences_.can_accept_load_drops == enabled) {
+    return;
+  }
+  renderer_preferences_.can_accept_load_drops = enabled;
+  SyncRendererPrefs();
+}
+
+bool WebContentsImpl::GetCanAcceptLoadDropsForTesting() {
+  return renderer_preferences_.can_accept_load_drops;
+}
+
 #endif
 
 net::handles::NetworkHandle WebContentsImpl::GetTargetNetwork() {

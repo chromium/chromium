@@ -953,6 +953,14 @@ void WebContentsAndroid::SetLongPressLinkSelectText(JNIEnv* env,
   web_contents_->SetLongPressLinkSelectText((bool)enabled);
 }
 
+void WebContentsAndroid::SetCanAcceptLoadDrops(JNIEnv* env, jboolean enabled) {
+  web_contents_->SetCanAcceptLoadDrops((bool)enabled);
+}
+
+bool WebContentsAndroid::GetCanAcceptLoadDropsForTesting(JNIEnv* env) {
+  return web_contents_->GetCanAcceptLoadDropsForTesting();  // IN-TEST
+}
+
 void WebContentsAndroid::SetSupportsForwardTransitionAnimation(
     JNIEnv* env,
     jboolean supports) {

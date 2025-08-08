@@ -617,6 +617,15 @@ public interface WebContents extends Parcelable {
     void setLongPressLinkSelectText(boolean enabled);
 
     /**
+     * Allow drag-drop of files such as an image to load and replace contents.
+     *
+     * @param enabled whether the behavior should be enabled.
+     */
+    void setCanAcceptLoadDrops(boolean enabled);
+
+    boolean getCanAcceptLoadDropsForTesting();
+
+    /**
      * Update the OffsetTagDefinitions. This could be because the controls' visibility constraints
      * have changed, which requires adding/removing the OffsetTags, or because the
      * OffsetTagConstraints have changed due to a change in the controls' scrollable height.
