@@ -11,8 +11,6 @@ function initialize() {
   // clang-format on
   window.isProbablyReaderable = isProbablyReaderable;
 }
-window.setTimeout = function() {};
-window.clearTimeout = function() {};
 initialize();
 
 return isProbablyReaderable(document);
