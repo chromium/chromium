@@ -330,6 +330,11 @@ BASE_FEATURE(kBocaMarkerMode,
              "BocaMarkerMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables Boca receiver app.
+BASE_FEATURE(kBocaReceiverApp,
+             "BocaReceiverApp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCrosSwitcher, "CrosSwitcher", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Indicates whether the camera super resolution is supported. Note that this
@@ -3438,6 +3443,10 @@ bool IsBocaMigrateSpeechRecognizerClientEnabled() {
 
 bool IsBocaMarkerModeEnabled() {
   return base::FeatureList::IsEnabled(kBocaMarkerMode);
+}
+
+bool IsBocaReceiverAppEnabled() {
+  return base::FeatureList::IsEnabled(kBocaReceiverApp);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {
