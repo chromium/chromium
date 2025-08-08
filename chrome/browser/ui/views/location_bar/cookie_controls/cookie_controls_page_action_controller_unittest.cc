@@ -9,15 +9,19 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/test_support/mock_page_action_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,7 +31,9 @@
 namespace {
 
 using testing::_;
+using testing::Invoke;
 using testing::Return;
+using testing::ReturnRef;
 
 std::u16string AllowedLabel() {
   return l10n_util::GetStringUTF16(
@@ -106,12 +112,27 @@ class CookieControlsPageActionControllerTest
             mock_tab_interface_, page_action_controller_);
     controller().set_bubble_delegate_for_testing(
         std::move(mock_bubble_delegate));
-  }
 
-  void SetUp() override {
-    // Default mock behavior. Tests can override these expectations.
-    ON_CALL(*mock_bubble_delegate(), IsReloading()).WillByDefault(Return(true));
-    ON_CALL(*mock_bubble_delegate(), HasBubble()).WillByDefault(Return(false));
+    ON_CALL(mock_tab_interface_, GetBrowserWindowInterface())
+        .WillByDefault(Return(&mock_browser_window_interface_));
+    ON_CALL(mock_browser_window_interface_, GetUnownedUserDataHost())
+        .WillByDefault(ReturnRef(user_data_host_));
+    user_education_.emplace(&mock_browser_window_interface_);
+
+    ON_CALL(page_action_controller_, AddActivity(kActionShowCookieControls))
+        .WillByDefault(Invoke([&](actions::ActionId) {
+          return page_actions::ScopedPageActionActivity(
+              page_action_controller_, kActionShowCookieControls);
+        }));
+
+    ON_CALL(*user_education_, MaybeShowFeaturePromo(_))
+        .WillByDefault(Invoke([](user_education::FeaturePromoParams params) {
+          std::move(params.show_promo_result_callback)
+              .Run(user_education::FeaturePromoResult::Success());
+        }));
+
+    ON_CALL(*mock_bubble_delegate_, IsReloading()).WillByDefault(Return(false));
+    ON_CALL(*mock_bubble_delegate_, HasBubble()).WillByDefault(Return(false));
   }
 
   CookieControlsPageActionController& controller() {
@@ -120,6 +141,10 @@ class CookieControlsPageActionControllerTest
 
   FakePageActionController& page_action_controller() {
     return page_action_controller_;
+  }
+
+  MockBrowserUserEducationInterface& user_education() {
+    return user_education_.value();
   }
 
   MockBubbleDelegate* mock_bubble_delegate() { return mock_bubble_delegate_; }
@@ -138,6 +163,9 @@ class CookieControlsPageActionControllerTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  ui::UnownedUserDataHost user_data_host_;
+  MockBrowserWindowInterface mock_browser_window_interface_;
+  std::optional<MockBrowserUserEducationInterface> user_education_;
   tabs::MockTabInterface mock_tab_interface_;
   FakePageActionController page_action_controller_;
 
@@ -152,7 +180,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          CookieBlocking3pcdStatus::kLimited,
                                          CookieBlocking3pcdStatus::kAll));
 
-// New test: Verifies icon remains visible when the bubble is showing, even if
+// Verifies icon remains visible when the bubble is showing, even if
 // the status says it should be hidden.
 TEST_P(CookieControlsPageActionControllerTest, IconVisibleWhenBubbleShowing) {
   EXPECT_CALL(*mock_bubble_delegate(), HasBubble()).WillOnce(Return(true));
@@ -170,9 +198,11 @@ TEST_P(CookieControlsPageActionControllerTest, IconVisibleWhenBubbleShowing) {
       /*should_highlight=*/false);
 }
 
-// New test: Verifies the suggestion chip is not shown when the bubble is open.
+// Verifies the suggestion chip is not shown when the bubble is open.
 TEST_P(CookieControlsPageActionControllerTest, ChipNotShownWhenBubbleShowing) {
-  EXPECT_CALL(*mock_bubble_delegate(), IsReloading()).WillOnce(Return(true));
+  if (!In3pcd()) {
+    GTEST_SKIP() << "IPHs are used when not in 3pcd";
+  }
   EXPECT_CALL(*mock_bubble_delegate(), HasBubble()).WillOnce(Return(true));
 
   // The chip should NOT be shown because the bubble is already visible.
@@ -188,11 +218,11 @@ TEST_P(CookieControlsPageActionControllerTest, ChipNotShownWhenBubbleShowing) {
       /*should_highlight=*/true);
 }
 
-// New test: Verifies that if the bubble is not in the "reloading" state, status
+// Verifies that if the bubble is in the "reloading" state, status
 // updates are ignored.
 TEST_P(CookieControlsPageActionControllerTest,
-       StatusChangedIgnoredWhenNotReloading) {
-  EXPECT_CALL(*mock_bubble_delegate(), IsReloading()).WillOnce(Return(false));
+       StatusChangedIgnoredWhenReloading) {
+  EXPECT_CALL(*mock_bubble_delegate(), IsReloading()).WillOnce(Return(true));
 
   // No calls to the page action controller are expected.
   EXPECT_CALL(page_action_controller(), Show(_)).Times(0);
@@ -206,7 +236,9 @@ TEST_P(CookieControlsPageActionControllerTest,
 
 TEST_P(CookieControlsPageActionControllerTest,
        IconAnimatesWhenShouldHighlightIsTrueAnd3pcsBlocked) {
-  EXPECT_CALL(*mock_bubble_delegate(), IsReloading()).WillOnce(Return(true));
+  if (!In3pcd()) {
+    GTEST_SKIP() << "IPHs are used when not in 3pcd";
+  }
   EXPECT_CALL(*mock_bubble_delegate(), HasBubble()).WillOnce(Return(false));
   EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls))
       .Times(1);
@@ -227,15 +259,16 @@ TEST_P(CookieControlsPageActionControllerTest,
 
 TEST_P(CookieControlsPageActionControllerTest,
        IconAnimationTextDoesNotResetWhenStateDoesNotChange) {
-  EXPECT_CALL(*mock_bubble_delegate(), IsReloading())
-      .WillRepeatedly(Return(true));
+  if (!In3pcd()) {
+    GTEST_SKIP() << "IPHs are used when not in 3pcd";
+  }
   EXPECT_CALL(*mock_bubble_delegate(), HasBubble())
       .WillRepeatedly(Return(false));
   EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls))
       .Times(2);
   EXPECT_CALL(page_action_controller(),
               ShowSuggestionChip(kActionShowCookieControls, _))
-      .Times(2);
+      .Times(1);
 
   controller().OnCookieControlsIconStatusChanged(
       /*icon_visible=*/true, CookieControlsState::kBlocked3pc, GetParam(),
@@ -253,8 +286,9 @@ TEST_P(CookieControlsPageActionControllerTest,
 
 TEST_P(CookieControlsPageActionControllerTest,
        IconAnimationTextUpdatesWhen3pcStateChanges) {
-  EXPECT_CALL(*mock_bubble_delegate(), IsReloading())
-      .WillRepeatedly(Return(true));
+  if (!In3pcd()) {
+    GTEST_SKIP() << "IPHs are used when not in 3pcd";
+  }
   EXPECT_CALL(*mock_bubble_delegate(), HasBubble())
       .WillRepeatedly(Return(false));
   EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls))
@@ -278,7 +312,6 @@ TEST_P(CookieControlsPageActionControllerTest,
 
 TEST_P(CookieControlsPageActionControllerTest,
        IconDoesNotAnimateWhenShouldHighlightIsFalse) {
-  EXPECT_CALL(*mock_bubble_delegate(), IsReloading()).WillOnce(Return(true));
   EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls))
       .Times(1);
   EXPECT_CALL(page_action_controller(),
@@ -291,7 +324,6 @@ TEST_P(CookieControlsPageActionControllerTest,
 
 TEST_P(CookieControlsPageActionControllerTest,
        IconHiddenWhenIconVisibleIsFalse) {
-  EXPECT_CALL(*mock_bubble_delegate(), IsReloading()).WillOnce(Return(true));
   EXPECT_CALL(*mock_bubble_delegate(), HasBubble()).WillOnce(Return(false));
   EXPECT_CALL(page_action_controller(), Hide(kActionShowCookieControls))
       .Times(1);
@@ -305,7 +337,6 @@ TEST_P(CookieControlsPageActionControllerTest,
 TEST_P(CookieControlsPageActionControllerTest,
        IconAnimatesOnPageReloadWithChanged3pcSettings) {
   // Set initial state without highlighting.
-  EXPECT_CALL(*mock_bubble_delegate(), IsReloading()).WillOnce(Return(true));
   EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls));
   EXPECT_CALL(page_action_controller(), ShowSuggestionChip(_, _)).Times(0);
   controller().OnCookieControlsIconStatusChanged(
@@ -326,9 +357,6 @@ TEST_P(CookieControlsPageActionControllerTest,
 
 TEST_P(CookieControlsPageActionControllerTest,
        IconAnimatesOnPageReloadWithChangedTpSettings) {
-  EXPECT_CALL(*mock_bubble_delegate(), IsReloading())
-      .WillRepeatedly(Return(true));
-
   // Default state when tracking protections are active.
   EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls));
   EXPECT_CALL(page_action_controller(), ShowSuggestionChip(_, _)).Times(0);
@@ -345,7 +373,6 @@ TEST_P(CookieControlsPageActionControllerTest,
   controller().OnCookieControlsIconStatusChanged(
       /*icon_visible=*/true, CookieControlsState::kPausedTp, GetParam(),
       /*should_highlight=*/false);
-  EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls));
   EXPECT_CALL(page_action_controller(),
               ShowSuggestionChip(kActionShowCookieControls, _));
   EXPECT_CALL(page_action_controller(),
@@ -361,7 +388,6 @@ TEST_P(CookieControlsPageActionControllerTest,
       /*icon_visible=*/true, CookieControlsState::kActiveTp, GetParam(),
       /*should_highlight=*/false);
 
-  EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls));
   EXPECT_CALL(page_action_controller(),
               ShowSuggestionChip(kActionShowCookieControls, _));
   EXPECT_CALL(page_action_controller(),
@@ -370,6 +396,64 @@ TEST_P(CookieControlsPageActionControllerTest,
   controller().OnFinishedPageReloadWithChangedSettings();
   EXPECT_EQ(page_action_controller().last_text(),
             TrackingProtectionResumedLabel());
+}
+
+TEST_P(CookieControlsPageActionControllerTest, MaybeShowIPH) {
+  EXPECT_CALL(user_education(),
+              MaybeShowFeaturePromo(testing::Truly(
+                  [](const user_education::FeaturePromoParams& params) {
+                    return params.feature ==
+                           feature_engagement::kIPHCookieControlsFeature;
+                  })));
+  controller().OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::kBlocked3pc,
+      CookieBlocking3pcdStatus::kNotIn3pcd,
+      /*should_highlight=*/true);
+}
+
+TEST_P(CookieControlsPageActionControllerTest, ShowChipOnIPHFailure) {
+  EXPECT_CALL(user_education(), MaybeShowFeaturePromo)
+      .WillOnce(testing::Invoke([](user_education::FeaturePromoParams params) {
+        std::move(params.show_promo_result_callback)
+            .Run(user_education::FeaturePromoResult::kError);
+      }));
+  EXPECT_CALL(page_action_controller(),
+              ShowSuggestionChip(kActionShowCookieControls, _))
+      .Times(1);
+  controller().OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::kBlocked3pc,
+      CookieBlocking3pcdStatus::kNotIn3pcd,
+      /*should_highlight=*/true);
+}
+
+TEST_P(CookieControlsPageActionControllerTest, SetActivityOnIPHShown) {
+  EXPECT_CALL(user_education(), MaybeShowFeaturePromo)
+      .WillOnce(testing::Invoke([](user_education::FeaturePromoParams params) {
+        std::move(params.show_promo_result_callback)
+            .Run(user_education::FeaturePromoResult::Success());
+      }));
+  EXPECT_CALL(page_action_controller(), AddActivity(kActionShowCookieControls))
+      .Times(1)
+      .WillOnce(Return(page_actions::ScopedPageActionActivity(
+          page_action_controller(), kActionShowCookieControls)));
+  controller().OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::kBlocked3pc,
+      CookieBlocking3pcdStatus::kNotIn3pcd,
+      /*should_highlight=*/true);
+}
+
+TEST_P(CookieControlsPageActionControllerTest, NoChipWhenIPHActive) {
+  EXPECT_CALL(user_education(),
+              IsFeaturePromoActive(
+                  testing::Ref(feature_engagement::kIPHCookieControlsFeature)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(page_action_controller(),
+              ShowSuggestionChip(kActionShowCookieControls, _))
+      .Times(0);
+  controller().OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::kBlocked3pc,
+      CookieBlocking3pcdStatus::kAll,
+      /*should_highlight=*/true);
 }
 
 }  // namespace
