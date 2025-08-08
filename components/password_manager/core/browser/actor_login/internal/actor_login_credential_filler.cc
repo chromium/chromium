@@ -54,9 +54,7 @@ void ActorLoginCredentialFiller::AttemptLogin(
   }
 
   if (!signin_form_manager) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback_),
-                                  LoginStatusResult::kErrorNoSigninForm));
+    std::move(callback_).Run(LoginStatusResult::kErrorNoSigninForm);
     return;
   }
 
@@ -72,9 +70,7 @@ void ActorLoginCredentialFiller::AttemptLogin(
   }
 
   if (!credential_is_saved_for_origin) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback_),
-                                  LoginStatusResult::kErrorInvalidCredential));
+    std::move(callback_).Run(LoginStatusResult::kErrorInvalidCredential);
     return;
   }
 

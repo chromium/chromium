@@ -5,7 +5,6 @@
 
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
@@ -40,6 +39,7 @@ using password_manager::PasswordSaveManagerImpl;
 using password_manager::StubPasswordManagerClient;
 using password_manager::StubPasswordManagerDriver;
 using testing::_;
+using testing::Eq;
 using testing::Return;
 using testing::ReturnRef;
 
@@ -115,14 +115,13 @@ TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_NoManagers) {
   Credential credential = CreateTestCredential(u"username", origin.GetURL());
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
 
-  base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(origin, credential, future.GetCallback());
+  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
+  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers())
       .WillOnce(Return(base::span(form_managers)));
+  EXPECT_CALL(mock_callback, Run(Eq(LoginStatusResult::kErrorNoSigninForm)));
   filler.AttemptLogin(&mock_password_manager_);
-  ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorNoSigninForm);
 }
 
 TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_DifferentOrigin) {
@@ -137,14 +136,13 @@ TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_DifferentOrigin) {
           other_origin, CreateSigninFormData(other_origin.GetURL()));
   form_managers.push_back(std::move(form_manager));
 
-  base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(origin, credential, future.GetCallback());
+  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
+  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers())
       .WillOnce(Return(base::span(form_managers)));
+  EXPECT_CALL(mock_callback, Run(Eq(LoginStatusResult::kErrorNoSigninForm)));
   filler.AttemptLogin(&mock_password_manager_);
-  ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorNoSigninForm);
 }
 
 TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_NoParsedForm) {
@@ -163,13 +161,12 @@ TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_NoParsedForm) {
 
   form_managers.push_back(std::move(form_manager));
 
-  base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(origin, credential, future.GetCallback());
+  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
+  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers())
       .WillOnce(Return(base::span(form_managers)));
+  EXPECT_CALL(mock_callback, Run(Eq(LoginStatusResult::kErrorNoSigninForm)));
   filler.AttemptLogin(&mock_password_manager_);
-  ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorNoSigninForm);
 }
 
 TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_NotLoginForm) {
@@ -182,13 +179,12 @@ TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_NotLoginForm) {
           origin, CreateChangePasswordFormData(origin.GetURL()));
   form_managers.push_back(std::move(form_manager));
 
-  base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(origin, credential, future.GetCallback());
+  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
+  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers())
       .WillOnce(Return(base::span(form_managers)));
+  EXPECT_CALL(mock_callback, Run(Eq(LoginStatusResult::kErrorNoSigninForm)));
   filler.AttemptLogin(&mock_password_manager_);
-  ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorNoSigninForm);
 }
 
 TEST_F(ActorLoginCredentialFillerTest,
@@ -207,13 +203,13 @@ TEST_F(ActorLoginCredentialFillerTest,
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
   form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
 
-  base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(origin, credential, future.GetCallback());
+  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
+  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers())
       .WillOnce(Return(base::span(form_managers)));
+  EXPECT_CALL(mock_callback,
+              Run(Eq(LoginStatusResult::kErrorInvalidCredential)));
   filler.AttemptLogin(&mock_password_manager_);
-  ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorInvalidCredential);
 }
 
 TEST_F(ActorLoginCredentialFillerTest,
@@ -230,13 +226,13 @@ TEST_F(ActorLoginCredentialFillerTest,
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
   form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
 
-  base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(origin, credential, future.GetCallback());
+  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
+  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers())
       .WillOnce(Return(base::span(form_managers)));
+  EXPECT_CALL(mock_callback,
+              Run(Eq(LoginStatusResult::kErrorInvalidCredential)));
   filler.AttemptLogin(&mock_password_manager_);
-  ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorInvalidCredential);
 }
 
 TEST_F(ActorLoginCredentialFillerTest,
@@ -256,13 +252,13 @@ TEST_F(ActorLoginCredentialFillerTest,
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
   form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
 
-  base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(origin, credential, future.GetCallback());
+  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
+  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers())
       .WillOnce(Return(base::span(form_managers)));
+  EXPECT_CALL(mock_callback,
+              Run(Eq(LoginStatusResult::kErrorInvalidCredential)));
   filler.AttemptLogin(&mock_password_manager_);
-  ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorInvalidCredential);
 }
 
 }  // namespace actor_login
