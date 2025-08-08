@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerBrowserTest,
   // content scripts.
   content::WebContents* web_contents = GetActiveWebContents();
   content::RenderFrameHost* background_frame =
-      ProcessManager::Get(browser()->profile())
+      ProcessManager::Get(profile())
           ->GetBackgroundHostForExtension(extension->id())
           ->main_frame_host();
   EXPECT_EQ("This page has no title.",
@@ -1982,7 +1982,7 @@ class ScriptInjectionTrackerAppBrowserTest : public PlatformAppBrowserTest {
 
   guest_view::TestGuestViewManager* GetGuestViewManager() {
     return factory_.GetOrCreateTestGuestViewManager(
-        browser()->profile(),
+        profile(),
         ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
   }
 

@@ -109,7 +109,7 @@ class ExtensionWebUIEmbeddedOptionsTest
     ExtensionWebUITest::SetUpOnMainThread();
     test_guest_view_manager_ =
         test_guest_view_manager_factory_.GetOrCreateTestGuestViewManager(
-            browser()->profile(),
+            profile(),
             ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
   }
 

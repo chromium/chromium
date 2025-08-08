@@ -57,7 +57,7 @@ class OmniboxFocusInteractiveTest : public ExtensionBrowserTest {
 
     // Prevent a focus-stealing focus bubble that warns the user that "An
     // extension has changed what page is shown when you open a new tab."
-    ExtensionPrefs* prefs = ExtensionPrefs::Get(browser()->profile());
+    ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
     prefs->UpdateExtensionPref(extension->id(),
                                kNtpOverridingExtensionAcknowledged,
                                base::Value(true));

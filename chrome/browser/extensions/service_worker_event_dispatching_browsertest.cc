@@ -160,8 +160,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
 
   // Stop the worker, and wait for it to stop. We must stop it first before we
   // can observe the kRunning status.
-  browsertest_util::StopServiceWorkerForExtensionGlobalScope(
-      browser()->profile(), extension->id());
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
   sw_started_observer.WaitForWorkerStopped();
   ASSERT_TRUE(content::CheckServiceWorkerIsStopped(sw_context_,
                                                    test_worker_version_id));
@@ -234,8 +234,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
   TestExtensionServiceWorkerRunningStatusObserver worker_restarted_observer(
       GetServiceWorkerContext());
   // Stop the worker, and wait for it to stop.
-  browsertest_util::StopServiceWorkerForExtensionGlobalScope(
-      browser()->profile(), extension->id());
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
   sw_started_stopped_observer.WaitForWorkerStopped();
   // TODO(crbug.com/40276609): Add a more guaranteed check that the worker was
   // stopped when we dispatch the event. This check confirms the worker is
@@ -292,8 +292,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
 
   // Stop the worker, and wait for it to stop. We must stop it first before we
   // can start and observe the kStarting status.
-  browsertest_util::StopServiceWorkerForExtensionGlobalScope(
-      browser()->profile(), extension->id());
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
   sw_started_stopped_observer.WaitForWorkerStopped();
 
   // Add observer that will watch for changes to the running status of the
@@ -413,8 +413,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
 
   // Stop the worker, and wait for it to stop. We must stop it first before we
   // can start and observe the kStarting status.
-  browsertest_util::StopServiceWorkerForExtensionGlobalScope(
-      browser()->profile(), extension->id());
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
   sw_started_stopped_observer.WaitForWorkerStopped();
 
   // Add observer that will watch for changes to the running status of the

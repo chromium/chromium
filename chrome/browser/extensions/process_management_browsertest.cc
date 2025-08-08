@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ProcessOverflow) {
 
   // Get extension processes.
   extensions::ProcessManager* process_manager =
-      extensions::ProcessManager::Get(browser()->profile());
+      extensions::ProcessManager::Get(profile());
   content::RenderProcessHost* extension1_host =
       (*process_manager->GetRenderFrameHostsForExtension(extension1->id())
             .begin())
@@ -321,8 +321,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ExtensionAndWebProcessOverflow) {
 
   // Verify the number of extension processes.
   std::set<int> process_ids;
-  Profile* profile = browser()->profile();
-  ProcessManager* epm = ProcessManager::Get(profile);
+  ProcessManager* epm = ProcessManager::Get(profile());
   for (ExtensionHost* host : epm->background_hosts()) {
     SCOPED_TRACE(testing::Message()
                  << "When testing extension: " << host->extension_id());
@@ -554,7 +553,7 @@ IN_PROC_BROWSER_TEST_P(ChromeWebStoreInIsolatedOriginTest,
                        NavigationLoadsChromeWebStore) {
   // Sanity check that a SiteInstance for a Chrome Web Store URL requires a
   // dedicated process.
-  content::BrowserContext* context = browser()->profile();
+  content::BrowserContext* context = profile();
   scoped_refptr<content::SiteInstance> cws_site_instance =
       content::SiteInstance::CreateForURL(context, webstore_url());
   EXPECT_TRUE(cws_site_instance->RequiresDedicatedProcess());

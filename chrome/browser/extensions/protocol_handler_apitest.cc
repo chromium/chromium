@@ -93,8 +93,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerApiTest, MAYBE_Registration) {
           permissions::PermissionRequestManager::ACCEPT_ALL);
 
   custom_handlers::ProtocolHandlerRegistry* registry =
-      ProtocolHandlerRegistryFactory::GetForBrowserContext(
-          browser()->profile());
+      ProtocolHandlerRegistryFactory::GetForBrowserContext(profile());
 
   // This synchronizes communication with the JavaScript test. To handle each
   // registerProtocolHandlerWithUserGesture() promise on the JavaScript side,

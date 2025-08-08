@@ -325,8 +325,8 @@ IN_PROC_BROWSER_TEST_F(
   // notification from occurring which prevents the previous worker instance
   // from being removed from `WorkerIdSet`. Combined with the open extension tab
   // above the worker is simulated as being stalled/blocked in terminating.
-  browsertest_util::StopServiceWorkerForExtensionGlobalScope(
-      browser()->profile(), extension()->id());
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension()->id());
   ASSERT_TRUE(content::CheckServiceWorkerIsStopped(
       GetServiceWorkerContext(), previous_service_worker_id->version_id));
 
@@ -384,8 +384,8 @@ IN_PROC_BROWSER_TEST_F(
   TestServiceWorkerTaskQueueObserver worker_id_removed_observer;
 
   // Stop the service worker.
-  browsertest_util::StopServiceWorkerForExtensionGlobalScope(
-      browser()->profile(), extension()->id());
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension()->id());
   ASSERT_TRUE(content::CheckServiceWorkerIsStopped(
       sw_context, previous_service_worker_id->version_id));
 
@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(
   // from being removed from `WorkerIdSet`. Combined with the open extension tab
   // above the worker is simulated as being stalled/blocked in terminating.
   browsertest_util::StopServiceWorkerForExtensionGlobalScope(
-      browser()->profile(), previous_service_worker_id->extension_id);
+      profile(), previous_service_worker_id->extension_id);
   ASSERT_TRUE(content::CheckServiceWorkerIsStopped(
       GetServiceWorkerContext(), previous_service_worker_id->version_id));
 
@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_P(
   // the test, `stop_interceptor` has intercepted and prevented the render stop
   // notification from occurring.
   browsertest_util::StopServiceWorkerForExtensionGlobalScope(
-      browser()->profile(), stopped_service_worker_id->extension_id);
+      profile(), stopped_service_worker_id->extension_id);
   ASSERT_TRUE(content::CheckServiceWorkerIsStopped(
       GetServiceWorkerContext(), stopped_service_worker_id->version_id));
 
@@ -590,8 +590,8 @@ IN_PROC_BROWSER_TEST_P(
   worker_state->StopObservingContextForTest();
 
   // Stop the service worker.
-  browsertest_util::StopServiceWorkerForExtensionGlobalScope(
-      browser()->profile(), extension()->id());
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension()->id());
   ASSERT_TRUE(content::CheckServiceWorkerIsStopped(
       sw_context, stopped_service_worker_id->version_id));
 
@@ -648,9 +648,8 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_EQ(worker_state->browser_state(), kExpectedBrowserState);
 
   // Deactivate extension.
-  extensions::ExtensionRegistrar::Get(browser()->profile())
-      ->DisableExtension(extension()->id(),
-                         {disable_reason::DISABLE_USER_ACTION});
+  extensions::ExtensionRegistrar::Get(profile())->DisableExtension(
+      extension()->id(), {disable_reason::DISABLE_USER_ACTION});
 
   // Confirm the worker state does not exist.
   worker_state = GetWorkerState();

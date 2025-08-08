@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
   // Both extensions receive extended lifetime.
   urls.Append(kTestOpenerExtensionUrl);
   urls.Append(kTestReceiverExtensionUrl);
-  browser()->profile()->GetPrefs()->SetList(
+  profile()->GetPrefs()->SetList(
       pref_names::kExtendedBackgroundLifetimeForPortConnectionsToUrls,
       std::move(urls));
 
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
   // Opener extension will receive extended lifetime because it connects to a
   // policy allowlisted extension.
   urls.Append(kTestReceiverExtensionUrl);
-  browser()->profile()->GetPrefs()->SetList(
+  profile()->GetPrefs()->SetList(
       pref_names::kExtendedBackgroundLifetimeForPortConnectionsToUrls,
       std::move(urls));
 
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
   // Both extensions receive extended lifetime.
   urls.Append(kTestReceiverExtensionUrl);
   urls.Append(kTestOpenerExtensionUrl);
-  browser()->profile()->GetPrefs()->SetList(
+  profile()->GetPrefs()->SetList(
       pref_names::kExtendedBackgroundLifetimeForPortConnectionsToUrls,
       std::move(urls));
 
@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
 
   // Disconnect the port from the receiver extension.
   constexpr char kDisconnectScript[] = R"(port.disconnect();)";
-  BackgroundScriptExecutor script_executor(browser()->profile());
+  BackgroundScriptExecutor script_executor(profile());
   script_executor.ExecuteScriptAsync(
       kTestReceiverExtensionId, kDisconnectScript,
       BackgroundScriptExecutor::ResultCapture::kNone,

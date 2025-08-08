@@ -1451,7 +1451,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   EXPECT_FALSE(IncognitoInfo::IsSplitMode(extension()));
 
   content::WebContents* background_web_contents =
-      ProcessManager::Get(browser()->profile())
+      ProcessManager::Get(profile())
           ->GetBackgroundHostForExtension(extension()->id())
           ->host_contents();
 
@@ -1473,7 +1473,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtension());
   content::WebContents* background_web_contents =
-      ProcessManager::Get(browser()->profile())
+      ProcessManager::Get(profile())
           ->GetBackgroundHostForExtension(extension()->id())
           ->host_contents();
 
@@ -1516,7 +1516,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   std::string script =
       CreateFetchScript(cross_site_resource, std::move(request_init));
   content::WebContents* background_web_contents =
-      ProcessManager::Get(browser()->profile())
+      ProcessManager::Get(profile())
           ->GetBackgroundHostForExtension(extension()->id())
           ->host_contents();
   content::DOMMessageQueue message_queue(background_web_contents);
@@ -1617,7 +1617,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   ASSERT_TRUE(InstallExtensionWithManifest(kManifest));
 
   content::WebContents* background_web_contents =
-      ProcessManager::Get(browser()->profile())
+      ProcessManager::Get(profile())
           ->GetBackgroundHostForExtension(extension()->id())
           ->host_contents();
 
@@ -1768,8 +1768,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   content::WebContents* incognito_contents = nullptr;
   {
     GURL http_test_page = GetTestPageUrl("fetch-initiator.com");
-    Browser* incognito_browser =
-        OpenURLOffTheRecord(browser()->profile(), http_test_page);
+    Browser* incognito_browser = OpenURLOffTheRecord(profile(), http_test_page);
     incognito_contents =
         incognito_browser->tab_strip_model()->GetActiveWebContents();
     ASSERT_EQ(http_test_page, incognito_contents->GetLastCommittedURL());
@@ -1874,8 +1873,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   GURL extension_page = extension->GetResourceURL("page.html");
   content::WebContents* regular_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), extension_page);
+  Browser* incognito_browser = OpenURLOffTheRecord(profile(), extension_page);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_page));
   content::WebContents* incognito_contents =
       incognito_browser->tab_strip_model()->GetActiveWebContents();
@@ -2174,7 +2172,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
     auto function = base::MakeRefCounted<TabsExecuteScriptFunction>();
     function->set_extension(extension());
     std::string actual_error = api_test_utils::RunFunctionAndReturnError(
-        function.get(), args, browser()->profile());
+        function.get(), args, profile());
     std::string expected_error =
         "Cannot access contents of url \"chrome://settings/\". "
         "Extension manifest must request permission to access this host.";
@@ -2743,7 +2741,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   GURL original_document_url =
       embedded_test_server()->GetURL(kActiveTabHost, "/title1.html");
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), original_document_url);
+      OpenURLOffTheRecord(profile(), original_document_url);
 
   // CORS exception shouldn't be initially granted based on ActiveTab.
   GURL cross_site_resource(
@@ -2853,7 +2851,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   GURL regular_resource_url =
       embedded_test_server()->GetURL(kRegularHost, "/nosniff.xml");
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), incognito_page_url);
+      OpenURLOffTheRecord(profile(), incognito_page_url);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), regular_page_url));
 
   // No CORS exception for `kIncognitoHost` should be initially granted based on
@@ -2978,7 +2976,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   GURL original_document_url =
       embedded_test_server()->GetURL(kActiveTabHost, "/title1.html");
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), original_document_url);
+      OpenURLOffTheRecord(profile(), original_document_url);
 
   // CORS exception shouldn't be initially granted based on ActiveTab.
   GURL cross_site_resource(
