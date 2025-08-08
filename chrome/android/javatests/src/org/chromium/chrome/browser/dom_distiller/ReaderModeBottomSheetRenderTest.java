@@ -87,7 +87,7 @@ public class ReaderModeBottomSheetRenderTest {
                                             .getActivity()
                                             .getRootUiCoordinatorForTesting()
                                             .getBottomSheetController());
-                    mView = mCoordinator.getView();
+                    mView = mCoordinator.getViewForTesting();
                     mContentView.addView(mView);
                 });
     }
