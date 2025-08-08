@@ -12,6 +12,15 @@ source_set("passage_embeddings") {
     "passage_embedder_model_observer_factory.h",
   ]
 
+  if (!is_android) {
+    sources += [
+      "page_embeddings_service.cc",
+      "page_embeddings_service.h",
+      "page_embeddings_service_factory.cc",
+      "page_embeddings_service_factory.h",
+    ]
+  }
+
   public_deps = [ "//components/passage_embeddings" ]
 
   deps = [
@@ -25,4 +34,20 @@ source_set("passage_embeddings") {
     "//content/public/browser",
     "//services/passage_embeddings/public/mojom",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  if (!is_android) {
+    sources = [ "page_embeddings_service_unittest.cc" ]
+    deps = [
+      ":passage_embeddings",
+      "//chrome/browser/page_content_annotations:extraction_service",
+      "//chrome/test:test_support",
+      "//components/passage_embeddings:passage_embeddings_types",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
 }

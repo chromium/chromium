@@ -8254,6 +8254,7 @@ test("unit_tests") {
       "//chrome/browser/actor:unit_tests",
       "//chrome/browser/actor/ui:unit_tests",
       "//chrome/browser/contextual_cueing:unit_tests",
+      "//chrome/browser/passage_embeddings:unit_tests",
       "//chrome/browser/password_manager/actor_login:unit_tests",
       "//chrome/browser/password_manager/password_change",
       "//chrome/browser/password_manager/password_change:unit_tests",
