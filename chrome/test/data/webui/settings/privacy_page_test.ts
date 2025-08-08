@@ -280,12 +280,10 @@ suite('ContentSettingsVisibility', function() {
     // except
     //   1. protocol handlers,
     //   2. pdf documents,
-    //   3. protected content (except on chromeos and win),
+    //   3. protected content (is in its own element),
     //   4. notifications (is in its own element)
-    let expectedPagesCount = redesignedPages.length - 4;
-    // <if expr="is_chromeos or is_win">
-    expectedPagesCount += 1;
-    // </if>
+    //   5. geolocation (is in its own element)
+    const expectedPagesCount = redesignedPages.length - 4;
 
     assertEquals(
         page.shadowRoot!
