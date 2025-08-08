@@ -90,8 +90,8 @@ class DeveloperPrivateAPIFunction : public ExtensionFunction {
                               const std::string& error,
                               size_t line_number,
                               const std::string& manifest)>;
-  // Takes in an |error| string and tries to parse it as a manifest error (with
-  // line number), asynchronously calling |callback| with the results.
+  // Takes in an `error` string and tries to parse it as a manifest error (with
+  // line number), asynchronously calling `callback` with the results.
   void GetManifestError(const std::string& error,
                         const base::FilePath& extension_path,
                         GetManifestErrorCallback callback);
