@@ -21,6 +21,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_FUNCTIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_FUNCTIONS_H_
 
+#include <cstddef>
 #include <stdint.h>
 
 #include <concepts>

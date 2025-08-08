@@ -42,6 +42,7 @@ component("gin") {
     "per_context_data.h",
     "per_isolate_data.cc",
     "per_isolate_data.h",
+    "persistent.h",
     "public/context_holder.h",
     "public/cppgc.h",
     "public/debug.h",
@@ -74,6 +75,7 @@ component("gin") {
     "v8_platform.cc",
     "v8_shared_memory_dump_provider.cc",
     "v8_shared_memory_dump_provider.h",
+    "weak_cell.h",
     "wrappable.cc",
     "wrappable.h",
   ]

@@ -12,6 +12,7 @@ include_rules = [
     "+base/task/post_job.h",
     "+gin/public/cppgc.h",
     "+gin/public/v8_platform.h",
+    "+gin/weak_cell.h",
     "+testing/perf/perf_result_reporter.h",
 
     "+third_party/blink/renderer/platform/bindings",
