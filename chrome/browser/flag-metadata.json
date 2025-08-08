@@ -5938,11 +5938,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "ios-enable-delete-all-saved-credentials",
-    "owners": ["mxlg@google.com", "bling-transactions@google.com"],
-    "expiry_milestone": 137
-  },
-  {
     "name": "ios-expanded-tips",
     "owners": ["scottyoder@google.com", "bwwilliams@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 142
