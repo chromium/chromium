@@ -263,7 +263,8 @@ ScriptPromise<GPUDevice> GPUAdapter::requestDevice(
     }
   }
 
-  Vector<wgpu::FeatureName> required_features;
+  // Use a set to prevent duplicate features.
+  HashSet<wgpu::FeatureName> required_features_set;
   // The ShaderModuleCompilationOptions feature is required only if the adapter
   // has the ShaderModuleCompilationOptions feature and the user has enabled the
   // WebGPUDeveloperFeatures flag. It is needed to control
@@ -271,12 +272,10 @@ ScriptPromise<GPUDevice> GPUAdapter::requestDevice(
   if (RuntimeEnabledFeatures::WebGPUDeveloperFeaturesEnabled() &&
       GetHandle().HasFeature(
           wgpu::FeatureName::ShaderModuleCompilationOptions)) {
-    required_features.push_back(
+    required_features_set.insert(
         wgpu::FeatureName::ShaderModuleCompilationOptions);
   }
   if (descriptor->hasRequiredFeatures()) {
-    // Insert features into a set to dedup them.
-    HashSet<wgpu::FeatureName> required_features_set;
     for (const V8GPUFeatureName& f : descriptor->requiredFeatures()) {
       // If the feature is not a valid feature reject with a type error.
       if (!features_->Has(f.AsEnum())) {
@@ -286,13 +285,13 @@ ScriptPromise<GPUDevice> GPUAdapter::requestDevice(
       }
       required_features_set.insert(AsDawnEnum(f));
     }
-
-    // Then, push the deduped features into a vector.
-    required_features.AppendRange(required_features_set.begin(),
-                                  required_features_set.end());
-    dawn_desc.requiredFeatures = required_features.data();
-    dawn_desc.requiredFeatureCount = required_features.size();
   }
+
+  Vector<wgpu::FeatureName> required_features;
+  required_features.AppendRange(required_features_set.begin(),
+                                required_features_set.end());
+  dawn_desc.requiredFeatures = required_features.data();
+  dawn_desc.requiredFeatureCount = required_features.size();
 
   std::string label = descriptor->label().Utf8();
   if (!label.empty()) {
