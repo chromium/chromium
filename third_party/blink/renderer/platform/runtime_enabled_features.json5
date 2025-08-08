@@ -5168,6 +5168,13 @@
     {
       name: "UpdateSelectionOnNodeInsertion"
     },
+    // Fix for https://crbug.com/436624850
+    // Ensures trivial_text_ is updated after fragment creation from text
+    // by calling UpdateTrivialReplacementText()
+    {
+      name: "UpdateTrivalTextAfterFragmentCreationFromText",
+      status: "stable",
+    },
     {
       name: "URLPatternCompareComponent",
       status: "experimental",

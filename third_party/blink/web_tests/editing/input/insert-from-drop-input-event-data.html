@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>insertFromDrop event data for contenteditable to textarea drag and drop</title>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+    <style>
+        #contenteditable {
+            width: 200px;
+            height: 50px;
+            border: 1px solid blue;
+            padding: 5px;
+            margin: 10px;
+            background-color: #f0f8ff;
+        }
+
+        #textarea {
+            width: 200px;
+            height: 50px;
+            border: 1px solid green;
+            margin: 10px;
+            background-color: #f0fff0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="contenteditable" contenteditable>
+        Trivial text content
+    </div>
+
+    <textarea id="textarea" placeholder="Drop content here"></textarea>
+
+    <script>
+        test(function () {
+            assert_not_equals(
+                window.eventSender,
+                undefined,
+                "This test requires eventSender."
+            );
+        });
+
+        function simulateDragDropFromContentEditableToTextarea() {
+            const contentEditable = document.getElementById("contenteditable");
+            const textarea = document.getElementById("textarea");
+
+            // Focus on contenteditable and select all text
+            contentEditable.focus();
+            const selection = window.getSelection();
+            selection.selectAllChildren(contentEditable);
+
+            // Get the selected text for verification
+            const selectedText = selection.toString().trim();
+
+            // Simulate drag from contenteditable to textarea
+            eventSender.mouseMoveTo(
+                contentEditable.offsetLeft + contentEditable.offsetWidth / 2,
+                contentEditable.offsetTop + contentEditable.offsetHeight / 2
+            );
+            eventSender.mouseDown();
+            eventSender.leapForward(600);
+            eventSender.mouseMoveTo(
+                textarea.offsetLeft + textarea.offsetWidth / 2,
+                textarea.offsetTop + textarea.offsetHeight / 2
+            );
+            eventSender.mouseUp();
+
+            return selectedText;
+        }
+
+        test(function () {
+            const textarea = document.getElementById("textarea");
+            const contentEditable = document.getElementById("contenteditable");
+
+            let inputEventFired = false;
+            let inputEventData = null;
+            let inputEventType = null;
+            let beforeInputEventFired = false;
+            let beforeInputEventData = null;
+
+            // Listen for input event on textarea (the drop target)
+            textarea.addEventListener("input", function (event) {
+                if (event.inputType === "insertFromDrop") {
+                    inputEventData = event.data;
+                    inputEventType = event.inputType;
+                }
+            });
+
+            // Perform the drag and drop operation
+            const draggedText = simulateDragDropFromContentEditableToTextarea();
+
+            assert_equals(
+                inputEventType,
+                "insertFromDrop",
+                "input event should have correct inputType"
+            );
+
+            // event.data should contain the dragged text
+            assert_equals(
+                inputEventData,
+                "Trivial text content",
+                "input event data should contain the dragged text from contenteditable"
+            );
+
+            // Verify the text was actually dropped
+            assert_true(
+                textarea.value.includes("Trivial text content"),
+                "textarea should contain the dropped text"
+            );
+
+        }, "insertFromDrop input event should have correct data when dragging from contenteditable to textarea");
+    </script>
+</body>
+
+</html>

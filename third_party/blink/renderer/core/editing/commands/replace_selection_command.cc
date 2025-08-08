@@ -97,6 +97,7 @@ class ReplacementFragment final {
   Node* LastChild() const;
 
   String TrivialReplacementText() const { return trivial_text_; }
+  bool IsTrivialTextOnlyFragment() const;
 
   bool IsEmpty() const;
 
@@ -273,6 +274,13 @@ ReplacementFragment::ReplacementFragment(Document* document,
 
     fragment_ = CreateFragmentFromText(selection.ToNormalizedEphemeralRange(),
                                        evt->GetText());
+
+    // Fragment may have become trivial after recreation from text
+    if (RuntimeEnabledFeatures::
+            UpdateTrivalTextAfterFragmentCreationFromTextEnabled()) {
+      UpdateTrivialReplacementText();
+    }
+
     if (!fragment_->HasChildren())
       return;
 
@@ -322,11 +330,16 @@ void ReplacementFragment::UpdateFragmentForTextArea() {
 }
 
 void ReplacementFragment::UpdateTrivialReplacementText() {
-  if (!FirstChild() || FirstChild() != LastChild() ||
-      !FirstChild()->IsTextNode()) {
+  if (!IsTrivialTextOnlyFragment()) {
     return;
   }
+
   trivial_text_ = To<Text>(FirstChild())->data();
+}
+
+bool ReplacementFragment::IsTrivialTextOnlyFragment() const {
+  return FirstChild() && FirstChild() == LastChild() &&
+         FirstChild()->IsTextNode();
 }
 
 bool ReplacementFragment::IsEmpty() const {
@@ -2181,9 +2194,9 @@ bool ReplaceSelectionCommand::PerformTrivialReplace(
   // Save the text to set event data for input events.
   input_event_data_ = fragment.TrivialReplacementText();
 
-  if (!fragment.FirstChild() || fragment.FirstChild() != fragment.LastChild() ||
-      !fragment.FirstChild()->IsTextNode())
+  if (!fragment.IsTrivialTextOnlyFragment()) {
     return false;
+  }
 
   // FIXME: Would be nice to handle smart replace in the fast path.
   if (smart_replace_ || fragment.HasInterchangeNewlineAtStart() ||

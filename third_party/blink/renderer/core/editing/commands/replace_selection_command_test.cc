@@ -317,4 +317,30 @@ TEST_F(ReplaceSelectionCommandTest, InsertLineFeedsToTextArea) {
   }
 }
 
+TEST_F(ReplaceSelectionCommandTest, TrivialFragmentTextDataForInputEvent) {
+  SetBodyContent("<textarea></textarea>");
+  Element* textarea = QuerySelector("textarea");
+  textarea->Focus();
+
+  // Create a fragment with span wrapper around text content
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  Element* span = GetDocument().CreateRawElement(html_names::kSpanTag);
+  span->appendChild(Text::Create(GetDocument(), "test content"));
+  fragment.appendChild(span);
+
+  // Use insertFromDrop input type to test the TextDataForInputEvent
+  // functionality
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, /* options */ 0,
+      InputEvent::InputType::kInsertFromDrop);
+
+  // Apply the command
+  EXPECT_TRUE(command.Apply()) << "ReplaceSelectionCommand should succeed";
+
+  // After Apply(), verify TextDataForInputEvent returns the correct text.
+  String result = command.TextDataForInputEvent();
+  EXPECT_EQ("test content", result) << "TextDataForInputEvent should return "
+                                       "the correct trivial text after Apply";
+}
+
 }  // namespace blink
