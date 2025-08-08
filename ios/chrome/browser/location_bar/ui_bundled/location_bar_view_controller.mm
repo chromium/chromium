@@ -364,20 +364,6 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   }
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-  [super viewWillDisappear:animated];
-
-  [NSNotificationCenter.defaultCenter
-      removeObserver:self
-                name:UIPasteboardChangedNotification
-              object:nil];
-
-  [NSNotificationCenter.defaultCenter
-      removeObserver:self
-                name:UIApplicationDidBecomeActiveNotification
-              object:nil];
-}
-
 #if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
