@@ -124,6 +124,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/test:test_support",
     "//chrome/common/chromeos/extensions",
     "//chrome/test:test_support_ui",
     "//chromeos/crosapi/cpp/telemetry:test_support",

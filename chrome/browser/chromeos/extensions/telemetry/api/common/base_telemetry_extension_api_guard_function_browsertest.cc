@@ -7,18 +7,16 @@
 
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/test/regular_logged_in_browser_test_mixin.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/api_guard_delegate.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/fake_api_guard_delegate.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/remote_probe_service_strategy.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/cpp/telemetry/fake_probe_service.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_features.h"
 #include "net/base/net_errors.h"
@@ -739,7 +737,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardBrowserTest,
 
 // Class that use real ApiGuardDelegate instance to verify its behavior.
 class TelemetryExtensionApiGuardRealDelegateBrowserTest
-    : public BaseTelemetryExtensionBrowserTest {
+    : public InProcessBrowserTestMixinHostSupport<
+          BaseTelemetryExtensionBrowserTest> {
  public:
   TelemetryExtensionApiGuardRealDelegateBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
@@ -757,11 +756,13 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
     ASSERT_TRUE(https_server_.InitializeAndListen());
 
-    BaseTelemetryExtensionBrowserTest::SetUp();
+    InProcessBrowserTestMixinHostSupport<
+        BaseTelemetryExtensionBrowserTest>::SetUp();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    BaseTelemetryExtensionBrowserTest::SetUpCommandLine(command_line);
+    InProcessBrowserTestMixinHostSupport<
+        BaseTelemetryExtensionBrowserTest>::SetUpCommandLine(command_line);
 
     command_line->AppendSwitchASCII(
         chromeos::switches::kTelemetryExtensionPwaOriginOverrideForTesting,
@@ -771,11 +772,8 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
   void SetUpOnMainThread() override {
     // Skip BaseTelemetryExtensionBrowserTest::SetUpOnMainThread() as it sets up
     // a FakeApiGuardDelegate instance.
+    mixin_host_.SetUpOnMainThread();
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
-
-    // Must be initialized before dealing with UserManager.
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<ash::FakeChromeUserManager>());
 
     https_server_.StartAcceptingConnections();
 
@@ -797,22 +795,7 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
         fake_probe_service_->BindNewPipeAndPassRemote());
   }
 
-  void TearDownOnMainThread() override {
-    // Explicitly removing the user is required; otherwise ProfileHelper keeps
-    // a dangling pointer to the User.
-    // TODO(b/208629291): Consider removing all users from ProfileHelper in the
-    // destructor of ash::FakeChromeUserManager.
-    GetFakeUserManager()->RemoveUserFromList(
-        GetFakeUserManager()->GetActiveUser()->GetAccountId());
-    user_manager_enabler_.reset();
-  }
-
  protected:
-  ash::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-
   GURL GetPwaGURL() const { return https_server_.GetURL("/ssl/google.html"); }
 
   // BaseTelemetryExtensionBrowserTest:
@@ -823,7 +806,9 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
 
   std::unique_ptr<FakeProbeService> fake_probe_service_;
 
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  ash::RegularLoggedInBrowserTestMixin logged_in_mixin_{
+      &mixin_host_,
+      AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345"))};
 };
 
 // Smoke test to verify that real ApiGuardDelegate works in prod.
@@ -831,14 +816,6 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
                        DISABLED_CanAccessRunBatteryCapacityRoutine) {
   SetUpProbeService();
-
-  // Add a new user and make it owner.
-  auto* const user_manager = GetFakeUserManager();
-  const AccountId account_id = AccountId::FromUserEmail("user@example.com");
-  user_manager->AddUser(account_id);
-  user_manager->LoginUser(account_id);
-  user_manager->SwitchActiveUser(account_id);
-  user_manager->SetOwnerId(account_id);
 
   // Make sure PWA UI is open and secure.
   auto* pwa_page_rfh =
@@ -863,14 +840,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
                        DISABLED_UseCacheForMultipleApiAccess) {
   SetUpProbeService();
-
-  // Add a new user and make it owner.
-  auto* const user_manager = GetFakeUserManager();
-  const AccountId account_id = AccountId::FromUserEmail("user@example.com");
-  user_manager->AddUser(account_id);
-  user_manager->LoginUser(account_id);
-  user_manager->SwitchActiveUser(account_id);
-  user_manager->SetOwnerId(account_id);
 
   // Make sure PWA UI is open and secure.
   auto* pwa_page_rfh =

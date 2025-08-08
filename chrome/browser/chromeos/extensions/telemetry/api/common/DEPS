@@ -26,7 +26,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-   'api_guard_delegate_unittest.cc': [
-      '+chrome/browser/web_applications/test/web_app_install_test_utils.h',
+   "api_guard_delegate_unittest\\.cc": [
+      "+chrome/browser/web_applications/test/web_app_install_test_utils.h",
+   ],
+   "base_telemetry_extension_api_guard_function_browsertest\\.cc": [
+      "+chrome/browser/ash/test/regular_logged_in_browser_test_mixin.h",
    ],
 }
