@@ -68,8 +68,13 @@ void SavedTabGroupModelListener::OnTabGroupAdded(
       group_and_tab_guid_mapping.second;
   service_->AddGroup(std::move(copy_group));
 
+  // It's possible that the group is null, which happens in case
+  // TabGroupSyncService is not yet initialized. In that case, we will skip the
+  // "Connect" step, as that will happen as a part of post-init reconcilition.
   std::optional<SavedTabGroup> group = service_->GetGroup(group_id);
-  ConnectToLocalTabGroup(group.value(), tab_guid_mapping);
+  if (group.has_value()) {
+    ConnectToLocalTabGroup(group.value(), tab_guid_mapping);
+  }
 }
 
 void SavedTabGroupModelListener::OnTabGroupWillBeRemoved(
