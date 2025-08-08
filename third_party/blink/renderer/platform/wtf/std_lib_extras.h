@@ -60,8 +60,9 @@
 #define DEFINE_STATIC_LOCAL(Type, Name, Arguments) \
   DEFINE_STATIC_LOCAL_IMPL(Type, Name, Arguments, false)
 
-// |DEFINE_THREAD_SAFE_STATIC_LOCAL()| is the cross-thread accessible variant
-// of |DEFINE_STATIC_LOCAL()|; use it if the singleton can be accessed by
+// |DEFINE_THREAD_SAFE_STATIC_LOCAL()| doesn't provide additional thread-safety,
+// but it effectively bypasses the `IsNotRacy` DCHECK present in
+// |DEFINE_STATIC_LOCAL()|; use it if the singleton can be accessed by
 // multiple threads.
 //
 // TODO: rename as DEFINE_CROSS_THREAD_STATIC_LOCAL() ?
