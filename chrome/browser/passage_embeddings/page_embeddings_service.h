@@ -17,6 +17,7 @@
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -28,20 +29,6 @@ class PageContentExtractionService;
 }
 
 namespace passage_embeddings {
-
-class WebContentsDestructionObserver : public content::WebContentsObserver {
- public:
-  WebContentsDestructionObserver(
-      content::WebContents* web_contents,
-      base::OnceCallback<void(content::WebContents*)> destroyed_callback);
-  ~WebContentsDestructionObserver() override;
-
-  // content::WebContentsObserver:
-  void WebContentsDestroyed() override;
-
- private:
-  base::OnceCallback<void(content::WebContents*)> destroyed_callback_;
-};
 
 // A passage from a page along with its computed embedding.
 struct PassageEmbedding {
@@ -117,6 +104,11 @@ class PageEmbeddingsService
 
   ScopedPriority RaisePriority(Observer* observer, Priority priority);
 
+  // PageEmbeddingsService computes embeddings lazily for the active tab, on
+  // backgrounding. ProcessAllEmbeddings() forces the active tab's embeddings to
+  // be processed.
+  void ProcessAllEmbeddings();
+
   // Retrieves the embeddings for web_content. Returns the empty vector if
   // embeddings have not yet been computed.
   std::vector<PassageEmbedding> GetEmbeddings(
@@ -129,13 +121,15 @@ class PageEmbeddingsService
       override;
 
  private:
+  class WebContentsEventsObserver;
+
+  void ComputeEmbeddings(content::WebContents* web_contents);
+
   void OnEmbeddingsComputed(base::WeakPtr<content::WebContents> web_contents,
                             std::vector<std::string> passages,
                             std::vector<Embedding> embeddings,
                             Embedder::TaskId task_id,
                             ComputeEmbeddingsStatus status);
-
-  void OnWebContentsDestroyed(content::WebContents* web_contents);
 
   static Priority GetActivePriority(
       const base::ObserverList<Observer>& observers,
@@ -143,14 +137,7 @@ class PageEmbeddingsService
 
   void UpdateTaskPriorities(Priority priority);
 
-  struct WebContentsState {
-    WebContentsState();
-    ~WebContentsState();
-
-    std::unique_ptr<WebContentsDestructionObserver> observer;
-    std::optional<Embedder::TaskId> active_task;
-    std::vector<PassageEmbedding> passage_embeddings;
-  };
+  struct WebContentsState;
 
   const EmbeddingCandidatesGenerator candidates_generator_;
 

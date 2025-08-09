@@ -33,17 +33,50 @@ passage_embeddings::PassagePriority ConvertToPassagePriority(
 }
 }  // namespace
 
-WebContentsDestructionObserver::WebContentsDestructionObserver(
-    content::WebContents* web_contents,
-    base::OnceCallback<void(content::WebContents*)> destroyed_callback)
-    : WebContentsObserver(web_contents),
-      destroyed_callback_(std::move(destroyed_callback)) {}
+class PageEmbeddingsService::WebContentsEventsObserver
+    : public content::WebContentsObserver {
+ public:
+  WebContentsEventsObserver(content::WebContents* web_contents,
+                            PageEmbeddingsService* page_embeddings_service)
+      : WebContentsObserver(web_contents),
+        page_embeddings_service_(page_embeddings_service) {}
+  ~WebContentsEventsObserver() override = default;
 
-WebContentsDestructionObserver::~WebContentsDestructionObserver() = default;
+  void OnVisibilityChanged(content::Visibility visibility) override {
+    if (visibility == content::Visibility::HIDDEN) {
+      page_embeddings_service_->ComputeEmbeddings(web_contents());
+    }
+  }
 
-void WebContentsDestructionObserver::WebContentsDestroyed() {
-  std::move(destroyed_callback_).Run(web_contents());
-}
+  void WebContentsDestroyed() override {
+    page_embeddings_service_->web_contents_state_.erase(web_contents());
+  }
+
+  bool IsWebContentsHidden() const {
+    return web_contents()->GetVisibility() == content::Visibility::HIDDEN;
+  }
+
+ private:
+  raw_ptr<PageEmbeddingsService> page_embeddings_service_;
+};
+
+struct PageEmbeddingsService::WebContentsState {
+  WebContentsState();
+  ~WebContentsState();
+
+  std::unique_ptr<WebContentsEventsObserver> observer;
+
+  // pending_passages is non-empty from the time passages are produced via
+  // candidates_generator_ to the time that embeddings are requested.
+  std::vector<std::string> pending_passages;
+
+  // The currently active task for computing embeddings. Non-empty while the
+  // embedding computation is pending.
+  std::optional<Embedder::TaskId> active_task;
+
+  // passage_embeddings is empty until embeddings are received.
+  std::vector<PassageEmbedding> passage_embeddings;
+};
 
 PageEmbeddingsService::ScopedPriority::ScopedPriority(
     PageEmbeddingsService* service,
@@ -122,6 +155,17 @@ PageEmbeddingsService::ScopedPriority PageEmbeddingsService::RaisePriority(
   return ScopedPriority(this, observer, priority);
 }
 
+void PageEmbeddingsService::ProcessAllEmbeddings() {
+  // For the computation of embeddings for all visible tabs, which are otherwise
+  // only lazily computed on being hidden.
+  for (const auto& [web_contents, web_contents_state] : web_contents_state_) {
+    if (!web_contents_state.observer->IsWebContentsHidden() &&
+        !web_contents_state.pending_passages.empty()) {
+      ComputeEmbeddings(web_contents);
+    }
+  }
+}
+
 std::vector<PassageEmbedding> PageEmbeddingsService::GetEmbeddings(
     content::WebContents* web_content) const {
   const auto loc = web_contents_state_.find(web_content);
@@ -136,31 +180,41 @@ void PageEmbeddingsService::OnPageContentExtracted(
     const optimization_guide::proto::AnnotatedPageContent& page_content) {
   auto* const web_contents =
       content::WebContents::FromRenderFrameHost(&page.GetMainDocument());
-  std::vector<std::string> passages =
-      candidates_generator_.Run(page_content, 10);
 
   auto loc = web_contents_state_.find(web_contents);
   if (loc == web_contents_state_.end()) {
     web_contents_state_[web_contents].observer =
-        std::make_unique<WebContentsDestructionObserver>(
-            web_contents,
-            base::BindOnce(&PageEmbeddingsService::OnWebContentsDestroyed,
-                           // The observer's lifetime is less than this object.
-                           base::Unretained(this)));
+        std::make_unique<WebContentsEventsObserver>(web_contents, this);
   }
 
-  if (web_contents_state_[web_contents].active_task.has_value()) {
-    embedder_->TryCancel(*web_contents_state_[web_contents].active_task);
-    web_contents_state_[web_contents].active_task.reset();
+  web_contents_state_[web_contents].pending_passages =
+      candidates_generator_.Run(page_content, 10);
+
+  if (web_contents_state_[web_contents].observer->IsWebContentsHidden()) {
+    // The WebContents may have transitioned from visible to hidden by the time
+    // we received the passages, so compute embeddings.
+    ComputeEmbeddings(web_contents);
+  }
+}
+
+void PageEmbeddingsService::ComputeEmbeddings(
+    content::WebContents* web_contents) {
+  WebContentsState& state = web_contents_state_[web_contents];
+  if (state.active_task.has_value()) {
+    embedder_->TryCancel(*state.active_task);
+    state.active_task.reset();
   }
 
-  Embedder::TaskId task_id = embedder_->ComputePassagesEmbeddings(
-      ConvertToPassagePriority(current_priority_), std::move(passages),
+  // Ensure that state.pending_passages is cleared before invoking
+  // ComputePassagesEmbeddings().
+  std::vector<std::string> pending_passages;
+  pending_passages.swap(state.pending_passages);
+
+  state.active_task = embedder_->ComputePassagesEmbeddings(
+      ConvertToPassagePriority(current_priority_), std::move(pending_passages),
       base::BindOnce(&PageEmbeddingsService::OnEmbeddingsComputed,
                      weak_ptr_factory_.GetWeakPtr(),
                      web_contents->GetWeakPtr()));
-
-  web_contents_state_[web_contents].active_task = task_id;
 }
 
 void PageEmbeddingsService::OnEmbeddingsComputed(
@@ -200,11 +254,6 @@ void PageEmbeddingsService::OnEmbeddingsComputed(
   for (Observer& observer : observers_) {
     observer.OnPageEmbeddingsAvailable(web_contents.get());
   }
-}
-
-void PageEmbeddingsService::OnWebContentsDestroyed(
-    content::WebContents* web_contents) {
-  web_contents_state_.erase(web_contents);
 }
 
 // static
