@@ -12,7 +12,6 @@
 #include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/check_deref.h"
-#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/functional/bind.h"
@@ -158,7 +157,6 @@ MultiCaptureUsageIndicatorService::Create(
     NotificationDisplayService* notification_display_service,
     MultiCaptureDataService* data_service) {
   if (!prefs || !provider || !notification_display_service || !data_service) {
-    CHECK_IS_TEST();
     return nullptr;
   }
   return base::WrapUnique(new MultiCaptureUsageIndicatorService(
@@ -406,7 +404,6 @@ void MultiCaptureUsageIndicatorService::ShowActiveMultiCaptureNotifications(
 
 void MultiCaptureUsageIndicatorService::RefreshNotifications() {
   if (!notification_display_service_) {
-    CHECK_IS_TEST();
     return;
   }
 

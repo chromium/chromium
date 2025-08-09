@@ -5,7 +5,6 @@
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service.h"
 
 #include "base/barrier_closure.h"
-#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/types/expected_macros.h"
@@ -40,7 +39,6 @@ std::unique_ptr<MultiCaptureDataService> MultiCaptureDataService::Create(
     web_app::WebAppProvider* provider,
     PrefService* prefs) {
   if (!provider || !prefs) {
-    CHECK_IS_TEST();
     return nullptr;
   }
   auto service = base::WrapUnique(new MultiCaptureDataService(provider, prefs));
@@ -169,8 +167,6 @@ void MultiCaptureDataService::LoadData() {
   // Listen for app installation changes after initial processing.
   if (!install_manager_observation_.IsObserving()) {
     install_manager_observation_.Observe(&provider_->install_manager());
-  } else {
-    CHECK_IS_TEST();
   }
   is_initialized_ = true;
 }
