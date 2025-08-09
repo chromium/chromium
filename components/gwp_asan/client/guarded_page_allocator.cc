@@ -57,10 +57,6 @@ T RandomEviction(std::vector<T>* list) {
 
 }  // namespace
 
-// TODO: Delete out-of-line constexpr defininitons once C++17 is in use.
-constexpr size_t GuardedPageAllocator::kOutOfMemoryCount;
-constexpr size_t GuardedPageAllocator::kGpaAllocAlignment;
-
 template <typename T>
 void GuardedPageAllocator::SimpleFreeList<T>::Initialize(T max_entries) {
   max_entries_ = max_entries;
