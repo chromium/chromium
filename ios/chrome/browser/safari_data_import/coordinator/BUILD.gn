@@ -64,6 +64,7 @@ source_set("import_coordinator") {
     "//components/password_manager/core/browser/ui",
     "//components/reading_list/core",
     "//components/signin/public/identity_manager/",
+    "//components/strings",
     "//components/user_data_importer/ios",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/affiliations/model",

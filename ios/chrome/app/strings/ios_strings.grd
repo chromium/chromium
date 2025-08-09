@@ -5473,6 +5473,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_TITLE" desc="Title of the alert message informing the user that the currently selected file could not be imported to Chrome. [iOS only]">
         Something went wrong
       </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_FILE_DELETION_ALERT_ACTION_DELETE" desc="Button in the alert message that deletes the imported ZIP file for the user. [iOS only]">
+        Yes, delete
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_FILE_DELETION_ALERT_DESCRIPTION" desc="Description in the alert message offering to delete the imported ZIP file for the user. [iOS only]">
+        This action can't be undone
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_FILE_DELETION_ALERT_TITLE" desc="Title of the alert message offering to delete the imported ZIP file for the user. [iOS only]">
+        Delete "<ph name="FILENAME">$1<ex>Safari Export 1970-01-01.zip</ex></ph>"?
+      </message>
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_INSTRUCTIONS_ONE" desc="Instructions view to teach users how to import data from Safari - step 1. [iOS only]">
         Tap <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Select your file<ph name="END_BOLD">END_BOLD</ph>
       </message>
