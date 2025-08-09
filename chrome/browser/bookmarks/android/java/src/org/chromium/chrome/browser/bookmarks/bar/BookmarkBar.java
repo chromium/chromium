@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -35,6 +36,14 @@ class BookmarkBar extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mOverflowButton = findViewById(R.id.bookmark_bar_overflow_button);
+    }
+
+    @Override
+    @SuppressLint("ClickableViewAccessibility")
+    public boolean onTouchEvent(MotionEvent event) {
+        super.onTouchEvent(event);
+        // Prevent touch events from "falling through" to views below.
+        return true;
     }
 
     @Override
