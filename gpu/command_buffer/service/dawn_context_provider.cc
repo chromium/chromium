@@ -555,27 +555,58 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   }
 
   // Provided to wgpu::Device as logging callback.
-  static void LogInfo(wgpu::LoggingType type,
-                      wgpu::StringView message,
-                      DawnSharedContext* shared_context) {
+  static void DeviceLogInfo(wgpu::LoggingType type,
+                            wgpu::StringView message,
+                            DawnSharedContext* shared_context) {
+    CHECK(shared_context);
+
     std::string_view view = {message.data, message.length};
+
     switch (static_cast<wgpu::LoggingType>(type)) {
       case wgpu::LoggingType::Warning:
         LOG(WARNING) << view;
-        if (shared_context && !shared_context->device_) {
-          // If device hasn't been created yet. This warning message must be
-          // from dawn::native::Instance when we try to enumerate adapters or
-          // when trying to create the device. In that case, saving the message
-          // so that if there is any init failure afterward, we can include the
-          // warnings in the LogInitFailure()'s report.
-          shared_context->init_warning_msgs_.append(view);
-          shared_context->init_warning_msgs_.append("\n");
-        }
+        break;
+      case wgpu::LoggingType::Error:
+        // Trigger context loss.
+        shared_context->OnError(wgpu::ErrorType::Internal, view);
+        break;
+      default:
+        break;
+    }
+  }
+
+  // Provided to wgpu::Instance as logging callback.
+  static void InstanceLogInfo(wgpu::LoggingType type,
+                              wgpu::StringView message,
+                              DawnSharedContext* shared_context) {
+    CHECK(shared_context);
+
+    std::string_view view = {message.data, message.length};
+
+    if (!shared_context->device_) {
+      // If device hasn't been created yet. Saving the message so that if there
+      // is any init failure afterward, we can include the messages in the
+      // LogInitFailure()'s report.
+      shared_context->StoreInitLoggingMessage(view);
+    }
+
+    switch (static_cast<wgpu::LoggingType>(type)) {
+      case wgpu::LoggingType::Warning:
+        LOG(WARNING) << view;
         break;
       case wgpu::LoggingType::Error:
         LOG(ERROR) << view;
-        SetDawnErrorCrashKey(view);
-        base::debug::DumpWithoutCrashing();
+        if (shared_context->device_) {
+          // Only DwC if the device is already created.
+          // We don't need to DwC for any error before the device is initialized
+          // because LogInitFailure() would handle them instead.
+          // Note: We don't trigger context loss here for now since most of the
+          // errors reported via instance callback is related to Surface
+          // creation. In that case, instead of triggering context loss, we
+          // should let the call sites handle them gracefully.
+          SetDawnErrorCrashKey(view);
+          base::debug::DumpWithoutCrashing();
+        }
         break;
       default:
         break;
@@ -595,6 +626,11 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
 
   void OnError(wgpu::ErrorType error_type, wgpu::StringView message);
 
+  void StoreInitLoggingMessage(std::string_view message) {
+    init_logging_msgs_.append(message);
+    init_logging_msgs_.append("\n");
+  }
+
   void LogInitFailure(std::string_view reason,
                       bool generate_crash_report,
                       wgpu::BackendType backend_type,
@@ -610,10 +646,10 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
                               BackendTypeToString(backend_type));
     SCOPED_CRASH_KEY_BOOL("dawn-shared-context", "fallback-adapter",
                           force_fallback_adapter);
-    // Also include any warning messages collected during the initialization.
-    SCOPED_CRASH_KEY_STRING1024("dawn-shared-context", "init-warning-msgs",
-                                init_warning_msgs_);
-    init_warning_msgs_.clear();
+    // Also include any logging messages collected during the initialization.
+    SCOPED_CRASH_KEY_STRING1024("dawn-shared-context", "init-logging-msgs",
+                                init_logging_msgs_);
+    init_logging_msgs_.clear();
     base::debug::DumpWithoutCrashing();
   }
 
@@ -630,7 +666,8 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   wgpu::Adapter adapter_;
   wgpu::Device device_;
   wgpu::BackendType backend_type_;
-  std::string init_warning_msgs_;
+  // Store logging messages collected during device initialization.
+  std::string init_logging_msgs_;
   bool is_vulkan_swiftshader_adapter_ = false;
   bool registered_memory_dump_provider_ = false;
 
@@ -716,7 +753,8 @@ bool DawnSharedContext::Initialize(
   // LogInfo will be used to receive instance level errors. For example failures
   // of loading libraries, initializing backend, etc
   dawn::native::DawnInstanceDescriptor dawn_instance_desc;
-  dawn_instance_desc.SetLoggingCallback(&DawnSharedContext::LogInfo, this);
+  dawn_instance_desc.SetLoggingCallback(&DawnSharedContext::InstanceLogInfo,
+                                        this);
   instance_ = webgpu::DawnInstance::Create(&platform_, gpu_preferences,
                                            webgpu::SafetyLevel::kUnsafe,
                                            &dawn_instance_desc);
@@ -899,7 +937,7 @@ bool DawnSharedContext::Initialize(
     return false;
   }
 
-  device_.SetLoggingCallback(&DawnSharedContext::LogInfo, this);
+  device_.SetLoggingCallback(&DawnSharedContext::DeviceLogInfo, this);
 
   backend_type_ = backend_type;
   is_vulkan_swiftshader_adapter_ =
