@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_picker_action_sheet_coordinator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_mediator.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_provider.h"
@@ -86,6 +87,9 @@ CGFloat const kSheetCornerRadius = 30;
                      initWithPrefService:self.profile->GetPrefs()
       discoverFeedVisibilityBrowserAgent:DiscoverFeedVisibilityBrowserAgent::
                                              FromBrowser(self.browser)
+                       backgroundService:
+                           HomeBackgroundCustomizationServiceFactory::
+                               GetForProfile(self.profile)
                      imageFetcherService:imageFetcherService];
   _mediator.navigationDelegate = self;
 

@@ -93,6 +93,14 @@ void HomeBackgroundCustomizationService::SetBackgroundColor(
   NotifyObserversOfBackgroundChange();
 }
 
+void HomeBackgroundCustomizationService::ClearCurrentBackground() {
+  current_theme_.Clear();
+
+  pref_service_->ClearPref(prefs::kIosUserUploadedBackground);
+
+  NotifyObserversOfBackgroundChange();
+}
+
 void HomeBackgroundCustomizationService::StoreCurrentTheme() {
   std::string serialized = current_theme_.SerializeAsString();
   // Encode bytestring so it can be stored in a pref.
@@ -149,7 +157,7 @@ void HomeBackgroundCustomizationService::NotifyObserversOfBackgroundChange() {
   }
 }
 
-std::optional<std::pair<std::string, FramingCoordinates>>
+std::optional<UserUploadedBackground>
 HomeBackgroundCustomizationService::GetCurrentUserUploadedBackground() {
   const base::Value::Dict& background_data =
       pref_service_->GetDict(prefs::kIosUserUploadedBackground);

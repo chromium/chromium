@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 
 class DiscoverFeedVisibilityBrowserAgent;
+class HomeBackgroundCustomizationService;
 @protocol HomeCustomizationDiscoverConsumer;
 @protocol HomeCustomizationMagicStackConsumer;
 @protocol HomeCustomizationMainConsumer;
@@ -27,6 +28,8 @@ class ImageFetcherService;
 - (instancetype)initWithPrefService:(PrefService*)prefService
     discoverFeedVisibilityBrowserAgent:
         (DiscoverFeedVisibilityBrowserAgent*)discoverFeedVisibilityBrowserAgent
+                     backgroundService:
+                         (HomeBackgroundCustomizationService*)backgroundService
                    imageFetcherService:
                        (image_fetcher::ImageFetcherService*)imageFetcherService
     NS_DESIGNATED_INITIALIZER;

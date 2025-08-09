@@ -20,6 +20,8 @@ class HomeBackgroundCustomizationServiceObserver;
 class PrefRegistrySimple;
 class PrefService;
 
+typedef std::pair<std::string, FramingCoordinates> UserUploadedBackground;
+
 // Service for allowing customization of the Home surface background.
 class HomeBackgroundCustomizationService : public KeyedService {
  public:
@@ -42,8 +44,7 @@ class HomeBackgroundCustomizationService : public KeyedService {
   std::optional<sync_pb::UserColorTheme> GetCurrentColorTheme();
 
   // Gets the current user-uploaded background data, if there is one.
-  std::optional<std::pair<std::string, FramingCoordinates>>
-  GetCurrentUserUploadedBackground();
+  std::optional<UserUploadedBackground> GetCurrentUserUploadedBackground();
 
   /// Sets the background to the given parameters. This represents a background
   /// image url from the NtpBackgroundService.
@@ -75,6 +76,9 @@ class HomeBackgroundCustomizationService : public KeyedService {
   void SetCurrentUserUploadedBackground(
       const std::string& image_path,
       const FramingCoordinates& framing_coordinates);
+
+  // Resets the current background to the default/no changes.
+  void ClearCurrentBackground();
 
   // Adds/Removes HomeBackgroundCustomizationServiceObserver observers.
   void AddObserver(HomeBackgroundCustomizationServiceObserver* observer);

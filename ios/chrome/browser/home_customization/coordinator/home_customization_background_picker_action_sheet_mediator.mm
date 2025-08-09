@@ -64,6 +64,7 @@
       [self applyBackgroundColor:backgroundConfiguration];
       break;
     case HomeCustomizationBackgroundStyle::kDefault:
+      [self applyDefaultBackground];
       break;
     default:
       NOTREACHED();
@@ -136,9 +137,18 @@
       static_cast<BackgroundCustomizationConfigurationItem*>(
           backgroundConfiguration);
 
+  if (!configurationItem.backgroundColor) {
+    [self applyDefaultBackground];
+    return;
+  }
+
   _homeBackgroundCustomizationService->SetBackgroundColor(
       skia::UIColorToSkColor(configurationItem.backgroundColor),
       SchemeVariantToProtoEnum(configurationItem.colorVariant));
+}
+
+- (void)applyDefaultBackground {
+  _homeBackgroundCustomizationService->ClearCurrentBackground();
 }
 
 // Discards customization changes and dismiss the menu.

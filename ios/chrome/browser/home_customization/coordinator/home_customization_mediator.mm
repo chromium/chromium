@@ -17,15 +17,20 @@
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_navigation_delegate.h"
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration_item.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
+#import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_discover_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_magic_stack_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_consumer.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_metrics_recorder.h"
+#import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "skia/ext/skia_utils_ios.h"
 #import "ui/gfx/image/image.h"
 #import "url/gurl.h"
 
@@ -37,17 +42,23 @@
       _discoverFeedVisibilityBrowserAgent;
   // The image fetcher used to download individual background images.
   raw_ptr<image_fetcher::ImageFetcher> _imageFetcher;
+  // The Background customization service for getting current and recently used
+  // backgrounds.
+  raw_ptr<HomeBackgroundCustomizationService> _backgroundService;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
     discoverFeedVisibilityBrowserAgent:
         (DiscoverFeedVisibilityBrowserAgent*)discoverFeedVisibilityBrowserAgent
+                     backgroundService:
+                         (HomeBackgroundCustomizationService*)backgroundService
                    imageFetcherService:(image_fetcher::ImageFetcherService*)
                                            imageFetcherService {
   self = [super init];
   if (self) {
     _prefService = prefService;
     _discoverFeedVisibilityBrowserAgent = discoverFeedVisibilityBrowserAgent;
+    _backgroundService = backgroundService;
     _imageFetcher = imageFetcherService->GetImageFetcher(
         image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
   }
@@ -81,6 +92,13 @@
         [[BackgroundCustomizationConfigurationItem alloc] initWithNoBackground];
     backgroundCustomizationConfigurationMap[defaultConfig.configurationID] =
         defaultConfig;
+
+    BackgroundCustomizationConfigurationItem* currentConfig =
+        [self generateConfigurationItemForCurrentBackground];
+    if (currentConfig) {
+      backgroundCustomizationConfigurationMap[currentConfig.configurationID] =
+          currentConfig;
+    }
 
     // TODO(crbug.com/408243803): fetch background customization
     // configurations and fill the `backgroundCustomizationConfigurationMap` and
@@ -189,6 +207,116 @@
   }
 }
 
+// Applies the user-uploaded photo background to the NTP.
+- (void)applyUserUploadedBackground:
+    (BackgroundCustomizationConfigurationItem*)configurationItem {
+  FramingCoordinates coordinates =
+      [configurationItem.userUploadedFramingCoordinates toFramingCoordinates];
+  _backgroundService->SetCurrentUserUploadedBackground(
+      base::SysNSStringToUTF8(configurationItem.userUploadedImagePath),
+      coordinates);
+  _backgroundService->StoreCurrentTheme();
+}
+
+// Applies the preset gallery background for the given collection image.
+- (void)applyPresetGalleryBackgroundForCollectionImage:
+    (const CollectionImage&)collectionImage {
+  std::string attribution_line_1;
+  std::string attribution_line_2;
+  // Set attribution lines if available.
+  if (!collectionImage.attribution.empty()) {
+    attribution_line_1 = collectionImage.attribution[0];
+    if (collectionImage.attribution.size() > 1) {
+      attribution_line_2 = collectionImage.attribution[1];
+    }
+  }
+
+  _backgroundService->SetCurrentBackground(
+      collectionImage.image_url, collectionImage.thumbnail_image_url,
+      attribution_line_1, attribution_line_2,
+      collectionImage.attribution_action_url, collectionImage.collection_id);
+  _backgroundService->StoreCurrentTheme();
+}
+
+// Applies a background color to the NTP.
+- (void)applyBackgroundColor:
+    (id<BackgroundCustomizationConfiguration>)backgroundConfiguration {
+  if (![backgroundConfiguration
+          isKindOfClass:[BackgroundCustomizationConfigurationItem class]]) {
+    // Only `BackgroundCustomizationConfigurationItem` exposes required
+    // fields. Other implementations may not support expected properties.
+    return;
+  }
+
+  BackgroundCustomizationConfigurationItem* configurationItem =
+      static_cast<BackgroundCustomizationConfigurationItem*>(
+          backgroundConfiguration);
+
+  if (!configurationItem.backgroundColor) {
+    [self applyDefaultBackground];
+    return;
+  }
+
+  _backgroundService->SetBackgroundColor(
+      skia::UIColorToSkColor(configurationItem.backgroundColor),
+      SchemeVariantToProtoEnum(configurationItem.colorVariant));
+  _backgroundService->StoreCurrentTheme();
+}
+
+// Sets the NTP to the default background (no color, no image, etc.).
+- (void)applyDefaultBackground {
+  _backgroundService->ClearCurrentBackground();
+  _backgroundService->StoreCurrentTheme();
+}
+
+// Generates a `BackgroundCustomizationConfigurationItem` for the current
+// background customization state to display in the UI. Returns `nil` if there
+// is no customization currently.
+- (BackgroundCustomizationConfigurationItem*)
+    generateConfigurationItemForCurrentBackground {
+  std::optional<sync_pb::NtpCustomBackground> currentBackground =
+      _backgroundService->GetCurrentCustomBackground();
+  if (currentBackground) {
+    CollectionImage image;
+    image.collection_id = currentBackground->collection_id();
+    image.thumbnail_image_url = GURL(currentBackground->url());
+    image.image_url = GURL(currentBackground->url());
+
+    image.attribution.push_back(currentBackground->attribution_line_1());
+    image.attribution.push_back(currentBackground->attribution_line_2());
+    image.attribution_action_url =
+        GURL(currentBackground->attribution_action_url());
+    return [[BackgroundCustomizationConfigurationItem alloc]
+        initWithCollectionImage:image];
+  }
+
+  std::optional<UserUploadedBackground> currentUserUploadedBackground =
+      _backgroundService->GetCurrentUserUploadedBackground();
+
+  if (currentUserUploadedBackground) {
+    NSString* imagePath =
+        base::SysUTF8ToNSString(currentUserUploadedBackground->first);
+
+    return [[BackgroundCustomizationConfigurationItem alloc]
+        initWithUserUploadedImagePath:imagePath
+                   framingCoordinates:currentUserUploadedBackground->second];
+  }
+
+  std::optional<sync_pb::UserColorTheme> currentColorTheme =
+      _backgroundService->GetCurrentColorTheme();
+
+  if (currentColorTheme) {
+    UIColor* backgroundColor = UIColorFromRGB(currentColorTheme->color());
+    ui::ColorProviderKey::SchemeVariant colorVariant =
+        ProtoEnumToSchemeVariant(currentColorTheme->browser_color_variant());
+    return [[BackgroundCustomizationConfigurationItem alloc]
+        initWithBackgroundColor:backgroundColor
+                   colorVariant:colorVariant];
+  }
+
+  return nil;
+}
+
 #pragma mark - HomeCustomizationMutator
 
 - (void)toggleModuleVisibilityForType:(CustomizationToggleType)type
@@ -275,7 +403,32 @@
 
 - (void)applyBackgroundForConfiguration:
     (id<BackgroundCustomizationConfiguration>)backgroundConfiguration {
-  // TODO(crbug.com/408243803): apply NTP background configuration to NTP.
+  if (![backgroundConfiguration
+          isKindOfClass:[BackgroundCustomizationConfigurationItem class]]) {
+    return;
+  }
+
+  BackgroundCustomizationConfigurationItem* configurationItem =
+      static_cast<BackgroundCustomizationConfigurationItem*>(
+          backgroundConfiguration);
+  switch (configurationItem.backgroundStyle) {
+    case HomeCustomizationBackgroundStyle::kUserUploaded:
+      [self applyUserUploadedBackground:configurationItem];
+      break;
+    case HomeCustomizationBackgroundStyle::kPreset:
+      [self
+          applyPresetGalleryBackgroundForCollectionImage:configurationItem
+                                                             .collectionImage];
+      break;
+    case HomeCustomizationBackgroundStyle::kColor:
+      [self applyBackgroundColor:backgroundConfiguration];
+      break;
+    case HomeCustomizationBackgroundStyle::kDefault:
+      [self applyDefaultBackground];
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 - (void)deleteBackgroundFromRecentlyUsedAtIndex:(NSInteger)index {
