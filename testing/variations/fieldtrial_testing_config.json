@@ -8267,9 +8267,11 @@
                         "OmniboxHideSuggestionGroupHeaders",
                         "OmniboxShowPopupOnMouseReleased",
                         "OmniboxZpsSuggestionLimit",
+                        "OpenLensActionUITweaks",
                         "SendContextualUrlSuggestParam",
                         "SendPageTitleSuggestParam",
                         "ShowSuggestionsOnNoApc",
+                        "SuggestionsFulfilledByLensSupported",
                         "UseApcPaywallSignal"
                     ],
                     "disable_features": [
