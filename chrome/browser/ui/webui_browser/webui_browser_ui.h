@@ -19,6 +19,7 @@ class Browser;
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }  // namespace content
 
 class WebUIBrowserUI;
@@ -56,6 +57,7 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
   base::WeakPtr<WebUIBrowserUI> GetWeakPtr();
 
  private:
+  WEB_UI_CONTROLLER_TYPE_DECL();
   // webui_browser::mojom::PageHandlerFactory:
   void CreatePageHandler(
       mojo::PendingReceiver<webui_browser::mojom::PageHandler> receiver)
@@ -64,9 +66,11 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
   mojo::Receiver<webui_browser::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
 
-  raw_ptr<Browser> browser_;
+  // TODO(webium): this is for testing guest contents embedding. Remove once
+  // the tab strip is integrated.
+  std::unique_ptr<content::WebContents> test_guest_contents_;
 
-  WEB_UI_CONTROLLER_TYPE_DECL();
+  raw_ptr<Browser> browser_;
 
   base::WeakPtrFactory<WebUIBrowserUI> weak_factory_{this};
 };

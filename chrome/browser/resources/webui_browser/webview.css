@@ -4,13 +4,22 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-#exampleDiv {
-  color: blue;
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
 }
 
-#exampleWebview {
-  height: 400px;
+#iframe {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  width: 100%;
+  height: 100%;
 }

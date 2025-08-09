@@ -44,6 +44,19 @@ WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
   // As a demonstration of passing a variable for JS to use we pass in some
   // a simple message.
   source->AddString("message", "Hello World from C++!");
+
+  // Make a guest contents handle for a test guest contents.
+  // TODO(webium): Remove once the tab strip is integrated.
+  test_guest_contents_ = content::WebContents::Create(
+      content::WebContents::CreateParams(browser_->profile()));
+  test_guest_contents_->GetController().LoadURL(
+      GURL("chrome://dino"), content::Referrer(), ui::PAGE_TRANSITION_FIRST,
+      std::string());
+  guest_contents::GuestId guest_id =
+      guest_contents::GuestContentsHandle::CreateForWebContents(
+          test_guest_contents_.get())
+          ->id();
+  source->AddInteger("testGuestId", guest_id);
 }
 
 WebUIBrowserUI::~WebUIBrowserUI() = default;

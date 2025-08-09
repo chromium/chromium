@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '/strings.m.js';
+import './webview.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -27,8 +28,12 @@ export class WebuiBrowserAppElement extends CrLitElement {
   static override get properties() {
     return {
       message_: {type: String},
+      guestId_: {type: Number},
     };
   }
+
+  protected accessor message_: string = loadTimeData.getString('message');
+  protected accessor guestId_: number = loadTimeData.getInteger('testGuestId');
 
   protected onLaunchDevtoolsClick_(_: Event) {
     BrowserProxy.getPageHandler().launchDevToolsForBrowser();
@@ -53,8 +58,6 @@ export class WebuiBrowserAppElement extends CrLitElement {
   protected onCloseClick_(_: Event) {
     BrowserProxy.getPageHandler().close();
   }
-
-  protected accessor message_: string = loadTimeData.getString('message');
 }
 
 declare global {
