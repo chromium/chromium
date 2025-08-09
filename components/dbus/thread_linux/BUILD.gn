@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 
 source_set("thread_linux") {
-  visibility = [ "//components/dbus/*" ]
+  visibility = [
+    "//components/dbus/*",
+    "//services/device/wake_lock/power_save_blocker",
+  ]
   sources = [
     "dbus_thread_linux.cc",
     "dbus_thread_linux.h",

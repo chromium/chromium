@@ -29,12 +29,10 @@ class PowerSaveBlocker {
   // |reason| and |description| (a more-verbose, human-readable justification of
   // the blocking) may be provided to the underlying system APIs on some
   // platforms.
-  PowerSaveBlocker(
-      mojom::WakeLockType type,
-      mojom::WakeLockReason reason,
-      const std::string& description,
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner);
+  PowerSaveBlocker(mojom::WakeLockType type,
+                   mojom::WakeLockReason reason,
+                   const std::string& description,
+                   scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   PowerSaveBlocker(const PowerSaveBlocker&) = delete;
   PowerSaveBlocker& operator=(const PowerSaveBlocker&) = delete;
@@ -66,7 +64,6 @@ class PowerSaveBlocker {
   scoped_refptr<Delegate> delegate_;
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 };
 
 }  // namespace device

@@ -19,15 +19,21 @@ class Bus;
 
 namespace dbus_thread_linux {
 
-// Obtains a shared session bus for usage on desktop Linux. The task runner is
-// the same as the one obtained from GetTaskRunner(). This should be used for
-// all session bus operations. Must be called on the UI thread.
+// Obtains a shared session bus for usage on desktop Linux. This should be used
+// for all session bus operations. Must be called on the UI thread. A bus will
+// be created on the first call to this function.
 COMPONENT_EXPORT(COMPONENTS_DBUS)
 scoped_refptr<dbus::Bus> GetSharedSessionBus();
 
 // The same as GetSharedSessionBus(), but for the system bus.
 COMPONENT_EXPORT(COMPONENTS_DBUS)
 scoped_refptr<dbus::Bus> GetSharedSystemBus();
+
+// Shuts down the shared session and system buses. Must be called on the UI
+// thread. This is intended to be called late in browser shutdown, or
+// in tests before task environments are destroyed.
+COMPONENT_EXPORT(COMPONENTS_DBUS)
+void ShutdownOnDBusThreadAndBlock();
 
 }  // namespace dbus_thread_linux
 

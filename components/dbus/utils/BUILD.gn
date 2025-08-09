@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 
 source_set("utils") {
-  visibility = [ "//components/dbus/*" ]
+  visibility = [
+    "//components/dbus/*",
+    "//services/device/wake_lock/power_save_blocker",
+  ]
   sources = [
     "check_for_service_and_start.cc",
     "check_for_service_and_start.h",

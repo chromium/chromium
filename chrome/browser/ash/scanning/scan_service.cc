@@ -176,8 +176,7 @@ std::unique_ptr<device::PowerSaveBlocker> RequestWakeLock(
       /*type=*/device::mojom::WakeLockType::kPreventDisplaySleepAllowDimming,
       /*reason=*/device::mojom::WakeLockReason::kOther,
       /*description=*/description,
-      /*ui_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
-      /*blocking_task_runner=*/nullptr);
+      /*ui_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault());
 }
 
 }  // namespace

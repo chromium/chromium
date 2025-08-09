@@ -30,8 +30,7 @@ class HostPowerSaveBlocker : public HostStatusObserver {
  public:
   HostPowerSaveBlocker(
       scoped_refptr<HostStatusMonitor> monitor,
-      const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner,
-      const scoped_refptr<base::SingleThreadTaskRunner>& file_task_runner);
+      const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner);
 
   ~HostPowerSaveBlocker() override;
 
@@ -44,7 +43,6 @@ class HostPowerSaveBlocker : public HostStatusObserver {
   scoped_refptr<HostStatusMonitor> monitor_;
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> file_task_runner_;
 
   // The remoting host doesn't have access to the service manager, so it
   // instantiates device::PowerSaveBlocker directly: https://crbug.com/689423

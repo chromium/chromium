@@ -1917,8 +1917,7 @@ void HostProcess::StartHost() {
 #endif
 
   power_save_blocker_ = std::make_unique<HostPowerSaveBlocker>(
-      host_->status_monitor(), context_->ui_task_runner(),
-      context_->file_task_runner());
+      host_->status_monitor(), context_->ui_task_runner());
 
   ftl_host_change_notification_listener_ =
       std::make_unique<FtlHostChangeNotificationListener>(

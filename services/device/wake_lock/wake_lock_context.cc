@@ -31,9 +31,9 @@ void WakeLockContext::GetWakeLock(
     mojom::WakeLockReason reason,
     const std::string& description,
     mojo::PendingReceiver<mojom::WakeLock> receiver) {
-  wake_locks_.push_back(std::make_unique<WakeLock>(
-      std::move(receiver), type, reason, description, context_id_,
-      native_view_getter_, file_task_runner_, this));
+  wake_locks_.push_back(
+      std::make_unique<WakeLock>(std::move(receiver), type, reason, description,
+                                 context_id_, native_view_getter_, this));
 }
 
 void WakeLockContext::OnWakeLockActivated(mojom::WakeLockType type) {}

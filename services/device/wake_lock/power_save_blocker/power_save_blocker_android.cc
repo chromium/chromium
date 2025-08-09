@@ -73,10 +73,8 @@ PowerSaveBlocker::PowerSaveBlocker(
     mojom::WakeLockType type,
     mojom::WakeLockReason reason,
     const std::string& description,
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner)
-    : ui_task_runner_(ui_task_runner),
-      blocking_task_runner_(blocking_task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+    : ui_task_runner_(ui_task_runner) {
   // Don't support PreventAppSuspension.
 }
 
