@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.content.Context;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
@@ -11,10 +13,13 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -90,20 +95,20 @@ public class PriceMessageService extends MessageService {
     }
 
     /** This is the data type that this MessageService is serving to its Observer. */
-    static class PriceMessageData implements MessageData {
+    static class PriceMessageData {
         private final int mType;
         private final @Nullable PriceDrop mPriceDrop;
-        private final MessageCardView.ReviewActionProvider mReviewActionProvider;
-        private final MessageCardView.DismissActionProvider mDismissActionProvider;
+        private final MessageCardView.ActionProvider mAcceptActionProvider;
+        private final MessageCardView.ActionProvider mDismissActionProvider;
 
         PriceMessageData(
                 @PriceMessageType int type,
                 @Nullable PriceTabData priceTabData,
-                MessageCardView.ReviewActionProvider reviewActionProvider,
-                MessageCardView.DismissActionProvider dismissActionProvider) {
+                MessageCardView.ActionProvider acceptActionProvider,
+                MessageCardView.ActionProvider dismissActionProvider) {
             mType = type;
             mPriceDrop = priceTabData == null ? null : priceTabData.priceDrop;
-            mReviewActionProvider = reviewActionProvider;
+            mAcceptActionProvider = acceptActionProvider;
             mDismissActionProvider = dismissActionProvider;
         }
 
@@ -124,18 +129,16 @@ public class PriceMessageService extends MessageService {
         }
 
         /**
-         * @return The {@link MessageCardView.ReviewActionProvider} for the associated
-         *         PRICE_MESSAGE.
+         * @return The {@link MessageCardView.ActionProvider} for the associated PRICE_MESSAGE.
          */
-        MessageCardView.ReviewActionProvider getReviewActionProvider() {
-            return mReviewActionProvider;
+        MessageCardView.ActionProvider getAcceptActionProvider() {
+            return mAcceptActionProvider;
         }
 
         /**
-         * @return The {@link MessageCardView.DismissActionProvider} for the associated
-         *         PRICE_MESSAGE.
+         * @return The {@link ServiceDismissActionProvider} for the associated PRICE_MESSAGE.
          */
-        MessageCardView.DismissActionProvider getDismissActionProvider() {
+        MessageCardView.ActionProvider getDismissActionProvider() {
             return mDismissActionProvider;
         }
     }
@@ -183,12 +186,7 @@ public class PriceMessageService extends MessageService {
         // before preparing new messages.
         invalidateMessage();
         mPriceTabData = priceTabData;
-        sendAvailabilityNotification(
-                new PriceMessageData(
-                        type,
-                        mPriceTabData,
-                        () -> review(type),
-                        (int messageType) -> dismiss(type)));
+        sendAvailabilityNotification((a, b) -> buildModel(type, a, b));
         return true;
     }
 
@@ -200,6 +198,17 @@ public class PriceMessageService extends MessageService {
     void invalidateMessage() {
         mPriceTabData = null;
         sendInvalidNotification();
+    }
+
+    private PropertyModel buildModel(
+            @PriceMessageType int type,
+            Context context,
+            ServiceDismissActionProvider serviceActionProvider) {
+        return PriceMessageCardViewModel.create(
+                context,
+                serviceActionProvider,
+                new PriceMessageData(type, mPriceTabData, () -> review(type), this::dismiss),
+                PriceDropNotificationManagerFactory.create(mProfile));
     }
 
     @VisibleForTesting
@@ -226,14 +235,12 @@ public class PriceMessageService extends MessageService {
     }
 
     @VisibleForTesting
-    public void dismiss(@PriceMessageType int type) {
-        if (type == PriceMessageType.PRICE_WELCOME) {
-            logMessageDisableMetrics(
-                    WELCOME_MESSAGE_METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_DISMISSED);
-            PriceTrackingUtilities.disablePriceWelcomeMessageCard();
-            mPriceTabData = null;
-            RecordUserAction.record("Commerce.PriceWelcomeMessageCard.Dismissed");
-        }
+    public void dismiss() {
+        logMessageDisableMetrics(
+                WELCOME_MESSAGE_METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_DISMISSED);
+        PriceTrackingUtilities.disablePriceWelcomeMessageCard();
+        mPriceTabData = null;
+        RecordUserAction.record("Commerce.PriceWelcomeMessageCard.Dismissed");
     }
 
     @Nullable PriceTabData getPriceTabDataForTesting() {

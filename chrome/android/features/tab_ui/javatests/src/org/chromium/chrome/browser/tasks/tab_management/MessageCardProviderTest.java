@@ -40,6 +40,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
@@ -74,7 +75,7 @@ public class MessageCardProviderTest {
     private MessageService mTestingService;
     private MessageService mPriceService;
 
-    private final MessageCardView.DismissActionProvider mUiDismissActionProvider =
+    private final MessageCardView.ServiceDismissActionProvider mServiceDismissActionProvider =
             (messageType) -> {};
 
     @Mock private PriceMessageService.PriceMessageData mPriceMessageData;
@@ -144,7 +145,7 @@ public class MessageCardProviderTest {
 
                     mCoordinator =
                             new MessageCardProviderCoordinator(
-                                    sActivity, () -> mProfile, mUiDismissActionProvider);
+                                    sActivity, () -> mProfile, mServiceDismissActionProvider);
                     mCoordinator.subscribeMessageService(mTestingService);
                     mCoordinator.subscribeMessageService(mPriceService);
                 });
@@ -155,7 +156,7 @@ public class MessageCardProviderTest {
     public void testPriceMessage() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPriceService.sendAvailabilityNotification(mPriceMessageData);
+                    sendAvailabilityNotification();
                     addMessageCards();
                 });
 
@@ -166,11 +167,11 @@ public class MessageCardProviderTest {
     @SmallTest
     public void testReviewPriceMessage() {
         AtomicBoolean reviewed = new AtomicBoolean();
-        when(mPriceMessageData.getReviewActionProvider()).thenReturn(() -> reviewed.set(true));
+        when(mPriceMessageData.getAcceptActionProvider()).thenReturn(() -> reviewed.set(true));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPriceService.sendAvailabilityNotification(mPriceMessageData);
+                    sendAvailabilityNotification();
                     addMessageCards();
                 });
 
@@ -185,12 +186,11 @@ public class MessageCardProviderTest {
     @SmallTest
     public void testDismissPriceMessage() {
         AtomicBoolean dismissed = new AtomicBoolean();
-        when(mPriceMessageData.getDismissActionProvider())
-                .thenReturn((type) -> dismissed.set(true));
+        when(mPriceMessageData.getDismissActionProvider()).thenReturn(() -> dismissed.set(true));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPriceService.sendAvailabilityNotification(mPriceMessageData);
+                    sendAvailabilityNotification();
                     addMessageCards();
                 });
 
@@ -211,5 +211,15 @@ public class MessageCardProviderTest {
                 mModelList.add(new MVCListAdapter.ListItem(UiType.IPH_MESSAGE, message.model));
             }
         }
+    }
+
+    private void sendAvailabilityNotification() {
+        mPriceService.sendAvailabilityNotification(
+                (a, b) ->
+                        PriceMessageCardViewModel.create(
+                                sActivity,
+                                c -> {},
+                                mPriceMessageData,
+                                new PriceDropNotificationManagerImpl(mProfile)));
     }
 }

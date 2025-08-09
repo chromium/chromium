@@ -71,13 +71,13 @@ public class LargeMessageCardViewBinderTest {
     private final AtomicBoolean mMessageServiceReviewCallbackRan = new AtomicBoolean();
     private final AtomicBoolean mMessageServiceDismissCallbackRan = new AtomicBoolean();
 
-    private final MessageCardView.ReviewActionProvider mUiReviewHandler =
+    private final MessageCardView.ActionProvider mUiReviewHandler =
             () -> mReviewButtonClicked.set(true);
-    private final MessageCardView.DismissActionProvider mUiDismissHandler =
-            (int messageType) -> mDismissButtonClicked.set(true);
-    private final MessageCardView.ReviewActionProvider mMessageServiceActionHandler =
+    private final MessageCardView.ActionProvider mUiDismissHandler =
+            () -> mDismissButtonClicked.set(true);
+    private final MessageCardView.ActionProvider mMessageServiceActionHandler =
             () -> mMessageServiceReviewCallbackRan.set(true);
-    private final MessageCardView.DismissActionProvider mMessageServiceDismissHandler =
+    private final MessageCardView.ServiceDismissActionProvider mMessageServiceDismissHandler =
             (int messageType) -> mMessageServiceDismissCallbackRan.set(true);
     private final OnClickListener mSecondaryActionButtonClickListener =
             view -> mSecondaryActionButtonClicked.set(true);

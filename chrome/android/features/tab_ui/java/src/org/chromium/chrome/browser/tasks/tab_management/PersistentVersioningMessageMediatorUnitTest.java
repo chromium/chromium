@@ -29,7 +29,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.data_sharing.ui.versioning.VersioningModalDialog;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ReviewActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ActionProvider;
 import org.chromium.components.tab_group_sync.MessageType;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.VersioningMessageController;
@@ -148,10 +148,9 @@ public class PersistentVersioningMessageMediatorUnitTest {
         mMediator.queueMessageIfNeeded();
         ListItem listItem = mModelList.get(0);
         PropertyModel model = listItem.model;
-        ReviewActionProvider actionProvider =
-                model.get(MessageCardViewProperties.UI_ACTION_PROVIDER);
+        ActionProvider actionProvider = model.get(MessageCardViewProperties.UI_ACTION_PROVIDER);
 
-        actionProvider.review();
+        actionProvider.action();
         verify(mVersioningModalDialogMock).show();
     }
 
@@ -165,10 +164,10 @@ public class PersistentVersioningMessageMediatorUnitTest {
         assertEquals(1, mModelList.size());
         ListItem listItem = mModelList.get(0);
         PropertyModel model = listItem.model;
-        MessageCardView.DismissActionProvider dismissProvider =
+        MessageCardView.ActionProvider dismissProvider =
                 model.get(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER);
 
-        dismissProvider.dismiss(MessageService.MessageType.ALL);
+        dismissProvider.action();
 
         assertTrue(mModelList.isEmpty());
         verify(mVersioningMessageController)

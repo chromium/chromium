@@ -23,8 +23,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.DismissActionProvider;
-import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ReviewActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -36,8 +36,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class CollaborationActivityMessageCardViewModelUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private ReviewActionProvider mActionHandler;
-    @Mock private DismissActionProvider mDismissHandler;
+    @Mock private ActionProvider mActionHandler;
+    @Mock private ServiceDismissActionProvider mDismissHandler;
 
     private Context mContext;
     private CollaborationActivityMessageCardViewModel mModel;
@@ -54,8 +54,8 @@ public class CollaborationActivityMessageCardViewModelUnitTest {
     public void testActionHandlers() {
         PropertyModel model = mModel.getPropertyModel();
 
-        model.get(MESSAGE_SERVICE_ACTION_PROVIDER).review();
-        verify(mActionHandler).review();
+        model.get(MESSAGE_SERVICE_ACTION_PROVIDER).action();
+        verify(mActionHandler).action();
 
         int messageType = 3423;
         model.get(MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER).dismiss(messageType);

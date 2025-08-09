@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -17,6 +18,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherIphController;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** One of the concrete {@link MessageService} that only serves {@link MessageType.IPH}. */
 @NullMarked
@@ -30,34 +32,33 @@ public class IphMessageService extends MessageService {
             (result) -> {
                 if (wouldTriggerIph()) {
                     assert mTracker.isInitialized();
-                    sendAvailabilityNotification(
-                            new IphMessageData(this::review, (int messageType) -> dismiss()));
+                    sendAvailabilityNotification(this::buildModel);
                 }
             };
 
     /** This is the data type that this MessageService is serving to its Observer. */
-    static class IphMessageData implements MessageData {
-        private final MessageCardView.ReviewActionProvider mReviewActionProvider;
-        private final MessageCardView.DismissActionProvider mDismissActionProvider;
+    static class IphMessageData {
+        private final MessageCardView.ActionProvider mAcceptActionProvider;
+        private final MessageCardView.ActionProvider mDismissActionProvider;
 
         IphMessageData(
-                MessageCardView.ReviewActionProvider reviewActionProvider,
-                MessageCardView.DismissActionProvider dismissActionProvider) {
-            mReviewActionProvider = reviewActionProvider;
+                MessageCardView.ActionProvider acceptActionProvider,
+                MessageCardView.ActionProvider dismissActionProvider) {
+            mAcceptActionProvider = acceptActionProvider;
             mDismissActionProvider = dismissActionProvider;
         }
 
         /**
-         * @return The {@link MessageCardView.ReviewActionProvider} for the associated IPH.
+         * @return The {@link MessageCardView.ActionProvider} for the associated IPH.
          */
-        MessageCardView.ReviewActionProvider getReviewActionProvider() {
-            return mReviewActionProvider;
+        MessageCardView.ActionProvider getAcceptActionProvider() {
+            return mAcceptActionProvider;
         }
 
         /**
-         * @return The {@link MessageCardView.DismissActionProvider} for the associated IPH.
+         * @return The {@link MessageCardView.ServiceDismissActionProvider} for the associated IPH.
          */
-        MessageCardView.DismissActionProvider getDismissActionProvider() {
+        MessageCardView.ActionProvider getDismissActionProvider() {
             return mDismissActionProvider;
         }
     }
@@ -110,5 +111,11 @@ public class IphMessageService extends MessageService {
         boolean oldValue = sSkipIphInTests;
         sSkipIphInTests = skipIphInTests;
         ResettersForTesting.register(() -> sSkipIphInTests = oldValue);
+    }
+
+    private PropertyModel buildModel(
+            Context context, MessageCardView.ServiceDismissActionProvider serviceActionProvider) {
+        return IphMessageCardViewModel.create(
+                context, serviceActionProvider, new IphMessageData(this::review, this::dismiss));
     }
 }

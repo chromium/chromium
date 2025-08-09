@@ -19,14 +19,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class IphMessageCardViewModel {
     /**
      * Create a {@link PropertyModel} for IphMessageCardView.
+     *
      * @param context The {@link Context} to use.
-     * @param uiDismissActionProvider The {@link MessageCardView.DismissActionProvider} to set.
+     * @param msgServiceDismissActionProvider The {@link
+     *     MessageCardView.ServiceDismissActionProvider} to set.
      * @param data The {@link IphMessageService.IphMessageData} to use.
      * @return A {@link PropertyModel} for the given {@code data}.
      */
     public static PropertyModel create(
             Context context,
-            MessageCardView.DismissActionProvider uiDismissActionProvider,
+            MessageCardView.ServiceDismissActionProvider msgServiceDismissActionProvider,
             IphMessageService.IphMessageData data) {
         String descriptionText = context.getString(R.string.iph_drag_and_drop_introduction);
         String actionText = context.getString(R.string.iph_drag_and_drop_show_me);
@@ -38,13 +40,15 @@ public class IphMessageCardViewModel {
                 .with(
                         MessageCardViewProperties.MESSAGE_IDENTIFIER,
                         MessageService.DEFAULT_MESSAGE_IDENTIFIER)
-                .with(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER, uiDismissActionProvider)
                 .with(
-                        MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER,
+                        MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER,
                         data.getDismissActionProvider())
                 .with(
+                        MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER,
+                        msgServiceDismissActionProvider)
+                .with(
                         MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER,
-                        data.getReviewActionProvider())
+                        data.getAcceptActionProvider())
                 .with(MessageCardViewProperties.DESCRIPTION_TEXT, descriptionText)
                 .with(MessageCardViewProperties.ACTION_TEXT, actionText)
                 .with(

@@ -28,9 +28,10 @@ public class MessageCardProviderCoordinator {
     MessageCardProviderCoordinator(
             Context context,
             Supplier<Profile> profileSupplier,
-            MessageCardView.DismissActionProvider uiDismissActionProvider) {
+            MessageCardView.ServiceDismissActionProvider serviceDismissActionProvider) {
         mMediator =
-                new MessageCardProviderMediator(context, profileSupplier, uiDismissActionProvider);
+                new MessageCardProviderMediator(
+                        context, profileSupplier, serviceDismissActionProvider);
     }
 
     /**

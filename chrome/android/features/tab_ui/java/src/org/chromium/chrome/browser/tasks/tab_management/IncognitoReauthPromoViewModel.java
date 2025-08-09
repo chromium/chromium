@@ -23,13 +23,14 @@ public class IncognitoReauthPromoViewModel {
      * Create a {@link PropertyModel} for incognito re-auth promo card.
      *
      * @param context The {@link Context} to use.
-     * @param uiDismissActionProvider The {@link MessageCardView.DismissActionProvider} to set.
+     * @param msgServiceDismissActionProvider The {@link
+     *     MessageCardView.ServiceDismissActionProvider} to set.
      * @param data The {@link IncognitoReauthPromoMessageService.IncognitoReauthMessageData} to use.
      * @return A {@link PropertyModel} for the given {@code data}.
      */
     public static PropertyModel create(
             Context context,
-            MessageCardView.DismissActionProvider uiDismissActionProvider,
+            MessageCardView.ServiceDismissActionProvider msgServiceDismissActionProvider,
             IncognitoReauthPromoMessageService.IncognitoReauthMessageData data) {
         String titleText = context.getString(R.string.incognito_reauth_promo_title);
         String descriptionText = context.getString(R.string.incognito_reauth_promo_description);
@@ -51,16 +52,13 @@ public class IncognitoReauthPromoViewModel {
                         MessageCardViewProperties.MESSAGE_TYPE,
                         MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE)
                 .with(MessageCardViewProperties.ACTION_TEXT, actionText)
-                .with(MessageCardViewProperties.UI_ACTION_PROVIDER, data.getReviewActionProvider())
+                .with(MessageCardViewProperties.UI_ACTION_PROVIDER, data.getAcceptActionProvider())
                 .with(MessageCardViewProperties.DESCRIPTION_TEXT, descriptionText)
                 .with(MessageCardViewProperties.SECONDARY_ACTION_TEXT, dismissActionText)
                 .with(
                         MessageCardViewProperties.SECONDARY_ACTION_BUTTON_CLICK_HANDLER,
                         view -> {
-                            data.getDismissActionProvider()
-                                    .dismiss(
-                                            MessageService.MessageType
-                                                    .INCOGNITO_REAUTH_PROMO_MESSAGE);
+                            data.getDismissActionProvider().action();
                             RecordHistogram.recordEnumeratedHistogram(
                                     "Android.IncognitoReauth.PromoAcceptedOrDismissed",
                                     IncognitoReauthPromoMessageService

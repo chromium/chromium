@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.content.Context;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -77,13 +81,13 @@ public class MessageService {
     // identifiers which should be used when creating the message card view model.
     public static final int DEFAULT_MESSAGE_IDENTIFIER = -1;
 
-    /**
-     * This is a data wrapper. Implement this interface to send notification with data to all the
-     * observers.
-     *
-     * @see #sendAvailabilityNotification(MessageData).
-     */
-    public interface MessageData {}
+    /** This builds the {@link PropertyModel} . */
+    @FunctionalInterface
+    public interface MessageModelFactory {
+        /** Builds the {@link PropertyModel} for the message. */
+        PropertyModel build(
+                Context context, ServiceDismissActionProvider msgServiceDismissRunnable);
+    }
 
     /**
      * An interface to be notified about changes to a Message. TODO(meiliang): Need to define this
@@ -94,12 +98,13 @@ public class MessageService {
          * Called when a message is available. TODO(meiliang): message data is needed.
          *
          * @param type The type of the message.
-         * @param data {@link MessageData} associated with the message.
+         * @param data {@link MessageModelFactory} associated with the message.
          */
-        void messageReady(@MessageType int type, MessageData data);
+        void messageReady(@MessageType int type, MessageModelFactory data);
 
         /**
          * Called when a message is invalidated.
+         *
          * @param type The type of the message.
          */
         void messageInvalidate(@MessageType int type);
@@ -140,9 +145,10 @@ public class MessageService {
 
     /**
      * Notifies all {@link MessageObserver} that a message is available.
-     * @param data {@link MessageData} to send to all the observers.
+     *
+     * @param data {@link MessageModelFactory} to send to all the observers.
      */
-    public void sendAvailabilityNotification(MessageData data) {
+    public void sendAvailabilityNotification(MessageModelFactory data) {
         for (MessageObserver observer : mObservers) {
             observer.messageReady(mMessageType, data);
         }

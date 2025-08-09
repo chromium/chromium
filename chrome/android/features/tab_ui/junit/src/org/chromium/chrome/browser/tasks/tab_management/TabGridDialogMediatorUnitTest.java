@@ -1916,7 +1916,7 @@ public class TabGridDialogMediatorUnitTest {
         mCollaborationActivityMessageCardCaptor
                 .getValue()
                 .get(MESSAGE_SERVICE_ACTION_PROVIDER)
-                .review();
+                .action();
 
         verify(mDataSharingTabManager, never()).showRecentActivity(any(), anyString());
         verify(mDialogController, atLeastOnce())
@@ -1969,7 +1969,7 @@ public class TabGridDialogMediatorUnitTest {
         mCollaborationActivityMessageCardCaptor
                 .getValue()
                 .get(MESSAGE_SERVICE_ACTION_PROVIDER)
-                .review();
+                .action();
 
         verify(mDataSharingTabManager).showRecentActivity(mActivity, COLLABORATION_ID1);
         verifyClearDirtyMessagesForGroup();

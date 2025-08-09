@@ -5,11 +5,6 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.ARCHIVED_TABS_MESSAGE;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.IPH;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.PRICE_MESSAGE;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.TAB_GROUP_SUGGESTION_MESSAGE;
 
 import android.content.Context;
 
@@ -18,7 +13,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -50,15 +44,15 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
     private final Supplier<Profile> mProfileSupplier;
     private final Map<Integer, List<Message>> mMessageItems = new LinkedHashMap<>();
     private final Map<Integer, Message> mShownMessageItems = new LinkedHashMap<>();
-    private final MessageCardView.DismissActionProvider mUiDismissActionProvider;
+    private final MessageCardView.ServiceDismissActionProvider mServiceDismissActionProvider;
 
     public MessageCardProviderMediator(
             Context context,
             Supplier<Profile> profileSupplier,
-            MessageCardView.DismissActionProvider uiDismissActionProvider) {
+            MessageCardView.ServiceDismissActionProvider serviceDismissActionProvider) {
         mContext = context;
         mProfileSupplier = profileSupplier;
-        mUiDismissActionProvider = uiDismissActionProvider;
+        mServiceDismissActionProvider = serviceDismissActionProvider;
     }
 
     /**
@@ -72,10 +66,10 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
             List<Message> messages = mMessageItems.get(key);
 
             assumeNonNull(messages);
-            assert messages.size() > 0;
+            assert !messages.isEmpty();
             mShownMessageItems.put(key, messages.remove(0));
 
-            if (messages.size() == 0) it.remove();
+            if (messages.isEmpty()) it.remove();
         }
 
         for (Message message : mShownMessageItems.values()) {
@@ -96,10 +90,10 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
 
             List<Message> messages = mMessageItems.get(messageType);
 
-            assert messages.size() > 0;
+            assert !messages.isEmpty();
             mShownMessageItems.put(messageType, messages.remove(0));
 
-            if (messages.size() == 0) mMessageItems.remove(messageType);
+            if (messages.isEmpty()) mMessageItems.remove(messageType);
         }
 
         Message message = mShownMessageItems.get(messageType);
@@ -121,51 +115,14 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
                 == identifier;
     }
 
-    private PropertyModel buildModel(int messageType, MessageService.MessageData data) {
-        switch (messageType) {
-            case IPH:
-                assert data instanceof IphMessageService.IphMessageData;
-                return IphMessageCardViewModel.create(
-                        mContext,
-                        this::invalidateShownMessage,
-                        (IphMessageService.IphMessageData) data);
-            case PRICE_MESSAGE:
-                assert data instanceof PriceMessageService.PriceMessageData;
-                return PriceMessageCardViewModel.create(
-                        mContext,
-                        this::invalidateShownMessage,
-                        (PriceMessageService.PriceMessageData) data,
-                        PriceDropNotificationManagerFactory.create(mProfileSupplier.get()));
-            case INCOGNITO_REAUTH_PROMO_MESSAGE:
-                assert data
-                        instanceof IncognitoReauthPromoMessageService.IncognitoReauthMessageData;
-                return IncognitoReauthPromoViewModel.create(
-                        mContext,
-                        this::invalidateShownMessage,
-                        (IncognitoReauthPromoMessageService.IncognitoReauthMessageData) data);
-            case ARCHIVED_TABS_MESSAGE:
-                assert data instanceof ArchivedTabsMessageService.ArchivedTabsMessageProvider;
-                return ((ArchivedTabsMessageService.ArchivedTabsMessageProvider) data).model;
-            case TAB_GROUP_SUGGESTION_MESSAGE:
-                assert data
-                        instanceof TabGroupSuggestionMessageService.TabGroupSuggestionMessageData;
-                return TabGroupSuggestionMessageViewModel.create(
-                        (TabGroupSuggestionMessageService.TabGroupSuggestionMessageData) data);
-            default:
-                return new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
-                        .with(MessageCardViewProperties.IS_INCOGNITO, false)
-                        .build();
-        }
-    }
-
     // MessageObserver implementations.
 
     @Override
     public void messageReady(
-            @MessageService.MessageType int type, MessageService.MessageData data) {
+            @MessageService.MessageType int type, MessageService.MessageModelFactory factory) {
         assert !mShownMessageItems.containsKey(type);
 
-        Message message = new Message(type, buildModel(type, data));
+        Message message = new Message(type, factory.build(mContext, this::invalidateShownMessage));
         if (mMessageItems.containsKey(type)) {
             mMessageItems.get(type).add(message);
         } else {
@@ -186,7 +143,7 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
     @VisibleForTesting
     void invalidateShownMessage(@MessageService.MessageType int type) {
         mShownMessageItems.remove(type);
-        mUiDismissActionProvider.dismiss(type);
+        mServiceDismissActionProvider.dismiss(type);
     }
 
     Map<Integer, List<Message>> getReadyMessageItemsForTesting() {

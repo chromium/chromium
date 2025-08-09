@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -40,7 +41,7 @@ public class MessageCardProviderMediatorUnitTest {
 
     private MessageCardProviderMediator mMediator;
 
-    @Mock private MessageCardView.DismissActionProvider mUiDismissActionProvider;
+    @Mock private MessageCardView.ServiceDismissActionProvider mServiceDismissActionProvider;
 
     @Mock private Context mContext;
 
@@ -64,32 +65,44 @@ public class MessageCardProviderMediatorUnitTest {
 
         doReturn(true).when(mIncognitoProfileMock).isOffTheRecord();
         doReturn(mProfileMock).when(mProfileSupplier).get();
-        doNothing().when(mUiDismissActionProvider).dismiss(anyInt());
+        doNothing().when(mServiceDismissActionProvider).dismiss(anyInt());
         mMediator =
                 new MessageCardProviderMediator(
-                        mContext, mProfileSupplier, mUiDismissActionProvider);
+                        mContext, mProfileSupplier, mServiceDismissActionProvider);
     }
 
     private void enqueueMessageItem(@MessageService.MessageType int type, int tabSuggestionAction) {
         switch (type) {
             case MessageService.MessageType.PRICE_MESSAGE:
                 when(mPriceMessageData.getPriceDrop()).thenReturn(null);
-                when(mPriceMessageData.getDismissActionProvider()).thenReturn((messageType) -> {});
-                when(mPriceMessageData.getReviewActionProvider()).thenReturn(() -> {});
+                when(mPriceMessageData.getDismissActionProvider()).thenReturn(() -> {});
+                when(mPriceMessageData.getAcceptActionProvider()).thenReturn(() -> {});
                 when(mPriceMessageData.getType()).thenReturn(PriceMessageType.PRICE_WELCOME);
-                mMediator.messageReady(type, mPriceMessageData);
+                mMediator.messageReady(
+                        type,
+                        (a, b) ->
+                                PriceMessageCardViewModel.create(
+                                        a,
+                                        b,
+                                        mPriceMessageData,
+                                        new PriceDropNotificationManagerImpl(mProfileMock)));
                 break;
             case MessageService.MessageType.IPH:
-                when(mIphMessageData.getDismissActionProvider()).thenReturn((messageType) -> {});
-                when(mIphMessageData.getReviewActionProvider()).thenReturn(() -> {});
-                mMediator.messageReady(type, mIphMessageData);
+                when(mIphMessageData.getDismissActionProvider()).thenReturn(() -> {});
+                when(mIphMessageData.getAcceptActionProvider()).thenReturn(() -> {});
+                mMediator.messageReady(
+                        type, (a, b) -> IphMessageCardViewModel.create(a, b, mIphMessageData));
                 break;
             case MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE:
-                when(mIncognitoReauthMessageData.getReviewActionProvider()).thenReturn(() -> {});
-                mMediator.messageReady(type, mIncognitoReauthMessageData);
+                when(mIncognitoReauthMessageData.getAcceptActionProvider()).thenReturn(() -> {});
+                mMediator.messageReady(
+                        type,
+                        (a, b) ->
+                                IncognitoReauthPromoViewModel.create(
+                                        a, b, mIncognitoReauthMessageData));
                 break;
             default:
-                mMediator.messageReady(type, new MessageService.MessageData() {});
+                mMediator.messageReady(type, (a, b) -> new PropertyModel());
         }
     }
 
@@ -267,7 +280,7 @@ public class MessageCardProviderMediatorUnitTest {
         mMediator.getMessageItems();
         mMediator.invalidateShownMessage(MessageService.MessageType.PRICE_MESSAGE);
 
-        verify(mUiDismissActionProvider).dismiss(anyInt());
+        verify(mServiceDismissActionProvider).dismiss(anyInt());
         Assert.assertFalse(
                 mMediator
                         .getShownMessageItemsForTesting()

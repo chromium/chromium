@@ -20,7 +20,6 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.DESCRIPTION_TEXT;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.ALL;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.COLOR_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DELETE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.LEAVE_RUNNABLE;
@@ -933,7 +932,7 @@ public class TabGroupListMediatorUnitTest {
 
         // Dismiss the message card.
         PropertyModel modelToBeRemoved = mModelList.get(0).model;
-        modelToBeRemoved.get(UI_DISMISS_ACTION_PROVIDER).dismiss(ALL);
+        modelToBeRemoved.get(UI_DISMISS_ACTION_PROVIDER).action();
 
         assertEquals(2, mModelList.size());
         verify(mMessagingBackendService)

@@ -110,9 +110,7 @@ public class PriceMessageServiceUnitTest {
         inOrder.verify(mMessageObserver, times(1)).messageInvalidate(eq(MessageType.PRICE_MESSAGE));
         assertEquals(mPriceTabData, mMessageService.getPriceTabDataForTesting());
         inOrder.verify(mMessageObserver, times(1))
-                .messageReady(
-                        eq(MessageService.MessageType.PRICE_MESSAGE),
-                        any(PriceMessageService.PriceMessageData.class));
+                .messageReady(eq(MessageService.MessageType.PRICE_MESSAGE), any());
         assertEquals(
                 INITIAL_SHOW_COUNT + 1,
                 PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount());
@@ -138,7 +136,7 @@ public class PriceMessageServiceUnitTest {
         mMessageService.preparePriceMessage(PriceMessageType.PRICE_WELCOME, mPriceTabData);
         assertEquals(mPriceTabData, mMessageService.getPriceTabDataForTesting());
 
-        mMessageService.dismiss(PriceMessageType.PRICE_WELCOME);
+        mMessageService.dismiss();
         assertFalse(PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile));
         assertNull(mMessageService.getPriceTabDataForTesting());
     }

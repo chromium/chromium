@@ -38,13 +38,13 @@ class MessageCardView extends LinearLayout {
         void fetchIconDrawable(Callback<Drawable> drawable);
     }
 
-    /** An interface to handle the review action. */
-    public interface ReviewActionProvider {
-        void review();
+    /** An interface to handle a message action. */
+    public interface ActionProvider {
+        void action();
     }
 
     /** An interface to handle the dismiss action. */
-    public interface DismissActionProvider {
+    public interface ServiceDismissActionProvider {
         void dismiss(@MessageService.MessageType int messageType);
     }
 

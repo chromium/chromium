@@ -19,9 +19,7 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.Sugg
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.DismissActionProvider;
-import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ReviewActionProvider;
-import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ActionProvider;
 import org.chromium.chrome.tab_ui.R;
 
 import java.util.ArrayList;
@@ -32,8 +30,7 @@ import java.util.List;
  * of tabs.
  */
 @NullMarked
-public class TabGroupSuggestionMessageService extends MessageService
-        implements MessageUpdateObserver {
+public class TabGroupSuggestionMessageService extends MessageService {
     /** Callback to start the merge animation which runs upon accepting a suggestion. */
     @FunctionalInterface
     public interface StartMergeAnimation {
@@ -51,36 +48,36 @@ public class TabGroupSuggestionMessageService extends MessageService
     }
 
     /** This is the data type that this MessageService is serving to its Observer. */
-    public static class TabGroupSuggestionMessageData implements MessageData {
+    public static class TabGroupSuggestionMessageData {
         private final int mNumTabs;
         private final Context mContext;
-        private final ReviewActionProvider mActionProvider;
-        private final DismissActionProvider mDismissActionProvider;
+        private final ActionProvider mAcceptActionProvider;
+        private final ActionProvider mDismissActionProvider;
 
         /**
          * @param numTabs The number of tabs in the suggestion.
          * @param context The context used obtaining the message strings.
-         * @param actionProvider The provider for the primary action.
+         * @param acceptActionProvider The provider for the primary action.
          * @param dismissActionProvider The provider for the dismiss action.
          */
         TabGroupSuggestionMessageData(
                 int numTabs,
                 Context context,
-                ReviewActionProvider actionProvider,
-                DismissActionProvider dismissActionProvider) {
+                ActionProvider acceptActionProvider,
+                ActionProvider dismissActionProvider) {
             mNumTabs = numTabs;
             mContext = context;
-            mActionProvider = actionProvider;
+            mAcceptActionProvider = acceptActionProvider;
             mDismissActionProvider = dismissActionProvider;
         }
 
-        /** The provider for the review action callback. */
-        public ReviewActionProvider getReviewActionProvider() {
-            return mActionProvider;
+        /** The provider for the accept action callback. */
+        public ActionProvider getActionProvider() {
+            return mAcceptActionProvider;
         }
 
         /** The provider for the dismiss action callback. */
-        public DismissActionProvider getDismissActionProvider() {
+        public ActionProvider getDismissActionProvider() {
             return mDismissActionProvider;
         }
 
@@ -157,8 +154,8 @@ public class TabGroupSuggestionMessageService extends MessageService
                         tabIdsSortedByIndex.size(),
                         mContext,
                         () -> onAcceptMessage(tabIdsSortedByIndex, responseListener),
-                        ignored -> dismissMessage(responseListener::onSuggestionDismissed));
-        sendAvailabilityNotification(data);
+                        () -> dismissMessage(responseListener::onSuggestionDismissed));
+        sendAvailabilityNotification((a, b) -> TabGroupSuggestionMessageViewModel.create(data));
         mMessageCurrentlyShown = true;
 
         @TabId int lastTabId = tabIdsSortedByIndex.get(tabIdsSortedByIndex.size() - 1);

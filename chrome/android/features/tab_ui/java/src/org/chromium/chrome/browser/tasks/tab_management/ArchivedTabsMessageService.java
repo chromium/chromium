@@ -71,15 +71,6 @@ public class ArchivedTabsMessageService extends MessageService implements Messag
         }
     }
 
-    /** Provides the view model for the archived message card. */
-    public static class ArchivedTabsMessageProvider implements MessageData {
-        public final PropertyModel model;
-
-        public ArchivedTabsMessageProvider(PropertyModel model) {
-            this.model = model;
-        }
-    }
-
     private final ArchivedTabModelOrchestrator.Observer mArchivedTabModelOrchestratorObserver =
             this::tabModelCreated;
 
@@ -316,7 +307,7 @@ public class ArchivedTabsMessageService extends MessageService implements Messag
         if (mTabGroupSyncService == null) return;
         if (tabCount <= 0) return;
         updateModelProperties(tabCount);
-        sendAvailabilityNotification(new ArchivedTabsMessageProvider(mModel));
+        sendAvailabilityNotification((a, b) -> mModel);
         mMessageSentToQueue = true;
         mAppendMessageRunnable.run();
     }

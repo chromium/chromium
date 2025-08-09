@@ -33,11 +33,11 @@ class MessageCardViewBinder {
             itemView.setDismissButtonOnClickListener(
                     v -> {
                         int type = model.get(MessageCardViewProperties.MESSAGE_TYPE);
-                        MessageCardView.DismissActionProvider uiProvider =
+                        MessageCardView.ActionProvider uiProvider =
                                 model.get(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER);
-                        if (uiProvider != null) uiProvider.dismiss(type);
+                        if (uiProvider != null) uiProvider.action();
 
-                        MessageCardView.DismissActionProvider serviceProvider =
+                        MessageCardView.ServiceDismissActionProvider serviceProvider =
                                 model.get(
                                         MessageCardViewProperties
                                                 .MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER);
@@ -82,19 +82,19 @@ class MessageCardViewBinder {
 
     static OnClickListener getConfirmationOnClickListener(PropertyModel model) {
         return v -> {
-            MessageCardView.ReviewActionProvider uiProvider =
+            MessageCardView.ActionProvider uiProvider =
                     model.get(MessageCardViewProperties.UI_ACTION_PROVIDER);
-            if (uiProvider != null) uiProvider.review();
+            if (uiProvider != null) uiProvider.action();
 
-            MessageCardView.ReviewActionProvider serviceProvider =
+            MessageCardView.ActionProvider serviceProvider =
                     model.get(MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER);
-            if (serviceProvider != null) serviceProvider.review();
+            if (serviceProvider != null) serviceProvider.action();
 
-            MessageCardView.DismissActionProvider uiDismissProvider =
+            MessageCardView.ActionProvider uiDismissProvider =
                     model.get(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER);
             if (uiDismissProvider != null
                     && !model.get(MessageCardViewProperties.SHOULD_KEEP_AFTER_REVIEW)) {
-                uiDismissProvider.dismiss(model.get(MessageCardViewProperties.MESSAGE_TYPE));
+                uiDismissProvider.action();
             }
         };
     }
