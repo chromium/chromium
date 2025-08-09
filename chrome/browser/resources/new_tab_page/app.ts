@@ -13,7 +13,6 @@ import 'chrome://resources/cr_components/composebox/composebox.js';
 import type {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
-import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -721,8 +720,6 @@ export class AppElement extends AppElementBase {
     assert(composebox);
     composebox.resetText();
     this.fadeoutScrim_();
-    const composeboxHandler = ComposeboxProxyImpl.getInstance().handler;
-    composeboxHandler.notifySessionAbandoned();
   }
 
   private fadeoutScrim_() {
