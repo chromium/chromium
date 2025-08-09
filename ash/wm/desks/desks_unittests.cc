@@ -48,7 +48,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_util.h"
-#include "ash/test/test_widget_builder.h"
 #include "ash/wm/desks/default_desk_button.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_button.h"
@@ -160,6 +159,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -9241,7 +9241,7 @@ class DeskBarTest : public AshTestBase,
 // Tests that `DeskTextfield` can be used outside overview.
 TEST_P(DeskBarTest, DeskTextfieldOutsideOverview) {
   auto widget =
-      TestWidgetBuilder()
+      views::test::TestWidgetBuilder()
           .SetDelegate(nullptr)
           .SetBounds(gfx::Rect(0, 0, 300, 300))
           .SetParent(Shell::GetPrimaryRootWindow())

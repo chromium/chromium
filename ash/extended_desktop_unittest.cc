@@ -9,7 +9,6 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/test_widget_builder.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_properties.h"
@@ -33,6 +32,7 @@
 #include "ui/events/event_handler.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/window_util.h"
@@ -157,7 +157,7 @@ class ExtendedDesktopTest : public AshTestBase {
   }
 
   views::Widget* CreateTestWidget(const gfx::Rect& bounds) {
-    return TestWidgetBuilder()
+    return views::test::TestWidgetBuilder()
         .SetBounds(bounds)
         .SetContext(GetContext())
         .BuildOwnedByNativeWidget();

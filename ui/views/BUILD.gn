@@ -1190,6 +1190,8 @@ source_set("test_support") {
       "corewm/tooltip_controller_test_helper.h",
       "test/desktop_test_views_delegate_aura.cc",
       "test/test_views_delegate_aura.cc",
+      "test/test_widget_builder.cc",
+      "test/test_widget_builder.h",
       "test/views_test_helper_aura.cc",
       "test/views_test_helper_aura.h",
       "test/widget_test_aura.cc",

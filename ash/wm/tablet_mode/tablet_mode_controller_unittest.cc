@@ -25,7 +25,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/test_widget_builder.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
@@ -69,6 +68,7 @@
 #include "ui/message_center/message_center.h"
 #include "ui/ozone/public/ozone_switches.h"
 #include "ui/views/test/native_widget_factory.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/window_util.h"
 
@@ -1870,7 +1870,7 @@ TEST_F(TabletModeControllerTest, TabletModeUsageMetricsTest) {
 // maximized or snapped.
 TEST_F(TabletModeControllerTest, ShouldAutoHideTitlebars) {
   tablet_mode_controller()->SetEnabledForTest(true);
-  TestWidgetBuilder widget_builder;
+  views::test::TestWidgetBuilder widget_builder;
   std::unique_ptr<views::Widget> widget =
       widget_builder.SetWidgetType(views::Widget::InitParams::TYPE_WINDOW)
           .SetBounds(gfx::Rect(500, 300))
@@ -1911,7 +1911,7 @@ TEST_F(TabletModeControllerTest, ShouldAutoHideTitlebars) {
 // Tests that `ShouldAutoHideTitlebars()` should not crash if the window state
 // does not exist (crbug.com/1267778).
 TEST_F(TabletModeControllerTest, ShouldAutoHideTitlebarsNoWindowState) {
-  TestWidgetBuilder widget_builder;
+  views::test::TestWidgetBuilder widget_builder;
   // Create a window type control which is an example of a window that its
   // state does not exist to test that `ShouldAutoHideTitlebars()` works.
   std::unique_ptr<views::Widget> widget =

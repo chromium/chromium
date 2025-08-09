@@ -13,7 +13,6 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/unified/unified_system_tray.h"
-#include "ash/test/test_widget_builder.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
@@ -70,6 +69,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/paint_info.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/caption_button_types.h"
 #include "ui/wm/core/shadow_controller.h"
@@ -1563,7 +1563,8 @@ TEST_F(ClientControlledShellSurfaceTest, WideFrame) {
   EXPECT_EQ(work_area.x(), wide_frame->GetBoundsInScreen().x());
   EXPECT_EQ(work_area.width(), wide_frame->GetBoundsInScreen().width());
 
-  auto another_window = ash::TestWidgetBuilder().BuildOwnsNativeWidget();
+  auto another_window =
+      views::test::TestWidgetBuilder().BuildOwnsNativeWidget();
   another_window->SetFullscreen(true);
 
   // Make sure that the wide frame stays in maximzied size even if there is

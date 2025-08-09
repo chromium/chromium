@@ -63,7 +63,6 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
-#include "ash/test/test_widget_builder.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -116,6 +115,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/views/animation/bounds_animator.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/test/widget_animation_waiter.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -1382,7 +1382,7 @@ TEST_F(ShelfLayoutManagerTest, ShelfWithSystemModalWindowDualDisplay) {
 TEST_F(ShelfLayoutManagerTest, FullscreenWidgetHidesShelf) {
   Shelf* shelf = GetPrimaryShelf();
   // Create a normal window.
-  views::Widget* widget = TestWidgetBuilder()
+  views::Widget* widget = views::test::TestWidgetBuilder()
                               .SetBounds(gfx::Rect(11, 22, 300, 400))
                               .BuildOwnedByNativeWidget();
   ASSERT_FALSE(widget->IsFullscreen());

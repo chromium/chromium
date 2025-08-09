@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/test/ash_test_base.h"
-#include "ash/test/test_widget_builder.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -19,6 +18,7 @@
 #include "ui/events/test/test_event_handler.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/test_widget_builder.h"
 
 namespace ash {
 namespace {
@@ -119,7 +119,7 @@ class UiMetricsRecorderTest : public AshTestBase {
   ~UiMetricsRecorderTest() override = default;
 
   std::unique_ptr<views::Widget> CreateTestWindowWidget() {
-    return TestWidgetBuilder()
+    return views::test::TestWidgetBuilder()
         .SetDelegate(nullptr)
         .SetBounds(gfx::Rect(0, 0, 100, 100))
         .SetShow(true)

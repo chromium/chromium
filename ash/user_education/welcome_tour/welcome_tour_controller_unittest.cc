@@ -27,7 +27,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/power/battery_notification.h"
-#include "ash/test/test_widget_builder.h"
 #include "ash/user_education/mock_user_education_delegate.h"
 #include "ash/user_education/user_education_ash_test_base.h"
 #include "ash/user_education/user_education_types.h"
@@ -67,6 +66,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 
@@ -1129,7 +1129,7 @@ class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
 TEST_F(WelcomeTourControllerRunTest, BlockInteractionsWithIrrelevantWindow) {
   // Create a random widget to interact with.
   std::unique_ptr<views::Widget> widget =
-      TestWidgetBuilder()
+      views::test::TestWidgetBuilder()
           .SetBounds(gfx::Rect(100, 100))
           .SetParent(Shell::GetPrimaryRootWindow()->GetChildById(
               kShellWindowId_LockScreenContainer))

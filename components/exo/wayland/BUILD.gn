@@ -351,6 +351,7 @@ source_set("unit_tests") {
     "//ui/display",
     "//ui/events:test_support",
     "//ui/gfx",
+    "//ui/views:test_support",
     "//ui/wm/public",
   ]
 

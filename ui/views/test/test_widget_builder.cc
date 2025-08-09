@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/test/test_widget_builder.h"
+#include "ui/views/test/test_widget_builder.h"
 
-#include "ash/shell.h"
+#include <utility>
+
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/test/test_windows.h"
@@ -13,37 +14,22 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
-namespace ash {
-
-// WidgetDelegate that is resizable and creates ash's NonClientFrameView
-// implementation.
-class TestWidgetBuilderDelegate : public views::WidgetDelegateView {
- public:
-  TestWidgetBuilderDelegate() {
-    SetCanFullscreen(true);
-    SetCanMaximize(true);
-    SetCanMinimize(true);
-    SetCanResize(true);
-  }
-  TestWidgetBuilderDelegate(const TestWidgetBuilderDelegate& other) = delete;
-  TestWidgetBuilderDelegate& operator=(const TestWidgetBuilderDelegate& other) =
-      delete;
-  ~TestWidgetBuilderDelegate() override = default;
-
-  // views::WidgetDelegateView:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
-      views::Widget* widget) override {
-    return Shell::Get()->CreateDefaultNonClientFrameView(widget);
-  }
-};
+namespace views::test {
 
 TestWidgetBuilder::TestWidgetBuilder(WidgetBuilderParams params)
     : params_(std::move(params)) {}
 
+TestWidgetBuilder::TestWidgetBuilder(TestWidgetBuilder&& other)
+    : widget_init_params_(std::move(other.widget_init_params_)),
+      params_(std::move(other.params_)) {
+  DCHECK(!other.built_);
+  other.built_ = true;
+}
+
 TestWidgetBuilder::~TestWidgetBuilder() = default;
 
 TestWidgetBuilder& TestWidgetBuilder::SetWidgetType(
-    views::Widget::InitParams::Type type) {
+    Widget::InitParams::Type type) {
   DCHECK(!built_);
   widget_init_params_.type = type;
   return *this;
@@ -55,9 +41,9 @@ TestWidgetBuilder& TestWidgetBuilder::SetZOrderLevel(ui::ZOrderLevel z_order) {
   return *this;
 }
 
-TestWidgetBuilder& TestWidgetBuilder::SetDelegate(
-    views::WidgetDelegate* delegate) {
+TestWidgetBuilder& TestWidgetBuilder::SetDelegate(WidgetDelegate* delegate) {
   DCHECK(!built_);
+  DCHECK(!widget_init_params_.delegate);
   widget_init_params_.delegate = delegate;
   return *this;
 }
@@ -82,9 +68,9 @@ TestWidgetBuilder& TestWidgetBuilder::SetContext(aura::Window* context) {
 
 TestWidgetBuilder& TestWidgetBuilder::SetActivatable(bool activatable) {
   DCHECK(!built_);
-  widget_init_params_.activatable =
-      activatable ? views::Widget::InitParams::Activatable::kYes
-                  : views::Widget::InitParams::Activatable::kNo;
+  widget_init_params_.activatable = activatable
+                                        ? Widget::InitParams::Activatable::kYes
+                                        : Widget::InitParams::Activatable::kNo;
   return *this;
 }
 
@@ -114,27 +100,21 @@ TestWidgetBuilder& TestWidgetBuilder::SetShow(bool show) {
   return *this;
 }
 
-TestWidgetBuilder& TestWidgetBuilder::SetTestWidgetDelegate() {
-  widget_init_params_.delegate = new TestWidgetBuilderDelegate();
-  return *this;
-}
-
-std::unique_ptr<views::Widget> TestWidgetBuilder::BuildOwnsNativeWidget() {
+std::unique_ptr<Widget> TestWidgetBuilder::BuildOwnsNativeWidget() {
   return BuildWidgetWithOwnership(
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+      Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 }
 
-std::unique_ptr<views::Widget> TestWidgetBuilder::BuildClientOwnsWidget() {
-  return BuildWidgetWithOwnership(
-      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+std::unique_ptr<Widget> TestWidgetBuilder::BuildClientOwnsWidget() {
+  return BuildWidgetWithOwnership(Widget::InitParams::CLIENT_OWNS_WIDGET);
 }
 
-std::unique_ptr<views::Widget> TestWidgetBuilder::BuildWidgetWithOwnership(
-    views::Widget::InitParams::Ownership ownership) {
+std::unique_ptr<Widget> TestWidgetBuilder::BuildWidgetWithOwnership(
+    Widget::InitParams::Ownership ownership) {
   DCHECK(!built_);
   built_ = true;
 
-  std::unique_ptr<views::Widget> widget = std::make_unique<views::Widget>();
+  std::unique_ptr<Widget> widget = std::make_unique<Widget>();
   widget_init_params_.ownership = ownership;
   widget->Init(std::move(widget_init_params_));
   if (params_.window_id != aura::Window::kInitialId) {
@@ -149,14 +129,14 @@ std::unique_ptr<views::Widget> TestWidgetBuilder::BuildWidgetWithOwnership(
   return widget;
 }
 
-views::Widget* TestWidgetBuilder::BuildOwnedByNativeWidget() {
+Widget* TestWidgetBuilder::BuildOwnedByNativeWidget() {
   DCHECK(!built_);
   built_ = true;
 
-  views::Widget* widget = new views::Widget();
-  widget_init_params_.ownership =
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
+  Widget* widget = new Widget();
+  widget_init_params_.ownership = Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   widget->Init(std::move(widget_init_params_));
+
   if (params_.window_id != aura::Window::kInitialId) {
     widget->GetNativeWindow()->SetId(params_.window_id);
   }
@@ -169,4 +149,4 @@ views::Widget* TestWidgetBuilder::BuildOwnedByNativeWidget() {
   return widget;
 }
 
-}  // namespace ash
+}  // namespace views::test

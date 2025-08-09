@@ -61,7 +61,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
-#include "ash/test/test_widget_builder.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
@@ -131,6 +130,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -2000,7 +2000,8 @@ TEST_P(CaptureModeTest, WindowRecordingCaptureId) {
 }
 
 TEST_P(CaptureModeTest, ClosingDimmedWidgetAboveRecordedWindow) {
-  views::Widget* widget = TestWidgetBuilder().BuildOwnedByNativeWidget();
+  views::Widget* widget =
+      views::test::TestWidgetBuilder().BuildOwnedByNativeWidget();
   auto* window = widget->GetNativeWindow();
   auto recorded_window = CreateTestWindow(gfx::Rect(200, 200));
 

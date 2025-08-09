@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/borealis/testing/windows.h"
 
-#include "ash/test/test_widget_builder.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "components/exo/shell_surface_util.h"
+#include "ui/views/test/test_widget_builder.h"
 
 namespace borealis {
 
@@ -44,7 +44,7 @@ std::unique_ptr<ScopedTestWindow> MakeAndTrackWindow(
 
 std::unique_ptr<views::Widget> CreateFakeWidget(std::string name,
                                                 bool fullscreen /*=false*/) {
-  ash::TestWidgetBuilder builder;
+  views::test::TestWidgetBuilder builder;
   builder.SetShow(false);
   std::unique_ptr<views::Widget> widget = builder.BuildOwnsNativeWidget();
   exo::SetShellApplicationId(widget->GetNativeWindow(), name);

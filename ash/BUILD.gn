@@ -5343,8 +5343,6 @@ static_library("test_support") {
     "test/test_ash_web_view.h",
     "test/test_ash_web_view_factory.cc",
     "test/test_ash_web_view_factory.h",
-    "test/test_widget_builder.cc",
-    "test/test_widget_builder.h",
     "test/test_widget_delegates.cc",
     "test/test_widget_delegates.h",
     "test/test_window_builder.cc",

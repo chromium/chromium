@@ -12,11 +12,12 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/test_widget_builder.h"
+#include "ash/test/test_widget_delegates.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/test/test_widget_builder.h"
 
 namespace ash {
 
@@ -114,8 +115,7 @@ TEST_P(DragHandleTest, AccessibleName) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   UpdateDisplay("800x700");
   // Create a widget to transition to the in-app shelf.
-  TestWidgetBuilder()
-      .SetTestWidgetDelegate()
+  CreateWidgetBuilderWithDelegate()
       .SetBounds(gfx::Rect(0, 0, 800, 800))
       .BuildOwnedByNativeWidget();
 
@@ -161,8 +161,7 @@ TEST_P(DragHandleTest, AccessiblePreviousAndNextFocus) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   UpdateDisplay("800x700");
   // Create a widget to transition to the in-app shelf.
-  TestWidgetBuilder()
-      .SetTestWidgetDelegate()
+  CreateWidgetBuilderWithDelegate()
       .SetBounds(gfx::Rect(0, 0, 800, 800))
       .BuildOwnedByNativeWidget();
 
@@ -210,8 +209,7 @@ TEST_P(DragHandleTest, AccessibilityFeaturesEnabled) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   UpdateDisplay("800x700");
   // Create a widget to transition to the in-app shelf.
-  TestWidgetBuilder()
-      .SetTestWidgetDelegate()
+  CreateWidgetBuilderWithDelegate()
       .SetBounds(gfx::Rect(0, 0, 800, 800))
       .BuildOwnedByNativeWidget();
 
@@ -261,8 +259,7 @@ TEST_F(DragHandleFocusTest, AccessibilityFocusOrder) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   UpdateDisplay("800x700");
   // Create a widget to transition to the in-app shelf.
-  TestWidgetBuilder()
-      .SetTestWidgetDelegate()
+  CreateWidgetBuilderWithDelegate()
       .SetBounds(gfx::Rect(0, 0, 800, 800))
       .BuildOwnedByNativeWidget();
   EXPECT_TRUE(drag_handle()->GetVisible());

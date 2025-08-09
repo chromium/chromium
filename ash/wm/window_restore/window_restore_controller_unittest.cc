@@ -12,7 +12,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/test_widget_builder.h"
+#include "ash/test/test_widget_delegates.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
@@ -39,6 +39,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -171,7 +172,7 @@ class WindowRestoreControllerTest : public AshTestBase,
     // Window restore widgets are inactive when created as we do not want to
     // take activation from a possible activated window, and we want to stack
     // them in a certain order.
-    TestWidgetBuilder widget_builder;
+    views::test::TestWidgetBuilder widget_builder;
     widget_builder.SetWidgetType(views::Widget::InitParams::TYPE_WINDOW)
         .SetBounds(*info.current_bounds)
         .SetShow(false)
@@ -977,11 +978,10 @@ TEST_F(WindowRestoreControllerTest, TabletToClamshell) {
 
   // The tablet mode window manager watches windows when they are added, then
   // tracks them when the window is shown. They must be resizable when tracked,
-  // so we use a TestWidgetBuilder instead of `CreateTestWindow()`, which would
-  // show the window before we can make it resizable.
+  // so we use a views::test::TestWidgetBuilder instead of `CreateTestWindow()`,
+  // which would show the window before we can make it resizable.
   const gfx::Rect expected_bounds(300, 300);
-  TestWidgetBuilder builder;
-  views::Widget* widget = builder.SetTestWidgetDelegate()
+  views::Widget* widget = CreateWidgetBuilderWithDelegate()
                               .SetBounds(expected_bounds)
                               .SetContext(Shell::GetPrimaryRootWindow())
                               .SetShow(false)

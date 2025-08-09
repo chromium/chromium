@@ -14,7 +14,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/system/toast/system_nudge_view.h"
-#include "ash/test/test_widget_builder.h"
+#include "ash/test/test_widget_delegates.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/files/file_path.h"
@@ -42,6 +42,7 @@
 #include "ui/display/screen.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/views/test/test_widget_builder.h"
 
 namespace {
 using NudgeTestVariantsParam = std::tuple</*tablet_mode=*/bool,
@@ -203,12 +204,11 @@ class TestCampaignsManagerObserver : public growth::CampaignsManager::Observer {
 };
 
 std::unique_ptr<aura::Window> CreateAuraWindow(std::u16string window_title) {
-  ash::TestWidgetBuilder builder;
-  builder.SetWindowTitle(window_title);
-  builder.SetTestWidgetDelegate();
-  builder.SetContext(ash::Shell::GetPrimaryRootWindow());
-  builder.SetBounds(gfx::Rect(0, 0, 600, 400));
-  views::Widget* widget = builder.BuildOwnedByNativeWidget();
+  views::Widget* widget = ash::CreateWidgetBuilderWithDelegate()
+                              .SetWindowTitle(window_title)
+                              .SetContext(ash::Shell::GetPrimaryRootWindow())
+                              .SetBounds(gfx::Rect(0, 0, 600, 400))
+                              .BuildOwnedByNativeWidget();
   return std::unique_ptr<aura::Window>(widget->GetNativeWindow());
 }
 

@@ -5,7 +5,6 @@
 #include <wayland-server-protocol-core.h>
 
 #include "ash/shell.h"
-#include "ash/test/test_widget_builder.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "base/memory/raw_ptr.h"
@@ -20,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/views/test/test_widget_builder.h"
 
 namespace exo::wayland {
 namespace {
@@ -334,8 +334,10 @@ TEST_F(WaylandAuraShellServerTest, AckRotateFocus) {
   auto keys = SetupClientSurfaces();
   AttachBufferToSurfaces();
 
-  auto native_widget1 = ash::TestWidgetBuilder().BuildOwnsNativeWidget();
-  auto native_widget2 = ash::TestWidgetBuilder().BuildOwnsNativeWidget();
+  auto native_widget1 =
+      views::test::TestWidgetBuilder().BuildOwnsNativeWidget();
+  auto native_widget2 =
+      views::test::TestWidgetBuilder().BuildOwnsNativeWidget();
 
   std::unique_ptr<zaura_toplevel> zaura_toplevel;
 
@@ -405,7 +407,7 @@ TEST_F(WaylandAuraShellServerTest, OverviewMode) {
   auto observer = SetupShellObservation();
 
   // Need at least one window for overview animation.
-  auto native_widget = ash::TestWidgetBuilder().BuildOwnsNativeWidget();
+  auto native_widget = views::test::TestWidgetBuilder().BuildOwnsNativeWidget();
 
   ui::ScopedAnimationDurationScaleMode non_zero(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -596,10 +598,10 @@ TEST_F(WaylandAuraOutputServerTest, ActiveDisplay) {
 
   // Create two widgets, one on the primary and the other on the secondary
   // display.
-  auto* primary_widget = ash::TestWidgetBuilder()
+  auto* primary_widget = views::test::TestWidgetBuilder()
                              .SetBounds({{100, 100}, {200, 200}})
                              .BuildOwnedByNativeWidget();
-  auto* secondary_widget = ash::TestWidgetBuilder()
+  auto* secondary_widget = views::test::TestWidgetBuilder()
                                .SetBounds({{900, 100}, {200, 200}})
                                .BuildOwnedByNativeWidget();
   ASSERT_EQ(

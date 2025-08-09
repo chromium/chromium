@@ -17,7 +17,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
-#include "ash/test/test_widget_builder.h"
+#include "ash/test/test_widget_delegates.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/float/float_test_api.h"
@@ -63,6 +63,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -2649,11 +2650,10 @@ TEST_P(ClientControlledStateTestClamshellAndTablet,
 
   // Create another client-controlled window.
   auto widget2 =
-      TestWidgetBuilder()
+      CreateWidgetBuilderWithDelegate()
           .SetParent(Shell::GetPrimaryRootWindow()->GetChildById(
               desks_util::GetActiveDeskContainerId()))
           .SetBounds(kInitialBounds)
-          .SetTestWidgetDelegate()
           .SetWindowProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP)
           .SetShow(false)
           .BuildOwnsNativeWidget();

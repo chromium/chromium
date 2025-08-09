@@ -345,6 +345,7 @@ source_set("unit_tests") {
     "//ui/gl:test_support",
     "//ui/message_center",
     "//ui/views",
+    "//ui/views:test_support",
     "//ui/wm",
   ]
 

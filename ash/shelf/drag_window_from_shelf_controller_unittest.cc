@@ -21,7 +21,6 @@
 #include "ash/shelf/window_scale_animation.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/test_widget_builder.h"
 #include "ash/test/test_widget_delegates.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -48,6 +47,7 @@
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/transient_window_manager.h"
@@ -1427,8 +1427,7 @@ TEST_F(DragWindowFromShelfControllerTest, DragWindowWithBubbleDialog) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
-  auto widget =
-      TestWidgetBuilder().SetTestWidgetDelegate().BuildClientOwnsWidget();
+  auto widget = CreateWidgetBuilderWithDelegate().BuildClientOwnsWidget();
   widget->Show();
 
   auto dialog_host = std::make_unique<CenteredBubbleDialogModelHost>(

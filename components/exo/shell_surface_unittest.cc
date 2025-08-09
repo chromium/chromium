@@ -19,7 +19,6 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
-#include "ash/test/test_widget_builder.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/resize_shadow.h"
@@ -81,6 +80,7 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/caption_button_layout_constants.h"
@@ -3649,7 +3649,7 @@ TEST_F(ShellSurfaceTest, Overlay) {
   EXPECT_EQ(textfield_ptr->GetText(), u"x");
   EXPECT_EQ(textfield_ptr->GetSelectedText(), u"x");
 
-  auto* widget = ash::TestWidgetBuilder()
+  auto* widget = views::test::TestWidgetBuilder()
                      .SetBounds(gfx::Rect(200, 200))
                      .BuildOwnedByNativeWidget();
   ASSERT_TRUE(widget->IsActive());

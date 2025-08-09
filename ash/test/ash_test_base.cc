@@ -39,7 +39,7 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "ash/test/test_widget_builder.h"
+#include "ash/test/test_widget_delegates.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -81,6 +81,7 @@
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -298,7 +299,7 @@ std::unique_ptr<views::Widget> AshTestBase::CreateTestWidget(
     int container_id,
     const gfx::Rect& bounds,
     bool show) {
-  TestWidgetBuilder builder;
+  views::test::TestWidgetBuilder builder;
   builder.SetDelegate(delegate)
       .SetBounds(bounds)
       .SetParent(Shell::GetPrimaryRootWindow()->GetChildById(container_id))
@@ -314,7 +315,7 @@ std::unique_ptr<views::Widget> AshTestBase::CreateTestWidget(
 // static
 std::unique_ptr<views::Widget> AshTestBase::CreateFramelessTestWidget(
     views::Widget::InitParams::Ownership ownership) {
-  TestWidgetBuilder builder;
+  views::test::TestWidgetBuilder builder;
   builder.SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   if (ownership == views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET) {
     return builder.BuildOwnsNativeWidget();
@@ -329,16 +330,15 @@ std::unique_ptr<aura::Window> AshTestBase::CreateAppWindow(
     chromeos::AppType app_type,
     int shell_window_id,
     views::WidgetDelegate* delegate) {
-  TestWidgetBuilder builder(
-      {.window_title = u"Window " + base::NumberToString16(shell_window_id)});
-  if (app_type != chromeos::AppType::NON_APP) {
-    builder.SetWindowProperty(chromeos::kAppTypeKey, app_type);
-  }
-
+  views::test::TestWidgetBuilder builder;
   if (delegate) {
     builder.SetDelegate(delegate);
   } else {
-    builder.SetTestWidgetDelegate();
+    builder.SetDelegate(CreateTestWidgetBuilderDelegate());
+  }
+  builder.SetWindowTitle(u"Window " + base::NumberToString16(shell_window_id));
+  if (app_type != chromeos::AppType::NON_APP) {
+    builder.SetWindowProperty(chromeos::kAppTypeKey, app_type);
   }
 
   // |widget| is configured to be owned by the underlying window.
