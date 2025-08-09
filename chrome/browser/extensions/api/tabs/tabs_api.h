@@ -202,10 +202,6 @@ class TabsQueryFunction : public ExtensionFunction {
   ~TabsQueryFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tabs.query", TABS_QUERY)
-#if BUILDFLAG(IS_ANDROID)
-  ResponseAction GetTabsMatchingUrl(const api::tabs::Query::Params& params);
-  ResponseAction GetActiveTab(const api::tabs::Query::Params& params);
-#endif  // BUILDFLAG(IS_ANDROID)
 };
 class TabsCreateFunction : public ExtensionFunction {
   ~TabsCreateFunction() override = default;

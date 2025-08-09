@@ -4,7 +4,9 @@
 
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 
+#include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/types/optional_util.h"
@@ -20,6 +22,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -39,6 +42,11 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/base_window.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/resource_coordinator/tab_manager.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/platform_util.h"
 #endif
@@ -55,6 +63,36 @@ namespace windows = api::windows;
 constexpr char kCannotDetermineLanguageOfUnloadedTab[] =
     "Cannot determine language: tab not loaded";
 constexpr char kFrameNotFoundError[] = "No frame with id * in tab *.";
+
+namespace {
+
+// Returns the last active browser with the given `profile`. If
+// `include_incognito_information` is true, this will also return a browser
+// that crosses the incognito boundary.
+BrowserWindowInterface* GetLastActiveBrowserWithProfile(
+    Profile* profile,
+    bool include_incognito_information) {
+  std::vector<BrowserWindowInterface*> all_browsers =
+      GetBrowserWindowInterfacesOrderedByActivation();
+  for (auto* browser : all_browsers) {
+    if (browser->GetProfile() == profile ||
+        (include_incognito_information &&
+         profile->IsSameOrParent(browser->GetProfile()))) {
+      return browser;
+    }
+  }
+
+  return nullptr;
+}
+
+// Returns true if either |boolean| is disengaged, or if |boolean| and
+// |value| are equal. This function is used to check if a tab's parameters match
+// those of the browser.
+bool MatchesBool(const std::optional<bool>& boolean, bool value) {
+  return !boolean || *boolean == value;
+}
+
+}  // namespace
 
 namespace tabs_internal {
 
@@ -405,6 +443,269 @@ ExtensionFunction::ResponseAction TabsGetAllInWindowFunction::Run() {
 
   return RespondNow(WithArguments(
       window_controller->CreateTabList(extension(), source_context_type())));
+}
+
+ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
+  std::optional<tabs::Query::Params> params =
+      tabs::Query::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  bool loading_status_set = params->query_info.status != tabs::TabStatus::kNone;
+
+  URLPatternSet url_patterns;
+  if (params->query_info.url) {
+    std::vector<std::string> url_pattern_strings;
+    if (params->query_info.url->as_string) {
+      url_pattern_strings.push_back(*params->query_info.url->as_string);
+    } else if (params->query_info.url->as_strings) {
+      url_pattern_strings.swap(*params->query_info.url->as_strings);
+    }
+    // It is o.k. to use URLPattern::SCHEME_ALL here because this function does
+    // not grant access to the content of the tabs, only to seeing their URLs
+    // and meta data.
+    std::string error;
+    if (!url_patterns.Populate(url_pattern_strings, URLPattern::SCHEME_ALL,
+                               true, &error)) {
+      return RespondNow(Error(std::move(error)));
+    }
+  }
+
+  std::string title = params->query_info.title.value_or(std::string());
+
+  int window_id = extension_misc::kUnknownWindowId;
+  if (params->query_info.window_id) {
+    window_id = *params->query_info.window_id;
+  }
+
+  std::optional<int> group_id = std::nullopt;
+  if (params->query_info.group_id) {
+    group_id = *params->query_info.group_id;
+  }
+
+  std::optional<int> split_id = std::nullopt;
+  if (params->query_info.split_view_id) {
+    split_id = *params->query_info.split_view_id;
+  }
+
+  int index = -1;
+  if (params->query_info.index) {
+    index = *params->query_info.index;
+  }
+
+  std::string window_type;
+  if (params->query_info.window_type != tabs::WindowType::kNone) {
+    window_type = tabs::ToString(params->query_info.window_type);
+  }
+
+  base::Value::List result;
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  BrowserWindowInterface* last_active_browser =
+      GetLastActiveBrowserWithProfile(profile, include_incognito_information());
+
+  // Note that the current browser is allowed to be null: you can still query
+  // the tabs in this case.
+  BrowserWindowInterface* current_browser = nullptr;
+  WindowController* current_window_controller =
+      ChromeExtensionFunctionDetails(this).GetCurrentWindowController();
+  if (current_window_controller) {
+    current_browser = current_window_controller->GetBrowserWindowInterface();
+    // Note: current_browser may still be null.
+  }
+
+  const bool include_incognito = include_incognito_information();
+  auto matches_profile = [profile, include_incognito](Profile* other_profile) {
+    if (!profile->IsSameOrParent(other_profile)) {
+      return false;
+    }
+    if (!include_incognito && profile != other_profile) {
+      return false;
+    }
+    return true;
+  };
+
+  // Historically, we queried browsers in creation order. Maintain that behavior
+  // (for now).
+  std::vector<BrowserWindowInterface*> all_browsers =
+      GetAllBrowserWindowInterfaces();
+  for (auto* browser : all_browsers) {
+#if !BUILDFLAG(IS_ANDROID)
+    // TODO(https://crbug.com/429037015): Android browser windows don't yet
+    // return a proper profile, so we look at the individual tabs instead.
+    if (!matches_profile(browser->GetProfile())) {
+      continue;
+    }
+#endif
+
+    if (!browser->GetWindow()) {
+      continue;
+    }
+
+    WindowController* window_controller =
+        BrowserExtensionWindowController::From(browser);
+    CHECK(window_controller);
+    if (!window_controller->IsVisibleToTabsAPIForExtension(
+            extension(), /*allow_dev_tools_windows=*/false)) {
+      continue;
+    }
+
+    if (window_id >= 0 && window_id != ExtensionTabUtil::GetWindowId(browser)) {
+      continue;
+    }
+
+    if (window_id == extension_misc::kCurrentWindowId &&
+        browser != current_browser) {
+      continue;
+    }
+
+    if (!MatchesBool(params->query_info.current_window,
+                     browser == current_browser)) {
+      continue;
+    }
+
+    if (!MatchesBool(params->query_info.last_focused_window,
+                     browser == last_active_browser)) {
+      continue;
+    }
+
+    if (!window_type.empty() &&
+        window_type != window_controller->GetWindowTypeText()) {
+      continue;
+    }
+
+    TabListInterface* tab_list = TabListInterface::From(browser);
+    for (int i = 0; i < tab_list->GetTabCount(); ++i) {
+      if (index > -1 && i != index) {
+        continue;
+      }
+
+      ::tabs::TabInterface* tab = tab_list->GetTab(i);
+      CHECK(tab);
+      content::WebContents* web_contents = tab->GetContents();
+
+#if BUILDFLAG(IS_ANDROID)
+      Profile* tab_profile =
+          Profile::FromBrowserContext(web_contents->GetBrowserContext());
+      if (!matches_profile(tab_profile)) {
+        continue;
+      }
+#endif
+
+      if (!web_contents) {
+        continue;
+      }
+
+      if (!MatchesBool(params->query_info.highlighted, tab->IsSelected())) {
+        continue;
+      }
+
+      if (!MatchesBool(params->query_info.active, tab->IsActivated())) {
+        continue;
+      }
+
+      if (!MatchesBool(params->query_info.pinned, tab->IsPinned())) {
+        continue;
+      }
+
+      if (group_id.has_value()) {
+        std::optional<tab_groups::TabGroupId> group = tab->GetGroup();
+        if (group_id.value() == -1) {
+          if (group.has_value()) {
+            continue;
+          }
+        } else if (!group.has_value()) {
+          continue;
+        } else if (ExtensionTabUtil::GetGroupId(group.value()) !=
+                   group_id.value()) {
+          continue;
+        }
+      }
+
+      if (split_id.has_value()) {
+        std::optional<split_tabs::SplitTabId> split = tab->GetSplit();
+        if (split_id.value() == -1) {
+          if (split.has_value()) {
+            continue;
+          }
+        } else if (!split.has_value() ||
+                   ExtensionTabUtil::GetSplitId(split.value()) !=
+                       split_id.value()) {
+          continue;
+        }
+      }
+
+      auto* audible_helper =
+          RecentlyAudibleHelper::FromWebContents(web_contents);
+      if (!MatchesBool(params->query_info.audible,
+                       audible_helper->WasRecentlyAudible())) {
+        continue;
+      }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      auto* tab_lifecycle_unit_external =
+          resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+              web_contents);
+
+      if (!MatchesBool(params->query_info.frozen,
+                       tab_lifecycle_unit_external->GetTabState() ==
+                           ::mojom::LifecycleUnitState::FROZEN)) {
+        continue;
+      }
+
+      if (!MatchesBool(params->query_info.discarded,
+                       tab_lifecycle_unit_external->GetTabState() ==
+                           ::mojom::LifecycleUnitState::DISCARDED)) {
+        continue;
+      }
+
+      if (!MatchesBool(params->query_info.auto_discardable,
+                       tab_lifecycle_unit_external->IsAutoDiscardable())) {
+        continue;
+      }
+#endif
+
+      if (!MatchesBool(params->query_info.muted,
+                       web_contents->IsAudioMuted())) {
+        continue;
+      }
+
+      if (!title.empty() || !url_patterns.is_empty()) {
+        // "title" and "url" properties are considered privileged data and can
+        // only be checked if the extension has the "tabs" permission or it has
+        // access to the WebContents's origin. Otherwise, this tab is considered
+        // not matched.
+        if (!extension_->permissions_data()->HasAPIPermissionForTab(
+                ExtensionTabUtil::GetTabId(web_contents),
+                mojom::APIPermissionID::kTab) &&
+            !extension_->permissions_data()->HasHostPermission(
+                web_contents->GetURL())) {
+          continue;
+        }
+
+        if (!title.empty() && !base::MatchPattern(web_contents->GetTitle(),
+                                                  base::UTF8ToUTF16(title))) {
+          continue;
+        }
+
+        if (!url_patterns.is_empty() &&
+            !url_patterns.MatchesURL(web_contents->GetURL())) {
+          continue;
+        }
+      }
+
+      if (loading_status_set &&
+          params->query_info.status !=
+              ExtensionTabUtil::GetLoadingStatus(web_contents)) {
+        continue;
+      }
+
+      result.Append(
+          tabs_internal::CreateTabObjectHelper(
+              web_contents, extension(), source_context_type(), browser, i)
+              .ToValue());
+    }
+  }
+
+  return RespondNow(WithArguments(std::move(result)));
 }
 
 TabsRemoveFunction::TabsRemoveFunction() = default;
