@@ -2513,6 +2513,14 @@
       browser_process_read_write_access: true,
     },
     {
+      // To filter only elements in the HTML namespace when calling
+      // getElementsByName().
+      // This was added in M141 and can be removed after M143.
+      // https://issues.chromium.org/issues/40502558
+      name: "GetElementsByNameOnlyHTMLElements",
+      status: "stable",
+    },
+    {
       name: "GetUserMediaEchoCancellationModes",
       status: "experimental",
     },
