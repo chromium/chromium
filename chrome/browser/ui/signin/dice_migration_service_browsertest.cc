@@ -1252,6 +1252,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(GetPrefs()->GetBoolean(kDiceMigrationRestoredFromBackup));
   // The migration pref is reset.
   EXPECT_FALSE(GetPrefs()->GetBoolean(kDiceMigrationMigrated));
+  // The dialog shown count is reset.
+  EXPECT_EQ(0, GetPrefs()->GetInteger(kDiceMigrationDialogShownCount));
+  // The dialog last shown time is not cleared.
+  EXPECT_FALSE(
+      GetPrefs()->GetTime(kDiceMigrationDialogLastShownTime).is_null());
 }
 
 IN_PROC_BROWSER_TEST_F(

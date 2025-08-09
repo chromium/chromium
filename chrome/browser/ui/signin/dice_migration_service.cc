@@ -149,38 +149,6 @@ bool MaybeMigrateUser(Profile* profile) {
   return true;
 }
 
-void RestoreImplicitlySignedInStateFromBackupIfExists(PrefService* prefs) {
-  CHECK(prefs);
-
-  if (!prefs->GetBoolean(kDiceMigrationMigrated)) {
-    return;
-  }
-
-  const bool restored_from_backup = [prefs]() -> bool {
-    const base::Value* backup = prefs->GetUserPrefValue(kDiceMigrationBackup);
-    if (!backup || !backup->is_dict()) {
-      return false;
-    }
-    const std::optional<bool> prefs_account_storage_enabled =
-        backup->GetDict().FindBoolByDottedPath(
-            prefs::kPrefsThemesSearchEnginesAccountStorageEnabled);
-    const std::optional<bool> explicit_browser_signin =
-        backup->GetDict().FindBoolByDottedPath(prefs::kExplicitBrowserSignin);
-    if (!explicit_browser_signin.has_value() ||
-        !prefs_account_storage_enabled.has_value()) {
-      return false;
-    }
-    prefs->SetBoolean(prefs::kPrefsThemesSearchEnginesAccountStorageEnabled,
-                      *prefs_account_storage_enabled);
-    prefs->SetBoolean(prefs::kExplicitBrowserSignin, *explicit_browser_signin);
-    return true;
-  }();
-
-  prefs->SetBoolean(kDiceMigrationRestoredFromBackup, restored_from_backup);
-  prefs->SetBoolean(kDiceMigrationMigrated, !restored_from_backup);
-  base::UmaHistogramBoolean(kRestoredFromBackupHistogram, restored_from_backup);
-}
-
 bool MaybeShowToast(Browser* browser) {
   ToastController* const toast_controller =
       browser->browser_window_features()->toast_controller();
@@ -244,14 +212,8 @@ DiceMigrationService::DiceMigrationService(
     Profile* profile,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_testing)
     : profile_(profile) {
+  CHECK(base::FeatureList::IsEnabled(switches::kOfferMigrationToDiceUsers));
   CHECK(profile_);
-  if (base::FeatureList::IsEnabled(switches::kRollbackDiceMigration)) {
-    RestoreImplicitlySignedInStateFromBackupIfExists(profile_->GetPrefs());
-    return;
-  }
-  if (!base::FeatureList::IsEnabled(switches::kOfferMigrationToDiceUsers)) {
-    return;
-  }
   const std::optional<DialogNotShownReason> not_shown_reason =
       ShouldStartDialogTriggerTimer();
   base::UmaHistogramBoolean(kDialogTimerStartedHistogram,
@@ -302,6 +264,45 @@ void DiceMigrationService::RegisterProfilePrefs(
   registry->RegisterBooleanPref(kDiceMigrationMigrated, false);
   registry->RegisterDictionaryPref(kDiceMigrationBackup);
   registry->RegisterBooleanPref(kDiceMigrationRestoredFromBackup, false);
+}
+
+// static
+void DiceMigrationService::RevertDiceMigration(PrefService* prefs) {
+  CHECK(prefs);
+
+  if (!prefs->GetBoolean(kDiceMigrationMigrated)) {
+    return;
+  }
+
+  const bool restored_from_backup = [prefs]() -> bool {
+    const base::Value* backup = prefs->GetUserPrefValue(kDiceMigrationBackup);
+    if (!backup || !backup->is_dict()) {
+      return false;
+    }
+    const std::optional<bool> prefs_account_storage_enabled =
+        backup->GetDict().FindBoolByDottedPath(
+            prefs::kPrefsThemesSearchEnginesAccountStorageEnabled);
+    const std::optional<bool> explicit_browser_signin =
+        backup->GetDict().FindBoolByDottedPath(prefs::kExplicitBrowserSignin);
+    if (!explicit_browser_signin.has_value() ||
+        !prefs_account_storage_enabled.has_value()) {
+      return false;
+    }
+    prefs->SetBoolean(prefs::kPrefsThemesSearchEnginesAccountStorageEnabled,
+                      *prefs_account_storage_enabled);
+    prefs->SetBoolean(prefs::kExplicitBrowserSignin, *explicit_browser_signin);
+    return true;
+  }();
+
+  prefs->SetBoolean(kDiceMigrationRestoredFromBackup, restored_from_backup);
+  prefs->SetBoolean(kDiceMigrationMigrated, !restored_from_backup);
+  base::UmaHistogramBoolean(kRestoredFromBackupHistogram, restored_from_backup);
+  // Clear the backup. Also clear the dialog shown count/time to ensure the
+  // dialog can be shown again once the flag is enabled again.
+  if (restored_from_backup) {
+    prefs->ClearPref(kDiceMigrationBackup);
+    prefs->ClearPref(kDiceMigrationDialogShownCount);
+  }
 }
 
 std::optional<DiceMigrationService::DialogNotShownReason>

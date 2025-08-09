@@ -106,6 +106,8 @@ class DiceMigrationService : public KeyedService,
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  static void RevertDiceMigration(PrefService* prefs);
+
   views::Widget* GetDialogWidgetForTesting();
 
   base::OneShotTimer& GetDialogTriggerTimerForTesting();
