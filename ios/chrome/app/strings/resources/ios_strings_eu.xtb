@@ -388,6 +388,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2434405374328098816">Gordeta daukazu jada "<ph name="USERNAME" />" erabiltzaile-izenari eta <ph name="WEBSITE" /> webguneari dagokien pasahitza</translation>
 <translation id="2434918313224755415">Ezkutuko moduan arakatzeko, hatza ezkerrera pasa dezakezu.</translation>
 <translation id="2435457462613246316">Erakutsi pasahitza</translation>
+<translation id="2458827363789845126">{count,plural, =1{Historiako {count} elementu}other{Historiako {count} elementu}}</translation>
 <translation id="2461070143328828326">Pasahitzen ezarpenak</translation>
 <translation id="2462736546165239215">Arakatze-historia guztia hemen aurki dezakezu.</translation>
 <translation id="2466518891828668184">Gorde pasahitzak, webgune eta aplikazioetan saioa erraz hasteko.</translation>
@@ -1515,6 +1516,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="6791425686608802741">Sakatu "Gehitu fitxa talde berri batean".</translation>
 <translation id="6794476726485507147">Hautatu noiz jaso nahi duzun orri hau berriro bisitatzeko gogorarazpena</translation>
 <translation id="6795481620482106033">Datu baliogabeak</translation>
+<translation id="6797543908718012274">Aktibatu irakurtzeko modua</translation>
 <translation id="6807287147325542056">Beste aplikazio batzuetako pasahitzak</translation>
 <translation id="681368974849482173">Elementua sortu da</translation>
 <translation id="6825078212112407882">{count,plural, =1{Laster-marka gorde da Google-ko kontuan ({email})}other{{count} laster-marka gorde dira Google-ko kontuan ({email})}}</translation>

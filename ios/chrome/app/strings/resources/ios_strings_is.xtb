@@ -388,6 +388,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2434405374328098816">Þú hefur þegar vistað aðgangsorð fyrir „<ph name="USERNAME" />“ á <ph name="WEBSITE" />.</translation>
 <translation id="2434918313224755415">Þú getur skoðað í huliðsstillingu með því að strjúka til vinstri.</translation>
 <translation id="2435457462613246316">Sýna aðgangsorð</translation>
+<translation id="2458827363789845126">{count,plural, =1{{count} ferilatriði}one{{count} ferilatriði}other{{count} ferilatriði}}</translation>
 <translation id="2461070143328828326">Stillingar fyrir aðgangsorð</translation>
 <translation id="2462736546165239215">Þú finnur vafraferilinn í heild sinni hér.</translation>
 <translation id="2466518891828668184">Vistaðu aðgangsorðin þín til að skrá þig inn á vefsvæði og forrit á einfaldan hátt.</translation>
@@ -1515,6 +1516,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="6791425686608802741">Ýttu á „Bæta flipa við nýjan hóp“</translation>
 <translation id="6794476726485507147">Veldu dagsetningu og tíma til að fá áminningu um að fara aftur á þessa síðu</translation>
 <translation id="6795481620482106033">Ógild gögn</translation>
+<translation id="6797543908718012274">Kveikja á lesstillingu</translation>
 <translation id="6807287147325542056">Aðgangsorð í öðrum tækjum</translation>
 <translation id="681368974849482173">Atriði búið til</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bókamerki var vistað á Google-reikningnum þínum: {email}}one{{count} bókamerki var vistað á Google-reikningnum þínum: {email}}other{{count} bókamerki voru vistuð á Google-reikningnum þínum: {email}}}</translation>

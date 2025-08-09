@@ -388,6 +388,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2434405374328098816">Artıq <ph name="WEBSITE" /> saytında "<ph name="USERNAME" />" üçün parolu yadda saxlamısınız</translation>
 <translation id="2434918313224755415">Sola sürüşdürərək Anonim rejimdə baxa bilərsiniz.</translation>
 <translation id="2435457462613246316">Parol görünsün</translation>
+<translation id="2458827363789845126">{count,plural, =1{{count} tarixçə elementi}other{{count} tarixçə elementi}}</translation>
 <translation id="2461070143328828326">Parol Ayarları</translation>
 <translation id="2462736546165239215">Bütün brauzer tarixçəsi buradadır.</translation>
 <translation id="2466518891828668184">Sayt və tətbiqlərə asanlıqla daxil olmaq üçün parollarınızı yadda saxlayın.</translation>
@@ -1515,6 +1516,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6791425686608802741">"Yeni qrupa tab əlavə edin" üzərinə toxunun</translation>
 <translation id="6794476726485507147">Bu səhifəyə yenidən daxil olmaq məqsədilə xatırladıcı bildirişi almaq üçün tarix və vaxt seçin</translation>
 <translation id="6795481620482106033">Yanlış data</translation>
+<translation id="6797543908718012274">Oxu rejimini aktivləşdirin</translation>
 <translation id="6807287147325542056">Digər tətbiqlərdəki parollar</translation>
 <translation id="681368974849482173">Element yaradılmışdır</translation>
 <translation id="6825078212112407882">{count,plural, =1{Əlfəcin Google Hesabında ({email}) yadda saxlandı}other{{count} əlfəcin Google Hesabında ({email}) yadda saxlandı.}}</translation>

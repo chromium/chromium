@@ -388,6 +388,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2434405374328098816">Anda sudah menyimpan sandi untuk "<ph name="USERNAME" />" di <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Anda dapat men-scroll ke kiri untuk menjelajah dalam mode Samaran.</translation>
 <translation id="2435457462613246316">Tampilkan sandi</translation>
+<translation id="2458827363789845126">{count,plural, =1{{count} item histori}other{{count} item histori}}</translation>
 <translation id="2461070143328828326">Setelan Sandi</translation>
 <translation id="2462736546165239215">Anda dapat menemukan semua histori penjelajahan Anda di sini.</translation>
 <translation id="2466518891828668184">Simpan sandi Anda untuk memudahkan proses login ke situs dan aplikasi.</translation>
@@ -1515,6 +1516,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6791425686608802741">Ketuk "Tambahkan Tab ke Grup Baru"</translation>
 <translation id="6794476726485507147">Pilih tanggal dan waktu untuk menerima notifikasi pengingat guna membuka kembali halaman ini</translation>
 <translation id="6795481620482106033">Data Tidak Valid</translation>
+<translation id="6797543908718012274">Aktifkan Mode Baca</translation>
 <translation id="6807287147325542056">Sandi di aplikasi lain</translation>
 <translation id="681368974849482173">Item dibuat</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bookmark disimpan di Akun Google Anda, {email}}other{{count} bookmark disimpan di Akun Google Anda, {email}}}</translation>

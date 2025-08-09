@@ -388,6 +388,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2434405374328098816">Heslo pro uživatelské jméno „<ph name="USERNAME" />“ už jste na webu <ph name="WEBSITE" /> uložili</translation>
 <translation id="2434918313224755415">Posunutím doleva si web můžete prohlížet v anonymním režimu.</translation>
 <translation id="2435457462613246316">Zobrazit heslo</translation>
+<translation id="2458827363789845126">{count,plural, =1{{count} položka historie}few{{count} položky historie}many{{count} položky historie}other{{count} položek historie}}</translation>
 <translation id="2461070143328828326">Nastavení hesla</translation>
 <translation id="2462736546165239215">Zde najdete veškerou svou historii prohlížení.</translation>
 <translation id="2466518891828668184">Ukládejte si hesla, abyste se mohli snadno přihlašovat na weby a do aplikací.</translation>
@@ -1515,6 +1516,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="6791425686608802741">Klepněte na Přidat kartu do nové skupiny</translation>
 <translation id="6794476726485507147">Vyberte datum a čas, kdy chcete dostat připomenutí, že tuto stránku máte znovu navštívit</translation>
 <translation id="6795481620482106033">Neplatná data</translation>
+<translation id="6797543908718012274">Zapnout režim čtení</translation>
 <translation id="6807287147325542056">Hesla v jiných aplikacích</translation>
 <translation id="681368974849482173">Položka byla vytvořena</translation>
 <translation id="6825078212112407882">{count,plural, =1{Záložka byla uložena do vašeho účtu Google {email}}few{Do vašeho účtu Google {email} byly uloženy {count} záložky}many{Do vašeho účtu Google {email} bylo uloženo {count} záložky}other{Do vašeho účtu Google {email} bylo uloženo {count} záložek}}</translation>

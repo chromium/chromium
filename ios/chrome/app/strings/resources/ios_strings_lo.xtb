@@ -388,6 +388,7 @@
 <translation id="2434405374328098816">ທ່ານມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ສຳລັບ "<ph name="USERNAME" />" ຢູ່ <ph name="WEBSITE" /> ຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="2434918313224755415">ທ່ານສາມາດເລື່ອນໄປທາງຊ້າຍເພື່ອທ່ອງເວັບໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນໄດ້.</translation>
 <translation id="2435457462613246316">ສະ​ແດງ​ລະ​ຫັດ​ຜ່ານ</translation>
+<translation id="2458827363789845126">{count,plural, =1{ລາຍການປະຫວັດ {count} ລາຍການ}other{ລາຍການປະຫວັດ {count} ລາຍການ}}</translation>
 <translation id="2461070143328828326">ການຕັ້ງຄ່າລະຫັດຜ່ານ</translation>
 <translation id="2462736546165239215">ທ່ານສາມາດຊອກຫາປະຫວັດການທ່ອງເວັບທັງໝົດຂອງທ່ານໄດ້ບ່ອນນີ້.</translation>
 <translation id="2466518891828668184">ບັນທຶກລະຫັດຜ່ານຂອງທ່ານເພື່ອເຂົ້າສູ່ລະບົບເວັບໄຊ ແລະ ແອັບໄດ້ຢ່າງງ່າຍດາຍ.</translation>
@@ -1515,6 +1516,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6791425686608802741">ແຕະ "ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່"</translation>
 <translation id="6794476726485507147">ເລືອກວັນທີ ແລະ ເວລາທີ່ຈະຮັບການແຈ້ງເຕືອນໃຫ້ກັບມາເບິ່ງໜ້ານີ້</translation>
 <translation id="6795481620482106033">ຂໍ້ມູນບໍ່ຖືກຕ້ອງ</translation>
+<translation id="6797543908718012274">ເປີດໂໝດການອ່ານ</translation>
 <translation id="6807287147325542056">ລະຫັດຜ່ານໃນແອັບອື່ນໆ</translation>
 <translation id="681368974849482173">ສ້າງ​ລາຍ​ການ​ຂຶ້ນ​ແລ້ວ</translation>
 <translation id="6825078212112407882">{count,plural, =1{ບັນທຶກບຸກມາກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, {email} ແລ້ວ}other{ບັນທຶກບຸກມາກ {count} ລາຍການໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, {email} ແລ້ວ}}</translation>

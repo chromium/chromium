@@ -388,6 +388,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2434405374328098816">Rydych eisoes wedi cadw cyfrinair ar gyfer "<ph name="USERNAME" />" yn <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Gallwch sgrolio i'r chwith i bori yn y modd Anhysbys.</translation>
 <translation id="2435457462613246316">Dangos y cyfrinair</translation>
+<translation id="2458827363789845126">{count,plural, =1{{count} eitem hanes}zero{{count} eitemau hanes}two{{count} eitem hanes}few{{count} eitem hanes}many{{count} eitem hanes}other{{count} eitem hanes}}</translation>
 <translation id="2461070143328828326">Cyfrinair Gosodiadau</translation>
 <translation id="2462736546165239215">Gallwch ddod o hyd i'ch holl hanes pori yma.</translation>
 <translation id="2466518891828668184">Cadwch eich cyfrineiriau er mwyn mewngofnodi'n hawdd i wefannau ac apiau.</translation>
@@ -1515,6 +1516,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="6791425686608802741">Tapiwch "Ychwanegu Tab at Grŵp Newydd"</translation>
 <translation id="6794476726485507147">Dewiswch ddyddiad ac amser i dderbyn hysbysiad atgoffa i ailymweld â'r dudalen hon</translation>
 <translation id="6795481620482106033">Data Annilys</translation>
+<translation id="6797543908718012274">Troi Modd Darllen ymlaen</translation>
 <translation id="6807287147325542056">Cyfrineiriau mewn apiau eraill</translation>
 <translation id="681368974849482173">Wedi creu'r eitem</translation>
 <translation id="6825078212112407882">{count,plural, =1{Mae'r nod tudalen wedi'i gadw yn eich Cyfrif Google, {email}}zero{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}two{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}few{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}many{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}other{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}}</translation>

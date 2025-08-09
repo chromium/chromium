@@ -388,6 +388,7 @@
 <translation id="2434405374328098816">Դուք <ph name="WEBSITE" /> կայքում «<ph name="USERNAME" />» օգտատիրոջ համար արդեն գաղտնաբառ պահել եք։</translation>
 <translation id="2434918313224755415">Ինկոգնիտո ռեժիմում դիտարկելու համար ոլորեք ձախ։</translation>
 <translation id="2435457462613246316">Ցույց տալ գաղտնաբառը</translation>
+<translation id="2458827363789845126">{count,plural, =1{Պատմության {count} տարր}one{Պատմության {count} տարր}other{Պատմության {count} տարր}}</translation>
 <translation id="2461070143328828326">Գաղտնաբառերի կարգավորումներ</translation>
 <translation id="2462736546165239215">Ձեր այցելությունների ամբողջ պատմությունը կգտնեք այստեղ։</translation>
 <translation id="2466518891828668184">Պահեք ձեր գաղտնաբառերը, որպեսզի հեշտությամբ մուտք գործեք կայքեր և հավելվածներ։</translation>
@@ -1515,6 +1516,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6791425686608802741">Հպեք «Ավելացնել ներդիրը նոր խմբում» քարտին</translation>
 <translation id="6794476726485507147">Ընտրեք ամսաթիվ և ժամ՝ այս էջը կրկին այցելելու հիշեցման ծանուցում ստանալու համար</translation>
 <translation id="6795481620482106033">Անվավեր տվյալներ</translation>
+<translation id="6797543908718012274">Միացնել ընթերցման ռեժիմը</translation>
 <translation id="6807287147325542056">Գաղտնաբառեր այլ հավելվածներում</translation>
 <translation id="681368974849482173">Տարրը ստեղծվեց</translation>
 <translation id="6825078212112407882">{count,plural, =1{Էջանիշը պահվել է ձեր Google հաշվում ({email})}one{{count} էջանիշ պահվել է ձեր Google հաշվում ({email})}other{{count} էջանիշ պահվել է ձեր Google հաշվում ({email})}}</translation>
