@@ -85,8 +85,7 @@
             {"name": "android", "description": "Specifies the Android operating system."},
             {"name": "cros", "description": "Specifies the Chrome operating system."},
             {"name": "linux", "description": "Specifies the Linux operating system."},
-            {"name": "openbsd", "description": "Specifies the OpenBSD operating system."},
-            {"name": "fuchsia", "description": "Specifies the Fuchsia operating system."}
+            {"name": "openbsd", "description": "Specifies the OpenBSD operating system."}
         ]
       },
       {
