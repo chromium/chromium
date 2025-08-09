@@ -134,6 +134,30 @@ WindowController* WindowControllerFromBrowser(BrowserWindowInterface* browser) {
   return BrowserExtensionWindowController::From(browser);
 }
 
+// Returns the BrowserWindowInterface that contains the given `web_contents`,
+// if any.
+BrowserWindowInterface* GetBrowserForWebContents(
+    content::WebContents* web_contents) {
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab) {
+    return nullptr;
+  }
+  std::vector<BrowserWindowInterface*> all_browsers =
+      GetAllBrowserWindowInterfaces();
+  for (auto* browser : all_browsers) {
+    TabListInterface* tab_list = TabListInterface::From(browser);
+    if (!tab_list) {
+      continue;
+    }
+    std::vector<tabs::TabInterface*> all_tabs = tab_list->GetAllTabs();
+    if (base::Contains(all_tabs, tab)) {
+      return browser;  // Found it!
+    }
+  }
+  return nullptr;
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 
 Browser* CreateBrowser(Profile* profile, bool user_gesture) {
@@ -1424,17 +1448,17 @@ bool ExtensionTabUtil::OpenOptionsPageFromWebContents(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // static
 WindowController* ExtensionTabUtil::GetWindowControllerOfTab(
-    const WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+    WebContents* web_contents) {
+  BrowserWindowInterface* browser = GetBrowserForWebContents(web_contents);
   if (browser) {
     return BrowserExtensionWindowController::From(browser);
   }
   return nullptr;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // static
 bool ExtensionTabUtil::OpenOptionsPageFromAPI(
     const Extension* extension,

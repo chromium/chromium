@@ -346,10 +346,10 @@ class ExtensionTabUtil {
       const Extension* extension,
       content::WebContents* web_contents);
 
-#if !BUILDFLAG(IS_ANDROID)
   static WindowController* GetWindowControllerOfTab(
-      const content::WebContents* web_contents);
+      content::WebContents* web_contents);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Open the extension's options page. Returns true if an options page was
   // successfully opened (though it may not necessarily *load*, e.g. if the
   // URL does not exist). This call to open the options page is iniatiated by
