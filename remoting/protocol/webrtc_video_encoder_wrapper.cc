@@ -476,8 +476,7 @@ void WebrtcVideoEncoderWrapper::OnFrameEncoded(
     // WebrtcFrameSchedulerConstantRate cannot estimate this delay. Set it to 0
     // so the client can still calculate the derived stats.
     frame_stats_->send_pending_delay = base::TimeDelta();
-    frame->stats =
-        std::make_unique<WebrtcVideoEncoder::FrameStats>(*frame_stats_);
+    frame->stats = frame_stats_->Duplicate();
 
     frame->rtp_timestamp = rtp_timestamp_;
   }

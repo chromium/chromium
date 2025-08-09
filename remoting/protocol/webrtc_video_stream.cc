@@ -56,6 +56,10 @@ struct WebrtcVideoStream::FrameStats : public WebrtcVideoEncoder::FrameStats {
   FrameStats& operator=(const FrameStats&) = default;
   ~FrameStats() override = default;
 
+  std::unique_ptr<WebrtcVideoEncoder::FrameStats> Duplicate() const override {
+    return std::make_unique<FrameStats>(*this);
+  }
+
   // The input-event fields are only valid for the frame after an input event.
   InputEventTimestamps input_event_timestamps;
 
