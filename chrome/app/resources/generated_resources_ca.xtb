@@ -642,6 +642,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1438630805136563416">S'ha suprimit l'acció <ph name="REMOVED_ACTION" /></translation>
 <translation id="1439671507542716852">assistència a llarg termini</translation>
 <translation id="1440090277117135316">La inscripció al centre educatiu s'ha completat</translation>
+<translation id="1441971243157709645">Impressora gestionada</translation>
 <translation id="1442054921249164535">Altres dades</translation>
 <translation id="144283815522798837">Elements seleccionats: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Estableix el tiquet de Kerberos actiu</translation>
@@ -5054,6 +5055,10 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4501530680793980440">Confirmació de la supressió</translation>
 <translation id="4502423230170890588">Suprimeix d'aquest dispositiu</translation>
 <translation id="4502477450742595012">Fes clic amb el botó dret en una pestanya i selecciona "Afegeix una pestanya a un grup nou"</translation>
+<translation id="4503362512377701151">Veus els grups de pestanyes que has utilitzat recentment perquè puguis continuar fàcilment a partir del punt on ho havies deixat.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Pots gestionar la configuració des del menú d'accions addicionals o veure més opcions a Personalitza Chrome.</translation>
 <translation id="4503748371388753124">L'ordinador conté un dispositiu de seguretat amb mòdul de plataforma de confiança (TPM), que s'utilitza per implementar un gran nombre de funcions clau de seguretat a ChromeOS Flex. Visita el Centre d'ajuda de Chromebook per obtenir més informació: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Les galetes es permeten}=1{Les galetes es permeten, 1 excepció}other{Les galetes es permeten, {COUNT} excepcions}}</translation>
 <translation id="4504940961672722399">Per fer servir aquesta extensió, fes clic en aquesta icona o prem <ph name="EXTENSION_SHORTCUT" />.</translation>

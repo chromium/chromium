@@ -1092,6 +1092,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> қосылған қойындылар тобына қосылыңыз</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Қосымша мәліметтер<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Элемент жойылған</translation>
+<translation id="6127860394906721547"><ph name="URL_LIST" /> сайттары бар <ph name="COLOR_NAME" /> түсті <ph name="TITLE_OF_GROUP" /> қойындылар тобын ашу.</translation>
 <translation id="6130303040046284160">Қойындыны кішірейту</translation>
 <translation id="6134168885321518274">Іздеу жолағын ашу</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> қойынды}other{<ph name="TAB_COUNT_MANY" /> қойынды}}</translation>

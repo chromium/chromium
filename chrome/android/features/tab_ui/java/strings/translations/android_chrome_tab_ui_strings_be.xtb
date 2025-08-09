@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">Стварыць у групе новую ўкладку</translation>
 <translation id="2918484639460781603">Перайсці ў налады</translation>
 <translation id="2928243913527329289">Google | Пра гэту краму</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{Выбрана: <ph name="ITEMS_COUNT_ONE" />}one{Выбрана: <ph name="ITEMS_COUNT_MANY" />}few{Выбрана: <ph name="ITEMS_COUNT_MANY" />}many{Выбрана: <ph name="ITEMS_COUNT_MANY" />}other{Выбрана: <ph name="ITEMS_COUNT_MANY" />}}</translation>
 <translation id="3008554597174452548">Перастаць адсочваць прадукт</translation>
 <translation id="3026391124054406831">Стварыце групы, каб упарадкаваць укладкі.</translation>
 <translation id="3051031624272448591">Вы заўсёды можаце паглядзець іх зноў у гісторыі</translation>

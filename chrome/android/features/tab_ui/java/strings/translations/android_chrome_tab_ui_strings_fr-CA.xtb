@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">Nouvel onglet dans le groupe</translation>
 <translation id="2918484639460781603">Accéder aux paramètres</translation>
 <translation id="2928243913527329289">Google | À propos de cette boutique</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> élément sélectionné}one{<ph name="ITEMS_COUNT_MANY" /> élément sélectionné}other{<ph name="ITEMS_COUNT_MANY" /> éléments sélectionnés}}</translation>
 <translation id="3008554597174452548">Arrêter de suivre ce produit</translation>
 <translation id="3026391124054406831">Créez des groupes pour organiser vos onglets.</translation>
 <translation id="3051031624272448591">Vous pouvez toujours les retrouver dans l'historique</translation>

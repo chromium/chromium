@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">Νέα καρτέλα στην ομάδα</translation>
 <translation id="2918484639460781603">Μετάβαση στις ρυθμίσεις</translation>
 <translation id="2928243913527329289">Google | Σχετικά με αυτό το κατάστημα</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{Επιλέχθηκε <ph name="ITEMS_COUNT_ONE" />}other{Επιλέχθηκαν <ph name="ITEMS_COUNT_MANY" />}}</translation>
 <translation id="3008554597174452548">Διακοπή παρακολούθησης προϊόντος</translation>
 <translation id="3026391124054406831">Δημιουργήστε ομάδες για να οργανώσετε τις καρτέλες σας.</translation>
 <translation id="3051031624272448591">Μπορείτε να τις επαναφέρετε ανά πάσα στιγμή από το ιστορικό</translation>

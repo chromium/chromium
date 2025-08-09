@@ -642,6 +642,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1438630805136563416">U hoq veprimi "<ph name="REMOVED_ACTION" />"</translation>
 <translation id="1439671507542716852">mbështetje afatgjatë</translation>
 <translation id="1440090277117135316">Regjistrimi për përdorimin në shkollë përfundoi</translation>
+<translation id="1441971243157709645">Printer i menaxhuar</translation>
 <translation id="1442054921249164535">Të dhëna të tjera</translation>
 <translation id="144283815522798837">U zgjodhën <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Cakto biletë aktive Kerberos</translation>
@@ -5053,6 +5054,10 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4501530680793980440">Konfirmo heqjen</translation>
 <translation id="4502423230170890588">Hiq nga kjo pajisje</translation>
 <translation id="4502477450742595012">Kliko me butonin djathtas në një skedë dhe zgjidh "Shto skedën në grup të ri"</translation>
+<translation id="4503362512377701151">Po i shikon grupet e skedave të përdorura së fundi për të të ndihmuar të vazhdosh me lehtësi aty ku e ke lënë.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Mund t'i menaxhosh cilësimet nga menyja e kartave ose mund të shikosh më shumë opsione te "Personalizo Chrome".</translation>
 <translation id="4503748371388753124">Kompjuteri yt përmban një pajisje sigurie të "Modulit të platformës së besuar" (TPM), e cila përdoret për të zbatuar shumë veçori kritike të sigurisë në Chrome OS Flex. Vizito "Qendrën e ndihmës të Chromebook" për të mësuar më shumë: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Kukit lejohen}=1{Kukit lejohen, 1 përjashtim}other{Kukit lejohen, {COUNT} përjashtime}}</translation>
 <translation id="4504940961672722399">Përdore këtë shtesë duke klikuar këtë ikonë ose duke shtypur <ph name="EXTENSION_SHORTCUT" />.</translation>

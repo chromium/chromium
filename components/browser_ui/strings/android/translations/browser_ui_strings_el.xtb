@@ -120,7 +120,9 @@
 <translation id="2379925928934107488">Εφαρμογή σκούρου θέματος σε ιστοτόπους όταν το Chrome χρησιμοποιεί σκούρο θέμα, όταν υπάρχει αυτή η δυνατότητα</translation>
 <translation id="2390272837142897736">Μεγέθυνση</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Ακριβής</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη επιτράπηκαν.}other{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη επιτράπηκαν.}}</translation>
+<translation id="2404857459073803936">Πρόσβαση τοποθεσίας για αυτόν τον ιστότοπο</translation>
 <translation id="2410940059315936967">Ένας ιστότοπος που επισκέπτεστε μπορεί να ενσωματώνει περιεχόμενο από άλλους ιστοτόπους, για παράδειγμα εικόνες, διαφημίσεις και κείμενο. Τα cookie που ορίζονται από αυτούς τους άλλους ιστοτόπους ονομάζονται cookie τρίτου μέρους.</translation>
 <translation id="2411116727035790889">Ενεργοποίηση συντομεύσεων</translation>
 <translation id="2433507940547922241">Εμφάνιση</translation>
@@ -276,6 +278,7 @@
 <translation id="3992684624889376114">Σχετικά με αυτήν τη σελίδα</translation>
 <translation id="4002066346123236978">Τίτλος</translation>
 <translation id="4031179711345676612">Επιτρέπεται το μικρόφωνο</translation>
+<translation id="4042597221652780603">Κατά προσέγγιση</translation>
 <translation id="4046123991198612571">Επόμενο κομμάτι</translation>
 <translation id="4077310749977440510">Οι ιστότοποι διαβάζουν συνήθως το πρόχειρο για διάφορες λειτουργίες, όπως η διατήρηση της μορφοποίησης του κειμένου που έχετε αντιγράψει</translation>
 <translation id="4082080074595021446">Οι εξαιρέσεις για συγκεκριμένους ιστοτόπους δεν επιτρέπονται, επειδή η συσκευή Android δεν έχει αρκετή RAM.</translation>

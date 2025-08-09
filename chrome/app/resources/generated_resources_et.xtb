@@ -642,6 +642,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1438630805136563416">Eemaldatud toiming <ph name="REMOVED_ACTION" /></translation>
 <translation id="1439671507542716852">pikaajaline tugi</translation>
 <translation id="1440090277117135316">Koolis kasutamiseks registreerimine on lõpule viidud</translation>
+<translation id="1441971243157709645">Hallatud printer</translation>
 <translation id="1442054921249164535">Muud andmed</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> on valitud</translation>
 <translation id="1442851588227551435">Kerberose pileti aktiveerimine</translation>
@@ -5061,6 +5062,10 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4501530680793980440">Eemaldamise kinnitamine</translation>
 <translation id="4502423230170890588">Eemalda sellest seadmest</translation>
 <translation id="4502477450742595012">Paremklõpsake vahelehel ja tehke valik „Lisa vaheleht uude gruppi“</translation>
+<translation id="4503362512377701151">Näete hiljuti kasutatud vahelehegruppe, mis aitavad teil hõlpsalt pooleli jäänud kohast jätkata.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Saate seadeid hallata kaardimenüüst või vaadata jaotises Chrome'i kohandamine saadaolevaid lisavalikuid.</translation>
 <translation id="4503748371388753124">Teie arvuti sisaldab turvaseadet Trusted Platform Module (TPM), mida kasutatakse paljude väga tähtsate turvafunktsioonide rakendamiseks Chrome OS Flexis. Lisateavet leiate Chromebooki abikeskusest aadressil https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Küpsisefailid on lubatud}=1{Küpsisefailid on lubatud; 1 erand}other{Küpsisefailid on lubatud; {COUNT} erandit}}</translation>
 <translation id="4504940961672722399">Laienduse aktiveerimiseks klõpsake sellel ikoonil või vajutage klahvikombinatsiooni <ph name="EXTENSION_SHORTCUT" />.</translation>

@@ -767,6 +767,7 @@
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> စာညှပ် တွေ့ရှိပါသည်</translation>
 <translation id="4668279686271488041">ကြော်ငြာဆိုင်ရာ တိုင်းတာမှုဒေတာကို သင့်စက်မှ ပုံမှန်ဖျက်သည်</translation>
 <translation id="4668347365065281350">ကွတ်ကီးများနှင့် စက်အတွင်း သိမ်းထားသော အခြားဒေတာအပါအဝင် ဝဘ်ဆိုက်များက သိမ်းထားသည့်ဒေတာအားလုံး</translation>
+<translation id="4673702426794876519">ရုပ်ဖျက် ဝင်းဒိုး</translation>
 <translation id="4678082183394354975">ဝဘ်ဆိုက်များအတွက် အမှောင်နောက်ခံကို Chrome တွင် ဖွင့်ထားသည်</translation>
 <translation id="4682306524980568490">ဝင်းဒိုး <ph name="MAX_INSTANCE_COUNT" /> ခုကိုသာ ပြနိုင်သည်</translation>
 <translation id="4684427112815847243">အားလုံး စင့်ခ်ရန်</translation>
@@ -1091,6 +1092,7 @@
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> နှင့်အတူ တဘ်အုပ်စုတွင် ပါဝင်ခြင်း</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />နောက်ထပ်အသေးစိတ်<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">အကြောင်းအရာကို ဖယ်ရှားလိုက်ပါပြီ</translation>
+<translation id="6127860394906721547"><ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စု၊ အရောင် <ph name="COLOR_NAME" /> နှင့် ဝဘ်ဆိုက်များ <ph name="URL_LIST" /> ကို ဖွင့်သည်။</translation>
 <translation id="6130303040046284160">တဘ်ကို ချုံ့ရန်</translation>
 <translation id="6134168885321518274">ရှာဖွေဘား ဖွင့်ရန်</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{တဘ် <ph name="TAB_COUNT_ONE" /> ခု}other{တဘ် <ph name="TAB_COUNT_MANY" /> ခု}}</translation>

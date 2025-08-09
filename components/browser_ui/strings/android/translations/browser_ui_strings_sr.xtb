@@ -120,7 +120,9 @@
 <translation id="2379925928934107488">Када је то могуће, тамна тема се примењује за сајтове када је Chrome користи</translation>
 <translation id="2390272837142897736">Повећајте зумирање</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Прецизна</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}one{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}few{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}other{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}}</translation>
+<translation id="2404857459073803936">Приступ локацији за овај сајт</translation>
 <translation id="2410940059315936967">Сајт који посећујете може да угради садржај са других сајтова, на пример, слике, огласе и текст. Колачићи које постављају ови други сајтови називају се колачићи треће стране.</translation>
 <translation id="2411116727035790889">Укључите пречице</translation>
 <translation id="2433507940547922241">Изглед</translation>
@@ -276,6 +278,7 @@
 <translation id="3992684624889376114">О овој страници</translation>
 <translation id="4002066346123236978">Наслов</translation>
 <translation id="4031179711345676612">Микрофон је дозвољен</translation>
+<translation id="4042597221652780603">Приближна</translation>
 <translation id="4046123991198612571">Следећа песма</translation>
 <translation id="4077310749977440510">Сајтови обично читају привремену меморију за потребе функција попут задржавања форматирања текста који сте копирали</translation>
 <translation id="4082080074595021446">Изузеци за одређене веб-сајтове нису дозвољени јер Android уређај нема довољно RAM-а.</translation>

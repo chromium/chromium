@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">Ny fane i gruppe</translation>
 <translation id="2918484639460781603">Gå til indstillinger</translation>
 <translation id="2928243913527329289">Google | Om denne butik</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> er valgt}one{<ph name="ITEMS_COUNT_MANY" /> er valgt}other{<ph name="ITEMS_COUNT_MANY" /> er valgt}}</translation>
 <translation id="3008554597174452548">Stop med at holde øje med produktet</translation>
 <translation id="3026391124054406831">Opret grupper for at organisere dine faner.</translation>
 <translation id="3051031624272448591">Du kan altid finde dem i historikken igen</translation>

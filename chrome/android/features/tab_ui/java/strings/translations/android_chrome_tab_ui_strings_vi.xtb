@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">Thẻ mới trong nhóm</translation>
 <translation id="2918484639460781603">Chuyển đến phần cài đặt</translation>
 <translation id="2928243913527329289">Google | Giới thiệu về cửa hàng này</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{Đã chọn <ph name="ITEMS_COUNT_ONE" />}other{Đã chọn <ph name="ITEMS_COUNT_MANY" />}}</translation>
 <translation id="3008554597174452548">Dừng theo dõi sản phẩm</translation>
 <translation id="3026391124054406831">Tạo nhóm để sắp xếp các thẻ.</translation>
 <translation id="3051031624272448591">Bạn có thể khôi phục các thẻ này bất cứ lúc nào trong phần nhật ký</translation>

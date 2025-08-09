@@ -118,7 +118,9 @@
 <translation id="2379925928934107488">ಡಾರ್ಕ್ ಥೀಮ್‌ ಅನ್ನು Chrome ಬಳಸುವಾಗ, ಸಾಧ್ಯವಾದರೆ ಡಾರ್ಕ್ ಥೀಮ್‌ ಅನ್ನು ಸೈಟ್‌ಗಳಿಗೆ ಅನ್ವಯಿಸಿ</translation>
 <translation id="2390272837142897736">ಝೂಮ್ ಅನ್ನು ಹೆಚ್ಚಿಸಿ</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">ನಿಖರ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಸಂಗತಿಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಸಂಗತಿಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಸಂಗತಿಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ}}</translation>
+<translation id="2404857459073803936">ಈ ಸೈಟ್‌ಗೆ ಸ್ಥಳದ ಆ್ಯಕ್ಸೆಸ್</translation>
 <translation id="2410940059315936967">ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್ ಇತರ ಸೈಟ್‌ಗಳಿಂದ ವಿಷಯವನ್ನು ಎಂಬೆಡ್ ಮಾಡಬಹುದು, ಉದಾಹರಣೆಗೆ ಚಿತ್ರಗಳು, ಜಾಹೀರಾತುಗಳು ಮತ್ತು ಪಠ್ಯ. ಈ ಇತರ ಸೈಟ್‌ಗಳಿಂದ ಸೆಟ್ ಮಾಡಲಾದ ಕುಕೀಗಳನ್ನು ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕಿಗಳು ಎಂದು ಕರೆಯಲಾಗುತ್ತದೆ.</translation>
 <translation id="2411116727035790889">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="2433507940547922241">ಗೋಚರತೆ</translation>
@@ -274,6 +276,7 @@
 <translation id="3992684624889376114">ಈ ಪುಟದ ಕುರಿತು</translation>
 <translation id="4002066346123236978">ಶೀರ್ಷಿಕೆ</translation>
 <translation id="4031179711345676612">ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
+<translation id="4042597221652780603">ಅಂದಾಜು</translation>
 <translation id="4046123991198612571">ಮುಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="4077310749977440510">ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ, ನೀವು ಕಾಪಿ ಮಾಡಿದ ಪಠ್ಯದ ಫಾರ್ಮ್ಯಾಟಿಂಗ್ ಅನ್ನು ಇರಿಸಿಕೊಳ್ಳುವಂತಹ ಫೀಚರ್‌ಗಳಿಗಾಗಿ ನಿಮ್ಮ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ಅನ್ನು ಓದುತ್ತವೆ</translation>
 <translation id="4082080074595021446">Android ಸಾಧನವು ಸಾಕಷ್ಟು RAM ಹೊಂದಿಲ್ಲದ ಕಾರಣ ನಿರ್ದಿಷ್ಟ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ವಿನಾಯಿತಿಗಳನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ.</translation>

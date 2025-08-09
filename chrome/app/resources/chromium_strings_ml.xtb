@@ -190,6 +190,7 @@
 <translation id="3313189106987092621">സുരക്ഷിതമല്ലാത്ത കണക്ഷൻ ഉപയോഗിച്ച് ഏതെങ്കിലും സൈറ്റ് ലോഡ് ചെയ്യുന്നതിന് മുമ്പ് Chromium നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകും</translation>
 <translation id="3316771292331273802">Chromium-ൽ സൈൻ ഇൻ ചെയ്‌തിട്ടുണ്ടെങ്കിൽ എല്ലാ Chromium വിൻഡോകളും അടയ്ക്കുമ്പോൾ, നിങ്ങളുടെ Google Account ഒഴികെ മിക്ക സൈറ്റുകളിൽ നിന്നും നിങ്ങൾ സൈൻ ഔട്ട് ആകും. നിങ്ങളെ ഓർക്കാൻ സൈറ്റുകളെ അനുവദിക്കുന്നതിന്, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">തിരയൽ ഏരിയയുടെ മുകളിലെ വലത് മൂല: വലതുഭാഗത്ത് <ph name="RIGHT" />%, മുകളിൽ <ph name="TOP" />%</translation>
+<translation id="3366305173356742781">നിങ്ങളുടെ അക്കൗണ്ടിലെ Chromium ഡാറ്റ</translation>
 <translation id="3369405342922656244">ചിത്രമുപയോഗിച്ചുള്ള തിരയൽ ഉപയോഗിച്ച് ഈ പേജ് തിരയുക</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">നിലവിലുള്ള Chromium പ്രൊഫൈലിലേക്ക് മാറണോ?</translation>
@@ -585,6 +586,7 @@
 <translation id="8458614432758743027">Chromium-ത്തിന് Windows 10 അല്ലെങ്കിൽ അതിനുശേഷമുള്ള പതിപ്പ് ആവശ്യമാണ്.</translation>
 <translation id="8463672209299734063">ഓപ്ഷണൽ: പ്രശ്നനിർണ്ണയ, ഉപയോഗ ഡാറ്റ സ്വയമേവ Google-ന് അയച്ച് ChromiumOS ഫീച്ചറുകളും പ്രകടനവും മെച്ചപ്പെടുത്താൻ സഹായിക്കുക.</translation>
 <translation id="8471947159125090285">നിങ്ങളുടെ Google Account-ലെ Chromium ഡാറ്റ ഉപയോഗിക്കാനും സംരക്ഷിക്കാനും, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
+<translation id="8482493977473846331">Chromium-ൽ സൈൻ ഇൻ ചെയ്യാനുള്ള നിർദ്ദേശങ്ങൾ കാണിക്കുന്നു</translation>
 <translation id="8493179195440786826">Chromium കാലഹരണപ്പെട്ടു</translation>
 <translation id="8522801943730206384">നിങ്ങളുടെ പാസ്‌വേഡുകൾ സംരക്ഷിക്കുകയാണങ്കിൽ, Chromium-ന് അവ പരിശോധിക്കാനാകും</translation>
 <translation id="8555465886620020932">സേവന പിശക്: <ph name="SERVICE_ERROR" /></translation>

@@ -120,7 +120,9 @@
 <translation id="2379925928934107488">Chrome қараңғы режим қолданғанда, сайттарға да мүмкіндігінше қараңғы режим қолданыңыз.</translation>
 <translation id="2390272837142897736">Масштабты көбейту</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
+<translation id="2403474027143565107">Нақты</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға рұқсат етілген.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға рұқсат етілген.}}</translation>
+<translation id="2404857459073803936">Бұл сайттың локацияны пайдалану рұқсаты</translation>
 <translation id="2410940059315936967">Сіз кірген сайт басқа сайттардан алынған контентті (мысалы, суреттерді, жарнамаларды және мәтінді) ендіре алады. Осындай басқа сайттар орнатқан cookie файлдары үшінші тарап cookie файлдары деп аталады.</translation>
 <translation id="2411116727035790889">Жылдам пәрмендерді қосу</translation>
 <translation id="2433507940547922241">Көрініс</translation>
@@ -276,6 +278,7 @@
 <translation id="3992684624889376114">Осы бет туралы ақпарат</translation>
 <translation id="4002066346123236978">Тақырып</translation>
 <translation id="4031179711345676612">Микрофонды пайдалануға рұқсат берілген</translation>
+<translation id="4042597221652780603">Болжалды</translation>
 <translation id="4046123991198612571">Келесі аудиотрек</translation>
 <translation id="4077310749977440510">Сіз көшірген мәтіннің форматын сақтау сияқты функциялар үшін сайттар әдетте буферді оқиды.</translation>
 <translation id="4082080074595021446">Android құрылғысының RAM жады жеткіліксіз болғандықтан, белгілі бір сайттарға арналған ерекше жағдайларға рұқсат берілмеді.</translation>

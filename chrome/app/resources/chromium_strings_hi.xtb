@@ -187,6 +187,7 @@
 <translation id="3313189106987092621">असुरक्षित कनेक्शन का इस्तेमाल करके किसी भी साइट को लोड करने से पहले, Chromium आपको चेतावनी देगा</translation>
 <translation id="3316771292331273802">Chromium की सभी विंडो बंद करने पर, आपको ज़्यादातर साइटों से साइन आउट कर दिया जाएगा. हालांकि, अगर आपने Chromium में साइन इन किया हुआ है, तो आपको Google खाते से साइन आउट नहीं किया जाएगा. <ph name="SETTINGS_LINK" />, ताकि साइटें आपके ब्राउज़िंग सेशन की जानकारी याद रखें.</translation>
 <translation id="3352986031709923790">खोज वाली जगह में सबसे ऊपर का दायां कोना: दाईं ओर से <ph name="RIGHT" />%, सबसे ऊपर से <ph name="TOP" />%</translation>
+<translation id="3366305173356742781">आपके खाते में मौजूद Chromium का डेटा</translation>
 <translation id="3369405342922656244">इमेज सर्च की मदद से यह पेज खोजें</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">क्या आप मौजूदा Chromium प्रोफ़ाइल में स्विच करना चाहते हैं?</translation>

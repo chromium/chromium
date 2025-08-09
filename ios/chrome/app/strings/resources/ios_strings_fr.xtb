@@ -388,6 +388,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2434405374328098816">Vous avez déjà enregistré un mot de passe pour "<ph name="USERNAME" />" sur <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Vous pouvez faire défiler l'écran vers la gauche pour utiliser la navigation privée.</translation>
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
+<translation id="2458827363789845126">{count,plural, =1{{count} élément d'historique}one{{count} élément d'historique}other{{count} éléments d'historique}}</translation>
 <translation id="2461070143328828326">Paramètres de mot de passe</translation>
 <translation id="2462736546165239215">Vous pouvez consulter ici votre historique de navigation complet.</translation>
 <translation id="2466518891828668184">Enregistrez vos mots de passe pour vous connecter facilement à des sites et applis.</translation>
@@ -1515,6 +1516,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="6791425686608802741">Appuyez sur "Ajouter l'onglet à un nouveau groupe"</translation>
 <translation id="6794476726485507147">Sélectionnez quand vous envoyer un rappel vous invitant à revenir sur cette page</translation>
 <translation id="6795481620482106033">Données incorrectes</translation>
+<translation id="6797543908718012274">Activer le mode Lecture</translation>
 <translation id="6807287147325542056">Mots de passe dans d'autres applis</translation>
 <translation id="681368974849482173">Élément créé</translation>
 <translation id="6825078212112407882">{count,plural, =1{Favori enregistré dans votre compte Google {email}}one{{count} favori enregistré dans votre compte Google {email}}other{{count} favoris enregistrés dans votre compte Google {email}}}</translation>

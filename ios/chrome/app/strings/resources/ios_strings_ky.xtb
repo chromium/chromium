@@ -388,6 +388,7 @@
 <translation id="2434405374328098816">"<ph name="USERNAME" />" үчүн <ph name="WEBSITE" /> вебсайтында сырсөздү сактап койгонсуз</translation>
 <translation id="2434918313224755415">Жашыруун режимде карап чыгуу үчүн солго сыдырыңыз.</translation>
 <translation id="2435457462613246316">Сырсөздү көрсөтүү</translation>
+<translation id="2458827363789845126">{count,plural, =1{Таржымалдагы {count} нерсе}other{Таржымалдагы {count} нерсе}}</translation>
 <translation id="2461070143328828326">Сырсөздүн параметрлери</translation>
 <translation id="2462736546165239215">Көргөн вебсайттарыңыздын баарын бул жерден таба аласыз.</translation>
 <translation id="2466518891828668184">Сайттарга жана колдонмолорго оңой кирүү үчүн сырсөздөрүңүздү сактаңыз.</translation>
@@ -1515,6 +1516,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6791425686608802741">"Өтмөктү жаңы топко кошуу" баскычын басыңыз</translation>
 <translation id="6794476726485507147">Бул бетке кайрадан баш багууну эстеткен билдирмени ала турган күн менен убакытты көрсөтүңүз</translation>
 <translation id="6795481620482106033">Туура эмес маалымат</translation>
+<translation id="6797543908718012274">Окуу режимин күйгүзүү</translation>
 <translation id="6807287147325542056">Башка колдонмолордогу сырсөздөр</translation>
 <translation id="681368974849482173">Нерсе түзүлдү</translation>
 <translation id="6825078212112407882">{count,plural, =1{Кыстарма Google аккаунтуңузга ({email}) сакталды}other{{count} кыстарма Google аккаунтуңузга ({email}) сакталды}}</translation>

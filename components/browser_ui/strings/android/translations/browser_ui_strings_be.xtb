@@ -120,7 +120,9 @@
 <translation id="2379925928934107488">Калі Chrome выкарыстоўвае цёмную тэму, прымяняць яе да сайтаў (калі гэта магчыма)</translation>
 <translation id="2390272837142897736">Павялічыць маштаб</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
+<translation id="2403474027143565107">Дакладнае</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
+<translation id="2404857459073803936">Доступ да месцазнаходжання для гэтага сайта</translation>
 <translation id="2410940059315936967">На сайце, які вы наведваеце, можа быць убудаванае змесціва з іншых сайтаў (напрыклад, відарысы, рэклама або тэкст). Файлы cookie, зададзеныя такімі сайтамі, называюцца староннімі файламі cookie.</translation>
 <translation id="2411116727035790889">Уключыць ярлыкі</translation>
 <translation id="2433507940547922241">Выгляд</translation>
@@ -276,6 +278,7 @@
 <translation id="3992684624889376114">Пра гэту старонку</translation>
 <translation id="4002066346123236978">Назва</translation>
 <translation id="4031179711345676612">Выкарыстанне мікрафона дазволена</translation>
+<translation id="4042597221652780603">Прыблізнае</translation>
 <translation id="4046123991198612571">Наступны трэк</translation>
 <translation id="4077310749977440510">Сайты звычайна счытваюць ваш буфер абмену для работы такіх функцый, як захаванне фармату скапіраванага тэксту</translation>
 <translation id="4082080074595021446">Вы не можаце наладжваць выключэнні для канкрэтных вэб-сайтаў, бо на прыладзе Android недастаткова аператыўнай памяці.</translation>

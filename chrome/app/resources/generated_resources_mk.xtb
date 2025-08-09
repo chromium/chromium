@@ -643,6 +643,7 @@
 <translation id="1438630805136563416">Отстрането дејство: <ph name="REMOVED_ACTION" /></translation>
 <translation id="1439671507542716852">долгорочна поддршка</translation>
 <translation id="1440090277117135316">Регистрирањето училиште е завршено</translation>
+<translation id="1441971243157709645">Управуван печатач</translation>
 <translation id="1442054921249164535">Други податоци</translation>
 <translation id="144283815522798837">Избрани се <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Поставете активен билет на Kerberos</translation>
@@ -5071,6 +5072,10 @@
 <translation id="4501530680793980440">Потврди отстранување</translation>
 <translation id="4502423230170890588">Отстрани од уредов</translation>
 <translation id="4502477450742595012">Кликнете со десно копче на картичка и изберете „Додајте картичка на нова група“</translation>
+<translation id="4503362512377701151">Ги гледате неодамна користените групи картички за да ви помогнат лесно да продолжите онаму каде што сте застанале.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Може да управувате со поставките од менито со картички или да видите повеќе опции во „Приспособете го Chrome“.</translation>
 <translation id="4503748371388753124">Вашиот компјутер содржи безбедносен уред Trusted Platform Module (TPM) кој се користи за имплементирање на многу критични безбедносни функции во ChromeOS Flex. Посетете го Центарот за помош на Chromebook за да дознаете повеќе: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Колачињата се дозволени}=1{Колачињата се дозволени, 1 исклучок}one{Колачињата се дозволени, {COUNT} исклучок}other{Колачињата се дозволени, {COUNT} исклучоци}}</translation>
 <translation id="4504940961672722399">Користете ја наставката со кликнување на иконата или со притискање на <ph name="EXTENSION_SHORTCUT" />.</translation>

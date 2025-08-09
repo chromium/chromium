@@ -120,7 +120,9 @@
 <translation id="2379925928934107488">সম্ভৱ হ’লে, Chromeএ গাঢ় ৰঙৰ থীম ব্যৱহাৰ কৰাৰ সময়ত ছাইটত গাঢ় ৰঙৰ থীম প্ৰয়োগ কৰক</translation>
 <translation id="2390272837142897736">জুম বঢ়াওক</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> এম. বি.</translation>
+<translation id="2403474027143565107">সঠিক</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}}</translation>
+<translation id="2404857459073803936">এই ছাইটোৰ বাবে অৱস্থানৰ এক্সেছ</translation>
 <translation id="2410940059315936967">আপুনি চোৱা এটা ছাইটে অন্য এটা ছাইটৰ পৰা প্ৰতিচ্ছবি, বিজ্ঞাপন আৰু পাঠৰ দৰে সমল এম্বেড কৰিব পাৰে। এই অন্য ছাইটসমূহে ছেট কৰা কুকিসমূহক তৃতীয় পক্ষৰ কুকি বুলি কোৱা হয়।</translation>
 <translation id="2411116727035790889">শ্বৰ্টকাট অন কৰক</translation>
 <translation id="2433507940547922241">ৰূপ</translation>
@@ -276,6 +278,7 @@
 <translation id="3992684624889376114">এই পৃষ্ঠাখনৰ বিষয়ে</translation>
 <translation id="4002066346123236978">শিৰোনাম</translation>
 <translation id="4031179711345676612">মাইক্ৰ’ফ’নৰ অনুমতি আছে</translation>
+<translation id="4042597221652780603">আনুমানিক</translation>
 <translation id="4046123991198612571">পৰৱৰ্তী ট্ৰেক</translation>
 <translation id="4077310749977440510">আপুনি প্ৰতিলিপি কৰা পাঠৰ ফৰ্মেটিং ৰখাৰ দৰে সুবিধাসমূহৰ বাবে ছাইটসমূহে সচৰাচৰ আপোনাৰ ক্লিপব’ৰ্ড পঢ়ে</translation>
 <translation id="4082080074595021446">নিৰ্দিষ্ট কিছুমান ৱেবছাইটৰ বাবে ব্যতিক্ৰমৰ অনুমতি নাই, কাৰণ Android ডিভাইচত পৰ্যাপ্ত RAM নাই।</translation>

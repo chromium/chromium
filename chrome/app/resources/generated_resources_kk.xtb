@@ -5724,6 +5724,7 @@
 <translation id="496742804571665842">eSIM профильдерін өшіру</translation>
 <translation id="4967571733817147990">Тінтуір түймелерін бейімдеу</translation>
 <translation id="4967852842111017386"><ph name="FEATURE_NAME" /> құрылғы атауы</translation>
+<translation id="4968994772848295474">Қонақ режимінде веб-қолданбалар орнатылмайды</translation>
 <translation id="4971412780836297815">Аяқталғанда ашу</translation>
 <translation id="4972129977812092092">Принтер ақпаратын өзгерту</translation>
 <translation id="4972164225939028131">Құпия сөз дұрыс емес</translation>
@@ -7500,6 +7501,7 @@
 <translation id="6257602895346497974">Синхрондауды қосу…</translation>
 <translation id="625827534921607067">Бұрын қосылған немесе конфигурацияланған бірнеше желі қолжетімді болса, осы желі таңдалады.</translation>
 <translation id="6259776178973198997">Wi-Fi Direct иелері туралы ақпаратты жаңарту</translation>
+<translation id="6261688934280090835">ChromeOS киоск қолданбасының журналдары</translation>
 <translation id="6262371516389954471">Сақтық көшірмелер Google-ға жүктеп салынады және Google аккаунтыңыздың құпия сөзі арқылы шифрланады.</translation>
 <translation id="6263082573641595914">Microsoft CA нұсқасы</translation>
 <translation id="6263284346895336537">Маңызды емес</translation>
@@ -10492,6 +10494,7 @@
 <translation id="8340547030807793004"><ph name="DEVICE" /> құрылғысына қатысты басқа әрекеттер</translation>
 <translation id="8341804784147620576">Іздеу жылдам пәрмендерін көрсету</translation>
 <translation id="8342221978608739536">Қолданып көрмедім</translation>
+<translation id="8342387517402567689">Инкогнито режимінде веб-қолданбалар орнатылмайды</translation>
 <translation id="8342861492835240085">Жинақ таңдау</translation>
 <translation id="8345848587667658367">Енді телефондағы соңғы фотосуреттерді, медиафайлдарды, хабарландырулар мен қолданбаларды көре аласыз</translation>
 <translation id="8347227221149377169">Баспа жұмыстары</translation>

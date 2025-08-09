@@ -1092,6 +1092,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="6125202119952209826">Dołącz do grupy kart, w której jest już <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Więcej szczegółów<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Element został usunięty</translation>
+<translation id="6127860394906721547">Otwórz grupę kart <ph name="TITLE_OF_GROUP" />, kolor <ph name="COLOR_NAME" />, z witrynami <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimalizuj kartę</translation>
 <translation id="6134168885321518274">Otwórz pasek wyszukiwania</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_COUNT_MANY" /> karty}many{<ph name="TAB_COUNT_MANY" /> kart}other{<ph name="TAB_COUNT_MANY" /> karty}}</translation>

@@ -642,6 +642,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1438630805136563416">Handeling <ph name="REMOVED_ACTION" /> is verwyder</translation>
 <translation id="1439671507542716852">langtermynsteundienste</translation>
 <translation id="1440090277117135316">Skoolinskrywing is voltooi</translation>
+<translation id="1441971243157709645">Bestuurde drukker</translation>
 <translation id="1442054921249164535">Ander data</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> gekies</translation>
 <translation id="1442851588227551435">Stel aktiewe Kerberos-kaartjie</translation>
@@ -5070,6 +5071,10 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4501530680793980440">Bevestig verwydering</translation>
 <translation id="4502423230170890588">Verwyder van hierdie toestel</translation>
 <translation id="4502477450742595012">Regsklik op ’n oortjie en kies "Voeg oortjie by nuwe groep"</translation>
+<translation id="4503362512377701151">Jy sien die oortjiegroepe wat jy onlangs gebruik het om jou te help om maklik aan te gaan waar jy opgehou het.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Jy kan hierdie instellings vanaf die kaartkieslys bestuur, of bekyk meer opsies in Pasmaak Chrome.</translation>
 <translation id="4503748371388753124">Jou rekenaar bevat ’n Vertroude Platform-module- (TPM-) sekuriteitstoestel, wat gebruik word om baie kritieke sekuriteitskenmerke in Chrome OS Flex te implementeer. Besoek die Chromebook-hulpsentrum om meer te wete te kom: http://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Webkoekies word toegelaat}=1{Webkoekies word toegelaat; 1 uitsondering}other{Webkoekies word toegelaat; {COUNT} uitsonderings}}</translation>
 <translation id="4504940961672722399">Gebruik hierdie uitbreiding deur op hierdie ikoon te klik of <ph name="EXTENSION_SHORTCUT" /> te druk.</translation>

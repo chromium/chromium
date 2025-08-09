@@ -642,6 +642,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1438630805136563416">Removed action <ph name="REMOVED_ACTION" /></translation>
 <translation id="1439671507542716852">long-term support</translation>
 <translation id="1440090277117135316">School enrolment complete</translation>
+<translation id="1441971243157709645">Managed printer</translation>
 <translation id="1442054921249164535">Other data</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> selected</translation>
 <translation id="1442851588227551435">Set active Kerberos ticket</translation>
@@ -5070,6 +5071,10 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4501530680793980440">Confirm Removal</translation>
 <translation id="4502423230170890588">Remove from this device</translation>
 <translation id="4502477450742595012">Right-click on a tab and select 'Add tab to new group'</translation>
+<translation id="4503362512377701151">You're seeing your recently used tab groups to help you easily pick up where you left off.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        You can manage settings from the card menu or see more options in Customise Chrome.</translation>
 <translation id="4503748371388753124">Your computer contains a Trusted Platform Module (TPM) security device, which is used to implement many critical security features in Chrome OS Flex. Visit the Chromebook Help Centre to learn more: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Cookies are allowed}=1{Cookies are allowed – 1 exception}other{Cookies are allowed – {COUNT} exceptions}}</translation>
 <translation id="4504940961672722399">Use this extension by clicking on this icon or by pressing <ph name="EXTENSION_SHORTCUT" />.</translation>

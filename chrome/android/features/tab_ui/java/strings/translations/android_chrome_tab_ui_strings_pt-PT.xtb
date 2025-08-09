@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">Novo separador no grupo</translation>
 <translation id="2918484639460781603">Ir para definições</translation>
 <translation id="2928243913527329289">Google | Acerca desta loja</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> selecionado}other{<ph name="ITEMS_COUNT_MANY" /> selecionados}}</translation>
 <translation id="3008554597174452548">Deixar de monitorizar produto</translation>
 <translation id="3026391124054406831">Crie grupos para organizar os seus separadores.</translation>
 <translation id="3051031624272448591">Pode sempre recuperá-los no histórico</translation>

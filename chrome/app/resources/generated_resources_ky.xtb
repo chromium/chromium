@@ -642,6 +642,7 @@
 <translation id="1438630805136563416"><ph name="REMOVED_ACTION" /> аракети өчүрүлдү</translation>
 <translation id="1439671507542716852">узак мөөнөттө колдоо көрсөтүү</translation>
 <translation id="1440090277117135316">Окуу жайы катталды</translation>
+<translation id="1441971243157709645">Башкарылган принтер</translation>
 <translation id="1442054921249164535">Башка дайындар</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> тандалды</translation>
 <translation id="1442851588227551435">Активдүү Kerberos билетин жөндөө</translation>
@@ -5070,6 +5071,10 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4501530680793980440">Алып салууну ырастоо</translation>
 <translation id="4502423230170890588">Ушул түзмөктөн алып салуу</translation>
 <translation id="4502477450742595012">Өтмөктү чычкандын оң баскычы менен чыкылдатып, "Өтмөктү жаңы топко кошуу" дегенди тандаңыз</translation>
+<translation id="4503362512377701151">Токтогон жерден оңой улантып кетүү үчүн акыркы жолу колдонулган өтмөк топторун көрүп турасыз.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Картанын менюсунан параметрлерди тескеп же Chrome'ду ыңгайлаштырууда кошумча варианттарды караңыз.</translation>
 <translation id="4503748371388753124">Компьютериңизде Ишенимдүү платформа модулунун (ИПМ) коопсуздук түзмөгү камтылган. Ал ChromeOS Flex тутумундагы көптөгөн олуттуу коопсуздук мүмкүнчүлүктөрүн аткаруу үчүн колдонулат. Көбүрөөк билүү үчүн Chromebook Жардам борборуна өтүңүз: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Cookie файлдарына уруксат берилди}=1{Cookie файлдарына уруксат берилди. 1 өзгөчө учур бар}other{Cookie файлдарына уруксат берилди. {COUNT} өзгөчө учур бар}}</translation>
 <translation id="4504940961672722399">Ушул кеңейтүүнү колдонуу үчүн бул сүрөтчөнү чыкылдатыңыз же <ph name="EXTENSION_SHORTCUT" /> басыңыз.</translation>

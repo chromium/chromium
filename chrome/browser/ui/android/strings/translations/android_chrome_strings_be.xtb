@@ -1092,6 +1092,7 @@
 <translation id="6125202119952209826">Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Дадатковая інфармацыя<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Элемент выдалены</translation>
+<translation id="6127860394906721547">Адкрыць групу ўкладак "<ph name="TITLE_OF_GROUP" />" (колер: <ph name="COLOR_NAME" />) з наступнымі сайтамі: <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Згарнуць укладку</translation>
 <translation id="6134168885321518274">Адкрыць панэль пошуку</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка}one{<ph name="TAB_COUNT_MANY" /> укладка}few{<ph name="TAB_COUNT_MANY" /> укладкі}many{<ph name="TAB_COUNT_MANY" /> укладак}other{<ph name="TAB_COUNT_MANY" /> укладкі}}</translation>

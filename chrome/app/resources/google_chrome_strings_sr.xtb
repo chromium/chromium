@@ -649,6 +649,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8843516219908676469">Chrome боље разуме обрасце и може брже аутоматски да их попуњава за вас</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome препоручује да ово уклоните}one{Chrome препоручује да их уклоните}few{Chrome препоручује да их уклоните}other{Chrome препоручује да их уклоните}}</translation>
 <translation id="8862326446509486874">Немате одговарајућа права за инсталацију на нивоу система. Пробајте поново да покренете програм за инсталацију, овога пута као администратор.</translation>
+<translation id="8865415417596392024">Chrome подаци на налогу</translation>
 <translation id="8883862939660515976">Поставите питање Google објективу о овој слици</translation>
 <translation id="8914504000324227558">Поново покрени Chrome</translation>
 <translation id="8922193594870374009">Да бисте послали број са <ph name="ORIGIN" /> на Android телефон, пријавите се у Chrome на оба уређаја.</translation>

@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">Топқа жаңа қойынды енгізу</translation>
 <translation id="2918484639460781603">Параметрлерге өту</translation>
 <translation id="2928243913527329289">Google | Дүкен туралы ақпарат</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> таңдалды.}other{<ph name="ITEMS_COUNT_MANY" /> таңдалды.}}</translation>
 <translation id="3008554597174452548">Өнімді бақылауды тоқтату</translation>
 <translation id="3026391124054406831">Қойындыларды реттеу үшін топтар жасаңыз.</translation>
 <translation id="3051031624272448591">Оларды тарихтан кез келген уақытта қайтаруға болады.</translation>

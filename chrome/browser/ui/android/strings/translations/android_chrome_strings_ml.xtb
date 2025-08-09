@@ -1092,6 +1092,7 @@
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> എന്നയാൾക്കൊപ്പം ടാബ് ഗ്രൂപ്പിൽ ചേരുക</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />കൂടുതൽ വിശദാംശങ്ങൾ<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">ഇനം നീക്കംചെയ്‌തു</translation>
+<translation id="6127860394906721547"><ph name="COLOR_NAME" /> നിറത്തിലുള്ള, <ph name="URL_LIST" /> സൈറ്റുകൾ അടങ്ങിയിട്ടുള്ള <ph name="TITLE_OF_GROUP" /> ടാബ് ഗ്രൂപ്പ് തുറക്കുക.</translation>
 <translation id="6130303040046284160">ടാബ് ചെറുതാക്കുക</translation>
 <translation id="6134168885321518274">'ബാർ കണ്ടെത്തുക' തുറക്കുക</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ടാബ്}other{<ph name="TAB_COUNT_MANY" /> ടാബുകൾ}}</translation>

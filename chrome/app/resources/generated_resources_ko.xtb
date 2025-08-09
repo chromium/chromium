@@ -642,6 +642,7 @@
 <translation id="1438630805136563416"><ph name="REMOVED_ACTION" /> 작업이 삭제되었습니다</translation>
 <translation id="1439671507542716852">장기적 지원</translation>
 <translation id="1440090277117135316">학교 등록이 완료되었습니다</translation>
+<translation id="1441971243157709645">관리 프린터</translation>
 <translation id="1442054921249164535">기타 데이터</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" />개가 선택되었습니다</translation>
 <translation id="1442851588227551435">활성 Kerberos 티켓 설정</translation>
@@ -5070,6 +5071,10 @@
 <translation id="4501530680793980440">삭제 확인</translation>
 <translation id="4502423230170890588">이 기기에서 삭제</translation>
 <translation id="4502477450742595012">탭을 마우스 오른쪽 버튼으로 클릭하고 '새 그룹에 탭 추가'를 선택합니다.</translation>
+<translation id="4503362512377701151">최근에 사용한 탭 그룹이 표시되어 중단한 부분부터 쉽게 다시 시작할 수 있습니다.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        카드 메뉴에서 설정을 관리하거나 Chrome 맞춤설정에서 추가 옵션을 확인할 수 있습니다.</translation>
 <translation id="4503748371388753124">컴퓨터에 신뢰할 수 있는 플랫폼 모듈(TPM) 보안 기기가 있습니다. 이 기기는 ChromeOS Flex에서 여러 중요한 보안 기능을 구현하는 데 사용됩니다. 자세히 알아보려면 Chromebook 고객센터의 다음 페이지를 방문하세요.
 https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{쿠키가 허용됨}=1{쿠키가 허용됨, 예외 1개}other{쿠키가 허용됨, 예외 {COUNT}개}}</translation>
@@ -7519,6 +7524,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6257602895346497974">동기화 사용...</translation>
 <translation id="625827534921607067">이전에 연결되었거나 구성된 네트워크를 2개 이상 사용할 수 있는 경우 이 네트워크가 우선 사용됩니다</translation>
 <translation id="6259776178973198997">Wi-Fi Direct 소유자 정보 새로고침</translation>
+<translation id="6261688934280090835">ChromeOS 키오스크 앱 로그</translation>
 <translation id="6262371516389954471">백업 항목은 Google에 업로드되며 내 Google 계정 비밀번호를 사용하여 암호화됩니다.</translation>
 <translation id="6263082573641595914">Microsoft CA Version</translation>
 <translation id="6263284346895336537">중요하지 않음</translation>

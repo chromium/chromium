@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">Ny fane i gruppen</translation>
 <translation id="2918484639460781603">Gå til Innstillinger</translation>
 <translation id="2928243913527329289">Google | Om denne butikken</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> er valgt}other{<ph name="ITEMS_COUNT_MANY" /> er valgt}}</translation>
 <translation id="3008554597174452548">Slutt å spore produktet</translation>
 <translation id="3026391124054406831">Opprett grupper for å organisere fanene dine.</translation>
 <translation id="3051031624272448591">Du kan alltid få dem tilbake via loggen</translation>

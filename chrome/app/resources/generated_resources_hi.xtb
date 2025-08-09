@@ -643,6 +643,7 @@
 <translation id="1438630805136563416"><ph name="REMOVED_ACTION" /> कार्रवाई को हटाया गया</translation>
 <translation id="1439671507542716852">लंबे समय तक सहायता</translation>
 <translation id="1440090277117135316">स्कूल में नाम दर्ज करने की प्रक्रिया पूरी हो गई है</translation>
+<translation id="1441971243157709645">मैनेज किया गया प्रिंटर</translation>
 <translation id="1442054921249164535">अन्य डेटा</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> चयनित</translation>
 <translation id="1442851588227551435">चालू Kerberos टिकट सेट करें</translation>
@@ -5070,6 +5071,10 @@
 <translation id="4501530680793980440">हटाने की पुष्टि करें</translation>
 <translation id="4502423230170890588">इस डिवाइस से हटाएं</translation>
 <translation id="4502477450742595012">टैब पर दायां क्लिक करें और "टैब को नए ग्रुप में जोड़ें" चुनें</translation>
+<translation id="4503362512377701151">आपको हाल ही में इस्तेमाल किए गए टैब ग्रुप दिख रहे हैं, ताकि आप आसानी से वहीं से काम शुरू कर सकें जहां आपने छोड़ा था.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        कार्ड मेन्यू से सेटिंग मैनेज की जा सकती हैं. इसके अलावा, आपको 'Chrome को पसंद के मुताबिक बनाएं' सेक्शन में मौजूद ज़्यादा विकल्प मिल सकते हैं.</translation>
 <translation id="4503748371388753124">आपके कंप्यूटर में 'ट्रस्टेड प्लैटफ़ॉर्म मॉड्यूल' (टीपीएम) सुरक्षा डिवाइस है. इसका इस्तेमाल, ChromeOS Flex में कई अहम सुरक्षा सुविधाओं को लागू करने के लिए किया जाता है. ज़्यादा जानकारी पाने के लिए, Chromebook सहायता केंद्र पर जाएं: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{कुकी की अनुमति है}=1{कुकी की अनुमति है, 1 अपवाद}one{कुकी की अनुमति है, {COUNT} अपवाद}other{कुकी की अनुमति है, {COUNT} अपवाद}}</translation>
 <translation id="4504940961672722399">इस आइकॉन पर क्लिक करके या <ph name="EXTENSION_SHORTCUT" /> को दबाकर यह एक्सटेंशन चालू करें.</translation>

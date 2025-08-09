@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">그룹에 새 탭 추가</translation>
 <translation id="2918484639460781603">설정으로 이동</translation>
 <translation id="2928243913527329289">Google | 매장 정보</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" />개 선택됨}other{<ph name="ITEMS_COUNT_MANY" />개 선택됨}}</translation>
 <translation id="3008554597174452548">제품 추적 중지</translation>
 <translation id="3026391124054406831">그룹을 만들어 탭을 정리하세요.</translation>
 <translation id="3051031624272448591">방문 기록에서 언제든지 되돌릴 수 있습니다.</translation>

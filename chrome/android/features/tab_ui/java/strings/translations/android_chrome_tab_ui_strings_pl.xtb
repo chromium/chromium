@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">Nowa karta w grupie</translation>
 <translation id="2918484639460781603">Przejdź do ustawień</translation>
 <translation id="2928243913527329289">Google | Informacje o tym sklepie</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{Wybrano <ph name="ITEMS_COUNT_ONE" />}few{Wybrano <ph name="ITEMS_COUNT_MANY" />}many{Wybrano <ph name="ITEMS_COUNT_MANY" />}other{Wybrano <ph name="ITEMS_COUNT_MANY" />}}</translation>
 <translation id="3008554597174452548">Przestań obserwować produkt</translation>
 <translation id="3026391124054406831">Twórz grupy, aby porządkować karty.</translation>
 <translation id="3051031624272448591">Zawsze możesz przywrócić je z historii</translation>

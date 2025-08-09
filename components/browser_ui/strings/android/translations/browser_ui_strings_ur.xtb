@@ -120,7 +120,9 @@
 <translation id="2379925928934107488">‏ممکن ہو تو سائٹس پر گہری تھیم لاگو ہوتی ہے جب Chrome کو گہری تھیم استعمال کرنے کیلئے سیٹ کیا جاتا ہے</translation>
 <translation id="2390272837142897736">زوم ان کریں</translation>
 <translation id="2402980924095424747">‎<ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">قطعی</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کی اجازت دی گئی}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کی اجازت دی گئی}}</translation>
+<translation id="2404857459073803936">اس سائٹ کے لیے مقام تک رسائی</translation>
 <translation id="2410940059315936967">آپ کی ملاحظہ کی جانے والی سائٹ دوسری سائٹس سے مواد کو سرایت کر سکتی ہے، مثال کے طور پر تصاویر، اشتہارات اور ٹیکسٹ۔ ان دیگر سائٹس کے ذریعے سیٹ کردہ کوکیز کو فریق ثالث کوکیز کہا جاتا ہے۔</translation>
 <translation id="2411116727035790889">شارٹ کٹس آن کریں</translation>
 <translation id="2433507940547922241">موجودگی</translation>
@@ -276,6 +278,7 @@
 <translation id="3992684624889376114">اس صفحہ کے بارے میں</translation>
 <translation id="4002066346123236978">عنوان</translation>
 <translation id="4031179711345676612">مائیکروفون اجازت یافتہ ہے</translation>
+<translation id="4042597221652780603">تخمینی</translation>
 <translation id="4046123991198612571">اگلا ٹریک</translation>
 <translation id="4077310749977440510">آپ کے کاپی کردہ ٹیکسٹ کی فارمیٹنگ کو برقرار رکھنے جیسی خصوصیات کیلئے سائٹس عام طور پر آپ کے کلپ بورڈ کو پڑھتی ہیں</translation>
 <translation id="4082080074595021446">‏مخصوص ویب سائٹس کے لیے مستثنیات کی اجازت نہیں ہے کیونکہ Android آلے میں کافی RAM نہیں ہوتا ہے۔</translation>

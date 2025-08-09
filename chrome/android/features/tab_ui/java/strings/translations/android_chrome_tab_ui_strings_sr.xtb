@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">Нова картица у групи</translation>
 <translation id="2918484639460781603">Иди на подешавања</translation>
 <translation id="2928243913527329289">Google | О овој продавници</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> изабрана ставка}one{<ph name="ITEMS_COUNT_MANY" /> изабрана ставка}few{<ph name="ITEMS_COUNT_MANY" /> изабране ставке}other{<ph name="ITEMS_COUNT_MANY" /> изабраних ставки}}</translation>
 <translation id="3008554597174452548">Заустави праћење производа</translation>
 <translation id="3026391124054406831">Направите групе да бисте организовали картице.</translation>
 <translation id="3051031624272448591">Увек можете да их вратите из историје</translation>

@@ -388,6 +388,7 @@
 <translation id="2434405374328098816">Вече запазихте парола за <ph name="USERNAME" /> за <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Можете да превъртите наляво, за да сърфирате в режим „инкогнито“.</translation>
 <translation id="2435457462613246316">Показване на паролата</translation>
+<translation id="2458827363789845126">{count,plural, =1{{count} елемент от историята}other{{count} елемента от историята}}</translation>
 <translation id="2461070143328828326">Настройки за паролите</translation>
 <translation id="2462736546165239215">Тук можете да намерите цялата си история на сърфиране.</translation>
 <translation id="2466518891828668184">Запазвайте паролите си, за да влизате лесно в сайтове и приложения.</translation>
@@ -1515,6 +1516,7 @@
 <translation id="6791425686608802741">Докоснете „Добавяне на раздела към нова група“</translation>
 <translation id="6794476726485507147">Изберете дата и час, когато да получите известие с напомняне да посетите отново тази страница</translation>
 <translation id="6795481620482106033">Невалидни данни</translation>
+<translation id="6797543908718012274">Включване на режима на четене</translation>
 <translation id="6807287147325542056">Пароли в други приложения</translation>
 <translation id="681368974849482173">Елементът е създаден</translation>
 <translation id="6825078212112407882">{count,plural, =1{Отметката е запазена в профила ви в Google {email}}other{{count} отметки са запазени в профила ви в Google {email}}}</translation>

@@ -641,6 +641,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8843516219908676469">Chrome краще визначає форми й швидше заповнює їх</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome радить вилучити його}one{Chrome радить вилучити їх}few{Chrome радить вилучити їх}many{Chrome радить вилучити їх}other{Chrome радить вилучити їх}}</translation>
 <translation id="8862326446509486874">У вас немає відповідних прав для встановлення на рівні системи. Спробуйте запустити програму встановлення, увійшовши з правами адміністратора.</translation>
+<translation id="8865415417596392024">Дані Chrome у вашому обліковому записі</translation>
 <translation id="8883862939660515976">Запитати Google Об’єктив про це зображення</translation>
 <translation id="8914504000324227558">Перезапустити Chrome</translation>
 <translation id="8922193594870374009">Щоб надіслати номер із сайту <ph name="ORIGIN" /> на телефон Android, увійдіть у Chrome на обох пристроях.</translation>

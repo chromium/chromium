@@ -1092,6 +1092,7 @@
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> સાથે ટૅબના ગ્રૂપમાં જોડાઓ</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />વધુ વિગતો<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">આઇટમ દૂર કરી</translation>
+<translation id="6127860394906721547">ટૅબનું ગ્રૂપ <ph name="TITLE_OF_GROUP" />, રંગ <ph name="COLOR_NAME" />, <ph name="URL_LIST" /> સાઇટ સાથે ખોલો.</translation>
 <translation id="6130303040046284160">ટૅબને નાનું કરો</translation>
 <translation id="6134168885321518274">શોધ બાર ખોલો</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ટૅબ}one{<ph name="TAB_COUNT_MANY" /> ટૅબ}other{<ph name="TAB_COUNT_MANY" /> ટૅબ}}</translation>

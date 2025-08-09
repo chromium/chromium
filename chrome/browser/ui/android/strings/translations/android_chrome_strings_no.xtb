@@ -1092,6 +1092,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="6125202119952209826">Bli med i fanegruppen med <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Mer informasjon<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Elementet er fjernet</translation>
+<translation id="6127860394906721547">Åpne fanegruppen <ph name="TITLE_OF_GROUP" />, fargen <ph name="COLOR_NAME" /> og nettstedene <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimer fanen</translation>
 <translation id="6134168885321518274">Åpne ordsøklinjen</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fane}other{<ph name="TAB_COUNT_MANY" /> faner}}</translation>

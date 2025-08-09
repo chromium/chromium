@@ -645,6 +645,7 @@
 <translation id="1438630805136563416">Дію "<ph name="REMOVED_ACTION" />" вилучено</translation>
 <translation id="1439671507542716852">довгострокова підтримка</translation>
 <translation id="1440090277117135316">Реєстрацію пристрою для використання в закладі освіти завершено</translation>
+<translation id="1441971243157709645">Керований принтер</translation>
 <translation id="1442054921249164535">Інші дані</translation>
 <translation id="144283815522798837">Вибрано <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Налаштувати активний квиток Kerberos</translation>
@@ -5073,6 +5074,10 @@
 <translation id="4501530680793980440">Підтвердити видалення</translation>
 <translation id="4502423230170890588">Видалити з цього пристрою</translation>
 <translation id="4502477450742595012">Натисніть правою кнопкою миші на вкладці й виберіть "Додати вкладку в нову групу"</translation>
+<translation id="4503362512377701151">Тут відображаються нещодавно використані групи вкладок, щоб ви могли легко продовжити роботу з того місця, де зупинилися.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Ви можете керувати налаштуваннями в меню картки або переглянути інші опції в розділі "Налаштувати Chrome".</translation>
 <translation id="4503748371388753124">Ваш комп’ютер оснащено пристроєм Trusted Platform Module (TPM), який виконує багато важливих функцій безпеки в ОС Chrome Flex. Щоб дізнатися більше, відвідайте Довідковий центр Chromebook: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Файли cookie дозволено}=1{Файли cookie дозволено, 1 виняток}one{Файли cookie дозволено, {COUNT} виняток}few{Файли cookie дозволено, {COUNT} винятки}many{Файли cookie дозволено, {COUNT} винятків}other{Файли cookie дозволено, {COUNT} винятку}}</translation>
 <translation id="4504940961672722399">Запустіть розширення, натиснувши цей значок або комбінацію клавіш <ph name="EXTENSION_SHORTCUT" />.</translation>

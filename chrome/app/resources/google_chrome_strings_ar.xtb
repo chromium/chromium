@@ -645,6 +645,7 @@
 <translation id="8843516219908676469">‏يفهم Chrome النماذج بشكل أفضل ويمكنه ملء بياناتها تلقائيًا بشكل أسرع</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{‏ينصح متصفّح Chrome بإزالتها}zero{‏ينصح متصفّح Chrome بإزالتها}two{‏ينصح متصفّح Chrome بإزالتهما}few{‏ينصح متصفّح Chrome بإزالتها}many{‏ينصح متصفّح Chrome بإزالتها}other{‏ينصح متصفّح Chrome بإزالتها}}</translation>
 <translation id="8862326446509486874">لا تملك الحقوق الكافية للتثبيت على مستوى النظام. جرّب تشغيل المثبِّت بصفة مشرف.</translation>
+<translation id="8865415417596392024">‏بيانات Chrome في حسابك</translation>
 <translation id="8883862939660515976">‏طرح أسئلة حول هذه الصورة باستخدام "عدسة Google"</translation>
 <translation id="8914504000324227558">‏إعادة تشغيل Chrome</translation>
 <translation id="8922193594870374009">‏لإرسال رقم من <ph name="ORIGIN" /> إلى هاتفك الذي يعمل بنظام التشغيل Android، يُرجى تسجيل الدخول إلى متصفِّح Chrome على الجهازَين.</translation>

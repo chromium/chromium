@@ -4748,7 +4748,7 @@
 <translation id="4275291496240508082">Звук при включении</translation>
 <translation id="4275397969489577657">Включить ведение журнала событий</translation>
 <translation id="4275788652681621337">Закрыть боковую панель</translation>
-<translation id="4275830172053184480">Перезапуск устройства</translation>
+<translation id="4275830172053184480">Перезапустить устройство</translation>
 <translation id="4276598757692536305">PPD-файл для принтера</translation>
 <translation id="4276856098224910511">Не удалось выполнить установку. Установите все запланированные обновления ОС, перезапустите устройство и повторите попытку. Код ошибки: <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Источник конфигурации XML</translation>
@@ -5731,6 +5731,7 @@
 <translation id="496742804571665842">Отключение профилей eSIM</translation>
 <translation id="4967571733817147990">Настроить кнопки мыши</translation>
 <translation id="4967852842111017386">Название устройства (<ph name="FEATURE_NAME" />)</translation>
+<translation id="4968994772848295474">Установка веб-приложений в гостевом режиме не поддерживается</translation>
 <translation id="4971412780836297815">Открыть по завершении</translation>
 <translation id="4972129977812092092">Настройка принтера</translation>
 <translation id="4972164225939028131">Неправильный пароль</translation>
@@ -10511,6 +10512,7 @@
 <translation id="8340547030807793004">Другие действия с устройством "<ph name="DEVICE" />"</translation>
 <translation id="8341804784147620576">Показать ярлыки для поиска</translation>
 <translation id="8342221978608739536">Не знаю</translation>
+<translation id="8342387517402567689">Установка веб-приложений в режиме инкогнито не поддерживается</translation>
 <translation id="8342861492835240085">Выберите коллекцию</translation>
 <translation id="8345848587667658367">Теперь вы можете просматривать недавние фотографии, медиафайлы, уведомления и приложения с телефона</translation>
 <translation id="8347227221149377169">Задания печати</translation>

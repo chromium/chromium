@@ -644,6 +644,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1438630805136563416">Akcia <ph name="REMOVED_ACTION" /> bola odstránená</translation>
 <translation id="1439671507542716852">dlhodobá podpora</translation>
 <translation id="1440090277117135316">Zápis do školy bol dokončený</translation>
+<translation id="1441971243157709645">Spravovaná tlačiareň</translation>
 <translation id="1442054921249164535">Iné údaje</translation>
 <translation id="144283815522798837">Počet vybratých položiek: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Nastaviť aktívny tiket Kerberos</translation>
@@ -5059,6 +5060,10 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4501530680793980440">Potvrdiť odstránenie</translation>
 <translation id="4502423230170890588">Odstrániť z tohto zariadenia</translation>
 <translation id="4502477450742595012">Kliknite pravým tlačidlom na kartu a vyberte Pridať kartu do novej skupiny</translation>
+<translation id="4503362512377701151">Zobrazujú sa vám nedávno používané skupiny kariet, aby ste mohli jednoducho pokračovať tam, kde ste prestali.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Nastavenia môžete spravovať v ponuke kariet, prípadne si môžete zobraziť ďalšie možnosti v sekcii Prispôsobenie Chromu.</translation>
 <translation id="4503748371388753124">Váš počítač obsahuje bezpečnostné zariadenie Trusted Platform Module (TPM), pomocou ktorého sa v systéme Chrome OS Flex implementuje mnoho kľúčových bezpečnostných funkcií. Viac sa dozviete v Centre pomoci pre Chromebooky na https://support.google.com/chromebook/?p=tpm.</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Súbory cookie sú povolené}=1{Súbory cookie sú povolené, 1 výnimka}few{Súbory cookie sú povolené, {COUNT} výnimky}many{Cookies are allowed, {COUNT} exceptions}other{Súbory cookie sú povolené, {COUNT} výnimiek}}</translation>
 <translation id="4504940961672722399">Rozšírenie použijete stlačením klávesov <ph name="EXTENSION_SHORTCUT" />.</translation>

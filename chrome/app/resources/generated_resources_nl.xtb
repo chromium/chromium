@@ -5726,6 +5726,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="496742804571665842">E-simkaartprofielen uitzetten</translation>
 <translation id="4967571733817147990">Muisknoppen aanpassen</translation>
 <translation id="4967852842111017386">Apparaatnaam voor <ph name="FEATURE_NAME" /></translation>
+<translation id="4968994772848295474">Web-apps installeren wordt niet ondersteund in de gastmodus</translation>
 <translation id="4971412780836297815">Openen wanneer klaar</translation>
 <translation id="4972129977812092092">Printer bewerken</translation>
 <translation id="4972164225939028131">Onjuist wachtwoord</translation>
@@ -7502,6 +7503,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6257602895346497974">Synchronisatie aanzetten...</translation>
 <translation id="625827534921607067">Dit netwerk krijgt de voorkeur als er meer dan één eerder verbonden of ingesteld netwerk beschikbaar is</translation>
 <translation id="6259776178973198997">Informatie over Wifi Direct-eigenaren vernieuwen</translation>
+<translation id="6261688934280090835">Logboeken van ChromeOS-kiosk-app</translation>
 <translation id="6262371516389954471">Je back-ups worden geüpload naar Google en versleuteld met het wachtwoord van je Google-account.</translation>
 <translation id="6263082573641595914">CA-versie van Microsoft</translation>
 <translation id="6263284346895336537">Niet kritiek</translation>
@@ -10495,6 +10497,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8340547030807793004">Meer acties voor <ph name="DEVICE" /></translation>
 <translation id="8341804784147620576">Snelkoppelingen voor zoekopdrachten tonen</translation>
 <translation id="8342221978608739536">Niet geprobeerd</translation>
+<translation id="8342387517402567689">Web-apps installeren wordt niet ondersteund in de incognitomodus</translation>
 <translation id="8342861492835240085">Een verzameling selecteren</translation>
 <translation id="8345848587667658367">Je kunt nu de recente foto's, media, meldingen en apps van je telefoon bekijken</translation>
 <translation id="8347227221149377169">Afdruktaken</translation>

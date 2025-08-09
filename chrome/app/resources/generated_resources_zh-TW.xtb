@@ -642,6 +642,7 @@
 <translation id="1438630805136563416">已移除動作「<ph name="REMOVED_ACTION" />」</translation>
 <translation id="1439671507542716852">長期支援</translation>
 <translation id="1440090277117135316">學校註冊程序完成</translation>
+<translation id="1441971243157709645">受管理的印表機</translation>
 <translation id="1442054921249164535">其他資料</translation>
 <translation id="144283815522798837">已選取 <ph name="NUMBER_OF_ITEMS_SELECTED" /> 個項目</translation>
 <translation id="1442851588227551435">設定使用中的 Kerberos 票證</translation>
@@ -5053,6 +5054,7 @@
 <translation id="4501530680793980440">確認移除</translation>
 <translation id="4502423230170890588">從這個裝置中移除</translation>
 <translation id="4502477450742595012">在分頁標籤上按一下滑鼠右鍵，選取「將分頁加入新群組」</translation>
+<translation id="4503362512377701151">系統顯示最近使用的分頁群組，方便你接續先前的瀏覽進度。<ph name="BREAK" /><ph name="BREAK" />你可以透過三點選單管理設定，也可以前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="4503748371388753124">你的電腦含有可信任平台模組 (TPM) 安全性裝置，可用於實作 ChromeOS Flex 中許多重要的安全性功能。如需瞭解詳情，請造訪 Chromebook 說明中心：https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{已允許 Cookie}=1{已允許 Cookie，有 1 個例外狀況}other{已允許 Cookie，有 {COUNT} 個例外狀況}}</translation>
 <translation id="4504940961672722399">按一下這個圖示或按下 <ph name="EXTENSION_SHORTCUT" />，即可使用這項擴充功能。</translation>

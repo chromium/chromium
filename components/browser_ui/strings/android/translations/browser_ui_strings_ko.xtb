@@ -120,7 +120,9 @@
 <translation id="2379925928934107488">가능하면 Chrome에서 어두운 테마를 사용할 때 사이트에도 어두운 테마를 적용합니다.</translation>
 <translation id="2390272837142897736">확대</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" />MB</translation>
+<translation id="2403474027143565107">정확한 위치</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 허용됨}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 허용됨}}</translation>
+<translation id="2404857459073803936">이 사이트의 위치 액세스</translation>
 <translation id="2410940059315936967">내가 방문한 사이트에서 다른 사이트의 콘텐츠(예: 이미지, 광고, 텍스트)를 삽입할 수 있습니다. 다른 사이트에서 설정한 쿠키를 서드 파티 쿠키라고 합니다.</translation>
 <translation id="2411116727035790889">바로가기 사용 설정</translation>
 <translation id="2433507940547922241">모양</translation>
@@ -276,6 +278,7 @@
 <translation id="3992684624889376114">이 페이지에 관한 정보</translation>
 <translation id="4002066346123236978">제목</translation>
 <translation id="4031179711345676612">마이크 허용됨</translation>
+<translation id="4042597221652780603">대략적인 위치</translation>
 <translation id="4046123991198612571">다음 트랙</translation>
 <translation id="4077310749977440510">사이트에서는 일반적으로 복사한 텍스트 서식 유지와 같은 기능을 사용하기 위해 클립보드를 읽습니다.</translation>
 <translation id="4082080074595021446">Android 기기에 RAM이 부족하여 특정 웹사이트에 대한 예외가 허용되지 않습니다.</translation>

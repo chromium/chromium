@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">แท็บใหม่ในกลุ่ม</translation>
 <translation id="2918484639460781603">ไปที่การตั้งค่า</translation>
 <translation id="2928243913527329289">Google | เกี่ยวกับร้านนี้</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{เลือกไว้ <ph name="ITEMS_COUNT_ONE" /> รายการ}other{เลือกไว้ <ph name="ITEMS_COUNT_MANY" /> รายการ}}</translation>
 <translation id="3008554597174452548">หยุดติดตามผลิตภัณฑ์</translation>
 <translation id="3026391124054406831">สร้างกลุ่มเพื่อจัดระเบียบแท็บ</translation>
 <translation id="3051031624272448591">คุณกู้คืนแท็บเหล่านี้ได้เสมอในประวัติการเข้าชม</translation>
