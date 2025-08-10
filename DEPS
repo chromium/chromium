@@ -1197,7 +1197,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/chrome/android/orderfiles/arm64',
-              'version': 'Gzb7Uokw8UaBMp7XHHH8XluB4GSZLLRRtJ5dyRk-0rUC',
+              'version': 'uVwMBTesLLnhS5AKhUR-gS73gxkgBD_dipopJaTfRgIC',
           },
       ],
       'condition': 'checkout_android',
