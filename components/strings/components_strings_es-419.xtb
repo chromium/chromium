@@ -2011,6 +2011,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4297937944457164390">Se actualizó <ph name="ATTRIBUTE_NAME" /></translation>
 <translation id="4298000214066716287">Inversión</translation>
 <translation id="42981349822642051">Expandir</translation>
+<translation id="4298148761711700950">Paga al instante sin subir un código QR</translation>
 <translation id="4298925811540301889">Las cookies de este sitio se sincronizan en todos tus dispositivos ChromeOS. Para administrar los datos de la sincronización, ve a <ph name="SYNC_SETTINGS" />.</translation>
 <translation id="4300272766492248925">Abrir app</translation>
 <translation id="4300675098767811073">Perforaciones múltiples a la derecha</translation>
@@ -2748,6 +2749,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5540969246441091044">Equitación</translation>
 <translation id="5541086400771735334">Buzón 7</translation>
 <translation id="5541546772353173584">Agregar correo electrónico</translation>
+<translation id="5543452229212526547">El texto, el contenido y la URL de la página en la que escribas se enviarán a Google. Los revisores humanos no usarán tu contenido para mejorar la IA. Tu organización puede cambiar esta configuración en cualquier momento.</translation>
 <translation id="5543564889050342791">Zoológicos, acuarios y reservas</translation>
 <translation id="5543722831081909240">180 grados</translation>
 <translation id="5544836308113951378">Cruceros y chárteres</translation>
@@ -3123,6 +3125,8 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184099524311454384">Buscar pestañas</translation>
 <translation id="6184868291074982484">Chrome limita automáticamente las cookies de terceros</translation>
+<translation id="6189351761800074311">El texto y el contenido de la página se envían a Google, pero no se usarán para mejorar la IA.
+    <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Anular algunas teclas del teclado, como Esc</translation>
 <translation id="6194209731893739467">Encuentra todos tus productos con seguimiento aquí</translation>
 <translation id="6195371403461054755">Geología</translation>

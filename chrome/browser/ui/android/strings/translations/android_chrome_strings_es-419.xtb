@@ -1092,6 +1092,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="6125202119952209826">Únete al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Más detalles<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Se eliminó el elemento</translation>
+<translation id="6127860394906721547">Abrir el grupo de pestañas <ph name="TITLE_OF_GROUP" />, en color <ph name="COLOR_NAME" />, con los sitios <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimizar pestaña</translation>
 <translation id="6134168885321518274">Abrir la barra de búsqueda</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestaña}other{<ph name="TAB_COUNT_MANY" /> pestañas}}</translation>

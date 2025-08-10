@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">Nueva pestaña en el grupo</translation>
 <translation id="2918484639460781603">Ir a Configuración</translation>
 <translation id="2928243913527329289">Google | Acerca de esta tienda</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> seleccionado}other{<ph name="ITEMS_COUNT_MANY" /> seleccionados}}</translation>
 <translation id="3008554597174452548">Dejar de seguir el precio del producto</translation>
 <translation id="3026391124054406831">Crea grupos para organizar tus pestañas.</translation>
 <translation id="3051031624272448591">Puedes recuperarlas desde el historial en cualquier momento</translation>
