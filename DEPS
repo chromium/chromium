@@ -515,7 +515,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling llvm-libc
   # and whatever else without interference from each other.
-  'compiler_rt_revision': '797599c8cf7ad2b8fa22850cbb1afb1ad1dd9e20',
+  'compiler_rt_revision': '581c5fcbc57a5f528bb9f5930b702e045084a4b6',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling clusterfuzz-data
   # and whatever else without interference from each other.
