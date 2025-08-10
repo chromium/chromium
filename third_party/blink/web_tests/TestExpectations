@@ -2878,6 +2878,12 @@ crbug.com/435704771 external/wpt/navigation-api/navigation-methods/return-value/
 crbug.com/435620308 external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win10.20h2 ] external/wpt/bluetooth/bidi/requestDevice/blocklisted-manufacturer-data-in-filter.https.window.html [ Pass Timeout ]
+[ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/invalid-companyIdentifier.https.window.html [ Pass Timeout ]
+[ Win10.20h2 ] external/wpt/bluetooth/bidi/service/getCharacteristic/gen-invalid-characteristic-name.https.window.html [ Pass Timeout ]
+[ Win11-arm64 ] external/wpt/bluetooth/bidi/service/getCharacteristics/blocklisted-characteristics.https.window.html [ Pass Timeout ]
+[ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?7-8 [ Crash Pass ]
+[ Android ] external/wpt/webdriver/tests/bidi/network/add_data_collector/user_contexts.py [ Failure ]
 crbug.com/435913825 [ Win10.20h2 ] external/wpt/bluetooth/bidi/characteristic/startNotifications/gen-characteristic-is-removed.https.window.html [ Pass Timeout ]
 crbug.com/435913825 [ Win10.20h2 ] external/wpt/bluetooth/bidi/server/device-same-object.https.window.html [ Pass Timeout ]
 crbug.com/435913825 [ Win11-arm64 ] external/wpt/bluetooth/bidi/server/getPrimaryServices/blocklisted-services.https.window.html [ Pass Timeout ]

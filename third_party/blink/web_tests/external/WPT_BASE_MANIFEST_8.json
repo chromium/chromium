@@ -2898,6 +2898,15 @@
        ]
       ]
      },
+     "animation": {
+      "rule-color-interpolation-conversion-crash.html": [
+       "693352bc81c69d7cf13f0c837d83a652390c58bf",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "flex": {
       "flex-gap-decorations-026-crash.html": [
        "82dcc4c76c5f0f6236752e114cda8b7f56170d5b",
@@ -136229,7 +136238,7 @@
        ]
       ],
       "flex-gap-decorations-012.html": [
-       "2f1f95c00c8c0eed6e11dc10c1e0e90c392ddb6f",
+       "764543219e7cdaac249a0fbcdf8aae5945a8f06e",
        [
         null,
         [
@@ -136268,7 +136277,7 @@
        ]
       ],
       "flex-gap-decorations-015.html": [
-       "8d100978205684b4a21dfcc2962f6f47bbe5417a",
+       "3a428b1fa0cca7fba6a8993fa7d16524a3510f19",
        [
         null,
         [
@@ -136281,7 +136290,7 @@
        ]
       ],
       "flex-gap-decorations-016.html": [
-       "9f956369d48c08793bafca4cd61653dfd963cc77",
+       "bd6b3a1d05f05380187a06c44c41208618e809f0",
        [
         null,
         [
@@ -136699,7 +136708,7 @@
        ]
       ],
       "grid-gap-decorations-023.html": [
-       "706f66ebcfac1a0000debf4c753f11ca4f481f16",
+       "c5f6b3c156b00aed5d5452b665be1345f7c4f512",
        [
         null,
         [
@@ -137233,7 +137242,7 @@
         ]
        ],
        "subgrid-gap-decorations-017.html": [
-        "c175dfa656353d7bc799e5c9376b723fda4b6155",
+        "dcd071e3d783ad59a36848d693c2ee7d839383d9",
         [
          null,
          [
@@ -331748,19 +331757,27 @@
      []
     ],
     "cookieStore_delete_arguments.https.any-expected.txt": [
-     "15da17ac05c6ec89748e9218bf26ae4e57696bad",
+     "3433ff6c8128bb2fc72ab57887c128ca88c8eddc",
      []
     ],
     "cookieStore_delete_arguments.https.any.serviceworker-expected.txt": [
-     "c16c1930903402eef917886549bc13454526415b",
+     "e159173bcc6be95936ac5c5b9ba206ba76543863",
+     []
+    ],
+    "cookieStore_getAll_arguments.https.any-expected.txt": [
+     "6b5e1a8675ca5fe4bd1ef35f01c82128e8a7a16e",
      []
     ],
     "cookieStore_getAll_arguments.https.any.serviceworker-expected.txt": [
-     "6c68d6d8e1481c5436437129b87f4b5a620726f3",
+     "0bcd4408bb17305d8549ac6ce585f598ee3661fa",
+     []
+    ],
+    "cookieStore_get_arguments.https.any-expected.txt": [
+     "0ccfdc3aca9fca3f4e74e3d492afe41dc67bb876",
      []
     ],
     "cookieStore_get_arguments.https.any.serviceworker-expected.txt": [
-     "e4c971b8d653aed83aaeea9606e1095ddf35daee",
+     "a2c92ed5a39c997f7d43609b81974610d58a95cd",
      []
     ],
     "cookieStore_in_detached_frame.https-expected.txt": [
@@ -372612,11 +372629,11 @@
        []
       ],
       "text-autospace-computed-expected.txt": [
-       "e74e82da25b6eab758c431d1fc08b6a43eeb3b75",
+       "d2340016a35deada392dd3eca25de7cdf6bf0b87",
        []
       ],
       "text-autospace-valid-expected.txt": [
-       "b76784579b7b715971abd6790420d76ebd7c9b75",
+       "900b73bdc852b02271df6134e18051cefadca4a0",
        []
       ],
       "text-group-align-valid-expected.txt": [
@@ -387673,10 +387690,6 @@
     ],
     "digital-credentials-static-methods.tentative.https-expected.txt": [
      "5c4a3b206c3f733dc0fe3e9255e7698d30f4b028",
-     []
-    ],
-    "enabled-on-self-origin-by-permissions-policy.https.sub-expected.txt": [
-     "dfd89661579f8883f4310a41241b645caf1d9b35",
      []
     ],
     "enabled-on-self-origin-by-permissions-policy.https.sub.html.headers": [
@@ -404158,16 +404171,6 @@
         "32effe3c4580613831be8c140b0af3948bebc479",
         []
        ],
-       "document.getElementsByName": {
-        "document.getElementsByName-namespace-expected.txt": [
-         "55f01c6277c8884a4ddeb78cff60544dff4fca19",
-         []
-        ],
-        "document.getElementsByName-namespace-xhtml-expected.txt": [
-         "55f01c6277c8884a4ddeb78cff60544dff4fca19",
-         []
-        ]
-       },
        "nameditem-names-expected.txt": [
         "a16d1b4eaa9d7bdfed30ac5a5a7dc1e413c7b004",
         []
@@ -441514,6 +441517,10 @@
         "invalid-expected.txt": [
          "22e10307442b870b44d725ad8318d9d57f749c34",
          []
+        ],
+        "max_encoded_data_size-expected.txt": [
+         "35f00bb0a797458a3482a10104c53b87d10dea2b",
+         []
         ]
        },
        "add_intercept": {
@@ -475846,7 +475853,7 @@
       ]
      ],
      "rewriter-availability-available.tentative.https.window.js": [
-      "a2117486e236d31a424f1920ba468d7531ee5775",
+      "cae56a7750bb61f7b88977331119dbe96f87f2f5",
       [
        "ai/rewriter/rewriter-availability-available.tentative.https.window.html",
        {
@@ -476116,7 +476123,7 @@
       ]
      ],
      "summarizer-availability-available.tentative.https.window.js": [
-      "df4e161d6374346a339d473b82732a3e40a82988",
+      "ccecd739a72cb0133c4b2dcd6af6293c3700fe7a",
       [
        "ai/summarizer/summarizer-availability-available.tentative.https.window.html",
        {
@@ -476528,7 +476535,7 @@
       ]
      ],
      "writer-availability-available.tentative.https.window.js": [
-      "0e3106a14c2ef4880a14132d74a9ed39ca97b4ac",
+      "7f652a85a52ed3c80101e3fa9fbbf7e30be6a3d7",
       [
        "ai/writer/writer-availability-available.tentative.https.window.html",
        {
@@ -498323,7 +498330,7 @@
      ]
     ],
     "cookieStore_delete_arguments.https.any.js": [
-     "27b54f5a8dcdbe25230b04a101ca0fb0b3c9851d",
+     "757eef7ade4bcc7b4df05ee2dc87a929fd9a51d3",
      [
       "cookiestore/cookieStore_delete_arguments.https.any.html",
       {
@@ -498425,7 +498432,7 @@
      ]
     ],
     "cookieStore_getAll_arguments.https.any.js": [
-     "868246f606f4ace75f807eef584d263114778f4b",
+     "fecd2945a877124ff99222092e58fd7e9ea95746",
      [
       "cookiestore/cookieStore_getAll_arguments.https.any.html",
       {
@@ -498542,7 +498549,7 @@
      ]
     ],
     "cookieStore_get_arguments.https.any.js": [
-     "d6ea0edef6a3d4e0cc69d4455d6672ddd433deda",
+     "a6bbc1a2f152d46b24ad0bf36af0b0bdd2c3050c",
      [
       "cookiestore/cookieStore_get_arguments.https.any.html",
       {
@@ -513402,6 +513409,20 @@
         {}
        ]
       ],
+      "gap-decorations-color-neutral-keyframe-004.html": [
+       "f897878fb7adf6fb74681494ea51669ac2ea3833",
+       [
+        null,
+        {}
+       ]
+      ],
+      "gap-decorations-color-neutral-keyframe-005.html": [
+       "182b7e866d8fdec428b8f5515be8ee57b45b5ae7",
+       [
+        null,
+        {}
+       ]
+      ],
       "gap-decorations-outset-neutral-keyframe-001.html": [
        "3793b2351798ac5a5e84f0f7ca9394aefc99107f",
        [
@@ -513467,6 +513488,48 @@
       ],
       "row-rule-width-interpolation.html": [
        "edb364fa4b8c23bfe5cbb21622ae5a5a26ce0e99",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rule-color-interpolation-conversion-001.html": [
+       "657acf811fabd3a517789acf739f7a887ab7c8a2",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rule-color-interpolation-conversion-002.html": [
+       "1578a26e2db5e133e7a35220a9e80af8d34e0f8d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rule-color-interpolation-multiple-values-001.html": [
+       "6c2b04cb6463b956746e78346ebcf58da3e1e66b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rule-color-interpolation-repeaters-001.html": [
+       "b1b1eaee0209e1e990b14889e63dac6f715ccc5f",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rule-width-interpolation-conversion-001.html": [
+       "041a1b168e851f142c2260da9996b0e8bdd8bc45",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rule-width-interpolation-conversion-002.html": [
+       "994b7098b60cf0efdc2a29ab8c6be164f6a98fa0",
        [
         null,
         {}
@@ -513672,22 +513735,22 @@
         {}
        ]
       ],
-      "rule-paint-order-computed.html": [
-       "441be8670d782ccc6dbb252bea4288f87e43918e",
+      "rule-overlap-computed.html": [
+       "efe7d74cfaba0b85f9d063f0df83628b5ebaca57",
        [
         null,
         {}
        ]
       ],
-      "rule-paint-order-invalid.html": [
-       "b18349a1aedadf9eda10fdea21ab03c99d9b0825",
+      "rule-overlap-invalid.html": [
+       "7d42590a01f52a143336e651ef54e339d9818937",
        [
         null,
         {}
        ]
       ],
-      "rule-paint-order-valid.html": [
-       "6a4294f7f4b5c07ea3b556e6cade62f47c6f72b3",
+      "rule-overlap-valid.html": [
+       "295a1e2c21cab1ce2e61e2df3ab9bade5c471b4f",
        [
         null,
         {}
@@ -517206,7 +517269,7 @@
        ]
       ],
       "grid-template-columns-invalid.html": [
-       "9f9f173375de85baff69419bf569abedbf3061ad",
+       "ee9fbb533106558862970b049621acad9797d066",
        [
         null,
         {}
@@ -517283,14 +517346,14 @@
        ]
       ],
       "grid-template-rows-invalid.html": [
-       "192b392d02c66ed30b6a9022b0bf6353ff600600",
+       "78468f83f32379c055afdc0fc821ce4bc231b892",
        [
         null,
         {}
        ]
       ],
       "grid-template-rows-repeat-intrinsic-valid.tentative.html": [
-       "a3975eb400788758144118220740b59b99786f91",
+       "32f8df97970b89cc67225fd4f24d4ba1791668b5",
        [
         null,
         {}
@@ -531652,21 +531715,21 @@
        ]
       ],
       "text-autospace-computed.html": [
-       "c8a4091eb99c19bb4355a8ed10a4f14a24fdbf39",
+       "05a7acb73ba963d6cc010dc3fe8babe44fb1e367",
        [
         null,
         {}
        ]
       ],
       "text-autospace-invalid.html": [
-       "7be73ba76eec5c6196017b7fa02c949a359aadaf",
+       "93de3abad75cf02e495877eb078eabe5a539990d",
        [
         null,
         {}
        ]
       ],
       "text-autospace-valid.html": [
-       "903da68307462b32536bbbfba136cd504b3f75d3",
+       "f49fe778586606699385fc62f002cd1af7e522dd",
        [
         null,
         {}
@@ -745066,7 +745129,7 @@
        ]
       ],
       "SVGAnimatedInteger.html": [
-       "849c13d3671df44b759729572c76f5965965865c",
+       "e8e8b30a7a5d38022145d4d704fcda84044d6653",
        [
         null,
         {}
