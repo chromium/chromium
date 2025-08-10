@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/css/css_initial_color_value.h"
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
@@ -1690,6 +1691,15 @@ bool CanApplyInlineStyleIncrementally(Element* element,
           property.Value().IsPendingSubstitutionValue() ||
           property.Value().IsRevertValue() ||
           property.Value().IsRevertLayerValue()) {
+        return false;
+      }
+      // Even though they are not substitution functions (and therefore not
+      // covered by the unparsed/pending-substitution value check above),
+      // anchor() and anchor-size() functions can still become IACVT,
+      // which must be handled by the StyleCascade.
+      if (auto* math_function =
+              DynamicTo<CSSMathFunctionValue>(property.Value());
+          math_function && math_function->HasAnchorFunctions()) {
         return false;
       }
     }
