@@ -189,4 +189,23 @@ TEST_F(HanKerningTest, ResetFeatures) {
   EXPECT_EQ(features.size(), 1u);
 }
 
+#if BUILDFLAG(IS_WIN)
+TEST_F(HanKerningTest, YuGothicUI) {
+  const FontFamily family(AtomicString("Yu Gothic UI"),
+                          FontFamily::Type::kFamilyName);
+  const scoped_refptr<LayoutLocale> locale =
+      LayoutLocale::CreateForTesting(AtomicString("ja"));
+  for (int weight = 100; weight <= 900; weight += 100) {
+    FontDescription font_description;
+    font_description.SetFamily(family);
+    font_description.SetWeight(FontSelectionValue(weight));
+    Font* font = MakeGarbageCollected<Font>(font_description);
+    const SimpleFontData* primary_font = font->PrimaryFont();
+    HanKerning::FontData han_kerning_data(*primary_font, *locale,
+                                          /*is_horizontal*/ true);
+    EXPECT_FALSE(han_kerning_data.has_alternate_spacing);
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace blink

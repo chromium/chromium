@@ -4963,6 +4963,11 @@
       depends_on: ["TextSpacingTrimFallback"],
       status: "test",
     },
+    {
+      // crbug.com/331123676
+      name: "TextSpacingTrimYuGothicUI",
+      status: "stable",
+    },
     // This feature is used to inform the renderer of a user bypass from the
     // browser process to disable third-party storage partitioning.
     {

@@ -413,6 +413,17 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
     return;
   }
 
+#if BUILDFLAG(IS_WIN)
+  if (RuntimeEnabledFeatures::TextSpacingTrimYuGothicUIEnabled()) {
+    // Exclude "Yu Gothic UI" until the fonts are fixed. crbug.com/331123676
+    const String postscript_name = font.PlatformData().GetPostScriptName();
+    if (postscript_name.StartsWith("YuGothicUI")) [[unlikely]] {
+      has_alternate_spacing = false;
+      return;
+    }
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   // Check if the font has `chws` (or `vchw` in vertical.)
   const hb_tag_t chws_tag =
       is_horizontal ? HB_TAG('c', 'h', 'w', 's') : HB_TAG('v', 'c', 'h', 'w');
