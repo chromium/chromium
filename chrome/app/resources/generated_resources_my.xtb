@@ -381,7 +381,7 @@
 <translation id="1246863218384630739"><ph name="VM_NAME" /> ထည့်သွင်း၍ မရပါ- ကွန်ပျူတာစနစ်မိတ္တူ URL က <ph name="HTTP_ERROR" /> အမှားကုဒ် ပြန်ပို့သည်။ သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။</translation>
 <translation id="1247372569136754018">မိုက်ခရိုဖုန်း (စက်တွင်း)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{ဝဘ်ဆိုက် ၁ ခုအတွက် အကြောင်းကြားချက်များ ခွင့်မပြုပါ}other{ဝဘ်ဆိုက် {NUM_SITES} ခုအတွက် အကြောင်းကြားချက်များ ခွင့်မပြုပါ}}</translation>
-<translation id="125097549534200450">ရှင်းထုတ်</translation>
+<translation id="125097549534200450">ရှင်းရန်</translation>
 <translation id="1251366534849411931">အဖွင့် တွန့်ကွင်းတစ်ခု လိုနေသည်- <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">မိုဘိုင်း ဒေတာကွန်ရက်များ ရှာဖွေနေသည်...</translation>
 <translation id="125220115284141797">မူရင်း</translation>

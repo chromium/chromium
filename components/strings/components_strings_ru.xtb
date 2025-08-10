@@ -27,7 +27,7 @@
 <translation id="1044897699341250361">Что это значит</translation>
 <translation id="1046350918013988591">Купоны и скидки</translation>
 <translation id="1048785276086539861">При редактировании заметок документ вернется в одностраничный режим просмотра.</translation>
-<translation id="1050038467049342496">Закройте другие приложения.</translation>
+<translation id="1050038467049342496">Закрыть другие приложения</translation>
 <translation id="1053959602163383901">Вы выбрали приложение для подтверждения покупок на сайтах, пользующихся услугами поставщика <ph name="PROVIDER_ORIGIN" />. Он мог сохранить информацию о вашем способе оплаты. У вас есть право <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Отменить добавление</translation>
 <translation id="1056898198331236512">Внимание</translation>
@@ -654,7 +654,7 @@
 <translation id="2102519472192754194">Веб-браузеры</translation>
 <translation id="2105838220373099643">Ролевые игры</translation>
 <translation id="2107021941795971877">Поддержка печати</translation>
-<translation id="2108755909498034140">Перезагрузите компьютер.</translation>
+<translation id="2108755909498034140">Перезагрузить компьютер</translation>
 <translation id="2109845311767915560">Общая группа вкладок</translation>
 <translation id="2111166930115883695">Чтобы начать игру, нажмите Пробел.</translation>
 <translation id="2113977810652731515">Карта</translation>
@@ -988,7 +988,7 @@
 <translation id="2660779039299703961">Событие</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Нет}=1{1 пароль (для <ph name="DOMAIN_LIST" />)}=2{2 пароля (для <ph name="DOMAIN_LIST" />)}one{# пароль (для <ph name="DOMAIN_LIST" />)}few{# пароля (для <ph name="DOMAIN_LIST" />)}many{# паролей (для <ph name="DOMAIN_LIST" />)}other{# пароля (для <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Сверху</translation>
-<translation id="2666117266261740852">Закройте другие вкладки, расширения и приложения.</translation>
+<translation id="2666117266261740852">Закрыть другие вкладки, расширения и приложения</translation>
 <translation id="266935134738038806">Открыть сайт</translation>
 <translation id="2672201172023654893">Этим браузером не управляет администратор.</translation>
 <translation id="2673968385134502798">Игры</translation>
@@ -1107,7 +1107,7 @@
 <translation id="2914160345369867329">На сайте <ph name="SITE" /> для защиты ваших данных обычно используется шифрование. Однако учетные данные, которые мы получили от сайта <ph name="SITE" /> сейчас, отличаются от тех, которые он отправляет обычно. Вероятно, вредоносный сайт пытается выдать себя за <ph name="SITE" /> или страница подключения к сети Wi-Fi прервала соединение. Ваша информация по-прежнему в безопасности, так как Chrome разорвал соединение до того, как произошел обмен данными.</translation>
 <translation id="2915068235268646559">Дата и время сбоя: <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Живопись</translation>
-<translation id="2916038427272391327">Закройте другие программы.</translation>
+<translation id="2916038427272391327">Закрыть другие программы</translation>
 <translation id="2917630513638801879">Бирюзовый 1</translation>
 <translation id="2919185931486062599">Охота и стрельба</translation>
 <translation id="2922350208395188000">Не удается проверить сертификат сервера.</translation>
@@ -1940,7 +1940,7 @@
 <translation id="4270541775497538019">Укладчик 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Посмотреть отзывы. Пока их нет. Средняя оценка: <ph name="STARS" />.}=1{Посмотреть 1 отзыв. Средняя оценка: <ph name="STARS" />.}one{Посмотреть # отзыв. Средняя оценка: <ph name="STARS" />.}few{Посмотреть # отзыва. Средняя оценка: <ph name="STARS" />.}many{Посмотреть # отзывов. Средняя оценка: <ph name="STARS" />.}other{Посмотреть # отзыва. Средняя оценка: <ph name="STARS" />.}}</translation>
 <translation id="4271652479722040953">При добавлении расширений в Chrome данные о них отправляются третьим лицам для анализа и могут быть видны вашему администратору. В данные входят такие сведения, как название расширения, время и источник установки, а также информация о действиях, связанных с этим расширением, например смена вкладок, обращение к сайтам или получение доступа к файлам cookie. Эти данные собираются для расширений, установленных из интернет-магазина Chrome и других источников.</translation>
-<translation id="4275830172053184480">Перезапуск устройства</translation>
+<translation id="4275830172053184480">Перезапустить устройство</translation>
 <translation id="4276974990916607331">Нет, спасибо</translation>
 <translation id="4277028893293644418">Сбросить пароль</translation>
 <translation id="4277529130885813215">Использовать другое устройство</translation>
@@ -2184,7 +2184,7 @@
 <translation id="4732860731866514038">Скачивание языкового пакета (<ph name="LANGUAGE" />)… <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992">Сайт <ph name="URL" /> запрашивает данные о местоположении вашего устройства.</translation>
 <translation id="473414950835101501">Использование камер.</translation>
-<translation id="4736825316280949806">Перезапустите Chromium.</translation>
+<translation id="4736825316280949806">Перезапустить Chromium</translation>
 <translation id="4736934858538408121">Виртуальная карта</translation>
 <translation id="473775607612524610">Обновить</translation>
 <translation id="4738601419177586157">Подсказка при поиске "<ph name="TEXT" />"</translation>
@@ -3585,7 +3585,7 @@
 <translation id="7118852830504022370">Вы видите это предупреждение, потому что сайт не поддерживает HTTPS. Подробнее <ph name="BEGIN_LEARN_MORE_LINK" />об этом предупреждении<ph name="END_LEARN_MORE_LINK" />…</translation>
 <translation id="7119063404975271297">Телевизионные драмы</translation>
 <translation id="7119371694555167493">Превышено время ожидания</translation>
-<translation id="7119414471315195487">Закройте другие вкладки и программы.</translation>
+<translation id="7119414471315195487">Закрыть другие вкладки и программы</translation>
 <translation id="7120588595737538743">скриншотов и скачанных файлов</translation>
 <translation id="7124354851782353862">Введите CVC-код</translation>
 <translation id="7129409597930077180">Невозможно отправить заказ по этому адресу. Выберите другой вариант.</translation>
