@@ -31,8 +31,10 @@ interface TypeConversions {
 
     attribute long long testLongLong;
     [ImplementedAs=testLongLong] attribute [EnforceRange] long long testEnforceRangeLongLong;
+    [ImplementedAs=testLongLong] attribute [Clamp] long long testClampLongLong;
     attribute unsigned long long testUnsignedLongLong;
     [ImplementedAs=testUnsignedLongLong] attribute [EnforceRange] unsigned long long testEnforceRangeUnsignedLongLong;
+    [ImplementedAs=testUnsignedLongLong] attribute [Clamp] unsigned long long testClampUnsignedLongLong;
 
     attribute byte testByte;
     [ImplementedAs=testByte] attribute [EnforceRange] byte testEnforceRangeByte;

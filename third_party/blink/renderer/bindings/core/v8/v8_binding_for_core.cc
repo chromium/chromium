@@ -438,6 +438,14 @@ int64_t ToInt64Slow(v8::Isolate* isolate,
     return EnforceRange(number_value, -kJSMaxInteger, kJSMaxInteger,
                         "long long", exception_state);
   }
+  if (std::isnan(number_value)) {
+    return 0;
+  }
+
+  if (configuration == kClamp) {
+    return ClampTo<int64_t>(std::nearbyint(number_value), -kJSMaxInteger,
+                            kJSMaxInteger);
+  }
 
   return DoubleToInteger(number_value);
 }
@@ -479,8 +487,9 @@ uint64_t ToUInt64Slow(v8::Isolate* isolate,
   if (std::isnan(number_value))
     return 0;
 
-  if (configuration == kClamp)
-    return ClampTo<uint64_t>(number_value);
+  if (configuration == kClamp) {
+    return ClampTo<uint64_t>(std::nearbyint(number_value), 0, kJSMaxInteger);
+  }
 
   return DoubleToInteger(number_value);
 }
