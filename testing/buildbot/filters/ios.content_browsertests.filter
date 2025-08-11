@@ -483,3 +483,8 @@
 # TODO(crbug.com/431553196): The test has been failing since
 # #935 build on the bot(https://ci.chromium.org/ui/p/chromium/builders/ci/ios-blink-rel-fyi/935/blamelist).
 -FencedFrameNestedModesTest/FencedFrameNestedModesTest.NestedModes/ParentModeOpaqueAds_ChildModeOpaqueAds
+
+# # TODO(crbug.com/437738588): The test has been failing since
+# https://crrev.com/c/6777074.
+-All/IndexedDBBrowserTest.SchedulingPriority/WithLevelDb
+-All/IndexedDBBrowserTest.SchedulingPriority/WithSqlite
