@@ -162,8 +162,8 @@ FT_BEGIN_HEADER
    * version of the @FT_MulFix function, which is a 'hotspot' when loading
    * and hinting glyphs, and which should be executed as fast as possible.
    *
-   * You can disable this option if you compiler is not C99-compliant or CPU
-   * is not supported.
+   * If your compiler is not C99-compliant or CPU assembly is not supported,
+   * you can disable this option.
    */
 #define FT_CONFIG_OPTION_INLINE_MULFIX
 
