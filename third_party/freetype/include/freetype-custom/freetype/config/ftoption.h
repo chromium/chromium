@@ -158,12 +158,12 @@ FT_BEGIN_HEADER
 
   /**************************************************************************
    *
-   * If this macro is defined, try to use an inlined assembler version of the
-   * @FT_MulFix function, which is a 'hotspot' when loading and hinting
-   * glyphs, and which should be executed as fast as possible.
+   * If this macro is defined, try to use an inlined 64-bit or assembler
+   * version of the @FT_MulFix function, which is a 'hotspot' when loading
+   * and hinting glyphs, and which should be executed as fast as possible.
    *
-   * Note that if your compiler or CPU is not supported, this will default to
-   * the standard and portable implementation found in `ftcalc.c`.
+   * You can disable this option if you compiler is not C99-compliant or CPU
+   * is not supported.
    */
 #define FT_CONFIG_OPTION_INLINE_MULFIX
 
