@@ -33,6 +33,7 @@ public abstract class TabModelOrchestrator {
     private boolean mTabModelsInitialized;
     private @Nullable Callback<String> mOnStandardActiveIndexRead;
     private boolean mTabPersistentStoreDestroyedEarly;
+    private boolean mIsDestroyed;
 
     // TabModelStartupInfo variables
     private @Nullable ObservableSupplierImpl<TabModelStartupInfo> mTabModelStartupInfoSupplier;
@@ -77,21 +78,18 @@ public abstract class TabModelOrchestrator {
 
     /** Destroy the {@link TabPersistentStore} and {@link TabModelSelectorImpl} members. */
     public void destroy() {
-        if (!mTabModelsInitialized) {
-            return;
-        }
+        if (mIsDestroyed) return;
+        mIsDestroyed = true;
 
-        // TODO(crbug.com/40743848): Set the members to null and mTabModelsInitialized to false.
-        // Right now, it breaks destruction of VrShell, which relies on using TabModel after
-        // its destruction.
-
-        if (mTabPersistentStore != null) {
+        if (mTabPersistentStore != null && !mTabPersistentStoreDestroyedEarly) {
             mTabPersistentStore.destroy();
         }
 
         if (mTabModelSelector != null) {
             mTabModelSelector.destroy();
         }
+
+        mTabModelsInitialized = false;
     }
 
     /**
@@ -286,6 +284,7 @@ public abstract class TabModelOrchestrator {
     }
 
     protected void markTabModelsInitialized() {
+        if (mIsDestroyed) return;
         mTabModelsInitialized = true;
     }
 }
