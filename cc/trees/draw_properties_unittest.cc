@@ -7086,10 +7086,6 @@ TEST_F(DrawPropertiesTest, LayerSkippingInSubtreeOfSingularTransform) {
 }
 
 TEST_F(DrawPropertiesTest, RenderSurfacePixelAlignment) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kRenderSurfacePixelAlignment);
-
   LayerImpl* root = root_layer();
   LayerImpl* parent = AddLayerInActiveTree<LayerImpl>();
   LayerImpl* child = AddLayerInActiveTree<LayerImpl>();

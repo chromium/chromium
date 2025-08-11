@@ -147,11 +147,6 @@ CC_BASE_EXPORT extern const base::FeatureParam<std::string>
 // Killswitch M135.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kAllowLCDTextWithFilter);
 
-// When enabled, for a render surface with fractional translation, we'll try to
-// align the texels in the render surface to screen pixels to avoid blurriness
-// during compositing.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kRenderSurfacePixelAlignment);
-
 // When enabled, and an image decode is requested by both a tile task and
 // explicitly via img.decode(), it will be decoded only once.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPreventDuplicateImageDecodes);

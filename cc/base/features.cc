@@ -153,10 +153,6 @@ BASE_FEATURE(kAllowLCDTextWithFilter,
              "AllowLCDTextWithFilter",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRenderSurfacePixelAlignment,
-             "RenderSurfacePixelAlignment",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPreventDuplicateImageDecodes,
              "PreventDuplicateImageDecodes",
              base::FEATURE_DISABLED_BY_DEFAULT);

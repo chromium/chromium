@@ -101,8 +101,7 @@ std::pair<gfx::Vector2dF, gfx::Size> PendingLayer::Bounds() const {
   // if scale rounding on the render surface doesn't apply).
   gfx::RectF bounds_with_ceiled_size(bounds_.origin(), gfx::SizeF(ceiled_size));
   gfx::Rect enclosing_bounds = gfx::ToEnclosingRect(bounds_);
-  if (base::FeatureList::IsEnabled(features::kRenderSurfacePixelAlignment) &&
-      rect_known_to_be_opaque_.Contains(bounds_with_ceiled_size) &&
+  if (rect_known_to_be_opaque_.Contains(bounds_with_ceiled_size) &&
       !rect_known_to_be_opaque_.Contains(gfx::RectF(enclosing_bounds))) {
     return {bounds_.OffsetFromOrigin(), ceiled_size};
   }

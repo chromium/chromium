@@ -674,23 +674,20 @@ void SetSurfaceDrawTransform(const PropertyTrees* property_trees,
   ConcatInverseSurfaceContentsScale(effect_node, &render_surface_transform);
 
   gfx::Vector2dF pixel_alignment_offset;
-  if (base::FeatureList::IsEnabled(features::kRenderSurfacePixelAlignment)) {
-    // Adjust render_surface_transform by applying the render target's pixel
-    // alignment before the transform, and de-applying this render surface's
-    // pixel alignment to align it to screen pixels.
-    render_surface_transform.PostTranslate(
-        render_surface->render_target()->pixel_alignment_offset());
-    if (effect_node->render_surface_reason !=
-            RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants &&
-        (base::FeatureList::IsEnabled(
-             features::kViewTransitionFloorTransform) ||
-         !effect_node->view_transition_element_resource_id.IsValid())) {
-      if (auto offset = draw_property_utils::PixelAlignmentOffset(
-              render_surface->screen_space_transform(),
-              render_surface_transform)) {
-        pixel_alignment_offset = *offset;
-        render_surface_transform.Translate(-pixel_alignment_offset);
-      }
+  // Adjust render_surface_transform by applying the render target's pixel
+  // alignment before the transform, and de-applying this render surface's
+  // pixel alignment to align it to screen pixels.
+  render_surface_transform.PostTranslate(
+      render_surface->render_target()->pixel_alignment_offset());
+  if (effect_node->render_surface_reason !=
+          RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants &&
+      (base::FeatureList::IsEnabled(features::kViewTransitionFloorTransform) ||
+       !effect_node->view_transition_element_resource_id.IsValid())) {
+    if (auto offset = draw_property_utils::PixelAlignmentOffset(
+            render_surface->screen_space_transform(),
+            render_surface_transform)) {
+      pixel_alignment_offset = *offset;
+      render_surface_transform.Translate(-pixel_alignment_offset);
     }
   }
   render_surface->SetDrawTransform(render_surface_transform,
@@ -1141,8 +1138,6 @@ void AdjustLayerDrawPropertiesForPixelAlignmentOffset(
   if (offset.IsZero()) {
     return;
   }
-
-  DCHECK(base::FeatureList::IsEnabled(features::kRenderSurfacePixelAlignment));
 
   // Apply the pixel alignment offset to all draw properties that are relative
   // to the render target's space.
