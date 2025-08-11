@@ -621,4 +621,10 @@ bool IsBookmarkTabGroupConversionEnabled() {
   return base::FeatureList::IsEnabled(kBookmarkTabGroupConversion);
 }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+BASE_FEATURE(kSessionRestoreInfobar,
+             "SessionRestoreInfobar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace features

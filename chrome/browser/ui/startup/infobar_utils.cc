@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/startup/test_third_party_cookie_phaseout_infobar_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -41,7 +42,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/pdf/infobar/pdf_infobar_controller.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -188,6 +188,13 @@ void AddInfoBarsIfNecessary(Browser* browser,
     if (auto* controller = g_browser_process->GetFeatures()
                                ->installer_downloader_controller()) {
       controller->MaybeShowInfoBar();
+    }
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    if (base::FeatureList::IsEnabled(features::kSessionRestoreInfobar)) {
+      // TODO(crbug.com/431828875): Instantiate and initialize the session
+      // restore controller.
     }
 #endif
 
