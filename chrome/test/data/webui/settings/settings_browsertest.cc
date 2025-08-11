@@ -1355,7 +1355,13 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, RestrictedEnabled) {
           "runMochaSuite('RestrictedEnabled')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, TopicsSubpage) {
+// TODO(crbug.com/437872601): Flaky on Linux bots.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_TopicsSubpage DISABLED_TopicsSubpage
+#else
+#define MAYBE_TopicsSubpage TopicsSubpage
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, MAYBE_TopicsSubpage) {
   RunTest("settings/privacy_sandbox_page_test.js",
           "runMochaSuite('TopicsSubpage')");
 }
