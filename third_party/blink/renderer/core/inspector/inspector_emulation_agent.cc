@@ -170,8 +170,10 @@ void InspectorEmulationAgent::Restore() {
     GetWebViewImpl()->GetDevToolsEmulator()->SetScrollbarsHidden(true);
   if (document_cookie_disabled_.Get())
     GetWebViewImpl()->GetDevToolsEmulator()->SetDocumentCookieDisabled(true);
-  setTouchEmulationEnabled(touch_event_emulation_enabled_.Get(),
-                           max_touch_points_.Get());
+  if (touch_event_emulation_enabled_.Get()) {
+    setTouchEmulationEnabled(touch_event_emulation_enabled_.Get(),
+                             max_touch_points_.Get());
+  }
   auto features =
       std::make_unique<protocol::Array<protocol::Emulation::MediaFeature>>();
   for (auto const& name : emulated_media_features_.Keys()) {
@@ -246,7 +248,9 @@ protocol::Response InspectorEmulationAgent::disable() {
   setScriptExecutionDisabled(false);
   setScrollbarsHidden(false);
   setDocumentCookieDisabled(false);
-  setTouchEmulationEnabled(false, std::nullopt);
+  if (touch_event_emulation_enabled_.Get()) {
+    setTouchEmulationEnabled(false, std::nullopt);
+  }
   setAutomationOverride(false);
   // Clear emulated media features. Note that the current approach
   // doesn't work well in cases where two clients have the same set of
