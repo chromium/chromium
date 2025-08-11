@@ -104,7 +104,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "skrifa"
   cargo_pkg_description = "Metadata reader and glyph scaler for OpenType fonts."
   cargo_pkg_repository = "https://github.com/googlefonts/fontations"
-  cargo_pkg_version = "0.33.1"
+  cargo_pkg_version = "0.33.2"
 
   allow_unsafe = false
 

@@ -186,6 +186,7 @@ docs/design
 docs/enterprise
 docs/experiments
 docs/gpu
+docs/imported
 docs/ios
 docs/linux
 docs/mac

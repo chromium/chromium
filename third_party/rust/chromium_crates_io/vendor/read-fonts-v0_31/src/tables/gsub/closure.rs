@@ -230,6 +230,8 @@ impl Gsub<'_> {
     }
 
     /// Return a set of lookups referenced by the specified features
+    ///
+    /// Pass `&IntSet::all()` to get the lookups referenced by all features.
     pub fn collect_lookups(&self, feature_indices: &IntSet<u16>) -> Result<IntSet<u16>, ReadError> {
         let feature_list = self.feature_list()?;
         let mut lookup_indices = feature_list.collect_lookups(feature_indices)?;

@@ -160,6 +160,10 @@ impl FeatureTableSubstitutionRecord {
     }
 }
 
+fn bit_storage(v: u32) -> u32 {
+    u32::BITS - v.leading_zeros()
+}
+
 impl<'a> CoverageTable<'a> {
     pub fn iter(&self) -> impl Iterator<Item = GlyphId16> + 'a {
         // all one expression so that we have a single return type
@@ -209,6 +213,14 @@ impl<'a> CoverageTable<'a> {
         match self {
             CoverageTable::Format1(sub) => sub.population(),
             CoverageTable::Format2(sub) => sub.population(),
+        }
+    }
+
+    /// Return the cost of looking up a glyph in this table
+    pub fn cost(&self) -> u32 {
+        match self {
+            CoverageTable::Format1(sub) => sub.cost(),
+            CoverageTable::Format2(sub) => sub.cost(),
         }
     }
 }
@@ -261,6 +273,11 @@ impl CoverageFormat1<'_> {
     /// Return the number of glyphs in this table
     pub fn population(&self) -> usize {
         self.glyph_count() as usize
+    }
+
+    /// Return the cost of looking up a glyph in this table
+    pub fn cost(&self) -> u32 {
+        bit_storage(self.glyph_count() as u32)
     }
 }
 
@@ -344,6 +361,11 @@ impl CoverageFormat2<'_> {
             .iter()
             .fold(0, |acc, record| acc + record.population())
     }
+
+    /// Return the cost of looking up a glyph in this table
+    pub fn cost(&self) -> u32 {
+        bit_storage(self.range_count() as u32)
+    }
 }
 
 impl RangeRecord {
@@ -424,6 +446,11 @@ impl<'a> ClassDefFormat1<'a> {
     /// Return the number of glyphs explicitly assigned to a class in this table
     pub fn population(&self) -> usize {
         self.glyph_count() as usize
+    }
+
+    /// Return the cost of looking up a glyph in this table
+    pub fn cost(&self) -> u32 {
+        1
     }
 
     /// Returns class values for the intersected glyphs of this table and input 'glyphs' set.
@@ -535,6 +562,11 @@ impl<'a> ClassDefFormat2<'a> {
         self.class_range_records()
             .iter()
             .fold(0, |acc, record| acc + record.population())
+    }
+
+    /// Return the cost of looking up a glyph in this table
+    pub fn cost(&self) -> u32 {
+        bit_storage(self.class_range_count() as u32)
     }
 
     /// Returns class values for the intersected glyphs of this table and input 'glyphs' set.
@@ -686,6 +718,14 @@ impl ClassDef<'_> {
         match self {
             ClassDef::Format1(table) => table.population(),
             ClassDef::Format2(table) => table.population(),
+        }
+    }
+
+    /// Return the cost of looking up a glyph in this table
+    pub fn cost(&self) -> u32 {
+        match self {
+            ClassDef::Format1(sub) => sub.cost(),
+            ClassDef::Format2(sub) => sub.cost(),
         }
     }
 
@@ -876,5 +916,18 @@ mod tests {
             device.iter().collect::<Vec<_>>(),
             &[1i8, -12, 30, -11, 101, 8, 42]
         );
+    }
+
+    #[test]
+    fn bit_storage_tests() {
+        assert_eq!(bit_storage(0), 0);
+        assert_eq!(bit_storage(1), 1);
+        assert_eq!(bit_storage(2), 2);
+        assert_eq!(bit_storage(4), 3);
+        assert_eq!(bit_storage(9), 4);
+        assert_eq!(bit_storage(0x123), 9);
+        assert_eq!(bit_storage(0x1234), 13);
+        assert_eq!(bit_storage(0xffff), 16);
+        assert_eq!(bit_storage(0xffff_ffff), 32);
     }
 }

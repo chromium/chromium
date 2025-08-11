@@ -199,34 +199,43 @@ impl<'a> Outlines<'a> {
         let charstring_data = charstrings.get(glyph_id.to_u32() as usize)?;
         let subrs = subfont.subrs(self)?;
         let blend_state = subfont.blend_state(self, coords)?;
+        let cs_eval = CharstringEvaluator {
+            cff_data,
+            charstrings,
+            global_subrs: self.global_subrs.clone(),
+            subrs,
+            blend_state,
+            charstring_data,
+        };
+        let is_scaled = subfont.scale.is_some();
         let mut pen_sink = PenSink::new(pen);
         let mut simplifying_adapter = NopFilteringSink::new(&mut pen_sink);
-        // Only apply hinting if we have a scale
-        if hint && subfont.scale.is_some() {
-            let mut hinting_adapter =
-                HintingSink::new(&subfont.hint_state, &mut simplifying_adapter);
-            charstring::evaluate(
-                cff_data,
-                charstrings,
-                self.global_subrs.clone(),
-                subrs,
-                blend_state,
-                charstring_data,
-                &mut hinting_adapter,
-            )?;
-            hinting_adapter.finish();
+        if let Some(matrix) = self.top_dict.font_matrix {
+            // Only apply hinting if we have a scale
+            if hint && is_scaled {
+                let mut transform_sink =
+                    HintedTransformingSink::new(&mut simplifying_adapter, matrix);
+                let mut hinting_adapter =
+                    HintingSink::new(&subfont.hint_state, &mut transform_sink);
+                cs_eval.evaluate(&mut hinting_adapter)?;
+                hinting_adapter.finish();
+            } else {
+                let mut transform_sink =
+                    ScalingTransformingSink::new(&mut simplifying_adapter, matrix, subfont.scale);
+                cs_eval.evaluate(&mut transform_sink)?;
+            }
         } else {
-            let mut scaling_adapter =
-                ScalingSink26Dot6::new(&mut simplifying_adapter, subfont.scale);
-            charstring::evaluate(
-                cff_data,
-                charstrings,
-                self.global_subrs.clone(),
-                subrs,
-                blend_state,
-                charstring_data,
-                &mut scaling_adapter,
-            )?;
+            // Only apply hinting if we have a scale
+            if hint && subfont.scale.is_some() {
+                let mut hinting_adapter =
+                    HintingSink::new(&subfont.hint_state, &mut simplifying_adapter);
+                cs_eval.evaluate(&mut hinting_adapter)?;
+                hinting_adapter.finish();
+            } else {
+                let mut scaling_adapter =
+                    ScalingSink26Dot6::new(&mut simplifying_adapter, subfont.scale);
+                cs_eval.evaluate(&mut scaling_adapter)?;
+            }
         }
         simplifying_adapter.finish();
         Ok(())
@@ -254,6 +263,29 @@ impl<'a> Outlines<'a> {
             Some(range.start as usize..range.end as usize)
         }
         .ok_or(Error::MissingPrivateDict)
+    }
+}
+
+struct CharstringEvaluator<'a> {
+    cff_data: &'a [u8],
+    charstrings: Index<'a>,
+    global_subrs: Index<'a>,
+    subrs: Option<Index<'a>>,
+    blend_state: Option<BlendState<'a>>,
+    charstring_data: &'a [u8],
+}
+
+impl CharstringEvaluator<'_> {
+    fn evaluate(self, sink: &mut impl CommandSink) -> Result<(), Error> {
+        charstring::evaluate(
+            self.cff_data,
+            self.charstrings,
+            self.global_subrs,
+            self.subrs,
+            self.blend_state,
+            self.charstring_data,
+            sink,
+        )
     }
 }
 
@@ -353,6 +385,7 @@ struct TopDict<'a> {
     font_dicts: Index<'a>,
     fd_select: Option<FdSelect<'a>>,
     private_dict_range: Range<u32>,
+    font_matrix: Option<[Fixed; 6]>,
     var_store: Option<ItemVariationStore<'a>>,
 }
 
@@ -376,6 +409,9 @@ impl<'a> TopDict<'a> {
                 }
                 dict::Entry::PrivateDictRange(range) => {
                     items.private_dict_range = range.start as u32..range.end as u32;
+                }
+                dict::Entry::FontMatrix(matrix) => {
+                    items.font_matrix = Some(matrix);
                 }
                 dict::Entry::VariationStoreOffset(offset) if is_cff2 => {
                     // IVS is preceded by a 2 byte length, but ensure that
@@ -431,6 +467,181 @@ where
     }
 }
 
+fn transform(matrix: &[Fixed; 6], x: Fixed, y: Fixed) -> (Fixed, Fixed) {
+    (
+        matrix[0] * x + matrix[2] * y + matrix[4],
+        matrix[1] * x + matrix[3] * y + matrix[5],
+    )
+}
+
+/// Command sink adapter that applies a transform to hinted coordinates.
+struct HintedTransformingSink<'a, S> {
+    inner: &'a mut S,
+    matrix: [Fixed; 6],
+}
+
+impl<'a, S> HintedTransformingSink<'a, S> {
+    fn new(sink: &'a mut S, matrix: [Fixed; 6]) -> Self {
+        Self {
+            inner: sink,
+            matrix,
+        }
+    }
+
+    fn transform(&self, x: Fixed, y: Fixed) -> (Fixed, Fixed) {
+        // FreeType applies the transform to 26.6 values but we maintain
+        // values in 16.16 so convert, transform and then convert back
+        let (x, y) = transform(
+            &self.matrix,
+            Fixed::from_bits(x.to_bits() >> 10),
+            Fixed::from_bits(y.to_bits() >> 10),
+        );
+        (
+            Fixed::from_bits(x.to_bits() << 10),
+            Fixed::from_bits(y.to_bits() << 10),
+        )
+    }
+}
+
+impl<S: CommandSink> CommandSink for HintedTransformingSink<'_, S> {
+    fn hstem(&mut self, y: Fixed, dy: Fixed) {
+        self.inner.hstem(y, dy);
+    }
+
+    fn vstem(&mut self, x: Fixed, dx: Fixed) {
+        self.inner.vstem(x, dx);
+    }
+
+    fn hint_mask(&mut self, mask: &[u8]) {
+        self.inner.hint_mask(mask);
+    }
+
+    fn counter_mask(&mut self, mask: &[u8]) {
+        self.inner.counter_mask(mask);
+    }
+
+    fn move_to(&mut self, x: Fixed, y: Fixed) {
+        let (x, y) = self.transform(x, y);
+        self.inner.move_to(x, y);
+    }
+
+    fn line_to(&mut self, x: Fixed, y: Fixed) {
+        let (x, y) = self.transform(x, y);
+        self.inner.line_to(x, y);
+    }
+
+    fn curve_to(&mut self, cx1: Fixed, cy1: Fixed, cx2: Fixed, cy2: Fixed, x: Fixed, y: Fixed) {
+        let (cx1, cy1) = self.transform(cx1, cy1);
+        let (cx2, cy2) = self.transform(cx2, cy2);
+        let (x, y) = self.transform(x, y);
+        self.inner.curve_to(cx1, cy1, cx2, cy2, x, y);
+    }
+
+    fn close(&mut self) {
+        self.inner.close();
+    }
+}
+
+// Used for scaling sinks below
+const ONE_OVER_64: Fixed = Fixed::from_bits(0x400);
+
+/// Command sink adapter that applies both a transform and a scaling
+/// factor.
+struct ScalingTransformingSink<'a, S> {
+    inner: &'a mut S,
+    matrix: [Fixed; 6],
+    scale: Option<Fixed>,
+}
+
+impl<'a, S> ScalingTransformingSink<'a, S> {
+    fn new(sink: &'a mut S, matrix: [Fixed; 6], scale: Option<Fixed>) -> Self {
+        Self {
+            inner: sink,
+            matrix,
+            scale,
+        }
+    }
+
+    fn transform(&self, x: Fixed, y: Fixed) -> (Fixed, Fixed) {
+        // The following dance is necessary to exactly match FreeType's
+        // application of scaling factors. This seems to be the result
+        // of merging the contributed Adobe code while not breaking the
+        // FreeType public API.
+        //
+        // The first two steps apply to both scaled and unscaled outlines:
+        //
+        // 1. Multiply by 1/64
+        // <https://gitlab.freedesktop.org/freetype/freetype/-/blob/80a507a6b8e3d2906ad2c8ba69329bd2fb2a85ef/src/psaux/psft.c#L284>
+        let ax = x * ONE_OVER_64;
+        let ay = y * ONE_OVER_64;
+        // 2. Truncate the bottom 10 bits. Combined with the division by 64,
+        // converts to font units.
+        // <https://gitlab.freedesktop.org/freetype/freetype/-/blob/80a507a6b8e3d2906ad2c8ba69329bd2fb2a85ef/src/psaux/psobjs.c#L2219>
+        let bx = Fixed::from_bits(ax.to_bits() >> 10);
+        let by = Fixed::from_bits(ay.to_bits() >> 10);
+        // 3. Apply the transform. It must be done here to match FreeType.
+        let (cx, cy) = transform(&self.matrix, bx, by);
+        if let Some(scale) = self.scale {
+            // Scaled case:
+            // 4. Multiply by the original scale factor (to 26.6)
+            // <https://gitlab.freedesktop.org/freetype/freetype/-/blob/80a507a6b8e3d2906ad2c8ba69329bd2fb2a85ef/src/cff/cffgload.c#L721>
+            let dx = cx * scale;
+            let dy = cy * scale;
+            // 5. Convert from 26.6 to 16.16
+            (
+                Fixed::from_bits(dx.to_bits() << 10),
+                Fixed::from_bits(dy.to_bits() << 10),
+            )
+        } else {
+            // Unscaled case:
+            // 4. Convert from integer to 16.16
+            (
+                Fixed::from_bits(cx.to_bits() << 16),
+                Fixed::from_bits(cy.to_bits() << 16),
+            )
+        }
+    }
+}
+
+impl<S: CommandSink> CommandSink for ScalingTransformingSink<'_, S> {
+    fn hstem(&mut self, y: Fixed, dy: Fixed) {
+        self.inner.hstem(y, dy);
+    }
+
+    fn vstem(&mut self, x: Fixed, dx: Fixed) {
+        self.inner.vstem(x, dx);
+    }
+
+    fn hint_mask(&mut self, mask: &[u8]) {
+        self.inner.hint_mask(mask);
+    }
+
+    fn counter_mask(&mut self, mask: &[u8]) {
+        self.inner.counter_mask(mask);
+    }
+
+    fn move_to(&mut self, x: Fixed, y: Fixed) {
+        let (x, y) = self.transform(x, y);
+        self.inner.move_to(x, y);
+    }
+
+    fn line_to(&mut self, x: Fixed, y: Fixed) {
+        let (x, y) = self.transform(x, y);
+        self.inner.line_to(x, y);
+    }
+
+    fn curve_to(&mut self, cx1: Fixed, cy1: Fixed, cx2: Fixed, cy2: Fixed, x: Fixed, y: Fixed) {
+        let (cx1, cy1) = self.transform(cx1, cy1);
+        let (cx2, cy2) = self.transform(cx2, cy2);
+        let (x, y) = self.transform(x, y);
+        self.inner.curve_to(cx1, cy1, cx2, cy2, x, y);
+    }
+
+    fn close(&mut self) {
+        self.inner.close();
+    }
+}
+
 /// Command sink adapter that applies a scaling factor.
 ///
 /// This assumes a 26.6 scaling factor packed into a Fixed and thus,
@@ -456,7 +667,7 @@ impl<'a, S> ScalingSink26Dot6<'a, S> {
         //
         // 1. Multiply by 1/64
         // <https://gitlab.freedesktop.org/freetype/freetype/-/blob/80a507a6b8e3d2906ad2c8ba69329bd2fb2a85ef/src/psaux/psft.c#L284>
-        let a = coord * Fixed::from_bits(0x0400);
+        let a = coord * ONE_OVER_64;
         // 2. Truncate the bottom 10 bits. Combined with the division by 64,
         // converts to font units.
         // <https://gitlab.freedesktop.org/freetype/freetype/-/blob/80a507a6b8e3d2906ad2c8ba69329bd2fb2a85ef/src/psaux/psobjs.c#L2219>
@@ -570,7 +781,6 @@ where
                         self.inner.move_to(x, y);
                         self.start = Some((x, y));
                     }
-                    return;
                 }
                 PendingElement::Line([x, y]) => {
                     if !for_close || self.start != Some((x, y)) {
@@ -915,5 +1125,58 @@ mod tests {
         // that we have a path to represent each by checking for two closepath
         // commands.
         assert_eq!(pen.to_string().chars().filter(|ch| *ch == 'Z').count(), 2);
+    }
+
+    const TRANSFORM: [Fixed; 6] = [
+        Fixed::ONE,
+        Fixed::ZERO,
+        // 0.167007446289062
+        Fixed::from_bits(10945),
+        Fixed::ONE,
+        Fixed::ZERO,
+        Fixed::ZERO,
+    ];
+
+    #[test]
+    fn hinted_transform_sink() {
+        // A few points taken from the test font in <https://github.com/googlefonts/fontations/issues/1581>
+        // Inputs and expected values extracted from FreeType
+        let input = [(383i32, 117i32), (450, 20), (555, -34), (683, -34)]
+            .map(|(x, y)| (Fixed::from_bits(x << 10), Fixed::from_bits(y << 10)));
+        let expected = [(403, 117i32), (453, 20), (549, -34), (677, -34)]
+            .map(|(x, y)| (Fixed::from_bits(x << 10), Fixed::from_bits(y << 10)));
+        let mut dummy = ();
+        let sink = HintedTransformingSink::new(&mut dummy, TRANSFORM);
+        let transformed = input.map(|(x, y)| sink.transform(x, y));
+        assert_eq!(transformed, expected);
+    }
+
+    #[test]
+    fn unhinted_scaled_transform_sink() {
+        // A few points taken from the test font in <https://github.com/googlefonts/fontations/issues/1581>
+        // Inputs and expected values extracted from FreeType
+        let input = [(150i32, 46i32), (176, 8), (217, -13), (267, -13)]
+            .map(|(x, y)| (Fixed::from_bits(x << 16), Fixed::from_bits(y << 16)));
+        let expected = [(404, 118i32), (453, 20), (550, -33), (678, -33)]
+            .map(|(x, y)| (Fixed::from_bits(x << 10), Fixed::from_bits(y << 10)));
+        let mut dummy = ();
+        let sink =
+            ScalingTransformingSink::new(&mut dummy, TRANSFORM, Some(Fixed::from_bits(167772)));
+        let transformed = input.map(|(x, y)| sink.transform(x, y));
+        assert_eq!(transformed, expected);
+    }
+
+    #[test]
+    fn unhinted_unscaled_transform_sink() {
+        // A few points taken from the test font in <https://github.com/googlefonts/fontations/issues/1581>
+        // Inputs and expected values extracted from FreeType
+        let input = [(150i32, 46i32), (176, 8), (217, -13), (267, -13)]
+            .map(|(x, y)| (Fixed::from_bits(x << 16), Fixed::from_bits(y << 16)));
+        let expected = [(158, 46i32), (177, 8), (215, -13), (265, -13)]
+            .map(|(x, y)| (Fixed::from_bits(x << 16), Fixed::from_bits(y << 16)));
+        let mut dummy = ();
+        let sink = ScalingTransformingSink::new(&mut dummy, TRANSFORM, None);
+        let transformed = input.map(|(x, y)| sink.transform(x, y));
+        assert_eq!(transformed, expected);
     }
 }
