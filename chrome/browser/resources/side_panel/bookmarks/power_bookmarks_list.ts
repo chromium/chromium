@@ -508,6 +508,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
 
   onBookmarkRemoved(bookmark: BookmarksTreeNode) {
     const scrollTop = this.$.bookmarks.scrollTop;
+    this.updateDisplayLists_();
     const isShown = this.bookmarkIsShowing_(bookmark);
     if (isShown) {
       this.removeNodeFromDisplayLists_(bookmark.id);

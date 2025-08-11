@@ -513,6 +513,43 @@ suite('General', () => {
       assertEquals(2, getBookmarksInList(powerBookmarksList, 0).length);
       assertEquals(4, getBookmarksInList(powerBookmarksList, 1).length);
     });
+
+    test('AddRemoveAddRemove', async () => {
+      const addTabButton = getAddTabButton();
+      assertFalse(addTabButton.disabled);
+
+      const newBookmark = {
+        id: '999',
+        title: 'New bookmark of current url',
+        index: 0,
+        parentId: FOLDERS[1]!.id,
+        url: powerBookmarksList.getCurrentUrlForTesting()!,
+        children: null,
+        dateAdded: null,
+        dateLastUsed: null,
+        unmodifiable: false,
+      };
+
+      // Add a bookmark for the current URL.
+      bookmarksApi.callbackRouterRemote.onBookmarkNodeAdded(newBookmark);
+      await flushTasks();
+      assertTrue(addTabButton.disabled);
+
+      // Remove the bookmark.
+      bookmarksApi.callbackRouterRemote.onBookmarkNodesRemoved(['999']);
+      await flushTasks();
+      assertFalse(addTabButton.disabled);
+
+      // Undo the removal.
+      bookmarksApi.callbackRouterRemote.onBookmarkNodeAdded(newBookmark);
+      await flushTasks();
+      assertTrue(addTabButton.disabled);
+
+      // Remove the bookmark again.
+      bookmarksApi.callbackRouterRemote.onBookmarkNodesRemoved(['999']);
+      await flushTasks();
+      assertFalse(addTabButton.disabled);
+    });
   });
 
   suite('Part2', function() {
