@@ -1533,6 +1533,7 @@ interface CountQueuingStrategy
 interface CrashReportStorage
     attribute @@toStringTag
     method constructor
+    method initialize
     method remove
     method set
 interface CreateMonitor : EventTarget

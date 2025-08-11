@@ -10955,10 +10955,45 @@ void RenderFrameHostImpl::RecordWindowProxyUsageMetrics(
       .Record(ukm::UkmRecorder::Get());
 }
 
+void RenderFrameHostImpl::InitializeCrashReportStorage(
+    uint64_t length,
+    InitializeCrashReportStorageCallback callback) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kCrashReportingStorageAPI)) {
+    mojo::ReportBadMessage("kCrashReportingStorageAPI feature must be enabled");
+    return;
+  }
+
+  if (length > blink::mojom::kMaxCrashReportStorageSize) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFH_CRASH_REPORT_STORAGE_SIZE_TOO_LARGE);
+    return;
+  }
+
+  // A renderer process must not try and create and initialize its crash report
+  // memory more than once. For now, this "initilization" is trivial since the
+  // backing memory is a `std::map`, but in the future when the backing memory
+  // might be a shared memory buffer, this becomes more important. See
+  // `CrashReportStorage::initialize()`.
+  if (crash_storage_requested_length_) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(),
+        bad_message::RFH_CRASH_REPORT_STORAGE_ALREADY_INITIALIZED);
+    return;
+  }
+
+  crash_storage_requested_length_ = length;
+  std::move(callback).Run();
+}
+
 void RenderFrameHostImpl::SetCrashReportStorageKey(
     const std::string& key,
     const std::string& value,
     SetCrashReportStorageKeyCallback callback) {
+  if (!crash_storage_requested_length_) {
+    mojo::ReportBadMessage("Must call InitializeCrashReportStorage() first");
+  }
+
   crash_storage_map_.insert(std::make_pair(key, value));
   std::move(callback).Run();
 }
@@ -10966,6 +11001,10 @@ void RenderFrameHostImpl::SetCrashReportStorageKey(
 void RenderFrameHostImpl::RemoveCrashReportStorageKey(
     const std::string& key,
     RemoveCrashReportStorageKeyCallback callback) {
+  if (!crash_storage_requested_length_) {
+    mojo::ReportBadMessage("Must call InitializeCrashReportStorage() first");
+  }
+
   crash_storage_map_.erase(key);
   std::move(callback).Run();
 }

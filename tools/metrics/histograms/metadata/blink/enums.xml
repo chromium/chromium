@@ -8375,6 +8375,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="373" label="DRAFT_IncomingCallNotifications"/>
   <int value="374" label="Popover"/>
   <int value="375" label="DRAFT_WebInstallAPI"/>
+  <int value="380" label="CrashReportStorageAPIInitialize"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

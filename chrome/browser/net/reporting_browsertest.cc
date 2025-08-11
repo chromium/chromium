@@ -751,11 +751,16 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestCrashReportingStorage,
   // Use the crash reporting storage API, to collect some data about the current
   // page. In this case, just the current origin and a custom key, to verify
   // they come out on the other end of the crash report.
-  EXPECT_TRUE(ExecJs(contents->GetPrimaryMainFrame(),
-                     "crashReport.set('self.origin', self.origin + "
-                     "'/');crashReport.set('custom_key', 'custom_value')"));
-  EXPECT_TRUE(ExecJs(contents->GetPrimaryMainFrame(),
-                     "crashReport.remove('custom_key')"));
+  EXPECT_TRUE(content::EvalJs(contents->GetPrimaryMainFrame(), R"(
+    (async () => {
+      await crashReport.initialize(1024);
+      crashReport.set('self.origin', self.origin + '/');
+      crashReport.set('outer_height', window.outerHeight);
+      crashReport.set('custom_key', 'custom_value');
+      crashReport.remove('custom_key');
+    })();
+  )")
+                  .is_ok());
 
   // Simulate the page being killed due to being unresponsive.
   content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
