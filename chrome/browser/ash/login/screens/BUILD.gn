@@ -21,8 +21,6 @@ static_library("screens") {
     "app_launch_splash_screen.h",
     "arc_vm_data_migration_screen.cc",
     "arc_vm_data_migration_screen.h",
-    "assistant_optin_flow_screen.cc",
-    "assistant_optin_flow_screen.h",
     "base_screen.cc",
     "base_screen.h",
     "categories_selection_screen.cc",

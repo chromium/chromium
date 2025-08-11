@@ -226,7 +226,6 @@
     "channel": "stable",
     "contexts": ["webui"],
     "matches": [
-      "chrome://assistant-optin/*",
       "chrome://add-supervision/*",
       "chrome://chrome-signin/*",
       "chrome://glic/*",

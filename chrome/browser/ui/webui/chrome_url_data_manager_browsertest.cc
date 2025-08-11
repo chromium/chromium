@@ -456,7 +456,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://add-supervision/",
     "chrome://app-disabled",
     "chrome://camera-app/views/main.html",
-    "chrome://assistant-optin/",
     "chrome://bluetooth-pairing",
     "chrome://certificate-manager/",
 
