@@ -943,6 +943,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "autofill-manual-testing-data",
+    "owners": ["fleimgruber@google.com", "chrome-autofill@google.com"],
+    "expiry_milestone": 146
+  },
+  {
     "name": "autofill-more-prominent-popup",
     "owners": [
       "vykochko@google.com",

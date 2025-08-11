@@ -15,6 +15,7 @@ source_set("flags") {
   deps = [
     ":system_flags",
     "//base",
+    "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/common",

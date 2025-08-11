@@ -562,6 +562,9 @@ extern const char kAutofillRequireCvcForPossibleCardUpdateDescription[];
 extern const char kAutofillSharedStorageServerCardDataName[];
 extern const char kAutofillSharedStorageServerCardDataDescription[];
 
+extern const char kAutofillManualTestingDataName[];
+extern const char kAutofillManualTestingDataDescription[];
+
 extern const char kAutofillMoreProminentPopupName[];
 extern const char kAutofillMoreProminentPopupDescription[];
 
