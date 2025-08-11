@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.blink_public.common.ContextMenuDataMediaFlags;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
@@ -81,6 +82,7 @@ public class ContextMenuHeaderMediatorTest {
                         0,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
                         url,
                         GURL.emptyGURL(),
                         "",
@@ -130,6 +132,7 @@ public class ContextMenuHeaderMediatorTest {
                         0,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.VIDEO,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
                         GURL.emptyGURL(),
                         GURL.emptyGURL(),
                         "",
@@ -172,6 +175,7 @@ public class ContextMenuHeaderMediatorTest {
                         0,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.FILE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
                         GURL.emptyGURL(),
                         linkUrl,
                         JUnitTestGURLs.URL_1.getSpec(),
@@ -417,6 +421,7 @@ public class ContextMenuHeaderMediatorTest {
                         0,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
                         GURL.emptyGURL(),
                         GURL.emptyGURL(),
                         "",

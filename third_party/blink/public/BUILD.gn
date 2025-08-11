@@ -83,6 +83,7 @@ buildflag_header("buildflags") {
 if (is_android) {
   java_cpp_enum("blink_headers_java_enums_srcjar") {
     sources = [
+      "./common/context_menu_data/context_menu_data.h",
       "./common/input/web_input_event.h",
       "./mojom/context_menu/context_menu.mojom",
       "./mojom/input/input_handler.mojom",

@@ -62,6 +62,8 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Manual;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.blink_public.common.ContextMenuDataMediaFlags;
+import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.download.DownloadTestRule;
 import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
@@ -1141,7 +1143,8 @@ public class ContextMenuTest {
                 new ContextMenuParams(
                         0,
                         mMenuModelBridge,
-                        0,
+                        ContextMenuDataMediaType.NONE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
                         new GURL("http://example.com/"),
                         GURL.emptyGURL(),
                         "",

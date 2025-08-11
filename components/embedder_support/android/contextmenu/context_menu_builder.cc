@@ -60,6 +60,7 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
           env, reinterpret_cast<intptr_t>(&params),
           menu_model_bridge->GetJavaObject(),
           static_cast<int>(params.media_type),
+          static_cast<int>(params.media_flags),
           url::GURLAndroid::FromNativeGURL(env, params.page_url),
           url::GURLAndroid::FromNativeGURL(env, params.link_url),
           ConvertUTF16ToJavaString(env, params.link_text),

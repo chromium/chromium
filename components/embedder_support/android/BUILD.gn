@@ -351,6 +351,7 @@ robolectric_library("junit_test_support") {
 
 robolectric_library("components_embedder_support_junit_tests") {
   sources = [
+    "junit/src/org/chromium/components/embedder_support/contextmenu/ContextMenuParamsUnitTest.java",
     "junit/src/org/chromium/components/embedder_support/contextmenu/ContextMenuUtilsUnitTest.java",
     "junit/src/org/chromium/components/embedder_support/util/OriginTest.java",
     "junit/src/org/chromium/components/embedder_support/view/ContentViewTest.java",

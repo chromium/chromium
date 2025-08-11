@@ -65,6 +65,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.blink_public.common.ContextMenuDataMediaFlags;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuSwitches;
@@ -606,6 +607,7 @@ public class ContextMenuTest extends AwParameterizedTest {
                         /* nativePtr= */ 0,
                         new MenuModelBridge(),
                         ContextMenuDataMediaType.NONE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
                         /* pageUrl= */ GURL.emptyGURL(),
                         /* linkUrl= */ GURL.emptyGURL(),
                         /* linkText= */ "Test Link Text",
@@ -896,6 +898,7 @@ public class ContextMenuTest extends AwParameterizedTest {
                 0,
                 new MenuModelBridge(),
                 mediaType,
+                ContextMenuDataMediaFlags.MEDIA_NONE,
                 mPageUrl,
                 linkUrl ? new GURL("http://www.example.com/other_example") : GURL.emptyGURL(),
                 linkText,
