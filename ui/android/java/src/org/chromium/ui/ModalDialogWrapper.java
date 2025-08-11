@@ -81,6 +81,27 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
     }
 
     @CalledByNative
+    private void withMenuItems(Bitmap[] icons, String[] texts) {
+        if (mContext == null) return;
+        assert icons.length == texts.length
+                : "Menu item icons and texts must have the same length.";
+
+        ArrayList<ModalDialogProperties.ModalDialogMenuItem> menuItems = new ArrayList<>();
+        for (int i = 0; i < icons.length; i++) {
+            final int index = i;
+            Drawable iconDrawable = new BitmapDrawable(mContext.getResources(), icons[i]);
+            Runnable callback =
+                    () -> {
+                        ModalDialogWrapperJni.get().menuItemClicked(mNativeDelegatePtr, index);
+                    };
+            menuItems.add(
+                    new ModalDialogProperties.ModalDialogMenuItem(
+                            iconDrawable, texts[i], callback));
+        }
+        mPropertyModelBuilder.with(ModalDialogProperties.MENU_ITEMS, menuItems);
+    }
+
+    @CalledByNative
     private void withCheckbox(String text, boolean isChecked) {
         mPropertyModelBuilder.with(ModalDialogProperties.CHECKBOX_TEXT, text);
         mPropertyModelBuilder.with(ModalDialogProperties.CHECKBOX_CHECKED, isChecked);
@@ -124,6 +145,8 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
         void negativeButtonClicked(long nativeModalDialogWrapper);
 
         void checkboxToggled(long nativeModalDialogWrapper, boolean isChecked);
+
+        void menuItemClicked(long nativeModalDialogWrapper, int index);
 
         void dismissed(long nativeModalDialogWrapper);
 

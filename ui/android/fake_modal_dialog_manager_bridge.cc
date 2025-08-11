@@ -64,10 +64,48 @@ FakeModalDialogManagerBridge::GetMessageParagraphs() {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto java_paragraphs =
       Java_FakeModalDialogManager_getMessageParagraphs(env, j_fake_manager_);
-  auto paragraphs = std::make_unique<std::vector<std::u16string>>();
+  auto paragraphs = std::vector<std::u16string>();
   base::android::AppendJavaStringArrayToStringVector(env, java_paragraphs,
-                                                     paragraphs.get());
-  return *paragraphs;
+                                                     &paragraphs);
+  return paragraphs;
+}
+
+std::vector<std::u16string> FakeModalDialogManagerBridge::GetMenuItemTexts() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto java_texts =
+      Java_FakeModalDialogManager_getMenuItemTexts(env, j_fake_manager_);
+  auto texts = std::vector<std::u16string>();
+  base::android::AppendJavaStringArrayToStringVector(env, java_texts, &texts);
+  return texts;
+}
+
+void FakeModalDialogManagerBridge::ClickMenuItem(int index) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_FakeModalDialogManager_clickMenuItem(env, j_fake_manager_, index);
+}
+
+std::vector<SkBitmap> FakeModalDialogManagerBridge::GetMenuItemIcons() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobjectArray> java_icons =
+      Java_FakeModalDialogManager_getMenuItemIcons(env, j_fake_manager_);
+
+  std::vector<SkBitmap> icons;
+  if (java_icons) {
+    size_t len = base::android::SafeGetArrayLength(env, java_icons);
+    icons.reserve(len);
+    for (size_t i = 0; i < len; ++i) {
+      base::android::ScopedJavaLocalRef<jobject> java_bitmap =
+          base::android::ScopedJavaLocalRef<jobject>::Adopt(
+              env, env->GetObjectArrayElement(java_icons.obj(), i));
+      if (java_bitmap) {
+        icons.push_back(
+            gfx::CreateSkBitmapFromJavaBitmap(gfx::JavaBitmap(java_bitmap)));
+      } else {
+        icons.emplace_back();
+      }
+    }
+  }
+  return icons;
 }
 
 SkBitmap FakeModalDialogManagerBridge::GetTitleIcon() {

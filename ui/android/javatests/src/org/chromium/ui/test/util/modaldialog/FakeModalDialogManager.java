@@ -20,6 +20,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
+
 /**
  * A fake ModalDialogManager for use in tests involving modals. Unlike ModalDialogManager, this
  * class is managed by its native `FakeModalDialogManagerBridge`.
@@ -121,6 +123,42 @@ public class FakeModalDialogManager extends ModalDialogManager {
             return ((BitmapDrawable) icon).getBitmap();
         }
         return null;
+    }
+
+    @CalledByNativeForTesting
+    public void clickMenuItem(int index) {
+        mShownDialogModel.get(ModalDialogProperties.MENU_ITEMS).get(index).getCallback().run();
+    }
+
+    @CalledByNativeForTesting
+    public String[] getMenuItemTexts() {
+        ArrayList<ModalDialogProperties.ModalDialogMenuItem> items =
+                mShownDialogModel.get(ModalDialogProperties.MENU_ITEMS);
+        if (items == null) {
+            return new String[0];
+        }
+        return items.stream()
+                .map(ModalDialogProperties.ModalDialogMenuItem::getText)
+                .toArray(String[]::new);
+    }
+
+    @CalledByNativeForTesting
+    public Bitmap[] getMenuItemIcons() {
+        ArrayList<ModalDialogProperties.ModalDialogMenuItem> items =
+                mShownDialogModel.get(ModalDialogProperties.MENU_ITEMS);
+        if (items == null) {
+            return new Bitmap[0];
+        }
+        return items.stream()
+                .map(
+                        item -> {
+                            Drawable icon = item.getIcon();
+                            if (icon instanceof BitmapDrawable) {
+                                return ((BitmapDrawable) icon).getBitmap();
+                            }
+                            return null;
+                        })
+                .toArray(Bitmap[]::new);
     }
 
     public PropertyModel getShownDialogModel() {

@@ -31,6 +31,41 @@ namespace ui {
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCheckboxId);
+// Icons used in tests below.
+constexpr int kIconDim = 24;
+const gfx::PathElement kTestIconPath[] = {
+    // A 16x16 canvas.
+    gfx::CANVAS_DIMENSIONS,
+    16,
+    // A square path.
+    gfx::MOVE_TO,
+    0,
+    0,
+    gfx::LINE_TO,
+    16,
+    0,
+    gfx::LINE_TO,
+    16,
+    16,
+    gfx::LINE_TO,
+    0,
+    16,
+    gfx::CLOSE,
+};
+const gfx::VectorIconRep kTestIconReps[] = {
+    {.path = kTestIconPath},
+};
+const gfx::VectorIcon kTestIcon(kTestIconReps,
+                                std::size(kTestIconReps),
+                                "test_icon");
+
+ui::ImageModel CreateBitmapImage(SkColor color) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kIconDim, kIconDim);
+  bitmap.eraseColor(color);
+  return ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(bitmap));
+}
+
 }  // namespace
 
 class ModalDialogWrapperTest : public testing::Test {
@@ -86,6 +121,20 @@ class ModalDialogWrapperTest : public testing::Test {
       return *this;
     }
 
+    DialogModelBuilder& AddMenuItem(ui::ImageModel icon,
+                                    const std::u16string& label) {
+      menu_items_.emplace_back(std::move(icon), label, base::DoNothing());
+      return *this;
+    }
+
+    DialogModelBuilder& AddMenuItemWithCallback(
+        ui::ImageModel icon,
+        const std::u16string& label,
+        base::RepeatingClosure callback) {
+      menu_items_.emplace_back(std::move(icon), label, std::move(callback));
+      return *this;
+    }
+
     std::unique_ptr<ui::DialogModel> Build() {
       ui::DialogModel::Builder dialog_builder;
       dialog_builder.SetTitle(u"title");
@@ -96,6 +145,14 @@ class ModalDialogWrapperTest : public testing::Test {
 
       for (const auto& paragraph_text : paragraphs_) {
         dialog_builder.AddParagraph(ui::DialogModelLabel(paragraph_text));
+      }
+
+      for (auto& item : menu_items_) {
+        dialog_builder.AddMenuItem(
+            std::move(std::get<0>(item)), std::get<1>(item),
+            base::BindRepeating([](base::RepeatingClosure callback,
+                                   int event_flags) { callback.Run(); },
+                                std::move(std::get<2>(item))));
       }
 
       if (has_checkbox_) {
@@ -145,6 +202,9 @@ class ModalDialogWrapperTest : public testing::Test {
     base::OnceClosure close_callback_ = base::DoNothing();
     std::optional<mojom::DialogButton> override_button_;
     std::vector<std::u16string> paragraphs_ = {u"paragraph"};
+    std::vector<
+        std::tuple<ui::ImageModel, std::u16string, base::RepeatingClosure>>
+        menu_items_;
 
     bool has_checkbox_ = false;
     bool checkbox_is_checked_ = false;
@@ -397,34 +457,7 @@ TEST_F(ModalDialogWrapperTest, Checkbox_StateSynchronizedAfterToggle) {
       dialog_model_ptr->GetCheckboxByUniqueId(kCheckboxId)->is_checked());
 }
 
-TEST_F(ModalDialogWrapperTest, ShowsVectorIcon) {
-  constexpr int kIconDim = 24;
-  const gfx::PathElement kTestIconPath[] = {
-      // A 16x16 canvas.
-      gfx::CANVAS_DIMENSIONS,
-      16,
-      // A square path.
-      gfx::MOVE_TO,
-      0,
-      0,
-      gfx::LINE_TO,
-      16,
-      0,
-      gfx::LINE_TO,
-      16,
-      16,
-      gfx::LINE_TO,
-      0,
-      16,
-      gfx::CLOSE,
-  };
-
-  const gfx::VectorIconRep kTestIconReps[] = {
-      {.path = kTestIconPath},
-  };
-
-  const gfx::VectorIcon kTestIcon(kTestIconReps, std::size(kTestIconReps),
-                                  "test_icon");
+TEST_F(ModalDialogWrapperTest, TitleIcon_ShowsVectorIcon) {
   auto icon =
       ui::ImageModel::FromVectorIcon(kTestIcon, SK_ColorBLACK, kIconDim);
 
@@ -444,11 +477,11 @@ TEST_F(ModalDialogWrapperTest, ShowsVectorIcon) {
   EXPECT_FALSE(dialog_destroyed_);
 }
 
-TEST_F(ModalDialogWrapperTest, ShowsGfxImage) {
-  SkBitmap expected_bitmap;
-  expected_bitmap.allocN32Pixels(24, 24);
-  auto gfx_image = gfx::Image::CreateFrom1xBitmap(expected_bitmap);
-  auto icon = ui::ImageModel::FromImage(gfx_image);
+TEST_F(ModalDialogWrapperTest, TitleIcon_ShowsGfxImage) {
+  auto icon = CreateBitmapImage(SK_ColorGREEN);
+  ui::ColorProvider color_provider;
+  color_provider.GenerateColorMapForTesting();
+  const SkBitmap expected_bitmap = *icon.Rasterize(&color_provider).bitmap();
 
   auto dialog_model =
       DialogModelBuilder(&dialog_destroyed_).WithIcon(std::move(icon)).Build();
@@ -459,6 +492,86 @@ TEST_F(ModalDialogWrapperTest, ShowsGfxImage) {
 
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(expected_bitmap, actual_bitmap));
   EXPECT_FALSE(dialog_destroyed_);
+}
+
+TEST_F(ModalDialogWrapperTest, ShowsMenuItems) {
+  // --- Item 1: SkBitmap-based ---
+  auto icon1 = CreateBitmapImage(SK_ColorRED);
+  ui::ColorProvider color_provider;
+  color_provider.GenerateColorMapForTesting();
+  const SkBitmap expected_bitmap1 = *icon1.Rasterize(&color_provider).bitmap();
+  const std::u16string label1 = u"Red Bitmap Item";
+
+  // --- Item 2: VectorIcon-based ---
+  auto icon2 =
+      ui::ImageModel::FromVectorIcon(kTestIcon, SK_ColorBLUE, kIconDim);
+  const SkBitmap expected_bitmap2 = *icon2.Rasterize(&color_provider).bitmap();
+  const std::u16string label2 = u"Blue Vector Item";
+
+  // --- Build and Show ---
+  auto dialog_model = DialogModelBuilder(&dialog_destroyed_)
+                          .AddMenuItem(std::move(icon1), label1)
+                          .AddMenuItem(std::move(icon2), label2)
+                          .Build();
+  ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
+
+  // --- Assert ---
+  std::vector<std::u16string> actual_labels =
+      fake_dialog_manager_->GetMenuItemTexts();
+  std::vector<SkBitmap> actual_icons = fake_dialog_manager_->GetMenuItemIcons();
+  // Try a null callback
+  fake_dialog_manager_->ClickMenuItem(0);
+
+  ASSERT_EQ(actual_labels.size(), 2u);
+  ASSERT_EQ(actual_icons.size(), 2u);
+
+  EXPECT_EQ(actual_labels[0], label1);
+  EXPECT_EQ(actual_labels[1], label2);
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(actual_icons[0], expected_bitmap1));
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(actual_icons[1], expected_bitmap2));
+
+  EXPECT_FALSE(dialog_destroyed_);
+}
+
+TEST_F(ModalDialogWrapperTest, MenuItem_Callbacks) {
+  bool callback1_called = false;
+  bool callback2_called = false;
+  auto icon = CreateBitmapImage(SK_ColorRED);
+
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_)
+          .AddMenuItemWithCallback(
+              icon, u"Item 1",
+              base::BindLambdaForTesting([&]() { callback1_called = true; }))
+          .AddMenuItemWithCallback(
+              icon, u"Item 2",
+              base::BindLambdaForTesting([&]() { callback2_called = true; }))
+          .Build();
+  ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
+
+  fake_dialog_manager_->ClickMenuItem(1);
+
+  EXPECT_FALSE(callback1_called);
+  EXPECT_TRUE(callback2_called);
+
+  fake_dialog_manager_->ClickMenuItem(0);
+  EXPECT_TRUE(callback1_called);
+}
+
+TEST_F(ModalDialogWrapperTest, MenuItem_CallbackDismissesDialog) {
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_)
+          .AddMenuItemWithCallback(
+              CreateBitmapImage(SK_ColorRED), u"Item",
+              base::BindLambdaForTesting([&]() {
+                ModalDialogWrapper::GetDialogForTesting()->Close();
+              }))
+          .Build();
+  ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
+
+  fake_dialog_manager_->ClickMenuItem(0);
+
+  EXPECT_TRUE(dialog_destroyed_);
 }
 
 }  // namespace ui

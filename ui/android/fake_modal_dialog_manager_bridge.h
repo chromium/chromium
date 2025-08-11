@@ -39,7 +39,12 @@ class UI_ANDROID_EXPORT FakeModalDialogManagerBridge {
   bool IsCheckboxChecked();
 
   int GetButtonStyles();
+
   std::vector<std::u16string> GetMessageParagraphs();
+
+  std::vector<std::u16string> GetMenuItemTexts();
+  std::vector<SkBitmap> GetMenuItemIcons();
+  void ClickMenuItem(int index);
 
   SkBitmap GetTitleIcon();
 
