@@ -103,10 +103,19 @@ constexpr char kLogInWithPasswordChangeSubmissionHistogram[] =
 bool DidLoginWithPrimaryChangedPassword(
     const PasswordFormManager& submitted_manager,
     const PasswordForm& change_password_login) {
-  CHECK(change_password_login.type == PasswordForm::Type::kChangeSubmission);
+  CHECK_EQ(change_password_login.type, PasswordForm::Type::kChangeSubmission);
 
   return submitted_manager.GetPendingCredentials().password_value ==
          change_password_login.password_value;
+}
+
+bool DidLoginWithBackupChangedPassword(
+    const PasswordFormManager& submitted_manager,
+    const PasswordForm& change_password_login) {
+  CHECK_EQ(change_password_login.type, PasswordForm::Type::kChangeSubmission);
+
+  return submitted_manager.GetPendingCredentials().password_value ==
+         change_password_login.GetPasswordBackup();
 }
 
 void RecordMetricsForLoginWithChangedPassword(
@@ -125,10 +134,15 @@ void RecordMetricsForLoginWithChangedPassword(
     outcome = login_successful
                   ? LogInWithChangedPasswordOutcome::kPrimaryPasswordSucceeded
                   : LogInWithChangedPasswordOutcome::kPrimaryPasswordFailed;
-  } else {
+  } else if (DidLoginWithBackupChangedPassword(submitted_manager,
+                                               *change_password_login)) {
     outcome = login_successful
                   ? LogInWithChangedPasswordOutcome::kBackupPasswordSucceeded
                   : LogInWithChangedPasswordOutcome::kBackupPasswordFailed;
+  } else {
+    outcome = login_successful
+                  ? LogInWithChangedPasswordOutcome::kUnknownPasswordSucceeded
+                  : LogInWithChangedPasswordOutcome::kUnknownPasswordFailed;
   }
 
   if (auto* password_change_service = client->GetPasswordChangeService()) {

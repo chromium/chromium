@@ -267,6 +267,19 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Set of character class members changed"/>
 </enum>
 
+<!-- LINT.IfChange(CoarseFinalPasswordChangeState) -->
+
+<enum name="CoarseFinalPasswordChangeState">
+  <int value="0" label="Offered password change"/>
+  <int value="1" label="Canceled by the user"/>
+  <int value="2" label="Password successfully changed"/>
+  <int value="3" label="Password change failed"/>
+  <int value="4" label="No change password form found"/>
+  <int value="5" label="OTP detected"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/password_manager/password_change_delegate.h) -->
+
 <enum name="CredentialEntryAction">
   <int value="0" label="Deleted"/>
   <int value="1" label="Copied username"/>
@@ -598,6 +611,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="PrimaryPasswordSucceeded"/>
   <int value="2" label="BackupPasswordFailed"/>
   <int value="3" label="BackupPasswordSucceeded"/>
+  <int value="4" label="UnknownPasswordFailed"/>
+  <int value="5" label="UnknownPasswordSucceeded"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/password_manager/core/browser/password_manager.h:LogInWithChangedPasswordOutcome) -->

@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/one_time_passwords/otp_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "url/gurl.h"
 
@@ -45,6 +46,8 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
  public:
   static constexpr char kFinalPasswordChangeStatusHistogram[] =
       "PasswordManager.FinalPasswordChangeStatus";
+  static constexpr char kCoarseFinalPasswordChangeStatusHistogram[] =
+      "PasswordManager.CoarseFinalPasswordChangeStatus";
 
   PasswordChangeDelegateImpl(GURL change_password_url,
                              std::u16string username,
@@ -157,6 +160,8 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   base::ScopedObservation<password_manager::OtpManager,
                           password_manager::OtpManager::Observer>
       otp_observation_{this};
+
+  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
   base::WeakPtrFactory<PasswordChangeDelegateImpl> weak_ptr_factory_{this};
 };

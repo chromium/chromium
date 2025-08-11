@@ -89,7 +89,9 @@ enum class LogInWithChangedPasswordOutcome {
   kPrimaryPasswordSucceeded = 1,
   kBackupPasswordFailed = 2,
   kBackupPasswordSucceeded = 3,
-  kMaxValue = kBackupPasswordSucceeded
+  kUnknownPasswordFailed = 4,
+  kUnknownPasswordSucceeded = 5,
+  kMaxValue = kUnknownPasswordSucceeded
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:LogInWithChangedPasswordOutcome)
 

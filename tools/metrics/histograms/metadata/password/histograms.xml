@@ -1264,6 +1264,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.CoarseFinalPasswordChangeStatus"
+    enum="CoarseFinalPasswordChangeState" expires_after="2026-07-30">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>otara@google.com</owner>
+  <summary>
+    Records a coarse state at which the password change flow was interrupted
+    (success or failed state if the flow completed fully). This is a coarser
+    version of PasswordManager.FinalPasswordChangeStatus The metric is logged
+    when password change delegate is being destroyed.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.CompromisedCredentials3.{Issue}"
     units="credentials" expires_after="2026-01-18">
   <owner>vasilii@chromium.org</owner>

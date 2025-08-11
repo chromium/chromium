@@ -167,6 +167,37 @@ std::unique_ptr<content::WebContents> CreateWebContents(Profile* profile,
   return new_web_contents;
 }
 
+PasswordChangeDelegate::CoarseFinalPasswordChangeState GetCoarseState(
+    PasswordChangeDelegate::State state) {
+  switch (state) {
+    case PasswordChangeDelegate::State::kWaitingForAgreement:
+    case PasswordChangeDelegate::State::kOfferingPasswordChange:
+      return PasswordChangeDelegate::CoarseFinalPasswordChangeState::kOffered;
+
+    case PasswordChangeDelegate::State::kCanceled:
+    case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
+    case PasswordChangeDelegate::State::kChangingPassword:
+    case PasswordChangeDelegate::State::kLoginFormDetected:
+      return PasswordChangeDelegate::CoarseFinalPasswordChangeState::kCanceled;
+
+    case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
+      return PasswordChangeDelegate::CoarseFinalPasswordChangeState::
+          kSuccessful;
+
+    case PasswordChangeDelegate::State::kPasswordChangeFailed:
+      return PasswordChangeDelegate::CoarseFinalPasswordChangeState::kFailed;
+
+    case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
+      return PasswordChangeDelegate::CoarseFinalPasswordChangeState::
+          kFormNotDetected;
+
+    case PasswordChangeDelegate::State::kOtpDetected:
+      return PasswordChangeDelegate::CoarseFinalPasswordChangeState::
+          kOtpDetected;
+    case PasswordChangeDelegate::State::kNoState:
+      NOTREACHED();
+  }
+}
 }  // namespace
 
 PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
@@ -178,7 +209,8 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
       username_(std::move(username)),
       original_password_(std::move(password)),
       originator_(tab_interface->GetContents()),
-      profile_(Profile::FromBrowserContext(originator_->GetBrowserContext())) {
+      profile_(Profile::FromBrowserContext(originator_->GetBrowserContext())),
+      ukm_source_id_(originator_->GetPrimaryMainFrame()->GetPageUkmSourceId()) {
   tab_will_detach_subscription_ = tab_interface->RegisterWillDetach(
       base::BindRepeating(&PasswordChangeDelegateImpl::OnTabWillDetach,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -230,6 +262,14 @@ PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
   }
   base::UmaHistogramEnumeration(kFinalPasswordChangeStatusHistogram,
                                 current_state_);
+  if (current_state_ != PasswordChangeDelegate::State::kNoState) {
+    base::UmaHistogramEnumeration(kCoarseFinalPasswordChangeStatusHistogram,
+                                  GetCoarseState(current_state_));
+    ukm::builders::PasswordManager_ChangeFlowOutcome(ukm_source_id_)
+        .SetCoarseFinalPasswordChangeStatus(
+            static_cast<int>(GetCoarseState(current_state_)))
+        .Record(ukm::UkmRecorder::Get());
+  }
   if (auto logger = GetLoggerIfAvailable(executor_.get())) {
     logger->LogBoolean(
         BrowserSavePasswordProgressLogger::STRING_PASSWORD_CHANGE_FINISHED,

@@ -62,6 +62,37 @@ class PasswordChangeDelegate {
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeFlowState)
 
+  // Password change flow state used for UMA and UKM. Corresponds to
+  // `CoarseFinalPasswordChangeState` in enums.xml.
+  //
+  // These values are persisted to logs.
+  // Entries should not be renumbered and numeric values should never be reused.
+  // LINT.IfChange(CoarseFinalPasswordChangeState)
+  enum class CoarseFinalPasswordChangeState {
+    // Password change is being offered to the user, waiting for the user to
+    // accept or reject it or waiting for the user to accept privacy notice.
+    kOffered = 0,
+
+    // Password change was canceled by the user.
+    kCanceled = 1,
+
+    // Password is successfully updated.
+    kSuccessful = 2,
+
+    // Password change failed.
+    kFailed = 3,
+
+    // Change password form wasn't found.
+    kFormNotDetected = 4,
+
+    // One time password (OTP) was detected on a page. The flow is stopped, user
+    // input is required.
+    kOtpDetected = 5,
+
+    kMaxValue = kOtpDetected,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:CoarseFinalPasswordChangeState)
+
   // An interface used to notify clients (observers) of delegate state. Register
   // the observer via `PasswordChangeDelegate::AddObserver`.
   class Observer : public base::CheckedObserver {
