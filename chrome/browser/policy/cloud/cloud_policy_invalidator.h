@@ -29,6 +29,9 @@ class SequencedTaskRunner;
 namespace policy {
 
 // Listens for and provides policy invalidations.
+// Listens to incoming invalidations only when `CloudPolicyCore` is connected
+// and `CloudPolicyRefreshScheduler` is available, because otherwise there's
+// no possibility to refresh policies.
 class CloudPolicyInvalidator
     : public invalidation::InvalidationListener::Observer,
       public CloudPolicyCore::Observer,
@@ -131,14 +134,9 @@ class CloudPolicyInvalidator
     // Update |max_fetch_delay_| based on the given policy map.
     void UpdateMaxFetchDelay(const PolicyMap& policy_map);
 
-    void HandlePolicyRefresh(CloudPolicyStore* store,
-                             bool is_registered_for_invalidations,
-                             bool invalidations_enabled);
+    void HandlePolicyRefresh(CloudPolicyStore* store);
 
-    // Cancels ongoing policy refresh if any.
-    void CancelInvalidationHandlingIfWaitingForOne();
-
-    void CancelInvalidationHandling();
+    void FinishInvalidationHandling();
 
     int64_t highest_handled_invalidation_version() const {
       return highest_handled_invalidation_version_;
@@ -157,15 +155,11 @@ class CloudPolicyInvalidator
     // response to an invalidation with a missing payload.
     void RefreshPolicy(bool is_missing_payload);
 
-    // Acknowledge the latest invalidation.
-    void AcknowledgeInvalidation();
-
-    // Determine if invalidations have been enabled longer than the grace
-    // period.
+    // Returns true if invalidations have been enabled for a while.
     // This is a heuristic attempt to avoid counting initial policy fetches as
     // invalidation-triggered.
     // See https://codereview.chromium.org/213743014 for more details.
-    bool HaveInvalidationsBeenEnabledForAWhileForMetricsRecording();
+    bool AreInvalidationsEnabledForAWhile() const;
 
     // The invalidation scope this invalidator is responsible for.
     const PolicyInvalidationScope scope_;
@@ -173,25 +167,21 @@ class CloudPolicyInvalidator
     // The cloud policy core.
     const raw_ptr<CloudPolicyCore> core_;
 
-    // The time that invalidations became enabled.
+    // The timestamp at which invalidations became enabled. If unset then
+    // invalidations are considered disabled.
     std::optional<base::Time> invalidations_enabled_time_;
 
-    // Whether the policy is current invalid. This is set to true when an
-    // invalidation is received and reset when the policy fetched due to the
-    // invalidation is stored.
-    bool invalid_ = false;
-
-    // The version of the latest invalidation received. This is compared to
-    // the invalidation version of policy stored to determine when the
-    // invalidated policy is up to date.
-    int64_t invalidation_version_ = 0;
+    // If set, contains a version of currently handled invalidation, i.e. a
+    // policy refresh has been triggered due to it, but the policy refresh has
+    // not finished yet.
+    std::optional<int64_t> in_progress_invalidation_version_;
 
     // The highest invalidation version that was handled already.
     int64_t highest_handled_invalidation_version_;
 
     // The hash value of the current policy. This is used to determine if a new
     // policy is different from the current one.
-    uint32_t policy_hash_value_ = 0;
+    std::optional<size_t> policy_hash_value_;
 
     // The maximum random delay, in ms, between receiving an invalidation and
     // fetching the new policy.
