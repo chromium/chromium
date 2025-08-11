@@ -1382,7 +1382,7 @@
     {
       // Kill switch for crbug.com/378966977
       name: "CSSNegatedFeatureless",
-      status: "test",
+      status: "stable",
     },
     {
       name: "CSSNestedPseudoElements",

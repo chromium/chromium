@@ -457,6 +457,10 @@ class CORE_EXPORT SelectorChecker {
     kFeaturelessUnknown,
   };
 
+  // Helper function to match a single complex selector MatchShadowHostInList().
+  SelectorChecker::FeaturelessMatch MatchesShadowHostInComplexSelector(
+      const SelectorCheckingContext& context,
+      MatchResult& result) const;
   // Helper function to match selector list arguments for MatchShadowHost().
   SelectorChecker::FeaturelessMatch MatchesShadowHostInList(
       const SelectorCheckingContext& context,
