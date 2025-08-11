@@ -103,4 +103,7 @@ tast.apps.LaunchGalleryFromNotifications.stable
 apps.Sharesheet
 tast.apps.Sharesheet
 
+# https://crbug.com/437961311
+tast.bruschetta.CopyFilesToGuest@betty
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
