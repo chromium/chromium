@@ -2410,6 +2410,27 @@
             ]
         }
     ],
+    "AutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment": [
+        {
+            "platforms": [
+                "android",
+                "ios",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableNewCardProfileRankingAlgorithm": [
         {
             "platforms": [
