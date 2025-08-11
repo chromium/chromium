@@ -24,7 +24,6 @@
 namespace {
 CGFloat constexpr kTableViewSeparatorInsetHide = 10000;
 CGFloat constexpr kSymbolImagePointSize = 17.;
-CGFloat constexpr kSectionHeaderHeight = 60;
 
 // Section identifiers in the browsing data page table view.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
@@ -69,8 +68,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_LABEL);
   self.navigationItem.largeTitleDisplayMode =
       UINavigationItemLargeTitleDisplayModeNever;
-  self.tableView.estimatedSectionHeaderHeight = kSectionHeaderHeight;
-  self.tableView.sectionHeaderHeight = kSectionHeaderHeight;
 
   [self loadBrowsingDataTableModel];
 }
@@ -98,6 +95,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [self.mutator updateShouldKeepBrowsingDataSeparate:_browsingDataSeparate];
   [self updateSelection];
   return indexPath;
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForHeaderInSection:(NSInteger)section {
+  return UITableViewAutomaticDimension;
 }
 
 - (UIView*)tableView:(UITableView*)tableView
