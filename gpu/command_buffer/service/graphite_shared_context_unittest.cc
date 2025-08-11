@@ -24,6 +24,8 @@ namespace {
 
 using testing::NiceMock;
 
+constexpr size_t kMaxPendingRecordings = 100;
+
 class MockGpuProcessShmCount : public GpuProcessShmCount {
  public:
   MOCK_METHOD(void, Increment, (), (override));
@@ -97,7 +99,7 @@ class GraphiteSharedContextTest : public testing::TestWithParam<bool> {
     graphite_shared_context_ = std::make_unique<GraphiteSharedContext>(
         skgpu::graphite::ContextFactory::MakeDawn(backend_context,
                                                   context_options),
-        &use_shader_cache_shm_count_, is_thread_safe(),
+        &use_shader_cache_shm_count_, is_thread_safe(), kMaxPendingRecordings,
         base::BindRepeating(&MockBackendFlushCallback::Flush,
                             base::Unretained(&backend_flush_callback_)));
   }
@@ -234,8 +236,7 @@ TEST_P(GraphiteSharedContextTest, LowPendingRecordings) {
   // No flush is expected if the number of pending recordings is low.
   EXPECT_CALL(backend_flush_callback_, Flush()).Times(0);
 
-  for (size_t i = 0; i < GraphiteSharedContext::kMaxPendingRecordings - 1;
-       ++i) {
+  for (size_t i = 0; i < kMaxPendingRecordings - 1; ++i) {
     EXPECT_TRUE(graphite_shared_context_->insertRecording(info));
   }
 }
@@ -254,7 +255,7 @@ TEST_P(GraphiteSharedContextTest, MaxPendingRecordings) {
   // Expect a flush when the number of pending recordings reaches the max.
   EXPECT_CALL(backend_flush_callback_, Flush()).Times(1);
 
-  for (size_t i = 0; i < GraphiteSharedContext::kMaxPendingRecordings; ++i) {
+  for (size_t i = 0; i < kMaxPendingRecordings; ++i) {
     EXPECT_TRUE(graphite_shared_context_->insertRecording(info));
   }
 }

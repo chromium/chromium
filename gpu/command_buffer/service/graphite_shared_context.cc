@@ -133,9 +133,11 @@ GraphiteSharedContext::GraphiteSharedContext(
     std::unique_ptr<skgpu::graphite::Context> graphite_context,
     GpuProcessShmCount* use_shader_cache_shm_count,
     bool is_thread_safe,
+    size_t max_pending_recordings,
     FlushCallback backend_flush_callback)
     : graphite_context_(std::move(graphite_context)),
       use_shader_cache_shm_count_(use_shader_cache_shm_count),
+      max_pending_recordings_(max_pending_recordings),
       backend_flush_callback_(std::move(backend_flush_callback)) {
   DCHECK(graphite_context_);
   if (is_thread_safe) {
@@ -172,7 +174,7 @@ bool GraphiteSharedContext::insertRecording(
   num_pending_recordings_++;
 
   // Force submitting if there are too many pending recordings.
-  if (num_pending_recordings_ >= kMaxPendingRecordings) {
+  if (num_pending_recordings_ >= max_pending_recordings_) {
     SubmitAndFlushBackendImpl(skgpu::graphite::SyncToCpu::kNo);
   }
 
