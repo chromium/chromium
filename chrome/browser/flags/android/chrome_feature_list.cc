@@ -1071,7 +1071,7 @@ BASE_FEATURE(kHistoryPaneAndroid,
 
 BASE_FEATURE(kHomepageIsNewTabPagePolicyAndroid,
              "HomepageIsNewTabPagePolicyAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLegacyTabStateDeprecation,
              "LegacyTabStateDeprecation",

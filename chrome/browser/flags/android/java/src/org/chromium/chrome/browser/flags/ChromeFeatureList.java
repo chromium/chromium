@@ -921,7 +921,7 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sHomepageIsNewTabPagePolicyAndroid =
-            newCachedFlag(HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_ANDROID, false);
+            newCachedFlag(HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_ANDROID, true);
     public static final CachedFlag sKeyboardEscBackNavigation =
             newCachedFlag(KEYBOARD_ESC_BACK_NAVIGATION, true);
     public static final CachedFlag sLegacyTabStateDeprecation =

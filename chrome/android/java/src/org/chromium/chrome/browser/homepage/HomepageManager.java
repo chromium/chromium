@@ -140,7 +140,6 @@ public class HomepageManager
      * @see #getPrefHomepageUseDefaultUri()
      */
     public GURL getHomepageGurl() {
-        // TODO (crbug.com/400800634): Confirm this behavior
         if (HomepagePolicyManager.isHomepageNewTabPageEnabled()) {
             return getNativeNtpUrlOrEmpty();
         }
