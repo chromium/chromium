@@ -108,8 +108,7 @@ TEST_F(ChangePasswordFormWaiterTest, PasswordChangeFormNotFound) {
   ChangePasswordFormWaiter waiter(web_contents(), client(),
                                   completion_callback.Get());
 
-  static_cast<content::WebContentsObserver*>(&waiter)
-      ->DocumentOnLoadCompletedInPrimaryMainFrame();
+  static_cast<content::WebContentsObserver*>(&waiter)->DidStopLoading();
   EXPECT_CALL(completion_callback, Run(nullptr));
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
@@ -126,8 +125,7 @@ TEST_F(ChangePasswordFormWaiterTest,
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout * 2);
 
-  static_cast<content::WebContentsObserver*>(&waiter)
-      ->DocumentOnLoadCompletedInPrimaryMainFrame();
+  static_cast<content::WebContentsObserver*>(&waiter)->DidStopLoading();
   EXPECT_CALL(completion_callback, Run(nullptr));
   // Now the timeout starts.
   task_environment()->FastForwardBy(
@@ -140,16 +138,14 @@ TEST_F(ChangePasswordFormWaiterTest, NotFoundTimeoutResetOnLoadingEvent) {
 
   ChangePasswordFormWaiter waiter(web_contents(), client(),
                                   completion_callback.Get());
-  static_cast<content::WebContentsObserver*>(&waiter)
-      ->DocumentOnLoadCompletedInPrimaryMainFrame();
+  static_cast<content::WebContentsObserver*>(&waiter)->DidStopLoading();
 
   EXPECT_CALL(completion_callback, Run).Times(0);
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout / 2);
 
   // Emulate another loading finished event again.
-  static_cast<content::WebContentsObserver*>(&waiter)
-      ->DocumentOnLoadCompletedInPrimaryMainFrame();
+  static_cast<content::WebContentsObserver*>(&waiter)->DidStopLoading();
   // Normally it would trigger timeout, but since another loading happened
   // before it doesn't happen.
   task_environment()->FastForwardBy(
@@ -160,6 +156,26 @@ TEST_F(ChangePasswordFormWaiterTest, NotFoundTimeoutResetOnLoadingEvent) {
   // is triggered.
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout / 2);
+}
+
+TEST_F(ChangePasswordFormWaiterTest, NewLoadingStopsTheCurrentTimer) {
+  base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
+      completion_callback;
+
+  ChangePasswordFormWaiter waiter(web_contents(), client(),
+                                  completion_callback.Get());
+  static_cast<content::WebContentsObserver*>(&waiter)->DidStopLoading();
+
+  EXPECT_CALL(completion_callback, Run).Times(0);
+  task_environment()->FastForwardBy(
+      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout / 2);
+
+  // Emulate another loading finished event again.
+  static_cast<content::WebContentsObserver*>(&waiter)->DidStartLoading();
+  // Normally it would trigger timeout, but since another loading happened
+  // before it doesn't happen.
+  task_environment()->FastForwardBy(
+      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
 }
 
 TEST_F(ChangePasswordFormWaiterTest, PasswordChangeFormIdentified) {
@@ -229,8 +245,7 @@ TEST_F(ChangePasswordFormWaiterTest, IgnoredChangePasswordForm) {
       ->OnPasswordFormParsed(form_manager.get());
   testing::Mock::VerifyAndClearExpectations(&completion_callback);
 
-  static_cast<content::WebContentsObserver*>(&waiter)
-      ->DocumentOnLoadCompletedInPrimaryMainFrame();
+  static_cast<content::WebContentsObserver*>(&waiter)->DidStopLoading();
   EXPECT_CALL(completion_callback, Run(nullptr));
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);

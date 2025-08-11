@@ -48,13 +48,13 @@ class ChangePasswordFormWaiter
       password_manager::PasswordFormManager* form_manager) override;
 
   //  content::WebContentsObserver
-  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
+  void DidStartLoading() override;
+  void DidStopLoading() override;
 
   void OnTimeout();
 
   const base::TimeDelta timeout_;
   base::OneShotTimer timeout_timer_;
-  const raw_ptr<content::WebContents> web_contents_;
   const raw_ptr<password_manager::PasswordManagerClient> client_;
   PasswordFormFoundCallback callback_;
 

@@ -89,8 +89,8 @@ ChangePasswordFormWaiter::ChangePasswordFormWaiter(
     PasswordFormFoundCallback callback,
     base::TimeDelta timeout,
     const std::vector<autofill::FieldRendererId>& fields_to_ignore)
-    : timeout_(timeout),
-      web_contents_(web_contents),
+    : content::WebContentsObserver(web_contents),
+      timeout_(timeout),
       client_(client),
       callback_(std::move(callback)),
       fields_to_ignore_(fields_to_ignore) {
@@ -106,9 +106,7 @@ ChangePasswordFormWaiter::ChangePasswordFormWaiter(
     cache->AddObserver(this);
   }
   if (web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
-    DocumentOnLoadCompletedInPrimaryMainFrame();
-  } else {
-    Observe(web_contents);
+    DidStopLoading();
   }
 }
 
@@ -136,11 +134,14 @@ void ChangePasswordFormWaiter::OnPasswordFormParsed(
   }
 }
 
-void ChangePasswordFormWaiter::DocumentOnLoadCompletedInPrimaryMainFrame() {
+void ChangePasswordFormWaiter::DidStartLoading() {
   if (timeout_timer_.IsRunning()) {
-    // Page is still loading, reset the timer.
-    timeout_timer_.Reset();
+    // Page is still loading, stop the timer.
+    timeout_timer_.Stop();
   }
+}
+
+void ChangePasswordFormWaiter::DidStopLoading() {
   timeout_timer_.Start(FROM_HERE, timeout_, this,
                        &ChangePasswordFormWaiter::OnTimeout);
 }
