@@ -48,6 +48,8 @@ public class ModalDialogViewBinder
             assert model.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1) == null
                     : "Do not use MESSAGE_PARAGRAPH_1 and MESSAGE_PARAGRAPHS at the same time.";
             view.setMessageParagraphs(model.get(ModalDialogProperties.MESSAGE_PARAGRAPHS));
+        } else if (ModalDialogProperties.MENU_ITEMS == propertyKey) {
+            view.setMenuItems(model.get(ModalDialogProperties.MENU_ITEMS));
         } else if (ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST == propertyKey) {
             assert checkFilterTouchConsistency(model);
             assert checkDefaultButtonsNotCombinedWithButtonGroup(model);

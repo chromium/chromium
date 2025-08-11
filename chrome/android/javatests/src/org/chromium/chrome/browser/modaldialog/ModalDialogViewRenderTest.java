@@ -431,6 +431,46 @@ public class ModalDialogViewRenderTest {
     @Test
     @MediumTest
     @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_MenuItems() throws IOException {
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
+
+        final Drawable icon1 =
+                UiUtils.getTintedDrawable(
+                        sActivity, R.drawable.ic_add, R.color.default_icon_color_tint_list);
+        final Drawable icon2 =
+                UiUtils.getTintedDrawable(
+                        sActivity, R.drawable.ic_globe_24dp, R.color.default_icon_color_tint_list);
+        final Drawable icon3 =
+                UiUtils.getTintedDrawable(
+                        sActivity,
+                        R.drawable.ic_info_outline_grey_24dp,
+                        R.color.default_icon_color_tint_list);
+
+        final var menuItems = new ArrayList<ModalDialogProperties.ModalDialogMenuItem>();
+        menuItems.add(new ModalDialogProperties.ModalDialogMenuItem(icon1, "First menu item"));
+        menuItems.add(new ModalDialogProperties.ModalDialogMenuItem(icon2, "Second menu item"));
+        menuItems.add(
+                new ModalDialogProperties.ModalDialogMenuItem(
+                        icon3, "Third menu item with longer text to check wrapping"));
+
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                        .with(ModalDialogProperties.MENU_ITEMS, menuItems)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                mResources,
+                                R.string.cancel));
+        waitForViewToBeRendered(mModalDialogView);
+        mRenderTestRule.render(mModalDialogView, "menu_items_only");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
     public void testRender_ButtonGroup() throws IOException {
         setUpViews(
                 R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,

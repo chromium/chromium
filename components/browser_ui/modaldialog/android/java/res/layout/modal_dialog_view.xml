@@ -50,6 +50,13 @@ found in the LICENSE file.
                 android:layout_height="16dp"
                 android:visibility="gone" />
 
+            <LinearLayout
+                android:id="@+id/menu_items_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone" />
+
         </LinearLayout>
 
     </org.chromium.components.browser_ui.widget.FadingEdgeScrollView>

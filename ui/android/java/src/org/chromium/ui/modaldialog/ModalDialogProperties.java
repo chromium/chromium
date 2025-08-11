@@ -148,6 +148,35 @@ public class ModalDialogProperties {
         int DIALOG_WHEN_LARGE = 3;
     }
 
+    /** Specifies a menu item for the modal dialog. Each item has an icon and a text. */
+    public static class ModalDialogMenuItem {
+        private final Drawable mIcon;
+        private final String mText;
+        private final Runnable mCallback;
+
+        public ModalDialogMenuItem(Drawable icon, String text) {
+            this(icon, text, () -> {});
+        }
+
+        public ModalDialogMenuItem(Drawable icon, String text, Runnable callback) {
+            mIcon = icon;
+            mText = text;
+            mCallback = callback;
+        }
+
+        public Drawable getIcon() {
+            return mIcon;
+        }
+
+        public String getText() {
+            return mText;
+        }
+
+        public Runnable getCallback() {
+            return mCallback;
+        }
+    }
+
     /** The name of the dialog. Should only be used internally to identify the dialog. */
     public static final ReadableIntPropertyKey NAME = new ReadableIntPropertyKey();
 
@@ -175,6 +204,10 @@ public class ModalDialogProperties {
 
     /** A list of the paragraphs of the dialog. */
     public static final WritableObjectPropertyKey<ArrayList<CharSequence>> MESSAGE_PARAGRAPHS =
+            new WritableObjectPropertyKey<>();
+
+    /** A list of the menu items of the dialog. */
+    public static final WritableObjectPropertyKey<ArrayList<ModalDialogMenuItem>> MENU_ITEMS =
             new WritableObjectPropertyKey<>();
 
     /** The customized content view of the dialog. */
@@ -327,6 +360,7 @@ public class ModalDialogProperties {
                 TITLE_ICON,
                 MESSAGE_PARAGRAPH_1,
                 MESSAGE_PARAGRAPHS,
+                MENU_ITEMS,
                 CUSTOM_VIEW,
                 CUSTOM_BUTTON_BAR_VIEW,
                 CHECKBOX_TEXT,

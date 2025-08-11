@@ -58,6 +58,7 @@ generate_jni("modaldialog_jni_headers") {
 android_resources("java_resources") {
   sources = [
     "java/res/layout/modal_dialog_container.xml",
+    "java/res/layout/modal_dialog_menu_item_view.xml",
     "java/res/layout/modal_dialog_paragraph_view.xml",
     "java/res/layout/modal_dialog_title.xml",
     "java/res/layout/modal_dialog_view.xml",

@@ -29,6 +29,7 @@ import static org.mockito.Mockito.times;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
@@ -77,6 +78,7 @@ import org.chromium.components.browser_ui.widget.ModalDialogViewUtils;
 import org.chromium.components.browser_ui.widget.SpinnerButtonWrapper;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ModalDialogButtonSpec;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ModalDialogMenuItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -766,16 +768,13 @@ public class ModalDialogViewTest {
     @MediumTest
     @Feature({"ModalDialog"})
     public void testTouchFilterDisabled() {
-                createModel(
-                        mModelBuilder
-                                .with(
-                                        ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                        sResources,
-                                        R.string.ok)
-                                .with(
-                                        ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                        sResources,
-                                        R.string.cancel));
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, sResources, R.string.ok)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                sResources,
+                                R.string.cancel));
         onView(withId(R.id.positive_button)).check(matches(not(touchFilterEnabled())));
         onView(withId(R.id.negative_button)).check(matches(not(touchFilterEnabled())));
     }
@@ -1097,6 +1096,114 @@ public class ModalDialogViewTest {
         // Assert that clicks on the modal dialog are disabled
         onView(withId(R.id.button_primary)).perform(click());
         Assert.assertEquals(0, callbackHelper.getCallCount());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    public void testMenuItem_Basic() {
+        final String text1 = "Menu Item 1";
+        final Drawable icon1 = sActivity.getDrawable(R.drawable.ic_business);
+        ArrayList<ModalDialogMenuItem> menuItems = new ArrayList<>();
+        menuItems.add(new ModalDialogMenuItem(icon1, text1));
+
+        createModel(mModelBuilder.with(ModalDialogProperties.MENU_ITEMS, menuItems));
+
+        onView(withId(R.id.menu_items_container)).check(matches(isDisplayed()));
+        onView(withText(text1)).check(matches(isDisplayed()));
+
+        LinearLayout menuItemsContainer = mModalDialogView.findViewById(R.id.menu_items_container);
+        Assert.assertEquals(
+                "Menu container should have one item.", 1, menuItemsContainer.getChildCount());
+        TextView menuItemView = (TextView) menuItemsContainer.getChildAt(0);
+        Assert.assertEquals(
+                "Icon should match.",
+                icon1.getConstantState(),
+                menuItemView.getCompoundDrawablesRelative()[0].getConstantState());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    public void testMenuItems_Dynamic() {
+        final String text1 = "First Menu Item";
+        final Drawable icon1 = sActivity.getDrawable(R.drawable.ic_business);
+        final String text2 = "Second Menu Item";
+        final Drawable icon2 = sActivity.getDrawable(R.drawable.ic_business);
+        ArrayList<ModalDialogMenuItem> menuItems = new ArrayList<>();
+        menuItems.add(new ModalDialogMenuItem(icon1, text1));
+        menuItems.add(new ModalDialogMenuItem(icon2, text2));
+
+        PropertyModel model =
+                createModel(mModelBuilder.with(ModalDialogProperties.MENU_ITEMS, menuItems));
+
+        // Assert initial state with 2 items.
+        onView(withId(R.id.menu_items_container)).check(matches(isDisplayed()));
+        onView(withText(text1)).check(matches(isDisplayed()));
+        onView(withText(text2)).check(matches(isDisplayed()));
+        LinearLayout menuItemsContainer = mModalDialogView.findViewById(R.id.menu_items_container);
+        Assert.assertEquals(
+                "Menu container should have two items.", 2, menuItemsContainer.getChildCount());
+        TextView menuItemView1 = (TextView) menuItemsContainer.getChildAt(0);
+        Assert.assertEquals("Item 1 text mismatch.", text1, menuItemView1.getText().toString());
+        Assert.assertEquals(
+                "Item 1 icon mismatch.",
+                icon1.getConstantState(),
+                menuItemView1.getCompoundDrawablesRelative()[0].getConstantState());
+        TextView menuItemView2 = (TextView) menuItemsContainer.getChildAt(1);
+        Assert.assertEquals("Item 2 text mismatch.", text2, menuItemView2.getText().toString());
+        Assert.assertEquals(
+                "Item 2 icon mismatch.",
+                icon2.getConstantState(),
+                menuItemView2.getCompoundDrawablesRelative()[0].getConstantState());
+
+        // Clear with null list.
+        ThreadUtils.runOnUiThreadBlocking(() -> model.set(ModalDialogProperties.MENU_ITEMS, null));
+        onView(withId(R.id.menu_items_container)).check(matches(not(isDisplayed())));
+        onView(withText(text1)).check(doesNotExist());
+        onView(withText(text2)).check(doesNotExist());
+        Assert.assertEquals(
+                "Menu container should be empty after setting null.",
+                0,
+                menuItemsContainer.getChildCount());
+
+        // Re-add the same 2 items.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(ModalDialogProperties.MENU_ITEMS, menuItems));
+        onView(withId(R.id.menu_items_container)).check(matches(isDisplayed()));
+        onView(withText(text1)).check(matches(isDisplayed()));
+        onView(withText(text2)).check(matches(isDisplayed()));
+        Assert.assertEquals(
+                "Menu container should have two items after re-adding.",
+                2,
+                menuItemsContainer.getChildCount());
+
+        // Clear with empty list.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(ModalDialogProperties.MENU_ITEMS, new ArrayList<>()));
+        onView(withId(R.id.menu_items_container)).check(matches(not(isDisplayed())));
+        onView(withText(text1)).check(doesNotExist());
+        onView(withText(text2)).check(doesNotExist());
+        Assert.assertEquals(
+                "Menu container should be empty after setting an empty list.",
+                0,
+                menuItemsContainer.getChildCount());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    public void testMenuItem_Callback() throws Exception {
+        final CallbackHelper callbackHelper = new CallbackHelper();
+        final String text = "Menu Item with Callback";
+        final Drawable icon = sActivity.getDrawable(R.drawable.ic_business);
+        ArrayList<ModalDialogMenuItem> menuItems = new ArrayList<>();
+        menuItems.add(new ModalDialogMenuItem(icon, text, callbackHelper::notifyCalled));
+
+        createModel(mModelBuilder.with(ModalDialogProperties.MENU_ITEMS, menuItems));
+
+        onView(withText(text)).perform(click());
+        callbackHelper.waitForCallback(0);
     }
 
     private static Matcher<View> touchFilterEnabled() {
