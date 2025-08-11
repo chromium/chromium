@@ -610,9 +610,6 @@ extern const char kLensUnaryClientDataHeaderEnabledDescription[];
 extern const char kLensUnaryHttpTransportEnabledName[];
 extern const char kLensUnaryHttpTransportEnabledDescription[];
 
-extern const char kLensVsintParamEnabledName[];
-extern const char kLensVsintParamEnabledDescription[];
-
 extern const char kLensWebPageLoadOptimizationEnabledName[];
 extern const char kLensWebPageLoadOptimizationEnabledDescription[];
 

@@ -6476,11 +6476,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "lens-vsint-param-enabled",
-    "owners": ["cmyang@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "lens-web-page-load-optimization-enabled",
     "owners": ["cmyang@google.com"],
     "expiry_milestone": 140
