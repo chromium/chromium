@@ -72,6 +72,8 @@ const CGFloat kButtonBottomMargin = 45.0;
   UIView* _footerContainerView;
   // A list of gesture recognizers that were disabled.
   NSMutableArray<UIGestureRecognizer*>* _disabledGestures;
+  // Whether the user has interacted with the Lens view.
+  BOOL _interaction;
 }
 
 @synthesize lensContainerViewController = _lensViewController;
@@ -267,6 +269,7 @@ const CGFloat kButtonBottomMargin = 45.0;
 - (void)lensOverlayPromoContainerViewControllerDidBeginInteraction:
     (LensOverlayPromoContainerViewController*)viewController {
   [self handleHideBubbleAnimation];
+  _interaction = YES;
 }
 
 - (void)lensOverlayPromoContainerViewControllerDidEndInteraction:
@@ -454,7 +457,7 @@ const CGFloat kButtonBottomMargin = 45.0;
 
 // Handles taps on the action button.
 - (void)buttonTapped {
-  [self.delegate didTapContinueButton];
+  [self.delegate didTapContinueButtonWithInteraction:_interaction];
 }
 
 // Transforms the action button from its initial plain style to a primary

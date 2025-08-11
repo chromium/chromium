@@ -12,8 +12,9 @@
 // Delegate for actions on the Interactive Lens screen.
 @protocol InteractiveLensPromoDelegate <NSObject>
 
-// Called when the user tapped on the "continue" button.
-- (void)didTapContinueButton;
+// Called when the user tapped on the "continue" button. `interaction` is YES if
+// the user has interacted with the Lens view of the screen.
+- (void)didTapContinueButtonWithInteraction:(BOOL)interaction;
 
 @end
 

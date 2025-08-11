@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/first_run/ui_bundled/interactive_lens/coordinator/interactive_lens_promo_coordinator.h"
 
 #import "base/check.h"
+#import "base/metrics/histogram_functions.h"
 #import "components/lens/lens_overlay_dismissal_source.h"
+#import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/first_run/ui_bundled/interactive_lens/ui/interactive_lens_overlay_promo_view_controller.h"
 #import "ios/chrome/browser/first_run/ui_bundled/interactive_lens/ui/lens_interactive_promo_results_page_presenter.h"
@@ -69,6 +71,9 @@
       resultsPresenterFactory:factory
                    completion:nil];
 
+  base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
+                                first_run::kInteractiveLensStart);
+
   BOOL animated = self.baseNavigationController.topViewController != nil;
   [self.baseNavigationController setViewControllers:@[ _promoViewController ]
                                            animated:animated];
@@ -85,9 +90,13 @@
 
 #pragma mark - InteractiveLensPromoDelegate
 
-- (void)didTapContinueButton {
+- (void)didTapContinueButtonWithInteraction:(BOOL)interaction {
   CHECK(self.firstRunDelegate);
   [self.firstRunDelegate screenWillFinishPresenting];
+  first_run::FirstRunStage stage =
+      interaction ? first_run::kInteractiveLensCompletionWithInteraction
+                  : first_run::kInteractiveLensCompletionWithoutInteraction;
+  base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram, stage);
 }
 
 @end

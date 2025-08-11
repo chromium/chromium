@@ -4854,6 +4854,12 @@ shown properly on the user-facing crash UI.
   <int value="27"
       label="Close Best Features Experience Through Detail Screen (added at
              M136)"/>
+  <int value="28" label="Show Interactive Lens screen (added in M141)"/>
+  <int value="29"
+      label="Close Interactive Lens screen with interaction (added in M141)"/>
+  <int value="30"
+      label="Close Interactive Lens screen without interaction (added in
+             M141)"/>
 </enum>
 
 <enum name="FirstUserActionType">
