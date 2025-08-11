@@ -80,13 +80,17 @@ void SpellCheckerSessionBridge::ProcessSpellCheckResults(
     JNIEnv* env,
     const JavaParamRef<jintArray>& offset_array,
     const JavaParamRef<jintArray>& length_array,
-    const JavaParamRef<jobjectArray>& suggestions_array) {
+    const JavaParamRef<jobjectArray>& suggestions_array,
+    const JavaParamRef<jintArray>& spellcheck_result_decorations_array) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::vector<int> offsets;
   std::vector<int> lengths;
+  std::vector<int> spellcheck_result_decorations;
 
   base::android::JavaIntArrayToIntVector(env, offset_array, &offsets);
   base::android::JavaIntArrayToIntVector(env, length_array, &lengths);
+  base::android::JavaIntArrayToIntVector(
+      env, spellcheck_result_decorations_array, &spellcheck_result_decorations);
 
   std::vector<SpellCheckResult> results;
   for (size_t i = 0; i < offsets.size(); i++) {
@@ -97,8 +101,11 @@ void SpellCheckerSessionBridge::ProcessSpellCheckResults(
     std::vector<std::u16string> suggestions_for_word;
     base::android::AppendJavaStringArrayToStringVector(
         env, suggestions_for_word_array, &suggestions_for_word);
-    results.push_back(SpellCheckResult(SpellCheckResult::SPELLING, offsets[i],
-                                       lengths[i], suggestions_for_word));
+    SpellCheckResult::Decoration decoration =
+        static_cast<SpellCheckResult::Decoration>(
+            spellcheck_result_decorations[i]);
+    results.push_back(SpellCheckResult(decoration, offsets[i], lengths[i],
+                                       suggestions_for_word));
   }
 
   std::move(active_request_->callback_).Run(results);

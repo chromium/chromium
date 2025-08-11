@@ -14,6 +14,7 @@
 // misspelled range inside the checked text. It also contains a
 // possible replacement of the misspelling if it is available.
 struct SpellCheckResult {
+  // LINT.IfChange(DecorationEnum)
   enum Decoration {
     // Red underline for misspelled words.
     SPELLING,
@@ -23,6 +24,7 @@ struct SpellCheckResult {
     GRAMMAR,
     LAST = GRAMMAR,
   };
+  // LINT.ThenChange(/components/spellcheck/browser/android/java/src/org/chromium/components/spellcheck/SpellCheckerSessionBridge.java:SpellCheckResultDecoration)
 
   explicit SpellCheckResult(
       Decoration d = SPELLING,
