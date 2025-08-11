@@ -8341,12 +8341,6 @@ const char kSupervisedUserLocalWebApprovalsDescription[] =
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
-const char kHistoryPageHistorySyncPromoName[] =
-    "History sync promo in History Page";
-const char kHistoryPageHistorySyncPromoDescription[] =
-    "Add a history sync opt-in promo in the History Page for signed-in users "
-    "that are not syncing history & tabs.";
-
 const char kHistoryOptInEducationalTipName[] = "History sync educational tip";
 const char kHistoryOptInEducationalTipDescription[] =
     "Enables a history sync promo in the magic stack on NTP";

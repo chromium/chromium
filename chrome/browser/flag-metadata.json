@@ -5647,11 +5647,6 @@
     "expiry_milestone": 141
   },
   {
-    "name": "history-page-history-sync-promo",
-    "owners": [ "myuu@google.com", "chrome-signin-mobile-team@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "history-pane-android",
     "owners": [ "wylieb@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 145

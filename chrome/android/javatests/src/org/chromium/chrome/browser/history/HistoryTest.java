@@ -38,7 +38,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -55,7 +54,6 @@ import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -128,7 +126,6 @@ public class HistoryTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.HISTORY_PAGE_HISTORY_SYNC_PROMO)
     // Tests that the history sync opt-in promo is shown correctly when display conditions are met,
     // and the history sync opt-in flow works correctly when the CTA is clicked.
     public void testHistorySyncPromoHeader_withHistoryRecord() throws Exception {
@@ -168,7 +165,6 @@ public class HistoryTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.HISTORY_PAGE_HISTORY_SYNC_PROMO)
     @Restriction({DeviceFormFactor.PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     // Tests that the history sync opt-in promo when there's no history record, to verify
     // interactions with the history page empty state.

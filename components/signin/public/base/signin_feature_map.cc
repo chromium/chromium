@@ -22,8 +22,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kCctSignInPrompt,
     &switches::kForceStartupSigninPromo,
     &switches::kForceHistoryOptInScreen,
-    &switches::kHistoryPageHistorySyncPromo,
-    &switches::kHistoryPagePromoCtaStringVariation,
     &switches::kSkipCheckForAccountManagementOnSignin,
     &switches::kUnoForAuto,
     &switches::kUseHostedDomainForManagementCheckOnSignin,

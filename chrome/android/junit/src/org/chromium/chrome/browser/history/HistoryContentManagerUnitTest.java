@@ -23,17 +23,19 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProviderJni;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.AsyncTabLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
-import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.FakeIdentityManager;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
@@ -41,11 +43,11 @@ import org.chromium.url.GURL;
 /** Unit tests for {@link HistoryContentManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures(SigninFeatures.HISTORY_PAGE_HISTORY_SYNC_PROMO)
 public class HistoryContentManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private Activity mActivity;
+    private final IdentityManager mIdentityManager = new FakeIdentityManager();
     @Mock private HistoryContentManager.Observer mObserver;
     @Mock private Profile mProfile;
     @Mock private SelectionDelegate<HistoryItem> mSelectionDelegate;
@@ -59,6 +61,7 @@ public class HistoryContentManagerUnitTest {
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
     @Mock private IdentityServicesProviderJni mIdentityServicesProviderJni;
     @Mock private SigninManager mSigninManager;
+    @Mock private SyncService mSyncService;
     @Mock private UserPrefsJni mUserPrefsJni;
     @Mock private PrefChangeRegistrarJni mPrefChangeRegistrarJni;
 
@@ -69,6 +72,8 @@ public class HistoryContentManagerUnitTest {
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
         when(mIdentityServicesProviderJni.getSigninManager(any())).thenReturn(mSigninManager);
+        when(mIdentityServicesProviderJni.getIdentityManager(any())).thenReturn(mIdentityManager);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
         IdentityServicesProviderJni.setInstanceForTesting(mIdentityServicesProviderJni);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJni);

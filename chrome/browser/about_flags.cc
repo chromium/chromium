@@ -4410,19 +4410,6 @@ constexpr char kDisableFacilitatedPaymentsMerchantAllowlistInternalName[] =
 
 #if BUILDFLAG(IS_ANDROID)
 
-const char kHistoryPagePromoVariationFeatures[] =
-    "HistoryPageHistorySyncPromo,"
-    "HistoryPagePromoCtaStringVariation";
-
-const FeatureEntry::Choice kHistoryOptInEntryPointChoices[] = {
-    {"Default", "", ""},
-    {"Enabled with Turn On CTA", "enable-features",
-     "HistoryPageHistorySyncPromo"},
-    {"Enabled with Continue CTA", "enable-features",
-     kHistoryPagePromoVariationFeatures},
-    {"Disabled", "disable-features", kHistoryPagePromoVariationFeatures},
-};
-
 const FeatureEntry::FeatureParam kHistoryOptInEducationalTipTurnOn[] = {
     {"history_opt_in_educational_tip_param", "0"}};
 const FeatureEntry::FeatureParam kHistoryOptInEducationalTipLetsGo[] = {
@@ -11413,10 +11400,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kLanguageDetectionAPI)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"history-page-history-sync-promo",
-     flag_descriptions::kHistoryPageHistorySyncPromoName,
-     flag_descriptions::kHistoryPageHistorySyncPromoDescription, kOsAndroid,
-     MULTI_VALUE_TYPE(kHistoryOptInEntryPointChoices)},
 
     {"history-opt-in-educational-tip",
      flag_descriptions::kHistoryOptInEducationalTipName,

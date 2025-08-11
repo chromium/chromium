@@ -26,17 +26,6 @@ BASE_FEATURE(kForceHistoryOptInScreen,
              "ForceHistoryOptInScreen",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Add history sync opt-in promo in the History Page.
-BASE_FEATURE(kHistoryPageHistorySyncPromo,
-             "HistoryPageHistorySyncPromo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Makes the History Page history opt-in promo use a different CTA String.
-// No-op unless "HistoryPageHistorySyncPromo" is enabled.
-BASE_FEATURE(kHistoryPagePromoCtaStringVariation,
-             "HistoryPagePromoCtaStringVariation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables a history sync educational tip in the magic stack on NTP.
 BASE_FEATURE(kHistoryOptInEducationalTip,
              "HistoryOptInEducationalTip",
