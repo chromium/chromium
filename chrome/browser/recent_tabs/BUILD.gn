@@ -24,6 +24,7 @@ android_library("helper_java") {
     "//components/feature_engagement/public:public_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 
@@ -64,6 +65,7 @@ android_library_factory("factory_java") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 

@@ -2199,7 +2199,8 @@ public class RootUiCoordinator
                 mTabCreatorManagerSupplier.get(),
                 getBottomSheetController(),
                 gtsTabListModelSizeSupplier,
-                scrollGTSToRestoredTabsCallback);
+                scrollGTSToRestoredTabsCallback,
+                mModalDialogManagerSupplier);
     }
 
     private void initBoardingPassDetector() {

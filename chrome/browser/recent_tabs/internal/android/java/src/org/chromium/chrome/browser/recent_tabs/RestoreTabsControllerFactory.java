@@ -6,10 +6,14 @@ package org.chromium.chrome.browser.recent_tabs;
 
 import android.content.Context;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.util.XrUtils;
 
 /** A factory interface for building a RestoreTabsController instance. */
 @NullMarked
@@ -21,7 +25,14 @@ public class RestoreTabsControllerFactory {
             Context context,
             Profile profile,
             TabCreatorManager tabCreatorManager,
-            BottomSheetController bottomSheetController) {
+            BottomSheetController bottomSheetController,
+            @Nullable Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+
+        if (XrUtils.isXrDevice() && modalDialogManagerSupplier != null) {
+            return new RestoreTabsDialogControllerImpl(
+                    context, profile, tabCreatorManager, modalDialogManagerSupplier);
+        }
+
         return new RestoreTabsControllerImpl(
                 context, profile, tabCreatorManager, bottomSheetController);
     }
