@@ -4390,6 +4390,11 @@
       status: "stable",
     },
     {
+      // Killswitch M141.
+      name: "SelectionHandleWithBottomClipped",
+      status: "stable",
+    },
+    {
       // See https://crbug.com/395544401
       name: "SelectionUpdateToInitialSelectionInListify",
       status: "stable",

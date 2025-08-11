@@ -1519,9 +1519,17 @@ LayerPropertiesUpdater::PaintedSelectionBoundToLayerSelectionBound(
   cc::LayerSelectionBound layer_bound;
   layer_bound.type = bound.type;
 
-  // This is similar to ComputeViewportSelectionBound() but is a bit simpler.
-  // Use the end point expanded by 1 as the sample rect to check visibility.
+  // This is similar to ComputeViewportSelectionBound(). Use the end point
+  // moved 1 pixel towards the start point and expanded by 1 as the sample
+  // rect to check visibility.
   gfx::Rect sample(bound.edge_end, gfx::Size());
+  if (RuntimeEnabledFeatures::SelectionHandleWithBottomClippedEnabled()) {
+    auto offset = [](int start, int end) {
+      return start < end ? -1 : start > end ? 1 : 0;
+    };
+    sample.Offset(offset(bound.edge_start.x(), bound.edge_end.x()),
+                  offset(bound.edge_start.y(), bound.edge_end.y()));
+  }
   sample.Outset(1);
   // The bound is treated as visible if the sample rect mapped to layer is
   // not empty.
