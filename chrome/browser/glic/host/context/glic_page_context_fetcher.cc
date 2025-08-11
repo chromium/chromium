@@ -117,8 +117,10 @@ void HandleFetchPageResult(
     }
 
     if (tab) {
-      actor::ActorTabData::From(tab.get())->DidObserveContent(
-          page_context.annotated_page_content_result->proto);
+      if (auto* actor_tab_data = actor::ActorTabData::From(tab.get())) {
+        actor_tab_data->DidObserveContent(
+            page_context.annotated_page_content_result->proto);
+      }
     }
 
     annotated_page_data->annotated_page_content = mojo_base::ProtoWrapper(
