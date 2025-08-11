@@ -1031,11 +1031,6 @@ extern const char kLensPrewarmHardStickinessInQueryFormulationName[] =
 extern const char kLensPrewarmHardStickinessInQueryFormulationDescription[] =
     "When enabled, query formulation prewarms hard stickiness.";
 
-extern const char kLensQRCodeParsingFixName[] =
-    "Enables the Lens QR code parding fix";
-extern const char kLensQRCodeParsingFixDescription[] =
-    "When enabled, properly parses QR codes.";
-
 extern const char kLensSingleTapTextSelectionDisabledName[] =
     "Disable Lens single tap text selection";
 extern const char kLensSingleTapTextSelectionDisabledDescription[] =

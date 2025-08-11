@@ -6436,11 +6436,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "lens-qr-code-parsing-fix",
-    "owners": ["cmyang@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "lens-search-side-panel-default-width-change",
     "owners": [ "juanmojica@google.com", "lens-chrome-eng@google.com" ],
     "expiry_milestone": 140

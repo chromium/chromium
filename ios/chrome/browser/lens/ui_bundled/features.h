@@ -67,9 +67,6 @@ BASE_DECLARE_FEATURE(kLensPrewarmHardStickinessInQueryFormulation);
 // Whether to enable the fetch srp API.
 BASE_DECLARE_FEATURE(kLensFetchSrpApiEnabled);
 
-// Whether to enable the QR parsing code fix.
-BASE_DECLARE_FEATURE(kLensQRCodeParsingFix);
-
 // Whether to enable exact matches.
 BASE_DECLARE_FEATURE(kLensExactMatchesEnabled);
 
