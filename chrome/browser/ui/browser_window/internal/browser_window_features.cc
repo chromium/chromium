@@ -71,6 +71,7 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog_coordinator.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
@@ -152,6 +153,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       std::make_unique<chrome::BrowserCommandController>(browser);
 
   browser_actions_->InitializeBrowserActions();
+
+  browser_elements_ = GetUserDataFactory().CreateInstance<BrowserElementsViews>(
+      *browser, *browser);
 
   // Initialize bookmark bar controller for all browser types.
   bookmark_bar_controller_ = std::make_unique<BookmarkBarController>(
@@ -467,6 +471,10 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
 void BrowserWindowFeatures::InitPostBrowserViewConstruction(
     BrowserView* browser_view) {
+  if (auto* const provider = browser_elements_->AsA<BrowserElementsViews>()) {
+    provider->Init(browser_view);
+  }
+
   // TODO(crbug.com/346148093): Move SidePanelCoordinator construction to Init.
   // TODO(crbug.com/346148554): Do not create a SidePanelCoordinator for most
   // browser.h types
@@ -650,6 +658,10 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   immersive_mode_controller_.reset();
 
   exclusive_access_manager_.reset();
+
+  if (auto* const provider = browser_elements_->AsA<BrowserElementsViews>()) {
+    provider->TearDown();
+  }
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {

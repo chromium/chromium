@@ -30,6 +30,7 @@ class BreadcrumbManagerBrowserAgent;
 class Browser;
 class BrowserActions;
 class BrowserContentSettingBubbleModelDelegate;
+class BrowserElements;
 class BrowserInstantController;
 class BrowserLiveTabContext;
 class BrowserLocationBarModelDelegate;
@@ -444,6 +445,8 @@ class BrowserWindowFeatures {
   std::unique_ptr<BrowserActions> browser_actions_;
 
   std::unique_ptr<chrome::BrowserCommandController> browser_command_controller_;
+
+  std::unique_ptr<BrowserElements> browser_elements_;
 
   std::unique_ptr<BookmarkBarController> bookmark_bar_controller_;
 

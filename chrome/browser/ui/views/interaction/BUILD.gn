@@ -1,0 +1,16 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("interaction") {
+  sources = [
+    "browser_elements_views.cc",
+    "browser_elements_views.h",
+  ]
+  public_deps = [
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/interaction",
+    "//ui/base",
+    "//ui/views",
+  ]
+}
