@@ -446,7 +446,7 @@ source_set("test_support") {
     "//testing/gtest",
   ]
 
-  if (is_linux) {
+  if (is_linux && use_dbus) {
     deps += [ "//components/dbus" ]
   }
 }
