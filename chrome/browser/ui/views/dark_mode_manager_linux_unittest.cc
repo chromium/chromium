@@ -197,6 +197,7 @@ class DarkModeManagerLinuxTest : public testing::Test {
     EXPECT_FALSE(mock_native_theme_->ShouldUseDarkColors());
     EXPECT_EQ(mock_native_theme_->GetPreferredColorScheme(),
               NativeTheme::PreferredColorScheme::kLight);
+    EXPECT_FALSE(mock_native_theme_->user_color().has_value());
   }
 
   void TearDown() override { manager_.reset(); }
@@ -314,6 +315,9 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalAccentColor) {
   std::optional<SkColor> expected_color = SkColorSetRGB(0, 127, 255);
   EXPECT_CALL(*mock_linux_ui(), SetAccentColor(expected_color));
   std::move(accent_color_callback()).Run(response.get(), nullptr);
+  auto const user_color1 = mock_native_theme()->user_color();
+  EXPECT_TRUE(user_color1.has_value());
+  EXPECT_EQ(*user_color1, expected_color);
 
   // Changes in the portal accent color should be processed by the manager and
   // the native theme should be updated.
@@ -333,6 +337,9 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalAccentColor) {
   signal_writer.CloseContainer(&variant_writer);
   EXPECT_CALL(*mock_linux_ui(), SetAccentColor(expected_color));
   std::move(setting_changed_callback()).Run(&signal);
+  auto const user_color2 = mock_native_theme()->user_color();
+  EXPECT_TRUE(user_color2.has_value());
+  EXPECT_EQ(*user_color2, expected_color);
 }
 
 }  // namespace ui

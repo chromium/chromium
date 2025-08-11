@@ -242,6 +242,11 @@ void DarkModeManagerLinux::SetAccentColor(dbus::MessageReader* reader) {
   for (ui::LinuxUiTheme* linux_ui_theme : *linux_ui_themes_) {
     linux_ui_theme->SetAccentColor(accent_color);
   }
+
+  for (NativeTheme* theme : native_themes_) {
+    theme->set_user_color(accent_color);
+    theme->NotifyOnNativeThemeUpdated();
+  }
 }
 
 }  // namespace ui
