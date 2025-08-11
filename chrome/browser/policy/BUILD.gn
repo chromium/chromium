@@ -368,6 +368,8 @@ source_set("browser_tests") {
     "test/accessibility_policy_browsertest.cc",
   ]
 
+  data_deps = [ "//components/policy:policy_templates" ]
+
   deps = [
     ":policy_specific_browser_tests",
     ":test_support",
