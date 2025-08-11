@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/url_formatter/url_formatter.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -52,6 +52,7 @@ namespace {
 constexpr int kContentOutlineThickness = 1;
 constexpr int kMiniToolbarContentPadding = 4;
 constexpr int kMiniToolbarOutlineCornerRadius = 8;
+constexpr int kMiniToolbarDomainMaxWidth = 140;
 
 constexpr gfx::Insets kDefaultInteriorMargins = gfx::Insets::TLBR(
     kMiniToolbarOutlineCornerRadius + kMiniToolbarContentPadding,
@@ -95,7 +96,6 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
           views::MaximumFlexSizeRule::kPreferred)
           .WithOrder(4));
   domain_label_->SetElideBehavior(gfx::ELIDE_HEAD);
-  domain_label_->SetTruncateLength(20);
   domain_label_->SetSubpixelRenderingEnabled(false);
   domain_label_->SetEnabledColor(kColorMulitContentsViewMiniToolbarForeground);
   domain_label_->SetBackgroundColor(kColorToolbar);
@@ -328,13 +328,9 @@ void MultiContentsViewMiniToolbar::UpdateContents(TabRendererData tab_data) {
   } else if (domain_url.SchemeIsBlob()) {
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_BLOB_URL_SOURCE);
   } else if (tab_data.should_display_url) {
-    domain = url_formatter::FormatUrl(
-        domain_url,
-        url_formatter::kFormatUrlOmitDefaults |
-            url_formatter::kFormatUrlOmitHTTPS |
-            url_formatter::kFormatUrlOmitTrivialSubdomains |
-            url_formatter::kFormatUrlTrimAfterHost,
-        base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr);
+    domain = url_formatter::ElideUrl(
+        domain_url, domain_label_->font_list(),
+        std::min(kMiniToolbarDomainMaxWidth, domain_label_->width()));
   }
   domain_label_->SetText(domain);
 
