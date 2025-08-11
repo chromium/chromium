@@ -51,6 +51,7 @@
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
@@ -1343,6 +1344,97 @@ TEST_P(D3DImageBackingFactoryTest, CreateSharedImageFromHandleFormatUNORM) {
 
 TEST_P(D3DImageBackingFactoryTest, CreateSharedImageFromHandleFormatTYPELESS) {
   RunCreateSharedImageFromHandleTest(DXGI_FORMAT_R8G8B8A8_TYPELESS);
+}
+
+// Tests that writing to a Skia representation of a D3DImageBacking created
+// from a shared handle is reflected in a second backing created from the
+// same handle.
+TEST_P(D3DImageBackingFactoryTest, SkiaWriteReadWithSharedHandle) {
+  auto mailbox1 = Mailbox::Generate();
+  auto mailbox2 = Mailbox::Generate();
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  const gfx::Size size(1, 1);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  const gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+  const GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  const SkAlphaType alpha_type = kPremul_SkAlphaType;
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      shared_image_factory_->GetDeviceForTesting();
+
+  D3D11_TEXTURE2D_DESC desc;
+  desc.Width = size.width();
+  desc.Height = size.height();
+  desc.MipLevels = 1;
+  desc.ArraySize = 1;
+  desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+  desc.SampleDesc.Count = 1;
+  desc.SampleDesc.Quality = 0;
+  desc.Usage = D3D11_USAGE_DEFAULT;
+  desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+  desc.CPUAccessFlags = 0;
+  desc.MiscFlags =
+      D3D11_RESOURCE_MISC_SHARED_NTHANDLE | D3D11_RESOURCE_MISC_SHARED;
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
+  HRESULT hr = d3d11_device->CreateTexture2D(&desc, nullptr, &d3d11_texture);
+  ASSERT_EQ(hr, S_OK);
+
+  Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
+  hr = d3d11_texture.As(&dxgi_resource);
+  ASSERT_EQ(hr, S_OK);
+
+  HANDLE shared_handle;
+  hr = dxgi_resource->CreateSharedHandle(
+      nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE, nullptr,
+      &shared_handle);
+  ASSERT_EQ(hr, S_OK);
+
+  gfx::GpuMemoryBufferHandle handle1{
+      gfx::DXGIHandle(base::win::ScopedHandle(shared_handle))};
+  auto handle2 = handle1.Clone();
+
+  auto backing1 = shared_image_factory_->CreateSharedImage(
+      mailbox1, format, size, color_space, surface_origin, alpha_type, usage,
+      "TestLabel", /*is_thread_safe=*/false, std::move(handle1));
+  ASSERT_TRUE(backing1);
+  auto backing2 = shared_image_factory_->CreateSharedImage(
+      mailbox2, format, size, color_space, surface_origin, alpha_type, usage,
+      "TestLabel", /*is_thread_safe=*/false, std::move(handle2));
+  ASSERT_TRUE(backing2);
+
+  D3DImageBacking* backing1_d3d = static_cast<D3DImageBacking*>(backing1.get());
+  D3DImageBacking* backing2_d3d = static_cast<D3DImageBacking*>(backing2.get());
+  ASSERT_EQ(backing1_d3d->dxgi_shared_handle_state_for_testing(),
+            backing2_d3d->dxgi_shared_handle_state_for_testing());
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref1 =
+      shared_image_manager_.Register(std::move(backing1),
+                                     memory_type_tracker_.get());
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref2 =
+      shared_image_manager_.Register(std::move(backing2),
+                                     memory_type_tracker_.get());
+
+  // Write blue to the first backing.
+  {
+    auto skia_representation1 =
+        shared_image_representation_factory_->ProduceSkia(mailbox1,
+                                                          context_state_);
+    ASSERT_TRUE(skia_representation1);
+    auto scoped_write_access = skia_representation1->BeginScopedWriteAccess(
+        /*begin_semaphores=*/nullptr, /*end_semaphores=*/nullptr,
+        SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    ASSERT_TRUE(scoped_write_access);
+
+    SkCanvas* canvas = scoped_write_access->surface()->getCanvas();
+    canvas->clear(SkColors::kBlue);
+    context_state_->FlushWriteAccess(scoped_write_access.get());
+    context_state_->SubmitIfNecessary({}, true);
+    skia_representation1->SetCleared();
+  }
+
+  // Read from the second backing and check that it is blue.
+  CheckSkiaPixels(mailbox2, size, {0, 0, 255, 255});
 }
 
 // Test to check external image stored in the backing can be reused
