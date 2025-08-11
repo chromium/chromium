@@ -87,6 +87,19 @@
   [_viewController presentViewController:picker animated:YES completion:nil];
 }
 
+- (void)aimPrototypeViewControllerDidTapCameraButton:
+    (AIMPrototypeViewController*)viewController {
+  if (![UIImagePickerController
+          isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+    // TODO(crbug.com/40280872): Show an error to the user.
+    return;
+  }
+  UIImagePickerController* picker = [[UIImagePickerController alloc] init];
+  picker.delegate = self;
+  picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+  [_viewController presentViewController:picker animated:YES completion:nil];
+}
+
 #pragma mark - PHPickerViewControllerDelegate
 
 - (void)picker:(PHPickerViewController*)picker
@@ -99,6 +112,23 @@
 
   NSItemProvider* provider = results.firstObject.itemProvider;
   [_mediator processImageItemProvider:provider];
+}
+
+#pragma mark - UIImagePickerControllerDelegate
+
+- (void)imagePickerController:(UIImagePickerController*)picker
+    didFinishPickingMediaWithInfo:(NSDictionary<NSString*, id>*)info {
+  [picker dismissViewControllerAnimated:YES completion:nil];
+  UIImage* image = info[UIImagePickerControllerOriginalImage];
+  if (!image) {
+    return;
+  }
+  NSItemProvider* provider = [[NSItemProvider alloc] initWithObject:image];
+  [_mediator processImageItemProvider:provider];
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController*)picker {
+  [picker dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - AIMPrototypeMediatorDelegate

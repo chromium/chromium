@@ -20,7 +20,9 @@
 // LensOverlayCoordinator presents the public interface for the Lens Overlay.
 @interface AIMPrototypeCoordinator
     : ChromeCoordinator <AIMPrototypeViewControllerDelegate,
-                         PHPickerViewControllerDelegate>
+                         PHPickerViewControllerDelegate,
+                         UIImagePickerControllerDelegate,
+                         UINavigationControllerDelegate>
 
 @property(nonatomic, weak) id<AIMPrototypeCoordinatorDelegate> delegate;
 

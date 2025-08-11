@@ -120,12 +120,12 @@ NSString* const kMainSectionIdentifier = @"MainSection";
                     action:@selector(galleryButtonTapped)
           forControlEvents:UIControlEventTouchUpInside];
 
-  UIButton* lensButton = [self
-      createButtonWithImage:CustomSymbolWithPointSize(kCameraLensSymbol,
-                                                      kSymbolActionPointSize)];
-  [lensButton addTarget:self
-                 action:@selector(lensButtonTapped)
-       forControlEvents:UIControlEventTouchUpInside];
+  UIButton* cameraButton =
+      [self createButtonWithImage:DefaultSymbolWithPointSize(
+                                      @"camera", kSymbolActionPointSize)];
+  [cameraButton addTarget:self
+                   action:@selector(cameraButtonTapped)
+         forControlEvents:UIControlEventTouchUpInside];
 
   UIButton* micButton = [self
       createButtonWithImage:DefaultSymbolWithPointSize(kMicrophoneSymbol,
@@ -145,7 +145,7 @@ NSString* const kMainSectionIdentifier = @"MainSection";
   // Horizontal stack view for buttons
   UIStackView* buttonsStackView =
       [[UIStackView alloc] initWithArrangedSubviews:@[
-        galleryButton, lensButton, [UIView new], micButton, _sendButton
+        galleryButton, cameraButton, [UIView new], micButton, _sendButton
       ]];
   buttonsStackView.translatesAutoresizingMaskIntoConstraints = NO;
   buttonsStackView.axis = UILayoutConstraintAxisHorizontal;
@@ -256,8 +256,8 @@ NSString* const kMainSectionIdentifier = @"MainSection";
   [self.delegate aimPrototypeViewControllerDidTapGalleryButton:self];
 }
 
-- (void)lensButtonTapped {
-  // TODO(crbug.com/40280872): Implement lens action.
+- (void)cameraButtonTapped {
+  [self.delegate aimPrototypeViewControllerDidTapCameraButton:self];
 }
 
 - (void)micButtonTapped {
