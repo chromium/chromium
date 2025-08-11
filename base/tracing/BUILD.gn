@@ -21,6 +21,10 @@ generate_wrapper("perfetto_diff_tests") {
       "$_protos_path/perfetto/metrics/chrome/all_chrome_metrics.descriptor"
   _rebased_all_chrome_metrics_descriptor =
       rebase_path(_all_chrome_metrics_descriptor, root_build_dir)
+  _all_webview_metrics_descriptor =
+      "$_protos_path/perfetto/metrics/webview/all_webview_metrics.descriptor"
+  _rebased_all_webview_metrics_descriptor =
+      rebase_path(_all_webview_metrics_descriptor, root_build_dir)
   _chrome_track_event_descriptor =
       "$root_gen_dir/base/tracing/protos/chrome_track_event.descriptor"
   _rebased_chrome_track_event_descriptor =
@@ -29,6 +33,10 @@ generate_wrapper("perfetto_diff_tests") {
       "$_protos_path/perfetto/trace/android/winscope.descriptor"
   _rebased_winscope_extensions_descriptor =
       rebase_path(_winscope_extensions_descriptor, root_build_dir)
+  _trace_summary_descriptor =
+      "$_protos_path/perfetto/trace_summary/trace_summary.descriptor"
+  _rebased_trace_summary_descriptor =
+      rebase_path(_trace_summary_descriptor, root_build_dir)
 
   _perfetto_script =
       rebase_path("//third_party/perfetto/tools/diff_test_trace_processor.py",
@@ -52,12 +60,14 @@ generate_wrapper("perfetto_diff_tests") {
     "@WrappedPath($_rebased_test_extensions_descriptor)",
     "--metrics-descriptor",
     "@WrappedPath($_rebased_metrics_descriptor)",
-    "--all-chrome-metrics-descriptor",
     "@WrappedPath($_rebased_all_chrome_metrics_descriptor)",
+    "@WrappedPath($_rebased_all_webview_metrics_descriptor)",
     "--chrome-track-event-descriptor",
     "@WrappedPath($_rebased_chrome_track_event_descriptor)",
     "--winscope-extensions-descriptor",
     "@WrappedPath($_rebased_winscope_extensions_descriptor)",
+    "--summary-descriptor",
+    "@WrappedPath($_rebased_trace_summary_descriptor)",
     "--script",
     "@WrappedPath($_perfetto_script)",
   ]
@@ -66,9 +76,11 @@ generate_wrapper("perfetto_diff_tests") {
     "//base/tracing/protos:chrome_track_event",
     "//third_party/perfetto/protos/perfetto/metrics:descriptor",
     "//third_party/perfetto/protos/perfetto/metrics/chrome:descriptor",
+    "//third_party/perfetto/protos/perfetto/metrics/webview:descriptor",
     "//third_party/perfetto/protos/perfetto/trace:descriptor",
     "//third_party/perfetto/protos/perfetto/trace:test_extensions_descriptor",
     "//third_party/perfetto/protos/perfetto/trace/android:winscope_descriptor",
+    "//third_party/perfetto/protos/perfetto/trace_summary:descriptor",
     "//third_party/perfetto/src/trace_processor:trace_processor_shell",
   ]
 
@@ -80,7 +92,9 @@ generate_wrapper("perfetto_diff_tests") {
     _test_extensions_descriptor,
     _metrics_descriptor,
     _all_chrome_metrics_descriptor,
+    _all_webview_metrics_descriptor,
     _chrome_track_event_descriptor,
     _winscope_extensions_descriptor,
+    _trace_summary_descriptor,
   ]
 }
