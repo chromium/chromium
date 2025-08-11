@@ -604,6 +604,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return cell;
 }
 
+- (NSString*)tableView:(UITableView*)tableView
+    titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath*)indexPath {
+  if ([self isItemTypeForIndexPathAddress:indexPath]) {
+    AutofillProfileItem* item =
+        base::apple::ObjCCastStrict<AutofillProfileItem>(
+            [self.tableViewModel itemAtIndexPath:indexPath]);
+    if (item.autofillProfileRecordType == AutofillAccountHomeProfile ||
+        item.autofillProfileRecordType == AutofillAccountWorkProfile) {
+      return l10n_util::GetNSString(
+          IDS_IOS_SETTINGS_AUTOFILL_REMOVE_ADDRESS_LABEL);
+    }
+  }
+
+  return l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE);
+}
+
 #pragma mark - Switch Callbacks
 
 - (void)autofillAddressSwitchChanged:(UISwitch*)switchView {
