@@ -911,4 +911,20 @@ TEST_F(ShapeResultCursorTest, Rtl) {
             GlyphOffset(-space, 0));
 }
 
+TEST_F(ShapeResultCursorTest, StartIndex) {
+  String string("0123456789");
+  HarfBuzzShaper shaper(string);
+  ShapeResult* result =
+      shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr, 2, 10);
+  EXPECT_EQ(result->StartIndex(), 2u);
+  ShapeResultCursor cursor(result);
+  EXPECT_EQ(cursor.CharacterIndex(), 2u);
+  EXPECT_EQ(cursor.GlyphData().glyph, 22u);
+
+  cursor.MoveToCharacter(4);
+  EXPECT_EQ(cursor.glyph_index_, 2u);
+  EXPECT_EQ(cursor.CharacterIndex(), 4u);
+  EXPECT_EQ(cursor.GlyphData().glyph, 24u);
+}
+
 }  // namespace blink

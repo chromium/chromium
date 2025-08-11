@@ -62,6 +62,7 @@ class PLATFORM_EXPORT ShapeResultCursor {
  private:
   FRIEND_TEST_ALL_PREFIXES(ShapeResultCursorTest, Ltr);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultCursorTest, Rtl);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultCursorTest, StartIndex);
 
   // Get `HarfBuzzRunGlyphData` for the current or the specified glyph index.
   const HarfBuzzRunGlyphData& GlyphData(wtf_size_t i) const {
