@@ -21073,7 +21073,7 @@
                 {
                     "name": "Enabled_Moderate_v1",
                     "params": {
-                        "experiment_version": "1",
+                        "experiment_version": "2",
                         "max_engagement_score": "0.0",
                         "min_engagement_score_delta": "3.0",
                         "min_notification_count": "4",
