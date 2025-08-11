@@ -786,10 +786,8 @@ public class PasswordManagerHelper {
                     "Backend downstream implementation is not available.",
                     CredentialManagerError.BACKEND_NOT_AVAILABLE);
         }
-        // This checks against the account store GMSCore version if the user is syncing and against
-        // the local version if the user is not syncing.
-        if (PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
-                SyncServiceFactory.getForProfile(mProfile))) {
+        // This checks whether the GMSCore version supports the credential manager.
+        if (PasswordManagerUtilBridge.isGmsCoreUpdateRequired()) {
             throw new CredentialManagerBackendException(
                     "Backend version is not supported.",
                     CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);

@@ -31,10 +31,8 @@ jboolean JNI_PasswordManagerUtilBridge_IsPasswordManagerAvailable(
       pref_service, is_internal_backend_present);
 }
 
-jboolean JNI_PasswordManagerUtilBridge_IsGmsCoreUpdateRequired(
-    JNIEnv* env,
-    syncer::SyncService* sync_service) {
-  return IsGmsCoreUpdateRequired(sync_service);
+jboolean JNI_PasswordManagerUtilBridge_IsGmsCoreUpdateRequired(JNIEnv* env) {
+  return IsGmsCoreUpdateRequired();
 }
 
 base::android::ScopedJavaLocalRef<jstring>

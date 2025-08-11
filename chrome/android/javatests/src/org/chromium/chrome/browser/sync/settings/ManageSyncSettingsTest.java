@@ -1339,7 +1339,7 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync"})
     @DisabledTest(message = "crbug.com/386744084")
     public void testSyncErrorCardForUpmBackendOutdatedUpdatedDynamically() {
-        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any())).thenReturn(true);
+        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired()).thenReturn(true);
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
@@ -1354,7 +1354,7 @@ public class ManageSyncSettingsTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any()))
+                    when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired())
                             .thenReturn(false);
                     // TODO(crbug.com/327623232): Observe such changes instead.
                     preference.syncStateChanged();

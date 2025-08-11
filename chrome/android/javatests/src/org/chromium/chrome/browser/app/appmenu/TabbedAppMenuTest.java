@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.app.appmenu;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.util.Batch.PER_CLASS;
@@ -108,7 +107,7 @@ public class TabbedAppMenuTest {
     public void setUp() {
         // Prevent "GmsCore outdated" error from being exposed in bots with old version.
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
-        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any())).thenReturn(false);
+        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired()).thenReturn(false);
 
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
 

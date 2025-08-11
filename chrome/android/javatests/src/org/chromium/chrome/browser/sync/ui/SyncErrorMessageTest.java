@@ -353,7 +353,7 @@ public class SyncErrorMessageTest {
     @LargeTest
     public void testSyncErrorMessageNotShownForUpmBackendOutdatedSignedInUsers() {
         // Sign in.
-        doReturn(true).when(mPasswordManagerUtilBridgeJniMock).isGmsCoreUpdateRequired(any());
+        doReturn(true).when(mPasswordManagerUtilBridgeJniMock).isGmsCoreUpdateRequired();
         mSyncTestRule.setUpAccountAndSignInForTesting();
         @SyncSettingsUtils.SyncError
         int syncError =

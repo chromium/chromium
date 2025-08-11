@@ -4019,10 +4019,10 @@ class ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest
  public:
   ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest() {
 #if BUILDFLAG(IS_ANDROID)
-    // Override the GMS version to be big enough for local UPM support, so these
-    // tests still pass in bots with an outdated version.
+    // Override the GMS version to be big enough for split stores UPM support,
+    // so these tests still pass in bots with an outdated version.
     base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
-        base::NumberToString(password_manager::GetLocalUpmMinGmsVersion()));
+        base::NumberToString(password_manager::GetSplitStoresUpmMinVersion()));
 #endif
   }
 

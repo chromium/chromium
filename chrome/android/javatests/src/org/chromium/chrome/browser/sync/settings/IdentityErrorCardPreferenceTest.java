@@ -8,7 +8,6 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import android.view.View;
@@ -235,7 +234,7 @@ public class IdentityErrorCardPreferenceTest {
     @LargeTest
     @Feature("RenderTest")
     public void testIdentityErrorCardForUpmBackendOutdated() throws Exception {
-        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any())).thenReturn(true);
+        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired()).thenReturn(true);
 
         mSigninTestRule.addTestAccountThenSignin();
 

@@ -69,10 +69,10 @@ std::unique_ptr<KeyedService> BuildOfflinePageModel(SimpleFactoryKey* key) {
 class SigninManagerAndroidTest : public ::testing::Test {
  public:
   SigninManagerAndroidTest() {
-    // Override the GMS version to be big enough for local UPM support, so
-    // DoNotWipePasswordsIfLocalUpmOn still passes on bots with outdated GMS.
+    // Override the GMS version to be big enough for split stores UPM support,
+    // so DoNotWipePasswordsIfLocalUpmOn still passes on bots with outdated GMS.
     base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
-        base::NumberToString(password_manager::GetLocalUpmMinGmsVersion()));
+        base::NumberToString(password_manager::GetSplitStoresUpmMinVersion()));
   }
 
   SigninManagerAndroidTest(const SigninManagerAndroidTest&) = delete;

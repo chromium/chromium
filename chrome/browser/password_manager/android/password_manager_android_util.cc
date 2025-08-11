@@ -37,7 +37,7 @@ bool HasMinGmsVersionForFullUpmSupport() {
   // gms_version_code() must be converted to int for comparison, because it can
   // have legacy values "3(...)" and those evaluate > "2023(...)".
   return base::StringToInt(gms_version_str, &gms_version) &&
-         gms_version >= password_manager::GetLocalUpmMinGmsVersion();
+         gms_version >= password_manager::GetSplitStoresUpmMinVersion();
 }
 
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)

@@ -12,9 +12,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.PackageUtils;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.sync.SyncService;
 
 /** Wrapper for utilities in password_manager_util. */
 @NullMarked
@@ -35,12 +33,11 @@ public class PasswordManagerUtilBridge {
     /**
      * Checks if the GMSCore update is required to use the Password Manager functionality.
      *
-     * @param syncService The sync service.
      * @return Whether the user is required to update GMSCore to use the Password Manager
      *     functionality.
      */
-    public static boolean isGmsCoreUpdateRequired(@Nullable SyncService syncService) {
-        return PasswordManagerUtilBridgeJni.get().isGmsCoreUpdateRequired(syncService);
+    public static boolean isGmsCoreUpdateRequired() {
+        return PasswordManagerUtilBridgeJni.get().isGmsCoreUpdateRequired();
     }
 
     @CalledByNative
@@ -71,7 +68,6 @@ public class PasswordManagerUtilBridge {
         boolean isPasswordManagerAvailable(
                 @JniType("PrefService*") PrefService prefService, boolean isInternalBackendPresent);
 
-        boolean isGmsCoreUpdateRequired(
-                @JniType("syncer::SyncService*") @Nullable SyncService syncService);
+        boolean isGmsCoreUpdateRequired();
     }
 }

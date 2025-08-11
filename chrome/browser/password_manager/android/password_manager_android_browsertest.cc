@@ -46,7 +46,7 @@ class PasswordManagerAndroidBrowserTest
     // This ensures that calls to the password store are derministically
     // routed to the android backend.
     base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
-        base::NumberToString(password_manager::GetLocalUpmMinGmsVersion()));
+        base::NumberToString(password_manager::GetSplitStoresUpmMinVersion()));
     // See crbug.com/331746629. The login database on Android will be
     // deprecated soon. So create a fake backend on GMS Core for password
     // storing.

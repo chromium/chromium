@@ -75,7 +75,7 @@ PasswordFeatureManagerImpl::ComputePasswordAccountStorageUsageLevel() const {
 
 #if BUILDFLAG(IS_ANDROID)
 bool PasswordFeatureManagerImpl::ShouldUpdateGmsCore() {
-  return IsGmsCoreUpdateRequired(sync_service_);
+  return IsGmsCoreUpdateRequired();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

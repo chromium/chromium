@@ -14,9 +14,6 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/base/user_selectable_type.h"
-#include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_user_settings.h"
 
 namespace password_manager {
 
@@ -36,9 +33,9 @@ enum class UseUpmLocalAndSeparateStoresState {
 constexpr char kPasswordsUseUPMLocalAndSeparateStores[] =
     "passwords_use_upm_local_and_separate_stores";
 
-// Do not expose these constants! Use GetLocalUpmMinGmsVersion() instead.
-const int kLocalUpmMinGmsVersionForNonAuto = 240212000;
-const int kLocalUpmMinGmsVersionForAuto = 241512000;
+// Do not expose these constants! Use GetSplitStoresUpmMinVersion() instead.
+const int kSplitStoresUpmMinVersionForNonAuto = 240212000;
+const int kSplitStoresUpmMinVersionForAuto = 241512000;
 
 }  // namespace
 
@@ -60,42 +57,26 @@ bool GetLegacySplitStoresPref(const PrefService* pref_service) {
   NOTREACHED();
 }
 
-bool IsGmsCoreUpdateRequired(const syncer::SyncService* sync_service) {
+bool IsGmsCoreUpdateRequired() {
 #if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   return false;
 #else
-  std::string gms_version_str =
+  const std::string& gms_version_str =
       base::android::BuildInfo::GetInstance()->gms_version_code();
-  int gms_version = 0;
+  int gms_version;
   // GMSCore version could not be parsed, probably no GMSCore installed.
   if (!base::StringToInt(gms_version_str, &gms_version)) {
     return true;
   }
-
-  // GMSCore version is pre-UPM, update is required.
-  if (gms_version < kAccountUpmMinGmsVersion) {
-    return true;
-  }
-
-  // GMSCore version is post-UPM with local passwords, no update required.
-  if (gms_version >= GetLocalUpmMinGmsVersion()) {
-    return false;
-  }
-
-  // GMSCore supports account storage only, thus update is required if password
-  // syncing is disabled.
-  if (!sync_util::HasChosenToSyncPasswords(sync_service)) {
-    return true;
-  }
-
-  return false;
+  // Returns whether GMSCore version is pre account/local password separation.
+  return gms_version < GetSplitStoresUpmMinVersion();
 #endif  //  BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 }
 
-int GetLocalUpmMinGmsVersion() {
+int GetSplitStoresUpmMinVersion() {
   return base::android::BuildInfo::GetInstance()->is_automotive()
-             ? kLocalUpmMinGmsVersionForAuto
-             : kLocalUpmMinGmsVersionForNonAuto;
+             ? kSplitStoresUpmMinVersionForAuto
+             : kSplitStoresUpmMinVersionForNonAuto;
 }
 
 void SetLegacySplitStoresPrefForTest(PrefService* pref_service, bool enabled) {

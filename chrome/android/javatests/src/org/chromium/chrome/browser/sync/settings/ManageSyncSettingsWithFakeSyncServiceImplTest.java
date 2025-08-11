@@ -105,7 +105,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
     public void setUp() {
         // Prevent "GmsCore outdated" error from being exposed in bots with old version.
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
-        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any())).thenReturn(false);
+        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired()).thenReturn(false);
     }
 
     /** Test that triggering OnPassphraseAccepted dismisses PassphraseDialogFragment. */
