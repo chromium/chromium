@@ -1472,15 +1472,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/trusted_vault/proto/local_trusted_vault.proto:TrustedVaultDegradedRecoverabilityValue) -->
 
-<!-- LINT.IfChange(TrustedVaultFetchKeysAttempt) -->
-
-<enum name="TrustedVaultFetchKeysAttempt">
-  <int value="0" label="First attempt"/>
-  <int value="1" label="Second attempt"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/sync/service/sync_service_crypto.cc:TrustedVaultFetchKeysAttempt) -->
-
 <!-- LINT.IfChange(TrustedVaultHintDegradedRecoverabilityChangedReason) -->
 
 <enum name="TrustedVaultHintDegradedRecoverabilityChangedReason">

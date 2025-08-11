@@ -24,17 +24,6 @@ namespace syncer {
 
 namespace {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Keep in sync with
-// TrustedVaultFetchKeysAttempt in
-// tools/metrics/histograms/metadata/sync/enums.xml.
-// LINT.IfChange(TrustedVaultFetchKeysAttempt)
-enum class TrustedVaultFetchKeysAttemptForUMA {
-  kFirstAttempt = 0,
-  kSecondAttempt = 1,
-  kMaxValue = kSecondAttempt
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultFetchKeysAttempt)
 
 // A SyncEncryptionHandler::Observer implementation that simply posts all calls
 // to another task runner.
@@ -621,12 +610,6 @@ void SyncServiceCrypto::FetchTrustedVaultKeys(bool is_second_fetch_attempt) {
              RequiredUserAction::kFetchingTrustedVaultKeys ||
          state_.required_user_action ==
              RequiredUserAction::kTrustedVaultKeyRequiredButFetching);
-
-  base::UmaHistogramEnumeration(
-      "Sync.TrustedVaultFetchKeysAttempt",
-      is_second_fetch_attempt
-          ? TrustedVaultFetchKeysAttemptForUMA::kSecondAttempt
-          : TrustedVaultFetchKeysAttemptForUMA::kFirstAttempt);
 
   if (!is_second_fetch_attempt) {
     state_.deferred_trusted_vault_fetch_keys_pending = false;

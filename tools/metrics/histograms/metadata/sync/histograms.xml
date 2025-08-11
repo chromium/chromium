@@ -2289,13 +2289,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.TrustedVaultFetchKeysAttempt"
-    enum="TrustedVaultFetchKeysAttempt" expires_after="2025-08-08">
-  <owner>mmoskvitin@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <summary>Recorded when fetching trusted vault keys is attempted.</summary>
-</histogram>
-
 <histogram name="Sync.TrustedVaultJavascriptAddRecoveryMethodIsIncognito"
     enum="BooleanIncognito" expires_after="2026-04-13">
   <owner>mmoskvitin@google.com</owner>
