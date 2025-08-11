@@ -1687,7 +1687,8 @@
       "chrome-storage-team@google.com"
     ],
     "platforms": [
-      "Linux"
+      "Linux",
+      "Win"
     ],
     "bases": [
       "external/wpt/IndexedDB",
