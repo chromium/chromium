@@ -196,6 +196,7 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
     overlay_window_->set_overlay_view_cb_for_testing(
         base::BindRepeating(&VideoOverlayWindowViewsTest::GetOverlayViewImpl,
                             base::Unretained(this)));
+    overlay_window_->set_meets_user_interaction_for_testing(true);
 
     // On some platforms, OnNativeWidgetMove is invoked on creation.
     WaitForMove();
