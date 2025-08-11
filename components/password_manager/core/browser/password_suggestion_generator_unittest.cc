@@ -217,6 +217,10 @@ MATCHER(FaviconCanBeRequestedFromGoogle, "") {
          arg_favicon_details->can_be_requested_from_google;
 }
 
+MATCHER(AutofillFieldTypeIsPassword, "") {
+  return arg->Type().GetIdentityCredentialType() == autofill::PASSWORD;
+}
+
 Suggestion::PasswordSuggestionDetails PasswordAndMetadataToSuggestionDetails(
     const PasswordAndMetadata& credential) {
   return Suggestion::PasswordSuggestionDetails(
@@ -803,10 +807,11 @@ TEST_F(PasswordSuggestionGeneratorTest, IdentitySuggestions_SingleAccount) {
   autofill_client().set_identity_credential_delegate(
       std::make_unique<NiceMock<MockIdentityCredentialDelegate>>());
 
-  ON_CALL(static_cast<MockIdentityCredentialDelegate&>(
-              *autofill_client().GetIdentityCredentialDelegate()),
-          GetVerifiedAutofillSuggestions)
-      .WillByDefault(Return(identity_suggestions));
+  EXPECT_CALL(
+      static_cast<MockIdentityCredentialDelegate&>(
+          *autofill_client().GetIdentityCredentialDelegate()),
+      GetVerifiedAutofillSuggestions(_, _, _, AutofillFieldTypeIsPassword(), _))
+      .WillOnce(Return(identity_suggestions));
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       undo_controller(),

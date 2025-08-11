@@ -8469,11 +8469,14 @@ class BrowserAutofillManagerIdentityCredentialTest
 TEST_F(BrowserAutofillManagerIdentityCredentialTest,
        CreateVerifiedEmailSuggestionShownBeforeAddressSuggestions) {
   EXPECT_CALL(identity_credential_delegate(), GetVerifiedAutofillSuggestions)
-      .WillOnce(testing::WithArg<0>([](const FieldType& field_type) {
+      .WillOnce([](const FormData& form, const FormStructure* form_structure,
+                   const FormFieldData& field,
+                   const AutofillField* autofill_field,
+                   const AutofillClient& client) {
         std::vector<Suggestion> suggestions = {
             Suggestion(SuggestionType::kIdentityCredential)};
         return suggestions;
-      }));
+      });
 
   // Set up our form data. Notably, the first field is an email address
   // with webidentity.

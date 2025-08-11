@@ -13,6 +13,7 @@
 namespace autofill {
 
 struct Suggestion;
+class AutofillClient;
 
 // The interface for communication from //components/autofill to
 // //content/browser/webid.
@@ -40,8 +41,9 @@ class IdentityCredentialDelegate {
   using OnFederatedTokenReceivedCallback = base::OnceCallback<void(bool)>;
   virtual ~IdentityCredentialDelegate() = default;
 
-  // Generates verified Autofill suggestions from identity credential requests.
-  // This could be representing two types of identity credentials suggestions:
+  // Generates verified Autofill suggestions from identity credential requests
+  // for the trigger `field` in `form`. This could be representing two types of
+  // identity credentials suggestions:
   // 1. Verified email and potentially other attributes from an identity
   // provider, e.g. name, address etc.
   // 2. Accounts information that is required for federated logins. e.g. name,
@@ -50,7 +52,11 @@ class IdentityCredentialDelegate {
   // The given `field_type` must be one of the Identity Credentials types
   // supported by AutofillType::GetIdentityCredentialType(), or UNKNOWN_TYPE.
   virtual std::vector<Suggestion> GetVerifiedAutofillSuggestions(
-      const FieldType& field_type) const = 0;
+      const FormData& form,
+      const FormStructure* form_structure,
+      const FormFieldData& field,
+      const AutofillField* autofill_field,
+      const AutofillClient& client) const = 0;
 
   // Notifies the delegate that a suggestion from an identity credential
   // conditional request was accepted.

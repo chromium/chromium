@@ -19,7 +19,11 @@ class MockIdentityCredentialDelegate : public IdentityCredentialDelegate {
 
   MOCK_METHOD(std::vector<Suggestion>,
               GetVerifiedAutofillSuggestions,
-              (const FieldType& field_type),
+              (const FormData& form,
+               const FormStructure* form_structure,
+               const FormFieldData& field,
+               const AutofillField* autofill_field,
+               const AutofillClient& client),
               (const override));
   MOCK_METHOD(void,
               NotifySuggestionAccepted,

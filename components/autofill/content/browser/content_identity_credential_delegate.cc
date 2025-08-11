@@ -126,7 +126,15 @@ ContentIdentityCredentialDelegate::~ContentIdentityCredentialDelegate() =
 
 std::vector<Suggestion>
 ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
-    const FieldType& field_type) const {
+    const FormData& form,
+    const FormStructure* form_structure,
+    const FormFieldData& field,
+    const AutofillField* autofill_field,
+    const AutofillClient& client) const {
+  if (!autofill_field) {
+    return {};
+  }
+
   // TODO(crbug.com/380367784): reproduce and add a test to make sure this
   // works properly when FedCM is called from inner frames.
   content::FederatedAuthAutofillSource* source = source_.Run();
@@ -155,7 +163,7 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
       continue;
     }
 
-    switch (field_type) {
+    switch (autofill_field->Type().GetIdentityCredentialType()) {
       case EMAIL_ADDRESS: {
         if (std::optional<Suggestion> suggestion =
                 CreateVerifiedEmailSuggestion(account);
@@ -168,7 +176,9 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
         [[fallthrough]];  // Intentional fall through.
       case PHONE_HOME_WHOLE_NUMBER: {
         if (std::optional<Suggestion> suggestion =
-                CreateProvidedFieldSuggestion(account, field_type);
+                CreateProvidedFieldSuggestion(
+                    account,
+                    autofill_field->Type().GetIdentityCredentialType());
             suggestion) {
           suggestions.emplace_back(std::move(*suggestion));
         }

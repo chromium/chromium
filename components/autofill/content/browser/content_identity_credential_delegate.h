@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webid/federated_auth_autofill_source.h"
@@ -28,7 +29,11 @@ class ContentIdentityCredentialDelegate : public IdentityCredentialDelegate {
   ~ContentIdentityCredentialDelegate() override;
 
   std::vector<Suggestion> GetVerifiedAutofillSuggestions(
-      const FieldType& field_type) const override;
+      const FormData& form,
+      const FormStructure* form_structure,
+      const FormFieldData& field,
+      const AutofillField* autofill_field,
+      const AutofillClient& client) const override;
 
   void NotifySuggestionAccepted(
       const Suggestion& suggestion,
