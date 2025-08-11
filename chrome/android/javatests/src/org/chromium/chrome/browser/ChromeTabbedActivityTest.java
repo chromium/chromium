@@ -877,4 +877,103 @@ public class ChromeTabbedActivityTest {
                 /* isGroupShared= */ false,
                 /* isIncognito= */ false);
     }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testMaybeLaunchDraggedMultiTabInWindow() {
+        int initialTabCount = mActivity.getCurrentTabModel().getCount();
+
+        Intent dragIntent = new Intent(Intent.ACTION_VIEW);
+        dragIntent.setClass(mActivity, ChromeTabbedActivity.class);
+        dragIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        Bundle multiTabBundle = new Bundle();
+        ArrayList<Integer> tabIds = new ArrayList<>(List.of(201, 202));
+        ArrayList<String> urls =
+                new ArrayList<>(
+                        List.of(JUnitTestGURLs.URL_1.getSpec(), JUnitTestGURLs.URL_2.getSpec()));
+        multiTabBundle.putIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS, tabIds);
+        multiTabBundle.putStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS, urls);
+
+        dragIntent.putExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA, multiTabBundle);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(dragIntent));
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount + 2));
+                    // Tabs are added at the end of the tab model.
+                    Criteria.checkThat(
+                            tabModel.getTabAt(initialTabCount).getUrl(),
+                            Matchers.is(JUnitTestGURLs.URL_1));
+                    Criteria.checkThat(
+                            tabModel.getTabAt(initialTabCount + 1).getUrl(),
+                            Matchers.is(JUnitTestGURLs.URL_2));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testMaybeLaunchDraggedMultiTabInWindow_EmptyList() {
+        int initialTabCount = mActivity.getCurrentTabModel().getCount();
+
+        Intent dragIntent = new Intent(Intent.ACTION_VIEW);
+        dragIntent.setClass(mActivity, ChromeTabbedActivity.class);
+        dragIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        Bundle multiTabBundle = new Bundle();
+        multiTabBundle.putIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS, new ArrayList<>());
+        multiTabBundle.putStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS, new ArrayList<>());
+
+        dragIntent.putExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA, multiTabBundle);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(dragIntent));
+
+        // Wait to ensure no new tabs are created.
+        SystemClock.sleep(500);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testMaybeLaunchDraggedMultiTabInWindow_mismatchedLists() {
+        int initialTabCount = mActivity.getCurrentTabModel().getCount();
+
+        Intent dragIntent = new Intent(Intent.ACTION_VIEW);
+        dragIntent.setClass(mActivity, ChromeTabbedActivity.class);
+        dragIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        Bundle multiTabBundle = new Bundle();
+        // Mismatch: 2 IDs, 1 URL. This should be handled gracefully without crashing.
+        ArrayList<Integer> tabIds = new ArrayList<>(List.of(201, 202));
+        ArrayList<String> urls = new ArrayList<>(List.of(JUnitTestGURLs.URL_1.getSpec()));
+        multiTabBundle.putIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS, tabIds);
+        multiTabBundle.putStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS, urls);
+
+        dragIntent.putExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA, multiTabBundle);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(dragIntent));
+
+        // Wait to ensure no new tabs are created.
+        SystemClock.sleep(500);
+
+        // Verify that no new tabs were created due to the malformed intent.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(
+                            "Tab count should not change for mismatched lists",
+                            tabModel.getCount(),
+                            Matchers.is(initialTabCount));
+                });
+    }
 }

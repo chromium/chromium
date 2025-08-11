@@ -201,8 +201,10 @@ public class DragAndDropLauncherActivity extends Activity {
             tabIds.add(tab.getId());
             tabUrls.add(tab.getUrl().getSpec());
         }
-        intent.putIntegerArrayListExtra(IntentHandler.MULTI_TAB_KEY_TAB_IDS, tabIds);
-        intent.putStringArrayListExtra(IntentHandler.MULTI_TAB_KEY_TAB_URLS, tabUrls);
+        Bundle multiTabBundle = new Bundle();
+        multiTabBundle.putIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS, tabIds);
+        multiTabBundle.putStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS, tabUrls);
+        intent.putExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA, multiTabBundle);
         return intent;
     }
 

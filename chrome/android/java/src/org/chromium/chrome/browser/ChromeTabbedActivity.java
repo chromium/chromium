@@ -2655,9 +2655,13 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
     private boolean maybeLaunchDraggedTabOrGroupInWindow(Intent intent) {
         @Nullable TabGroupMetadata tabGroupMetadata = IntentHandler.getTabGroupMetadata(intent);
-        return tabGroupMetadata != null
-                ? maybeLaunchDraggedTabGroupInWindow(intent, tabGroupMetadata)
-                : maybeLaunchDraggedTabInWindow(intent);
+        if (tabGroupMetadata != null) {
+            return maybeLaunchDraggedTabGroupInWindow(intent, tabGroupMetadata);
+        }
+        if (intent.hasExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA)) {
+            return maybeLaunchDraggedMultiTabInWindow(intent);
+        }
+        return maybeLaunchDraggedTabInWindow(intent);
     }
 
     private boolean maybeLaunchDraggedTabInWindow(Intent intent) {
@@ -2688,6 +2692,31 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 AppHeaderUtils.isAppInDesktopWindow(
                         mRootUiCoordinator.getDesktopWindowStateManager()),
                 /* isTabGroup= */ false);
+        return true;
+    }
+
+    private boolean maybeLaunchDraggedMultiTabInWindow(Intent intent) {
+        Bundle multiTabBundle =
+                intent.getBundleExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA);
+        ArrayList<Integer> draggedTabIds =
+                multiTabBundle.getIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS);
+        if (draggedTabIds.isEmpty()) return false;
+        if (!IntentHandler.wasIntentSenderChrome(intent)) return false;
+        if (mMultiInstanceManager == null) return false;
+
+        // |draggedTabId| is retrieved from the activity the tab is being dragged from.
+        int windowId =
+                IntentUtils.safeGetIntExtra(
+                        intent, IntentHandler.EXTRA_DRAGDROP_TAB_WINDOW_ID, INVALID_WINDOW_ID);
+        List<Tab> tabs = new ArrayList<>();
+        for (int draggedTabId : draggedTabIds) {
+            Tab tab = TabWindowManagerSingleton.getInstance().getTabById(draggedTabId, windowId);
+            tabs.add(tab);
+        }
+
+        mMultiInstanceManager.moveTabsToWindow(this, tabs, /* atIndex= */ 0);
+
+        // TODO(crbug.com/404074503): Add metrics for multi tab drag.
         return true;
     }
 

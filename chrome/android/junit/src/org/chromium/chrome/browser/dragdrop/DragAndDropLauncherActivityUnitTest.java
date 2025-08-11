@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -230,6 +231,8 @@ public class DragAndDropLauncherActivityUnitTest {
                     buildTabGroupMetadata(),
                     IntentHandler.getTabGroupMetadata(intent));
         } else if (isMultiTabDrag) {
+            Bundle bundle =
+                    intent.getBundleExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA);
             assertEquals(
                     "The EXTRA_URL_SOURCE intent extra value should match.",
                     UrlIntentSource.TAB_IN_STRIP,
@@ -238,11 +241,11 @@ public class DragAndDropLauncherActivityUnitTest {
             assertEquals(
                     "The intent data value should match.",
                     Collections.singletonList(tab.getUrl().getSpec()),
-                    intent.getStringArrayListExtra(IntentHandler.MULTI_TAB_KEY_TAB_URLS));
+                    bundle.getStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS));
             assertEquals(
                     "The intent data value should match.",
                     Collections.singletonList(tab.getId()),
-                    intent.getIntegerArrayListExtra(IntentHandler.MULTI_TAB_KEY_TAB_IDS));
+                    bundle.getIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS));
         } else {
             assertEquals(
                     "The EXTRA_URL_SOURCE intent extra value should match.",
