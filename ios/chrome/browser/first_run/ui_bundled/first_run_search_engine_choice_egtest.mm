@@ -280,7 +280,13 @@
 }
 
 // Tests that incognito can be forced through the FRE with search engine screen.
-- (void)testIncognitoForcedByPolicy {
+// TODO(crbug.com/427943675): Test is flaky on simulator. Reenable the test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testIncognitoForcedByPolicy FLAKY_testIncognitoForcedByPolicy
+#else
+#define MAYBE_testIncognitoForcedByPolicy testIncognitoForcedByPolicy
+#endif
+- (void)MAYBE_testIncognitoForcedByPolicy {
   // Configure the policy to force sign-in.
   [self relaunchAppWithPolicyKey:policy::key::kIncognitoModeAvailability
                   xmlPolicyValue:"<integer>2</integer>"];
