@@ -451,13 +451,6 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       performAction:grey_tap()];
 
   // Note: The profile switch happens here.
-
-  // History sync screen: Decline the promo (irrelevant here).
-  [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          PromoScreenSecondaryButtonMatcher()]
-      performAction:grey_tap()];
-
   [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
 }
 
@@ -629,13 +622,6 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       performAction:grey_tap()];
 
   // Note: The profile switch happens here.
-
-  // History sync screen: Decline the promo (irrelevant here).
-  [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          PromoScreenSecondaryButtonMatcher()]
-      performAction:grey_tap()];
-
   [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
 }
 
@@ -992,13 +978,6 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       performAction:grey_tap()];
 
   // Note: The profile switch happens here.
-
-  // History sync screen: Decline the promo (irrelevant here).
-  [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          PromoScreenSecondaryButtonMatcher()]
-      performAction:grey_tap()];
-
   // Confirm profile switched.
   GREYAssert(![[ChromeEarlGrey currentProfileName]
                  isEqualToString:personalProfileName],
