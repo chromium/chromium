@@ -5,10 +5,13 @@
 #include "components/spellcheck/browser/spellchecker_session_bridge_android.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/feature_list.h"
+#include "components/spellcheck/common/spellcheck_features.h"
 #include "components/spellcheck/common/spellcheck_result.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -50,8 +53,8 @@ void SpellCheckerSessionBridge::RequestTextCheck(
   // text will be spellchecked immediately.
   if (java_object_.is_null()) {
     java_object_.Reset(Java_SpellCheckerSessionBridge_create(
-        base::android::AttachCurrentThread(),
-        reinterpret_cast<intptr_t>(this)));
+        base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+        base::FeatureList::IsEnabled(spellcheck::kAndroidGrammarCheck)));
     if (java_object_.is_null()) {
       java_object_initialization_failed_ = true;
       return;

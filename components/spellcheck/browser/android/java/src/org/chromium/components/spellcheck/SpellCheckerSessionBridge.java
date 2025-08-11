@@ -28,14 +28,19 @@ import java.util.ArrayList;
 @NullMarked
 public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
     private long mNativeSpellCheckerSessionBridge;
+    private final boolean mAllowGrammarChecks;
     private final @Nullable SpellCheckerSession mSpellCheckerSession;
 
     /**
      * Constructs a SpellCheckerSessionBridge object as well as its SpellCheckerSession object.
+     *
      * @param nativeSpellCheckerSessionBridge Pointer to the native SpellCheckerSessionBridge.
+     * @param allowGrammarChecks Allows grammar errors to be processed.
      */
-    private SpellCheckerSessionBridge(long nativeSpellCheckerSessionBridge) {
+    private SpellCheckerSessionBridge(
+            long nativeSpellCheckerSessionBridge, boolean allowGrammarChecks) {
         mNativeSpellCheckerSessionBridge = nativeSpellCheckerSessionBridge;
+        mAllowGrammarChecks = allowGrammarChecks;
 
         Context context = ContextUtils.getApplicationContext();
         final TextServicesManager textServicesManager =
@@ -52,15 +57,17 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
     }
 
     /**
-     * Returns a new SpellCheckerSessionBridge object if the internal SpellCheckerSession object
-     * was able to be created.
+     * Returns a new SpellCheckerSessionBridge object if the internal SpellCheckerSession object was
+     * able to be created.
+     *
      * @param nativeSpellCheckerSessionBridge Pointer to the native SpellCheckerSessionBridge.
+     * @param allowGrammarChecks Allows grammar errors to be processed.
      */
     @CalledByNative
     private static @Nullable SpellCheckerSessionBridge create(
-            long nativeSpellCheckerSessionBridge) {
+            long nativeSpellCheckerSessionBridge, boolean allowGrammarChecks) {
         SpellCheckerSessionBridge bridge =
-                new SpellCheckerSessionBridge(nativeSpellCheckerSessionBridge);
+                new SpellCheckerSessionBridge(nativeSpellCheckerSessionBridge, allowGrammarChecks);
         if (bridge.mSpellCheckerSession == null) {
             return null;
         }
@@ -116,13 +123,19 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
                 continue;
             }
             for (int i = 0; i < result.getSuggestionsCount(); i++) {
-                // If a word looks like a typo, record its offset and length.
-                if ((result.getSuggestionsInfoAt(i).getSuggestionsAttributes()
-                                & SuggestionsInfo.RESULT_ATTR_LOOKS_LIKE_TYPO)
-                        == SuggestionsInfo.RESULT_ATTR_LOOKS_LIKE_TYPO) {
+                SuggestionsInfo info = result.getSuggestionsInfoAt(i);
+
+                final int grammarBitMask =
+                        mAllowGrammarChecks
+                                ? SuggestionsInfo.RESULT_ATTR_LOOKS_LIKE_GRAMMAR_ERROR
+                                : 0;
+
+                // If a word looks like a typo or grammar error, record its offset and length.
+                if ((info.getSuggestionsAttributes()
+                                & (SuggestionsInfo.RESULT_ATTR_LOOKS_LIKE_TYPO | grammarBitMask))
+                        != 0) {
                     offsets.add(result.getOffsetAt(i));
                     lengths.add(result.getLengthAt(i));
-                    SuggestionsInfo info = result.getSuggestionsInfoAt(i);
                     ArrayList<String> suggestions_for_word = new ArrayList<String>();
                     for (int j = 0; j < info.getSuggestionsCount(); ++j) {
                         String suggestion = info.getSuggestionAt(j);
