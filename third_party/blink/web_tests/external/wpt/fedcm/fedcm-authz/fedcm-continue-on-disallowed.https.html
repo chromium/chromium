@@ -12,9 +12,17 @@
 import {fedcm_test,
         request_options_with_mediation_required,
         select_manifest,
+        disconnect_options,
         fedcm_get_and_select_first_account} from '../support/fedcm-helper.sub.js';
 
 fedcm_test(async t => {
+  t.add_cleanup(async () => {
+    try {
+      await IdentityCredential.disconnect(disconnect_options(""));
+    } catch (ex){
+      // Failure is not critical, test state is reset.
+    }
+  });
   // First, do a regular fedcm request so we that we can be considered
   // a returning user below.
   let options = request_options_with_mediation_required();
