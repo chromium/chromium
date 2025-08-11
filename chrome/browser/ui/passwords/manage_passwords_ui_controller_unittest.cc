@@ -595,7 +595,6 @@ TEST_F(ManagePasswordsUIControllerTest, BackupPasswordSaved) {
   auto test_form_manager = CreateFormManagerWithBestMatches(
       /*best_matches=*/{stored_matching_form}, &submitted_form);
 
-  EXPECT_CALL(*test_form_manager, OnRemovePasswordBackupNote()).Times(1);
   EXPECT_CALL(*test_form_manager, Save());
   controller()->OnUpdatePasswordSubmitted(std::move(test_form_manager));
 

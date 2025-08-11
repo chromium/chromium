@@ -840,7 +840,6 @@ TEST_P(IOSChromeSavePasswordInfoBarDelegateRecoveryFlowTest,
       .WillByDefault(testing::ReturnRef(updated_form));
 
   // Set the expectations.
-  EXPECT_CALL(*form_manager_ptr_, OnRemovePasswordBackupNote()).Times(1);
   EXPECT_CALL(*form_manager_ptr_, Save).Times(1);
 
   // Emulate starting presenting the info banner so actions can be taken and

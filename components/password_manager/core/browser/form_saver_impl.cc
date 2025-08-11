@@ -86,6 +86,10 @@ void PostProcessMatches(
         if (std::optional<std::u16string> backup_password =
                 pending.GetPasswordBackup()) {
           form_to_update.SetPasswordBackupNote(backup_password.value());
+        } else {
+          // Since we've updated the old password and there is no new backup
+          // password, the backup password is now obsolete.
+          form_to_update.DeletePasswordBackupNote();
         }
         SanitizeFormData(&form_to_update.form_data);
         store->UpdateLogin(std::move(form_to_update));

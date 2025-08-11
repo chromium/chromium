@@ -202,7 +202,6 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   bool IsUpdateAffectingPasswordsStoredInTheGoogleAccount() const override;
   void OnUpdateUsernameFromPrompt(const std::u16string& new_username) override;
   void OnUpdatePasswordFromPrompt(const std::u16string& new_password) override;
-  void OnRemovePasswordBackupNote() override;
 
   void OnNopeUpdateClicked() override;
   void OnNeverClicked() override;

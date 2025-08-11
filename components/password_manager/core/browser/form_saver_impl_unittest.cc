@@ -263,7 +263,7 @@ TEST_P(FormSaverImplSaveTest, Write_AndUpdatePasswordValuesOnPSLMatch) {
 }
 
 // Stores a credential and makes sure that the backup password is propagated.
-TEST_P(FormSaverImplSaveTest, Write_UpdatePropagetesBackup) {
+TEST_P(FormSaverImplSaveTest, Write_UpdatePropagatesBackup) {
   constexpr char16_t kOldPassword[] = u"old_password";
   constexpr char16_t kNewPassword[] = u"new_password";
   constexpr char16_t kBackupPassword[] = u"backup_password";
@@ -282,6 +282,38 @@ TEST_P(FormSaverImplSaveTest, Write_UpdatePropagetesBackup) {
   expected_update.date_password_modified = base::Time::Now();
   EXPECT_CALL(*mock_store_, UpdateLogin(expected_update, _));
   SaveCredential(pending, {&duplicate}, kOldPassword);
+}
+
+// Stores a credential and makes sure that the backup password is propagated.
+TEST_P(FormSaverImplSaveTest, Write_UpdateDeletesAllAffectedBackups) {
+  constexpr char16_t kOldPassword[] = u"old_password";
+  constexpr char16_t kNewPassword[] = u"new_password";
+  constexpr char16_t kBackupPassword[] = u"backup_password";
+  PasswordForm pending = CreatePending(u"nameofuser", kNewPassword);
+  pending.date_password_modified = base::Time::Now() - base::Seconds(1);
+
+  PasswordForm match_1 =
+      CreatePending(u"nameofuser", kOldPassword, PasswordForm::MatchType::kPSL);
+  match_1.SetPasswordBackupNote(kBackupPassword);
+  match_1.url = GURL("https://www.example.in");
+  match_1.signon_realm = match_1.url.spec();
+  PasswordForm match_2 =
+      CreatePending(u"nameofuser", kOldPassword, PasswordForm::MatchType::kPSL);
+  match_2.SetPasswordBackupNote(kBackupPassword);
+  match_2.url = GURL("https://account.example.in");
+  match_2.signon_realm = match_2.url.spec();
+
+  PasswordForm expected_update_1 = match_1;
+  expected_update_1.password_value = kNewPassword;
+  expected_update_1.DeletePasswordBackupNote();
+  expected_update_1.date_password_modified = base::Time::Now();
+  PasswordForm expected_update_2 = match_2;
+  expected_update_2.password_value = kNewPassword;
+  expected_update_2.DeletePasswordBackupNote();
+  expected_update_2.date_password_modified = base::Time::Now();
+  EXPECT_CALL(*mock_store_, UpdateLogin(expected_update_1, _));
+  EXPECT_CALL(*mock_store_, UpdateLogin(expected_update_2, _));
+  SaveCredential(pending, {&match_1, &match_2}, kOldPassword);
 }
 
 // Stores a credential and makes sure that not exact matches are not updated.

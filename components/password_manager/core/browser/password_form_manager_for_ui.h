@@ -82,12 +82,6 @@ class PasswordFormManagerForUI {
   virtual void OnUpdatePasswordFromPrompt(
       const std::u16string& new_password) = 0;
 
-  // To be called if the newly saved password is overriding a
-  // password saved previously as a backup password.
-  // It sets an empty backup password note to the submitted
-  // form, which means the backup should be deleted.
-  virtual void OnRemovePasswordBackupNote() = 0;
-
   // Called when the user chose not to update password.
   virtual void OnNopeUpdateClicked() = 0;
 

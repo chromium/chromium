@@ -871,7 +871,7 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordWithBackup) {
                                      Parse(submitted_form));
 
   EXPECT_EQ(new_password, updated_form.password_value);
-  EXPECT_EQ(updated_form.GetPasswordBackup().value(), backup_password);
+  EXPECT_FALSE(updated_form.GetPasswordBackup().has_value());
 }
 
 TEST_P(PasswordSaveManagerImplTest, UpdateUsernameToAnotherFieldValue) {

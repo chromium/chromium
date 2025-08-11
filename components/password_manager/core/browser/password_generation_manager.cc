@@ -67,7 +67,6 @@ class PasswordDataForUI : public PasswordFormManagerForUI {
   bool IsUpdateAffectingPasswordsStoredInTheGoogleAccount() const override;
   void OnUpdateUsernameFromPrompt(const std::u16string& new_username) override;
   void OnUpdatePasswordFromPrompt(const std::u16string& new_password) override;
-  void OnRemovePasswordBackupNote() override;
   void OnNopeUpdateClicked() override;
   void OnNeverClicked() override;
   void OnNoInteraction(bool is_update) override;
@@ -172,11 +171,6 @@ void PasswordDataForUI::OnUpdateUsernameFromPrompt(
 void PasswordDataForUI::OnUpdatePasswordFromPrompt(
     const std::u16string& new_password) {
   // Ignore. The generated password can be edited in-place.
-}
-
-void PasswordDataForUI::OnRemovePasswordBackupNote() {
-  // Ignore. This path isn't needed for the APC flow.
-  NOTREACHED();
 }
 
 void PasswordDataForUI::OnNopeUpdateClicked() {
