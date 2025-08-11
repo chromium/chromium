@@ -30,7 +30,8 @@ public class StripLayoutTabDelegate {
 
     public static final float TAB_WIDTH_MEDIUM = 156.f;
 
-    private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_START = 96.f;
+    private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_START =
+            StripLayoutUtils.shouldApplyMoreDensity() ? 64.f : 96.f;
 
     public static final int ANIM_HOVERED_TAB_CONTAINER_FADE_MS = 200;
     private final LayoutUpdateHost mUpdateHost;
