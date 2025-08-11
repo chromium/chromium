@@ -329,7 +329,14 @@ TEST_F(ReaderModeTabHelperTest, FetchLastCommittedUrlDistillabilityResult) {
 
 // Tests that ReaderModeTabHelper observers are notified when the Reader mode
 // WebState becomes available, and unavailable.
-TEST_F(ReaderModeTabHelperTest, NotifiesObserversOfAvailability) {
+// TODO(crbug.com/437829140): Re-enable the test on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_NotifiesObserversOfAvailability NotifiesObserversOfAvailability
+#else
+#define MAYBE_NotifiesObserversOfAvailability \
+  DISABLED_NotifiesObserversOfAvailability
+#endif
+TEST_F(ReaderModeTabHelperTest, MAYBE_NotifiesObserversOfAvailability) {
   MockReaderModeTabHelperObserver mock_observer;
   base::ScopedObservation<ReaderModeTabHelper, ReaderModeTabHelper::Observer>
       observation(&mock_observer);
@@ -413,7 +420,13 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObserversOfDistillationFailure) {
 }
 
 // Tests that the WebViewProxy is updated when reader mode is toggled.
-TEST_F(ReaderModeTabHelperTest, WebViewProxyUpdated) {
+// TODO(crbug.com/437829140): Re-enable the test on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_WebViewProxyUpdated WebViewProxyUpdated
+#else
+#define MAYBE_WebViewProxyUpdated DISABLED_WebViewProxyUpdated
+#endif
+TEST_F(ReaderModeTabHelperTest, MAYBE_WebViewProxyUpdated) {
   WebViewProxyTabHelper::CreateForWebState(web_state());
   WebViewProxyTabHelper* web_view_proxy_tab_helper =
       WebViewProxyTabHelper::FromWebState(web_state());
@@ -455,7 +468,13 @@ TEST_F(ReaderModeTabHelperTest, WebViewProxyUpdated) {
 
 // Tests that ReaderMode WebState has the correct TabHelpers attached for edit
 // menu.
-TEST_F(ReaderModeTabHelperTest, TestTabHelpers) {
+// TODO(crbug.com/437829140): Re-enable the test on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_TestTabHelpers TestTabHelpers
+#else
+#define MAYBE_TestTabHelpers DISABLED_TestTabHelpers
+#endif
+TEST_F(ReaderModeTabHelperTest, MAYBE_TestTabHelpers) {
   EditMenuTabHelper::CreateForWebState(web_state());
 
   // Set a non-empty DOM Distiller result.
@@ -480,7 +499,14 @@ TEST_F(ReaderModeTabHelperTest, TestTabHelpers) {
 
 // Tests that when eligible content is displayed, the reader mode state is
 // recorded correctly.
-TEST_F(ReaderModeTabHelperTest, TestEligibleContentIsDisplayed) {
+// TODO(crbug.com/437829140): Re-enable the test on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_TestEligibleContentIsDisplayed TestEligibleContentIsDisplayed
+#else
+#define MAYBE_TestEligibleContentIsDisplayed \
+  DISABLED_TestEligibleContentIsDisplayed
+#endif
+TEST_F(ReaderModeTabHelperTest, MAYBE_TestEligibleContentIsDisplayed) {
   // Set a non-empty DOM Distiller result.
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
@@ -536,7 +562,15 @@ TEST_F(ReaderModeTabHelperTest, TestDistillationTimeout) {
 }
 
 // Tests that distillation that completes prior to the timeout is recorded.
-TEST_F(ReaderModeTabHelperTest, TestDistillationCompletedAfterTimeout) {
+// TODO(crbug.com/437829140): Re-enable the test on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_TestDistillationCompletedAfterTimeout \
+  TestDistillationCompletedAfterTimeout
+#else
+#define MAYBE_TestDistillationCompletedAfterTimeout \
+  DISABLED_TestDistillationCompletedAfterTimeout
+#endif
+TEST_F(ReaderModeTabHelperTest, MAYBE_TestDistillationCompletedAfterTimeout) {
   base::test::ScopedFeatureList scoped_feature_list;
   base::FieldTrialParams custom_time_params = {
       {kReaderModeHeuristicPageLoadDelayDurationStringName, "1s"},
