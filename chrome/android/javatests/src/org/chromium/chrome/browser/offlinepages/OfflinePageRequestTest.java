@@ -69,7 +69,7 @@ public class OfflinePageRequestTest {
         String testUrl = testServer.getURL(TEST_PAGE);
         String aboutUrl = testServer.getURL(ABOUT_PAGE);
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Load and save an offline page.
         savePage(testUrl, CLIENT_ID);
@@ -103,7 +103,7 @@ public class OfflinePageRequestTest {
         String testUrl = testServer.getURL(TEST_PAGE);
         String testUrlWithFragment = testUrl + "#ref";
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Load and save an offline page for the url with a fragment.
         savePage(testUrlWithFragment, CLIENT_ID);
@@ -134,7 +134,7 @@ public class OfflinePageRequestTest {
         String testUrl = testServer.getURL(TEST_PAGE);
         String aboutUrl = testServer.getURL(ABOUT_PAGE);
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Load and save a persistent offline page using a persistent namespace so that the archive
         // will be published.

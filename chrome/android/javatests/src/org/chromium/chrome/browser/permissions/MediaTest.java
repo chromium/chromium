@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.permissions;
 
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -42,7 +41,7 @@ public class MediaTest {
     private void testMediaPermissionsPlumbing(
             String prefix, String script, int numUpdates, boolean withGesture, boolean isDialog)
             throws Exception {
-        Tab tab = mPermissionRule.getActivity().getActivityTab();
+        Tab tab = mPermissionRule.getActivityTab();
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter(prefix, mPermissionRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));

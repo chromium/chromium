@@ -284,7 +284,7 @@ public class ChromeTabModalPresenterTest {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
 
         // Make sure there is only one opened tab.
-        while (mActivity.getCurrentTabModel().getCount() > 1) {
+        while (ChromeTabUtils.getTabCountOnUiThread(mActivity.getCurrentTabModel()) > 1) {
             ChromeTabUtils.closeCurrentTab(InstrumentationRegistry.getInstrumentation(), mActivity);
         }
 

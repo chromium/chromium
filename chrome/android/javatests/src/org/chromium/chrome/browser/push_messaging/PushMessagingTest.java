@@ -144,7 +144,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
                 });
 
         waitForTitle(
-                mNotificationTestRule.getActivity().getActivityTab(),
+                mNotificationTestRule.getActivityTab(),
                 "subscribe fail: NotAllowedError: Registration failed - permission denied");
 
         // Notifications permission should still be prompt.
@@ -160,7 +160,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
         PermissionTestRule.replyToDialog(
                 PermissionTestRule.PromptDecision.DENY, mNotificationTestRule.getActivity());
         waitForTitle(
-                mNotificationTestRule.getActivity().getActivityTab(),
+                mNotificationTestRule.getActivityTab(),
                 "subscribe fail: NotAllowedError: Registration failed - permission denied");
 
         // This should have caused notifications permission to become denied.
@@ -201,7 +201,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
         PermissionTestRule.waitForDialog(mNotificationTestRule.getActivity());
         PermissionTestRule.replyToDialog(
                 PermissionTestRule.PromptDecision.ALLOW, mNotificationTestRule.getActivity());
-        waitForTitle(mNotificationTestRule.getActivity().getActivityTab(), "subscribe ok");
+        waitForTitle(mNotificationTestRule.getActivityTab(), "subscribe ok");
 
         // This should have caused notifications permission to become granted.
         Assert.assertEquals("\"granted\"", runScriptBlocking("Notification.permission"));
@@ -239,7 +239,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
     public void testDefaultNotification() throws TimeoutException {
         // Start off using the tab loaded in setUp().
         Assert.assertEquals(1, mNotificationTestRule.getActivity().getCurrentTabModel().getCount());
-        Tab tab = mNotificationTestRule.getActivity().getActivityTab();
+        Tab tab = mNotificationTestRule.getActivityTab();
         Assert.assertEquals(mPushTestPage, tab.getUrl().getSpec());
         Assert.assertFalse(tab.isHidden());
 
@@ -253,9 +253,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
         // Make the tab invisible by opening another one with a different origin.
         mNotificationTestRule.loadUrlInNewTab(ABOUT_BLANK);
         Assert.assertEquals(2, mNotificationTestRule.getActivity().getCurrentTabModel().getCount());
-        Assert.assertEquals(
-                ABOUT_BLANK,
-                mNotificationTestRule.getActivity().getActivityTab().getUrl().getSpec());
+        Assert.assertEquals(ABOUT_BLANK, mNotificationTestRule.getActivityTab().getUrl().getSpec());
         Assert.assertTrue(tab.isHidden());
 
         // The first time a push event is fired and no notification is shown from the service
@@ -296,8 +294,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
      * expectedTitle}.
      */
     private void runScriptAndWaitForTitle(String script, String expectedTitle) {
-        runScriptAndWaitForTitle(
-                script, expectedTitle, mNotificationTestRule.getActivity().getActivityTab());
+        runScriptAndWaitForTitle(script, expectedTitle, mNotificationTestRule.getActivityTab());
     }
 
     /**

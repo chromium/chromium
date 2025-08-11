@@ -50,7 +50,7 @@ public class GeolocationTest {
 
     private void runTest(String javascript, int nUpdates, boolean withGesture, boolean isDialog)
             throws Exception {
-        Tab tab = mPermissionRule.getActivity().getActivityTab();
+        Tab tab = mPermissionRule.getActivityTab();
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter("Count:", mPermissionRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));

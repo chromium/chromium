@@ -217,7 +217,7 @@ public class PageLoadMetricsTest {
     public void testPageLoadMetricEmitted() throws InterruptedException {
         Assert.assertFalse(
                 "Tab shouldn't be loading anything before we add observer",
-                mActivityTestRule.getActivity().getActivityTab().isLoading());
+                mActivityTestRule.getActivityTab().isLoading());
         PageLoadMetricsTestObserver metricsObserver = new PageLoadMetricsTestObserver();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> PageLoadMetrics.addObserver(metricsObserver, false));
@@ -259,7 +259,7 @@ public class PageLoadMetricsTest {
     public void testPageLoadMetricForPrerendering() throws Exception {
         Assert.assertFalse(
                 "Tab shouldn't be loading anything before we add observer",
-                mActivityTestRule.getActivity().getActivityTab().isLoading());
+                mActivityTestRule.getActivityTab().isLoading());
         // Add two observers, one doesn't support prerendering, and the other is does.
         PageLoadMetricsTestObserver metricsObserver = new PageLoadMetricsTestObserver();
         ThreadUtils.runOnUiThreadBlocking(

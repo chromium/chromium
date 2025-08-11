@@ -57,7 +57,7 @@ public class AutomaticEmbargoTest {
             final String updaterPrefix,
             final boolean withGesture)
             throws Exception {
-        Tab tab = mPermissionRule.getActivity().getActivityTab();
+        Tab tab = mPermissionRule.getActivityTab();
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter(updaterPrefix, mPermissionRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));

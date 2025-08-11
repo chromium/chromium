@@ -55,7 +55,7 @@ public class InstalledAppTest {
 
         @Override
         public void onTitleUpdated(Tab tab) {
-            String title = mActivityTestRule.getActivity().getActivityTab().getTitle();
+            String title = mActivityTestRule.getActivityTab().getTitle();
             // Wait until the title indicates either success or failure.
             if (!title.startsWith("Success:") && !title.startsWith("Fail:")) return;
             mStatus = title;
@@ -72,7 +72,7 @@ public class InstalledAppTest {
     public void setUp() throws Exception {
         mUrl = mActivityTestRule.getTestServer().getURL(TEST_FILE);
         mPage = mActivityTestRule.startOnBlankPage();
-        mTab = mActivityTestRule.getActivity().getActivityTab();
+        mTab = mActivityTestRule.getActivityTab();
         mUpdateWaiter = new InstalledAppUpdateWaiter();
         ThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mUpdateWaiter));
     }

@@ -80,7 +80,7 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
         String blockedHost = testServer.getURLWithHostName(BLOCKED_SITE_URL, "/");
         mActivityTestRule.loadUrl(blockedHost);
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         Assert.assertTrue(tab.isShowingErrorPage());
         String title = mActivityTestRule.getActivity().getCurrentWebContents().getTitle();
         Assert.assertFalse(title.isEmpty());
@@ -124,7 +124,7 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
         String blockedHost = testServer.getURL(TEST_PAGE);
         mActivityTestRule.loadUrl(blockedHost);
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         Assert.assertTrue(tab.isShowingErrorPage());
         String title = mActivityTestRule.getActivity().getCurrentWebContents().getTitle();
         Assert.assertFalse(title.isEmpty());
@@ -147,7 +147,7 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
         String notBlockedHost = testServer.getURL(TEST_PAGE);
         mActivityTestRule.loadUrl(notBlockedHost);
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         Assert.assertFalse(tab.isShowingErrorPage());
         String title = mActivityTestRule.getActivity().getCurrentWebContents().getTitle();
         Assert.assertFalse(title.isEmpty());

@@ -64,7 +64,7 @@ public final class SafeBrowsingTest {
     }
 
     private WebContents getWebContents() {
-        return mActivityTestRule.getActivity().getCurrentWebContents();
+        return mActivityTestRule.getWebContents();
     }
 
     /*
@@ -72,7 +72,7 @@ public final class SafeBrowsingTest {
      * This is necessary because pages with interstitials do not finish loading.
      */
     private void loadUrlNonBlocking(String url) {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
                 (Runnable) () -> tab.loadUrl(new LoadUrlParams(url, PageTransition.TYPED)));
     }

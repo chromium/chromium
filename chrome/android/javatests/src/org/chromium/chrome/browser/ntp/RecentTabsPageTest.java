@@ -127,7 +127,7 @@ public class RecentTabsPageTest {
         mActivityTestRule.startOnBlankPage();
         mActivity = mActivityTestRule.getActivity();
         mTabModel = mActivity.getTabModelSelector().getModel(false);
-        mTab = mActivity.getActivityTab();
+        mTab = mActivityTestRule.getActivityTab();
     }
 
     @After

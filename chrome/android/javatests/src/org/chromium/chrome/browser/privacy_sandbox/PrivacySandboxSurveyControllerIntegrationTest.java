@@ -177,7 +177,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     }
 
     private void waitForSurveyMessageToShow() {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         CriteriaHelper.pollUiThread(() -> !tab.isLoading() && tab.isUserInteractable());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

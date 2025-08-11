@@ -90,7 +90,7 @@ public class UkmTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> UmaSessionStats.updateMetricsAndCrashReportingForTesting(false));
-        Tab normalTab = mSyncTestRule.getActivity().getActivityTab();
+        Tab normalTab = mSyncTestRule.getActivityTab();
         enableUkmUi(normalTab);
         Assert.assertFalse("UKM Enabled:", isUkmEnabled(normalTab));
 
@@ -120,7 +120,7 @@ public class UkmTest {
 
         // Enable a Syncing account.
         mSyncTestRule.setUpAccountAndEnableHistorySync();
-        Tab normalTab = mSyncTestRule.getActivity().getActivityTab();
+        Tab normalTab = mSyncTestRule.getActivityTab();
         enableUkmUi(normalTab);
         Assert.assertTrue("UKM Enabled:", isUkmEnabled(normalTab));
 

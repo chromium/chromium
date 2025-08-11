@@ -1012,8 +1012,7 @@ public class ContextMenuTest {
     @Feature({"Browser", "ContextMenu"})
     public void testContextMenuRetrievesVideoOptions() throws TimeoutException {
         Tab tab = sDownloadTestRule.getActivityTab();
-        DOMUtils.clickNode(
-                sDownloadTestRule.getActivity().getCurrentWebContents(), "videoDOMElement");
+        DOMUtils.clickNode(sDownloadTestRule.getWebContents(), "videoDOMElement");
         mMenuCoordinator = ContextMenuUtils.openContextMenu(tab, "videoDOMElement");
 
         Integer[] expectedItems = {R.id.contextmenu_save_video};
