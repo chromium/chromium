@@ -1040,6 +1040,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kIOSBWGPromoImpressionCount, 0);
   registry->RegisterTimePref(prefs::kLastGeminiInteractionTimestamp,
                              base::Time());
+  registry->RegisterStringPref(prefs::kLastGeminiInteractionURL, std::string());
   registry->RegisterStringPref(prefs::kGeminiConversationId, std::string());
 
   registry->RegisterTimePref(prefs::kIosSyncInfobarErrorLastDismissedTimestamp,

@@ -797,6 +797,10 @@ inline constexpr char kIOSBWGPromoImpressionCount[] =
 inline constexpr char kLastGeminiInteractionTimestamp[] =
     "ios.gemini.last_interaction_timestamp";
 
+// The URL where the user last had a Gemini interaction.
+inline constexpr char kLastGeminiInteractionURL[] =
+    "ios.gemini.last_interaction_url";
+
 // A string specifying the active conversation ID.
 inline constexpr char kGeminiConversationId[] = "ios.gemini.conversation_id";
 
