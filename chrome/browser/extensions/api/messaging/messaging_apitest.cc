@@ -626,8 +626,6 @@ class OnMessagePromiseReturnMessagingApiTest : public MessagingApiTest {
 
 // Runs multiple test scenarios for runtime.OnMessage() listeners returning
 // promises.
-// TODO(crbug.com/40753031): Create a test case that handles promise returns
-// from listeners that reject too.
 IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
                        OnMessagePromiseReturnResolvesBehavior) {
   ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
