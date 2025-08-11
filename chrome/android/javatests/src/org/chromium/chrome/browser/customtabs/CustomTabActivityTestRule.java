@@ -55,7 +55,7 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
      */
     public void startCustomTabActivityWithIntentNotWaitingForFirstFrame(Intent intent) {
         startActivityCompletely(intent);
-        final Tab tab = getActivity().getActivityTab();
+        final Tab tab = getActivityTab();
         Assert.assertTrue(TabTestUtils.isCustomTab(tab));
     }
 }

@@ -130,7 +130,7 @@ public class IncognitoHistoryLeakageTest {
         mChromeActivityTestRule.startOnBlankPage();
         mChromeActivityTestRule.loadUrlInNewTab(mTestPage1, /* incognito= */ true);
         List<HistoryItem> historyEntriesOfIncognitoMode =
-                getBrowsingHistory(mChromeActivityTestRule.getActivity().getActivityTab());
+                getBrowsingHistory(mChromeActivityTestRule.getActivityTab());
         assertTrue(historyEntriesOfIncognitoMode.isEmpty());
     }
 
@@ -143,7 +143,7 @@ public class IncognitoHistoryLeakageTest {
                         ApplicationProvider.getApplicationContext(), mTestPage1);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         List<HistoryItem> historyEntriesOfIncognitoMode =
-                getBrowsingHistory(mCustomTabActivityTestRule.getActivity().getActivityTab());
+                getBrowsingHistory(mCustomTabActivityTestRule.getActivityTab());
         assertTrue(historyEntriesOfIncognitoMode.isEmpty());
     }
 

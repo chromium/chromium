@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.notifications;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.chromium.chrome.browser.notifications.NotificationContentDetectionManager.SUSPICIOUS_NOTIFICATION_WARNING_INTERACTIONS_HISTOGRAM_NAME;
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 import static org.chromium.components.content_settings.PrefNames.NOTIFICATIONS_VIBRATE_ENABLED;
 
 import android.app.Notification;
@@ -104,7 +105,7 @@ public class NotificationPlatformBridgeTest {
 
     @SuppressWarnings("MissingFail")
     private void waitForTitle(String expectedTitle) {
-        Tab tab = mNotificationTestRule.getActivity().getActivityTab();
+        Tab tab = mNotificationTestRule.getActivityTab();
         TabTitleObserver titleObserver = new TabTitleObserver(tab, expectedTitle);
         try {
             titleObserver.waitForTitleUpdate(TITLE_UPDATE_TIMEOUT_SECONDS);
@@ -709,7 +710,7 @@ public class NotificationPlatformBridgeTest {
         Assert.assertEquals(
                 "Expected the notification test page to be the sole tab in the current model",
                 1,
-                mNotificationTestRule.getActivity().getCurrentTabModel().getCount());
+                getTabCountOnUiThread(mNotificationTestRule.getActivity().getCurrentTabModel()));
 
         Notification notification =
                 showAndGetNotification("MyNotification", "{ data: 'ACTION_CREATE_TAB' }");

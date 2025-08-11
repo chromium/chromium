@@ -11,6 +11,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -89,7 +91,7 @@ public class IncognitoProfileDestroyerIntegrationTest {
         Tab onlyTab = mActivityTestRule.newIncognitoTabFromMenu();
 
         // Verify the tab is opened and the TabModel now has an incognito Profile
-        assertEquals(1, mIncognitoTabModel.getCount());
+        assertEquals(1, getTabCountOnUiThread(mIncognitoTabModel));
         assertIncognitoProfileStillAlive();
 
         // Close the incognito tab
@@ -114,7 +116,7 @@ public class IncognitoProfileDestroyerIntegrationTest {
         mActivityTestRule.newIncognitoTabFromMenu();
 
         // Verify the tabs are opened and the TabModel now has an incognito Profile
-        assertEquals(2, mIncognitoTabModel.getCount());
+        assertEquals(2, getTabCountOnUiThread(mIncognitoTabModel));
         assertIncognitoProfileStillAlive();
 
         // Close one incognito tab
@@ -140,7 +142,7 @@ public class IncognitoProfileDestroyerIntegrationTest {
         mActivityTestRule.newIncognitoTabFromMenu();
 
         // Verify the tab is opened and the TabModel now has an incognito Profile.
-        assertEquals(1, mIncognitoTabModel.getCount());
+        assertEquals(1, getTabCountOnUiThread(mIncognitoTabModel));
         assertIncognitoProfileStillAlive();
 
         // Switch to regular mode.
@@ -159,7 +161,7 @@ public class IncognitoProfileDestroyerIntegrationTest {
         Tab firstTab = mActivityTestRule.newIncognitoTabFromMenu();
 
         // Verify the tab is opened and the TabModel now has an incognito Profile.
-        assertEquals(1, mIncognitoTabModel.getCount());
+        assertEquals(1, getTabCountOnUiThread(mIncognitoTabModel));
         assertIncognitoProfileStillAlive();
 
         // Switch to regular mode.

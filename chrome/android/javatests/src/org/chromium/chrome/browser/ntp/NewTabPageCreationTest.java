@@ -72,7 +72,7 @@ public class NewTabPageCreationTest {
 
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
 
         verify(mTestState).onNewTabCreated();
@@ -88,7 +88,7 @@ public class NewTabPageCreationTest {
         String testUrl = mActivityTestRule.getTestServer().getURL(TEST_URL);
         mActivityTestRule.loadUrlInNewTab(testUrl);
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         assertNull(tab.getNativePage());
         assertEquals(tab.getUrl().getSpec(), testUrl);
 

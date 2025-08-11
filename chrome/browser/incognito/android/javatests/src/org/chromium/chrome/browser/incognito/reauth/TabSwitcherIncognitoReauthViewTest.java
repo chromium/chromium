@@ -124,7 +124,7 @@ public class TabSwitcherIncognitoReauthViewTest {
         // Open incognito tab.
         addBlankTabs(cta, true, 1);
 
-        assertTrue(cta.getActivityTab().isIncognito());
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(() -> cta.getActivityTab()).isIncognito());
 
         // Enter tab switcher in incognito mode.
         enterTabSwitcher(cta);

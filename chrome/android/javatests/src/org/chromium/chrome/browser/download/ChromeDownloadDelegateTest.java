@@ -55,7 +55,7 @@ public class ChromeDownloadDelegateTest {
     @SmallTest
     @Feature({"Download"})
     public void testShouldInterceptContextMenuDownload() {
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        final Tab tab = mActivityTestRule.getActivityTab();
         mActivityTestRule.loadUrl("about:blank");
         ChromeDownloadDelegate delegate =
                 ThreadUtils.runOnUiThreadBlocking(

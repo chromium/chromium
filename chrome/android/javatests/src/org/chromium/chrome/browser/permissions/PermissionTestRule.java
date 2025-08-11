@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
@@ -89,8 +88,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
 
         @Override
         public void onTitleUpdated(Tab tab) {
-            if (ChromeTabUtils.getTitleOnUiThread(mActivity.getActivityTab())
-                    .equals(mExpectedTitle)) {
+            if (getTitle().equals(mExpectedTitle)) {
                 mCallbackHelper.notifyCalled();
             }
         }
@@ -109,12 +107,15 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
             // Update might have already happened, check before waiting for title udpdates.
             mExpectedTitle = mPrefix;
             if (numUpdates != 0) mExpectedTitle += numUpdates;
-            if (ChromeTabUtils.getTitleOnUiThread(mActivity.getActivityTab())
-                    .equals(mExpectedTitle)) {
+            if (getTitle().equals(mExpectedTitle)) {
                 return;
             }
 
             mCallbackHelper.waitForCallback(callbackCountBefore);
+        }
+
+        private String getTitle() {
+            return ThreadUtils.runOnUiThreadBlocking(() -> mActivity.getActivityTab().getTitle());
         }
     }
 
@@ -293,7 +294,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     public void runJavaScriptCodeInCurrentTabWithGesture(String javascript)
             throws java.util.concurrent.TimeoutException {
         runJavaScriptCodeInCurrentTab("functionToRun = '" + javascript + "'");
-        TouchCommon.singleClickView(getActivity().getActivityTab().getView());
+        TouchCommon.singleClickView(getActivityTab().getView());
     }
 
     /**

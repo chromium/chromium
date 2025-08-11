@@ -566,7 +566,7 @@ public class TabsTest {
     public void testLastClosedUndoableTabGetsHidden() {
         final TabModel model =
                 mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
-        final Tab tab = TabModelUtils.getCurrentTab(model);
+        final Tab tab = mActivityTestRule.getActivityTab();
 
         assertEquals("Too many tabs at startup", 1, getTabCountOnUiThread(model));
 
@@ -803,7 +803,7 @@ public class TabsTest {
     public void testLastClosedTabTriggersNotifyChangedCall() {
         final TabModel model =
                 mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
-        final Tab tab = TabModelUtils.getCurrentTab(model);
+        final Tab tab = mActivityTestRule.getActivityTab();
         final TabModelSelector selector = mActivityTestRule.getActivity().getTabModelSelector();
         mNotifyChangedCalled = false;
 

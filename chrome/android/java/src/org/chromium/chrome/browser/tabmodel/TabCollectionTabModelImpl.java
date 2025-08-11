@@ -959,7 +959,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public TabModel getTabModel() {
-        assertOnUiThread();
         return this;
     }
 

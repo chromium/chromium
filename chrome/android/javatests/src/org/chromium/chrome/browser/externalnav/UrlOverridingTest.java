@@ -2370,7 +2370,7 @@ public class UrlOverridingTest {
         testParams.willNavigateTwice = true;
         loadUrlAndWaitForIntentUrl(testParams);
 
-        Tab tab = mTabbedActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
+        Tab tab = mTabbedActivityTestRule.getActivityTab();
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(

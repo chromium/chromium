@@ -34,6 +34,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createTestBitmap;
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -1024,7 +1025,9 @@ public class CustomTabActivityTest {
 
         openTabHelper.waitForCallback(0, 1);
         assertEquals(
-                "A new tab should have been created.", 2, tabSelector.getModel(false).getCount());
+                "A new tab should have been created.",
+                2,
+                getTabCountOnUiThread(tabSelector.getModel(false)));
     }
 
     @Test
@@ -2094,9 +2097,9 @@ public class CustomTabActivityTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         CustomTabActivity activity = mCustomTabActivityTestRule.getActivity();
-        Assert.assertEquals(1, activity.getCurrentTabModel().getCount());
+        Assert.assertEquals(1, mCustomTabActivityTestRule.tabsCount(false));
 
-        DOMUtils.clickNode(activity.getActivityTab().getWebContents(), "target_blank_link");
+        DOMUtils.clickNode(mCustomTabActivityTestRule.getWebContents(), "target_blank_link");
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(activity.getCurrentTabModel().getCount(), is(2)));
 

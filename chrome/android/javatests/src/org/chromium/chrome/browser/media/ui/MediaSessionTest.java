@@ -62,7 +62,7 @@ public class MediaSessionTest {
     @LargeTest
     public void testPauseOnHeadsetUnplug() throws IllegalArgumentException, TimeoutException {
         mActivityTestRule.startOnTestServerUrl(TEST_PATH);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         Assert.assertTrue(DOMUtils.isMediaPaused(tab.getWebContents(), VIDEO_ID));
         DOMUtils.playMedia(tab.getWebContents(), VIDEO_ID);
@@ -84,7 +84,7 @@ public class MediaSessionTest {
     public void mediaSessionUrlUpdatedAfterNativePageNavigation() throws Exception {
         mActivityTestRule.startOnBlankPage();
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         NewTabPageTestUtils.waitForNtpLoaded(tab);
 

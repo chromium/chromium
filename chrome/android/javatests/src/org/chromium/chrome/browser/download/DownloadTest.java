@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.download;
 
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
+
 import android.app.Notification;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -297,7 +299,8 @@ public class DownloadTest {
     public void testCloseEmptyDownloadTab() throws Exception {
         loadUrl(sTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "get.html"));
         waitForFocus();
-        final int initialTabCount = sDownloadTestRule.getActivity().getCurrentTabModel().getCount();
+        final int initialTabCount =
+                getTabCountOnUiThread(sDownloadTestRule.getActivity().getCurrentTabModel());
         int currentCallCount = sDownloadTestRule.getChromeDownloadCallCount();
         View currentView = sDownloadTestRule.getActivityTab().getView();
         TouchCommon.singleClickView(currentView);
@@ -362,7 +365,7 @@ public class DownloadTest {
                                     + "  }"
                                     + "</script>"
                                     + "<body id='body' onclick='download()'></body>"));
-            DOMUtils.clickNode(sDownloadTestRule.getActivity().getCurrentWebContents(), "body");
+            DOMUtils.clickNode(sDownloadTestRule.getWebContents(), "body");
             CriteriaHelper.pollUiThread(
                     () -> {
                         Criteria.checkThat(interceptor.mDownloadItem, Matchers.notNullValue());

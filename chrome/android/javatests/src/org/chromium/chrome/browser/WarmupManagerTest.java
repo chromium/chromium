@@ -159,12 +159,10 @@ public class WarmupManagerTest {
     }
 
     private void assertOrderValid(boolean expectedState) {
-        boolean isOrderValid =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return ((TabGroupModelFilterImpl) mTabGroupModelFilter).isOrderValid();
-                        });
-        assertEquals(expectedState, isOrderValid);
+        if (mTabGroupModelFilter instanceof TabGroupModelFilterImpl filter) {
+            boolean isOrderValid = ThreadUtils.runOnUiThreadBlocking(filter::isOrderValid);
+            assertEquals(expectedState, isOrderValid);
+        }
     }
 
     /**
