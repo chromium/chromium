@@ -836,9 +836,6 @@ public final class ProductionSupportedFlagList {
                 "Include system bars in safe-area-inset CSS environment values for WebViews"
                         + " that take up the entire screen."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_SEPARATE_RESOURCE_CONTEXT,
-                "Use WebView's own Context for Resources rather than the embedding app's"),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_SKIP_INTERCEPTS_FOR_PREFETCH,
                 "Skip shouldInterceptRequest and other checks for prefetch requests."),
         Flag.baseFeature(

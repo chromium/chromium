@@ -122,8 +122,6 @@ public class WebViewCachedFlagsTest {
         WebViewCachedFlags cachedFlags = new WebViewCachedFlags(sharedPrefs, Map.of());
 
         // The flags should be enabled if the prefs were present.
-        Assert.assertTrue(
-                cachedFlags.isCachedFeatureEnabled(AwFeatures.WEBVIEW_SEPARATE_RESOURCE_CONTEXT));
         Assert.assertTrue(cachedFlags.isCachedFeatureEnabled(AwFeatures.WEBVIEW_DISABLE_CHIPS));
         Assert.assertTrue(
                 cachedFlags.isCachedFeatureEnabled(AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC));

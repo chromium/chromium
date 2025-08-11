@@ -56,7 +56,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewReduceUAAndroidVersionDeviceModel,
     &features::kWebViewReportImeInsets,
     &features::kWebViewSafeAreaIncludesSystemBars,
-    &features::kWebViewSeparateResourceContext,
     &features::kWebViewShortCircuitShouldInterceptRequest,
     &features::kWebViewSkipInterceptsForPrefetch,
     &features::kWebViewStartupTasksYieldToNative,

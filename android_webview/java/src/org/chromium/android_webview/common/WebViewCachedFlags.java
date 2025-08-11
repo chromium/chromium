@@ -74,8 +74,6 @@ public class WebViewCachedFlags {
                             prefs,
                             Map.of(
                                     // Add new CachedFlags here along with their default state.
-                                    AwFeatures.WEBVIEW_SEPARATE_RESOURCE_CONTEXT,
-                                    DefaultState.DISABLED,
                                     AwFeatures.WEBVIEW_DISABLE_CHIPS,
                                     DefaultState.DISABLED,
                                     AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC,
@@ -174,11 +172,9 @@ public class WebViewCachedFlags {
             SharedPreferences prefs, SharedPreferences.Editor editor) {
         boolean didMigration = false;
         if (prefs.contains("useWebViewResourceContext")) {
-            // If this pref is present, we should enable the WEBVIEW_SEPARATE_RESOURCE_CONTEXT flag
-            // for this run of WebView.
+            // This flag has been cleaned up now so we don't need to add it to enabled set. Just
+            // remove the pref.
             editor.remove("useWebViewResourceContext");
-            mOverrideDisabled.remove(AwFeatures.WEBVIEW_SEPARATE_RESOURCE_CONTEXT);
-            mOverrideEnabled.add(AwFeatures.WEBVIEW_SEPARATE_RESOURCE_CONTEXT);
             didMigration = true;
         }
         if (prefs.contains("defaultWebViewPartitionedCookiesState")) {

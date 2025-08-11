@@ -1024,14 +1024,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             return valueFromManifest;
         }
 
-        // We also want to enable by default on the listed package names.
-        if ("com.aurora.launcher".equals(ctx.getPackageName())
-                || "com.qiku.android.launcher3".equals(ctx.getPackageName())) {
-            return true;
-        }
-
-        return WebViewCachedFlags.get()
-                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_SEPARATE_RESOURCE_CONTEXT);
+        return true;
     }
 
     // These values are persisted to logs. Entries should not be renumbered and

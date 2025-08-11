@@ -146,11 +146,6 @@ BASE_FEATURE(kWebViewInvokeZoomPickerOnGSU,
              "WebViewInvokeZoomPickerOnGSU",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Whether to use WebView's own Context for resource related lookups.
-BASE_FEATURE(kWebViewSeparateResourceContext,
-             "WebViewSeparateResourceContext",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether to skip shouldInterceptRequest and other checks for prefetch
 // requests.
 BASE_FEATURE(kWebViewSkipInterceptsForPrefetch,
