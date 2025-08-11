@@ -128,6 +128,7 @@
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/autofill_ai/autofill_ai_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/compose_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/one_time_passwords/otp_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/iban_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/merchant_promo_code_suggestion_generator.h"
@@ -716,6 +717,43 @@ void AddCachedAutofillAiPredictions(const AutofillAiModelCache& cache,
     }
   }
 }
+// Generates a compose suggestion for the given `form` and `field` if conditions
+// are met, returns `std::nullopt` otherwise.
+// TODO(crbug.com/409962888): Remove once new suggestion generator architecture
+// is launched.
+std::optional<Suggestion> GenerateComposeSuggestion(
+    const FormData& form,
+    const FormFieldData& field,
+    AutofillSuggestionTriggerSource trigger_source,
+    AutofillClient& client,
+    AutofillComposeDelegate* compose_delegate) {
+  ComposeSuggestionGenerator suggestion_generator(compose_delegate,
+                                                  trigger_source);
+  std::vector<Suggestion> suggestions;
+
+  auto on_suggestion_data_returned =
+      [&form, &field, &suggestions, &suggestion_generator](
+          std::pair<autofill::FillingProduct,
+                    std::vector<autofill::SuggestionGenerator::SuggestionData>>
+              suggestion_data) {
+        suggestion_generator.GenerateSuggestions(
+            form, field, nullptr, nullptr, {std::move(suggestion_data)},
+            [&suggestions](autofill::SuggestionGenerator::ReturnedSuggestions
+                               returned_suggestions) {
+              suggestions = std::move(returned_suggestions.second);
+            });
+      };
+
+  // Since the `on_suggestion_data_returned` callback is called synchronously,
+  // we can assume that `suggestions` will hold correct value.
+  suggestion_generator.FetchSuggestionData(form, field, nullptr, nullptr,
+                                           client, on_suggestion_data_returned);
+  if (suggestions.empty()) {
+    return std::nullopt;
+  }
+  CHECK_EQ(suggestions.size(), 1u);
+  return suggestions[0];
+}
 
 }  // namespace
 
@@ -1203,6 +1241,11 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
           client().GetValuablesDataManager()->GetWeakPtr(),
           client().GetLastCommittedPrimaryMainFrameURL()));
   }
+  if (client().GetComposeDelegate()) {
+    suggestion_generators_.push_back(
+        std::make_unique<ComposeSuggestionGenerator>(
+            client().GetComposeDelegate(), trigger_source));
+  }
 
   SuggestionsContext context = BuildSuggestionsContext(
       form, form_structure, field, autofill_field, trigger_source);
@@ -1501,7 +1544,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
     AutofillComposeDelegate* compose_delegate = client().GetComposeDelegate();
     std::optional<Suggestion> maybe_compose_suggestion =
         compose_delegate
-            ? compose_delegate->GetSuggestion(form, field, trigger_source)
+            ? GenerateComposeSuggestion(form, field, trigger_source, client(),
+                                        compose_delegate)
             : std::nullopt;
     if (maybe_compose_suggestion) {
       std::move(callback).Run(/*show_suggestions=*/true,
