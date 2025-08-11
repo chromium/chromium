@@ -2894,6 +2894,51 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
+    name = "Win11 FYI x64 Experimental Release (NVIDIA RTX 4070 Super)",
+    description_html = "Runs release GPU tests on experimental Windows 11/NVIDIA RTX 4070 configs",
+    parent = "GPU FYI Win x64 Builder",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        run_tests_serially = True,
+    ),
+    targets = targets.bundle(
+        # When the experimental driver is identical to the stable driver, this
+        # should be running the gpu_noop_sleep_telemetry_test. Otherwise, it
+        # should be running the same test_suites as
+        # 'Win11 FYI x64 Release (NVIDIA RTX 4070 Super)'
+        targets = [
+            "gpu_noop_sleep_telemetry_test",
+        ],
+        mixins = [
+            "limited_capacity_bot",
+            "win11_nvidia_rtx_4070_super_experimental",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE_X64,
+        os_type = targets.os_type.WINDOWS,
+    ),
+    # Uncomment this entry when this experimental tester is actually in use.
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Windows|11|x64|Nvidia",
+    #     short_name = "exp",
+    # ),
+    list_view = "chromium.gpu.experimental",
+)
+
+ci.thin_tester(
     name = "Win11 FYI x64 Release (NVIDIA RTX 4070 Super)",
     description_html = "Runs release GPU tests on stable Windows 11/NVIDIA RTX 4070 Super configs",
     parent = "GPU FYI Win x64 Builder",

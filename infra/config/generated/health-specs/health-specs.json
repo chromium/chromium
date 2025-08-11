@@ -5844,6 +5844,27 @@
           }
         ]
       },
+      "Win11 FYI x64 Experimental Release (NVIDIA RTX 4070 Super)": {
+        "contact_team_email": "chrome-gpu-infra@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "Win11 FYI x64 Release (AMD RX 7600)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
         "problem_specs": [

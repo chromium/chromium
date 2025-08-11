@@ -235,6 +235,35 @@
           {
             "builder_id": {
               "bucket": "ci",
+              "builder": "Win11 FYI x64 Experimental Release (NVIDIA RTX 4070 Super)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "win"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Win x64 Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
               "builder": "Win11 FYI x64 Release (AMD RX 7600)",
               "project": "chromium"
             },
@@ -337,6 +366,11 @@
         },
         {
           "bucket": "ci",
+          "builder": "Win11 FYI x64 Experimental Release (NVIDIA RTX 4070 Super)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
           "builder": "Win11 FYI x64 Release (AMD RX 7600)",
           "project": "chromium"
         },
@@ -373,6 +407,10 @@
         },
         {
           "builder": "gpu-fyi-try-win11-amd-rel-64",
+          "group": "tryserver.chromium.win"
+        },
+        {
+          "builder": "gpu-fyi-try-win11-nvidia-4070-exp-64",
           "group": "tryserver.chromium.win"
         },
         {

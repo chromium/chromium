@@ -2519,6 +2519,21 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "win11_nvidia_rtx_4070_super_experimental",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
+    swarming = targets.swarming(
+        dimensions = {
+            "display_attached": "1",
+            "gpu": "10de:2783-32.0.15.8088",
+            "os": "Windows-11",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
     name = "win11_nvidia_rtx_4070_super_stable",
     # We always need this entry to be generated since it is used by
     # //content/test/gpu/find_bad_machines.py.
