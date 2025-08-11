@@ -8,7 +8,7 @@
 #include <cmath>
 #include <limits>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/numerics/angle_conversions.h"
@@ -382,8 +382,8 @@ TEST(MotionEventAndroidTest, ActionIndexForPointerDown) {
 }
 
 TEST(MotionEventAndroidTest, NativeBackedConstructor) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_S) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_S) {
     GTEST_SKIP()
         << "AMotionEvent_fromJava used in test is only available on S+";
   }

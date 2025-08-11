@@ -6,7 +6,7 @@
 
 #include <dlfcn.h>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/check.h"
 #include "base/logging.h"
 
@@ -68,8 +68,8 @@ AndroidInputReceiverCompat::AndroidInputReceiverCompat() {
 
 // static
 bool AndroidInputReceiverCompat::IsSupportAvailable() {
-  return base::android::BuildInfo::GetInstance()->sdk_int() >=
-         base::android::SDK_VERSION_V;
+  return base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_V;
 }
 
 // static

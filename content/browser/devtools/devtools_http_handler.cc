@@ -61,7 +61,7 @@
 #include "v8/include/v8-version-string.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
@@ -598,7 +598,7 @@ void DevToolsHttpHandler::OnJsonRequest(
         base::StringPrintf("ws://%s%s", host.c_str(), browser_guid_.c_str()));
 #if BUILDFLAG(IS_ANDROID)
     version.Set("Android-Package",
-                base::android::BuildInfo::GetInstance()->host_package_name());
+                base::android::apk_info::host_package_name());
 #endif
     SendJson(connection_id, net::HTTP_OK, version, std::string());
     return;

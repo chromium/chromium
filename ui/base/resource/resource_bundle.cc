@@ -65,7 +65,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
 #include "ui/base/resource/resource_bundle_android.h"
 #endif
 

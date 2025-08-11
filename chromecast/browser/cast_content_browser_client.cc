@@ -115,7 +115,7 @@
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "chromecast/media/audio/cast_audio_manager_android.h"  // nogncheck
 #include "components/crash/core/app/crashpad.h"
 #include "media/audio/android/audio_manager_android.h"
@@ -169,7 +169,7 @@ CastContentBrowserClient::CastContentBrowserClient(
   extra_enable_features.push_back(
       &::media::kUseTaskRunnerForMojoAudioDecoderService);
 
-  if (base::android::BuildInfo::GetInstance()->is_tv()) {
+  if (base::android::device_info::is_tv()) {
     // Use the software decoder provided by MediaCodec instead of the built in
     // software decoder. This can improve av sync quality.
     extra_enable_features.push_back(&::media::kAllowMediaCodecSoftwareDecoder);

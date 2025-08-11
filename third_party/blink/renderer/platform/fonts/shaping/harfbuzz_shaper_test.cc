@@ -33,7 +33,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -2159,8 +2159,8 @@ TEST_F(HarfBuzzShaperTest, MAYBE_EmojiPercentage) {
 #if BUILDFLAG(IS_ANDROID)
   // On Android 11, SDK level 30, fallback occurs to an emoji
   // font that has coverage for the last segment. Adjust the expectation.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SdkVersion::SDK_VERSION_R) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_R) {
     expectations[2].expected_broken_clusters = 0;
   }
 #endif

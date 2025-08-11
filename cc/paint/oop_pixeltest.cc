@@ -73,7 +73,7 @@
 #include "ui/gl/gl_implementation.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 namespace cc {
@@ -2165,8 +2165,8 @@ class OopTextBlobPixelTest
 #if BUILDFLAG(IS_ANDROID)
     // The nexus5 and nexus5x bots are particularly susceptible to small changes
     // when bilerping an image (not visible).
-    const int sdk = base::android::BuildInfo::GetInstance()->sdk_int();
-    if (sdk <= base::android::SDK_VERSION_MARSHMALLOW) {
+    const int sdk = base::android::android_info::sdk_int();
+    if (sdk <= base::android::android_info::SDK_VERSION_MARSHMALLOW) {
       error_pixels_percentage = 10.f;
       max_abs_error = 20;
     } else {

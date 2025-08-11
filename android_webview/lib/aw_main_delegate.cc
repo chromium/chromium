@@ -22,8 +22,9 @@
 #include "android_webview/common/crash_reporter/crash_keys.h"
 #include "android_webview/gpu/aw_content_gpu_client.h"
 #include "android_webview/renderer/aw_content_renderer_client.h"
+#include "base/android/android_info.h"
 #include "base/android/apk_assets.h"
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
@@ -255,20 +256,17 @@ void AwMainDelegate::PreSandboxStartup() {
 
   EnableCrashReporter(process_type);
 
-  base::android::BuildInfo* android_build_info =
-      base::android::BuildInfo::GetInstance();
-
   static ::crash_reporter::CrashKeyString<64> app_name_key(
       crash_keys::kAppPackageName);
-  app_name_key.Set(android_build_info->host_package_name());
+  app_name_key.Set(base::android::apk_info::host_package_name());
 
   static ::crash_reporter::CrashKeyString<64> app_version_key(
       crash_keys::kAppPackageVersionCode);
-  app_version_key.Set(android_build_info->host_version_code());
+  app_version_key.Set(base::android::apk_info::host_version_code());
 
   static ::crash_reporter::CrashKeyString<8> sdk_int_key(
       crash_keys::kAndroidSdkInt);
-  sdk_int_key.Set(base::NumberToString(android_build_info->sdk_int()));
+  sdk_int_key.Set(base::NumberToString(base::android::android_info::sdk_int()));
 }
 
 std::variant<int, content::MainFunctionParams> AwMainDelegate::RunProcess(

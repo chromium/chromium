@@ -6,7 +6,7 @@
 
 #include <optional>
 
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #include "base/android/path_utils.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -26,10 +26,10 @@ std::optional<FilePath> GetInMemoryContentDocumentUriFromCacheDirPath(
   if (!cache_dir.AppendRelativePath(path, &document_id)) {
     return std::nullopt;
   }
-  base::FilePath uri(base::StrCat(
-      {"content://", base::android::BuildInfo::GetInstance()->package_name(),
-       ".docprov/", is_tree ? "tree/" : "document/",
-       base::EscapeAllExceptUnreserved(document_id.value())}));
+  base::FilePath uri(
+      base::StrCat({"content://", base::android::apk_info::package_name(),
+                    ".docprov/", is_tree ? "tree/" : "document/",
+                    base::EscapeAllExceptUnreserved(document_id.value())}));
   return uri;
 }
 }  // namespace
@@ -40,9 +40,9 @@ std::optional<FilePath> GetContentUriFromCacheDirFilePath(
   if (!base::android::GetCacheDirectory(&cache_dir)) {
     return std::nullopt;
   }
-  base::FilePath uri(base::StrCat(
-      {"content://", base::android::BuildInfo::GetInstance()->package_name(),
-       ".fileprovider/cache/"}));
+  base::FilePath uri(
+      base::StrCat({"content://", base::android::apk_info::package_name(),
+                    ".fileprovider/cache/"}));
   if (!cache_dir.AppendRelativePath(path, &uri)) {
     return std::nullopt;
   }
@@ -55,9 +55,9 @@ std::optional<FilePath> GetInMemoryContentUriFromCacheDirFilePath(
   if (!base::android::GetCacheDirectory(&cache_dir)) {
     return std::nullopt;
   }
-  base::FilePath uri(base::StrCat(
-      {"content://", base::android::BuildInfo::GetInstance()->package_name(),
-       ".inmemory/cache/"}));
+  base::FilePath uri(
+      base::StrCat({"content://", base::android::apk_info::package_name(),
+                    ".inmemory/cache/"}));
   if (!cache_dir.AppendRelativePath(path, &uri)) {
     return std::nullopt;
   }

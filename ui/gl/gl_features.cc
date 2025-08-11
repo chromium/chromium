@@ -19,7 +19,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
@@ -140,8 +140,8 @@ bool UseGpuVsync() {
 
 bool IsAndroidFrameDeadlineEnabled() {
 #if BUILDFLAG(IS_ANDROID)
-  static bool enabled = base::android::BuildInfo::GetInstance()->sdk_int() >=
-                            base::android::SDK_VERSION_T &&
+  static bool enabled = base::android::android_info::sdk_int() >=
+                            base::android::android_info::SDK_VERSION_T &&
                         gfx::AChoreographerCompat33::Get().supported &&
                         gfx::SurfaceControl::SupportsSetFrameTimeline() &&
                         gfx::SurfaceControl::SupportsSetEnableBackPressure();
@@ -161,30 +161,37 @@ bool UsePassthroughCommandDecoder() {
 
 #if BUILDFLAG(IS_ANDROID)
   // Check block list against build info.
-  const auto* build_info = base::android::BuildInfo::GetInstance();
-  if (IsDeviceBlocked(build_info->brand(),
-                      kPassthroughCommandDecoderBlockListByBrand.Get()))
+  if (IsDeviceBlocked(base::android::android_info::brand(),
+                      kPassthroughCommandDecoderBlockListByBrand.Get())) {
     return false;
-  if (IsDeviceBlocked(build_info->device(),
-                      kPassthroughCommandDecoderBlockListByDevice.Get()))
+  }
+  if (IsDeviceBlocked(base::android::android_info::device(),
+                      kPassthroughCommandDecoderBlockListByDevice.Get())) {
     return false;
+  }
   if (IsDeviceBlocked(
-          build_info->android_build_id(),
-          kPassthroughCommandDecoderBlockListByAndroidBuildId.Get()))
+          base::android::android_info::android_build_id(),
+          kPassthroughCommandDecoderBlockListByAndroidBuildId.Get())) {
     return false;
-  if (IsDeviceBlocked(build_info->manufacturer(),
-                      kPassthroughCommandDecoderBlockListByManufacturer.Get()))
-    return false;
-  if (IsDeviceBlocked(build_info->model(),
-                      kPassthroughCommandDecoderBlockListByModel.Get()))
-    return false;
-  if (IsDeviceBlocked(build_info->board(),
-                      kPassthroughCommandDecoderBlockListByBoard.Get()))
-    return false;
+  }
   if (IsDeviceBlocked(
-          build_info->android_build_fp(),
-          kPassthroughCommandDecoderBlockListByAndroidBuildFP.Get()))
+          base::android::android_info::manufacturer(),
+          kPassthroughCommandDecoderBlockListByManufacturer.Get())) {
     return false;
+  }
+  if (IsDeviceBlocked(base::android::android_info::model(),
+                      kPassthroughCommandDecoderBlockListByModel.Get())) {
+    return false;
+  }
+  if (IsDeviceBlocked(base::android::android_info::board(),
+                      kPassthroughCommandDecoderBlockListByBoard.Get())) {
+    return false;
+  }
+  if (IsDeviceBlocked(
+          base::android::android_info::android_build_fp(),
+          kPassthroughCommandDecoderBlockListByAndroidBuildFP.Get())) {
+    return false;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return true;

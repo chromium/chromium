@@ -6,7 +6,7 @@
 
 #include <android/data_space.h>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -199,8 +199,8 @@ TEST(SurfaceControl, ColorSpaceToADataSpace) {
   }
 
   // Before S, only sRGB and P3 are supported.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_S) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_S) {
     return;
   }
 

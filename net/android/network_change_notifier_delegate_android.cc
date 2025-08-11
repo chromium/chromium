@@ -4,7 +4,6 @@
 
 #include "net/android/network_change_notifier_delegate_android.h"
 
-#include "base/android/build_info.h"
 #include "base/android/jni_array.h"
 #include "base/check.h"
 #include "base/notreached.h"

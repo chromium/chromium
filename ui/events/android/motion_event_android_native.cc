@@ -8,7 +8,6 @@
 
 #include <cmath>
 
-#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"

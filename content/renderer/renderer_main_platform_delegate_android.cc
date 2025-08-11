@@ -4,7 +4,7 @@
 
 #include "content/renderer/renderer_main_platform_delegate.h"
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "content/renderer/seccomp_sandbox_status_android.h"
@@ -35,8 +35,8 @@ void RendererMainPlatformDelegate::PlatformUninitialize() {
 
 bool RendererMainPlatformDelegate::EnableSandbox() {
   TRACE_EVENT0("startup", "RendererMainPlatformDelegate::EnableSandbox");
-  auto* info = base::android::BuildInfo::GetInstance();
-  sandbox::SeccompStarterAndroid starter(info->sdk_int());
+  sandbox::SeccompStarterAndroid starter(
+      base::android::android_info::sdk_int());
   // The policy compiler is only available if USE_SECCOMP_BPF is enabled.
 #if BUILDFLAG(USE_SECCOMP_BPF)
   sandbox::BaselinePolicyAndroid::RuntimeOptions options(

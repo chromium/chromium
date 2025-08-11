@@ -22,7 +22,6 @@
 #include "media/mojo/buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
 #include "media/base/android/media_codec_util.h"
 #endif
 

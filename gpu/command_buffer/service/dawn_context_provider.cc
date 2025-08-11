@@ -57,9 +57,6 @@
 #include "ui/gl/gl_angle_util_win.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif
 
 namespace gpu {
 namespace {

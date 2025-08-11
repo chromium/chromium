@@ -47,7 +47,7 @@
 #include "base/test/malloc_wrapper.h"
 #endif
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -188,8 +188,8 @@ class OutOfMemoryDeathTest : public OutOfMemoryTest {
   // These tests don't work properly on old x86 Android; crbug.com/1181112
   bool ShouldSkipTest() {
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
-    return base::android::BuildInfo::GetInstance()->sdk_int() <
-           base::android::SDK_VERSION_NOUGAT;
+    return base::android::android_info::sdk_int() <
+           base::android::android_info::SDK_VERSION_NOUGAT;
 #else
     return false;
 #endif

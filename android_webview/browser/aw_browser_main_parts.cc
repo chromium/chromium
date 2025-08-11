@@ -25,7 +25,7 @@
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/common/crash_reporter/aw_crash_reporter_client.h"
 #include "base/android/apk_assets.h"
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #include "base/android/bundle_utils.h"
 #include "base/android/memory_pressure_listener_android.h"
 #include "base/android/path_utils.h"
@@ -285,8 +285,7 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   //    represented mainly by version codes ending with 41 and 42, which
   //    dominate, but we want to filter them out nonetheless because it's harder
   //    to set up experiment for them.)
-  std::string version_code =
-      base::android::BuildInfo::GetInstance()->package_version_code();
+  std::string version_code = base::android::apk_info::package_version_code();
   size_t ram_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
   auto cpu_abi_bitness_support =
       metrics::AndroidMetricsHelper::GetInstance()->cpu_abi_bitness_support();

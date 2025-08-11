@@ -36,7 +36,7 @@
 #include "testing/multiprocess_func_list.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 #ifndef IFA_F_HOMEADDRESS
@@ -619,9 +619,10 @@ TEST_F(AddressTrackerLinuxTest, NonTrackingMode) {
 TEST_F(AddressTrackerLinuxTest, NonTrackingModeInit) {
 #if BUILDFLAG(IS_ANDROID)
   // Calling Init() on Android P+ isn't supported.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_P)
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_P) {
     return;
+  }
 #endif
   AddressTrackerLinux tracker;
   tracker.Init();
@@ -661,9 +662,10 @@ class GetCurrentConnectionTypeRunner
 TEST_F(AddressTrackerLinuxTest, BroadcastInit) {
 #if BUILDFLAG(IS_ANDROID)
   // Calling Init() on Android P+ isn't supported.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_P)
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_P) {
     return;
+  }
 #endif
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
@@ -705,9 +707,10 @@ namespace net::internal {
 TEST(AddressTrackerLinuxNetlinkTest, TestInitializeTwoTrackers) {
 #if BUILDFLAG(IS_ANDROID)
   // Calling Init() on Android P+ isn't supported.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_P)
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_P) {
     return;
+  }
 #endif
   base::test::TaskEnvironment task_env(
       base::test::TaskEnvironment::MainThreadType::IO);

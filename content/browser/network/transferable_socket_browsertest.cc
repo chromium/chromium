@@ -33,7 +33,7 @@
 #include "services/network/public/mojom/network_service_test.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 namespace content {
@@ -59,8 +59,8 @@ class TransferableSocketBrowserTest : public ContentBrowserTest {
       GTEST_SKIP();
     }
 #elif BUILDFLAG(IS_ANDROID)
-    if (base::android::BuildInfo::GetInstance()->sdk_int() <
-        base::android::SdkVersion::SDK_VERSION_R) {
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SdkVersion::SDK_VERSION_R) {
       // Android below R does not support transfer of sockets.
       GTEST_SKIP();
     }

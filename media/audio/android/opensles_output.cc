@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/android/build_info.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"

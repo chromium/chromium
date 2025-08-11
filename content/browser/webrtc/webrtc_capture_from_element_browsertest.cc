@@ -14,7 +14,6 @@
 #include "media/mojo/buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
 #include "base/system/sys_info.h"
 #endif
 

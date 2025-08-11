@@ -6,7 +6,7 @@
 
 #include <iterator>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/check_op.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -488,8 +488,8 @@ void DelegatedFrameHostAndroid::EmbedSurface(
 
   if (!current_primary_surface_id.is_valid() ||
       current_primary_surface_id.local_surface_id() != local_surface_id_) {
-    if (base::android::BuildInfo::GetInstance()->sdk_int() <
-        base::android::SDK_VERSION_OREO) {
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SDK_VERSION_OREO) {
       // On version of Android earlier than Oreo, we would like to produce new
       // content as soon as possible or the OS will create an additional black
       // gutter. We only reset the deadline on the first frame (no bounds yet

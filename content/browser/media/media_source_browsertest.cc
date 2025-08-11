@@ -11,9 +11,6 @@
 #include "media/base/test_data_util.h"
 #include "media/media_buildflags.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif
 
 namespace content {
 

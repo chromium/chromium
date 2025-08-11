@@ -13,7 +13,7 @@
 #include <iterator>
 #include <vector>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
@@ -139,8 +139,8 @@ std::vector<Frame> CaptureScenario(
 
 // Checks that the expected information is present in sampled frames.
 TEST(NativeUnwinderAndroidTest, PlainFunction) {
-  const auto sdk_version = base::android::BuildInfo::GetInstance()->sdk_int();
-  if (sdk_version < base::android::SDK_VERSION_NOUGAT) {
+  const auto sdk_version = base::android::android_info::sdk_int();
+  if (sdk_version < base::android::android_info::SDK_VERSION_NOUGAT) {
     GTEST_SKIP();
   }
 
@@ -178,8 +178,8 @@ TEST(NativeUnwinderAndroidTest, PlainFunction) {
 // Checks that the unwinder handles stacks containing dynamically-allocated
 // stack memory.
 TEST(NativeUnwinderAndroidTest, Alloca) {
-  const auto sdk_version = base::android::BuildInfo::GetInstance()->sdk_int();
-  if (sdk_version < base::android::SDK_VERSION_NOUGAT) {
+  const auto sdk_version = base::android::android_info::sdk_int();
+  if (sdk_version < base::android::android_info::SDK_VERSION_NOUGAT) {
     GTEST_SKIP();
   }
 
@@ -218,8 +218,8 @@ TEST(NativeUnwinderAndroidTest, Alloca) {
 // Checks that a stack that runs through another library produces a stack with
 // the expected functions.
 TEST(NativeUnwinderAndroidTest, OtherLibrary) {
-  const auto sdk_version = base::android::BuildInfo::GetInstance()->sdk_int();
-  if (sdk_version < base::android::SDK_VERSION_NOUGAT) {
+  const auto sdk_version = base::android::android_info::sdk_int();
+  if (sdk_version < base::android::android_info::SDK_VERSION_NOUGAT) {
     GTEST_SKIP();
   }
 
@@ -372,12 +372,11 @@ TEST(NativeUnwinderAndroidTest, ResumeUnwinding) {
 // Checks that java frames can be unwound through.
 // TODO(crbug.com/362210993): Re-enable test.
 TEST(NativeUnwinderAndroidTest, DISABLED_JavaFunction) {
-  auto* build_info = base::android::BuildInfo::GetInstance();
-  const auto sdk_version = build_info->sdk_int();
+  const auto sdk_version = base::android::android_info::sdk_int();
 
   // Skip this test on anything Android O or earlier, because Java unwinding
   // fails on these.
-  if (sdk_version <= base::android::SDK_VERSION_OREO) {
+  if (sdk_version <= base::android::android_info::SDK_VERSION_OREO) {
     GTEST_SKIP();
   }
 

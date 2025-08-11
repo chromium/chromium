@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "media/base/android/media_codec_bridge.h"
@@ -90,7 +90,7 @@ class MediaCodecLoopTest : public testing::Test {
   }
 
   void ConstructCodecLoop() {
-    int sdk_int = base::android::SDK_VERSION_NOUGAT;
+    int sdk_int = base::android::android_info::SDK_VERSION_NOUGAT;
     auto codec = std::make_unique<MockMediaCodecBridge>();
     // Since we're providing a codec, we do not expect an error.
     EXPECT_CALL(*client_, OnCodecLoopError()).Times(0);
@@ -197,7 +197,7 @@ class MediaCodecLoopTest : public testing::Test {
 TEST_F(MediaCodecLoopTest, TestConstructionWithNullCodec) {
   std::unique_ptr<MediaCodecBridge> codec;
   EXPECT_CALL(*client_, OnCodecLoopError()).Times(1);
-  const int sdk_int = base::android::SDK_VERSION_NOUGAT;
+  const int sdk_int = base::android::android_info::SDK_VERSION_NOUGAT;
   codec_loop_ = std::make_unique<MediaCodecLoop>(
       sdk_int, client_.get(), std::move(codec),
       scoped_refptr<base::SingleThreadTaskRunner>());

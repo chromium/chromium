@@ -16,7 +16,8 @@
 #include "android_webview/browser/aw_client_hints_controller_delegate.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
 #include "android_webview/common/aw_switches.h"
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
+#include "base/android/apk_info.h"
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
@@ -205,8 +206,8 @@ CookieManager::CookieManager(AwBrowserContext* const parent_context)
       allow_file_scheme_cookies_(kDefaultFileSchemeAllowed),
       cookie_store_created_(false),
       workaround_http_secure_cookies_(
-          base::android::BuildInfo::GetInstance()->target_sdk_version() <
-          base::android::SDK_VERSION_R),
+          base::android::apk_info::target_sdk_version() <
+          base::android::android_info::SDK_VERSION_R),
       cookie_store_client_thread_("CookieMonsterClient"),
       cookie_store_backend_thread_("CookieMonsterBackend"),
       setting_new_mojo_cookie_manager_(false) {

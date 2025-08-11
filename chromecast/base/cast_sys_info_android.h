@@ -10,12 +10,6 @@
 
 #include "chromecast/public/cast_sys_info.h"
 
-namespace base {
-namespace android {
-class BuildInfo;
-}
-}
-
 namespace chromecast {
 
 class CastSysInfoAndroid : public CastSysInfo {
@@ -47,7 +41,6 @@ class CastSysInfoAndroid : public CastSysInfo {
                                const std::string& default_value);
 
  private:
-  const base::android::BuildInfo* const build_info_;
 };
 
 }  // namespace chromecast

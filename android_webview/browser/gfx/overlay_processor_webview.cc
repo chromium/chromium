@@ -10,7 +10,7 @@
 #include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
 #include "base/android/android_hardware_buffer_compat.h"
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -605,8 +605,8 @@ class OverlayProcessorWebView::Manager
       // OnComplete callback. To workaround it we create 1x1 buffer instead of
       // setting empty one.
       const bool need_empty_buffer_workaround =
-          base::android::BuildInfo::GetInstance()->sdk_int() >=
-          base::android::SDK_VERSION_T;
+          base::android::android_info::sdk_int() >=
+          base::android::android_info::SDK_VERSION_T;
       if (need_empty_buffer_workaround) {
         // We never delete this buffer.
         static AHardwareBuffer* fake_buffer = nullptr;

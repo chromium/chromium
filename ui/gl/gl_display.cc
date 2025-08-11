@@ -35,7 +35,7 @@
 #include "ui/gl/gpu_switching_manager.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 using ui::GetLastEGLErrorString;
@@ -742,8 +742,8 @@ void GLDisplayEGL::InitializeCommon(bool for_testing) {
       ext->b_EGL_ANDROID_native_fence_sync;
 #if BUILDFLAG(IS_ANDROID)
   if (!egl_android_native_fence_sync_supported_ &&
-      base::android::BuildInfo::GetInstance()->sdk_int() >=
-          base::android::SDK_VERSION_NOUGAT &&
+      base::android::android_info::sdk_int() >=
+          base::android::android_info::SDK_VERSION_NOUGAT &&
       g_driver_egl.fn.eglDupNativeFenceFDANDROIDFn &&
       base::SysInfo::GetAndroidHardwareEGL() != "swiftshader" &&
       base::SysInfo::GetAndroidHardwareEGL() != "emulation") {

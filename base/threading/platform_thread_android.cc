@@ -12,7 +12,7 @@
 
 #include <optional>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -85,8 +85,8 @@ bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
   // https://android-review.googlesource.com/c/platform/system/core/+/1975808
   // this becomes obsolete and we can avoid this starting in API level 33.
   if (thread_type == ThreadType::kRealtimeAudio &&
-      base::android::BuildInfo::GetInstance()->sdk_int() <
-          base::android::SDK_VERSION_T) {
+      base::android::android_info::sdk_int() <
+          base::android::android_info::SDK_VERSION_T) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_ThreadUtils_setThreadPriorityAudio(env,
                                             PlatformThread::CurrentId().raw());

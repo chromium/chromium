@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/viz/common/features.h"
@@ -88,8 +88,8 @@ ScopedAppGLStateRestoreImpl::ScopedAppGLStateRestoreImpl(
   ClearGLErrors(true, "Incoming GLError");
 
   if (mode_ == ScopedAppGLStateRestore::MODE_DRAW &&
-      base::android::BuildInfo::GetInstance()->sdk_int() ==
-      base::android::SDK_VERSION_S) {
+      base::android::android_info::sdk_int() ==
+          base::android::android_info::SDK_VERSION_S) {
     GLint red_bits = 0;
     GLint green_bits = 0;
     GLint blue_bits = 0;

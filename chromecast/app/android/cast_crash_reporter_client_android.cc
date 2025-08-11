@@ -4,7 +4,7 @@
 
 #include "chromecast/app/android/cast_crash_reporter_client_android.h"
 
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -25,8 +25,7 @@ CastCrashReporterClientAndroid::~CastCrashReporterClientAndroid() {}
 void CastCrashReporterClientAndroid::GetProductInfo(ProductInfo* product_info) {
   product_info->product_name = "media_shell";
   product_info->version = CAST_BUILD_RELEASE ".";
-  product_info->version +=
-      base::android::BuildInfo::GetInstance()->package_version_code();
+  product_info->version += base::android::apk_info::package_version_code();
 #if CAST_IS_DEBUG_BUILD()
   product_info->version += ".debug";
 #endif

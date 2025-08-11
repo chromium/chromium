@@ -4,14 +4,14 @@
 
 #include "base/android/android_input_receiver_compat.h"
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 
 TEST(AndroidInputReceiverCompatTest, CanFindMethodsOnAndroidVPlus) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_V) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_V) {
     EXPECT_EQ(AndroidInputReceiverCompat::IsSupportAvailable(), false);
     return;
   }

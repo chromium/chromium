@@ -21,7 +21,7 @@
 #include "ui/display/display_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 namespace content {
@@ -167,8 +167,8 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_NewVp9Variants) {
      !BUILDFLAG(IS_APPLE)) ||                              \
     defined(ARCH_CPU_MIPS_FAMILY)
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_P) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_P) {
     ExecuteTest("testNewVp9Variants(true)");  // has_profile_2_3_support=true
     return;
   }

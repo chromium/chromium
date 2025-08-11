@@ -17,7 +17,7 @@
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -75,8 +75,8 @@ bool AudioLatency::IsResamplingPassthroughSupported(Type type) {
   // cycles on resampling when using the playback mode. See OpenSLESOutputStream
   // for additional implementation details.
   return type == Type::kPlayback &&
-         base::android::BuildInfo::GetInstance()->sdk_int() >=
-             base::android::SDK_VERSION_NOUGAT_MR1;
+         base::android::android_info::sdk_int() >=
+             base::android::android_info::SDK_VERSION_NOUGAT_MR1;
 #else
   return false;
 #endif

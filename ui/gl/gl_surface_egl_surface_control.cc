@@ -8,7 +8,7 @@
 #include <variant>
 
 #include "base/android/android_hardware_buffer_compat.h"
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/functional/bind.h"
 #include "base/posix/eintr_wrapper.h"
@@ -40,8 +40,7 @@ gfx::Size GetBufferSize(const AHardwareBuffer* buffer) {
 }
 
 std::string BuildSurfaceName(const char* suffix) {
-  return base::StrCat(
-      {base::android::BuildInfo::GetInstance()->package_name(), "/", suffix});
+  return base::StrCat({base::android::apk_info::package_name(), "/", suffix});
 }
 
 base::TimeTicks GetSignalTime(const base::ScopedFD& fence) {

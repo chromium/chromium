@@ -40,7 +40,7 @@
 #include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "net/android/network_library.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -486,8 +486,8 @@ HostResolver::CreateStandaloneNetworkBoundResolver(
   // Support the use of the built-in resolver when possible.
   bool is_builtin_resolver_supported =
       manager_options.insecure_dns_client_enabled &&
-      base::android::BuildInfo::GetInstance()->sdk_int() >=
-          base::android::SDK_VERSION_P;
+      base::android::android_info::sdk_int() >=
+          base::android::android_info::SDK_VERSION_P;
   if (is_builtin_resolver_supported) {
     // Pre-existing DnsConfigOverrides is currently ignored, consider extending
     // if a use case arises.

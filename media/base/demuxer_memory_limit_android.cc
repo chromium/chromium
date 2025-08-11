@@ -4,7 +4,7 @@
 
 #include "media/base/demuxer_memory_limit.h"
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/system/sys_info.h"
 
 namespace media {
@@ -23,8 +23,8 @@ size_t SelectLimit(size_t default_limit,
                : default_limit;
   }
   // Use very low limit on 512MiB Android Go devices only.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-          base::android::SDK_VERSION_OREO &&
+  if (base::android::android_info::sdk_int() >=
+          base::android::android_info::SDK_VERSION_OREO &&
       base::SysInfo::AmountOfPhysicalMemoryMB() <= 512) {
     return very_low_limit;
   }

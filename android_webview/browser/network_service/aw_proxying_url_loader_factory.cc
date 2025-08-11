@@ -29,7 +29,7 @@
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/common/url_constants.h"
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -744,8 +744,7 @@ void InterceptedRequest::InterceptResponseReceived(
         break;
       case AwSettings::RequestedWithHeaderMode::APP_PACKAGE_NAME:
         request_.cors_exempt_headers.SetHeader(
-            header,
-            base::android::BuildInfo::GetInstance()->host_package_name());
+            header, base::android::apk_info::host_package_name());
         committed_mode = CommittedRequestedWithHeaderMode::kAppPackageName;
         break;
       case AwSettings::RequestedWithHeaderMode::CONSTANT_WEBVIEW:

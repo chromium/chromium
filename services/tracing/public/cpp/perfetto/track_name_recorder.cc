@@ -20,7 +20,7 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/thread_descriptor.gen.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #endif
 
 namespace tracing {
@@ -104,8 +104,7 @@ void TrackNameRecorder::SetProcessTrackDescriptor(
     // processes that "belong" to the same WebView app.
     if (process_type == pbzero_enums::PROCESS_RENDERER ||
         process_type == pbzero_enums::PROCESS_BROWSER) {
-      host_package_name =
-          base::android::BuildInfo::GetInstance()->host_package_name();
+      host_package_name = base::android::apk_info::host_package_name();
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -48,7 +48,6 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "media/capture/video/android/video_capture_device_android.h"
 #include "media/capture/video/android/video_capture_device_factory_android.h"

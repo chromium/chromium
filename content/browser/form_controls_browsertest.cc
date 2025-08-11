@@ -21,7 +21,7 @@
 #include "ui/base/ui_base_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 // TODO(crbug.com/40625383): Move the baselines to skia gold for easier
@@ -78,8 +78,8 @@ class FormControlsBrowserTest : public ContentBrowserTest {
 #elif BUILDFLAG(IS_CHROMEOS)
     platform_suffix = "_chromeos";
 #elif BUILDFLAG(IS_ANDROID)
-    int sdk_int = base::android::BuildInfo::GetInstance()->sdk_int();
-    if (sdk_int >= base::android::SDK_VERSION_T) {
+    int sdk_int = base::android::android_info::sdk_int();
+    if (sdk_int >= base::android::android_info::SDK_VERSION_T) {
       platform_suffix = "_android_T";
     } else {
       platform_suffix = "_android";
@@ -142,8 +142,8 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     // Lower versions of android running on older devices, ex Nexus 5, render
     // form controls with a too large of a difference -- >20% error -- to
     // pixel compare.
-    if (base::android::BuildInfo::GetInstance()->sdk_int() <
-        base::android::SDK_VERSION_OREO) {
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SDK_VERSION_OREO) {
       return true;
     }
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/android/build_info.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"

@@ -23,7 +23,7 @@
 #include "third_party/perfetto/protos/perfetto/trace/extension_descriptor.pbzero.h"
 
 #if BUILDFLAG(IS_ANDROID) && defined(OFFICIAL_BUILD)
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #endif
 
 namespace tracing {
@@ -169,7 +169,7 @@ void MetadataDataSource::WriteMetadata(
 #if BUILDFLAG(IS_ANDROID) && defined(OFFICIAL_BUILD)
     // Version code is only set for official builds on Android.
     const std::string& version_code_str =
-        base::android::BuildInfo::GetInstance()->package_version_code();
+        base::android::apk_info::package_version_code();
     if (!version_code_str.empty()) {
       int version_code = 0;
       bool res = base::StringToInt(version_code_str, &version_code);

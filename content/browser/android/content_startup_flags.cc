@@ -4,7 +4,7 @@
 
 #include "content/browser/android/content_startup_flags.h"
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
@@ -43,8 +43,8 @@ void SetContentCommandLineFlags(bool single_process) {
   parsed_command_line->AppendSwitch(switches::kEnableViewport);
   parsed_command_line->AppendSwitch(input::switches::kValidateInputEventStream);
 
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_MARSHMALLOW) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_MARSHMALLOW) {
     parsed_command_line->AppendSwitch(switches::kEnableLongpressDragSelection);
     parsed_command_line->AppendSwitchASCII(
         blink::switches::kTouchTextSelectionStrategy,

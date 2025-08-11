@@ -15,7 +15,7 @@
 #include "components/tracing/common/tracing_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"  // nogncheck
+#include "base/android/android_info.h"  // nogncheck
 #endif
 
 namespace features {
@@ -73,7 +73,7 @@ namespace tracing {
 
 bool ShouldSetupSystemTracing() {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_debug_android()) {
+  if (base::android::android_info::is_debug_android()) {
     return true;
   }
 #endif  // BUILDFLAG(IS_ANDROID)

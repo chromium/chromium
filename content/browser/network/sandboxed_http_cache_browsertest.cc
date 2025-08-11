@@ -36,7 +36,7 @@
 #include "services/network/public/mojom/network_service_test.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 namespace content {
@@ -127,9 +127,9 @@ class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
       // On older android, we cannot use ftruncate in the network process.
       // See https://crbug.com/1315933 and https://crrev.com/c/3581676.
       // Let's skip the tests.
-      const int sdk_version =
-          base::android::BuildInfo::GetInstance()->sdk_int();
-      if (sdk_version <= base::android::SdkVersion::SDK_VERSION_MARSHMALLOW) {
+      const int sdk_version = base::android::android_info::sdk_int();
+      if (sdk_version <=
+          base::android::android_info::SdkVersion::SDK_VERSION_MARSHMALLOW) {
         DVLOG(0) << "Android is too old: " << sdk_version;
         GTEST_SKIP();
       }

@@ -11,7 +11,7 @@
 
 #include <stddef.h>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -49,50 +49,49 @@ bool HasStandardMappingOnAndroid(GamepadId gamepad_id,
   // represent gamepads that have been manually tested and are known to
   // work correctly on recent versions of Android. The key is a GamepadId to
   // identify the gamepad and the value is the earliest
-  // base::android::SdkVersion where the gamepad is known to be mapped
-  // correctly.
-  const base::flat_map<GamepadId, base::android::SdkVersion>
+  // base::android::android_info::SdkVersion where the gamepad is known to be
+  // mapped correctly.
+  const base::flat_map<GamepadId, base::android::android_info::SdkVersion>
       kManualAssessmentResult = {
           // Stadia Controller USB
           {GamepadId::kGoogleProduct9400,
-           base::android::SdkVersion::SDK_VERSION_OREO},
+           base::android::android_info::SDK_VERSION_OREO},
           // Xbox 360 wireless
           {GamepadId::kMicrosoftProduct02a1,
-           base::android::SdkVersion::SDK_VERSION_R},
+           base::android::android_info::SDK_VERSION_R},
           // Xbox One USB (2015 firmware)
           {GamepadId::kMicrosoftProduct02dd,
-           base::android::SdkVersion::SDK_VERSION_R},
+           base::android::android_info::SDK_VERSION_R},
           // Xbox One S USB
           {GamepadId::kMicrosoftProduct02ea,
-           base::android::SdkVersion::SDK_VERSION_Q},
+           base::android::android_info::SDK_VERSION_Q},
           // Xbox One S Bluetooth
           {GamepadId::kMicrosoftProduct02fd,
-           base::android::SdkVersion::SDK_VERSION_R},
+           base::android::android_info::SDK_VERSION_R},
           // Xbox Series X USB
           {GamepadId::kMicrosoftProduct0b12,
-           base::android::SdkVersion::SDK_VERSION_R},
+           base::android::android_info::SDK_VERSION_R},
           // Xbox Series X Bluetooth
           {GamepadId::kMicrosoftProduct0b13,
-           base::android::SdkVersion::SDK_VERSION_Q},
+           base::android::android_info::SDK_VERSION_Q},
           // Xbox One S Bluetooth (2021 firmware)
           {GamepadId::kMicrosoftProduct0b20,
-           base::android::SdkVersion::SDK_VERSION_Q},
+           base::android::android_info::SDK_VERSION_Q},
           // Xbox Adaptive (2021 firmware)
           {GamepadId::kMicrosoftProduct0b21,
-           base::android::SdkVersion::SDK_VERSION_Q},
+           base::android::android_info::SDK_VERSION_Q},
           // Xbox Elite Series 2 (2021 firmware)
           {GamepadId::kMicrosoftProduct0b22,
-           base::android::SdkVersion::SDK_VERSION_Q},
+           base::android::android_info::SDK_VERSION_Q},
           // Switch Pro Controller
           {GamepadId::kNintendoProduct2009,
-           base::android::SdkVersion::SDK_VERSION_R},
+           base::android::android_info::SDK_VERSION_R},
       };
 
   auto find_it = kManualAssessmentResult.find(gamepad_id);
 
   if (find_it != kManualAssessmentResult.end()) {
-    return find_it->second <=
-           base::android::BuildInfo::GetInstance()->sdk_int();
+    return find_it->second <= base::android::android_info::sdk_int();
   }
   // Assume XInput gamepads are always correctly mapped.
   return x_input_type == kXInputTypeXbox360 ||

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/android/application_status_listener.h"
-#include "base/android/build_info.h"
 #include "base/base_switches.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"

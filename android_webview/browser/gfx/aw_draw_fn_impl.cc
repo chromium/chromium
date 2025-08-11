@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/compiler_specific.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -297,8 +297,8 @@ void AwDrawFnImpl::DrawVk(AwDrawFn_DrawVkParams* params) {
   // GrVkSecondaryCBDrawContext currently does not expect or support R8 format
   // so just skip these draw calls before Android side is fixed.
   if (params->format == VK_FORMAT_R8_UNORM &&
-      base::android::BuildInfo::GetInstance()->sdk_int() ==
-          base::android::SDK_VERSION_S) {
+      base::android::android_info::sdk_int() ==
+          base::android::android_info::SDK_VERSION_S) {
     skip_next_post_draw_vk_ = true;
     return;
   }

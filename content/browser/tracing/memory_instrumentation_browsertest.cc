@@ -22,7 +22,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 // TODO: Remove this definition by targeting version 22+ NDK at build time.
 // This was copied from <malloc.h> in Bionic master.
 extern "C" int mallopt(int __option, int __value) __attribute__((weak));
@@ -88,8 +88,8 @@ IN_PROC_BROWSER_TEST_F(MemoryInstrumentationTest,
   // until the purge interval, which is set at 1 second. If we are on N or
   // above, check whether we can use mallopt(M_PURGE) to trigger an immediate
   // purge. If we can't, skip the test.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_NOUGAT) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_NOUGAT) {
     // M_PURGE is supported on most devices running P, but not all of them. So
     // we can't check the API level but must instead attempt to trigger a purge
     // and check whether or not it succeeded.

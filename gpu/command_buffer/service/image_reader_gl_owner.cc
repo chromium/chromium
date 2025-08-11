@@ -9,7 +9,7 @@
 #include <stdint.h>
 
 #include "base/android/android_hardware_buffer_compat.h"
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/debug/dump_without_crashing.h"
@@ -160,7 +160,7 @@ ImageReaderGLOwner::ImageReaderGLOwner(
       width, height, AIMAGE_FORMAT_PRIVATE, usage, max_images_, &reader);
   if (return_code != AMEDIA_OK) {
     LOG(ERROR) << " Image reader creation failed on device model : "
-               << base::android::BuildInfo::GetInstance()->model()
+               << base::android::android_info::model()
                << ". maxImages used is : " << max_images_;
     base::debug::DumpWithoutCrashing();
     if (return_code == AMEDIA_ERROR_INVALID_PARAMETER) {

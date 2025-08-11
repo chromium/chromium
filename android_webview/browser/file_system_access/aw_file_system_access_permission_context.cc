@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/android/build_info.h"
 #include "base/base_paths_android.h"
 #include "base/base_paths_posix.h"
 #include "base/files/file_path.h"

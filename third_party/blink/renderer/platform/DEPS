@@ -2,7 +2,9 @@ include_rules = [
     # To only allow a subset of base/ in Blink, we explicitly list all
     # directories and files instead of writing 'base/'.
     "+base/allocator/buildflags.h",
-    "+base/android/build_info.h",
+    "+base/android/android_info.h",
+    "+base/android/apk_info.h",
+    "+base/android/device_info.h",
     "+base/android/sys_utils.h",
     "+base/atomic_ref_count.h",
     "+base/at_exit.h",

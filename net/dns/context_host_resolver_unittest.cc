@@ -51,7 +51,6 @@
 #include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
 #include "net/android/network_change_notifier_factory_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 

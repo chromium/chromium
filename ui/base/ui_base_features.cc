@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -350,8 +350,8 @@ BASE_FEATURE(kUIDebugTools,
 bool IsSwipeToMoveCursorEnabled() {
   static const bool enabled =
 #if BUILDFLAG(IS_ANDROID)
-      base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_R;
+      base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_R;
 #else
       base::FeatureList::IsEnabled(kSwipeToMoveCursor) ||
       IsTouchTextEditingRedesignEnabled();

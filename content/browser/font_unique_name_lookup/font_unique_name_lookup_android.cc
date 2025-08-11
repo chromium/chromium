@@ -7,7 +7,7 @@
 #include <set>
 #include <vector>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/check.h"
 #include "base/containers/span_rust.h"
 #include "base/files/file.h"
@@ -242,8 +242,7 @@ base::FilePath FontUniqueNameLookup::TableCacheFilePath() {
 std::string FontUniqueNameLookup::GetAndroidBuildFingerprint() const {
   return android_build_fingerprint_for_testing_.size()
              ? android_build_fingerprint_for_testing_
-             : std::string(base::android::BuildInfo::GetInstance()
-                               ->android_build_fp()) +
+             : std::string(base::android::android_info::android_build_fp()) +
                    std::string(kFingerprintSuffixForceUpdateCache);
 }
 

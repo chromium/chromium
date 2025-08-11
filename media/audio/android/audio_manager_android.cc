@@ -9,7 +9,7 @@
 #include <optional>
 #include <vector>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -302,14 +302,13 @@ bool UseAAudioInput() {
     return false;
   }
 
-  if (auto* info = base::android::BuildInfo::GetInstance()) {
-    // Disable AAudio input on Unisoc devices running Android 11 and below due
-    // to missing/broken echo cancellation. See https://crbug.com/344607452.
-    if (base::StartsWith(info->board(), "ums",
-                         base::CompareCase::INSENSITIVE_ASCII) &&
-        info->sdk_int() < base::android::SDK_VERSION_S) {
-      return false;
-    }
+  // Disable AAudio input on Unisoc devices running Android 11 and below due
+  // to missing/broken echo cancellation. See https://crbug.com/344607452.
+  if (base::StartsWith(base::android::android_info::board(), "ums",
+                       base::CompareCase::INSENSITIVE_ASCII) &&
+      base::android::android_info::sdk_int() <
+          base::android::android_info::SDK_VERSION_S) {
+    return false;
   }
 
   return true;

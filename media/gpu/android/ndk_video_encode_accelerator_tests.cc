@@ -9,7 +9,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/android/build_info.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"

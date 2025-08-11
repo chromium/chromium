@@ -18,7 +18,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"
@@ -56,7 +56,6 @@ WebGPUBlocklistReason GetWebGPUAdapterBlocklistReason(
   constexpr uint32_t kQualcommVendorID = 0x5143;
   constexpr uint32_t kIntelVendorID = 0x8086;
   constexpr uint32_t kImgTecVendorID = 0x1010;
-  const auto* build_info = base::android::BuildInfo::GetInstance();
 
   switch (info.vendorID) {
     case kARMVendorID:
@@ -64,7 +63,7 @@ WebGPUBlocklistReason GetWebGPUAdapterBlocklistReason(
     case kIntelVendorID:
       // ARM, Qualcomm, and Intel GPUs are supported on Android 12+ on Vulkan
       if (info.backendType == wgpu::BackendType::Vulkan &&
-          (build_info->sdk_int() <
+          (base::android::android_info::sdk_int() <
            base::android::android_info::SDK_VERSION_S)) {
         reason = reason | WebGPUBlocklistReason::AndroidLimitedSupport;
       }
@@ -75,13 +74,13 @@ WebGPUBlocklistReason GetWebGPUAdapterBlocklistReason(
     case kImgTecVendorID:
       // Imagination GPUs are supported on Android 16+ on Vulkan
       if (info.backendType == wgpu::BackendType::Vulkan &&
-          (build_info->sdk_int() <
+          (base::android::android_info::sdk_int() <
            base::android::android_info::SDK_VERSION_BAKLAVA)) {
         reason = reason | WebGPUBlocklistReason::AndroidLimitedSupport;
       }
       // and Android 13+ on OpenGLES
       if (info.backendType == wgpu::BackendType::OpenGLES &&
-          (build_info->sdk_int() <
+          (base::android::android_info::sdk_int() <
            base::android::android_info::SDK_VERSION_T)) {
         reason = reason | WebGPUBlocklistReason::AndroidLimitedSupport;
       }

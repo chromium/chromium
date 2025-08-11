@@ -4,7 +4,7 @@
 
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -87,8 +87,8 @@ class GpuMojoMediaClientAndroid final : public GpuMojoMediaClient {
   std::optional<SupportedAudioDecoderConfigs>
   GetPlatformSupportedAudioDecoderConfigs() final {
     SupportedAudioDecoderConfigs audio_configs;
-    if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-        base::android::SDK_VERSION_P) {
+    if (base::android::android_info::sdk_int() >=
+        base::android::android_info::SDK_VERSION_P) {
       audio_configs.emplace_back(AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC);
     }
     return audio_configs;

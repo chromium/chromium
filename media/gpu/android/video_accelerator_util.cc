@@ -4,7 +4,6 @@
 
 #include "media/gpu/android/video_accelerator_util.h"
 
-#include "base/android/build_info.h"
 #include "base/android/jni_string.h"
 #include "base/no_destructor.h"
 #include "media/base/media_switches.h"

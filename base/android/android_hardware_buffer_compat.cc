@@ -6,7 +6,7 @@
 
 #include <dlfcn.h>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/check.h"
 
 namespace base {
@@ -58,8 +58,8 @@ AndroidHardwareBufferCompat::AndroidHardwareBufferCompat() {
 
 // static
 bool AndroidHardwareBufferCompat::IsSupportAvailable() {
-  return base::android::BuildInfo::GetInstance()->sdk_int() >=
-         base::android::SDK_VERSION_OREO;
+  return base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_OREO;
 }
 
 // static

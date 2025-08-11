@@ -8,7 +8,7 @@
 
 #include <vector>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -31,7 +31,7 @@ using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaIntArrayToIntVector;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
-using base::android::SDK_VERSION_P;
+using base::android::android_info::SDK_VERSION_P;
 
 namespace media {
 
@@ -73,13 +73,13 @@ static bool IsDecoderSupportedByDevice(const std::string& android_mime_type) {
     // MediaTek decoders do not work properly on vp8. See
     // http://crbug.com/446974 and http://crbug.com/597836.
     if (hardware.starts_with("mt")) {
-      if (base::android::BuildInfo::GetInstance()->sdk_int() <
-          base::android::SDK_VERSION_P) {
+      if (base::android::android_info::sdk_int() <
+          base::android::android_info::SDK_VERSION_P) {
         return false;
       }
       // MediaTek chipsets after 'Android T' are compatible with vp8.
-      if (base::android::BuildInfo::GetInstance()->sdk_int() <
-          base::android::SDK_VERSION_T) {
+      if (base::android::android_info::sdk_int() <
+          base::android::android_info::SDK_VERSION_T) {
         // The following chipsets have been confirmed by MediaTek to work on P+
         return hardware.starts_with("mt5599") ||
                hardware.starts_with("mt5895") ||
@@ -93,8 +93,8 @@ static bool IsDecoderSupportedByDevice(const std::string& android_mime_type) {
       return false;
     }
   } else if (android_mime_type == kAv1MimeType) {
-    if (base::android::BuildInfo::GetInstance()->sdk_int() <
-        base::android::SDK_VERSION_Q) {
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SDK_VERSION_Q) {
       return false;
     }
   }
@@ -128,8 +128,8 @@ static bool HasVp9Profile23Decoder() {
   // support which we can't check from the renderer process. Since Android P+
   // has a software decoder available for VP9.2, VP9.3 content and usage is nil
   // on Android, just gate support on P+.
-  return base::android::BuildInfo::GetInstance()->sdk_int() >=
-         base::android::SDK_VERSION_P;
+  return base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_P;
 }
 
 // static
@@ -260,8 +260,8 @@ bool MediaCodecUtil::IsHEVCDecoderAvailable() {
 // static
 bool MediaCodecUtil::IsAACEncoderAvailable() {
   // We only support AAC encoding on android Q+, due to our use of the NDK.
-  return base::android::BuildInfo::GetInstance()->sdk_int() >=
-         base::android::SDK_VERSION_Q;
+  return base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_Q;
 }
 
 // static
@@ -279,7 +279,7 @@ bool MediaCodecUtil::IsSurfaceViewOutputSupported() {
                                              "SCH-I960", "SCH-S968", "SGH-T999",
                                              "SGH-I747", "SGH-N064"};
 
-  std::string model(base::android::BuildInfo::GetInstance()->model());
+  std::string model(base::android::android_info::model());
   for (auto* disabled_model : kDisabledModels) {
     if (base::StartsWith(model, disabled_model,
                          base::CompareCase::INSENSITIVE_ASCII)) {
@@ -316,12 +316,12 @@ std::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
   struct CodecAlignment {
     const char* name_regex;
     gfx::Size alignment;
-    int sdk_int = base::android::SDK_VERSION_NOUGAT;
+    int sdk_int = base::android::android_info::SDK_VERSION_NOUGAT;
   };
-  using base::android::SDK_VERSION_Q;
-  using base::android::SDK_VERSION_R;
-  using base::android::SDK_VERSION_Sv2;
-  using base::android::SDK_VERSION_U;
+  using base::android::android_info::SDK_VERSION_Q;
+  using base::android::android_info::SDK_VERSION_R;
+  using base::android::android_info::SDK_VERSION_Sv2;
+  using base::android::android_info::SDK_VERSION_U;
   constexpr CodecAlignment kCodecAlignmentMap[] = {
       // Codec2 software decoders.
       {"c2.android.avc", gfx::Size(128, 2), SDK_VERSION_Sv2},
@@ -364,7 +364,7 @@ std::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
   const auto lower_name = base::ToLowerASCII(name);
 
   const auto sdk_int =
-      host_sdk_int.value_or(base::android::BuildInfo::GetInstance()->sdk_int());
+      host_sdk_int.value_or(base::android::android_info::sdk_int());
   for (const auto& entry : kCodecAlignmentMap) {
     if (sdk_int >= entry.sdk_int &&
         RE2::PartialMatch(lower_name, entry.name_regex)) {
@@ -425,7 +425,7 @@ bool MediaCodecUtil::IsKnownUnaccelerated(VideoCodec codec,
     // We may still reject VP8 hardware decoding later on certain chipsets,
     // see IsDecoderSupportedByDevice(). We don't have the the chipset ID
     // here to check now though.
-    return base::android::BuildInfo::GetInstance()->sdk_int() < SDK_VERSION_P;
+    return base::android::android_info::sdk_int() < SDK_VERSION_P;
   }
 
   return false;

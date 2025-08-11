@@ -31,7 +31,7 @@
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_trace_event.pbzero.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #endif
 
 using TraceConfig = base::trace_event::TraceConfig;
@@ -128,7 +128,7 @@ void TraceEventMetadataSource::WriteMetadataPacket(
 #if BUILDFLAG(IS_ANDROID) && defined(OFFICIAL_BUILD)
   // Version code is only set for official builds on Android.
   const std::string& version_code_str =
-      base::android::BuildInfo::GetInstance()->package_version_code();
+      base::android::apk_info::package_version_code();
   if (!version_code_str.empty()) {
     int version_code = 0;
     bool res = base::StringToInt(version_code_str, &version_code);

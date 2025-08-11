@@ -7,7 +7,7 @@
 #include <cmath>
 #include <memory>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -188,7 +188,7 @@ bool MediaCodecAudioDecoder::CreateMediaCodecLoop() {
   }
 
   codec_loop_ = std::make_unique<MediaCodecLoop>(
-      base::android::BuildInfo::GetInstance()->sdk_int(), this,
+      base::android::android_info::sdk_int(), this,
       std::move(audio_codec_bridge),
       scoped_refptr<base::SingleThreadTaskRunner>());
 

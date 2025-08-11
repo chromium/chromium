@@ -10,7 +10,7 @@
 #include <optional>
 #include <string>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/pmf_utils.h"
 #include "base/android/self_compaction_manager.h"
 #include "base/cancelable_callback.h"
@@ -117,8 +117,8 @@ std::optional<uint64_t> Diff(std::optional<uint64_t> before,
 }  // namespace
 
 PreFreezeBackgroundMemoryTrimmer::PreFreezeBackgroundMemoryTrimmer()
-    : supports_modern_trim_(BuildInfo::GetInstance()->sdk_int() >=
-                            SDK_VERSION_U) {}
+    : supports_modern_trim_(base::android::android_info::sdk_int() >=
+                            base::android::android_info::SDK_VERSION_U) {}
 
 // static
 PreFreezeBackgroundMemoryTrimmer& PreFreezeBackgroundMemoryTrimmer::Instance() {

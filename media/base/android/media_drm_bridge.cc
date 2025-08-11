@@ -16,7 +16,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
@@ -145,8 +145,8 @@ CdmKeyInformation::KeyStatus ConvertKeyStatus(KeyStatus key_status,
       // expect. See crbug.com/889272 for explanation.
       // TODO(jrummell): "KEY_STATUS_PENDING" should probably be renamed to
       // "STATUS_PENDING".
-      return (base::android::BuildInfo::GetInstance()->sdk_int() <=
-              base::android::SDK_VERSION_P)
+      return (base::android::android_info::sdk_int() <=
+              base::android::android_info::SDK_VERSION_P)
                  ? CdmKeyInformation::USABLE_IN_FUTURE
                  : CdmKeyInformation::KEY_STATUS_PENDING;
     case KeyStatus::KEY_STATUS_INTERNAL_ERROR:
@@ -373,15 +373,14 @@ bool MediaDrmBridge::IsPerApplicationProvisioningSupported() {
   // and thus is cached.
   static int first_api_level = GetFirstApiLevel();
   DVLOG(1) << "first_api_level = " << first_api_level;
-  if (first_api_level >= base::android::SDK_VERSION_OREO) {
+  if (first_api_level >= base::android::android_info::SDK_VERSION_OREO) {
     return true;
   }
 
   // If "ro.product.first_api_level" does not match, then check build number.
-  DVLOG(1) << "api_level = "
-           << base::android::BuildInfo::GetInstance()->sdk_int();
-  return base::android::BuildInfo::GetInstance()->sdk_int() >=
-         base::android::SDK_VERSION_OREO;
+  DVLOG(1) << "api_level = " << base::android::android_info::sdk_int();
+  return base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_OREO;
 }
 
 // static

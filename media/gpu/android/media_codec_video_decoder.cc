@@ -7,7 +7,7 @@
 #include <memory>
 #include <variant>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -259,7 +259,7 @@ MediaCodecVideoDecoder::MediaCodecVideoDecoder(
       allow_nonsecure_overlays_(
           base::FeatureList::IsEnabled(media::kAllowNonSecureOverlays)),
       use_block_model_(device_info_->SdkVersion() >=
-                           base::android::SDK_VERSION_V &&
+                           base::android::android_info::SDK_VERSION_V &&
                        base::FeatureList::IsEnabled(kMediaCodecBlockModel)) {
   DVLOG(2) << __func__;
   surface_chooser_helper_.chooser()->SetClientCallbacks(
@@ -769,7 +769,8 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
   // surface.  If we're in one of those cases, then retry codec allocation.
   // This only happens on R and S, so skip it otherwise.
   if (!codec && should_retry_codec_allocation &&
-      device_info_->SdkVersion() >= base::android::SDK_VERSION_R &&
+      device_info_->SdkVersion() >=
+          base::android::android_info::SDK_VERSION_R &&
       device_info_->SdkVersion() <= 32 /* SDK_VERSION_S_V2 */
   ) {
     // We might want to post this with a short delay, but there is already quite
@@ -1398,7 +1399,8 @@ bool MediaCodecVideoDecoder::CodecNeedsReallocation(int new_width) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return !use_block_model_ && new_width > last_width_ * kReallocateThreshold &&
          device_info_ &&
-         device_info_->SdkVersion() > base::android::SDK_VERSION_P;
+         device_info_->SdkVersion() >
+             base::android::android_info::SDK_VERSION_P;
 }
 
 std::vector<SupportedVideoDecoderConfig>

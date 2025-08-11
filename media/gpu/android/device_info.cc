@@ -4,7 +4,7 @@
 
 #include "media/gpu/android/device_info.h"
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "media/base/android/media_codec_util.h"
 
 namespace media {
@@ -15,7 +15,7 @@ DeviceInfo* DeviceInfo::GetInstance() {
 }
 
 int DeviceInfo::SdkVersion() {
-  static const int result = base::android::BuildInfo::GetInstance()->sdk_int();
+  static const int result = base::android::android_info::sdk_int();
   return result;
 }
 

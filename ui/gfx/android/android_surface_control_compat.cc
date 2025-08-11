@@ -14,7 +14,6 @@
 #include <dlfcn.h>
 
 #include "base/android/android_info.h"
-#include "base/android/build_info.h"
 #include "base/atomic_sequence_num.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
@@ -544,15 +543,16 @@ void OnTransactiOnCommittedOnAnyThread(void* context,
 
 // static
 bool SurfaceControl::IsSupported() {
-  const auto* build_info = base::android::BuildInfo::GetInstance();
-
   // Disabled on Samsung devices due to a platform bug fixed in R.
-  int min_sdk_version = base::android::SDK_VERSION_Q;
-  if (base::EqualsCaseInsensitiveASCII(build_info->manufacturer(), "samsung"))
-    min_sdk_version = base::android::SDK_VERSION_R;
+  int min_sdk_version = base::android::android_info::SDK_VERSION_Q;
+  if (base::EqualsCaseInsensitiveASCII(
+          base::android::android_info::manufacturer(), "samsung")) {
+    min_sdk_version = base::android::android_info::SDK_VERSION_R;
+  }
 
-  if (build_info->sdk_int() < min_sdk_version)
+  if (base::android::android_info::sdk_int() < min_sdk_version) {
     return false;
+  }
 
   CHECK(SurfaceControlMethods::Get().supported);
   return true;
@@ -579,8 +579,8 @@ bool SurfaceControl::ColorSpaceToADataSpace(
     return true;
   }
 
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_S) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_S) {
     if (color_space == gfx::ColorSpace::CreateExtendedSRGB()) {
       out_dataspace = ADATASPACE_STANDARD_BT709 | ADATASPACE_TRANSFER_SRGB |
                       ADATASPACE_RANGE_EXTENDED;
@@ -806,8 +806,8 @@ void SurfaceControl::Transaction::SetBuffer(const Surface& surface,
   // In T OS, setBuffer call setOnComplete internally, so Apply() is required to
   // decrease ref count of SurfaceControl.
   // TODO(crbug.com/40249006): remove this if AOSP fix the issue
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_T) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_T) {
     need_to_apply_ = true;
   }
 }
