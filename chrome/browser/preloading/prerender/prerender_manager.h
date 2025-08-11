@@ -126,7 +126,8 @@ class PrerenderManager : public content::WebContentsObserver,
     kNoTemplateUrlService = 6,
     kNoDefaultSearchProvider = 7,
     kNotSameOriginWithDSE = 8,
-    kMaxValue = kNotSameOriginWithDSE,
+    kInPictureInPicture = 9,
+    kMaxValue = kInPictureInPicture,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:PrerenderPrewarmDecision)
 
