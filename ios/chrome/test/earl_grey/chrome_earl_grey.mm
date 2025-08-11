@@ -1959,7 +1959,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       [NSString stringWithFormat:@"Reader mode WebState is ready."];
   GREYCondition* condition = [GREYCondition conditionWithName:conditionName
                                                         block:verifyBlock];
-  return [condition waitWithTimeout:kWaitForJSCompletionTimeout.InSecondsF()];
+  // For the Reader mode WebState to be ready, distillation must complete
+  // (JavaScript completion) and the distilled content must be loaded in to the
+  // Reader mode WebState (page load).
+  constexpr base::TimeDelta timeout =
+      kWaitForJSCompletionTimeout + kWaitForPageLoadTimeout;
+  return [condition waitWithTimeout:timeout.InSecondsF()];
 }
 
 - (void)hideReaderMode {
