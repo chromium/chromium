@@ -4120,7 +4120,7 @@
   },
   {
     "name": "enable-pix-account-linking",
-    "owners": [ "vishwasuppoor@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
+    "owners": [ "siashah@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 143
   },
   {
@@ -4130,7 +4130,7 @@
   },
   {
     "name": "enable-pix-payments-in-landscape-mode",
-    "owners": [ "vishwasuppoor@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
+    "owners": [ "siashah@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 143
   },
   {
