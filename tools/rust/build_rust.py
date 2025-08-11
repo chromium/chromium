@@ -69,6 +69,14 @@ EXCLUDED_TESTS = [
     os.path.join('tests', 'codegen-llvm', 'common_prim_int_ptr.rs'),
     # Temporarily disabled due to https://crbug.com/433249564
     os.path.join('tests', 'codegen-llvm', 'enum', 'enum-discriminant-eq.rs'),
+    # Temporarily disabled due to https://crbug.com/437926231
+    os.path.join('tests', 'codegen-llvm', 'align-byval-alignment-mismatch.rs'),
+    os.path.join('tests', 'codegen-llvm', 'call-tmps-lifetime.rs'),
+    os.path.join('tests', 'codegen-llvm', 'issues', 'issue-105386-ub-in-debuginfo.rs'),
+    os.path.join('tests', 'codegen-llvm', 'intrinsics', 'transmute-simd.rs'),
+    os.path.join('tests', 'codegen-llvm', 'intrinsics', 'transmute.rs'),
+    os.path.join('tests', 'codegen-llvm', 'lifetime_start_end.rs'),
+    os.path.join('tests', 'codegen-llvm', 'uninhabited-transparent-return-abi.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # Temporarily disabled due to https://crbug.com/379308086
