@@ -79,7 +79,12 @@ class PermissionVerticalButtonsDialogCustomViewBinder {
     private static void updateCloseButtonCallback(View customView, Runnable closeButtonCallback) {
         View closeButton = customView.findViewById(R.id.close_button);
         if (closeButton != null) {
-            closeButton.setOnClickListener(view -> closeButtonCallback.run());
+            final View.OnClickListener callback =
+                    (View view) -> {
+                        closeButtonCallback.run();
+                        closeButton.setOnClickListener(null);
+                    };
+            closeButton.setOnClickListener(callback);
         }
     }
 }
