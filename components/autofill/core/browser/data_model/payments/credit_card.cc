@@ -631,10 +631,11 @@ void CreditCard::GetMatchingTypes(const std::u16string& text,
     }
   }
 
-  int month = 0;
-  if (data_util::ParseExpirationMonth(text, app_locale, &month) &&
-      month == expiration_month_) {
-    matching_types->insert(CREDIT_CARD_EXP_MONTH);
+  if (std::optional<int> parsed_month =
+          data_util::ParseExpirationMonth(text, app_locale)) {
+    if (*parsed_month == expiration_month_) {
+      matching_types->insert(CREDIT_CARD_EXP_MONTH);
+    }
   }
 }
 
@@ -659,11 +660,17 @@ void CreditCard::SetInfoForMonthInputType(const std::u16string& value) {
 }
 
 void CreditCard::SetExpirationMonth(int expiration_month) {
-  data_util::SetExpirationMonth(expiration_month, &expiration_month_);
+  if (std::optional<int> parsed_month =
+          data_util::GetExpirationMonth(expiration_month)) {
+    expiration_month_ = *parsed_month;
+  }
 }
 
 void CreditCard::SetExpirationYear(int expiration_year) {
-  data_util::SetExpirationYear(expiration_year, &expiration_year_);
+  if (std::optional<int> parsed_year =
+          data_util::GetExpirationYear(expiration_year)) {
+    expiration_year_ = *parsed_year;
+  }
 }
 
 void CreditCard::SetNickname(const std::u16string& nickname) {
@@ -949,11 +956,20 @@ bool CreditCard::HasValidExpirationDate() const {
 
 bool CreditCard::SetExpirationMonthFromString(const std::u16string& text,
                                               const std::string& app_locale) {
-  return data_util::ParseExpirationMonth(text, app_locale, &expiration_month_);
+  if (std::optional<int> parsed_month =
+          data_util::ParseExpirationMonth(text, app_locale)) {
+    expiration_month_ = *parsed_month;
+    return true;
+  }
+  return false;
 }
 
 bool CreditCard::SetExpirationYearFromString(const std::u16string& text) {
-  return data_util::ParseExpirationYear(text, &expiration_year_);
+  if (std::optional<int> parsed_year = data_util::ParseExpirationYear(text)) {
+    expiration_year_ = *parsed_year;
+    return true;
+  }
+  return false;
 }
 
 void CreditCard::SetExpirationDateFromString(const std::u16string& text) {

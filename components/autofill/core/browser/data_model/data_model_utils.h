@@ -140,27 +140,25 @@ std::u16string Expiration2DigitYearAsString(int expiration_year);
 std::u16string Expiration4DigitYearAsString(int expiration_year);
 
 // Converts a string representation of a month (such as "February" or "feb."
-// or "2") into a numeric value in [1, 12]. Returns true on successful
-// conversion or false if a month was not recognized. When conversion fails,
-// |expiration_month| is not modified.
-bool ParseExpirationMonth(const std::u16string& text,
-                          const std::string& app_locale,
-                          int* expiration_month);
+// or "2") into a numeric value in [1, 12]. Returns the corresponding `int`
+// value if parsing was successful or `std::nullopt` if a month was not
+// recognized.
+std::optional<int> ParseExpirationMonth(const std::u16string& text,
+                                        const std::string& app_locale);
 
-// Parses the |text| and stores the corresponding int value result in
-// |*expiration_year|. This function accepts two digit years as well as
-// four digit years between 2000 and 2999. Returns true on success.
-// On failure, no change is made to |*expiration_year|.
-bool ParseExpirationYear(const std::u16string& text, int* expiration_year);
+// Parses the `text` and returns the corresponding `int` value if parsing was
+// successful . This function accepts two digit years as well as four digit
+// years between 2000 and 2999. On failure, it returns `std::nullopt`.
+std::optional<int> ParseExpirationYear(std::u16string_view text);
 
-// Sets |*expiration_month| to |value| if |value| is a valid month (1-12).
-// Returns if any change is made to |*expiration_month|.
-bool SetExpirationMonth(int value, int* expiration_month);
+// Returns the corresponding `int` value if parsing a valid month (1-12) was
+// successful. On failure, it returns `std::nullopt`.
+std::optional<int> GetExpirationMonth(int value);
 
-// Sets |*expiration_year| to |value| if |value| is a valid year. See comments
-// in the function body for the definition of "valid". Returns if any change is
-// made to |*expiration_year|.
-bool SetExpirationYear(int value, int* expiration_year);
+// Returns the corresponding `int` value if parsing the expiration year was
+// successful or `std::nullopt` if a valid year was not recognized. See
+// comments in the function body for the definition of "valid".
+std::optional<int> GetExpirationYear(int value);
 
 // Finds possible country code in |text| by fetching the first sub-group when
 // matched with |kAugmentedPhoneCountryCodeRe| regex. It basically looks for a

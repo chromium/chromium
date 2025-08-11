@@ -96,23 +96,23 @@ std::u16string GetExpirationMonthSelectControlValue(
   // Attempt to match the user's `month` with the field's value attributes.
   for (auto [field_option, trimmed_value] :
        base::zip(field_options, trimmed_values)) {
-    int converted_value = 0;
     // We use the trimmed value to match with `month`, but the original select
     // value to fill the field (otherwise filling wouldn't work).
-    if (data_util::ParseExpirationMonth(trimmed_value, app_locale,
-                                        &converted_value) &&
-        month == converted_value) {
-      return field_option.value;
+    if (std::optional<int> parsed_month =
+            data_util::ParseExpirationMonth(trimmed_value, app_locale)) {
+      if (month == *parsed_month) {
+        return field_option.value;
+      }
     }
   }
 
   // Attempt to match with each of the options' content.
   for (const SelectOption& option : field_options) {
-    int converted_contents = 0;
-    if (data_util::ParseExpirationMonth(option.text, app_locale,
-                                        &converted_contents) &&
-        month == converted_contents) {
-      return option.value;
+    if (std::optional<int> parsed_month =
+            data_util::ParseExpirationMonth(option.text, app_locale)) {
+      if (month == *parsed_month) {
+        return option.value;
+      }
     }
   }
   if (std::optional<std::u16string> numeric_value =
