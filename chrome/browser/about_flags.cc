@@ -7627,10 +7627,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          download::features::kDownloadNotificationServiceUnifiedAPI)},
 
-    {"tab-hover-card-images", flag_descriptions::kTabHoverCardImagesName,
-     flag_descriptions::kTabHoverCardImagesDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabHoverCardImages)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {flag_descriptions::kTabSearchPositionSettingId,
      flag_descriptions::kTabSearchPositionSettingName,

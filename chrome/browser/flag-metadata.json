@@ -9466,11 +9466,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "tab-hover-card-images",
-    "owners": [ "dfried@chromium.org", "estalin@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "tab-model-init-fixes",
     "owners": [ "skym@chromium.org", "clank-tab-dev@google.com" ],
     "expiry_milestone": 150

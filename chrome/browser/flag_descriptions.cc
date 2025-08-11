@@ -4024,10 +4024,6 @@ const char kTabGroupShorcutsName[] = "Tab Group Keyboard Shortcuts";
 const char kTabGroupShorcutsDescription[] =
     "Adds a few keyboard shortcuts for some tab group interactions.";
 
-const char kTabHoverCardImagesName[] = "Tab Hover Card Images";
-const char kTabHoverCardImagesDescription[] =
-    "Shows a preview image in tab hover cards, if tab hover cards are enabled.";
-
 #if !BUILDFLAG(IS_ANDROID)
 const char kTabSearchPositionSettingId[] = "tab-search-position-setting";
 const char kTabSearchPositionSettingName[] = "Tab Search Position Setting";

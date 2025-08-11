@@ -2298,9 +2298,6 @@ extern const char kTabGroupShorcutsId[];
 extern const char kTabGroupShorcutsName[];
 extern const char kTabGroupShorcutsDescription[];
 
-extern const char kTabHoverCardImagesName[];
-extern const char kTabHoverCardImagesDescription[];
-
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kTabSearchPositionSettingId[];
 extern const char kTabSearchPositionSettingName[];
