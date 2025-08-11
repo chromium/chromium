@@ -5,7 +5,8 @@
       "linux",
       "mac",
       "chromeos",
-      "fuchsia"
+      "fuchsia",
+      "android"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "auth.globally_scoped_http_auth_cache_enabled",
