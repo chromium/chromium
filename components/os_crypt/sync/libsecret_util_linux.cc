@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -178,9 +177,7 @@ bool LibsecretLoader::EnsureLibsecretLoaded() {
   // be removed once the implementation is completed and is rolled out for
   // several Chrome releases to give users time for their stored credentials to
   // be migrated to the new backend.
-  const bool can_use_libsecret = CanUseLibsecret();
-  base::UmaHistogramBoolean("OSCrypt.Linux.CanUseLibsecret", can_use_libsecret);
-  return can_use_libsecret && LoadLibsecret() && LibsecretIsAvailable();
+  return CanUseLibsecret() && LoadLibsecret() && LibsecretIsAvailable();
 }
 
 // static
