@@ -6336,11 +6336,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "lens-ink-multi-sample-mode-disabled",
-    "owners": ["cmyang@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "lens-load-aim-in-lens-result-page",
     "owners": [ "cmyang@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 145

@@ -934,11 +934,6 @@ const char kLensInitialLvfZoomLevel90PercentName[] =
 const char kLensInitialLvfZoomLevel90PercentDescription[] =
     "When enabled, sets the initial Lens camera zoom level to 90 percent.";
 
-const char kLensInkMultiSampleModeDisabledName[] =
-    "Disable Lens Ink multi-sample mode";
-const char kLensInkMultiSampleModeDisabledDescription[] =
-    "When disabled, turns off multi-sample mode and uses less memory.";
-
 const char kLensLoadAIMInLensResultPageName[] =
     "Enable loading AIM in the Lens result page";
 const char kLensLoadAIMInLensResultPageDescription[] =

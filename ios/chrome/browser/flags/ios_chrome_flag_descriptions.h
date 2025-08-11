@@ -541,9 +541,6 @@ extern const char kLensGestureTextSelectionDisabledDescription[];
 extern const char kLensInitialLvfZoomLevel90PercentName[];
 extern const char kLensInitialLvfZoomLevel90PercentDescription[];
 
-extern const char kLensInkMultiSampleModeDisabledName[];
-extern const char kLensInkMultiSampleModeDisabledDescription[];
-
 extern const char kLensLoadAIMInLensResultPageName[];
 extern const char kLensLoadAIMInLensResultPageDescription[];
 

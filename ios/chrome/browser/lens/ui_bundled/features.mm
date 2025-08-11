@@ -48,10 +48,6 @@ BASE_FEATURE(kLensSingleTapTextSelectionDisabled,
              "LensSingleTapTextSelectionDisabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensInkMultiSampleModeDisabled,
-             "LensInkMultiSampleModeDisabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensGestureTextSelectionDisabled,
              "LensGestureTextSelectionDisabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
