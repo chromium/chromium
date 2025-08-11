@@ -35,59 +35,126 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCheckboxId);
 
 class ModalDialogWrapperTest : public testing::Test {
  protected:
+  // Test helper class to build a DialogModel with a fluent interface.
+  class DialogModelBuilder {
+   public:
+    explicit DialogModelBuilder(bool* dialog_destroyed_flag)
+        : dialog_destroyed_flag_(dialog_destroyed_flag) {}
+
+    DialogModelBuilder& WithOkButton(
+        base::OnceClosure callback,
+        ui::ButtonStyle style = ui::ButtonStyle::kDefault) {
+      ok_callback_ = std::move(callback);
+      ok_button_style_ = style;
+      return *this;
+    }
+
+    DialogModelBuilder& WithCancelButton(
+        base::OnceClosure callback,
+        ui::ButtonStyle style = ui::ButtonStyle::kDefault) {
+      has_cancel_button_ = true;
+      cancel_callback_ = std::move(callback);
+      cancel_button_style_ = style;
+      return *this;
+    }
+
+    DialogModelBuilder& WithCloseAction(base::OnceClosure callback) {
+      close_callback_ = std::move(callback);
+      return *this;
+    }
+
+    DialogModelBuilder& OverrideDefaultButton(
+        mojom::DialogButton override_button) {
+      override_button_ = override_button;
+      return *this;
+    }
+
+    DialogModelBuilder& WithParagraphs(
+        const std::vector<std::u16string>& paragraphs) {
+      paragraphs_ = paragraphs;
+      return *this;
+    }
+
+    DialogModelBuilder& WithCheckbox(bool is_checked) {
+      has_checkbox_ = true;
+      checkbox_is_checked_ = is_checked;
+      return *this;
+    }
+
+    DialogModelBuilder& WithIcon(ui::ImageModel icon) {
+      icon_ = std::move(icon);
+      return *this;
+    }
+
+    std::unique_ptr<ui::DialogModel> Build() {
+      ui::DialogModel::Builder dialog_builder;
+      dialog_builder.SetTitle(u"title");
+
+      if (icon_) {
+        dialog_builder.SetIcon(*icon_);
+      }
+
+      for (const auto& paragraph_text : paragraphs_) {
+        dialog_builder.AddParagraph(ui::DialogModelLabel(paragraph_text));
+      }
+
+      if (has_checkbox_) {
+        dialog_builder.AddCheckbox(
+            kCheckboxId, ui::DialogModelLabel(u"checkbox label"),
+            ui::DialogModelCheckbox::Params().SetIsChecked(
+                checkbox_is_checked_));
+      }
+
+      dialog_builder.AddOkButton(
+          std::move(ok_callback_),
+          ui::DialogModel::Button::Params().SetLabel(u"ok").SetStyle(
+              ok_button_style_));
+
+      if (has_cancel_button_) {
+        dialog_builder.AddCancelButton(
+            std::move(cancel_callback_),
+            ui::DialogModel::Button::Params().SetLabel(u"cancel").SetStyle(
+                cancel_button_style_));
+      }
+
+      // Capture the pointer to the destruction flag by value. This prevents
+      // the lambda from holding a dangling reference to the temporary builder
+      // instance.
+      bool* flag_ptr = dialog_destroyed_flag_;
+      dialog_builder.SetCloseActionCallback(std::move(close_callback_))
+          .SetDialogDestroyingCallback(
+              base::BindLambdaForTesting([flag_ptr]() { *flag_ptr = true; }));
+
+      if (override_button_) {
+        dialog_builder.OverrideDefaultButton(*override_button_);
+      }
+      return dialog_builder.Build();
+    }
+
+   private:
+    raw_ptr<bool> dialog_destroyed_flag_;
+
+    // Default values match the original CreateDialogModel function.
+    base::OnceClosure ok_callback_ = base::DoNothing();
+    ui::ButtonStyle ok_button_style_ = ui::ButtonStyle::kDefault;
+
+    bool has_cancel_button_ = false;
+    base::OnceClosure cancel_callback_ = base::DoNothing();
+    ui::ButtonStyle cancel_button_style_ = ui::ButtonStyle::kDefault;
+
+    base::OnceClosure close_callback_ = base::DoNothing();
+    std::optional<mojom::DialogButton> override_button_;
+    std::vector<std::u16string> paragraphs_ = {u"paragraph"};
+
+    bool has_checkbox_ = false;
+    bool checkbox_is_checked_ = false;
+    std::optional<ui::ImageModel> icon_;
+  };
+
   void SetUp() override {
     window_ = ui::WindowAndroid::CreateForTesting();
     fake_dialog_manager_ = FakeModalDialogManagerBridge::CreateForTab(
         window_->get(), /*use_empty_java_presenter=*/false);
-  }
-
-  // Helper function to build the dialog model.
-  std::unique_ptr<ui::DialogModel> CreateDialogModel(
-      base::OnceClosure ok_callback = base::DoNothing(),
-      ui::ButtonStyle ok_button_style = ui::ButtonStyle::kDefault,
-      bool cancel_button = false,
-      base::OnceClosure cancel_callback = base::DoNothing(),
-      ui::ButtonStyle cancel_button_style = ui::ButtonStyle::kDefault,
-      base::OnceClosure close_callback = base::DoNothing(),
-      std::optional<mojom::DialogButton> override_button = std::nullopt,
-      const std::vector<std::u16string>& paragraphs = {u"paragraph"},
-      bool with_checkbox = false,
-      bool checkbox_is_checked = false,
-      std::optional<ui::ImageModel> icon = std::nullopt) {
-    ui::DialogModel::Builder dialog_builder;
-    dialog_builder.SetTitle(u"title");
-
-    if (icon) {
-      dialog_builder.SetIcon(*icon);
-    }
-
-    for (const auto& paragraph_text : paragraphs) {
-      dialog_builder.AddParagraph(ui::DialogModelLabel(paragraph_text));
-    }
-
-    if (with_checkbox) {
-      dialog_builder.AddCheckbox(
-          kCheckboxId, ui::DialogModelLabel(u"checkbox label"),
-          ui::DialogModelCheckbox::Params().SetIsChecked(checkbox_is_checked));
-    }
-
-    dialog_builder.AddOkButton(
-        std::move(ok_callback),
-        ui::DialogModel::Button::Params().SetLabel(u"ok").SetStyle(
-            ok_button_style));
-    if (cancel_button) {
-      dialog_builder.AddCancelButton(
-          std::move(cancel_callback),
-          ui::DialogModel::Button::Params().SetLabel(u"cancel").SetStyle(
-              cancel_button_style));
-    }
-    dialog_builder.SetCloseActionCallback(std::move(close_callback))
-        .SetDialogDestroyingCallback(
-            base::BindLambdaForTesting([&]() { dialog_destroyed_ = true; }));
-    if (override_button.has_value()) {
-      dialog_builder.OverrideDefaultButton(override_button.value());
-    }
-    return dialog_builder.Build();
   }
 
   bool dialog_destroyed_ = false;
@@ -98,10 +165,10 @@ class ModalDialogWrapperTest : public testing::Test {
 TEST_F(ModalDialogWrapperTest, CallOkButton) {
   bool ok_called = false;
 
-  auto dialog_model = CreateDialogModel(
-      /*ok_callback=*/base::BindLambdaForTesting([&]() { ok_called = true; }),
-      /*ok_button_style=*/ui::ButtonStyle::kDefault,
-      /*cancel_button=*/false);
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_)
+          .WithOkButton(base::BindLambdaForTesting([&]() { ok_called = true; }))
+          .Build();
 
   ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
   fake_dialog_manager_->ClickPositiveButton();
@@ -113,14 +180,12 @@ TEST_F(ModalDialogWrapperTest, CallOkButton) {
 TEST_F(ModalDialogWrapperTest, CallCancelButton) {
   bool ok_called = false, cancel_called = false;
 
-  auto dialog_model = CreateDialogModel(
-      /*ok_callback=*/base::BindLambdaForTesting([&]() { ok_called = true; }),
-      /*ok_button_style=*/ui::ButtonStyle::kDefault,
-      /*cancel_button=*/true,
-      /*cancel_callback=*/base::BindLambdaForTesting([&]() {
-        cancel_called = true;
-      }),
-      /*cancel_button_style=*/ui::ButtonStyle::kDefault);
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_)
+          .WithOkButton(base::BindLambdaForTesting([&]() { ok_called = true; }))
+          .WithCancelButton(
+              base::BindLambdaForTesting([&]() { cancel_called = true; }))
+          .Build();
 
   ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
   fake_dialog_manager_->ClickNegativeButton();
@@ -133,15 +198,13 @@ TEST_F(ModalDialogWrapperTest, CallCancelButton) {
 TEST_F(ModalDialogWrapperTest, CloseDialogFromNative) {
   bool ok_called = false, cancel_called = false, closed = false;
 
-  auto dialog_model = CreateDialogModel(
-      /*ok_callback=*/base::BindLambdaForTesting([&]() { ok_called = true; }),
-      /*ok_button_style=*/ui::ButtonStyle::kDefault,
-      /*cancel_button=*/true,
-      /*cancel_callback=*/base::BindLambdaForTesting([&]() {
-        cancel_called = true;
-      }),
-      /*cancel_button_style=*/ui::ButtonStyle::kDefault,
-      /*close_callback=*/base::BindLambdaForTesting([&]() { closed = true; }));
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_)
+          .WithOkButton(base::BindLambdaForTesting([&]() { ok_called = true; }))
+          .WithCancelButton(
+              base::BindLambdaForTesting([&]() { cancel_called = true; }))
+          .WithCloseAction(base::BindLambdaForTesting([&]() { closed = true; }))
+          .Build();
 
   ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
   ModalDialogWrapper::GetDialogForTesting()->Close();
@@ -153,7 +216,7 @@ TEST_F(ModalDialogWrapperTest, CloseDialogFromNative) {
 }
 
 TEST_F(ModalDialogWrapperTest, ModalButtonsNoProminent) {
-  auto dialog_model = CreateDialogModel();
+  auto dialog_model = DialogModelBuilder(&dialog_destroyed_).Build();
 
   ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
 
@@ -165,9 +228,10 @@ TEST_F(ModalDialogWrapperTest, ModalButtonsNoProminent) {
 }
 
 TEST_F(ModalDialogWrapperTest, ModalButtonsPrimaryProminentNoNegative) {
-  auto dialog_model = CreateDialogModel(
-      /*ok_callback=*/base::DoNothing(),
-      /*ok_button_style=*/ui::ButtonStyle::kProminent);
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_)
+          .WithOkButton(base::DoNothing(), ui::ButtonStyle::kProminent)
+          .Build();
 
   ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
 
@@ -179,12 +243,11 @@ TEST_F(ModalDialogWrapperTest, ModalButtonsPrimaryProminentNoNegative) {
 }
 
 TEST_F(ModalDialogWrapperTest, ModalButtonsPrimaryProminent) {
-  auto dialog_model = CreateDialogModel(
-      /*ok_callback=*/base::DoNothing(),
-      /*ok_button_style=*/ui::ButtonStyle::kProminent,
-      /*cancel_button=*/true,
-      /*cancel_callback=*/base::DoNothing(),
-      /*cancel_button_style=*/ui::ButtonStyle::kDefault);
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_)
+          .WithOkButton(base::DoNothing(), ui::ButtonStyle::kProminent)
+          .WithCancelButton(base::DoNothing())
+          .Build();
 
   ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
 
@@ -196,12 +259,10 @@ TEST_F(ModalDialogWrapperTest, ModalButtonsPrimaryProminent) {
 }
 
 TEST_F(ModalDialogWrapperTest, ModalButtonsNegativeProminent) {
-  auto dialog_model = CreateDialogModel(
-      /*ok_callback=*/base::DoNothing(),
-      /*ok_button_style=*/ui::ButtonStyle::kDefault,
-      /*cancel_button=*/true,
-      /*cancel_callback=*/base::DoNothing(),
-      /*cancel_button_style=*/ui::ButtonStyle::kProminent);
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_)
+          .WithCancelButton(base::DoNothing(), ui::ButtonStyle::kProminent)
+          .Build();
 
   ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
 
@@ -213,14 +274,12 @@ TEST_F(ModalDialogWrapperTest, ModalButtonsNegativeProminent) {
 }
 
 TEST_F(ModalDialogWrapperTest, ModalButtonsOverriddenNone) {
-  auto dialog_model = CreateDialogModel(
-      /*ok_callback=*/base::DoNothing(),
-      /*ok_button_style=*/ui::ButtonStyle::kProminent,
-      /*cancel_button=*/true,
-      /*cancel_callback=*/base::DoNothing(),
-      /*cancel_button_style=*/ui::ButtonStyle::kProminent,
-      /*close_callback=*/base::DoNothing(),
-      /*override_button=*/ui::mojom::DialogButton::kNone);
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_)
+          .WithOkButton(base::DoNothing(), ui::ButtonStyle::kProminent)
+          .WithCancelButton(base::DoNothing(), ui::ButtonStyle::kProminent)
+          .OverrideDefaultButton(ui::mojom::DialogButton::kNone)
+          .Build();
 
   ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
 
@@ -232,14 +291,11 @@ TEST_F(ModalDialogWrapperTest, ModalButtonsOverriddenNone) {
 }
 
 TEST_F(ModalDialogWrapperTest, ModalButtonsOverriddenPositive) {
-  auto dialog_model = CreateDialogModel(
-      /*ok_callback=*/base::DoNothing(),
-      /*ok_button_style=*/ui::ButtonStyle::kDefault,
-      /*cancel_button=*/true,
-      /*cancel_callback=*/base::DoNothing(),
-      /*cancel_button_style=*/ui::ButtonStyle::kProminent,
-      /*close_callback=*/base::DoNothing(),
-      /*override_button=*/ui::mojom::DialogButton::kOk);
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_)
+          .WithCancelButton(base::DoNothing(), ui::ButtonStyle::kProminent)
+          .OverrideDefaultButton(ui::mojom::DialogButton::kOk)
+          .Build();
 
   ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
 
@@ -251,14 +307,12 @@ TEST_F(ModalDialogWrapperTest, ModalButtonsOverriddenPositive) {
 }
 
 TEST_F(ModalDialogWrapperTest, ModalButtonsOverriddenNegative) {
-  auto dialog_model = CreateDialogModel(
-      /*ok_callback=*/base::DoNothing(),
-      /*ok_button_style=*/ui::ButtonStyle::kProminent,
-      /*cancel_button=*/true,
-      /*cancel_callback=*/base::DoNothing(),
-      /*cancel_button_style=*/ui::ButtonStyle::kDefault,
-      /*close_callback=*/base::DoNothing(),
-      /*override_button=*/ui::mojom::DialogButton::kCancel);
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_)
+          .WithOkButton(base::DoNothing(), ui::ButtonStyle::kProminent)
+          .WithCancelButton(base::DoNothing())
+          .OverrideDefaultButton(ui::mojom::DialogButton::kCancel)
+          .Build();
 
   ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
 
@@ -273,15 +327,8 @@ TEST_F(ModalDialogWrapperTest, ParagraphsAreSetAndReplaced) {
   std::vector<std::u16string> paragraphs = {u"This is the first paragraph.",
                                             u"This is the second paragraph."};
 
-  auto dialog_model_1 = CreateDialogModel(
-      /*ok_callback=*/base::DoNothing(),
-      /*ok_button_style=*/ui::ButtonStyle::kDefault,
-      /*cancel_button=*/false,
-      /*cancel_callback=*/base::DoNothing(),
-      /*cancel_button_style=*/ui::ButtonStyle::kDefault,
-      /*close_callback=*/base::DoNothing(),
-      /*override_button=*/std::nullopt,
-      /*paragraphs=*/paragraphs);
+  auto dialog_model_1 =
+      DialogModelBuilder(&dialog_destroyed_).WithParagraphs(paragraphs).Build();
 
   ModalDialogWrapper::ShowTabModal(std::move(dialog_model_1), window_->get());
 
@@ -294,15 +341,8 @@ TEST_F(ModalDialogWrapperTest, ParagraphsAreSetAndReplaced) {
   // Remove the last element and confirm the behavior.
   paragraphs.pop_back();
 
-  auto dialog_model_2 = CreateDialogModel(
-      /*ok_callback=*/base::DoNothing(),
-      /*ok_button_style=*/ui::ButtonStyle::kDefault,
-      /*cancel_button=*/false,
-      /*cancel_callback=*/base::DoNothing(),
-      /*cancel_button_style=*/ui::ButtonStyle::kDefault,
-      /*close_callback=*/base::DoNothing(),
-      /*override_button=*/std::nullopt,
-      /*paragraphs=*/paragraphs);
+  auto dialog_model_2 =
+      DialogModelBuilder(&dialog_destroyed_).WithParagraphs(paragraphs).Build();
 
   ModalDialogWrapper::ShowTabModal(std::move(dialog_model_2), window_->get());
 
@@ -313,49 +353,24 @@ TEST_F(ModalDialogWrapperTest, ParagraphsAreSetAndReplaced) {
 }
 
 TEST_F(ModalDialogWrapperTest, Checkbox_InitialStateUnchecked) {
-  auto dialog_model = CreateDialogModel(
-      /*ok_callback=*/base::DoNothing(),
-      /*ok_button_style=*/ui::ButtonStyle::kDefault,
-      /*cancel_button=*/false,
-      /*cancel_callback=*/base::DoNothing(),
-      /*cancel_button_style=*/ui::ButtonStyle::kDefault,
-      /*close_callback=*/base::DoNothing(),
-      /*override_button=*/std::nullopt,
-      /*paragraphs=*/{u"paragraph"},
-      /*with_checkbox=*/true);
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_).WithCheckbox(false).Build();
   ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
 
   EXPECT_FALSE(fake_dialog_manager_->IsCheckboxChecked());
 }
 
 TEST_F(ModalDialogWrapperTest, Checkbox_InitialStateChecked) {
-  auto dialog_model = CreateDialogModel(
-      /*ok_callback=*/base::DoNothing(),
-      /*ok_button_style=*/ui::ButtonStyle::kDefault,
-      /*cancel_button=*/false,
-      /*cancel_callback=*/base::DoNothing(),
-      /*cancel_button_style=*/ui::ButtonStyle::kDefault,
-      /*close_callback=*/base::DoNothing(),
-      /*override_button=*/std::nullopt,
-      /*paragraphs=*/{u"paragraph"},
-      /*with_checkbox=*/true,
-      /*checkbox_is_checked=*/true);
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_).WithCheckbox(true).Build();
   ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
 
   EXPECT_TRUE(fake_dialog_manager_->IsCheckboxChecked());
 }
 
 TEST_F(ModalDialogWrapperTest, Checkbox_StateSynchronizedAfterToggle) {
-  auto dialog_model = CreateDialogModel(
-      /*ok_callback=*/base::DoNothing(),
-      /*ok_button_style=*/ui::ButtonStyle::kDefault,
-      /*cancel_button=*/false,
-      /*cancel_callback=*/base::DoNothing(),
-      /*cancel_button_style=*/ui::ButtonStyle::kDefault,
-      /*close_callback=*/base::DoNothing(),
-      /*override_button=*/std::nullopt,
-      /*paragraphs=*/{u"paragraph"},
-      /*with_checkbox=*/true);
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_).WithCheckbox(false).Build();
   // Get a raw pointer to the model before it's moved.
   auto* dialog_model_ptr = dialog_model.get();
 
@@ -419,17 +434,7 @@ TEST_F(ModalDialogWrapperTest, ShowsVectorIcon) {
   const SkBitmap expected_bitmap = *icon.Rasterize(&color_provider).bitmap();
 
   auto dialog_model =
-      CreateDialogModel(/*ok_callback=*/base::DoNothing(),
-                        /*ok_button_style=*/ui::ButtonStyle::kDefault,
-                        /*cancel_button=*/false,
-                        /*cancel_callback=*/base::DoNothing(),
-                        /*cancel_button_style=*/ui::ButtonStyle::kDefault,
-                        /*close_callback=*/base::DoNothing(),
-                        /*override_button=*/std::nullopt,
-                        /*paragraphs=*/{u"paragraph"},
-                        /*with_checkbox=*/false,
-                        /*checkbox_is_checked=*/false,
-                        /*icon=*/std::move(icon));
+      DialogModelBuilder(&dialog_destroyed_).WithIcon(std::move(icon)).Build();
 
   ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
 
@@ -446,17 +451,7 @@ TEST_F(ModalDialogWrapperTest, ShowsGfxImage) {
   auto icon = ui::ImageModel::FromImage(gfx_image);
 
   auto dialog_model =
-      CreateDialogModel(/*ok_callback=*/base::DoNothing(),
-                        /*ok_button_style=*/ui::ButtonStyle::kDefault,
-                        /*cancel_button=*/false,
-                        /*cancel_callback=*/base::DoNothing(),
-                        /*cancel_button_style=*/ui::ButtonStyle::kDefault,
-                        /*close_callback=*/base::DoNothing(),
-                        /*override_button=*/std::nullopt,
-                        /*paragraphs=*/{u"paragraph"},
-                        /*with_checkbox=*/false,
-                        /*checkbox_is_checked=*/false,
-                        /*icon=*/std::move(icon));
+      DialogModelBuilder(&dialog_destroyed_).WithIcon(std::move(icon)).Build();
 
   ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
 
