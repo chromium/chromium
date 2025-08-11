@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/scoped_feature_list.h"
 
 namespace ash {
 
@@ -26,6 +27,20 @@ class AshPixelTestHelper : public WallpaperControllerObserver {
   // Makes the variable UI components (such as the battery view and wallpaper)
   // constant to avoid flakiness in pixel tests.
   void StabilizeUi();
+
+  bool IsSystemBlurEnabled() const {
+    return params_.system_blur_enabled.value_or(true);
+  }
+
+  std::string GenerateScreenshotName(const std::string& prefix) const {
+    std::string name(prefix);
+    if (params_.system_blur_enabled) {
+      name += (IsSystemBlurEnabled() ? "_with_system_blur"
+                                     : "_without_system_blur");
+    }
+
+    return name;
+  }
 
  private:
   // Ensures that the system UI is under the dark mode if the dark/light feature
@@ -54,6 +69,7 @@ class AshPixelTestHelper : public WallpaperControllerObserver {
   // Used for setting the locale and the time zone.
   const base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
   const base::test::ScopedRestoreDefaultTimezone time_zone_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace ash

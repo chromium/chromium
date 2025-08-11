@@ -576,8 +576,7 @@ bool IsRoundedWindowsEnabled() {
 }
 
 bool IsSystemBlurEnabled() {
-  static bool disable_blur = base::FeatureList::IsEnabled(kDisableSystemBlur);
-  return !disable_blur;
+  return !base::FeatureList::IsEnabled(kDisableSystemBlur);
 }
 
 bool IsFeatureManagementHistoryEmbeddingEnabled() {

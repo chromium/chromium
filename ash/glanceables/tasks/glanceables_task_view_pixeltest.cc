@@ -85,7 +85,7 @@ class GlanceablesTaskViewPixelTest
     return init_params;
   }
 
-  std::string GenerateScreenshotName() const {
+  std::string GenerateScreenshotName(const std::string& title) override {
     std::vector<std::string> parameters = {
         use_rtl() ? "rtl" : "ltr",
         has_due_date() ? "has_due_date=true" : "has_due_date=false",
@@ -96,7 +96,7 @@ class GlanceablesTaskViewPixelTest
                            : "is_in_edit_state=false"};
 
     std::string stringified_params = base::JoinString(parameters, "|");
-    return base::JoinString({"glanceables_task_view", stringified_params}, ".");
+    return base::JoinString({title, stringified_params}, ".");
   }
 
   views::Widget* widget() const { return widget_.get(); }
@@ -158,7 +158,8 @@ TEST_P(GlanceablesTaskViewPixelTest, GlanceablesTaskView) {
   widget()->LayoutRootViewIfNecessary();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/1, widget()));
+      GenerateScreenshotName("glanceables_task_view"), /*revision_number=*/1,
+      widget()));
 }
 
 }  // namespace ash

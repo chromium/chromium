@@ -219,6 +219,11 @@ void AshTestBase::TearDown() {
   // Flush the message loop to finish pending release tasks.
   base::RunLoop().RunUntilIdle();
 
+  // Must be deleted before ash_test_helper. AshPixelTestHelper manages a
+  // ScopedFeatureList, and for the correct order of destruction of feature
+  // listss, AshPixelTestHelper needs to be deleted earlier.
+  pixel_test_helper_.reset();
+
   ash_test_helper_->TearDown();
   OnHelperWillBeDestroyed();
   ash_test_helper_.reset();
@@ -276,6 +281,11 @@ display::Display::Rotation AshTestBase::GetCurrentInternalDisplayRotation() {
 std::optional<pixel_test::InitParams> AshTestBase::CreatePixelTestInitParams()
     const {
   return std::nullopt;
+}
+
+std::string AshTestBase::GenerateScreenshotName(const std::string& title) {
+  CHECK(CreatePixelTestInitParams());
+  return pixel_test_helper()->GenerateScreenshotName(title);
 }
 
 void AshTestBase::UpdateDisplay(const std::string& display_specs,

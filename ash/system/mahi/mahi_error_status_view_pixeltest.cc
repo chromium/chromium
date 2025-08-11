@@ -13,6 +13,7 @@
 #include "ash/system/mahi/test/mock_mahi_manager.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
@@ -35,7 +36,7 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::Values;
 
-std::string GetScreenShotNameForErrorStatus(MahiResponseStatus status) {
+std::string ErrorStatusToString(MahiResponseStatus status) {
   switch (status) {
     case chromeos::MahiResponseStatus::kCantFindOutputData:
       return "CantFindOutputData";
@@ -63,6 +64,11 @@ std::string GetScreenShotNameForErrorStatus(MahiResponseStatus status) {
 
 class MahiErrorStatusViewPixelTestBase : public AshTestBase {
  protected:
+  explicit MahiErrorStatusViewPixelTestBase(MahiResponseStatus response_status,
+                                            bool enable_system_blur)
+      : response_status_(response_status),
+        enable_system_blur_(enable_system_blur) {}
+
   void ShowMahiPanel() {
     mahi_panel_widget_ = MahiPanelWidget::CreateAndShowPanelWidget(
         GetPrimaryDisplay().id(), /*mahi_menu_bounds=*/gfx::Rect(),
@@ -74,11 +80,12 @@ class MahiErrorStatusViewPixelTestBase : public AshTestBase {
   MockMahiManager& mock_mahi_manager() { return mock_mahi_manager_; }
   MahiUiController* ui_controller() { return &ui_controller_; }
 
- private:
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = enable_system_blur_;
+    return init_params;
   }
 
   void SetUp() override {
@@ -98,6 +105,8 @@ class MahiErrorStatusViewPixelTestBase : public AshTestBase {
     AshTestBase::TearDown();
   }
 
+  MahiResponseStatus response_status_;
+  const bool enable_system_blur_;
   base::test::ScopedFeatureList scoped_feature_list_;
   NiceMock<MockMahiManager> mock_mahi_manager_;
   MahiUiController ui_controller_;
@@ -109,25 +118,34 @@ class MahiErrorStatusViewPixelTestBase : public AshTestBase {
 
 class MahiErrorStatusViewPixelTest
     : public MahiErrorStatusViewPixelTestBase,
-      public testing::WithParamInterface<MahiResponseStatus> {};
+      public testing::WithParamInterface<
+          std::tuple<MahiResponseStatus, /*enable_system_blur*/ bool>> {
+ public:
+  MahiErrorStatusViewPixelTest()
+      : MahiErrorStatusViewPixelTestBase(
+            /*response_status=*/std::get<0>(GetParam()),
+            /*enable_system_blur=*/std::get<1>(GetParam())) {}
+};
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         MahiErrorStatusViewPixelTest,
-                         Values(MahiResponseStatus::kCantFindOutputData,
-                                MahiResponseStatus::kContentExtractionError,
-                                MahiResponseStatus::kInappropriate,
-                                MahiResponseStatus::kQuotaLimitHit,
-                                MahiResponseStatus::kResourceExhausted,
-                                MahiResponseStatus::kRestrictedCountry,
-                                MahiResponseStatus::kUnsupportedLanguage,
-                                MahiResponseStatus::kUnknownError));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MahiErrorStatusViewPixelTest,
+    testing::Combine(Values(MahiResponseStatus::kCantFindOutputData,
+                            MahiResponseStatus::kContentExtractionError,
+                            MahiResponseStatus::kInappropriate,
+                            MahiResponseStatus::kQuotaLimitHit,
+                            MahiResponseStatus::kResourceExhausted,
+                            MahiResponseStatus::kRestrictedCountry,
+                            MahiResponseStatus::kUnsupportedLanguage,
+                            MahiResponseStatus::kUnknownError),
+                     testing::Bool()));
 
 // Verifies the error status view when a summary update incurs an error
 // specified by the test param.
 TEST_P(MahiErrorStatusViewPixelTest, Basics) {
   ON_CALL(mock_mahi_manager(), GetSummary)
       .WillByDefault([&](chromeos::MahiManager::MahiSummaryCallback callback) {
-        std::move(callback).Run(u"fake summary", GetParam());
+        std::move(callback).Run(u"fake summary", response_status_);
       });
 
   ShowMahiPanel();
@@ -136,7 +154,8 @@ TEST_P(MahiErrorStatusViewPixelTest, Basics) {
           mahi_constants::ViewId::kErrorStatusView);
   ASSERT_TRUE(error_status_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/10,
+      GenerateScreenshotName(ErrorStatusToString(response_status_)),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 10 : 0,
       error_status_view));
 }
 
@@ -145,9 +164,9 @@ TEST_P(MahiErrorStatusViewPixelTest, Basics) {
 TEST_P(MahiErrorStatusViewPixelTest, QuestionAnswerView) {
   ON_CALL(mock_mahi_manager(), AnswerQuestion)
       .WillByDefault(
-          [](const std::u16string& question, bool current_panel_content,
-             chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
-            std::move(callback).Run(u"answer", GetParam());
+          [&](const std::u16string& question, bool current_panel_content,
+              chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+            std::move(callback).Run(u"answer", response_status_);
           });
 
   ShowMahiPanel();
@@ -166,7 +185,8 @@ TEST_P(MahiErrorStatusViewPixelTest, QuestionAnswerView) {
   LeftClickOn(send_button);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/8,
+      GenerateScreenshotName(ErrorStatusToString(response_status_)),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 0,
       mahi_contents_view->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 

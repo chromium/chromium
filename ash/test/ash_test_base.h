@@ -21,6 +21,7 @@
 #include "ash/wm/overview/overview_types.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/traits_bag.h"
@@ -276,6 +277,7 @@ class AshTestBase : public testing::Test {
   // pixel tests.
   virtual std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const;
+  virtual std::string GenerateScreenshotName(const std::string& title);
 
   void set_start_session(bool start_session) {
     CHECK(init_params_) << "start_session must set before calling SetUp()";
@@ -316,6 +318,7 @@ class AshTestBase : public testing::Test {
   TestingPrefServiceSimple* local_state() { return local_state_.get(); }
 
   AshTestHelper* ash_test_helper() { return ash_test_helper_.get(); }
+  AshPixelTestHelper* pixel_test_helper() { return pixel_test_helper_.get(); }
 
   // Returns nullptr before SetUp() is called.
   ui::InProcessContextFactory* GetContextFactory() {

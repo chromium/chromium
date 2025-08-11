@@ -5,6 +5,7 @@
 #ifndef ASH_TEST_PIXEL_ASH_PIXEL_TEST_INIT_PARAMS_H_
 #define ASH_TEST_PIXEL_ASH_PIXEL_TEST_INIT_PARAMS_H_
 
+#include <optional>
 namespace ash::pixel_test {
 
 // Lists the wallpaper types supported during the pixel test setup.
@@ -27,6 +28,8 @@ struct InitParams {
 
   // If true, the system UI layout follows the right-to-left fashion.
   bool under_rtl = false;
+
+  std::optional<bool> system_blur_enabled;
 };
 
 }  // namespace ash::pixel_test

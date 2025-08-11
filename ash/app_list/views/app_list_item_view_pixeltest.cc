@@ -129,7 +129,7 @@ class AppListItemViewPixelTestBase : public AshTestBase {
     return GetAppsGridView()->GetItemViewAt(index);
   }
 
-  std::string GenerateScreenshotName() {
+  std::string GenerateScreenshotName(const std::string& title) override {
     std::vector<std::string> parameters = {
         use_tablet_mode() ? "tablet_mode" : "clamshell_mode",
         use_dense_ui() ? "dense_ui" : "regular_ui", use_rtl() ? "rtl" : "ltr",
@@ -137,7 +137,7 @@ class AppListItemViewPixelTestBase : public AshTestBase {
         has_notification() ? "has_notification=true"
                            : "has_notification=false"};
     std::string stringified_params = base::JoinString(parameters, "|");
-    return base::JoinString({"app_list_item_view", stringified_params}, ".");
+    return base::JoinString({title, stringified_params}, ".");
   }
 
   views::Widget* GetDraggedWidget() {
@@ -202,8 +202,8 @@ TEST_P(AppListItemViewPixelTest, AppListItemView) {
 
   ShowAppList();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/6, GetItemViewAt(0),
-      GetItemViewAt(1)));
+      GenerateScreenshotName("app_list_item_view"), /*revision_number=*/6,
+      GetItemViewAt(0), GetItemViewAt(1)));
 }
 
 // Verifies the layout of the item icons inside a folder.
@@ -226,8 +226,9 @@ TEST_P(AppListItemViewPixelTest, AppListFolderItemsLayoutInIcon) {
   ShowAppList();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/10, GetItemViewAt(0),
-      GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3), GetItemViewAt(4)));
+      GenerateScreenshotName("app_list_item_view"), /*revision_number=*/10,
+      GetItemViewAt(0), GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
+      GetItemViewAt(4)));
 }
 
 // Verifies the folder icon is extended when an app is dragged upon it.
@@ -263,8 +264,9 @@ TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
   }
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/12, GetItemViewAt(0),
-      GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3), GetItemViewAt(4)));
+      GenerateScreenshotName("app_list_item_view"), /*revision_number=*/12,
+      GetItemViewAt(0), GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
+      GetItemViewAt(4)));
 
   // Reset the states.
   for (int i = 0; i < max_items_in_folder; ++i) {
@@ -310,7 +312,8 @@ TEST_P(AppListItemViewPixelTest, DraggedAppListFolderIcon) {
         std::string filename =
             base::NumberToString(number_of_items) + "_items_folder";
         EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-            base::JoinString({GenerateScreenshotName(), filename}, "."),
+            base::JoinString(
+                {GenerateScreenshotName("app_list_item_view"), filename}, "."),
             /*revision_number=*/6, GetDraggedWidget()));
       };
 
@@ -399,7 +402,9 @@ TEST_P(AppListViewPromiseAppPixelTest, PromiseAppWaiting) {
   EXPECT_EQ(GetItemViewAt(1)->item()->app_status(), AppStatus::kPending);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      base::JoinString({"promise_app_waiting", GenerateScreenshotName()}, "."),
+      base::JoinString(
+          {"promise_app_waiting", GenerateScreenshotName("app_list_item_view")},
+          "."),
       /*revision_number=*/4, GetItemViewAt(0), GetItemViewAt(1)));
 }
 
@@ -426,7 +431,8 @@ TEST_P(AppListViewPromiseAppPixelTest, PromiseAppInstalling) {
   EXPECT_EQ(GetItemViewAt(1)->item()->progress(), 0.8f);
   EXPECT_EQ(GetItemViewAt(1)->item()->app_status(), AppStatus::kInstalling);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      base::JoinString({"promise_app_installing", GenerateScreenshotName()},
+      base::JoinString({"promise_app_installing",
+                        GenerateScreenshotName("app_list_item_view")},
                        "."),
       /*revision_number=*/4, GetItemViewAt(0), GetItemViewAt(1)));
 }
