@@ -12,18 +12,20 @@
 
 @class AIMPrototypeCoordinator;
 
-// Delegate for the AIM prototype coordinator.
+/// Delegate for the AIM prototype coordinator.
 @protocol AIMPrototypeCoordinatorDelegate
+/// Called when the coordinator is finished and should be stopped.
 - (void)aimPrototypeCoordinatorDidFinish:(AIMPrototypeCoordinator*)coordinator;
 @end
 
-// LensOverlayCoordinator presents the public interface for the Lens Overlay.
+/// AIMPrototypeCoordinator presents the public interface for the Lens Overlay.
 @interface AIMPrototypeCoordinator
     : ChromeCoordinator <AIMPrototypeViewControllerDelegate,
                          PHPickerViewControllerDelegate,
                          UIImagePickerControllerDelegate,
                          UINavigationControllerDelegate>
 
+/// The delegate for this coordinator.
 @property(nonatomic, weak) id<AIMPrototypeCoordinatorDelegate> delegate;
 
 @end

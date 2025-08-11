@@ -8,6 +8,8 @@
 #import "base/unguessable_token.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_image_cell.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_input_item.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_animation_context_provider.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_view_controller+private.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -29,6 +31,10 @@ NSString* const kMainSectionIdentifier = @"MainSection";
   UICollectionView* _carouselView;
   /// The diffable data source for the carousel view.
   UICollectionViewDiffableDataSource<NSString*, AIMInputItem*>* _dataSource;
+  /// The view containing the input text field and action buttons.
+  UIView* _inputPlateContainerView;
+  /// The stack view for the input plate.
+  UIStackView* _inputPlateStackView;
   /// The label used as a placeholder for the text view.
   UILabel* _placeholderLabel;
   /// The constraint for the height of the text view.
@@ -37,11 +43,19 @@ NSString* const kMainSectionIdentifier = @"MainSection";
   UITextView* _textView;
   /// The button to send the user's query.
   UIButton* _sendButton;
+  /// The backing view for the animation.
+  UIView* _mainViewForAnimation;
 }
+
+/// AIMPrototypeAnimationContextProvider
+@synthesize mainViewForAnimation = _mainViewForAnimation;
+@synthesize inputPlateViewForAnimation = _inputPlateContainerView;
+@synthesize textViewForAnimation = _textView;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  _mainViewForAnimation = self.view;
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
   // Close button
@@ -55,13 +69,13 @@ NSString* const kMainSectionIdentifier = @"MainSection";
   // --- Bottom Input Area ---
 
   // Input plate container
-  UIView* inputPlateView = [[UIView alloc] init];
-  inputPlateView.translatesAutoresizingMaskIntoConstraints = NO;
-  inputPlateView.backgroundColor = [UIColor colorNamed:kGrey100Color];
-  inputPlateView.layer.cornerRadius = 20;
-  inputPlateView.layer.maskedCorners =
+  _inputPlateContainerView = [[UIView alloc] init];
+  _inputPlateContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  _inputPlateContainerView.backgroundColor = [UIColor colorNamed:kGrey100Color];
+  _inputPlateContainerView.layer.cornerRadius = 20;
+  _inputPlateContainerView.layer.maskedCorners =
       kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
-  [self.view addSubview:inputPlateView];
+  [self.view addSubview:_inputPlateContainerView];
 
   // Text view
   _textView = [[UITextView alloc] init];
@@ -153,12 +167,12 @@ NSString* const kMainSectionIdentifier = @"MainSection";
   buttonsStackView.alignment = UIStackViewAlignmentCenter;
 
   // Main vertical stack view
-  UIStackView* mainStackView = [[UIStackView alloc]
+  _inputPlateStackView = [[UIStackView alloc]
       initWithArrangedSubviews:@[ _textView, _carouselView, buttonsStackView ]];
-  mainStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  mainStackView.axis = UILayoutConstraintAxisVertical;
-  mainStackView.spacing = 8;
-  [inputPlateView addSubview:mainStackView];
+  _inputPlateStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  _inputPlateStackView.axis = UILayoutConstraintAxisVertical;
+  _inputPlateStackView.spacing = 8;
+  [_inputPlateContainerView addSubview:_inputPlateStackView];
 
   // Layout
   [NSLayoutConstraint activateConstraints:@[
@@ -171,24 +185,25 @@ NSString* const kMainSectionIdentifier = @"MainSection";
                        constant:-16],
 
     // Input Plate
-    [inputPlateView.bottomAnchor
+    [_inputPlateContainerView.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor],
-    [inputPlateView.leadingAnchor
+    [_inputPlateContainerView.leadingAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
-    [inputPlateView.trailingAnchor
+    [_inputPlateContainerView.trailingAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
 
     // Main Stack View in Plate
-    [mainStackView.topAnchor constraintEqualToAnchor:inputPlateView.topAnchor
-                                            constant:8],
-    [mainStackView.bottomAnchor
+    [_inputPlateStackView.topAnchor
+        constraintEqualToAnchor:_inputPlateContainerView.topAnchor
+                       constant:8],
+    [_inputPlateStackView.bottomAnchor
         constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor
                        constant:-8],
-    [mainStackView.leadingAnchor
-        constraintEqualToAnchor:inputPlateView.leadingAnchor
+    [_inputPlateStackView.leadingAnchor
+        constraintEqualToAnchor:_inputPlateContainerView.leadingAnchor
                        constant:16],
-    [mainStackView.trailingAnchor
-        constraintEqualToAnchor:inputPlateView.trailingAnchor
+    [_inputPlateStackView.trailingAnchor
+        constraintEqualToAnchor:_inputPlateContainerView.trailingAnchor
                        constant:-16],
   ]];
 }

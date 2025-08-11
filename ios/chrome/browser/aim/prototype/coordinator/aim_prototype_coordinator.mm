@@ -9,6 +9,9 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_mediator.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_dismiss_animator.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_present_animator.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_view_controller+private.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_view_controller.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -20,7 +23,8 @@
 #import "ios/chrome/common/channel_info.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-@interface AIMPrototypeCoordinator () <AIMPrototypeMediatorDelegate>
+@interface AIMPrototypeCoordinator () <AIMPrototypeMediatorDelegate,
+                                       UIViewControllerTransitioningDelegate>
 @end
 
 @implementation AIMPrototypeCoordinator {
@@ -31,7 +35,8 @@
 - (void)start {
   _viewController = [[AIMPrototypeViewController alloc] init];
   _viewController.delegate = self;
-  _viewController.modalPresentationStyle = UIModalPresentationFullScreen;
+  _viewController.modalPresentationStyle = UIModalPresentationCustom;
+  _viewController.transitioningDelegate = self;
 
   UrlLoadingBrowserAgent* urlLoadingBrowserAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
@@ -66,6 +71,22 @@
   _viewController = nil;
   [_mediator disconnect];
   _mediator = nil;
+}
+
+#pragma mark - UIViewControllerTransitioningDelegate
+
+- (id<UIViewControllerAnimatedTransitioning>)
+    animationControllerForPresentedController:(UIViewController*)presented
+                         presentingController:(UIViewController*)presenting
+                             sourceController:(UIViewController*)source {
+  return [[AIMPrototypePresentAnimator alloc]
+      initWithContextProvider:_viewController];
+}
+
+- (id<UIViewControllerAnimatedTransitioning>)
+    animationControllerForDismissedController:(UIViewController*)dismissed {
+  return [[AIMPrototypeDismissAnimator alloc]
+      initWithContextProvider:_viewController];
 }
 
 #pragma mark - AIMPrototypeViewControllerDelegate
