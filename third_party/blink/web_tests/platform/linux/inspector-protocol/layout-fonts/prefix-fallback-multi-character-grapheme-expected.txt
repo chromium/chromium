@@ -1,6 +1,6 @@
 bẩbẩbẩbẩbẩbẩbẩ
 #should_be_half_tinos_half_serif:
-"Tinos (Fontations)" : 7,
-"Tinos (Fontations)" : 7
+"Tinos" : 7,
+"Tinos" : 7
 
 

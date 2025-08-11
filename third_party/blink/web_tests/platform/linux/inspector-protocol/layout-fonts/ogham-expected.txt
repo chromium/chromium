@@ -1,10 +1,10 @@
 ᚁᚂᚃᚄᚅᚆᚇᚈᚉᚊᚋᚌᚍᚎᚏᚐᚑᚒᚓᚔᚕᚖᚗᚘᚙᚚ᚛᚜
 #oghammonofont:
-"DejaVu Sans (Fontations)" : 29
+"DejaVu Sans" : 29
 
 ᚁᚂᚃᚄᚅᚆᚇᚈᚉᚊᚋᚌᚍᚎᚏᚐᚑᚒᚓᚔᚕᚖᚗᚘᚙᚚ᚛᚜
 #oghamdefaultfont:
-"DejaVu Sans (Fontations)" : 29
+"DejaVu Sans" : 29
 
 There should be two lines of Ogham above.
 

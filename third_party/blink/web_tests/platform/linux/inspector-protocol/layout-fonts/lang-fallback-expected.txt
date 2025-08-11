@@ -1,249 +1,249 @@
 تح
 #ar:
-"DejaVu Sans (Fontations)" : 2
+"DejaVu Sans" : 2
 
 ՀՁ
 #hy-am:
-"DejaVu Sans (Fontations)" : 2
+"DejaVu Sans" : 2
 
 সম
 #bn:
-"Mukti Narrow (Fontations)" : 2
+"Mukti Narrow" : 2
 
 ⡰⡱
 #en-us-brai:
-"DejaVu Sans (Fontations)" : 2
+"DejaVu Sans" : 2
 
 ᨀᨁ
 #bug:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 ᐐᐑ
 #cans:
-"DejaVu Sans (Fontations)" : 2
+"DejaVu Sans" : 2
 
 𐊠𐊡
 #xcr:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 ᎡᎢ
 #chr:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 ⲁⲂ
 #copt:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 𒀀𒀌
 #akk:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 𐠀𐠁
 #ecy:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 АБВ
 #ru:
-"Tinos (Fontations)" : 3
+"Tinos" : 3
 
 𐐀𐐁
 #en:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 अआ
 #hi:
-"Lohit Devanagari (Fontations)" : 2
+"Lohit Devanagari" : 2
 
 ሁሂ
 #am:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 ႠႡ
 #ka:
-"DejaVu Sans (Fontations)" : 2
+"DejaVu Sans" : 2
 
 ΑΒ
 #el:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 ਡਢ
 #pa:
-"Lohit Gurmukhi (Fontations)" : 2
+"Lohit Gurmukhi" : 2
 
 我
 #zh-CN:
-"Noto Sans CJK JP (Fontations)" : 1
+"Noto Sans CJK JP" : 1
 
 我
 #zh-HK:
-"Noto Sans CJK JP (Fontations)" : 1
+"Noto Sans CJK JP" : 1
 
 我
 #zh-Hans:
-"Noto Sans CJK JP (Fontations)" : 1
+"Noto Sans CJK JP" : 1
 
 我
 #zh-Hant:
-"Noto Sans CJK JP (Fontations)" : 1
+"Noto Sans CJK JP" : 1
 
 我
 #ja:
-"Noto Sans CJK JP (Fontations)" : 1
+"Noto Sans CJK JP" : 1
 
 ᄀᄁ
 #ko:
-"Noto Sans CJK JP (Fontations)" : 2
+"Noto Sans CJK JP" : 2
 
 בג
 #he:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 កខ
 #km:
-"Noto Sans Khmer (Fontations)" : 2
+"Noto Sans Khmer" : 2
 
 𐡁𐡂
 #arc:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 𐭡𐭢
 #pal:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 𐭁𐭂
 #xpr:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 ꦑꦒ
 #jv:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 ಡಢ
 #kn:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 𐨐𐨑
 #sa:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 ໐໑
 #lo:
-"DejaVu Sans (Fontations)" : 2
+"DejaVu Sans" : 2
 
 ꓐꓑ
 #lis:
-"DejaVu Sans (Fontations)" : 2
+"DejaVu Sans" : 2
 
 𐊁𐊂
 #xlc:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 𐤡𐤢
 #xld:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 ഡഢ
 #ml:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 𐦡𐦢
 #script_meroitic:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 ကခ
 #my:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 ᦁᦂ
 #script_new_tai_lue:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 ߁߂
 #nko:
-"DejaVu Sans (Fontations)" : 2
+"DejaVu Sans" : 2
 
 ᚁ
 #script_ogham:
-"DejaVu Sans (Fontations)" : 2
+"DejaVu Sans" : 2
 
 ᱑᱒
 #script_ol_chiki:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 𐌁𐌂
 #script_old_italic:
-"DejaVu Sans (Fontations)" : 2
+"DejaVu Sans" : 2
 
 𐎡𐎢
 #peo:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 𐩡𐩢
 #script_old_south_arabian:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 ଡଢ
 #or:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 ꡁꡂ
 #script_phags_pa:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 ᚠᚡ
 #script_runic:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 𐑑𐑒
 #script_shavian:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 එඒ
 #si:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 𑃑𑃒
 #script_sora_sompeng:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 ܑܒ
 #syr:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 ᥑᥒ
 #script_tai_le:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 றல
 #ta:
-"Lohit Tamil (Fontations)" : 2
+"Lohit Tamil" : 2
 
 డఢ
 #te:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 ށނ
 #script_thaana:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 กข
 #th:
-"Garuda (Fontations)" : 2
+"Garuda" : 2
 
 ༁༂
 #bo:
-"Noto Sans Tibetan (Fontations)" : 2
+"Noto Sans Tibetan" : 2
 
 ⴱⴲ
 #script_tifinagh:
-"DejaVu Sans (Fontations)" : 2
+"DejaVu Sans" : 2
 
 ꔁꔂ
 #vai:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 ꀀꀁ
 #yi:
-"Tinos (Fontations)" : 2
+"Tinos" : 2
 
 

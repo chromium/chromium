@@ -19,19 +19,6 @@
 
 namespace blink {
 
-namespace {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-StringView MaybeStripFontationsSuffix(const String& font_name) {
-  wtf_size_t found_index = font_name.ReverseFind(" (Fontations)");
-  if (found_index != kNotFound) {
-    return StringView(font_name, 0, found_index);
-  } else {
-    return font_name;
-  }
-}
-#endif
-}  // namespace
-
 class FontCacheTest : public FontTestBase {};
 
 TEST_F(FontCacheTest, getLastResortFallbackFont) {
@@ -107,9 +94,8 @@ TEST_F(FontCacheTest, FallbackForEmojis) {
         const SimpleFontData* font_data = font_cache.FallbackFontForCharacter(
             font_description, character, nullptr,
             FontFallbackPriority::kEmojiEmoji);
-        EXPECT_EQ(MaybeStripFontationsSuffix(
-                      font_data->PlatformData().FontFamilyName()),
-                  kNotoColorEmoji)
+        EXPECT_EQ(font_data->PlatformData().FontFamilyName(),
+                  String::FromUTF8(kNotoColorEmoji))
             << "Character " << character_utf8
             << " doesn't match what we expected for kEmojiEmoji.";
       }
@@ -118,15 +104,13 @@ TEST_F(FontCacheTest, FallbackForEmojis) {
             font_description, character, nullptr,
             FontFallbackPriority::kEmojiText);
         if (available_in_contour_font) {
-          EXPECT_NE(MaybeStripFontationsSuffix(
-                        font_data->PlatformData().FontFamilyName()),
-                    kNotoColorEmoji)
+          EXPECT_NE(font_data->PlatformData().FontFamilyName(),
+                    String::FromUTF8(kNotoColorEmoji))
               << "Character " << character_utf8
               << " doesn't match what we expected for kEmojiText.";
         } else {
-          EXPECT_EQ(MaybeStripFontationsSuffix(
-                        font_data->PlatformData().FontFamilyName()),
-                    kNotoColorEmoji)
+          EXPECT_EQ(font_data->PlatformData().FontFamilyName(),
+                    String::FromUTF8(kNotoColorEmoji))
               << "Character " << character_utf8
               << " doesn't match what we expected for kEmojiText.";
         }
