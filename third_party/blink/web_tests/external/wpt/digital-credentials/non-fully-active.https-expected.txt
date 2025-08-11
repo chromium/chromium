@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Promise rejects with DOMException when the document becomes non-fully active
+  assert_equals: CredentialsContainer should be null after iframe is removed expected null but got object "[object CredentialsContainer]"
+Harness: the test ran to completion.
+
