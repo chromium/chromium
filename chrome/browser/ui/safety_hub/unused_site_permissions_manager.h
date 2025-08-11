@@ -6,10 +6,17 @@
 #define CHROME_BROWSER_UI_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
+#include "base/time/clock.h"
+#include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_result.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/browser_context.h"
@@ -35,6 +42,14 @@ class UnusedSitePermissionsManager {
 
   ~UnusedSitePermissionsManager();
 
+  // Does most of the heavy lifting of the update process: for each permission,
+  // it determines whether it should be considered as recently unused (i.e. one
+  // week). This list will be further filtered in the UI task to determine which
+  // permissions should be revoked.
+  static std::unique_ptr<SafetyHubResult> UpdateOnBackgroundThread(
+      base::Clock* clock,
+      const scoped_refptr<HostContentSettingsMap> hcsm);
+
   // Helper to convert content settings type into its string representation.
   static std::string ConvertContentSettingsTypeToKey(ContentSettingsType type);
 
@@ -50,6 +65,23 @@ class UnusedSitePermissionsManager {
   static url::Origin ConvertPrimaryPatternToOrigin(
       const ContentSettingsPattern& primary_pattern);
 
+  // Revokes permissions from sites whose last visit is older than a defined
+  // threshold (e.g. currently 60 days).
+  void RevokeUnusedPermissions(std::unique_ptr<SafetyHubResult> result);
+
+  // Returns true if settings are being changed due to auto revocation of
+  // unused site permissions.
+  bool IsRevocationRunning();
+
+  // Called by TabHelper when a URL was visited.
+  void OnPageVisited(const url::Origin& origin);
+
+  // Test support:
+  void SetClockForTesting(base::Clock* clock);
+  std::vector<ContentSettingEntry> GetTrackedUnusedPermissionsForTesting();
+
+  using UnusedPermissionMap = RevokedPermissionsResult::UnusedPermissionMap;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(UnusedSitePermissionsManagerTest,
                            UpdateIntegerValuesToGroupName_AllContentSettings);
@@ -59,6 +91,21 @@ class UnusedSitePermissionsManager {
   FRIEND_TEST_ALL_PREFIXES(
       UnusedSitePermissionsManagerTest,
       UpdateIntegerValuesToGroupName_UnknownContentSettings);
+
+  // Stores revoked permissions data on HCSM.
+  void StorePermissionInUnusedSitePermissionSetting(
+      const std::set<ContentSettingsType>& permissions,
+      const base::Value::Dict& chooser_permissions_data,
+      const std::optional<content_settings::ContentSettingConstraints>
+          constraint,
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern);
+
+  // Since the permissions are a const set, reconstruct a const set
+  // of unused site content setting types by removing `NOTIFICATIONS`
+  // from the set if it is in there.
+  const std::set<ContentSettingsType> GetRevokedUnusedSitePermissionTypes(
+      const std::set<ContentSettingsType> permissions);
 
   // Convert all integer permission values to string, if there is any
   // permission represented by integer.
@@ -74,6 +121,17 @@ class UnusedSitePermissionsManager {
 
   // Observes user profile prefs.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  // Set of permissions that haven't been used for at least a week.
+  UnusedPermissionMap recently_unused_permissions_;
+
+  // Returns true if automatic check and revocation of unused site permissions
+  // is occurring. This value is used in `OnContentSettingChanged` to help
+  // decide whether to clean up revoked permission data.
+  bool is_unused_site_revocation_running_ = false;
+
+  // Clock to implement revocation based on last visited time.
+  raw_ptr<base::Clock> clock_;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MANAGER_H_

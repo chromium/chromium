@@ -110,14 +110,6 @@ class RevokedPermissionsService final : public SafetyHubService,
   // Stops or restarts permissions autorevocation upon the pref change.
   void OnPermissionsAutorevocationControlChanged();
 
-  // Does most of the heavy lifting of the update process: for each permission,
-  // it determines whether it should be considered as recently unused (i.e. one
-  // week). This list will be further filtered in the UI task to determine which
-  // permissions should be revoked.
-  static std::unique_ptr<SafetyHubResult> UpdateOnBackgroundThread(
-      base::Clock* clock,
-      const scoped_refptr<HostContentSettingsMap> hcsm);
-
   // SafetyHubService implementation
   // Returns a weak pointer to the service.
   base::WeakPtr<SafetyHubService> GetAsWeakRef() override;
@@ -131,8 +123,6 @@ class RevokedPermissionsService final : public SafetyHubService,
   void SetClockForTesting(base::Clock* clock);
   std::vector<ContentSettingEntry> GetTrackedUnusedPermissionsForTesting();
 
-  using UnusedPermissionMap = RevokedPermissionsResult::UnusedPermissionMap;
-
  private:
   // Called by TabHelper when a URL was visited.
   void OnPageVisited(const url::Origin& origin);
@@ -142,10 +132,6 @@ class RevokedPermissionsService final : public SafetyHubService,
   void DeletePatternFromRevokedPermissionList(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern);
-
-  // Revokes permissions that belong to sites that were last visited over 60
-  // days ago.
-  void RevokeUnusedPermissions();
 
   // Stores revoked permissions data on HCSM.
   void StorePermissionInUnusedSitePermissionSetting(
@@ -175,8 +161,7 @@ class RevokedPermissionsService final : public SafetyHubService,
   base::OnceCallback<std::unique_ptr<SafetyHubResult>()> GetBackgroundTask()
       override;
 
-  // Uses the |UnusedPermissionMap| from the background task to determine which
-  // permissions should be revoked, revokes them and returns the list of revoked
+  // Revokes permissions for all managers and returns the list of revoked
   // permissions.
   std::unique_ptr<SafetyHubResult> UpdateOnUIThread(
       std::unique_ptr<SafetyHubResult> result) override;
@@ -193,9 +178,6 @@ class RevokedPermissionsService final : public SafetyHubService,
   // from the set if it is in there.
   const std::set<ContentSettingsType> GetRevokedUnusedSitePermissionTypes(
       const std::set<ContentSettingsType> permissions);
-
-  // Set of permissions that haven't been used for at least a week.
-  UnusedPermissionMap recently_unused_permissions_;
 
   raw_ptr<content::BrowserContext> browser_context_;
 
@@ -224,7 +206,7 @@ class RevokedPermissionsService final : public SafetyHubService,
   // Returns true if automatic check and revocation of unused site permissions
   // is occurring. This value is used in `OnContentSettingChanged` to help
   // decide whether to clean up revoked permission data.
-  bool is_unused_site_revocation_running = false;
+  bool is_unused_site_revocation_running_ = false;
 
   base::WeakPtrFactory<RevokedPermissionsService> weak_factory_{this};
 };
