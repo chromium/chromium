@@ -24070,6 +24070,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiFirstPromptSubmitted">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Reported when the user submits the first prompt to BWG (Gemini). Persisted
+    floaties resumed from persisted tabs are considered new sessions. iOS only.
+  </description>
+</action>
+
 <action name="MobileGeminiFirstResponseReceived">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy@google.com</owner>

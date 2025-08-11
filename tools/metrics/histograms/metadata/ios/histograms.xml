@@ -2076,6 +2076,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.FirstPrompt.SubmissionMethod"
+    enum="IOSGeminiFirstPromptSubmissionMethod" expires_after="2026-02-01">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <summary>
+    Records how the user submitted the first prompt of a session to BWG (Gemini)
+    on iOS. Persisted floaties resumed from persisted tabs are considered new
+    sessions.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.FRE.ConsentAction" enum="IOSGeminiFREAction"
     expires_after="2026-06-01">
   <owner>sebsg@chromium.org</owner>
