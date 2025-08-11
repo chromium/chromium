@@ -123,14 +123,12 @@ public abstract class DisplayUtil {
 
     /** Returns the given value converted from px to dp. */
     public static int pxToDp(DisplayAndroid display, int value) {
-        // Adding .5 is what Android does when doing this conversion.
-        return (int) (value / display.getDipScale() + 0.5f);
+        return Math.round(value / display.getDipScale());
     }
 
     /** Returns the given value converted from dp to px. */
     public static int dpToPx(DisplayAndroid display, int value) {
-        // Adding .5 is what Android does when doing this conversion.
-        return (int) (value * display.getDipScale() + 0.5f);
+        return Math.round(value * display.getDipScale());
     }
 
     /**
