@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -87,8 +86,7 @@ public class ToolbarButtonIphTest {
     @Test
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
-    @DisabledTest(message = "https://crbug.com/1142979")
-    public void testTabSwitcherButtonIph() throws InterruptedException {
+    public void testTabSwitcherButtonIph() {
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE))
                 .thenReturn(true);
         when(mTracker.shouldTriggerHelpUiWithSnooze(FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE))
