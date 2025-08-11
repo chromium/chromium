@@ -800,6 +800,10 @@
   "chromeos/ash/resources/internal/ash_internal_strings.grd": {
     "messages": [5820],
   },
+  "ash/webui/boca_receiver_app_ui/resources/trusted/boca_receiver_trusted_resources.grd": {
+    "META": {"sizes": {"includes": [120],}},
+    "includes": [5825],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/boca_receiver_app_ui/resources/untrusted/resources.grd": {
     "META": {"sizes": {"includes": [120],}},
     "includes": [5830],

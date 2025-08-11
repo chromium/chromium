@@ -666,6 +666,7 @@ chromium-metrics-reviews@google.com.
   <int value="-1362220223" label="chrome://connection-help/"/>
   <int value="-1346911023" label="chrome://signin-dice-web-intercept/"/>
   <int value="-1331415629" label="chrome://os-settings/"/>
+  <int value="-1326709686" label="chrome://class-tools-remote-display/"/>
   <int value="-1313432739" label="chrome://plugins/"/>
   <int value="-1296182448" label="chrome://vc-tray-tester/"/>
   <int value="-1294799178" label="chrome://signout-confirmation/"/>

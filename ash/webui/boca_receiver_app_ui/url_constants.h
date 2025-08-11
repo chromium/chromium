@@ -10,6 +10,8 @@ namespace ash {
 inline constexpr char kBocaReceiverHost[] = "class-tools-remote-display";
 inline constexpr char kChromeUntrustedBocaReceiverURL[] =
     "chrome-untrusted://class-tools-remote-display/";
+inline constexpr char kChromeBocaReceiverURL[] =
+    "chrome://class-tools-remote-display";
 
 }  // namespace ash
 

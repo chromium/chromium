@@ -8,12 +8,16 @@ assert(is_chromeos, "Boca Receiver App is ChromeOS only")
 
 static_library("boca_receiver_app_ui") {
   sources = [
+    "boca_receiver_ui.cc",
+    "boca_receiver_ui.h",
     "boca_receiver_untrusted_ui.cc",
     "boca_receiver_untrusted_ui.h",
     "url_constants.h",
   ]
 
   deps = [
+    "//ash/constants",
+    "//ash/webui/boca_receiver_app_ui/resources/trusted:resources",
     "//ash/webui/boca_receiver_app_ui/resources/untrusted:resources",
     "//base",
     "//content/public/browser",

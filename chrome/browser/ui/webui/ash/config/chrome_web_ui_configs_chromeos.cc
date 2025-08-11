@@ -21,6 +21,7 @@
 #include "chrome/browser/feedback/feedback_dialog_utils.h"  // nogncheck
 // clang-format on
 
+#include "ash/webui/boca_receiver_app_ui/boca_receiver_ui.h"
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/color_internals/color_internals_ui.h"
 #include "ash/webui/connectivity_diagnostics/connectivity_diagnostics_ui.h"
@@ -249,6 +250,7 @@ void RegisterAshChromeWebUIConfigs() {
 
   map.AddWebUIConfig(std::make_unique<AudioUIConfig>());
   map.AddWebUIConfig(std::make_unique<BluetoothPairingDialogUIConfig>());
+  map.AddWebUIConfig(std::make_unique<BocaReceiverUIConfig>());
   map.AddWebUIConfig(std::make_unique<borealis::BorealisMOTDUIConfig>());
   map.AddWebUIConfig(std::make_unique<BorealisCreditsUI>());
   map.AddWebUIConfig(std::make_unique<BorealisInstallerUIConfig>());

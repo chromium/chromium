@@ -4,6 +4,7 @@
 
 #include "ash/webui/boca_receiver_app_ui/boca_receiver_untrusted_ui.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/boca_receiver_app_ui/url_constants.h"
 #include "ash/webui/grit/ash_boca_receiver_untrusted_ui_resources.h"
 #include "content/public/browser/browser_context.h"
@@ -26,8 +27,8 @@ BocaReceiverUntrustedUIConfig::~BocaReceiverUntrustedUIConfig() = default;
 
 bool BocaReceiverUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  // TODO(crbug.com/435165759): enable based on feature flag and policy.
-  return false;
+  // TODO(crbug.com/435165759): enable based on kiosk policy.
+  return features::IsBocaReceiverAppEnabled();
 }
 
 BocaReceiverUntrustedUI::BocaReceiverUntrustedUI(content::WebUI* web_ui)
@@ -36,6 +37,7 @@ BocaReceiverUntrustedUI::BocaReceiverUntrustedUI(content::WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       kChromeUntrustedBocaReceiverURL);
   source->AddResourcePath("", IDR_ASH_BOCA_RECEIVER_UNTRUSTED_UI_INDEX_HTML);
+  source->AddFrameAncestor(GURL(kChromeBocaReceiverURL));
 }
 
 BocaReceiverUntrustedUI::~BocaReceiverUntrustedUI() = default;
