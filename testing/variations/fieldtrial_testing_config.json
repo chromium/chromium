@@ -12609,21 +12609,6 @@
             ]
         }
     ],
-    "IOSContainedTabGroup": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ContainedTabGroup"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSCriteriaExperimentEnabled": [
         {
             "platforms": [
