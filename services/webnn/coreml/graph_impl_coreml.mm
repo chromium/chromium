@@ -579,6 +579,10 @@ void GraphImplCoreml::DidCreateAndBuild(
     return;
   }
 
+#if DCHECK_IS_ON()
+  context->AssertCalledOnValidSequence();
+#endif
+
   std::move(callback).Run(base::MakeRefCounted<GraphImplCoreml>(
       std::move(receiver), std::move(context), *std::move(result)));
 }

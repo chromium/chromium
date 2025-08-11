@@ -118,7 +118,7 @@ class WebnnGraphLPMFuzzer {
   void BuildGraph(const mojolpm::webnn::mojom::GraphInfo& graph_info_proto,
                   webnn::mojom::Device device) {
     mojo::Remote<webnn::mojom::WebNNContextProvider> webnn_provider_remote;
-    mojo::AssociatedRemote<webnn::mojom::WebNNContext> webnn_context_remote;
+    mojo::Remote<webnn::mojom::WebNNContext> webnn_context_remote;
     mojo::AssociatedRemote<webnn::mojom::WebNNGraphBuilder>
         webnn_graph_builder_remote;
     mojo::AssociatedRemote<webnn::mojom::WebNNGraph> webnn_graph_remote;
@@ -262,7 +262,7 @@ class WebnnGraphLPMFuzzer {
   base::test::InsecureRandomGenerator input_generator_;
 
   mojo::Remote<webnn::mojom::WebNNContextProvider> provider_remote_;
-  mojo::AssociatedRemote<webnn::mojom::WebNNContext> webnn_context_;
+  mojo::Remote<webnn::mojom::WebNNContext> webnn_context_;
 };
 
 DEFINE_BINARY_PROTO_FUZZER(

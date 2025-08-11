@@ -19,20 +19,14 @@
 namespace webnn::ort {
 
 ContextImplOrt::ContextImplOrt(
-    mojo::PendingAssociatedReceiver<mojom::WebNNContext> receiver,
+    mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
     mojom::CreateContextOptionsPtr options,
-    scoped_refptr<Environment> env,
-    gpu::CommandBufferId command_buffer_id,
-    gpu::SequenceId sequence_id,
-    scoped_refptr<gpu::SchedulerTaskRunner> task_runner)
+    scoped_refptr<Environment> env)
     : WebNNContextImpl(std::move(receiver),
                        context_provider,
                        GetContextProperties(),
-                       std::move(options),
-                       command_buffer_id,
-                       sequence_id,
-                       std::move(task_runner)),
+                       std::move(options)),
       env_(std::move(env)),
       session_options_(SessionOptions::Create(this->options().device)),
       is_external_data_supported_(

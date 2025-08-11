@@ -561,11 +561,11 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
   // Override methods from webnn::mojom::WebNNContextProvider.
   void CreateWebNNContext(blink_mojom::CreateContextOptionsPtr options,
                           CreateWebNNContextCallback callback) override {
-    mojo::PendingAssociatedRemote<blink_mojom::WebNNContext> blink_remote;
+    mojo::PendingRemote<blink_mojom::WebNNContext> blink_remote;
     // The receiver bind to FakeWebNNContext.
-    mojo::MakeSelfOwnedAssociatedReceiver<blink_mojom::WebNNContext>(
+    mojo::MakeSelfOwnedReceiver<blink_mojom::WebNNContext>(
         std::make_unique<FakeWebNNContext>(*helper_),
-        blink_remote.InitWithNewEndpointAndPassReceiver());
+        blink_remote.InitWithNewPipeAndPassReceiver());
 
     webnn::ContextProperties context_properties(
         webnn::InputOperandLayout::kNchw, webnn::Resample2DAxes::kAny,

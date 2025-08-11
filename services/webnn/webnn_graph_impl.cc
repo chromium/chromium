@@ -100,6 +100,9 @@ WebNNGraphImpl::WebNNGraphImpl(
       compute_resource_info_(std::move(compute_resource_info)),
       devices_(std::move(devices)) {
   CHECK(context_);
+#if DCHECK_IS_ON()
+  context_->AssertCalledOnValidSequence();
+#endif
 }
 
 WebNNGraphImpl::~WebNNGraphImpl() = default;
