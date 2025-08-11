@@ -32,7 +32,7 @@ public class PageInfoConnectionController
     private final WebContents mWebContents;
     private final PageInfoRowView mRowView;
     private final PageInfoControllerDelegate mDelegate;
-    private final String mContentPublisher;
+    private final @Nullable String mContentPublisher;
     private final boolean mIsInternalPage;
     private @Nullable String mTitle;
     private @Nullable ConnectionInfoView mInfoView;
@@ -43,7 +43,7 @@ public class PageInfoConnectionController
             PageInfoRowView view,
             WebContents webContents,
             PageInfoControllerDelegate delegate,
-            String publisher,
+            @Nullable String publisher,
             boolean isInternalPage) {
         mMainController = mainController;
         mRowView = view;

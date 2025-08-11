@@ -159,7 +159,7 @@ public class PageInfoController
     public PageInfoController(
             WebContents webContents,
             @ConnectionSecurityLevel int securityLevel,
-            String publisher,
+            @Nullable String publisher,
             PageInfoControllerDelegate delegate,
             PageInfoHighlight pageInfoHighlight,
             @OpenedFromSource int source,
@@ -531,7 +531,7 @@ public class PageInfoController
     public static void show(
             final Activity activity,
             WebContents webContents,
-            final String contentPublisher,
+            final @Nullable String contentPublisher,
             @OpenedFromSource int source,
             PageInfoControllerDelegate delegate,
             PageInfoHighlight pageInfoHighlight,
