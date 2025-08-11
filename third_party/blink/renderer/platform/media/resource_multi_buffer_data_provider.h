@@ -16,7 +16,6 @@
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_associated_url_loader_client.h"
 #include "third_party/blink/public/web/web_frame.h"
-#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer.h"
 #include "third_party/blink/renderer/platform/media/url_index.h"
 #include "third_party/blink/renderer/platform/platform_export.h"

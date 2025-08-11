@@ -16,7 +16,6 @@
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -53,12 +52,12 @@
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
-#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/media/media_player_client.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer_data_source.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -92,8 +91,10 @@ class RasterContextProvider;
 }
 
 namespace blink {
+
 class BufferedDataSourceHostImpl;
 class PowerStatusHelper;
+class KURL;
 class ThreadSafeBrowserInterfaceBrokerProxy;
 class UrlIndex;
 class VideoDecodeStatsReporter;

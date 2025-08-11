@@ -10,10 +10,8 @@
 
 #include <functional>
 #include <limits>
-#include <map>
 #include <memory>
 #include <set>
-#include <unordered_map>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -24,9 +22,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/data_buffer.h"
-#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/media/interval_map.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
@@ -210,8 +209,11 @@ class PLATFORM_EXPORT MultiBuffer {
   // Identifies a block in the cache.
   // Block numbers can be calculated from byte positions as:
   // block_num = byte_pos >> block_size_shift
-  typedef MultiBufferBlockId BlockId;
-  typedef std::unordered_map<BlockId, scoped_refptr<media::DataBuffer>> DataMap;
+  using BlockId = MultiBufferBlockId;
+  using DataMap = HashMap<BlockId,
+                          scoped_refptr<media::DataBuffer>,
+                          // Block ids cannot be negative.
+                          IntHashTraits<BlockId, -1, -2>>;
 
   // Registers a reader at the given position.
   // If the cache does not already contain |pos|, it will activate
@@ -353,7 +355,7 @@ class PLATFORM_EXPORT MultiBuffer {
   bool is_client_audio_element_ = false;
 
   // Stores the actual data.
-  DataMap data_ ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/40760651)");
+  DataMap data_;
 
   // protects data_
   // Note that because data_ is only modified on the a single thread,

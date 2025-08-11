@@ -1557,7 +1557,7 @@ TEST_F(MultiBufferDataSourceTest, Http_RetryThenRedirect) {
 
   // Server responds with a redirect.
   WebURL url{KURL(kHttpDifferentPathUrl)};
-  WebURLResponse response((KURL(kHttpUrl)));
+  WebURLResponse response{KURL(kHttpUrl)};
   response.SetHttpStatusCode(307);
   data_provider()->WillFollowRedirect(url, response);
 
@@ -1575,7 +1575,7 @@ TEST_F(MultiBufferDataSourceTest, Http_NotStreamingAfterRedirect) {
 
   // Server responds with a redirect.
   WebURL url{KURL(kHttpDifferentPathUrl)};
-  WebURLResponse response((KURL(kHttpUrl)));
+  WebURLResponse response{KURL(kHttpUrl)};
   response.SetHttpStatusCode(307);
   data_provider()->WillFollowRedirect(url, response);
 
@@ -1597,7 +1597,7 @@ TEST_F(MultiBufferDataSourceTest, Http_RangeNotSatisfiableAfterRedirect) {
 
   // Server responds with a redirect.
   WebURL url{KURL(kHttpDifferentPathUrl)};
-  WebURLResponse response((KURL(kHttpUrl)));
+  WebURLResponse response{KURL(kHttpUrl)};
   response.SetHttpStatusCode(307);
   data_provider()->WillFollowRedirect(url, response);
 
@@ -1611,7 +1611,7 @@ TEST_F(MultiBufferDataSourceTest, Http_404AfterRedirect) {
 
   // Server responds with a redirect.
   WebURL url{KURL(kHttpDifferentPathUrl)};
-  WebURLResponse response((KURL(kHttpUrl)));
+  WebURLResponse response{KURL(kHttpUrl)};
   response.SetHttpStatusCode(307);
   data_provider()->WillFollowRedirect(url, response);
 

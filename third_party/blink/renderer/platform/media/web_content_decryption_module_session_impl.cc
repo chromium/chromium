@@ -357,7 +357,7 @@ void WebContentDecryptionModuleSessionImpl::InitializeNewSession(
           WTF::BindOnce(
               &WebContentDecryptionModuleSessionImpl::OnSessionInitialized,
               weak_ptr_factory_.GetWeakPtr()),
-          std::vector<SessionInitStatus>{SessionInitStatus::NEW_SESSION}));
+          Vector<SessionInitStatus>{SessionInitStatus::NEW_SESSION}));
 }
 
 void WebContentDecryptionModuleSessionImpl::Load(
@@ -389,9 +389,8 @@ void WebContentDecryptionModuleSessionImpl::Load(
           WTF::BindOnce(
               &WebContentDecryptionModuleSessionImpl::OnSessionInitialized,
               weak_ptr_factory_.GetWeakPtr()),
-          std::vector<SessionInitStatus>{
-              SessionInitStatus::NEW_SESSION,
-              SessionInitStatus::SESSION_NOT_FOUND}));
+          Vector<SessionInitStatus>{SessionInitStatus::NEW_SESSION,
+                                    SessionInitStatus::SESSION_NOT_FOUND}));
 }
 
 void WebContentDecryptionModuleSessionImpl::Update(

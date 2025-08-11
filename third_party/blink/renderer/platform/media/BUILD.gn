@@ -86,8 +86,8 @@ component("media") {
   ]
 
   configs += [
+    "//third_party/blink/renderer/platform:blink_platform_config",
     "//third_party/blink/renderer/platform:blink_platform_implementation",
-    "//third_party/blink/renderer:inside_blink",
   ]
   public_deps = [
     "//base",
@@ -128,10 +128,7 @@ source_set("unit_tests") {
 
   data = [ "//media/test/data/" ]
 
-  # TODO(https://crbug.com/1198341): enable this config once the code is ported
-  # to Blink code conventions.
-  #configs += [ "//third_party/blink/renderer/platform:blink_platform_config" ]
-  configs += [ "//third_party/blink/renderer:inside_blink" ]
+  configs += [ "//third_party/blink/renderer/platform:blink_platform_config" ]
   sources = [
     "buffered_data_source_host_impl_unittest.cc",
     "cache_util_unittest.cc",
@@ -176,11 +173,7 @@ source_set("test_support") {
   testonly = true
   configs += [
     "//third_party/blink/renderer:non_test_config",
-
-    # TODO(https://crbug.com/1198341): enable this config once the code is
-    # ported to Blink code conventions.
-    #"//third_party/blink/renderer/platform:blink_platform_config",
-    "//third_party/blink/renderer:inside_blink",
+    "//third_party/blink/renderer/platform:blink_platform_config",
   ]
   sources = [
     "testing/mock_resource_fetch_context.cc",

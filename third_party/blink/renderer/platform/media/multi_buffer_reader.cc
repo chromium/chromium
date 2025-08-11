@@ -171,13 +171,15 @@ void MultiBufferReader::Call(base::OnceClosure cb) const {
 }
 
 void MultiBufferReader::UpdateEnd(MultiBufferBlockId p) {
-  auto i = multibuffer_->map().find(p - 1);
-  if (i != multibuffer_->map().end() && i->second->end_of_stream()) {
-    // This is an upper limit because the last-to-one block is allowed
-    // to be smaller than the rest of the blocks.
-    int64_t size_upper_limit = static_cast<int64_t>(p)
-                               << multibuffer_->block_size_shift();
-    end_ = std::min(end_, size_upper_limit);
+  if (p > 0) {
+    auto i = multibuffer_->map().find(p - 1);
+    if (i != multibuffer_->map().end() && i->value->end_of_stream()) {
+      // This is an upper limit because the last-to-one block is allowed
+      // to be smaller than the rest of the blocks.
+      int64_t size_upper_limit = static_cast<int64_t>(p)
+                                 << multibuffer_->block_size_shift();
+      end_ = std::min(end_, size_upper_limit);
+    }
   }
 }
 

@@ -8,11 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <map>
 #include <optional>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
@@ -21,12 +19,14 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -266,8 +266,7 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   std::string etag_;
 
   ResourceMultiBuffer multibuffer_;
-  std::vector<RedirectCB> redirect_callbacks_
-      ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/40760651)");
+  Vector<RedirectCB> redirect_callbacks_;
 
   THREAD_CHECKER(thread_checker_);
 };
@@ -289,7 +288,7 @@ class PLATFORM_EXPORT UrlIndex {
   // ranges and it's last modified time.
   // Because the returned UrlData has a raw reference to |this|, it must be
   // released before |this| is destroyed.
-  scoped_refptr<UrlData> GetByUrl(const KURL& gurl,
+  scoped_refptr<UrlData> GetByUrl(const KURL& url,
                                   UrlData::CorsMode cors_mode,
                                   UrlData::CacheMode cache_mode);
 

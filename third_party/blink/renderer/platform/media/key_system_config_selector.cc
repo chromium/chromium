@@ -27,6 +27,7 @@
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/media/media_player_util.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -190,7 +191,8 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
 
 struct KeySystemConfigSelector::SelectionRequest {
   std::string key_system;
-  std::vector<WebMediaKeySystemConfiguration> candidate_configurations;
+  std::vector<WebMediaKeySystemConfiguration> candidate_configurations
+      ALLOW_DISCOURAGED_TYPE("Avoids conversion in media code");
   SelectConfigCB cb;
   bool was_permission_requested = false;
   bool is_permission_granted = false;

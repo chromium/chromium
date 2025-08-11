@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/media/testing/mock_resource_fetch_context.h"
 #include "third_party/blink/renderer/platform/media/testing/mock_web_associated_url_loader.h"
 #include "third_party/blink/renderer/platform/media/url_index.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {

@@ -16,6 +16,8 @@
 #include "third_party/blink/renderer/platform/media/resource_multi_buffer_data_provider.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -147,7 +149,7 @@ void UrlData::RedirectTo(const scoped_refptr<UrlData>& url_data) {
   // Copy any cached data over to the new location.
   url_data->multibuffer()->MergeFrom(multibuffer());
 
-  std::vector<RedirectCB> redirect_callbacks;
+  Vector<RedirectCB> redirect_callbacks;
   redirect_callbacks.swap(redirect_callbacks_);
   for (RedirectCB& cb : redirect_callbacks) {
     std::move(cb).Run(url_data);
@@ -157,7 +159,7 @@ void UrlData::RedirectTo(const scoped_refptr<UrlData>& url_data) {
 void UrlData::Fail() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Handled similar to a redirect.
-  std::vector<RedirectCB> redirect_callbacks;
+  Vector<RedirectCB> redirect_callbacks;
   redirect_callbacks.swap(redirect_callbacks_);
   for (RedirectCB& cb : redirect_callbacks) {
     std::move(cb).Run(nullptr);

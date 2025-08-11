@@ -261,8 +261,8 @@ void WatchTimeReporter::OnUnderflow() {
   // In the event of a pending finalize, we don't want to count underflow events
   // that occurred after the finalize time. Yet if the finalize is canceled we
   // want to ensure they are all recorded.
-  pending_underflow_events_.push_back(
-      {false, get_media_time_cb_.Run(), media::kNoTimestamp});
+  pending_underflow_events_.emplace_back(false, get_media_time_cb_.Run(),
+                                         media::kNoTimestamp);
 }
 
 void WatchTimeReporter::OnUnderflowComplete(base::TimeDelta elapsed) {
@@ -508,7 +508,7 @@ void WatchTimeReporter::RecordWatchTime() {
       }
     }
 
-    std::erase_if(pending_underflow_events_, [](const UnderflowEvent& ufe) {
+    EraseIf(pending_underflow_events_, [](const UnderflowEvent& ufe) {
       return ufe.reported && ufe.duration != media::kNoTimestamp;
     });
 

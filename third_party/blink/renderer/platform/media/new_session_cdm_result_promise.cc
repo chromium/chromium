@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/media/new_session_cdm_result_promise.h"
 
+#include <utility>
+
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -52,12 +54,12 @@ NewSessionCdmResultPromise::NewSessionCdmResultPromise(
     const std::string& key_system_uma_prefix,
     const std::string& uma_name,
     SessionInitializedCB new_session_created_cb,
-    const std::vector<SessionInitStatus>& expected_statuses)
+    Vector<SessionInitStatus> expected_statuses)
     : web_cdm_result_(result),
       key_system_uma_prefix_(key_system_uma_prefix),
       uma_name_(uma_name),
       new_session_created_cb_(std::move(new_session_created_cb)),
-      expected_statuses_(expected_statuses),
+      expected_statuses_(std::move(expected_statuses)),
       creation_time_(base::TimeTicks::Now()) {}
 
 NewSessionCdmResultPromise::~NewSessionCdmResultPromise() {

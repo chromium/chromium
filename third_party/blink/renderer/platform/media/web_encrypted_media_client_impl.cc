@@ -5,6 +5,7 @@
 #include "third_party/blink/public/platform/media/web_encrypted_media_client_impl.h"
 
 #include <memory>
+#include <unordered_map>
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"

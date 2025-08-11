@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WATCH_TIME_REPORTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WATCH_TIME_REPORTER_H_
 
-#include <vector>
-
 #include "base/functional/callback.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/task/sequenced_task_runner.h"
@@ -20,9 +18,9 @@
 #include "media/mojo/mojom/watch_time_recorder.mojom-blink.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/platform/web_media_player.h"
-#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/media/watch_time_component.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/origin.h"
 
@@ -244,8 +242,7 @@ class PLATFORM_EXPORT WatchTimeReporter : base::PowerStateObserver {
     base::TimeDelta timestamp = media::kNoTimestamp;
     base::TimeDelta duration = media::kNoTimestamp;
   };
-  std::vector<UnderflowEvent> pending_underflow_events_
-      ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/40760651): Pending migration");
+  Vector<UnderflowEvent> pending_underflow_events_;
 
   media::PipelineStatistics initial_stats_;
   media::PipelineStatistics last_stats_;
