@@ -28,9 +28,9 @@ class ChromeWebAuthnClientAndroid : public webauthn::WebAuthnClientAndroid {
           passkey_callback,
       base::RepeatingCallback<void(std::u16string_view, std::u16string_view)>
           password_callback,
-      base::RepeatingCallback<void()> hybrid_callback,
-      base::RepeatingCallback<void(webauthn::ImmediateRequestRejectionReason)>
-          reject_immediate_callback) override;
+      base::RepeatingClosure hybrid_closure,
+      base::RepeatingCallback<void(webauthn::NonCredentialReturnReason)>
+          non_credential_callback) override;
 
   void CleanupWebAuthnRequest(content::RenderFrameHost* frame_host) override;
 };

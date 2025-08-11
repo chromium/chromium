@@ -67,11 +67,7 @@ void TouchToFillControllerWebAuthnDelegate::OnHybridSignInSelected(
 
 void TouchToFillControllerWebAuthnDelegate::OnDismiss(
     base::OnceClosure action_complete) {
-  if (is_immediate_) {
-    credential_receiver_->OnCredentialSelectionDeclined();
-  } else {
-    credential_receiver_->OnWebAuthnAccountSelected(std::vector<uint8_t>());
-  }
+  credential_receiver_->OnCredentialSelectionDeclined();
   std::move(action_complete).Run();
 }
 

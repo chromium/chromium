@@ -34,6 +34,33 @@ public class WebauthnBrowserBridge {
         @Nullable WebauthnBrowserBridge getBridge();
     }
 
+    /**
+     * Union class that can hold either a WebAuthn credential ID or a username/password pair
+     * (CredentialInfo).
+     */
+    public static class SelectedCredential {
+        private final byte @Nullable [] mWebAuthnCredentialId;
+        private final @Nullable CredentialInfo mPasswordCredential;
+
+        public SelectedCredential(byte[] webAuthnCredentialId) {
+            mWebAuthnCredentialId = webAuthnCredentialId;
+            mPasswordCredential = null;
+        }
+
+        public SelectedCredential(CredentialInfo passwordCredential) {
+            mWebAuthnCredentialId = null;
+            mPasswordCredential = passwordCredential;
+        }
+
+        public byte @Nullable [] webAuthnCredential() {
+            return mWebAuthnCredentialId;
+        }
+
+        public @Nullable CredentialInfo passwordCredential() {
+            return mPasswordCredential;
+        }
+    }
+
     private long mNativeWebauthnBrowserBridge;
 
     /**
@@ -42,32 +69,26 @@ public class WebauthnBrowserBridge {
      * fields. For non-conditional requests, a selection sheet is shown immediately. The callback is
      * invoked when a user selects one of the credentials from the list.
      *
-     * <p>TODO(https://crbug.com/433543129): This interface has gotten a bit overly complicated. It
-     * should be simplified by combining the callbacks into just two: one for credentials being
-     * returned (password or passkey), and another for other actions.
-     *
      * @param frameHost The RenderFrameHost for the frame that generated the request.
      * @param credentialList The list of credentials that can be used as autofill suggestions.
      * @param mediationType Value indicating whether the credentials are for a modal, conditional,
      *     or immediate request.
-     * @param passkeyCallback The callback to be invoked with the credential ID of a selected
-     *     WebAuthn credential.
-     * @param passwordCallback The callback to be invoked with a selected password credential.
+     * @param credentialCallback The callback to be invoked if a credential is selected. This
+     *     contains a credential ID for a WebAuthn credential, or a username/password pair.
      * @param hybridCallback The callback to be invoked if a user initiates a cross-device hybrid
      *     sign-in.
-     * @param rejectImmediateCallback The callback to be invoked if an immediate request will be
-     *     completed without a credential.
+     * @param nonCredentialCallback The callback to be invoked for any other outcome, with a code
+     *     indicating what the outcome was.
      */
     public void onCredentialsDetailsListReceived(
             @Nullable RenderFrameHost frameHost,
             List<WebauthnCredentialDetails> credentialList,
             @AssertionMediationType int mediationType,
-            Callback<byte[]> passkeyCallback,
-            @Nullable Callback<CredentialInfo> passwordCallback,
+            Callback<SelectedCredential> credentialCallback,
             @Nullable Runnable hybridCallback,
-            @Nullable Callback<Integer> rejectImmediateCallback) {
+            Callback<Integer> nonCredentialCallback) {
         assert credentialList != null;
-        assert passkeyCallback != null;
+        assert credentialCallback != null;
         log(
                 TAG,
                 "onCredentialsDetailsListReceived, mediationType: %d, number of credentials:"
@@ -84,10 +105,9 @@ public class WebauthnBrowserBridge {
                         credentialArray,
                         frameHost,
                         mediationType,
-                        passkeyCallback,
-                        passwordCallback,
+                        credentialCallback,
                         hybridCallback,
-                        rejectImmediateCallback);
+                        nonCredentialCallback);
     }
 
     /**
@@ -212,14 +232,20 @@ public class WebauthnBrowserBridge {
     }
 
     @CalledByNative
-    private static CredentialInfo createPasswordCredentialInfo(String username, String password) {
+    private static SelectedCredential createSelectedPasswordCredential(
+            String username, String password) {
         CredentialInfo passwordCredential = new CredentialInfo();
         passwordCredential.type = CredentialType.PASSWORD;
         String16 name = stringToMojoString16(username);
         passwordCredential.name = name;
         passwordCredential.id = name;
         passwordCredential.password = stringToMojoString16(password);
-        return passwordCredential;
+        return new SelectedCredential(passwordCredential);
+    }
+
+    @CalledByNative
+    private static SelectedCredential createSelectedPasskeyCredential(byte[] credentialId) {
+        return new SelectedCredential(credentialId);
     }
 
     private void prepareNativeBrowserBridgeIfRequired() {
@@ -240,10 +266,9 @@ public class WebauthnBrowserBridge {
                 WebauthnCredentialDetails[] credentialList,
                 @Nullable RenderFrameHost frameHost,
                 @AssertionMediationType int mediationType,
-                Callback<byte[]> getAssertionCallback,
-                @Nullable Callback<CredentialInfo> passwordCallback,
+                Callback<SelectedCredential> credentialCallback,
                 @Nullable Runnable hybridCallback,
-                @Nullable Callback<Integer> rejectImmediateCallback);
+                Callback<Integer> nonCredentialCallback);
 
         void onCredManConditionalRequestPending(
                 long nativeWebauthnBrowserBridge,

@@ -53,20 +53,23 @@ class WebAuthnRequestDelegateAndroid
   ~WebAuthnRequestDelegateAndroid() override;
 
   // Called when a Web Authentication GetAssertion request is received. This
-  // provides a callback that will complete the request if and when a user
-  // selects a credential from a touch to fill sheet, and also a closure that
-  // is invoked if the user starts a hybrid authentication.
+  // provides password and passkey callbacks that will complete the request if
+  // and when a user selects a credential from a touch to fill sheet.
+  // `hybrid_closure` is invoked if the user selects the option to trigger the
+  // hybrid transport for passkeys.
+  // `non_credential_callback` is invoked if the sheet if the request will be
+  // completed for any other reason.
   void OnWebAuthnRequestPending(
       content::RenderFrameHost* frame_host,
       std::vector<device::DiscoverableCredentialMetadata> credentials,
       webauthn::AssertionMediationType mediation_type,
       base::RepeatingCallback<void(const std::vector<uint8_t>& id)>
-          passkey_or_dismiss_callback,
+          passkey_callback,
       base::RepeatingCallback<void(std::u16string_view, std::u16string_view)>
           password_callback,
-      base::RepeatingCallback<void()> hybrid_callback,
-      base::RepeatingCallback<void(webauthn::ImmediateRequestRejectionReason)>
-          reject_immediate_callback);
+      base::RepeatingClosure hybrid_closure,
+      base::RepeatingCallback<void(webauthn::NonCredentialReturnReason)>
+          non_credential_callback);
 
   // Called when an outstanding request is ended, either because it was aborted
   // by the RP, or because it completed successfully. Its main purpose is to
@@ -98,13 +101,16 @@ class WebAuthnRequestDelegateAndroid
       std::vector<std::unique_ptr<password_manager::PasswordForm>>
           password_credentials);
 
-  base::RepeatingCallback<void(const std::vector<uint8_t>& user_id)>
-      passkey_or_dismiss_callback_;
+  // Completion callbacks for the request. These can be null if
+  // `CleanupWebAuthnRequest` has been called, probably due to the credential
+  // request being cancelled.
+  base::RepeatingCallback<void(const std::vector<uint8_t>& id)>
+      passkey_callback_;
   base::RepeatingCallback<void(std::u16string_view, std::u16string_view)>
       password_callback_;
-  base::RepeatingClosure hybrid_callback_;
-  base::RepeatingCallback<void(webauthn::ImmediateRequestRejectionReason)>
-      reject_immediate_callback_;
+  base::RepeatingClosure hybrid_closure_;
+  base::RepeatingCallback<void(webauthn::NonCredentialReturnReason)>
+      non_credential_callback_;
 
   // Controller for using the Touch To Fill bottom sheet for non-conditional
   // requests.

@@ -35,7 +35,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.AuthenticatorTransport;
-import org.chromium.blink.mojom.CredentialInfo;
 import org.chromium.blink.mojom.CredentialTypeFlags;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
@@ -931,20 +930,11 @@ public class Fido2CredentialRequest
         }
 
         @AssertionMediationType int mediationType = AssertionMediationType.MODAL;
-        Callback<Integer> rejectImmediateCallback = null;
-        Callback<CredentialInfo> passwordCallback = null;
         if (isConditionalRequest) {
             mediationType = AssertionMediationType.CONDITIONAL;
         } else if (isImmediateRequest) {
             if ((options.requestedCredentialTypeFlags & CredentialTypeFlags.PASSWORD) != 0) {
                 mediationType = AssertionMediationType.IMMEDIATE_WITH_PASSWORDS;
-                passwordCallback =
-                        (passwordCredential) -> {
-                            if (mGetCredentialCallback != null) {
-                                mGetCredentialCallback.onCredentialResponse(
-                                        /* assertionResponse= */ null, passwordCredential);
-                            }
-                        };
             } else {
                 if (discoverableCredentials.isEmpty()) {
                     log(TAG, "Immediate Get request did not display UI: no passkeys found");
@@ -956,14 +946,6 @@ public class Fido2CredentialRequest
                 }
                 mediationType = AssertionMediationType.IMMEDIATE_PASSKEYS_ONLY;
             }
-            rejectImmediateCallback =
-                    (rejectReason) -> {
-                        log(TAG, "Immediate Get request did not display UI: Code " + rejectReason);
-                        // TODO(https://crbug.com/433543129): Add metrics for the rejection reason
-                        // in order to distinguish user dismissal from no credentials being
-                        // available.
-                        returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
-                    };
         }
 
         mCancellableUiState = CancellableUiState.WAITING_FOR_SELECTION;
@@ -973,15 +955,24 @@ public class Fido2CredentialRequest
                         mAuthenticationContextProvider.getRenderFrameHost(),
                         discoverableCredentials,
                         mediationType,
-                        (selectedCredentialId) ->
+                        (selectedCredential) -> {
+                            if (selectedCredential.webAuthnCredential() != null) {
                                 maybeDispatchGetAssertionRequest(
                                         options,
                                         callerOriginString,
                                         clientDataHash,
-                                        selectedCredentialId),
-                        passwordCallback,
+                                        selectedCredential.webAuthnCredential());
+                            } else {
+                                assertNonNull(selectedCredential.passwordCredential());
+                                if (mGetCredentialCallback != null) {
+                                    mGetCredentialCallback.onCredentialResponse(
+                                            /* assertionResponse= */ null,
+                                            selectedCredential.passwordCredential());
+                                }
+                            }
+                        },
                         hybridCallback,
-                        rejectImmediateCallback);
+                        (reason) -> handleNonCredentialReturn(options, reason));
     }
 
     /**
@@ -1121,22 +1112,7 @@ public class Fido2CredentialRequest
 
         mCancellableUiState = CancellableUiState.NONE;
         if (credentialId != null) {
-            if (credentialId.length == 0) {
-                if (options.mediation == Mediation.CONDITIONAL) {
-                    // An empty credential ID means an error from native code, which can happen if
-                    // the embedder does not support Conditional UI.
-                    logError(TAG, "Empty credential ID from account selection.");
-                    assumeNonNull(getBridge());
-                    getBridge().cleanupRequest(mAuthenticationContextProvider.getRenderFrameHost());
-                    returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
-                    return;
-                }
-                // For non-conditional requests, an empty credential ID means the user dismissed
-                // the account selection dialog.
-                mGetAssertionErrorOutcome = GetAssertionOutcome.USER_CANCELLATION;
-                returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
-                return;
-            }
+            assert (credentialId.length > 0);
             PublicKeyCredentialDescriptor selected_credential = new PublicKeyCredentialDescriptor();
             selected_credential.type = PublicKeyCredentialType.PUBLIC_KEY;
             selected_credential.id = credentialId;
@@ -1157,6 +1133,32 @@ public class Fido2CredentialRequest
                         getMaybeResultReceiver(),
                         this::onGotPendingIntent,
                         this::onBinderCallException);
+    }
+
+    private void handleNonCredentialReturn(
+            PublicKeyCredentialRequestOptions options, Integer reason) {
+        if (options.mediation == Mediation.IMMEDIATE) {
+            log(TAG, "Immediate Get request did not display UI: Code " + reason);
+            // TODO(https://crbug.com/433543129): Add metrics for the rejection reason
+            // in order to distinguish user dismissal from no credentials being
+            // available.
+            returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+            return;
+        }
+
+        if (reason == NonCredentialReturnReason.ERROR) {
+            logError(TAG, "Bottom sheet not displayed due to an error.");
+            assumeNonNull(getBridge());
+            getBridge().cleanupRequest(mAuthenticationContextProvider.getRenderFrameHost());
+            returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+            return;
+        }
+
+        // Conditional mediation should never return from the user closing the sheet.
+        assert (options.mediation != Mediation.CONDITIONAL);
+        assert (reason == NonCredentialReturnReason.USER_DISMISSED);
+        mGetAssertionErrorOutcome = GetAssertionOutcome.USER_CANCELLATION;
+        returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
     }
 
     private void dispatchHybridGetAssertionRequest(

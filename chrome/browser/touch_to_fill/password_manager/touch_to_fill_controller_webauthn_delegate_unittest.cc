@@ -246,8 +246,7 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndCancel) {
        MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/false,
                                          /*is_immediate=*/false));
 
-  EXPECT_CALL(request_delegate(),
-              OnWebAuthnAccountSelected(std::vector<uint8_t>()));
+  EXPECT_CALL(request_delegate(), OnCredentialSelectionDeclined());
   touch_to_fill_controller().Close();
 }
 
