@@ -59,9 +59,6 @@ PersonalDataManager::PersonalDataManager(
   autofill_metrics::LogIsAutofillEnabledAtStartup(
       address_data_manager_->IsAutofillProfileEnabled() ||
       payments_data_manager_->IsAutofillPaymentMethodsEnabled());
-
-  // Potentially import addresses and credit cards for testing.
-  MaybeImportDataForManualTesting(weak_factory_.GetWeakPtr());
 }
 
 PersonalDataManager::~PersonalDataManager() = default;
@@ -105,8 +102,7 @@ void PersonalDataManager::SetSyncServiceForTest(
 }
 
 bool PersonalDataManager::IsDataLoaded() const {
-  return address_data_manager_->has_initial_load_finished() &&
-         payments_data_manager_->is_payments_data_loaded();
+  return has_initial_load_finished_;
 }
 
 void PersonalDataManager::Refresh() {
@@ -118,6 +114,13 @@ void PersonalDataManager::NotifyPersonalDataObserver() {
   if (address_data_manager_->IsAwaitingPendingAddressChanges() ||
       payments_data_manager_->HasPendingPaymentQueries()) {
     return;
+  }
+  if (!has_initial_load_finished_ &&
+      address_data_manager_->has_initial_load_finished() &&
+      payments_data_manager_->is_payments_data_loaded()) {
+    has_initial_load_finished_ = true;
+    // Potentially import addresses and credit cards for testing.
+    MaybeImportDataForManualTesting(weak_factory_.GetWeakPtr());
   }
   for (PersonalDataManagerObserver& observer : observers_) {
     observer.OnPersonalDataChanged();

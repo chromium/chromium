@@ -166,6 +166,8 @@ class PersonalDataManager : public KeyedService,
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
 
+  bool has_initial_load_finished_ = false;
+
   base::WeakPtrFactory<PersonalDataManager> weak_factory_{this};
 };
 
