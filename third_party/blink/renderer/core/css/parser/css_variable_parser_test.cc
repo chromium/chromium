@@ -271,7 +271,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(valid_attr_values));
 
 TEST_P(ValidAttrTest, ContainsValidAttr) {
-  ScopedCSSAttrRawStringForTest scoped_feature_attr_raw_string(true);
   SCOPED_TRACE(GetParam());
   CSSParserTokenStream stream{GetParam()};
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -292,8 +291,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(invalid_attr_values));
 
 TEST_P(InvalidAttrTest, ContainsInvalidAttr) {
-  ScopedCSSAttrRawStringForTest scoped_feature_attr_raw_string(true);
-
   SCOPED_TRACE(GetParam());
   CSSParserTokenStream stream{GetParam()};
   auto* context = MakeGarbageCollected<CSSParserContext>(

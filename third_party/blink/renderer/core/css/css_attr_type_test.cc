@@ -9,7 +9,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -28,34 +27,12 @@ const char* kInvalidAttrSyntax[] = {"type(<number >)", "type(< angle>)",
 
 class CSSAttrTypeTest : public PageTestBase {};
 
-TEST_F(CSSAttrTypeTest, ConsumeStringType) {
-  ScopedCSSAttrRawStringForTest scoped_feature(false);
-  CSSParserTokenStream valid_stream("string");
-  std::optional<CSSAttrType> valid_type = CSSAttrType::Consume(valid_stream);
-  ASSERT_TRUE(valid_type.has_value());
-  EXPECT_TRUE(valid_type->IsString());
-  EXPECT_TRUE(valid_stream.AtEnd());
-
-  CSSParserTokenStream invalid_stream("raw-string");
-  std::optional<CSSAttrType> invalid_type =
-      CSSAttrType::Consume(invalid_stream);
-  ASSERT_FALSE(invalid_type.has_value());
-  EXPECT_EQ(invalid_stream.Offset(), 0u);
-}
-
 TEST_F(CSSAttrTypeTest, ConsumeRawStringType) {
-  ScopedCSSAttrRawStringForTest scoped_feature(true);
   CSSParserTokenStream valid_stream("raw-string");
   std::optional<CSSAttrType> valid_type = CSSAttrType::Consume(valid_stream);
   ASSERT_TRUE(valid_type.has_value());
   EXPECT_TRUE(valid_type->IsString());
   EXPECT_TRUE(valid_stream.AtEnd());
-
-  CSSParserTokenStream invalid_stream("string");
-  std::optional<CSSAttrType> invalid_type =
-      CSSAttrType::Consume(invalid_stream);
-  ASSERT_FALSE(invalid_type.has_value());
-  EXPECT_EQ(invalid_stream.Offset(), 0u);
 }
 
 TEST_F(CSSAttrTypeTest, ConsumeInvalidType) {

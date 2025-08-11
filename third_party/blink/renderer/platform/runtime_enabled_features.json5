@@ -1185,12 +1185,6 @@
       status: "test",
     },
     {
-      // Replaces `string` type in CSS attr() function syntax with `raw-string`.
-      // https://github.com/w3c/csswg-drafts/issues/11645#issuecomment-2701601350
-      name: "CSSAttrRawString",
-      status: "stable",
-    },
-    {
       // https://chromestatus.com/feature/5125388091260928
       name: "CSSBackgroundClipUnprefix",
       status: "stable",
