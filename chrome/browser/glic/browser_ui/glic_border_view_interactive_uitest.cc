@@ -910,8 +910,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest,
       browser()->GetActiveTabInterface()->GetHandle(), base::DoNothing());
 
   // Perform an action to trigger the glow.
-  base::test::TestFuture<actor::mojom::ActionResultCode, std::optional<size_t>>
-      result_future;
+  actor::PerformActionsFuture result_future;
   std::vector<std::unique_ptr<actor::ToolRequest>> actions;
   actions.push_back(actor::MakeWaitRequest());
   actor_keyed_service->PerformActions(task_id, std::move(actions),

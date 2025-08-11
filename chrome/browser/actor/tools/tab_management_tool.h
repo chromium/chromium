@@ -48,6 +48,7 @@ class TabManagementTool : public Tool,
   std::unique_ptr<ObservationDelayController> GetObservationDelayer()
       const override;
   void UpdateTaskAfterInvoke(ActorTask& task,
+                             mojom::ActionResultPtr result,
                              InvokeCallback callback) const override;
 
   // TabStripModelObserver

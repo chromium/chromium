@@ -36,7 +36,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_TextInput) {
       MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
                       /*follow_by_enter=*/true);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_TextInputAtNewlyCreatedNode) {
       MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
                       /*follow_by_enter=*/false);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_NonExistentNode) {
       MakeTypeRequest(*main_frame(), kNonExistentContentNodeId, typed_string,
                       /*follow_by_enter=*/true);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kInvalidDomNodeId);
   EXPECT_EQ("",
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DisabledInput) {
     std::unique_ptr<ToolRequest> action =
         MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
                         /*follow_by_enter=*/true);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectErrorResult(result, mojom::ActionResultCode::kElementDisabled);
     EXPECT_EQ("",
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DisabledInput) {
     std::unique_ptr<ToolRequest> action =
         MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
                         /*follow_by_enter=*/true);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
     EXPECT_EQ("",
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_Events) {
       MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
                       /*follow_by_enter=*/true);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_EmptyText) {
       MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
                       /*follow_by_enter=*/true);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_FollowByEnter) {
         MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
                         /*follow_by_enter=*/true);
 
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
   }
@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_FollowByEnter) {
         MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
                         /*follow_by_enter=*/false);
 
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
   }
@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_PageHandlesKeyEvents) {
       MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
                       /*follow_by_enter=*/true);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 }
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_ReplacesText) {
       MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
                       /*follow_by_enter=*/false);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
   EXPECT_EQ(typed_string,
@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_FocusMovesFocus) {
       MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
                       /*follow_by_enter=*/false);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
@@ -339,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_TextInputAtCoordinate) {
         MakeTypeRequest(*active_tab(), type_point, typed_string,
                         /*follow_by_enter=*/true);
 
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
 
@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_TextInputAtCoordinate) {
         MakeTypeRequest(*active_tab(), type_point, typed_string,
                         /*follow_by_enter=*/true);
 
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
 
@@ -386,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_EventsSentToCoordinates) {
         MakeTypeRequest(*active_tab(), type_point, typed_string,
                         /*follow_by_enter=*/false);
 
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
 
@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_EventsSentToCoordinates) {
         MakeTypeRequest(*active_tab(), type_point, typed_string,
                         /*follow_by_enter=*/false);
 
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
 
@@ -452,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest,
       MakeTypeRequest(*active_tab(), type_point, typed_string,
                       /*follow_by_enter=*/false);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
@@ -485,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_SentToOffScreenCoordinates) {
       MakeTypeRequest(*active_tab(), gfx::Point(-1, 0), typed_string,
                       /*follow_by_enter=*/false);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kCoordinatesOutOfBounds);
 
@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DomNodeIdTargetsNonEditable) {
       MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
                       /*follow_by_enter=*/false);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_IncrementalTyping) {
       MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
                       /*follow_by_enter=*/false);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 

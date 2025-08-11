@@ -1075,8 +1075,7 @@ class HistoryTaskTagBrowserTest : public HistoryBrowserTest {
         *tabs::TabInterface::GetFromContents(web_contents), gfx::Point(0, 0));
 
     // Ensure the actor is in an acting state on the current tab.
-    base::test::TestFuture<actor::mojom::ActionResultPtr, std::optional<size_t>>
-        result;
+    actor::ActResultFuture result;
     actor_service->GetTask(id)->Act(ToRequestList(action),
                                     result.GetCallback());
     actor::ExpectOkResult(result);

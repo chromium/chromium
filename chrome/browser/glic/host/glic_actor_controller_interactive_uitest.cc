@@ -38,6 +38,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace glic::test {
@@ -152,6 +153,7 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
         InAnyContext(WithElement(
             kGlicContentsElementId,
             [result_out = buffer_raw,
+             actions_result_out = &last_execution_result_,
              proto_provider =
                  std::move(proto_provider)](ui::TrackedElement* el) mutable {
               content::WebContents* glic_contents =
@@ -178,6 +180,7 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
                     DecodeActionsResultProto(result.ExtractString());
                 if (actions_result) {
                   *result_out = actions_result->action_result();
+                  *actions_result_out = actions_result;
                 } else {
                   *result_out = -static_cast<int>(
                       mojom::PerformActionsErrorReason::kInvalidProto);
@@ -338,6 +341,18 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
 
   auto WaitAction(ExpectedErrorResult expected_result = {}) {
     return WaitAction(task_id_, std::move(expected_result));
+  }
+
+  auto ScriptAction(const std::string& name,
+                    const std::string& input_arguments) {
+    auto script_provider = base::BindLambdaForTesting([&]() {
+      Actions action = actor::MakeScriptTool(
+          *tab_handle_.Get()->GetContents()->GetPrimaryMainFrame(), name,
+          input_arguments);
+      action.set_task_id(task_id_.value());
+      return EncodeActionProto(action);
+    });
+    return ExecuteAction(std::move(script_provider), {});
   }
 
   // Starts a new task by executing an initial navigate action to `task_url` to
@@ -588,6 +603,10 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
                                    "').src='", url.spec(), "';}"}));
   }
 
+  const std::optional<ActionsResult>& last_execution_result() const {
+    return last_execution_result_;
+  }
+
   // The default task_id and tab created by StartActorTaskInNewTab. Most tests
   // will use these to act in the single tab of a task so these are stored for
   // convenience. More complicated tests involving multiple tasks or tabs will
@@ -623,6 +642,7 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
     NOTREACHED() << "Label [" << label << "] not found in page.";
   }
 
+  std::optional<ActionsResult> last_execution_result_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<AnnotatedPageContent> annotated_page_content_;
 };
@@ -1143,6 +1163,44 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
       StopActorTask(),
       CheckIsWebContentsCaptured(kNewActorTabId, false));
   // clang-format on
+}
+
+class GlicActorControllerWithScriptToolsTest
+    : public GlicActorControllerUiTest {
+ public:
+  GlicActorControllerWithScriptToolsTest() {
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kScriptTools);
+  }
+  ~GlicActorControllerWithScriptToolsTest() override = default;
+
+  auto CheckValidResult(const std::string& expected_result) {
+    return Steps(Do([&]() {
+      ASSERT_TRUE(last_execution_result());
+      ASSERT_EQ(last_execution_result()->script_tool_results().size(), 1);
+
+      const auto& result = last_execution_result()->script_tool_results().at(0);
+      EXPECT_EQ(result.index_of_script_tool_action(), 0);
+      EXPECT_EQ(result.result(), expected_result);
+    }));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerWithScriptToolsTest, Basic) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/script_tool.html");
+
+  const std::string expected_result = "This is an example sentence.";
+  const std::string input_arguments =
+      "{ \"text\": \"This is an example sentence.\" }";
+  RunTestSequence(InitializeWithOpenGlicWindow(),
+                  StartActorTaskInNewTab(task_url, kNewActorTabId),
+                  ScriptAction("echo", input_arguments),
+                  CheckValidResult(expected_result));
 }
 
 }  //  namespace

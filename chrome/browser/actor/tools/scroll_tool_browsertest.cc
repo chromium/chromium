@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_FailOnInvalidNodeID) {
       MakeScrollRequest(*main_frame(), kNonExistentContentNodeId,
                         /*scroll_offset_x=*/0, scroll_offset_y);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_fail;
+  ActResultFuture result_fail;
   actor_task().Act(ToRequestList(action), result_fail.GetCallback());
   ExpectErrorResult(result_fail, mojom::ActionResultCode::kInvalidDomNodeId);
 
@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollPageVertical) {
     std::unique_ptr<ToolRequest> action =
         MakeScrollRequest(*main_frame(), /*content_node_id=*/std::nullopt,
                           /*scroll_offset_x=*/0, scroll_offset_y);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+    ActResultFuture result_success;
     actor_task().Act(ToRequestList(action), result_success.GetCallback());
     ExpectOkResult(result_success);
     EXPECT_EQ(scroll_offset_y, EvalJs(web_contents(), "window.scrollY"));
@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollPageVertical) {
     std::unique_ptr<ToolRequest> action =
         MakeScrollRequest(*main_frame(), /*content_node_id=*/std::nullopt,
                           /*scroll_offset_x=*/0, scroll_offset_y);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+    ActResultFuture result_success;
     actor_task().Act(ToRequestList(action), result_success.GetCallback());
     ExpectOkResult(result_success);
     EXPECT_EQ(2 * scroll_offset_y, EvalJs(web_contents(), "window.scrollY"));
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollPageHorizontal) {
         MakeScrollRequest(*main_frame(),
                           /*content_node_id=*/std::nullopt, scroll_offset_x,
                           /*scroll_offset_y=*/0);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+    ActResultFuture result_success;
     actor_task().Act(ToRequestList(action), result_success.GetCallback());
     ExpectOkResult(result_success);
     EXPECT_EQ(scroll_offset_x, EvalJs(web_contents(), "window.scrollX"));
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollPageHorizontal) {
         MakeScrollRequest(*main_frame(),
                           /*content_node_id=*/std::nullopt, scroll_offset_x,
                           /*scroll_offset_y=*/0);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+    ActResultFuture result_success;
     actor_task().Act(ToRequestList(action), result_success.GetCallback());
     ExpectOkResult(result_success);
     EXPECT_EQ(2 * scroll_offset_x, EvalJs(web_contents(), "window.scrollX"));
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollElement) {
     std::unique_ptr<ToolRequest> action =
         MakeScrollRequest(*main_frame(), scroller, scroll_offset_x,
                           /*scroll_offset_y=*/0);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+    ActResultFuture result_success;
     actor_task().Act(ToRequestList(action), result_success.GetCallback());
     ExpectOkResult(result_success);
     EXPECT_EQ(scroll_offset_x,
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollElement) {
     std::unique_ptr<ToolRequest> action =
         MakeScrollRequest(*main_frame(), scroller,
                           /*scroll_offset_x=*/0, scroll_offset_y);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+    ActResultFuture result_success;
     actor_task().Act(ToRequestList(action), result_success.GetCallback());
     ExpectOkResult(result_success);
     EXPECT_EQ(scroll_offset_y,
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_NonScrollable) {
     std::unique_ptr<ToolRequest> action =
         MakeScrollRequest(*main_frame(), scroller,
                           /*scroll_offset_x=*/0, scroll_offset_y);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectErrorResult(result,
                       mojom::ActionResultCode::kScrollTargetNotUserScrollable);
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_OffscreenScrollable) {
     std::unique_ptr<ToolRequest> action =
         MakeScrollRequest(*main_frame(), scroller,
                           /*scroll_offset_x=*/0, scroll_offset_y);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
     EXPECT_EQ(scroll_offset_y,
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_OneAxisScroller) {
     std::unique_ptr<ToolRequest> action =
         MakeScrollRequest(*main_frame(), scroller,
                           /*scroll_offset_x=*/0, scroll_offset);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectErrorResult(result,
                       mojom::ActionResultCode::kScrollTargetNotUserScrollable);
@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_OneAxisScroller) {
     std::unique_ptr<ToolRequest> action =
         MakeScrollRequest(*main_frame(), scroller, scroll_offset,
                           /*scroll_offset_y=*/0);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+    ActResultFuture result_success;
     actor_task().Act(ToRequestList(action), result_success.GetCallback());
     ExpectOkResult(result_success);
     EXPECT_EQ(
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_BrowserZoom) {
     std::unique_ptr<ToolRequest> action =
         MakeScrollRequest(*main_frame(), scroller,
                           /*scroll_offset_x=*/0, scroll_offset_physical);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+    ActResultFuture result_success;
     actor_task().Act(ToRequestList(action), result_success.GetCallback());
     ExpectOkResult(result_success);
     EXPECT_EQ(expected_offset_css,
@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_CSSZoom) {
     std::unique_ptr<ToolRequest> action =
         MakeScrollRequest(*main_frame(), scroller,
                           /*scroll_offset_x=*/0, scroll_offset_physical);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+    ActResultFuture result_success;
     actor_task().Act(ToRequestList(action), result_success.GetCallback());
     ExpectOkResult(result_success);
     EXPECT_EQ(expected_offset_css,
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestDSF2, ScrollTool_ScrollDSF) {
     std::unique_ptr<ToolRequest> action =
         MakeScrollRequest(*main_frame(), scroller,
                           /*scroll_offset_x=*/0, scroll_offset_physical);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+    ActResultFuture result_success;
     actor_task().Act(ToRequestList(action), result_success.GetCallback());
     ExpectOkResult(result_success);
     EXPECT_EQ(expected_offset_css,
@@ -341,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ZeroIdTargetsViewport) {
       MakeScrollRequest(*main_frame(), kViewportId,
                         /*scroll_offset_x=*/0, scroll_offset_y);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_SmoothScrollSucceeds) {
       MakeScrollRequest(*main_frame(), scroller,
                         /*scroll_offset_x=*/0, scroll_offset_y);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 }
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_SmoothScrollAtExtent) {
       MakeScrollRequest(*main_frame(), scroller,
                         /*scroll_offset_x=*/0, scroll_offset_y);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kScrollOffsetDidNotChange);
 }

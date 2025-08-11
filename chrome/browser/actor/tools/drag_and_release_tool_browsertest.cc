@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, DragAndReleaseTool_Range) {
   std::unique_ptr<ToolRequest> action =
       MakeDragAndReleaseRequest(*active_tab(), start, end);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+  ActResultFuture result_success;
   actor_task().Act(ToRequestList(action), result_success.GetCallback());
   ExpectOkResult(result_success);
 
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, DragAndReleaseTool_Events) {
   std::unique_ptr<ToolRequest> action =
       MakeDragAndReleaseRequest(*active_tab(), start, end);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+  ActResultFuture result_success;
   actor_task().Act(ToRequestList(action), result_success.GetCallback());
   ExpectOkResult(result_success);
 
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, DragAndReleaseTool_Offscreen) {
 
     std::unique_ptr<ToolRequest> action =
         MakeDragAndReleaseRequest(*active_tab(), start, end);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectErrorResult(result,
                       mojom::ActionResultCode::kDragAndReleaseFromOffscreen);
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, DragAndReleaseTool_Offscreen) {
 
     std::unique_ptr<ToolRequest> action =
         MakeDragAndReleaseRequest(*active_tab(), start, end);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+    ActResultFuture result_success;
     actor_task().Act(ToRequestList(action), result_success.GetCallback());
     ExpectOkResult(result_success);
   }

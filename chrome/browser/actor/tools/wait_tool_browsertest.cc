@@ -25,7 +25,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, WaitTool) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   std::unique_ptr<ToolRequest> action = MakeWaitRequest();
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 }
@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, WaitTool_DontRecordActOnTask) {
   ASSERT_TRUE(actor_task().GetTabs().empty());
 
   std::unique_ptr<ToolRequest> action = MakeWaitRequest();
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 

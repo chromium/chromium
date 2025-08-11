@@ -191,8 +191,7 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
                                                                url);
     fake_chrome_render_frame_.OverrideBinder(main_rfh());
 
-    base::test::TestFuture<mojom::ActionResultPtr, std::optional<size_t>>
-        success;
+    ActResultFuture success;
     std::unique_ptr<ToolRequest> action = std::move(make_action).Run();
     task_->Act(ToRequestList(std::move(action)), success.GetCallback());
     return IsOk(*success.Get<0>());
@@ -334,7 +333,7 @@ TEST_F(ExecutionEngineTest, ActFailsWhenTabDestroyed) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
 
-  base::test::TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
 
   FakeChromeRenderFrame fake_chrome_render_frame;
   fake_chrome_render_frame.OverrideBinder(main_rfh());
@@ -358,7 +357,7 @@ TEST_F(ExecutionEngineTest, CrossOriginNavigationBeforeAction) {
   FakeChromeRenderFrame fake_chrome_render_frame;
   fake_chrome_render_frame.OverrideBinder(main_rfh());
 
-  base::test::TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   auto execution_engine = std::make_unique<ExecutionEngine>(profile());
   ActorTask task(profile(), std::move(execution_engine),
                  ui::NewMockUiEventDispatcher());

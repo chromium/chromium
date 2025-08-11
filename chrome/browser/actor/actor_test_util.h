@@ -46,6 +46,15 @@ auto UiEventDispatcherCallback(
   };
 }
 
+using ActResultFuture = base::test::TestFuture<
+    mojom::ActionResultPtr,
+    std::optional<size_t>,
+    std::vector<optimization_guide::proto::ScriptToolResult>>;
+using PerformActionsFuture = base::test::TestFuture<
+    mojom::ActionResultCode,
+    std::optional<size_t>,
+    std::vector<optimization_guide::proto::ScriptToolResult>>;
+
 /////////////////////////
 // Proto action makers
 
@@ -160,10 +169,8 @@ std::vector<std::unique_ptr<ToolRequest>> ToRequestList(T&& first,
 
 void ExpectOkResult(const mojom::ActionResult& result);
 void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future);
-void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr,
-                                           std::optional<size_t>>& future);
-void ExpectErrorResult(base::test::TestFuture<mojom::ActionResultPtr,
-                                              std::optional<size_t>>& future,
+void ExpectOkResult(ActResultFuture& future);
+void ExpectErrorResult(ActResultFuture& future,
                        mojom::ActionResultCode expected_code);
 
 // Sets up GLIC_ACTION_PAGE_BLOCK to block the given host.

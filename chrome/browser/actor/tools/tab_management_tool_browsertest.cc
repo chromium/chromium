@@ -30,7 +30,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TabManagementTool_CreateForegroundTab) {
 
   std::unique_ptr<ToolRequest> action =
       MakeCreateTabRequest(browser()->session_id(), /*foreground=*/true);
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TabManagementTool_CreateBackgroundTab) {
 
   std::unique_ptr<ToolRequest> action =
       MakeCreateTabRequest(browser()->session_id(), /*foreground=*/false);
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TabManagementTool_RecordActingOnTask) {
   {
     std::unique_ptr<ToolRequest> action =
         MakeCreateTabRequest(browser()->session_id(), /*foreground=*/false);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
 
@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TabManagementTool_RecordActingOnTask) {
   {
     std::unique_ptr<ToolRequest> action =
         MakeCreateTabRequest(browser()->session_id(), /*foreground=*/true);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
 

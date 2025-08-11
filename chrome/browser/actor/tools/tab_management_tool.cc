@@ -106,11 +106,12 @@ TabManagementTool::GetObservationDelayer() const {
 }
 
 void TabManagementTool::UpdateTaskAfterInvoke(ActorTask& task,
+                                              mojom::ActionResultPtr result,
                                               InvokeCallback callback) const {
   if (action_ == kCreate && did_create_tab_handle_) {
     task.AddTab(*did_create_tab_handle_, std::move(callback));
   } else {
-    std::move(callback).Run(MakeOkResult());
+    std::move(callback).Run(std::move(result));
   }
 }
 

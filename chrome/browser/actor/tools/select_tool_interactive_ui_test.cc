@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MAYBE_SelectToolCloseDropDownMenu) {
       GetDOMNodeId(*main_frame(), "#plainSelect").value();
   std::unique_ptr<ToolRequest> action =
       MakeSelectRequest(*main_frame(), plain_select_dom_node_id, "beta");
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
   popup_closed.Wait();

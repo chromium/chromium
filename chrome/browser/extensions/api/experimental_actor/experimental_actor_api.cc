@@ -208,7 +208,9 @@ void ExperimentalActorStartTaskFunction::OnTabCreated(
     base::WeakPtr<Browser> browser,
     actor::TaskId task_id,
     actor::mojom::ActionResultCode result_code,
-    std::optional<size_t> index_of_failed_action) {
+    std::optional<size_t> index_of_failed_action,
+    std::vector<optimization_guide::proto::ScriptToolResult>
+        script_tool_results) {
   int32_t tab_id = 0;
   // CreateTask assumes it always succeeds but we won't have a tab if the
   // browser is closed during creation.
@@ -417,12 +419,14 @@ ExperimentalActorPerformActionsFunction::Run() {
   actor::BuildToolRequestResult requests = actor::BuildToolRequest(actions);
 
   if (!requests.has_value()) {
+    const std::vector<optimization_guide::proto::ScriptToolResult>
+        empty_results;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &ExperimentalActorPerformActionsFunction::OnActionsFinished, this,
             task_id, actor::mojom::ActionResultCode::kArgumentsInvalid,
-            requests.error()));
+            requests.error(), empty_results));
     return RespondLater();
   }
 
@@ -438,7 +442,9 @@ ExperimentalActorPerformActionsFunction::Run() {
 void ExperimentalActorPerformActionsFunction::OnActionsFinished(
     actor::TaskId task_id,
     actor::mojom::ActionResultCode result_code,
-    std::optional<size_t> index_of_failed_action) {
+    std::optional<size_t> index_of_failed_action,
+    std::vector<optimization_guide::proto::ScriptToolResult>
+        script_tool_results) {
   auto* actor_service = actor::ActorKeyedService::Get(browser_context());
   actor::ActorTask* task = actor_service->GetTask(task_id);
 
@@ -448,7 +454,8 @@ void ExperimentalActorPerformActionsFunction::OnActionsFinished(
   CHECK(task);
 
   actor::BuildActionsResultWithObservations(
-      *browser_context(), result_code, index_of_failed_action, *task,
+      *browser_context(), result_code, index_of_failed_action,
+      std::move(script_tool_results), *task,
       base::BindOnce(
           &ExperimentalActorPerformActionsFunction::OnObservationResult, this));
 }

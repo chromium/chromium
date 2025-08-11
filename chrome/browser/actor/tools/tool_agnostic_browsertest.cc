@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, InvokeToolInInactiveFrame) {
   EXPECT_EQ(first_rfh.AsRenderFrameHostIfValid()->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kFrameWentAway);
 }
@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, InvokeToolSameSiteSubframe) {
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*subframe, button_id.value());
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, OffscreenElement) {
 
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*main_frame(), button_id.value());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
   EXPECT_EQ(EvalJs(web_contents(), "offscreen_button_clicked"), true);
@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, OffscreenCoordinate) {
 
     std::unique_ptr<ToolRequest> action =
         MakeClickRequest(*active_tab(), click_point);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectErrorResult(result, mojom::ActionResultCode::kCoordinatesOutOfBounds);
     EXPECT_EQ(EvalJs(web_contents(), "offscreen_button_clicked"), false);
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, InvalidCoordinate) {
 
     std::unique_ptr<ToolRequest> action =
         MakeClickRequest(*active_tab(), click_point);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectErrorResult(result, mojom::ActionResultCode::kCoordinatesOutOfBounds);
   }
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, InvalidCoordinate) {
 
     std::unique_ptr<ToolRequest> action =
         MakeClickRequest(*active_tab(), click_point);
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectErrorResult(result, mojom::ActionResultCode::kCoordinatesOutOfBounds);
   }
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, OffscreenElementNonScrollablePage) {
 
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*main_frame(), button_id.value());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kElementOffscreen);
 
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, OffscreenFixedElement) {
 
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*main_frame(), button_id.value());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kElementOffscreen);
 

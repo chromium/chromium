@@ -30,9 +30,10 @@ void Tool::UpdateTaskBeforeInvoke(ActorTask& task,
 }
 
 void Tool::UpdateTaskAfterInvoke(ActorTask& task,
+                                 mojom::ActionResultPtr result,
                                  InvokeCallback callback) const {
   // Do nothing by default, just trigger the callback.
-  std::move(callback).Run(MakeOkResult());
+  std::move(callback).Run(std::move(result));
 }
 
 }  // namespace actor

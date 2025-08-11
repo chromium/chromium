@@ -84,12 +84,12 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
                     ActCallback callback) {
   if (state_ == State::kPausedByActor) {
     std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskPaused),
-                            std::nullopt);
+                            std::nullopt, {});
     return;
   }
   if (IsStopped()) {
     std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskWentAway),
-                            std::nullopt);
+                            std::nullopt, {});
     return;
   }
   SetState(State::kActing);
@@ -99,15 +99,19 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
                      std::move(callback)));
 }
 
-void ActorTask::OnFinishedAct(ActCallback callback,
-                              mojom::ActionResultPtr result,
-                              std::optional<size_t> index_of_failed_action) {
+void ActorTask::OnFinishedAct(
+    ActCallback callback,
+    mojom::ActionResultPtr result,
+    std::optional<size_t> index_of_failed_action,
+    std::vector<optimization_guide::proto::ScriptToolResult>
+        script_tool_results) {
   if (state_ != State::kActing) {
-    std::move(callback).Run(MakeErrorResult(), std::nullopt);
+    std::move(callback).Run(MakeErrorResult(), std::nullopt, {});
     return;
   }
   SetState(State::kReflecting);
-  std::move(callback).Run(std::move(result), std::nullopt);
+  std::move(callback).Run(std::move(result), std::nullopt,
+                          std::move(script_tool_results));
 }
 
 void ActorTask::Stop(bool success) {

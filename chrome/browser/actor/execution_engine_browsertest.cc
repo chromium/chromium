@@ -113,7 +113,7 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(dom_node_id);
     std::unique_ptr<ToolRequest> click =
         MakeClickRequest(*main_frame(), dom_node_id.value());
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(click), result.GetCallback());
     if (expected_code == mojom::ActionResultCode::kOk) {
       ExpectOkResult(result);
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicks) {
       MakeClickRequest(*main_frame(), button2_id.value());
 
   // Execute the action
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(click1, click2), result.GetCallback());
   ExpectOkResult(result);
 
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicksInBackgroundTab) {
       *first_tab_contents->GetPrimaryMainFrame(), button2_id.value());
 
   // Execute the actions.
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(click1, click2), result.GetCallback());
 
   // Check that the action succeeded.

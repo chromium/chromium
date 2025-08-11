@@ -86,6 +86,7 @@ class Tool {
   // Gives the tool an opportunity to update the task's state after being
   // invoked.
   virtual void UpdateTaskAfterInvoke(ActorTask& task,
+                                     mojom::ActionResultPtr result,
                                      InvokeCallback callback) const;
 
  protected:

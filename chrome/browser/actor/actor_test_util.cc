@@ -436,14 +436,12 @@ void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future) {
   ExpectOkResult(result);
 }
 
-void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr,
-                                           std::optional<size_t>>& future) {
+void ExpectOkResult(ActResultFuture& future) {
   const auto& result = *(future.Get<0>());
   ExpectOkResult(result);
 }
 
-void ExpectErrorResult(base::test::TestFuture<mojom::ActionResultPtr,
-                                              std::optional<size_t>>& future,
+void ExpectErrorResult(ActResultFuture& future,
                        mojom::ActionResultCode expected_code) {
   const auto& result = *(future.Get<0>());
   EXPECT_EQ(result.code, expected_code)

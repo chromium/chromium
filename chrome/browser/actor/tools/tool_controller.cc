@@ -208,8 +208,9 @@ void ToolController::PostInvokeTool(mojom::ActionResultPtr result) {
 
   SetState(State::kPostInvoke);
   active_state_->tool->UpdateTaskAfterInvoke(
-      *task_, base::BindOnce(&ToolController::CompleteToolRequest,
-                             weak_ptr_factory_.GetWeakPtr()));
+      *task_, std::move(result),
+      base::BindOnce(&ToolController::CompleteToolRequest,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ToolController::CompleteToolRequest(mojom::ActionResultPtr result) {

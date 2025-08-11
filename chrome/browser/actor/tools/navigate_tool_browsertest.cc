@@ -32,7 +32,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, NavigateTool) {
 
   std::unique_ptr<ToolRequest> action =
       MakeNavigateRequest(*active_tab(), url_target.spec());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+  ActResultFuture result_success;
   actor_task().Act(ToRequestList(action), result_success.GetCallback());
   ExpectOkResult(result_success);
 
@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, NavigateTool_DelaysUntilLoad) {
 
   std::unique_ptr<ToolRequest> action =
       MakeNavigateRequest(*active_tab(), url_second.spec());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
 
   // Wait for the main frame navigation to finish and for the main document to
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, NavigateTool_TargetUrlRestriction) {
 
   std::unique_ptr<ToolRequest> action =
       MakeNavigateRequest(*active_tab(), url_target.spec());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kUrlBlocked);
 
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, NavigateTool_RecordActingOnTask) {
 
   std::unique_ptr<ToolRequest> action =
       MakeNavigateRequest(*active_tab(), url_target.spec());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+  ActResultFuture result_success;
   actor_task().Act(ToRequestList(action), result_success.GetCallback());
   ExpectOkResult(result_success);
 

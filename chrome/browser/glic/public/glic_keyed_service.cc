@@ -372,7 +372,9 @@ void GlicKeyedService::PerformActionsFinished(
     mojom::WebClientHandler::PerformActionsCallback callback,
     actor::TaskId task_id,
     actor::mojom::ActionResultCode result_code,
-    std::optional<size_t> index_of_failed_action) {
+    std::optional<size_t> index_of_failed_action,
+    std::vector<optimization_guide::proto::ScriptToolResult>
+        script_tool_results) {
   actor::ActorTask* task =
       actor::ActorKeyedService::Get(profile_)->GetTask(task_id);
 
@@ -391,9 +393,9 @@ void GlicKeyedService::PerformActionsFinished(
       },
       std::move(callback));
 
-  actor::BuildActionsResultWithObservations(*profile_, result_code,
-                                            index_of_failed_action, *task,
-                                            std::move(result_callback));
+  actor::BuildActionsResultWithObservations(
+      *profile_, result_code, index_of_failed_action,
+      std::move(script_tool_results), *task, std::move(result_callback));
 }
 
 void GlicKeyedService::PerformActions(

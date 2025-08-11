@@ -47,7 +47,9 @@ class ExperimentalActorStartTaskFunction : public ExperimentalActorApiFunction {
   void OnTabCreated(base::WeakPtr<Browser> browser,
                     actor::TaskId task_id,
                     actor::mojom::ActionResultCode result_code,
-                    std::optional<size_t> index_of_failed_action);
+                    std::optional<size_t> index_of_failed_action,
+                    std::vector<optimization_guide::proto::ScriptToolResult>
+                        script_tool_results);
 
   DECLARE_EXTENSION_FUNCTION("experimentalActor.startTask",
                              EXPERIMENTALACTOR_STARTTASK)
@@ -120,9 +122,12 @@ class ExperimentalActorPerformActionsFunction
  protected:
   ~ExperimentalActorPerformActionsFunction() override;
   ResponseAction Run() override;
-  void OnActionsFinished(actor::TaskId task_id,
-                         actor::mojom::ActionResultCode result_code,
-                         std::optional<size_t> index_of_failed_action);
+  void OnActionsFinished(
+      actor::TaskId task_id,
+      actor::mojom::ActionResultCode result_code,
+      std::optional<size_t> index_of_failed_action,
+      std::vector<optimization_guide::proto::ScriptToolResult>
+          script_tool_results);
   void OnObservationResult(
       std::unique_ptr<optimization_guide::proto::ActionsResult> response);
   DECLARE_EXTENSION_FUNCTION("experimentalActor.performActions",

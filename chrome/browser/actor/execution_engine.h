@@ -180,6 +180,9 @@ class ExecutionEngine : public ToolDelegate {
   // completes.
   std::optional<mojom::ActionResultCode> external_tool_failure_reason_;
 
+  // The results for script tool invocations so far.
+  std::vector<optimization_guide::proto::ScriptToolResult> script_tool_results_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Normally, a WeakPtrFactory only invalidates its WeakPtrs when the object is

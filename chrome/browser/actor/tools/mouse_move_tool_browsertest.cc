@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_NonExistentNode) {
   std::unique_ptr<ToolRequest> action =
       MakeMouseMoveRequest(*main_frame(), kNonExistentContentNodeId);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kInvalidDomNodeId);
 }
@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_Events) {
     std::unique_ptr<ToolRequest> action =
         MakeMouseMoveRequest(*main_frame(), first_id.value());
 
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
   }
@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_Events) {
     std::unique_ptr<ToolRequest> action =
         MakeMouseMoveRequest(*main_frame(), second_id.value());
 
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
   }
@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_TargetOutsideViewport) {
     std::unique_ptr<ToolRequest> action =
         MakeMouseMoveRequest(*main_frame(), offscreen_id.value());
 
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
   }
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_MoveToCoordinate) {
   std::unique_ptr<ToolRequest> action =
       MakeMouseMoveRequest(*active_tab(), move_point);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest,
     std::unique_ptr<ToolRequest> action =
         MakeMouseMoveRequest(*active_tab(), move_point);
 
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectErrorResult(result, mojom::ActionResultCode::kCoordinatesOutOfBounds);
   }

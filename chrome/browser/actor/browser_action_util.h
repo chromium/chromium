@@ -72,6 +72,8 @@ void BuildActionsResultWithObservations(
     content::BrowserContext& browser_context,
     mojom::ActionResultCode result_code,
     std::optional<size_t> index_of_failed_action,
+    std::vector<optimization_guide::proto::ScriptToolResult>
+        script_tool_results,
     const ActorTask& task,
     base::OnceCallback<void(
         std::unique_ptr<optimization_guide::proto::ActionsResult>)> callback);
@@ -102,6 +104,17 @@ optimization_guide::proto::TabObservation ConvertToTabObservation(
 optimization_guide::proto::BrowserActionResult BuildBrowserActionResult(
     mojom::ActionResultCode result_code,
     int32_t tab_id);
+
+// Copies `script_tool_results` to the input proto.
+template <typename T>
+void CopyScriptToolResults(
+    T& proto,
+    const std::vector<optimization_guide::proto::ScriptToolResult>&
+        script_tool_results) {
+  for (const auto& result : script_tool_results) {
+    *proto.add_script_tool_results() = result;
+  }
+}
 
 std::string ToBase64(const optimization_guide::proto::BrowserAction& actions);
 std::string ToBase64(const optimization_guide::proto::Actions& actions);

@@ -39,11 +39,14 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Basic) {
         { "text": "This is an example sentence." }
       )JSON";
   auto action = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  // TODO(khushalsagar): Validate the result of the script tool response here.
+  const auto& script_tool_results = result.Get<2>();
+  ASSERT_EQ(script_tool_results.size(), 1u);
+  EXPECT_EQ(script_tool_results.at(0).index_of_script_tool_action(), 0);
+  EXPECT_EQ(script_tool_results.at(0).result(), "This is an example sentence.");
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, BadToolName) {
@@ -56,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, BadToolName) {
       )JSON";
   auto action =
       MakeScriptToolRequest(*main_frame(), "invalid", input_arguments);
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kError);
 }

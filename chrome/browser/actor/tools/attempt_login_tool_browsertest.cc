@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, Basic) {
       actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
 
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
   EXPECT_EQ(u"username", mock_login_service().last_credential_used().username);
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoCredentials) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kError);
 }
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
       actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
 
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
       actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
 
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoAvailableCredentials) {
       actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
 
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kError);
 }
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
       actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
 
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
   EXPECT_EQ(u"username2", mock_login_service().last_credential_used().username);
@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, OnlyUsernameFilled) {
       actor_login::LoginStatusResult::kSuccessUsernameFilled);
 
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 }
@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, OnlyPasswordFilled) {
       actor_login::LoginStatusResult::kSuccessPasswordFilled);
 
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 }
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoSigninForm) {
       actor_login::LoginStatusResult::kErrorNoSigninForm);
 
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kError);
 }
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
       actor_login::LoginStatusResult::kErrorInvalidCredential);
 
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kError);
 }
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, FailedAttemptLogin) {
       base::unexpected(actor_login::ActorLoginError::kServiceBusy));
 
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kError);
 }

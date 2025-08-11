@@ -22,6 +22,7 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/web_contents.h"
 
 class BrowserWindowInterface;
@@ -239,7 +240,9 @@ class GlicKeyedService : public KeyedService {
       mojom::WebClientHandler::PerformActionsCallback callback,
       actor::TaskId task_id,
       actor::mojom::ActionResultCode result_code,
-      std::optional<size_t> index_of_failed_action);
+      std::optional<size_t> index_of_failed_action,
+      std::vector<optimization_guide::proto::ScriptToolResult>
+          script_tool_results);
 
   // List of callbacks to be notified when the client requests a change to the
   // context access indicator status.

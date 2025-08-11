@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(ActorPageStabilityTest, DISABLED_WaitOnNetworkFetch) {
   ASSERT_TRUE(button_id);
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*main_frame(), button_id.value());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   task().Act(ToRequestList(action), result.GetCallback());
 
   fetch_response().WaitForRequest();
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(ActorPageStabilityTest, DISABLED_WaitOnFetchAndWork) {
   ASSERT_TRUE(button_id);
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*main_frame(), button_id.value());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   task().Act(ToRequestList(action), result.GetCallback());
   fetch_response().WaitForRequest();
 
@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(ActorPageStabilityGlobalTimeoutTest, NetworkTimeout) {
   ASSERT_TRUE(button_id);
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*main_frame(), button_id.value());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   task().Act(ToRequestList(action), result.GetCallback());
 
   // Never respond to the request
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(ActorPageStabilityGlobalTimeoutTest, BusyMainThread) {
   ASSERT_TRUE(button_id);
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*main_frame(), button_id.value());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   task().Act(ToRequestList(action), result.GetCallback());
 
   // Ensure the stability monitor eventually allows completion.
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(ActorPageStabilityLocalTimeoutTest, BusyMainThread) {
   ASSERT_TRUE(button_id);
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*main_frame(), button_id.value());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   task().Act(ToRequestList(action), result.GetCallback());
 
   // Ensure the stability monitor eventually allows completion.
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_P(ActorPageStabilityNavigationTypesTest, Test) {
 
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*main_frame(), link_id.value());
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   task().Act(ToRequestList(action), result.GetCallback());
 
   if (main_frame_delay) {

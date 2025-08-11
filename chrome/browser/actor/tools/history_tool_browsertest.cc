@@ -39,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_Back) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+  ActResultFuture result_success;
   std::unique_ptr<ToolRequest> action = MakeHistoryBackRequest(*active_tab());
   actor_task().Act(ToRequestList(action), result_success.GetCallback());
   ExpectOkResult(result_success);
@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_Forward) {
   GoBack();
   ASSERT_EQ(web_contents()->GetURL(), url_first);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+  ActResultFuture result_success;
   std::unique_ptr<ToolRequest> action =
       MakeHistoryForwardRequest(*active_tab());
   actor_task().Act(ToRequestList(action), result_success.GetCallback());
@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_BackNoBFCache) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+  ActResultFuture result_success;
   std::unique_ptr<ToolRequest> action = MakeHistoryBackRequest(*active_tab());
   actor_task().Act(ToRequestList(action), result_success.GetCallback());
   ExpectOkResult(result_success);
@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_FailNoSessionHistory) {
   // Attempting a forward history navigation should fail since we're at the
   // latest entry.
   {
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     std::unique_ptr<ToolRequest> action =
         MakeHistoryForwardRequest(*active_tab());
     actor_task().Act(ToRequestList(action), result.GetCallback());
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_FailNoSessionHistory) {
   // Attempting a back history navigation should fail since we're at the first
   // entry.
   {
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     std::unique_ptr<ToolRequest> action = MakeHistoryBackRequest(*active_tab());
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectErrorResult(result, mojom::ActionResultCode::kHistoryNoBackEntries);
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_BackSameDocument) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
   {
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     std::unique_ptr<ToolRequest> action = MakeHistoryBackRequest(*active_tab());
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_BackSameDocument) {
   }
 
   {
-    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    ActResultFuture result;
     std::unique_ptr<ToolRequest> action =
         MakeHistoryForwardRequest(*active_tab());
     actor_task().Act(ToRequestList(action), result.GetCallback());
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_BasicIframeBack) {
   ASSERT_EQ(child_frame->GetLastCommittedURL(), child_frame_url_2);
 
   // Invoke the history back tool. The iframe should be navigated back.
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   std::unique_ptr<ToolRequest> action = MakeHistoryBackRequest(*active_tab());
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_SlowBack) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
   TestNavigationManager back_navigation(web_contents(), url_first);
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+  ActResultFuture result_success;
   std::unique_ptr<ToolRequest> action = MakeHistoryBackRequest(*active_tab());
   actor_task().Act(ToRequestList(action), result_success.GetCallback());
   ASSERT_TRUE(back_navigation.WaitForResponse());
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_ConcurrentNavigations) {
 
   // Invoke the history back tool. Both should be navigated back to their
   // starting URL.
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   std::unique_ptr<ToolRequest> action = MakeHistoryBackRequest(*active_tab());
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_HasBeforeUnload) {
                       addEventListener('beforeunload', () => {});
                       )JS"));
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+  ActResultFuture result_success;
   std::unique_ptr<ToolRequest> action = MakeHistoryBackRequest(*active_tab());
   actor_task().Act(ToRequestList(action), result_success.GetCallback());
   ExpectOkResult(result_success);
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_DelaysUntilLoad) {
   TestNavigationManager subframe_manager(web_contents(), url_subframe);
   TestNavigationManager main_manager(web_contents(), url_first);
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  ActResultFuture result;
   std::unique_ptr<ToolRequest> action = MakeHistoryBackRequest(*active_tab());
   actor_task().Act(ToRequestList(action), result.GetCallback());
 
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_RecordActingOnTask) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   ASSERT_TRUE(actor_task().GetTabs().empty());
 
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result_success;
+  ActResultFuture result_success;
   std::unique_ptr<ToolRequest> action = MakeHistoryBackRequest(*active_tab());
   actor_task().Act(ToRequestList(action), result_success.GetCallback());
   ExpectOkResult(result_success);

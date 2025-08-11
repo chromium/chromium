@@ -62,14 +62,18 @@ namespace actor {
 
 namespace {
 
-void PostTaskForActCallback(ActorTask::ActCallback callback,
-                            mojom::ActionResultPtr result,
-                            std::optional<size_t> index_of_failed_action) {
+void PostTaskForActCallback(
+    ActorTask::ActCallback callback,
+    mojom::ActionResultPtr result,
+    std::optional<size_t> index_of_failed_action,
+    std::vector<optimization_guide::proto::ScriptToolResult>
+        script_tool_results) {
   UMA_HISTOGRAM_ENUMERATION("Actor.ExecutionEngine.Action.ResultCode",
                             result->code);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(result),
-                                index_of_failed_action));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::move(result),
+                     index_of_failed_action, std::move(script_tool_results)));
 }
 
 }  // namespace
@@ -190,7 +194,7 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
     PostTaskForActCallback(std::move(callback),
                            MakeResult(mojom::ActionResultCode::kError,
                                       "Task already has action in progress"),
-                           std::nullopt);
+                           std::nullopt, {});
     return;
   }
 
@@ -376,6 +380,12 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
     return;
   }
 
+  if (result->script_tool_response) {
+    auto& script_tool_result = script_tool_results_.emplace_back();
+    script_tool_result.set_index_of_script_tool_action(InProgressActionIndex());
+    script_tool_result.set_result(*result->script_tool_response);
+  }
+
   SetState(State::kUiPostInvoke);
   ui_event_dispatcher_->OnPostTool(
       GetInProgressAction(),
@@ -417,7 +427,7 @@ void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result,
 
   // TODO(crbug.com/411462297): Populate observation.
   PostTaskForActCallback(std::move(act_callback_), std::move(result),
-                         action_index);
+                         action_index, std::move(script_tool_results_));
 
   action_sequence_.clear();
   next_action_index_ = 0;

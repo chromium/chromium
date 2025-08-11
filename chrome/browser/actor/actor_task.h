@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -32,8 +33,10 @@ class UiEventDispatcher;
 // Represents a task that Chrome is executing on behalf of the user.
 class ActorTask {
  public:
-  using ActCallback =
-      base::OnceCallback<void(mojom::ActionResultPtr, std::optional<size_t>)>;
+  using ActCallback = base::OnceCallback<void(
+      mojom::ActionResultPtr,
+      std::optional<size_t>,
+      std::vector<optimization_guide::proto::ScriptToolResult>)>;
 
   ActorTask() = delete;
   ActorTask(Profile* profile,
@@ -120,7 +123,9 @@ class ActorTask {
  private:
   void OnFinishedAct(ActCallback callback,
                      mojom::ActionResultPtr result,
-                     std::optional<size_t> index_of_failed_action);
+                     std::optional<size_t> index_of_failed_action,
+                     std::vector<optimization_guide::proto::ScriptToolResult>
+                         script_tool_results);
 
   State state_ = State::kCreated;
   raw_ptr<Profile> profile_;

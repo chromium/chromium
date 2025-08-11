@@ -71,7 +71,9 @@ class ActorKeyedService : public KeyedService {
   // given task id.
   using PerformActionsCallback = base::OnceCallback<void(
       mojom::ActionResultCode /*result_code*/,
-      std::optional<size_t> /*index_of_failing_action*/)>;
+      std::optional<size_t> /*index_of_failing_action*/,
+      std::vector<optimization_guide::proto::
+                      ScriptToolResult> /* script_tool_results */)>;
   void PerformActions(TaskId task_id,
                       std::vector<std::unique_ptr<ToolRequest>>&& actions,
                       PerformActionsCallback callback);
@@ -136,12 +138,17 @@ class ActorKeyedService : public KeyedService {
           callback,
       TaskId task_id,
       actor::mojom::ActionResultPtr action_result,
-      std::optional<size_t> index_of_failed_action);
+      std::optional<size_t> index_of_failed_action,
+      std::vector<optimization_guide::proto::ScriptToolResult>
+          script_tool_results);
 
   // The callback used for ExecutorEngine::Act.
-  void OnActionsFinished(PerformActionsCallback callback,
-                         actor::mojom::ActionResultPtr action_result,
-                         std::optional<size_t> index_of_failed_action);
+  void OnActionsFinished(
+      PerformActionsCallback callback,
+      actor::mojom::ActionResultPtr action_result,
+      std::optional<size_t> index_of_failed_action,
+      std::vector<optimization_guide::proto::ScriptToolResult>
+          script_tool_results);
 
   void ConvertToBrowserActionResult(
       base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
@@ -150,6 +157,8 @@ class ActorKeyedService : public KeyedService {
       int32_t tab_id,
       const GURL& url,
       actor::mojom::ActionResultPtr action_result,
+      std::vector<optimization_guide::proto::ScriptToolResult>
+          script_tool_results,
       TabObservationResult context_result);
   void OnTabOservationResult(
       base::OnceCallback<void(TabObservationResult)> callback,

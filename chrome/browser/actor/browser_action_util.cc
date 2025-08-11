@@ -580,6 +580,8 @@ namespace {
 
 void FetchCallback(base::RepeatingClosure barrier,
                    apc::TabObservation* tab_observation,
+                   std::vector<optimization_guide::proto::ScriptToolResult>
+                       script_tool_results,
                    ActorKeyedService::TabObservationResult result) {
   base::ScopedClosureRunner run_barrier_at_return(barrier);
 
@@ -595,6 +597,12 @@ void FetchCallback(base::RepeatingClosure barrier,
   CHECK(fetch_result.screenshot_result.has_value());
   CHECK(fetch_result.annotated_page_content_result.has_value());
 
+  // TODO(khushalsagar): Remove this once consumers use ActionResults for script
+  // tool results.
+  CopyScriptToolResults(*fetch_result.annotated_page_content_result->proto
+                             .mutable_main_frame_data(),
+                        script_tool_results);
+
   *tab_observation = ConvertToTabObservation(fetch_result);
 }
 
@@ -604,6 +612,8 @@ void BuildActionsResultWithObservations(
     content::BrowserContext& browser_context,
     mojom::ActionResultCode result_code,
     std::optional<size_t> index_of_failed_action,
+    std::vector<optimization_guide::proto::ScriptToolResult>
+        script_tool_results,
     const ActorTask& task,
     base::OnceCallback<void(std::unique_ptr<apc::ActionsResult>)> callback) {
   auto response = std::make_unique<apc::ActionsResult>();
@@ -612,6 +622,7 @@ void BuildActionsResultWithObservations(
   if (index_of_failed_action) {
     response->set_index_of_failed_action(*index_of_failed_action);
   }
+  CopyScriptToolResults(*response, script_tool_results);
 
   auto* profile = Profile::FromBrowserContext(&browser_context);
 
@@ -670,7 +681,7 @@ void BuildActionsResultWithObservations(
     actor_service->RequestTabObservation(
         *tab, task.id(),
         base::BindOnce(FetchCallback, barrier,
-                       base::Unretained(tab_observation)));
+                       base::Unretained(tab_observation), script_tool_results));
   }
 }
 
