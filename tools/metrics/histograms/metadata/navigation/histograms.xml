@@ -3531,6 +3531,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Prerender.Experimental.PrewarmDecision"
+    enum="PrerenderPrewarmDecision" expires_after="2025-11-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the decision whether PrerenderManager can start prewarming in the
+    current context and settings. This decision is made and recorded per each
+    prewarm request.
+  </summary>
+</histogram>
+
 <histogram
     name="Prerender.Experimental.ReceivedPrerendersPerPrimaryPageChangedCount2{PreloadingTriggerType}{EagernessCategory}"
     units="count" expires_after="2025-08-24">

@@ -19,8 +19,10 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -45,6 +47,9 @@ const char kHistogramPrerenderPredictionStatusDirectUrlInput[] =
 namespace {
 
 using content::PreloadingTriggeringOutcome;
+
+const char kHistogramPrerenderPrewarmDecision[] =
+    "Prerender.Experimental.PrewarmDecision";
 
 void MarkPreloadingAttemptAsDuplicate(
     content::PreloadingAttempt* preloading_attempt) {
@@ -219,24 +224,10 @@ PrerenderManager::StartPrerenderDirectUrlInput(
 bool PrerenderManager::MaybeStartPrewarmSearchResult() {
   // TODO(https://crbug.com/423465927): Revalidate the handle when the prewarm
   // is reused for prerendering.
-  if (search_prewarm_handle_ ||
-      !base::FeatureList::IsEnabled(features::kPrewarm) ||
-      headless::IsHeadlessMode() || headless::IsOldHeadlessMode() ||
-      (content::DevToolsAgentHost::IsDebuggerAttached(web_contents()) &&
-       !features::kForceEnableWithDevTools.Get())) {
-    // We just return in the following cases;
-    // - The prewarm was already triggered.
-    // - The prewarm feature is disabled.
-    // - Running in a headless mode.
-    // - A Debugger is attached (this condition can be masked by a parameter).
-    return false;
-  }
-
-  const GURL prewarm_url =
-      prewarm_url_for_testing_.value_or(GURL(features::kPrewarmUrl.Get()));
-  if (!prewarm_url.is_valid()) {
-    // A valid URL would not be provided if the feature is enabled from
-    // chrome://flags, or arbitrary command line options.
+  GURL prewarm_url;
+  PrewarmDecision decision = ShouldPrewarm(prewarm_url);
+  base::UmaHistogramEnumeration(kHistogramPrerenderPrewarmDecision, decision);
+  if (decision != PrewarmDecision::kReady) {
     return false;
   }
 
@@ -418,6 +409,52 @@ void PrerenderManager::ResetPrerenderHandlesOnPrimaryPageChanged(
 
     search_prerender_task_.reset();
   }
+}
+
+PrerenderManager::PrewarmDecision PrerenderManager::ShouldPrewarm(
+    GURL& prewarm_url) {
+  if (search_prewarm_handle_) {
+    return PrewarmDecision::kAlreadyExists;
+  }
+  if (!base::FeatureList::IsEnabled(features::kPrewarm)) {
+    return PrewarmDecision::kDisabled;
+  }
+  if (headless::IsHeadlessMode() || headless::IsOldHeadlessMode()) {
+    return PrewarmDecision::kInHeadlessMode;
+  }
+  if (content::DevToolsAgentHost::IsDebuggerAttached(web_contents()) &&
+      !features::kForceEnableWithDevTools.Get()) {
+    // TODO(https://crbug.com/431928370): Allows this once the prewarm support
+    // is implemented in the CDP.
+    return PrewarmDecision::kDebuggerAttached;
+  }
+  prewarm_url =
+      prewarm_url_for_testing_.value_or(GURL(features::kPrewarmUrl.Get()));
+  if (!prewarm_url.is_valid()) {
+    // A valid URL would not be provided if the feature is enabled from
+    // chrome://flags, or arbitrary command line options.
+    return PrewarmDecision::kInvalidUrl;
+  }
+  if (!prewarm_url_for_testing_.has_value() &&
+      features::kPrewarmZeroSuggestTrigger.Get()) {
+    // Check if the prewarm URL is aligned with the default search provider.
+    // This check should be done only when the feature is correctly configured
+    // for the production.
+    // TODO(https://crbug.com/434823934): Once we ensure the feature is
+    // promising, integrate it with the template service for other search
+    // providers.
+    auto* template_url_service = TemplateURLServiceFactory::GetForProfile(
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+    if (!template_url_service) {
+      return PrewarmDecision::kNoTemplateUrlService;
+    }
+    if (!template_url_service->GetDefaultSearchProviderOrigin()
+             .IsSameOriginWith(prewarm_url)) {
+      return PrewarmDecision::kNotSameOriginWithDSE;
+    }
+  }
+
+  return PrewarmDecision::kReady;
 }
 
 PrerenderManager::PrerenderManager(content::WebContents* web_contents)
