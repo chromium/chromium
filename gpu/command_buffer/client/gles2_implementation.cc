@@ -7050,7 +7050,8 @@ bool GLES2Implementation::ThreadsafeDiscardableTextureIsDeletedForTracing(
   return manager->TextureIsDeletedForTracing(texture_id);
 }
 
-void* GLES2Implementation::MapTransferCacheEntry(uint32_t serialized_size) {
+base::span<uint8_t> GLES2Implementation::MapTransferCacheEntry(
+    uint32_t serialized_size) {
   NOTREACHED();
 }
 

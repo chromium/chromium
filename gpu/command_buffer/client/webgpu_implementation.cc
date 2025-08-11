@@ -174,7 +174,8 @@ bool WebGPUImplementation::ThreadsafeDiscardableTextureIsDeletedForTracing(
     uint32_t texture_id) {
   NOTREACHED();
 }
-void* WebGPUImplementation::MapTransferCacheEntry(uint32_t serialized_size) {
+base::span<uint8_t> WebGPUImplementation::MapTransferCacheEntry(
+    uint32_t serialized_size) {
   NOTREACHED();
 }
 void WebGPUImplementation::UnmapAndCreateTransferCacheEntry(uint32_t type,

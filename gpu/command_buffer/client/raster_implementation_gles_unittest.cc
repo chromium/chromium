@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/heap_array.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/image_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -161,12 +162,13 @@ class ContextSupportStub : public ContextSupport {
       uint32_t texture_id) override {
     return false;
   }
-  void* MapTransferCacheEntry(uint32_t serialized_size) override {
-    mapped_transfer_cache_entry_.reset(new char[serialized_size]);
-    return mapped_transfer_cache_entry_.get();
+  base::span<uint8_t> MapTransferCacheEntry(uint32_t serialized_size) override {
+    mapped_transfer_cache_entry_ =
+        base::HeapArray<uint8_t>::Uninit(serialized_size);
+    return mapped_transfer_cache_entry_;
   }
   void UnmapAndCreateTransferCacheEntry(uint32_t type, uint32_t id) override {
-    mapped_transfer_cache_entry_.reset();
+    mapped_transfer_cache_entry_ = base::HeapArray<uint8_t>();
   }
   bool ThreadsafeLockTransferCacheEntry(uint32_t type, uint32_t id) override {
     return true;
@@ -187,7 +189,7 @@ class ContextSupportStub : public ContextSupport {
   void DidCallGLFromSkia() override {}
 
  private:
-  std::unique_ptr<char[]> mapped_transfer_cache_entry_;
+  base::HeapArray<uint8_t> mapped_transfer_cache_entry_;
 };
 
 class ImageProviderStub : public cc::ImageProvider {

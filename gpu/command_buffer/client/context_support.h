@@ -6,8 +6,10 @@
 #define GPU_COMMAND_BUFFER_CLIENT_CONTEXT_SUPPORT_H_
 
 #include <stdint.h>
+
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/overlay_transform.h"
@@ -83,9 +85,10 @@ class ContextSupport {
   // context lock.
 
   // Maps a buffer that will receive serialized data for an entry to be created.
-  // Returns nullptr on failure. If success, must be paired with a call to
+  // Returns an empty span on failure. If success, must be paired with a call to
   // UnmapAndCreateTransferCacheEntry.
-  virtual void* MapTransferCacheEntry(uint32_t serialized_size) = 0;
+  virtual base::span<uint8_t> MapTransferCacheEntry(
+      uint32_t serialized_size) = 0;
 
   // Unmaps the buffer and creates a transfer cache entry with the serialized
   // data.

@@ -178,12 +178,12 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
   void CompleteLockDiscardableTexureOnContextThread(
       uint32_t texture_id) override {}
 
-  void* MapTransferCacheEntry(uint32_t serialized_size) override {
+  base::span<uint8_t> MapTransferCacheEntry(uint32_t serialized_size) override {
     mapped_entry_size_ = serialized_size;
     auto buffer =
         PaintOpWriter::AllocateAlignedBuffer<uint8_t>(serialized_size);
     mapped_entry_.swap(buffer);
-    return mapped_entry_.get();
+    return UNSAFE_TODO(base::span(mapped_entry_.get(), mapped_entry_size_));
   }
 
   void UnmapAndCreateTransferCacheEntry(uint32_t type, uint32_t id) override {
