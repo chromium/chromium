@@ -18,6 +18,7 @@ source_set("model") {
     ":tab_helper",
     "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/intelligence/bwg/metrics",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/web_state_list",
