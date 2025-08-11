@@ -203,6 +203,10 @@ bool IsIChromeAccessibleEnabled() {
   return base::FeatureList::IsEnabled(::features::kIChromeAccessible);
 }
 
+BASE_FEATURE(kUiaDisconnectRootProviders,
+             "UiaDisconnectRootProviders",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUiaProvider, "UiaProvider", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUiaEventOptimization,

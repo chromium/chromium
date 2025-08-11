@@ -803,6 +803,11 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // cause re-entrancy during teardown. https://crbug.com/1087553
   bool did_return_uia_object_;
 
+  // Set to true immediately before disconnecting the fragment root's element
+  // provider. From that point onward, any request for UiaRootObjectId via
+  // WM_GET_OBJECT will be ignored.
+  bool disconnecting_fragment_root_ = false;
+
   // The location where the user clicked on the caption. We cache this when we
   // receive the WM_NCLBUTTONDOWN message. We use this in the subsequent
   // WM_NCMOUSEMOVE message to see if the mouse actually moved.
