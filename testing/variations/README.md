@@ -108,7 +108,8 @@ the experiment group name.
 > config.
 
 The remaining keys -- `enable_features`, `disable_features`, `min_os_version`,
-`disable_benchmarking`, and `params` -- are optional.
+`disable_benchmarking`, `params`, `hardware_classes`, and
+`exclude_hardware_classes` -- are optional.
 
 `enable_features` and `disable_features` indicate which features should be
 enabled and disabled, respectively, through the
@@ -132,6 +133,9 @@ enabled. This should be used extremely sparingly.
 > `--enable-benchmarking` will be passed or not.
 
 `params` is a dictionary mapping parameter name to parameter value.
+
+`hardware_classes` and `exclude_hardware_classes` indicate which hardware
+classes to include or exclude respectively when applying the experiment.
 
 > Reminder: The variations framework does not actually fetch any field trial
 > definitions from the server for Chromium builds, so any feature enabling or
