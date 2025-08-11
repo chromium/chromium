@@ -693,6 +693,16 @@ class WebIdlSchemaTest(unittest.TestCase):
         schema['description'],
     )
 
+  # Tests that an enum that uses the nodoc extended attribute has the related
+  # nodoc attribute set to true after processing.
+  def testNoDocOnEnum(self):
+    schema = self.idl_basics
+    nodoc_enum = getType(schema, 'EnumTypeWithNoDoc')
+    self.assertEqual(True, nodoc_enum['nodoc'])
+    # An enum without the extended attribute will not have a nodoc attribute.
+    no_nodoc_enum = getType(schema, 'EnumType')
+    self.assertFalse(hasattr(no_nodoc_enum, 'nodoc'))
+
   # Tests that a function defined with the requiredCallback extended attribute
   # does not have the returns_async field marked as optional after processing.
   # Note: These are only relevant to contexts which don't support promise based

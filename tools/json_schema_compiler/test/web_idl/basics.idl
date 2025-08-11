@@ -128,6 +128,11 @@ enum EnumType {
   "name2"
 };
 
+[nodoc] enum EnumTypeWithNoDoc {
+  "name1",
+  "name2"
+};
+
 partial interface Browser {
   static attribute TestWebIdl testWebIdl;
 };

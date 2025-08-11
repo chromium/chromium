@@ -621,8 +621,12 @@ class Enum:
         'type': 'string',
         'enum': enum
     }
-    # TODO(crbug.com/340297705): Add support for deprecated and nodoc extended
-    # attributes on the whole enum.
+    # TODO(crbug.com/340297705): Add support for deprecated extended attribute
+    # on the whole enum.
+    for extended_attribute in GetExtendedAttributes(self.node):
+      attribute_name = extended_attribute.GetName()
+      if attribute_name == 'nodoc':
+        result['nodoc'] = True
     return result
 
 
