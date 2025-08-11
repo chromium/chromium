@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "components/google/core/common/google_util.h"
@@ -15,7 +14,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
@@ -185,12 +183,7 @@ bool IsChildAccountStatusKnown(const PrefService& pref_service) {
 #endif
 
 bool IsSafeSitesEnabled(const PrefService& pref_service) {
-  if (base::FeatureList::IsEnabled(kDecoupleSafeSitesFromMainSwitch)) {
-    return pref_service.GetBoolean(prefs::kSupervisedUserSafeSites);
-  }
-
-  return supervised_user::IsSubjectToParentalControls(pref_service) &&
-         pref_service.GetBoolean(prefs::kSupervisedUserSafeSites);
+  return pref_service.GetBoolean(prefs::kSupervisedUserSafeSites);
 }
 
 bool IsSubjectToParentalControls(const PrefService& pref_service) {
