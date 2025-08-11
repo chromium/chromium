@@ -144,7 +144,7 @@ void SaveUpdateAddressProfileMessageController::RunSaveAddressProfileCallback(
 }
 
 std::u16string SaveUpdateAddressProfileMessageController::GetTitle() {
-  if (original_profile_) {
+  if (original_profile_ && !original_profile_->IsHomeAndWorkProfile()) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
   }
 
@@ -193,9 +193,12 @@ SaveUpdateAddressProfileMessageController::GetRecordTypeNotice() {
 
 std::u16string
 SaveUpdateAddressProfileMessageController::GetPrimaryButtonText() {
+  if (original_profile_ && !original_profile_->IsHomeAndWorkProfile()) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+  }
   return l10n_util::GetStringUTF16(
-      original_profile_ ? IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL
-                        : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+      IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
 }
 
 }  // namespace autofill

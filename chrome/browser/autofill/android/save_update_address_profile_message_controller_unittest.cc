@@ -279,6 +279,32 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest, UpdateMessageContent) {
   TriggerMessageDismissedCallback(messages::DismissReason::UNKNOWN);
 }
 
+// Tests that the update message properties (title, description with original
+// profile details, primary button text, icon) are set correctly for Home
+// profile.
+TEST_F(SaveUpdateAddressProfileMessageControllerTest,
+       HomeAddressUpdateMessageContent) {
+  test_api(*original_profile_)
+      .set_record_type(AutofillProfile::RecordType::kAccountHome);
+  EnqueueUpdateMessage(*profile_, original_profile_.get(), save_callback_.Get(),
+                       action_callback_.Get());
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE),
+            GetMessageWrapper()->GetTitle());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL),
+            GetMessageWrapper()->GetPrimaryButtonText());
+  EXPECT_EQ(1, GetMessageWrapper()->GetPrimaryButtonTextMaxLines());
+  EXPECT_EQ(u"Jane A. Smith, 123 Main Street",
+            GetMessageWrapper()->GetDescription());
+  EXPECT_EQ(SaveUpdateAddressProfileMessageController::kDescriptionMaxLines,
+            GetMessageWrapper()->GetDescriptionMaxLines());
+  EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS),
+            GetMessageWrapper()->GetIconResourceId());
+
+  TriggerMessageDismissedCallback(messages::DismissReason::UNKNOWN);
+}
+
 // Tests that the action callback is triggered when the user clicks on the
 // primary action button of the save message.
 TEST_F(SaveUpdateAddressProfileMessageControllerTest,
