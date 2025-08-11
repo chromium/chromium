@@ -485,6 +485,42 @@ bool HasSeenTabUpdate(const tab_groups::SavedTabGroupTab& tab) {
 
 }  // namespace
 
+// MessagingBackendServiceImpl is the central component for handling
+// collaboration messages. It integrates events from TabGroupSyncService and
+// DataSharingService, persists them to storage, and notifies UI components of
+// relevant changes.
+//
+// The initialization of this service is critical and follows a strict order to
+// ensure data consistency and prevent race conditions:
+//
+// 1. MessagingBackendStore: The service first initializes its backing store to
+//    ensure that message persistence is available.
+//
+// 2. DataSharingService Integration: It then initializes its connection to the
+//    DataSharingService via DataSharingChangeNotifier. This step is
+//    asynchronous, waiting for the DataSharingService's GroupDataModel to fully
+//    load. Crucially, the DataSharingChangeNotifier provides a callback to the
+//    MessagingBackendServiceImpl upon its own initialization. This callback
+//    acts as a gate; it is not executed immediately. Its purpose is to defer
+//    the processing of any queued or subsequent data sharing events until the
+//    entire messaging system is ready.
+//
+// 3. TabGroupSyncService Integration: After the DataSharingChangeNotifier is
+//    ready, the service proceeds to initialize its connection to the
+//    TabGroupSyncService via TabGroupChangeNotifier. This also waits for the
+//    underlying SavedTabGroupModel to load. This ordering is vital because
+//    handling shared tab group events often requires access to collaboration
+//    data, which must be available beforehand.
+//
+// 4. Finalization and Flush: Once the TabGroupChangeNotifier confirms it is
+//    initialized, the MessagingBackendServiceImpl considers itself fully
+//    online. It notifies its own observers and then, finally, executes the
+//    pending callback from the DataSharingChangeNotifier. This "flushes" any
+//    queued data sharing events, ensuring they are processed with the full
+//    context of both services being available.
+//
+// This structured sequence guarantees that events are handled correctly and
+// that dependencies are met before any actions are taken.
 MessagingBackendServiceImpl::MessagingBackendServiceImpl(
     const MessagingBackendConfiguration& configuration,
     std::unique_ptr<TabGroupChangeNotifier> tab_group_change_notifier,
