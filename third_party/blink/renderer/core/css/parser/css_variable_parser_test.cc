@@ -271,7 +271,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(valid_attr_values));
 
 TEST_P(ValidAttrTest, ContainsValidAttr) {
-  ScopedCSSAdvancedAttrFunctionForTest scoped_feature(true);
   ScopedCSSAttrRawStringForTest scoped_feature_attr_raw_string(true);
   SCOPED_TRACE(GetParam());
   CSSParserTokenStream stream{GetParam()};
@@ -293,7 +292,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(invalid_attr_values));
 
 TEST_P(InvalidAttrTest, ContainsInvalidAttr) {
-  ScopedCSSAdvancedAttrFunctionForTest scoped_feature(true);
   ScopedCSSAttrRawStringForTest scoped_feature_attr_raw_string(true);
 
   SCOPED_TRACE(GetParam());
@@ -340,7 +338,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(invalid_auto_base_values));
 
 TEST_P(InvalidAutoBaseTest, ContainsInvalidFunction) {
-  ScopedCSSAdvancedAttrFunctionForTest scoped_feature(true);
 
   SCOPED_TRACE(GetParam());
   CSSParserTokenStream stream{GetParam()};

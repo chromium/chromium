@@ -9656,7 +9656,6 @@ bool Element::PseudoElementStylesDependOnFontMetrics() const {
 }
 
 bool Element::PseudoElementStylesDependOnAttr() const {
-  DCHECK(RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled());
 
   auto func = [](const ComputedStyle& style) {
     return style.HasAttrFunction();

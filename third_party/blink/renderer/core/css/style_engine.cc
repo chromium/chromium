@@ -1776,28 +1776,7 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
 
 namespace {
 
-bool HasAttributeDependentGeneratedContent(const Element& element) {
-  DCHECK(!RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled());
-
-  const auto HasAttrFunc = [](PseudoElement* pseudo_element) {
-    if (!pseudo_element) {
-      return false;
-    }
-
-    const ComputedStyle* style = pseudo_element->GetComputedStyle();
-    return style && style->HasAttrFunction();
-  };
-
-  return HasAttrFunc(element.GetPseudoElement(kPseudoIdCheckMark)) ||
-         HasAttrFunc(element.GetPseudoElement(kPseudoIdBefore)) ||
-         HasAttrFunc(element.GetPseudoElement(kPseudoIdAfter)) ||
-         HasAttrFunc(element.GetPseudoElement(kPseudoIdPickerIcon)) ||
-         HasAttrFunc(element.GetPseudoElement(kPseudoIdInterestHint)) ||
-         HasAttrFunc(element.GetPseudoElement(kPseudoIdScrollMarker));
-}
-
 bool HasAttributeDependentStyle(const Element& element) {
-  DCHECK(RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled());
   const ComputedStyle* style = element.GetComputedStyle();
   if (style && style->HasAttrFunction()) {
     return true;
@@ -1840,10 +1819,7 @@ void StyleEngine::AttributeChangedForElement(
                                                          element);
 
   if (!element.NeedsStyleRecalc()) {
-    bool attr_dependent =
-        RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()
-            ? HasAttributeDependentStyle(element)
-            : HasAttributeDependentGeneratedContent(element);
+    bool attr_dependent = HasAttributeDependentStyle(element);
     if (attr_dependent) {
       element.SetNeedsStyleRecalc(
           kLocalStyleChange,

@@ -1160,13 +1160,6 @@
       status: "experimental",
     },
     {
-      // CSS attr() function that accepts not only string types
-      // and can be used in all properties.
-      // https://drafts.csswg.org/css-values-5/#attr-notation
-      name: "CSSAdvancedAttrFunction",
-      status: "stable",
-    },
-    {
       // Allows using counter() and counters() in alt text (after / in content property).
       name: "CSSAltCounter",
       status: "stable",

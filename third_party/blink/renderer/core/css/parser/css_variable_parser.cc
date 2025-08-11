@@ -505,9 +505,6 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
           has_references = true;
           continue;
         case CSSValueID::kAttr:
-          if (!RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
-            break;
-          }
           if (!ConsumeAttributeReference(
                   stream, has_references, has_font_units, has_root_font_units,
                   has_line_height_units, has_dashed_functions, context)) {

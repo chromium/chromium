@@ -1450,8 +1450,7 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
     } else if (token.FunctionId() == CSSValueID::kEnv) {
       CSSParserTokenStream::BlockGuard guard(stream);
       success &= ResolveEnvInto(stream, tree_scope, resolver, context, out);
-    } else if (token.FunctionId() == CSSValueID::kAttr &&
-               RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
+    } else if (token.FunctionId() == CSSValueID::kAttr) {
       CSSParserTokenStream::BlockGuard guard(stream);
       state_.StyleBuilder().SetHasAttrFunction();
       success &= ResolveAttrInto(stream, tree_scope, resolver, context,
