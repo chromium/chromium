@@ -195,7 +195,8 @@ class SaveUpdatePasswordMessageDelegateTest
   void CommitPasswordFormMetrics();
   void VerifyUkmMetrics(const ukm::TestUkmRecorder& ukm_recorder,
                         PasswordFormMetricsRecorder::BubbleDismissalReason
-                            expected_dismissal_reason);
+                            expected_dismissal_reason,
+                        bool update_password);
   void EnableUseUPMLocalAndSeparateStores();
 
   messages::MockMessageDispatcherBridge* message_dispatcher_bridge() {
@@ -461,21 +462,34 @@ void SaveUpdatePasswordMessageDelegateTest::CommitPasswordFormMetrics() {
 void SaveUpdatePasswordMessageDelegateTest::VerifyUkmMetrics(
     const ukm::TestUkmRecorder& ukm_recorder,
     PasswordFormMetricsRecorder::BubbleDismissalReason
-        expected_dismissal_reason) {
+        expected_dismissal_reason,
+    bool update_password) {
   const auto& entries =
       ukm_recorder.GetEntriesByName(ukm::builders::PasswordForm::kEntryName);
   EXPECT_EQ(1u, entries.size());
   for (const ukm::mojom::UkmEntry* entry : entries) {
     EXPECT_EQ(ukm_source_id_, entry->source_id);
-    ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::PasswordForm::kSaving_Prompt_ShownName, 1);
-    ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::PasswordForm::kSaving_Prompt_TriggerName,
-        static_cast<int64_t>(PasswordFormMetricsRecorder::BubbleTrigger::
-                                 kPasswordManagerSuggestionAutomatic));
-    ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::PasswordForm::kSaving_Prompt_InteractionName,
-        static_cast<int64_t>(expected_dismissal_reason));
+    if (update_password) {
+      ukm_recorder.ExpectEntryMetric(
+          entry, ukm::builders::PasswordForm::kUpdating_Prompt_ShownName, 1);
+      ukm_recorder.ExpectEntryMetric(
+          entry, ukm::builders::PasswordForm::kUpdating_Prompt_TriggerName,
+          static_cast<int64_t>(PasswordFormMetricsRecorder::BubbleTrigger::
+                                   kPasswordManagerSuggestionAutomatic));
+      ukm_recorder.ExpectEntryMetric(
+          entry, ukm::builders::PasswordForm::kUpdating_Prompt_InteractionName,
+          static_cast<int64_t>(expected_dismissal_reason));
+    } else {
+      ukm_recorder.ExpectEntryMetric(
+          entry, ukm::builders::PasswordForm::kSaving_Prompt_ShownName, 1);
+      ukm_recorder.ExpectEntryMetric(
+          entry, ukm::builders::PasswordForm::kSaving_Prompt_TriggerName,
+          static_cast<int64_t>(PasswordFormMetricsRecorder::BubbleTrigger::
+                                   kPasswordManagerSuggestionAutomatic));
+      ukm_recorder.ExpectEntryMetric(
+          entry, ukm::builders::PasswordForm::kSaving_Prompt_InteractionName,
+          static_cast<int64_t>(expected_dismissal_reason));
+    }
   }
 }
 
@@ -564,7 +578,8 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, SaveOnActionClick) {
   CommitPasswordFormMetrics();
   VerifyUkmMetrics(
       test_ukm_recorder,
-      PasswordFormMetricsRecorder::BubbleDismissalReason::kAccepted);
+      PasswordFormMetricsRecorder::BubbleDismissalReason::kAccepted,
+      /*update_password=*/false);
   histogram_tester.ExpectUniqueSample(
       kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
@@ -694,7 +709,8 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, DontSaveOnDismiss) {
   CommitPasswordFormMetrics();
   VerifyUkmMetrics(
       test_ukm_recorder,
-      PasswordFormMetricsRecorder::BubbleDismissalReason::kDeclined);
+      PasswordFormMetricsRecorder::BubbleDismissalReason::kDeclined,
+      /*update_password=*/false);
   histogram_tester.ExpectUniqueSample(
       kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_CANCEL, 1);
@@ -716,9 +732,9 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, MetricOnAutodismissTimer) {
   EXPECT_EQ(nullptr, GetMessageWrapper());
 
   CommitPasswordFormMetrics();
-  VerifyUkmMetrics(
-      test_ukm_recorder,
-      PasswordFormMetricsRecorder::BubbleDismissalReason::kIgnored);
+  VerifyUkmMetrics(test_ukm_recorder,
+                   PasswordFormMetricsRecorder::BubbleDismissalReason::kIgnored,
+                   /*update_password=*/false);
   histogram_tester.ExpectUniqueSample(
       kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::NO_DIRECT_INTERACTION, 1);
@@ -745,7 +761,8 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, UpdatePasswordWithSingleForm) {
   CommitPasswordFormMetrics();
   VerifyUkmMetrics(
       test_ukm_recorder,
-      PasswordFormMetricsRecorder::BubbleDismissalReason::kAccepted);
+      PasswordFormMetricsRecorder::BubbleDismissalReason::kAccepted,
+      /*update_password=*/true);
   histogram_tester.ExpectUniqueSample(
       kUpdateUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
@@ -778,7 +795,8 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   CommitPasswordFormMetrics();
   VerifyUkmMetrics(
       test_ukm_recorder,
-      PasswordFormMetricsRecorder::BubbleDismissalReason::kAccepted);
+      PasswordFormMetricsRecorder::BubbleDismissalReason::kAccepted,
+      /*update_password=*/true);
   histogram_tester.ExpectUniqueSample(
       kUpdateUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
@@ -816,7 +834,8 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   CommitPasswordFormMetrics();
   VerifyUkmMetrics(
       test_ukm_recorder,
-      PasswordFormMetricsRecorder::BubbleDismissalReason::kAccepted);
+      PasswordFormMetricsRecorder::BubbleDismissalReason::kAccepted,
+      /*update_password=*/false);
   histogram_tester.ExpectUniqueSample(
       kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
@@ -842,7 +861,8 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   CommitPasswordFormMetrics();
   VerifyUkmMetrics(
       test_ukm_recorder,
-      PasswordFormMetricsRecorder::BubbleDismissalReason::kDeclined);
+      PasswordFormMetricsRecorder::BubbleDismissalReason::kDeclined,
+      /*update_password=*/false);
   histogram_tester.ExpectUniqueSample(
       kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_NEVER, 1);
@@ -882,7 +902,8 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   CommitPasswordFormMetrics();
   VerifyUkmMetrics(
       test_ukm_recorder,
-      PasswordFormMetricsRecorder::BubbleDismissalReason::kAccepted);
+      PasswordFormMetricsRecorder::BubbleDismissalReason::kAccepted,
+      /*update_password=*/true);
   histogram_tester.ExpectUniqueSample(
       kUpdateUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
@@ -914,7 +935,8 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   CommitPasswordFormMetrics();
   VerifyUkmMetrics(
       test_ukm_recorder,
-      PasswordFormMetricsRecorder::BubbleDismissalReason::kDeclined);
+      PasswordFormMetricsRecorder::BubbleDismissalReason::kDeclined,
+      /*update_password=*/false);
   histogram_tester.ExpectUniqueSample(
       kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_CANCEL, 1);

@@ -124,7 +124,7 @@ class SaveUpdatePasswordMessageDelegate
 
   void ClearState();
 
-  void RecordMessageShownMetrics();
+  void RecordMessageShownMetrics(bool update_password);
   void RecordDismissalReasonMetrics(
       password_manager::metrics_util::UIDismissalReason ui_dismissal_reason);
 
