@@ -369,6 +369,26 @@ public class HomepagePolicyManager implements PrefObserver {
                             isEitherRecommendationOverridden
                                     ? BooleanPolicyState.RECOMMENDED_IS_NOT_FOLLOWED
                                     : BooleanPolicyState.RECOMMENDED_IS_FOLLOWED;
+
+                    // If admin changes recommendation that user has not overridden, update prefs.
+                    boolean usesLocationRecommendation =
+                            prefService.isRecommendedPreference(Pref.HOME_PAGE);
+                    boolean usesNtpRecommendation =
+                            prefService.isRecommendedPreference(Pref.HOME_PAGE_IS_NEW_TAB_PAGE);
+                    if (usesNtpRecommendation) {
+                        boolean homepageIsNtp =
+                                prefService.getBoolean(Pref.HOME_PAGE_IS_NEW_TAB_PAGE);
+                        mSharedPreferenceManager.writeBoolean(
+                                ChromePreferenceKeys.HOMEPAGE_USE_CHROME_NTP, homepageIsNtp);
+                    }
+                    if (usesLocationRecommendation) {
+                        GURL homepageGURL = new GURL(prefService.getString(Pref.HOME_PAGE));
+                        mSharedPreferenceManager.writeBoolean(
+                                ChromePreferenceKeys.HOMEPAGE_USE_CHROME_NTP, false);
+                        mSharedPreferenceManager.writeString(
+                                ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL,
+                                homepageGURL.serialize());
+                    }
                 }
             }
         }

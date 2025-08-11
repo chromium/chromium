@@ -86,7 +86,8 @@ public class PartnerHomepageUnitTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mHomepageManager.setJavaPrefHomepageEnabled(true);
-                    mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_GURL);
+                    mHomepageManager.setJavaHomepageSelection(
+                            false, true, TEST_CUSTOM_HOMEPAGE_GURL);
                 });
 
         // Note that unlike other tests in this file, we test if Chrome ignores a customizations
@@ -121,7 +122,8 @@ public class PartnerHomepageUnitTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mHomepageManager.setJavaPrefHomepageEnabled(true);
-                    mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_GURL);
+                    mHomepageManager.setJavaHomepageSelection(
+                            false, true, TEST_CUSTOM_HOMEPAGE_GURL);
                 });
 
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
@@ -152,7 +154,8 @@ public class PartnerHomepageUnitTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mHomepageManager.setJavaPrefHomepageEnabled(false);
-                    mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_GURL);
+                    mHomepageManager.setJavaHomepageSelection(
+                            false, true, TEST_CUSTOM_HOMEPAGE_GURL);
                 });
 
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
@@ -187,7 +190,7 @@ public class PartnerHomepageUnitTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mHomepageManager.setJavaPrefHomepageEnabled(true);
-                    mHomepageManager.setHomepagePreferences(
+                    mHomepageManager.setJavaHomepageSelection(
                             false, false, TEST_CUSTOM_HOMEPAGE_GURL);
                 });
 
@@ -224,7 +227,8 @@ public class PartnerHomepageUnitTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mHomepageManager.setJavaPrefHomepageEnabled(true);
-                    mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_GURL);
+                    mHomepageManager.setJavaHomepageSelection(
+                            false, true, TEST_CUSTOM_HOMEPAGE_GURL);
                 });
 
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
@@ -268,7 +272,8 @@ public class PartnerHomepageUnitTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mHomepageManager.setJavaPrefHomepageEnabled(true);
-                    mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_GURL);
+                    mHomepageManager.setJavaHomepageSelection(
+                            false, true, TEST_CUSTOM_HOMEPAGE_GURL);
                 });
 
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
@@ -316,7 +321,8 @@ public class PartnerHomepageUnitTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mHomepageManager.setJavaPrefHomepageEnabled(true);
-                    mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_GURL);
+                    mHomepageManager.setJavaHomepageSelection(
+                            false, true, TEST_CUSTOM_HOMEPAGE_GURL);
                 });
 
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(

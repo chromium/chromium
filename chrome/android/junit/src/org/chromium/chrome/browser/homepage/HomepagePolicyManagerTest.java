@@ -431,8 +431,8 @@ public class HomepagePolicyManagerTest {
     }
 
     @Test
-    public void testRefresh_UpdatesUserSettingWhenRecommendationChanges() {
-        // Start with homepage disabled for the user.
+    public void testRefresh_UpdatesShowHomeButtonStateWhenRecommendationChanges() {
+        // Homepage disabled for client
         mSharedPreferenceManager.writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, false);
 
         // Mock that the preference is controlled by a recommendation.
@@ -473,6 +473,56 @@ public class HomepagePolicyManagerTest {
         Assert.assertFalse(
                 "HOMEPAGE_ENABLED should be false after recommendation changes to false",
                 mSharedPreferenceManager.readBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true));
+    }
+
+    @Test
+    public void testRefresh_UpdatesHomepageSelectionWhenRecommendationChanges() {
+        // Arrange: Start with user setting for NTP, but admin recommends a custom URL.
+        mSharedPreferenceManager.writeBoolean(ChromePreferenceKeys.HOMEPAGE_USE_CHROME_NTP, true);
+        Mockito.when(mMockPrefService.isRecommendedPreference(Pref.HOME_PAGE)).thenReturn(true);
+        Mockito.when(mMockPrefService.isRecommendedPreference(Pref.HOME_PAGE_IS_NEW_TAB_PAGE))
+                .thenReturn(false);
+
+        new PolicyBuilder()
+                .withHomepageLocation(TEST_URL)
+                .withHasLocationRecommendation(true)
+                .withIsFollowingLocationRecommendation(false)
+                .build();
+        mHomepagePolicyManager = new HomepagePolicyManager(mMockRegistrar, mListener);
+        HomepagePolicyManager.setInstanceForTests(mHomepagePolicyManager);
+
+        // Assert: User settings should update to the recommended custom URL.
+        // NOTE: This tests logic where policy recommendations automatically update user
+        // preferences.
+        Assert.assertFalse(
+                "HOMEPAGE_USE_CHROME_NTP should be false to follow URL recommendation.",
+                mSharedPreferenceManager.readBoolean(
+                        ChromePreferenceKeys.HOMEPAGE_USE_CHROME_NTP, true));
+        Assert.assertEquals(
+                "HOMEPAGE_CUSTOM_GURL should be updated to the recommended URL.",
+                new GURL(TEST_URL).serialize(),
+                mSharedPreferenceManager.readString(
+                        ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL, null));
+
+        // Arrange: Admin now changes recommendation to NTP.
+        Mockito.when(mMockPrefService.isRecommendedPreference(Pref.HOME_PAGE)).thenReturn(false);
+        Mockito.when(mMockPrefService.hasRecommendation(Pref.HOME_PAGE)).thenReturn(false);
+        Mockito.when(mMockPrefService.isRecommendedPreference(Pref.HOME_PAGE_IS_NEW_TAB_PAGE))
+                .thenReturn(true);
+        Mockito.when(mMockPrefService.getBoolean(Pref.HOME_PAGE_IS_NEW_TAB_PAGE)).thenReturn(true);
+        Mockito.when(mMockPrefService.hasRecommendation(Pref.HOME_PAGE_IS_NEW_TAB_PAGE))
+                .thenReturn(true);
+        Mockito.when(mMockPrefService.isFollowingRecommendation(Pref.HOME_PAGE_IS_NEW_TAB_PAGE))
+                .thenReturn(false);
+
+        // Act: Refresh policies.
+        mHomepagePolicyManager.onPreferenceChange();
+
+        // Assert: User settings should update to the new NTP recommendation.
+        Assert.assertTrue(
+                "HOMEPAGE_USE_CHROME_NTP should now be true to follow NTP recommendation.",
+                mSharedPreferenceManager.readBoolean(
+                        ChromePreferenceKeys.HOMEPAGE_USE_CHROME_NTP, false));
     }
 
     @Test

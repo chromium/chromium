@@ -326,6 +326,8 @@ found in the LICENSE file.
     <dimen name="theme_preferences_checkbox_margin_end">8dp</dimen>
     <dimen name="homepage_preference_title_lateral_padding">16dp</dimen>
     <dimen name="homepage_preference_title_vertical_padding">10dp</dimen>
+    <dimen name="homepage_radio_button_managed_lateral_padding">20dp</dimen>
+    <dimen name="homepage_managed_icon_padding">8dp</dimen>
 
     <!-- Dimens of tab indicator -->
     <dimen name="tab_indicator_height">3dp</dimen>

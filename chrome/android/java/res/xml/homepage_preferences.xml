@@ -18,5 +18,6 @@ found in the LICENSE file.
         android:key="homepage_radio_group"
         android:selectable="false"
         app:allowDividerAbove="true"
-        app:allowDividerBelow="false" />
+        app:allowDividerBelow="false"
+        app:layout="@layout/radio_button_group_homepage_preference" />
 </PreferenceScreen>

@@ -45,4 +45,15 @@ found in the LICENSE file.
         android:inputType="textUri" />
 
   </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
+
+
+  <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+      android:id="@+id/managed_disclaimer_text"
+      style="@style/ManagedDisclaimerView"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingStart="@dimen/homepage_radio_button_managed_lateral_padding"
+      android:paddingEnd="@dimen/homepage_radio_button_managed_lateral_padding"
+      android:drawablePadding="@dimen/homepage_managed_icon_padding"
+      android:visibility="gone" />
 </LinearLayout>

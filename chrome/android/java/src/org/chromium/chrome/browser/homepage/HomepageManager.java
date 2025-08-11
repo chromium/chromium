@@ -321,7 +321,18 @@ public class HomepageManager
      * @param customGurl A GURL for the user customized homepage URI.
      * @see #getHomepageGurl()
      */
-    public void setHomepagePreferences(
+    public void setHomepageSelection(
+            boolean useChromeNtp, boolean useDefaultGurl, GURL customGurl) {
+        // Update the native state.
+        HomepagePolicyManager.setNativeHomepageIsNtp(useChromeNtp);
+        if (!useChromeNtp) {
+            HomepagePolicyManager.setNativeHomepageLocation(customGurl.serialize());
+        }
+        // Update Java state.
+        setJavaHomepageSelection(useChromeNtp, useDefaultGurl, customGurl);
+    }
+
+    public void setJavaHomepageSelection(
             boolean useChromeNtp, boolean useDefaultGurl, GURL customGurl) {
         boolean wasUseChromeNtp = getPrefHomepageUseChromeNtp();
         boolean wasUseDefaultUri = getPrefHomepageUseDefaultUri();
