@@ -222,30 +222,7 @@ class ClankCompiler:
     self._native_library_build_variant = native_library_build_variant
 
     self._ninja_command = ['autoninja']
-    if options.buildbot:
-      # we can't use autoninja on buildbot.
-      if options.use_siso:
-        # assume recipe sets siso context (e.g. SISO_PROJECT etc).
-        # rather than reading .sisoenv by depot_tools/siso.py
-        self._ninja_command = [str(_SISO_PATH), 'ninja']
-        # enable cloud logging on bot
-        self._ninja_command += ['--enable_cloud_logging']
-      else:
-        # assume "preprocess for reclient" step.
-        if options.ninja_path:
-          self._ninja_command = [options.ninja_path]
-        else:
-          self._ninja_command = [str(_NINJA_PATH)]
-    else:
-      # use ninja_path if it is explicitly given.
-      if options.ninja_path:
-        self._ninja_command = [options.ninja_path]
-
-    if self._options.ninja_j:
-      if options.use_siso:
-        self._ninja_command += ['-remote_jobs', options.ninja_j]
-      else:
-        self._ninja_command += ['-j', options.ninja_j]
+    # use ninja_path if it is explicitly given.
 
     self._ninja_command += ['-C']
 
@@ -275,7 +252,6 @@ class ClankCompiler:
         'symbol_level=1',  # to fit 30 GiB RAM on the bot when LLD is running
         'target_os="android"',
         'enable_proguard_obfuscation=false',  # More debuggable stacktraces.
-        'use_siso=' + str(self._options.use_siso).lower(),
         'use_remoteexec=' + str(self._options.use_remoteexec).lower(),
         'use_order_profiling=' + str(instrumented).lower(),
         'devtools_instrumentation_dumping=' + str(instrumented).lower()
@@ -424,10 +400,7 @@ class OrderfileUpdater:
     self._repository_root = repository_root
     self._step_recorder = step_recorder
 
-  def UploadToCloudStorage(self,
-                           filename,
-                           use_debug_location,
-                           use_new_cloud=False):
+  def UploadToCloudStorage(self, filename, use_debug_location):
     """Uploads a file to cloud storage.
 
     Here's an example of what the JSON object looks like for the new cloud: # pylint: disable=line-too-long
@@ -592,21 +565,8 @@ class OrderfileGenerator:
     self._native_library_build_variant = NativeLibraryBuildVariant.TRICHROME
     if options.native_lib_variant == 'monochrome':
       self._native_library_build_variant = NativeLibraryBuildVariant.MONOCHROME
-    if options.use_common_out_dir_for_instrumented:
-      assert options.buildbot, ('--use-common-out-dir-for-instrumented is only '
-                                'meant to be used with --buildbot, otherwise '
-                                'it will overwrite the local out/Release dir.')
-      assert options.common_out_dir, (
-          '--common-out-dir needs to be specified when '
-          '--use-common-out-dir-for-instrumented is passed.')
-      # This is used on the bot to save the directory for the stack tool. We
-      # only save the instrumented out dir since it is needed to deobfuscate the
-      # stack trace. The uninstrumented build is used to compare performance on
-      # Speedometer with/without orderfile, which is less likely to fail.
-      self._instrumented_out_dir = pathlib.Path(options.common_out_dir)
-    else:
-      self._instrumented_out_dir = (
-          _OUT_PATH / f'orderfile_{self._options.arch}_instrumented_out')
+    self._instrumented_out_dir = (
+        _OUT_PATH / f'orderfile_{self._options.arch}_instrumented_out')
 
     self._uninstrumented_out_dir = (
         _OUT_PATH / f'orderfile_{self._options.arch}_uninstrumented_out')
@@ -779,13 +739,8 @@ class OrderfileGenerator:
 
   def _SaveForDebugging(self, filename: str):
     """Uploads the file to cloud storage or saves to a temporary location."""
-    if not self._options.buildbot:
-      file_sha1 = _GenerateHash(filename)
-      self._SaveFileLocally(filename, file_sha1)
-    else:
-      logging.info('Uploading file for debugging: %s', filename)
-      self._orderfile_updater.UploadToCloudStorage(filename,
-                                                   use_debug_location=True)
+    file_sha1 = _GenerateHash(filename)
+    self._SaveFileLocally(filename, file_sha1)
 
   def _SaveForDebuggingWithOverwrite(self, file_name):
     """Uploads and overwrites the file in cloud storage or copies locally.
@@ -796,19 +751,9 @@ class OrderfileGenerator:
       file_name: (str) File to upload.
     """
     file_sha1 = _GenerateHash(file_name)
-    if not self._options.buildbot:
-      self._SaveFileLocally(file_name, file_sha1)
-    else:
-      logging.info('Uploading file for debugging: %s, sha1sum: %s', file_name,
-                   file_sha1)
-      upload_location = '%s/%s' % (self._CLOUD_STORAGE_BUCKET_FOR_DEBUG,
-                                   os.path.basename(file_name))
-      self._step_recorder.RunCommand(
-          ['gsutil.py', 'cp', file_name, 'gs://' + upload_location])
-      logging.info('Uploaded to: https://sandbox.google.com/storage/%s',
-                   upload_location)
+    self._SaveFileLocally(file_name, file_sha1)
 
-  def _MaybeArchiveOrderfile(self, filename, use_new_cloud: bool = False):
+  def _MaybeArchiveOrderfile(self, filename):
     """In buildbot configuration, uploads the generated orderfile to
     Google Cloud Storage.
 
@@ -819,11 +764,7 @@ class OrderfileGenerator:
     # First compute hashes so that we can download them later if we need to.
     self._step_recorder.BeginStep('Compute hash for ' + filename)
     self._RecordHash(filename)
-    if self._options.buildbot:
-      self._step_recorder.BeginStep('Archive ' + filename)
-      self._orderfile_updater.UploadToCloudStorage(filename,
-                                                   use_debug_location=False,
-                                                   use_new_cloud=use_new_cloud)
+
 
   def UploadReadyOrderfiles(self):
     self._step_recorder.BeginStep('Upload Ready Orderfiles')
@@ -1037,17 +978,6 @@ class OrderfileGenerator:
 
   def Generate(self):
     """Generates and maybe upload an order."""
-    if self._options.clobber:
-      assert self._options.buildbot, '--clobber is intended for the buildbot.'
-      # This is useful on the bot when we need to start from scratch to rebuild.
-      if _OUT_PATH.exists():
-        logging.info('Clobbering %s...', _OUT_PATH)
-        shutil.rmtree(_OUT_PATH, ignore_errors=True)
-        # The bot assumes that the common dir is always available.
-        out_release_path = pathlib.Path(self._options.common_out_dir)
-        logging.info('mkdir %s', out_release_path)
-        out_release_path.mkdir(parents=True)
-
     if self._options.profile:
       self._compiler = ClankCompiler(self._instrumented_out_dir,
                                      self._step_recorder, self._options,
@@ -1074,8 +1004,7 @@ class OrderfileGenerator:
     self._AddDummyFunctions()
     self._compiler.CompileLibchrome(instrumented=False, force_relink=False)
     if self._VerifySymbolOrder():
-      self._MaybeArchiveOrderfile(self._GetPathToOrderfile(),
-                                  use_new_cloud=True)
+      self._MaybeArchiveOrderfile(self._GetPathToOrderfile())
     else:
       self._SaveForDebugging(self._GetPathToOrderfile())
 
@@ -1084,8 +1013,7 @@ class OrderfileGenerator:
           self.RunBenchmark(self._uninstrumented_out_dir),
           self.RunBenchmark(self._no_orderfile_out_dir, no_orderfile=True))
 
-    if self._options.buildbot:
-      self._orderfile_updater._GitStash()
+
     self._step_recorder.EndStep()
     return not self._step_recorder.ErrorRecorded()
 
@@ -1101,18 +1029,8 @@ class OrderfileGenerator:
 
     Returns: true on success.
     """
-    if not self._options.buildbot:
-      logging.error('Trying to commit when not running on the buildbot')
-      return False
-    paths = [
-        filename + '.sha1'
-        for filename in (self._GetUnpatchedOrderfileFilename(),
-                         self._GetPathToOrderfile())
-    ]
-    # DEPS is updated as well in the new cloud flow.
-    paths.append(str(self._clank_dir / 'DEPS'))
-    self._orderfile_updater._CommitStashedFiles(paths)
-    return True
+    logging.error('Trying to commit when not running on the buildbot')
+    return False
 
 
 def CreateArgumentParser():
@@ -1123,10 +1041,6 @@ def CreateArgumentParser():
                       dest='benchmark',
                       default=True,
                       help='Disables running benchmarks.')
-  parser.add_argument(
-      '--buildbot',
-      action='store_true',
-      help='If true, the script expects to be run on a buildbot')
   parser.add_argument('--device',
                       default=None,
                       type=str,
@@ -1156,13 +1070,6 @@ def CreateArgumentParser():
                       action='store_true',
                       help='Enable remoteexec. see //build/toolchain/rbe.gni.',
                       default=False)
-  parser.add_argument('--ninja-path',
-                      help='Path to the ninja binary. If given, use this'
-                      'instead of autoninja.')
-  parser.add_argument('--ninja-j',
-                      help='-j value passed to ninja.'
-                      'pass -j to ninja. no need to set this when '
-                      '--ninja-path is not specified.')
   parser.add_argument('--adb-path', help='Path to the adb binary.')
 
   parser.add_argument('--public',
@@ -1212,22 +1119,6 @@ def CreateArgumentParser():
                       action='store_true',
                       help=('Commit any orderfile hash files in the current '
                             'checkout; performs no other action'))
-  parser.add_argument('--common-out-dir',
-                      help='The bot will pass in its own unique path.')
-  parser.add_argument('--use-common-out-dir-for-instrumented',
-                      action='store_true',
-                      help='Use the common dir for the instrumented out dir so '
-                      'that the stack tool works on the bot.')
-  parser.add_argument('--clobber',
-                      action='store_true',
-                      default=False,
-                      help='Set this to clear the entire out/ directory prior '
-                      'to running any builds. This helps to clear the build '
-                      'cache and restart with empty build dirs.')
-  parser.add_argument('--use-siso',
-                      action='store_true',
-                      default=False,
-                      help='Set this to turn on using siso.')
   parser.add_argument('-v',
                       '--verbose',
                       dest='verbosity',
