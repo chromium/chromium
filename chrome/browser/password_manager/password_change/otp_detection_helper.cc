@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/password_change/otp_detection_helper.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
@@ -55,19 +56,23 @@ OtpDetectionHelper::~OtpDetectionHelper() = default;
 bool OtpDetectionHelper::IsOtpPresent(
     content::WebContents* web_contents,
     password_manager::PasswordManagerClient* client) {
-  if (!client || !client->GetOtpManager()) {
-    return false;
-  }
+  bool is_otp_present = false;
+  if (client && client->GetOtpManager()) {
+    password_manager::OtpManager* otp_manager = client->GetOtpManager();
 
-  password_manager::OtpManager* otp_manager = client->GetOtpManager();
-
-  for (const auto& [form_id, otp_form_manager] : otp_manager->form_managers()) {
-    if (IsFieldStillPresent(otp_form_manager->otp_field_ids().back(),
-                            web_contents)) {
-      return true;
+    for (const auto& [form_id, otp_form_manager] :
+         otp_manager->form_managers()) {
+      if (IsFieldStillPresent(otp_form_manager->otp_field_ids().back(),
+                              web_contents)) {
+        is_otp_present = true;
+        break;
+      }
     }
   }
-  return false;
+
+  base::UmaHistogramBoolean("PasswordManager.OtpPresentInMainTab",
+                            is_otp_present);
+  return is_otp_present;
 }
 
 void OtpDetectionHelper::OnOtpFieldDetected(

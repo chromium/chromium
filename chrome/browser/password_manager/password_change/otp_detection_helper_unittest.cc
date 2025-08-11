@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/password_change/otp_detection_helper.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -135,15 +136,24 @@ class OtpDetectionHelperTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(OtpDetectionHelperTest, CheckOTPPresence) {
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(OtpDetectionHelper::IsOtpPresent(web_contents(), client()));
+  histogram_tester.ExpectUniqueSample("PasswordManager.OtpPresentInMainTab",
+                                      false, 1);
 
   AddOtpToThePage();
 
   EXPECT_TRUE(OtpDetectionHelper::IsOtpPresent(web_contents(), client()));
+  histogram_tester.ExpectBucketCount("PasswordManager.OtpPresentInMainTab",
+                                     true, 1);
+  histogram_tester.ExpectTotalCount("PasswordManager.OtpPresentInMainTab", 2);
 
   RemoveOtpFromThePage();
 
   EXPECT_FALSE(OtpDetectionHelper::IsOtpPresent(web_contents(), client()));
+  histogram_tester.ExpectBucketCount("PasswordManager.OtpPresentInMainTab",
+                                     false, 2);
+  histogram_tester.ExpectTotalCount("PasswordManager.OtpPresentInMainTab", 3);
 }
 
 TEST_F(OtpDetectionHelperTest, OtpDetectedInitiallyAndStillPresent) {

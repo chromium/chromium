@@ -2496,6 +2496,16 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.OtpPresentInMainTab" enum="Boolean"
+    expires_after="2026-02-01">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records whether an OTP field is present on the page where an password change
+    is initiated. Recorded when the password change flow starts.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.OutdatedGMSDialogDismissalReason"
     enum="OutdatedGMSDialogDismissalReason" expires_after="2025-12-14">
   <owner>ioanap@chromium.org</owner>
