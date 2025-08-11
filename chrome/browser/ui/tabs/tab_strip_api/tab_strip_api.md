@@ -5,12 +5,6 @@ to query tab information, perform actions, and listen for events related to the
 tab strip.
 
 ## Getting Started
-#### Feature Flag
-To use the TabStripService API, you must enable it via its feature flag.
-Launch Chrome with the following command-line argument:
-
-`out\Default\chrome --enable-features="TabStripBrowserApi"`
-
 #### API Source
 The core of the API, including all data structures and interfaces, is defined in
 the following Mojo files:
