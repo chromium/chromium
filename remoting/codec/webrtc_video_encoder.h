@@ -62,7 +62,7 @@ class WebrtcVideoEncoder {
     virtual ~FrameStats();
 
     // Creates a copy of the frame stats.
-    virtual std::unique_ptr<FrameStats> Duplicate() const;
+    virtual std::unique_ptr<FrameStats> Clone() const;
 
     // TODO(crbug.com/40175068): Consolidate all the per-frame statistics
     // into a single struct in remoting/protocol.

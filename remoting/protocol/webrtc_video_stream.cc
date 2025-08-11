@@ -56,7 +56,7 @@ struct WebrtcVideoStream::FrameStats : public WebrtcVideoEncoder::FrameStats {
   FrameStats& operator=(const FrameStats&) = default;
   ~FrameStats() override = default;
 
-  std::unique_ptr<WebrtcVideoEncoder::FrameStats> Duplicate() const override {
+  std::unique_ptr<WebrtcVideoEncoder::FrameStats> Clone() const override {
     return std::make_unique<FrameStats>(*this);
   }
 

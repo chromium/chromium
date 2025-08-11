@@ -15,7 +15,7 @@ WebrtcVideoEncoder::FrameStats& WebrtcVideoEncoder::FrameStats::operator=(
 WebrtcVideoEncoder::FrameStats::~FrameStats() = default;
 
 std::unique_ptr<WebrtcVideoEncoder::FrameStats>
-WebrtcVideoEncoder::FrameStats::Duplicate() const {
+WebrtcVideoEncoder::FrameStats::Clone() const {
   return std::make_unique<FrameStats>(*this);
 }
 
