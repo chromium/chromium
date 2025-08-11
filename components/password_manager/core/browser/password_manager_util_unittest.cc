@@ -484,6 +484,28 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsernamePSLAnotherPassword) {
 }
 
 TEST(PasswordManagerUtil,
+     GetMatchForUpdating_PasswordChangeCredentialPSLAnotherPassword) {
+  PasswordForm stored = GetTestCredential();
+  stored.match_type = PasswordForm::MatchType::kPSL;
+  PasswordForm parsed = GetTestCredential();
+  parsed.password_value = u"new_password";
+  parsed.type = PasswordForm::Type::kChangeSubmission;
+
+  EXPECT_EQ(&stored, GetMatchForUpdating(parsed, {&stored}));
+}
+
+TEST(PasswordManagerUtil,
+     GetMatchForUpdating_PasswordChangeCredentialGroupedAnotherPassword) {
+  PasswordForm stored = GetTestCredential();
+  stored.match_type = PasswordForm::MatchType::kGrouped;
+  PasswordForm parsed = GetTestCredential();
+  parsed.password_value = u"new_password";
+  parsed.type = PasswordForm::Type::kChangeSubmission;
+
+  EXPECT_EQ(nullptr, GetMatchForUpdating(parsed, {&stored}));
+}
+
+TEST(PasswordManagerUtil,
      GetMatchForUpdating_MatchUsernamePSLNewPasswordKnown) {
   PasswordForm stored = GetTestCredential();
   stored.match_type = PasswordForm::MatchType::kPSL;
