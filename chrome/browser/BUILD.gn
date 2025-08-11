@@ -2674,6 +2674,10 @@ static_library("browser") {
     ]
   }
 
+  if (is_win || is_mac || is_linux) {
+    deps += [ "//chrome/browser/ui/views/session_restore_infobar" ]
+  }
+
   # Platforms that have a network diagnostics dialog. All others fall through
   # to the stub which is not implemented.
   if (is_chromeos) {
