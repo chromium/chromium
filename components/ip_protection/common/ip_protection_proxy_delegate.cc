@@ -236,13 +236,13 @@ net::Error IpProtectionProxyDelegate::OnBeforeTunnelRequest(
       // error, mark the connection as failed immediately.
       return net::ERR_TUNNEL_CONNECTION_FAILED;
     }
+    int experiment_arm = net::features::kIpPrivacyDebugExperimentArm.Get();
+    if (experiment_arm != 0) {
+      extra_headers->SetHeader("Ip-Protection-Debug-Experiment-Arm",
+                               base::NumberToString(experiment_arm));
+    }
   } else {
     vlog("not for IP protection");
-  }
-  int experiment_arm = net::features::kIpPrivacyDebugExperimentArm.Get();
-  if (experiment_arm != 0) {
-    extra_headers->SetHeader("Ip-Protection-Debug-Experiment-Arm",
-                             base::NumberToString(experiment_arm));
   }
   return net::OK;
 }
