@@ -17,6 +17,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "absl_hardening_tests",
@@ -33,6 +38,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "accessibility_unittests",
@@ -48,6 +58,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -66,6 +81,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "app_shell_unittests",
@@ -81,6 +101,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -98,6 +123,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_common_unittests",
@@ -114,6 +144,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_fuzzer_unittests",
@@ -129,6 +164,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -154,6 +194,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_platform_unittests",
@@ -170,6 +215,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "boringssl_crypto_tests",
@@ -185,6 +235,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -205,6 +260,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "capture_unittests",
@@ -220,6 +280,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -237,6 +302,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cc_unittests",
@@ -252,6 +322,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -269,6 +344,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chromedriver_unittests",
@@ -285,6 +365,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_browsertests",
@@ -300,6 +385,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
@@ -335,6 +425,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_unittests",
@@ -350,6 +445,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -367,6 +467,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cronet_tests",
@@ -382,6 +487,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -399,6 +509,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "crypto_unittests",
@@ -414,6 +529,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -431,6 +551,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "display_unittests",
@@ -446,6 +571,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -463,6 +593,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "events_unittests",
@@ -478,6 +613,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -495,6 +635,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "extensions_unittests",
@@ -510,6 +655,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -527,6 +677,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "fuzzing_unittests",
@@ -542,6 +697,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -559,6 +719,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gfx_unittests",
@@ -574,6 +739,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -591,6 +761,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "google_apis_unittests",
@@ -606,6 +781,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -623,6 +803,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gwp_asan_unittests",
@@ -639,6 +824,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "headless_browsertests",
@@ -654,6 +844,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -688,6 +883,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ipc_tests",
@@ -703,6 +903,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -720,6 +925,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "leveldb_unittests",
@@ -735,6 +945,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -752,6 +967,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "liburlpattern_unittests",
@@ -767,6 +987,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -784,6 +1009,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "message_center_unittests",
@@ -799,6 +1029,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -816,6 +1051,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_unittests",
@@ -831,6 +1071,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -848,6 +1093,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "net_unittests",
@@ -863,6 +1113,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -880,6 +1135,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "pdf_unittests",
@@ -895,6 +1155,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -912,6 +1177,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "power_sampler_unittests",
@@ -927,6 +1197,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -944,6 +1219,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "remoting_unittests",
@@ -959,6 +1239,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -976,6 +1261,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -991,6 +1281,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1008,6 +1303,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "skia_unittests",
@@ -1023,6 +1323,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1040,6 +1345,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "sql_unittests",
@@ -1056,6 +1366,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "storage_unittests",
@@ -1071,6 +1386,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
@@ -1089,6 +1409,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_base_unittests",
@@ -1104,6 +1429,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1121,6 +1451,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_unittests",
@@ -1136,6 +1471,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1153,6 +1493,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "updater_tests",
@@ -1168,6 +1513,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1185,6 +1535,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "views_unittests",
@@ -1200,6 +1555,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1217,6 +1577,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_unittests",
@@ -1232,6 +1597,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1249,6 +1619,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "xr_browser_tests",
@@ -1264,6 +1639,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1285,6 +1665,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1371,6 +1756,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_wpt_tests",
@@ -1431,6 +1821,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chromedriver_replay_unittests",
@@ -1453,6 +1848,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_perftests",
@@ -1472,6 +1872,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1493,6 +1898,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "flatbuffers_unittests",
@@ -1511,6 +1921,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1562,6 +1977,11 @@
             "cpu": "arm64",
             "os": "Mac-15"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mac_signing_tests",
@@ -1580,6 +2000,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1601,6 +2026,11 @@
             "os": "Mac-15"
           },
           "idempotent": false,
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "telemetry_gpu_unittests",
@@ -1624,6 +2054,11 @@
             "os": "Mac-15"
           },
           "idempotent": false,
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
@@ -1649,6 +2084,11 @@
             "os": "Mac-15"
           },
           "idempotent": false,
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
@@ -1671,6 +2111,11 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-15"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
