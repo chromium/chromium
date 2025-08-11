@@ -191,19 +191,11 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
       .translatesAutoresizingMaskIntoConstraints = NO;
 
   // Set low compression resistance priority for the animation views to make
-  // their height dynamic. We need to index the subviews here because Lottie
-  // animation wrapper doesn't expose the view we need access to for this.
-  // TODO(crbug.com/404301564): Expose the subview we need from Lottie.
-  NSArray<UIView*>* animationSubviews =
-      _animationViewWrapper.animationView.subviews;
-  NSArray<UIView*>* animationDarkmodeSubviews =
-      _animationViewWrapper.animationView.subviews;
-  CHECK([animationSubviews count] == 1, base::NotFatalUntil::M138);
-  CHECK([animationDarkmodeSubviews count] == 1, base::NotFatalUntil::M138);
-  [animationSubviews[0]
+  // their height dynamic.
+  [_animationViewWrapper.animationView
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisVertical];
-  [animationDarkmodeSubviews[0]
+  [_animationViewWrapperDarkMode.animationView
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisVertical];
 
