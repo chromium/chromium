@@ -155,9 +155,11 @@ public class ChromeWindow extends ActivityWindowAndroid {
     }
 
     private void destroyChromeAndroidTask() {
-        var chromeAndroidTaskTracker = ChromeAndroidTaskTrackerFactory.getInstance();
-        if (chromeAndroidTaskTracker != null) {
-            chromeAndroidTaskTracker.remove(getTaskId());
+        if (getActivity().get() instanceof ChromeTabbedActivity) {
+            var chromeAndroidTaskTracker = ChromeAndroidTaskTrackerFactory.getInstance();
+            if (chromeAndroidTaskTracker != null) {
+                chromeAndroidTaskTracker.remove(getTaskId());
+            }
         }
     }
 
