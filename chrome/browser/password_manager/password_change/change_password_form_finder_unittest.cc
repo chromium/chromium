@@ -291,7 +291,6 @@ TEST_F(ChangePasswordFormFinderTest, ButtonClickRequestedButFailed) {
   // Since ExecuteModel() call was successful, `form_finder` is now attempting
   // to click an underlying button.
   EXPECT_TRUE(form_finder->click_helper());
-  EXPECT_FALSE(form_finder->form_waiter());
 
   EXPECT_CALL(completion_callback, Run(nullptr));
   form_finder->click_helper()->SimulateClickResult(/*result=*/false);
@@ -356,7 +355,6 @@ TEST_F(ChangePasswordFormFinderTest, ButtonClickRequestedAndSucceeded) {
   // Since ExecuteModel() call was successful, `form_finder` is now attempting
   // to click an underlying button.
   EXPECT_TRUE(form_finder->click_helper());
-  EXPECT_FALSE(form_finder->form_waiter());
 
   form_finder->click_helper()->SimulateClickResult(/*result=*/true);
   EXPECT_FALSE(form_finder->click_helper());

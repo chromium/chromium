@@ -68,8 +68,10 @@ bool IsLikelyChangePasswordForm(
 ChangePasswordFormWaiter::ChangePasswordFormWaiter(
     content::WebContents* web_contents,
     password_manager::PasswordManagerClient* client,
-    PasswordFormFoundCallback callback)
-    : web_contents_(web_contents),
+    PasswordFormFoundCallback callback,
+    base::TimeDelta timeout)
+    : timeout_(timeout),
+      web_contents_(web_contents),
       client_(client),
       callback_(std::move(callback)) {
   if (PasswordFormCache* cache = GetFormCache(client_)) {
@@ -119,7 +121,7 @@ void ChangePasswordFormWaiter::DocumentOnLoadCompletedInPrimaryMainFrame() {
     // Page is still loading, reset the timer.
     timeout_timer_.Reset();
   }
-  timeout_timer_.Start(FROM_HERE, kChangePasswordFormWaitingTimeout, this,
+  timeout_timer_.Start(FROM_HERE, timeout_, this,
                        &ChangePasswordFormWaiter::OnTimeout);
 }
 
