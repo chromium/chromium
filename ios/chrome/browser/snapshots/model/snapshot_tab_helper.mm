@@ -61,6 +61,7 @@ void SnapshotTabHelper::RetrieveColorSnapshot(SnapshotRetrievedBlock callback) {
 
 void SnapshotTabHelper::RetrieveGreySnapshot(SnapshotRetrievedBlock callback) {
   CHECK(snapshot_manager_);
+  CHECK(!base::FeatureList::IsEnabled(kRemoveGreySnapshot));
   [snapshot_manager_
       retrieveSnaphotWithKind:SnapshotKindGreyscale
                    completion:BlockRecordingElapsedTime(

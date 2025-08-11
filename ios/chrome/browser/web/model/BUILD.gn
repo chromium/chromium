@@ -132,6 +132,7 @@ source_set("page_placeholder") {
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/snapshots/model:features",
     "//ios/chrome/browser/tabs/model:features",
     "//ios/chrome/common/ui/util",
     "//ios/net",
