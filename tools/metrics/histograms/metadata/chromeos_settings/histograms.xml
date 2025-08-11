@@ -458,7 +458,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Display.{DisplayType}.UserOverrideDisplayDefaultSettingsTimeElapsed.{DisplaySettings}"
-    units="minutes" expires_after="2025-09-23">
+    units="minutes" expires_after="2026-03-23">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
