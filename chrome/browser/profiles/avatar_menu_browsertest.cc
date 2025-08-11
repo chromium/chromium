@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -163,8 +164,14 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, PRE_EditProfile_NotLoaded) {
   CloseAllBrowsers();
 }
 
+// TODO(crbug.com/432068316): Flaky on linux-msan-rel.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_EditProfile_NotLoaded DISABLED_EditProfile_NotLoaded
+#else
+#define MAYBE_EditProfile_NotLoaded EditProfile_NotLoaded
+#endif
 // "Edit" isn't enabled if no profiles are loaded.
-IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_NotLoaded) {
+IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, MAYBE_EditProfile_NotLoaded) {
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 0U);
   EXPECT_FALSE(menu()->ShouldShowEditProfileLink());
   EXPECT_FALSE(menu()->GetActiveProfileIndex().has_value());
