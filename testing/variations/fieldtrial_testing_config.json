@@ -8377,6 +8377,42 @@
             ]
         }
     ],
+    "DevToolsAiDebugWithAi": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DevToolsAiDebugWithAi"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DevToolsAiSubmenuPrompts": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DevToolsAiSubmenuPrompts"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeviceBoundSessionAccessObserverSharedRemote": [
         {
             "platforms": [
