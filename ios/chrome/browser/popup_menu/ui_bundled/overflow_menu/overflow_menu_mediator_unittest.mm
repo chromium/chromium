@@ -1192,7 +1192,7 @@ TEST_F(OverflowMenuMediatorTest, TestReadingModeMenu) {
   // Force model update.
   mediator_.model = model_;
   ASSERT_TRUE(HasItem(kToolsMenuReadLater, /*enabled=*/YES));
-  ASSERT_TRUE(HasItem(kToolsMenuTextZoom, /*enabled=*/NO));
+  ASSERT_TRUE(HasItem(kToolsMenuTextZoom, /*enabled=*/YES));
   ASSERT_TRUE(HasItem(kToolsMenuRequestDesktopId, /*enabled=*/YES));
   ASSERT_TRUE(HasItem(kToolsMenuAddToBookmarks, /*enabled=*/YES));
   ASSERT_TRUE(HasItem(kToolsMenuReadingListId, /*enabled=*/YES));

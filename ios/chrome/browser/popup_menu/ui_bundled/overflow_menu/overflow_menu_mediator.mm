@@ -760,9 +760,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 }
 
 - (OverflowMenuAction*)toggleReaderModeAction {
-  ReaderModeTabHelper* tabHelper =
-      ReaderModeTabHelper::FromWebState(self.webState);
-  BOOL isReaderModeActive = tabHelper && tabHelper->IsActive();
+  BOOL isReaderModeActive = [self isReaderModeActive];
   int nameID = isReaderModeActive ? IDS_IOS_TOOLS_MENU_HIDE_READER_MODE
                                   : IDS_IOS_TOOLS_MENU_READER_MODE;
   __weak __typeof(self) weakSelf = self;
@@ -1451,12 +1449,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   bool canFetchUserPolicies =
       _authenticationService && _profilePrefs &&
       CanFetchUserPolicy(_authenticationService, _profilePrefs);
-  bool isReaderModeActive = false;
-  if (IsReaderModeAvailable()) {
-    ReaderModeTabHelper* readerModeTabHelper =
-        ReaderModeTabHelper::FromWebState(self.webState);
-    isReaderModeActive = readerModeTabHelper && readerModeTabHelper->IsActive();
-  }
   // Set footer (on last section), if any.
   web::BrowserState* browserState =
       self.webState ? self.webState->GetBrowserState() : nullptr;
@@ -1489,10 +1481,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       [self isCurrentURLWebURL] && [self isEditBookmarksEnabled];
   self.addBookmarkAction.enabled = bookmarkEnabled;
   self.editBookmarkAction.enabled = bookmarkEnabled;
-  self.translateAction.enabled =
-      [self isTranslateEnabled] && !isReaderModeActive;
+  self.translateAction.enabled = [self isTranslateEnabled];
   self.findInPageAction.enabled = [self isFindInPageEnabled];
-  self.textZoomAction.enabled = [self isTextZoomEnabled] && !isReaderModeActive;
+  self.textZoomAction.enabled = [self isTextZoomEnabled];
   self.requestDesktopAction.enabled =
       [self userAgentType] == web::UserAgentType::MOBILE;
   self.requestMobileAction.enabled =
@@ -1579,7 +1570,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 // Returns whether translate is enabled on the current page.
 - (BOOL)isTranslateEnabled {
-  return [self canManuallyTranslate:NO] && ![self isLensOverlayVisible];
+  return [self canManuallyTranslate:NO] && ![self isLensOverlayVisible] &&
+         ![self isReaderModeActive];
 }
 
 - (BOOL)isLensOverlayEnabled {
@@ -1644,6 +1636,16 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   }
 }
 
+// Whether Reader mode is active.
+- (BOOL)isReaderModeActive {
+  if (!self.webState) {
+    return NO;
+  }
+  ReaderModeTabHelper* helper =
+      ReaderModeTabHelper::FromWebState(self.webState);
+  return helper && helper->IsActive();
+}
+
 // Whether or not text zoom is enabled for this page.
 - (BOOL)isTextZoomEnabled {
   if (self.webContentAreaShowingOverlay) {
@@ -1654,8 +1656,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     return NO;
   }
   FontSizeTabHelper* helper = FontSizeTabHelper::FromWebState(self.webState);
-  return helper && helper->CurrentPageSupportsTextZoom() &&
-         !helper->IsTextZoomUIActive();
+  if (!helper || helper->IsTextZoomUIActive()) {
+    return NO;
+  }
+  return helper->CurrentPageSupportsTextZoom() || [self isReaderModeActive];
 }
 
 // Returns YES if user is allowed to edit any bookmarks.

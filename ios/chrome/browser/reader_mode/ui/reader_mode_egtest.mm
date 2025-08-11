@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -1002,6 +1003,68 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
       selectElementWithMatcher:grey_accessibilityID(
                                    kReaderModeChipViewAccessibilityIdentifier)]
       assertWithMatcher:grey_hidden(YES)];
+}
+
+// Tests that the text zoom UI can be opened from reader mode and that it
+// controls the reader mode font size.
+- (void)testTextZoomInReaderMode {
+  // This test is not relevant on iPads because the text zoom UI is unavailable
+  // on iPad, even outside of Reader mode.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
+  }
+
+  std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
+  [ChromeEarlGrey setDoubleValue:multipliers[2]
+                     forUserPref:dom_distiller::prefs::kFontScale];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Open Reader Mode UI.
+  [ChromeEarlGrey showReaderMode];
+  GREYAssertTrue([ChromeEarlGrey waitUntilReaderModeWebStateIsReady],
+                 @"Reader mode content could not be loaded");
+
+  // Open the tools menu and tap the text zoom button.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityID(kToolsMenuTextZoom)];
+
+  // The text zoom UI should be visible.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kTextZoomViewAccessibilityIdentifier)];
+
+  // Increase the font size.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kTextZoomIncreaseButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  GREYAssertEqual(
+      [ChromeEarlGrey userDoublePref:dom_distiller::prefs::kFontScale],
+      multipliers[3], @"Pref should be updated to next multiplier");
+  ExpectFontSize(multipliers[3] * kReaderModeBaseFontSize);
+
+  // Decrease the font size.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kTextZoomDecreaseButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  GREYAssertEqual(
+      [ChromeEarlGrey userDoublePref:dom_distiller::prefs::kFontScale],
+      multipliers[2], @"Pref should be updated to previous multiplier");
+  ExpectFontSize(multipliers[2] * kReaderModeBaseFontSize);
+
+  // Reset the font size.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kTextZoomResetButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  GREYAssertEqual(
+      [ChromeEarlGrey userDoublePref:dom_distiller::prefs::kFontScale], 1.0,
+      @"Pref should be updated to 1.0");
+  ExpectFontSize(1.0 * kReaderModeBaseFontSize);
 }
 
 @end

@@ -11,9 +11,14 @@ source_set("coordinator") {
   ]
   deps = [
     ":ui",
+    "//components/dom_distiller/core",
+    "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/presenters/ui_bundled",
+    "//ios/chrome/browser/reader_mode/model",
+    "//ios/chrome/browser/reader_mode/ui:constants",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/toolbar/ui_bundled/accessory",
