@@ -24,6 +24,16 @@ final class BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport {
     }
 
     @CalledByNative
+    private static void invokeOnTopResumedActivityChanged(
+            int taskId, boolean isTopResumedActivity) {
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) ChromeAndroidTaskTrackerImpl.getInstance().get(taskId);
+        assert chromeAndroidTask != null : "Task doesn't exist";
+
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(isTopResumedActivity);
+    }
+
+    @CalledByNative
     private static void destroyBrowserWindow(int taskId) {
         ChromeAndroidTaskTrackerImpl.getInstance().remove(taskId);
     }

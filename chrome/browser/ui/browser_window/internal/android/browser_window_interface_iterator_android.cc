@@ -5,19 +5,17 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 
 #include "base/android/jni_android.h"
-#include "chrome/browser/ui/browser_window/internal/android/android_browser_window.h"
 #include "chrome/browser/ui/browser_window/internal/jni/BrowserWindowInterfaceIteratorAndroid_jni.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
 namespace {
 using base::android::AttachCurrentThread;
-}  // namespace
 
-std::vector<BrowserWindowInterface*> GetAllBrowserWindowInterfaces() {
-  std::vector<int64_t> browser_window_ptr_values =
-      Java_BrowserWindowInterfaceIteratorAndroid_getAllBrowserWindowInterfaces(
-          AttachCurrentThread());
-
+// reinterpret_cast int64_t values to BrowserWindowInterface*.
+std::vector<BrowserWindowInterface*> CastBrowserWindowPtrValues(
+    const std::vector<int64_t>& browser_window_ptr_values) {
   std::vector<BrowserWindowInterface*> browser_windows;
+
   for (int64_t ptr_value : browser_window_ptr_values) {
     browser_windows.emplace_back(
         reinterpret_cast<BrowserWindowInterface*>(ptr_value));
@@ -25,18 +23,29 @@ std::vector<BrowserWindowInterface*> GetAllBrowserWindowInterfaces() {
 
   return browser_windows;
 }
+}  // namespace
+
+std::vector<BrowserWindowInterface*> GetAllBrowserWindowInterfaces() {
+  std::vector<int64_t> browser_window_ptr_values =
+      Java_BrowserWindowInterfaceIteratorAndroid_getAllBrowserWindowInterfaces(
+          AttachCurrentThread());
+
+  return CastBrowserWindowPtrValues(browser_window_ptr_values);
+}
 
 std::vector<BrowserWindowInterface*>
 GetBrowserWindowInterfacesOrderedByActivation() {
-  // TODO(https://crbug.com/419057482): This is wrong, since this is creation
-  // order, rather than activation order. This is a temporary solution so things
-  // don't crash and "mostly" work (especially when creation order matches
-  // activation order, such in the case of a single window).
-  return AndroidBrowserWindow::GetAllAndroidBrowserWindowsByCreationTime();
+  std::vector<int64_t> browser_window_ptr_values =
+      Java_BrowserWindowInterfaceIteratorAndroid_getBrowserWindowInterfacesOrderedByActivation(
+          AttachCurrentThread());
+
+  return CastBrowserWindowPtrValues(browser_window_ptr_values);
 }
 
 BrowserWindowInterface* GetLastActiveBrowserWindowInterfaceWithAnyProfile() {
-  std::vector<BrowserWindowInterface*> all_windows =
+  std::vector<BrowserWindowInterface*> browser_windows_ordered_by_activation =
       GetBrowserWindowInterfacesOrderedByActivation();
-  return all_windows.empty() ? nullptr : all_windows[0];
+  return browser_windows_ordered_by_activation.empty()
+             ? nullptr
+             : browser_windows_ordered_by_activation[0];
 }

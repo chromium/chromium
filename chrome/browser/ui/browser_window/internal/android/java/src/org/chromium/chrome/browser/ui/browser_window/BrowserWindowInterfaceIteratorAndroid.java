@@ -22,4 +22,11 @@ final class BrowserWindowInterfaceIteratorAndroid {
     private static long[] getAllBrowserWindowInterfaces() {
         return ChromeAndroidTaskTrackerImpl.getInstance().getAllNativeBrowserWindowPtrs();
     }
+
+    @CalledByNative
+    @JniType("std::vector<int64_t>")
+    private static long[] getBrowserWindowInterfacesOrderedByActivation() {
+        return ChromeAndroidTaskTrackerImpl.getInstance()
+                .getNativeBrowserWindowPtrsOrderedByActivation();
+    }
 }

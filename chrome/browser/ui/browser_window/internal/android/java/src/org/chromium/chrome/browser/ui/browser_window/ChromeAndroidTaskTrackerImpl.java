@@ -13,6 +13,10 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 /** Implements {@link ChromeAndroidTaskTracker} as a singleton. */
@@ -77,14 +81,22 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
     /** Returns an array of the native {@code BrowserWindowInterface} addresses. */
     long[] getAllNativeBrowserWindowPtrs() {
         synchronized (mTasksLock) {
-            long[] nativeBrowserWindowPtrs = new long[mTasks.size()];
+            return getNativeBrowserWindowPtrsLocked(mTasks.values());
+        }
+    }
 
-            int index = 0;
-            for (var task : mTasks.values()) {
-                nativeBrowserWindowPtrs[index] = task.getOrCreateNativeBrowserWindowPtr();
-                index++;
-            }
-            return nativeBrowserWindowPtrs;
+    /**
+     * Returns an array of the native {@code BrowserWindowInterface} addresses, sorted by the
+     * descending order of {@link ChromeAndroidTask#getLastActivatedTimeMillis()}.
+     */
+    long[] getNativeBrowserWindowPtrsOrderedByActivation() {
+        synchronized (mTasksLock) {
+            List<ChromeAndroidTask> tasks = new ArrayList<>(mTasks.values());
+            tasks.sort(
+                    Comparator.comparingLong(ChromeAndroidTask::getLastActivatedTimeMillis)
+                            .reversed());
+
+            return getNativeBrowserWindowPtrsLocked(tasks);
         }
     }
 
@@ -108,5 +120,25 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         assert activity != null : "ActivityWindowAndroid should have an Activity.";
 
         return activity.getTaskId();
+    }
+
+    /**
+     * Returns an array of the native {@code BrowserWindowInterface} addresses.
+     *
+     * <p>This method requires {@link #mTasksLock} as the parameter can be a view of {@link
+     * #mTasks}.
+     */
+    @GuardedBy("mTasksLock")
+    private long[] getNativeBrowserWindowPtrsLocked(
+            Collection<ChromeAndroidTask> chromeAndroidTasks) {
+        long[] nativeBrowserWindowPtrs = new long[chromeAndroidTasks.size()];
+
+        int index = 0;
+        for (var task : chromeAndroidTasks) {
+            nativeBrowserWindowPtrs[index] = task.getOrCreateNativeBrowserWindowPtr();
+            index++;
+        }
+
+        return nativeBrowserWindowPtrs;
     }
 }

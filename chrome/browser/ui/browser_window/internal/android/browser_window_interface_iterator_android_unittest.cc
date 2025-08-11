@@ -27,17 +27,23 @@ class BrowserWindowInterfaceIteratorAndroidUnitTest : public testing::Test {
   BrowserWindowInterface* CreateBrowserWindow(int task_id) {
     return reinterpret_cast<BrowserWindowInterface*>(
         Java_BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport_createBrowserWindow(
-            base::android::AttachCurrentThread(), task_id));
+            AttachCurrentThread(), task_id));
+  }
+
+  void InvokeOnTopResumedActivityChanged(int task_id,
+                                         bool is_top_resumed_activity) {
+    Java_BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport_invokeOnTopResumedActivityChanged(
+        AttachCurrentThread(), task_id, is_top_resumed_activity);
   }
 
   void DestroyBrowserWindow(int task_id) {
     Java_BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport_destroyBrowserWindow(
-        base::android::AttachCurrentThread(), task_id);
+        AttachCurrentThread(), task_id);
   }
 
   void TearDown() override {
     Java_BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport_destroyAllBrowserWindows(
-        base::android::AttachCurrentThread());
+        AttachCurrentThread());
   }
 };
 
@@ -74,4 +80,63 @@ TEST_F(BrowserWindowInterfaceIteratorAndroidUnitTest,
 
   EXPECT_EQ(1u, browser_windows.size());
   EXPECT_TRUE(VectorContains(browser_windows, browser_window2));
+}
+
+TEST_F(
+    BrowserWindowInterfaceIteratorAndroidUnitTest,
+    GetBrowserWindowInterfaceOrderedByActivationReturnsEmptyVectorWhenNoWindowsExist) {
+  std::vector<BrowserWindowInterface*> browser_windows_ordered_by_activation =
+      GetBrowserWindowInterfacesOrderedByActivation();
+  EXPECT_TRUE(browser_windows_ordered_by_activation.empty());
+}
+
+TEST_F(
+    BrowserWindowInterfaceIteratorAndroidUnitTest,
+    GetBrowserWindowInterfacesOrderedByActivationReturnsCorrectlyOrderedWindows) {
+  // Arrange:
+  // Create 2 windows, and simulate Android system's behavior regarding
+  // calls to |OnTopResumedActivityChanged|
+  BrowserWindowInterface* browser_window1 = CreateBrowserWindow(/*task_id=*/1);
+  InvokeOnTopResumedActivityChanged(/*task_id=*/1,
+                                    /*is_top_resumed_activity=*/true);
+  BrowserWindowInterface* browser_window2 = CreateBrowserWindow(/*task_id=*/2);
+  InvokeOnTopResumedActivityChanged(/*task_id=*/1,
+                                    /*is_top_resumed_activity=*/false);
+  InvokeOnTopResumedActivityChanged(/*task_id=*/2,
+                                    /*is_top_resumed_activity=*/true);
+
+  std::vector<BrowserWindowInterface*> browser_windows_ordered_by_activation =
+      GetBrowserWindowInterfacesOrderedByActivation();
+
+  EXPECT_EQ(2u, browser_windows_ordered_by_activation.size());
+  EXPECT_EQ(browser_window2, browser_windows_ordered_by_activation[0]);
+  EXPECT_EQ(browser_window1, browser_windows_ordered_by_activation[1]);
+}
+
+TEST_F(
+    BrowserWindowInterfaceIteratorAndroidUnitTest,
+    GetLastActiveBrowserWindowInterfaceWithAnyProfileReturnsNullWhenNoWindowsExist) {
+  BrowserWindowInterface* browser_window =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  EXPECT_EQ(nullptr, browser_window);
+}
+
+TEST_F(BrowserWindowInterfaceIteratorAndroidUnitTest,
+       GetLastActiveBrowserWindowInterfaceWithAnyProfileReturnsCorrectWindow) {
+  // Arrange:
+  // Create 2 windows, and simulate Android system's behavior regarding
+  // calls to |OnTopResumedActivityChanged|
+  CreateBrowserWindow(/*task_id=*/1);
+  InvokeOnTopResumedActivityChanged(/*task_id=*/1,
+                                    /*is_top_resumed_activity=*/true);
+  BrowserWindowInterface* browser_window2 = CreateBrowserWindow(/*task_id=*/2);
+  InvokeOnTopResumedActivityChanged(/*task_id=*/1,
+                                    /*is_top_resumed_activity=*/false);
+  InvokeOnTopResumedActivityChanged(/*task_id=*/2,
+                                    /*is_top_resumed_activity=*/true);
+
+  BrowserWindowInterface* last_active_browser_window =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+
+  EXPECT_EQ(browser_window2, last_active_browser_window);
 }
