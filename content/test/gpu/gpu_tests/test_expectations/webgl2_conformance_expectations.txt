@@ -263,6 +263,7 @@ crbug.com/angleproject/6748 [ angle-swiftshader passthrough ] WebglExtension_KHR
 crbug.com/1421437 [ mac passthrough angle-opengl ] WebglExtension_WEBGL_shader_pixel_local_storage [ Skip ]
 
 # Extensions not available on Brya devices with Android Desktop.
+[ android android-brya intel passthrough angle-vulkan ] WebglExtension_WEBGL_clip_cull_distance [ Skip ]
 [ android android-brya intel passthrough angle-vulkan ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
 [ android android-brya intel passthrough angle-vulkan ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
 [ android android-brya intel passthrough angle-vulkan ] conformance2/extensions/ovr_multiview2.html [ Skip ]
