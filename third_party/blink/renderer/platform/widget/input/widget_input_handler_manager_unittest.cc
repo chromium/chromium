@@ -173,7 +173,7 @@ TEST_P(WidgetInputHandlerManagerTest, InputWhileHidden) {
       manager->suppressing_input_events_state(),
       static_cast<uint16_t>(WidgetInputHandlerManager::
                                 SuppressingInputEventsBits::kHasNotPainted));
-  manager->DidFirstVisuallyNonEmptyPaint(base::TimeTicks::Now());
+  manager->OnFirstContentfulPaint(base::TimeTicks::Now());
   EXPECT_EQ(manager->suppressing_input_events_state(), 0u);
 
   manager->SetHidden(true);
@@ -201,7 +201,7 @@ TEST_P(WidgetInputHandlerManagerTest, DevToolsSessionOverridesSuppression) {
       manager->suppressing_input_events_state(),
       static_cast<uint16_t>(WidgetInputHandlerManager::
                                 SuppressingInputEventsBits::kHasNotPainted));
-  manager->DidFirstVisuallyNonEmptyPaint(base::TimeTicks::Now());
+  manager->OnFirstContentfulPaint(base::TimeTicks::Now());
   EXPECT_EQ(manager->suppressing_input_events_state(), 0u);
 
   manager->SetHidden(true);

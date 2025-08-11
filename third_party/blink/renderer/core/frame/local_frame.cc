@@ -999,9 +999,14 @@ void LocalFrame::OnFirstPaint(bool text_painted, bool image_painted) {
   }
 }
 
-void LocalFrame::OnFirstContentfulPaint() {
+void LocalFrame::OnFirstContentfulPaint(
+    const base::TimeTicks& first_paint_time) {
   if (IsOutermostMainFrame()) {
     GetPage()->GetChromeClient().OnFirstContentfulPaint();
+  }
+  auto* widget = GetWidgetForLocalRoot();
+  if (widget) {
+    widget->OnFirstContentfulPaint(first_paint_time);
   }
 }
 

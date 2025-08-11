@@ -862,7 +862,7 @@ class CORE_EXPORT LocalFrame final
   void OnFirstPaint(bool text_painted, bool image_painted);
 
   // Invoked on first contentful paint on this frame.
-  void OnFirstContentfulPaint();
+  void OnFirstContentfulPaint(const base::TimeTicks& first_paint_time);
 
 #if BUILDFLAG(IS_MAC)
   void ResetTextInputHostForTesting();

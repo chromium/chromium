@@ -338,7 +338,7 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
 #endif
 }
 
-void WidgetInputHandlerManager::DidFirstVisuallyNonEmptyPaint(
+void WidgetInputHandlerManager::OnFirstContentfulPaint(
     const base::TimeTicks& first_paint_time) {
   suppressing_input_events_state_ &=
       ~static_cast<uint16_t>(SuppressingInputEventsBits::kHasNotPainted);

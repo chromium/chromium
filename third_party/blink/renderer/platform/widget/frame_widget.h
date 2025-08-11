@@ -324,6 +324,9 @@ class PLATFORM_EXPORT FrameWidget {
   // other parameters are recorded earlier).
   virtual AnimationFrameTimingInfo* RecordRenderingUpdateEndTime(
       base::TimeTicks) = 0;
+
+  virtual void OnFirstContentfulPaint(
+      const base::TimeTicks& first_paint_time) = 0;
 };
 
 }  // namespace blink

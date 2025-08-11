@@ -752,6 +752,8 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   void OnDevToolsSessionConnectionChanged(bool attached);
 
+  void OnFirstContentfulPaint(const base::TimeTicks& first_paint_time) override;
+
  protected:
   // WidgetBaseClient overrides:
   void ScheduleAnimation(bool urgent) override;

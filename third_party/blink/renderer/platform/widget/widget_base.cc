@@ -280,11 +280,10 @@ void WidgetBase::InitializeNonCompositing() {
   initialized_ = true;
 }
 
-void WidgetBase::DidFirstVisuallyNonEmptyPaint(
-    base::TimeTicks& first_paint_time) {
+void WidgetBase::OnFirstContentfulPaint(
+    const base::TimeTicks& first_paint_time) {
   if (widget_input_handler_manager_) {
-    widget_input_handler_manager_->DidFirstVisuallyNonEmptyPaint(
-        first_paint_time);
+    widget_input_handler_manager_->OnFirstContentfulPaint(first_paint_time);
   }
 }
 

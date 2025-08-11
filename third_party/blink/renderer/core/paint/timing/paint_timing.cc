@@ -638,7 +638,7 @@ void PaintTiming::SetFirstContentfulPaintPresentation(
           .InSecondsF());
   WindowPerformance* performance = GetPerformanceInstance(GetFrame());
   if (GetFrame()) {
-    GetFrame()->OnFirstContentfulPaint();
+    GetFrame()->OnFirstContentfulPaint(paint_timing_info.presentation_time);
     GetFrame()->Loader().Progress().DidFirstContentfulPaint();
   }
   NotifyPaintTimingChanged();
