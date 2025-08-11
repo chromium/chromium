@@ -35,6 +35,7 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
 
   void SwitchToReauth(
       Profile* profile,
+      StepSwitchFinishedCallback switch_finished_callback,
       base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback);
 #endif
 
@@ -49,8 +50,10 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
   void SwitchToSignedOutPostIdentityFlow(Profile* profile);
 
   // ProfileManagementFlowControllerImpl:
-  void PickProfile(const base::FilePath& profile_path,
-                   ProfilePicker::ProfilePickingArgs args) override;
+  void PickProfile(
+      const base::FilePath& profile_path,
+      ProfilePicker::ProfilePickingArgs args,
+      base::OnceCallback<void(bool)> pick_profile_complete_callback) override;
 
  protected:
   // ProfileManagementFlowControllerImpl
@@ -78,7 +81,10 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
       std::unique_ptr<content::WebContents> contents) override;
 
   // Callback after loading a profile and opening a browser.
-  void OnSwitchToProfileComplete(bool open_settings, Browser* browser);
+  void OnSwitchToProfileComplete(
+      bool open_settings,
+      base::OnceCallback<void(bool)> pick_profile_complete_callback,
+      Browser* browser);
 
   const ProfilePicker::EntryPoint entry_point_;
   const GURL selected_profile_target_url_;

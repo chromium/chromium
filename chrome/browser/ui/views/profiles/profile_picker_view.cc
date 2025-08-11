@@ -200,17 +200,21 @@ void ProfilePicker::SwitchToDiceSignIn(
     base::OnceCallback<void(bool)> switch_finished_callback) {
   if (g_profile_picker_view) {
     g_profile_picker_view->SwitchToDiceSignIn(
-        std::move(profile_info), std::move(switch_finished_callback));
+        std::move(profile_info),
+        StepSwitchFinishedCallback(std::move(switch_finished_callback)));
   }
 }
 
 // static
 void ProfilePicker::SwitchToReauth(
     Profile* profile,
+    base::OnceCallback<void(bool)> switch_finished_callback,
     base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback) {
   if (g_profile_picker_view) {
-    g_profile_picker_view->SwitchToReauth(profile,
-                                          std::move(on_error_callback));
+    g_profile_picker_view->SwitchToReauth(
+        profile,
+        StepSwitchFinishedCallback(std::move(switch_finished_callback)),
+        std::move(on_error_callback));
   }
 }
 #endif
@@ -224,10 +228,13 @@ void ProfilePicker::SwitchToSignedOutPostIdentityFlow(
 }
 
 // static
-void ProfilePicker::PickProfile(const base::FilePath& profile_path,
-                                ProfilePickingArgs args) {
+void ProfilePicker::PickProfile(
+    const base::FilePath& profile_path,
+    ProfilePickingArgs args,
+    base::OnceCallback<void(bool)> pick_profile_complete_callback) {
   if (g_profile_picker_view) {
-    g_profile_picker_view->flow_controller_->PickProfile(profile_path, args);
+    g_profile_picker_view->flow_controller_->PickProfile(
+        profile_path, args, std::move(pick_profile_complete_callback));
   }
 }
 
@@ -711,17 +718,18 @@ ProfilePickerView::CreateFlowController(Profile* picker_profile,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfilePickerView::SwitchToDiceSignIn(
     ProfilePicker::ProfileInfo profile_info,
-    base::OnceCallback<void(bool)> switch_finished_callback) {
+    StepSwitchFinishedCallback switch_finished_callback) {
   GetProfilePickerFlowController()->SwitchToDiceSignIn(
-      std::move(profile_info),
-      StepSwitchFinishedCallback(std::move(switch_finished_callback)));
+      std::move(profile_info), std::move(switch_finished_callback));
 }
 
 void ProfilePickerView::SwitchToReauth(
     Profile* profile,
+    StepSwitchFinishedCallback switch_finished_callback,
     base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback) {
   GetProfilePickerFlowController()->SwitchToReauth(
-      profile, std::move(on_error_callback));
+      profile, std::move(switch_finished_callback),
+      std::move(on_error_callback));
 }
 #endif
 

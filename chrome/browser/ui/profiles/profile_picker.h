@@ -231,8 +231,12 @@ class ProfilePicker {
   // the `profile` will be opened. On unsuccessful reauth, the user will be
   // redirected to the profile picker main page, with a popup error dialog
   // displayed through `on_error_callback`.
+  // `switch_finished_callback` will be called once the step was switched (or
+  // failed to switch to), the bool parameter indicating the success of the
+  // switch.
   static void SwitchToReauth(
       Profile* profile,
+      base::OnceCallback<void(bool)> switch_finished_callback,
       base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback);
 #endif
 
@@ -252,8 +256,13 @@ class ProfilePicker {
   };
 
   // Picks the profile with `profile_path`.
-  static void PickProfile(const base::FilePath& profile_path,
-                          ProfilePickingArgs args);
+  // `pick_profile_complete_callback` will be called when a browser is opened
+  // with the profile associated with `profile_path`, the boolean parameter
+  // returning whether a browser was successfully opened or not.
+  static void PickProfile(
+      const base::FilePath& profile_path,
+      ProfilePickingArgs args,
+      base::OnceCallback<void(bool)> pick_profile_complete_callback);
 
   // Cancel the signed-in flow and returns back to the main picker screen (if
   // the original EntryPoint was to open the picker). Must only be called from

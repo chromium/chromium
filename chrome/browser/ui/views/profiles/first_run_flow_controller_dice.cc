@@ -541,7 +541,8 @@ void FirstRunFlowControllerDice::CancelPostSignInFlow() {
 
 void FirstRunFlowControllerDice::PickProfile(
     const base::FilePath& profile_path,
-    ProfilePicker::ProfilePickingArgs args) {
+    ProfilePicker::ProfilePickingArgs args,
+    base::OnceCallback<void(bool)> pick_profile_complete_callback) {
   NOTREACHED() << "FRE is not expected to handle this flow";
 }
 
