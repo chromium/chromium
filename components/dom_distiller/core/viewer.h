@@ -91,6 +91,9 @@ const std::string GetDistilledPageThemeJs(mojom::Theme theme);
 // Returns JavaScript corresponding to setting the font scaling.
 const std::string GetDistilledPageFontScalingJs(float scaling);
 
+// Returns JavaScript corresponding to setting the base font size.
+const std::string SetDistilledPageBaseFontSize(float baseFontSize);
+
 }  // namespace viewer
 }  // namespace dom_distiller
 

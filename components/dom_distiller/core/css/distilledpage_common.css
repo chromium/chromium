@@ -225,6 +225,16 @@ body {
 
 /* Content. */
 
+<if expr="is_ios or is_android">
+.desktop-only {
+  display: none;
+}
+</if>
+
+body .hidden {
+  display: none;
+}
+
 #loading-indicator {
   padding-bottom: 2em;
   width: 100%;
@@ -249,3 +259,28 @@ video::-webkit-media-controls-fullscreen-button {
   display: none;
 }
 </if>
+
+
+/* Video styling. */
+
+video::-webkit-media-controls-fullscreen-button {
+  display: none;
+}
+
+/* Iframe sizing. */
+.youtubeContainer {
+  height: 0;
+  /* This is the perecnt height of a standard HD video. */
+  padding-bottom: 56.25%;
+  position: relative;
+  width: 100%;
+}
+
+.youtubeIframe {
+  height: 100%;
+  position: absolute;
+  start: 0;
+  top: 0;
+  width: 100%;
+}
+

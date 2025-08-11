@@ -1,0 +1,105 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+html {
+    width: 100%;
+    margin: auto;
+}
+
+/* Default styles for your container on small screens */
+html {
+  width: 100%; /* Use full width by default */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;  /* Add some horizontal space */
+  padding-right: 16px;
+  box-sizing: border-box; /* Ensures padding is included in the width */
+}
+
+/* For device screens at least 800px wide */
+@media (min-width: 800px) {
+  html {
+    max-width: 600px;
+  }
+}
+
+/* For device screens at least 1000px wide */
+@media (min-width: 1000px) {
+  html {
+    max-width: 800px;
+  }
+}
+
+
+ body {
+     margin: 16px;
+ }
+
+ img {
+    width: 100%;
+    height: auto;
+ }
+
+/* Margins and paddings. */
+
+/* Reset default margins to prevent conflicts and ensure consistency. */
+article, h1, h2, h3, p, figure, div, ul, ol, li {
+  margin: 0;
+}
+
+/*
+  GENERAL RULE: Apply vertical spacing between sibling elements within an
+  article. This rule targets direct children of the <article> itself, as well
+  as children inside any <div>, <ul>, or <ol> containers, no matter how
+  deeply they are nested.
+*/
+article > * + *,
+article :is(div, section, ul, ol) > * + * {
+  margin-top: 1.5rem; /* 24dp */
+}
+
+/*
+  EXCEPTION: Use tighter spacing for a paragraph that immediately follows a
+  heading. Because this selector is more specific, it will correctly
+  override the general rule above.
+*/
+article h1 + p,
+article h2 + p,
+article h3 + p {
+  margin-top: 0.75rem; /* ~12dp */
+}
+/* Text rules. */
+
+html {
+    font-size: 16px;
+    line-height: 1.5rem; /* 18px */
+}
+
+#title-holder, h1 {
+    font-size: 2rem; /* 32px */
+    line-height: 3rem; /* 48px */
+    font-weight: bold;
+}
+
+h2, h3, h4, h5, h6 {
+    font-size: 1.5rem; /* 24px */
+    line-height: 2.25rem; /* 36px */
+    font-weight: bold;
+}
+
+img, figcaption {
+    font-size: 0.75rem; /* 12px */
+    line-height: 1.125rem; /* 18px */
+    font-style: italic;
+}
+
+/* list specific styling */
+
+ul, ol {
+    list-style-type: none;
+    padding-inline-start: 0;
+    padding-inline-end: 0;
+    padding: 0;
+    margin: 0;
+}

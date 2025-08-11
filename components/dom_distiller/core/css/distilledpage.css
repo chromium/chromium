@@ -166,27 +166,6 @@ pre {
   white-space: pre-wrap;
 }
 
-body .hidden {
-  display: none;
-}
-
 .clear {
   clear: both;
-}
-
-/* Iframe sizing. */
-.youtubeContainer {
-  height: 0;
-  /* This is the perecnt height of a standard HD video. */
-  padding-bottom: 56.25%;
-  position: relative;
-  width: 100%;
-}
-
-.youtubeIframe {
-  height: 100%;
-  position: absolute;
-  start: 0;
-  top: 0;
-  width: 100%;
 }

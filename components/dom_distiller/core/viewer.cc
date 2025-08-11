@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
@@ -17,6 +18,7 @@
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
+#include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "components/dom_distiller/core/experiments.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
@@ -66,6 +68,12 @@ const char kMonospaceCssClass[] = "monospace";
 // LINT.ThenChange(//components/dom_distiller/core/css/distilledpage_common.css)
 
 std::string GetVersionedCss() {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(dom_distiller::kReaderModeDistillInApp)) {
+    return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+        IDR_DISTILLER_NEW_CSS);
+  }
+#endif
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
       IDR_DISTILLER_CSS);
 }
@@ -354,6 +362,10 @@ const std::string GetDistilledPageFontFamilyJs(mojom::FontFamily font_family) {
 
 const std::string GetDistilledPageFontScalingJs(float scaling) {
   return "useFontScaling(" + base::NumberToString(scaling) + ");";
+}
+
+const std::string SetDistilledPageBaseFontSize(float baseFontSize) {
+  return "useBaseFontSize(" + base::NumberToString(baseFontSize) + ");";
 }
 
 }  // namespace viewer

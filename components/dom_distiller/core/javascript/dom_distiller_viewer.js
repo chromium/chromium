@@ -210,6 +210,11 @@ class FontSizeSlider {
       option.classList.toggle('after-thumb', !isBeforeThumb);
     }
   }
+
+  useBaseFontSize(size) {
+    this.baseSize = size;
+    this.update(this.element.value);
+  }
 }
 
 maybeSetWebFont();
@@ -474,6 +479,11 @@ class Pincher {
     this.clampedScale = scaling;
     this.restoreCenter_();
   }
+
+  useBaseFontSize(size) {
+    this.baseSize = size;
+    reset();
+  }
 }
 
 // The pincher is only defined on Android, and the font size slider only on
@@ -484,6 +494,17 @@ if (navigator.userAgent.toLowerCase().indexOf('android') > -1) {
   pincher = new Pincher();
 } else {
   fontSizeSlider = new FontSizeSlider();
+}
+
+/**
+ * Called to set the baseFontSize for the pinch/slider (whichever is active).
+ */
+function useBaseFontSize(size) {
+  if (navigator.userAgent.toLowerCase().indexOf('android') > -1) {
+    pincher.useBaseFontSize(size);
+  } else {
+    fontSizeSlider.useBaseFontSize(size);
+  }
 }
 
 function useFontScaling(scale) {
