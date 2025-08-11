@@ -5847,21 +5847,6 @@
             ]
         }
     ],
-    "ClaySnackbarOnAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ClaySnackbar"
-                    ]
-                }
-            ]
-        }
-    ],
     "CleanupToBeNormalTermination": [
         {
             "platforms": [

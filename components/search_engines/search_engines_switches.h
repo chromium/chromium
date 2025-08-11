@@ -53,10 +53,6 @@ extern const base::FeatureParam<std::string>
     kSearchEngineChoiceTriggerRepromptParams;
 
 #if BUILDFLAG(IS_ANDROID)
-// Enables showing a snackbar when users change their default search engine in
-// Android.
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-BASE_DECLARE_FEATURE(kClaySnackbar);
 // Suppresses the default browser promo if the user has already completed the
 // OS-level default browser choice.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
