@@ -699,8 +699,6 @@ void VideoOverlayWindowViews::OnKeyEvent(ui::KeyEvent* event) {
     event->SetHandled();
   }
 
-  MaybeUpdateMeetsUserInteraction(*event);
-
   views::Widget::OnKeyEvent(event);
 }
 
@@ -748,8 +746,6 @@ void VideoOverlayWindowViews::OnMouseEvent(ui::MouseEvent* event) {
   // If the user interacts with the window using a mouse, stop the timer to
   // automatically hide the controls.
   hide_controls_timer_.Reset();
-
-  MaybeUpdateMeetsUserInteraction(*event);
 
   views::Widget::OnMouseEvent(event);
 }
@@ -799,14 +795,6 @@ void VideoOverlayWindowViews::StopForcingControlsVisibleForTesting() {
   force_title_and_scrim_visible_.reset();
 }
 
-void VideoOverlayWindowViews::FireEnableControlsAfterMoveTimerForTesting() {
-  if (!enable_controls_after_move_timer_.IsRunning()) {
-    return;
-  }
-  enable_controls_after_move_timer_.Stop();
-  ReEnableControlsAfterMove();
-}
-
 bool VideoOverlayWindowViews::AreControlsVisible() const {
   // If we're animating to a visibility state, then we'll act as if we're in
   // that state.
@@ -845,28 +833,17 @@ void VideoOverlayWindowViews::UpdateControlsVisibility(bool is_visible,
   const bool wanted_visibility =
       !IsOverlayViewShown() && force_controls_visible_.value_or(is_visible);
 
-  // The title and scrim can be hidden if the overlay window is trusted or meets
-  // the user interaction criteria.
-  const bool can_hide_title_and_scrim =
-      IsTrustedForMediaPlayback() || meets_user_interaction_;
-
-  // If the controls are becoming visible, and the title and scrim can be
-  // hidden, stop the initial hide timer.
-  if (wanted_visibility && can_hide_title_and_scrim) {
+  // If the controls are becoming visible, stop the initial hide timer.
+  if (wanted_visibility) {
     initial_title_hide_timer_.Stop();
   }
 
-  // The title and controls top scrim are visible if:
-  //   * The controls are, or
-  //   * We are in the initial "show" period, or
-  //   * The overlay window does not meet the user interaction criteria and is
-  //   not trusted for media playback
-  const bool title_is_visible =
-      force_title_and_scrim_visible_.has_value()
-          ? force_title_and_scrim_visible_.value()
-          : (wanted_visibility && Use2024UI()) ||
-                initial_title_hide_timer_.IsRunning() ||
-                (Use2024UI() && !can_hide_title_and_scrim);
+  // The title and controls top scrim are visible if the controls are, or if we
+  // are in the initial "show" period.
+  const bool title_is_visible = force_title_and_scrim_visible_.has_value()
+                                    ? force_title_and_scrim_visible_.value()
+                                    : (wanted_visibility && Use2024UI()) ||
+                                          initial_title_hide_timer_.IsRunning();
 
   if (should_animate) {
     // Animate the title and top scrim.
@@ -2402,8 +2379,6 @@ void VideoOverlayWindowViews::OnNativeWidgetRemovingFromCompositor() {
 }
 
 void VideoOverlayWindowViews::OnGestureEvent(ui::GestureEvent* event) {
-  MaybeUpdateMeetsUserInteraction(*event);
-
   if (OnGestureEventHandledOrIgnored(event)) {
     return;
   }
@@ -2886,9 +2861,6 @@ void VideoOverlayWindowViews::UpdateFavicon(const gfx::ImageSkia& favicon) {
 }
 
 void VideoOverlayWindowViews::OnInitialTitleTimerFired() {
-  if (user_interacted_before_timer_fired_) {
-    meets_user_interaction_ = true;
-  }
   UpdateControlsVisibility(false);
 }
 
@@ -2913,23 +2885,4 @@ bool VideoOverlayWindowViews::AreTitleAndScrimVisible() const {
   DCHECK_EQ(GetTitleView()->layer()->opacity(),
             GetControlsTopScrimView()->layer()->opacity());
   return GetTitleView()->layer()->opacity() > 0;
-}
-
-void VideoOverlayWindowViews::MaybeUpdateMeetsUserInteraction(
-    const ui::Event& event) {
-  if (meets_user_interaction_) {
-    return;
-  }
-
-  if (event.type() != ui::EventType::kKeyPressed &&
-      event.type() != ui::EventType::kGestureTap &&
-      event.type() != ui::EventType::kMousePressed) {
-    return;
-  }
-
-  if (initial_title_hide_timer_.IsRunning()) {
-    user_interacted_before_timer_fired_ = true;
-  } else {
-    meets_user_interaction_ = true;
-  }
 }
