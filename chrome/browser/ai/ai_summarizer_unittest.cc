@@ -16,6 +16,7 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/summarize.pb.h"
+#include "components/optimization_guide/proto/string_value.pb.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,8 +64,8 @@ class MockCreateSummarizerClient
 
 optimization_guide::OptimizationGuideModelStreamingExecutionResult
 CreateExecutionResult(std::string_view output, bool is_complete) {
-  optimization_guide::proto::SummarizeResponse response;
-  *response.mutable_output() = output;
+  optimization_guide::proto::StringValue response;
+  *response.mutable_value() = output;
   return optimization_guide::OptimizationGuideModelStreamingExecutionResult(
       optimization_guide::StreamingResponse{
           .response = optimization_guide::AnyWrapProto(response),
