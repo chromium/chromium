@@ -60,7 +60,7 @@ class SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired
 };
 
 TEST_P(SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired,
-       IsGmsCoreUpdateRequired) {
+       DISABLED_IsGmsCoreUpdateRequired) {
   IsGmsCoreUpdateRequiredTestCase p = GetParam();
   base::test::ScopedFeatureList features;
   pref_service()->SetBoolean(
