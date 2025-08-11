@@ -85,7 +85,7 @@ void TouchFactory::SetTouchDeviceListFromCommandLine() {
 
 void TouchFactory::UpdateDeviceList(x11::Connection* connection) {
   // Detect touch devices.
-  touch_device_lookup_.reset();
+  touch_device_lookup_.clear();
   touch_device_list_.clear();
   touchscreen_ids_.clear();
 
@@ -104,7 +104,7 @@ void TouchFactory::UpdateDeviceList(x11::Connection* connection) {
   // is possible), then the device is detected as a floating device, and a
   // floating device is not connected to a master device. So it is necessary to
   // also select on the floating devices.
-  pointer_device_lookup_.reset();
+  pointer_device_lookup_.clear();
   const XIDeviceList& xi_dev_list =
       DeviceListCacheX11::GetInstance()->GetXI2DeviceList(connection);
   for (const auto& devinfo : xi_dev_list) {
@@ -124,10 +124,7 @@ void TouchFactory::UpdateDeviceList(x11::Connection* connection) {
                              ? devinfo.attachment
                              : devinfo.deviceid;
 
-        if (!IsValidDevice(static_cast<uint16_t>(master_id)))
-          continue;
-
-        touch_device_lookup_[static_cast<uint16_t>(master_id)] = true;
+        touch_device_lookup_.insert(master_id);
         touch_device_list_[master_id] = {true, EventPointerType::kTouch};
 
         if (devinfo.type != x11::Input::DeviceType::MasterPointer)
@@ -135,13 +132,14 @@ void TouchFactory::UpdateDeviceList(x11::Connection* connection) {
 
         if (devinfo.type == x11::Input::DeviceType::MasterPointer) {
           device_master_id_list_[devinfo.deviceid] = master_id;
-          touch_device_lookup_[static_cast<uint16_t>(devinfo.deviceid)] = true;
+          touch_device_lookup_.insert(devinfo.deviceid);
           touch_device_list_[devinfo.deviceid] = {false,
                                                   EventPointerType::kTouch};
         }
       }
-      pointer_device_lookup_[static_cast<uint16_t>(devinfo.deviceid)] =
-          (devinfo.type != x11::Input::DeviceType::SlavePointer);
+      if (devinfo.type != x11::Input::DeviceType::SlavePointer) {
+        pointer_device_lookup_.insert(devinfo.deviceid);
+      }
     } else if (devinfo.type == x11::Input::DeviceType::MasterKeyboard) {
       virtual_core_keyboard_device_ = devinfo.deviceid;
     }
@@ -236,40 +234,31 @@ void TouchFactory::SetupXI2ForXWindow(x11::Window window) {
 
 void TouchFactory::SetTouchDeviceList(
     const std::vector<std::pair<int, EventPointerType>>& devices) {
-  touch_device_lookup_.reset();
+  touch_device_lookup_.clear();
   touch_device_list_.clear();
   for (auto& device : devices) {
     int device_int = device.first;
     auto device_id = static_cast<x11::Input::DeviceId>(device_int);
     EventPointerType type = device.second;
-    DCHECK(IsValidDevice(device_int));
-    touch_device_lookup_[device_int] = true;
+    touch_device_lookup_.insert(device_id);
     touch_device_list_[device_id] = {false, type};
     if (device_master_id_list_.find(device_id) !=
         device_master_id_list_.end()) {
       // When we set the device through the "--touch-devices" flag to slave
       // touch device, we also set its master device to be touch device.
-      touch_device_lookup_[static_cast<uint16_t>(
-          device_master_id_list_[device_id])] = true;
+      touch_device_lookup_.insert(device_master_id_list_[device_id]);
       touch_device_list_[device_master_id_list_[device_id]] = {false, type};
     }
   }
 }
 
-bool TouchFactory::IsValidDevice(int deviceid) const {
-  return deviceid >= 0 &&
-         static_cast<size_t>(deviceid) < touch_device_lookup_.size();
-}
-
 bool TouchFactory::IsTouchDevice(x11::Input::DeviceId deviceid) const {
-  return IsValidDevice(static_cast<uint16_t>(deviceid)) &&
-         touch_device_lookup_[static_cast<uint16_t>(deviceid)];
+  return touch_device_lookup_.contains(deviceid);
 }
 
 bool TouchFactory::IsMultiTouchDevice(x11::Input::DeviceId deviceid) const {
-  return IsValidDevice(static_cast<uint16_t>(deviceid)) &&
-         touch_device_lookup_[static_cast<uint16_t>(deviceid)] &&
-         touch_device_list_.find(deviceid)->second.is_master;
+  return touch_device_lookup_.contains(deviceid) &&
+         touch_device_list_.at(deviceid).is_master;
 }
 
 EventPointerType TouchFactory::GetTouchDevicePointerType(
@@ -294,12 +283,12 @@ void TouchFactory::ReleaseSlot(int slot) {
 }
 
 bool TouchFactory::IsTouchDevicePresent() {
-  return touch_screens_enabled_ && touch_device_lookup_.any();
+  return touch_screens_enabled_ && !touch_device_lookup_.empty();
 }
 
 void TouchFactory::ResetForTest() {
-  pointer_device_lookup_.reset();
-  touch_device_lookup_.reset();
+  pointer_device_lookup_.clear();
+  touch_device_lookup_.clear();
   touch_device_list_.clear();
   touchscreen_ids_.clear();
   id_generator_.ResetForTest();
@@ -307,21 +296,20 @@ void TouchFactory::ResetForTest() {
 }
 
 void TouchFactory::SetTouchDeviceForTest(const std::vector<int>& devices) {
-  touch_device_lookup_.reset();
+  touch_device_lookup_.clear();
   touch_device_list_.clear();
   for (int device_id : devices) {
     auto device = static_cast<x11::Input::DeviceId>(device_id);
-    DCHECK(IsValidDevice(device_id));
-    touch_device_lookup_[device_id] = true;
+    touch_device_lookup_.insert(device);
     touch_device_list_[device] = {true, EventPointerType::kTouch};
   }
   SetTouchscreensEnabled(true);
 }
 
 void TouchFactory::SetPointerDeviceForTest(const std::vector<int>& devices) {
-  pointer_device_lookup_.reset();
+  pointer_device_lookup_.clear();
   for (int device : devices)
-    pointer_device_lookup_[device] = true;
+    pointer_device_lookup_.insert(static_cast<x11::Input::DeviceId>(device));
 }
 
 void TouchFactory::SetTouchscreensEnabled(bool enabled) {
@@ -343,8 +331,9 @@ void TouchFactory::CacheTouchscreenIds(x11::Input::DeviceId device_id) {
 
 bool TouchFactory::ShouldProcessEventForDevice(
     x11::Input::DeviceId device_id) const {
-  if (!pointer_device_lookup_[static_cast<uint16_t>(device_id)])
+  if (!pointer_device_lookup_.contains(device_id)) {
     return false;
+  }
 
   return IsTouchDevice(device_id) ? touch_screens_enabled_ : true;
 }
