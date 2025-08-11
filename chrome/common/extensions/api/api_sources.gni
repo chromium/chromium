@@ -28,7 +28,7 @@ schema_sources_ = [
   "page_capture.json",
   "permissions.json",
   "processes.idl",
-  "reading_list.idl",
+  "reading_list.webidl",
   "scripting.idl",
   "tabs.json",
   "web_authentication_proxy.webidl",
