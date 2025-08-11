@@ -112,7 +112,6 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
-import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
@@ -1724,8 +1723,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
             View indicator = mMenuButton.findViewById(R.id.menu_dot);
             boolean show =
-                    AdaptiveToolbarFeatures.isDynamicAction(buttonVariant)
-                            && buttonVariant != AdaptiveToolbarButtonVariant.READER_MODE;
+                    buttonVariant == AdaptiveToolbarButtonVariant.PRICE_TRACKING
+                            || buttonVariant == AdaptiveToolbarButtonVariant.PRICE_INSIGHTS;
             indicator.setVisibility(show ? View.VISIBLE : View.GONE);
             if (!show) return;
 
