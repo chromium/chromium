@@ -26,7 +26,7 @@ class MockBubbleController : public BubbleControllerBase {
     // Default behavior for mock methods.
     ON_CALL(*this, ShowBubble).WillByDefault([this]() { is_shown_ = true; });
     ON_CALL(*this, HideBubble).WillByDefault([this]() { is_shown_ = false; });
-    ON_CALL(*this, IsShown).WillByDefault([this]() { return is_shown_; });
+    ON_CALL(*this, IsShowing).WillByDefault([this]() { return is_shown_; });
     ON_CALL(*this, GetBubbleControllerBaseWeakPtr).WillByDefault([this]() {
       return weak_ptr_factory_.GetWeakPtr();
     });
@@ -35,7 +35,7 @@ class MockBubbleController : public BubbleControllerBase {
   MOCK_METHOD(void, ShowBubble, (), (override));
   MOCK_METHOD(void, HideBubble, (), (override));
   MOCK_METHOD(BubbleType, GetBubbleType, (), (const, override));
-  MOCK_METHOD(bool, IsShown, (), (const, override));
+  MOCK_METHOD(bool, IsShowing, (), (const, override));
   MOCK_METHOD(base::WeakPtr<BubbleControllerBase>,
               GetBubbleControllerBaseWeakPtr,
               (),
@@ -76,7 +76,7 @@ TEST_F(BubbleManagerImplTest, RequestShow_NoActiveBubble_ShowsImmediately) {
 
   EXPECT_CALL(*address_controller, ShowBubble());
   bubble_manager_.RequestShowController(*address_controller);
-  EXPECT_TRUE(address_controller->IsShown());
+  EXPECT_TRUE(address_controller->IsShowing());
 }
 
 // Test that a higher-priority bubble preempts a lower-priority one.
@@ -88,7 +88,7 @@ TEST_F(BubbleManagerImplTest, RequestShow_HigherPriority_PreemptsActive) {
 
   EXPECT_CALL(*address_controller, ShowBubble());
   bubble_manager_.RequestShowController(*address_controller);
-  ASSERT_TRUE(address_controller->IsShown());
+  ASSERT_TRUE(address_controller->IsShowing());
 
   {
     InSequence sequence;
@@ -97,8 +97,8 @@ TEST_F(BubbleManagerImplTest, RequestShow_HigherPriority_PreemptsActive) {
   }
 
   bubble_manager_.RequestShowController(*card_controller);
-  EXPECT_FALSE(address_controller->IsShown());
-  EXPECT_TRUE(card_controller->IsShown());
+  EXPECT_FALSE(address_controller->IsShowing());
+  EXPECT_TRUE(card_controller->IsShowing());
 }
 
 // Test that hiding the active bubble shows the next highest-priority one from
@@ -112,9 +112,9 @@ TEST_F(BubbleManagerImplTest, HideActiveBubble_WithPendingRequest_ShowsNext) {
   // Show card bubble, then queue address bubble.
   EXPECT_CALL(*card_controller, ShowBubble());
   bubble_manager_.RequestShowController(*card_controller);
-  ASSERT_TRUE(card_controller->IsShown());
+  ASSERT_TRUE(card_controller->IsShowing());
   bubble_manager_.RequestShowController(*address_controller);
-  ASSERT_FALSE(address_controller->IsShown());
+  ASSERT_FALSE(address_controller->IsShowing());
 
   // When the active (card) bubble is hidden, the address bubble should be shown
   // from the queue.
@@ -126,8 +126,8 @@ TEST_F(BubbleManagerImplTest, HideActiveBubble_WithPendingRequest_ShowsNext) {
   // The state of the card controller should now be false.
   card_controller->HideBubble();
 
-  EXPECT_FALSE(card_controller->IsShown());
-  EXPECT_TRUE(address_controller->IsShown());
+  EXPECT_FALSE(card_controller->IsShowing());
+  EXPECT_TRUE(address_controller->IsShowing());
 }
 
 // Tests that when a high priority bubble is shown, the lower priority bubbles
@@ -144,9 +144,9 @@ TEST_F(BubbleManagerImplTest,
   // Show card bubble and then queue address bubble.
   EXPECT_CALL(*card_controller, ShowBubble());
   bubble_manager_.RequestShowController(*card_controller);
-  ASSERT_TRUE(card_controller->IsShown());
+  ASSERT_TRUE(card_controller->IsShowing());
   bubble_manager_.RequestShowController(*address_controller);
-  ASSERT_FALSE(address_controller->IsShown());
+  ASSERT_FALSE(address_controller->IsShowing());
 
   // Request a high-priority password bubble. This will preempt the active
   // card bubble.
@@ -161,9 +161,9 @@ TEST_F(BubbleManagerImplTest,
   bubble_manager_.RequestShowController(*password_controller);
 
   // The password bubble is now active, and the other two are not.
-  EXPECT_TRUE(password_controller->IsShown());
-  EXPECT_FALSE(address_controller->IsShown());
-  EXPECT_FALSE(card_controller->IsShown());
+  EXPECT_TRUE(password_controller->IsShowing());
+  EXPECT_FALSE(address_controller->IsShowing());
+  EXPECT_FALSE(card_controller->IsShowing());
 }
 
 // Test that a lower-priority bubble is queued if a higher-priority one is
@@ -176,14 +176,14 @@ TEST_F(BubbleManagerImplTest, RequestShow_LowerPriority_QueuesRequest) {
 
   EXPECT_CALL(*card_controller, ShowBubble());
   bubble_manager_.RequestShowController(*card_controller);
-  ASSERT_TRUE(card_controller->IsShown());
+  ASSERT_TRUE(card_controller->IsShowing());
 
   EXPECT_CALL(*address_controller, ShowBubble()).Times(0);
   EXPECT_CALL(*card_controller, HideBubble()).Times(0);
   bubble_manager_.RequestShowController(*address_controller);
 
-  EXPECT_TRUE(card_controller->IsShown());
-  EXPECT_FALSE(address_controller->IsShown());
+  EXPECT_TRUE(card_controller->IsShowing());
+  EXPECT_FALSE(address_controller->IsShowing());
 }
 
 // Test the special case where a new password bubble replaces an existing one.
@@ -196,7 +196,7 @@ TEST_F(BubbleManagerImplTest, RequestShow_PasswordReplacesPassword) {
   // Show password bubble and then replace it.
   EXPECT_CALL(*password_controller_1, ShowBubble());
   bubble_manager_.RequestShowController(*password_controller_1);
-  ASSERT_TRUE(password_controller_1->IsShown());
+  ASSERT_TRUE(password_controller_1->IsShowing());
 
   {
     InSequence sequence;
@@ -205,8 +205,8 @@ TEST_F(BubbleManagerImplTest, RequestShow_PasswordReplacesPassword) {
   }
 
   bubble_manager_.RequestShowController(*password_controller_2);
-  EXPECT_FALSE(password_controller_1->IsShown());
-  EXPECT_TRUE(password_controller_2->IsShown());
+  EXPECT_FALSE(password_controller_1->IsShowing());
+  EXPECT_TRUE(password_controller_2->IsShowing());
 }
 
 // Test that a pending request is ignored if a request of the same type
@@ -227,12 +227,12 @@ TEST_F(BubbleManagerImplTest, AddToQueue_DuplicateType_IgnoredBeforeTimeout) {
 
   bubble_manager_.OnBubbleHiddenByController(*password_controller);
 
-  EXPECT_TRUE(address_controller_1->IsShown());
-  EXPECT_FALSE(address_controller_2->IsShown());
+  EXPECT_TRUE(address_controller_1->IsShowing());
+  EXPECT_FALSE(address_controller_2->IsShowing());
 
   // Ensure `address_controller_2` is never shown.
   bubble_manager_.OnBubbleHiddenByController(*address_controller_1);
-  EXPECT_FALSE(address_controller_2->IsShown());
+  EXPECT_FALSE(address_controller_2->IsShowing());
 }
 
 // Test that a pending request replaces an older one of the same type after
@@ -256,12 +256,12 @@ TEST_F(BubbleManagerImplTest, AddToQueue_DuplicateType_ReplacedAfterTimeout) {
 
   bubble_manager_.OnBubbleHiddenByController(*password_controller);
 
-  EXPECT_FALSE(address_controller_1->IsShown());
-  EXPECT_TRUE(address_controller_2->IsShown());
+  EXPECT_FALSE(address_controller_1->IsShowing());
+  EXPECT_TRUE(address_controller_2->IsShowing());
 
   // Ensure `address_controller_1` is never shown.
   bubble_manager_.OnBubbleHiddenByController(*address_controller_2);
-  EXPECT_FALSE(address_controller_1->IsShown());
+  EXPECT_FALSE(address_controller_1->IsShowing());
 }
 
 // Test that a new password bubble always replaces a pending password bubble.
@@ -283,12 +283,12 @@ TEST_F(BubbleManagerImplTest,
   bubble_manager_.RequestShowController(*password_controller_2);
 
   bubble_manager_.OnBubbleHiddenByController(*filled_card_controller);
-  EXPECT_FALSE(password_controller_1->IsShown());
-  EXPECT_TRUE(password_controller_2->IsShown());
+  EXPECT_FALSE(password_controller_1->IsShowing());
+  EXPECT_TRUE(password_controller_2->IsShowing());
 
   // Ensure `password_controller_1` is never shown.
   bubble_manager_.OnBubbleHiddenByController(*password_controller_2);
-  EXPECT_FALSE(password_controller_1->IsShown());
+  EXPECT_FALSE(password_controller_1->IsShowing());
 }
 
 }  // namespace autofill
