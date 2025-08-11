@@ -58,7 +58,9 @@ class OtpFormManagerTest : public testing::Test {
   OtpFormManagerTest() : task_runner_(new base::TestMockTimeTaskRunner) {}
 
   void SetUp() override {
-    form_id_ = autofill::test::MakeFormGlobalId();
+    form_data_.set_fields({autofill::test::CreateTestFormField(
+        "some_label", "some_name", "some_value",
+        autofill::FormControlType::kInputText)});
     field_ids_.push_back(autofill::test::MakeFieldGlobalId());
 
     field_info_manager_ = std::make_unique<FieldInfoManager>(task_runner_);
@@ -68,7 +70,7 @@ class OtpFormManagerTest : public testing::Test {
 
  protected:
   MockPasswordManagerClient client_;
-  FormGlobalId form_id_;
+  FormData form_data_;
   std::vector<FieldGlobalId> field_ids_;
   std::unique_ptr<FieldInfoManager> field_info_manager_;
   GURL test_otp_url_ = GURL(kTestOtpUrl);
@@ -87,7 +89,7 @@ TEST_F(OtpFormManagerTest, BasicOtpSourceIdentification) {
 
   const GURL otp_url(kTestOtpUrl);
   EXPECT_CALL(client_, GetLastCommittedURL).WillOnce(ReturnRef(test_otp_url_));
-  OtpFormManager form_manager(form_id_, field_ids_, &client_);
+  OtpFormManager form_manager(form_data_, field_ids_, &client_);
 
   // Email field was interacted with last, it should be picked as most probable.
   EXPECT_EQ(OtpSource::kEmail, form_manager.otp_source());
@@ -97,7 +99,7 @@ TEST_F(OtpFormManagerTest, OtpSourceUpdatedWithNewPredictions) {
   const GURL otp_url(kTestOtpUrl);
   EXPECT_CALL(client_, GetLastCommittedURL)
       .WillRepeatedly(ReturnRef(test_otp_url_));
-  OtpFormManager form_manager(form_id_, field_ids_, &client_);
+  OtpFormManager form_manager(form_data_, field_ids_, &client_);
   EXPECT_EQ(OtpSource::kUnknown, form_manager.otp_source());
 
   // Simulate user interacting with a phone number field.
@@ -122,7 +124,7 @@ TEST_F(OtpFormManagerTest, OtpSourceNotRemovedOnceDataGetsStale) {
   const GURL otp_url(kTestOtpUrl);
   EXPECT_CALL(client_, GetLastCommittedURL)
       .WillRepeatedly(ReturnRef(test_otp_url_));
-  OtpFormManager form_manager(form_id_, field_ids_, &client_);
+  OtpFormManager form_manager(form_data_, field_ids_, &client_);
   EXPECT_EQ(OtpSource::kSms, form_manager.otp_source());
 
   // To keep the test simple, reset the FieldInfoManager, so no data is
@@ -170,7 +172,7 @@ class OtpFormManagerTestWithSmsBackend : public OtpFormManagerTest {
 TEST_F(OtpFormManagerTestWithSmsBackend, SmsOtpBackendUsedForSmsOtpRetrieval) {
   // Check that the backend is called on the form manager creation.
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp);
-  OtpFormManager form_manager(form_id_, field_ids_, &client_);
+  OtpFormManager form_manager(form_data_, field_ids_, &client_);
 
   // Simulate form changing dynamically, which should result in receiving new
   // predictions and trigger the new backend query.
@@ -190,7 +192,7 @@ TEST_F(OtpFormManagerTestWithSmsBackend, OtpFillingWithOtpValueRetrieved) {
                                                   /*request_complete=*/true));
           }));
   FieldGlobalId otp_field_id = autofill::test::MakeFieldGlobalId();
-  OtpFormManager form_manager(form_id_, {otp_field_id}, &client_);
+  OtpFormManager form_manager(form_data_, {otp_field_id}, &client_);
 
   // A field not parsed as an OTP field is not eligible for OTP filling.
   FieldGlobalId some_other_field_id = autofill::test::MakeFieldGlobalId();
@@ -215,7 +217,7 @@ TEST_F(OtpFormManagerTestWithSmsBackend, OtpFillingEligibilityOtpValueMissing) {
                                                   /*request_complete=*/true));
           }));
   FieldGlobalId otp_field_id = autofill::test::MakeFieldGlobalId();
-  OtpFormManager form_manager(form_id_, {otp_field_id}, &client_);
+  OtpFormManager form_manager(form_data_, {otp_field_id}, &client_);
 
   FieldGlobalId some_other_field_id = autofill::test::MakeFieldGlobalId();
   EXPECT_FALSE(form_manager.IsFieldEligibleForOtpFilling(some_other_field_id));
