@@ -11,5 +11,4 @@ parcelable IDeviceInfo {
   boolean isFoldable;
   boolean isTv;
   int vulkanDeqpLevel;
-  boolean isXr;
 }

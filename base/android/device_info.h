@@ -21,22 +21,17 @@ struct IDeviceInfo;
 namespace base::android::device_info {
 const std::string& gms_version_code();
 
-BASE_EXPORT void set_gms_version_code_for_test(
-    const std::string& gms_version_code);
+void set_gms_version_code_for_test(const std::string& gms_version_code);
 
 BASE_EXPORT void Set(const IDeviceInfo& info);
 
-BASE_EXPORT bool is_tv();
-BASE_EXPORT bool is_automotive();
-BASE_EXPORT bool is_foldable();
-BASE_EXPORT bool is_desktop();
+bool is_tv();
+bool is_automotive();
+bool is_foldable();
+bool is_desktop();
 // Available only on Android T+.
-BASE_EXPORT int32_t vulkan_deqp_level();
-BASE_EXPORT bool is_xr();
+int32_t vulkan_deqp_level();
 
-// For testing use only.
-BASE_EXPORT void set_is_xr_for_testing();
-BASE_EXPORT void reset_is_xr_for_testing();
 }  // namespace base::android::device_info
 
 #endif  // BASE_ANDROID_DEVICE_INFO_H_

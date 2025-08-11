@@ -32,6 +32,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "net/http/http_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -54,6 +55,10 @@
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 #include <sys/utsname.h>
 #endif
+
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
+#include "device/vr/public/cpp/features.h"
+#endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
 
 namespace embedder_support {
 
@@ -338,10 +343,7 @@ std::string GetUnifiedPlatform() {
   constexpr char kUnifiedPlatformLinuxX64[] = "X11; Linux x86_64";
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  // The Android XR device by default also has the unified platform of desktop
-  // form factor.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP ||
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_XR) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
     return kUnifiedPlatformLinuxX64;
   }
   return "Linux; Android 10; K";
@@ -601,8 +603,7 @@ bool GetMobileBitForUAMetadata() {
   // Android and not a desktop form factor, AND the kUseMobileUserAgent switch
   // is present.
 #if BUILDFLAG(IS_ANDROID)
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP ||
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_XR) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
     return false;
   }
 #endif
@@ -624,8 +625,7 @@ std::string GetPlatformVersion() {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP ||
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_XR) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
     return std::string();
   }
 #endif
@@ -642,8 +642,7 @@ std::string GetPlatformVersion() {
 
 std::string GetPlatformForUAMetadata() {
 #if BUILDFLAG(IS_ANDROID)
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP ||
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_XR) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
     return "Linux";
   }
 #endif
@@ -717,11 +716,11 @@ std::vector<std::string> GetFormFactorsClientHint(
   std::vector<std::string> form_factors = {
       is_mobile ? blink::kMobileFormFactor : blink::kDesktopFormFactor};
 
-#if BUILDFLAG(IS_ANDROID)
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_XR) {
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
+  if (device::features::IsXrDevice()) {
     form_factors.push_back(blink::kXRFormFactor);
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
   return form_factors;
 }
 
@@ -788,11 +787,7 @@ std::string GetCpuArchitecture() {
 #elif BUILDFLAG(IS_IOS)
   return "arm";
 #elif BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/433345971) The user agent string should contain the actual
-  // cpu type information obtained from the Android device. Same for the cpu bit
-  // count in #GetCpuBitness below.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP ||
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_XR) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
     return "x86";
   }
   return std::string();
@@ -831,8 +826,7 @@ std::string GetCpuBitness() {
 #elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
   return "64";
 #elif BUILDFLAG(IS_ANDROID)
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP ||
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_XR) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
     return "64";
   }
   return std::string();
