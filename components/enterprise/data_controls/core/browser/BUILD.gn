@@ -104,6 +104,7 @@ source_set("unit_tests") {
     "conditions/not_condition_unittest.cc",
     "conditions/or_condition_unittest.cc",
     "rule_unittest.cc",
+    "rules_service_base_unittest.cc",
     "verdict_unittest.cc",
   ]
 
@@ -112,6 +113,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/prefs:test_support",
     "//testing/gtest",
   ]
 }

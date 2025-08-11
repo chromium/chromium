@@ -20,6 +20,34 @@ RulesServiceBase::RulesServiceBase(PrefService* pref_service) {
 
 RulesServiceBase::~RulesServiceBase() = default;
 
+Verdict RulesServiceBase::GetCopyRestrictedBySourceVerdict(
+    const GURL& source) const {
+  return GetVerdict(Rule::Restriction::kClipboard,
+                    {
+                        .source =
+                            {
+                                .url = source,
+                                .incognito = incognito_profile(),
+                            },
+                    });
+}
+
+Verdict RulesServiceBase::GetCopyToOSClipboardVerdict(
+    const GURL& source) const {
+  return GetVerdict(Rule::Restriction::kClipboard,
+                    {
+                        .source =
+                            {
+                                .url = source,
+                                .incognito = incognito_profile(),
+                            },
+                        .destination =
+                            {
+                                .os_clipboard = true,
+                            },
+                    });
+}
+
 Verdict RulesServiceBase::GetVerdict(Rule::Restriction restriction,
                                      const ActionContext& context) const {
   Rule::Level max_level = Rule::Level::kNotSet;
