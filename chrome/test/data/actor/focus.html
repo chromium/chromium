@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+    <title>Page with focus event handler</title>
+  </head>
+  <body>
+    <input id="input" type="text">
+    <script>
+      let focus_fired = false;
+      document.getElementById('input').addEventListener('focus', () => {
+        focus_fired = true;
+      });
+    </script>
+  </body>
+</html>

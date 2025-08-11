@@ -6,13 +6,17 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 using base::test::TestFuture;
@@ -20,6 +24,8 @@ using content::ChildFrameAt;
 using content::EvalJs;
 using content::GetDOMNodeId;
 using content::NavigateIframeToURL;
+using content::RenderFrameHost;
+using content::WebContents;
 
 namespace actor {
 
@@ -60,6 +66,46 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, InvokeToolInInactiveFrame) {
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kFrameWentAway);
+}
+
+// Ensure actuation for a page tool simulates the page having focus. This is
+// important to ensure, e.g. 'focus' events are fired on the page in a way that
+// matches if a real user was interacting with the page.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, EnsureFocusSimulatedWhenActing) {
+  const GURL url_background =
+      embedded_test_server()->GetURL("/actor/focus.html");
+  const GURL url_foreground =
+      embedded_test_server()->GetURL("/actor/blank.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_background));
+
+  WebContents* background_contents = web_contents();
+  NavigateParams params(browser(), url_foreground, ::ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  ::ui_test_utils::NavigateToURL(&params);
+
+  ASSERT_NE(web_contents(), background_contents);
+  ASSERT_FALSE(background_contents->GetPrimaryMainFrame()
+                   ->GetRenderWidgetHost()
+                   ->GetView()
+                   ->HasFocus());
+
+  content::RenderFrameHost* background_main_frame =
+      background_contents->GetPrimaryMainFrame();
+  std::optional<int> input_id = GetDOMNodeId(*background_main_frame, "input");
+  ASSERT_TRUE(input_id);
+
+  ASSERT_EQ(false, EvalJs(background_contents, "focus_fired"));
+
+  // Create an action that targets the first document.
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*background_main_frame, input_id.value());
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(true, EvalJs(background_contents, "focus_fired"));
 }
 
 // Basic test to ensure sending a click to an element in a same-site subframe

@@ -23,6 +23,8 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -327,6 +329,10 @@ void PageTool::Invoke(InvokeCallback callback) {
   // ToolRequest params are checked for validity at creation.
   CHECK(invocation->action);
 
+  // Ensure the renderer believes it has focus. This ensures a realistic state
+  // needed for e.g. firing 'focus' events.
+  frame.GetRenderWidgetHost()->Focus();
+
   frame.GetRemoteAssociatedInterfaces()->GetInterface(&chrome_render_frame_);
 
   // Watch for the RenderFrameHost being swapped out by a navigation (e.g. after
@@ -403,6 +409,12 @@ void PageTool::UpdateTaskBeforeInvoke(ActorTask& task,
 void PageTool::FinishInvoke(mojom::ActionResultPtr result) {
   if (!invoke_callback_) {
     return;
+  }
+
+  // Blink state was set to focused as part of invocation. Reset Blink focus
+  // back to match the Views focus state.
+  if (GetFrame() && !GetFrame()->GetRenderWidgetHost()->GetView()->HasFocus()) {
+    GetFrame()->GetRenderWidgetHost()->Blur();
   }
 
   frame_change_observer_.reset();
