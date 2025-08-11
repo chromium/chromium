@@ -5182,11 +5182,12 @@ void BrowserView::AddedToWidget() {
       SetLayoutManager(std::make_unique<BrowserViewLayout>(
           std::make_unique<BrowserViewLayoutDelegateImpl>(this), this,
           window_scrim_view_, top_container_, web_app_frame_toolbar_,
-          web_app_window_title_, tab_strip_region_view_, tabstrip_, toolbar_,
-          infobar_container_, contents_container_, multi_contents_view_,
-          vertical_tab_strip_container_, left_aligned_side_panel_separator_,
-          unified_side_panel_, right_aligned_side_panel_separator_,
-          side_panel_rounded_corner_, contents_separator_));
+          web_app_window_title_, tab_strip_region_view_, tabstrip_,
+          vertical_tab_strip_container_, toolbar_, infobar_container_,
+          contents_container_, multi_contents_view_,
+          left_aligned_side_panel_separator_, unified_side_panel_,
+          right_aligned_side_panel_separator_, side_panel_rounded_corner_,
+          contents_separator_));
   browser_view_layout->SetUseBrowserContentMinimumSize(
       ShouldUseBrowserContentMinimumSize());
 

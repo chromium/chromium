@@ -55,11 +55,11 @@ class BrowserViewLayout : public views::LayoutManager {
                     views::Label* web_app_window_title,
                     TabStripRegionView* tab_strip_region_view,
                     TabStrip* tab_strip,
+                    views::View* vertical_tab_strip_container,
                     views::View* toolbar,
                     InfoBarContainerView* infobar_container,
                     views::View* contents_container,
                     MultiContentsView* multi_contents_view,
-                    views::View* vertical_tab_strip_container,
                     views::View* left_aligned_side_panel_separator,
                     views::View* unified_side_panel,
                     views::View* right_aligned_side_panel_separator,
@@ -170,11 +170,11 @@ class BrowserViewLayout : public views::LayoutManager {
   const raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar_;
   const raw_ptr<views::Label> web_app_window_title_;
   const raw_ptr<TabStripRegionView> tab_strip_region_view_;
+  const raw_ptr<views::View> vertical_tab_strip_container_;
   const raw_ptr<views::View> toolbar_;
   const raw_ptr<InfoBarContainerView> infobar_container_;
   const raw_ptr<views::View> contents_container_;
   const raw_ptr<MultiContentsView> multi_contents_view_;
-  const raw_ptr<views::View> vertical_tab_strip_container_;
   const raw_ptr<views::View> left_aligned_side_panel_separator_;
   const raw_ptr<views::View> unified_side_panel_;
   const raw_ptr<views::View> right_aligned_side_panel_separator_;
