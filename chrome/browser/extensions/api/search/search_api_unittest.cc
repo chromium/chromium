@@ -61,7 +61,6 @@ class SearchApiUnitTest : public ExtensionServiceTestBase {
   ~SearchApiUnitTest() override = default;
 
   Browser* browser() { return browser_.get(); }
-  TestBrowserWindow* browser_window() { return browser_window_.get(); }
   TabStripModel* GetTabStripModel() { return browser_->tab_strip_model(); }
   extensions::SearchQueryFunction* function() { return function_.get(); }
   void RunFunctionAndExpectError(const std::string& input,
@@ -71,8 +70,6 @@ class SearchApiUnitTest : public ExtensionServiceTestBase {
   void SetUp() override;
   void TearDown() override;
 
-  // The browser (and accompanying window).
-  std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
 
   scoped_refptr<extensions::SearchQueryFunction> function_;
@@ -85,10 +82,10 @@ void SearchApiUnitTest::SetUp() {
   // Force TabManager/TabLifecycleUnitSource creation.
   g_browser_process->GetTabManager();
 
-  browser_window_ = std::make_unique<TestBrowserWindow>();
+  auto browser_window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), /*user_gesture*/ true);
   params.type = Browser::TYPE_NORMAL;
-  params.window = browser_window_.get();
+  params.window = browser_window.release();
   browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
 
   // Mock TemplateURLService.
@@ -106,7 +103,6 @@ void SearchApiUnitTest::SetUp() {
 void SearchApiUnitTest::TearDown() {
   browser_->tab_strip_model()->CloseAllTabs();
   browser_ = nullptr;
-  browser_window_ = nullptr;
   ExtensionServiceTestBase::TearDown();
 }
 

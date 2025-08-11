@@ -128,10 +128,11 @@ void BrowserWithTestWindowTest::SetUp() {
     SwitchActiveUser(*profile_name);
 #endif
 
-    window_ = CreateBrowserWindow();
+    auto window = CreateBrowserWindow();
+    window_ = window.get();
 
     browser_ =
-        CreateBrowser(profile(), browser_type_, hosted_app_, window_.get());
+        CreateBrowser(profile(), browser_type_, hosted_app_, window.release());
   }
 }
 
@@ -141,12 +142,12 @@ void BrowserWithTestWindowTest::TearDown() {
   base::RunLoop().RunUntilIdle();
 
   // Close the browser tabs and destroy the browser and window instances.
+  window_ = nullptr;
   if (browser_) {
     browser_->tab_strip_model()->CloseAllTabs();
     browser_->GetFeatures().TearDownPreBrowserWindowDestruction();
     browser_.reset();
   }
-  window_.reset();
 
 #if defined(TOOLKIT_VIEWS)
   constrained_window::SetConstrainedWindowViewsClient(nullptr);
@@ -206,6 +207,11 @@ void BrowserWithTestWindowTest::SetUpProfileManager(
 #endif
   ASSERT_TRUE(
       profile_manager_->SetUp(profiles_path, std::move(profile_manager)));
+}
+
+std::unique_ptr<Browser> BrowserWithTestWindowTest::release_browser() {
+  window_ = nullptr;
+  return std::move(browser_);
 }
 
 gfx::NativeWindow BrowserWithTestWindowTest::GetContext() {
@@ -316,6 +322,15 @@ std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(
   }
   params.window = browser_window;
   return Browser::DeprecatedCreateOwnedForTesting(params);
+}
+
+std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(
+    Profile* profile,
+    Browser::Type browser_type,
+    bool hosted_app) {
+  auto browser_window = CreateBrowserWindow();
+  return CreateBrowser(profile, browser_type, hosted_app,
+                       browser_window.release());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

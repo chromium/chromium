@@ -40,7 +40,6 @@ class KioskBrowserLogsCollectorTest : public BrowserWithTestWindowTest {
   void TearDown() override {
     CloseAllTabs();
     browsers_.clear();
-    browser_windows_.clear();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -73,10 +72,8 @@ class KioskBrowserLogsCollectorTest : public BrowserWithTestWindowTest {
   }
 
   Browser* CreateTestBrowser() {
-    browser_windows_.push_back(CreateBrowserWindow());
     browsers_.push_back(CreateBrowser(profile(), Browser::Type::TYPE_NORMAL,
-                                      /*hosted_app=*/false,
-                                      browser_windows_.back().get()));
+                                      /*hosted_app=*/false));
     return browsers_.back().get();
   }
 
@@ -87,7 +84,6 @@ class KioskBrowserLogsCollectorTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  std::vector<std::unique_ptr<BrowserWindow>> browser_windows_;
   std::vector<std::unique_ptr<Browser>> browsers_;
   std::unique_ptr<KioskBrowserLogsCollector> logs_collector_;
 };
@@ -204,4 +200,4 @@ TEST_F(KioskBrowserLogsCollectorTest, ShouldObserveLogsFromMultipleTabs) {
   EXPECT_EQ(log3.severity(), blink::mojom::ConsoleMessageLevel::kWarning);
 }
 
-} //namespace chromeos
+}  // namespace chromeos

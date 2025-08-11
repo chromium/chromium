@@ -184,12 +184,11 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
     // This may be called multiple times, we must reset the original test
     // browser and its associated window.
     browser_.reset();
-    browser_window_.reset();
 
-    browser_window_ = std::make_unique<TestBrowserWindow>();
+    auto browser_window = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params(profile(), true);
     params.type = Browser::TYPE_NORMAL;
-    params.window = browser_window_.get();
+    params.window = browser_window.release();
     browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
     chrome_tailored_security_service_ =
         std::make_unique<TestChromeTailoredSecurityService>(profile_);
@@ -221,7 +220,6 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
     }
 
     browser_.reset();
-    browser_window_.reset();
     chrome_tailored_security_service_->Shutdown();
     chrome_tailored_security_service_.reset();
 
@@ -305,7 +303,6 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
       identity_test_env_adaptor_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
-  std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeTailoredSecurityService>
       chrome_tailored_security_service_;

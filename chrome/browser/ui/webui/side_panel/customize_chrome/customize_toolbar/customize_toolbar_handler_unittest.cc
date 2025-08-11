@@ -405,9 +405,8 @@ TEST_F(CustomizeToolbarHandlerTest, ActionsUpdatedOnVisibilityChange) {
 
 TEST_F(CustomizeToolbarHandlerTest, ChangeBrowserWhileOpen) {
   // Open a second browser with a new tab.
-  std::unique_ptr<BrowserWindow> window_2 = CreateBrowserWindow();
   std::unique_ptr<Browser> browser_2 =
-      CreateBrowser(profile(), Browser::TYPE_NORMAL, false, window_2.get());
+      CreateBrowser(profile(), Browser::TYPE_NORMAL, false);
   AddTab(browser_2.get(), GURL("about:blank"));
 
   // Set up a second handler associated with that tab in the second browser.

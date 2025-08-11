@@ -1442,7 +1442,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, DISABLED_ShowAddShortcutDialog) {
   Browser::CreateParams params(profile(), /*user_gesture=*/true);
   params.type = Browser::TYPE_NORMAL;
   auto window = std::make_unique<TestBrowserWindow>();
-  params.window = window.get();
+  params.window = window.release();
   auto browser = Browser::DeprecatedCreateOwnedForTesting(params);
   NavigateParams nav_params(browser.get(), GURL("chrome://password-manager"),
                             ui::PAGE_TRANSITION_TYPED);

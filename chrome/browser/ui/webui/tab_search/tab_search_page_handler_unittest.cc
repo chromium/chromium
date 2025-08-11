@@ -298,14 +298,8 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
 
  private:
   std::unique_ptr<Browser> CreateTestBrowser(Profile* profile, bool popup) {
-    auto window = std::make_unique<TestBrowserWindow>();
     Browser::Type type = popup ? Browser::TYPE_POPUP : Browser::TYPE_NORMAL;
-
-    std::unique_ptr<Browser> browser =
-        CreateBrowser(profile, type, false, window.get());
-    // Self deleting.
-    new TestBrowserWindowOwner(std::move(window));
-    return browser;
+    return CreateBrowser(profile, type, false);
   }
 
   std::unique_ptr<content::WebContents> web_contents_;

@@ -48,8 +48,8 @@ class AppTabHelperUnitTest : public ExtensionServiceTestWithInstall {
   Browser* browser() {
     if (!browser_) {
       Browser::CreateParams params(profile(), true);
-      browser_window_ = std::make_unique<TestBrowserWindow>();
-      params.window = browser_window_.get();
+      auto browser_window = std::make_unique<TestBrowserWindow>();
+      params.window = browser_window.release();
       browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
     }
     return browser_.get();
@@ -58,8 +58,6 @@ class AppTabHelperUnitTest : public ExtensionServiceTestWithInstall {
   AppTabHelper* app_tab_helper() { return app_tab_helper_; }
 
  private:
-  // The browser and accompanying window.
-  std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
 
   raw_ptr<content::WebContentsTester> web_contents_tester_ = nullptr;

@@ -94,9 +94,7 @@ TEST_F(SessionDataServiceTest, CleanupOnWindowClosed) {
   const BrowserList* browser_list = BrowserList::GetInstance();
   EXPECT_EQ(1U, browser_list->size());
 
-  auto new_window = CreateBrowserWindow();
-  auto new_browser =
-      CreateBrowser(profile(), Browser::TYPE_NORMAL, false, new_window.get());
+  auto new_browser = CreateBrowser(profile(), Browser::TYPE_NORMAL, false);
   EXPECT_EQ(2U, browser_list->size());
 
   new_browser.reset();
@@ -105,7 +103,7 @@ TEST_F(SessionDataServiceTest, CleanupOnWindowClosed) {
 
   bool skip_session_cookies = browser_defaults::kBrowserAliveWithNoWindows;
   EXPECT_CALL(*deleter(), DeleteSessionOnlyData(skip_session_cookies, _));
-  set_browser(nullptr);
+  release_browser();
   EXPECT_EQ(0U, browser_list->size());
   Mock::VerifyAndClearExpectations(deleter());
 }
@@ -115,14 +113,12 @@ TEST_F(SessionDataServiceTest, CleanupOnWindowClosedWithOtherProfileOpen) {
   EXPECT_EQ(1U, browser_list->size());
 
   auto* new_profile = profile_manager()->CreateTestingProfile("second_profile");
-  auto new_window = CreateBrowserWindow();
-  auto new_browser =
-      CreateBrowser(new_profile, Browser::TYPE_NORMAL, false, new_window.get());
+  auto new_browser = CreateBrowser(new_profile, Browser::TYPE_NORMAL, false);
   EXPECT_EQ(2U, browser_list->size());
 
   bool skip_session_cookies = browser_defaults::kBrowserAliveWithNoWindows;
   EXPECT_CALL(*deleter(), DeleteSessionOnlyData(skip_session_cookies, _));
-  set_browser(nullptr);
+  release_browser();
   EXPECT_EQ(1U, browser_list->size());
   Mock::VerifyAndClearExpectations(deleter());
 }
@@ -131,7 +127,7 @@ TEST_F(SessionDataServiceTest, RepeatCleanupAfterNewWindowOpened) {
   // Close browser and expect cleanup.
   bool skip_session_cookies = browser_defaults::kBrowserAliveWithNoWindows;
   EXPECT_CALL(*deleter(), DeleteSessionOnlyData(skip_session_cookies, _));
-  set_browser(nullptr);
+  release_browser();
   Mock::VerifyAndClearExpectations(deleter());
 
   // Additional requests for cleanup will be ignored.
@@ -139,9 +135,7 @@ TEST_F(SessionDataServiceTest, RepeatCleanupAfterNewWindowOpened) {
   Mock::VerifyAndClearExpectations(deleter());
 
   // Unless a new browser is opened.
-  auto new_window = CreateBrowserWindow();
-  auto new_browser =
-      CreateBrowser(profile(), Browser::TYPE_NORMAL, false, new_window.get());
+  auto new_browser = CreateBrowser(profile(), Browser::TYPE_NORMAL, false);
   Mock::VerifyAndClearExpectations(deleter());
 
   // And another cleanup is started.

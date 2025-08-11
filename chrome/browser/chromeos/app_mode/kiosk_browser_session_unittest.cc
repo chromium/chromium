@@ -205,9 +205,7 @@ std::unique_ptr<FakeBrowser> CreateBrowserWithFullscreenTestWindowForParams(
   // production.
   auto window = std::make_unique<FullscreenTestBrowserWindow>(
       profile, /*fullscreen=*/is_main_browser);
-  params.window = window.get();
-  // Self deleting.
-  new TestBrowserWindowOwner(std::move(window));
+  params.window = window.release();
   return std::make_unique<FakeBrowser>(params);
 }
 
@@ -911,9 +909,7 @@ class KioskBrowserSessionTroubleshootingTest
     auto params = Browser::CreateParams::CreateForDevTools(profile());
 
     auto test_window = std::make_unique<TestBrowserWindow>();
-    params.window = test_window.get();
-    // Self deleting.
-    new TestBrowserWindowOwner(std::move(test_window));
+    params.window = test_window.release();
 
     return std::make_unique<FakeBrowser>(params);
   }

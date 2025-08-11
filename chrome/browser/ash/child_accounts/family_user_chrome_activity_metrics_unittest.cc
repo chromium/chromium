@@ -102,7 +102,6 @@ class FamilyUserChromeActivityMetricsTest
 
   void TearDown() override {
     test_browser_.reset();
-    browser_window_.reset();
     DestroyFamilyUserChromeActivityMetrics();
     ChromeRenderViewHostTestHarness::TearDown();
     chromeos::PowerManagerClient::Shutdown();
@@ -136,16 +135,15 @@ class FamilyUserChromeActivityMetricsTest
     // This may be called multiple times, we must reset the original test
     // browser and its associated window.
     test_browser_.reset();
-    browser_window_.reset();
 
     std::unique_ptr<aura::Window> window = std::make_unique<aura::Window>(
         nullptr, aura::client::WINDOW_TYPE_NORMAL);
     window->SetId(0);
     window->Init(ui::LAYER_TEXTURED);
     Browser::CreateParams params(profile(), true);
-    browser_window_ =
+    auto browser_window =
         std::make_unique<TestBrowserWindowAura>(std::move(window));
-    params.window = browser_window_.get();
+    params.window = browser_window.release();
     test_browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
   }
 
@@ -160,7 +158,6 @@ class FamilyUserChromeActivityMetricsTest
  private:
   std::unique_ptr<FamilyUserChromeActivityMetrics>
       family_user_chrome_activity_metrics_;
-  std::unique_ptr<TestBrowserWindowAura> browser_window_;
   session_manager::SessionManager session_manager_;
   raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_ =
       nullptr;
@@ -187,7 +184,7 @@ TEST_F(FamilyUserChromeActivityMetricsTest, Basic) {
   Browser::CreateParams params(profile(), true);
   auto another_browser_window =
       std::make_unique<TestBrowserWindowAura>(std::move(window));
-  params.window = another_browser_window.get();
+  params.window = another_browser_window.release();
   auto another_browser = Browser::DeprecatedCreateOwnedForTesting(params);
 
   EXPECT_EQ(2U, BrowserList::GetInstance()->size());

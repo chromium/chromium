@@ -88,7 +88,6 @@ class SafeBrowsingPrivateApiUnitTest : public ExtensionServiceTestBase {
   void SetUp() override;
   void TearDown() override;
 
-  std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
 };
 
@@ -96,10 +95,10 @@ void SafeBrowsingPrivateApiUnitTest::SetUp() {
   ExtensionServiceTestBase::SetUp();
   InitializeEmptyExtensionService();
 
-  browser_window_ = std::make_unique<TestBrowserWindow>();
+  auto browser_window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
   params.type = Browser::TYPE_NORMAL;
-  params.window = browser_window_.get();
+  params.window = browser_window.release();
   browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
 
   ProfilePasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -130,7 +129,6 @@ void SafeBrowsingPrivateApiUnitTest::TearDown() {
     browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
   }
   browser_.reset();
-  browser_window_.reset();
 
   // Make sure the NetworkContext owned by SafeBrowsingService is destructed
   // before the NetworkService object..

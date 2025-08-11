@@ -432,7 +432,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
     params.type = Browser::TYPE_NORMAL;
     browser_window1_ =
         std::make_unique<TestBrowserWindowAura>(std::move(window));
-    params.window = browser_window1_.get();
+    params.window = browser_window1_.release();
     return Browser::DeprecatedCreateOwnedForTesting(params);
   }
 
@@ -445,7 +445,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
     params.type = Browser::TYPE_NORMAL;
     browser_window2_ =
         std::make_unique<TestBrowserWindowAura>(std::move(window));
-    params.window = browser_window2_.get();
+    params.window = browser_window2_.release();
     return Browser::DeprecatedCreateOwnedForTesting(params);
   }
 
@@ -1834,9 +1834,8 @@ class AppPlatformInputMetricsTest : public AppPlatformMetricsServiceTest {
     Browser::CreateParams params(profile(), true);
     params.type = Browser::TYPE_NORMAL;
     browser_window_ = std::make_unique<TestBrowserWindow>();
-    params.window = browser_window_.get();
     browser_window_->SetNativeWindow(window());
-    params.window = browser_window_.get();
+    params.window = browser_window_.release();
     return Browser::DeprecatedCreateOwnedForTesting(params);
   }
 

@@ -783,10 +783,10 @@ class PermissionsAPIHostAccessRequestsUnitTest : public PermissionsAPIUnitTest {
   void SetUp() override {
     PermissionsAPIUnitTest::SetUp();
 
-    browser_window_ = std::make_unique<TestBrowserWindow>();
+    auto browser_window = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params(profile(), true);
     params.type = Browser::TYPE_NORMAL;
-    params.window = browser_window_.get();
+    params.window = browser_window.release();
     browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
 
     std::unique_ptr<content::WebContents> web_contents =
@@ -802,14 +802,12 @@ class PermissionsAPIHostAccessRequestsUnitTest : public PermissionsAPIUnitTest {
     web_contents_tester_ = nullptr;
     browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(/*index=*/0);
     browser_.reset();
-    browser_window_.reset();
     PermissionsAPIUnitTest::TearDown();
   }
 
   Browser* browser() { return browser_.get(); }
 
  private:
-  std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<content::WebContentsTester> web_contents_tester_;

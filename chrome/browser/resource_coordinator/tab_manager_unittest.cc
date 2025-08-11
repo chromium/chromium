@@ -134,7 +134,7 @@ TEST_F(TabManagerTest, MAYBE_DiscardTabWithNonVisibleTabs) {
   auto window1 = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params1(profile(), true);
   params1.type = Browser::TYPE_NORMAL;
-  params1.window = window1.get();
+  params1.window = window1.release();
   auto browser1 = Browser::DeprecatedCreateOwnedForTesting(params1);
   TabStripModel* tab_strip1 = browser1->tab_strip_model();
   tab_strip1->AppendWebContents(CreateWebContents(), true);
@@ -145,7 +145,7 @@ TEST_F(TabManagerTest, MAYBE_DiscardTabWithNonVisibleTabs) {
   auto window2 = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params2(profile(), true);
   params2.type = Browser::TYPE_NORMAL;
-  params2.window = window2.get();
+  params2.window = window2.release();
   auto browser2 = Browser::DeprecatedCreateOwnedForTesting(params1);
   TabStripModel* tab_strip2 = browser2->tab_strip_model();
   tab_strip2->AppendWebContents(CreateWebContents(), true);
@@ -185,7 +185,7 @@ TEST_F(TabManagerTest, GetSortedLifecycleUnits) {
   auto window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
   params.type = Browser::TYPE_NORMAL;
-  params.window = window.get();
+  params.window = window.release();
   auto browser = Browser::DeprecatedCreateOwnedForTesting(params);
   TabStripModel* tab_strip = browser->tab_strip_model();
 

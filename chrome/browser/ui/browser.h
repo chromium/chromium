@@ -305,7 +305,11 @@ class Browser : public TabStripModelObserver,
     bool in_tab_dragging = false;
 
     // Supply a custom BrowserWindow implementation, to be used instead of the
-    // default. Intended for testing.
+    // default. Intended for testing. The resulting Browser takes ownership
+    // of `window`.
+    // TODO(crbug.com/413168662): CreateParams should be updated to be move-only
+    // and this should become a unique_ptr (or removed completely once
+    // deprecated Browser unit tests are eliminated).
     raw_ptr<BrowserWindow, DanglingUntriaged> window = nullptr;
 
     // User-set title of this browser window, if there is one.
@@ -1278,6 +1282,11 @@ class Browser : public TabStripModelObserver,
 
   // Prevent Profile deletion until this browser window is closed.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
+
+  // The Browser's BrowserWindow, only set by tests.
+  // TODO(crbug.com/413168662): This can be consolidated with `window_` once
+  // Browser always owns BrowserWindow.
+  std::unique_ptr<BrowserWindow> window_for_testing_;
 
   // This Browser's window.
   raw_ptr<BrowserWindow, DanglingUntriaged> window_;

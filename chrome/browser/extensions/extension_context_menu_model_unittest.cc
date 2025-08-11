@@ -295,7 +295,6 @@ class ExtensionContextMenuModelTest : public ExtensionServiceTestBase {
   void TearDown() override;
 
  private:
-  std::unique_ptr<TestBrowserWindow> test_window_;
   std::unique_ptr<Browser> browser_;
   display::test::TestScreen test_screen_;
 };
@@ -347,8 +346,8 @@ void ExtensionContextMenuModelTest::InitializeAndAddExtension(
 Browser* ExtensionContextMenuModelTest::GetBrowser() {
   if (!browser_) {
     Browser::CreateParams params(profile(), true);
-    test_window_ = std::make_unique<TestBrowserWindow>();
-    params.window = test_window_.get();
+    auto test_window = std::make_unique<TestBrowserWindow>();
+    params.window = test_window.release();
     browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
   }
   return browser_.get();

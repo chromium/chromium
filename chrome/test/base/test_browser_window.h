@@ -11,10 +11,12 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -54,7 +56,7 @@ class SharingHubBubbleView;
 // contains a valid LocationBar, all other getters return NULL.
 // However, some of them can be preset to a specific value.
 // See BrowserWithTestWindowTest for an example of using this class.
-class TestBrowserWindow : public BrowserWindow {
+class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
  public:
   TestBrowserWindow();
   TestBrowserWindow(const TestBrowserWindow&) = delete;
@@ -302,6 +304,9 @@ class TestBrowserWindow : public BrowserWindow {
     void UpdateWithoutTabRestore() override {}
   };
 
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override;
+
   autofill::TestAutofillBubbleHandler autofill_bubble_handler_;
   TestLocationBar location_bar_;
   gfx::NativeWindow native_window_ = gfx::NativeWindow();
@@ -314,23 +319,12 @@ class TestBrowserWindow : public BrowserWindow {
   bool is_tab_strip_editable_ = true;
   bool is_tab_modal_popup_deprecated_ = false;
 
+  base::ScopedObservation<BrowserList, BrowserListObserver>
+      browser_list_observer_{this};
+  raw_ptr<Browser> browser_;
+
   ui::ElementContext element_context_;
   base::OnceClosure close_callback_;
-};
-
-// Handles destroying a TestBrowserWindow when the Browser it is attached to is
-// destroyed.
-class TestBrowserWindowOwner : public BrowserListObserver {
- public:
-  explicit TestBrowserWindowOwner(std::unique_ptr<TestBrowserWindow> window);
-  TestBrowserWindowOwner(const TestBrowserWindowOwner&) = delete;
-  TestBrowserWindowOwner& operator=(const TestBrowserWindowOwner&) = delete;
-  ~TestBrowserWindowOwner() override;
-
- private:
-  // Overridden from BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override;
-  std::unique_ptr<TestBrowserWindow> window_;
 };
 
 // Helper that handle the lifetime of TestBrowserWindow instances.

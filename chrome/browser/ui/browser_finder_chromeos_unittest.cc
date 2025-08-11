@@ -94,7 +94,7 @@ TEST_F(BrowserFinderChromeOSTest, IncognitoBrowserMatchTest) {
   EXPECT_EQ(1u, chrome::GetBrowserCount(profile()));
   EXPECT_TRUE(chrome::FindAnyBrowser(profile(), true));
   EXPECT_TRUE(chrome::FindAnyBrowser(profile(), false));
-  set_browser(nullptr);
+  release_browser();
 
   // Create an incognito browser.
   Browser::CreateParams params(
@@ -109,7 +109,7 @@ TEST_F(BrowserFinderChromeOSTest, IncognitoBrowserMatchTest) {
 }
 
 TEST_F(BrowserFinderChromeOSTest, FindBrowserOwnedByAnotherProfile) {
-  set_browser(nullptr);
+  release_browser();
 
   Browser::CreateParams params(profile()->GetOriginalProfile(), true);
   std::unique_ptr<Browser> browser(

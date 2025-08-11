@@ -73,12 +73,11 @@ class WindowedIncognitoMonitorTest : public testing::Test {
                   : profile_.get();
     Browser::CreateParams params(browser_profile, true);
     params.type = Browser::TYPE_NORMAL;
-    params.window = browser_window.get();
+    params.window = browser_window.release();
     auto browser = Browser::DeprecatedCreateOwnedForTesting(params);
 
     size_t handle = next_browser_id++;
-    open_browsers_[handle] =
-        std::make_pair(std::move(browser_window), std::move(browser));
+    open_browsers_[handle] = std::move(browser);
     return handle;
   }
 
@@ -95,11 +94,8 @@ class WindowedIncognitoMonitorTest : public testing::Test {
   // The associated testing browser profile.
   std::unique_ptr<TestingProfile> profile_;
 
-  // Keep track of the open browsers and accompanying windows.
-  std::unordered_map<
-      size_t,
-      std::pair<std::unique_ptr<TestBrowserWindow>, std::unique_ptr<Browser>>>
-      open_browsers_;
+  // Keep track of the open browsers.
+  std::unordered_map<size_t, std::unique_ptr<Browser>> open_browsers_;
   static size_t next_browser_id;
 
   std::unique_ptr<TestWindowedIncognitoMonitor> incognito_monitor_;

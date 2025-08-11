@@ -127,7 +127,7 @@ class TabGroupsApiUnitTest : public ExtensionServiceTestBase {
 
  private:
   // The browser (and accompanying window).
-  std::unique_ptr<TestBrowserWindow> browser_window_;
+  raw_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
 
   // The original web contentses in order.
@@ -140,10 +140,11 @@ void TabGroupsApiUnitTest::SetUp() {
   InitializeEmptyExtensionService();
 
   // Create a browser window.
-  browser_window_ = std::make_unique<TestBrowserWindow>();
+  auto browser_window = std::make_unique<TestBrowserWindow>();
+  browser_window_ = browser_window.get();
   Browser::CreateParams params(profile(), /* user_gesture */ true);
   params.type = Browser::TYPE_NORMAL;
-  params.window = browser_window_.get();
+  params.window = browser_window.release();
   browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
   BrowserList::SetLastActive(browser_.get());
 
@@ -174,9 +175,9 @@ void TabGroupsApiUnitTest::SetUp() {
 }
 
 void TabGroupsApiUnitTest::TearDown() {
+  browser_window_ = nullptr;
   browser_->tab_strip_model()->CloseAllTabs();
   browser_.reset();
-  browser_window_.reset();
   ExtensionServiceTestBase::TearDown();
 }
 
@@ -189,11 +190,7 @@ TEST_F(TabGroupsApiUnitTest, TabStripModelWithNoTabGroupFails) {
   Browser::CreateParams params = Browser::CreateParams::CreateForApp(
       "some app", /*trusted_source=*/false, gfx::Rect(), profile(),
       /*user_gesture=*/true);
-  params.window = window2.get();
-
-  // TestBrowserWindowOwner handles its own lifetime, and also cleans up
-  // |window2|.
-  new TestBrowserWindowOwner(std::move(window2));
+  params.window = window2.release();
 
   auto browser2 = Browser::DeprecatedCreateOwnedForTesting(params);
   BrowserList::SetLastActive(browser2.get());
@@ -662,11 +659,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsMoveAcrossWindows) {
   auto window2 = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), /* user_gesture */ true);
   params.type = Browser::TYPE_NORMAL;
-  params.window = window2.get();
-
-  // TestBrowserWindowOwner handles its own lifetime, and also cleans up
-  // |window2|.
-  new TestBrowserWindowOwner(std::move(window2));
+  params.window = window2.release();
 
   auto browser2 = Browser::DeprecatedCreateOwnedForTesting(params);
   BrowserList::SetLastActive(browser2.get());

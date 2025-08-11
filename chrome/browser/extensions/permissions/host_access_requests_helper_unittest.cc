@@ -58,8 +58,6 @@ class HostAccessRequestsHelperUnittest : public ExtensionServiceTestBase {
   void TearDown() override;
 
  private:
-  // The browser and accompaying window.
-  std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
 
   raw_ptr<PermissionsManager> permissions_manager_;
@@ -112,8 +110,8 @@ content::WebContents* HostAccessRequestsHelperUnittest::AddTab(
 Browser* HostAccessRequestsHelperUnittest::browser() {
   if (!browser_) {
     Browser::CreateParams params(profile(), true);
-    browser_window_ = std::make_unique<TestBrowserWindow>();
-    params.window = browser_window_.get();
+    auto browser_window = std::make_unique<TestBrowserWindow>();
+    params.window = browser_window.release();
     browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
   }
   return browser_.get();

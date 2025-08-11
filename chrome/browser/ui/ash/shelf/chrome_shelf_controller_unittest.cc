@@ -733,11 +733,8 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   std::unique_ptr<Browser> CreateBrowserWithTestWindowForProfile(
       Profile* profile) {
     auto browser_window = CreateTestBrowserWindowAura();
-    auto browser = CreateBrowser(profile, Browser::TYPE_NORMAL, false,
-                                 browser_window.get());
-    // Self deleting.
-    new TestBrowserWindowOwner(std::move(browser_window));
-    return browser;
+    return CreateBrowser(profile, Browser::TYPE_NORMAL, false,
+                         browser_window.release());
   }
 
   // Create an uninitialized controller instance.
@@ -1442,19 +1439,20 @@ class ChromeShelfControllerTest : public ChromeShelfControllerTestBase {
 };
 
 // A V1 windowed application.
-class V1App : public TestBrowserWindow {
+class V1App {
  public:
   V1App(Profile* profile, const std::string& app_name) {
     Browser::CreateParams params = Browser::CreateParams::CreateForApp(
         kCrxAppPrefix + app_name, true /* trusted_source */, gfx::Rect(),
         profile, true);
-    params.window = this;
+    auto window = std::make_unique<TestBrowserWindow>();
+    params.window = window.release();
     browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
     chrome::AddTabAt(browser_.get(), GURL(), 0, true);
   }
   V1App(const V1App&) = delete;
   V1App& operator=(const V1App&) = delete;
-  ~V1App() override {
+  ~V1App() {
     // close all tabs. Note that we do not need to destroy the browser itself.
     browser_->tab_strip_model()->CloseAllTabs();
   }

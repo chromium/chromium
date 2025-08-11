@@ -128,9 +128,8 @@ TEST_F(ExtensionInstalledWaiterTest, ExtensionUninstalledWhileWaiting) {
 }
 
 TEST_F(ExtensionInstalledWaiterTest, BrowserShutdownWhileWaiting) {
-  std::unique_ptr<BrowserWindow> window = CreateBrowserWindow();
   std::unique_ptr<Browser> browser =
-      CreateBrowser(profile(), Browser::TYPE_NORMAL, false, window.get());
+      CreateBrowser(profile(), Browser::TYPE_NORMAL, false);
 
   auto foo = MakeExtensionNamed("foo");
   WaitFor(foo, browser.get());
@@ -142,9 +141,8 @@ TEST_F(ExtensionInstalledWaiterTest, BrowserShutdownWhileWaiting) {
 
 // Regression test for https://crbug.com/1049190.
 TEST_F(ExtensionInstalledWaiterTest, BrowserShutdownWhileWaitingDoesntCrash) {
-  std::unique_ptr<BrowserWindow> window = CreateBrowserWindow();
   std::unique_ptr<Browser> browser =
-      CreateBrowser(profile(), Browser::TYPE_NORMAL, false, window.get());
+      CreateBrowser(profile(), Browser::TYPE_NORMAL, false);
 
   auto foo = MakeExtensionNamed("foo");
   WaitFor(foo, browser.get());

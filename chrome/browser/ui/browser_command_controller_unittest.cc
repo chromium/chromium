@@ -140,30 +140,31 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKey) {
 }
 
 TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKeyIsApp) {
+  auto browser_window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params = Browser::CreateParams::CreateForApp(
       "app",
-      /*trusted_source=*/true, browser()->window()->GetBounds(), profile(),
+      /*trusted_source=*/true, browser_window->GetBounds(), profile(),
       /*user_gesture=*/true);
-  params.window = browser()->window();
-  set_browser(Browser::DeprecatedCreateOwnedForTesting(params));
+  params.window = browser_window.release();
+  auto browser = Browser::DeprecatedCreateOwnedForTesting(params);
 
-  ASSERT_TRUE(browser()->is_type_app());
+  ASSERT_TRUE(browser->is_type_app());
 
   // When is_type_app(), no keys are reserved.
 #if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
+  EXPECT_FALSE(browser->command_controller()->IsReservedCommandOrKey(
       IDC_BACK,
       input::NativeWebKeyboardEvent(ui::KeyEvent(
           ui::EventType::kKeyPressed, ui::VKEY_F1, ui::DomCode::F1, 0))));
-  EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
+  EXPECT_FALSE(browser->command_controller()->IsReservedCommandOrKey(
       IDC_FORWARD,
       input::NativeWebKeyboardEvent(ui::KeyEvent(
           ui::EventType::kKeyPressed, ui::VKEY_F2, ui::DomCode::F2, 0))));
-  EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
+  EXPECT_FALSE(browser->command_controller()->IsReservedCommandOrKey(
       IDC_RELOAD,
       input::NativeWebKeyboardEvent(ui::KeyEvent(
           ui::EventType::kKeyPressed, ui::VKEY_F3, ui::DomCode::F3, 0))));
-  EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
+  EXPECT_FALSE(browser->command_controller()->IsReservedCommandOrKey(
       -1, input::NativeWebKeyboardEvent(ui::KeyEvent(
               ui::EventType::kKeyPressed, ui::VKEY_F4, ui::DomCode::F4, 0))));
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -171,15 +172,15 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKeyIsApp) {
 #if defined(USE_AURA)
   // The input::NativeWebKeyboardEvent constructor is available only when
   // USE_AURA is #defined.
-  EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
+  EXPECT_FALSE(browser->command_controller()->IsReservedCommandOrKey(
       IDC_NEW_WINDOW, input::NativeWebKeyboardEvent(ui::KeyEvent(
                           ui::EventType::kKeyPressed, ui::VKEY_N,
                           ui::DomCode::US_N, ui::EF_CONTROL_DOWN))));
-  EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
+  EXPECT_FALSE(browser->command_controller()->IsReservedCommandOrKey(
       IDC_CLOSE_TAB, input::NativeWebKeyboardEvent(ui::KeyEvent(
                          ui::EventType::kKeyPressed, ui::VKEY_W,
                          ui::DomCode::US_W, ui::EF_CONTROL_DOWN))));
-  EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
+  EXPECT_FALSE(browser->command_controller()->IsReservedCommandOrKey(
       IDC_FIND, input::NativeWebKeyboardEvent(
                     ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_F,
                                  ui::DomCode::US_F, ui::EF_CONTROL_DOWN))));
@@ -218,15 +219,16 @@ TEST_F(BrowserCommandControllerTest, AppFullScreen) {
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_FULLSCREEN));
 
   // Enabled for app windows.
+  auto browser_window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params = Browser::CreateParams::CreateForApp(
       "app",
-      /*trusted_source=*/true, browser()->window()->GetBounds(), profile(),
+      /*trusted_source=*/true, browser_window->GetBounds(), profile(),
       /*user_gesture=*/true);
-  params.window = browser()->window();
-  set_browser(Browser::DeprecatedCreateOwnedForTesting(params));
-  ASSERT_TRUE(browser()->is_type_app());
-  browser()->command_controller()->FullscreenStateChanged();
-  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_FULLSCREEN));
+  params.window = browser_window.release();
+  auto browser = Browser::DeprecatedCreateOwnedForTesting(params);
+  ASSERT_TRUE(browser->is_type_app());
+  browser->command_controller()->FullscreenStateChanged();
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser.get(), IDC_FULLSCREEN));
 }
 
 TEST_F(BrowserCommandControllerTest, AvatarAcceleratorEnabledOnDesktop) {

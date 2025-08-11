@@ -38,7 +38,8 @@ class ProductSpecificationsButtonTest : public ChromeViewsTestBase {
         }));
     profile_ = profile_builder.Build();
     Browser::CreateParams params(profile_.get(), true);
-    params.window = &browser_window_;
+    auto browser_window = std::make_unique<TestBrowserWindow>();
+    params.window = browser_window.release();
     browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
     tab_strip_controller_ = std::make_unique<FakeBaseTabStripController>();
     tab_strip_model_ = std::make_unique<TabStripModel>(
@@ -59,7 +60,6 @@ class ProductSpecificationsButtonTest : public ChromeViewsTestBase {
   void ShowButton() { button_->Show(); }
 
  protected:
-  TestBrowserWindow browser_window_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<Browser> browser_;
   TestTabStripModelDelegate tab_strip_model_delegate_;

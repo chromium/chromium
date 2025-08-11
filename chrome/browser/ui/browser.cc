@@ -674,10 +674,15 @@ Browser::Browser(const CreateParams& params)
   }
 #endif  // BUILDFLAG(IS_OZONE)
 
-  window_ = params.window ? params.window.get()
-                          : CreateBrowserWindow(std::unique_ptr<Browser>(this),
-                                                params.user_gesture,
-                                                params.in_tab_dragging);
+  if (params.window) {
+    window_for_testing_.reset(params.window.get());
+    window_ = params.window.get();
+  } else {
+    // TODO(crbug.com/413168662): This can be consolidated with above once
+    // Browser always owns BrowserWindow.
+    window_ = CreateBrowserWindow(std::unique_ptr<Browser>(this),
+                                  params.user_gesture, params.in_tab_dragging);
+  }
 
   if (app_controller_) {
     app_controller_->UpdateCustomTabBarVisibility(false);
@@ -695,6 +700,9 @@ Browser::Browser(const CreateParams& params)
 }
 
 Browser::~Browser() {
+  // Reset the test window, if present, before tearing down browser state.
+  window_for_testing_.reset();
+
   // Tear down `BrowserWindowFeatures` and `BrowserUserData`s now to avoid
   // exposing them to Browser in a partially-destroyed state. Eventually,
   // all BrowserUserData should be converted to features. Until then,

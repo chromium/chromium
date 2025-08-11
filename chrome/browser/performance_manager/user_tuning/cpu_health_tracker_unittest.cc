@@ -671,9 +671,8 @@ TEST_F(CpuHealthTrackerBrowserTest, ActionableTabsIgnoreIncognitoTabs) {
   Profile* const default_profile = profile();
   Profile* const incognito_profile =
       default_profile->GetPrimaryOTRProfile(true);
-  auto browser_window = CreateBrowserWindow();
-  auto incognito_browser = CreateBrowser(
-      incognito_profile, Browser::TYPE_NORMAL, false, browser_window.get());
+  auto incognito_browser =
+      CreateBrowser(incognito_profile, Browser::TYPE_NORMAL, false);
   AddTab(incognito_browser.get(), GURL("http://a.com"));
 
   // This is usually called when the profile is created. Fake it here since it

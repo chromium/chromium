@@ -124,11 +124,11 @@ TEST_F(PermissionPromptBaseViewTest, IncludedInTrackedPictureInPictureWidgets) {
 
   // Create a picture-in-picture browser window to request the permission.
   TestingProfile profile;
-  TestBrowserWindow browser_window;
+  auto browser_window = std::make_unique<TestBrowserWindow>();
   std::unique_ptr<Browser> browser;
   Browser::CreateParams params(&profile, /*user_gesture=*/true);
   params.type = Browser::TYPE_PICTURE_IN_PICTURE;
-  params.window = &browser_window;
+  params.window = browser_window.release();
   browser = Browser::DeprecatedCreateOwnedForTesting(params);
 
   // Create the bubble for a picture-in-picture-window.

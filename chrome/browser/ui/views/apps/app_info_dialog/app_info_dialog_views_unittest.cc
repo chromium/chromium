@@ -259,9 +259,6 @@ TEST_F(AppInfoDialogViewsTest, DestroyedProfileClosesDialog) {
     std::unique_ptr<Browser> browser = release_browser();
     browser->tab_strip_model()->CloseAllTabs();
     browser.reset();
-    std::unique_ptr<BrowserWindow> browser_window = release_browser_window();
-    browser_window->Close();
-    browser_window.reset();
 
     // The following serves two purposes:
     // it ensures the Widget close is being triggered by the DeleteProfile()
