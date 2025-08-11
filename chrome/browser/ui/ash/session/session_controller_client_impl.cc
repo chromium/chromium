@@ -40,6 +40,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -428,6 +429,11 @@ void SessionControllerClientImpl::OnUserToBeRemoved(
 
 // static
 bool SessionControllerClientImpl::CanLockScreen() {
+  // Never enabled lock screen for demo sessions. Demo accounts is not
+  // affiliated so it cannot be controlled through policy.
+  if (ash::demo_mode::IsDeviceInDemoMode()) {
+    return false;
+  }
   return !UserManager::Get()->GetUnlockUsers().empty();
 }
 

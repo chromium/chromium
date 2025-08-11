@@ -37,6 +37,7 @@ static_library("session") {
     "//chrome/common",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/login/session",
     "//components/prefs",
