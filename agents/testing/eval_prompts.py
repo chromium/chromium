@@ -6,11 +6,13 @@
 
 import argparse
 import atexit
+import contextlib
 import os
 import shutil
 import subprocess
 import sys
 import tempfile
+from collections.abc import Collection
 
 CHROMIUM_SRC = os.path.realpath(
     os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -43,11 +45,12 @@ class PromptfooInstallation:
         """Called once to clean up the promptfoo installation."""
         raise NotImplementedError()
 
-    def run(self, cmd: list[str]) -> int:
+    def run(self, cmd: list[str], cwd: os.PathLike | None = None) -> int:
         """Runs a promptfoo command.
 
         Args:
             cmd: The command to run
+            cwd: The working directory from which the command should be run
 
         Returns:
             The returncode of the command.
@@ -79,10 +82,12 @@ class FromNpmPromptfooInstallation(PromptfooInstallation):
         shutil.rmtree(self._directory)
         self._directory = None
 
-    def run(self, cmd: list[str]) -> int:
+    def run(self, cmd: list[str], cwd: os.PathLike | None = None) -> int:
         promptfoo_executable = os.path.join(self._directory, 'node_modules',
                                             '.bin', 'promptfoo')
-        proc = subprocess.run([promptfoo_executable] + cmd, check=False)
+        proc = subprocess.run([promptfoo_executable] + cmd,
+                              cwd=cwd,
+                              check=False)
         return proc.returncode
 
 
@@ -132,7 +137,7 @@ class FromSourcePromptfooInstallation(PromptfooInstallation):
         shutil.rmtree(self._parent_dir)
         self._parent_dir = None
 
-    def run(self, cmd: list[str]) -> int:
+    def run(self, cmd: list[str], cwd: os.PathLike | None = None) -> int:
         node_cmd = [
             'npm',
             'run',
@@ -141,74 +146,8 @@ class FromSourcePromptfooInstallation(PromptfooInstallation):
             'local',
             '--',
         ]
-        proc = subprocess.run(node_cmd + cmd, check=False)
+        proc = subprocess.run(node_cmd + cmd, cwd=cwd, check=False)
         return proc.returncode
-
-
-def _prompt_user_to_continue() -> None:
-    response = input(
-        f'WARNING: This script will potentially make changes to your local '
-        f'repo at {CHROMIUM_SRC}, including untracked files. It will attempt '
-        f'move untracked files to a safe location and restore them on exit, '
-        f'but it is always possible something will go wrong. Do you want to '
-        f'continue? y/N: ')
-    if response.lower() != 'y':
-        sys.exit(1)
-
-
-def _move_untracked_files() -> None:
-    """Moves any untracked files to a temporary location.
-
-    If any files are moved, cleanup will be automatically performed
-    when the script exits to restore the files to their original
-    locations.
-    """
-    cmd = [
-        'git',
-        'ls-files',
-        '--others',
-        '--exclude-standard',
-        '--directory',
-        '--no-empty-directory',
-    ]
-    proc = subprocess.run(cmd,
-                          cwd=CHROMIUM_SRC,
-                          capture_output=True,
-                          check=True,
-                          text=True)
-
-    untracked_files = []
-    for line in proc.stdout.splitlines():
-        line = line.strip()
-        if line:
-            untracked_files.append(line)
-    if not untracked_files:
-        return
-
-    tmpdir = tempfile.mkdtemp()
-    print(f'Moving untracked files to {tmpdir}')
-    for f in untracked_files:
-        parent_dirs = os.path.dirname(f)
-        if parent_dirs:
-            os.makedirs(os.path.join(tmpdir, parent_dirs), exist_ok=True)
-        shutil.move(os.path.join(CHROMIUM_SRC, f),
-                    os.path.join(tmpdir, parent_dirs))
-    atexit.register(_restore_untracked_files, tmpdir, untracked_files)
-
-
-def _restore_untracked_files(directory: str, file_list: list[str]) -> None:
-    """Restores untracked files to their original locations.
-
-    Args:
-        directory: The directory that contains the untracked files to
-            restore.
-        file_list: The list of untracked files to actually copy. This
-            should be the list that git originally generated.
-    """
-    print(f'Restoring untracked files from {directory}')
-    for f in file_list:
-        shutil.move(os.path.join(directory, f), os.path.join(CHROMIUM_SRC, f))
-    shutil.rmtree(directory)
 
 
 def _setup_promptfoo(from_npm: bool, promptfoo_revision: str | None,
@@ -234,87 +173,76 @@ def _setup_promptfoo(from_npm: bool, promptfoo_revision: str | None,
     return promptfoo
 
 
-def _move_installed_extensions() -> None:
-    """Moves any installed Gemini extensions to a temporary location.
+class WorkTree(contextlib.AbstractContextManager):
+    """A `git worktree` [0] used for testing destructive changes by an agent.
 
-    If any extensions are moved, they will be automatically moved back
-    when the script exits.
+    Each working tree acts like a local shallow clone and has its own isolated
+    checkout state (staging, untracked files, `//.gemini/extensions/`).
+
+    [0]: https://git-scm.com/docs/git-worktree
     """
-    extensions_dir = os.path.join(CHROMIUM_SRC, '.gemini', 'extensions')
-    if not os.path.isdir(extensions_dir):
-        print('Did not find any installed extensions')
-        return
 
-    tmpdir = tempfile.mkdtemp()
-    print(f'Moving installed extensions to {tmpdir}')
-    shutil.move(extensions_dir, tmpdir)
-    atexit.register(_restore_installed_extensions, tmpdir)
+    def __init__(self, path: os.PathLike):
+        self.path = path
 
+    def __enter__(self) -> 'WorkTree':
+        # TODO(crbug.com/436274253): Consider some optimizations once the test
+        # suite grows large enough:
+        # 1. Parallelization [a]
+        # 2. Worktree reuse when several test cases share a revision, and each
+        #    test run doesn't modify the checkout
+        #
+        # [a]: https://docs.anthropic.com/en/docs/claude-code/common-workflows#run-parallel-claude-code-sessions-with-git-worktrees
+        subprocess.check_call(['git', 'worktree', 'add', str(self.path)])
+        self.install_extensions()
+        return self
 
-def _restore_installed_extensions(directory: str) -> None:
-    """Restores any previously installed extensions.
+    def __exit__(self, *_exc_info) -> None:
+        # Add `--force` in case the agent left behind a dirty checkout.
+        subprocess.check_call([
+            'git',
+            'worktree',
+            'remove',
+            '--force',
+            str(self.path),
+        ])
+        # `git worktree remove` doesn't automatically delete the associated
+        # branch in the main tree.
+        subprocess.check_call([
+            'git',
+            'branch',
+            '--delete',
+            str(os.path.basename(self.path)),
+        ])
 
-    Args:
-        directory: The directory containing the moved extensions.
-    """
-    print(f'Restoring installed extensions from {directory}')
-    extensions_dir = os.path.join(CHROMIUM_SRC, '.gemini', 'extensions')
-    shutil.move(os.path.join(directory, 'extensions'), extensions_dir)
-
-
-def _install_extensions() -> None:
-    """Installs extensions for testing.
-
-    Any extensions installed this way will be automatically removed
-    when the script exits.
-    """
-    print(f'Installing extensions {" ".join(EXTENSIONS_TO_INSTALL)}')
-    install_script = os.path.join(CHROMIUM_SRC, 'agents', 'extensions',
-                                  'install.py')
-    subprocess.run([install_script, 'add'] + EXTENSIONS_TO_INSTALL, check=True)
-    atexit.register(_uninstall_extensions)
-
-
-def _uninstall_extensions() -> None:
-    """Uninstalls extensions that were installed for testing."""
-    print('Uninstalling extensions')
-    shutil.rmtree(os.path.join(CHROMIUM_SRC, '.gemini', 'extensions'))
-
-
-def _clean_repo() -> None:
-    """Gets the repo into a clean state."""
-    print('Cleaning repo')
-    cmd = [
-        'git',
-        'reset',
-        '--hard',
-        'HEAD',
-    ]
-    subprocess.run(cmd, check=True)
-
-    cmd = [
-        'git',
-        'clean',
-        '-f',
-    ]
-    subprocess.run(cmd, check=True)
+    def install_extensions(
+        self,
+        extensions: Collection[str] | None = None,
+    ) -> None:
+        # The installation script should identify the working tree as the "repo
+        # root", so use the copy in the working tree with the CWD set
+        # appropriately for subprocesses like `git`.
+        #
+        # TODO(crbug.com/436274253): Consider allowing tests to specify which
+        # extensions they need.
+        if extensions is None:
+            extensions = EXTENSIONS_TO_INSTALL
+        command = [
+            sys.executable,
+            os.path.join(self.path, 'agents', 'extensions', 'install.py'),
+            'add',
+            *extensions,
+        ]
+        subprocess.check_call(command, cwd=self.path)
 
 
 def main() -> int:
     """Evaluates prompts using promptfoo.
 
-    This will get a temporary copy of promptfoo and attempt to get the
-    repo into a clean state before running tests. Any changes to the
-    repo will be undone at the end of the script to the best of its
-    ability.
+    This will get a temporary copy of promptfoo and create clean checkouts
+    before running tests.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--bypass-confirmation',
-        action='store_true',
-        default=False,
-        help='Bypasses the prompt for user confirmation at the beginning of '
-        'the script.')
     parser.add_argument(
         '--install-from-npm',
         action='store_true',
@@ -331,22 +259,19 @@ def main() -> int:
         'If unspecified, latest will be used.')
     args = parser.parse_args()
 
-    if not args.bypass_confirmation:
-        _prompt_user_to_continue()
-
-    _move_untracked_files()
     promptfoo = _setup_promptfoo(args.install_from_npm,
                                  args.promptfoo_revision,
                                  args.promptfoo_version)
-    _move_installed_extensions()
-    _install_extensions()
 
     returncode = 0
     for config in PROMPTFOO_CONFIGS:
-        _clean_repo()
-        rc = promptfoo.run(['eval', '-j', '1', '-c', config])
-        returncode = returncode or rc
-    _clean_repo()
+        # TODO(crbug.com/436274253): Add a `--no-clean` flag so that the agent
+        # output can be inspected.
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            with WorkTree(tmp_dir):
+                rc = promptfoo.run(['eval', '-j', '1', '-c', config],
+                                   cwd=tmp_dir)
+                returncode = returncode or rc
 
     return returncode
 
