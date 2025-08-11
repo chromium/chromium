@@ -2130,6 +2130,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::cloud_upload::RegisterProfilePrefs(registry);
   policy::NetworkAnnotationBlocklistHandler::RegisterPrefs(registry);
   quickoffice::RegisterProfilePrefs(registry);
+  registry->RegisterBooleanPref(prefs::kAutoSignOutEnabled, false);
   registry->RegisterBooleanPref(prefs::kDeskAPIThirdPartyAccessEnabled, false);
   registry->RegisterBooleanPref(prefs::kDeskAPIDeskSaveAndShareEnabled, false);
   registry->RegisterListPref(prefs::kDeskAPIThirdPartyAllowlist);

@@ -2256,6 +2256,7 @@ chromium-metrics-reviews@google.com.
   <int value="1386" label="RestrictCoreSharingOnRenderer"/>
   <int value="1387" label="OriginKeyedProcessesEnabled"/>
   <int value="1388" label="NTPShortcuts"/>
+  <int value="1389" label="AutoSignOutEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

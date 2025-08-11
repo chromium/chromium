@@ -1151,6 +1151,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kFloatingSsoSessionCookiesIncluded,
     prefs::kFloatingSsoSessionCookiesIncluded,
     base::Value::Type::BOOLEAN },
+  { key::kAutoSignOutEnabled,
+    prefs::kAutoSignOutEnabled,
+    base::Value::Type::BOOLEAN },
   { key::kDeviceAllowEnterpriseRemoteAccessConnections,
     prefs::kDeviceAllowEnterpriseRemoteAccessConnections,
     base::Value::Type::BOOLEAN

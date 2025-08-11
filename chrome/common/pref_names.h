@@ -1291,6 +1291,10 @@ inline constexpr char kFloatingSsoEnabled[] = "floating_sso_enabled";
 inline constexpr char kFloatingSsoSessionCookiesIncluded[] =
     "floating_sso_session_cookies_included";
 
+// Boolean pref that determines whether signing in on a new ChromeOS device
+// automatically signs the user out of their previous session.
+inline constexpr char kAutoSignOutEnabled[] = "auto_sign_out_enabled";
+
 // This boolean controls whether the first window shown on first run should be
 // unconditionally maximized, overriding the heuristic that normally chooses the
 // window size.

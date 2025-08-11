@@ -1387,6 +1387,7 @@ policies:
   1386: RestrictCoreSharingOnRenderer
   1387: OriginKeyedProcessesEnabled
   1388: NTPShortcuts
+  1389: AutoSignOutEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess
