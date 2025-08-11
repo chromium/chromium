@@ -628,6 +628,10 @@ class ComputedStyle final : public ComputedStyleBase {
     }
     return 0;
   }
+  bool HasAutoLineClamp() const {
+    return RuntimeEnabledFeatures::CSSLineClampEnabled() &&
+           IsEffectiveContinueCollapse() && !MaxLines();
+  }
   bool IsEffectiveContinueCollapse() const {
     DCHECK(RuntimeEnabledFeatures::CSSLineClampEnabled());
     switch (Continue()) {
