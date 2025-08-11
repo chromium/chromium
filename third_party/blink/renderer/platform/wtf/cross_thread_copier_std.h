@@ -55,6 +55,15 @@ struct CrossThreadCopier<std::unique_ptr<T, Deleter>> {
   }
 };
 
+template <typename T, typename Deleter>
+struct CrossThreadCopier<std::vector<std::unique_ptr<T, Deleter>>> {
+  STATIC_ONLY(CrossThreadCopier);
+  using Type = std::vector<std::unique_ptr<T, Deleter>>;
+  static Type Copy(Type pointer) {
+    return pointer;  // This is in fact a move.
+  }
+};
+
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 struct CrossThreadCopier<
     Vector<std::unique_ptr<T>, inlineCapacity, Allocator>> {
