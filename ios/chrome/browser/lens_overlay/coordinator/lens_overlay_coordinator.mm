@@ -942,12 +942,13 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 // This coordinator acts as a proxy consumer to the result consumer to implement
 // lazy initialization of the result UI.
-- (void)loadResultsURL:(GURL)url {
+- (void)loadResultsURL:(GURL)url
+           httpHeaders:(NSDictionary<NSString*, NSString*>*)httpHeaders {
   [_metricsRecorder
       recordResultLoadedWithTextSelection:_mediator.currentLensResult
                                               .isTextSelection];
   [self startResultPage];
-  [_resultMediator loadResultsURL:url];
+  [_resultMediator loadResultsURL:url httpHeaders:httpHeaders];
 }
 
 - (void)handleSearchRequestStarted {

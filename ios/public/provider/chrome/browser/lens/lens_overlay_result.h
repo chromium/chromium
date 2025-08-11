@@ -14,6 +14,10 @@ class GURL;
 // The result URL that is meant to be loaded in the LRP.
 @property(nonatomic, assign, readonly) GURL searchResultURL;
 
+// The results HTTP headers that are meant to be loaded in the LRP.
+@property(nonatomic, readonly, copy)
+    NSDictionary<NSString*, NSString*>* resultsHttpHeaders;
+
 // The selected portion of the original snapshot.
 @property(nonatomic, readonly) UIImage* selectionPreviewImage;
 
