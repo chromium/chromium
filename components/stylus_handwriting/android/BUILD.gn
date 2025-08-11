@@ -65,7 +65,6 @@ android_library("java") {
     "java/src/org/chromium/components/stylus_handwriting/DirectWritingTrigger.java",
     "java/src/org/chromium/components/stylus_handwriting/DisabledStylusWritingHandler.java",
     "java/src/org/chromium/components/stylus_handwriting/StylusApiOption.java",
-    "java/src/org/chromium/components/stylus_handwriting/StylusHandwritingInitiator.java",
     "java/src/org/chromium/components/stylus_handwriting/StylusWritingController.java",
     "java/src/org/chromium/components/stylus_handwriting/StylusWritingSettingsState.java",
   ]
@@ -86,7 +85,6 @@ robolectric_library("stylus_handwriting_junit_tests") {
     "junit/src/org/chromium/components/stylus_handwriting/DirectWritingServiceBinderTest.java",
     "junit/src/org/chromium/components/stylus_handwriting/DirectWritingServiceCallbackTest.java",
     "junit/src/org/chromium/components/stylus_handwriting/DirectWritingTriggerTest.java",
-    "junit/src/org/chromium/components/stylus_handwriting/StylusHandwritingInitiatorTest.java",
     "junit/src/org/chromium/components/stylus_handwriting/StylusWritingControllerTest.java",
   ]
   deps = [
