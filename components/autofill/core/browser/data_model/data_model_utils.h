@@ -143,13 +143,13 @@ std::u16string Expiration4DigitYearAsString(int expiration_year);
 // or "2") into a numeric value in [1, 12]. Returns the corresponding `int`
 // value if parsing was successful or `std::nullopt` if a month was not
 // recognized.
-std::optional<int> ParseExpirationMonth(const std::u16string& text,
+std::optional<int> ParseMonthFromString(const std::u16string& text,
                                         const std::string& app_locale);
 
 // Parses the `text` and returns the corresponding `int` value if parsing was
 // successful . This function accepts two digit years as well as four digit
 // years between 2000 and 2999. On failure, it returns `std::nullopt`.
-std::optional<int> ParseExpirationYear(std::u16string_view text);
+std::optional<int> ParseYearFromString(std::u16string_view text);
 
 // Returns the corresponding `int` value if parsing a valid month (1-12) was
 // successful. On failure, it returns `std::nullopt`.

@@ -632,7 +632,7 @@ void CreditCard::GetMatchingTypes(const std::u16string& text,
   }
 
   if (std::optional<int> parsed_month =
-          data_util::ParseExpirationMonth(text, app_locale)) {
+          data_util::ParseMonthFromString(text, app_locale)) {
     if (*parsed_month == expiration_month_) {
       matching_types->insert(CREDIT_CARD_EXP_MONTH);
     }
@@ -957,7 +957,7 @@ bool CreditCard::HasValidExpirationDate() const {
 bool CreditCard::SetExpirationMonthFromString(const std::u16string& text,
                                               const std::string& app_locale) {
   if (std::optional<int> parsed_month =
-          data_util::ParseExpirationMonth(text, app_locale)) {
+          data_util::ParseMonthFromString(text, app_locale)) {
     expiration_month_ = *parsed_month;
     return true;
   }
@@ -965,7 +965,7 @@ bool CreditCard::SetExpirationMonthFromString(const std::u16string& text,
 }
 
 bool CreditCard::SetExpirationYearFromString(const std::u16string& text) {
-  if (std::optional<int> parsed_year = data_util::ParseExpirationYear(text)) {
+  if (std::optional<int> parsed_year = data_util::ParseYearFromString(text)) {
     expiration_year_ = *parsed_year;
     return true;
   }

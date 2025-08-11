@@ -266,7 +266,7 @@ std::u16string Expiration4DigitYearAsString(int expiration_year) {
   return FormatDate({.year = expiration_year}, u"YYYY");
 }
 
-std::optional<int> ParseExpirationMonth(const std::u16string& text,
+std::optional<int> ParseMonthFromString(const std::u16string& text,
                                         const std::string& app_locale) {
   std::u16string trimmed;
   base::TrimWhitespace(text, base::TRIM_ALL, &trimmed);
@@ -336,7 +336,7 @@ std::optional<int> ParseExpirationMonth(const std::u16string& text,
   return std::nullopt;
 }
 
-std::optional<int> ParseExpirationYear(std::u16string_view text) {
+std::optional<int> ParseYearFromString(std::u16string_view text) {
   std::u16string trimmed;
   base::TrimWhitespace(text, base::TRIM_ALL, &trimmed);
 
