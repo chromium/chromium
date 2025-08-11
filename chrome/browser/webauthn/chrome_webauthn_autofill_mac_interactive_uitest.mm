@@ -138,7 +138,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthnMacAutofillIntegrationTest, SelectAccount) {
   // Click the credential.
   test_api(static_cast<autofill::AutofillPopupControllerImpl&>(*controller))
       .DisableThreshold(true);
-  controller->AcceptSuggestion(it - suggestions.begin());
+  controller->AcceptSuggestion(
+      it - suggestions.begin(),
+      autofill::AutofillMetrics::SuggestionAcceptedMethod::kMouse);
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));
   EXPECT_EQ(result, "\"webauthn: OK\"");

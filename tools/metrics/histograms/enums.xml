@@ -787,6 +787,12 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="2" label="ScheduledFileRemovedFromDevice"/>
 </enum>
 
+<enum name="AutofillSuggestionAcceptedMethod">
+  <int value="0" label="Mouse"/>
+  <int value="1" label="Keyboard"/>
+  <int value="2" label="Tap"/>
+</enum>
+
 <enum name="AutoScreenBrightnessAlsReaderStatus">
   <int value="0" label="Success"/>
   <int value="1" label="InProgress"/>

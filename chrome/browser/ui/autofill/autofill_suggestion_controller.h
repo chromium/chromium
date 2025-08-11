@@ -53,7 +53,9 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
   // allow ruling out accidental UI interactions (crbug.com/1279268).
   static constexpr base::TimeDelta kIgnoreEarlyClicksOnSuggestionsDuration =
       base::Milliseconds(500);
-  virtual void AcceptSuggestion(int index) = 0;
+  virtual void AcceptSuggestion(
+      int index,
+      AutofillMetrics::SuggestionAcceptedMethod accept_method) = 0;
 
   // Removes the suggestion at the given `index`. `removal_method`specifies the
   // UI entry point for removal, e.g. clicking on a delete button.

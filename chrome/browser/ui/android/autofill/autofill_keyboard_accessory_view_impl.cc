@@ -164,7 +164,8 @@ void AutofillKeyboardAccessoryViewImpl::ConfirmDeletion(
 void AutofillKeyboardAccessoryViewImpl::SuggestionSelected(JNIEnv* env,
                                                            jint list_index) {
   if (controller_) {
-    controller_->AcceptSuggestion(list_index);
+    controller_->AcceptSuggestion(
+        list_index, autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
   }
 }
 

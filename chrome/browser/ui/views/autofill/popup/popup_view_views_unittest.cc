@@ -538,7 +538,9 @@ TEST_F(PopupViewViewsTest, AcceptingOnTap) {
   CreateAndShowView({SuggestionType::kPasswordEntry});
 
   // Tapping will accept the selection.
-  EXPECT_CALL(controller(), AcceptSuggestion(0));
+  EXPECT_CALL(
+      controller(),
+      AcceptSuggestion(0, AutofillMetrics::SuggestionAcceptedMethod::kTap));
   generator().GestureTapAt(
       GetPopupRowViewAt(0).GetBoundsInScreen().CenterPoint());
 }
@@ -948,14 +950,18 @@ class PopupViewViewsTestKeyboard : public PopupViewViewsTest {
 // Tests that hitting enter on a suggestion autofills it.
 TEST_F(PopupViewViewsTestKeyboard, FillOnEnter) {
   SelectFirstSuggestion();
-  EXPECT_CALL(controller(), AcceptSuggestion(0));
+  EXPECT_CALL(controller(),
+              AcceptSuggestion(
+                  0, AutofillMetrics::SuggestionAcceptedMethod::kKeyboard));
   SimulateKeyPress(ui::VKEY_RETURN);
 }
 
 // Tests that hitting tab on a suggestion autofills it.
 TEST_F(PopupViewViewsTestKeyboard, FillOnTabPressed) {
   SelectFirstSuggestion();
-  EXPECT_CALL(controller(), AcceptSuggestion(0));
+  EXPECT_CALL(controller(),
+              AcceptSuggestion(
+                  0, AutofillMetrics::SuggestionAcceptedMethod::kKeyboard));
   SimulateKeyPress(ui::VKEY_TAB);
 }
 
@@ -963,7 +969,7 @@ TEST_F(PopupViewViewsTestKeyboard, FillOnTabPressed) {
 // autofill a selected suggestion.
 TEST_F(PopupViewViewsTestKeyboard, NoFillOnTabPressedWithModifiers) {
   SelectFirstSuggestion();
-  EXPECT_CALL(controller(), AcceptSuggestion(0)).Times(0);
+  EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
   SimulateKeyPress(ui::VKEY_TAB, /*shift_modifier_pressed=*/false,
                    /*non_shift_modifier_pressed=*/true);
 }
@@ -1819,7 +1825,10 @@ TEST_F(PopupViewViewsTest, VirtualCardSuggestion_ElementId) {
 // Tests that (only) clickable items trigger an AcceptSuggestion event.
 TEST_P(PopupViewViewsTestWithAnySuggestionType, ShowClickTest) {
   CreateAndShowView({type()});
-  EXPECT_CALL(controller(), AcceptSuggestion(0)).Times(IsClickable(type()));
+  EXPECT_CALL(
+      controller(),
+      AcceptSuggestion(0, AutofillMetrics::SuggestionAcceptedMethod::kMouse))
+      .Times(IsClickable(type()));
   generator().MoveMouseTo(gfx::Point(1000, 1000));
   ASSERT_FALSE(view().IsMouseHovered());
   Paint();
@@ -1832,7 +1841,9 @@ TEST_P(PopupViewViewsTestWithAnySuggestionType, ShowClickTest) {
 TEST_P(PopupViewViewsTestWithClickableSuggestionType,
        AcceptSuggestionIfUnfocusedAtPaint) {
   CreateAndShowView({type()});
-  EXPECT_CALL(controller(), AcceptSuggestion(0));
+  EXPECT_CALL(
+      controller(),
+      AcceptSuggestion(0, AutofillMetrics::SuggestionAcceptedMethod::kMouse));
   generator().MoveMouseTo(gfx::Point(1000, 1000));
   ASSERT_FALSE(view().IsMouseHovered());
   Paint();
@@ -1845,7 +1856,9 @@ TEST_P(PopupViewViewsTestWithClickableSuggestionType,
 TEST_P(PopupViewViewsTestWithClickableSuggestionType,
        AcceptSuggestionIfMouseSelectedAnotherRow) {
   CreateAndShowView({type(), type()});
-  EXPECT_CALL(controller(), AcceptSuggestion);
+  EXPECT_CALL(
+      controller(),
+      AcceptSuggestion(1, AutofillMetrics::SuggestionAcceptedMethod::kMouse));
   generator().MoveMouseTo(GetCenterOfSuggestion(0));
   ASSERT_TRUE(view().IsMouseHovered());
   Paint();
@@ -1858,7 +1871,9 @@ TEST_P(PopupViewViewsTestWithClickableSuggestionType,
 TEST_P(PopupViewViewsTestWithClickableSuggestionType,
        AcceptSuggestionIfMouseTemporarilySelectedAnotherRow) {
   CreateAndShowView({type(), type()});
-  EXPECT_CALL(controller(), AcceptSuggestion);
+  EXPECT_CALL(
+      controller(),
+      AcceptSuggestion(0, AutofillMetrics::SuggestionAcceptedMethod::kMouse));
   generator().MoveMouseTo(GetCenterOfSuggestion(0));
   ASSERT_TRUE(view().IsMouseHovered());
   Paint();
@@ -1873,7 +1888,9 @@ TEST_P(PopupViewViewsTestWithClickableSuggestionType,
 TEST_P(PopupViewViewsTestWithClickableSuggestionType,
        AcceptSuggestionIfMouseExitedPopupSincePaint) {
   CreateAndShowView({type()});
-  EXPECT_CALL(controller(), AcceptSuggestion);
+  EXPECT_CALL(
+      controller(),
+      AcceptSuggestion(0, AutofillMetrics::SuggestionAcceptedMethod::kMouse));
   generator().MoveMouseTo(GetCenterOfSuggestion(0));
   ASSERT_TRUE(view().IsMouseHovered());
   Paint();

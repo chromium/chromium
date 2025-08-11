@@ -331,7 +331,9 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     test_api(static_cast<autofill::AutofillPopupControllerImpl&>(
                  *suggestion_controller))
         .DisableThreshold(true);
-    suggestion_controller->AcceptSuggestion(it - suggestions.begin());
+    suggestion_controller->AcceptSuggestion(
+        it - suggestions.begin(),
+        autofill::AutofillMetrics::SuggestionAcceptedMethod::kMouse);
     std::string result;
     ASSERT_TRUE(message_queue.WaitForMessage(&result));
     EXPECT_EQ(result, "\"webauthn: OK\"");

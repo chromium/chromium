@@ -188,7 +188,8 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
 }
 
 - (void)acceptCreditCard:(id)sender {
-  _controller->AcceptSuggestion([sender tag]);
+  _controller->AcceptSuggestion(
+      [sender tag], autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
 }
 
 - (void)setIsCreditCardPopup:(bool)is_credit_card_popup {

@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -307,7 +308,8 @@ void PopupRowView::OnMouseReleased(const ui::MouseEvent& event) {
   if (event.IsOnlyLeftMouseButton() &&
       content_view_->HitTestPoint(event.location()) && controller_ &&
       IsViewVisibleEnough()) {
-    controller_->AcceptSuggestion(line_number_);
+    controller_->AcceptSuggestion(
+        line_number_, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
   }
 }
 
@@ -316,7 +318,8 @@ void PopupRowView::OnGestureEvent(ui::GestureEvent* event) {
     case ui::EventType::kGestureTap:
       if (content_view_->HitTestPoint(event->location()) && controller_ &&
           IsViewVisibleEnough()) {
-        controller_->AcceptSuggestion(line_number_);
+        controller_->AcceptSuggestion(
+            line_number_, AutofillMetrics::SuggestionAcceptedMethod::kTap);
       }
       break;
     default:
@@ -439,7 +442,8 @@ bool PopupRowView::HandleKeyPressEvent(
           event.GetModifiers() & blink::WebInputEvent::kKeyModifiers;
       if (*GetSelectedCell() == CellType::kContent && controller_ &&
           !kHasKeyModifierPressed && IsViewVisibleEnough()) {
-        controller_->AcceptSuggestion(line_number_);
+        controller_->AcceptSuggestion(
+            line_number_, AutofillMetrics::SuggestionAcceptedMethod::kKeyboard);
         return true;
       }
       return false;

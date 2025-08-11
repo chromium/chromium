@@ -90,14 +90,17 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   }
 
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
-  client().popup_controller(manager()).AcceptSuggestion(0);
+  client().popup_controller(manager()).AcceptSuggestion(
+      /*index=*/0, autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
   task_environment()->FastForwardBy(base::Milliseconds(100));
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+  client().popup_controller(manager()).AcceptSuggestion(
+      /*index=*/0, autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
   task_environment()->FastForwardBy(base::Milliseconds(400));
 
   // Only now suggestions should be accepted.
   check.Call();
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+  client().popup_controller(manager()).AcceptSuggestion(
+      /*index=*/0, autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
 }
 
 // Tests that reshowing the suggestions resets the accept threshold.
@@ -113,20 +116,24 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   // Calls before the threshold are ignored.
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+  client().popup_controller(manager()).AcceptSuggestion(
+      /*index=*/0, autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
   task_environment()->FastForwardBy(base::Milliseconds(100));
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+  client().popup_controller(manager()).AcceptSuggestion(
+      /*index=*/0, autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
   task_environment()->FastForwardBy(base::Milliseconds(400));
 
   // Show the suggestions again (simulating, e.g., a click somewhere slightly
   // different).
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+  client().popup_controller(manager()).AcceptSuggestion(
+      /*index=*/0, autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
 
   // After waiting again, suggestions become acceptable.
   task_environment()->FastForwardBy(base::Milliseconds(500));
   check.Call();
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+  client().popup_controller(manager()).AcceptSuggestion(
+      /*index=*/0, autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
 }
 
 // Tests that calling `Show()` on the controller shows the view.
@@ -351,7 +358,8 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
         client().popup_controller(manager()).Hide(
             SuggestionHidingReason::kAcceptSuggestion);
       });
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+  client().popup_controller(manager()).AcceptSuggestion(
+      /*index=*/0, autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
@@ -363,7 +371,8 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   task_environment()->FastForwardBy(base::Milliseconds(500));
 
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
-  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+  client().popup_controller(manager()).AcceptSuggestion(
+      /*index=*/0, autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
 }
 
 // Tests that the `KeyboardAccessoryController` moves "clear form" suggestions
@@ -417,9 +426,11 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, SelectInvalidSuggestion) {
 
   // The following should not crash:
   client().popup_controller(manager()).AcceptSuggestion(
-      /*index=*/0);  // Non-acceptable type.
+      /*index=*/0,  // Non-acceptable type.
+      autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
   client().popup_controller(manager()).AcceptSuggestion(
-      /*index=*/1);  // Out of bounds!
+      /*index=*/1,  // Out of bounds!
+      autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
 }
 
 }  // namespace

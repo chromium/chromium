@@ -6884,6 +6884,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.SuggestionAccepted.Method"
+    enum="AutofillSuggestionAcceptedMethod" expires_after="2026-06-01">
+  <owner>battre@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the method by which a user accepts an Autofill suggestion. This is
+    logged every time a suggestion is accepted.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.SuggestionAccepted.OffTheRecord" units="units"
     expires_after="2025-12-28">
   <owner>arabm@google.com</owner>

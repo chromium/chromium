@@ -62,7 +62,9 @@ class AutofillKeyboardAccessoryControllerImpl
 
   // AutofillSuggestionController:
   void OnSuggestionsChanged() override;
-  void AcceptSuggestion(int index) override;
+  void AcceptSuggestion(int index,
+                        autofill::AutofillMetrics::SuggestionAcceptedMethod
+                            accept_method) override;
   bool RemoveSuggestion(
       int index,
       AutofillMetrics::SingleEntryRemovalMethod removal_method) override;

@@ -73,7 +73,9 @@ class AutofillPopupControllerImpl : public AutofillPopupController,
 
   // AutofillSuggestionController:
   void OnSuggestionsChanged() override;
-  void AcceptSuggestion(int index) override;
+  void AcceptSuggestion(
+      int index,
+      AutofillMetrics::SuggestionAcceptedMethod accept_method) override;
   bool RemoveSuggestion(
       int list_index,
       AutofillMetrics::SingleEntryRemovalMethod removal_method) override;
