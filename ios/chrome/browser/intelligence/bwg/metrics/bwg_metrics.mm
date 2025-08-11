@@ -64,3 +64,8 @@ void RecordGeminiEntryPointImpression() {
 void RecordFREShown() {
   base::RecordAction(base::UserMetricsAction("MobileGeminiFREShown"));
 }
+
+void RecordFirstResponseReceived() {
+  base::RecordAction(
+      base::UserMetricsAction("MobileGeminiFirstResponseReceived"));
+}
