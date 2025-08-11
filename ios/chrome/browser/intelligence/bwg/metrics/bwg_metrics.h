@@ -70,6 +70,9 @@ enum class IOSGeminiFirstPromptSubmissionMethod {
 // UMA histogram key for IOS.Gemini.FirstPrompt.SubmissionMethod.
 extern const char kFirstPromptSubmissionMethodHistogram[];
 
+// UMA histogram key for IOS.Gemini.Prompt.ContextAttachment.
+extern const char kPromptContextAttachmentHistogram[];
+
 // Records the duration of a Gemini session.
 void RecordBWGSessionTime(base::TimeDelta session_duration);
 
@@ -104,5 +107,8 @@ void RecordFREConsentDismiss();
 
 // Records that the user clicked a link on the BWG FRE consent screen.
 void RecordFREConsentLinkClick();
+
+// Records prompt context attachment metrics.
+void RecordPromptContextAttachment(bool has_page_context);
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_
