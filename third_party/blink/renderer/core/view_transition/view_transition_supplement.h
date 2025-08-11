@@ -48,6 +48,9 @@ class CORE_EXPORT ViewTransitionSupplement
                                                 Document&,
                                                 ExceptionState&);
 
+  // activeViewTransition idl implementation
+  static DOMViewTransition* activeViewTransition(Document&);
+
   static DOMViewTransition* StartViewTransitionForElement(
       ScriptState*,
       Element*,

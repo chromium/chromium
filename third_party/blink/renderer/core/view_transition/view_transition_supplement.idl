@@ -8,4 +8,6 @@
     [MeasureAs=ViewTransition, CallWith=ScriptState, RaisesException] ViewTransition startViewTransition();
     [MeasureAs=ViewTransition, CallWith=ScriptState, RaisesException] ViewTransition startViewTransition(ViewTransitionCallback update);
     [MeasureAs=ViewTransition, CallWith=ScriptState, RaisesException] ViewTransition startViewTransition(ViewTransitionOptions opts);
+
+    [MeasureAs=ViewTransition, RuntimeEnabled=DocumentActiveViewTransition] readonly attribute ViewTransition? activeViewTransition;
 };

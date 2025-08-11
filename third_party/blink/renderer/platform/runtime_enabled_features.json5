@@ -1848,6 +1848,11 @@
       public: true,
     },
     {
+      // https://chromestatus.com/feature/5067126381215744
+      name: "DocumentActiveViewTransition",
+      status: "experimental",
+    },
+    {
       name: "DocumentCookie",
     },
     {
