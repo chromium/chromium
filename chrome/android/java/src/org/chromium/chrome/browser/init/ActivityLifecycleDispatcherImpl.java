@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.lifecycle.RecreateObserver;
 import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
+import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
 
 /**
@@ -55,6 +56,8 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
             new ObserverList<>();
     private final ObserverList<TopResumedActivityChangedObserver>
             mTopResumedActivityChangedObservers = new ObserverList<>();
+    private final ObserverList<TopResumedActivityChangedWithNativeObserver>
+            mTopResumedActivityChangedWithNativeObservers = new ObserverList<>();
 
     private @Nullable Activity mActivity;
 
@@ -110,6 +113,10 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
             mTopResumedActivityChangedObservers.addObserver(
                     (TopResumedActivityChangedObserver) observer);
         }
+        if (observer instanceof TopResumedActivityChangedWithNativeObserver) {
+            mTopResumedActivityChangedWithNativeObservers.addObserver(
+                    (TopResumedActivityChangedWithNativeObserver) observer);
+        }
     }
 
     @Override
@@ -151,6 +158,10 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         if (observer instanceof TopResumedActivityChangedObserver) {
             mTopResumedActivityChangedObservers.removeObserver(
                     (TopResumedActivityChangedObserver) observer);
+        }
+        if (observer instanceof TopResumedActivityChangedWithNativeObserver) {
+            mTopResumedActivityChangedWithNativeObservers.removeObserver(
+                    (TopResumedActivityChangedWithNativeObserver) observer);
         }
     }
 
@@ -294,6 +305,13 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
     void dispatchOnTopResumedActivityChanged(boolean isTopResumedActivity) {
         for (TopResumedActivityChangedObserver observer : mTopResumedActivityChangedObservers) {
             observer.onTopResumedActivityChanged(isTopResumedActivity);
+        }
+    }
+
+    void dispatchOnTopResumedActivityChangedWithNative(boolean isTopResumedActivity) {
+        for (TopResumedActivityChangedWithNativeObserver observer :
+                mTopResumedActivityChangedWithNativeObservers) {
+            observer.onTopResumedActivityChangedWithNative(isTopResumedActivity);
         }
     }
 }

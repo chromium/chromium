@@ -20,19 +20,21 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.ui.base.DeviceFormFactor;
 
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(value = Batch.PER_CLASS)
 @NullMarked
@@ -56,6 +58,7 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* test needs "new window" in app menu */)
     public void startChromeTabbedActivity_activeChromeAndroidTask_isActive() {
         // Arrange & Act.
         WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
@@ -73,6 +76,31 @@ public class ChromeAndroidTaskIntegrationTest {
         chromeAndroidTask = getChromeAndroidTask(secondTaskId);
         assertNotNull(chromeAndroidTask);
         assertTrue(chromeAndroidTask.isActive());
+        ntpStation.getActivity().finish();
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* test needs "new window" in app menu */)
+    public void getLastActivatedTimeMillis_returnsCorrectTimestampForEachTask() {
+        // Arrange & Act.
+        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+        int firstTaskId = mFreshCtaTransitTestRule.getActivity().getTaskId();
+
+        RegularNewTabPageStation ntpStation =
+                webPageStation.openRegularTabAppMenu().openNewWindow();
+        int secondTaskId = ntpStation.getActivity().getTaskId();
+
+        // Assert.
+        var firstChromeAndroidTask = getChromeAndroidTask(firstTaskId);
+        var secondChromeAndroidTask = getChromeAndroidTask(secondTaskId);
+        assertNotNull(firstChromeAndroidTask);
+        assertNotNull(secondChromeAndroidTask);
+        assertTrue(
+                secondChromeAndroidTask.getLastActivatedTimeMillis()
+                        > firstChromeAndroidTask.getLastActivatedTimeMillis());
+
+        // Cleanup.
         ntpStation.getActivity().finish();
     }
 

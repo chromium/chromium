@@ -1161,6 +1161,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     public void onTopResumedActivityChangedWithNative(boolean isTopResumedActivity) {
+        super.onTopResumedActivityChangedWithNative(isTopResumedActivity);
+
         View view = isTopResumedActivity ? getWindow().getDecorView() : null;
         InputHintChecker.setView(view);
 

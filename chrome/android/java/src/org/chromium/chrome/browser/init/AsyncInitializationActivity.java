@@ -26,7 +26,6 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LoaderErrors;
-import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.BuildConfig;
@@ -49,6 +48,7 @@ import org.chromium.ui.base.ActivityIntentRequestTrackerDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
 
@@ -307,8 +307,11 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         throw new ProcessInitException(LoaderErrors.NATIVE_STARTUP_FAILED, failureCause);
     }
 
+    @CallSuper
     @Override
-    public void onTopResumedActivityChangedWithNative(boolean isTopResumedActivity) {}
+    public void onTopResumedActivityChangedWithNative(boolean isTopResumedActivity) {
+        mLifecycleDispatcher.dispatchOnTopResumedActivityChangedWithNative(isTopResumedActivity);
+    }
 
     /**
      * Extending classes should override {@link AsyncInitializationActivity#preInflationStartup()},

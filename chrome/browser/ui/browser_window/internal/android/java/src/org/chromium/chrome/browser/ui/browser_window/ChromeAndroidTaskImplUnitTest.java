@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -22,13 +23,17 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
 
 import java.util.Arrays;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChromeAndroidTaskImplUnitTest {
 
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static ChromeAndroidTaskImpl createChromeAndroidTask() {
@@ -37,8 +42,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
     private static ChromeAndroidTaskImpl createChromeAndroidTask(int taskId) {
         var chromeAndroidTask =
-                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
-                                /* taskId= */ 1)
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(taskId)
                         .mChromeAndroidTask;
         assert chromeAndroidTask instanceof ChromeAndroidTaskImpl;
         return (ChromeAndroidTaskImpl) chromeAndroidTask;
@@ -55,6 +59,23 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Assert.
         assertEquals(activityWindowAndroid, chromeAndroidTask.getActivityWindowAndroid());
+    }
+
+    @Test
+    public void constructor_registersActivityLifecycleObservers() {
+        // Arrange & Act.
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1);
+        var mockActivityLifecycleDispatcher =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityLifecycleDispatcher;
+
+        // Assert.
+        verify(mockActivityLifecycleDispatcher, times(1))
+                .register(isA(TopResumedActivityChangedWithNativeObserver.class));
+        // TODO(crbug.com/424857039): verify ConfigurationChangedObserver.
     }
 
     @Test
@@ -83,9 +104,10 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void setActivityWindowAndroid_previousRefCleared_setsNewRef() {
         // Arrange.
-        var chromeAndroidTask = createChromeAndroidTask();
+        int taskId = 1;
+        var chromeAndroidTask = createChromeAndroidTask(taskId);
         var newActivityWindowAndroid =
-                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
+                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
         chromeAndroidTask.clearActivityWindowAndroid();
 
         // Act.
@@ -93,6 +115,26 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Assert.
         assertEquals(newActivityWindowAndroid, chromeAndroidTask.getActivityWindowAndroid());
+    }
+
+    @Test
+    public void
+            setActivityWindowAndroid_previousRefCleared_registersNewActivityLifecycleObservers() {
+        // Arrange.
+        int taskId = 1;
+        var chromeAndroidTask = createChromeAndroidTask(taskId);
+        var newActivityWindowAndroidMocks =
+                ChromeAndroidTaskUnitTestSupport.createActivityWindowAndroidMocks(taskId);
+        chromeAndroidTask.clearActivityWindowAndroid();
+
+        // Act.
+        chromeAndroidTask.setActivityWindowAndroid(
+                newActivityWindowAndroidMocks.mMockActivityWindowAndroid);
+
+        // Assert.
+        verify(newActivityWindowAndroidMocks.mMockActivityLifecycleDispatcher, times(1))
+                .register(isA(TopResumedActivityChangedWithNativeObserver.class));
+        // TODO(crbug.com/424857039): verify ConfigurationChangedObserver.
     }
 
     @Test
@@ -133,6 +175,28 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act & Assert.
         assertThrows(AssertionError.class, () -> chromeAndroidTask.getActivityWindowAndroid());
+    }
+
+    @Test
+    public void clearActivityWindowAndroid_unregistersActivityLifecycleObservers() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockActivityLifecycleDispatcher =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityLifecycleDispatcher;
+
+        // Act.
+        chromeAndroidTask.clearActivityWindowAndroid();
+
+        // Assert.
+        verify(mockActivityLifecycleDispatcher, times(1))
+                .unregister(isA(TopResumedActivityChangedWithNativeObserver.class));
+        // TODO(crbug.com/424857039): verify ConfigurationChangedObserver.
     }
 
     @Test
@@ -287,5 +351,43 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act & Assert.
         assertThrows(AssertionError.class, () -> chromeAndroidTask.destroy());
+    }
+
+    @Test
+    public void onTopResumedActivityChanged_activityIsTopResumed_updatesLastActivatedTime() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        long elapsedRealTime = TimeUtils.elapsedRealtimeMillis();
+
+        // Act.
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(/* isTopResumedActivity= */ true);
+
+        // Assert.
+        assertEquals(elapsedRealTime, chromeAndroidTask.getLastActivatedTimeMillis());
+    }
+
+    @Test
+    public void
+            onTopResumedActivityChanged_activityIsNotTopResumed_doesNotUpdateLastActivatedTime() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        long elapsedRealTime1 = TimeUtils.elapsedRealtimeMillis();
+
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(/* isTopResumedActivity= */ true);
+        mFakeTimeTestRule.advanceMillis(100L);
+
+        // Act.
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(/* isTopResumedActivity= */ false);
+
+        // Assert.
+        assertEquals(elapsedRealTime1, chromeAndroidTask.getLastActivatedTimeMillis());
     }
 }
