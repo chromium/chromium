@@ -53,11 +53,13 @@ import org.chromium.chrome.test.transit.hub.TabSwitcherSearchStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherSearchStation.SuggestionFacility;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.testhtmls.NavigatePageStations;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.PageTransition;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -348,9 +350,19 @@ public class TabSwitcherSearchTest {
     @EnableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
     public void testTypedSuggestions_OpenTabGroupSearchSuggestion() {
         String tabGroupTitle = "Test";
-        int firstTabId = mPage.loadedTabElement.get().getId();
+        Tab firstTab = mPage.loadedTabElement.get();
+        int firstTabId = firstTab.getId();
+        mCtaTestRule.loadUrlInTab(
+                mCtaTestRule.getTestServer().getURL(NavigatePageStations.PATH_ONE),
+                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
+                firstTab);
         RegularNewTabPageStation secondPage = mPage.openNewTabFast();
-        int secondTabId = secondPage.loadedTabElement.get().getId();
+        Tab secondTab = secondPage.loadedTabElement.get();
+        int secondTabId = secondTab.getId();
+        mCtaTestRule.loadUrlInTab(
+                mCtaTestRule.getTestServer().getURL(NavigatePageStations.PATH_ONE),
+                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
+                secondTab);
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
                 tabSwitcher.openAppMenu().clickSelectTabs();
@@ -365,9 +377,57 @@ public class TabSwitcherSearchTest {
         tabSwitcherSearchStation.typeInOmnibox("test");
         SuggestionFacility suggestion =
                 tabSwitcherSearchStation.findSuggestion(
-                        /* index= */ 0,
+                        /* index= */ 1,
                         /* title= */ "   Test",
-                        /* text= */ "chrome://newtab/, chrome://newtab/");
+                        /* text= */ "127.0.0.1:13245/chrome/test/data/android/navigate/one.html,"
+                                + " 127.0.0.1:13245/chrome/test/data/android/navigate/one.html");
+        Pair<RegularTabSwitcherStation, TabGroupDialogFacility> pair =
+                suggestion.openTabGroup(
+                        mCtaTestRule.getActivity(),
+                        List.of(firstTabId, secondTabId),
+                        tabGroupTitle);
+        assertEquals(tabGroupTitle, pair.second.getTitle());
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount("TabGroups.HubSearchTabGroupSuggestionClicked"));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
+    public void testTypedSuggestions_OpenTabGroupSearchSuggestionByURLMatch() {
+        String tabGroupTitle = "Test";
+        Tab firstTab = mPage.loadedTabElement.get();
+        int firstTabId = firstTab.getId();
+        mCtaTestRule.loadUrlInTab(
+                mCtaTestRule.getTestServer().getURL(NavigatePageStations.PATH_ONE),
+                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
+                firstTab);
+        RegularNewTabPageStation secondPage = mPage.openNewTabFast();
+        Tab secondTab = secondPage.loadedTabElement.get();
+        int secondTabId = secondTab.getId();
+        mCtaTestRule.loadUrlInTab(
+                mCtaTestRule.getTestServer().getURL(NavigatePageStations.PATH_ONE),
+                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
+                secondTab);
+        RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
+        TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
+                tabSwitcher.openAppMenu().clickSelectTabs();
+        editor = editor.addTabToSelection(0, firstTabId);
+        editor = editor.addTabToSelection(1, secondTabId);
+        NewTabGroupDialogFacility<RegularTabSwitcherStation> dialog =
+                editor.openAppMenuWithEditor().groupTabs();
+        dialog = dialog.inputName(tabGroupTitle);
+        dialog.pressDone();
+
+        TabSwitcherSearchStation tabSwitcherSearchStation = tabSwitcher.openTabSwitcherSearch();
+        tabSwitcherSearchStation.typeInOmnibox("navigate");
+        SuggestionFacility suggestion =
+                tabSwitcherSearchStation.findSuggestion(
+                        /* index= */ 1,
+                        /* title= */ "   Test",
+                        /* text= */ "127.0.0.1:13245/chrome/test/data/android/navigate/one.html,"
+                                + " 127.0.0.1:13245/chrome/test/data/android/navigate/one.html");
         Pair<RegularTabSwitcherStation, TabGroupDialogFacility> pair =
                 suggestion.openTabGroup(
                         mCtaTestRule.getActivity(),
@@ -384,9 +444,19 @@ public class TabSwitcherSearchTest {
     @EnableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
     public void testTypedSuggestionsFromTabGroupsPane_OpenTabGroupSearchSuggestion() {
         String tabGroupTitle = "Test";
-        int firstTabId = mPage.loadedTabElement.get().getId();
+        Tab firstTab = mPage.loadedTabElement.get();
+        int firstTabId = firstTab.getId();
+        mCtaTestRule.loadUrlInTab(
+                mCtaTestRule.getTestServer().getURL(NavigatePageStations.PATH_ONE),
+                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
+                firstTab);
         RegularNewTabPageStation secondPage = mPage.openNewTabFast();
-        int secondTabId = secondPage.loadedTabElement.get().getId();
+        Tab secondTab = secondPage.loadedTabElement.get();
+        int secondTabId = secondTab.getId();
+        mCtaTestRule.loadUrlInTab(
+                mCtaTestRule.getTestServer().getURL(NavigatePageStations.PATH_ONE),
+                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
+                secondTab);
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
                 tabSwitcher.openAppMenu().clickSelectTabs();
@@ -402,9 +472,10 @@ public class TabSwitcherSearchTest {
         tabSwitcherSearchStation.typeInOmnibox("test");
         SuggestionFacility suggestion =
                 tabSwitcherSearchStation.findSuggestion(
-                        /* index= */ 0,
+                        /* index= */ 1,
                         /* title= */ "   Test",
-                        /* text= */ "chrome://newtab/, chrome://newtab/");
+                        /* text= */ "127.0.0.1:13245/chrome/test/data/android/navigate/one.html,"
+                                + " 127.0.0.1:13245/chrome/test/data/android/navigate/one.html");
         Pair<RegularTabSwitcherStation, TabGroupDialogFacility> pair =
                 suggestion.openTabGroup(
                         mCtaTestRule.getActivity(),

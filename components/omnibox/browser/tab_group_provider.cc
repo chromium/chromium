@@ -39,10 +39,19 @@
 #include "url/gurl.h"
 
 namespace {
-int Score(const AutocompleteInput& input,
-          const query_parser::QueryNodeVector& input_query_nodes,
-          const tab_groups::SavedTabGroup& group) {
+std::pair<int, std::u16string> Score(
+    const AutocompleteInput& input,
+    const query_parser::QueryNodeVector& input_query_nodes,
+    const tab_groups::SavedTabGroup& group) {
   TRACE_EVENT_BEGIN0("omnibox", "TabGroupProvider::Score");
+
+  std::u16string matching_url;
+  // TODO(crbug.com/435705148): Remove this check when unnamed tab groups are
+  // supported as they may be surfaced through a matching URL with no title.
+  if (group.title().empty()) {
+    return {0, matching_url};
+  }
+
   // Extract query words from the title.
   const std::u16string lower_title = base::i18n::ToLower(group.title());
   query_parser::QueryWordVector title_words;
@@ -52,13 +61,41 @@ int Score(const AutocompleteInput& input,
   query_parser::Snippet::MatchPositions title_matches;
   query_parser::Snippet::MatchPositions url_matches;
   if (!std::ranges::all_of(input_query_nodes, [&](const auto& query_node) {
+        // Search for a matching URL and early return once one is found but do
+        // not consider chrome prefixed tabs during matching.
+        bool has_url_match;
+        for (auto& saved_tab : group.saved_tabs()) {
+#if BUILDFLAG(IS_ANDROID)
+          if (saved_tab.url().SchemeIs(browser_ui::kChromeUINativeScheme) ||
+              saved_tab.url().SchemeIs(content::kChromeUIScheme)) {
+            continue;
+          }
+#endif
+
+          const std::u16string lower_url =
+              base::i18n::ToLower(url_formatter::FormatUrl(
+                  saved_tab.url(),
+                  AutocompleteMatch::GetFormatTypes(
+                      /*preserve_scheme=*/false,
+                      /*preserve_subdomain=*/false),
+                  base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+
+          query_parser::QueryWordVector url_words;
+          query_parser::QueryParser::ExtractQueryWords(lower_url, &url_words);
+
+          has_url_match = query_node->HasMatchIn(url_words, &url_matches);
+          if (has_url_match) {
+            matching_url = lower_url;
+            break;
+          }
+        }
         // Using local vars so to not short circuit adding URL matches when
         // title matches are found.
         const bool has_title_match =
             query_node->HasMatchIn(title_words, &title_matches);
-        return has_title_match;
+        return has_title_match || has_url_match;
       })) {
-    return 0;
+    return {0, matching_url};
   }
 
   // Max score is based on these suggestions sharing a group with open tab
@@ -68,12 +105,16 @@ int Score(const AutocompleteInput& input,
       for_each(title_matches.begin(), title_matches.end(),
                ScoringFunctor(lower_title.length()))
           .ScoringFactor();
+  const double url_factor = for_each(url_matches.begin(), url_matches.end(),
+                                     ScoringFunctor(matching_url.length()))
+                                .ScoringFactor();
   const double normalized_factors =
-      std::min((title_factor) / (lower_title.length() + 10), 1.0);
+      std::min((title_factor + url_factor) / (lower_title.length() + 10), 1.0);
   TRACE_EVENT_END0("omnibox", "TabGroupProvider::Score");
 
-  return normalized_factors * kMaxScore;
+  return {normalized_factors * kMaxScore, matching_url};
 }
+
 }  // namespace
 
 TabGroupProvider::TabGroupProvider(AutocompleteProviderClient* client)
@@ -109,9 +150,10 @@ void TabGroupProvider::Start(const AutocompleteInput& input,
       &input_query_nodes);
 
   for (auto& group : client_->GetTabGroupSyncService()->GetAllGroups()) {
-    int score = Score(input, input_query_nodes, group);
+    const auto [score, matching_url] = Score(input, input_query_nodes, group);
     if (score > 0) {
-      matches_.push_back(CreateTabGroupMatch(input, group, score));
+      matches_.push_back(
+          CreateTabGroupMatch(input, group, score, matching_url));
     }
   }
   TRACE_EVENT_END0("omnibox", "TabGroupProvider::Start");
@@ -120,7 +162,8 @@ void TabGroupProvider::Start(const AutocompleteInput& input,
 AutocompleteMatch TabGroupProvider::CreateTabGroupMatch(
     const AutocompleteInput& input,
     const tab_groups::SavedTabGroup& group,
-    int score) {
+    int score,
+    const std::u16string& matching_url) {
   AutocompleteMatch match(this, score, /*deletable=*/false,
                           AutocompleteMatchType::TAB_GROUP);
   match.contents = group.title();
@@ -134,19 +177,42 @@ AutocompleteMatch TabGroupProvider::CreateTabGroupMatch(
       base::NumberToString(static_cast<int>(group.color()));
 
   std::u16string url_list;
-  for (size_t i = 0; i < group.saved_tabs().size(); i++) {
-    const tab_groups::SavedTabGroupTab& saved_tab = group.saved_tabs()[i];
-    url_list.append(base::ASCIIToUTF16(saved_tab.url().spec()));
+  for (auto& saved_tab : group.saved_tabs()) {
+#if BUILDFLAG(IS_ANDROID)
+    // Skip showing chrome-prefixed tabs.
+    if (saved_tab.url().SchemeIs(browser_ui::kChromeUINativeScheme) ||
+        saved_tab.url().SchemeIs(content::kChromeUIScheme)) {
+      continue;
+    }
+#endif
 
-    if (i < group.saved_tabs().size() - 1) {
+    const std::u16string url = url_formatter::FormatUrl(
+        saved_tab.url(),
+        AutocompleteMatch::GetFormatTypes(/*preserve_scheme=*/false,
+                                          /*preserve_subdomain=*/false),
+        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+
+    // Place the matching URL at the front of the list.
+    if (!matching_url.empty() && url == matching_url) {
+      url_list.insert(0, u", ");
+      url_list.insert(0, url);
+    } else {
+      url_list.append(url);
       url_list.append(u", ");
     }
   }
+
+  // Remove the last comma and space from the string.
+  if (!url_list.empty()) {
+    url_list.erase(url_list.size() - 2);
+  }
+
   match.description = url_list;
   auto description_terms = FindTermMatches(input.text(), match.description);
   match.description_class = ClassifyTermMatches(
-      description_terms, match.description.size(), ACMatchClassification::MATCH,
-      ACMatchClassification::NONE);
+      description_terms, match.description.size(),
+      ACMatchClassification::MATCH | ACMatchClassification::URL,
+      ACMatchClassification::URL);
   match.has_tab_match = true;
 
   return match;
