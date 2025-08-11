@@ -8,6 +8,17 @@
 
 namespace remoting {
 
+WebrtcVideoEncoder::FrameStats::FrameStats() = default;
+WebrtcVideoEncoder::FrameStats::FrameStats(const FrameStats&) = default;
+WebrtcVideoEncoder::FrameStats& WebrtcVideoEncoder::FrameStats::operator=(
+    const FrameStats&) = default;
+WebrtcVideoEncoder::FrameStats::~FrameStats() = default;
+
+std::unique_ptr<WebrtcVideoEncoder::FrameStats>
+WebrtcVideoEncoder::FrameStats::Duplicate() const {
+  return std::make_unique<FrameStats>(*this);
+}
+
 WebrtcVideoEncoder::EncodedFrame::EncodedFrame() = default;
 WebrtcVideoEncoder::EncodedFrame::~EncodedFrame() = default;
 WebrtcVideoEncoder::EncodedFrame::EncodedFrame(
