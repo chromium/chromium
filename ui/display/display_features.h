@@ -91,7 +91,7 @@ extern const base::FeatureParam<int>
     kMaxExternalDisplaySupportedNotificationLimit;
 
 COMPONENT_EXPORT(DISPLAY_FEATURES)
-bool IsMaximumDisplaySupportedNotifacationEnabled();
+bool IsMaxExternalDisplaySupportedNotificationEnabled();
 
 }  // namespace features
 }  // namespace display

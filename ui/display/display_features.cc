@@ -169,7 +169,7 @@ BASE_FEATURE(kMaxExternalDisplaySupportedNotification,
 const base::FeatureParam<int> kMaxExternalDisplaySupportedNotificationLimit{
     &kMaxExternalDisplaySupportedNotification, "display_limit", -1};
 
-bool IsMaximumDisplaySupportedNotificationEnabled() {
+bool IsMaxExternalDisplaySupportedNotificationEnabled() {
   return base::FeatureList::IsEnabled(
              kMaxExternalDisplaySupportedNotification) &&
          kMaxExternalDisplaySupportedNotificationLimit.Get() >= 0;
