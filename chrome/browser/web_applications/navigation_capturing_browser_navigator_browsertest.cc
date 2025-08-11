@@ -51,9 +51,9 @@ constexpr char kFocusExistingUrl[] =
 constexpr char kFocusExistingSecondUrl[] =
     "/web_apps/simple_focus_existing/index2.html";
 constexpr char kLaunchParamsEnqueueMetricWithNavigation[] =
-    "WebApp.NavigationCapturing.LaunchParamsConsumedTime.WithNavigation";
+    "Webapp.NavigationCapturing.LaunchParamsConsumedTime.WithNavigation";
 constexpr char kLaunchParamsEnqueueMetricWithoutNavigation[] =
-    "WebApp.NavigationCapturing.LaunchParamsConsumedTime.WithoutNavigation";
+    "Webapp.NavigationCapturing.LaunchParamsConsumedTime.WithoutNavigation";
 
 // Actually start a navigation in an existing web contents for the
 // `navigate-existing` use-case.
