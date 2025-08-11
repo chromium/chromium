@@ -155,7 +155,7 @@ BASE_FEATURE(kAutomaticUsbDetach,
 // Can be disabled as a kill switch if needed.
 BASE_FEATURE(kSerialSplitDtrAndRts,
              "SerialSplitDtrAndRts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_WIN)
 
 }  // namespace features
