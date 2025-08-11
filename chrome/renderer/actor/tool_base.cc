@@ -150,6 +150,20 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
                         base::NumberToString(target_node.GetDomNodeId())}));
       // TODO(crbug.com/418280472): return error after retry for failed task is
       // landed.
+      return resolved_target;
+    }
+
+    if (!observed_target_->node_attribute->geometry) {
+      journal_->Log(
+          task_id_, "TimeOfUseValidation",
+          base::StrCat(
+              {"No geometry for node:",
+               base::NumberToString(
+                   *observed_target_->node_attribute->dom_node_id),
+               base::ToString(gfx::ToFlooredPoint(resolved_target.point))}));
+      // TODO(crbug.com/418280472): return error after retry for failed task is
+      // landed.
+      return resolved_target;
     }
 
     // Check that the interaction point is inside the observed target bounding
@@ -165,6 +179,7 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
                " Observed bounding box:", base::ToString(observed_bounds)}));
       // TODO(crbug.com/418280472): return error after retry for failed task is
       // landed.
+      return resolved_target;
     }
   }
 
