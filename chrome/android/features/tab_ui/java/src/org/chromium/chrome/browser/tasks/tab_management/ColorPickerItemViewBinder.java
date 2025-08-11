@@ -165,7 +165,8 @@ public class ColorPickerItemViewBinder {
         Resources res = view.getContext().getResources();
 
         final @StringRes int colorDescRes =
-                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(colorId);
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                        colorId);
         final @StringRes int selectedFormatDescRes =
                 isSelected
                         ? R.string

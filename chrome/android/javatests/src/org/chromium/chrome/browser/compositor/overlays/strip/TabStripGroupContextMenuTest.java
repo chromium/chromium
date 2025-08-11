@@ -365,10 +365,7 @@ public class TabStripGroupContextMenuTest {
                 tabGroupModelFilter.getTabGroupColor(mTabGroupId));
 
         // Select the blue color.
-        String blueColor =
-                mActivityTestRule
-                        .getActivity()
-                        .getString(R.string.accessibility_tab_group_color_picker_color_item_blue);
+        String blueColor = mActivityTestRule.getActivity().getString(R.string.tab_group_color_blue);
         String notSelectedStringBlue =
                 mActivityTestRule
                         .getActivity()

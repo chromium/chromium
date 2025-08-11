@@ -183,6 +183,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -3753,7 +3754,7 @@ public class TabListMediatorUnitTest {
 
         @StringRes
         int colorDesc1 =
-                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
                         SYNC_GROUP_COLOR1);
         String nonEmptyTitleTargetString =
                 mResources.getQuantityString(
@@ -3776,7 +3777,7 @@ public class TabListMediatorUnitTest {
 
         @StringRes
         int colorDesc2 =
-                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
                         SYNC_GROUP_COLOR2);
         String emptyTitleTargetString =
                 mResources.getQuantityString(
@@ -3817,7 +3818,8 @@ public class TabListMediatorUnitTest {
 
         final @TabGroupColorId int defaultColor = TabGroupColorId.GREY;
         final @StringRes int colorDesc =
-                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(defaultColor);
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                        defaultColor);
         String emptyTitleTargetString =
                 mResources.getQuantityString(
                         R.plurals.accessibility_expand_shared_tab_group_with_color,
@@ -3864,7 +3866,8 @@ public class TabListMediatorUnitTest {
         createTabGroup(group1, TAB1_ID, TAB_GROUP_ID);
         final @TabGroupColorId int defaultColor = TabGroupColorId.GREY;
         final @StringRes int colorDesc =
-                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(defaultColor);
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                        defaultColor);
         String targetString =
                 String.format(
                         "Open the tab group action menu for tab group 2 tabs, color %s.",
@@ -3910,7 +3913,7 @@ public class TabListMediatorUnitTest {
 
         @StringRes
         int colorDesc1 =
-                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
                         SYNC_GROUP_COLOR1);
         String nonEmptyTitleTargetString =
                 mResources.getQuantityString(
@@ -3933,7 +3936,7 @@ public class TabListMediatorUnitTest {
 
         @StringRes
         int colorDesc2 =
-                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
                         SYNC_GROUP_COLOR2);
         String emptyTitleTargetString =
                 mResources.getQuantityString(
@@ -3970,7 +3973,8 @@ public class TabListMediatorUnitTest {
         String defaultTitle = TabGroupTitleUtils.getDefaultTitle(mActivity, group1.size());
         final @TabGroupColorId int defaultColor = TabGroupColorId.GREY;
         final @StringRes int colorDesc =
-                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(defaultColor);
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                        defaultColor);
         String emptyTitleTargetString =
                 mResources.getString(
                         R.string

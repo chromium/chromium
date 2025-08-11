@@ -254,7 +254,8 @@ public class TabGridDialogToolbarView extends FrameLayout {
         // Set accessibility content for the color icon.
         Resources res = getContext().getResources();
         final @StringRes int colorDescRes =
-                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(colorId);
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                        colorId);
         String colorDesc = res.getString(colorDescRes);
         String contentDescription =
                 res.getString(R.string.accessibility_tab_group_color_icon_description, colorDesc);

@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -281,7 +280,7 @@ public class RecentTabsPageTest {
                         () -> {
                             Resources res = mActivity.getResources();
                             final @StringRes int colorDesc =
-                                    ColorPickerUtils
+                                    TabGroupColorPickerUtils
                                             .getTabGroupColorPickerItemColorAccessibilityString(
                                                     group.getColor());
                             return res.getString(
@@ -353,7 +352,7 @@ public class RecentTabsPageTest {
                         () -> {
                             Resources res = mActivity.getResources();
                             final @StringRes int colorDesc =
-                                    ColorPickerUtils
+                                    TabGroupColorPickerUtils
                                             .getTabGroupColorPickerItemColorAccessibilityString(
                                                     group.getColor());
                             return res.getQuantityString(

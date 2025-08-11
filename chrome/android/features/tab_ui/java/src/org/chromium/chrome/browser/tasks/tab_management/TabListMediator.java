@@ -118,6 +118,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -2263,8 +2264,8 @@ class TabListMediator implements TabListNotificationHandler {
                     @TabGroupColorId
                     int colorId = filter.getTabGroupColorWithFallback(tab.getTabGroupId());
                     final @StringRes int colorDescRes =
-                            ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
-                                    colorId);
+                            TabGroupColorPickerUtils
+                                    .getTabGroupColorPickerItemColorAccessibilityString(colorId);
                     String colorDesc = res.getString(colorDescRes);
                     if (TabUiUtils.isDataSharingFunctionalityEnabled() && hasCollaboration(tab)) {
                         TabCardLabelData tabCardLabelData =
@@ -2333,8 +2334,9 @@ class TabListMediator implements TabListNotificationHandler {
                     Resources res = context.getResources();
                     @StringRes
                     int colorDescRes =
-                            ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
-                                    savedTabGroup.color);
+                            TabGroupColorPickerUtils
+                                    .getTabGroupColorPickerItemColorAccessibilityString(
+                                            savedTabGroup.color);
                     String colorDesc = res.getString(colorDescRes);
                     int numOfRelatedTabs = savedTabGroup.savedTabs.size();
                     // The default string to return for now with TabGroup card type and
@@ -2388,8 +2390,9 @@ class TabListMediator implements TabListNotificationHandler {
                     Resources res = context.getResources();
                     @StringRes
                     int colorDescRes =
-                            ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
-                                    savedTabGroup.color);
+                            TabGroupColorPickerUtils
+                                    .getTabGroupColorPickerItemColorAccessibilityString(
+                                            savedTabGroup.color);
                     String colorDesc = res.getString(colorDescRes);
                     int numOfRelatedTabs = savedTabGroup.savedTabs.size();
                     // The default string to return for now with TabGroup card type and
@@ -3105,7 +3108,8 @@ class TabListMediator implements TabListNotificationHandler {
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         @TabGroupColorId int colorId = filter.getTabGroupColorWithFallback(tab.getTabGroupId());
         final @StringRes int colorDescRes =
-                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(colorId);
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                        colorId);
         String colorDesc = mActivity.getResources().getString(colorDescRes);
         return (context) -> {
             Resources res = context.getResources();

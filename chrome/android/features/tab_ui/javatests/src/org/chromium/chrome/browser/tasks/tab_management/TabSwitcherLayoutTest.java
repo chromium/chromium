@@ -500,8 +500,7 @@ public class TabSwitcherLayoutTest {
         // Change the title.
         editGroupVisualDataDialogTitle(cta, "Test");
         // Change the color.
-        String blueColor =
-                cta.getString(R.string.accessibility_tab_group_color_picker_color_item_blue);
+        String blueColor = cta.getString(R.string.tab_group_color_blue);
         String notSelectedStringBlue =
                 cta.getString(
                         R.string
@@ -553,8 +552,7 @@ public class TabSwitcherLayoutTest {
         // Change the title.
         editGroupVisualDataDialogTitle(cta, "Test");
         // Change the color.
-        String blueColor =
-                cta.getString(R.string.accessibility_tab_group_color_picker_color_item_blue);
+        String blueColor = cta.getString(R.string.tab_group_color_blue);
         String notSelectedStringBlue =
                 cta.getString(
                         R.string

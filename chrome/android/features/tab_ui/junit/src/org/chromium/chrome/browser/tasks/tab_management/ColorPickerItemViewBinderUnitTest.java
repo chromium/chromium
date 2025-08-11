@@ -178,8 +178,7 @@ public class ColorPickerItemViewBinderUnitTest {
     public void testColorPickerItem_isSelected() {
         ImageView imageView = mColorPickerItemView.findViewById(R.id.color_picker_icon);
         LayerDrawable layerDrawable1 = (LayerDrawable) imageView.getBackground();
-        String color =
-                mActivity.getString(R.string.accessibility_tab_group_color_picker_color_item_blue);
+        String color = mActivity.getString(R.string.tab_group_color_blue);
         String notSelectedString =
                 mActivity.getString(
                         R.string
@@ -205,8 +204,7 @@ public class ColorPickerItemViewBinderUnitTest {
     @EnableFeatures({ChromeFeatureList.ANDROID_THEME_MODULE})
     public void testColorPickerItem_isSelected_withThemeModuleEnabled() {
         MaterialButton view = mColorPickerItemView.findViewById(R.id.color_picker_icon);
-        String color =
-                mActivity.getString(R.string.accessibility_tab_group_color_picker_color_item_blue);
+        String color = mActivity.getString(R.string.tab_group_color_blue);
         int notSelectedStringId =
                 R.string.accessibility_tab_group_color_picker_color_item_not_selected_description;
         String notSelectedString = mActivity.getString(notSelectedStringId, color);

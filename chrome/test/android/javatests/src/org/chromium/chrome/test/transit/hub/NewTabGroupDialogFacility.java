@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
@@ -44,6 +43,7 @@ import org.chromium.chrome.test.transit.tabmodel.TabGroupCreatedCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
 import org.chromium.chrome.test.util.TabBinningUtil;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 
 import java.util.List;
 
@@ -159,7 +159,8 @@ public class NewTabGroupDialogFacility<
         Context context = mHostStation.getActivity();
         String colorName =
                 context.getString(
-                        ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(color));
+                        TabGroupColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                                color));
         Matcher<View> contentDescriptionMatcher;
         if (selected != null) {
             contentDescriptionMatcher =
