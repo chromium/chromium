@@ -6316,11 +6316,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "lens-clearcut-background-upload-enabled",
-    "owners": ["cmyang@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "lens-continuous-zoom-enabled",
     "owners": ["cmyang@google.com", "aruslan@google.com"],
     "expiry_milestone": 145

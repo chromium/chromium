@@ -914,11 +914,6 @@ extern const char kLensCameraUnbinnedCaptureFormatsPreferredName[] =
 extern const char kLensCameraUnbinnedCaptureFormatsPreferredDescription[] =
     "When enabled, Lens camera prefers unbinned pixel formats.";
 
-const char kLensClearcutBackgroundUploadEnabledName[] =
-    "Lens clearcut background upload";
-const char kLensClearcutBackgroundUploadEnabledDescription[] =
-    "Enables uploading of clearcut logs in the background.";
-
 extern const char kLensContinuousZoomEnabledName[] =
     "Enable Lens camera continuous zoom";
 extern const char kLensContinuousZoomEnabledDescription[] =

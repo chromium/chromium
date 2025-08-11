@@ -526,9 +526,6 @@ extern const char kLensCameraNoStillOutputRequiredDescription[];
 extern const char kLensCameraUnbinnedCaptureFormatsPreferredName[];
 extern const char kLensCameraUnbinnedCaptureFormatsPreferredDescription[];
 
-extern const char kLensClearcutBackgroundUploadEnabledName[];
-extern const char kLensClearcutBackgroundUploadEnabledDescription[];
-
 extern const char kLensContinuousZoomEnabledName[];
 extern const char kLensContinuousZoomEnabledDescription[];
 

@@ -37,9 +37,6 @@ BASE_DECLARE_FEATURE(kLensUnaryHttpTransportEnabled);
 // Whether to enable the unary salient text API.
 BASE_DECLARE_FEATURE(kLensUnaryApiSalientTextEnabled);
 
-// Whether to enable background uploading for clearcut logs.
-BASE_DECLARE_FEATURE(kLensClearcutBackgroundUploadEnabled);
-
 // Whether to disable single tap text selection.
 BASE_DECLARE_FEATURE(kLensSingleTapTextSelectionDisabled);
 
