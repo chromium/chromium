@@ -6,7 +6,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/test/mock_tracker.h"
@@ -80,8 +80,8 @@ IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
       kTestIphFeature, kTopContainerElementId, IDS_SETTINGS);
   RegisterTestFeature(other, std::move(spec));
 
-  RunTestSequence(InContext(other->window()->GetElementContext(), ShowPromo(),
-                            CheckPromoRequested(kTestIphFeature)));
+  RunTestSequence(InContext(BrowserElements::From(other)->GetContext(),
+                            ShowPromo(), CheckPromoRequested(kTestIphFeature)));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
@@ -95,7 +95,8 @@ IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
       [other](const ui::ElementTracker::ElementList& elements)
           -> ui::TrackedElement* {
         for (auto* element : elements) {
-          if (element->context() == other->window()->GetElementContext()) {
+          if (element->context() ==
+              BrowserElements::From(other)->GetContext()) {
             return element;
           }
         }
@@ -119,7 +120,8 @@ IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
       [other](const ui::ElementTracker::ElementList& elements)
           -> ui::TrackedElement* {
         for (auto* element : elements) {
-          if (element->context() == other->window()->GetElementContext()) {
+          if (element->context() ==
+              BrowserElements::From(other)->GetContext()) {
             return element;
           }
         }
@@ -150,8 +152,8 @@ IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
       kTestIphFeature, kTopContainerElementId, IDS_SETTINGS);
   RegisterTestFeature(other, std::move(spec));
 
-  RunTestSequence(InContext(other->window()->GetElementContext(), ShowPromo(),
-                            WaitForPromo(kTestIphFeature)));
+  RunTestSequence(InContext(BrowserElements::From(other)->GetContext(),
+                            ShowPromo(), WaitForPromo(kTestIphFeature)));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
@@ -165,7 +167,8 @@ IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
       [other](const ui::ElementTracker::ElementList& elements)
           -> ui::TrackedElement* {
         for (auto* element : elements) {
-          if (element->context() == other->window()->GetElementContext()) {
+          if (element->context() ==
+              BrowserElements::From(other)->GetContext()) {
             return element;
           }
         }

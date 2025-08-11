@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -242,10 +243,10 @@ class GlicBorderViewUiTest : public test::InteractiveGlicTest {
   }
 
   void ClickGlicButtonInBrowser(Browser* browser) {
-    RunTestSequence(InContext(browser->window()->GetElementContext(),
-                              PressButton(kGlicButtonElementId)),
-                    CheckControllerHasWidget(true),
-                    CheckControllerWidgetMode(GlicWindowMode::kAttached));
+    RunTestSequenceInContext(BrowserElements::From(browser)->GetContext(),
+                             PressButton(kGlicButtonElementId)),
+        CheckControllerHasWidget(true),
+        CheckControllerWidgetMode(GlicWindowMode::kAttached);
   }
 
   void AppendTabAndNavigate(Browser* browser, const GURL& url) {

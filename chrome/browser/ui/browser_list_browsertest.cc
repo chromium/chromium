@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -61,14 +61,14 @@ IN_PROC_BROWSER_TEST_F(BrowserListBrowserTest,
   EXPECT_EQ(1U, browser_list->size());
 
   Browser* result = chrome::FindBrowserWithUiElementContext(
-      browser_list->get(0)->window()->GetElementContext());
+      BrowserElements::From(browser_list->get(0))->GetContext());
   EXPECT_EQ(browser_list->get(0), result);
 
   Browser* browser2 =
       Browser::Create(Browser::CreateParams(GetProfile(), true));
   ASSERT_EQ(2U, browser_list->size());
   result = chrome::FindBrowserWithUiElementContext(
-      browser2->window()->GetElementContext());
+      BrowserElements::From(browser2)->GetContext());
   EXPECT_EQ(browser2, result);
 
   result = chrome::FindBrowserWithUiElementContext(ui::ElementContext(100));

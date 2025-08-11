@@ -72,10 +72,6 @@ class MidiPermissionsFlowInteractiveUITest : public InteractiveBrowserTest {
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
-  ui::ElementContext context() const {
-    return browser()->window()->GetElementContext();
-  }
-
   auto NavigateAndRequestMidi() {
     return Steps(
         InstrumentTab(kWebContentsElementId),
@@ -100,8 +96,8 @@ class MidiPermissionsFlowInteractiveUITest : public InteractiveBrowserTest {
 
 // Display MIDI permission prompt.
 IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest, PermissionPrompt) {
-  RunTestSequenceInContext(
-      context(), NavigateAndRequestMidi(),
+  RunTestSequence(
+      NavigateAndRequestMidi(),
       CheckViewProperty(
           PermissionPromptBubbleBaseView::kMainViewId,
           &PermissionPromptBubbleBaseView::GetPermissionFragmentForTesting,
@@ -113,8 +109,8 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest, PermissionPrompt) {
 // Display MIDI permission state in page info when denied.
 IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
                        BlockedMidiPermissionInPageInfo) {
-  RunTestSequenceInContext(
-      context(), NavigateAndRequestMidi(),
+  RunTestSequence(
+      NavigateAndRequestMidi(),
       PressButton(PermissionPromptBubbleBaseView::kBlockButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
       PressButton(kLocationIconElementId),  // open page info.
@@ -137,8 +133,8 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
 // Display MIDI permission state in page info when allowed.
 IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
                        AllowedMidiPermissionInPageInfo) {
-  RunTestSequenceInContext(
-      context(), NavigateAndRequestMidi(),
+  RunTestSequence(
+      NavigateAndRequestMidi(),
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
       PressButton(kLocationIconElementId),  // open page info.
@@ -161,8 +157,8 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
 // Display blockage indicator of MIDI when blocked.
 IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
                        BlockedMidiPermissionIndicator) {
-  RunTestSequenceInContext(
-      context(), NavigateAndRequestMidi(),
+  RunTestSequence(
+      NavigateAndRequestMidi(),
       PressButton(PermissionPromptBubbleBaseView::kBlockButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
       AfterShow(ContentSettingImageView::kMidiSysexActivityIndicatorElementId,
@@ -181,8 +177,8 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
 // Display in-use indicator of MIDI when allowed.
 IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
                        AllowedMidiPermissionIndicator) {
-  RunTestSequenceInContext(
-      context(), NavigateAndRequestMidi(),
+  RunTestSequence(
+      NavigateAndRequestMidi(),
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
       AfterShow(ContentSettingImageView::kMidiSysexActivityIndicatorElementId,

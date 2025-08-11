@@ -234,11 +234,6 @@ ui::RendererColorMap WebUIBrowserWindow::GetRendererColorMap(
   return ui::CreateRendererColorMap(*color_provider);
 }
 
-ui::ElementContext WebUIBrowserWindow::GetElementContext() {
-  NOTIMPLEMENTED();
-  return ui::ElementContext();
-}
-
 int WebUIBrowserWindow::GetTopControlsHeight() const {
   NOTIMPLEMENTED();
   return 0;

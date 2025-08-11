@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -18,8 +19,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
-#include "ui/base/interaction/element_tracker.h"
-#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
 
 using views::BubbleBorder;
@@ -108,9 +107,8 @@ gfx::Size GetExpandedPopupSize(const gfx::Rect& content_area_bounds,
 bool BoundsOverlapWithView(const gfx::Rect& screen_bounds,
                            BrowserView* browser_view,
                            ui::ElementIdentifier view_id) {
-  auto* view_tracker = views::ElementTrackerViews::GetInstance();
-  views::View* view = view_tracker->GetFirstMatchingView(
-      view_id, view_tracker->GetContextForView(browser_view));
+  auto* const view =
+      BrowserElementsViews::From(browser_view->browser())->GetView(view_id);
   return view &&
          view->GetWidget()->GetWindowBoundsInScreen().Intersects(screen_bounds);
 }

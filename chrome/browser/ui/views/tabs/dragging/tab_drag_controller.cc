@@ -2681,16 +2681,10 @@ void TabDragController::NotifyEventIfTabAddedToGroup() {
       continue;
     }
 
-    ui::TrackedElement* element =
-        views::ElementTrackerViews::GetInstance()->GetElementForView(
-            tab_drag_datum.attached_view);
-    if (!element) {
-      continue;
+    if (views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+            kTabGroupedCustomEventId, tab_drag_datum.attached_view)) {
+      break;
     }
-
-    ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-        element, kTabGroupedCustomEventId);
-    break;
   }
 }
 

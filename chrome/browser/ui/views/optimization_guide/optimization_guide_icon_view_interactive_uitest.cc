@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/optimization_guide/optimization_guide_icon_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -16,7 +17,6 @@
 #include "components/optimization_guide/proto/icon_view_metadata.pb.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "ui/views/interaction/element_tracker_views.h"
 
 namespace {
 
@@ -43,12 +43,8 @@ class OptimizationGuideIconViewTestBase : public InProcessBrowserTest {
   }
 
   OptimizationGuideIconView* optimization_guide_icon_view() {
-    views::View* const icon_view =
-        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-            kOptimizationGuideChipElementId,
-            browser()->window()->GetElementContext());
-    return icon_view ? views::AsViewClass<OptimizationGuideIconView>(icon_view)
-                     : nullptr;
+    return BrowserElementsViews::From(browser())
+        ->GetViewAs<OptimizationGuideIconView>(kOptimizationGuideChipElementId);
   }
 };
 

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -25,7 +26,6 @@
 #include "content/public/browser/navigation_entry.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -108,10 +108,8 @@ bool LensOverlayHomeworkPageActionIconView::ShouldShow() {
   // Don't show the chip if the location bar isn't visible yet.
   // TODO(crbug.com/421963047): Investigate why we are getting two matching
   // views on ChromeOS.
-  View* location_bar_view =
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          kLocationBarElementId,
-          views::ElementTrackerViews::GetContextForView(this));
+  View* const location_bar_view =
+      BrowserElementsViews::From(browser_)->GetView(kLocationBarElementId);
   if (!location_bar_view) {
     return false;
   }

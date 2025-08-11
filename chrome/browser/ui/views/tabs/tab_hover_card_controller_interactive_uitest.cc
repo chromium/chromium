@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_metrics_refresh_waiter.h"
@@ -855,12 +856,12 @@ class TabHoverCardSystemWebAppTest : public InteractiveBrowserTest {
 IN_PROC_BROWSER_TEST_F(TabHoverCardSystemWebAppTest,
                        HideDomainNameFromHoverCard) {
   test_system_web_app_installation_->WaitForAppInstall();
-  const auto* const app_browser = web_app::LaunchWebAppBrowser(
+  auto* const app_browser = web_app::LaunchWebAppBrowser(
       browser()->profile(), test_system_web_app_installation_->GetAppId());
   const char kTabToHover[] = "Tab to hover";
 
   RunTestSequenceInContext(
-      app_browser->window()->GetElementContext(),
+      BrowserElements::From(app_browser)->GetContext(),
       WithView(kTabStripElementId,
                [](TabStrip* tab_strip) { tab_strip->StopAnimating(true); }),
       NameDescendantViewByType<Tab>(kBrowserViewElementId, kTabToHover, 0),

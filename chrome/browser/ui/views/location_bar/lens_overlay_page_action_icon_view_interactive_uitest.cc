@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/lens_overlay_page_action_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
@@ -29,7 +30,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/events/test/test_event.h"
-#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 #include "url/url_constants.h"
 
@@ -64,20 +64,14 @@ class LensOverlayPageActionIconViewTestBase : public InProcessBrowserTest {
   }
 
   LensOverlayPageActionIconView* lens_overlay_icon_view() {
-    views::View* const icon_view =
-        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-            kLensOverlayPageActionIconElementId,
-            browser()->window()->GetElementContext());
-    return icon_view
-               ? views::AsViewClass<LensOverlayPageActionIconView>(icon_view)
-               : nullptr;
+    return BrowserElementsViews::From(browser())
+        ->GetViewAs<LensOverlayPageActionIconView>(
+            kLensOverlayPageActionIconElementId);
   }
 
   LocationBarView* location_bar() {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    return views::AsViewClass<LocationBarView>(
-        browser_view->toolbar()->location_bar());
+    return BrowserElementsViews::From(browser())->GetViewAs<LocationBarView>(
+        kLocationBarElementId);
   }
 
   page_actions::PageActionView* lens_overlay_page_action_view() {

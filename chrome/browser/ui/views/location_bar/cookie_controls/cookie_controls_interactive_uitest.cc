@@ -15,6 +15,7 @@
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_content_view.h"
@@ -744,7 +745,7 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUi3pcdTest,
   SetBlockAll3pcToggle(std::get<0>(GetParam()));
   auto* const incognito_browser = CreateIncognitoBrowser(browser()->profile());
   RunTestSequence(InContext(
-      incognito_browser->window()->GetElementContext(),
+      BrowserElements::From(incognito_browser)->GetContext(),
       Steps(InstrumentTab(kWebContentsElementId),
             NavigateWebContents(kWebContentsElementId,
                                 third_party_cookie_page_url()),
@@ -896,7 +897,7 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTrackingProtectionTest,
   EnableFpProtection();
   auto* const incognito_browser = CreateIncognitoBrowser(browser()->profile());
   RunTestSequence(InContext(
-      incognito_browser->window()->GetElementContext(),
+      BrowserElements::From(incognito_browser)->GetContext(),
       Steps(InstrumentTab(kWebContentsElementId),
             NavigateWebContents(kWebContentsElementId,
                                 third_party_cookie_page_url()),
@@ -927,7 +928,7 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTrackingProtectionTest,
       third_party_cookie_page_url());
   auto* const incognito_browser = CreateIncognitoBrowser(browser()->profile());
   RunTestSequence(InContext(
-      incognito_browser->window()->GetElementContext(),
+      BrowserElements::From(incognito_browser)->GetContext(),
       Steps(InstrumentTab(kWebContentsElementId),
             NavigateWebContents(kWebContentsElementId,
                                 third_party_cookie_page_url()),
@@ -960,7 +961,7 @@ IN_PROC_BROWSER_TEST_P(
   EnableFpProtection();
   auto* const incognito_browser = CreateIncognitoBrowser(browser()->profile());
   RunTestSequence(InContext(
-      incognito_browser->window()->GetElementContext(),
+      BrowserElements::From(incognito_browser)->GetContext(),
       Steps(InstrumentTab(kWebContentsElementId),
             EnterText(
                 kOmniboxElementId,

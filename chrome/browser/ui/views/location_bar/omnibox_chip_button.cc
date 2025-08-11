@@ -129,12 +129,8 @@ void OmniboxChipButton::AnimationEnded(const gfx::Animation* animation) {
 
   OnAnimationValueMaybeChanged();
 
-  auto* element =
-      views::ElementTrackerViews::GetInstance()->GetElementForView(this);
-  if (animation->GetCurrentValue() == 1.0 && element) {
-    ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-        element, kOmniboxChipButtonExpanded);
-  }
+  views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+      kOmniboxChipButtonExpanded, this);
 }
 
 void OmniboxChipButton::AnimationProgressed(const gfx::Animation* animation) {
