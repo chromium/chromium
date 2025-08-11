@@ -29,10 +29,10 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 
     auto masonry_items = algorithm.Node().ConstructMasonryItems(line_resolver);
     bool needs_intrinsic_track_size = false;
-    std::optional<LayoutUnit> intrinsic_repeat_track_size = std::nullopt;
     grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
-        SizingConstraint::kLayout, intrinsic_repeat_track_size, masonry_items,
-        collapsed_track_indexes_, start_offset, needs_intrinsic_track_size);
+        SizingConstraint::kLayout, /*intrinsic_repeat_track_sizes=*/nullptr,
+        masonry_items, collapsed_track_indexes_, start_offset,
+        needs_intrinsic_track_size);
 
     // We have a repeat() track definition with an intrinsic sized track(s). The
     // previous track sizing pass was used to find the track size to apply
@@ -42,22 +42,14 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     //
     // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
     if (needs_intrinsic_track_size) {
-      CHECK_NE(grid_axis_tracks_->GetIntrinsicSizedRepeaterTrackIndex(),
-               kNotFound);
       CHECK(collapsed_track_indexes_.empty());
-      // Note that when `needs_intrinsic_track_size` is true, we skip the steps
-      // to distribute free space during track sizing. This means that the base
-      // track size at this point represents the size of the intrinsic track
-      // without free space distribution.
-      intrinsic_repeat_track_size =
-          grid_axis_tracks_
-              ->GetSetAt(
-                  grid_axis_tracks_->GetIntrinsicSizedRepeaterTrackIndex())
-              .BaseSize();
 
+      Vector<LayoutUnit> intrinsic_repeat_track_sizes =
+          algorithm.GetIntrinsicRepeaterTrackSizes(grid_axis_tracks_.value());
       grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
-          SizingConstraint::kLayout, intrinsic_repeat_track_size, masonry_items,
-          collapsed_track_indexes_, start_offset, needs_intrinsic_track_size);
+          SizingConstraint::kLayout, &intrinsic_repeat_track_sizes,
+          masonry_items, collapsed_track_indexes_, start_offset,
+          needs_intrinsic_track_size);
     }
 
     const auto grid_axis_direction = grid_axis_tracks_->Direction();

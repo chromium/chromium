@@ -41,39 +41,32 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   auto ComputeIntrinsicInlineSize = [&](SizingConstraint sizing_constraint) {
     bool needs_intrinsic_track_size = false;
-    std::optional<LayoutUnit> intrinsic_repeat_track_size = std::nullopt;
     wtf_size_t start_offset;
     GridItems masonry_items;
     Vector<wtf_size_t> collapsed_track_indexes;
+    const ComputedStyle& style = Style();
     const bool is_for_columns =
-        Style().MasonryTrackSizingDirection() == kForColumns;
+        style.MasonryTrackSizingDirection() == kForColumns;
 
     GridSizingTrackCollection track_collection = ComputeGridAxisTracks(
-        sizing_constraint, intrinsic_repeat_track_size, masonry_items,
-        collapsed_track_indexes, start_offset, needs_intrinsic_track_size);
+        sizing_constraint, /*intrinsic_repeat_track_sizes=*/nullptr,
+        masonry_items, collapsed_track_indexes, start_offset,
+        needs_intrinsic_track_size);
 
     // We have a repeat() track definition with an intrinsic sized track(s). The
     // previous track sizing pass was used to find the track size to apply
-    // to the intrinsic sized track(s). Retrieve that value, and re-run track
+    // to the intrinsic sized track(s). Retrieve that value(s), and re-run track
     // sizing to get the correct number of automatic repetitions for the
     // repeat() definition.
     //
     // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
     if (needs_intrinsic_track_size) {
-      CHECK_NE(track_collection.GetIntrinsicSizedRepeaterTrackIndex(),
-               kNotFound);
       CHECK(collapsed_track_indexes.empty());
-      // Note that when `needs_intrinsic_track_size` is true, we skip the steps
-      // to distribute free space during track sizing. This means that the base
-      // track size at this point represents the size of the intrinsic track
-      // without free space distribution.
-      intrinsic_repeat_track_size =
-          track_collection
-              .GetSetAt(track_collection.GetIntrinsicSizedRepeaterTrackIndex())
-              .BaseSize();
 
+      Vector<LayoutUnit> intrinsic_repeat_track_sizes =
+          GetIntrinsicRepeaterTrackSizes(track_collection);
       track_collection = ComputeGridAxisTracks(
-          sizing_constraint, intrinsic_repeat_track_size, masonry_items,
+          sizing_constraint, &intrinsic_repeat_track_sizes, masonry_items,
           collapsed_track_indexes, start_offset, needs_intrinsic_track_size);
     }
 
@@ -91,7 +84,7 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
 
       MasonryRunningPositions running_positions(
           track_collection.EndLineOfImplicitGrid(), LayoutUnit(),
-          ResolveItemToleranceForMasonry(Style(), masonry_available_size_),
+          ResolveItemToleranceForMasonry(style, masonry_available_size_),
           collapsed_track_indexes);
       PlaceMasonryItems(track_collection, masonry_items, start_offset,
                         running_positions, sizing_constraint);
@@ -101,7 +94,7 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
       // addition should be deleted as there is no item after it.
       const auto stacking_axis_gap =
           GridTrackSizingAlgorithm::CalculateGutterSize(
-              Style(), masonry_available_size_, kForColumns);
+              style, masonry_available_size_, kForColumns);
       return running_positions.GetMaxPositionForSpan(
                  GridSpan::TranslatedDefiniteGridSpan(
                      /*start_line=*/0,
@@ -122,38 +115,30 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
 
 const LayoutResult* MasonryLayoutAlgorithm::Layout() {
   bool needs_intrinsic_track_size = false;
-  std::optional<LayoutUnit> intrinsic_repeat_track_size = std::nullopt;
   wtf_size_t start_offset;
   GridItems masonry_items;
   HeapVector<Member<LayoutBox>> oof_children;
   Vector<wtf_size_t> collapsed_track_indexes;
 
   GridSizingTrackCollection track_collection = ComputeGridAxisTracks(
-      SizingConstraint::kLayout, intrinsic_repeat_track_size, masonry_items,
-      collapsed_track_indexes, start_offset, needs_intrinsic_track_size,
-      &oof_children);
+      SizingConstraint::kLayout, /*intrinsic_repeat_track_sizes=*/nullptr,
+      masonry_items, collapsed_track_indexes, start_offset,
+      needs_intrinsic_track_size, &oof_children);
 
   // We have a repeat() track definition with an intrinsic sized track(s). The
   // previous track sizing pass was used to find the track size to apply
-  // to the intrinsic sized track(s). Retrieve that value, and re-run track
+  // to the intrinsic sized track(s). Retrieve that value(s), and re-run track
   // sizing to get the correct number of automatic repetitions for the
   // repeat() definition.
   //
   // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
   if (needs_intrinsic_track_size) {
-    CHECK_NE(track_collection.GetIntrinsicSizedRepeaterTrackIndex(), kNotFound);
     CHECK(collapsed_track_indexes.empty());
-    // Note that when `needs_intrinsic_track_size` is true, we skip the steps to
-    // distribute free space during track sizing. This means that the base track
-    // size at this point represents the size of the intrinsic track without
-    // free space distribution.
-    intrinsic_repeat_track_size =
-        track_collection
-            .GetSetAt(track_collection.GetIntrinsicSizedRepeaterTrackIndex())
-            .BaseSize();
 
+    Vector<LayoutUnit> intrinsic_repeat_track_sizes =
+        GetIntrinsicRepeaterTrackSizes(track_collection);
     track_collection = ComputeGridAxisTracks(
-        SizingConstraint::kLayout, intrinsic_repeat_track_size, masonry_items,
+        SizingConstraint::kLayout, &intrinsic_repeat_track_sizes, masonry_items,
         collapsed_track_indexes, start_offset, needs_intrinsic_track_size);
   }
 
@@ -714,7 +699,7 @@ LayoutUnit MasonryLayoutAlgorithm::ComputeMasonryItemBlockContribution(
 
 GridSizingTrackCollection MasonryLayoutAlgorithm::ComputeGridAxisTracks(
     const SizingConstraint sizing_constraint,
-    std::optional<LayoutUnit> intrinsic_repeat_track_size,
+    const Vector<LayoutUnit>* intrinsic_repeat_track_sizes,
     GridItems& masonry_items,
     Vector<wtf_size_t>& collapsed_track_indexes,
     wtf_size_t& start_offset,
@@ -724,7 +709,7 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::ComputeGridAxisTracks(
   needs_intrinsic_track_size = false;
 
   const GridLineResolver line_resolver(
-      Style(), ComputeAutomaticRepetitions(intrinsic_repeat_track_size,
+      Style(), ComputeAutomaticRepetitions(intrinsic_repeat_track_sizes,
                                            needs_intrinsic_track_size));
   const auto& node = Node();
   if (masonry_items.IsEmpty()) {
@@ -812,9 +797,41 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
   return track_collection;
 }
 
+Vector<LayoutUnit> MasonryLayoutAlgorithm::GetIntrinsicRepeaterTrackSizes(
+    const GridSizingTrackCollection& track_collection) const {
+  CHECK_NE(track_collection.GetIntrinsicSizedRepeaterTrackIndex(), kNotFound);
+  const ComputedStyle& style = Style();
+  const bool is_for_columns =
+      style.MasonryTrackSizingDirection() == kForColumns;
+
+  const GridTrackList& track_list =
+      is_for_columns ? style.GridTemplateColumns().GetTrackList()
+                     : style.GridTemplateRows().GetTrackList();
+  const wtf_size_t repeat_track_count = track_list.AutoRepeatTrackCount();
+
+  Vector<LayoutUnit> intrinsic_repeat_track_sizes(repeat_track_count);
+  for (wtf_size_t i = 0; i < repeat_track_count; ++i) {
+    GridSet current_set = track_collection.GetSetAt(
+        track_collection.GetIntrinsicSizedRepeaterTrackIndex() + i);
+
+    // During the first pass to calculate the intrinsic repeater track
+    // sizes, we consolidate all spanners to a single span and place
+    // the largest contribution in every track position, which will
+    // guarentee that each set will have a single track.
+    CHECK_EQ(current_set.track_count, 1U);
+
+    // Note that when `needs_intrinsic_track_size` is true, we skip the
+    // steps to distribute free space during track sizing. This means that
+    // the base track size at this point represents the size of the
+    // intrinsic track without free space distribution.
+    intrinsic_repeat_track_sizes[i] = current_set.BaseSize();
+  }
+  return intrinsic_repeat_track_sizes;
+}
+
 // https://drafts.csswg.org/css-grid-2/#auto-repeat
 wtf_size_t MasonryLayoutAlgorithm::ComputeAutomaticRepetitions(
-    std::optional<LayoutUnit> intrinsic_repeat_track_size,
+    const Vector<LayoutUnit>* intrinsic_repeat_track_sizes,
     bool& needs_intrinsic_track_size) const {
   const ComputedStyle& style = Style();
   GridTrackSizingDirection masonry_track_sizing_direction =
@@ -835,7 +852,7 @@ wtf_size_t MasonryLayoutAlgorithm::ComputeAutomaticRepetitions(
   // track sizing pass based on this size.
   //
   // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
-  if (track_list.HasIntrinsicSizedRepeater() && !intrinsic_repeat_track_size) {
+  if (track_list.HasIntrinsicSizedRepeater() && !intrinsic_repeat_track_sizes) {
     CHECK(!needs_intrinsic_track_size);
     needs_intrinsic_track_size = true;
     return 1;
@@ -857,7 +874,7 @@ wtf_size_t MasonryLayoutAlgorithm::ComputeAutomaticRepetitions(
                      : masonry_min_available_size_.block_size,
       is_for_columns ? masonry_max_available_size_.inline_size
                      : masonry_max_available_size_.block_size,
-      intrinsic_repeat_track_size);
+      intrinsic_repeat_track_sizes);
 }
 
 ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpace(
