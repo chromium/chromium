@@ -32,14 +32,6 @@ using chrome_test_util::SearchIconButton;
 using chrome_test_util::SwipeToShowDeleteButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 
-namespace {
-
-id<GREYMatcher> SearchBar() {
-  return grey_accessibilityID(kBookmarksHomeSearchBarIdentifier);
-}
-
-}  // namespace
-
 // Bookmark search integration tests for Chrome.
 @interface BookmarksSearchTestCase : WebHttpServerChromeTestCase
 @end
@@ -218,7 +210,8 @@ id<GREYMatcher> SearchBar() {
 
   // Cancel search.
   if (iOS26_OR_ABOVE()) {
-    [[EarlGrey selectElementWithMatcher:SearchBar()] performAction:grey_tap()];
+    [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+        performAction:grey_tap()];
     [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"escape" flags:0];
   } else {
     [[EarlGrey selectElementWithMatcher:CancelButton()]
@@ -511,7 +504,7 @@ id<GREYMatcher> SearchBar() {
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Verify search bar is enabled.
-  [[EarlGrey selectElementWithMatcher:SearchBar()]
+  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       assertWithMatcher:grey_userInteractionEnabled()];
 
   // Change to edit mode
@@ -521,14 +514,14 @@ id<GREYMatcher> SearchBar() {
       performAction:grey_tap()];
 
   // Verify search bar is disabled.
-  [[EarlGrey selectElementWithMatcher:SearchBar()]
+  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       assertWithMatcher:grey_not(grey_userInteractionEnabled())];
 
   // Cancel edito mode.
   [BookmarkEarlGreyUI closeContextBarEditMode];
 
   // Verify search bar is enabled.
-  [[EarlGrey selectElementWithMatcher:SearchBar()]
+  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       assertWithMatcher:grey_userInteractionEnabled()];
 }
 
@@ -741,7 +734,8 @@ id<GREYMatcher> SearchBar() {
 
   // Cancel search.
   if (iOS26_OR_ABOVE()) {
-    [[EarlGrey selectElementWithMatcher:SearchBar()] performAction:grey_tap()];
+    [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+        performAction:grey_tap()];
     [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"escape" flags:0];
   } else {
     [[EarlGrey selectElementWithMatcher:CancelButton()]
