@@ -550,6 +550,16 @@ void CommandService::UpdateExtensionSuggestedCommandPrefs(
                             std::move(command_keys));
   }
 
+  const Command* action_command = CommandsInfo::GetActionCommand(extension);
+  if (action_command &&
+      action_command->accelerator().key_code() != ui::VKEY_UNKNOWN) {
+    base::Value::Dict command_keys;
+    command_keys.Set(kSuggestedKey, Command::AcceleratorToString(
+                                        action_command->accelerator()));
+    suggested_key_prefs.Set(action_command->command_name(),
+                            std::move(command_keys));
+  }
+
   const Command* page_action_command =
       CommandsInfo::GetPageActionCommand(extension);
   if (page_action_command) {
