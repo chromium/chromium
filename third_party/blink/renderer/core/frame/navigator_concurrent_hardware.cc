@@ -9,10 +9,14 @@
 
 namespace blink {
 
+namespace {
+
 // TODO(435582603): Hard-coding this to a common value is a reasonable start,
 // but it likely makes sense to vary the hard-coded number by platform and
 // form-factor in order to maintain plausibility over time.
 constexpr unsigned kReducedHardwareConcurrencyValue = 8u;
+
+}  // namespace
 
 unsigned NavigatorConcurrentHardware::hardwareConcurrency() const {
   if (RuntimeEnabledFeatures::ReduceHardwareConcurrencyEnabled()) {

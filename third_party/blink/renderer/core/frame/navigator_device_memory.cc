@@ -14,10 +14,14 @@
 
 namespace blink {
 
+namespace {
+
 // TODO(435582603): Hard-coding this to a common value is a reasonable start,
 // but it likely makes sense to vary the hard-coded number by platform and
 // form-factor in order to maintain plausibility over time.
 constexpr float kReducedDeviceMemoryValue = 8.0;
+
+}  // namespace
 
 float NavigatorDeviceMemory::deviceMemory() const {
   if (RuntimeEnabledFeatures::ReduceDeviceMemoryEnabled()) {
