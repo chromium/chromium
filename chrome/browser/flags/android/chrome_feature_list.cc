@@ -1487,7 +1487,7 @@ BASE_FEATURE(kUseActivityManagerForTabActivation,
 // startup.
 BASE_FEATURE(kUseInitialNetworkStateAtStartup,
              "UseInitialNetworkStateAtStartup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Use the LibunwindstackNativeUnwinderAndroid for only browser main thread, and
 // only on Android.
