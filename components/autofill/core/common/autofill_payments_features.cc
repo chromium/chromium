@@ -291,7 +291,7 @@ BASE_FEATURE(kAutofillRetryImageFetchOnFailure,
 // and both a valid expiry date and cardholder name are present.
 BASE_FEATURE(kAutofillSaveCardBottomSheet,
              "AutofillSaveCardBottomSheet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // If enabled, we will store autofill server card data in shared storage.

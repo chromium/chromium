@@ -18,6 +18,7 @@
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
@@ -31,6 +32,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @interface FakeAutofillCommands : NSObject <AutofillCommands>
 
@@ -354,8 +356,10 @@ TEST_F(
 TEST_F(IOSChromePaymentsAutofillClientTest,
        UsesSaveCvcInfobarTypeForUploadSaveCvc) {
   // Set up the save options for a CVC-only save.
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enable_features=*/{features::kAutofillEnableCvcStorageAndFilling},
+      /*disable_features=*/{features::kAutofillSaveCardBottomSheet});
   payments::PaymentsAutofillClient::SaveCreditCardOptions options;
   options.card_save_type =
       payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly;
@@ -637,6 +641,30 @@ TEST_F(IOSChromePaymentsAutofillClientWithSaveCardBottomSheetTest,
   const std::optional<AutofillErrorDialogContext>& error_context =
       [autofill_commands() autofillErrorDialogContext];
   EXPECT_FALSE(error_context.has_value());
+}
+
+// Test that a save CVC Bottomsheet is shown when saving only a CVC for upload
+// save.
+TEST_F(IOSChromePaymentsAutofillClientWithSaveCardBottomSheetTest,
+       UsesSaveCvcBottomsheetForUploadSaveCvc) {
+  // Set up the save options for a CVC-only save.
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
+  payments::PaymentsAutofillClient::SaveCreditCardOptions options;
+  options.card_save_type =
+      payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly;
+  options.show_prompt = true;
+
+  payments_client()->ShowSaveCreditCardToCloud(autofill::test::GetCreditCard(),
+                                               LegalMessageLines(), options,
+                                               base::DoNothing());
+
+  // Make sure that a bottomsheet was shown and is specifically for the CVC-only
+  // prompt.
+  EXPECT_TRUE([autofill_commands() showSaveCardBottomSheetCalled]);
+  EXPECT_EQ(
+      bottomsheet_tab_helper_->GetSaveCardBottomSheetModel()->title(),
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD));
 }
 
 class IOSChromePaymentsAutofillClientWithLocalSaveCardBottomSheetTest
