@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <vector>
+
 #import "base/time/time.h"
 
 // Recorded for IOS.ReaderMode.State. Entries should not be renumbered and
@@ -174,5 +176,9 @@ extern const char kReaderModeAccessPointHistogram[];
 
 // Returns the Reader mode symbol name.
 NSString* GetReaderModeSymbolName();
+
+// Reader mode font scale multipliers. Must be sorted.
+// These values should be in the range defined in distilled_page_prefs.cc.
+std::vector<double> ReaderModeFontScaleMultipliers();
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_CONSTANTS_H_

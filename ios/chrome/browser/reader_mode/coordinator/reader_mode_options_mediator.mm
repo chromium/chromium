@@ -6,8 +6,8 @@
 
 #import "components/dom_distiller/core/distilled_page_prefs.h"
 #import "components/dom_distiller/ios/distilled_page_prefs_observer_bridge.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_font_size_utils.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
-#import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
@@ -40,12 +40,12 @@
     // Initialize consumer with current state of `_distilledPagePrefs`.
     [self.consumer setSelectedFontFamily:_distilledPagePrefs->GetFontFamily()];
     [self.consumer setSelectedTheme:_distilledPagePrefs->GetTheme()];
-    std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
-    const float scaling = _distilledPagePrefs->GetFontScaling();
     [self.consumer
-        setDecreaseFontSizeButtonEnabled:(scaling > multipliers.front())];
+        setDecreaseFontSizeButtonEnabled:CanDecreaseReaderModeFontSize(
+                                             _distilledPagePrefs)];
     [self.consumer
-        setIncreaseFontSizeButtonEnabled:(scaling < multipliers.back())];
+        setIncreaseFontSizeButtonEnabled:CanIncreaseReaderModeFontSize(
+                                             _distilledPagePrefs)];
   }
 }
 
@@ -56,23 +56,11 @@
 }
 
 - (void)increaseFontSize {
-  double currentScaling = _distilledPagePrefs->GetFontScaling();
-  std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
-  auto it =
-      std::upper_bound(multipliers.begin(), multipliers.end(), currentScaling);
-  if (it != multipliers.end()) {
-    _distilledPagePrefs->SetFontScaling(*it);
-  }
+  IncreaseReaderModeFontSize(_distilledPagePrefs);
 }
 
 - (void)decreaseFontSize {
-  double currentScaling = _distilledPagePrefs->GetFontScaling();
-  std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
-  auto it =
-      std::lower_bound(multipliers.begin(), multipliers.end(), currentScaling);
-  if (it != multipliers.begin()) {
-    _distilledPagePrefs->SetFontScaling(*(--it));
-  }
+  DecreaseReaderModeFontSize(_distilledPagePrefs);
 }
 
 - (void)setTheme:(dom_distiller::mojom::Theme)theme {
@@ -103,11 +91,10 @@
 }
 
 - (void)onChangeFontScaling:(float)scaling {
-  std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
-  [self.consumer
-      setDecreaseFontSizeButtonEnabled:(scaling > multipliers.front())];
-  [self.consumer
-      setIncreaseFontSizeButtonEnabled:(scaling < multipliers.back())];
+  [self.consumer setDecreaseFontSizeButtonEnabled:CanDecreaseReaderModeFontSize(
+                                                      _distilledPagePrefs)];
+  [self.consumer setIncreaseFontSizeButtonEnabled:CanIncreaseReaderModeFontSize(
+                                                      _distilledPagePrefs)];
   [self.consumer announceFontSizeMultiplier:scaling];
 }
 

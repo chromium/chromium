@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import <vector>
-
 // The accessibility identifier of the Reader Mode content view.
 extern NSString* const kReaderModeViewAccessibilityIdentifier;
 
@@ -54,9 +52,5 @@ UIColor* ReaderModeDarkBackgroundColor();
 UIColor* ReaderModeDarkTextColor();
 UIColor* ReaderModeSepiaBackgroundColor();
 UIColor* ReaderModeSepiaTextColor();
-
-// Reader mode font scale multipliers. Must be sorted.
-// These values should be in the range defined in distilled_page_prefs.cc.
-std::vector<double> ReaderModeFontScaleMultipliers();
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_UI_CONSTANTS_H_
