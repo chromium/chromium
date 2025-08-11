@@ -8,6 +8,10 @@ assert(is_chromeos, "OnTask is only supported in Ash")
 
 static_library("on_task") {
   sources = [
+    "locked_quiz_session_manager.cc",
+    "locked_quiz_session_manager.h",
+    "locked_quiz_session_manager_factory.cc",
+    "locked_quiz_session_manager_factory.h",
     "locked_session_window_tracker_factory.cc",
     "locked_session_window_tracker_factory.h",
     "on_task_extensions_manager_impl.cc",
@@ -100,6 +104,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
+    "locked_quiz_session_manager_browsertest.cc",
     "on_task_locked_session_navigation_throttle_interactive_ui_test.cc",
     "on_task_locked_session_window_tracker_browsertest.cc",
     "on_task_pod_controller_impl_browsertest.cc",

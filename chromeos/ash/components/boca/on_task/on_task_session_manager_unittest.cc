@@ -84,6 +84,12 @@ class OnTaskSystemWebAppManagerMock : public OnTaskSystemWebAppManager {
        GURL url,
        ::boca::LockedNavigationOptions::NavigationType restriction_level),
       (override));
+  MOCK_METHOD(
+      void,
+      SetParentTabsRestriction,
+      (SessionID window_id,
+       ::boca::LockedNavigationOptions::NavigationType restriction_level),
+      (override));
   MOCK_METHOD(void,
               RemoveTabsWithTabIds,
               (SessionID window_id,
