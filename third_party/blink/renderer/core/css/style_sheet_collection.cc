@@ -30,16 +30,13 @@
 
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
-#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/rule_set_diff.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
-#include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_sheet_candidate.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/html/html_link_element.h"
-#include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 
 namespace blink {
 
@@ -56,7 +53,7 @@ void StyleSheetCollection::ReplaceActiveStyleSheets(
                  new_active_style_sheets, rule_set_diffs);
 
   GetDocument().GetStyleEngine().ApplyRuleSetChanges(
-      GetTreeScope(), active_style_sheets_, new_active_style_sheets,
+      *tree_scope_, active_style_sheets_, new_active_style_sheets,
       rule_set_diffs);
 
   active_style_sheets_ = std::move(new_active_style_sheets);
@@ -159,7 +156,13 @@ void StyleSheetCollection::Trace(Visitor* visitor) const {
 }
 
 StyleSheetCollection::StyleSheetCollection(TreeScope& tree_scope)
-    : tree_scope_(tree_scope) {}
+    : tree_scope_(tree_scope), is_shadow_tree_(IsA<ShadowRoot>(tree_scope)) {
+  if (is_shadow_tree_) {
+    DCHECK_NE(tree_scope.RootNode(), tree_scope.RootNode().GetDocument());
+  } else {
+    DCHECK_EQ(tree_scope.RootNode(), tree_scope.RootNode().GetDocument());
+  }
+}
 
 void StyleSheetCollection::AddStyleSheetCandidateNode(Node& node) {
   if (node.isConnected()) {
@@ -186,6 +189,56 @@ void StyleSheetCollection::UpdateStyleSheetList() {
 
   style_sheets_for_style_sheet_list_ = std::move(new_list);
   sheet_list_dirty_ = false;
+}
+
+void StyleSheetCollection::UpdateActiveStyleSheets(
+    const StyleEngine& engine,
+    const MediaQueryEvaluator& medium) {
+  ActiveStyleSheetVector new_active_style_sheets;
+  const String& preferred_name =
+      is_shadow_tree_
+          ? g_null_atom
+          : GetDocument().GetStyleEngine().PreferredStylesheetSetName();
+
+  if (!is_shadow_tree_) {
+    for (auto& sheet :
+         GetDocument().GetStyleEngine().InjectedAuthorStyleSheets()) {
+      new_active_style_sheets.push_back(std::pair(sheet.second, nullptr));
+    }
+  }
+
+  for (Node* n : style_sheet_candidate_nodes_) {
+    StyleSheetCandidate candidate(*n);
+
+    DCHECK(!candidate.IsXSL());
+    if (candidate.IsEnabledAndLoading()) {
+      continue;
+    }
+
+    StyleSheet* sheet = candidate.Sheet();
+    if (sheet && candidate.CanBeActivated(preferred_name)) {
+      CSSStyleSheet* css_sheet = To<CSSStyleSheet>(sheet);
+      new_active_style_sheets.push_back(std::pair(css_sheet, nullptr));
+    }
+  }
+
+  if (tree_scope_->HasAdoptedStyleSheets()) {
+    for (CSSStyleSheet* sheet : *tree_scope_->AdoptedStyleSheets()) {
+      if (sheet && sheet->CanBeActivated(preferred_name)) {
+        DCHECK_EQ(GetDocument(), sheet->ConstructorDocument());
+        new_active_style_sheets.push_back(std::pair(sheet, nullptr));
+      }
+    }
+  }
+
+  if (!is_shadow_tree_) {
+    for (CSSStyleSheet* inspector_sheet :
+         GetDocument().GetStyleEngine().InspectorStyleSheets()) {
+      new_active_style_sheets.push_back(std::pair(inspector_sheet, nullptr));
+    }
+  }
+
+  ReplaceActiveStyleSheets(medium, std::move(new_active_style_sheets));
 }
 
 }  // namespace blink

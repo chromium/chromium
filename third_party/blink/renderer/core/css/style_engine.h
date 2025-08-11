@@ -83,7 +83,6 @@ class CSSPropertyValueSet;
 class CSSStyleSheet;
 class CSSValue;
 class Document;
-class DocumentStyleSheetCollection;
 class ElementRuleCollector;
 class Font;
 class FontSelector;
@@ -93,7 +92,6 @@ class MediaQuerySet;
 class Node;
 class ReferenceFilterOperation;
 class RuleFeatureSet;
-class ShadowTreeStyleSheetCollection;
 class DocumentStyleEnvironmentVariables;
 class CascadeLayerMap;
 class SpaceSplitString;
@@ -822,12 +820,12 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                             TextPosition start_position,
                             RenderBlockingBehavior render_blocking_behavior);
 
-  const DocumentStyleSheetCollection& GetDocumentStyleSheetCollection() const {
+  const StyleSheetCollection& GetDocumentStyleSheetCollection() const {
     DCHECK(document_style_sheet_collection_);
     return *document_style_sheet_collection_;
   }
 
-  DocumentStyleSheetCollection& GetDocumentStyleSheetCollection() {
+  StyleSheetCollection& GetDocumentStyleSheetCollection() {
     DCHECK(document_style_sheet_collection_);
     return *document_style_sheet_collection_;
   }
@@ -980,13 +978,12 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // Stylesheets inserted by DevTools.
   HeapVector<Member<CSSStyleSheet>> inspector_style_sheet_list_;
 
-  Member<DocumentStyleSheetCollection> document_style_sheet_collection_;
+  Member<StyleSheetCollection> document_style_sheet_collection_;
 
   Member<StyleRuleUsageTracker> tracker_;
 
   using StyleSheetCollectionMap =
-      HeapHashMap<WeakMember<TreeScope>,
-                  Member<ShadowTreeStyleSheetCollection>>;
+      HeapHashMap<WeakMember<TreeScope>, Member<StyleSheetCollection>>;
   StyleSheetCollectionMap style_sheet_collection_map_;
 
   bool document_scope_dirty_{true};

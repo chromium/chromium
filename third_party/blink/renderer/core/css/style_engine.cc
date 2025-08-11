@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
-#include "third_party/blink/renderer/core/css/document_style_sheet_collection.h"
 #include "third_party/blink/renderer/core/css/font_face_cache.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/media_feature_overrides.h"
@@ -63,11 +62,11 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
 #include "third_party/blink/renderer/core/css/resolver/style_rule_usage_tracker.h"
 #include "third_party/blink/renderer/core/css/resolver/viewport_style_resolver.h"
-#include "third_party/blink/renderer/core/css/shadow_tree_style_sheet_collection.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
 #include "third_party/blink/renderer/core/css/style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
+#include "third_party/blink/renderer/core/css/style_sheet_collection.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -242,7 +241,7 @@ StyleEngine::StyleEngine(Document& document)
       style_containment_scope_tree_(
           MakeGarbageCollected<StyleContainmentScopeTree>()),
       document_style_sheet_collection_(
-          MakeGarbageCollected<DocumentStyleSheetCollection>(document)),
+          MakeGarbageCollected<StyleSheetCollection>(document)),
       preferred_color_scheme_(mojom::blink::PreferredColorScheme::kLight),
       owner_preferred_color_scheme_(mojom::blink::PreferredColorScheme::kLight),
       owner_color_scheme_(mojom::blink::ColorScheme::kLight) {
@@ -285,8 +284,7 @@ StyleSheetCollection& StyleEngine::EnsureStyleSheetCollectionFor(
       style_sheet_collection_map_.insert(&tree_scope, nullptr);
   if (result.is_new_entry) {
     result.stored_value->value =
-        MakeGarbageCollected<ShadowTreeStyleSheetCollection>(
-            To<ShadowRoot>(tree_scope));
+        MakeGarbageCollected<StyleSheetCollection>(To<ShadowRoot>(tree_scope));
   }
   return *result.stored_value->value.Get();
 }
@@ -640,8 +638,7 @@ void StyleEngine::UpdateActiveStyleSheetsInShadow(
     TreeScope* tree_scope,
     UnorderedTreeScopeSet& tree_scopes_removed) {
   DCHECK_NE(tree_scope, document_);
-  auto* collection =
-      To<ShadowTreeStyleSheetCollection>(StyleSheetCollectionFor(*tree_scope));
+  auto* collection = StyleSheetCollectionFor(*tree_scope);
   DCHECK(collection);
   collection->UpdateActiveStyleSheets(*this, EnsureMediaQueryEvaluator());
   if (!collection->HasStyleSheetCandidateNodes() &&

@@ -62,19 +62,20 @@ class StyleEngine;
 // and RemoveStyleSheetCandidateNode().)
 //
 // The precise logic for which sheets are in which list (e.g., do we include
-// injected author style sheets or not?) will depend on what kind of
-// tree scope you are interested in; the actual collection logic lies in
-// subclasses DocumentStyleSheetCollection and ShadowTreeStyleSheetCollection.
+// injected author style sheets or not?) will depend on whether the tree scope
+// is a document or a shadow tree. However, it is broadly similar between
+// the two.
 //
-// Note, however, that even ShadowTreeStyleSheetCollection only considers
-// the list of stylesheets for _one_ tree scope, not any parent tree scopes.
-// Thus, ScopedStyleResolver also needs to consider StyleSheetCollections
-// for parent tree scopes (for nodes in Shadow DOM), since style sheets
-// there may be relevant for ::host, ::part() and similar.
+// Note, however, that even for a shadow tree, StyleSheetCollection only
+// considers the list of stylesheets for _one_ tree scope, not any parent tree
+// scopes. Thus, ScopedStyleResolver also needs to consider
+// StyleSheetCollections for parent tree scopes (for nodes in Shadow DOM), since
+// style sheets there may be relevant for ::host, ::part() and similar.
 class CORE_EXPORT StyleSheetCollection
     : public GarbageCollected<StyleSheetCollection>,
       public NameClient {
  public:
+  explicit StyleSheetCollection(TreeScope&);
   StyleSheetCollection(const StyleSheetCollection&) = delete;
   StyleSheetCollection& operator=(const StyleSheetCollection&) = delete;
   ~StyleSheetCollection() override = default;
@@ -101,31 +102,27 @@ class CORE_EXPORT StyleSheetCollection
     return !style_sheet_candidate_nodes_.IsEmpty();
   }
 
-  virtual bool IsShadowTreeStyleSheetCollection() const { return false; }
+  bool IsShadowTreeStyleSheetCollection() const { return is_shadow_tree_; }
   void UpdateStyleSheetList();
+  void UpdateActiveStyleSheets(const StyleEngine&, const MediaQueryEvaluator&);
 
- protected:
+ private:
   friend class StyleCascadeTest;  // For ReplaceActiveStyleSheets().
 
-  explicit StyleSheetCollection(TreeScope&);
-
-  // Called by child classes after collecting a new set of active style sheets.
+  // Called after collecting a new set of active style sheets.
   // Creates RuleSets, notifies the StyleEngine and moves the new values into
   // place.
   void ReplaceActiveStyleSheets(const MediaQueryEvaluator& medium,
                                 ActiveStyleSheetVector new_active_style_sheets);
 
-  Document& GetDocument() const { return GetTreeScope().GetDocument(); }
-  TreeScope& GetTreeScope() const { return *tree_scope_; }
+  Document& GetDocument() const { return tree_scope_->GetDocument(); }
 
-  // TODO(sesse): We should not have protected data members.
-  TreeOrderedList<Node> style_sheet_candidate_nodes_;
-
- private:
   Member<TreeScope> tree_scope_;
   HeapVector<Member<StyleSheet>> style_sheets_for_style_sheet_list_;
+  TreeOrderedList<Node> style_sheet_candidate_nodes_;
   ActiveStyleSheetVector active_style_sheets_;
   bool sheet_list_dirty_ = true;
+  const bool is_shadow_tree_;
 };
 
 }  // namespace blink
