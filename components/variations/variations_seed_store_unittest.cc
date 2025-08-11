@@ -79,6 +79,10 @@ class TestVariationsSeedStore : public VariationsSeedStore {
                             entropy_providers.get(),
                             use_first_run_prefs) {}
   ~TestVariationsSeedStore() override = default;
+
+  void SetSerialNumberForTesting(std::string_view serial_number) {
+    StoreLatestSerialNumber(serial_number);
+  }
 };
 
 // Creates a base::Time object from the corresponding raw value. The specific
@@ -240,6 +244,7 @@ void SetAllSeedsAndSeedPrefsToNonDefaultValues(
           .client_fetch_time = now,
           .session_country_code = "us",
       });
+  seed_store.SetSerialNumberForTesting("123");
 
   //  Update the safe seed in memory. This is done for the Local-State-based
   //  seed OR the seed-file-based seed depending on the seed file trial group to
@@ -296,6 +301,9 @@ void CheckRegularSeedAndSeedPrefsAreCleared(
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSeedMilestone));
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsLastFetchTime));
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSeedDate));
+
+  // The serial number should be cleared when the seed is cleared.
+  EXPECT_THAT(seed_store.GetLatestSerialNumber(), IsEmpty());
 }
 
 void CheckSafeSeedAndSeedPrefsAreSet(const TestingPrefServiceSimple& prefs,
@@ -1134,22 +1142,12 @@ TEST_P(StoreSeedDataAllGroupsTest, IdenticalToSafeSeed) {
 // is saved.
 TEST_P(StoreSeedDataAllGroupsTest,
        GetLatestSerialNumber_UpdatedWithNewStoredSeed) {
-  // Store good seed data initially.
-  const std::string seed_data = SerializeSeed(CreateTestSeed());
-
   // Call GetLatestSerialNumber() once to prime the cached value.
   TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
             GetParam().field_trial_group);
-  seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
-      ValidatedSeedInfo{
-          .seed_data = seed_data,
-          .signature = "a completely ignored signature",
-          .milestone = 1,
-          .seed_date = base::Time::Now(),
-          .client_fetch_time = base::Time::Now(),
-          .session_country_code = "us",
-      });
+  ASSERT_THAT(seed_store.GetLatestSerialNumber(), IsEmpty());
+  ASSERT_TRUE(StoreSeedData(seed_store, SerializeSeed(CreateTestSeed())));
   EXPECT_EQ("123", seed_store.GetLatestSerialNumber());
 
   VariationsSeed new_seed = CreateTestSeed();
@@ -2155,48 +2153,6 @@ TEST_P(VariationsSeedStoreTestAllGroups, LastFetchTime_IdenticalSeeds) {
   // Verify that the safe seed's fetch time *was* also updated.
   const base::Time safe_fetch_time = seed_store.GetSafeSeedFetchTime();
   EXPECT_EQ(WrapTime(11), safe_fetch_time);
-}
-
-TEST_P(VariationsSeedStoreTestAllGroups,
-       GetLatestSerialNumber_LoadsInitialValue) {
-  // Store good seed data to test if loading works.
-  const std::string seed_data = SerializeSeed(CreateTestSeed());
-
-  TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
-  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
-  seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
-      ValidatedSeedInfo{
-          .seed_data = seed_data,
-          .signature = "a completely ignored signature",
-          .milestone = 1,
-          .seed_date = base::Time::Now(),
-          .client_fetch_time = base::Time::Now(),
-          .session_country_code = "us",
-      });
-
-  EXPECT_EQ("123", seed_store.GetLatestSerialNumber());
-}
-
-TEST_P(VariationsSeedStoreTestAllGroups,
-       GetLatestSerialNumber_ClearsPrefsOnFailure) {
-  // Store corrupted seed data to test that prefs are cleared when loading
-  // fails.
-  TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
-  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
-  seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
-      ValidatedSeedInfo{
-          .seed_data = "this will be overwritten",
-          .signature = "an unused signature",
-          .milestone = 1,
-          .seed_date = base::Time::Now(),
-          .client_fetch_time = base::Time::Now(),
-          .session_country_code = "us",
-      });
-  seed_store.GetSeedReaderWriterForTesting()->StoreRawSeedForTesting(
-      "invalid seed data");
-  EXPECT_EQ(std::string(), seed_store.GetLatestSerialNumber());
-  EXPECT_TRUE(PrefHasDefaultValue(prefs_, prefs::kVariationsCompressedSeed));
-  EXPECT_THAT(GetSeedData(seed_store).data, IsEmpty());
 }
 
 TEST_F(VariationsSeedStoreTest, GetLatestSerialNumber_EmptyWhenNoSeedIsSaved) {

@@ -188,7 +188,11 @@ bool VariationsSeedStore::LoadSeed(VariationsSeed* seed,
   if (result != LoadSeedResult::kSuccess)
     return false;
 
-  latest_serial_number_ = seed->serial_number();
+  // TODO(crbug.com/437811262): Remove after milestone M146. This code is used
+  // to populate the pref with the serial number of the latest seed. This value
+  // is already stored when we fetch a new seed, so we don't need to store it
+  // again here.
+  StoreLatestSerialNumber(seed->serial_number());
   return true;
 }
 
@@ -362,28 +366,7 @@ void VariationsSeedStore::LogSeedDayChange(
 }
 
 const std::string& VariationsSeedStore::GetLatestSerialNumber() {
-  if (!latest_serial_number_.has_value()) {
-    // Efficiency note: This code should rarely be reached; typically, the
-    // latest serial number should be cached via the call to LoadSeed(). The
-    // call to ParseFromString() can be expensive, so it's best to only perform
-    // it once, if possible: [ https://crbug.com/761684#c2 ]. At the time of
-    // this writing, the only expected code path that should reach this code is
-    // when running in safe mode.
-    std::string seed_data;
-    VariationsSeed seed;
-    if (ReadSeedData(SeedType::LATEST, &seed_data) ==
-            LoadSeedResult::kSuccess &&
-        seed.ParseFromString(seed_data)) {
-      latest_serial_number_ = std::optional<std::string>{seed.serial_number()};
-    } else {
-      // If the seed could not be read, the serial number is empty. We set the
-      // value to an empty string so that we don't keep trying to read the
-      // seed. The value will be updated when a new seed is successfully fetched
-      // and stored.
-      latest_serial_number_ = std::optional<std::string>{""};
-    }
-  }
-  return latest_serial_number_.value();
+  return local_state_->GetString(prefs::kVariationsSeedSerialNumber);
 }
 
 std::string VariationsSeedStore::GetLatestCountry() {
@@ -422,6 +405,8 @@ void VariationsSeedStore::RegisterPrefs(PrefRegistrySimple* registry) {
   // This preference keeps track of the country code used to filter
   // permanent-consistency studies.
   registry->RegisterListPref(prefs::kVariationsPermanentConsistencyCountry);
+  registry->RegisterStringPref(prefs::kVariationsSeedSerialNumber,
+                               std::string());
 
   VariationsSafeSeedStoreLocalState::RegisterPrefs(registry);
 }
@@ -464,6 +449,7 @@ VariationsSeedStore::SeedProcessingResult::operator=(
 // for the next safe seed.
 void VariationsSeedStore::ClearPrefs(SeedType seed_type) {
   if (seed_type == SeedType::LATEST) {
+    local_state_->ClearPref(prefs::kVariationsSeedSerialNumber);
     // Seed and other related information is cleared by the SeedReaderWriter.
     seed_reader_writer_->ClearSeedInfo();
     return;
@@ -564,6 +550,11 @@ LoadSeedResult VariationsSeedStore::VerifyAndParseSeed(
   }
 
   return LoadSeedResult::kSuccess;
+}
+
+void VariationsSeedStore::StoreLatestSerialNumber(
+    std::string_view serial_number) {
+  local_state_->SetString(prefs::kVariationsSeedSerialNumber, serial_number);
 }
 
 LoadSeedResult VariationsSeedStore::LoadSeedImpl(
@@ -688,7 +679,7 @@ StoreSeedResult VariationsSeedStore::StoreValidatedSeed(
   if (result != StoreSeedResult::kSuccess) {
     return result;
   }
-  latest_serial_number_ = seed.parsed.serial_number();
+  StoreLatestSerialNumber(seed.parsed.serial_number());
   return StoreSeedResult::kSuccess;
 }
 

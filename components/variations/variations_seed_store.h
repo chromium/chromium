@@ -259,6 +259,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
       const std::string& base64_seed_signature,
       std::optional<VerifySignatureResult>* verify_signature_result);
 
+  // Stores the serial number of the latest seed.
+  void StoreLatestSerialNumber(std::string_view serial_number);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(VariationsSeedStoreTest, VerifySeedSignature);
   FRIEND_TEST_ALL_PREFIXES(VariationsSeedStoreTest, ApplyDeltaPatch);
@@ -393,17 +396,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
 
   // Setters and getters for safe seed state.
   std::unique_ptr<VariationsSafeSeedStore> safe_seed_store_;
-
-  // Cached serial number from the most recently fetched variations seed. If
-  // using the regular seed, the value is set on startup when
-  // VariationsSeedStore::LoadSeed() is called. If using the safe seed, the
-  // regular seed won't be loaded on startup, so the value is set when fetching
-  // a new seed by calling VariationsSeedStore::GetLatestSerialNumber().
-  // The value is updated when a new seed is successfully fetched and stored.
-  // std::nullopt means it hasn't been populated yet and an empty string
-  // indicates the seed information couldn't be read or parsed when
-  // GetLatestSerialNumber() was called.
-  std::optional<std::string> latest_serial_number_;
 
   // Whether to validate signatures on the seed. Always on except in unit tests.
   const bool signature_verification_enabled_;
