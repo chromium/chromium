@@ -224,7 +224,7 @@ NSString* const kMainSectionIdentifier = @"MainSection";
   itemToUpdate.state = state;
   NSDiffableDataSourceSnapshot<NSString*, AIMInputItem*>* newSnapshot =
       [currentSnapshot copy];
-  [newSnapshot reloadItemsWithIdentifiers:@[ itemToUpdate ]];
+  [newSnapshot reconfigureItemsWithIdentifiers:@[ itemToUpdate ]];
   [_dataSource applySnapshot:newSnapshot animatingDifferences:YES];
 }
 

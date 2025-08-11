@@ -7,15 +7,18 @@
 #import <memory>
 
 #import "base/files/file_path.h"
+#import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted_memory.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "base/unguessable_token.h"
 #import "components/omnibox/composebox/ios/composebox_file_upload_observer_bridge.h"
 #import "components/omnibox/composebox/ios/composebox_query_controller_ios.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/util.h"
+#import "ios/chrome/browser/aim/prototype/public/features.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_input_item.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -116,7 +119,6 @@
     case FileUploadStatus::kUploadFailed:
     case FileUploadStatus::kValidationFailed:
     case FileUploadStatus::kUploadExpired:
-      // TODO(crbug.com/40280872): Handle error case in consumer.
       item.state = AIMInputItemState::kError;
       break;
     case FileUploadStatus::kNotUploaded:
@@ -144,10 +146,22 @@
 // Handles the loaded full `image` for the given `item`.
 - (void)didLoadFullImage:(UIImage*)image forItem:(AIMInputItem*)item {
   if (!image) {
-    // TODO(crbug.com/40280872): Handle error case.
+    item.state = AIMInputItemState::kError;
+    [self.consumer updateState:item.state forItemWithToken:item.fileToken];
     return;
   }
 
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf didFinishSimulatedLoadForImage:image item:item];
+      }),
+      GetImageLoadDelay());
+}
+
+// Called after the simulated image load delay.
+- (void)didFinishSimulatedLoadForImage:(UIImage*)image
+                                  item:(AIMInputItem*)item {
   item.state = AIMInputItemState::kUploading;
   [self.consumer updateState:item.state forItemWithToken:item.fileToken];
 
@@ -156,6 +170,27 @@
     [self.consumer setItems:_items];
   }
 
+  base::OnceClosure task;
+  __weak __typeof(self) weakSelf = self;
+  if (ShouldForceUploadFailure()) {
+    task = base::BindOnce(^{
+      [weakSelf onFileUploadStatusChanged:item.fileToken
+                                 mimeType:lens::MimeType::kImage
+                         fileUploadStatus:FileUploadStatus::kUploadFailed
+                                errorType:std::nullopt];
+    });
+  } else {
+    task = base::BindOnce(^{
+      [weakSelf uploadImage:image forItem:item];
+    });
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, std::move(task), GetUploadDelay());
+}
+
+// Uploads the `image` for the given `item`.
+- (void)uploadImage:(UIImage*)image forItem:(AIMInputItem*)item {
   auto file_info = std::make_unique<ComposeboxQueryController::FileInfo>();
   file_info->file_token_ = item.fileToken;
   file_info->file_name = "image.png";

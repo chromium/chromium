@@ -13,6 +13,7 @@ source_set("coordinator") {
     "//components/application_locale_storage",
     "//components/omnibox/composebox/ios",
     "//components/search_engines",
+    "//ios/chrome/browser/aim/prototype/public:features",
     "//ios/chrome/browser/aim/prototype/ui",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
