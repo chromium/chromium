@@ -17,6 +17,7 @@
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
 #include "remoting/host/base/loggable.h"
@@ -34,6 +35,8 @@ class EiSenderSession {
       base::expected<std::unique_ptr<EiSenderSession>, Loggable>)>;
 
   ~EiSenderSession();
+
+  base::WeakPtr<EiSenderSession> GetWeakPtr();
 
   // Injects an event for the provided |usb_keycode|. |is_press| should be true
   // for key-down and repeat events, and false for release events.
@@ -183,6 +186,8 @@ class EiSenderSession {
   std::unique_ptr<base::FileDescriptorWatcher::Controller> fd_watcher_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<EiSenderSession> weak_ptr_factory_{this};
 };
 
 }  // namespace remoting

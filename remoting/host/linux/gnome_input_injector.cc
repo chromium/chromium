@@ -14,11 +14,11 @@
 namespace remoting {
 
 GnomeInputInjector::GnomeInputInjector(
-    std::unique_ptr<EiSenderSession> session,
+    base::WeakPtr<EiSenderSession> session,
     base::WeakPtr<const PipewireCaptureStreamManager> stream_manager,
     GDBusConnectionRef dbus_connection,
     gvariant::ObjectPath session_path)
-    : ei_session_(std::move(session)),
+    : ei_session_(session),
       stream_manager_(stream_manager),
       clipboard_(std::move(dbus_connection), std::move(session_path)) {}
 
@@ -30,6 +30,9 @@ void GnomeInputInjector::Start(
 }
 
 void GnomeInputInjector::InjectKeyEvent(const protocol::KeyEvent& event) {
+  if (!ei_session_) {
+    return;
+  }
   if (!event.has_usb_keycode() || !event.has_pressed()) {
     LOG(WARNING) << "Key event with no key info";
     return;
@@ -42,6 +45,9 @@ void GnomeInputInjector::InjectTextEvent(const protocol::TextEvent& event) {
 }
 
 void GnomeInputInjector::InjectMouseEvent(const protocol::MouseEvent& event) {
+  if (!ei_session_) {
+    return;
+  }
   bool event_sent = false;
   if (event.has_fractional_coordinate() &&
       event.fractional_coordinate().has_x() &&

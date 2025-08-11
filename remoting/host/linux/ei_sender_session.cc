@@ -154,6 +154,10 @@ EiSenderSession::~EiSenderSession() {
   ProcessEvents(true);
 }
 
+base::WeakPtr<EiSenderSession> EiSenderSession::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void EiSenderSession::InjectKeyEvent(std::uint32_t usb_keycode, bool is_press) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

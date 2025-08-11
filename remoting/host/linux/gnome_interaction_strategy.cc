@@ -119,11 +119,9 @@ std::unique_ptr<InputInjector> GnomeInteractionStrategy::CreateInputInjector() {
   // after the EI session is initialized.
   DCHECK(ei_session_);
 
-  // Passing exclusive ownership to the input-injector allows it to use the EI
-  // session on a different thread.
   return std::make_unique<GnomeInputInjector>(
-      std::move(ei_session_), capture_stream_manager_.GetWeakPtr(), connection_,
-      session_path_);
+      ei_session_->GetWeakPtr(), capture_stream_manager_.GetWeakPtr(),
+      connection_, session_path_);
 }
 
 std::unique_ptr<DesktopResizer>

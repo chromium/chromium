@@ -22,7 +22,7 @@ class GnomeInputInjector : public InputInjector {
   // Currently, there is only 1 capture-stream and its mapping-id never
   // changes during the connection lifetime.
   GnomeInputInjector(
-      std::unique_ptr<EiSenderSession> session,
+      base::WeakPtr<EiSenderSession> session,
       base::WeakPtr<const PipewireCaptureStreamManager> stream_manager,
       GDBusConnectionRef dbus_connection,
       gvariant::ObjectPath session_path);
@@ -42,7 +42,7 @@ class GnomeInputInjector : public InputInjector {
   void InjectClipboardEvent(const protocol::ClipboardEvent& event) override;
 
  private:
-  std::unique_ptr<EiSenderSession> ei_session_;
+  base::WeakPtr<EiSenderSession> ei_session_;
   base::WeakPtr<const PipewireCaptureStreamManager> stream_manager_;
   ClipboardGnome clipboard_;
 };
