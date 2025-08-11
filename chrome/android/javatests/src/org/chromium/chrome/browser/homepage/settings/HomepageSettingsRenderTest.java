@@ -68,7 +68,7 @@ public class HomepageSettingsRenderTest {
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(1)
+                    .setRevision(2) // Revision incremented for new tests
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_SETTINGS)
                     .build();
 
@@ -142,11 +142,39 @@ public class HomepageSettingsRenderTest {
         Mockito.doReturn(isNtp).when(mMockHomepagePolicyManager).getHomepageIsNtpPolicyValue();
     }
 
-    private void setupRecommendedOnPolicy(boolean isFollowing) {
+    private void setupShowHomeButtonRecommendation(boolean isFollowing) {
         Mockito.doReturn(true).when(mMockHomepagePolicyManager).isShowHomeButtonPolicyRecommended();
         Mockito.doReturn(isFollowing)
                 .when(mMockHomepagePolicyManager)
                 .isFollowingHomepageButtonPolicyRecommendation();
+    }
+
+    private void setupHomepageIsNtpRecommendation(boolean recommendNtp, boolean isFollowing) {
+        Mockito.doReturn(true)
+                .when(mMockHomepagePolicyManager)
+                .isHomepageSelectionPolicyRecommended();
+        Mockito.doReturn(isFollowing)
+                .when(mMockHomepagePolicyManager)
+                .isFollowingHomepageSelectionPolicyRecommendation();
+        // To properly simulate the recommendation, we need HomepageManager to return the
+        // correct value. We'll use the test rule to set the underlying preference.
+        if (recommendNtp) {
+            ThreadUtils.runOnUiThreadBlocking(() -> mHomepageTestRule.useChromeNtpForTest());
+        } else {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL));
+        }
+    }
+
+    private void setupHomepageLocationRecommendation(GURL url, boolean isFollowing) {
+        Mockito.doReturn(true)
+                .when(mMockHomepagePolicyManager)
+                .isHomepageSelectionPolicyRecommended();
+        Mockito.doReturn(isFollowing)
+                .when(mMockHomepagePolicyManager)
+                .isFollowingHomepageSelectionPolicyRecommendation();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mHomepageTestRule.useCustomizedHomepageForTest(url.getSpec()));
     }
 
     private void setupPartnerHomepage(GURL url) {
@@ -156,12 +184,13 @@ public class HomepageSettingsRenderTest {
         Mockito.doReturn(url).when(mMockPartnerBrowserCustomizations).getHomePageUrl();
     }
 
+    // Unmanaged States
     @Test
     @MediumTest
     @Feature({"RenderTest"})
     public void testRender_HomepageOnNtp() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(() -> mHomepageTestRule.useChromeNtpForTest());
-        launchFragmentAndRender("homepage_on_ntp");
+        launchFragmentAndRender("_unmanaged_homepage_on_ntp");
     }
 
     @Test
@@ -170,7 +199,7 @@ public class HomepageSettingsRenderTest {
     public void testRender_HomepageOnCustom() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL));
-        launchFragmentAndRender("homepage_on_custom");
+        launchFragmentAndRender("_unmanaged_homepage_on_custom");
     }
 
     @Test
@@ -182,9 +211,10 @@ public class HomepageSettingsRenderTest {
                     mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL);
                     mHomepageTestRule.disableHomepageForTest();
                 });
-        launchFragmentAndRender("homepage_off");
+        launchFragmentAndRender("_unmanaged_homepage_off");
     }
 
+    // Managed States
     @Test
     @MediumTest
     @Feature({"RenderTest"})
@@ -195,7 +225,7 @@ public class HomepageSettingsRenderTest {
                     mHomepageTestRule.useChromeNtpForTest();
                     mHomepageTestRule.disableHomepageForTest();
                 });
-        launchFragmentAndRender("policy_show_home_button_off");
+        launchFragmentAndRender("_policy_show_home_button_off");
     }
 
     @Test
@@ -204,7 +234,7 @@ public class HomepageSettingsRenderTest {
     public void testRender_PolicyShowHomeButtonOn() throws IOException {
         setupShowHomeButtonPolicy(true);
         ThreadUtils.runOnUiThreadBlocking(() -> mHomepageTestRule.useChromeNtpForTest());
-        launchFragmentAndRender("policy_show_home_button_on");
+        launchFragmentAndRender("_policy_show_home_button_on");
     }
 
     @Test
@@ -214,7 +244,7 @@ public class HomepageSettingsRenderTest {
         setupHomepageLocationPolicy(TEST_GURL);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL));
-        launchFragmentAndRender("policy_location_custom");
+        launchFragmentAndRender("_policy_location_custom");
     }
 
     @Test
@@ -223,7 +253,7 @@ public class HomepageSettingsRenderTest {
     public void testRender_PolicyLocationNtp() throws IOException {
         setupHomepageLocationPolicy(NTP_GURL);
         ThreadUtils.runOnUiThreadBlocking(() -> mHomepageTestRule.useChromeNtpForTest());
-        launchFragmentAndRender("policy_location_ntp");
+        launchFragmentAndRender("_policy_location_ntp");
     }
 
     @Test
@@ -232,7 +262,7 @@ public class HomepageSettingsRenderTest {
     public void testRender_PolicyHomepageIsNtpOn() throws IOException {
         setupHomepageIsNtpPolicy(true);
         ThreadUtils.runOnUiThreadBlocking(() -> mHomepageTestRule.useChromeNtpForTest());
-        launchFragmentAndRender("policy_homepage_is_ntp_on");
+        launchFragmentAndRender("_policy_homepage_is_ntp_on");
     }
 
     @Test
@@ -242,38 +272,183 @@ public class HomepageSettingsRenderTest {
         setupHomepageIsNtpPolicy(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL));
-        launchFragmentAndRender("policy_homepage_is_ntp_off");
+        launchFragmentAndRender("_policy_homepage_is_ntp_off");
     }
 
+    // Recommended States: ShowHomeButton
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testRender_RecommendedOn_Following() throws IOException {
-        setupRecommendedOnPolicy(true);
+    public void testRender_ShowHomeButtonRecommended_Following() throws IOException {
+        setupShowHomeButtonRecommendation(true);
         ThreadUtils.runOnUiThreadBlocking(() -> mHomepageTestRule.useChromeNtpForTest());
-        launchFragmentAndRender("recommended_on_following");
+        launchFragmentAndRender("_recommended_show_home_button_following");
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testRender_RecommendedOn_Overridden() throws IOException {
-        setupRecommendedOnPolicy(false);
+    public void testRender_ShowHomeButtonRecommended_Overridden() throws IOException {
+        setupShowHomeButtonRecommendation(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mHomepageTestRule.useChromeNtpForTest();
-                    // Simulate user override.
-                    mHomepageTestRule.disableHomepageForTest();
+                    mHomepageTestRule.disableHomepageForTest(); // Simulate user override.
                 });
-        launchFragmentAndRender("recommended_on_overridden");
+        launchFragmentAndRender("_recommended_show_home_button_overridden");
     }
 
+    // Recommended States: HomepageIsNTP
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRender_HomepageIsNtpRecommended_On_Following() throws IOException {
+        setupHomepageIsNtpRecommendation(/* recommendNtp= */ true, /* isFollowing= */ true);
+        launchFragmentAndRender("_recommended_ntp_on_following");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRender_HomepageIsNtpRecommended_On_Overridden() throws IOException {
+        setupHomepageIsNtpRecommendation(/* recommendNtp= */ true, /* isFollowing= */ false);
+        // The helper sets NTP, but we override to custom to create the "overridden" state.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL));
+        launchFragmentAndRender("_recommended_ntp_on_overridden");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRender_HomepageIsNtpRecommended_Off_Following() throws IOException {
+        setupHomepageIsNtpRecommendation(/* recommendNtp= */ false, /* isFollowing= */ true);
+        launchFragmentAndRender("_recommended_ntp_off_following");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRender_HomepageIsNtpRecommended_Off_Overridden() throws IOException {
+        setupHomepageIsNtpRecommendation(/* recommendNtp= */ false, /* isFollowing= */ false);
+        // The helper sets a custom URL, but we override to NTP to create the "overridden" state.
+        ThreadUtils.runOnUiThreadBlocking(() -> mHomepageTestRule.useChromeNtpForTest());
+        launchFragmentAndRender("_recommended_ntp_off_overridden");
+    }
+
+    // Recommended States: HomepageLocation
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRender_HomepageLocationRecommended_Following() throws IOException {
+        setupHomepageLocationRecommendation(TEST_GURL, /* isFollowing= */ true);
+        launchFragmentAndRender("_recommended_location_following");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRender_HomepageLocationRecommended_Overridden() throws IOException {
+        setupHomepageLocationRecommendation(TEST_GURL, /* isFollowing= */ false);
+        // The helper sets the custom URL, but we override to NTP.
+        ThreadUtils.runOnUiThreadBlocking(() -> mHomepageTestRule.useChromeNtpForTest());
+        launchFragmentAndRender("_recommended_location_overridden");
+    }
+
+    // Combined Managed and Recommended States
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRender_ShowHomeButtonManagedOn_HomepageIsNtpRecommendedOn_Following()
+            throws IOException {
+        setupShowHomeButtonPolicy(true);
+        setupHomepageIsNtpRecommendation(/* recommendNtp= */ true, /* isFollowing= */ true);
+        launchFragmentAndRender("_managed_on_recommended_ntp_on_following");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRender_ShowHomeButtonManagedOn_HomepageIsNtpRecommendedOn_Overridden()
+            throws IOException {
+        setupShowHomeButtonPolicy(true);
+        setupHomepageIsNtpRecommendation(/* recommendNtp= */ true, /* isFollowing= */ false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL));
+        launchFragmentAndRender("_managed_on_recommended_ntp_on_overridden");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRender_ShowHomeButtonManagedOn_HomepageIsNtpRecommendedOff_Following()
+            throws IOException {
+        setupShowHomeButtonPolicy(true);
+        setupHomepageIsNtpRecommendation(/* recommendNtp= */ false, /* isFollowing= */ true);
+        launchFragmentAndRender("_managed_on_recommended_ntp_off_following");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRender_ShowHomeButtonManagedOn_HomepageIsNtpRecommendedOff_Overridden()
+            throws IOException {
+        setupShowHomeButtonPolicy(true);
+        setupHomepageIsNtpRecommendation(/* recommendNtp= */ false, /* isFollowing= */ false);
+        ThreadUtils.runOnUiThreadBlocking(() -> mHomepageTestRule.useChromeNtpForTest());
+        launchFragmentAndRender("_managed_on_recommended_ntp_off_overridden");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRender_ShowHomeButtonManagedOff_HomepageIsNtpRecommendedOn_Following()
+            throws IOException {
+        setupShowHomeButtonPolicy(false);
+        setupHomepageIsNtpRecommendation(/* recommendNtp= */ true, /* isFollowing= */ true);
+        launchFragmentAndRender("_managed_off_recommended_ntp_on_following");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRender_ShowHomeButtonManagedOff_HomepageIsNtpRecommendedOn_Overridden()
+            throws IOException {
+        setupShowHomeButtonPolicy(false);
+        setupHomepageIsNtpRecommendation(/* recommendNtp= */ true, /* isFollowing= */ false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL));
+        launchFragmentAndRender("_managed_off_recommended_ntp_on_overridden");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRender_ShowHomeButtonManagedOff_HomepageIsNtpRecommendedOff_Following()
+            throws IOException {
+        setupShowHomeButtonPolicy(false);
+        setupHomepageIsNtpRecommendation(/* recommendNtp= */ false, /* isFollowing= */ true);
+        launchFragmentAndRender("_managed_off_recommended_ntp_off_following");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRender_ShowHomeButtonManagedOff_HomepageIsNtpRecommendedOff_Overridden()
+            throws IOException {
+        setupShowHomeButtonPolicy(false);
+        setupHomepageIsNtpRecommendation(/* recommendNtp= */ false, /* isFollowing= */ false);
+        ThreadUtils.runOnUiThreadBlocking(() -> mHomepageTestRule.useChromeNtpForTest());
+        launchFragmentAndRender("_managed_off_recommended_ntp_off_overridden");
+    }
+
+    // Partner Homepage State
     @Test
     @MediumTest
     @Feature({"RenderTest"})
     public void testRender_PartnerHomepage() throws IOException {
         setupPartnerHomepage(TEST_GURL);
         ThreadUtils.runOnUiThreadBlocking(() -> mHomepageTestRule.useDefaultHomepageForTest());
-        launchFragmentAndRender("partner_homepage");
+        launchFragmentAndRender("_partner_homepage");
     }
 }
