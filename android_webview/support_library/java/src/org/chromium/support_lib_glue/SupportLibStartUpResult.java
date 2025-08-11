@@ -13,6 +13,7 @@ class SupportLibStartUpResult implements WebViewStartUpResultBoundaryInterface {
     private Long mTotalTimeInUiThreadMillis;
     private Long mMaxTimePerTaskTimeInUiThreadMillis;
     private final List<Throwable> mBlockingStartUpLocations = new ArrayList<Throwable>();
+    private final List<Throwable> mAsyncStartUpLocations = new ArrayList<Throwable>();
 
     SupportLibStartUpResult() {}
 
@@ -31,6 +32,11 @@ class SupportLibStartUpResult implements WebViewStartUpResultBoundaryInterface {
         return mBlockingStartUpLocations;
     }
 
+    @Override
+    public List<Throwable> getAsyncStartUpLocations() {
+        return mAsyncStartUpLocations;
+    }
+
     void setTotalTimeInUiThreadMillis(Long time) {
         mTotalTimeInUiThreadMillis = time;
     }
@@ -41,5 +47,9 @@ class SupportLibStartUpResult implements WebViewStartUpResultBoundaryInterface {
 
     void addBlockingStartUpLocation(Throwable t) {
         mBlockingStartUpLocations.add(t);
+    }
+
+    void addAsyncStartUpLocation(Throwable t) {
+        mAsyncStartUpLocations.add(t);
     }
 }

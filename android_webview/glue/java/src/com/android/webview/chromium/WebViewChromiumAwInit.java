@@ -118,6 +118,9 @@ public class WebViewChromiumAwInit {
         @GuardedBy("mLock")
         private Throwable mProviderInitOnMainLooperLocation;
 
+        @GuardedBy("mLock")
+        private Throwable mAsynchronousChromiumInitLocation;
+
         public Long getTotalTimeUiThreadChromiumInitMillis() {
             synchronized (mLock) {
                 return mTotalTimeUiThreadChromiumInitMillis;
@@ -139,6 +142,12 @@ public class WebViewChromiumAwInit {
         public @Nullable Throwable getProviderInitOnMainLooperLocationOrNull() {
             synchronized (mLock) {
                 return mProviderInitOnMainLooperLocation;
+            }
+        }
+
+        public @Nullable Throwable getAsynchronousChromiumInitLocationOrNull() {
+            synchronized (mLock) {
+                return mAsynchronousChromiumInitLocation;
             }
         }
 
@@ -171,6 +180,14 @@ public class WebViewChromiumAwInit {
                 // The setter should only be called once.
                 assert (mProviderInitOnMainLooperLocation == null);
                 mProviderInitOnMainLooperLocation = t;
+            }
+        }
+
+        void setAsynchronousChromiumInitLocation(Throwable t) {
+            synchronized (mLock) {
+                // The setter should only be called once.
+                assert (mAsynchronousChromiumInitLocation == null);
+                mAsynchronousChromiumInitLocation = t;
             }
         }
     }
@@ -218,9 +235,12 @@ public class WebViewChromiumAwInit {
 
     private final CountDownLatch mStartupFinished = new CountDownLatch(1);
 
-    // mInitState should only transition INIT_NOT_STARTED -> INIT_FINISHED
+    // mInitState should only transition from INIT_NOT_STARTED to INIT_FINISHED with possibly
+    // INIT_POSTED as an intermediate state. INIT_POSTED is set right before posting `startChromium`
+    // on the UI thread in case of async startup.
     private static final int INIT_NOT_STARTED = 0;
-    private static final int INIT_FINISHED = 1;
+    private static final int INIT_POSTED = 1;
+    private static final int INIT_FINISHED = 2;
 
     private final AtomicInteger mInitState = new AtomicInteger(INIT_NOT_STARTED);
 
@@ -861,12 +881,18 @@ public class WebViewChromiumAwInit {
             return true;
         }
 
-        // If we're not running on the UI thread (because init was triggered by a thread-safe
-        // function), post init to the UI thread, since init is *not* thread-safe.
-        // TODO(crbug.com/397372092): Consider checking if async startup is in progress so as not to
-        // bother posting.
-        AwThreadUtils.postToUiThreadLooper(
-                () -> startChromium(callSite, /* triggeredFromUIThread= */ false));
+        if (mInitState.getAndSet(INIT_POSTED) == INIT_NOT_STARTED) {
+            if (callSite != CallSite.ASYNC_WEBVIEW_STARTUP) {
+                mWebViewStartUpDiagnostics.setAsynchronousChromiumInitLocation(
+                        new Throwable(
+                                "Location where Chromium init was started asynchronously on a"
+                                        + " non-UI thread"));
+            }
+            // If we're not running on the UI thread (because init was triggered by a thread-safe
+            // function), post init to the UI thread, since init is *not* thread-safe.
+            AwThreadUtils.postToUiThreadLooper(
+                    () -> startChromium(callSite, /* triggeredFromUIThread= */ false));
+        }
         return false;
     }
 
