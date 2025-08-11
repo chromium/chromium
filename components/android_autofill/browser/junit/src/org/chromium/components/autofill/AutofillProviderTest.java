@@ -48,6 +48,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 
+import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -130,7 +131,10 @@ public class AutofillProviderTest {
 
         mAutofillProvider =
                 new AutofillProvider(
-                        mContext, mContainerView, mWebContents, "AutofillProviderTest") {
+                        new WeakReference(mContext),
+                        mContainerView,
+                        mWebContents,
+                        "AutofillProviderTest") {
                     @Override
                     protected void initializeNativeAutofillProvider(WebContents webContents) {
                         setNativeAutofillProvider(mMockedNativeAndroidAutofillProvider);

@@ -110,6 +110,7 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
@@ -2258,9 +2259,10 @@ class TabImpl implements Tab {
             // Provider already existed. Swapping contents suffices.
             mAutofillProvider.setWebContents(newWebContents);
         } else {
+            // TODO: crbug.com/432447902 — Provide only an activity context and push changes.
             mAutofillProvider =
                     new AutofillProvider(
-                            getContext(),
+                            new WeakReference(getContext()),
                             mContentView,
                             newWebContents,
                             getContext().getString(R.string.app_name));

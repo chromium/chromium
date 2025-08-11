@@ -1139,7 +1139,11 @@ public class AwContents implements SmartClipProvider {
             AutofillSelectionActionMenuDelegate selectionActionMenuDelegate) {
         if (mAutofillProvider == null) {
             mAutofillProvider =
-                    new AutofillProvider(mContext, mContainerView, mWebContents, "Android WebView");
+                    new AutofillProvider(
+                            new WeakReference(mContext),
+                            mContainerView,
+                            mWebContents,
+                            "Android WebView");
         } else {
             mAutofillProvider.setWebContents(mWebContents);
         }

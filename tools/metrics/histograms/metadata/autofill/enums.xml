@@ -2421,6 +2421,13 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Manage cards button pressed"/>
 </enum>
 
+<enum name="AutofillManagerCreationContext">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Null"/>
+  <int value="2" label="Application Context"/>
+  <int value="3" label="Activity Context"/>
+</enum>
+
 <enum name="AutofillManagerMethod">
   <summary>
     Describes which method of Android Autofill's AutofillManager was called.

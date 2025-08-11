@@ -399,8 +399,9 @@ public class AwAutofillTest extends AwParameterizedTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return HistogramWatcher.newSingleRecordWatcher(
-                                    AutofillProviderUMA.UMA_AUTOFILL_CREATED_BY_ACTIVITY_CONTEXT,
-                                    true);
+                                    AutofillProviderUMA.UMA_AUTOFILL_CREATION_CONTEXT,
+                                    AutofillProviderUMA.AutofillManagerCreationContext
+                                            .ACTIVITY_CONTEXT);
                         });
         mContentsClient = new AwAutofillTestClient();
         mTestContainerView =

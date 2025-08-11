@@ -6984,6 +6984,20 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.ThirdPartyMode.AutofillManager.CreationContext"
+    enum="AutofillManagerCreationContext" expires_after="2025-12-12">
+  <owner>friedrichh@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the creation context used to retrieve the AutofillManager service
+    and should always be an activity context. For historical reasons or in rare
+    bugs, the context may not be correct. It is recorded every time a new
+    AutofillManagerWrapper is being created. It's recorded only on Android (both
+    for WebView and Chrome).
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ThirdPartyModeDisabled.Provider"
     enum="AutofillProviderPackageName" expires_after="2025-12-07">
   <owner>friedrichh@chromium.org</owner>
@@ -8058,13 +8072,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Emitted at the end of a session (i.e. on submit, on start of a new session,
     or on destruction of the WebContents).
   </summary>
-</histogram>
-
-<histogram name="Autofill.WebView.CreatedByActivityContext"
-    enum="BooleanEnabled" expires_after="2025-12-12">
-  <owner>battre@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>Whether the autofill is created by activity context.</summary>
 </histogram>
 
 <histogram name="Autofill.WebView.Enabled" enum="BooleanEnabled"
