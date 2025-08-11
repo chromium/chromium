@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_tester.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
   EXPECT_TRUE(frame_view->GetShouldPaint());
   EXPECT_LT(0, frame_view
                    ->GetBoundsForTabStripRegion(
-                       browser_view->tab_strip_region_view()->GetMinimumSize())
+                       browser_view->tab_strip_view()->GetMinimumSize())
                    .bottom());
 
   // Enter both browser fullscreen and tab fullscreen. Entering browser
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
   EXPECT_FALSE(frame_view->GetShouldPaint());
   EXPECT_EQ(0, frame_view
                    ->GetBoundsForTabStripRegion(
-                       browser_view->tab_strip_region_view()->GetMinimumSize())
+                       browser_view->tab_strip_view()->GetMinimumSize())
                    .bottom());
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
 
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
   EXPECT_TRUE(frame_view->GetShouldPaint());
   EXPECT_LT(0, frame_view
                    ->GetBoundsForTabStripRegion(
-                       browser_view->tab_strip_region_view()->GetMinimumSize())
+                       browser_view->tab_strip_view()->GetMinimumSize())
                    .bottom());
   EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
 
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
   EXPECT_FALSE(frame_view->GetShouldPaint());
   EXPECT_EQ(0, frame_view
                    ->GetBoundsForTabStripRegion(
-                       browser_view->tab_strip_region_view()->GetMinimumSize())
+                       browser_view->tab_strip_view()->GetMinimumSize())
                    .bottom());
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
 
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
   EXPECT_TRUE(frame_view->GetShouldPaint());
   EXPECT_LT(0, frame_view
                    ->GetBoundsForTabStripRegion(
-                       browser_view->tab_strip_region_view()->GetMinimumSize())
+                       browser_view->tab_strip_view()->GetMinimumSize())
                    .bottom());
   EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
 }

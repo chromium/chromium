@@ -28,7 +28,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/caption_button_placeholder_container.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
@@ -357,8 +357,7 @@ void BrowserNonClientFrameViewMac::WindowControlsOverlayEnabledChanged() {
 gfx::Size BrowserNonClientFrameViewMac::GetMinimumSize() const {
   gfx::Size client_size = frame()->client_view()->GetMinimumSize();
   if (browser_view()->browser()->is_type_normal()) {
-    client_size.SetToMax(
-        browser_view()->tab_strip_region_view()->GetMinimumSize());
+    client_size.SetToMax(browser_view()->tab_strip_view()->GetMinimumSize());
   }
 
   // macOS apps generally don't allow their windows to get shorter than a

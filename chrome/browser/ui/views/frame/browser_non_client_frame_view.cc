@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/theme_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -250,8 +250,12 @@ int BrowserNonClientFrameView::GetSystemMenuY() const {
   if (!browser_view()->GetTabStripVisible()) {
     return GetTopInset(false);
   }
+
+  // TODO(crbug.com/437915662): Find an alternative way to get the starting Y
+  // position when in vertical tabs mode since the top element will now be the
+  // toolbar instead of the tabstrip.
   return GetBoundsForTabStripRegion(
-             browser_view()->tab_strip_region_view()->GetMinimumSize())
+             browser_view()->tab_strip_view()->GetMinimumSize())
              .bottom() -
          GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
 }
