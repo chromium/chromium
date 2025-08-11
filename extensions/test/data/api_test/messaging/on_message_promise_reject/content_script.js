@@ -53,7 +53,7 @@ chrome.test.runTests([
   async function onMessagePromiseRejectWithNonObject() {
     await chrome.test.assertPromiseRejects(
         chrome.runtime.sendMessage(
-            'return promise reject with a non-error object'),
+          'return promise reject with a non-object'),
         'Error: A runtime.onMessage listener\'s promise rejected without an ' +
             'Error');
     chrome.test.succeed();
