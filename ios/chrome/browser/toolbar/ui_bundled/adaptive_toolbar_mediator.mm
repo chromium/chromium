@@ -303,12 +303,18 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
 - (UIMenu*)menuForButtonOfType:(AdaptiveToolbarButtonType)buttonType {
   switch (buttonType) {
     case AdaptiveToolbarButtonTypeBack:
-      return [self menuForNavigationItems:self.webState->GetNavigationManager()
-                                              ->GetBackwardItems()];
+      return self.webState
+                 ? [self menuForNavigationItems:self.webState
+                                                    ->GetNavigationManager()
+                                                    ->GetBackwardItems()]
+                 : nil;
 
     case AdaptiveToolbarButtonTypeForward:
-      return [self menuForNavigationItems:self.webState->GetNavigationManager()
-                                              ->GetForwardItems()];
+      return self.webState
+                 ? [self menuForNavigationItems:self.webState
+                                                    ->GetNavigationManager()
+                                                    ->GetForwardItems()]
+                 : nil;
 
     case AdaptiveToolbarButtonTypeNewTab:
       return [self menuForNewTabButton];
