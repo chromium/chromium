@@ -23,7 +23,9 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.AwBrowserProcess;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
+import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.common.services.IVariationsSeedServer;
 import org.chromium.android_webview.common.services.IVariationsSeedServerCallback;
 import org.chromium.android_webview.common.services.ServiceConnectionDelayRecorder;
@@ -199,6 +201,10 @@ public class VariationsSeedLoader {
         long maxRequestPeriodMillis =
                 VariationsUtils.getDurationSwitchValueInMillis(
                         AwSwitches.FINCH_SEED_MIN_UPDATE_PERIOD, MAX_REQUEST_PERIOD_MILLIS);
+        if (WebViewCachedFlags.get()
+                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_REDUCED_SEED_REQUEST_PERIOD)) {
+            maxRequestPeriodMillis /= 2;
+        }
         return now < lastRequestTime + maxRequestPeriodMillis;
     }
 
@@ -206,6 +212,10 @@ public class VariationsSeedLoader {
         long expirationDuration =
                 VariationsUtils.getDurationSwitchValueInMillis(
                         AwSwitches.FINCH_SEED_EXPIRATION_AGE, SEED_EXPIRATION_MILLIS);
+        if (WebViewCachedFlags.get()
+                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_REDUCED_SEED_EXPIRATION)) {
+            expirationDuration /= 2;
+        }
         return getCurrentTimeMillis() > seedFileTime + expirationDuration;
     }
 

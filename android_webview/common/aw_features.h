@@ -68,6 +68,8 @@ extern const base::FeatureParam<double> kWebViewCodeCacheSizeLimitMultiplier;
 BASE_DECLARE_FEATURE(kWebViewConnectToComponentProviderInBackground);
 BASE_DECLARE_FEATURE(kAndroidMetricsAsyncMetricLogging);
 BASE_DECLARE_FEATURE(kWebViewUseBackgroundThreadForGms);
+BASE_DECLARE_FEATURE(kWebViewReducedSeedExpiration);
+BASE_DECLARE_FEATURE(kWebViewReducedSeedRequestPeriod);
 }  // namespace android_webview::features
 
 #endif  // ANDROID_WEBVIEW_COMMON_AW_FEATURES_H_

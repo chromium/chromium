@@ -333,4 +333,17 @@ BASE_FEATURE(kWebViewUseBackgroundThreadForGms,
              "WebViewUseBackgroundThreadForGms",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Reduce when the app's copy of the finch seed expires. This makes WebView more
+// aggressive in requesting a new copy of its finch seed.
+BASE_FEATURE(kWebViewReducedSeedExpiration,
+             "WebViewReducedSeedExpiration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This flag reduces the minimum amount of time before WebView can request a new
+// seed. This, in conjunction with kWebViewReducedSeedExpiration, should mean
+// more up-to-date copies of finch seeds.
+BASE_FEATURE(kWebViewReducedSeedRequestPeriod,
+             "WebViewReducedSeedRequestPeriod",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace android_webview::features

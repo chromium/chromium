@@ -27667,6 +27667,36 @@
             ]
         }
     ],
+    "WebViewReducedSeedExpiration": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewReducedSeedExpiration"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebViewReducedSeedRequestPeriod": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewReducedSeedRequestPeriod"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewSafeAreaIncludesSystemBars": [
         {
             "platforms": [
