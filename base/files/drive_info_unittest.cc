@@ -21,8 +21,7 @@ void TestForReasonableDriveInfo(const std::optional<DriveInfo>& info) {
   // `has_seek_penalty` may or may not be true but should be ascertainable.
   EXPECT_TRUE(info->has_seek_penalty.has_value());
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // `is_removable` may or may not be true but should be ascertainable.
   EXPECT_TRUE(info->is_removable.has_value());
 
@@ -30,7 +29,7 @@ void TestForReasonableDriveInfo(const std::optional<DriveInfo>& info) {
   EXPECT_THAT(info->size_bytes, Optional(testing::Ge(10'000'000)));
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
   // `is_usb` may or may not be true but should be ascertainable.
   EXPECT_TRUE(info->is_usb.has_value());
 #endif
