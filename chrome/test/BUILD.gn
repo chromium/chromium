@@ -805,6 +805,7 @@ static_library("test_support") {
       "//chrome/browser/themes",
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/find_bar",
+      "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/signin:signin_utils",
@@ -1642,7 +1643,10 @@ source_set("platform_browser_tests") {
       "//ui/webui:test_support",
     ]
     if (!is_android) {
-      deps += [ "//chrome/browser/ui/search:test_support_ui" ]
+      deps += [
+        "//chrome/browser/ui/search:test_support_ui",
+        "//chrome/browser/ui/views/location_bar",
+      ]
     }
     if (is_chromeos) {
       deps += [
@@ -3928,7 +3932,6 @@ if (!is_android) {
       "//chrome/browser/supervised_user",
       "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui/extensions",
-      "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/passwords/bubble_controllers",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/search",
@@ -3943,6 +3946,7 @@ if (!is_android) {
       "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/toolbar/chrome_labs",
       "//chrome/browser/ui/toolbar/pinned_toolbar",
+      "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/web_applications:app_service_browser_tests",
       "//chrome/browser/ui/webauthn",
       "//chrome/browser/ui/webui/new_tab_page/composebox/variations:browser_tests",
@@ -3954,6 +3958,7 @@ if (!is_android) {
       "//components/policy/core/common:common_constants",
       "//components/safe_browsing/content/common/proto:download_file_types_proto",
     ]
+
     if (!is_win || target_cpu != "arm64") {
       # SODA doesn't support Windows on Arm64.
       sources += [
@@ -8647,6 +8652,10 @@ test("unit_tests") {
     ]
   }
 
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/views/location_bar" ]
+  }
+
   if (is_chromeos) {
     sources -= [
       "../browser/policy/cloud/user_policy_signin_service_unittest.cc",
@@ -10840,6 +10849,7 @@ if (!is_android) {
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/startup",
       "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/views/toolbar",
@@ -11322,6 +11332,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/infobars",
+      "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/views/new_tab_footer",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/side_panel",

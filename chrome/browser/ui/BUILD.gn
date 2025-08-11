@@ -1502,6 +1502,7 @@ static_library("ui") {
       "//chrome/browser/ui/toolbar/pinned_toolbar:impl",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/user_education:impl",
+      "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/views/new_tab_footer",
       "//chrome/browser/ui/views/side_panel:side_panel_enums",
       "//chrome/browser/ui/views/toolbar",
@@ -3900,8 +3901,6 @@ static_library("ui") {
       "views/location_bar/custom_tab_bar_view.h",
       "views/location_bar/find_bar_icon.cc",
       "views/location_bar/find_bar_icon.h",
-      "views/location_bar/icon_label_bubble_view.cc",
-      "views/location_bar/icon_label_bubble_view.h",
       "views/location_bar/intent_chip_button.cc",
       "views/location_bar/intent_chip_button.h",
       "views/location_bar/intent_picker_view.cc",
@@ -3910,27 +3909,12 @@ static_library("ui") {
       "views/location_bar/lens_overlay_homework_page_action_icon_view.h",
       "views/location_bar/lens_overlay_page_action_icon_view.cc",
       "views/location_bar/lens_overlay_page_action_icon_view.h",
-      "views/location_bar/location_bar_bubble_delegate_view.cc",
-      "views/location_bar/location_bar_bubble_delegate_view.h",
-      "views/location_bar/location_bar_layout.cc",
-      "views/location_bar/location_bar_layout.h",
-      "views/location_bar/location_bar_util.cc",
-      "views/location_bar/location_bar_util.h",
       "views/location_bar/location_bar_view.cc",
       "views/location_bar/location_bar_view.h",
-      "views/location_bar/location_icon_view.cc",
-      "views/location_bar/location_icon_view.h",
-      "views/location_bar/merchant_trust_chip_button_controller.cc",
-      "views/location_bar/merchant_trust_chip_button_controller.h",
-      "views/location_bar/omnibox_chip_button.cc",
-      "views/location_bar/omnibox_chip_button.h",
-      "views/location_bar/omnibox_chip_theme.h",
       "views/location_bar/selected_keyword_view.cc",
       "views/location_bar/selected_keyword_view.h",
       "views/location_bar/star_view.cc",
       "views/location_bar/star_view.h",
-      "views/location_bar/zoom_bubble_view.cc",
-      "views/location_bar/zoom_bubble_view.h",
       "views/login_handler_views.cc",
       "views/login_view.cc",
       "views/login_view.h",
@@ -4706,6 +4690,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/infobars",
       "//chrome/browser/ui/views/intent_picker:intent_picker_page_action",
       "//chrome/browser/ui/views/interaction",
+      "//chrome/browser/ui/views/location_bar:impl",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/views/page_info:impl",
@@ -4794,6 +4779,15 @@ static_library("ui") {
       "//chrome/browser/ui/views/permissions/chip:impl",
       "//chrome/browser/ui/views/page_info:impl",
       "//chrome/browser/ui/window_name_prompt",
+
+      # TODO(crbug.com/434882143): Remove this circular dependency when the following
+      # headers get componentized:
+      # c/b/ui/browser.h, browser_dialogs.h, browser_finder.h, browser_tabstrip.h, view_ids.h, browser_window.h.
+      # c/b/ui/views/chrome_layout_provider.h
+      # c/b/ui/views/frame/browser_view.h
+      # c/b/ui/views/page_info/page_info_bubble_specification.h
+      # c/b/ui/views/page_action/zoom_view.h
+      "//chrome/browser/ui/views/location_bar:impl",
 
       # TODO(crbug.com/413572035): Remove circular dependency once/if
       # chrome_{typography,layout_provider} get modularized.

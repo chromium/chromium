@@ -20,6 +20,7 @@ source_set("impl") {
     "//chrome/browser/sync",
     "//chrome/browser/ui",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/views/location_bar",
     "//components/feature_engagement/public",
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/public",

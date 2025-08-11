@@ -1,0 +1,107 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("location_bar") {
+  sources = []
+
+  if (toolkit_views) {
+    sources += [
+      "icon_label_bubble_view.h",
+      "location_bar_bubble_delegate_view.h",
+      "location_bar_layout.h",
+      "location_bar_util.h",
+      "location_icon_view.h",
+      "merchant_trust_chip_button_controller.h",
+      "omnibox_chip_button.h",
+      "omnibox_chip_theme.h",
+      "zoom_bubble_view.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//chrome/browser/lens/region_search",
+      "//chrome/browser/ui:layout_constants",
+      "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/location_bar",
+      "//chrome/browser/ui/page_action:icon_type",
+      "//chrome/browser/ui/views/frame:immersive_mode_controller",
+      "//components//sessions:session_id",
+      "//components/omnibox/browser:location_bar",
+      "//components/page_info/core",
+      "//content/public/browser",
+      "//extensions/browser",
+      "//services/device/public/cpp/geolocation",
+      "//skia:skia_core_public_headers",
+      "//ui/base",
+      "//ui/base/metadata",
+      "//ui/gfx/geometry",
+      "//ui/views",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = []
+  deps = [ ":location_bar" ]
+
+  if (toolkit_views) {
+    sources += [
+      "icon_label_bubble_view.cc",
+      "location_bar_bubble_delegate_view.cc",
+      "location_bar_layout.cc",
+      "location_bar_util.cc",
+      "location_icon_view.cc",
+      "merchant_trust_chip_button_controller.cc",
+      "omnibox_chip_button.cc",
+      "zoom_bubble_view.cc",
+    ]
+
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+    deps += [
+      "//chrome/app:generated_resources",
+      "//chrome/app/vector_icons",
+      "//chrome/browser:primitives",
+      "//chrome/browser/extensions",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/actions",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/omnibox",
+      "//chrome/browser/ui/tabs:tabs_public",
+      "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views/frame:toolbar_button_provider",
+      "//chrome/browser/ui/views/page_action",
+      "//chrome/browser/ui/views/page_info",
+      "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/views/zoom",
+      "//components/autofill/core/common:features",
+      "//components/dom_distiller/core",
+      "//components/feature_engagement/public:feature_constants",
+      "//components/history_embeddings",
+      "//components/lens",
+      "//components/omnibox/browser",
+      "//components/omnibox/browser:vector_icons",
+      "//components/omnibox/common",
+      "//components/security_state/core",
+      "//components/strings:components_strings",
+      "//components/user_education/common",
+      "//components/zoom",
+      "//extensions:extensions_browser_resources",
+      "//third_party/blink/public/common",
+      "//ui/accessibility",
+      "//ui/actions",
+      "//ui/color",
+      "//ui/gfx",
+      "//ui/native_theme",
+    ]
+  }
+}

@@ -54,7 +54,10 @@ source_set("page_action") {
     "//ui/views",
   ]
 
-  deps = [ "//ui/gfx" ]
+  deps = [
+    "//chrome/browser/ui/views/location_bar",
+    "//ui/gfx",
+  ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
@@ -105,6 +108,7 @@ source_set("unit_tests") {
     ":test_support",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
+    "//chrome/browser/ui/views/location_bar",
     "//chrome/test:test_support",
     "//components/tabs:test_support",
     "//ui/events:test_support",
