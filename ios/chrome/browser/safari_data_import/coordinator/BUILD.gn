@@ -15,6 +15,8 @@ source_set("coordinator") {
     ":coordinator_delegate",
     ":export_coordinator",
     "//base",
+    "//components/feature_engagement/public",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/passwords/model:features",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:factory",
@@ -116,10 +118,15 @@ source_set("unit_tests") {
   sources = [ "safari_data_import_entry_point_mediator_unittest.mm" ]
   deps = [
     ":coordinator",
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
     "//ios/chrome/app/profile",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:test_support",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

@@ -6,6 +6,9 @@
 
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
@@ -16,10 +19,13 @@
   std::unique_ptr<ScopedUIBlocker> _UIBlocker;
   /// Promos manager that is used to register the reminder.
   raw_ptr<PromosManager> _promosManager;
+  /// Feature engagement tracker used for the reminder.
+  raw_ptr<feature_engagement::Tracker> _tracker;
 }
 
 - (instancetype)initWithUIBlockerTarget:(id<UIBlockerTarget>)target
-                          promosManager:(PromosManager*)promosManager {
+                          promosManager:(PromosManager*)promosManager
+               featureEngagementTracker:(feature_engagement::Tracker*)tracker {
   self = [super init];
   if (self) {
     CHECK(target);
@@ -27,6 +33,7 @@
     _UIBlocker =
         std::make_unique<ScopedUIBlocker>(target, UIBlockerExtent::kProfile);
     _promosManager = promosManager;
+    _tracker = tracker;
   }
   return self;
 }
@@ -34,6 +41,12 @@
 - (void)registerReminder {
   _promosManager->RegisterPromoForSingleDisplay(
       promos_manager::Promo::SafariImportRemindMeLater);
+  _tracker->NotifyEvent(
+      feature_engagement::events::kIOSSafariImportRemindMeLater);
+}
+
+- (void)notifyUsedOrDismissed {
+  _tracker->NotifyUsedEvent(feature_engagement::kIPHiOSSafariImportFeature);
 }
 
 - (void)disconnect {

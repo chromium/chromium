@@ -7,6 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+namespace feature_engagement {
+class Tracker;
+}
 class PromosManager;
 @protocol UIBlockerTarget;
 
@@ -16,11 +19,15 @@ class PromosManager;
 /// Initializer.
 - (instancetype)initWithUIBlockerTarget:(id<UIBlockerTarget>)target
                           promosManager:(PromosManager*)promosManager
+               featureEngagementTracker:(feature_engagement::Tracker*)tracker
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 /// Displays the entry point again in a few days.
 - (void)registerReminder;
+
+/// Mark Safari data import workflow as used or dismissed by the user.
+- (void)notifyUsedOrDismissed;
 
 /// Disconnects mediator dependencies; should be called when stopping the
 /// coordinator.
