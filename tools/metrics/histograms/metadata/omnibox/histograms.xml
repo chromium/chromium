@@ -2091,6 +2091,39 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.OnDeviceBrainModel.Latency" units="ms"
+    expires_after="2026-08-08">
+  <owner>cechen@google.com</owner>
+  <owner>suggest-2g@google.com</owner>
+  <summary>
+    Recorded once when OnDeviceHeadProvider is run and the provider calls the on
+    device brain model. Records the latency for the brain model to generate
+    predictions for a given prefix, in unit millisecond.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.OnDeviceBrainModel.NumResults" units="count"
+    expires_after="2026-08-08">
+  <owner>cechen@google.com</owner>
+  <owner>suggest-2g@google.com</owner>
+  <summary>
+    Recorded once when OnDeviceHeadProvider is run and the provider calls the on
+    device brain model. Records how many predictions the brain model generates
+    for a given prefix.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.OnDeviceBrainModel.ResultLength" units="chars"
+    expires_after="2026-08-08">
+  <owner>cechen@google.com</owner>
+  <owner>suggest-2g@google.com</owner>
+  <summary>
+    Recorded once for each prediction when OnDeviceHeadProvider is run and the
+    provider calls the on device brain model to generate predictions for a given
+    prefix. Records the length of each prediction respectively.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.OnPopupOpen.PaywallSignal" enum="PaywallSignal"
     expires_after="2026-01-31">
   <owner>juanmojica@google.com</owner>
