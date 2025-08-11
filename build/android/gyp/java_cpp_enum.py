@@ -216,7 +216,7 @@ class HeaderParser:
   # possibility of miscalculating whether lines should be ignored when building
   # for Android.
   if_buildflag_re = re.compile(
-      r'^#if BUILDFLAG\((\w+)\)(?: \|\| BUILDFLAG\((\w+)\))*$')
+      r'^#if !?BUILDFLAG\((\w+)\)(?: \|\| !?BUILDFLAG\((\w+)\))*$')
   if_buildflag_end_re = re.compile(r'^#endif.*$')
   generator_error_re = re.compile(r'^\s*//\s+GENERATED_JAVA_(\w+)\s*:\s*$')
   generator_directive_re = re.compile(
@@ -243,8 +243,12 @@ class HeaderParser:
     self._in_enum = False
     # Indicates whether an #if block was encountered on a previous line (until
     # an #endif block was seen). When nonzero, `_in_buildflag_android` indicates
-    # whether the blocks were `#if BUILDFLAG(IS_ANDROID)` or not.
-    # Note: Currently only statements like `#if BUILDFLAG(IS_<PLATFORM>)` are
+    # whether the blocks have `BUILDFLAG(IS_ANDROID)`, or `BUILDFLAG(IS_POSIX)`(
+    # which includes `IS_ANDROID`), or `!BUILDFLAG(PLATFORM_BUILDFLAG)` where
+    # `PLATFORM_BUILDFLAG` is neither `IS_ANDROID` nor `IS_POSIX` (which means
+    # true for Android).
+    # Note: Currently only statements like `#if BUILDFLAG(IS_<PLATFORM>)` where
+    # the build flag conditions are joined only by the `||` (OR) operator are
     # supported.
     self._in_preprocessor_block = 0
     self._in_buildflag_android = []
@@ -269,8 +273,11 @@ class HeaderParser:
   def _ParseLine(self, line):
     if HeaderParser.if_buildflag_re.match(line):
       self._in_preprocessor_block += 1
-      self._in_buildflag_android.append('BUILDFLAG(IS_ANDROID)' in line
-                                        or 'BUILDFLAG(IS_POSIX)' in line)
+      # Matches `BUILDFLAG(IS_ANDROID)`, or `BUILDFLAG(IS_POSIX)`, or
+      # `!BUILDFLAG(PLATFORM_BUILDFLAG)` where `PLATFORM_BUILDFLAG` is neither
+      # `IS_ANDROID` nor `IS_POSIX`.
+      pattern = r'(?<!!)BUILDFLAG\(IS_(?:ANDROID|POSIX)\)|!BUILDFLAG\((?!IS_(?:ANDROID|POSIX)\b)\w+\)'
+      self._in_buildflag_android.append(re.search(pattern, line))
       return
     if self._in_preprocessor_block and HeaderParser.if_buildflag_end_re.match(
         line):

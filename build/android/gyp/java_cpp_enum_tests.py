@@ -593,6 +593,19 @@ enum TerminationStatus {
   TERMINATION_STATUS_FOURTEEN = 14,
 #endif
 
+#if !BUILDFLAG(IS_WIN)
+  // This should be included.
+  TERMINATION_STATUS_FIFTEEN = 15,
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+  // This should NOT be included.
+  TERMINATION_STATUS_SIXTEEN = 16,
+#endif
+#if !BUILDFLAG(IS_POSIX)
+  // This should NOT be included.
+  TERMINATION_STATUS_SEVENTEEN = 17,
+#endif
+
 #if BUILDFLAG(IS_WIN)
   TERMINATION_STATUS_LAST = 1000,
 #endif
@@ -618,6 +631,7 @@ enum TerminationStatus {
             ('TWELVE', '12'),
             ('THIRTEEN', '13'),
             ('FOURTEEN', '14'),
+            ('FIFTEEN', '15'),
         ]),
         definition.entries)
     self.assertEqual(
@@ -628,6 +642,7 @@ enum TerminationStatus {
              'On Android processes are spawned from the system Zygote and we ' +
              'do not get the termination status.'),
             ('OOM', 'Out of memory.'),
+            ('FIFTEEN', 'This should be included.'),
         ]), definition.comments)
 
   def testParseEnumStruct(self):
