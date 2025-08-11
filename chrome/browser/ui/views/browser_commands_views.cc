@@ -46,8 +46,8 @@ namespace chrome {
 
 std::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser) {
   BrowserView* view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (view && view->tabstrip()) {
-    return view->tabstrip()->GetFocusedTabIndex();
+  if (view && view->tab_strip_view()) {
+    return view->tab_strip_view()->GetFocusedTabIndex();
   }
   return std::nullopt;
 }

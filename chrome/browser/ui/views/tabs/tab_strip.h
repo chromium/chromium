@@ -242,9 +242,6 @@ class TabStrip : public views::View,
   // ongoing this does a layout.
   void StopAnimating(bool layout);
 
-  // Returns the index of the focused tab, if any.
-  std::optional<int> GetFocusedTabIndex() const;
-
   // Returns a view for anchoring an in-product help promo. `index_hint`
   // indicates at which tab the promo should be displayed, but is not
   // binding.

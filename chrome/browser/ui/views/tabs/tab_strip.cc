@@ -1596,15 +1596,6 @@ void TabStrip::StopAnimating(bool layout) {
   }
 }
 
-std::optional<int> TabStrip::GetFocusedTabIndex() const {
-  for (int i = 0; i < GetTabCount(); ++i) {
-    if (tab_at(i)->HasFocus()) {
-      return i;
-    }
-  }
-  return std::nullopt;
-}
-
 views::View* TabStrip::GetTabViewForPromoAnchor(int index_hint) {
   return tab_at(std::clamp(index_hint, 0, GetTabCount() - 1));
 }
@@ -2610,7 +2601,6 @@ ADD_PROPERTY_METADATA(int, BackgroundOffset)
 ADD_READONLY_PROPERTY_METADATA(int, TabCount)
 ADD_READONLY_PROPERTY_METADATA(int, ModelCount)
 ADD_READONLY_PROPERTY_METADATA(int, ModelPinnedTabCount)
-ADD_READONLY_PROPERTY_METADATA(std::optional<int>, FocusedTabIndex)
 ADD_READONLY_PROPERTY_METADATA(int, StrokeThickness)
 ADD_READONLY_PROPERTY_METADATA(SkColor,
                                TabSeparatorColor,

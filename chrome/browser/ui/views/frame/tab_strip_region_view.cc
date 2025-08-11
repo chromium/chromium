@@ -524,7 +524,12 @@ bool TabStripRegionView::IsAnimating() const {
 }
 
 std::optional<int> TabStripRegionView::GetFocusedTabIndex() const {
-  return tab_strip_->GetFocusedTabIndex();
+  for (int i = 0; i < tab_strip_->GetTabCount(); ++i) {
+    if (tab_strip_->tab_at(i)->HasFocus()) {
+      return i;
+    }
+  }
+  return std::nullopt;
 }
 
 Tab* TabStripRegionView::GetTabAnchorViewAt(int tab_index) {
