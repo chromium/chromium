@@ -13,11 +13,11 @@ found in the LICENSE file.
   tools:ignore="UnusedResources">
   <!-- Pressed state: 12% alpha of colorOnSurface -->
   <item android:state_pressed="true"
-      android:color="@color/color_on_surface_with_alpha_12" />
+      android:color="@color/baseline_neutral_90_alpha_12" />
 
   <!-- Hovered state: 8% alpha of colorOnSurface -->
   <item android:state_hovered="true"
-      android:color="@color/color_on_surface_with_alpha_8" />
+      android:color="@color/baseline_neutral_90_alpha_8" />
 
   <!-- Focused state: transparent, will be handled by external outline -->
   <!-- Default state: transparent -->

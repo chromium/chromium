@@ -9,7 +9,7 @@ found in the LICENSE file.
   <!-- Base background layer. This is always visible. -->
   <item android:id="@+id/card_background_base">
     <shape android:shape="rectangle">
-      <solid android:color="@color/gm3_baseline_surface_container" />
+      <solid android:color="@color/gm3_baseline_surface_container_dark" />
       <corners android:radius="@dimen/card_rounded_corner_radius" />
     </shape>
   </item>
@@ -17,7 +17,7 @@ found in the LICENSE file.
   <!-- State overlay layer that responded to hover / focus / etc. -->
   <item android:id="@+id/card_background_state_overlay">
     <shape android:shape="rectangle">
-      <solid android:color="@color/card_hover_press_overlay_color_list_baseline" />
+      <solid android:color="@color/card_hover_press_overlay_color_list_baseline_dark" />
       <corners android:radius="@dimen/card_rounded_corner_radius" />
     </shape>
   </item>

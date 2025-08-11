@@ -244,6 +244,22 @@ public class TabGridIphTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testRenderIph_Portrait_Incognito() throws IOException {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+
+        createTabs(cta, /* isIncognito= */ true, 1);
+        enterTabSwitcher(cta);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
+        onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+
+        ChromeRenderTestRule.sanitize(cta.findViewById(R.id.tab_grid_message_item));
+        mRenderTestRule.render(
+                cta.findViewById(R.id.tab_grid_message_item), "iph_entrance_portrait_incognito");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testRenderIph_Landscape() throws IOException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
