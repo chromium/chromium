@@ -922,9 +922,11 @@ void DatabaseConnection::CancelBlobWriting() {
   blob_writers_weak_factory_.InvalidateWeakPtrs();
   blob_writers_.clear();
   outstanding_external_object_writes_ = 0;
-  std::move(blob_write_callback_)
-      .Run(BlobWriteResult::kRunPhaseTwoAsync,
-           storage::mojom::WriteBlobToFileResult::kError);
+  if (blob_write_callback_) {
+    std::move(blob_write_callback_)
+        .Run(BlobWriteResult::kRunPhaseTwoAsync,
+             storage::mojom::WriteBlobToFileResult::kError);
+  }
 }
 
 Status DatabaseConnection::CommitTransactionPhaseTwo(
@@ -954,8 +956,8 @@ void DatabaseConnection::RollBackTransaction(
 
   // Abort ongoing blob writes, if any.
   // TODO(crbug.com/419208485): Be sure to test this case.
-  blob_writers_.clear();
-  blob_write_callback_ = BlobWriteCallback();
+  blob_write_callback_.Reset();
+  CancelBlobWriting();
 
   active_rw_transaction_->Rollback();
 
