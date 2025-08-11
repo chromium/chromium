@@ -14,8 +14,6 @@
 #include "crypto/hash.h"
 #include "crypto/obsolete/md5.h"
 #include "net/base/net_export.h"
-#include "net/http/http_request_info.h"
-#include "net/http/http_response_headers.h"
 
 namespace base {
 class Pickle;
@@ -23,6 +21,9 @@ class PickleIterator;
 }  // namespace base
 
 namespace net {
+
+struct HttpRequestInfo;
+class HttpResponseHeaders;
 
 using Md5Hash = std::array<uint8_t, crypto::obsolete::Md5::kSize>;
 using Sha256Hash = std::array<uint8_t, crypto::hash::kSha256Size>;
