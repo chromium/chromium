@@ -6,8 +6,6 @@
 
 #include <string_view>
 
-#include "base/feature_list.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
@@ -71,8 +69,7 @@ void OverrideWebPreferencesForTabletMode(
   if (IsInternalPage(contents))
     return;
 
-  web_prefs->double_tap_to_zoom_enabled =
-      base::FeatureList::IsEnabled(features::kDoubleTapToZoomInTabletMode);
+  web_prefs->double_tap_to_zoom_enabled = false;
   web_prefs->text_autosizing_enabled = true;
   web_prefs->shrinks_viewport_contents_to_fit = true;
   web_prefs->main_frame_resizes_are_orientation_changes = true;

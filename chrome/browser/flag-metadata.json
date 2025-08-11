@@ -2440,11 +2440,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "double-tap-to-zoom-in-tablet-mode",
-    "owners": [ "afakhry@chromium.org", "tbuckley@chromium.org" ],
-    "expiry_milestone": 85
-  },
-  {
       "name": "download-auto-deletion",
       "owners": [ "danieltwhite@google.com", "bling-flags@google.com" ],
       "expiry_milestone": 137

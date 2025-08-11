@@ -47,10 +47,6 @@ BASE_DECLARE_FEATURE(kUseFreedesktopSecretKeyProvider);
 BASE_DECLARE_FEATURE(kDestroyProfileOnBrowserClose);
 BASE_DECLARE_FEATURE(kDestroySystemProfiles);
 
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_DECLARE_FEATURE(kDoubleTapToZoomInTabletMode);
-#endif
-
 BASE_DECLARE_FEATURE(kFlexOrgManagementDisclosure);
 BASE_DECLARE_FEATURE(kIncomingCallNotifications);
 

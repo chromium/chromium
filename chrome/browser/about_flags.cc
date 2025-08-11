@@ -7318,13 +7318,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kMBIModeVariations,
                                     "MBIMode")},
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"double-tap-to-zoom-in-tablet-mode",
-     flag_descriptions::kDoubleTapToZoomInTabletModeName,
-     flag_descriptions::kDoubleTapToZoomInTabletModeDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kDoubleTapToZoomInTabletMode)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
     {flag_descriptions::kTabGroupSyncServiceDesktopMigrationId,
      flag_descriptions::kTabGroupSyncServiceDesktopMigrationName,
      flag_descriptions::kTabGroupSyncServiceDesktopMigrationDescription,

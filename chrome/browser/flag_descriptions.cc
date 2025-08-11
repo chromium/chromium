@@ -6689,12 +6689,6 @@ const char kEnableExternalDisplayHdr10Name[] =
 const char kEnableExternalDisplayHdr10Description[] =
     "Allows using HDR10 mode on any external monitor that supports it";
 
-const char kDoubleTapToZoomInTabletModeName[] =
-    "Double-tap to zoom in tablet mode";
-const char kDoubleTapToZoomInTabletModeDescription[] =
-    "If Enabled, double tapping in webpages while in tablet mode will zoom the "
-    "page.";
-
 const char kDriveFsMirroringName[] = "Enable local to Drive mirror sync";
 const char kDriveFsMirroringDescription[] =
     "Enable mirror sync between local files and Google Drive";

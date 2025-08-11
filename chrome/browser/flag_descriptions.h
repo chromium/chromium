@@ -3849,9 +3849,6 @@ extern const char kUseHDRTransferFunctionDescription[];
 extern const char kEnableExternalDisplayHdr10Name[];
 extern const char kEnableExternalDisplayHdr10Description[];
 
-extern const char kDoubleTapToZoomInTabletModeName[];
-extern const char kDoubleTapToZoomInTabletModeDescription[];
-
 extern const char kDriveFsMirroringName[];
 extern const char kDriveFsMirroringDescription[];
 

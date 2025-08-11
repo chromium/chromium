@@ -111,14 +111,6 @@ BASE_FEATURE(kDestroySystemProfiles,
              "DestroySystemProfiles",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Enables being able to zoom a web page by double tapping in Chrome OS tablet
-// mode.
-BASE_FEATURE(kDoubleTapToZoomInTabletMode,
-             "DoubleTapToZoomInTabletMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Enables showing the email of the flex org admin that setup CBCM in the
 // management disclosures.
 BASE_FEATURE(kFlexOrgManagementDisclosure,
