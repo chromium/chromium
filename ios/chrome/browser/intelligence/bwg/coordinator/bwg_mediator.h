@@ -9,8 +9,11 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_consent_mutator.h"
 
-class Browser;
+@protocol ApplicationCommands;
+class BwgService;
+class BwgBrowserAgent;
 class PrefService;
+class WebStateList;
 
 @protocol BWGMediatorDelegate;
 
@@ -18,11 +21,16 @@ class PrefService;
 @interface BWGMediator : NSObject <BWGConsentMutator>
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
-                            browser:(Browser*)browser
-                 baseViewController:(UIViewController*)baseViewController;
+                       webStateList:(WebStateList*)webStateList
+                 baseViewController:(UIViewController*)baseViewController
+                         BWGService:(BwgService*)BWGService
+                    BWGBrowserAgent:(BwgBrowserAgent*)BWGBrowserAgent;
 
 // The delegate for this mediator.
 @property(nonatomic, weak) id<BWGMediatorDelegate> delegate;
+
+// The handler for sending application commands.
+@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 
 // Presents the BWG flow, which can either show the FRE or BWG directly.
 - (void)presentBWGFlow;

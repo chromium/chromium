@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_fre_wrapper_view_controller.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -19,6 +21,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -85,9 +88,15 @@ const CGFloat kPromoMaxImpressionCount = 3;
   _BWGCommandsHandler = HandlerForProtocol(dispatcher, BWGCommands);
   _helpCommandsHandler = HandlerForProtocol(dispatcher, HelpCommands);
 
-  _mediator = [[BWGMediator alloc] initWithPrefService:_prefService
-                                               browser:self.browser
-                                    baseViewController:self.baseViewController];
+  _mediator = [[BWGMediator alloc]
+      initWithPrefService:_prefService
+             webStateList:self.browser->GetWebStateList()
+       baseViewController:self.baseViewController
+               BWGService:BwgServiceFactory::GetForProfile(self.profile)
+          BWGBrowserAgent:BwgBrowserAgent::FromBrowser(self.browser)];
+  _mediator.applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+
   _mediator.delegate = self;
   [_mediator presentBWGFlow];
 
