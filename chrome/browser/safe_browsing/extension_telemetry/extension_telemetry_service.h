@@ -112,6 +112,10 @@ class ExtensionTelemetryService : public KeyedService {
   // Accepts extension telemetry signals for processing.
   void AddSignal(std::unique_ptr<ExtensionSignal> signal);
 
+  // Called when a Search Engine Results Page (SERP) corresponding to a
+  // Default Search Engine (DSE) has been loaded. Declared virtual for testing.
+  virtual void OnDseSerpLoaded();
+
   // Checks the `extension_id` and `signal_type` against the
   // configuration and reports true if the signal should be created.
   bool IsSignalEnabled(const extensions::ExtensionId& extension_id,

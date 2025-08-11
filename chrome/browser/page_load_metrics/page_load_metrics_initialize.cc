@@ -77,6 +77,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/page_load_metrics/observers/serp_page_load_metrics_observer.h"
 #include "extensions/common/constants.h"
 #endif
 
@@ -245,6 +246,9 @@ void PageLoadMetricsEmbedder::RegisterObservers(
   tracker->AddObserver(
       SecurityStatePageLoadMetricsObserver::MaybeCreateForProfile(
           web_contents()->GetBrowserContext()));
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  tracker->AddObserver(std::make_unique<SerpPageLoadMetricsObserver>());
+#endif
   tracker->AddObserver(
       std::make_unique<PageAnchorsMetricsObserver>(tracker->GetWebContents()));
   std::unique_ptr<TranslatePageLoadMetricsObserver> translate_observer =

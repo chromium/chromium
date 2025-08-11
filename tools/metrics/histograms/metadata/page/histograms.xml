@@ -2869,6 +2869,15 @@ chromium-metrics-reviews@google.com.
   <token key="RTTBucketSuffix" variants="RTTBucketSuffix"/>
 </histogram>
 
+<histogram name="PageLoad.CommittedPageIsDseSerp" enum="Boolean"
+    expires_after="2026-08-01">
+  <owner>anunoy@chromium.org</owner>
+  <summary>
+    For each page load, records whether the page is a search results page from
+    the default search engine. Recorded at the time of commit.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.Cpu.TotalUsage" units="ms" expires_after="2025-12-28">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>

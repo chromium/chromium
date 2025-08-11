@@ -7620,6 +7620,8 @@ static_library("browser") {
       "media/extension_media_access_handler.h",
       "metrics/extensions_metrics_provider.cc",
       "metrics/extensions_metrics_provider.h",
+      "page_load_metrics/observers/serp_page_load_metrics_observer.cc",
+      "page_load_metrics/observers/serp_page_load_metrics_observer.h",
       "performance_manager/extension_watcher.cc",
       "performance_manager/extension_watcher.h",
       "policy/chrome_extension_policy_migrator.cc",

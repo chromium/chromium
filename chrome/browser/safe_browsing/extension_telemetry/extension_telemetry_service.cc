@@ -1774,4 +1774,11 @@ ExtensionTelemetryService::GetOffstoreFileDataCollectionIntervalSeconds() {
   return kOffstoreFileDataCollectionIntervalSeconds;
 }
 
+void ExtensionTelemetryService::OnDseSerpLoaded() {
+  // TODO(crbug.com/437345485): Increment a search event counter and persist it
+  // to prefs. The event counts will be checked for a search hijacking
+  // heuristics match in a separate class periodically
+  // (implementation in a separate CL).
+}
+
 }  // namespace safe_browsing

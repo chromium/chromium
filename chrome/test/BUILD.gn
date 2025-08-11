@@ -4672,6 +4672,7 @@ if (!is_android) {
         "../browser/extensions/window_open_apitest.cc",
         "../browser/extensions/worker_apitest.cc",
         "../browser/notifications/notification_permission_context_apitest.cc",
+        "../browser/page_load_metrics/observers/serp_page_load_metrics_observer_browsertest.cc",
         "../browser/safe_browsing/extension_telemetry/extension_telemetry_service_browsertest.cc",
         "../browser/supervised_user/desktop/supervised_user_extension_browsertest.cc",
         "../browser/supervised_user/extensions_interactive_uitest.cc",
