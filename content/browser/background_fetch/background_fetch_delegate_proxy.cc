@@ -109,6 +109,7 @@ void BackgroundFetchDelegateProxy::GetPermissionForOrigin(
         result = BackgroundFetchPermission::ALLOWED;
         break;
       case blink::mojom::PermissionStatus::DENIED:
+      case blink::mojom::PermissionStatus::UNSATISFIED_OPTIONS:
         result = BackgroundFetchPermission::BLOCKED;
         break;
       case blink::mojom::PermissionStatus::ASK:

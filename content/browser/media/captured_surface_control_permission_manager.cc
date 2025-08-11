@@ -82,6 +82,7 @@ void CheckPermissionOnUIThread(
       std::move(callback).Run(PermissionResult::kGranted);
       return;
     case PermissionStatus::DENIED:
+    case blink::mojom::PermissionStatus::UNSATISFIED_OPTIONS:
       std::move(callback).Run(PermissionResult::kDenied);
       return;
     case PermissionStatus::ASK:

@@ -57,6 +57,7 @@ PermissionStatusToEmbeddedPermissionControlResult(PermissionStatus status) {
     case PermissionStatus::GRANTED:
       return EmbeddedPermissionControlResult::kGranted;
     case PermissionStatus::DENIED:
+    case blink::mojom::PermissionStatus::UNSATISFIED_OPTIONS:
       return EmbeddedPermissionControlResult::kDenied;
     case PermissionStatus::ASK:
       return EmbeddedPermissionControlResult::kDismissed;

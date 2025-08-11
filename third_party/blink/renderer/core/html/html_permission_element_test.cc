@@ -134,6 +134,7 @@ V8PermissionState::Enum PermissionStatusV8Enum(MojoPermissionStatus status) {
     case MojoPermissionStatus::ASK:
       return V8PermissionState::Enum::kPrompt;
     case MojoPermissionStatus::DENIED:
+    case mojom::PermissionStatus::UNSATISFIED_OPTIONS:
       return V8PermissionState::Enum::kDenied;
   }
 }
@@ -347,7 +348,6 @@ class TestPermissionService : public PermissionService {
     observer->OnPermissionStatusChange(status);
     run_loop.Run();
   }
-
 
   void WaitForClientDisconnected() {
     client_disconnect_run_loop_ = std::make_unique<base::RunLoop>();

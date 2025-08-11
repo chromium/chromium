@@ -48,6 +48,7 @@ std::vector<ContentSettingPatternSource> GetContentSettings(
       setting = ContentSetting::CONTENT_SETTING_ALLOW;
       break;
     case blink::mojom::PermissionStatus::DENIED:
+    case blink::mojom::PermissionStatus::UNSATISFIED_OPTIONS:
       setting = ContentSetting::CONTENT_SETTING_BLOCK;
       break;
     case blink::mojom::PermissionStatus::ASK:
