@@ -818,6 +818,9 @@ public class ContextualSearchManager
             doLiteralSearch = true;
         }
 
+        // TODO(crbug.com/437389354): Convert into an assert
+        assumeNonNull(message);
+
         mRelatedSearches = new RelatedSearchesList(resolvedSearchTerm.relatedSearchesJson());
         mResolvedSearchTerm = resolvedSearchTerm;
         displayResolvedSearchTerm(resolvedSearchTerm, message, doLiteralSearch);
@@ -869,6 +872,9 @@ public class ContextualSearchManager
             alternateTerm = null;
             doPreventPreload = true;
         }
+
+        // TODO(crbug.com/437389354): Convert into an assert
+        assumeNonNull(searchTerm);
 
         List<String> inBarRelatedSearches = buildRelatedSearches(searchTerm);
 
@@ -966,8 +972,10 @@ public class ContextualSearchManager
         assumeNonNull(mContext)
                 .prepareToResolve(
                         isExactSearch, mPolicy.getRelatedSearchesStamp(getBasePageLanguage()));
+        String selectedText = mSelectionController.getSelectedText();
+        assumeNonNull(selectedText);
         mNetworkCommunicator.startSearchTermResolutionRequest(
-                mSelectionController.getSelectedText(), isExactSearch, mContext);
+                selectedText, isExactSearch, mContext);
     }
 
     /** Resets internal state that should be reset whenever a Search ends (panel is closed). */
@@ -1479,7 +1487,9 @@ public class ContextualSearchManager
                 if (!TextUtils.isEmpty(adjustedSelection)) {
                     mSelectionController.setSelectedText(adjustedSelection);
                 }
-                showSelectionAsSearchInBar(mSelectionController.getSelectedText());
+                String selectedText = mSelectionController.getSelectedText();
+                assumeNonNull(selectedText);
+                showSelectionAsSearchInBar(selectedText);
                 mInternalStateController.notifyFinishedWorkOn(InternalState.START_SHOWING_TAP_UI);
             } else {
                 hideContextualSearch(StateChangeReason.UNKNOWN);

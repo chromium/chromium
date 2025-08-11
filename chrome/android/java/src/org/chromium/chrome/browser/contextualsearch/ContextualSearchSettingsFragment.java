@@ -10,6 +10,7 @@ import androidx.preference.Preference;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -23,6 +24,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
  * Fragment to manage the Contextual Search Settings in Chrome Settings, and to explain to the user
  * what Contextual Search (aka Touch to Search) actually does.
  */
+@NullMarked
 public class ContextualSearchSettingsFragment extends ChromeBaseSettingsFragment {
     static final String PREF_CONTEXTUAL_SEARCH_SWITCH = "contextual_search_switch";
     static final String PREF_WAS_FULLY_ENABLED_SWITCH = "see_better_results_switch";

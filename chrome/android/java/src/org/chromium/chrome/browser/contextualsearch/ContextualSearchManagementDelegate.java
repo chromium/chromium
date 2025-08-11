@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import android.app.Activity;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContentDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
@@ -16,6 +17,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
  * specific actions in the {@link ContextualSearchManager} e.g tell it to close or promote the panel
  * into a separate Tab.
  */
+@NullMarked
 public interface ContextualSearchManagementDelegate {
 
     /**

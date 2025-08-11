@@ -9,8 +9,6 @@ import android.net.Uri;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JniType;
@@ -19,6 +17,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStateController.InternalState;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionController.SelectionType;
@@ -37,6 +37,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.url.GURL;
 
 /** Handles business decision policy for the {@code ContextualSearchManager}. */
+@NullMarked
 class ContextualSearchPolicy {
     private static final String TAG = "ContextualSearch";
     private static final String DOMAIN_GOOGLE = "google";
@@ -54,15 +55,14 @@ class ContextualSearchPolicy {
     private final ContextualSearchSelectionController mSelectionController;
     private final RelatedSearchesStamp mRelatedSearchesStamp;
     private ContextualSearchNetworkCommunicator mNetworkCommunicator;
-    private ContextualSearchPanel mSearchPanel;
+    private @Nullable ContextualSearchPanel mSearchPanel;
 
     // Members used only for testing purposes.
     private boolean mDidOverrideFullyEnabledForTesting;
     private boolean mFullyEnabledForTesting;
-    private Integer mTapTriggeredPromoLimitForTesting;
     private boolean mDidOverrideAllowSendingPageUrlForTesting;
     private boolean mAllowSendingPageUrlForTesting;
-    private Boolean mContextualSearchResolutionUrlValid;
+    private @Nullable Boolean mContextualSearchResolutionUrlValid;
 
     /** ContextualSearchPolicy constructor. */
     public ContextualSearchPolicy(
@@ -96,17 +96,10 @@ class ContextualSearchPolicy {
         // Return a non-negative value if opt-out promo counter is enabled, and there's a limit.
         DisableablePromoTapCounter counter = getPromoTapCounter();
         if (counter.isEnabled()) {
-            int limit = getPromoTapTriggeredLimit();
-            if (limit >= 0) return Math.max(0, limit - counter.getCount());
+            return Math.max(0, TAP_TRIGGERED_PROMO_LIMIT - counter.getCount());
         }
 
         return REMAINING_NOT_APPLICABLE;
-    }
-
-    private int getPromoTapTriggeredLimit() {
-        return mTapTriggeredPromoLimitForTesting != null
-                ? mTapTriggeredPromoLimitForTesting.intValue()
-                : TAP_TRIGGERED_PROMO_LIMIT;
     }
 
     /**
@@ -499,10 +492,9 @@ class ContextualSearchPolicy {
     // --------------------------------------------------------------------------------------------
 
     /**
-     * @return The ISO country code for the user's home country, or an empty string if not
-     *         available or privacy-enabled.
+     * @return The ISO country code for the user's home country, or an empty string if not available
+     *     or privacy-enabled.
      */
-    @NonNull
     String getHomeCountry(Context context) {
         TelephonyManager telephonyManager =
                 (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
