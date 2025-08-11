@@ -9,7 +9,6 @@
 
 #include "media/gpu/vaapi/h264_vaapi_video_encoder_delegate.h"
 
-#include <array>
 #include <memory>
 
 #include "base/logging.h"
@@ -48,12 +47,9 @@ constexpr uint8_t kMaxQP = 42;
 constexpr size_t kMaxRefIdxL0Size = 2;
 
 constexpr size_t kTemporalLayerCycle = 4;
-constexpr auto kExpectedTemporalId =
-    std::to_array<std::array<uint8_t, kTemporalLayerCycle>>({
-        {0, 0, 0, 0},
-        {0, 1, 0, 1},
-        {0, 2, 1, 2},
-    });
+constexpr uint8_t kExpectedTemporalId[][kTemporalLayerCycle] = {{0, 0, 0, 0},
+                                                                {0, 1, 0, 1},
+                                                                {0, 2, 1, 2}};
 
 VaapiVideoEncoderDelegate::Config kDefaultVEADelegateConfig{
     .max_num_ref_frames = 4,
@@ -579,8 +575,8 @@ TEST_P(H264VaapiVideoEncoderDelegateTest, UpdateRatesWithSWBitrateController) {
   InitializeEncoderWithSWBitrateController(num_temporal_layers);
   const uint32_t kBitrate = DefaultVEAConfig().bitrate.target_bps();
   const uint32_t kFramerate = DefaultVEAConfig().framerate;
-  const auto expected_temporal_ids =
-      base::span<const uint8_t>(kExpectedTemporalId[num_temporal_layers - 1]);
+  const uint8_t* expected_temporal_ids =
+      kExpectedTemporalId[num_temporal_layers - 1];
 
   // Call UpdateRates before Encode.
   UpdateRatesAndEncode(true, kBitrate / 2, kFramerate, num_temporal_layers,

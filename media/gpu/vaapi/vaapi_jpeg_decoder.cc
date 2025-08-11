@@ -15,7 +15,6 @@
 #include <iostream>
 #include <type_traits>
 
-#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -48,7 +47,7 @@ static void FillPictureParameters(
   }
 }
 
-static void FillIQMatrix(base::span<const JpegQuantizationTable> q_table,
+static void FillIQMatrix(const JpegQuantizationTable* q_table,
                          VAIQMatrixBufferJPEGBaseline* iq_matrix) {
   static_assert(kJpegMaxQuantizationTableNum ==
                     std::extent<decltype(iq_matrix->load_quantiser_table)>(),
@@ -65,8 +64,8 @@ static void FillIQMatrix(base::span<const JpegQuantizationTable> q_table,
   }
 }
 
-static void FillHuffmanTable(base::span<const JpegHuffmanTable> dc_table,
-                             base::span<const JpegHuffmanTable> ac_table,
+static void FillHuffmanTable(const JpegHuffmanTable* dc_table,
+                             const JpegHuffmanTable* ac_table,
                              VAHuffmanTableBufferJPEGBaseline* huffman_table) {
   // Use default huffman tables if not specified in header.
   bool has_huffman_table = false;
