@@ -24,7 +24,7 @@ namespace media {
 
 namespace {
 void LogToStderr(const std::string& message) {
-  LOG(ERROR) << message;
+  LOG(INFO) << message;
 }
 
 bool AudioObjectPropertyAddressEq(const AudioObjectPropertyAddress& x,
@@ -49,6 +49,20 @@ constexpr AudioDeviceIOProcID kTapIoProcId = AudioDeviceIoProcIdFunction;
 // Arbitrary numbers that identifies the aggregate device and tap.
 constexpr AudioObjectID kAggregateDeviceId = 17;
 constexpr AudioObjectID kTap = 23;
+
+const AudioObjectPropertyAddress kDeviceIsAliveAddress = {
+    kAudioDevicePropertyDeviceIsAlive, kAudioObjectPropertyScopeGlobal,
+    kAudioObjectPropertyElementMain};
+
+const AudioObjectPropertyAddress kDefaultOutputDevicePropertyAddress = {
+    kAudioHardwarePropertyDefaultOutputDevice, kAudioObjectPropertyScopeGlobal,
+    kAudioObjectPropertyElementMain};
+
+bool operator==(const AudioObjectPropertyAddress& x,
+                const AudioObjectPropertyAddress& y) {
+  return x.mSelector == y.mSelector && x.mScope == y.mScope &&
+         x.mElement == y.mElement;
+}
 
 // Mock for the AudioInputCallback.
 class MockAudioInputCallback : public AudioInputStream::AudioInputCallback {
@@ -127,6 +141,21 @@ class API_AVAILABLE(macos(14.2)) MockCatapApi : public CatapApi {
   MOCK_METHOD(OSStatus,
               AudioHardwareDestroyProcessTap,
               (AudioObjectID in_tap),
+              (override));
+
+  MOCK_METHOD(OSStatus,
+              AudioObjectAddPropertyListenerBlock,
+              (AudioObjectID in_object_id,
+               const AudioObjectPropertyAddress* in_address,
+               dispatch_queue_t in_dispatch_queue,
+               AudioObjectPropertyListenerBlock in_listener),
+              (override));
+  MOCK_METHOD(OSStatus,
+              AudioObjectRemovePropertyListenerBlock,
+              (AudioObjectID in_object_id,
+               const AudioObjectPropertyAddress* in_address,
+               dispatch_queue_t in_dispatch_queue,
+               AudioObjectPropertyListenerBlock in_listener),
               (override));
 };
 
@@ -239,6 +268,18 @@ class CatapAudioInputStreamTest : public testing::Test {
                 return -1;
               });
 
+      EXPECT_CALL(mock_catap_api(), AudioObjectAddPropertyListenerBlock)
+          .WillRepeatedly([this](AudioObjectID in_object_id,
+                                 const AudioObjectPropertyAddress* in_address,
+                                 dispatch_queue_t in_dispatch_queue,
+                                 AudioObjectPropertyListenerBlock in_listener) {
+            EXPECT_TRUE(*in_address == kDeviceIsAliveAddress ||
+                        *in_address == kDefaultOutputDevicePropertyAddress);
+            property_listener_block_ = in_listener;
+            ++property_listener_block_count_;
+            return noErr;
+          });
+
       // Initialize the stream.
       AudioInputStream::OpenOutcome result = stream_->Open();
       EXPECT_EQ(set_sample_rate_count, 1);
@@ -283,6 +324,8 @@ class CatapAudioInputStreamTest : public testing::Test {
   }
 
  protected:
+  AudioObjectPropertyListenerBlock property_listener_block_;
+  int property_listener_block_count_ = 0;
   raw_ptr<AudioInputStream> stream_;
   raw_ptr<CatapApi> mock_catap_api_;
   MockAudioInputCallback mock_callback_;
@@ -636,6 +679,64 @@ TEST_F(CatapAudioInputStreamTest, LoopbackWithAllDevices) {
 
     // Initialize the stream.
     EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, ErrorIfDeviceIsAliveChanges) {
+  if (@available(macOS 14.2, *)) {
+    EXPECT_EQ(CreateAndOpenStream(/*with_permissions=*/true),
+              AudioInputStream::OpenOutcome::kSuccess);
+    stream_->Start(&mock_callback_);
+
+    // Simulate that "device is alive" is changed to false.
+    EXPECT_CALL(mock_catap_api(), AudioObjectGetPropertyData)
+        .WillOnce([](AudioObjectID in_object_id,
+                     const AudioObjectPropertyAddress* in_address,
+                     UInt32 in_qualifier_data_size,
+                     const void* in_qualifier_data, UInt32* ioDataSize,
+                     void* outData) {
+          uint32_t* is_alive = static_cast<uint32_t*>(outData);
+          *is_alive = false;
+          return noErr;
+        });
+    EXPECT_CALL(mock_callback_, OnError()).Times(1);
+    property_listener_block_(1, &kDeviceIsAliveAddress);
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, NoErrorIfDefaultOutputDeviceChanges) {
+  if (@available(macOS 14.2, *)) {
+    EXPECT_EQ(CreateAndOpenStream(/*with_permissions=*/true),
+              AudioInputStream::OpenOutcome::kSuccess);
+    stream_->Start(&mock_callback_);
+
+    // Simulate a change of default output device.
+    EXPECT_CALL(mock_callback_, OnError()).Times(0);
+    property_listener_block_(1, &kDefaultOutputDevicePropertyAddress);
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, PropertyListenerRemovedOnClose) {
+  if (@available(macOS 14.2, *)) {
+    EXPECT_EQ(CreateAndOpenStream(/*with_permissions=*/true),
+              AudioInputStream::OpenOutcome::kSuccess);
+
+    EXPECT_CALL(mock_catap_api(), AudioObjectRemovePropertyListenerBlock)
+        .WillRepeatedly([this](AudioObjectID in_object_id,
+                               const AudioObjectPropertyAddress* in_address,
+                               dispatch_queue_t in_dispatch_queue,
+                               AudioObjectPropertyListenerBlock in_listener) {
+          EXPECT_TRUE(*in_address == kDeviceIsAliveAddress ||
+                      *in_address == kDefaultOutputDevicePropertyAddress);
+          --property_listener_block_count_;
+
+          if (property_listener_block_count_ == 0) {
+            property_listener_block_ = nil;
+          }
+          return noErr;
+        });
+    stream_->Stop();
+    EXPECT_EQ(property_listener_block_count_, 0);
   }
 }
 

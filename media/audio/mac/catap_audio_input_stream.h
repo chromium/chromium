@@ -7,9 +7,11 @@
 
 #include <CoreAudio/CATapDescription.h>
 
+#include <memory>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "media/audio/agc_audio_stream.h"
 #include "media/audio/audio_io.h"
@@ -21,6 +23,7 @@
 namespace media {
 
 class CatapApi;
+class PropertyListenerHelper;
 
 // Implementation of AudioInputStream using the CoreAudio API for macOS 14.2
 // and later. The current implementation supports mono and stereo capture system
@@ -99,6 +102,7 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
 
   void OnCatapSample(const base::span<const AudioBuffer> input_buffers,
                      const AudioTimeStamp* input_time);
+  void OnError();
 
  private:
   // Returns all CoreAudio process audio device IDs that belong to the specified
@@ -118,6 +122,9 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
   // audio capture permission.
   bool ProbeAudioTapPermissions();
 
+  void ProcessPropertyChange(
+      base::span<const AudioObjectPropertyAddress> property_addresses);
+
   // Send log messages to the stream creator.
   void SendLogMessage(const char* format, ...);
 
@@ -132,6 +139,11 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
 
   // One of AudioDeviceDescription::kLoopback*.
   const std::string device_id_;
+
+  // True if the capturer is configured to capture the default device. In this
+  // case, the stream will be stopped with an error if the default output device
+  // is changed.
+  const bool capture_default_device_;
 
   // Audio bus used to pass audio samples to sink_.
   const std::unique_ptr<AudioBus> audio_bus_;
@@ -173,6 +185,9 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
   const std::string default_output_device_id_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  std::unique_ptr<PropertyListenerHelper> property_listener_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   AudioObjectID aggregate_device_id_ GUARDED_BY_CONTEXT(sequence_checker_) =
       kAudioObjectUnknown;
   AudioDeviceIOProcID tap_io_proc_id_ GUARDED_BY_CONTEXT(sequence_checker_) =
@@ -184,6 +199,8 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
   bool is_device_open_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<CatapAudioInputStream> weak_ptr_factory_{this};
 };
 
 API_AVAILABLE(macos(14.2))

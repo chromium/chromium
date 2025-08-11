@@ -60,6 +60,17 @@ class CatapApi {
   virtual OSStatus AudioHardwareDestroyAggregateDevice(
       AudioDeviceID in_device) = 0;
   virtual OSStatus AudioHardwareDestroyProcessTap(AudioObjectID in_tap) = 0;
+
+  virtual OSStatus AudioObjectAddPropertyListenerBlock(
+      AudioObjectID in_object_id,
+      const AudioObjectPropertyAddress* in_address,
+      dispatch_queue_t in_dispatch_queue,
+      AudioObjectPropertyListenerBlock in_listener) = 0;
+  virtual OSStatus AudioObjectRemovePropertyListenerBlock(
+      AudioObjectID in_object_id,
+      const AudioObjectPropertyAddress* in_address,
+      dispatch_queue_t in_dispatch_queue,
+      AudioObjectPropertyListenerBlock in_listener) = 0;
 };
 
 // Implementation of CatapApi that calls the system APIs.
@@ -108,6 +119,17 @@ class API_AVAILABLE(macos(14.2)) CatapApiImpl : public CatapApi {
   OSStatus AudioHardwareDestroyAggregateDevice(
       AudioDeviceID in_device) override;
   OSStatus AudioHardwareDestroyProcessTap(AudioObjectID in_tap) override;
+
+  OSStatus AudioObjectAddPropertyListenerBlock(
+      AudioObjectID in_object_id,
+      const AudioObjectPropertyAddress* in_address,
+      dispatch_queue_t in_dispatch_queue,
+      AudioObjectPropertyListenerBlock in_listener) override;
+  OSStatus AudioObjectRemovePropertyListenerBlock(
+      AudioObjectID in_object_id,
+      const AudioObjectPropertyAddress* in_address,
+      dispatch_queue_t in_dispatch_queue,
+      AudioObjectPropertyListenerBlock in_listener) override;
 };
 
 }  // namespace media

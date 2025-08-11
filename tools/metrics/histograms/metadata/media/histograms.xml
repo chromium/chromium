@@ -1119,6 +1119,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Mac.CatapAudioInputStream.IsAlive" enum="Boolean"
+    expires_after="2026-02-15">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Reports the IsAlive property of the CoreAudio tap's aggregated device. The
+    histogram is recorded in the property listener's callback when the IsAlive
+    property is reported to have changed.
+  </summary>
+</histogram>
+
 <histogram
     name="Media.Audio.Mac.CatapAudioInputStream.OperationDuration.{Operation}.{Status}"
     units="ms" expires_after="2026-02-15">
