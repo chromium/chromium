@@ -36,90 +36,6 @@
 #include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/future.h"
 
-// XIScrollClass was introduced in XI 2.1 so we need to define it here
-// for backward-compatibility with older versions of XInput.
-#if !defined(XIScrollClass)
-#define XIScrollClass 3
-#endif
-
-// Copied from xserver-properties.h
-#define AXIS_LABEL_PROP_REL_HWHEEL "Rel Horiz Wheel"
-#define AXIS_LABEL_PROP_REL_WHEEL "Rel Vert Wheel"
-
-// CMT specific timings
-#define AXIS_LABEL_PROP_ABS_DBL_START_TIME "Abs Dbl Start Timestamp"
-#define AXIS_LABEL_PROP_ABS_DBL_END_TIME "Abs Dbl End Timestamp"
-
-// Ordinal values
-#define AXIS_LABEL_PROP_ABS_DBL_ORDINAL_X "Abs Dbl Ordinal X"
-#define AXIS_LABEL_PROP_ABS_DBL_ORDINAL_Y "Abs Dbl Ordinal Y"
-
-// Fling properties
-#define AXIS_LABEL_PROP_ABS_DBL_FLING_VX "Abs Dbl Fling X Velocity"
-#define AXIS_LABEL_PROP_ABS_DBL_FLING_VY "Abs Dbl Fling Y Velocity"
-#define AXIS_LABEL_PROP_ABS_FLING_STATE "Abs Fling State"
-
-#define AXIS_LABEL_PROP_ABS_FINGER_COUNT "Abs Finger Count"
-
-// Cros metrics gesture from touchpad
-#define AXIS_LABEL_PROP_ABS_METRICS_TYPE "Abs Metrics Type"
-#define AXIS_LABEL_PROP_ABS_DBL_METRICS_DATA1 "Abs Dbl Metrics Data 1"
-#define AXIS_LABEL_PROP_ABS_DBL_METRICS_DATA2 "Abs Dbl Metrics Data 2"
-
-// Touchscreen multi-touch
-#define AXIS_LABEL_ABS_MT_TOUCH_MAJOR "Abs MT Touch Major"
-#define AXIS_LABEL_ABS_MT_TOUCH_MINOR "Abs MT Touch Minor"
-#define AXIS_LABEL_ABS_MT_ORIENTATION "Abs MT Orientation"
-#define AXIS_LABEL_ABS_MT_PRESSURE "Abs MT Pressure"
-#define AXIS_LABEL_ABS_MT_POSITION_X "Abs MT Position X"
-#define AXIS_LABEL_ABS_MT_POSITION_Y "Abs MT Position Y"
-#define AXIS_LABEL_ABS_MT_TRACKING_ID "Abs MT Tracking ID"
-#define AXIS_LABEL_TOUCH_TIMESTAMP "Touch Timestamp"
-
-// Stylus with absolute x y pressure and tilt info
-#define AXIS_LABEL_PROP_ABS_X "Abs X"
-#define AXIS_LABEL_PROP_ABS_Y "Abs Y"
-#define AXIS_LABEL_PROP_ABS_PRESSURE "Abs Pressure"
-#define AXIS_LABEL_PROP_ABS_TILT_X "Abs Tilt X"
-#define AXIS_LABEL_PROP_ABS_TILT_Y "Abs Tilt Y"
-
-// When you add new data types, please make sure the order here is aligned
-// with the order in the DataType enum in the header file because we assume
-// they are in sync when updating the device list (see UpdateDeviceList).
-constexpr auto kCachedAtoms = std::to_array<const char*>({
-    AXIS_LABEL_PROP_REL_HWHEEL,
-    AXIS_LABEL_PROP_REL_WHEEL,
-    AXIS_LABEL_PROP_ABS_DBL_ORDINAL_X,
-    AXIS_LABEL_PROP_ABS_DBL_ORDINAL_Y,
-    AXIS_LABEL_PROP_ABS_DBL_START_TIME,
-    AXIS_LABEL_PROP_ABS_DBL_END_TIME,
-    AXIS_LABEL_PROP_ABS_DBL_FLING_VX,
-    AXIS_LABEL_PROP_ABS_DBL_FLING_VY,
-    AXIS_LABEL_PROP_ABS_FLING_STATE,
-    AXIS_LABEL_PROP_ABS_METRICS_TYPE,
-    AXIS_LABEL_PROP_ABS_DBL_METRICS_DATA1,
-    AXIS_LABEL_PROP_ABS_DBL_METRICS_DATA2,
-    AXIS_LABEL_PROP_ABS_FINGER_COUNT,
-    AXIS_LABEL_ABS_MT_TOUCH_MAJOR,
-    AXIS_LABEL_ABS_MT_TOUCH_MINOR,
-    AXIS_LABEL_ABS_MT_ORIENTATION,
-    AXIS_LABEL_ABS_MT_PRESSURE,
-    AXIS_LABEL_ABS_MT_POSITION_X,
-    AXIS_LABEL_ABS_MT_POSITION_Y,
-    AXIS_LABEL_ABS_MT_TRACKING_ID,
-    AXIS_LABEL_TOUCH_TIMESTAMP,
-    AXIS_LABEL_PROP_ABS_X,
-    AXIS_LABEL_PROP_ABS_Y,
-    AXIS_LABEL_PROP_ABS_PRESSURE,
-    AXIS_LABEL_PROP_ABS_TILT_X,
-    AXIS_LABEL_PROP_ABS_TILT_Y,
-});
-
-// Make sure the sizes of enum and |kCachedAtoms| are aligned.
-static_assert(std::size(kCachedAtoms) ==
-                  ui::DeviceDataManagerX11::DT_LAST_ENTRY,
-              "kCachedAtoms count / enum mismatch");
-
 // Constants for checking if a data type lies in the range of CMT/Touch data
 // types.
 const int kCMTDataTypeStart = ui::DeviceDataManagerX11::DT_CMT_SCROLL_X;
@@ -132,6 +48,38 @@ const int kStylusDataTypeEnd = ui::DeviceDataManagerX11::DT_STYLUS_TILT_Y;
 namespace ui {
 
 namespace {
+
+const struct {
+  const char* name;
+  DeviceDataManagerX11::DataType type;
+} static constexpr kAtomNameToDataType[] = {
+    {"Rel Horiz Wheel", DeviceDataManagerX11::DT_CMT_SCROLL_X},
+    {"Rel Vert Wheel", DeviceDataManagerX11::DT_CMT_SCROLL_Y},
+    {"Abs Dbl Ordinal X", DeviceDataManagerX11::DT_CMT_ORDINAL_X},
+    {"Abs Dbl Ordinal Y", DeviceDataManagerX11::DT_CMT_ORDINAL_Y},
+    {"Abs Dbl Start Timestamp", DeviceDataManagerX11::DT_CMT_START_TIME},
+    {"Abs Dbl End Timestamp", DeviceDataManagerX11::DT_CMT_END_TIME},
+    {"Abs Dbl Fling X Velocity", DeviceDataManagerX11::DT_CMT_FLING_X},
+    {"Abs Dbl Fling Y Velocity", DeviceDataManagerX11::DT_CMT_FLING_Y},
+    {"Abs Fling State", DeviceDataManagerX11::DT_CMT_FLING_STATE},
+    {"Abs Metrics Type", DeviceDataManagerX11::DT_CMT_METRICS_TYPE},
+    {"Abs Dbl Metrics Data 1", DeviceDataManagerX11::DT_CMT_METRICS_DATA1},
+    {"Abs Dbl Metrics Data 2", DeviceDataManagerX11::DT_CMT_METRICS_DATA2},
+    {"Abs Finger Count", DeviceDataManagerX11::DT_CMT_FINGER_COUNT},
+    {"Abs MT Touch Major", DeviceDataManagerX11::DT_TOUCH_MAJOR},
+    {"Abs MT Touch Minor", DeviceDataManagerX11::DT_TOUCH_MINOR},
+    {"Abs MT Orientation", DeviceDataManagerX11::DT_TOUCH_ORIENTATION},
+    {"Abs MT Pressure", DeviceDataManagerX11::DT_TOUCH_PRESSURE},
+    {"Abs MT Position X", DeviceDataManagerX11::DT_TOUCH_POSITION_X},
+    {"Abs MT Position Y", DeviceDataManagerX11::DT_TOUCH_POSITION_Y},
+    {"Abs MT Tracking ID", DeviceDataManagerX11::DT_TOUCH_TRACKING_ID},
+    {"Touch Timestamp", DeviceDataManagerX11::DT_TOUCH_RAW_TIMESTAMP},
+    {"Abs X", DeviceDataManagerX11::DT_STYLUS_POSITION_X},
+    {"Abs Y", DeviceDataManagerX11::DT_STYLUS_POSITION_Y},
+    {"Abs Pressure", DeviceDataManagerX11::DT_STYLUS_PRESSURE},
+    {"Abs Tilt X", DeviceDataManagerX11::DT_STYLUS_TILT_X},
+    {"Abs Tilt Y", DeviceDataManagerX11::DT_STYLUS_TILT_Y},
+};
 
 template <typename Iterator>
 Iterator FindDeviceWithId(Iterator begin,
@@ -265,9 +213,10 @@ void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
   // Update the structs with new valuator information
   const XIDeviceList& info_list =
       ui::DeviceListCacheX11::GetInstance()->GetXI2DeviceList(connection);
-  x11::Atom atoms[DT_LAST_ENTRY];
-  for (int data_type = 0; data_type < DT_LAST_ENTRY; ++data_type)
-    atoms[data_type] = x11::GetAtom(kCachedAtoms[data_type]);
+  base::flat_map<x11::Atom, DataType> atom_to_data_type;
+  for (const auto& map_entry : kAtomNameToDataType) {
+    atom_to_data_type[x11::GetAtom(map_entry.name)] = map_entry.type;
+  }
 
   for (const auto& info : info_list) {
     if (info.type == x11::Input::DeviceType::MasterPointer)
@@ -301,8 +250,8 @@ void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
                                        DT_LAST_ENTRY);
     for (const auto& device_class : info.classes) {
       if (device_class.valuator.has_value()) {
-        auto dt =
-            UpdateValuatorClassDevice(*device_class.valuator, atoms, deviceid);
+        auto dt = UpdateValuatorClassDevice(*device_class.valuator,
+                                            atom_to_data_type, deviceid);
         if (IsStylusDataType(dt))
           possible_stylus = true;
         if (IsCMTDataType(dt))
@@ -797,15 +746,13 @@ void DeviceDataManagerX11::InitializeValuatorsForTest(
 
 DeviceDataManagerX11::DataType DeviceDataManagerX11::UpdateValuatorClassDevice(
     const x11::Input::DeviceClass::Valuator& valuator_class_info,
-    x11::Atom* atoms,
+    const base::flat_map<x11::Atom, DataType>& atom_to_data_type,
     x11::Input::DeviceId deviceid) {
-  x11::Atom* label =
-      std::find(atoms, atoms + DT_LAST_ENTRY, valuator_class_info.label);
-  if (label == atoms + DT_LAST_ENTRY)
+  auto it = atom_to_data_type.find(valuator_class_info.label);
+  if (it == atom_to_data_type.end()) {
     return DT_LAST_ENTRY;
-  int data_type = label - atoms;
-  DCHECK_GE(data_type, 0);
-  DCHECK_LT(data_type, DT_LAST_ENTRY);
+  }
+  int data_type = it->second;
 
   auto& valuator_info = valuator_lookup_[deviceid][data_type];
   valuator_info.number = valuator_class_info.number;

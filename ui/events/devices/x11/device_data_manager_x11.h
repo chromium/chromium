@@ -329,7 +329,7 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
   // Updates a device based on a Valuator class info.
   DataType UpdateValuatorClassDevice(
       const x11::Input::DeviceClass::Valuator& valuator_class_info,
-      x11::Atom* atoms,
+      const base::flat_map<x11::Atom, DataType>& atom_to_data_type,
       x11::Input::DeviceId deviceid);
 
   // Updates a device based on a Scroll class info.
