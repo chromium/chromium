@@ -3843,6 +3843,23 @@
             ]
         }
     ],
+    "BookmarksImportOnFirstRun": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BookmarksImportOnFirstRun"
+                    ]
+                }
+            ]
+        }
+    ],
     "BookmarksUseBinaryTreeInTitledUrlIndex": [
         {
             "platforms": [

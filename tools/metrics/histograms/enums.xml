@@ -4768,6 +4768,21 @@ shown properly on the user-facing crash UI.
   <int value="5" label="DB data corrupted"/>
 </enum>
 
+<!-- LINT.IfChange(FirstRunImportBookmarksResult) -->
+
+<enum name="FirstRunImportBookmarksResult">
+  <summary>
+    Result states for importing bookmarks from Initial Preferences on First Run.
+  </summary>
+  <int value="0" label="kSuccess">Bookmark import succeeded</int>
+  <int value="1" label="kInvalidDict">Missing/malformed data</int>
+  <int value="2" label="kInvalidProfile">
+    Bookmarks not supported for Profile (e.g., the System profile)
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/first_run/first_run_internal.h:FirstRunImportBookmarksResult) -->
+
 <enum name="FirstRunLaunchSource">
   <summary>
     External applications/promotions that triggered Chrome launch and First Run.

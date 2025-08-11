@@ -36,6 +36,7 @@
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/component_updater/registration.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/first_run/first_run_features.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
@@ -1592,6 +1593,12 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
     // "BrowserSignin" policy is set to "Force". If so, skip the auto import.
     if (profile) {
       first_run::AutoImport(profile, master_prefs_->import_bookmarks_path);
+
+      if (base::FeatureList::IsEnabled(features::kBookmarksImportOnFirstRun) &&
+          !master_prefs_->import_bookmarks_dict.empty()) {
+        first_run::StartBookmarksImportFromDict(
+            profile, std::move(master_prefs_->import_bookmarks_dict));
+      }
     }
 
     // Note: This can pop-up the first run consent dialog on Linux & Mac.

@@ -5265,6 +5265,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FirstRun.ImportBookmarksDict"
+    enum="FirstRunImportBookmarksResult" expires_after="M150">
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Tracks the success or failure of the automatic bookmark import from the
+    Initial Preferences file. This is a one-time import that occurs during the
+    user's First Run experience.
+  </summary>
+</histogram>
+
 <histogram name="FirstRun.IOSFirebaseConfigured" enum="FirebaseConfiguredState"
     expires_after="M89">
   <owner>ghendel@chromium.org</owner>

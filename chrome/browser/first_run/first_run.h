@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/installer/util/initial_preferences.h"
 
@@ -63,6 +64,7 @@ struct MasterPrefs {
   std::vector<GURL> bookmarks;
   std::string import_bookmarks_path;
   std::string suppress_default_browser_prompt_for_version;
+  base::Value::Dict import_bookmarks_dict;
 #if BUILDFLAG(IS_MAC)
   bool confirm_to_quit;
 #endif
@@ -98,6 +100,11 @@ void ResetCachedSentinelDataForTesting();
 // |import_bookmarks_path| is not empty.
 void AutoImport(Profile* profile,
                 const std::string& import_bookmarks_path);
+
+// Schedules importing bookmarks from Initial Preferences on First Run after
+// BookmarkModel loads.
+void StartBookmarksImportFromDict(Profile* profile,
+                                  base::Value::Dict bookmarks_dict);
 
 // Does remaining first run tasks. This can pop the first run consent dialog on
 // linux. |make_chrome_default_for_user| is the value of
