@@ -160,6 +160,13 @@ const size_t kAssumeOverlapThreshold = 100;
 
 constexpr auto kHasInputResetDelay = base::Milliseconds(250);
 
+// Threshold for accumulated scroll delta to trigger flash of scrollbars.
+constexpr float kScrollDeltaThreshold = 25.f;
+
+// Threshold for intersection area of scrollable content and viewport to trigger
+// flash of scrollbars. The value is chosen after testing different values.
+constexpr float kIntersectionThresholdAreaPercentage = 5.f / 100.f;
+
 // gfx::DisplayColorSpaces stores up to 3 different color spaces. This should be
 // updated to match any size changes in DisplayColorSpaces.
 constexpr size_t kContainsSrgbCacheSize = 3;
@@ -478,6 +485,14 @@ LayerTreeHostImpl::LayerTreeHostImpl(
                               base::Unretained(this)),
           kHasInputResetDelay),
       contains_srgb_cache_(kContainsSrgbCacheSize) {
+  CHECK(!(settings.scrollbar_flash_once_after_scroll_update &&
+          settings.scrollbar_flash_after_any_scroll_update))
+      << "Only one of "
+      << "scrollbar_flash_once_after_scroll_update "
+      << "or "
+      << "scrollbar_flash_after_any_scroll_update "
+      << "can be enabled";
+
   resource_provider_ = std::make_unique<viz::ClientResourceProvider>(
       task_runner_provider_->MainThreadTaskRunner(),
       task_runner_provider_->HasImplThread()
@@ -4689,13 +4704,16 @@ void LayerTreeHostImpl::SetRenderFrameObserver(
 
 void LayerTreeHostImpl::WillScrollContent(ElementId element_id) {
   // Flash the overlay scrollbar even if the scroll delta is 0.
-  if (settings().scrollbar_flash_after_any_scroll_update) {
-    FlashAllScrollbars(false);
-  } else {
+
+  // If the given |element_id| was flashed along with other scrollbars, we don't
+  // need to flash it again.
+  if (!MaybeFlashAllScrollbars(element_id, /*did_scroll=*/false)) {
     if (ScrollbarAnimationController* animation_controller =
-            ScrollbarAnimationControllerForElementId(element_id))
+            ScrollbarAnimationControllerForElementId(element_id)) {
       animation_controller->WillUpdateScroll();
+    }
   }
+
   // Whenever we are scrolling, we want to save the metrics. It is possible for
   // the event to result in a 0 delta change. However we want to associate it
   // with the subsequent frame. Otherwise this event will be attributed to jank.
@@ -4710,13 +4728,18 @@ void LayerTreeHostImpl::DidScrollContent(ElementId element_id,
   scroll_accumulated_this_frame_ += scroll_delta;
   frame_max_scroll_delta_ =
       std::max(std::abs(scroll_delta.x()), std::abs(scroll_delta.y()));
-  if (settings().scrollbar_flash_after_any_scroll_update) {
-    FlashAllScrollbars(true);
-  } else {
+
+  // If the given |element_id| was flashed along with other scrollbars, we don't
+  // need to flash it again.
+  if (!MaybeFlashAllScrollbars(element_id, /*did_scroll=*/true)) {
     if (ScrollbarAnimationController* animation_controller =
-            ScrollbarAnimationControllerForElementId(element_id))
+            ScrollbarAnimationControllerForElementId(element_id)) {
       animation_controller->DidScrollUpdate();
+    }
   }
+
+  // Also flash the scrollbars that became visible due to this scroll update.
+  MaybeFlashEnteredViewportScrollbars(element_id, scroll_delta);
 
   // We may wish to prioritize smoothness over raster when the user is
   // interacting with content, but this needs to be evaluated only for direct
@@ -5221,6 +5244,15 @@ void LayerTreeHostImpl::RegisterScrollbarAnimationController(
   scrollbar_animation_controllers_[scroll_element_id] =
       active_tree_->CreateScrollbarAnimationController(scroll_element_id,
                                                        scrollbar_opacity);
+  // There mustn't be a scrollbar for this element id that has been flashed.
+  if (settings().scrollbar_flash_once_visible_on_viewport) {
+    CHECK(flashed_scrollbars_.find(scroll_element_id) ==
+          flashed_scrollbars_.end());
+  }
+  if (settings().scrollbar_flash_once_visible_on_viewport) {
+    CHECK(previously_visible_scrollable_elements_.find(scroll_element_id) ==
+          previously_visible_scrollable_elements_.end());
+  }
 }
 
 void LayerTreeHostImpl::DidRegisterScrollbarLayer(
@@ -5233,8 +5265,13 @@ void LayerTreeHostImpl::DidRegisterScrollbarLayer(
 void LayerTreeHostImpl::DidUnregisterScrollbarLayer(
     ElementId scroll_element_id,
     ScrollbarOrientation orientation) {
-  if (ScrollbarsFor(scroll_element_id).empty())
+  if (ScrollbarsFor(scroll_element_id).empty()) {
     scrollbar_animation_controllers_.erase(scroll_element_id);
+    // Clean up the flashed state when removing scrollbar controller
+    flashed_scrollbars_.erase(scroll_element_id);
+    previously_visible_scrollable_elements_.erase(scroll_element_id);
+    accumulated_scroll_deltas_by_element_id_.erase(scroll_element_id);
+  }
   if (input_delegate_)
     input_delegate_->DidUnregisterScrollbar(scroll_element_id, orientation);
 }
@@ -5269,13 +5306,12 @@ LayerTreeHostImpl::ScrollbarAnimationControllerForElementId(
   return i->second.get();
 }
 
-void LayerTreeHostImpl::FlashAllScrollbars(bool did_scroll) {
-  for (auto& pair : scrollbar_animation_controllers_) {
-    if (did_scroll)
-      pair.second->DidScrollUpdate();
-    else
-      pair.second->WillUpdateScroll();
+void LayerTreeHostImpl::OnPageScaleUpdated() {
+  if (settings().scrollbar_flash_once_after_scroll_update) {
+    EraseFlashedScrollbars();
   }
+  MaybeFlashAllScrollbars(/*tracking_element_id=*/ElementId(),
+                          /*did_scroll=*/false);
 }
 
 void LayerTreeHostImpl::PostDelayedScrollbarAnimationTask(
@@ -6027,15 +6063,17 @@ void LayerTreeHostImpl::SetContextVisibility(bool is_visible) {
 }
 
 void LayerTreeHostImpl::ShowScrollbarsForImplScroll(ElementId element_id) {
-  if (settings_.scrollbar_flash_after_any_scroll_update) {
-    FlashAllScrollbars(true);
+  // If the element id was flashed along with other scrollbars or there is no
+  // element id, skip further steps.
+  if (!element_id ||
+      !MaybeFlashAllScrollbars(element_id, /*did_scroll=*/true)) {
     return;
   }
-  if (!element_id)
-    return;
+
   if (ScrollbarAnimationController* animation_controller =
-          ScrollbarAnimationControllerForElementId(element_id))
+          ScrollbarAnimationControllerForElementId(element_id)) {
     animation_controller->DidScrollUpdate();
+  }
 }
 
 void LayerTreeHostImpl::InitializeUkm(
@@ -6159,6 +6197,139 @@ bool LayerTreeHostImpl::RunningOnRendererProcess() const {
 
 void LayerTreeHostImpl::ResetHasInputForFrameInterval() {
   has_input_for_frame_interval_ = false;
+}
+
+bool LayerTreeHostImpl::MaybeFlashAllScrollbars(ElementId tracking_element_id,
+                                                bool did_scroll) {
+  bool has_tracking_element_id_flashed = false;
+  if (settings_.scrollbar_flash_after_any_scroll_update) {
+    FlashAllScrollbars(did_scroll);
+    // Always assume that the given |element_id| was flashed (along with the
+    // other scrollbars) since we are flashing all scrollbars.
+    has_tracking_element_id_flashed = true;
+  } else if (settings_.scrollbar_flash_once_after_scroll_update) {
+    // This call will flash all the scrollbars including the given |element_id|
+    // if it has not flashed them before.
+    has_tracking_element_id_flashed =
+        MaybeFlashAllScrollbarsOnce(tracking_element_id, did_scroll);
+  }
+  return has_tracking_element_id_flashed;
+}
+
+void LayerTreeHostImpl::FlashAllScrollbars(bool did_scroll) {
+  CHECK(settings().scrollbar_flash_after_any_scroll_update);
+  for (auto& pair : scrollbar_animation_controllers_) {
+    if (did_scroll) {
+      pair.second->DidScrollUpdate();
+    } else {
+      pair.second->WillUpdateScroll();
+    }
+  }
+}
+
+void LayerTreeHostImpl::EraseFlashedScrollbars() {
+  CHECK(settings().scrollbar_flash_once_after_scroll_update);
+  flashed_scrollbars_.clear();
+}
+
+bool LayerTreeHostImpl::MaybeFlashAllScrollbarsOnce(
+    ElementId tracking_element_id,
+    bool did_scroll) {
+  CHECK(settings().scrollbar_flash_once_after_scroll_update);
+  bool flashed_tracking_element_id = false;
+  for (auto& pair : scrollbar_animation_controllers_) {
+    ElementId element_id = pair.first;
+
+    // Skip if this scrollbar has already been flashed
+    if (flashed_scrollbars_.find(element_id) != flashed_scrollbars_.end()) {
+      continue;
+    }
+
+    // Flash the scrollbar and mark it as flashed
+    if (did_scroll) {
+      pair.second->DidScrollUpdate();
+    } else {
+      pair.second->WillUpdateScroll();
+    }
+    flashed_scrollbars_.insert(element_id);
+    flashed_tracking_element_id = element_id == tracking_element_id;
+  }
+  return flashed_tracking_element_id;
+}
+
+void LayerTreeHostImpl::MaybeFlashEnteredViewportScrollbars(
+    ElementId element_id,
+    const gfx::Vector2dF& scroll_delta) {
+  if (!settings().scrollbar_flash_once_visible_on_viewport) {
+    return;
+  }
+
+  // First check that scrolling delta is larger than the threshold.
+  const gfx::Vector2dF last_scroll_delta =
+      accumulated_scroll_deltas_by_element_id_[element_id];
+  const gfx::Vector2dF new_scroll_delta = last_scroll_delta + scroll_delta;
+  // If length of last scroll vector is smaller than new scroll vector, reset
+  // them, the scroll direction has changed. Reset it. Otherwise, accumulate.
+  if (last_scroll_delta.Length() > new_scroll_delta.Length()) {
+    accumulated_scroll_deltas_by_element_id_[element_id] = scroll_delta;
+  } else {
+    accumulated_scroll_deltas_by_element_id_[element_id] = new_scroll_delta;
+  }
+
+  if (std::abs(accumulated_scroll_deltas_by_element_id_[element_id].x()) <
+          kScrollDeltaThreshold &&
+      std::abs(accumulated_scroll_deltas_by_element_id_[element_id].y()) <
+          kScrollDeltaThreshold) {
+    return;
+  }
+
+  accumulated_scroll_deltas_by_element_id_[element_id] = gfx::Vector2dF();
+
+  const gfx::Rect visible_viewport_rect = active_tree_->GetDeviceViewport();
+  for (const auto& [scroll_element_id, controller] :
+       scrollbar_animation_controllers_) {
+    // Skip the scrollbar that is being scrolled.
+    if (scroll_element_id == element_id) {
+      continue;
+    }
+
+    ScrollbarSet scrollbars = ScrollbarsFor(scroll_element_id);
+    if (scrollbars.empty()) {
+      continue;
+    }
+
+    gfx::Rect combined_bounds_in_screen;
+    for (ScrollbarLayerImplBase* scrollbar_layer : scrollbars) {
+      gfx::Rect scrollbar_bounds_in_screen = MathUtil::MapEnclosingClippedRect(
+          scrollbar_layer->ScreenSpaceTransform(),
+          gfx::Rect(scrollbar_layer->bounds()));
+
+      if (combined_bounds_in_screen.IsEmpty()) {
+        combined_bounds_in_screen = scrollbar_bounds_in_screen;
+      } else {
+        combined_bounds_in_screen.Union(scrollbar_bounds_in_screen);
+      }
+    }
+
+    bool was_visible =
+        previously_visible_scrollable_elements_.count(scroll_element_id);
+
+    const gfx::Rect intersection =
+        gfx::IntersectRects(visible_viewport_rect, combined_bounds_in_screen);
+    // If intersection area is threshold of combined bounds area, consider it
+    // as visible.
+    const bool is_visible = (intersection.width() * intersection.height() >=
+                             combined_bounds_in_screen.width() *
+                                 combined_bounds_in_screen.height() *
+                                 kIntersectionThresholdAreaPercentage);
+
+    if (is_visible && !was_visible) {
+      controller->DidScrollUpdate();
+      previously_visible_scrollable_elements_.insert(scroll_element_id);
+    } else if (!is_visible && was_visible) {
+      previously_visible_scrollable_elements_.erase(scroll_element_id);
+    }
+  }
 }
 
 }  // namespace cc
