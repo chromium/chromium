@@ -24,10 +24,6 @@
 #include "net/socket/stream_socket.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
-namespace crypto {
-class RSAPrivateKey;
-}  // namespace crypto
-
 namespace net {
 
 struct SSLServerConfig;
@@ -75,14 +71,6 @@ NET_EXPORT std::unique_ptr<SSLServerContext> CreateSSLServerContext(
 NET_EXPORT std::unique_ptr<SSLServerContext> CreateSSLServerContext(
     base::span<const bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain,
     EVP_PKEY* pkey,
-    const SSLServerConfig& ssl_config);
-
-// As above, but takes an RSAPrivateKey object. Deprecated, use the EVP_PKEY
-// version instead.
-// TODO(mattm): convert existing callers and remove this function.
-NET_EXPORT std::unique_ptr<SSLServerContext> CreateSSLServerContext(
-    X509Certificate* certificate,
-    const crypto::RSAPrivateKey& key,
     const SSLServerConfig& ssl_config);
 
 NET_EXPORT std::unique_ptr<SSLServerContext> CreateSSLServerContext(

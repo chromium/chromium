@@ -17,7 +17,6 @@
 #include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "crypto/openssl_util.h"
-#include "crypto/rsa_private_key.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_verify_result.h"
@@ -951,14 +950,6 @@ std::unique_ptr<SSLServerContext> CreateSSLServerContext(
   }
   return std::make_unique<SSLServerContextImpl>(std::move(copied_cert_chain),
                                                 pkey, ssl_server_config);
-}
-
-std::unique_ptr<SSLServerContext> CreateSSLServerContext(
-    X509Certificate* certificate,
-    const crypto::RSAPrivateKey& key,
-    const SSLServerConfig& ssl_server_config) {
-  return std::make_unique<SSLServerContextImpl>(certificate, key.key(),
-                                                ssl_server_config);
 }
 
 std::unique_ptr<SSLServerContext> CreateSSLServerContext(
