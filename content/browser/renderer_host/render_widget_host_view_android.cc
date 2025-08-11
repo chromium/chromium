@@ -1741,8 +1741,6 @@ void RenderWidgetHostViewAndroid::Destroy() {
   }
   UpdateNativeViewTree(/*parent_native_view=*/nullptr,
                        /*parent_layer=*/nullptr);
-  delegated_frame_host_.reset();
-  delegated_frame_host_client_.reset();
 
   if (GetTextInputManager() && GetTextInputManager()->HasObserver(this))
     GetTextInputManager()->RemoveObserver(this);
@@ -1753,7 +1751,14 @@ void RenderWidgetHostViewAndroid::Destroy() {
   // Call this before the derived class is destroyed so that virtual function
   // calls back into `this` still work.
   NotifyObserversAboutShutdown();
+
+  // Reset DelegatedFrameHostAndroid after notifying observers which can
+  // recurse back and use DFHA.
+  delegated_frame_host_.reset();
+  delegated_frame_host_client_.reset();
+
   RenderWidgetHostViewBase::Destroy();
+
   delete this;
 }
 
