@@ -47,17 +47,6 @@ CursorController* CursorController::GetInstance() {
   return base::Singleton<CursorController>::get();
 }
 
-void CursorController::AddCursorObserver(CursorObserver* observer) {
-  base::AutoLock lock(cursor_observers_lock_);
-  CHECK(!base::Contains(cursor_observers_, observer));
-  cursor_observers_.push_back(observer);
-}
-
-void CursorController::RemoveCursorObserver(CursorObserver* observer) {
-  base::AutoLock lock(cursor_observers_lock_);
-  std::erase(cursor_observers_, observer);
-}
-
 void CursorController::SetCursorConfigForWindow(
     gfx::AcceleratedWidget widget,
     display::Display::Rotation rotation,
@@ -79,13 +68,6 @@ void CursorController::ApplyCursorConfigForWindow(gfx::AcceleratedWidget widget,
   auto it = window_to_cursor_configuration_map_.find(widget);
   if (it != window_to_cursor_configuration_map_.end())
     TransformCursorMove(it->second.rotation, it->second.scale, delta);
-}
-
-void CursorController::SetCursorLocation(const gfx::PointF& location) {
-  base::AutoLock lock(cursor_observers_lock_);
-  for (auto* observer : cursor_observers_) {
-    observer->OnCursorLocationChanged(location);
-  }
 }
 
 CursorController::CursorController() {
