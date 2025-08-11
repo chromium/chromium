@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_SIDE_PANEL_UTILS_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_SIDE_PANEL_UTILS_H_
 
+#include <optional>
+
 #include "extensions/common/extension_id.h"
 
 class Browser;
