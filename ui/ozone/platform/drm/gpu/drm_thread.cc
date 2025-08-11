@@ -175,20 +175,6 @@ void DrmThread::CreateBuffer(gfx::AcceleratedWidget widget,
   }
 }
 
-void DrmThread::CreateBufferAsync(gfx::AcceleratedWidget widget,
-                                  const gfx::Size& size,
-                                  gfx::BufferFormat format,
-                                  gfx::BufferUsage usage,
-                                  uint32_t client_flags,
-                                  CreateBufferAsyncCallback callback) {
-  TRACE_EVENT0("drm", "DrmThread::CreateBufferAsync");
-  std::unique_ptr<GbmBuffer> buffer;
-  scoped_refptr<DrmFramebuffer> framebuffer;
-  CreateBuffer(widget, size, /*framebuffer_size=*/size, format, usage,
-               client_flags, &buffer, &framebuffer);
-  std::move(callback).Run(std::move(buffer), std::move(framebuffer));
-}
-
 void DrmThread::CreateBufferFromHandle(
     gfx::AcceleratedWidget widget,
     const gfx::Size& size,
