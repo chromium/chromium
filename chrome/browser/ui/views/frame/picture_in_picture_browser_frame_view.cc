@@ -341,6 +341,12 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
 
 void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
     MaybeResizeForChildDialog(views::Widget* child_dialog) {
+  // If the pip window in the process of closing ignore any resizes that could
+  // occur as child dialogs are destroyed during teardown.
+  if (pip_widget_->IsClosed()) {
+    return;
+  }
+
   if (resizing_state_ == ResizingState::kResizeForChildInProgress) {
     // If we're in the middle of a resize to match the child, ignore any
     // resizes that the child might do as a result.
@@ -401,6 +407,12 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
 
 void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
     MaybeRevertSizeAfterChildDialogCloses() {
+  // If the pip window in the process of closing ignore any resizes that could
+  // occur as child dialogs are destroyed during teardown.
+  if (pip_widget_->IsClosed()) {
+    return;
+  }
+
   // If we still have another visible child dialog, continue to maintain the
   // size.
   if (child_dialog_observations_.GetSourcesCount() >
