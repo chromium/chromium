@@ -31,6 +31,7 @@ source_set("coordinator") {
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
     "//components/prefs",
+    "//components/themes",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list:utils",
     "//ios/chrome/browser/discover_feed/model:constants",

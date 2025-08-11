@@ -40,6 +40,11 @@ std::string GetImageOptions();
 GURL AddOptionsToImageURL(const std::string& image_url,
                           const std::string& image_options);
 
+// Removes the options for resizing an image from a url. The URL includes the
+// options after a single `=` but all still part of the path, so they can't be
+// removed with built-in URL modification tools.
+GURL RemoveOptionsFromImageURL(const std::string& image_url);
+
 // Background images are organized into collections, according to a theme. This
 // struct contains the data required to display information about a collection,
 // including a representative image. The complete set of CollectionImages must

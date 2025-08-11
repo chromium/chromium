@@ -51,6 +51,12 @@ GURL AddOptionsToImageURL(const std::string& image_url,
                                : std::string("")));
 }
 
+GURL RemoveOptionsFromImageURL(const std::string& image_url) {
+  return GURL((image_url.rfind('=') == std::string::npos)
+                  ? image_url
+                  : image_url.substr(0, image_url.rfind('=')));
+}
+
 CollectionInfo::CollectionInfo() = default;
 CollectionInfo::CollectionInfo(const CollectionInfo&) = default;
 CollectionInfo::CollectionInfo(CollectionInfo&&) = default;

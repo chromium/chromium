@@ -12,6 +12,7 @@
 #import "components/image_fetcher/core/image_fetcher.h"
 #import "components/image_fetcher/core/image_fetcher_service.h"
 #import "components/prefs/pref_service.h"
+#import "components/themes/ntp_background_data.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/utils.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
@@ -279,7 +280,9 @@
   if (currentBackground) {
     CollectionImage image;
     image.collection_id = currentBackground->collection_id();
-    image.thumbnail_image_url = GURL(currentBackground->url());
+    image.thumbnail_image_url = AddOptionsToImageURL(
+        RemoveOptionsFromImageURL(currentBackground->url()).spec(),
+        GetThumbnailImageOptions());
     image.image_url = GURL(currentBackground->url());
 
     image.attribution.push_back(currentBackground->attribution_line_1());

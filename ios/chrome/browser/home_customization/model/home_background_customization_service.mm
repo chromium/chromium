@@ -64,7 +64,6 @@ void HomeBackgroundCustomizationService::SetCurrentBackground(
     const std::string& collection_id) {
   sync_pb::NtpCustomBackground new_background;
   new_background.set_url(background_url.spec());
-  // TODO(crbug.com/411453550): Add thumbnail_url to NtpCustomBackground field.
   new_background.set_attribution_line_1(attribution_line_1);
   new_background.set_attribution_line_2(attribution_line_2);
   new_background.set_attribution_action_url(attribution_action_url.spec());
