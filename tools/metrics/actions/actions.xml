@@ -24088,6 +24088,47 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiFREConsentAccept">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Reported when the user accepts the BWG FRE consent. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiFREConsentDismiss">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Reported when the user dismisses the BWG FRE consent. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiFREConsentLinkClick">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Reported when the user clicks any link (privacy notice, learn more, etc.) on
+    the BWG FRE consent screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiFREPromoAccept">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Reported when the user accepts the BWG FRE promo. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiFREPromoCancel">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Reported when the user dismisses the BWG FRE promo. iOS only.
+  </description>
+</action>
+
 <action name="MobileGeminiFREShown">
   <owner>kanouche@google.com</owner>
   <description>Reported when the BWG FRE was shown. iOS only.</description>
