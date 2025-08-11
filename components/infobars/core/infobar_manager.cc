@@ -176,7 +176,6 @@ bool InfoBarManager::ShouldHideInFullscreen() const {
   return std::all_of(infobars_.begin(), infobars_.end(), [](InfoBar* infobar) {
     return infobar->delegate()->ShouldHideInFullscreen();
   });
-  ;
 }
 
 bool InfoBarManager::ShouldShowInfoBar(const InfoBar* infobar) const {
