@@ -391,9 +391,7 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
           &main_thread_scheduler_impl->tracing_controller_,
           YesNoStateToString),
       background_status_changed_at(now),
-      metrics_helper(main_thread_scheduler_impl,
-                     now,
-                     kLaunchingProcessIsBackgrounded),
+      metrics_helper(now, kLaunchingProcessIsBackgrounded),
       task_description_for_tracing(
           std::nullopt,
           MakeNamedTrack("Scheduler.MainThreadTask", this),

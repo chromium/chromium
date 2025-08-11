@@ -389,8 +389,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   BackForwardCacheDisablingFeatureTracker
       back_forward_cache_disabling_feature_tracker_;
 
-  TaskPriority default_loading_task_priority_ = TaskPriority::kNormalPriority;
-
   // These are the states of the Page.
   // They should be accessed via GetPageScheduler()->SetPageState().
   // they are here because we don't support page-level tracing yet.

@@ -49,12 +49,9 @@ bool ShouldDiscardTask(
 
 }  // namespace
 
-MainThreadMetricsHelper::MainThreadMetricsHelper(
-    MainThreadSchedulerImpl* main_thread_scheduler,
-    base::TimeTicks now,
-    bool in_background)
-    : main_thread_scheduler_(main_thread_scheduler),
-      renderer_shutting_down_(false),
+MainThreadMetricsHelper::MainThreadMetricsHelper(base::TimeTicks now,
+                                                 bool in_background)
+    : renderer_shutting_down_(false),
       main_thread_load_tracker_(
           now,
           base::BindRepeating(
