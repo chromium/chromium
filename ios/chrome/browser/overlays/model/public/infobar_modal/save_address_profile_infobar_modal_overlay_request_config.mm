@@ -32,6 +32,12 @@ SaveAddressProfileModalRequestConfig::SaveAddressProfileModalRequestConfig(
   if (IsUpdateModal()) {
     StoreProfileDiff(delegate->GetProfileDiff());
     update_modal_description_ = delegate->GetSubtitle();
+    is_profile_a_home_profile_ =
+        (delegate->GetOriginalProfile()->record_type() ==
+         autofill::AutofillProfile::RecordType::kAccountHome);
+    is_profile_a_work_profile_ =
+        (delegate->GetOriginalProfile()->record_type() ==
+         autofill::AutofillProfile::RecordType::kAccountWork);
   }
 
   current_address_profile_saved_ = infobar->accepted();

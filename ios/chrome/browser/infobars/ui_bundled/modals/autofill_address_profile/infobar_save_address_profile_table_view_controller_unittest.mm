@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/infobars/ui_bundled/modals/autofill_address_profile/infobar_save_address_profile_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/types/cxx23_to_underlying.h"
 #import "components/autofill/core/browser/field_types.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/autofill_address_profile/infobar_save_address_profile_modal_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
@@ -104,6 +106,43 @@ class InfobarSaveAddressProfileTableViewControllerTest
       kUpdateModalDescriptionKey : @"For John Doe, 345 Spear Street",
       kUserEmailKey : @"test@gmail.com",
       kIsProfileAnAccountProfileKey : @(true)
+    };
+    return prefs;
+  }
+
+  NSDictionary* GetDataForAddInAccountModal() {
+    NSDictionary* prefs = @{
+      kAddressPrefKey : @"",
+      kPhonePrefKey : @"",
+      kEmailPrefKey : @"",
+      kCurrentAddressProfileSavedPrefKey : @(false),
+      kIsUpdateModalPrefKey : @(true),
+      kProfileDataDiffKey : @{
+        [NSNumber numberWithInt:base::to_underlying(autofill::NAME_FULL)] :
+            @[ @"John H. Doe", @"" ]
+      },
+      kUpdateModalDescriptionKey : @"For John Doe, 345 Spear Street",
+      kUserEmailKey : @"test@gmail.com",
+      kIsProfileAnAccountProfileKey : @(true)
+    };
+    return prefs;
+  }
+
+  NSDictionary* GetDataForHomeUpdateInAccountModal() {
+    NSDictionary* prefs = @{
+      kAddressPrefKey : @"",
+      kPhonePrefKey : @"",
+      kEmailPrefKey : @"",
+      kCurrentAddressProfileSavedPrefKey : @(false),
+      kIsUpdateModalPrefKey : @(true),
+      kProfileDataDiffKey : @{
+        [NSNumber numberWithInt:base::to_underlying(autofill::NAME_FULL)] :
+            @[ @"John Doe", @"John H. Doe" ]
+      },
+      kUpdateModalDescriptionKey : @"For John Doe, 345 Spear Street",
+      kUserEmailKey : @"test@gmail.com",
+      kIsProfileAnAccountProfileKey : @(true),
+      kIsProfileAnAccountHomeKey : @(true)
     };
     return prefs;
   }
@@ -229,4 +268,56 @@ TEST_F(InfobarSaveAddressProfileTableViewControllerTest,
                     0, 5);
   CheckTextButtonCellButtonTextWithId(
       IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL, 0, 6);
+}
+
+// Tests that the modal has been initialized for updating the Google account
+// profile with new info.
+TEST_F(InfobarSaveAddressProfileTableViewControllerTest,
+       TestAddInExistingAccountProfileModalInitialization) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      autofill::features::kAutofillEnableSupportForHomeAndWork);
+  CreateController();
+  CheckController();
+  InfobarSaveAddressProfileTableViewController* update_view_controller =
+      base::apple::ObjCCastStrict<InfobarSaveAddressProfileTableViewController>(
+          controller());
+  [update_view_controller
+      setupModalViewControllerWithPrefs:GetDataForAddInAccountModal()];
+  [update_view_controller viewDidLoad];
+
+  CheckTitleWithId(IDS_IOS_AUTOFILL_ADD_NEW_INFO_ADDRESS_PROMPT_TITLE);
+  EXPECT_EQ(1, NumberOfSections());
+  EXPECT_EQ(4, NumberOfItemsInSection(0));
+  CheckTextCellText(l10n_util::GetNSStringF(
+                        IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT,
+                        u"test@gmail.com"),
+                    0, 2);
+  CheckTextButtonCellButtonTextWithId(
+      IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_OK_BUTTON_LABEL, 0, 3);
+}
+
+// Tests that the modal has been initialized for adding new profile by adding
+// new data to an existing home profile.
+TEST_F(InfobarSaveAddressProfileTableViewControllerTest,
+       TestUpdateInAccountHomeModalInitialization) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      autofill::features::kAutofillEnableSupportForHomeAndWork);
+  CreateController();
+  CheckController();
+  InfobarSaveAddressProfileTableViewController* update_view_controller =
+      base::apple::ObjCCastStrict<InfobarSaveAddressProfileTableViewController>(
+          controller());
+  [update_view_controller
+      setupModalViewControllerWithPrefs:GetDataForHomeUpdateInAccountModal()];
+  [update_view_controller viewDidLoad];
+
+  CheckTitleWithId(IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
+  EXPECT_EQ(1, NumberOfSections());
+  EXPECT_EQ(7, NumberOfItemsInSection(0));
+  CheckTextCellText(
+      l10n_util::GetNSStringF(IDS_AUTOFILL_ADDRESS_HOME_RECORD_TYPE_NOTICE,
+                              u"test@gmail.com"),
+      0, 5);
+  CheckTextButtonCellButtonTextWithId(
+      IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL, 0, 6);
 }

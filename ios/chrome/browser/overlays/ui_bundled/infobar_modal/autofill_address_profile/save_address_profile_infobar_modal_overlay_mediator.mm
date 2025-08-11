@@ -68,6 +68,8 @@ using save_address_profile_infobar_modal_responses::NoThanksViewAction;
         ? base::SysUTF16ToNSString(config->user_email().value())
         : @"",
     kIsProfileAnAccountProfileKey : @(config->is_profile_an_account_profile()),
+    kIsProfileAnAccountHomeKey : @(config->is_profile_a_home_profile()),
+    kIsProfileAnAccountWorkKey : @(config->is_profile_a_work_profile()),
     kProfileDescriptionForMigrationPromptKey : base::SysUTF16ToNSString(
         config->profile_description_for_migration_prompt())
   };

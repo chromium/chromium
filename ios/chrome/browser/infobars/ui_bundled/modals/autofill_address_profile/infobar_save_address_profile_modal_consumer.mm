@@ -15,5 +15,7 @@ NSString* const kUpdateModalDescriptionKey = @"UpdateModalDescriptionKey";
 NSString* const kUserEmailKey = @"UserEmailKey";
 NSString* const kIsMigrationToAccountKey = @"IsMigrationToAccountKey";
 NSString* const kIsProfileAnAccountProfileKey = @"IsProfileAnAccountProfileKey";
+NSString* const kIsProfileAnAccountHomeKey = @"IsProfileAnAccountHomeKey";
+NSString* const kIsProfileAnAccountWorkKey = @"IsProfileAnAccountWorkKey";
 NSString* const kProfileDescriptionForMigrationPromptKey =
     @"ProfileDescriptionForMigrationPromptKey";

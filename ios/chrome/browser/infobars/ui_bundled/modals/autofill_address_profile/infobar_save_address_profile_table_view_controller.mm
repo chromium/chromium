@@ -86,6 +86,10 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
 // IF YES, for update prompt, the profile belongs to the Google Account.
 // For save prompt, denotes that the profile will be saved to Google Account.
 @property(nonatomic, assign) BOOL profileAnAccountProfile;
+// If YES, the update prompt is shown for home profile.
+@property(nonatomic, assign) BOOL homeProfile;
+// If YES, the update prompt is shown for work profile.
+@property(nonatomic, assign) BOOL workProfile;
 // Description shown in the migration prompt.
 @property(nonatomic, copy) NSString* profileDescriptionForMigrationPrompt;
 
@@ -147,22 +151,7 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
 
   self.navigationController.navigationBar.prefersLargeTitles = NO;
 
-  if (self.isMigrationToAccount) {
-    self.title = l10n_util::GetNSString(
-        IDS_IOS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_TITLE);
-  } else if (self.isUpdateModal) {
-    self.title = l10n_util::GetNSString(
-        base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableSupportForHomeAndWork) &&
-                ![self shouldShowOldSection]
-            ? IDS_IOS_AUTOFILL_ADD_NEW_INFO_ADDRESS_PROMPT_TITLE
-            : IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
-  } else {
-    self.title = l10n_util::GetNSString(
-        self.isMigrationToAccount
-            ? IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_PROMPT_TITLE
-            : IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
-  }
+  self.title = [self computeTitle];
 
   [self loadModel];
 }
@@ -251,6 +240,8 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
   self.userEmail = prefs[kUserEmailKey];
   self.profileAnAccountProfile =
       [prefs[kIsProfileAnAccountProfileKey] boolValue];
+  self.homeProfile = [prefs[kIsProfileAnAccountHomeKey] boolValue];
+  self.workProfile = [prefs[kIsProfileAnAccountWorkKey] boolValue];
   self.profileDescriptionForMigrationPrompt =
       prefs[kProfileDescriptionForMigrationPromptKey];
   [self.tableView reloadData];
@@ -417,12 +408,17 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
     saveUpdateButton.buttonText = l10n_util::GetNSString(
         IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_OK_BUTTON_LABEL);
   } else if (self.isUpdateModal) {
-    saveUpdateButton.buttonText = l10n_util::GetNSString(
-        base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableSupportForHomeAndWork) &&
-                ![self shouldShowOldSection]
-            ? IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_OK_BUTTON_LABEL
-            : IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+    int buttonTextId = IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL;
+    if (base::FeatureList::IsEnabled(
+            autofill::features::kAutofillEnableSupportForHomeAndWork)) {
+      if (self.homeProfile || self.workProfile) {
+        buttonTextId = IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL;
+      } else if (![self shouldShowOldSection]) {
+        buttonTextId =
+            IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_OK_BUTTON_LABEL;
+      }
+    }
+    saveUpdateButton.buttonText = l10n_util::GetNSString(buttonTextId);
   } else {
     saveUpdateButton.buttonText = l10n_util::GetNSString(
         IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
@@ -491,6 +487,32 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
   return NO;
 }
 
+// Returns the title of the view.
+- (NSString*)computeTitle {
+  if (self.isMigrationToAccount) {
+    return l10n_util::GetNSString(
+        IDS_IOS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_TITLE);
+  }
+
+  if (!self.isUpdateModal) {
+    return l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableSupportForHomeAndWork)) {
+    return l10n_util::GetNSString(IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
+  }
+
+  if (self.homeProfile || self.workProfile) {
+    return l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
+  }
+
+  return l10n_util::GetNSString(
+      [self shouldShowOldSection]
+          ? IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE
+          : IDS_IOS_AUTOFILL_ADD_NEW_INFO_ADDRESS_PROMPT_TITLE);
+}
+
 #pragma mark - Item Constructors
 
 // Returns a `SettingsImageDetailTextItem` for the fields to be shown in the
@@ -542,9 +564,14 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:ItemTypeFooter];
   CHECK([self.userEmail length] > 0);
-  item.text = l10n_util::GetNSStringF(
-      IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT,
-      base::SysNSStringToUTF16(self.userEmail));
+  int footerTextId =
+      self.homeProfile
+          ? IDS_AUTOFILL_ADDRESS_HOME_RECORD_TYPE_NOTICE
+          : (self.workProfile
+                 ? IDS_AUTOFILL_ADDRESS_WORK_RECORD_TYPE_NOTICE
+                 : IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT);
+  item.text = l10n_util::GetNSStringF(footerTextId,
+                                      base::SysNSStringToUTF16(self.userEmail));
   item.textFont = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   item.textColor = [UIColor colorNamed:kTextSecondaryColor];
   return item;

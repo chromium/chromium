@@ -18,6 +18,8 @@ extern NSString* const kUpdateModalDescriptionKey;
 extern NSString* const kUserEmailKey;
 extern NSString* const kIsMigrationToAccountKey;
 extern NSString* const kIsProfileAnAccountProfileKey;
+extern NSString* const kIsProfileAnAccountHomeKey;
+extern NSString* const kIsProfileAnAccountWorkKey;
 extern NSString* const kProfileDescriptionForMigrationPromptKey;
 
 // Consumer for model to push configurations to the SaveAddressProfile UI.
