@@ -1,6 +1,5 @@
 include_rules = [
   "+ash/shell.h",
-  "+chromeos/ash/experiences/arc/mojom",
   "+content/public/browser",
   "+content/public/test",
   "+media/base",

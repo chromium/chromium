@@ -3,8 +3,6 @@ noparent = True
 include_rules = [
   "+base",
   "+dbus",
-  "+net",
   "+testing",
   "+third_party/cros_system_api",
-  "+url",
 ]

@@ -1,6 +1,5 @@
 include_rules = [
   "+ash/shell.h",
-  "+chromeos/ash/components/memory",
   "+chromeos/ash/components/mojo_service_manager",
   "+chromeos/system",
   "+components/user_manager",

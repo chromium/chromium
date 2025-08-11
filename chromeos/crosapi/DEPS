@@ -2,10 +2,7 @@
 # low level Chrome OS system library that may be used by targets that need to
 # be kept as small as possible.
 include_rules = [
-  "+components/services/app_service/public",
   "+components/webapps/browser",
-  "+components/policy/core/common",
-  "+components/tab_groups",
   "+components/version_info",
 ]
 

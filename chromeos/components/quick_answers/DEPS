@@ -1,5 +1,4 @@
 include_rules = [
-  "+ash/public",
   "+chrome/common",
   "+components/language/core/browser",
   "+components/spellcheck/common",

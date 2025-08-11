@@ -3,7 +3,6 @@ include_rules = [
   "+chromeos/ash/components/network/network_ui_data.h",
   "+chromeos/ash/services/network_config/public/cpp",
   "+chromeos/services/network_config/public/cpp",
-  "+components/content_settings",
   "+components/gcm_driver",
   "+components/session_manager",
   "+components/sessions/core/session_id.h",

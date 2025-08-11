@@ -9,7 +9,6 @@ include_rules = [
   "+chromeos/ash/components/login/auth",
   "+components/prefs",
   "+components/user_manager",
-  "+content/public/browser",
 
   # Abseil is allowed by default, but some features are banned. See
   # //styleguide/c++/c++-features.md.
