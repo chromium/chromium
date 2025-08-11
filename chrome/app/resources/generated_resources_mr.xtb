@@ -4391,6 +4391,7 @@
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" /> ला USB डिव्हाइसचे नियंत्रण द्या.</translation>
 <translation id="3994318741694670028">दुर्दैवाने, तुमचा कॉंप्युटर हा समस्या असलेला हार्डवेअर आयडी वापरून कॉन्फिगर केला गेला आहे. यामुळे ChromeOS Flex वर नवीनतम सुरक्षा निराकरणे अपडेट करणे रोखले जात आहे आणि तुमच्या कॉंप्युटरवर <ph name="BEGIN_BOLD" />दुर्भावनापूर्ण हल्ले होण्याची शक्यता आहे<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">तुमचा फोन अनलॉक करा आणि तुमचे <ph name="DEVICE_TYPE" /> अनलॉक करण्यासाठी तो जवळ आणा.</translation>
+<translation id="3994522032746736727"><ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="3994530503403062649">तुमच्या टॅबलेटवरील बटणे शोधा</translation>
 <translation id="3994708120330953242">तुमचे काही पासवर्ड डेटा भंगामध्ये आढळले. तुमची खाती सुरक्षित करण्यासाठी, तुम्ही आता हे पासवर्ड बदलले पाहिजेत.</translation>
 <translation id="3994878504415702912">&amp;झूम करा</translation>
@@ -9295,6 +9296,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">पेज डाउन</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> थांबवले आहे</translation>
+<translation id="7517292544534877198">तुमच्या Google खाते मधील पासवर्डसाठी Google चे डीफॉल्ट एन्क्रिप्शन वापरा</translation>
 <translation id="7517959947270534934">तुमच्या कुटुंबातील सदस्याला सध्या पासवर्ड मिळू शकत नाहीत. त्यांना Chrome अपडेट आणि त्यांचे पासवर्ड सिंक करण्यास सांगा.</translation>
 <translation id="7518079994230200553">हा पर्याय सध्या उपलब्ध नाही.</translation>
 <translation id="7520766081042531487">गुप्त पोर्टल: <ph name="SUBFRAME_SITE" /></translation>

@@ -4392,6 +4392,7 @@
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" />-কে USB ডিভাইস কন্ট্রোল করতে দিন।</translation>
 <translation id="3994318741694670028">আপনার কম্পিউটার একটি ত্রুটিপূর্ণ হার্ডওয়্যার আইডির মাধ্যমে কনফিগার করা হয়েছে। এটি ChromeOS Flex-কে সাম্প্রতিক সুরক্ষা সমাধানে আপডেট করা থেকে বাধা দেয় এবং আপনার কম্পিউটার <ph name="BEGIN_BOLD" />ক্ষতিকর আক্রমণের ফলে সুরক্ষিত নাও হতে পারে<ph name="END_BOLD" />।</translation>
 <translation id="3994374631886003300">আপনার ফোন আনলক করুন এবং <ph name="DEVICE_TYPE" /> আনলক করতে কাছাকাছি আনুন।</translation>
+<translation id="3994522032746736727"><ph name="EMAIL" /> হিসেবে সাইন-ইন করুন</translation>
 <translation id="3994530503403062649">আপনার ট্যাবলেটে থাকা বোতামে ক্লিক করুন</translation>
 <translation id="3994708120330953242">আপনার সেভ করা কিছু পাসওয়ার্ড ডেটার নিরাপত্তা লঙ্ঘন করে দেখানো হয়েছে। আপনার অ্য়াকাউন্ট সুরক্ষিত রাখতে, এখনই এইসব পাসওয়ার্ড পরিবর্তন করতে হবে।</translation>
 <translation id="3994878504415702912">&amp;জুম</translation>
@@ -9299,6 +9300,7 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> পজ করা আছে</translation>
+<translation id="7517292544534877198">আপনার Google অ্যাকাউন্টের পাসওয়ার্ডের জন্য Google-এর ডিফল্ট এনক্রিপশন ব্যবহার করুন</translation>
 <translation id="7517959947270534934">আপনার পরিবারের সদস্য এই মুহূর্তে পাসওয়ার্ড রিসিভ করতে পারবেন না। তাকে Chrome আপডেট করে পাসওয়ার্ড সিঙ্ক করতে বলুন।</translation>
 <translation id="7518079994230200553">এই মুহূর্তে এই বিকল্প উপলভ্য নয়।</translation>
 <translation id="7520766081042531487">ছদ্মবেশী পোর্টাল: <ph name="SUBFRAME_SITE" /></translation>

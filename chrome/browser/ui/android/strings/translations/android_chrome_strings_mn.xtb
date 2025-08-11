@@ -1092,6 +1092,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" />-н байгаа табын бүлэгт нэгдэх</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Дэлгэрэнгүй мэдээлэл<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Хамгийн их зочилсон вэбсайтуудыг устгасан</translation>
+<translation id="6127860394906721547"><ph name="COLOR_NAME" /> өнгө, <ph name="URL_LIST" /> сайттай <ph name="TITLE_OF_GROUP" /> табын бүлгийг нээнэ үү.</translation>
 <translation id="6130303040046284160">Табыг багасгах</translation>
 <translation id="6134168885321518274">Олох хэсгийг нээх</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> таб}other{<ph name="TAB_COUNT_MANY" /> таб}}</translation>

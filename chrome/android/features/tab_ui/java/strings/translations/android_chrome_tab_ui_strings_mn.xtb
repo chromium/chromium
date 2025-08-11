@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">Бүлэг доторх шинэ таб</translation>
 <translation id="2918484639460781603">Тохиргоо руу очих</translation>
 <translation id="2928243913527329289">Google | Энэ дэлгүүрийн тухай</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" />-г сонгосон}other{<ph name="ITEMS_COUNT_MANY" />-г сонгосон}}</translation>
 <translation id="3008554597174452548">Бүтээгдэхүүн хянахаа зогсоох</translation>
 <translation id="3026391124054406831">Табуудаа цэгцлэхийн тулд бүлэг үүсгэнэ үү.</translation>
 <translation id="3051031624272448591">Та тэдгээрийг түүхээс хүссэн үедээ буцааж авах боломжтой</translation>

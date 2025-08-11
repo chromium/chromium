@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">Joriy guruhda yangi varaq ochish</translation>
 <translation id="2918484639460781603">Sozlamalarni ochish</translation>
 <translation id="2928243913527329289">Google | Bu doʻkon haqida</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> ta tanlandi}other{<ph name="ITEMS_COUNT_MANY" /> ta tanlandi}}</translation>
 <translation id="3008554597174452548">Mahsulot kuzatuvini toʻxtatish</translation>
 <translation id="3026391124054406831">Varaqlarni tartiblash uchun guruhlar yaratish.</translation>
 <translation id="3051031624272448591">Ularni istalgan vaqt tarix sahifasidan olish mumkin</translation>

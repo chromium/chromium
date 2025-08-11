@@ -120,7 +120,9 @@
 <translation id="2379925928934107488">‏استفاده از زمینه تاریک برای سایت‌ها وقتی Chrome از زمینه تاریک استفاده می‌کند (هرگاه ممکن باشد)</translation>
 <translation id="2390272837142897736">افزایش بزرگ‌نمایی</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> مگابایت</translation>
+<translation id="2403474027143565107">دقیق</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}one{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}}</translation>
+<translation id="2404857459073803936">دسترسی به مکان برای این سایت</translation>
 <translation id="2410940059315936967">سایتی که بازدید می‌کنید می‌تواند از سایت‌های دیگر محتوایی مثل تصویر، آگهی، و نوشتار جاسازی کند. کوکی‌های تنظیم‌شده توسط سایت‌های دیگر کوکی‌های طرف سوم نامیده می‌شوند.</translation>
 <translation id="2411116727035790889">روشن کردن میان‌برها</translation>
 <translation id="2433507940547922241">شکل ظاهری</translation>
@@ -276,6 +278,7 @@
 <translation id="3992684624889376114">درباره این صفحه</translation>
 <translation id="4002066346123236978">عنوان</translation>
 <translation id="4031179711345676612">میکروفون مجاز است</translation>
+<translation id="4042597221652780603">تقریبی</translation>
 <translation id="4046123991198612571">آهنگ بعدی</translation>
 <translation id="4077310749977440510">سایت‌ها برای ارائه ویژگی‌هایی مثل حفظ قالب نوشتاری که کپی می‌کنید، معمولاً بریده‌دان شما را می‌خوانند</translation>
 <translation id="4082080074595021446">‏افزودن استثنا برای وب‌سایت‌های خاص غیرمجاز است زیرا دستگاه Android حافظه دسترسی تصادفی کافی ندارد.</translation>

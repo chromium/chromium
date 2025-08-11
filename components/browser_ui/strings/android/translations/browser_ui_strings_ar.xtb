@@ -120,7 +120,9 @@
 <translation id="2379925928934107488">‏يمكنك تطبيق "المظهر الداكن" على المواقع الإلكترونية عندما يستخدم Chrome "المظهر الداكن"، إن أمكن ذلك.</translation>
 <translation id="2390272837142897736">تكبير</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> ميغابايت</translation>
+<translation id="2403474027143565107">دقيق</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذن واحد (<ph name="NUM_MORE" />) آخر.}zero{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}two{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذنَين (<ph name="NUM_MORE" />) آخرَين.}few{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> أذونات أخرى.}many{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذنًا آخر.}other{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}}</translation>
+<translation id="2404857459073803936">الوصول إلى الموقع الجغرافي لهذا الموقع الإلكتروني</translation>
 <translation id="2410940059315936967">يمكن للموقع الإلكتروني الذي تنتقل إليه أن يضمِّن محتوى من مواقع إلكترونية أخرى، مثل الصور والإعلانات والنصوص. ويُطلق على ملفات تعريف الارتباط التي تضبطها هذه المواقع الإلكترونية الأخرى اسم "ملفات تعريف الارتباط التابعة لجهات خارجية".</translation>
 <translation id="2411116727035790889">تفعيل الاختصارات</translation>
 <translation id="2433507940547922241">المظهر</translation>
@@ -277,6 +279,7 @@
 <translation id="3992684624889376114">لمحة حول هذه الصفحة</translation>
 <translation id="4002066346123236978">العنوان</translation>
 <translation id="4031179711345676612">تم السماح باستخدام الميكروفون</translation>
+<translation id="4042597221652780603">تقريبي</translation>
 <translation id="4046123991198612571">المقطع الصوتي التالي</translation>
 <translation id="4077310749977440510">تقرأ المواقع الإلكترونية عادةً البيانات المخزَّنة في الحافظة لتتيح ميزات مثل الحفاظ على تنسيق النصوص المنسوخة</translation>
 <translation id="4082080074595021446">‏لا يمكن إضافة استثناءات لمواقع إلكترونية معيّنة لأنّ جهاز Android لا تتوفّر به ذاكرة وصول عشوائي (RAM) كافية.</translation>

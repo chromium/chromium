@@ -4377,6 +4377,7 @@
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" />-ին թույլ տվեք կառավարել USB սարքերը։</translation>
 <translation id="3994318741694670028">Ձեր համակարգիչը կազմաձևված է սարքակազմի սխալ ID-ով։ Սա թույլ չի տալիս, որպեսզի ChromeOS Flex-ը ստանա անվտանգության վերջին թարմացումները, և ձեր համակարգիչը <ph name="BEGIN_BOLD" />կարող է վնասաբեր հարձակումների թիրախ դառնալ<ph name="END_BOLD" />։</translation>
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" /> սարքն ապակողպելու համար ապակողպեք ձեր հեռախոսը և այն մոտեցրեք սարքին։</translation>
+<translation id="3994522032746736727">Մուտք գործել որպես <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Գտեք պլանշետի կոճակները</translation>
 <translation id="3994708120330953242">Տվյալների արտահոսքի հետևանքով ձեր որոշ գաղտնաբառեր բացահայտվել են։ Ձեր հաշիվները պաշտպանելու համար անհապաղ փոխեք գաղտնաբառերը։</translation>
 <translation id="3994878504415702912">&amp;Խոշորացնել</translation>
@@ -9277,6 +9278,7 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> հավելվածի աշխատանքը դադարեցված է</translation>
+<translation id="7517292544534877198">Օգտագործել Google-ի կանխադրված գաղտնագրումը գաղտնաբառերի համար ձեր Google հաշվում</translation>
 <translation id="7517959947270534934">Ձեր ընտանիքի անդամն այս պահին չի կարող գաղտնաբառեր ստանալ։ Խնդրեք նրան թարմացնել Chrome-ը և համաժամացնել իր գաղտնաբառերը։</translation>
 <translation id="7518079994230200553">Այս եղանակը ներկայումս հասանելի չէ։</translation>
 <translation id="7520766081042531487">Ինկոգնիտո պորտալ՝ <ph name="SUBFRAME_SITE" /></translation>

@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">ແຖບໃໝ່ໃນກຸ່ມ</translation>
 <translation id="2918484639460781603">ເຂົ້າໄປຫາການຕັ້ງຄ່າ</translation>
 <translation id="2928243913527329289">Google | ກ່ຽວກັບຮ້ານຄ້ານີ້</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{ເລືອກແລ້ວ <ph name="ITEMS_COUNT_ONE" /> ລາຍການ}other{ເລືອກແລ້ວ <ph name="ITEMS_COUNT_MANY" /> ລາຍການ}}</translation>
 <translation id="3008554597174452548">ຢຸດການຕິດຕາມສິນຄ້າ</translation>
 <translation id="3026391124054406831">ສ້າງກຸ່ມເພື່ອຈັດລະບຽບແຖບຂອງທ່ານ.</translation>
 <translation id="3051031624272448591">ທ່ານສາມາດກູ້ຄືນແຖບເຫຼົ່ານີ້ໄດ້ສະເໝີໃນປະຫວັດ</translation>

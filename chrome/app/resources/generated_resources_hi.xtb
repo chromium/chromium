@@ -4392,6 +4392,7 @@
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" /> को यूएसबी डिवाइसों को कंट्रोल करने की अनुमति दें.</translation>
 <translation id="3994318741694670028">माफ़ करें, आपका कंप्यूटर किसी गलत हार्डवेयर आईडी से कॉन्फ़िगर किया गया है. इस वजह से ChromeOS Flex में नए सुरक्षा सुधार अपडेट नहीं हो पा रहे हैं. इसके अलावा, आपके कंप्यूटर को <ph name="BEGIN_BOLD" />नुकसान पहुंचाने वाले हमलों का जोखिम हो सकता है<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">अपना फ़ोन अनलॉक करें और उसे पास लाकर अपने <ph name="DEVICE_TYPE" /> को अनलॉक करें.</translation>
+<translation id="3994522032746736727"><ph name="EMAIL" /> के तौर पर साइन इन करें</translation>
 <translation id="3994530503403062649">अपने टैबलेट पर मौजूद बटन पर क्लिक करें</translation>
 <translation id="3994708120330953242">आपके कुछ पासवर्ड, डेटा के गलत इस्तेमाल की वजह से लीक हो चुके हैं. अपने खातों को सुरक्षित रखने के लिए, इन पासवर्ड को अभी बदलें.</translation>
 <translation id="3994878504415702912">&amp;ज़ूम</translation>
@@ -9294,6 +9295,7 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> को रोका गया</translation>
+<translation id="7517292544534877198">अपने Google खाते में सेव किए गए पासवर्ड के लिए, Google के एन्क्रिप्ट (सुरक्षित) करने के डिफ़ॉल्ट तरीके का इस्तेमाल करें</translation>
 <translation id="7517959947270534934">आपके परिवार के सदस्य को अभी पासवर्ड नहीं मिल सकता. उन्हें Chrome अपडेट करने और अपना पासवर्ड सिंक करने के लिए कहें.</translation>
 <translation id="7518079994230200553">फ़िलहाल, यह विकल्प उपलब्ध नहीं है.</translation>
 <translation id="7520766081042531487">गुप्त पोर्टल: <ph name="SUBFRAME_SITE" /></translation>

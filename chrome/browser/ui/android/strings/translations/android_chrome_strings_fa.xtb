@@ -1092,6 +1092,7 @@
 <translation id="6125202119952209826">به گروه برگه با <ph name="OWNER_FIRST_NAME" /> بپیوندید</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />جزئیات بیشتر<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">مورد برداشته شد</translation>
+<translation id="6127860394906721547">گروه زبانه‌های «<ph name="TITLE_OF_GROUP" />»، به‌رنگ <ph name="COLOR_NAME" />، متشکل از سایت‌های <ph name="URL_LIST" /> باز می‌شود.</translation>
 <translation id="6130303040046284160">کوچک کردن زبانه</translation>
 <translation id="6134168885321518274">باز کردن نوار جستجو</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{‫<ph name="TAB_COUNT_ONE" /> برگه}one{‫<ph name="TAB_COUNT_MANY" /> برگه}other{‫<ph name="TAB_COUNT_MANY" /> برگه}}</translation>

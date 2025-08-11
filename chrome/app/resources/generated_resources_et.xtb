@@ -4383,6 +4383,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="3994075804072562819">Üksusele <ph name="SPECIFIC_NAME" /> antakse kontroll USB-seadmete üle.</translation>
 <translation id="3994318741694670028">Kahjuks on teie arvuti seadistatud valesti vormindatud riistvara ID-ga. See ei lase Chrome OS Flexil uusimate turvaparandustega värskendada ja teie arvuti <ph name="BEGIN_BOLD" />võib olla pahatahtlike rünnakute suhtes haavatav<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Seadme <ph name="DEVICE_TYPE" /> avamiseks avage oma telefon ja tooge see lähemale.</translation>
+<translation id="3994522032746736727">Logige sisse kasutajana <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Leidke oma tahvelarvuti nupud</translation>
 <translation id="3994708120330953242">Mõned teie paroolid leiti andmetega seotud rikkumise käigus. Oma kontode kaitsmiseks peate neid paroole kohe muutma.</translation>
 <translation id="3994878504415702912">&amp;Suumi</translation>
@@ -9286,6 +9287,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">lehe võrra alla</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> on peatatud</translation>
+<translation id="7517292544534877198">Kasuta Google'i konto paroolide jaoks Google'i vaikekrüpteerimist</translation>
 <translation id="7517959947270534934">Teie pereliige ei saa praegu paroole vastu võtta. Paluge tal Chrome’i värskendada ja oma paroolid sünkroonida.</translation>
 <translation id="7518079994230200553">See valik pole praegu saadaval.</translation>
 <translation id="7520766081042531487">Inkognito portaal: <ph name="SUBFRAME_SITE" /></translation>

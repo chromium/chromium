@@ -4389,6 +4389,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3994075804072562819">Предоставете на <ph name="SPECIFIC_NAME" /> контрол над USB устройствата.</translation>
 <translation id="3994318741694670028">За съжаление, компютърът ви е конфигуриран с неправилно образуван идентификационен номер на хардуера. Това не позволява на ChromeOS Flex да се актуализира с най-новите корекции за сигурност и устройството ви <ph name="BEGIN_BOLD" />може да е уязвимо на злонамерени атаки<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">За да отключите своя <ph name="DEVICE_TYPE" />, отключете телефона си и го приближете до него.</translation>
+<translation id="3994522032746736727">Вход като <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Намиране на бутони на таблета ви</translation>
 <translation id="3994708120330953242">Някои от паролите ви бяха открити при нарушение на сигурността на данните. Променете ги сега, за да защитите профилите си.</translation>
 <translation id="3994878504415702912">&amp;Мащаб</translation>
@@ -9293,6 +9294,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> е на пауза</translation>
+<translation id="7517292544534877198">Използване на стандартното шифроване на Google за паролите в профила ви в Google</translation>
 <translation id="7517959947270534934">Понастоящем членът на семейството ви не може да получава пароли. Помолете го да актуализира Chrome и да синхронизира паролите си.</translation>
 <translation id="7518079994230200553">В момента тази опция не е налице.</translation>
 <translation id="7520766081042531487">Портал в режим „инкогнито“: <ph name="SUBFRAME_SITE" /></translation>

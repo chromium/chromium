@@ -4394,6 +4394,7 @@
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" />에 USB 기기 제어 권한을 부여합니다.</translation>
 <translation id="3994318741694670028">컴퓨터가 잘못된 형식의 하드웨어 ID로 구성되어 있습니다. 이렇게 하면 ChromeOS Flex가 최신 보안 수정사항으로 업데이트되지 않으며 컴퓨터가 <ph name="BEGIN_BOLD" />악의적인 공격에 취약해질 수 있습니다<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" />을(를) 잠금 해제하려면 휴대전화를 잠금 해제하고 더 가까이 가져오세요.</translation>
+<translation id="3994522032746736727"><ph name="EMAIL" />(으)로 로그인</translation>
 <translation id="3994530503403062649">태블릿에서 버튼 찾기</translation>
 <translation id="3994708120330953242">일부 비밀번호가 정보 유출로 인해 노출된 것으로 확인되었습니다. 계정 보안을 유지하려면 지금 비밀번호를 변경해야 합니다.</translation>
 <translation id="3994878504415702912">글꼴 크기(&amp;Z)</translation>
@@ -9296,6 +9297,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">페이지 아래로</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> 앱이 일시중지됨</translation>
+<translation id="7517292544534877198">Google 계정의 비밀번호에 Google의 기본 암호화 사용</translation>
 <translation id="7517959947270534934">가족 구성원이 비밀번호를 바로 받을 수 없습니다. Chrome을 업데이트하고 비밀번호를 동기화하도록 요청하세요.</translation>
 <translation id="7518079994230200553">지금은 이 옵션을 사용할 수 없습니다.</translation>
 <translation id="7520766081042531487">시크릿 모드 포털: <ph name="SUBFRAME_SITE" /></translation>

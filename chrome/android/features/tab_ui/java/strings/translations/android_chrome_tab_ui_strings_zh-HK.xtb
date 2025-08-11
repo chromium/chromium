@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">在群組中新增分頁</translation>
 <translation id="2918484639460781603">前往設定</translation>
 <translation id="2928243913527329289">Google | 關於此商店</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{已選取 <ph name="ITEMS_COUNT_ONE" /> 個}other{已選取 <ph name="ITEMS_COUNT_MANY" /> 個}}</translation>
 <translation id="3008554597174452548">停止追蹤產品</translation>
 <translation id="3026391124054406831">建立群組，以便整理分頁。</translation>
 <translation id="3051031624272448591">你可隨時在記錄中重新開啟這些分頁</translation>

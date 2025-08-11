@@ -63,6 +63,7 @@
 <translation id="2894757982205307093">برگه جدید در گروه</translation>
 <translation id="2918484639460781603">رفتن به تنظیمات</translation>
 <translation id="2928243913527329289">‏Google | درباره این فروشگاه</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{‫<ph name="ITEMS_COUNT_ONE" /> مورد انتخاب شده است}one{‫<ph name="ITEMS_COUNT_MANY" /> مورد انتخاب شده است}other{‫<ph name="ITEMS_COUNT_MANY" /> مورد انتخاب شده است}}</translation>
 <translation id="3008554597174452548">توقف پیگیری محصول</translation>
 <translation id="3026391124054406831">با ایجاد گروه‌ها، برگه‌هایتان را سازمان‌دهی کنید.</translation>
 <translation id="3051031624272448591">همیشه می‌توانید ازطریق سابقه دوباره به آن‌ها دست پیدا کنید</translation>

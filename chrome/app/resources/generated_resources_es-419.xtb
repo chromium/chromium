@@ -4376,6 +4376,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3994075804072562819">Otorga a <ph name="SPECIFIC_NAME" /> el control de los dispositivos USB.</translation>
 <translation id="3994318741694670028">Lamentablemente, la computadora está configurada con un ID de hardware incorrecto. Esto impide que ChromeOS Flex se actualice con las correcciones de seguridad más recientes, y la computadora <ph name="BEGIN_BOLD" />puede quedar expuesta a ataques maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Desbloquea tu teléfono y acércalo para desbloquear tu <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3994522032746736727">Acceder como <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Encuentra los botones de la tablet</translation>
 <translation id="3994708120330953242">Se encontraron algunas de tus contraseñas en una violación de la seguridad de los datos. Cámbialas para proteger tus cuentas.</translation>
 <translation id="3994878504415702912">&amp;Tamaño</translation>
@@ -9280,6 +9281,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">Av Pág</translation>
 <translation id="7516981202574715431">Se pausó <ph name="APP_NAME" /></translation>
+<translation id="7517292544534877198">Usar la encriptación predeterminada de Google para las contraseñas en tu Cuenta de Google</translation>
 <translation id="7517959947270534934">El miembro de tu familia no puede recibir contraseñas en este momento. Pídele que actualice Chrome y sincronice sus contraseñas.</translation>
 <translation id="7518079994230200553">Esta opción no está disponible en este momento.</translation>
 <translation id="7520766081042531487">Portal en modo incógnito: <ph name="SUBFRAME_SITE" /></translation>
