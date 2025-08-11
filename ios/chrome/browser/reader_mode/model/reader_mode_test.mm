@@ -129,8 +129,14 @@ void ReaderModeTest::WaitForPageLoadDelayAndRunUntilIdle() {
 
 bool ReaderModeTest::WaitForAvailableReaderModeContentInWebState(
     web::WebState* web_state) {
+  // For the Reader mode WebState to be ready, distillation must complete
+  // (JavaScript completion) and the distilled content must be loaded in to the
+  // Reader mode WebState (page load).
+  constexpr base::TimeDelta timeout =
+      base::test::ios::kWaitForJSCompletionTimeout +
+      base::test::ios::kWaitForPageLoadTimeout;
   return base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, true, ^{
+      timeout, true, ^{
         return ReaderModeTabHelper::FromWebState(web_state)
                    ->GetReaderModeWebState() != nullptr;
       });

@@ -93,6 +93,13 @@ class ReaderModeBrowserAgentTest : public ReaderModeTest {
     return ReaderModeBrowserAgent::FromBrowser(test_browser_.get());
   }
 
+  // Activates a web state that expects Reader mode to be displayed.
+  void ActivateWebStateWithReaderModeAt(int index) {
+    GetWebStateList()->ActivateWebStateAt(index);
+    WaitForAvailableReaderModeContentInWebState(
+        GetWebStateList()->GetWebStateAt(index));
+  }
+
  protected:
   std::unique_ptr<TestBrowser> test_browser_;
   id fake_reader_mode_chip_handler_;
@@ -106,7 +113,7 @@ TEST_F(ReaderModeBrowserAgentTest, ChangingActiveWebState) {
   OCMExpect([delegate_ readerModeBrowserAgent:GetReaderModeBrowserAgent()
                           showContentAnimated:NO]);
   OCMExpect([fake_reader_mode_chip_handler_ showReaderModeChip]);
-  GetWebStateList()->ActivateWebStateAt(1);
+  ActivateWebStateWithReaderModeAt(1);
   EXPECT_OCMOCK_VERIFY(delegate_);
   EXPECT_OCMOCK_VERIFY(fake_reader_mode_chip_handler_);
 
@@ -120,7 +127,7 @@ TEST_F(ReaderModeBrowserAgentTest, ChangingActiveWebState) {
   OCMExpect([delegate_ readerModeBrowserAgent:GetReaderModeBrowserAgent()
                           showContentAnimated:NO]);
   OCMExpect([fake_reader_mode_chip_handler_ showReaderModeChip]);
-  GetWebStateList()->ActivateWebStateAt(3);
+  ActivateWebStateWithReaderModeAt(3);
   EXPECT_OCMOCK_VERIFY(delegate_);
   EXPECT_OCMOCK_VERIFY(fake_reader_mode_chip_handler_);
 
@@ -138,7 +145,7 @@ TEST_F(ReaderModeBrowserAgentTest, MovingActiveWebState) {
   OCMExpect([delegate_ readerModeBrowserAgent:GetReaderModeBrowserAgent()
                           showContentAnimated:NO]);
   OCMExpect([fake_reader_mode_chip_handler_ showReaderModeChip]);
-  GetWebStateList()->ActivateWebStateAt(1);
+  ActivateWebStateWithReaderModeAt(1);
   EXPECT_OCMOCK_VERIFY(delegate_);
   EXPECT_OCMOCK_VERIFY(fake_reader_mode_chip_handler_);
 
