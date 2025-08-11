@@ -1918,6 +1918,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       prefs.payment_request_enabled);
 
   if (prefs.api_based_fingerprinting_interventions_enabled) {
+    RuntimeEnabledFeatures::SetReduceDeviceMemoryEnabled(true);
     RuntimeEnabledFeatures::SetReduceHardwareConcurrencyEnabled(true);
     RuntimeEnabledFeatures::SetReduceScreenSizeEnabled(true);
   }

@@ -10,10 +10,19 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
+// TODO(435582603): Hard-coding this to a common value is a reasonable start,
+// but it likely makes sense to vary the hard-coded number by platform and
+// form-factor in order to maintain plausibility over time.
+constexpr float kReducedDeviceMemoryValue = 8.0;
+
 float NavigatorDeviceMemory::deviceMemory() const {
+  if (RuntimeEnabledFeatures::ReduceDeviceMemoryEnabled()) {
+    return kReducedDeviceMemoryValue;
+  }
   return ApproximatedDeviceMemory::GetApproximatedDeviceMemory();
 }
 

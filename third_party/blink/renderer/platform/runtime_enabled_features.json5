@@ -3908,6 +3908,12 @@
       base_feature: "none",
     },
     {
+      // If enabled, the amount of RAM reported through the `Navigator`
+      // interface will be hard-coded to 8gb.
+      name: "ReduceDeviceMemory",
+      settable_from_internals: true,
+    },
+    {
       // If enabled, the number of CPU cores reported through the `Navigator`
       // interface will be hard-coded to 8.
       name: "ReduceHardwareConcurrency",
