@@ -5,6 +5,9 @@
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 
 #include "base/notimplemented.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
+#include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -26,8 +29,12 @@ bool WebUIBrowserUIConfig::IsWebUIEnabled(
   return webui_browser::IsWebUIBrowserEnabled();
 }
 
+// realbox uses ui/webui/resources/js/metrics_reporter, which in turn uses
+// chrome.timeTicks.nowInMicroseconds(). In order to provide it we pass
+// enable_chrome_send to MojoWebUIController constructor, since they're
+// a package deal via BindingsPolicyValue::kWebUi.
 WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui) {
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   WebUIBrowserWindow* webui_browser_window =
       WebUIBrowserWindow::FromWebShellWebContents(web_ui->GetWebContents());
   browser_ = webui_browser_window->browser();
@@ -40,6 +47,8 @@ WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
   // Add required resources.
   webui::SetupWebUIDataSource(source, kWebuiBrowserResources,
                               IDR_WEBUI_BROWSER_WEBUI_BROWSER_HTML);
+
+  SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
 
   // As a demonstration of passing a variable for JS to use we pass in some
   // a simple message.
@@ -65,6 +74,20 @@ void WebUIBrowserUI::BindInterface(
     mojo::PendingReceiver<webui_browser::mojom::PageHandlerFactory> receiver) {
   page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void WebUIBrowserUI::BindInterface(
+    mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler) {
+  content::WebUI* webui = web_ui();
+  content::WebContents* web_contents = webui->GetWebContents();
+  realbox_handler_ = std::make_unique<RealboxHandler>(
+      std::move(pending_page_handler), Profile::FromWebUI(webui), web_contents,
+      &metrics_reporter_, /*omnibox_controller=*/nullptr);
+}
+
+void WebUIBrowserUI::BindInterface(
+    mojo::PendingReceiver<metrics_reporter::mojom::PageMetricsHost> receiver) {
+  metrics_reporter_.BindInterface(std::move(receiver));
 }
 
 void WebUIBrowserUI::BindInterface(

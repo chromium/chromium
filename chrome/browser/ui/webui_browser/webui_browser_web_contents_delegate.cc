@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui_browser/webui_browser_web_contents_delegate.h"
 
+#include "base/logging.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -47,4 +48,16 @@ void WebUIBrowserWebContentsDelegate::EnableDraggableRegions() {
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> client;
   rfh->GetRemoteAssociatedInterfaces()->GetInterface(&client);
   client->SetSupportsDraggableRegions(true);
+}
+
+content::WebContents* WebUIBrowserWebContentsDelegate::OpenURLFromTab(
+    content::WebContents* source,
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
+  // TODO(webium): Navigate the guest.
+  LOG(ERROR)
+      << "WebUIBrowserWebContentsDelegate::OpenURLFromTab unimplemented, url = "
+      << params.url;
+  return nullptr;
 }

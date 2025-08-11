@@ -14,6 +14,9 @@ export function getHtml(this: WebuiBrowserAppElement) {
  <cr-button type="button" @click="${this.onMaximizeClick_}">[+]</cr-button>
  <cr-button type="button" @click="${this.onCloseClick_}">[X]</cr-button>
 </h1>
+<div style="display: flex; flex: none; padding: 7px;">
+  <cr-searchbox id="address"></cr-searchbox>
+</div>
 <div id="exampleDiv">${this.message_}</div>
 <cr-webview id="exampleWebview" guest-id="${this.guestId_}"></cr-webview>
 <!--_html_template_end_-->`;

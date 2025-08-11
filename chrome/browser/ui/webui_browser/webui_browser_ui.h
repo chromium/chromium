@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_UI_H_
 
+#include <memory>
+
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui_browser/browser.mojom.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "components/guest_contents/common/guest_contents.mojom.h"
@@ -22,6 +25,11 @@ class BrowserContext;
 class WebContents;
 }  // namespace content
 
+namespace searchbox::mojom {
+class PageHandler;
+}  // namespace searchbox::mojom
+
+class RealboxHandler;
 class WebUIBrowserUI;
 
 class WebUIBrowserUIConfig
@@ -42,7 +50,10 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
 
   void BindInterface(
       mojo::PendingReceiver<webui_browser::mojom::PageHandlerFactory> receiver);
-
+  void BindInterface(mojo::PendingReceiver<searchbox::mojom::PageHandler>
+                         pending_page_handler);
+  void BindInterface(
+      mojo::PendingReceiver<metrics_reporter::mojom::PageMetricsHost> receiver);
   void BindInterface(
       mojo::PendingReceiver<guest_contents::mojom::GuestContentsHost> receiver);
 
@@ -62,6 +73,9 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
   void CreatePageHandler(
       mojo::PendingReceiver<webui_browser::mojom::PageHandler> receiver)
       override;
+
+  MetricsReporter metrics_reporter_;
+  std::unique_ptr<RealboxHandler> realbox_handler_;
 
   mojo::Receiver<webui_browser::mojom::PageHandlerFactory>
       page_factory_receiver_{this};

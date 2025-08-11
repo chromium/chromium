@@ -26,7 +26,10 @@ if (is_chrome_branded) {
       "webui_browser.ts",
       "webview.ts",
     ]
-    css_files = [ "app.css", "webview.css" ]
+    css_files = [
+      "app.css",
+      "webview.css",
+    ]
 
     mojo_files = [
       "$root_gen_dir/chrome/browser/ui/webui_browser/browser.mojom-webui.ts",
@@ -42,6 +45,7 @@ if (is_chrome_branded) {
 
     ts_deps = [
       "//third_party/lit/v3_0:build_ts",
+      "//ui/webui/resources/cr_components/searchbox:build_ts",
       "//ui/webui/resources/cr_elements:build_ts",
       "//ui/webui/resources/js:build_ts",
       "//ui/webui/resources/mojo:build_ts",

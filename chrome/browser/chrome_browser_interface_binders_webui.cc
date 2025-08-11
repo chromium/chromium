@@ -1447,7 +1447,9 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
 
   if (webui_browser::IsWebUIBrowserEnabled()) {
     registry.ForWebUI<WebUIBrowserUI>()
-        .Add<webui_browser::mojom::PageHandlerFactory>();
+        .Add<webui_browser::mojom::PageHandlerFactory>()
+        .Add<searchbox::mojom::PageHandler>()
+        .Add<metrics_reporter::mojom::PageMetricsHost>();
   }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

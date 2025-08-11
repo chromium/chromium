@@ -4,6 +4,7 @@
 
 import '/strings.m.js';
 import './webview.js';
+import '//resources/cr_components/searchbox/searchbox.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
