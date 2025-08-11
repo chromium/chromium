@@ -81,6 +81,7 @@ source_set("event_dispatcher") {
   sources = [
     "event_dispatcher.cc",
     "event_dispatcher.h",
+    "event_dispatcher_computations.cc",
   ]
   public_deps = [
     ":ui",

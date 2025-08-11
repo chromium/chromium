@@ -81,6 +81,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/common/actor.mojom:ActionResultCode) -->
 
+<!-- LINT.IfChange(ModelPageTargetType) -->
+
+<enum name="ModelPageTargetType">
+  <int value="0" label="kDomNode"/>
+  <int value="1" label="kPoint"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/ui/event_dispatcher.h:ModelPageTargetType) -->
+
 </enums>
 
 </histogram-configuration>

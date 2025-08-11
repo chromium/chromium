@@ -569,15 +569,16 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
 
 TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
        OnMouseMove_UpdatesUiCorrectly) {
-  PageTarget page_target(gfx::Point(100, 200));
   UiTabState expected_ui_tab_state{
       .actor_overlay = ActorOverlayState(
-          /*is_active=*/true, /*mouse_down=*/false, page_target),
+          /*is_active=*/true, /*mouse_down=*/false,
+          /*mouse_target=*/gfx::Point(100, 200)),
       .handoff_button = {.is_active = true, .controller = kActor},
       .tab_indicator_visible = true,
       .border_glow_visible = true,
   };
-  VerifyUiEvent(MouseMove{mock_tab_.GetHandle(), page_target},
+  VerifyUiEvent(MouseMove{mock_tab_.GetHandle(), gfx::Point(100, 200),
+                          TargetSource::kToolRequest},
                 expected_ui_tab_state);
 }
 

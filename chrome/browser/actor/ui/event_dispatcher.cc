@@ -19,10 +19,15 @@
 #include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/browser/actor/ui/ui_event_debugstring.h"
 #include "chrome/common/actor/action_result.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace actor::ui {
+
+// Constructs a MouseMove that may have a computed_target.
+AsyncUiEvent ComputedMouseMove(tabs::TabInterface::Handle tab,
+                               const PageTarget& target);
 namespace {
 
 using ::actor::mojom::ActionResultCode;
@@ -48,7 +53,7 @@ auto NoUiEvents = [](const T& tr) -> EventSequence<AsyncUiEvent> {
 constexpr absl::Overload PreToolEventsFn{
     [](const ClickToolRequest& tr) {
       return EventSequence<AsyncUiEvent>{
-          MouseMove(tr.GetTabHandle(), tr.GetTarget()),
+          ComputedMouseMove(tr.GetTabHandle(), tr.GetTarget()),
           MouseClick(tr.GetTabHandle(), tr.GetClickType(), tr.GetClickCount())};
     },
     NoUiEvents<ActivateTabToolRequest>,
@@ -58,14 +63,14 @@ constexpr absl::Overload PreToolEventsFn{
     NoUiEvents<HistoryToolRequest>,
     [](const MoveMouseToolRequest& tr) {
       return EventSequence<AsyncUiEvent>{
-          MouseMove(tr.GetTabHandle(), tr.GetTarget())};
+          ComputedMouseMove(tr.GetTabHandle(), tr.GetTarget())};
     },
     NoUiEvents<NavigateToolRequest>,
     NoUiEvents<ScrollToolRequest>,
     NoUiEvents<SelectToolRequest>,
     [](const TypeToolRequest& tr) {
       return EventSequence<AsyncUiEvent>{
-          MouseMove(tr.GetTabHandle(), tr.GetTarget())};
+          ComputedMouseMove(tr.GetTabHandle(), tr.GetTarget())};
     },
     NoUiEvents<WaitToolRequest>,
     NoUiEvents<AttemptLoginToolRequest>,

@@ -33,8 +33,10 @@ MouseClick::MouseClick(tabs::TabInterface::Handle th,
 MouseClick::~MouseClick() = default;
 MouseClick::MouseClick(const MouseClick&) = default;
 
-MouseMove::MouseMove(tabs::TabInterface::Handle th, PageTarget t)
-    : tab_handle(th), target(t) {}
+MouseMove::MouseMove(tabs::TabInterface::Handle th,
+                     std::optional<gfx::Point> t,
+                     TargetSource s)
+    : tab_handle(th), target(t), target_source(s) {}
 MouseMove::~MouseMove() = default;
 MouseMove::MouseMove(const MouseMove&) = default;
 

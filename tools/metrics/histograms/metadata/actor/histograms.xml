@@ -22,10 +22,22 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Actor.ExecutionEngine.Action.ResultCode"
-    enum="ActionResultCode" expires_after="2026-01-15">
+<histogram name="Actor.EventDispatcher.ModelPageTargetType"
+    enum="ModelPageTargetType" expires_after="2026-08-11">
   <owner>kmg@google.com</owner>
   <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    The type of the PageTarget specified by the model. Recorded when PageTargets
+    are converted.
+  </summary>
+</histogram>
+
+<histogram name="Actor.ExecutionEngine.Action.ResultCode"
+    enum="ActionResultCode" expires_after="2026-08-11">
+  <owner>kmg@google.com</owner>
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
   <summary>
     Recorded just before ActionResultCallback within ExecutionEngine. Reports
     the result codes of completed actions.

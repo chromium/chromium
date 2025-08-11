@@ -8,7 +8,7 @@ namespace actor::ui {
 
 ActorOverlayState::ActorOverlayState(bool is_active,
                                      bool mouse_down,
-                                     std::optional<PageTarget> mouse_target)
+                                     std::optional<gfx::Point> mouse_target)
     : is_active(is_active),
       mouse_down(mouse_down),
       mouse_target(mouse_target) {}

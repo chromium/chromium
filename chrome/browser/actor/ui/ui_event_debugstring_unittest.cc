@@ -13,15 +13,6 @@ namespace actor::ui {
 namespace {
 using testing::Return;
 
-constexpr PageTarget PointTarget() {
-  return gfx::Point(10, 20);
-}
-
-constexpr PageTarget DomNodeTarget() {
-  return DomNode{.node_id = 30,
-                 .document_identifier = "some_document_identifier"};
-}
-
 class UiEventDebugStringTest : public ::testing::Test {
  protected:
   void SetUp() override {
@@ -59,10 +50,15 @@ TEST_F(UiEventDebugStringTest, StoppedActingOnTab) {
 }
 
 TEST_F(UiEventDebugStringTest, MouseMove) {
-  EXPECT_EQ(DebugString(UiEvent(MouseMove(Handle(), PointTarget()))),
-            "MouseMove[target=10,20]");
-  EXPECT_EQ(DebugString(AsyncUiEvent(MouseMove(Handle(), DomNodeTarget()))),
-            "MouseMove[target=DomNode[id=30 doc_id=some_document_identifier]]");
+  EXPECT_EQ(DebugString(UiEvent(MouseMove(Handle(), gfx::Point(10, 20),
+                                          TargetSource::kToolRequest))),
+            "MouseMove[target=10,20 target_source=ToolRequest]");
+  EXPECT_EQ(DebugString(AsyncUiEvent(MouseMove(
+                Handle(), std::nullopt, TargetSource::kUnresolvableInApc))),
+            "MouseMove[target=null target_source=UnresolvableInApc]");
+  EXPECT_EQ(DebugString(UiEvent(MouseMove(Handle(), gfx::Point(999, 888),
+                                          TargetSource::kDerivedFromApc))),
+            "MouseMove[target=999,888 target_source=DerivedFromApc]");
 }
 
 TEST_F(UiEventDebugStringTest, MouseClick) {

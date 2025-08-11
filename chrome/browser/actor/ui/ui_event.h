@@ -12,8 +12,19 @@
 #include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/task_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace actor::ui {
+
+// The source of a target on a page.
+enum class TargetSource {
+  kUnresolvableInApc = 0,  // The ToolRequest DomTarget couldn't be resolved
+                           // from the AnnotatedPageContent.
+  kToolRequest = 1,        // The target came directly from the ToolRequest.
+  kDerivedFromApc = 2,     // The target was derived from AnnotatedPageContent.
+  kMaxValue = kDerivedFromApc,
+};
+
 // STATUS: Dispatched when ActorTask state changes from Created to Acting.
 struct StartTask {
   actor::TaskId task_id;
@@ -55,9 +66,12 @@ struct StoppedActingOnTab {
 // STATUS: Dispatched pre-tool invocation.
 struct MouseMove {
   tabs::TabInterface::Handle tab_handle;
-  PageTarget target;
+  std::optional<gfx::Point> target;
+  TargetSource target_source;
 
-  MouseMove(tabs::TabInterface::Handle, PageTarget);
+  MouseMove(tabs::TabInterface::Handle,
+            std::optional<gfx::Point>,
+            TargetSource);
   MouseMove(const MouseMove&);
   ~MouseMove();
 };
