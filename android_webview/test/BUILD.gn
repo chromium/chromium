@@ -621,6 +621,7 @@ android_library("base_webview_instrumentation_test_java") {
 
   deps = [
     "//android_webview:browser_java",
+    "//android_webview:common_java",
     "//android_webview/test:base_webview_instrumentation_java",
     "//base:base_java",
     "//base:base_java_test_support",
