@@ -36,6 +36,7 @@ public final class DeviceInfo {
     private static @Nullable String sGmsVersionCodeForTesting;
     private static @Nullable Boolean sIsAutomotiveForTesting;
     private static boolean sInitialized;
+    private static boolean sIsXrForTesting;
     private final IDeviceInfo mIDeviceInfo;
 
     @GuardedBy("CREATION_LOCK")
@@ -61,7 +62,8 @@ public final class DeviceInfo {
                         /* isAutomotive= */ info.isAutomotive,
                         /* isFoldable= */ info.isFoldable,
                         /* isDesktop= */ info.isDesktop,
-                        /* vulkanDeqpLevel= */ info.vulkanDeqpLevel);
+                        /* vulkanDeqpLevel= */ info.vulkanDeqpLevel,
+                        /* isXr= */ sIsXrForTesting ? true : info.isXr);
     }
 
     public static IDeviceInfo getAidlInfo() {
@@ -105,8 +107,22 @@ public final class DeviceInfo {
         return getInstance().mIDeviceInfo.vulkanDeqpLevel;
     }
 
+    public static boolean isXr() {
+        return getInstance().mIDeviceInfo.isXr;
+    }
+
     public static boolean isInitializedForTesting() {
         return sInitialized;
+    }
+
+    @CalledByNativeForTesting
+    public static void setIsXrForTesting() {
+        sIsXrForTesting = true;
+    }
+
+    @CalledByNativeForTesting
+    public static void resetIsXrForTesting() {
+        sIsXrForTesting = false;
     }
 
     private static DeviceInfo getInstance() {
@@ -197,6 +213,8 @@ public final class DeviceInfo {
             }
         }
         mIDeviceInfo.vulkanDeqpLevel = vulkanLevel;
+
+        mIDeviceInfo.isXr = pm.hasSystemFeature("android.software.xr.api.openxr");
     }
 
     @NativeMethods
@@ -207,6 +225,7 @@ public final class DeviceInfo {
                 boolean isAutomotive,
                 boolean isFoldable,
                 boolean isDesktop,
-                int vulkanDeqpLevel);
+                int vulkanDeqpLevel,
+                boolean isXr);
     }
 }

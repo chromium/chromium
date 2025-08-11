@@ -59,6 +59,7 @@ bool IsClientCompatibleWithProgram(Program program) {
         case ui::DEVICE_FORM_FACTOR_TABLET:
         case ui::DEVICE_FORM_FACTOR_TV:
         case ui::DEVICE_FORM_FACTOR_AUTOMOTIVE:
+        case ui::DEVICE_FORM_FACTOR_XR:
           break;
       }
 #endif
