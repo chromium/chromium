@@ -205,10 +205,14 @@ public interface BrowserPaymentRequest {
         return true;
     }
 
-    /** @return The selected payment app. */
-    PaymentApp getSelectedPaymentApp();
+    /**
+     * @return The selected payment app.
+     */
+    @Nullable PaymentApp getSelectedPaymentApp();
 
-    /** @return All of the available payment apps. */
+    /**
+     * @return All of the available payment apps.
+     */
     List<PaymentApp> getPaymentApps();
 
     /**

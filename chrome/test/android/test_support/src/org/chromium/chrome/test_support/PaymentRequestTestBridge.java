@@ -86,7 +86,7 @@ public class PaymentRequestTestBridge {
         }
 
         @Override
-        public String getInvalidSslCertificateErrorMessage() {
+        public @Nullable String getInvalidSslCertificateErrorMessage() {
             if (mIsValidSsl) return null;
             return "Invalid SSL certificate";
         }

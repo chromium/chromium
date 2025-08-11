@@ -44,7 +44,7 @@ public class AwPaymentRequestFactory implements InterfaceFactory<PaymentRequest>
         }
 
         @Override
-        public String getInvalidSslCertificateErrorMessage() {
+        public @Nullable String getInvalidSslCertificateErrorMessage() {
             WebContents liveWebContents =
                     PaymentRequestServiceUtil.getLiveWebContents(mRenderFrameHost);
             if (liveWebContents == null) return null;

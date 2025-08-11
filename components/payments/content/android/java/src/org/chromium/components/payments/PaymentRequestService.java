@@ -219,7 +219,7 @@ public class PaymentRequestService
          * @return A non-null string if there is an invalid SSL certificate on the currently loaded
          *     page.
          */
-        String getInvalidSslCertificateErrorMessage();
+        @Nullable String getInvalidSslCertificateErrorMessage();
 
         /**
          * @return Whether the preferences allow CAN_MAKE_PAYMENT.

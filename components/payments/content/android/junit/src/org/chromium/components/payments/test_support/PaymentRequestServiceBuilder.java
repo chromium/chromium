@@ -121,7 +121,7 @@ public class PaymentRequestServiceBuilder implements Delegate {
     }
 
     @Override
-    public String getInvalidSslCertificateErrorMessage() {
+    public @Nullable String getInvalidSslCertificateErrorMessage() {
         return mInvalidSslCertificateErrorMessage;
     }
 

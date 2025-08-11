@@ -174,12 +174,13 @@ public class PaymentUiService
          *     spinner is hidden in that case. Other payment apps typically show a spinner.
          */
         boolean invokePaymentApp(
-                EditableOption selectedShippingAddress,
-                EditableOption selectedShippingOption,
-                PaymentApp selectedPaymentApp);
+                @Nullable EditableOption selectedShippingAddress,
+                @Nullable EditableOption selectedShippingOption,
+                @Nullable PaymentApp selectedPaymentApp);
 
         /**
          * Invoked when the UI service has been aborted.
+         *
          * @param reason The reason for the aborting, as defined by {@link AbortReason}.
          * @param debugMessage The debug message for the aborting.
          */
@@ -930,7 +931,7 @@ public class PaymentUiService
                 toEdit,
                 new Callback<>() {
                     @Override
-                    public void onResult(AutofillContact editedContact) {
+                    public void onResult(@Nullable AutofillContact editedContact) {
                         if (mPaymentRequestUi == null) return;
 
                         if (editedContact != null) {
