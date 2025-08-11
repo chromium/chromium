@@ -862,18 +862,19 @@ int64_t IndexedDBContextImpl::ReadUsageFromDisk(
   DCHECK(!in_memory());
 
 #if BUILDFLAG(IS_WIN)
-  // Touch all files in the LevelDB directory to update directory entry
+  // Touch all files in the database paths to update directory entry
   // metadata. See note for `bucket_size_map_` about why this is necessary.
-  // TODO(crbug.com/419203257): Determine if this is also needed for SQLite.
   if (write_in_progress) {
-    const base::FilePath leveldb_dir =
-        GetLevelDBPath(GetDataPath(bucket_locator), bucket_locator);
-    base::FileEnumerator file_iter(leveldb_dir, /*recursive=*/true,
-                                   base::FileEnumerator::FILES);
-    for (base::FilePath file_path = file_iter.Next(); !file_path.empty();
-         file_path = file_iter.Next()) {
-      base::File file(
-          file_path, base::File::FLAG_OPEN | base::File::FLAG_WIN_SHARE_DELETE);
+    const base::FilePath& data_path = GetDataPath(bucket_locator);
+    for (const base::FilePath& path :
+         {GetLevelDBPath(data_path, bucket_locator),
+          GetSqlitePath(data_path, bucket_locator)}) {
+      base::FileEnumerator(path, /*recursive=*/false,
+                           base::FileEnumerator::FILES)
+          .ForEach([](const base::FilePath& file_path) {
+            base::File file(file_path, base::File::FLAG_OPEN |
+                                           base::File::FLAG_WIN_SHARE_DELETE);
+          });
     }
   }
 #endif
