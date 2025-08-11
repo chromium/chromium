@@ -32,6 +32,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Geolocation.AndroidLocationProvider.ProviderType"
+    enum="AndroidLocationProviderType" expires_after="2026-02-07">
+  <owner>alvinji@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Records which underlying Android framework location provider is used by the
+    LocationProviderAdapter class.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.CoreLocationProvider.Accuracy" units="meter"
     expires_after="2025-12-14">
   <owner>alvinji@chromium.org</owner>
