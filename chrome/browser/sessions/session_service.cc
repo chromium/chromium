@@ -538,7 +538,6 @@ void SessionService::DidScheduleCommand() {
   if (is_first_session_service_)
     return;
 
-#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40196304): for debugging, remove once tracked down
   // source of problem.
   // A command has been scheduled for a SessionService other than the first.
@@ -548,7 +547,6 @@ void SessionService::DidScheduleCommand() {
   const bool shutdown_started = browser_shutdown::HasShutdownStarted();
   base::debug::Alias(&shutdown_started);
   base::debug::DumpWithoutCrashing();
-#endif
 }
 
 bool SessionService::ShouldRestoreWindowOfType(
