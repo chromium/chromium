@@ -475,26 +475,28 @@ bool SerialIoHandlerPosix::SetControlSignals(
     // The order these signals are set is defined by
     // https://wicg.github.io/serial/#dom-serialport-setsignals.
     if (signals.has_dtr) {
+      const int dtr = TIOCM_DTR;
       if (signals.dtr) {
-        if (ioctl(file().GetPlatformFile(), TIOCMBIS, TIOCM_DTR) != 0) {
+        if (ioctl(file().GetPlatformFile(), TIOCMBIS, &dtr) != 0) {
           SERIAL_PLOG(DEBUG) << "Failed to set dataTerminalReady";
           return false;
         }
       } else {
-        if (ioctl(file().GetPlatformFile(), TIOCMBIC, TIOCM_DTR) != 0) {
+        if (ioctl(file().GetPlatformFile(), TIOCMBIC, &dtr) != 0) {
           SERIAL_PLOG(DEBUG) << "Failed to clear dataTerminalReady";
           return false;
         }
       }
     }
     if (signals.has_rts) {
+      const int rts = TIOCM_RTS;
       if (signals.rts) {
-        if (ioctl(file().GetPlatformFile(), TIOCMBIS, TIOCM_RTS) != 0) {
+        if (ioctl(file().GetPlatformFile(), TIOCMBIS, &rts) != 0) {
           SERIAL_PLOG(DEBUG) << "Failed to set requestToSend";
           return false;
         }
       } else {
-        if (ioctl(file().GetPlatformFile(), TIOCMBIC, TIOCM_RTS) != 0) {
+        if (ioctl(file().GetPlatformFile(), TIOCMBIC, &rts) != 0) {
           SERIAL_PLOG(DEBUG) << "Failed to clear requestToSend";
           return false;
         }

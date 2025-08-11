@@ -219,6 +219,30 @@ IN_PROC_BROWSER_TEST_F(SerialRealTargetTest, SerialOpenAndClosePort) {
   EXPECT_EQ(true, EvalJs(web_contents, test_script));
 }
 
+IN_PROC_BROWSER_TEST_F(SerialRealTargetTest, SetSignals) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto test_script = base::StringPrintf(
+      R"((async () => {
+        const port = await navigator.serial.requestPort(
+          {filters: [{ usbVendorId: %d, usbProductId: %d }]}
+        );
+        await port.open({ baudRate: 115200 });
+        for (let i = 3; i >= 0; --i) {
+          const expectedDataTerminalReady = !!(i & 0x1);
+          const expectedRequestToSend = !!(i & 0x2);
+          await port.setSignals({
+            dataTerminalReady: expectedDataTerminalReady,
+            requestToSend: expectedRequestToSend,
+          });
+        }
+        await port.close();
+        return true;
+      })())",
+      kMicroBitVendorId, kMicroBitProductId);
+  EXPECT_EQ(true, EvalJs(web_contents, test_script));
+}
+
 IN_PROC_BROWSER_TEST_F(SerialRealTargetTest, BluetoothSerialOpenAndClosePort) {
   // This step is to make the target bluetooth device connected to the system,
   // to reduce flaky when running Serial Bluetooth test.
