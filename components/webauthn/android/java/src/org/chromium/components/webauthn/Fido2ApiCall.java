@@ -436,7 +436,8 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
             switch (code) {
                 case IBinder.FIRST_CALL_TRANSACTION + 0:
                     try {
-                        mCompletionSource.setResult(Fido2Api.parseCredentialList(data));
+                        final boolean fromCache = mInterfaceName.equals(PERSISTENT_API_INTERFACE);
+                        mCompletionSource.setResult(Fido2Api.parseCredentialList(data, fromCache));
                     } catch (IllegalArgumentException e) {
                         mCompletionSource.setException(e);
                     }
