@@ -8,6 +8,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
@@ -38,8 +39,8 @@ public class OneshotSupplierImpl<T> implements OneshotSupplier<T> {
     }
 
     @Override
-    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1209
-    public @Nullable T get() {
+    @NullUnmarked // TODO(430320400): Introduces a lot of warnings.
+    public T get() {
         mThreadChecker.assertOnValidThread();
         return mPromise.isFulfilled() ? mPromise.getResult() : null;
     }

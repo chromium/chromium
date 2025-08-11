@@ -9,6 +9,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.ThreadUtils.ThreadChecker;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.Objects;
@@ -95,9 +96,16 @@ public class ObservableSupplierImpl<E extends @Nullable Object> implements Obser
         }
     }
 
+    /**
+     * This should be @Nullable even for non-@Nullable T, since the constructor does not guarantee
+     * the value is set.
+     *
+     * <p>For now, this is marked with @NullUnmarked in order to suppress warnings.
+     * https://crbug.com/430320400 will track figuring out the nullability properly.
+     */
     @Override
-    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1209
-    public @Nullable E get() {
+    @NullUnmarked
+    public E get() {
         // Allow instrumentation thread access since tests often access variables for asserts.
         // https://crbug.com/1173814
         mThreadChecker.assertOnValidOrInstrumentationThread();

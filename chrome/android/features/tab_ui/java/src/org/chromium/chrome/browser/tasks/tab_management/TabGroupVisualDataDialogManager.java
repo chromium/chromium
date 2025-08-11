@@ -120,11 +120,11 @@ public class TabGroupVisualDataDialogManager {
         // Early exit the second attempt so that we don't show another dialog and cause the
         // dialog controller and user actions to freeze when attempting to navigate out.
         if (mModel != null) {
-            assumeNonNull(mModalDialogManagerObserver);
-            assumeNonNull(mCustomView);
-            assumeNonNull(mTextInputLayout);
-            assumeNonNull(mInitialGroupTitle);
-            assumeNonNull(mColorPickerCoordinator);
+            assert mModalDialogManagerObserver != null;
+            assert mCustomView != null;
+            assert mTextInputLayout != null;
+            assert mInitialGroupTitle != null;
+            assert mColorPickerCoordinator != null;
             return;
         }
 

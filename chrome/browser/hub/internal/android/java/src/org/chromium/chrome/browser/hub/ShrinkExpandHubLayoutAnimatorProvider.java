@@ -276,6 +276,7 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
         boolean isShrink = mAnimationType == HubLayoutAnimationType.SHRINK_TAB;
         float initialAlpha;
         float finalAlpha;
+        assumeNonNull(animationData);
         if (animationData.isTopToolbar()) {
             initialAlpha = isShrink ? 0.0f : 1.0f;
             finalAlpha = isShrink ? 1.0f : 0.0f;

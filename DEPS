@@ -1865,7 +1865,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/nullaway',
-               'version': 'mFkUqdlIqmMQ3rAaTHFmOBYjNFgFUQOmMlPG6PGgmHYC',
+               'version': 'Zk_ffB0B6qGrr2ZDKqCxAgnPmo4-5giVRIauRffZaZYC',
           },
       ],
       'condition': 'checkout_android and non_git_source',

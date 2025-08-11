@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -92,6 +94,7 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
                 mAnimatorProvider.getAnimatorSupplier();
         if (animatorSupplier.hasValue()) {
             HubLayoutAnimator animator = animatorSupplier.get();
+            assumeNonNull(animator);
             if (mAnimationState == AnimationState.STARTED) {
                 animator.getAnimatorSet().end();
             } else {
@@ -130,7 +133,7 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
 
         // Don't rely on the observable supplier here as we might post when the value is set. Call
         // the onAnimatorReady method directly (repeat calls will be dropped).
-        onAnimatorReady(animatorSupplier.get());
+        onAnimatorReady(assumeNonNull(animatorSupplier.get()));
     }
 
     private void postOnAnimatorReady(HubLayoutAnimator animator) {

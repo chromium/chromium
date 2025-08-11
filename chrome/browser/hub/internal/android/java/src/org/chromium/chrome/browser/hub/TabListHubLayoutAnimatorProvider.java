@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_FADE_DURATION_MS;
 
 import android.animation.Animator;
@@ -115,6 +116,7 @@ public class TabListHubLayoutAnimatorProvider implements HubLayoutAnimatorProvid
         assert !mAnimatorSupplier.hasValue() && mAnimationDataSupplier.hasValue();
 
         List<View> views = mAnimationDataSupplier.get();
+        assumeNonNull(views);
         AnimatorSet animatorSet = buildAnimatorSet(views);
         HubLayoutAnimationListener listener =
                 new HubLayoutAnimationListener() {

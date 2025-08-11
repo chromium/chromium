@@ -199,9 +199,11 @@ def main():
     #     https://github.com/uber/NullAway/issues/1104
     # errorprone_flags += ['-XepOpt:NullAway:CheckContracts=true']
 
+    # TODO(agrieve): Re-enable once we sort out nullability of
+    #     ObservableSuppliers. https://crbug.com/430320400
     # Make it a warning to use assumeNonNull() with a @NonNull.
-    errorprone_flags += [('-XepOpt:NullAway:CastToNonNullMethod='
-                          'org.chromium.build.NullUtil.assumeNonNull')]
+    #errorprone_flags += [('-XepOpt:NullAway:CastToNonNullMethod='
+    #                      'org.chromium.build.NullUtil.assumeNonNull')]
     # Detect "assert foo != null" as a null check.
     errorprone_flags += ['-XepOpt:NullAway:AssertsEnabled=true']
     # Do not ignore @Nullable & @NonNull in non-@NullMarked classes.

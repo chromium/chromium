@@ -4,8 +4,6 @@
 
 package org.chromium.components.page_info;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Typeface;
@@ -71,7 +69,7 @@ public class CertificateViewer implements OnItemSelectedListener {
     @Initializer
     public void showCertificateChain(byte[][] derData) {
         if (mDialog != null && mDialog.isShowing()) {
-            assumeNonNull(mViews);
+            assert mViews != null;
             return;
         }
 
