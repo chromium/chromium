@@ -181,6 +181,7 @@ void ChangePasswordFormFillingSubmissionHelper::TriggerFilling(
     return;
   }
 
+  observed_fields_.push_back(form.new_password_element_renderer_id);
   driver->FillChangePasswordForm(
       form.password_element_renderer_id, form.new_password_element_renderer_id,
       form.confirmation_password_element_renderer_id, login_password_,
@@ -222,7 +223,9 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
         web_contents_, client_,
         base::BindOnce(&ChangePasswordFormFillingSubmissionHelper::
                            OnChangePasswordFormFound,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr()),
+        ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout,
+        observed_fields_);
     return;
   }
 
