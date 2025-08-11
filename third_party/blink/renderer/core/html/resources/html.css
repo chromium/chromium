@@ -649,7 +649,9 @@ input[type="file" i] {
     align-items: baseline;
     color: inherit;
     text-align: start !important;
-    text-overflow: ellipsis;
+    /* Prevent a malicious author from using a custom string for text-overflow
+       to spoof a filename. */
+    text-overflow: ellipsis !important;
     white-space: pre;
 }
 

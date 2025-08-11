@@ -45,15 +45,23 @@ const ComputedStyle& LineTruncator::EllipsisStyle() const {
   return *line_style_;
 }
 
+String LineTruncator::ComputeEllipsisText() const {
+  const ComputedStyle& style = EllipsisStyle();
+  const TextOverflowData& text_overflow = style.TextOverflow();
+  if (text_overflow.IsString()) {
+    return text_overflow.StringValue();
+  }
+  return ellipsis_font_data_ && ellipsis_font_data_->GlyphForCharacter(
+                                    uchar::kHorizontalEllipsis)
+             ? String(base::span_from_ref(uchar::kHorizontalEllipsis))
+             : String(u"...");
+}
+
 void LineTruncator::SetupEllipsis() {
   const Font* font = EllipsisStyle().GetFont();
   ellipsis_font_data_ = font->PrimaryFont();
   DCHECK(ellipsis_font_data_);
-  ellipsis_text_ =
-      ellipsis_font_data_ &&
-              ellipsis_font_data_->GlyphForCharacter(uchar::kHorizontalEllipsis)
-          ? String(base::span_from_ref(uchar::kHorizontalEllipsis))
-          : String(u"...");
+  ellipsis_text_ = ComputeEllipsisText();
   HarfBuzzShaper shaper(ellipsis_text_);
   ellipsis_shape_result_ =
       ShapeResultView::Create(shaper.Shape(font, line_direction_));

@@ -83,4 +83,12 @@ Styling ::-webkit-file-upload-button:
 <input type=file class=overflow>
 </div>
 
+<style>
+.text-overflow {
+  text-overflow: "harmless filename";
+}
+</style>
+'text-overflow' should be 'ellipsis' even if it's specified string value:
+<input type=file class="text-overflow" style="width: 12em">
+
 </body>

@@ -43,6 +43,8 @@ class CORE_EXPORT LineTruncator final {
  private:
   const ComputedStyle& EllipsisStyle() const;
 
+  String ComputeEllipsisText() const;
+
   // Initialize four ellipsis_*_ data members.
   void SetupEllipsis();
 
