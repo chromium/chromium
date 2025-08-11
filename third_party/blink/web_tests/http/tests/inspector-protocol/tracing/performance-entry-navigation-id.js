@@ -176,10 +176,6 @@
     name: 'hard-lcp (entry)'
   });
 
-  // There's no principled way to wait for the trace events to arrive,
-  // so we give it a second here, before we stop tracing.
-  await new Promise(resolve => setTimeout(resolve, 1000));
-
   const unfilteredEvents = await tracingHelper.stopTracing();
 
   const traceEntries = [];
