@@ -100,7 +100,10 @@ InvalidationListenerImpl::InvalidationListenerImpl(
           base::StrCat({kFmAppId, "-", base::NumberToString(project_number_)})),
       log_prefix_(base::StrCat(
           {log_prefix, "-", base::NumberToString(project_number_)})),
-      registration_retry_backoff_(&kRegistrationRetryBackoffPolicy) {}
+      registration_retry_backoff_(&kRegistrationRetryBackoffPolicy) {
+  CHECK(gcm_driver_);
+  CHECK(instance_id_driver_);
+}
 
 InvalidationListenerImpl::~InvalidationListenerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
