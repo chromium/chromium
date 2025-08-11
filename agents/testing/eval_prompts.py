@@ -8,14 +8,14 @@ import argparse
 import atexit
 import contextlib
 import os
+import pathlib
 import shutil
 import subprocess
 import sys
 import tempfile
 from collections.abc import Collection
 
-CHROMIUM_SRC = os.path.realpath(
-    os.path.join(os.path.dirname(__file__), '..', '..'))
+CHROMIUM_SRC = pathlib.Path(__file__).resolve().parents[2]
 
 PROMPTFOO_CONFIG_COMPONENTS = [
     ('agents', 'extensions', 'build_information', 'tests', 'promptfoo',
@@ -24,7 +24,7 @@ PROMPTFOO_CONFIG_COMPONENTS = [
      'host_arch.yaml'),
 ]
 PROMPTFOO_CONFIGS = [
-    os.path.join(CHROMIUM_SRC, *c) for c in PROMPTFOO_CONFIG_COMPONENTS
+    CHROMIUM_SRC.joinpath(*c) for c in PROMPTFOO_CONFIG_COMPONENTS
 ]
 
 EXTENSIONS_TO_INSTALL = [
@@ -62,12 +62,12 @@ class FromNpmPromptfooInstallation(PromptfooInstallation):
     """A promptfoo installation retrieved via npm."""
 
     def __init__(self, version: str | None):
-        self._directory = None
+        self._directory: pathlib.Path | None = None
         self._version = version or 'latest'
 
     def setup(self) -> None:
         assert self._directory is None
-        self._directory = tempfile.mkdtemp()
+        self._directory = pathlib.Path(tempfile.mkdtemp())
         atexit.register(self.cleanup)
         print(f'Creating promptfoo copy at {self._directory}')
         subprocess.run(['npm', 'init', '-y'], cwd=self._directory, check=True)
@@ -83,8 +83,8 @@ class FromNpmPromptfooInstallation(PromptfooInstallation):
         self._directory = None
 
     def run(self, cmd: list[str], cwd: os.PathLike | None = None) -> int:
-        promptfoo_executable = os.path.join(self._directory, 'node_modules',
-                                            '.bin', 'promptfoo')
+        promptfoo_executable = str(self._directory / 'node_modules' / '.bin' /
+                                   'promptfoo')
         proc = subprocess.run([promptfoo_executable] + cmd,
                               cwd=cwd,
                               check=False)
@@ -95,13 +95,13 @@ class FromSourcePromptfooInstallation(PromptfooInstallation):
     """A promptfoo installation built from source."""
 
     def __init__(self, revision: str | None):
-        self._parent_dir = None
-        self._promptfoo_dir = None
+        self._parent_dir: pathlib.Path | None = None
+        self._promptfoo_dir: pathlib.Path | None = None
         self._revision = revision
 
     def setup(self) -> None:
         assert self._parent_dir is None
-        self._parent_dir = tempfile.mkdtemp()
+        self._parent_dir = pathlib.Path(tempfile.mkdtemp())
         atexit.register(self.cleanup)
         print(f'Creating promptfoo copy at {self._parent_dir}')
 
@@ -111,7 +111,7 @@ class FromSourcePromptfooInstallation(PromptfooInstallation):
             'https://github.com/promptfoo/promptfoo',
         ]
         subprocess.run(cmd, check=True, cwd=self._parent_dir)
-        self._promptfoo_dir = os.path.join(self._parent_dir, 'promptfoo')
+        self._promptfoo_dir = self._parent_dir / 'promptfoo'
 
         if self._revision:
             cmd = ['git', 'checkout', self._revision]
@@ -142,7 +142,7 @@ class FromSourcePromptfooInstallation(PromptfooInstallation):
             'npm',
             'run',
             '--prefix',
-            self._promptfoo_dir,
+            str(self._promptfoo_dir),
             'local',
             '--',
         ]
@@ -183,7 +183,7 @@ class WorkTree(contextlib.AbstractContextManager):
     """
 
     def __init__(self, path: os.PathLike):
-        self.path = path
+        self.path = pathlib.Path(path)
 
     def __enter__(self) -> 'WorkTree':
         # TODO(crbug.com/436274253): Consider some optimizations once the test
@@ -212,7 +212,7 @@ class WorkTree(contextlib.AbstractContextManager):
             'git',
             'branch',
             '--delete',
-            str(os.path.basename(self.path)),
+            self.path.name,
         ])
 
     def install_extensions(
@@ -229,7 +229,7 @@ class WorkTree(contextlib.AbstractContextManager):
             extensions = EXTENSIONS_TO_INSTALL
         command = [
             sys.executable,
-            os.path.join(self.path, 'agents', 'extensions', 'install.py'),
+            str(self.path / 'agents' / 'extensions' / 'install.py'),
             'add',
             *extensions,
         ]
@@ -269,8 +269,14 @@ def main() -> int:
         # output can be inspected.
         with tempfile.TemporaryDirectory() as tmp_dir:
             with WorkTree(tmp_dir):
-                rc = promptfoo.run(['eval', '-j', '1', '-c', config],
-                                   cwd=tmp_dir)
+                command = [
+                    'eval',
+                    '-j',
+                    '1',
+                    '-c',
+                    str(config),
+                ]
+                rc = promptfoo.run(command, cwd=tmp_dir)
                 returncode = returncode or rc
 
     return returncode
