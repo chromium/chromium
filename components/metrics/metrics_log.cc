@@ -49,7 +49,8 @@
 #include "third_party/metrics_proto/user_action_event.pb.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
+#include "base/android/apk_info.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -446,12 +447,11 @@ void MetricsLog::RecordCoreSystemProfile(
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  const auto* build_info = base::android::BuildInfo::GetInstance();
-  os->set_build_fingerprint(build_info->android_build_fp());
+  os->set_build_fingerprint(base::android::android_info::android_build_fp());
   if (!package_name.empty() && package_name != "com.android.chrome")
     system_profile->set_app_package_name(package_name);
-  system_profile->set_installer_package(
-      internal::ToInstallerPackage(build_info->installer_package_name()));
+  system_profile->set_installer_package(internal::ToInstallerPackage(
+      base::android::apk_info::installer_package_name()));
 #elif BUILDFLAG(IS_IOS)
   os->set_build_number(base::SysInfo::GetIOSBuildNumber());
 #endif

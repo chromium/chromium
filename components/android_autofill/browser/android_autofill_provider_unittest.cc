@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -702,8 +702,8 @@ TEST_F(AndroidAutofillProviderTest, FormSubmissionHappensDirectly) {
 // overwrite all type predictions of the respective `FormDataAndroidField`s.
 TEST_F(AndroidAutofillProviderTest,
        UsePasswordManagerOverridesInPrefillRequest) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -729,8 +729,8 @@ TEST_F(AndroidAutofillProviderTest,
 // signatures (and predictions) match.
 TEST_F(AndroidAutofillProviderTest,
        SessionIdIsReusedForCachedFormsAsLongAsPredictionsAgree) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1025,8 +1025,8 @@ using AndroidAutofillProviderPrefillRequestTest = AndroidAutofillProviderTest;
 // Tests that we can send another prefill request after navigation.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        MultiplePrefillRequestsOnNavigation) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1052,8 +1052,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 // was not enough time to send a prefill request.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        OnAskForValuesToFillRecordsPrefillRequestStateUmaMetric) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1073,8 +1073,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        NoPrefillRequestOnVersionsPriorToU) {
   // This test only makes sense on Android versions smaller than U.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1092,8 +1092,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 // Tests that a prefill request is sent if all requirements for it are
 // satisfied.
 TEST_F(AndroidAutofillProviderPrefillRequestTest, SendPrefillRequest) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1112,8 +1112,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest, SendPrefillRequest) {
 // session.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        NoPrefillRequestIfOngoingSession) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1143,8 +1143,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 // Tests that no prefill request is sent if there has already been another
 // prefill request.
 TEST_F(AndroidAutofillProviderPrefillRequestTest, NoSecondPrefillRequest) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1184,8 +1184,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest, NoSecondPrefillRequest) {
 // the Autofill session for that form.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        SessionIdIsReusedForCachedForms) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1215,8 +1215,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 // starting a session on a form with the same id, but changed field content.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        SessionIdIsNotReusedForCachedFormsIfContentHasChanged) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1259,8 +1259,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 // before returning to the (formerly) cached form, a new session is started.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        SessionIdIsNotReusedMultipleAutofillSessions) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1321,8 +1321,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 // Tests that metrics are emitted when the bottom sheet is shown.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        PrefillRequestStateEmittedOnShowingBottomSheet) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1350,8 +1350,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 // and no view structure was provided to the Android framework.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        PrefillRequestStateEmittedOnNotShowingBottomSheetWithoutViewStructure) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 
@@ -1376,8 +1376,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 // and a view structure was provided to the Android framework.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        PrefillRequestStateEmittedOnNotShowingBottomSheetWithViewStructure) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
     GTEST_SKIP();
   }
 

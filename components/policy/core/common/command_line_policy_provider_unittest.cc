@@ -15,8 +15,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif  // BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
+#endif
 
 namespace policy {
 
@@ -75,7 +75,7 @@ TEST_F(CommandLinePolicyProviderTest, Creator) {
 #if BUILDFLAG(IS_ANDROID)
     is_created = channel != version_info::Channel::BETA &&
                  channel != version_info::Channel::STABLE &&
-                 base::android::BuildInfo::GetInstance()->is_debug_android();
+                 base::android::android_info::is_debug_android();
 #endif  // BUILDFLAG(IS_ANDROID)
     auto policy_provider = CreatePolicyProviderWithCheck(channel);
     if (is_created)

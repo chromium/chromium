@@ -20,7 +20,7 @@
 #include <dlfcn.h>
 #include <sys/types.h>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/native_library.h"
@@ -310,8 +310,8 @@ bool IsAdpfEnabled() {
           switches::kDisableAdpf)) {
     return false;
   }
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_S) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_S) {
     return false;
   }
   if (!AdpfMethods::Get().supported) {

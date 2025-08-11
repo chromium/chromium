@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/android/device_info.h"
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,7 +25,6 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
 #include "base/test/gmock_callback_support.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -288,7 +288,7 @@ void TestPaymentsAutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
 #if BUILDFLAG(IS_ANDROID)
 void TestPaymentsAutofillClient::
     SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive() {
-  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (!base::android::device_info::is_automotive()) {
     return;
   }
 

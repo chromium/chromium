@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/allocator/partition_alloc_support.h"
+#include "base/android/android_info.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
@@ -87,7 +88,6 @@
 #endif  // BUILDFLAG(USE_VAAPI)
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
 #include "components/viz/service/gl/throw_uncaught_exception.h"
 #include "media/base/android/media_codec_util.h"
 #endif
@@ -831,8 +831,7 @@ std::string GpuServiceImpl::GetShaderPrefixKey() {
         base::SysInfo::ProcessCPUArchitecture();
 
 #if BUILDFLAG(IS_ANDROID)
-    std::string build_fp =
-        base::android::BuildInfo::GetInstance()->android_build_fp();
+    std::string build_fp = base::android::android_info::android_build_fp();
     shader_prefix_key_ += "-" + build_fp;
 #endif
   }

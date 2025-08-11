@@ -15,9 +15,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif
 
 namespace password_manager {
 

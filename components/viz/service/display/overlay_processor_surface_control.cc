@@ -8,7 +8,7 @@
 #include <optional>
 #include <variant>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/feature_list.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/features.h"
@@ -205,12 +205,11 @@ void OverlayProcessorSurfaceControl::SetViewportSize(
 
 std::optional<gfx::ColorSpace>
 OverlayProcessorSurfaceControl::GetOverrideColorSpace() {
-  // Historically, android media was hardcoding color space to srgb and it
+  // historically, android media was hardcoding color space to srgb and it
   // wasn't possible to overlay with arbitrary colorspace on pre-S devices, so
   // we keep old behaviour there.
-  static bool is_older_than_s =
-      base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_S;
+  static bool is_older_than_s = base::android::android_info::sdk_int() <
+                                base::android::android_info::SDK_VERSION_S;
   if (is_older_than_s) {
     return gfx::ColorSpace::CreateSRGB();
   }

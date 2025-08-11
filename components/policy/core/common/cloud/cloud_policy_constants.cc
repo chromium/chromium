@@ -8,11 +8,11 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
-#include "components/policy/core/common/policy_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #endif
+#include "components/policy/core/common/policy_switches.h"
 
 namespace policy {
 
@@ -132,7 +132,7 @@ const char* GetChromeUserPolicyType() {
 #if BUILDFLAG(IS_CHROMEOS)
   return "google/chromeos/user";
 #elif BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_desktop()) {
+  if (base::android::device_info::is_desktop()) {
     return "google/chrome/user";
   } else {
     return "google/android/user";

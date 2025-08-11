@@ -30,7 +30,7 @@
 #include "components/feed/feed_feature_list.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 namespace feed {
@@ -96,7 +96,7 @@ feedwire::Version GetPlatformVersionMessage() {
   result.set_minor(minor);
   result.set_revision(revision);
 #if BUILDFLAG(IS_ANDROID)
-  result.set_api_version(base::android::BuildInfo::GetInstance()->sdk_int());
+  result.set_api_version(base::android::android_info::sdk_int());
 #endif
   return result;
 }
@@ -115,7 +115,7 @@ feedwire::Version GetAppVersionMessage(const ChromeInfo& chrome_info) {
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  result.set_api_version(base::android::BuildInfo::GetInstance()->sdk_int());
+  result.set_api_version(base::android::android_info::sdk_int());
 #endif
   return result;
 }

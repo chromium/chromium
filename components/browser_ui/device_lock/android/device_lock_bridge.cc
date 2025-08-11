@@ -4,7 +4,7 @@
 
 #include "components/browser_ui/device_lock/android/device_lock_bridge.h"
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "ui/android/window_android.h"
@@ -56,7 +56,7 @@ bool DeviceLockBridge::ShouldShowDeviceLockUi() {
 }
 
 bool DeviceLockBridge::RequiresDeviceLock() {
-  return base::android::BuildInfo::GetInstance()->is_automotive();
+  return base::android::device_info::is_automotive();
 }
 
 bool DeviceLockBridge::IsDeviceSecure() {

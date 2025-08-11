@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -651,7 +651,7 @@ TEST_F(AddToHomescreenDataFetcherTest,
 
   ObserverWaiter waiter;
   std::unique_ptr<AddToHomescreenDataFetcher> fetcher = BuildFetcher(&waiter);
-  if (base::android::BuildInfo::GetInstance()->is_desktop()) {
+  if (base::android::device_info::is_desktop()) {
     // Desktop Android expects a standalone DIY WebAPK.
     RunFetcher(fetcher.get(), waiter, kWebAppInstallInfoTitle,
                blink::mojom::DisplayMode::kStandalone,

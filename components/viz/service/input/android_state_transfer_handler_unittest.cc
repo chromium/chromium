@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -147,8 +147,8 @@ class AndroidStateTransferHandlerTest : public testing::Test {
  public:
   AndroidStateTransferHandlerTest() : handler_(mock_handler_client_) {}
   void SetUp() override {
-    if (base::android::BuildInfo::GetInstance()->sdk_int() <
-        base::android::SDK_VERSION_V) {
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SDK_VERSION_V) {
       GTEST_SKIP()
           << "AndroidStateTransferHandlerTest is used only when InputOnViz "
              "is enabled i.e. on Android V+";

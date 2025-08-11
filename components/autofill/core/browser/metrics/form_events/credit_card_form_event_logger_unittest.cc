@@ -15,6 +15,10 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
 namespace autofill::autofill_metrics {
 
 using ::autofill::test::CreateTestFormField;
@@ -837,7 +841,7 @@ TEST_F(CreditCardFormEventLoggerTest,
 // Test that we log filled form events for credit cards.
 TEST_F(CreditCardFormEventLoggerTest, CreditCardFilledFormEventsPreviewOnly) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -863,7 +867,7 @@ TEST_F(CreditCardFormEventLoggerTest, CreditCardFilledFormEventsPreviewOnly) {
 
 TEST_F(CreditCardFormEventLoggerTest, CreditCardFilledFormEventsFill) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -890,7 +894,7 @@ TEST_F(CreditCardFormEventLoggerTest, CreditCardFilledFormEventsFill) {
 TEST_F(CreditCardFormEventLoggerTest,
        CreditCardFilledFormEventsFillVirtualCard) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -920,7 +924,7 @@ TEST_F(CreditCardFormEventLoggerTest,
 TEST_F(CreditCardFormEventLoggerTest,
        CreditCardFilledFormEventsFillMaskedServerCard) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -949,7 +953,7 @@ TEST_F(CreditCardFormEventLoggerTest,
 
 TEST_F(CreditCardFormEventLoggerTest, CreditCardFilledFormEventsFillTwice) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)

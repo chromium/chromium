@@ -7,14 +7,12 @@
 #include <memory>
 #include <utility>
 
+#include "base/android/android_info.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_types.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace policy {
 
@@ -29,8 +27,9 @@ CommandLinePolicyProvider::CreateIfAllowed(
     return nullptr;
   }
 
-  if (!base::android::BuildInfo::GetInstance()->is_debug_android())
+  if (!base::android::android_info::is_debug_android()) {
     return nullptr;
+  }
 
   return base::WrapUnique(new CommandLinePolicyProvider(command_line));
 #else

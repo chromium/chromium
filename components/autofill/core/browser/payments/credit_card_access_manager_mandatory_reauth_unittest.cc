@@ -22,7 +22,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #endif
 
 namespace autofill {
@@ -44,7 +44,7 @@ class CreditCardAccessManagerMandatoryReauthTestBase
     feature_list_.InitAndEnableFeature(
         features::kAutofillEnableFpanRiskBasedAuthentication);
 #if BUILDFLAG(IS_ANDROID)
-    if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    if (base::android::device_info::is_automotive()) {
       autofill_client_.GetPrefs()->SetBoolean(
           prefs::kAutofillPaymentMethodsMandatoryReauth,
           /*value=*/true);
@@ -104,7 +104,7 @@ class CreditCardAccessManagerMandatoryReauthTestBase
 
   bool IsMandatoryReauthEnabled() {
 #if BUILDFLAG(IS_ANDROID)
-    if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    if (base::android::device_info::is_automotive()) {
       return true;
     }
 #endif

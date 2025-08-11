@@ -49,7 +49,6 @@
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 
 using password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords;

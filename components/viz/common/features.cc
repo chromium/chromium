@@ -24,7 +24,7 @@
 #include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -480,7 +480,7 @@ bool ShouldWebRtcLogCapturePipeline() {
 #if BUILDFLAG(IS_ANDROID)
 bool UseWebViewNewInvalidateHeuristic() {
   // For Android TVs we bundle this with WebViewSurfaceControlForTV.
-  if (base::android::BuildInfo::GetInstance()->is_tv()) {
+  if (base::android::device_info::is_tv()) {
     return base::FeatureList::IsEnabled(kWebViewSurfaceControlForTV);
   }
 

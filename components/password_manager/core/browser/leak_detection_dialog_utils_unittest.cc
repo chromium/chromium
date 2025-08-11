@@ -18,7 +18,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #endif
 
 using password_manager::CreateLeakType;
@@ -138,7 +138,7 @@ class CredentialLeakDialogUtilsTest
     std::vector<LeakTypeParams> test_cases;
     std::ranges::copy(kLeakTypesTestCases, std::back_inserter(test_cases));
 #if BUILDFLAG(IS_ANDROID)
-    if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    if (base::android::device_info::is_automotive()) {
       std::ranges::copy(kPasswordCheckLeakTypesTestCasesAndroidAutomotive,
                         std::back_inserter(test_cases));
       return test_cases;
@@ -204,7 +204,7 @@ class BulkCheckCredentialLeakDialogUtilsTest
     std::vector<BulkCheckParams> test_cases;
     std::ranges::copy(kBulkCheckTestCases, std::back_inserter(test_cases));
 #if BUILDFLAG(IS_ANDROID)
-    if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    if (base::android::device_info::is_automotive()) {
       std::ranges::copy(kPasswordCheckBulkCheckTestCasesAndroidAutomotive,
                         std::back_inserter(test_cases));
       return test_cases;
@@ -281,7 +281,7 @@ class PasswordChangeCredentialLeakDialogUtilsTest
     std::vector<PasswordChangeParams> test_cases;
     std::ranges::copy(kPasswordChangeTestCases, std::back_inserter(test_cases));
 
-    if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    if (base::android::device_info::is_automotive()) {
       std::ranges::copy(kPasswordChangeTestCasesAuto,
                         std::back_inserter(test_cases));
       return test_cases;

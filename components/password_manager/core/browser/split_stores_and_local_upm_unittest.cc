@@ -4,7 +4,7 @@
 
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
@@ -71,13 +71,12 @@ TEST_P(SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired,
 #if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
       false
 #else
-      base::android::BuildInfo::GetInstance()->is_automotive()
+      base::android::device_info::is_automotive()
           ? p.expected_is_update_required_automotive
           : p.expected_is_update_required
 #endif
       ;
-  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
-      p.gms_version);
+  base::android::device_info::set_gms_version_code_for_test(p.gms_version);
   EXPECT_EQ(expected_is_update_required, IsGmsCoreUpdateRequired());
 }
 

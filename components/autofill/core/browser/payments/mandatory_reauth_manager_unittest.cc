@@ -21,7 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #endif
 
 namespace autofill::payments {
@@ -140,7 +140,7 @@ TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_UnsupportedMethod) {
 // opt-in if the conditions for offering it are all met for local cards.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -176,7 +176,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_Incognito) {
 // opt-in if the conditions for offering it are all met for virtual cards.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_VirtualCard) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -192,7 +192,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_VirtualCard) {
 // opt-in if the conditions for offering it are all met for masked server cards.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_MaskedServerCard) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -209,7 +209,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_MaskedServerCard) {
 // re-auth.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_UserAlreadyMadeDecision) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -233,7 +233,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_UserAlreadyMadeDecision) {
 TEST_F(MandatoryReauthManagerTest,
        ShouldOfferOptin_AuthenticationNotAvailable) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -261,7 +261,7 @@ TEST_F(
     MandatoryReauthManagerTest,
     ShouldOfferOptin_FilledCardWentThroughInteractiveAuthenticationOrNoAutofill) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -287,7 +287,7 @@ TEST_F(
     MandatoryReauthManagerTest,
     ShouldOfferOptin_ServerCardWithMatchingLocalCard_LastFilledCardWasLocalCard) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -319,7 +319,7 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
 #if BUILDFLAG(IS_ANDROID)
   // Opt-in prompts are not shown on automotive as mandatory reauth is always
   // enabled.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -375,7 +375,7 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
 // user cancels the re-auth prompt.
 TEST_F(MandatoryReauthManagerTest, OnUserCancelledOptInPrompt) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -397,7 +397,7 @@ TEST_F(MandatoryReauthManagerTest, OnUserCancelledOptInPrompt) {
 // user closed the re-auth prompt.
 TEST_F(MandatoryReauthManagerTest, OnUserClosedOptInPrompt) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -524,7 +524,7 @@ TEST_P(MandatoryReauthManagerOptInFlowTest,
 
 TEST_P(MandatoryReauthManagerOptInFlowTest, OptInSuccess) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -576,7 +576,7 @@ TEST_P(MandatoryReauthManagerOptInFlowTest, OptInSuccess) {
 
 TEST_P(MandatoryReauthManagerOptInFlowTest, OptInShownButAuthFailure) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Skip the test for automotive as Mandatory Re-auth should always be turned
     // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";

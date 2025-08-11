@@ -41,7 +41,7 @@
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -336,7 +336,7 @@ TEST_F(MetricsLogTest, BasicRecord) {
       base::SysInfo::OperatingSystemVersion());
 #elif BUILDFLAG(IS_ANDROID)
   system_profile->mutable_os()->set_build_fingerprint(
-      base::android::BuildInfo::GetInstance()->android_build_fp());
+      base::android::android_info::android_build_fp());
   system_profile->set_app_package_name("test app");
 #elif BUILDFLAG(IS_IOS)
   system_profile->mutable_os()->set_build_number(

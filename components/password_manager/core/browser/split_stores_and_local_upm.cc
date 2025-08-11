@@ -4,7 +4,7 @@
 
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/buildflag.h"
@@ -62,7 +62,7 @@ bool IsGmsCoreUpdateRequired() {
   return false;
 #else
   const std::string& gms_version_str =
-      base::android::BuildInfo::GetInstance()->gms_version_code();
+      base::android::device_info::gms_version_code();
   int gms_version;
   // GMSCore version could not be parsed, probably no GMSCore installed.
   if (!base::StringToInt(gms_version_str, &gms_version)) {
@@ -74,7 +74,7 @@ bool IsGmsCoreUpdateRequired() {
 }
 
 int GetSplitStoresUpmMinVersion() {
-  return base::android::BuildInfo::GetInstance()->is_automotive()
+  return base::android::device_info::is_automotive()
              ? kSplitStoresUpmMinVersionForAuto
              : kSplitStoresUpmMinVersionForNonAuto;
 }

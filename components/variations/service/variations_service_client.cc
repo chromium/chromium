@@ -21,7 +21,7 @@
 #include "ui/base/device_form_factor.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #endif
 
 namespace variations {
@@ -47,7 +47,7 @@ version_info::Channel VariationsServiceClient::GetChannelForVariations() {
   // TODO(crbug.com/389565104): Remove this if block when ready to move desktop
   // to stable builds.
   if (channel == version_info::Channel::STABLE &&
-      base::android::BuildInfo::GetInstance()->is_desktop()) {
+      base::android::device_info::is_desktop()) {
     return version_info::Channel::DEV;
   }
 #endif
@@ -62,7 +62,7 @@ Study::FormFactor VariationsServiceClient::GetCurrentFormFactor() {
 // audit of form factor usage or exposing ui_mode.
 // FormFactorMetricsProvider::GetFormFactor() also needs to be updated.
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_foldable()) {
+  if (base::android::device_info::is_foldable()) {
     return Study::FOLDABLE;
   }
 #endif

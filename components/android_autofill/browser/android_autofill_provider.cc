@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -52,7 +52,7 @@ using FieldInfo = ::autofill::AndroidAutofillProviderBridge::FieldInfo;
 using RequestPasswords = WebAuthnCredManDelegate::RequestPasswords;
 
 constexpr int kMinimumSdkVersionForPrefillRequests =
-    base::android::SdkVersion::SDK_VERSION_U;
+    base::android::android_info::SDK_VERSION_U;
 
 constexpr base::TimeDelta kKeyboardSuppressionTimeout = base::Seconds(1);
 
@@ -763,7 +763,7 @@ SessionId AndroidAutofillProvider::CreateSessionId() {
 }
 
 bool AndroidAutofillProvider::ArePrefillRequestsSupported() const {
-  return base::android::BuildInfo::GetInstance()->sdk_int() >=
+  return base::android::android_info::sdk_int() >=
          kMinimumSdkVersionForPrefillRequests;
 }
 

@@ -14,7 +14,7 @@
 #include "components/prefs/pref_service.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #endif
 
 namespace autofill::prefs {
@@ -71,7 +71,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 #if BUILDFLAG(IS_ANDROID)
   // Automotive devices require stricter data protection for user privacy, so
   // mandatory reauth for autofill payment methods should always be enabled.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     registry->RegisterBooleanPref(kAutofillPaymentMethodsMandatoryReauth, true);
   } else {
     registry->RegisterBooleanPref(kAutofillPaymentMethodsMandatoryReauth,
@@ -237,7 +237,7 @@ bool IsPaymentMethodsMandatoryReauthEnabled(const PrefService* prefs) {
 void SetPaymentMethodsMandatoryReauthEnabled(PrefService* prefs, bool enabled) {
 #if BUILDFLAG(IS_ANDROID)
   // The user should not be able to update the pref value on automotive devices.
-  CHECK(!base::android::BuildInfo::GetInstance()->is_automotive());
+  CHECK(!base::android::device_info::is_automotive());
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \

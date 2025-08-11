@@ -17,7 +17,7 @@
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #endif
 #if BUILDFLAG(IS_WIN)
 #include "components/metrics/system_session_analyzer/system_session_analyzer_win.h"
@@ -31,8 +31,7 @@ namespace {
 bool HasGmsCoreVersionChanged(PrefService* local_state) {
   std::string previous_version =
       local_state->GetString(prefs::kStabilityGmsCoreVersion);
-  std::string current_version =
-      base::android::BuildInfo::GetInstance()->gms_version_code();
+  std::string current_version = base::android::device_info::gms_version_code();
 
   // If the last version is empty, treat it as consistent.
   if (previous_version.empty())
@@ -42,8 +41,7 @@ bool HasGmsCoreVersionChanged(PrefService* local_state) {
 }
 
 void UpdateGmsCoreVersionPref(PrefService* local_state) {
-  std::string current_version =
-      base::android::BuildInfo::GetInstance()->gms_version_code();
+  std::string current_version = base::android::device_info::gms_version_code();
   local_state->SetString(prefs::kStabilityGmsCoreVersion, current_version);
 }
 #endif

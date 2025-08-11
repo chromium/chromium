@@ -4,7 +4,7 @@
 
 #include "components/variations/variations_crash_keys_android.h"
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/command_line.h"
@@ -44,9 +44,8 @@ void SaveVariationsForAnrReporting(
     scoped_refptr<base::SequencedTaskRunner> runner,
     ExperimentListInfo info) {
   // ANR collection and reporting is only available on R and above.
-  bool sdk_version_enough =
-      base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_R;
+  bool sdk_version_enough = base::android::android_info::sdk_int() >=
+                            base::android::android_info::SDK_VERSION_R;
   bool is_browser_process = base::CommandLine::ForCurrentProcess()
                                 ->GetSwitchValueASCII(kProcessTypeSwitchName)
                                 .empty();

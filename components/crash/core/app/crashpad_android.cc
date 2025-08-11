@@ -18,7 +18,9 @@
 #include <algorithm>
 #include <string_view>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
+#include "base/android/apk_info.h"
+#include "base/android/device_info.h"
 #include "base/android/java_exception_reporter.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
@@ -160,12 +162,11 @@ class SandboxedHandler {
     // Android's debuggerd handler on JB MR2 until OREO displays a dialog which
     // is a bad user experience for child process crashes. Disable the debuggerd
     // handler for user builds. crbug.com/273706
-    base::android::BuildInfo* build_info =
-        base::android::BuildInfo::GetInstance();
     restore_previous_handler_ =
-        build_info->sdk_int() >= base::android::SDK_VERSION_OREO ||
-        build_info->build_type() == "eng" ||
-        build_info->build_type() == "userdebug";
+        base::android::android_info::sdk_int() >=
+            base::android::android_info::SDK_VERSION_OREO ||
+        base::android::android_info::build_type() == "eng" ||
+        base::android::android_info::build_type() == "userdebug";
 
     bool signal_stack_initialized =
         CrashpadClient::InitializeSignalStackForThread();
@@ -286,23 +287,28 @@ void SetJavaExceptionInfo(const char* info_string) {
 }
 
 void SetBuildInfoAnnotations(std::map<std::string, std::string>* annotations) {
-  base::android::BuildInfo* info = base::android::BuildInfo::GetInstance();
+  (*annotations)["android_build_id"] =
+      base::android::android_info::android_build_id();
+  (*annotations)["android_build_fp"] =
+      base::android::android_info::android_build_fp();
+  (*annotations)["sdk"] =
+      base::StringPrintf("%d", base::android::android_info::sdk_int());
+  (*annotations)["device"] = base::android::android_info::device();
+  (*annotations)["model"] = base::android::android_info::model();
+  (*annotations)["brand"] = base::android::android_info::brand();
+  (*annotations)["board"] = base::android::android_info::board();
+  (*annotations)["installer_package_name"] =
+      base::android::apk_info::installer_package_name();
+  (*annotations)["abi_name"] = base::android::android_info::abi_name();
+  (*annotations)["resources_version"] =
+      base::android::apk_info::resources_version();
+  (*annotations)["gms_core_version"] =
+      base::android::device_info::gms_version_code();
 
-  (*annotations)["android_build_id"] = info->android_build_id();
-  (*annotations)["android_build_fp"] = info->android_build_fp();
-  (*annotations)["sdk"] = base::StringPrintf("%d", info->sdk_int());
-  (*annotations)["device"] = info->device();
-  (*annotations)["model"] = info->model();
-  (*annotations)["brand"] = info->brand();
-  (*annotations)["board"] = info->board();
-  (*annotations)["installer_package_name"] = info->installer_package_name();
-  (*annotations)["abi_name"] = info->abi_name();
-  (*annotations)["resources_version"] = info->resources_version();
-  (*annotations)["gms_core_version"] = info->gms_version_code();
-
-  (*annotations)["package"] = std::string(info->package_name()) + " v" +
-                              info->package_version_code() + " (" +
-                              info->package_version_name() + ")";
+  (*annotations)["package"] =
+      std::string(base::android::apk_info::package_name()) + " v" +
+      base::android::apk_info::package_version_code() + " (" +
+      base::android::apk_info::package_version_name() + ")";
 }
 
 // Constructs paths to a handler trampoline executable and a library exporting
@@ -313,8 +319,8 @@ bool GetHandlerTrampoline(std::string* handler_trampoline,
                           std::string* handler_library) {
   // The linker doesn't support loading executables passed on its command
   // line until Q.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_Q) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_Q) {
     return false;
   }
 

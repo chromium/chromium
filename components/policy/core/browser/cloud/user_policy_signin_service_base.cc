@@ -24,7 +24,7 @@
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #endif
 
 namespace em = enterprise_management;
@@ -35,7 +35,7 @@ namespace {
 
 em::DeviceRegisterRequest::Type GetCloudPolicyRegistrationType() {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_desktop()) {
+  if (base::android::device_info::is_desktop()) {
     return em::DeviceRegisterRequest::BROWSER;
   } else {
     return em::DeviceRegisterRequest::ANDROID_BROWSER;

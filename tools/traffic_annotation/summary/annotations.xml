@@ -46,11 +46,11 @@ Refer to README.md for content description and update process.
  <item id="desktop_screenshot_save" added_in_milestone="94" content_hash_code="0431b7d2" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/views/sharing_hub/screenshot/screenshot_captured_bubble.cc" />
  <item id="device_management_service" added_in_milestone="62" content_hash_code="05c7768f" os_list="linux,windows,chromeos,android" file_path="components/policy/core/common/cloud/device_management_service.cc" />
  <item id="devtools_cdp_network_resource" added_in_milestone="87" content_hash_code="051db8c6" os_list="linux,windows,chromeos,android" file_path="content/browser/devtools/protocol/devtools_network_resource_loader.cc" />
- <item id="devtools_free_data_source" added_in_milestone="62" content_hash_code="01a26b6a" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/devtools/devtools_ui_data_source.cc" />
+ <item id="devtools_free_data_source" added_in_milestone="62" content_hash_code="01a26b6a" os_list="linux,windows,chromeos,android" file_path="chrome/browser/ui/webui/devtools/devtools_ui_data_source.cc" />
  <item id="devtools_handle_front_end_messages" added_in_milestone="62" content_hash_code="04940191" os_list="linux,windows,chromeos,android" file_path="content/shell/browser/shell_devtools_bindings.cc" />
- <item id="devtools_hard_coded_data_source" added_in_milestone="62" content_hash_code="073b9777" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/devtools/devtools_ui_data_source.cc" />
+ <item id="devtools_hard_coded_data_source" added_in_milestone="62" content_hash_code="073b9777" os_list="linux,windows,chromeos,android" file_path="chrome/browser/ui/webui/devtools/devtools_ui_data_source.cc" />
  <item id="devtools_http_handler" added_in_milestone="66" content_hash_code="054518b9" os_list="linux,windows,chromeos,android" file_path="content/browser/devtools/devtools_http_handler.cc" />
- <item id="devtools_network_resource" added_in_milestone="62" content_hash_code="06958290" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/devtools_ui_bindings.cc" />
+ <item id="devtools_network_resource" added_in_milestone="62" content_hash_code="06958290" os_list="linux,windows,chromeos,android" file_path="chrome/browser/devtools/devtools_ui_bindings.cc" />
  <item id="devtools_proxy_config" added_in_milestone="85" content_hash_code="01e83c36" os_list="linux,windows,chromeos,android" file_path="content/browser/devtools/protocol/target_handler.cc" />
  <item id="dial_url_fetcher" added_in_milestone="67" content_hash_code="07bd0650" os_list="linux,windows,chromeos" file_path="chrome/browser/media/router/discovery/dial/dial_url_fetcher.cc" />
  <item id="digital_asset_links" added_in_milestone="90" content_hash_code="05caa66d" os_list="linux,windows,chromeos,android" file_path="components/content_relationship_verification/digital_asset_links_handler.cc" />
@@ -400,7 +400,7 @@ Refer to README.md for content description and update process.
  <item id="almanac_app_install" added_in_milestone="120" content_hash_code="04f21824" os_list="chromeos" file_path="chrome/browser/apps/app_service/app_install/app_install_almanac_endpoint.cc" />
  <item id="remoting_report_provisioning_error" added_in_milestone="120" content_hash_code="01928ee5" os_list="linux,windows,android,chromeos" file_path="remoting/base/corp_service_client.cc" />
  <item id="webauthn_rp_id_check" added_in_milestone="121" content_hash_code="048c3faa" os_list="linux,windows,android,chromeos" file_path="content/browser/webauth/webauth_request_security_checker.cc" />
- <item id="devtools_cdp_console_insights" added_in_milestone="121" content_hash_code="051d2911" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/devtools_ui_bindings.cc" />
+ <item id="devtools_cdp_console_insights" added_in_milestone="121" content_hash_code="051d2911" os_list="linux,windows,chromeos,android" file_path="chrome/browser/devtools/devtools_ui_bindings.cc" />
  <item id="tasks_integration" added_in_milestone="121" content_hash_code="06b37a3d" os_list="chromeos" file_path="chrome/browser/ash/api/tasks/chrome_tasks_delegate.cc" />
  <item id="metrics_report_appkm" added_in_milestone="121" content_hash_code="0662ff56" os_list="linux,windows,android,chromeos" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
  <item id="metrics_report_ukm_and_appkm" added_in_milestone="121" content_hash_code="0616c235" os_list="linux,windows,android,chromeos" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
