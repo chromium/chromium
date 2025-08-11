@@ -8,12 +8,15 @@
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/connectors/core/content_area_user_provider.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/download_item_utils.h"
@@ -89,6 +92,22 @@ std::string ContentAnalysisInfo::GetContentAreaAccountEmail() const {
           }
         });
   }
+
+  if (!email.empty()) {
+    return email;
+  }
+
+  auto referrers = referrer_chain();
+  for (const auto& referrer : referrers) {
+    GURL referrer_url(referrer.url());
+    if (referrer_url.is_valid()) {
+      email = GetActiveContentAreaUser(identity_manager(), referrer_url);
+
+      if (!email.empty()) {
+        break;
+      }
+    }
+  }
   return email;
 }
 
@@ -96,8 +115,11 @@ std::string ContentAnalysisInfo::GetContentAreaAccountEmail() const {
 std::string ContentAreaUserProvider::GetUser(Profile* profile,
                                              content::WebContents* web_contents,
                                              const GURL& tab_url) {
-  return ContentAreaUserProvider(IdentityManagerFactory::GetForProfile(profile),
-                                 web_contents, tab_url)
+  return ContentAreaUserProvider(
+             IdentityManagerFactory::GetForProfile(profile),
+             safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
+                 GetForBrowserContext(profile),
+             web_contents, tab_url)
       .GetContentAreaAccountEmail();
 }
 
@@ -141,7 +163,7 @@ ContentAreaUserProvider::reason() const {
 
 google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
 ContentAreaUserProvider::referrer_chain() const {
-  NOTREACHED();
+  return referrer_chain_;
 }
 
 google::protobuf::RepeatedPtrField<std::string>
@@ -155,11 +177,16 @@ content::WebContents* ContentAreaUserProvider::web_contents() const {
 
 ContentAreaUserProvider::ContentAreaUserProvider(
     signin::IdentityManager* im,
+    safe_browsing::SafeBrowsingNavigationObserverManager* nav_observer_manager,
     content::WebContents* web_contents,
     const GURL& tab_url)
     : im_(im),
       web_contents_(web_contents ? web_contents->GetWeakPtr() : nullptr),
-      tab_url_(tab_url) {}
+      tab_url_(tab_url) {
+  nav_observer_manager->IdentifyReferrerChainByEventURL(
+      tab_url, sessions::SessionTabHelper::IdForTab(web_contents),
+      enterprise_connectors::kReferrerUserGestureLimit, &referrer_chain_);
+}
 
 ContentAreaUserProvider::~ContentAreaUserProvider() = default;
 
@@ -174,7 +201,14 @@ DownloadContentAreaUserProvider::DownloadContentAreaUserProvider(
               ? content::DownloadItemUtils::GetOriginalWebContents(
                     &download_item)
                     ->GetWeakPtr()
-              : nullptr) {}
+              : nullptr) {
+  std::unique_ptr<safe_browsing::ReferrerChainData> referrer_chain_data =
+      safe_browsing::IdentifyReferrerChain(
+          download_item, enterprise_connectors::kReferrerUserGestureLimit);
+  if (referrer_chain_data && referrer_chain_data->GetReferrerChain()) {
+    referrer_chain_ = *referrer_chain_data->GetReferrerChain();
+  }
+}
 
 DownloadContentAreaUserProvider::~DownloadContentAreaUserProvider() = default;
 
@@ -223,7 +257,7 @@ DownloadContentAreaUserProvider::reason() const {
 
 google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
 DownloadContentAreaUserProvider::referrer_chain() const {
-  NOTREACHED();
+  return referrer_chain_;
 }
 
 google::protobuf::RepeatedPtrField<std::string>
