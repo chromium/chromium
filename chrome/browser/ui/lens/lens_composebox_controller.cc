@@ -31,6 +31,12 @@ void LensComposeboxController::BindComposebox(
 
 void LensComposeboxController::IssueComposeboxQuery(
     const std::string& query_text) {
+  // Can only issue a query if the remote UI supports the DEFAULT feature.
+  if (remote_ui_capabilities_.empty() ||
+      !remote_ui_capabilities_.contains(lens::FeatureCapability::DEFAULT)) {
+    return;
+  }
+
   // TODO(crbug.com/435504019): Implement filling out all details of the query
   // proto.
   lens::ClientToAimMessage client_to_aim_message;
@@ -52,6 +58,29 @@ void LensComposeboxController::IssueComposeboxQuery(
 
 void LensComposeboxController::CloseUI() {
   composebox_handler_.reset();
+}
+
+void LensComposeboxController::OnAimMessage(
+    const std::vector<uint8_t>& message) {
+  // Try and parse the message as an AimToClientMessage. Since it is the only
+  // message type we expect, if parsing fails, we can assume it is a malformed
+  // message and ignore it.
+  lens::AimToClientMessage aim_to_client_message;
+  if (!aim_to_client_message.ParseFromArray(message.data(), message.size())) {
+    return;
+  }
+
+  if (aim_to_client_message.has_handshake_response()) {
+    // Store the remote UI's capabilities. This should only be done once.
+    for (int capability_int :
+         aim_to_client_message.handshake_response().capabilities()) {
+      remote_ui_capabilities_.insert(
+          static_cast<lens::FeatureCapability>(capability_int));
+    }
+
+    lens_search_controller_->lens_overlay_side_panel_coordinator()
+        ->AimHandshakeReceived();
+  }
 }
 
 }  // namespace lens

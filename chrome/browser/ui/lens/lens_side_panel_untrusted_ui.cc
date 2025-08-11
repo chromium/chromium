@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #include "ui/webui/webui_util.h"
@@ -177,6 +178,12 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   // Send event when escape is pressed.
   html_source->AddBoolean("composeboxCloseByEscape", true);
 
+  // Add strings for post message communication with the remote UI.
+  lens::ClientToAimMessage handshake_ping;
+  handshake_ping.mutable_handshake_ping()->add_capabilities(
+      lens::FeatureCapability::DEFAULT);
+  html_source->AddString("handshakeMessage",
+                         handshake_ping.SerializeAsString());
 
   // Add required resources.
   webui::SetupWebUIDataSource(html_source, kLensUntrustedResources,

@@ -132,6 +132,11 @@ class LensOverlaySidePanelCoordinator
     return lens_search_controller_->lens_searchbox_controller();
   }
 
+  // Return the LensComposeboxController that is part of this tab.
+  LensComposeboxController* GetLensComposeboxController() {
+    return lens_search_controller_->lens_composebox_controller();
+  }
+
   // Handles rendering text highlights on the main browser window based on
   // navigations from the side panel. Returns true if handled, false otherwise.
   // `nav_url` refers to the URL that the side panel was set to navigate to. It
@@ -154,6 +159,7 @@ class LensOverlaySidePanelCoordinator
   void OnScrollToMessage(const std::vector<std::string>& text_fragments,
       uint32_t pdf_page_number) override;
   void RequestSendFeedback() override;
+  void OnAimMessage(const std::vector<uint8_t>& message) override;
 
   // This method is used to set up communication between this instance and the
   // side panel WebUI. This is called by the WebUIController when the WebUI is
@@ -257,6 +263,9 @@ class LensOverlaySidePanelCoordinator
   // UI in the side panel iframe. `message` should be a serialized
   // ClientToAimMessage proto.
   void SendClientMessageToAim(const std::vector<uint8_t>& serialized_message);
+
+  // Notifies the side panel WebUI that the AIM handshake has been received.
+  void AimHandshakeReceived();
 
  private:
   // Data class for constructing the side panel and storing side panel state for

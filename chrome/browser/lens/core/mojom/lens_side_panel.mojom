@@ -33,6 +33,10 @@ interface LensSidePanelPageHandler {
 
   // Request the browser to open the feedback dialog.
   RequestSendFeedback();
+
+  // Called when the WebUI received a message from the remote AIM UI. This is
+  // assumed to be a binary serialized AimToClientMessage proto.
+  OnAimMessage(array<uint8> message);
 };
 
 // Enumerates the semantic events that can be logged by the Lens Overlay.
@@ -94,4 +98,7 @@ interface LensSidePanelPage {
   // serialized ClientToAimMessage proto, as it will be passed
   // directly to the remote UI in the side panel iframe.
   SendClientMessageToAim(array<uint8> serialized_message);
+
+  // Notifies the side panel that the AIM handshake has been received.
+  AimHandshakeReceived();
 };

@@ -18,6 +18,7 @@ export class TestLensSidePanelPageHandler extends TestBrowserProxy implements
       'getIsContextualSearchbox',
       'onScrollToMessage',
       'requestSendFeedback',
+      'onAimMessage',
     ]);
   }
 
@@ -36,6 +37,10 @@ export class TestLensSidePanelPageHandler extends TestBrowserProxy implements
         textFragments,
         pdfPageNumber,
     );
+  }
+
+  onAimMessage(message: number[]) {
+    this.methodCalled('onAimMessage', message);
   }
 
   requestSendFeedback() {
