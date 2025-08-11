@@ -110,7 +110,6 @@ void OmniboxTabHelper::OnInputInProgress(bool in_progress) {
 
 void OmniboxTabHelper::OnFocusChanged(OmniboxFocusState state,
                                       OmniboxFocusChangeReason reason) {
-  focus_state_ = state;
   for (auto& observer : observers_) {
     observer.OnOmniboxFocusChanged(state, reason);
   }
@@ -131,10 +130,6 @@ void OmniboxTabHelper::OnPopupVisibilityChanged(
 
 std::optional<bool> OmniboxTabHelper::IsPagePaywalled() {
   return page_has_apc_paywall_signal_;
-}
-
-OmniboxFocusState OmniboxTabHelper::focus_state() const {
-  return focus_state_;
 }
 
 void OmniboxTabHelper::OnPageContentExtracted(

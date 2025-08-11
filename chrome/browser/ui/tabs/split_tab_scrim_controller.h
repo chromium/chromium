@@ -31,10 +31,10 @@ class SplitTabScrimController : public OmniboxTabHelper::Observer,
 
   // OmniboxTabHelper::Observer:
   void OnOmniboxFocusChanged(OmniboxFocusState state,
-                             OmniboxFocusChangeReason reason) override;
+                             OmniboxFocusChangeReason reason) override {}
   void OnOmniboxInputStateChanged() override {}
   void OnOmniboxInputInProgress(bool in_progress) override {}
-  void OnOmniboxPopupVisibilityChanged(bool popup_is_open) override {}
+  void OnOmniboxPopupVisibilityChanged(bool popup_is_open) override;
 
   // ChipController::Observer:
   void OnPermissionPromptShown() override;
@@ -54,6 +54,7 @@ class SplitTabScrimController : public OmniboxTabHelper::Observer,
 
   bool is_permission_prompt_showing_ = false;
   bool is_page_info_bubble_showing_ = false;
+  bool is_omnibox_popup_showing_ = false;
   base::CallbackListSubscription active_tab_change_subscription_;
   base::CallbackListSubscription tab_will_detach_subscription_;
   base::CallbackListSubscription page_info_bubble_created_subscription_;

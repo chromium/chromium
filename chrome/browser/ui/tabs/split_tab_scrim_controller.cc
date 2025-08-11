@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace split_tabs {
@@ -38,17 +37,13 @@ SplitTabScrimController::SplitTabScrimController(BrowserView* browser_view)
 SplitTabScrimController::~SplitTabScrimController() = default;
 
 bool SplitTabScrimController::ShouldShowScrim() {
-  tabs::TabInterface* const active_tab =
-      browser_window_interface_->GetActiveTabInterface();
-  return (active_tab &&
-          (OmniboxTabHelper::FromWebContents(active_tab->GetContents())
-               ->focus_state() != OmniboxFocusState::OMNIBOX_FOCUS_NONE)) ||
-         is_permission_prompt_showing_ || is_page_info_bubble_showing_;
+  return is_omnibox_popup_showing_ || is_permission_prompt_showing_ ||
+         is_page_info_bubble_showing_;
 }
 
-void SplitTabScrimController::OnOmniboxFocusChanged(
-    OmniboxFocusState state,
-    OmniboxFocusChangeReason reason) {
+void SplitTabScrimController::OnOmniboxPopupVisibilityChanged(
+    bool popup_is_open) {
+  is_omnibox_popup_showing_ = popup_is_open;
   UpdateScrimVisibility();
 }
 

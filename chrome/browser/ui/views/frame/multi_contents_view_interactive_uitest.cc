@@ -696,20 +696,21 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
       }));
 }
 
-IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ShowScrimOnOmniboxFocus) {
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
+                       ShowScrimOnOmniboxDropDownOpen) {
   RunTestSequence(
       InstrumentTab(kNewTab), AddInstrumentedTab(kSecondTab, GetTestUrl()),
       SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
       FocusElement(kNewTab),
       WaitForHide(MultiContentsView::kEndContainerViewScrimElementId),
       EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId),
-      FocusElement(kOmniboxElementId),
+      FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"query"),
       WaitForShow(MultiContentsView::kEndContainerViewScrimElementId),
       EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId),
       // Move focus to the inactive tab and trigger scrim on the start tab
       FocusInactiveTabInSplit(),
       WaitForHide(MultiContentsView::kEndContainerViewScrimElementId),
-      FocusElement(kOmniboxElementId),
+      FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"query"),
       WaitForShow(MultiContentsView::kStartContainerViewScrimElementId),
       EnsureNotPresent(MultiContentsView::kEndContainerViewScrimElementId));
 }
@@ -721,25 +722,20 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
       EnsureNotPresent(MultiContentsView::kEndContainerViewScrimElementId),
       // Create a split tab and verify that the scrim shows
       AddInstrumentedTab(kSecondTab, GetTestUrl()),
-      SelectTab(kTabStripElementId, 0), FocusElement(kOmniboxElementId),
-      EnterSplitView(0, 1),
+      SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
+      FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"query"),
       WaitForShow(MultiContentsView::kEndContainerViewScrimElementId),
       // Create a second split tab
       AddInstrumentedTab(kThirdTab, GetTestUrl()),
       AddInstrumentedTab(kFourthTab, GetTestUrl()),
-      SelectTab(kTabStripElementId, 2), FocusElement(kOmniboxElementId),
-      EnterSplitView(2, 3),
+      SelectTab(kTabStripElementId, 2), EnterSplitView(2, 3),
+      FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"query"),
       WaitForShow(MultiContentsView::kEndContainerViewScrimElementId),
       EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId),
       // Remove focus from the omnibox split to ensure the second split
       // isn't showing a scrim
       FocusElement(kThirdTab),
       WaitForHide(MultiContentsView::kEndContainerViewScrimElementId),
-      EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId),
-      // Ensure the scrim is showing when the first split tab is selected
-      // because it had the omnibox focus
-      SelectTab(kTabStripElementId, 0),
-      WaitForShow(MultiContentsView::kEndContainerViewScrimElementId),
       EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId));
 }
 
@@ -768,7 +764,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, CoordinateScrimShowReasons) {
       // Create a split tab and focus the omnibox
       AddInstrumentedTab(kSecondTab, GetTestUrl()),
       SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
-      FocusElement(kOmniboxElementId),
+      FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"query"),
       WaitForShow(MultiContentsView::kEndContainerViewScrimElementId),
       // Trigger the permission prompt while focusing the omnibox should
       // continue showing the scrim.
