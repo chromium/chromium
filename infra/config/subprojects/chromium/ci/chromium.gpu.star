@@ -19,6 +19,7 @@ ci.defaults.set(
     pool = ci.gpu.POOL,
     gardener_rotations = gardener_rotations.CHROMIUM_GPU,
     tree_closing = True,
+    tree_closing_notifiers = ci.gpu.TREE_CLOSING_NOTIFIERS,
     contact_team_email = "chrome-gpu-infra@google.com",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
@@ -28,7 +29,6 @@ ci.defaults.set(
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
     thin_tester_cores = 2,
-    tree_closing_notifiers = ci.gpu.TREE_CLOSING_NOTIFIERS,
 )
 
 targets.builder_defaults.set(

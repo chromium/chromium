@@ -24,6 +24,7 @@ ci.defaults.set(
     os = os.LINUX_DEFAULT,
     gardener_rotations = gardener_rotations.CHROMIUM,
     tree_closing = True,
+    tree_closing_notifiers = ci.DEFAULT_TREE_CLOSING_NOTIFIERS,
     main_console_view = "main",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
@@ -241,17 +242,16 @@ ci.builder(
     ),
     ssd = True,
     free_space = builders.free_space.high,
-    # Set tree_closing to false to disable the defaualt tree closer, which
-    # filters by step name, and instead enable tree closing for any step
-    # failure.
-    tree_closing = False,
+    # Don't use the default tree closer, which filters by step name, and instead
+    # enable tree closing for any step failure.
+    tree_closing_notifiers = args.ignore_default(["close-on-any-step-failure"]),
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "det",
     ),
     contact_team_email = "chrome-build-team@google.com",
     execution_timeout = 6 * time.hour,
-    notifies = ["Deterministic Linux", "close-on-any-step-failure"],
+    notifies = ["Deterministic Linux"],
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 

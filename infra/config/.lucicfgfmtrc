@@ -54,6 +54,7 @@ rules {
         arg: "gce"
         arg: "gardener_rotations"
         arg: "tree_closing"
+        arg: "tree_closing_notifiers"
         arg: "console_view_entry"
         arg: "main_console_view"
         arg: "cq_mirrors_console_view"

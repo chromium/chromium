@@ -18,6 +18,7 @@ ci.defaults.set(
     pool = ci.DEFAULT_POOL,
     builderless = False,
     os = os.LINUX_DEFAULT,
+    tree_closing_notifiers = ci.DEFAULT_TREE_CLOSING_NOTIFIERS,
     contact_team_email = "clank-engprod@google.com",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
