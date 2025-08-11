@@ -667,6 +667,22 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 () -> {
                     minimizeAppAndCloseTabOnBackPress(getActivityTab());
                 });
+
+        Intent intent = getIntent();
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            boolean hasIncognitoExtra =
+                    intent != null
+                            && (intent.getBooleanExtra(
+                                            IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
+                                    || intent.getBooleanExtra(
+                                            IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, false));
+            mSupportedProfileType =
+                    hasIncognitoExtra
+                            ? SupportedProfileType.OFF_THE_RECORD
+                            : SupportedProfileType.REGULAR;
+        } else {
+            mSupportedProfileType = SupportedProfileType.MIXED;
+        }
     }
 
     @Override
@@ -3158,22 +3174,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
         assert mWindowId != INVALID_WINDOW_ID;
 
         Bundle savedInstanceState = getSavedInstanceState();
-        Intent intent = getIntent();
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            boolean hasIncognitoExtra =
-                    intent != null
-                            && (intent.getBooleanExtra(
-                                            IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
-                                    || intent.getBooleanExtra(
-                                            IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, false));
-            mSupportedProfileType =
-                    hasIncognitoExtra
-                            ? SupportedProfileType.OFF_THE_RECORD
-                            : SupportedProfileType.REGULAR;
-        } else {
-            mSupportedProfileType = SupportedProfileType.MIXED;
-        }
 
+        // We determine SupportedProfileType in onPreCreate().
         // We determine the model as soon as possible so every systems get initialized coherently.
         boolean startIncognito =
                 (mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD)
