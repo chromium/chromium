@@ -181,22 +181,76 @@ TEST_F(ActorUiStateManagerTest, GlicUpdateFloatyState_NotifiesSubscribers) {
   std::vector<base::CallbackListSubscription> subscriptions;
   actor_ui_state_manager()->SetUiStateForTesting(
       ActorUiStateManager::UiState::kCheckTasks);
+
+  bool callback_called = false;
   subscriptions.push_back(
       actor_ui_state_manager()->RegisterFloatyTaskStateChange(
-          base::BindRepeating(
-              [](ActorUiStateManager::UiState actual_ui_state,
-                 glic::GlicWindowController::State actual_glic_state,
-                 glic::mojom::CurrentView actual_glic_view) {
+          base::BindLambdaForTesting(
+              [&callback_called](
+                  ActorUiStateManager::UiState actual_ui_state,
+                  glic::GlicWindowController::State actual_glic_state,
+                  glic::mojom::CurrentView actual_glic_view) {
                 EXPECT_EQ(actual_ui_state,
                           ActorUiStateManager::UiState::kCheckTasks);
                 EXPECT_EQ(actual_glic_state,
                           glic::GlicWindowController::State::kOpen);
                 EXPECT_EQ(actual_glic_view,
                           glic::mojom::CurrentView::kConversation);
+                callback_called = true;
               })));
   actor_ui_state_manager()->OnGlicUpdateFloatyState(
       glic::GlicWindowController::State::kOpen,
       glic::mojom::CurrentView::kConversation);
+  EXPECT_TRUE(callback_called);
+
+  callback_called = false;
+  subscriptions.clear();
+
+  subscriptions.push_back(
+      actor_ui_state_manager()->RegisterFloatyTaskStateChange(
+          base::BindLambdaForTesting(
+              [&callback_called](
+                  ActorUiStateManager::UiState actual_ui_state,
+                  glic::GlicWindowController::State actual_glic_state,
+                  glic::mojom::CurrentView actual_glic_view) {
+                EXPECT_EQ(actual_ui_state,
+                          ActorUiStateManager::UiState::kCheckTasks);
+                EXPECT_EQ(actual_glic_state,
+                          glic::GlicWindowController::State::kClosed);
+                EXPECT_EQ(actual_glic_view,
+                          glic::mojom::CurrentView::kActuation);
+                callback_called = true;
+              })));
+  actor_ui_state_manager()->OnGlicUpdateFloatyState(
+      glic::GlicWindowController::State::kClosed,
+      glic::mojom::CurrentView::kActuation);
+  EXPECT_TRUE(callback_called);
+}
+
+TEST_F(ActorUiStateManagerTest,
+       GlicUpdateFloatyState_DoesNotNotifySubscribersIfTaskInactive) {
+  std::vector<base::CallbackListSubscription> subscriptions;
+  actor_ui_state_manager()->SetUiStateForTesting(
+      ActorUiStateManager::UiState::kActive);
+  actor_ui_state_manager()->OnGlicUpdateFloatyState(
+      glic::GlicWindowController::State::kOpen,
+      glic::mojom::CurrentView::kConversation);
+
+  subscriptions.push_back(
+      actor_ui_state_manager()->RegisterFloatyTaskStateChange(
+          base::BindRepeating(
+              [](ActorUiStateManager::UiState actual_ui_state,
+                 glic::GlicWindowController::State actual_glic_state,
+                 glic::mojom::CurrentView actual_glic_view) {
+                // Callback should not be called, so should not be reached.
+                NOTREACHED();
+              })));
+
+  actor_ui_state_manager()->SetUiStateForTesting(
+      ActorUiStateManager::UiState::kInactive);
+  actor_ui_state_manager()->OnGlicUpdateFloatyState(
+      glic::GlicWindowController::State::kClosed,
+      glic::mojom::CurrentView::kActuation);
 }
 #endif
 
