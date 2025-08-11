@@ -28,7 +28,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "chrome/browser/android/flags/chrome_cached_flags.h"
 #include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -193,8 +193,8 @@ void NotificationPermissionContext::DecidePermission(
       ShortcutHelper::DoesOriginContainAnyInstalledTrustedWebActivity(
           request_data->requesting_origin);
   bool contains_installed_webapp = contains_twa || contains_webapk;
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-          base::android::SDK_VERSION_T &&
+  if (base::android::android_info::sdk_int() >=
+          base::android::android_info::SDK_VERSION_T &&
       contains_installed_webapp) {
     // WebAPKs match URLs using a scope URL which may contain a path. An origin
     // has no path and would not fall within such a scope. So to find a matching

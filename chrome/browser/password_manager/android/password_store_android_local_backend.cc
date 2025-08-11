@@ -4,7 +4,6 @@
 
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
 
-#include "base/android/build_info.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
 #include "components/password_manager/core/browser/features/password_features.h"

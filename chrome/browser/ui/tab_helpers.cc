@@ -160,7 +160,7 @@
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_tab_helper.h"
@@ -349,8 +349,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   // The sensitive content client has to be instantiated after the autofill
   // client, because the sensitive content client starts a flow which uses
   // `ScopedAutofillManagersObservation`.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-          base::android::SdkVersion::SDK_VERSION_V &&
+  if (base::android::android_info::sdk_int() >=
+          base::android::android_info::SdkVersion::SDK_VERSION_V &&
       base::FeatureList::IsEnabled(
           sensitive_content::features::kSensitiveContent)) {
     sensitive_content::AndroidSensitiveContentClient::CreateForWebContents(

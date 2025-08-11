@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/ui/android/safe_browsing/password_reuse_dialog_view_android.h"
@@ -83,7 +83,7 @@ std::u16string PasswordReuseControllerAndroid::GetPrimaryButtonText() const {
   }
   // The modal can be shown on automotive, but should not lead users to the
   // GMSCore Password Check UI, as that is not optimized for automotive.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     return l10n_util::GetStringUTF16(IDS_CLOSE);
   }
 
@@ -113,7 +113,7 @@ std::u16string PasswordReuseControllerAndroid::GetSecondaryButtonText() const {
   }
   // The modal can be shown on automotive, but without any call to action as
   // those are not optimized for automotive.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     return std::u16string();
   }
 

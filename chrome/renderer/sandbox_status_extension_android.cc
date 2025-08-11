@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -140,8 +140,7 @@ base::Value::Dict SandboxStatusExtension::ReadSandboxStatus() {
   status.Set("seccompStatus",
              static_cast<int>(content::GetSeccompSandboxStatus()));
   status.Set("procStatus", proc_status);
-  status.Set("androidBuildId",
-             base::android::BuildInfo::GetInstance()->android_build_id());
+  status.Set("androidBuildId", base::android::android_info::android_build_id());
   return status;
 }
 

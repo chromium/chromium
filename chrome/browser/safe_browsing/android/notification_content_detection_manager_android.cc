@@ -4,7 +4,6 @@
 
 #include "chrome/browser/safe_browsing/android/notification_content_detection_manager_android.h"
 
-#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"

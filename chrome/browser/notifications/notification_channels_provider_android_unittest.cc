@@ -8,7 +8,6 @@
 #include <map>
 #include <vector>
 
-#include "base/android/build_info.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"

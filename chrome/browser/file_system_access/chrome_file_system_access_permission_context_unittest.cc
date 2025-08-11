@@ -54,7 +54,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #include "base/android/path_utils.h"
 #else
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
@@ -981,14 +981,12 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   // Content-URI with an authority which matches the package name should fail.
   EXPECT_TRUE(IsOpenAbort(
       base::FilePath(
-          base::StrCat({"content://",
-                        base::android::BuildInfo::GetInstance()->package_name(),
+          base::StrCat({"content://", base::android::apk_info::package_name(),
                         ".fileprovider/cache/dir"})),
       HandleType::kDirectory));
   EXPECT_TRUE(IsOpenAbort(
       base::FilePath(
-          base::StrCat({"content://",
-                        base::android::BuildInfo::GetInstance()->package_name(),
+          base::StrCat({"content://", base::android::apk_info::package_name(),
                         ".fileprovider/cache/file"})),
       HandleType::kFile));
 

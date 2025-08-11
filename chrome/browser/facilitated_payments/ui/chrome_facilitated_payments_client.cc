@@ -8,7 +8,7 @@
 #include <string>
 #include <string_view>
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -126,7 +126,7 @@ bool ChromeFacilitatedPaymentsClient::IsInLandscapeMode() {
 }
 
 bool ChromeFacilitatedPaymentsClient::IsFoldable() {
-  return base::android::BuildInfo::GetInstance()->is_foldable();
+  return base::android::device_info::is_foldable();
 }
 
 optimization_guide::OptimizationGuideDecider*

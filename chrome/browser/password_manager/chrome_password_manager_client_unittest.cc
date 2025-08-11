@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/android/device_info.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -102,7 +103,6 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
 #include "base/i18n/rtl.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
@@ -160,7 +160,6 @@ using testing::StrictMock;
 using testing::UnorderedElementsAre;
 
 #if BUILDFLAG(IS_ANDROID)
-using base::android::BuildInfo;
 using device_reauth::BiometricStatus;
 using password_manager::CredentialCache;
 using password_manager::MockPasswordStoreInterface;
@@ -921,7 +920,7 @@ TEST_F(ChromePasswordManagerClientTest,
 
 TEST_F(ChromePasswordManagerClientTest, AutoSignInEnabledDeterminedByService) {
 #if BUILDFLAG(IS_ANDROID)
-  if (BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif
@@ -938,7 +937,7 @@ TEST_F(ChromePasswordManagerClientTest, AutoSignInEnabledDeterminedByService) {
 TEST_F(ChromePasswordManagerClientTest,
        AutoSignInDisableddDeterminedByService) {
 #if BUILDFLAG(IS_ANDROID)
-  if (BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif
@@ -953,7 +952,7 @@ TEST_F(ChromePasswordManagerClientTest,
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(ChromePasswordManagerClientTest, AutoSignInDisabledOnAutomotive) {
-  if (!BuildInfo::GetInstance()->is_automotive()) {
+  if (!base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should only run on automotive.";
   }
   EXPECT_FALSE(GetClient()->IsAutoSignInEnabled());
@@ -1093,7 +1092,7 @@ TEST_F(ChromePasswordManagerClientTest,
 #if BUILDFLAG(IS_ANDROID)
 // Test that authentication is not possible if the `authenticator` is `nullptr`.
 TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthAndroid) {
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Authentication is always available for automotive and the `authenticator`
     // is always available.
     device_reauth::MockDeviceAuthenticator authenticator;
@@ -1109,7 +1108,7 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthAndroid) {
 TEST_F(ChromePasswordManagerClientTest,
        CanUseBiometricAuthAndroidFeatureIsDisabled) {
   // Authentication is always available for automotive.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP();
   }
   device_reauth::MockDeviceAuthenticator authenticator;
@@ -1124,7 +1123,7 @@ TEST_F(ChromePasswordManagerClientTest,
 TEST_F(ChromePasswordManagerClientTest,
        CanUseBiometricAuthAndroidAuthDisabled) {
   // Authentication is always available for automotive.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP();
   }
   base::HistogramTester histogram_tester;
@@ -1147,7 +1146,7 @@ TEST_F(ChromePasswordManagerClientTest,
 TEST_F(ChromePasswordManagerClientTest,
        CanUseBiometricAuthAndroidPrefDisabled) {
   // Authentication is always available for automotive.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP();
   }
   base::test::ScopedFeatureList enabled_features(
@@ -1163,7 +1162,7 @@ TEST_F(ChromePasswordManagerClientTest,
 // pref is set to true when `kBiometricTouchToFill` is enabled.
 TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthAndroidAuthEnabled) {
   // Authentication is always available for automotive.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP();
   }
 
@@ -1187,7 +1186,7 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthAndroidAuthEnabled) {
 TEST_F(ChromePasswordManagerClientTest,
        CanUseBiometricAuthAndroidAlwaysTrueOnAutomotive) {
   // Authentication is always available for automotive.
-  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (!base::android::device_info::is_automotive()) {
     GTEST_SKIP();
   }
   device_reauth::MockDeviceAuthenticator authenticator;
@@ -1200,7 +1199,7 @@ TEST_F(ChromePasswordManagerClientTest,
 // biometric auth.
 TEST_F(ChromePasswordManagerClientTest, MandatoryBiometricEnabled) {
   // Authentication is always available for automotive.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP();
   }
   base::test::ScopedFeatureList enabled_features(
@@ -1950,7 +1949,7 @@ class ChromePasswordManagerClientWithAccountStoreAndroidTest
   void SetUp() override {
     // Override the GMS version to be big enough for split stores UPM support,
     // so these tests still pass in bots with an outdated version.
-    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+    base::android::device_info::set_gms_version_code_for_test(
         base::NumberToString(password_manager::GetSplitStoresUpmMinVersion()));
 
     ChromePasswordManagerClientAndroidTest::SetUp();

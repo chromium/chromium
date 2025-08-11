@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -31,8 +31,7 @@ namespace password_manager_android_util {
 namespace {
 
 bool HasMinGmsVersionForFullUpmSupport() {
-  std::string gms_version_str =
-      base::android::BuildInfo::GetInstance()->gms_version_code();
+  std::string gms_version_str = base::android::device_info::gms_version_code();
   int gms_version = 0;
   // gms_version_code() must be converted to int for comparison, because it can
   // have legacy values "3(...)" and those evaluate > "2023(...)".

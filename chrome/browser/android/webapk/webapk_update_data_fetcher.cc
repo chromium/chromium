@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/android/build_info.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"

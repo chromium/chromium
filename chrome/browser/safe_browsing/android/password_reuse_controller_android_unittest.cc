@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
@@ -74,7 +74,7 @@ TEST_F(PasswordReuseControllerAndroidTest, ClickedClose) {
 }
 
 TEST_F(PasswordReuseControllerAndroidTest, VerifyButtonTextOnAutomotive) {
-  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (!base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should only run on automotive.";
   }
   MockOnWarningDone empty_callback;
@@ -199,7 +199,7 @@ TEST_F(PasswordReuseControllerAndroidTest,
        VerifyButtonTextLoginDbDeprecationUPMActive) {
   // Skipping on automotive, since the regular button text for
   // SAVED_PASSWORD does not apply there.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
   password_manager::SetLegacySplitStoresPrefForTest(profile()->GetPrefs(),

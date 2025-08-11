@@ -40,7 +40,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "chrome/browser/enterprise/util/android_enterprise_info.h"
 #endif
 
@@ -154,8 +154,9 @@ bool ShouldEnableAsyncDns() {
 #if BUILDFLAG(IS_ANDROID)
   int min_sdk = base::GetFieldTrialParamByFeatureAsInt(net::features::kAsyncDns,
                                                        "min_sdk", 0);
-  if (base::android::BuildInfo::GetInstance()->sdk_int() < min_sdk)
+  if (base::android::android_info::sdk_int() < min_sdk) {
     feature_can_be_enabled = false;
+  }
 #endif
   return feature_can_be_enabled &&
          base::FeatureList::IsEnabled(net::features::kAsyncDns);

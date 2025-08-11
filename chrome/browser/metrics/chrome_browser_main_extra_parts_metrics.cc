@@ -79,10 +79,10 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/apk_info.h"
 #if defined(__arm__)
 #include <cpu-features.h>
 #endif
-#include "base/android/build_info.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -1060,7 +1060,7 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
        chrome::android::MultipleUserProfilesState::kSingleProfile) &&
       (cpu_abi_bitness_support == metrics::CpuAbiBitnessSupport::k32And64bit) &&
       IsBundleForMixedDeviceAccordingToVersionCode(
-          base::android::BuildInfo::GetInstance()->package_version_code());
+          base::android::apk_info::package_version_code());
   if (is_device_of_interest) {
     std::vector<std::string> gws_experiment_ids;
     std::string trial_group;

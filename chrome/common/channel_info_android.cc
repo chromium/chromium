@@ -4,7 +4,6 @@
 
 #include "chrome/common/channel_info.h"
 
-#include "base/android/build_info.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "components/version_info/android/channel_getter.h"

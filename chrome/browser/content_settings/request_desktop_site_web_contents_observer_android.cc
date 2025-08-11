@@ -4,7 +4,7 @@
 
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/command_line.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -65,7 +65,7 @@ void RequestDesktopSiteWebContentsObserverAndroid::DidStartNavigation(
   bool is_global_setting = setting_info.primary_pattern.MatchesAllHosts();
 
   // RDS Window Setting support.
-  if (!base::android::BuildInfo::GetInstance()->is_automotive() &&
+  if (!base::android::device_info::is_automotive() &&
       pref_service_->GetBoolean(prefs::kDesktopSiteWindowSettingEnabled) &&
       desktop_mode && !always_request_desktop_site && is_global_setting) {
     int web_contents_width_dp =

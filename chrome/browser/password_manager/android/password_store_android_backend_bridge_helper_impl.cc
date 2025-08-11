@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
@@ -88,9 +88,9 @@ PasswordStoreAndroidBackendBridgeHelperImpl::
 
 bool PasswordStoreAndroidBackendBridgeHelperImpl::
     CanUseGetAffiliatedPasswordsAPI() {
-  base::android::BuildInfo* info = base::android::BuildInfo::GetInstance();
   int current_gms_core_version;
-  if (!base::StringToInt(info->gms_version_code(), &current_gms_core_version)) {
+  if (!base::StringToInt(base::android::device_info::gms_version_code(),
+                         &current_gms_core_version)) {
     return false;
   }
   if (kGMSCoreMinVersionForGetAffiliatedAPI > current_gms_core_version) {
@@ -102,9 +102,9 @@ bool PasswordStoreAndroidBackendBridgeHelperImpl::
 
 bool PasswordStoreAndroidBackendBridgeHelperImpl::
     CanUseGetAllLoginsWithBrandingInfoAPI() {
-  base::android::BuildInfo* info = base::android::BuildInfo::GetInstance();
   int current_gms_core_version;
-  if (!base::StringToInt(info->gms_version_code(), &current_gms_core_version)) {
+  if (!base::StringToInt(base::android::device_info::gms_version_code(),
+                         &current_gms_core_version)) {
     return false;
   }
   if (kGMSCoreMinVersionForGetAllLoginsWithBrandingAPI >

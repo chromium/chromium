@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -98,7 +98,7 @@ class CredentialLeakControllerAndroidTest : public testing::Test {
 };
 
 TEST_F(CredentialLeakControllerAndroidTest, ClickedCancel) {
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 
@@ -145,7 +145,7 @@ TEST_F(CredentialLeakControllerAndroidTest, ClickedOkDoesNotLaunchCheckup) {
 
 TEST_F(CredentialLeakControllerAndroidTest,
        ClickedCheckPasswordsLaunchesCheckup) {
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
   base::HistogramTester histogram_tester;
@@ -176,7 +176,7 @@ TEST_F(CredentialLeakControllerAndroidTest,
 
 TEST_F(CredentialLeakControllerAndroidTest,
        AutomotiveShowsOkButtonForSavedReusedSynced) {
-  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (!base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should only run on automotive.";
   }
   base::HistogramTester histogram_tester;
@@ -260,7 +260,7 @@ TEST_F(CredentialLeakControllerAndroidTest,
 
 TEST_F(CredentialLeakControllerAndroidTest,
        LeakTypeNotResetIfPasswordsExported) {
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Automotive only uses the base leak type and doesn't display the
     // "Check passwords" button.
     GTEST_SKIP() << "This test should not run on automotive.";
@@ -296,7 +296,7 @@ TEST_F(CredentialLeakControllerAndroidTest,
 
 TEST_F(CredentialLeakControllerAndroidTest,
        LeakTypeNotResetIfUPMAlreadyActive) {
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     // Automotive only uses the base leak type and doesn't display the
     // "Check passwords" button.
     GTEST_SKIP() << "This test should not run on automotive.";

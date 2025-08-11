@@ -7,7 +7,7 @@
 #include <memory>
 #include <set>
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
@@ -71,7 +71,7 @@ class SigninManagerAndroidTest : public ::testing::Test {
   SigninManagerAndroidTest() {
     // Override the GMS version to be big enough for split stores UPM support,
     // so DoNotWipePasswordsIfLocalUpmOn still passes on bots with outdated GMS.
-    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+    base::android::device_info::set_gms_version_code_for_test(
         base::NumberToString(password_manager::GetSplitStoresUpmMinVersion()));
   }
 

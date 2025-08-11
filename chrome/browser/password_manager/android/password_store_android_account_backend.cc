@@ -6,7 +6,6 @@
 
 #include <variant>
 
-#include "base/android/build_info.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"

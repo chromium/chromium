@@ -74,7 +74,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "chrome/browser/password_manager/android/mock_password_checkup_launcher_helper.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/enterprise/connectors/core/features.h"
@@ -1815,7 +1815,7 @@ class ChromePasswordProtectionServiceWithAccountPasswordStoreTest
 #if BUILDFLAG(IS_ANDROID)
     // Override the GMS version to be big enough for split stores UPM support,
     // so these tests still pass in bots with an outdated version.
-    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+    base::android::device_info::set_gms_version_code_for_test(
         base::NumberToString(password_manager::GetSplitStoresUpmMinVersion()));
 #endif
   }
@@ -1901,7 +1901,7 @@ class PasswordCheckupWithPhishGuardAndroidTest
   void SetUp() override {
     // Override the GMS version to be big enough for split stores UPM support,
     // so these tests still pass in bots with an outdated version.
-    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+    base::android::device_info::set_gms_version_code_for_test(
         base::NumberToString(password_manager::GetSplitStoresUpmMinVersion()));
     PasswordCheckupWithPhishGuardTest::SetUp();
   }

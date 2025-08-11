@@ -138,7 +138,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
@@ -190,7 +190,6 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-using base::android::BuildInfo;
 using password_manager::CredentialCache;
 using password_manager::PasswordCredentialFillerImpl;
 #endif
@@ -315,7 +314,7 @@ bool ChromePasswordManagerClient::IsFillingEnabled(const GURL& url) const {
 
 bool ChromePasswordManagerClient::IsAutoSignInEnabled() const {
 #if BUILDFLAG(IS_ANDROID)
-  if (BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     return false;
   }
 #endif
@@ -703,13 +702,14 @@ bool ChromePasswordManagerClient::IsReauthBeforeFillingRequired(
   return GetPasswordFeatureManager()
       ->IsBiometricAuthenticationBeforeFillingEnabled();
 #elif BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     CHECK(authenticator);
     return true;
   }
   if (!authenticator || !GetPrefs()) {
     return false;
   }
+
   device_reauth::BiometricStatus biometric_status =
       authenticator->GetBiometricAvailabilityStatus();
   base::UmaHistogramBoolean(

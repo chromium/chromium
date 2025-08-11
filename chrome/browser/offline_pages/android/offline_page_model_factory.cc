@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/android/build_info.h"
 #include "base/android/path_utils.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
