@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/strings/utf_string_conversions.h"
 #include "gin/function_template.h"
+#include "gin/handle.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/public/wrappable_pointer_tags.h"
 #include "gin/test/v8_test.h"

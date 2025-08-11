@@ -14,6 +14,7 @@
 #include "extensions/renderer/bindings/api_type_reference_map.h"
 #include "extensions/renderer/bindings/binding_access_checker.h"
 #include "gin/arguments.h"
+#include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "v8/include/cppgc/allocation.h"
 #include "v8/include/v8-cppgc.h"

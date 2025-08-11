@@ -11,7 +11,7 @@
 namespace blink {
 
 static_assert(offsetof(struct WrapperTypeInfo, type_id) ==
-                  offsetof(struct gin::WrapperInfo, type_id),
+                  offsetof(struct gin::DeprecatedWrapperInfo, embedder),
               "offset of WrapperTypeInfo.ginEmbedder must be the same as "
               "gin::DeprecatedWrapperInfo.embedder");
 

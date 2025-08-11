@@ -35,6 +35,7 @@
 #include "extensions/renderer/script_context.h"
 #include "gin/arguments.h"
 #include "gin/dictionary.h"
+#include "gin/handle.h"
 #include "gin/per_context_data.h"
 #include "ipc/ipc_message.h"
 #include "v8/include/v8-container.h"

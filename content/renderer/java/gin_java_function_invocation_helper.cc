@@ -108,17 +108,17 @@ v8::Local<v8::Value> GinJavaFunctionInvocationHelper::Invoke(
   std::unique_ptr<const GinJavaBridgeValue> gin_value =
       GinJavaBridgeValue::FromValue(result.get());
   if (gin_value->IsType(GinJavaBridgeValue::TYPE_OBJECT_ID)) {
-    GinJavaBridgeObject* object_result = nullptr;
+    GinJavaBridgeObject* object_result = NULL;
     GinJavaBridgeDispatcher::ObjectID object_id;
     if (gin_value->GetAsObjectID(&object_id)) {
       object_result = dispatcher_->GetObject(object_id);
     }
     if (object_result) {
-      v8::Local<v8::Value> controller;
-      if (!object_result->GetWrapper(args->isolate()).ToLocal(&controller)) {
+      gin::Handle<GinJavaBridgeObject> controller =
+          gin::CreateHandle(args->isolate(), object_result);
+      if (controller.IsEmpty())
         return v8::Undefined(args->isolate());
-      }
-      return controller;
+      return controller.ToV8();
     }
   } else if (gin_value->IsType(GinJavaBridgeValue::TYPE_NONFINITE)) {
     float float_value;

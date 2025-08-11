@@ -51,10 +51,30 @@ class GIN_EXPORT PerIsolateData {
 
   static PerIsolateData* From(v8::Isolate* isolate);
 
+  // Each isolate is associated with a collection of v8::ObjectTemplates and
+  // v8::FunctionTemplates. Typically these template objects are created
+  // lazily.
+  void DeprecatedSetObjectTemplate(
+      DeprecatedWrapperInfo* info,
+      v8::Local<v8::ObjectTemplate> object_template);
+
   void SetObjectTemplate(const WrapperInfo* info,
                          v8::Local<v8::ObjectTemplate> object_template);
 
+  void SetFunctionTemplate(DeprecatedWrapperInfo* info,
+                           v8::Local<v8::FunctionTemplate> function_template);
+
+  // These are low-level functions for retrieving object or function templates
+  // stored in this object. Because these templates are often created lazily,
+  // most clients should call higher-level functions that know how to populate
+  // these templates if they haven't already been created.
+  v8::Local<v8::ObjectTemplate> DeprecatedGetObjectTemplate(
+      DeprecatedWrapperInfo* info);
+
   v8::Local<v8::ObjectTemplate> GetObjectTemplate(const WrapperInfo* info);
+
+  v8::Local<v8::FunctionTemplate> GetFunctionTemplate(
+      DeprecatedWrapperInfo* info);
 
   void AddDisposeObserver(DisposeObserver* observer);
   void RemoveDisposeObserver(DisposeObserver* observer);
@@ -74,14 +94,20 @@ class GIN_EXPORT PerIsolateData {
   }
 
  private:
+  typedef std::map<DeprecatedWrapperInfo*, v8::Eternal<v8::ObjectTemplate>>
+      DeprecatedObjectTemplateMap;
   typedef std::map<const WrapperInfo*, v8::Eternal<v8::ObjectTemplate>>
       ObjectTemplateMap;
+  typedef std::map<DeprecatedWrapperInfo*, v8::Eternal<v8::FunctionTemplate>>
+      FunctionTemplateMap;
 
   // PerIsolateData doesn't actually own |isolate_|. Instead, the isolate is
   // owned by the IsolateHolder, which also owns the PerIsolateData.
   raw_ptr<v8::Isolate, AcrossTasksDanglingUntriaged> isolate_;
   raw_ptr<v8::ArrayBuffer::Allocator, DanglingUntriaged> allocator_;
+  DeprecatedObjectTemplateMap deprecated_object_templates_;
   ObjectTemplateMap object_templates_;
+  FunctionTemplateMap function_templates_;
   base::ObserverList<DisposeObserver> dispose_observers_;
   std::shared_ptr<V8ForegroundTaskRunnerBase> task_runner_;
   std::shared_ptr<V8ForegroundTaskRunnerBase> user_visible_task_runner_;

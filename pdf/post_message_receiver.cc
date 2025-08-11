@@ -17,13 +17,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "gin/function_template.h"
+#include "gin/handle.h"
 #include "gin/interceptor.h"
 #include "gin/object_template_builder.h"
 #include "gin/public/wrapper_info.h"
 #include "gin/wrappable.h"
 #include "pdf/v8_value_converter.h"
-#include "v8/include/cppgc/allocation.h"
-#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8.h"
 
 namespace chrome_pdf {
@@ -35,16 +34,21 @@ constexpr char kPropertyName[] = "postMessage";
 }  // namespace
 
 // static
+gin::DeprecatedWrapperInfo PostMessageReceiver::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
+
+// static
 v8::Local<v8::Object> PostMessageReceiver::Create(
     v8::Isolate* isolate,
     base::WeakPtr<V8ValueConverter> v8_value_converter,
     base::WeakPtr<Client> client,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner) {
-  auto* receiver = cppgc::MakeGarbageCollected<PostMessageReceiver>(
-      isolate->GetCppHeap()->GetAllocationHandle(), isolate,
-      std::move(v8_value_converter), std::move(client),
-      std::move(client_task_runner));
-  return receiver->GetWrapper(isolate).ToLocalChecked();
+  return gin::CreateHandle(
+             isolate, new PostMessageReceiver(
+                          isolate, std::move(v8_value_converter),
+                          std::move(client), std::move(client_task_runner)))
+      .ToV8()
+      .As<v8::Object>();
 }
 
 PostMessageReceiver::~PostMessageReceiver() = default;
@@ -74,18 +78,13 @@ gin::ObjectTemplateBuilder PostMessageReceiver::GetObjectTemplateBuilder(
   // treated like a static method for all other instances.
   //
   // An interceptor allows for the creation of a function template per instance.
-
-  return gin::WrappableWithNamedPropertyInterceptor<
+  return gin::DeprecatedWrappable<
              PostMessageReceiver>::GetObjectTemplateBuilder(isolate)
-      .template AddNamedPropertyInterceptor<kWrapperInfo.pointer_tag>();
+      .AddNamedPropertyInterceptor();
 }
 
-const char* PostMessageReceiver::GetHumanReadableName() const {
+const char* PostMessageReceiver::GetTypeName() {
   return "ChromePdfPostMessageReceiver";
-}
-
-const gin::WrapperInfo* PostMessageReceiver::wrapper_info() const {
-  return &kWrapperInfo;
 }
 
 v8::Local<v8::Value> PostMessageReceiver::GetNamedProperty(
@@ -93,9 +92,8 @@ v8::Local<v8::Value> PostMessageReceiver::GetNamedProperty(
     const std::string& property) {
   DCHECK_EQ(isolate_, isolate);
 
-  if (property != kPropertyName) {
+  if (property != kPropertyName)
     return v8::Local<v8::Value>();
-  }
 
   return GetFunctionTemplate()
       ->GetFunction(isolate->GetCurrentContext())
@@ -121,9 +119,8 @@ v8::Local<v8::FunctionTemplate> PostMessageReceiver::GetFunctionTemplate() {
 }
 
 void PostMessageReceiver::PostMessage(v8::Local<v8::Value> message) {
-  if (!client_ || !v8_value_converter_) {
+  if (!client_ || !v8_value_converter_)
     return;
-  }
 
   std::unique_ptr<base::Value> converted_message =
       v8_value_converter_->FromV8Value(message, isolate_->GetCurrentContext());

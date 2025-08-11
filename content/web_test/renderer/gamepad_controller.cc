@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/arguments.h"
+#include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
 #include "mojo/public/cpp/system/platform_handle.h"
