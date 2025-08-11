@@ -23,9 +23,6 @@ namespace flag_descriptions {
 extern const char kAddAddressManuallyName[];
 extern const char kAddAddressManuallyDescription[];
 
-extern const char kAIMPrototypeDevToolsName[];
-extern const char kAIMPrototypeDevToolsDescription[];
-
 extern const char kAIMPrototypeName[];
 extern const char kAIMPrototypeDescription[];
 

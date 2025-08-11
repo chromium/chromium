@@ -89,7 +89,6 @@
 #import "components/webui/flags/flags_ui_switches.h"
 #import "crypto/features.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
-#import "ios/chrome/browser/aim/prototype/public/features.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
@@ -1402,21 +1401,6 @@ const FeatureEntry::FeatureVariation kOmniboxAimShortcutTypedStateVariations[] =
     {{"for 15+ chars", kOmniboxAimShortcutTypedStateEnabledForTypedLength15,
       std::size(kOmniboxAimShortcutTypedStateEnabledForTypedLength15),
       nullptr}};
-
-const FeatureEntry::FeatureParam kAimPrototypeDevToolsForceFailure[] = {
-    {kForceUploadFailure.name, "true"}};
-const FeatureEntry::FeatureParam kAimPrototypeDevToolsSlowLoad[] = {
-    {kImageLoadDelayMs.name, "1000"}};
-const FeatureEntry::FeatureParam kAimPrototypeDevToolsSlowUpload[] = {
-    {kUploadDelayMs.name, "3000"}};
-
-const FeatureEntry::FeatureVariation kAimPrototypeDevToolsVariations[] = {
-    {"Force Failure", kAimPrototypeDevToolsForceFailure,
-     std::size(kAimPrototypeDevToolsForceFailure), nullptr},
-    {"Slow Load (1s)", kAimPrototypeDevToolsSlowLoad,
-     std::size(kAimPrototypeDevToolsSlowLoad), nullptr},
-    {"Slow Upload (3s)", kAimPrototypeDevToolsSlowUpload,
-     std::size(kAimPrototypeDevToolsSlowUpload), nullptr}};
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
@@ -2843,14 +2827,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillCreditCardScannerIosDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillCreditCardScannerIos)},
-    {"lens-strokes-api-enabled", flag_descriptions::kStrokesAPIEnabledName,
-     flag_descriptions::kStrokesAPIEnabledDescription, flags_ui::kOsIos,
+     {"lens-strokes-api-enabled",
+     flag_descriptions::kStrokesAPIEnabledName,
+     flag_descriptions::kStrokesAPIEnabledDescription,
+     flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kLensStrokesAPIEnabled)},
-    {"aim-prototype-devtools", flag_descriptions::kAIMPrototypeDevToolsName,
-     flag_descriptions::kAIMPrototypeDevToolsDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kAimPrototypeDevTools,
-                                    kAimPrototypeDevToolsVariations,
-                                    "AimPrototypeDevTools")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

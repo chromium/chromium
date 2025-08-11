@@ -16,11 +16,6 @@ const char kAddAddressManuallyName[] =
 const char kAddAddressManuallyDescription[] =
     "When enabled, allows users to manually enter and save an address.";
 
-const char kAIMPrototypeDevToolsName[] = "Enable AIM Prototype Dev Tools";
-const char kAIMPrototypeDevToolsDescription[] =
-    "Enables development tools for the AIM prototype, allowing simulation of "
-    "delays and failures.";
-
 const char kAIMPrototypeName[] = "Enable the AIM prototype";
 const char kAIMPrototypeDescription[] =
     "When enabled the AIM ZPS entrypoint will open the AIM prototype which "
