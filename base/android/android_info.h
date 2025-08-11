@@ -45,36 +45,36 @@ enum SdkVersion {
   SDK_VERSION_BAKLAVA = 36,
 };
 
-const std::string& device();
+BASE_EXPORT const std::string& device();
 
-const std::string& manufacturer();
+BASE_EXPORT const std::string& manufacturer();
 
-const std::string& model();
+BASE_EXPORT const std::string& model();
 
 BASE_EXPORT const std::string& brand();
 
-const std::string& android_build_id();
+BASE_EXPORT const std::string& android_build_id();
 
-const std::string& build_type();
+BASE_EXPORT const std::string& build_type();
 
-const std::string& board();
+BASE_EXPORT const std::string& board();
 
-const std::string& android_build_fp();
+BASE_EXPORT const std::string& android_build_fp();
 
 BASE_EXPORT int sdk_int();
 
 BASE_EXPORT bool is_debug_android();
 
-const std::string& version_incremental();
+BASE_EXPORT const std::string& version_incremental();
 
 BASE_EXPORT const std::string& hardware();
 
-const std::string& codename();
+BASE_EXPORT const std::string& codename();
 
 // Available only on android S+. For S-, this method returns empty string.
-const std::string& soc_manufacturer();
+BASE_EXPORT const std::string& soc_manufacturer();
 
-const std::string& abi_name();
+BASE_EXPORT const std::string& abi_name();
 
 BASE_EXPORT const std::string& security_patch();
 
