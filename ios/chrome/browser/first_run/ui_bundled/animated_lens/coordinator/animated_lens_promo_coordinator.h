@@ -6,11 +6,13 @@
 #define IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_ANIMATED_LENS_COORDINATOR_ANIMATED_LENS_PROMO_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
 @protocol FirstRunScreenDelegate;
 
 // Coordinator to present the Animated Lens Promo.
-@interface AnimatedLensPromoCoordinator : ChromeCoordinator
+@interface AnimatedLensPromoCoordinator
+    : ChromeCoordinator <PromoStyleViewControllerDelegate>
 
 // Delegate for communicating with the FirstRunCoordinator.
 @property(nonatomic, weak) id<FirstRunScreenDelegate> firstRunDelegate;

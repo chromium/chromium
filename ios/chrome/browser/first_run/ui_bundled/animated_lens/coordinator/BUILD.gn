@@ -10,7 +10,9 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
+    "//ios/chrome/browser/first_run/ui_bundled/animated_lens/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/common/ui/promo_style",
   ]
   frameworks = [ "UIKit.framework" ]
 }

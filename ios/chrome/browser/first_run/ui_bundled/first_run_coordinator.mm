@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
 namespace first_run {
@@ -157,9 +158,15 @@ class FirstRunCoordinatorMetricsHelper final {
     WriteFirstRunSentinel();
     [self.delegate didFinishFirstRun];
 
-    // Present feed swipe IPH.
-    [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                        NewTabPageCommands) presentFeedSwipeFirstRunBubble];
+    if (IsBestOfAppLensAnimatedPromoEnabled()) {
+      // Present the Lens entrypoint IPH.
+      [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                          NewTabPageCommands) presentLensIconBubble];
+    } else {
+      // Present feed swipe IPH.
+      [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                          NewTabPageCommands) presentFeedSwipeFirstRunBubble];
+    }
 
     return;
   }
