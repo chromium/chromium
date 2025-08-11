@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_credential_filler.h"
 
+#include <ranges>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -23,6 +24,33 @@ namespace actor_login {
 using password_manager::PasswordForm;
 using password_manager::PasswordFormCache;
 using password_manager::PasswordFormManager;
+
+namespace {
+
+bool IsElementFocusable(autofill::FieldRendererId renderer_id,
+                        const autofill::FormData& form_data) {
+  auto field = std::ranges::find(form_data.fields(), renderer_id,
+                                 &autofill::FormFieldData::renderer_id);
+  CHECK(field != form_data.fields().end());
+  return field->is_focusable();
+}
+
+bool IsLoginForm(const password_manager::PasswordForm& form) {
+  const bool has_focusable_username =
+      form.HasUsernameElement() &&
+      IsElementFocusable(form.username_element_renderer_id, form.form_data);
+  const bool has_focusable_password =
+      form.HasPasswordElement() &&
+      IsElementFocusable(form.password_element_renderer_id, form.form_data);
+  const bool has_focusable_new_password =
+      form.HasNewPasswordElement() &&
+      IsElementFocusable(form.new_password_element_renderer_id, form.form_data);
+
+  return (has_focusable_username || has_focusable_password) &&
+         !has_focusable_new_password;
+}
+
+}  // namespace
 
 ActorLoginCredentialFiller::ActorLoginCredentialFiller(
     const url::Origin& main_frame_origin,
@@ -51,9 +79,7 @@ void ActorLoginCredentialFiller::AttemptLogin(
     }
 
     const PasswordForm* parsed_form = manager->GetParsedObservedForm();
-    // TODO(crbug.com/427170499): Check if this is the right condition to
-    // check for a signin form.
-    if (!parsed_form || parsed_form->HasNewPasswordElement()) {
+    if (!parsed_form || !IsLoginForm(*parsed_form)) {
       continue;
     }
 

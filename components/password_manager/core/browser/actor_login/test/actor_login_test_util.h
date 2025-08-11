@@ -27,6 +27,12 @@ autofill::FormData CreateSigninFormData(const GURL& url);
 // the given `url`.
 autofill::FormData CreateChangePasswordFormData(const GURL& url);
 
+// Creates a `FormData` with only a username field.
+autofill::FormData CreateUsernameOnlyFormData(const GURL& url);
+
+// Creates a `FormData` with only a password field.
+autofill::FormData CreatePasswordOnlyFormData(const GURL& url);
+
 }  // namespace actor_login
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_TEST_ACTOR_LOGIN_TEST_UTIL_H_
