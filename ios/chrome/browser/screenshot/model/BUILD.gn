@@ -13,6 +13,8 @@ source_set("model") {
     "//base",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/main/ui_bundled",
+    "//ios/chrome/browser/reader_mode/model",
+    "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
   ]
