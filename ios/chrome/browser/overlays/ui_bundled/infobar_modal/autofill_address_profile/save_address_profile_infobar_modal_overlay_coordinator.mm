@@ -11,6 +11,7 @@
 #import "components/autofill/ios/common/features.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_country_selection_table_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator_delegate.h"
@@ -127,8 +128,7 @@ using autofill_address_profile_infobar_overlays::
                                 ? base::SysUTF16ToNSString(
                                       self.config->user_email().value())
                                 : nil)controller:editModalViewController
-              settingsView:NO
-          addManualAddress:NO];
+            addressContext:SaveAddressContext::kInfobarSaveUpdateAddress];
   self.sharedEditViewMediator.consumer = self.sharedEditViewController;
   editModalViewController.handler = self.sharedEditViewController;
 

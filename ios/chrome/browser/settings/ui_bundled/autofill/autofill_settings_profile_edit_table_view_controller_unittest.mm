@@ -14,6 +14,7 @@
 #import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_controller.h"
@@ -71,8 +72,7 @@ class AutofillSettingsProfileEditTableViewControllerTest
             initWithDelegate:autofill_profile_edit_mediator_
                    userEmail:nil
                   controller:viewController
-                settingsView:YES
-            addManualAddress:NO];
+              addressContext:SaveAddressContext::kEditingSavedAddress];
     viewController.handler = autofill_profile_edit_table_view_controller_;
     autofill_profile_edit_mediator_.consumer =
         autofill_profile_edit_table_view_controller_;
@@ -115,8 +115,7 @@ class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
             initWithDelegate:autofill_profile_edit_mediator_
                    userEmail:base::SysUTF16ToNSString(kTestSyncingEmail)
                   controller:viewController
-                settingsView:YES
-            addManualAddress:NO];
+              addressContext:SaveAddressContext::kEditingSavedAddress];
     viewController.handler = autofill_profile_edit_table_view_controller_;
     autofill_profile_edit_mediator_.consumer =
         autofill_profile_edit_table_view_controller_;
@@ -226,8 +225,7 @@ class AutofillSettingsProfileEditTableViewControllerWithMigrationButtonTest
             initWithDelegate:autofill_profile_edit_mediator_
                    userEmail:base::SysUTF16ToNSString(kTestSyncingEmail)
                   controller:viewController
-                settingsView:YES
-            addManualAddress:NO];
+              addressContext:SaveAddressContext::kEditingSavedAddress];
     viewController.handler = autofill_profile_edit_table_view_controller_;
     autofill_profile_edit_mediator_.consumer =
         autofill_profile_edit_table_view_controller_;

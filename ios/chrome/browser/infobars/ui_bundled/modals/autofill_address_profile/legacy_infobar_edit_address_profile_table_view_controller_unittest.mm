@@ -20,6 +20,7 @@
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_controller.h"
@@ -76,8 +77,7 @@ class LegacyInfobarEditAddressProfileTableViewControllerTest
             initWithDelegate:autofill_profile_edit_mediator_
                    userEmail:base::SysUTF16ToNSString(kTestSyncingEmail)
                   controller:viewController
-                settingsView:NO
-            addManualAddress:NO];
+              addressContext:SaveAddressContext::kInfobarSaveUpdateAddress];
     viewController.handler = autofill_profile_edit_table_view_controller_;
     autofill_profile_edit_mediator_.consumer =
         autofill_profile_edit_table_view_controller_;

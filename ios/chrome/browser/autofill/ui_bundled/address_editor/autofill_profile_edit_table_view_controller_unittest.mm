@@ -39,8 +39,8 @@ struct AutofillProfileEditTableViewControllerTestCase {
   AutofillSaveProfilePromptMode prompt_mode;
   // Yes, if the profile is an account profile.
   bool account_profile;
-  // Yes, if the caller is from settings.
-  bool is_settings;
+  // The context in which the address is being saved or edited.
+  SaveAddressContext address_context;
 };
 
 class AutofillProfileEditTableViewControllerTest
@@ -64,13 +64,13 @@ class AutofillProfileEditTableViewControllerTest
           isMigrationPrompt:(GetParam().prompt_mode ==
                              AutofillSaveProfilePromptMode::kMigrateProfile)
            addManualAddress:NO];
+
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewController alloc]
             initWithDelegate:autofill_profile_edit_mediator_
                    userEmail:base::SysUTF16ToNSString(kTestSyncingEmail)
                   controller:controller()
-                settingsView:GetParam().is_settings
-            addManualAddress:NO];
+              addressContext:GetParam().address_context];
     autofill_profile_edit_mediator_.consumer =
         autofill_profile_edit_table_view_controller_;
 
@@ -83,7 +83,8 @@ class AutofillProfileEditTableViewControllerTest
 
     CacheProfileDataForComparisons();
     [autofill_profile_edit_table_view_controller_ loadModel];
-    if (!GetParam().is_settings) {
+    if (GetParam().address_context !=
+        SaveAddressContext::kEditingSavedAddress) {
       [autofill_profile_edit_table_view_controller_
           loadMessageAndButtonForModalIfSaveOrUpdate:
               (GetParam().prompt_mode ==
@@ -190,40 +191,53 @@ INSTANTIATE_TEST_SUITE_P(
         // Editing an account profile via settings.
         AutofillProfileEditTableViewControllerTestCase{
             AutofillSaveProfilePromptMode::kNewProfile, /*account_profile=*/YES,
-            /*is_settings=*/YES},
+            /*address_context=*/SaveAddressContext::kEditingSavedAddress},
 
         // Editing a local profile via settings.
         AutofillProfileEditTableViewControllerTestCase{
             AutofillSaveProfilePromptMode::kNewProfile, /*account_profile=*/NO,
-            /*is_settings=*/YES},
+            /*address_context=*/SaveAddressContext::kEditingSavedAddress},
 
         // Save Flow via Overlay UI: Editing an account profile.
         AutofillProfileEditTableViewControllerTestCase{
             AutofillSaveProfilePromptMode::kNewProfile, /*account_profile=*/YES,
-            /*is_settings=*/NO},
+            /*address_context=*/SaveAddressContext::kInfobarSaveUpdateAddress},
 
         // Save Flow via Overlay UI: Editing a local profile.
         AutofillProfileEditTableViewControllerTestCase{
             AutofillSaveProfilePromptMode::kNewProfile, /*account_profile=*/NO,
-            /*is_settings=*/NO},
+            /*address_context=*/SaveAddressContext::kInfobarSaveUpdateAddress},
 
         // Save Flow via Overlay UI: Editing an account profile after showing
         // the update prompt.
         AutofillProfileEditTableViewControllerTestCase{
             AutofillSaveProfilePromptMode::kUpdateProfile,
-            /*account_profile=*/YES, /*is_settings=*/NO},
+            /*account_profile=*/YES,
+            /*address_context=*/SaveAddressContext::kInfobarSaveUpdateAddress},
 
         // Save Flow via Overlay UI: Editing a local profile after showing the
         // update prompt.
         AutofillProfileEditTableViewControllerTestCase{
             AutofillSaveProfilePromptMode::kUpdateProfile,
-            /*account_profile=*/NO, /*is_settings=*/NO},
+            /*account_profile=*/NO,
+            /*address_context=*/SaveAddressContext::kInfobarSaveUpdateAddress},
 
         // Save Flow via Overlay UI: Editing a local profile after showing the
         // migration to account prompt.
         AutofillProfileEditTableViewControllerTestCase{
             AutofillSaveProfilePromptMode::kMigrateProfile,
-            /*account_profile=*/NO, /*is_settings=*/NO}));
+            /*account_profile=*/NO, /*address_context=*/
+            SaveAddressContext::kInfobarSaveUpdateAddress},
+
+        // Manually adding an account address from settings.
+        AutofillProfileEditTableViewControllerTestCase{
+            AutofillSaveProfilePromptMode::kNewProfile, /*account_profile=*/YES,
+            /*address_context=*/SaveAddressContext::kAddingManualAddress},
+
+        // Manually adding a local address from settings.
+        AutofillProfileEditTableViewControllerTestCase{
+            AutofillSaveProfilePromptMode::kNewProfile, /*account_profile=*/NO,
+            /*address_context=*/SaveAddressContext::kAddingManualAddress}));
 
 }  // namespace
 
@@ -231,7 +245,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(AutofillProfileEditTableViewControllerTest, TestItems) {
   auto test_case = GetParam();
   int numOfSections;
-  if (test_case.is_settings) {
+  if (test_case.address_context == SaveAddressContext::kEditingSavedAddress) {
     numOfSections = test_case.account_profile ? 4 : 3;
   } else {
     numOfSections = test_case.account_profile ||
@@ -256,7 +270,7 @@ TEST_P(AutofillProfileEditTableViewControllerTest, TestItems) {
   EXPECT_NSEQ(GetFieldValue(2, 0), phone_home_whole_number_);
   EXPECT_NSEQ(GetFieldValue(2, 1), email_);
 
-  if (test_case.is_settings) {
+  if (test_case.address_context == SaveAddressContext::kEditingSavedAddress) {
     if (test_case.account_profile) {
       EXPECT_EQ(NumberOfItemsInSection(3), 0);
       NSString* expected_footer_text = l10n_util::GetNSStringF(
@@ -312,11 +326,13 @@ TEST_P(AutofillProfileEditTableViewControllerTest, TestRequirements) {
   auto test_case = GetParam();
   BOOL show_update_string =
       test_case.prompt_mode == AutofillSaveProfilePromptMode::kUpdateProfile ||
-      test_case.is_settings;
+      test_case.address_context == SaveAddressContext::kEditingSavedAddress;
   if (test_case.account_profile ||
       test_case.prompt_mode == AutofillSaveProfilePromptMode::kMigrateProfile) {
-    int sectionIndex = test_case.is_settings ? (NumberOfSections() - 1)
-                                             : (NumberOfSections() - 2);
+    int sectionIndex =
+        test_case.address_context == SaveAddressContext::kEditingSavedAddress
+            ? (NumberOfSections() - 1)
+            : (NumberOfSections() - 2);
     TableViewAttributedStringHeaderFooterItem* footer_item =
         static_cast<TableViewAttributedStringHeaderFooterItem*>(
             [[controller() tableViewModel] footerForSectionIndex:sectionIndex]);
@@ -324,7 +340,7 @@ TEST_P(AutofillProfileEditTableViewControllerTest, TestRequirements) {
                 footer_item.attributedString);
   }
 
-  if (!test_case.is_settings) {
+  if (test_case.address_context != SaveAddressContext::kEditingSavedAddress) {
     AutofillEditProfileButtonFooterItem* button_item =
         static_cast<AutofillEditProfileButtonFooterItem*>([[controller()
             tableViewModel] footerForSectionIndex:NumberOfSections() - 1]);
@@ -344,8 +360,10 @@ TEST_P(AutofillProfileEditTableViewControllerTest, TestRequirements) {
   // Check that the error message has been updated.
   if (test_case.account_profile ||
       test_case.prompt_mode == AutofillSaveProfilePromptMode::kMigrateProfile) {
-    int sectionIndex = test_case.is_settings ? (NumberOfSections() - 1)
-                                             : (NumberOfSections() - 2);
+    int sectionIndex =
+        test_case.address_context == SaveAddressContext::kEditingSavedAddress
+            ? (NumberOfSections() - 1)
+            : (NumberOfSections() - 2);
     TableViewAttributedStringHeaderFooterItem* footer_item =
         static_cast<TableViewAttributedStringHeaderFooterItem*>(
             [[controller() tableViewModel] footerForSectionIndex:sectionIndex]);
@@ -367,11 +385,13 @@ TEST_P(AutofillProfileEditTableViewControllerTest,
 
   BOOL show_update_string =
       test_case.prompt_mode == AutofillSaveProfilePromptMode::kUpdateProfile ||
-      test_case.is_settings;
+      test_case.address_context == SaveAddressContext::kEditingSavedAddress;
   if (test_case.account_profile ||
       test_case.prompt_mode == AutofillSaveProfilePromptMode::kMigrateProfile) {
-    int sectionIndex = test_case.is_settings ? (NumberOfSections() - 1)
-                                             : (NumberOfSections() - 2);
+    int sectionIndex =
+        test_case.address_context == SaveAddressContext::kEditingSavedAddress
+            ? (NumberOfSections() - 1)
+            : (NumberOfSections() - 2);
     TableViewAttributedStringHeaderFooterItem* footer_item =
         static_cast<TableViewAttributedStringHeaderFooterItem*>(
             [[controller() tableViewModel] footerForSectionIndex:sectionIndex]);
@@ -390,7 +410,7 @@ TEST_P(AutofillProfileEditTableViewControllerTest,
   [autofill_profile_edit_mediator_ didSelectCountry:countryItem];
 
   int numOfSections;
-  if (test_case.is_settings) {
+  if (test_case.address_context == SaveAddressContext::kEditingSavedAddress) {
     numOfSections = test_case.account_profile ? 4 : 3;
   } else {
     numOfSections = test_case.account_profile ||
@@ -407,8 +427,10 @@ TEST_P(AutofillProfileEditTableViewControllerTest,
 
   if (test_case.account_profile ||
       test_case.prompt_mode == AutofillSaveProfilePromptMode::kMigrateProfile) {
-    int sectionIndex = test_case.is_settings ? (NumberOfSections() - 1)
-                                             : (NumberOfSections() - 2);
+    int sectionIndex =
+        test_case.address_context == SaveAddressContext::kEditingSavedAddress
+            ? (NumberOfSections() - 1)
+            : (NumberOfSections() - 2);
     TableViewAttributedStringHeaderFooterItem* footer_item =
         static_cast<TableViewAttributedStringHeaderFooterItem*>(
             [[controller() tableViewModel] footerForSectionIndex:sectionIndex]);

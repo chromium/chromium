@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_ADDRESS_EDITOR_AUTOFILL_PROFILE_EDIT_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_ADDRESS_EDITOR_AUTOFILL_PROFILE_EDIT_TABLE_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_handler.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
@@ -25,8 +26,7 @@
                     (id<AutofillProfileEditTableViewControllerDelegate>)delegate
                        userEmail:(NSString*)userEmail
                       controller:(LegacyChromeTableViewController*)controller
-                    settingsView:(BOOL)settingsView
-                addManualAddress:(BOOL)addManualAddress
+                  addressContext:(SaveAddressContext)addressContext
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

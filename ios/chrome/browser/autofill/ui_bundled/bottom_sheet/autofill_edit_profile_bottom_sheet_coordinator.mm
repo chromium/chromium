@@ -8,6 +8,7 @@
 
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_country_selection_table_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator_delegate.h"
@@ -94,15 +95,18 @@
           initWithDelegate:self
              editSheetMode:[_handler saveProfilePromptMode]];
 
-  // TODO(crbug.com/405976686): Rename settingsView
+  SaveAddressContext saveAddressContext =
+      [_handler addingManualAddress]
+          ? SaveAddressContext::kAddingManualAddress
+          : SaveAddressContext::kInfobarSaveUpdateAddress;
+
   // View controller that lays down the table views for the edit profile view.
   _autofillProfileEditTableViewController =
       [[AutofillProfileEditTableViewController alloc]
           initWithDelegate:_autofillProfileEditMediator
                  userEmail:[_handler userEmail]
                 controller:editModalViewController
-              settingsView:NO
-          addManualAddress:[_handler addingManualAddress]];
+            addressContext:saveAddressContext];
   _autofillProfileEditMediator.consumer =
       _autofillProfileEditTableViewController;
   // `editModalViewController` lays down the bottom sheet view and communicates
