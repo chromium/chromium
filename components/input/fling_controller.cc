@@ -170,10 +170,11 @@ void FlingController::ProcessGestureFlingStart(
   // Wait for BeginFrame to call ProgressFling when
   // SetNeedsBeginFrameForFlingProgress is used to progress flings instead of
   // compositor animation observer (happens on Android WebView).
-  if (scheduler_client_->NeedsBeginFrameForFlingProgress())
-    ScheduleFlingProgress();
-  else
+  if (scheduler_client_->ProgressFlingOnFlingStart()) {
     ProgressFling(clock_->NowTicks());
+  } else {
+    ScheduleFlingProgress();
+  }
 }
 
 void FlingController::ScheduleFlingProgress() {
