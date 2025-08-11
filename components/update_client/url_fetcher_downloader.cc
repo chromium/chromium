@@ -42,8 +42,7 @@ base::OnceClosure UrlFetcherDownloader::DoStartDownload(const GURL& url) {
 }
 
 void UrlFetcherDownloader::CreateDownloadDir() {
-  base::CreateNewTempDirectory(FILE_PATH_LITERAL("chrome_url_fetcher_"),
-                               &download_dir_);
+  CreateTempDirectory(FILE_PATH_LITERAL("chrome_url_fetcher_"), &download_dir_);
 }
 
 void UrlFetcherDownloader::StartURLFetch(const GURL& url) {

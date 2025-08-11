@@ -32,6 +32,7 @@
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/update_client_metrics.h"
 #include "components/update_client/update_engine.h"
+#include "components/update_client/utils.h"
 #include "url/gurl.h"
 
 namespace update_client {
@@ -199,7 +200,7 @@ base::OnceClosure DownloadOperation(
           [](base::RepeatingCallback<int64_t(const base::FilePath&)>
                  get_available_space) {
             base::ScopedTempDir temp_dir;
-            return temp_dir.CreateUniqueTempDir()
+            return CreateScopedTempDirectory(temp_dir)
                        ? get_available_space.Run(temp_dir.GetPath())
                        : int64_t{0};
           },
