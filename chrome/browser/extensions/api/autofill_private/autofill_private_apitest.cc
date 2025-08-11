@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
@@ -29,6 +30,7 @@
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/test/browser_test.h"
@@ -419,15 +421,52 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, bulkDeleteAllCvcs) {
   EXPECT_TRUE(RunAutofillSubtest("bulkDeleteAllCvcs")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddVirtualCard) {
+class VirtualCardMultipleRequestPrivateApiTest
+    : public AutofillPrivateApiTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  VirtualCardMultipleRequestPrivateApiTest() {
+    feature_list_.InitWithFeatureState(
+        autofill::features::
+            kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment,
+        MultipleRequestInVcnDownstreamEnrollmentEnabled());
+  }
+
+  ~VirtualCardMultipleRequestPrivateApiTest() override = default;
+
+  bool MultipleRequestInVcnDownstreamEnrollmentEnabled() const {
+    return GetParam();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(AutofillPrivateApiTest,
+                         VirtualCardMultipleRequestPrivateApiTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(VirtualCardMultipleRequestPrivateApiTest,
+                       AddVirtualCard) {
   autofill::TestPersonalDataManager& personal_data_manager =
       autofill_client()->GetPersonalDataManager();
-  autofill_client()
-      ->GetPaymentsAutofillClient()
-      ->set_payments_network_interface(
-          std::make_unique<autofill::payments::TestPaymentsNetworkInterface>(
-              autofill_client()->GetURLLoaderFactory(),
-              autofill_client()->GetIdentityManager(), &personal_data_manager));
+  if (MultipleRequestInVcnDownstreamEnrollmentEnabled()) {
+    autofill_client()
+        ->GetPaymentsAutofillClient()
+        ->set_multiple_request_payments_network_interface(
+            std::make_unique<autofill::payments::
+                                 MockMultipleRequestPaymentsNetworkInterface>(
+                autofill_client()->GetURLLoaderFactory(),
+                *autofill_client()->GetIdentityManager()));
+  } else {
+    autofill_client()
+        ->GetPaymentsAutofillClient()
+        ->set_payments_network_interface(
+            std::make_unique<autofill::payments::TestPaymentsNetworkInterface>(
+                autofill_client()->GetURLLoaderFactory(),
+                autofill_client()->GetIdentityManager(),
+                &personal_data_manager));
+  }
   // Required for adding the server card.
   personal_data_manager.payments_data_manager().SetSyncingForTest(
       /*is_syncing_for_test=*/true);

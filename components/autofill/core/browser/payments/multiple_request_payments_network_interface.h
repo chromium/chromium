@@ -61,7 +61,7 @@ class MultipleRequestPaymentsNetworkInterface
   // Send the necessary information for the server to identify the credit card
   // for which virtual-card enrollment will be updated, as well as metadata so
   // that the server understands the context for the request.
-  RequestId UpdateVirtualCardEnrollment(
+  virtual RequestId UpdateVirtualCardEnrollment(
       const UpdateVirtualCardEnrollmentRequestDetails& request_details,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult)>
           callback);
