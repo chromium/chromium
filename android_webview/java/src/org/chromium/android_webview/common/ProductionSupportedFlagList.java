@@ -1053,6 +1053,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.BLINK_LIFECYCLE_SCRIPT_FORBIDDEN,
                 "Disallow script execution during blink lifecycle update."),
+        Flag.baseFeature(
+                BlinkFeatures.SOFT_NAVIGATION_DETECTION_PRE_PAINT_BASED_ATTRIBUTION,
+                "Enable the PrePaint-based paint attribution mode for soft navigation detect."),
         Flag.commandLine(
                 AwSwitches.WEBVIEW_USE_STARTUP_TASKS_LOGIC_P2,
                 "Enables phase 2 of using startup tasks logic for webview chromium initialization"
