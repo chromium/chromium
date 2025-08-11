@@ -820,8 +820,21 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
 - (UIMenu*)contextMenuUIMenu:(NSArray<UIMenuElement*>*)suggestedActions {
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
-
   __weak __typeof__(self) weakSelf = self;
+
+  if (IsDiamondPrototypeEnabled() && !self.locationBarSteadyView.hidden) {
+    UIImage* image =
+        DefaultSymbolWithPointSize(kShareSymbol, kSymbolActionPointSize);
+    UIAction* copyAction = [UIAction
+        actionWithTitle:l10n_util::GetNSString(IDS_IOS_SHARE_BUTTON_LABEL)
+                  image:image
+             identifier:nil
+                handler:^(UIAction* action) {
+                  [weakSelf.delegate locationBarShareTapped];
+                }];
+    [menuElements addObject:copyAction];
+  }
+
   UIImage* pasteImage = nil;
   if (IsBottomOmniboxAvailable()) {
     pasteImage =

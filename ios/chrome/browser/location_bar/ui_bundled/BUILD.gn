@@ -105,6 +105,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/sharing/ui_bundled",
     "//ios/chrome/browser/ssl/model",
     "//ios/chrome/browser/toolbar/ui_bundled/buttons",
     "//ios/chrome/browser/toolbar/ui_bundled/public",

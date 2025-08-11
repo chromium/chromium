@@ -84,6 +84,8 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
+#import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -158,7 +160,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 @property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
 @end
 
-@implementation LocationBarCoordinator
+@implementation LocationBarCoordinator {
+  // TODO(crbug.com/429955447): Remove when diamond prototype is cleaned.
+  SharingCoordinator* _sharingCoordinator;
+}
 
 #pragma mark - Accessors
 
@@ -375,6 +380,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       stopDispatchingToTarget:self.viewController
                                   .pageActionMenuEntryPointHandler];
 
+  [_sharingCoordinator stop];
+  _sharingCoordinator = nil;
+
   [self.contextualPanelEntrypointCoordinator stop];
   self.contextualPanelEntrypointCoordinator.delegate = nil;
   self.contextualPanelEntrypointCoordinator = nil;
@@ -584,6 +592,23 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (void)locationBarCopyTapped {
   StoreURLInPasteboard(self.webState->GetVisibleURL());
+}
+
+- (void)locationBarShareTapped {
+  CHECK(IsDiamondPrototypeEnabled());
+  const GURL visibleURL = self.webState->GetVisibleURL();
+  NSString* title = base::SysUTF16ToNSString(self.webState->GetTitle());
+
+  SharingParams* params =
+      [[SharingParams alloc] initWithURL:visibleURL
+                                   title:title
+                                scenario:SharingScenario::TabShareButton];
+  _sharingCoordinator = [[SharingCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                          params:params
+                      originView:self.viewController.view];
+  [_sharingCoordinator start];
 }
 
 - (void)locationBarRequestScribbleTargetFocus {
