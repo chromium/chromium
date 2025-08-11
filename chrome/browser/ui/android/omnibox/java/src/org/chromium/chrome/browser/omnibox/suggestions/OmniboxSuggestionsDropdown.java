@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -18,36 +17,26 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewOutlineProvider;
 import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.TimingMetric;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder.OmniboxAlignment;
-import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.omnibox.OmniboxFeatures;
-import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.KeyNavigationUtil;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.MotionEventUtils;
-
-import java.util.Optional;
 
 /** A widget for showing a list of omnibox suggestions. */
 @NullMarked
@@ -79,15 +68,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private final Handler mHandler;
 
     private @Nullable OmniboxSuggestionsDropdownAdapter mAdapter;
-    private Optional<OmniboxSuggestionsDropdownEmbedder> mEmbedder = Optional.empty();
     private @Nullable GestureObserver mGestureObserver;
-    private @Nullable Callback<Integer> mHeightChangeListener;
-    private OmniboxAlignment mOmniboxAlignment = OmniboxAlignment.UNSPECIFIED;
-
-    private int mListViewMaxHeight;
-    private int mLastBroadcastedListViewMaxHeight;
-    private final Callback<OmniboxAlignment> mOmniboxAlignmentObserver =
-            this::onOmniboxAlignmentChanged;
     private float mChildVerticalTranslation;
     private float mChildAlpha = 1.0f;
 
@@ -322,7 +303,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     public void destroy() {
         getRecycledViewPool().clear();
         mGestureObserver = null;
-        mHeightChangeListener = null;
     }
 
     /**
@@ -332,16 +312,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      */
     public void setGestureObserver(OmniboxSuggestionsDropdown.GestureObserver observer) {
         mGestureObserver = observer;
-    }
-
-    /**
-     * Sets the listener for changes of the suggestion list's height. The height may change as a
-     * result of eg. soft keyboard popping up.
-     *
-     * @param listener A listener will receive the new height of the suggestion list in pixels.
-     */
-    public void setHeightChangeListener(Callback<Integer> listener) {
-        mHeightChangeListener = listener;
     }
 
     /** Resets selection typically in response to changes to the list. */
@@ -441,66 +411,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        boolean isTablet = mEmbedder.map(e -> e.isTablet()).orElse(false);
-
-        try (TraceEvent tracing = TraceEvent.scoped("OmniboxSuggestionsList.Measure");
-                TimingMetric metric = OmniboxMetrics.recordSuggestionListMeasureTime();
-                TimingMetric metric2 = OmniboxMetrics.recordSuggestionListMeasureWallTime()) {
-            maybeUpdateLayoutParams(mOmniboxAlignment.top);
-            int availableViewportHeight = mOmniboxAlignment.height;
-            int desiredWidth = mOmniboxAlignment.width;
-            adjustHorizontalPosition();
-            notifyObserversIfViewportHeightChanged(availableViewportHeight);
-
-            widthMeasureSpec = MeasureSpec.makeMeasureSpec(desiredWidth, MeasureSpec.EXACTLY);
-            heightMeasureSpec =
-                    MeasureSpec.makeMeasureSpec(
-                            availableViewportHeight,
-                            isTablet ? MeasureSpec.AT_MOST : MeasureSpec.EXACTLY);
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-            if (isTablet) {
-                setRoundBottomCorners(
-                        getMeasuredHeight() < availableViewportHeight
-                                || !KeyboardVisibilityDelegate.getInstance()
-                                        .isKeyboardShowing(getContext(), this));
-            }
-        }
-    }
-
-    private void maybeUpdateLayoutParams(int topMargin) {
-        // Update the layout params to ensure the parent correctly positions the suggestions
-        // under the anchor view.
-        ViewGroup.LayoutParams layoutParams = getLayoutParams();
-        if (layoutParams != null && layoutParams instanceof ViewGroup.MarginLayoutParams) {
-            ((ViewGroup.MarginLayoutParams) layoutParams).topMargin = topMargin;
-        }
-    }
-
-    private void notifyObserversIfViewportHeightChanged(int availableViewportHeight) {
-        if (availableViewportHeight == mListViewMaxHeight) return;
-
-        mListViewMaxHeight = availableViewportHeight;
-        if (mHeightChangeListener != null) {
-            PostTask.postTask(
-                    TaskTraits.UI_DEFAULT,
-                    () -> {
-                        // Detect if there was another change since this task posted.
-                        // This indicates a subsequent task being posted too.
-                        if (mListViewMaxHeight != availableViewportHeight) return;
-                        // Detect if the new height is the same as previously broadcasted.
-                        // The two checks (one above and one below) allow us to detect quick
-                        // A->B->A transitions and suppress the broadcasts.
-                        if (mLastBroadcastedListViewMaxHeight == availableViewportHeight) return;
-                        if (mHeightChangeListener == null) return;
-
-                        mHeightChangeListener.onResult(availableViewportHeight);
-                        mLastBroadcastedListViewMaxHeight = availableViewportHeight;
-                    });
-        }
-    }
-
-    @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         try (TraceEvent tracing = TraceEvent.scoped("OmniboxSuggestionsList.Layout");
                 TimingMetric metric = OmniboxMetrics.recordSuggestionListLayoutTime();
@@ -565,110 +475,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         return super.dispatchTouchEvent(ev);
     }
 
-    /**
-     * Sets the embedder for the list view.
-     *
-     * @param embedder the embedder of this list.
-     */
-    public void setEmbedder(OmniboxSuggestionsDropdownEmbedder embedder) {
-        // Don't reset the current value of `mOmniboxAlignment`, and don't read the value from newly
-        // installed embedder to ensure the `onOmniboxAlignmentChanged` does the right thing when we
-        // install our observers.
-        mEmbedder = Optional.of(embedder);
-    }
-
-    /**
-     * Respond to Omnibox session state change.
-     *
-     * @param urlHasFocus whether URL has focus (signaling the session is active)
-     */
-    /* package */ void onOmniboxSessionStateChange(boolean urlHasFocus) {
-        if (urlHasFocus) {
-            installAlignmentObserver();
-        } else {
-            cancelWindowContentChangedAnnouncement();
-            removeAlignmentObserver();
-        }
-    }
-
-    private void installAlignmentObserver() {
-        mEmbedder.ifPresent(
-                e -> {
-                    e.onAttachedToWindow();
-                    mOmniboxAlignment = e.addAlignmentObserver(mOmniboxAlignmentObserver);
-                });
-    }
-
-    private void removeAlignmentObserver() {
-        mEmbedder.ifPresent(
-                e -> {
-                    e.onDetachedFromWindow();
-                    e.removeAlignmentObserver(mOmniboxAlignmentObserver);
-                });
-
-        if (!OmniboxFeatures.shouldPreWarmRecyclerViewPool()) {
-            getRecycledViewPool().clear();
-        }
-    }
-
-    private void onOmniboxAlignmentChanged(OmniboxAlignment omniboxAlignment) {
-        boolean isOnlyHorizontalDifference =
-                omniboxAlignment.isOnlyHorizontalDifference(mOmniboxAlignment);
-        boolean isWidthDifference = omniboxAlignment.doesWidthDiffer(mOmniboxAlignment);
-        mOmniboxAlignment = omniboxAlignment;
-        this.setPaddingRelative(
-                getPaddingStart(),
-                getPaddingTop(),
-                getPaddingEnd(),
-                mBaseBottomPadding + mOmniboxAlignment.paddingBottom);
-
-        if (isOnlyHorizontalDifference) {
-            adjustHorizontalPosition();
-            return;
-        } else if (isWidthDifference) {
-            // If our width has changed, we may have views in our pool that are now the wrong width.
-            // Recycle them by calling swapAdapter() to avoid showing views of the wrong size.
-            swapAdapter(mAdapter, true);
-            Configuration configuration = getContext().getResources().getConfiguration();
-            setClipToOutline(
-                    configuration.screenWidthDp >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP);
-            BaseSuggestionViewBinder.resetCachedResources();
-        }
-        if (isInLayout()) {
-            // requestLayout doesn't behave predictably in the middle of a layout pass. Even if it
-            // does trigger a second layout pass, measurement caches aren't properly reset,
-            // resulting in stale sizing. Absent a way to abort the current pass and start over the
-            // simplest solution is to wait until the current pass is over to request relayout.
-            PostTask.postTask(
-                    TaskTraits.UI_USER_VISIBLE,
-                    () -> {
-                        ViewUtils.requestLayout(
-                                OmniboxSuggestionsDropdown.this,
-                                "OmniboxSuggestionsDropdown.onOmniboxAlignmentChanged");
-                    });
-        } else {
-            ViewUtils.requestLayout(
-                    (View) OmniboxSuggestionsDropdown.this,
-                    "OmniboxSuggestionsDropdown.onOmniboxAlignmentChanged");
-        }
-    }
-
-    private void adjustHorizontalPosition() {
-        // Set our left edge using translation x. This avoids needing to relayout (like setting
-        // a left margin would) and is less risky than calling View#setLeft(), which is intended
-        // for use by the layout system.
-        setTranslationX(mOmniboxAlignment.left);
-    }
-
-    private void setRoundBottomCorners(boolean roundBottomCorners) {
-        ViewOutlineProvider outlineProvider = getOutlineProvider();
-        if (!(outlineProvider instanceof RoundedCornerOutlineProvider)) return;
-
-        RoundedCornerOutlineProvider roundedCornerOutlineProvider =
-                (RoundedCornerOutlineProvider) outlineProvider;
-        roundedCornerOutlineProvider.setRoundingEdges(true, true, true, roundBottomCorners);
-    }
-
     public void emitWindowContentChangedAnnouncement() {
         cancelWindowContentChangedAnnouncement();
         // Note: can't use postDelayed until minSdk is 28.
@@ -687,12 +493,23 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                 TimeUtils.uptimeMillis() + LIST_COMPOSITION_ACCESSIBILITY_ANNOUNCEMENT_DELAY_MS);
     }
 
-    private void cancelWindowContentChangedAnnouncement() {
+    /* package */ void cancelWindowContentChangedAnnouncement() {
         mHandler.removeCallbacksAndMessages(TOKEN_ACCESSIBILITY_FOCUS);
     }
 
     @VisibleForTesting
     SuggestionLayoutScrollListener getLayoutScrollListener() {
         return mLayoutScrollListener;
+    }
+
+    @VisibleForTesting
+    int getBaseBottomPadding() {
+        return mBaseBottomPadding;
+    }
+
+    @VisibleForTesting
+    @Override
+    public @Nullable OmniboxSuggestionsDropdownAdapter getAdapter() {
+        return mAdapter;
     }
 }

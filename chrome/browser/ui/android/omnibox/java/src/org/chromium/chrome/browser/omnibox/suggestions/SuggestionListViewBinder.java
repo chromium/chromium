@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import android.content.Context;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
 
@@ -24,10 +23,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 class SuggestionListViewBinder {
     /** Holds the view components needed to renderer the suggestion list. */
     public static class SuggestionListViewHolder {
-        public final ViewGroup container;
+        public final OmniboxSuggestionsContainer container;
         public final OmniboxSuggestionsDropdown dropdown;
 
-        public SuggestionListViewHolder(ViewGroup container, OmniboxSuggestionsDropdown dropdown) {
+        public SuggestionListViewHolder(
+                OmniboxSuggestionsContainer container, OmniboxSuggestionsDropdown dropdown) {
             this.container = container;
             this.dropdown = dropdown;
         }
@@ -44,15 +44,15 @@ class SuggestionListViewBinder {
             view.dropdown.translateChildrenVertical(
                     model.get(SuggestionListProperties.CHILD_TRANSLATION_Y));
         } else if (SuggestionListProperties.EMBEDDER.equals(propertyKey)) {
-            view.dropdown.setEmbedder(model.get(SuggestionListProperties.EMBEDDER));
+            view.container.setEmbedder(model.get(SuggestionListProperties.EMBEDDER));
         } else if (SuggestionListProperties.OMNIBOX_SESSION_ACTIVE.equals(propertyKey)) {
             updateContainerVisibility(model, view);
-            view.dropdown.onOmniboxSessionStateChange(
+            view.container.onOmniboxSessionStateChange(
                     model.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE));
         } else if (SuggestionListProperties.GESTURE_OBSERVER.equals(propertyKey)) {
             view.dropdown.setGestureObserver(model.get(SuggestionListProperties.GESTURE_OBSERVER));
         } else if (SuggestionListProperties.DROPDOWN_HEIGHT_CHANGE_LISTENER.equals(propertyKey)) {
-            view.dropdown.setHeightChangeListener(
+            view.container.setHeightChangeListener(
                     model.get(SuggestionListProperties.DROPDOWN_HEIGHT_CHANGE_LISTENER));
         } else if (SuggestionListProperties.DROPDOWN_SCROLL_LISTENER.equals(propertyKey)) {
             view.dropdown

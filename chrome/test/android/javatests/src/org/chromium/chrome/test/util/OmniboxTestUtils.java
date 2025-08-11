@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownItemViewInfo;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsContainer;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdown;
 import org.chromium.chrome.browser.omnibox.suggestions.base.ActionChipsProperties;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
@@ -313,8 +314,10 @@ public class OmniboxTestUtils {
 
         CriteriaHelper.pollUiThread(
                 () -> {
+                    OmniboxSuggestionsContainer container =
+                            mAutocomplete.getSuggestionsContainerForTest();
                     OmniboxSuggestionsDropdown dropdown =
-                            mAutocomplete.getSuggestionsDropdownForTest();
+                            container.findViewById(R.id.omnibox_suggestions_dropdown);
 
                     ModelList currentModels = mAutocomplete.getSuggestionModelListForTest();
                     for (int i = 0; i < currentModels.size(); i++) {
@@ -660,15 +663,17 @@ public class OmniboxTestUtils {
 
         @Override
         protected ConditionStatus checkWithSuppliers() {
-            OmniboxSuggestionsDropdown suggestionsDropdown =
+            OmniboxSuggestionsContainer container =
+                    mLocationBar.getAutocompleteCoordinator().getSuggestionsContainerForTest();
+            OmniboxSuggestionsDropdown dropdown =
                     mLocationBar.getAutocompleteCoordinator().getSuggestionsDropdownForTest();
-            if (suggestionsDropdown == null) {
+            if (container == null || dropdown == null) {
                 return notFulfilled("suggestion list is null");
             }
-            if (!suggestionsDropdown.getViewGroup().isShown()) {
+            if (!container.isShown() || !dropdown.isShown()) {
                 return notFulfilled("suggestion list is not shown");
             }
-            int count = suggestionsDropdown.getDropdownItemViewCountForTest();
+            int count = dropdown.getDropdownItemViewCountForTest();
             return whether(count > 0, "suggestion list has %d entries", count);
         }
 
@@ -688,17 +693,19 @@ public class OmniboxTestUtils {
 
         @Override
         protected ConditionStatus checkWithSuppliers() {
-            OmniboxSuggestionsDropdown suggestionsDropdown =
+            OmniboxSuggestionsContainer container =
+                    mLocationBar.getAutocompleteCoordinator().getSuggestionsContainerForTest();
+            OmniboxSuggestionsDropdown dropdown =
                     mLocationBar.getAutocompleteCoordinator().getSuggestionsDropdownForTest();
             // Suggestions list can't be showing if it's not constructed.
-            if (suggestionsDropdown == null) {
+            if (container == null || dropdown == null) {
                 return fulfilled();
             }
-            if (suggestionsDropdown.getViewGroup().isShown()) {
+            if (container.isShown() && dropdown.isShown()) {
                 return notFulfilled("suggestion list is shown");
             }
-            int entries = suggestionsDropdown.getDropdownItemViewCountForTest();
-            if (suggestionsDropdown.getDropdownItemViewCountForTest() > 0) {
+            int entries = dropdown.getDropdownItemViewCountForTest();
+            if (dropdown.getDropdownItemViewCountForTest() > 0) {
                 return notFulfilled("suggestion list has %d entries", entries);
             }
             return fulfilled();

@@ -9,23 +9,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.Rect;
 import android.view.ContextThemeWrapper;
 import android.view.View;
-import android.view.View.MeasureSpec;
-import android.view.ViewGroup;
-import android.view.ViewGroup.MarginLayoutParams;
 
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView.LayoutParams;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
@@ -38,17 +30,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.annotation.LooperMode.Mode;
-import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder.OmniboxAlignment;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.base.WindowDelegate;
 
 /** Unit tests for {@link OmniboxSuggestionsDropdown}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -57,74 +42,11 @@ public class OmniboxSuggestionsDropdownUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock Runnable mDropdownScrollListener;
     private @Mock Runnable mDropdownScrollToTopListener;
-    private @Mock WindowDelegate mWindowDelegate;
     private @Mock OmniboxSuggestionsDropdownAdapter mAdapter;
 
     private Context mContext;
-
-    private TestOmniboxSuggestionsDropdown mDropdown;
+    private OmniboxSuggestionsDropdown mDropdown;
     private OmniboxSuggestionsDropdown.SuggestionLayoutScrollListener mListener;
-    private OmniboxAlignment mOmniboxAlignment;
-    private final ObservableSupplierImpl<OmniboxAlignment> mOmniboxAlignmentSupplier =
-            new ObservableSupplierImpl<>();
-    private boolean mIsTablet;
-    private boolean mAttachedToWindow;
-    private final OmniboxSuggestionsDropdownEmbedder mEmbedder =
-            new OmniboxSuggestionsDropdownEmbedder() {
-                @Override
-                public boolean isTablet() {
-                    return mIsTablet;
-                }
-
-                @Override
-                public void onAttachedToWindow() {
-                    mAttachedToWindow = true;
-                }
-
-                @Override
-                public void onDetachedFromWindow() {
-                    mAttachedToWindow = false;
-                }
-
-                @Override
-                public OmniboxAlignment addAlignmentObserver(Callback<OmniboxAlignment> obs) {
-                    return mOmniboxAlignmentSupplier.addObserver(obs);
-                }
-
-                @Override
-                public void removeAlignmentObserver(Callback<OmniboxAlignment> obs) {
-                    mOmniboxAlignmentSupplier.removeObserver(obs);
-                }
-
-                @Nullable
-                @Override
-                public OmniboxAlignment getCurrentAlignment() {
-                    return mOmniboxAlignmentSupplier.get();
-                }
-
-                @Override
-                public float getVerticalTranslationForAnimation() {
-                    return 0.0f;
-                }
-            };
-
-    // TODO(341377411): resolve issues with mockito not being able to stub the isInLayout method.
-    private static class TestOmniboxSuggestionsDropdown extends OmniboxSuggestionsDropdown {
-        private boolean mIsInLayout;
-
-        public TestOmniboxSuggestionsDropdown(Context context) {
-            super(context, null);
-        }
-
-        @Override
-        public boolean isInLayout() {
-            return mIsInLayout;
-        }
-
-        public void setIsInLayout(boolean isInLayout) {
-            mIsInLayout = isInLayout;
-        }
-    }
 
     @Before
     public void setUp() {
@@ -132,7 +54,8 @@ public class OmniboxSuggestionsDropdownUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        mDropdown = new TestOmniboxSuggestionsDropdown(mContext);
+        mDropdown = new OmniboxSuggestionsDropdown(mContext, null);
+        mDropdown.setId(R.id.omnibox_suggestions_dropdown);
         mDropdown.setAdapter(mAdapter);
         mListener = mDropdown.getLayoutScrollListener();
     }
@@ -298,177 +221,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     }
 
     @Test
-    public void onOmniboxSessionStateChange_withEmbedder() {
-        mDropdown.setEmbedder(mEmbedder);
-
-        assertFalse(mAttachedToWindow);
-        mDropdown.onOmniboxSessionStateChange(true);
-        assertTrue(mAttachedToWindow);
-
-        mDropdown.onOmniboxSessionStateChange(false);
-        assertFalse(mAttachedToWindow);
-    }
-
-    @Test
-    public void onOmniboxSessionStateChange_withoutEmbedder() {
-        assertFalse(mAttachedToWindow);
-        mDropdown.onOmniboxSessionStateChange(true);
-        assertFalse(mAttachedToWindow);
-        mDropdown.onOmniboxSessionStateChange(false);
-        assertFalse(mAttachedToWindow);
-    }
-
-    @Test
-    public void testAlignmentProvider_widthChange() {
-        mDropdown.setEmbedder(mEmbedder);
-        mDropdown.onOmniboxSessionStateChange(true);
-
-        mOmniboxAlignment = new OmniboxAlignment(0, 100, 600, 0, 10, 10, 0);
-        mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
-        layoutDropdown(600, 800);
-        assertEquals(600, mDropdown.getMeasuredWidth());
-
-        mOmniboxAlignment = new OmniboxAlignment(0, 100, 400, 0, 10, 10, 0);
-        mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
-        ShadowLooper.runUiThreadTasks();
-        assertTrue(mDropdown.isLayoutRequested());
-
-        layoutDropdown(600, 800);
-        assertEquals(400, mDropdown.getMeasuredWidth());
-        assertFalse(mDropdown.isLayoutRequested());
-    }
-
-    @Test
-    public void testAlignmentProvider_topChange() {
-        mDropdown.setEmbedder(mEmbedder);
-        mDropdown.onOmniboxSessionStateChange(true);
-
-        mDropdown.setLayoutParams(
-                new LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        int marginTop = 100;
-        int height = 800 - marginTop;
-        mOmniboxAlignment = new OmniboxAlignment(0, 100, 600, height, 10, 10, 0);
-        mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
-        layoutDropdown(600, height);
-
-        MarginLayoutParams layoutParams = (MarginLayoutParams) mDropdown.getLayoutParams();
-        assertNotNull(layoutParams);
-        assertEquals(marginTop, layoutParams.topMargin);
-
-        mOmniboxAlignment = new OmniboxAlignment(0, 54, 600, 0, 10, 10, 0);
-        mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
-        layoutDropdown(600, height);
-
-        layoutParams = (MarginLayoutParams) mDropdown.getLayoutParams();
-        assertNotNull(layoutParams);
-        assertEquals(54, layoutParams.topMargin);
-    }
-
-    @Test
-    public void testAlignmentProvider_heightChange() {
-        mDropdown.setEmbedder(mEmbedder);
-        mDropdown.onOmniboxSessionStateChange(true);
-
-        mDropdown.setLayoutParams(
-                new LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        int height = 400;
-        mOmniboxAlignment = new OmniboxAlignment(0, 80, 600, height, 10, 10, 0);
-        mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
-        layoutDropdown(600, 800);
-
-        assertEquals(height, mDropdown.getMeasuredHeight());
-
-        height = 300;
-        mOmniboxAlignment = new OmniboxAlignment(0, 80, 600, height, 10, 10, 0);
-        mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
-        layoutDropdown(600, 800);
-
-        assertEquals(height, mDropdown.getMeasuredHeight());
-    }
-
-    @Test
-    public void testAlignmentProvider_bottomPaddingChange() {
-        mDropdown.setEmbedder(mEmbedder);
-        mDropdown.onOmniboxSessionStateChange(true);
-        mDropdown.setLayoutParams(
-                new LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        int originalPaddingTop = mDropdown.getPaddingTop();
-        int originalPaddingLeft = mDropdown.getPaddingLeft();
-        int originalPaddingRight = mDropdown.getPaddingRight();
-        int originalPaddingBottom = mDropdown.getPaddingBottom();
-
-        int bottomPadding = 40;
-        mOmniboxAlignment = new OmniboxAlignment(0, 80, 600, 400, 10, 10, bottomPadding);
-        mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
-
-        assertEquals(
-                "The new bottom padding should be layered on the original base bottom padding.",
-                originalPaddingBottom + bottomPadding,
-                mDropdown.getPaddingBottom());
-        assertEquals(
-                "A change in the bottom padding should not affect the top padding.",
-                originalPaddingTop,
-                mDropdown.getPaddingTop());
-        assertEquals(
-                "A change in the bottom padding should not affect the left padding.",
-                originalPaddingLeft,
-                mDropdown.getPaddingLeft());
-        assertEquals(
-                "A change in the bottom padding should not affect the right padding.",
-                originalPaddingRight,
-                mDropdown.getPaddingRight());
-
-        bottomPadding = 20;
-        mOmniboxAlignment = new OmniboxAlignment(0, 80, 600, 400, 10, 10, bottomPadding);
-        mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
-
-        assertEquals(
-                "The new bottom padding should be layered on the original base bottom padding.",
-                originalPaddingBottom + bottomPadding,
-                mDropdown.getPaddingBottom());
-        assertEquals(
-                "A change in the bottom padding should not affect the top padding.",
-                originalPaddingTop,
-                mDropdown.getPaddingTop());
-        assertEquals(
-                "A change in the bottom padding should not affect the left padding.",
-                originalPaddingLeft,
-                mDropdown.getPaddingLeft());
-        assertEquals(
-                "A change in the bottom padding should not affect the right padding.",
-                originalPaddingRight,
-                mDropdown.getPaddingRight());
-    }
-
-    @Test
-    @LooperMode(Mode.PAUSED)
-    public void testAlignmentProvider_changeDuringlayout() {
-        mDropdown.setAdapter(mAdapter);
-        mDropdown.setEmbedder(mEmbedder);
-        mDropdown.onOmniboxSessionStateChange(true);
-
-        mDropdown.setIsInLayout(true);
-        mOmniboxAlignment = new OmniboxAlignment(0, 80, 400, 600, 10, 10, 0);
-        mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
-
-        mDropdown.layout(0, 0, 600, 800);
-        assertFalse(mDropdown.isLayoutRequested());
-
-        // The posted task should re-request layout.
-        ShadowLooper.runUiThreadTasks();
-        assertTrue(mDropdown.isLayoutRequested());
-    }
-
-    @Test
     public void translateChildrenVertical() {
-        mDropdown.setAdapter(mAdapter);
-        mDropdown.setEmbedder(mEmbedder);
-        mDropdown.onOmniboxSessionStateChange(true);
-
         View childView = Mockito.mock(View.class);
 
         mDropdown.translateChildrenVertical(45.6f);
@@ -481,10 +234,6 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
     @Test
     public void setChildAlpha() {
-        mDropdown.setAdapter(mAdapter);
-        mDropdown.setEmbedder(mEmbedder);
-        mDropdown.onOmniboxSessionStateChange(true);
-
         View childView = Mockito.mock(View.class);
 
         mDropdown.setChildAlpha(0.6f);
@@ -493,21 +242,6 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
         mDropdown.onChildDetachedFromWindow(childView);
         verify(childView).setAlpha(1.0f);
-    }
-
-    private void layoutDropdown(int width, int height) {
-        doAnswer(
-                        (invocation) -> {
-                            Rect r = invocation.getArgument(0);
-                            r.set(0, 0, 0, height);
-                            return true;
-                        })
-                .when(mWindowDelegate)
-                .getWindowVisibleDisplayFrame(any(Rect.class));
-        int widthSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST);
-        int heightSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST);
-        mDropdown.measure(widthSpec, heightSpec);
-        mDropdown.layout(0, 0, mDropdown.getMeasuredWidth(), mDropdown.getMeasuredHeight());
     }
 
     @Test
