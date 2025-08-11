@@ -20,12 +20,14 @@ namespace {
 
 using OrtGetApiBaseProc = decltype(OrtGetApiBase)*;
 
-constexpr base::wcstring_view kWindowsMLPackageFamilyName =
-    L"Microsoft.WindowsMLRuntime.0.3_8wekyb3d8bbwe";
+// WinAppRuntime, run the installer for version 1.8 experimental 4 found at
+// https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/downloads
+constexpr base::wcstring_view kWinAppRuntimePackageFamilyName =
+    L"Microsoft.WindowsAppRuntime.1.8-experimental4_8wekyb3d8bbwe";
 
 constexpr base::wcstring_view kOnnxRuntimeLibraryName = L"onnxruntime.dll";
 
-constexpr PACKAGE_VERSION kWindowsMLPackageVersion = {
+constexpr PACKAGE_VERSION kWinAppRuntimePackageVersion = {
     .Major = 0,
     .Minor = 0,
     .Build = 0,
@@ -111,8 +113,8 @@ PlatformFunctions::PlatformFunctions() {
   } else {
     // Initialize Windows ML.
     std::optional<base::FilePath> windows_ml_package_path =
-        InitializePackageDependency(kWindowsMLPackageFamilyName,
-                                    kWindowsMLPackageVersion);
+        InitializePackageDependency(kWinAppRuntimePackageFamilyName,
+                                    kWinAppRuntimePackageVersion);
     if (!windows_ml_package_path) {
       LOG(ERROR) << "[WebNN] Failed to initialize Windows ML and get the "
                     "package path.";
