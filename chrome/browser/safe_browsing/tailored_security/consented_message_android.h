@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/android/window_android.h"
 
 namespace content {
@@ -18,7 +19,8 @@ class WebContents;
 
 namespace safe_browsing {
 
-class TailoredSecurityConsentedModalAndroid {
+class TailoredSecurityConsentedModalAndroid
+    : public content::WebContentsObserver {
  public:
   // Show the message for the given `web_contents`, when the Tailored security
   // setting has been `enabled`.
@@ -26,7 +28,10 @@ class TailoredSecurityConsentedModalAndroid {
                                         bool enabled,
                                         base::OnceClosure dismiss_callback,
                                         bool is_requested_by_synced_esb);
-  ~TailoredSecurityConsentedModalAndroid();
+  ~TailoredSecurityConsentedModalAndroid() override;
+
+  // Override declaration for the observer method.
+  void WebContentsDestroyed() override;
 
  private:
   friend class TailoredSecurityConsentedModalAndroidTest;
@@ -38,6 +43,8 @@ class TailoredSecurityConsentedModalAndroid {
   FRIEND_TEST_ALL_PREFIXES(
       TailoredSecurityConsentedModalAndroidTest,
       HandleAccepted_EsbSynced_NullWebContents_DisabledMessage_LogsFailed);
+  FRIEND_TEST_ALL_PREFIXES(TailoredSecurityConsentedModalAndroidTest,
+                           WebContentsDestroyedNullifiesPointer);
   void DismissMessageInternal(messages::DismissReason dismiss_reason);
   void HandleSettingsClicked();
   void HandleMessageAccepted();
