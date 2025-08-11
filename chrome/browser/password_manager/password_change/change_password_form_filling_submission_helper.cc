@@ -147,6 +147,10 @@ void ChangePasswordFormFillingSubmissionHelper::OnPasswordFormSubmission(
   if (std::exchange(submission_detected_, true)) {
     return;
   }
+  if (auto logger = GetLoggerIfAvailable(client_)) {
+    logger->LogMessage(
+        Logger::STRING_AUTOMATED_PASSWORD_CHANGE_FORM_SUBMISSION);
+  }
   if (!timeout_timer_.IsRunning()) {
     return;
   }
@@ -263,6 +267,11 @@ void ChangePasswordFormFillingSubmissionHelper::OnSubmitWithEnterResult(
 
 void ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived(
     std::optional<optimization_guide::AIPageContentResult> content) {
+  if (auto logger = GetLoggerIfAvailable(client_)) {
+    logger->LogBoolean(
+        Logger::STRING_AUTOMATED_PASSWORD_CHANGE_PAGE_CONTENT_RECEIVED,
+        content.has_value());
+  }
   if (!content) {
     LogPageContentCaptureFailure(password_manager::metrics_util::
                                      PasswordChangeFlowStep::kSubmitFormStep);
@@ -331,8 +340,8 @@ void ChangePasswordFormFillingSubmissionHelper::OnButtonClicked(bool result) {
   click_helper_.reset();
 
   if (auto logger = GetLoggerIfAvailable(client_)) {
-    logger->LogBoolean(Logger::STRING_PASSWORD_CHANGE_SUBMIT_WITH_MODEL_RESULT,
-                       result);
+    logger->LogBoolean(
+        Logger::STRING_AUTOMATED_PASSWORD_CHANGE_ON_BUTTON_CLICKED, result);
   }
 
   if (!result && !submission_detected_) {
@@ -345,6 +354,11 @@ void ChangePasswordFormFillingSubmissionHelper::OnButtonClicked(bool result) {
 
 void ChangePasswordFormFillingSubmissionHelper::
     OnSubmissionDetectedOrTimeout() {
+  if (auto logger = GetLoggerIfAvailable(client_)) {
+    logger->LogMessage(
+        Logger::
+            STRING_AUTOMATED_PASSWORD_CHANGE_SUBMISSION_DETECTED_OR_TIMEOUT);
+  }
   if (!submission_verifier_) {
     CHECK(callback_);
     std::move(callback_).Run(false);
@@ -377,6 +391,10 @@ void ChangePasswordFormFillingSubmissionHelper::OnChangePasswordFormFound(
 
   CHECK(form_manager->GetParsedObservedForm());
   CHECK(form_manager->GetDriver());
+
+  if (auto logger = GetLoggerIfAvailable(client_)) {
+    logger->LogMessage(Logger::STRING_AUTOMATED_PASSWORD_CHANGE_FORM_FOUND);
+  }
 
   form_manager_ = form_manager->Clone();
   TriggerFilling(*form_manager->GetParsedObservedForm(),

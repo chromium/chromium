@@ -197,6 +197,11 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
 void PasswordChangeDelegateImpl::OnOtpNotFound() {
   otp_detection_.reset();
 
+  if (auto logger = GetLoggerIfAvailable(originator_)) {
+    logger->LogMessage(BrowserSavePasswordProgressLogger::
+                           STRING_AUTOMATED_PASSWORD_CHANGE_OTP_DISAPPEARED);
+  }
+
   password_change_hats_ = std::make_unique<PasswordChangeHats>(
       HatsServiceFactory::GetForProfile(profile_,
                                         /*create_if_necessary=*/true),
@@ -230,6 +235,10 @@ PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
 }
 
 void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
+  if (auto logger = GetLoggerIfAvailable(originator_)) {
+    logger->LogMessage(BrowserSavePasswordProgressLogger::
+                           STRING_AUTOMATED_PASSWORD_CHANGE_START_FLOW);
+  }
   flow_start_time_ = base::Time::Now();
   LogLeakDialogTimeSpent(current_state_,
                          flow_start_time_ - leak_dialog_display_time_);
@@ -255,6 +264,10 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
 }
 
 void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
+  if (auto logger = GetLoggerIfAvailable(executor_.get())) {
+    logger->LogMessage(BrowserSavePasswordProgressLogger::
+                           STRING_AUTOMATED_PASSWORD_CHANGE_CANCEL_FLOW);
+  }
   if (logs_uploader_) {
     logs_uploader_->SetFlowInterrupted();
   }
@@ -307,6 +320,10 @@ void PasswordChangeDelegateImpl::OnTabWillDetach(
     tabs::TabInterface* tab_interface,
     tabs::TabInterface::DetachReason reason) {
   if (reason == tabs::TabInterface::DetachReason::kDelete) {
+    if (auto logger = GetLoggerIfAvailable(originator_)) {
+      logger->LogMessage(BrowserSavePasswordProgressLogger::
+                             STRING_AUTOMATED_PASSWORD_CHANGE_TAB_DETACH);
+    }
     base::UmaHistogramEnumeration(
         "PasswordManager.PasswordChange.UserClosedTab", current_state_);
     if (logs_uploader_) {
@@ -348,6 +365,10 @@ void PasswordChangeDelegateImpl::OnPasswordFormSubmission(
 
 void PasswordChangeDelegateImpl::OnOtpFieldDetected(
     password_manager::OtpFormManager* form_manager) {
+  if (auto logger = GetLoggerIfAvailable(executor_.get())) {
+    logger->LogMessage(BrowserSavePasswordProgressLogger::
+                           STRING_AUTOMATED_PASSWORD_CHANGE_OTP_DETECTED);
+  }
   if (logs_uploader_) {
     logs_uploader_->SetOtpDetected();
   }
@@ -405,6 +426,11 @@ void PasswordChangeDelegateImpl::RemoveObserver(
 }
 
 void PasswordChangeDelegateImpl::OnPrivacyNoticeAccepted() {
+  if (auto logger = GetLoggerIfAvailable(originator_)) {
+    logger->LogMessage(
+        BrowserSavePasswordProgressLogger::
+            STRING_AUTOMATED_PASSWORD_CHANGE_PRIVACY_NOTICE_ACCEPTED);
+  }
   // Enable via the Optimization Guide's pref.
   profile_->GetPrefs()->SetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(
@@ -414,6 +440,11 @@ void PasswordChangeDelegateImpl::OnPrivacyNoticeAccepted() {
 }
 
 void PasswordChangeDelegateImpl::OnPasswordChangeDeclined() {
+  if (auto logger = GetLoggerIfAvailable(originator_)) {
+    logger->LogMessage(
+        BrowserSavePasswordProgressLogger::
+            STRING_AUTOMATED_PASSWORD_CHANGE_PASSWORD_CHANGE_DECLINED);
+  }
   password_change_hats_->MaybeLaunchSurvey(
       kHatsSurveyTriggerPasswordChangeCanceled,
       /*password_change_duration=*/base::TimeDelta(), originator_);
@@ -429,9 +460,9 @@ void PasswordChangeDelegateImpl::UpdateState(State new_state) {
   ui_controller_->UpdateState(new_state);
 
   if (auto logger = GetLoggerIfAvailable(originator_)) {
-    logger->LogNumber(
-        BrowserSavePasswordProgressLogger::STRING_PASSWORD_CHANGE_STATE_CHANGED,
-        static_cast<int>(new_state));
+    logger->LogNumber(BrowserSavePasswordProgressLogger::
+                          STRING_AUTOMATED_PASSWORD_CHANGE_STATE_CHANGED,
+                      static_cast<int>(new_state));
   }
 
   // In case the password change was canceled or finished successfully, the flow
@@ -445,6 +476,11 @@ void PasswordChangeDelegateImpl::UpdateState(State new_state) {
 }
 
 void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(bool result) {
+  if (auto logger = GetLoggerIfAvailable(executor_.get())) {
+    logger->LogBoolean(BrowserSavePasswordProgressLogger::
+                           STRING_AUTOMATED_PASSWORD_CHANGE_SUBMISSION_VERIFIED,
+                       result);
+  }
   base::Time time_now = base::Time::Now();
   base::TimeDelta password_change_duration_overall =
       time_now - flow_start_time_;
@@ -486,6 +522,11 @@ std::u16string PasswordChangeDelegateImpl::GetDisplayOrigin() const {
 }
 
 void PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected() {
+  if (auto logger = GetLoggerIfAvailable(executor_.get())) {
+    logger->LogMessage(
+        BrowserSavePasswordProgressLogger::
+            STRING_AUTOMATED_PASSWORD_CHANGE_CROSS_ORIGIN_NAVIGATION);
+  }
   navigation_observer_.reset();
 
   // Navigation happened when looking for a change password form, password

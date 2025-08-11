@@ -474,20 +474,59 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "POST error with 400-403 status is detected, considering "
              "current submission failed";
     case STRING_PASSWORD_CHANGE_FORM_FILLING_RESULT:
-      return "Result of password change form filling";
+      return "Automated password change: Result of password change form "
+             "filling";
     case STRING_PASSWORD_CHANGE_SUBMIT_WITH_ENTER_RESULT:
-      return "Result of password change form submission with Enter";
+      return "Automated password change: Result of password change form "
+             "submission with Enter";
     case STRING_PASSWORD_CHANGE_SUBMIT_WITH_MODEL_RESULT:
-      return "Result of password change form submission with model";
+      return "Automated password change: Result of password change form "
+             "submission with model";
     case STRING_PASSWORD_POTENTIALLY_FAILED_LOGIN:
-      return "Potentially failed login attempt detected";
+      return "Automated password change: Potentially failed login attempt "
+             "detected";
     case STRING_PASSWORD_CHANGE_INITIAL_FORM_WAITING_RESULT:
-      return "Is change password form detected after navigation to change-pwd "
+      return "Automated password change: Is change password form detected "
+             "after navigation to change-pwd "
              "URL";
     case STRING_PASSWORD_CHANGE_MODEL_PAGE_PREDICTION_TYPE:
       return "Page type prediction for OPEN_FORM step";
     case STRING_PASSWORD_CHANGE_SUBSEQUENT_FORM_WAITING_RESULT:
       return "Is change password form detected after OPEN_FORM step";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_OTP_DISAPPEARED:
+      return "No one-time-password received on page load";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_START_FLOW:
+      return "Automated password change: flow started";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_CANCEL_FLOW:
+      return "Automated password change: flow cancelled";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_FORM_FOUND:
+      return "Automated password change: form found";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_LOGIN_FORM_FOUND:
+      return "Automated password change: login form found";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_TAB_DETACH:
+      return "Tab with Automated password change: detached";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_FORM_SUBMISSION:
+      return "Automated password change: form submission";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_OTP_DETECTED:
+      return "Automated password change: OTP detected";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_PRIVACY_NOTICE_ACCEPTED:
+      return "Automated password change: privacy notice accepted";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_PASSWORD_CHANGE_DECLINED:
+      return "Automated password change: declined";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_STATE_CHANGED:
+      return "Automated password change: state changed";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_SUBMISSION_VERIFIED:
+      return "Automated password change: submission verified";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_CROSS_ORIGIN_NAVIGATION:
+      return "Automated password change: cross-origin navigation detected";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_PAGE_CONTENT_RECEIVED:
+      return "Automated password change: page content received";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_ON_BUTTON_CLICKED:
+      return "Automated password change: on button clicked";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_FORM_NOT_FOUND:
+      return "Automated password change: form not found";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_SUBMISSION_DETECTED_OR_TIMEOUT:
+      return "Automated password change: submission detected or timeout";
     case SavePasswordProgressLogger::STRING_INVALID:
       return "INVALID";
       // Intentionally no default: clause here -- all IDs need to get covered.
