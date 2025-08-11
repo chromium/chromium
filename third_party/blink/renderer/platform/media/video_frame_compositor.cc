@@ -380,7 +380,7 @@ bool VideoFrameCompositor::ProcessNewFrame(
     return false;
   }
 
-  // TODO(crbug.com/1447318): Add other cases where the frame is not readable.
+  // TODO(crbug.com/40064689): Add other cases where the frame is not readable.
   bool is_frame_readable = !frame->metadata().dcomp_surface;
 
   // Copy to a local variable to avoid potential deadlock when executing the

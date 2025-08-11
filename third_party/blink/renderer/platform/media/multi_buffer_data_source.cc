@@ -597,8 +597,7 @@ void MultiBufferDataSource::SetBitrateTask(int bitrate) {
 void MultiBufferDataSource::StartCallback() {
   DCHECK(render_task_runner_->BelongsToCurrentThread());
 
-  // TODO(scherkus): we shouldn't have to lock to signal host(), see
-  // http://crbug.com/113712 for details.
+  // TODO(crbug.com/40724615): we shouldn't have to lock to signal host().
   base::AutoLock auto_lock(lock_);
   if (stop_signal_received_) {
     return;

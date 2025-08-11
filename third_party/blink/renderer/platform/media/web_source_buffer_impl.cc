@@ -170,7 +170,7 @@ bool WebSourceBufferImpl::AppendChunks(
 
   // Like in ::Append, timestamp_offset may be updated by coded frame
   // processing.
-  // TODO(crbug.com/1144908): Consider refactoring this common bit into helper.
+  // TODO(crbug.com/40155657): Consider refactoring this common bit into helper.
   if (timestamp_offset && old_offset != timestamp_offset_)
     *timestamp_offset = timestamp_offset_.InSecondsF();
 
@@ -184,7 +184,7 @@ void WebSourceBufferImpl::ResetParserState() {
 
   // TODO(wolenetz): resetParserState should be able to modify the caller
   // timestamp offset (just like WebSourceBufferImpl::append).
-  // See http://crbug.com/370229 for further details.
+  // See http://crbug.com/41105493 for further details.
 }
 
 void WebSourceBufferImpl::Remove(double start, double end) {

@@ -103,7 +103,8 @@ void ResourceMultiBufferDataProvider::Start() {
   // tell the remote server that we really can't handle files other
   // than the one we already started playing. Unfortunately, doing
   // so will disable the http cache, and possibly other proxies
-  // along the way. See crbug/504194 and crbug/689989 for more information.
+  // along the way. See crbug.com/41185060 and crbug.com/41300485 for more
+  // information.
 
   // Disable compression, compression for audio/video doesn't make sense...
   request.SetHttpHeaderField(

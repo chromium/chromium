@@ -27,7 +27,7 @@ class BufferedDataSourceHost {
 
   // Notify the host that byte range [start,end] has been buffered.
   // TODO(fischman): remove this method when demuxing is push-based instead of
-  // pull-based.  http://crbug.com/131444
+  // pull-based. http://crbug.com/40221412.
   virtual void AddBufferedByteRange(int64_t start, int64_t end) = 0;
 
  protected:

@@ -702,7 +702,7 @@ TEST_F(MultiBufferDataSourceTest, Http_RetryOnError) {
   Stop();
 }
 
-// Make sure that we prefetch across partial responses. (crbug.com/516589)
+// Make sure that we prefetch across partial responses. (crbug.com/41192138).
 TEST_F(MultiBufferDataSourceTest, Http_PartialResponsePrefetch) {
   Initialize(kHttpUrl, true);
   WebURLResponse response1 =

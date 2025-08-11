@@ -183,7 +183,7 @@ class PLATFORM_EXPORT MediaPlayerClient : public WebMediaPlayerClient {
   virtual void DidUseAudioServiceChange(bool uses_audio_service) = 0;
 
   // Notify the client that the size of the media player has changed.
-  // TODO(crbug.com/1039252): Remove by merging this method into SizeChanged().
+  // TODO(crbug.com/40113516): Remove by merging this method into SizeChanged().
   virtual void DidPlayerSizeChange(const gfx::Size& size) = 0;
 
   virtual void OnFirstFrame(base::TimeTicks first_frame,

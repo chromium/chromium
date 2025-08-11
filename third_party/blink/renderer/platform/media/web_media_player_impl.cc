@@ -240,7 +240,7 @@ int GetSwitchToLocalMessage(
 
 // These values are persisted to UMA. Entries should not be renumbered and
 // numeric values should never be reused.
-// TODO(crbug.com/825041): This should use EncryptionScheme when kUnencrypted
+// TODO(crbug.com/40568386): This should use EncryptionScheme when kUnencrypted
 // removed.
 enum class EncryptionSchemeUMA { kCenc = 0, kCbcs = 1, kCount };
 
@@ -369,7 +369,7 @@ bool MediaPositionNeedsUpdate(
 
 // Returns whether the player uses AudioService. This is needed to enable
 // AudioStreamMonitor (for audio indicator) when not using AudioService.
-// TODO(crbug.com/1017943): Support other RendererTypes.
+// TODO(crbug.com/40104699): Support other RendererTypes.
 bool UsesAudioService(media::RendererType renderer_type) {
   return renderer_type != media::RendererType::kMediaFoundation;
 }
@@ -594,7 +594,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
           weak_this_, CrossThreadUnretained(client_)));
 
   // TODO(xhwang): When we use an external Renderer, many methods won't work,
-  // e.g. GetCurrentFrameFromCompositor(). See http://crbug.com/434861
+  // e.g. GetCurrentFrameFromCompositor(). See http://crbug.com/41143892.
   audio_source_provider_ = base::MakeRefCounted<WebAudioSourceProviderImpl>(
       std::move(audio_renderer_sink), media_log_.get(),
       std::move(on_audio_source_provider_set_client_callback));
@@ -751,8 +751,8 @@ void WebMediaPlayerImpl::UnregisterContentsLayer(cc::Layer* layer) {
 }
 
 void WebMediaPlayerImpl::OnSurfaceIdUpdated(viz::SurfaceId surface_id) {
-  // TODO(726619): Handle the behavior when Picture-in-Picture mode is
-  // disabled.
+  // TODO(crbug.com/40522727): Handle the behavior when Picture-in-Picture mode
+  // is disabled.
   // The viz::SurfaceId may be updated when the video begins playback or when
   // the size of the video changes.
   if (client_ && !client_->IsAudioElement()) {
@@ -1489,16 +1489,16 @@ WebTimeRanges WebMediaPlayerImpl::Seekable() const {
   // finite duration; this allows looping to work.
   const bool is_finite_stream = IsStreaming() && std::isfinite(seekable_end);
 
-  // TODO(dalecurtis): Technically this allows seeking on media which return an
-  // infinite duration so long as DataSource::IsStreaming() is false. While not
-  // expected, disabling this breaks semi-live players, http://crbug.com/427412.
+  // TODO(crbug.com/40391052): Technically this allows seeking on media which
+  // return an infinite duration so long as DataSource::IsStreaming() is false.
+  // While not expected, disabling this breaks semi-live players,
   return WebTimeRanges(0.0, is_finite_stream ? 0.0 : seekable_end);
 }
 
 bool WebMediaPlayerImpl::IsPrerollAttemptNeeded() {
   // TODO(sandersd): Replace with `highest_ready_state_since_seek_` if we need
   // to ensure that preroll always gets a chance to complete.
-  // See http://crbug.com/671525.
+  // See http://crbug.com/40496714.
   //
   // Note: Even though we get play/pause signals at kReadyStateHaveMetadata, we
   // must attempt to preroll until kReadyStateHaveFutureData so that the
@@ -1633,7 +1633,7 @@ void WebMediaPlayerImpl::SetContentDecryptionModule(
 
   // Once the CDM is set it can't be cleared as there may be frames being
   // decrypted on other threads. So fail this request.
-  // http://crbug.com/462365#c7.
+  // http://crbug.com/40407494#comment8.
   if (!cdm) {
     result.CompleteWithError(
         kWebContentDecryptionModuleExceptionInvalidStateError, 0,
@@ -1916,8 +1916,8 @@ void WebMediaPlayerImpl::OnBeforePipelineResume() {
 
   // Enable video track if we disabled it in the background - this way the new
   // renderer will attach its callbacks to the video stream properly.
-  // TODO(avayvod): Remove this when disabling and enabling video tracks in
-  // non-playing state works correctly. See https://crbug.com/678374.
+  // TODO(crbug.com/41293579): Remove this when disabling and enabling video
+  // tracks in non-playing state works correctly.
   EnableVideoTrackIfNeeded();
   is_pipeline_resuming_ = true;
 }
@@ -1980,8 +1980,8 @@ void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
 
 #if BUILDFLAG(IS_WIN)
   // Hardware context reset is not an error. Restart to recover.
-  // TODO(crbug.com/1208618): Find a way to break the potential infinite loop of
-  // restart -> PIPELINE_ERROR_HARDWARE_CONTEXT_RESET -> restart.
+  // TODO(crbug.com/40181810): Find a way to break the potential infinite loop
+  // of restart -> PIPELINE_ERROR_HARDWARE_CONTEXT_RESET -> restart.
   if (status == media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET) {
     ScheduleRestart();
     return;
@@ -2157,9 +2157,9 @@ void WebMediaPlayerImpl::ActivateSurfaceLayerForVideo() {
   // WebMediaPlayerImpl. The new player needs to send its id, size and
   // surface id to the browser process to make sure the states are properly
   // updated.
-  // TODO(872056): the surface should be activated but for some reasons, it
-  // does not. It is possible that this will no longer be needed after 872056
-  // is fixed.
+  // TODO(crbug.com/40588454): the surface should be activated but for some
+  // reasons, it does not. It is possible that this will no longer be needed
+  // after 40588454 is fixed.
   if (IsInVideoPictureInPicture()) {
     OnSurfaceIdUpdated(bridge_->GetSurfaceId());
   }
@@ -2387,9 +2387,9 @@ void WebMediaPlayerImpl::OnWaiting(media::WaitingReason reason) {
       has_waiting_for_key_ = true;
       media_metrics_provider_->SetHasWaitingForKey();
       encrypted_client_->DidBlockPlaybackWaitingForKey();
-      // TODO(jrummell): didResumePlaybackBlockedForKey() should only be called
-      // when a key has been successfully added (e.g. OnSessionKeysChange() with
-      // `has_additional_usable_key` = true). http://crbug.com/461903
+      // TODO(crbug.com/41159529): didResumePlaybackBlockedForKey() should only
+      // be called when a key has been successfully added (e.g.
+      // OnSessionKeysChange() with `has_additional_usable_key` = true).
       encrypted_client_->DidResumePlaybackBlockedForKey();
       return;
 
@@ -2952,7 +2952,7 @@ std::unique_ptr<media::Renderer> WebMediaPlayerImpl::CreateRenderer(
   bool old_uses_audio_service = UsesAudioService(renderer_type_);
   renderer_type_ = renderer_factory_selector_->GetCurrentRendererType();
 
-  // TODO(crbug/1426179): Support codec changing for Media Foundation.
+  // TODO(crbug.com/40261162): Support codec changing for Media Foundation.
   if (renderer_type_ == media::RendererType::kMediaFoundation) {
     demuxer_manager_->DisableDemuxerCanChangeType();
   }
@@ -3766,7 +3766,7 @@ void WebMediaPlayerImpl::UpdateBackgroundVideoOptimizationState() {
 
       // Defer disable track until we're sure the clip will be backgrounded for
       // some time. Resuming may take half a second, so frequent tab switches
-      // will yield a poor user experience otherwise. http://crbug.com/709302
+      // will yield a poor user experience otherwise. http://crbug.com/41311818
       // may also cause AV sync issues if disable/enable happens too fast.
       main_task_runner_->PostDelayedTask(
           FROM_HERE, update_background_status_cb_.callback(),

@@ -55,7 +55,7 @@ class BLINK_PLATFORM_EXPORT KeySystemConfigSelector {
 
   // The unsupported statuses will be mapped to different rejection messages.
   // The statuses should not leak sensitive information, e.g. incognito mode or
-  // user settings. See https://crbug.com/760720
+  // user settings. See https://crbug.com/40537826.
   enum class Status {
     kSupported,
     kUnsupportedKeySystem,
