@@ -118,6 +118,21 @@ class InstallIntegrationTest(unittest.TestCase):
             install.main()
         self.assertFalse((self.target_extensions_dir / 'sample_1').exists())
 
+    def test_symlink_add_remove(self):
+        """Tests adding and removing a symlinked extension."""
+        with patch('sys.argv',
+                   ['install.py', 'add', '--symlink', 'sample_1']):
+            install.main()
+        symlink_path = self.target_extensions_dir / 'sample_1'
+        self.assertTrue(symlink_path.is_symlink())
+        # Windows adds \\?\ as a prefix for readlink().
+        self.assertEqual(os.readlink(symlink_path).removeprefix('\\\\?\\'),
+                         str(self.extension1_dir))
+
+        with patch('sys.argv', ['install.py', 'remove', 'sample_1']):
+            install.main()
+        self.assertFalse(symlink_path.exists())
+
     def test_update_sequence(self):
         """Tests adding, updating, and then checking the version."""
         with patch('sys.argv', ['install.py', 'add', 'sample_1']):

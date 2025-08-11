@@ -223,7 +223,8 @@ def add_extension(extension_name: str, source_extensions_dir: Path,
             return
 
     if dest_dir.exists():
-        shutil.rmtree(dest_dir)
+        _do_remove(dest_dir)
+
     if symlink:
         os.symlink(source_dir, dest_dir)
     else:
@@ -252,18 +253,26 @@ def update_extension(extension_name: str, source_extensions_dir: Path,
         return
 
     if dest_dir.exists():
-        shutil.rmtree(dest_dir)
+        _do_remove(dest_dir)
+
     shutil.copytree(source_dir,
                     dest_dir,
                     ignore=shutil.ignore_patterns('tests'))
     print(f"Updated '{extension_name}' in {dest_dir}")
 
 
+def _do_remove(dest_dir: Path) -> None:
+    if dest_dir.is_symlink():
+        dest_dir.unlink()
+    else:
+        shutil.rmtree(dest_dir)
+
+
 def remove_extension(extension_name: str, target_extensions_dir: Path) -> None:
     """Removes an extension."""
     dest_dir = target_extensions_dir / extension_name
     if dest_dir.exists():
-        shutil.rmtree(dest_dir)
+        _do_remove(dest_dir)
         print(f"Removed '{extension_name}' from {target_extensions_dir}")
     else:
         print(
