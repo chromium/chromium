@@ -47,7 +47,7 @@ rewriting. -->
 * Add code comments sparingly: Focus on *why* something is done, not *what* is
   done.
 
-## Presumbit Checks
+## Presubmit Checks
 
 When you have finished validating your changes through other means, run:
 
