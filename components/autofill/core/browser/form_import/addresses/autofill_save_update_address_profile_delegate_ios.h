@@ -66,6 +66,10 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   // |original_profile_|.
   std::vector<ProfileValueDifference> GetProfileDiff() const;
 
+  // Returns whether the update prompt is for home/work profile.
+  bool IsOriginalProfileHomeProfile() const;
+  bool IsOriginalProfileWorkProfile() const;
+
   virtual void EditAccepted();
   void EditDeclined();
   void MessageTimeout();

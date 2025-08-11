@@ -73,6 +73,18 @@ std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetPhoneNumber()
   return GetProfileInfo(PHONE_HOME_WHOLE_NUMBER);
 }
 
+bool AutofillSaveUpdateAddressProfileDelegateIOS::IsOriginalProfileHomeProfile()
+    const {
+  return GetOriginalProfile()->record_type() ==
+         AutofillProfile::RecordType::kAccountHome;
+}
+
+bool AutofillSaveUpdateAddressProfileDelegateIOS::IsOriginalProfileWorkProfile()
+    const {
+  return GetOriginalProfile()->record_type() ==
+         AutofillProfile::RecordType::kAccountWork;
+}
+
 std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetEmailAddress()
     const {
   return GetProfileInfo(EMAIL_ADDRESS);
