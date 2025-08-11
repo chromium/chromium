@@ -582,9 +582,6 @@ extern const char kAutofillShowBubblesBasedOnPrioritiesDescription[];
 extern const char kAutofillUnmaskCardRequestTimeoutName[];
 extern const char kAutofillUnmaskCardRequestTimeoutDescription[];
 
-extern const char kAutofillUploadCardRequestTimeoutName[];
-extern const char kAutofillUploadCardRequestTimeoutDescription[];
-
 extern const char kAutofillVcnEnrollStrikeExpiryTimeName[];
 extern const char kAutofillVcnEnrollStrikeExpiryTimeDescription[];
 

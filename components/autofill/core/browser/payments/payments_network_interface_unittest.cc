@@ -1221,12 +1221,6 @@ TEST_F(PaymentsNetworkInterfaceTest, UploadSuccessCardArtUrlPresent) {
 TEST_F(PaymentsNetworkInterfaceTest, UploadSuccessMeasureTimeoutHistogram) {
   base::HistogramTester histogram_tester;
 
-  base::FieldTrialParams params;
-  params["autofill_upload_card_request_timeout_milliseconds"] = "10000";
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kAutofillUploadCardRequestTimeout, params);
-
   StartUploading();
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK, "{}");
@@ -1239,12 +1233,6 @@ TEST_F(PaymentsNetworkInterfaceTest, UploadSuccessMeasureTimeoutHistogram) {
 
 TEST_F(PaymentsNetworkInterfaceTest, UploadFailureDueToClientSideTimeout) {
   base::HistogramTester histogram_tester;
-
-  base::FieldTrialParams params;
-  params["autofill_upload_card_request_timeout_milliseconds"] = "10000";
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kAutofillUploadCardRequestTimeout, params);
 
   // Fake a client-side timeout on the card upload.
   StartUploading();
@@ -1260,12 +1248,6 @@ TEST_F(PaymentsNetworkInterfaceTest, UploadFailureDueToClientSideTimeout) {
 TEST_F(PaymentsNetworkInterfaceTest,
        UploadClientTimeoutNotRecordedForOtherFailure) {
   base::HistogramTester histogram_tester;
-
-  base::FieldTrialParams params;
-  params["autofill_upload_card_request_timeout_milliseconds"] = "10000";
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kAutofillUploadCardRequestTimeout, params);
 
   // Fake a network issue on the upload; this shouldn't result in any record
   // being made for the client timeout histogram. In particular,

@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/values_test_util.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request_constants.h"
 #include "components/autofill/core/browser/payments/test/autofill_payments_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -168,23 +169,9 @@ TEST(CreateCardRequestTest, NoAddressInRequestIfAddressNotProvided) {
               std::string::npos);
 }
 
-TEST(CreateCardRequestTest, GetTimeOutIfFlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillUploadCardRequestTimeout);
+TEST(CreateCardRequestTest, GetTimeout) {
   std::unique_ptr<CreateCardRequest> request = BuildCreateCardRequest();
-  EXPECT_FALSE(request->GetTimeout().has_value());
-}
-
-TEST(CreateCardRequestTest, GetTimeOut) {
-  base::FieldTrialParams params;
-  params["autofill_upload_card_request_timeout_milliseconds"] = "6000";
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kAutofillUploadCardRequestTimeout, params);
-  std::unique_ptr<CreateCardRequest> request = BuildCreateCardRequest();
-
-  EXPECT_EQ(*request->GetTimeout(), base::Milliseconds(6000));
+  EXPECT_EQ(request->GetTimeout(), kUploadCardRequestTimeout);
 }
 
 TEST(CreateCardRequestTest, ParseResponse) {

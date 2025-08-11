@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request_constants.h"
 
 namespace autofill::payments {
 
@@ -155,12 +156,7 @@ std::string CreateCardRequest::GetHistogramName() const {
 }
 
 std::optional<base::TimeDelta> CreateCardRequest::GetTimeout() const {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillUploadCardRequestTimeout)) {
-    return std::nullopt;
-  }
-  return base::Milliseconds(
-      features::kAutofillUploadCardRequestTimeoutMilliseconds.Get());
+  return kUploadCardRequestTimeout;
 }
 
 std::string CreateCardRequest::GetInstrumentIdForTesting() const {
