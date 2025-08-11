@@ -10,4 +10,16 @@ AndroidBnplStrategy::AndroidBnplStrategy() = default;
 
 AndroidBnplStrategy::~AndroidBnplStrategy() = default;
 
+BnplStrategy::SuggestionShownNextAction
+AndroidBnplStrategy::GetNextActionOnSuggestionShown() {
+  return SuggestionShownNextAction::
+      kSkipNotifyingUpdateCallbackOfSuggestionsShownResponse;
+}
+
+BnplStrategy::BnplSuggestionAcceptedNextAction
+AndroidBnplStrategy::GetNextActionOnBnplSuggestionAcceptance() {
+  return BnplSuggestionAcceptedNextAction::
+      kCheckAmountExtractionBeforeContinuingFlow;
+}
+
 }  // namespace autofill::payments

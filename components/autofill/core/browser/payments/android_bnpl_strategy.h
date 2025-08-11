@@ -17,6 +17,11 @@ class AndroidBnplStrategy : public BnplStrategy {
   AndroidBnplStrategy(const AndroidBnplStrategy&) = delete;
   AndroidBnplStrategy& operator=(const AndroidBnplStrategy&) = delete;
   ~AndroidBnplStrategy() override;
+
+  // BnplStrategy:
+  SuggestionShownNextAction GetNextActionOnSuggestionShown() override;
+  BnplSuggestionAcceptedNextAction GetNextActionOnBnplSuggestionAcceptance()
+      override;
 };
 
 }  // namespace autofill::payments

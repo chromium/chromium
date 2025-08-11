@@ -16,6 +16,8 @@
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,6 +26,7 @@
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
+#include "components/autofill/core/browser/payments/bnpl_strategy.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
@@ -32,6 +35,12 @@
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+#include "components/autofill/core/browser/payments/desktop_bnpl_strategy.h"
+#elif BUILDFLAG(IS_ANDROID)
+#include "components/autofill/core/browser/payments/android_bnpl_strategy.h"
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 namespace autofill::payments {
 
@@ -96,11 +105,27 @@ void BnplManager::OnDidAcceptBnplSuggestion(
   payments_autofill_client().LoadRiskData(base::BindOnce(
       &BnplManager::OnPrefetchedRiskDataLoaded, weak_factory_.GetWeakPtr()));
 
-  payments_autofill_client().ShowSelectBnplIssuerDialog(
-      GetSortedBnplIssuerContext(), ongoing_flow_state_->app_locale,
-      base::BindOnce(&BnplManager::OnIssuerSelected,
-                     weak_factory_.GetWeakPtr()),
-      base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
+  CHECK(payments_autofill_client().GetBnplStrategy());
+  using enum BnplStrategy::BnplSuggestionAcceptedNextAction;
+  switch (payments_autofill_client()
+              .GetBnplStrategy()
+              ->GetNextActionOnBnplSuggestionAcceptance()) {
+    case kShowSelectBnplIssuerDialog:
+      payments_autofill_client().ShowSelectBnplIssuerDialog(
+          GetSortedBnplIssuerContext(), ongoing_flow_state_->app_locale,
+          base::BindOnce(&BnplManager::OnIssuerSelected,
+                         weak_factory_.GetWeakPtr()),
+          base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
+      break;
+    case kCheckAmountExtractionBeforeContinuingFlow:
+      // TODO(crbug.com/430575808): Implement Android flow logic to show
+      // progress screen or select issuer screen depending on amount extraction
+      // status. If the amount extraction has failed to return a valid amount,
+      // the selection screen is grayed out, and selecting an issuer is not
+      // possible.
+      NOTIMPLEMENTED();
+      break;
+  }
 
   browser_autofill_manager_->GetCreditCardFormEventLogger()
       .OnDidAcceptBnplSuggestion();
@@ -125,18 +150,24 @@ void BnplManager::OnSuggestionsShown(
     return;
   }
 
-  // Do not proceed to calling the barrier callback, if the suggestion list
-  // already contains a buy-now-pay-later-entry (which is triggered after
-  // updating the original suggestion list).
-  if (base::Contains(suggestions, SuggestionType::kBnplEntry,
-                     &Suggestion::type)) {
-    return;
-  }
-
-  if (update_suggestions_barrier_callback_.has_value()) {
-    update_suggestions_barrier_callback_->Run(SuggestionsShownResponse(
-        std::vector<Suggestion>(std::begin(suggestions), std::end(suggestions)),
-        std::move(update_suggestions_callback)));
+  CHECK(payments_autofill_client().GetBnplStrategy());
+  using enum BnplStrategy::SuggestionShownNextAction;
+  switch (payments_autofill_client()
+              .GetBnplStrategy()
+              ->GetNextActionOnSuggestionShown()) {
+    case kNotifyUpdateCallbackOfSuggestionsShownResponse:
+      // The update suggestions callback attempts to add a BNPL entry to the
+      // list of suggestions if no BNPL entry exists in the list.
+      if (!base::Contains(suggestions, SuggestionType::kBnplEntry,
+                          &Suggestion::type)) {
+        update_suggestions_barrier_callback_->Run(SuggestionsShownResponse(
+            std::vector<Suggestion>(std::begin(suggestions),
+                                    std::end(suggestions)),
+            std::move(update_suggestions_callback)));
+      }
+      break;
+    case kSkipNotifyingUpdateCallbackOfSuggestionsShownResponse:
+      break;
   }
 }
 

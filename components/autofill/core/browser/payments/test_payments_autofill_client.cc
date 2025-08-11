@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
+#include "components/autofill/core/browser/payments/bnpl_strategy.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
@@ -26,12 +27,17 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/test/gmock_callback_support.h"
+#include "components/autofill/core/browser/payments/android_bnpl_strategy.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/autofill/core/browser/payments/test_internal_authenticator.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #endif  // !BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#include "components/autofill/core/browser/payments/desktop_bnpl_strategy.h"
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 namespace autofill::payments {
 
@@ -306,5 +312,18 @@ void TestPaymentsAutofillClient::
           })));
 }
 #endif
+
+BnplStrategy* TestPaymentsAutofillClient::GetBnplStrategy() {
+  if (!bnpl_strategy_) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    bnpl_strategy_ = std::make_unique<DesktopBnplStrategy>();
+#elif BUILDFLAG(IS_ANDROID)
+    bnpl_strategy_ = std::make_unique<AndroidBnplStrategy>();
+#else   // BUILDFLAG(IS_IOS)
+    bnpl_strategy_ = nullptr;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  }
+  return bnpl_strategy_.get();
+}
 
 }  // namespace autofill::payments

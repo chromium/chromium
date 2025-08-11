@@ -1609,7 +1609,10 @@ source_set("unit_tests") {
   }
 
   if (is_android) {
-    sources += [ "payments/autofill_save_iban_ui_info_unittest.cc" ]
+    sources += [
+      "payments/android_bnpl_strategy_unittest.cc",
+      "payments/autofill_save_iban_ui_info_unittest.cc",
+    ]
   }
 
   if (is_ios || is_android) {
@@ -1649,7 +1652,10 @@ source_set("unit_tests") {
   }
 
   if (!is_ios && !is_android) {
-    sources += [ "crowdsourcing/server_prediction_overrides_unittest.cc" ]
+    sources += [
+      "crowdsourcing/server_prediction_overrides_unittest.cc",
+      "payments/desktop_bnpl_strategy_unittest.cc",
+    ]
   }
 
   if (build_with_tflite_lib) {

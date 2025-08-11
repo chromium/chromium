@@ -4,8 +4,20 @@
 
 #include "components/autofill/core/browser/payments/bnpl_strategy.h"
 
+#include "base/notreached.h"
+
 namespace autofill::payments {
 
 BnplStrategy::~BnplStrategy() = default;
+
+BnplStrategy::SuggestionShownNextAction
+BnplStrategy::GetNextActionOnSuggestionShown() {
+  NOTREACHED();
+}
+
+BnplStrategy::BnplSuggestionAcceptedNextAction
+BnplStrategy::GetNextActionOnBnplSuggestionAcceptance() {
+  NOTREACHED();
+}
 
 }  // namespace autofill::payments

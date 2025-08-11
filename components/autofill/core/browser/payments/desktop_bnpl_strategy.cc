@@ -10,4 +10,15 @@ DesktopBnplStrategy::DesktopBnplStrategy() = default;
 
 DesktopBnplStrategy::~DesktopBnplStrategy() = default;
 
+BnplStrategy::SuggestionShownNextAction
+DesktopBnplStrategy::GetNextActionOnSuggestionShown() {
+  return SuggestionShownNextAction::
+      kNotifyUpdateCallbackOfSuggestionsShownResponse;
+}
+
+BnplStrategy::BnplSuggestionAcceptedNextAction
+DesktopBnplStrategy::GetNextActionOnBnplSuggestionAcceptance() {
+  return BnplSuggestionAcceptedNextAction::kShowSelectBnplIssuerDialog;
+}
+
 }  // namespace autofill::payments

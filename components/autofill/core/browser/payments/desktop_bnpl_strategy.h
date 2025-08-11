@@ -17,6 +17,11 @@ class DesktopBnplStrategy : public BnplStrategy {
   DesktopBnplStrategy(const DesktopBnplStrategy&) = delete;
   DesktopBnplStrategy& operator=(const DesktopBnplStrategy&) = delete;
   ~DesktopBnplStrategy() override;
+
+  // BnplStrategy:
+  SuggestionShownNextAction GetNextActionOnSuggestionShown() override;
+  BnplSuggestionAcceptedNextAction GetNextActionOnBnplSuggestionAcceptance()
+      override;
 };
 
 }  // namespace autofill::payments

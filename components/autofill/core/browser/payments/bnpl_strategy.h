@@ -12,7 +12,45 @@ namespace autofill::payments {
 // systems. Created lazily in the PaymentsAutofillClient when it is needed.
 class BnplStrategy {
  public:
+  // Defines the next step that the BnplManager should take after the user has
+  // been shown a payment method autofill suggestion. The strategy
+  // implementation determines which action to return based on the platform.
+  enum class SuggestionShownNextAction {
+    // The flow should check if a BNPL suggestion is currently being shown.
+    // If it isn't, then run the update suggestions barrier callback.
+    kNotifyUpdateCallbackOfSuggestionsShownResponse = 0,
+
+    // The flow does not need to run the update suggestions barrier callback.
+    kSkipNotifyingUpdateCallbackOfSuggestionsShownResponse = 1,
+
+    kMaxValue = kSkipNotifyingUpdateCallbackOfSuggestionsShownResponse,
+  };
+
+  // Defines the next step that the BnplManager should take after the user has
+  // accepted a BNPL autofill suggestion. The strategy implementation determines
+  // which action to return based on the platform.
+  enum class BnplSuggestionAcceptedNextAction {
+    // The flow should show the Select BNPL Issuer Dialog.
+    kShowSelectBnplIssuerDialog = 0,
+
+    // The flow should check if amount extraction has finished extracting the
+    // checkout amount from the webpage. If complete, show the BNPL selection
+    // screen. Otherwise, show the progress screen.
+    kCheckAmountExtractionBeforeContinuingFlow = 1,
+
+    kMaxValue = kCheckAmountExtractionBeforeContinuingFlow,
+  };
+
   virtual ~BnplStrategy();
+
+  // Returns the next action to take after the user has been shown a payment
+  // method autofill suggestion.
+  virtual SuggestionShownNextAction GetNextActionOnSuggestionShown();
+
+  // Returns the next action to take after the user has accepted a BNPL
+  // suggestion.
+  virtual BnplSuggestionAcceptedNextAction
+  GetNextActionOnBnplSuggestionAcceptance();
 };
 
 }  // namespace autofill::payments
