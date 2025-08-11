@@ -150,7 +150,7 @@ class FromSourcePromptfooInstallation(PromptfooInstallation):
         return proc.returncode
 
 
-def _setup_promptfoo(from_npm: bool, promptfoo_revision: str | None,
+def _setup_promptfoo(promptfoo_revision: str | None,
                      promptfoo_version: str | None) -> PromptfooInstallation:
     """Sets up a temporary promptfoo installation.
 
@@ -158,14 +158,12 @@ def _setup_promptfoo(from_npm: bool, promptfoo_revision: str | None,
     exits.
 
     Args:
-        from_npm: Whether the installation should come from npm instead
-            of being built from source.
         promptfoo_revision: When building from source, an optional git
             revision to build at instead of ToT.
         promptfoo_version: When installing from npm, an optional
             version to use instead of latest.
     """
-    if from_npm:
+    if promptfoo_version:
         promptfoo = FromNpmPromptfooInstallation(promptfoo_version)
     else:
         promptfoo = FromSourcePromptfooInstallation(promptfoo_revision)
@@ -243,24 +241,26 @@ def main() -> int:
     before running tests.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--install-from-npm',
-        action='store_true',
-        default=False,
-        help='Install a release version of promptfoo via npm instead of '
-        'building from source.')
-    parser.add_argument(
-        '--promptfoo-revision',
-        help='The promptfoo revision to build at if building from source. If '
-        'unspecified, ToT will be used.')
-    parser.add_argument(
-        '--promptfoo-version',
-        help='The promptfoo release version to use if installing through npm. '
-        'If unspecified, latest will be used.')
+    promptfoo_install_group = parser.add_mutually_exclusive_group()
+    promptfoo_install_group.add_argument(
+        '--install-promptfoo-from-npm',
+        metavar='VERSION',
+        nargs='?',
+        dest='promptfoo_version',
+        const='latest',
+        help=('Install promptfoo through npm. If no release version is given, '
+              'latest will be used.'))
+    promptfoo_install_group.add_argument(
+        '--install-promptfoo-from-src',
+        metavar='REVISION',
+        nargs='?',
+        dest='promptfoo_revision',
+        const='main',
+        help=('Build promptfoo from the given source revision. If no revision '
+              'is specified, ToT will be used.'))
     args = parser.parse_args()
 
-    promptfoo = _setup_promptfoo(args.install_from_npm,
-                                 args.promptfoo_revision,
+    promptfoo = _setup_promptfoo(args.promptfoo_revision,
                                  args.promptfoo_version)
 
     returncode = 0
