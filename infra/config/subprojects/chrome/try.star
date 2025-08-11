@@ -101,6 +101,18 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    # TODO(https://crbug.com/400712231): Turn on branches for this bot.
+    #branch_selector = branches.selector.ANDROID_BRANCHES,
+    builder = "webview-arm-orderfile",
+)
+
+chrome_internal_verifier(
+    # TODO(https://crbug.com/400712231): Turn on branches for this bot.
+    #branch_selector = branches.selector.ANDROID_BRANCHES,
+    builder = "webview-arm64-orderfile",
+)
+
+chrome_internal_verifier(
     builder = "android-internal-binary-size",
 )
 

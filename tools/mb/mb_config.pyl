@@ -43,6 +43,8 @@
     'chrome.orderfile': {
       'android-arm32-orderfile': 'official_android_arm32_orderfile',
       'android-arm64-orderfile': 'official_android_arm64_orderfile',
+      'webview-arm-orderfile': 'official_android_arm32_orderfile',
+      'webview-arm64-orderfile': 'official_android_arm64_orderfile',
     },
 
     'chrome.pgo': {
@@ -232,6 +234,8 @@
     'tryserver.chrome.orderfile': {
       'android-arm32-orderfile': 'official_android_arm32_orderfile',
       'android-arm64-orderfile': 'official_android_arm64_orderfile',
+      'webview-arm-orderfile': 'official_android_arm32_orderfile',
+      'webview-arm64-orderfile': 'official_android_arm64_orderfile',
     },
 
     'tryserver.chrome.pgo': {

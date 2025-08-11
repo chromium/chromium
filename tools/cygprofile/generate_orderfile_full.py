@@ -549,7 +549,7 @@ class OrderfileGenerator:
     else:
       self._clank_dir = _SRC_PATH / 'clank'
     self._orderfiles_dir = self._clank_dir / 'orderfiles'
-    if self._options.profile_webview_startup:
+    if self._options.profile_webview:
       self._orderfiles_dir = self._orderfiles_dir / 'webview'
     self._orderfiles_dir.mkdir(exist_ok=True)
 
@@ -680,7 +680,7 @@ class OrderfileGenerator:
 
     assert self._compiler is not None, (
         'A valid compiler is needed to generate profiles.')
-    if self._options.profile_webview_startup:
+    if self._options.profile_webview:
       self._profiler.InstallAndSetWebViewProvider(
           self._compiler.webview_installer_path)
       files = self._profiler.CollectWebViewStartupProfile(
@@ -1000,7 +1000,7 @@ class OrderfileGenerator:
           self._compiler.chrome_apk_path)
       benchmark_results['orderfile.memory_mobile'] = (
           self._NativeCodeMemoryBenchmark(self._compiler.chrome_apk_path))
-      if self._options.profile_webview_startup:
+      if self._options.profile_webview:
         self._compiler.CompileWebViewApk(instrumented=False, force_relink=True)
         self._profiler.InstallAndSetWebViewProvider(
             self._compiler.webview_installer_path)
@@ -1057,7 +1057,7 @@ class OrderfileGenerator:
         # If there are pregenerated profiles, the instrumented build should
         # not be changed to avoid invalidating the pregenerated profile
         # offsets.
-        if self._options.profile_webview_startup:
+        if self._options.profile_webview:
           self._compiler.CompileWebViewApk(instrumented=True)
         else:
           self._compiler.CompileChromeApk(instrumented=True)
@@ -1178,11 +1178,11 @@ def CreateArgumentParser():
           'The shared library build variant for chrome on android. See '
           'https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_native_libraries.md '  # pylint: disable=line-too-long
           'for more details.'))
-  parser.add_argument('--profile-webview-startup',
+  parser.add_argument('--profile-webview',
                       action='store_true',
                       default=False,
-                      help='Use the webview startup benchmark profiles to '
-                      'generate the orderfile.')
+                      help='Use the WebView benchmark profiles to generate the '
+                      'orderfile.')
   parser.add_argument('--pregenerated-profiles',
                       default=None,
                       type=str,

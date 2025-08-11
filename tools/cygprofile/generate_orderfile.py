@@ -116,6 +116,10 @@ def GenerateAndProcessProfile(options):
     libchrome_target += '_64'
   lib_chrome_so = str(options.out_dir / f'lib.unstripped/{libchrome_target}.so')
 
+  if options.profile_webview:
+    raise Exception(
+        'WebView is not yet supported')  # TODO(tne): crbug.com/435633362
+
   if options.arch == 'arm64':
     files = profiler.CollectSpeedometerProfile(options.android_browser,
                                                str(options.out_dir))
@@ -157,6 +161,11 @@ def CreateArgumentParser():
   parser.add_argument('--android-browser',
                       required=True,
                       help='Browser string to pass to run_benchmark.')
+  parser.add_argument('--profile-webview',
+                      action='store_true',
+                      default=False,
+                      help='Use the WebView benchmark profiles to generate the '
+                      'orderfile.')
   parser.add_argument('-C',
                       '--out-dir',
                       type=pathlib.Path,
