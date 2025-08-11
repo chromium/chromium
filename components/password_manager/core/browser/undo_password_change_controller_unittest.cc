@@ -338,6 +338,20 @@ TEST_F(UndoPasswordChangeControllerTest, OnLoginPotentiallyFailedFlagOff) {
 }
 
 TEST_F(UndoPasswordChangeControllerTest,
+       OnLoginPotentiallyFailed_UnfocusablePassword) {
+  base::test::ScopedFeatureList feature_list(features::kShowRecoveryPassword);
+  best_match_form_.SetPasswordBackupNote(kBackupPassword);
+  auto form_manager = CreateFormManager(best_match_form_);
+  test_api(failed_login_form_.form_data)
+      .fields()[kPasswordFieldIndex]
+      .set_is_focusable(false);
+
+  controller_.OnLoginPotentiallyFailed(&driver_, failed_login_form_);
+
+  EXPECT_FALSE(controller_.failed_login_form());
+}
+
+TEST_F(UndoPasswordChangeControllerTest,
        OnLoginPotentiallyFailedNoBackupIgnored) {
   base::test::ScopedFeatureList feature_list(features::kShowRecoveryPassword);
   auto form_manager = CreateFormManager(best_match_form_);
