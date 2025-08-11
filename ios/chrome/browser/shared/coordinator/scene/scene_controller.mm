@@ -2483,8 +2483,10 @@ using UserFeedbackDataCallback =
   [self.AIPrototypingCoordinator start];
 }
 
-- (void)displaySafariDataImportEntryPointWithUIHandler:
-    (id<SafariDataImportUIHandler>)UIHandler {
+- (void)displaySafariDataImportFromEntryPoint:
+            (SafariDataImportEntryPoint)entryPoint
+                                withUIHandler:
+                                    (id<SafariDataImportUIHandler>)UIHandler {
   if (_safariImportCoordinator) {
     // Currently displaying.
     return;
@@ -2492,8 +2494,9 @@ using UserFeedbackDataCallback =
   CHECK(ShouldShowSafariImportWorkflow());
   SafariDataImportMainCoordinator* safariDataImportCoordinator =
       [[SafariDataImportMainCoordinator alloc]
-          initWithBaseViewController:self.activeViewController
-                             browser:self.currentInterface.browser];
+              initFromEntryPoint:entryPoint
+          withBaseViewController:self.activeViewController
+                         browser:self.currentInterface.browser];
   safariDataImportCoordinator.delegate = self;
   safariDataImportCoordinator.UIHandler = UIHandler;
   [self closePresentedViews:YES

@@ -18,6 +18,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/passwords/model:features",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/browser/safari_data_import/public:metrics",
     "//ios/chrome/browser/safari_data_import/ui",
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -39,6 +40,7 @@ source_set("export_coordinator") {
     ":coordinator_delegate",
     ":import_coordinator",
     "//base",
+    "//ios/chrome/browser/safari_data_import/public:metrics",
     "//ios/chrome/browser/safari_data_import/ui",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/public/provider/chrome/browser/safari_data_import:safari_data_import_api",
@@ -77,6 +79,7 @@ source_set("import_coordinator") {
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/safari_data_import/model",
     "//ios/chrome/browser/safari_data_import/public",
+    "//ios/chrome/browser/safari_data_import/public:metrics",
     "//ios/chrome/browser/safari_data_import/ui",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
@@ -103,6 +106,7 @@ source_set("promo") {
     ":coordinator",
     "//components/feature_engagement/public",
     "//ios/chrome/browser/promos_manager/model:types",
+    "//ios/chrome/browser/safari_data_import/public",
     "//ios/chrome/browser/shared/public/commands",
   ]
 }

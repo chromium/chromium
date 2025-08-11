@@ -9,6 +9,7 @@
 
 @class SafariDataImportMainCoordinator;
 @protocol SafariDataImportUIHandler;
+enum class SafariDataImportEntryPoint;
 
 /// Delegate object for the Safari data import flow.
 @protocol SafariDataImportMainCoordinatorDelegate
@@ -29,6 +30,13 @@
 
 /// Handler for Safari import workflow UI events. Optional.
 @property(nonatomic, weak) id<SafariDataImportUIHandler> UIHandler;
+
+/// Initializer.
+- (instancetype)initFromEntryPoint:(SafariDataImportEntryPoint)entryPoint
+            withBaseViewController:(UIViewController*)viewController
+                           browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 @end
 

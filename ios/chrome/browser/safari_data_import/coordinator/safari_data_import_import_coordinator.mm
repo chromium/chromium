@@ -7,7 +7,6 @@
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/check_op.h"
-#import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -28,6 +27,7 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_child_coordinator_delegate.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_import_mediator.h"
+#import "ios/chrome/browser/safari_data_import/public/metrics.h"
 #import "ios/chrome/browser/safari_data_import/public/password_import_item.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_import_stage_transition_handler.h"
@@ -42,12 +42,6 @@
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-namespace {
-/// Histogram to keep track of the success rate of attempts to display an alert
-/// right after the file picker supposedly dismisses.
-const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
-}  // namespace
 
 @interface SafariDataImportImportCoordinator () <
     PromoStyleViewControllerDelegate,
@@ -242,7 +236,7 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
 }
 
 - (void)didTapDismissButton {
-  [self.delegate safariDataImportCoordinatorWillDismissWorkflow:self];
+  [self dismissWorkflow];
 }
 
 #pragma mark - SafariDataImportImportStageTransitionHandler
@@ -266,7 +260,7 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
   /// they selected the wrong file.
   if (!userInitiated) {
     BOOL success = [self presentViewController:self.errorAlert];
-    base::UmaHistogramBoolean(kDisplayAlertHistogram, success);
+    RecordSafariDataImportFailure(success);
   }
   [self.mediator reset];
   _containerViewController.importStage = SafariDataImportStage::kNotStarted;
@@ -277,6 +271,7 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
 - (void)tableView:(UITableView*)tableView
     accessoryButtonTappedForRowWithIndexPath:(NSIndexPath*)indexPath {
   CHECK_EQ(tableView, _tableView);
+  RecordSafariDataImportInvalidPasswordDisplay();
   NSArray<PasswordImportItem*>* invalidPasswords =
       self.mediator.invalidPasswords;
   CHECK_GT(invalidPasswords.count, 0u);
@@ -330,11 +325,13 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
   UINavigationController* wrapper = [[UINavigationController alloc]
       initWithRootViewController:conflictResolutionViewController];
   wrapper.toolbarHidden = NO;
+  wrapper.modalInPresentation = YES;
   [self presentViewController:wrapper];
 }
 
 /// Handler for actions in `self.fileDeletionAlert`.
 - (void)didRespondToFileDeletionAlert:(BOOL)willDelete {
+  RecordSafariDataImportFileDeletionDecision(willDelete);
   NSError* error = nil;
   if (willDelete) {
     error = [_mediator deleteFile];
@@ -342,13 +339,12 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
   if (error) {
     __weak __typeof(self) weakSelf = self;
     NSString* buttonText = l10n_util::GetNSString(IDS_OK);
-    UIAlertAction* dismiss = [UIAlertAction
-        actionWithTitle:buttonText
-                  style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction* action) {
-                  [weakSelf.delegate
-                      safariDataImportCoordinatorWillDismissWorkflow:weakSelf];
-                }];
+    UIAlertAction* dismiss =
+        [UIAlertAction actionWithTitle:buttonText
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction* action) {
+                                 [weakSelf dismissWorkflow];
+                               }];
     UIAlertController* failToDeleteAlert = [UIAlertController
         alertControllerWithTitle:error.localizedDescription
                          message:nil
@@ -359,7 +355,7 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
       return;
     }
   }
-  [self.delegate safariDataImportCoordinatorWillDismissWorkflow:self];
+  [self dismissWorkflow];
 }
 
 /// Presents `viewController` and returns `YES` if no other view controller is
@@ -372,6 +368,12 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
                                          animated:YES
                                        completion:nil];
   return YES;
+}
+
+/// Dismisses Safari import workflow.
+- (void)dismissWorkflow {
+  RecordSafariDataImportEndsAtImportStage(_containerViewController.importStage);
+  [self.delegate safariDataImportCoordinatorWillDismissWorkflow:self];
 }
 
 @end

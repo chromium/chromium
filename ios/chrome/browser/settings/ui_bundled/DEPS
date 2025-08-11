@@ -15,6 +15,8 @@ include_rules = [
   "+ios/chrome/browser/default_browser/model/utils.h",
   "+ios/chrome/browser/default_promo/ui_bundled",
   "+ios/chrome/browser/discover_feed/model",
+  "+ios/chrome/browser/download/ui/auto_deletion",
+  "+ios/chrome/browser/download/coordinator/auto_deletion",
   "+ios/chrome/browser/favicon/model",
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/history/model/web_history_service_factory.h",
@@ -35,10 +37,11 @@ include_rules = [
   "+ios/chrome/browser/prerender/model/prerender_pref.h",
   "+ios/chrome/browser/push_notification/model",
   "+ios/chrome/browser/push_notification/ui_bundled/notifications_alert_presenter.h",
+  "+ios/chrome/browser/regional_capabilities/model",
+  "+ios/chrome/browser/safari_data_import/public",
   "+ios/chrome/browser/scoped_ui_blocker/ui_bundled",
   "+ios/chrome/browser/search_engine_choice/ui_bundled",
   "+ios/chrome/browser/search_engines/model",
-  "+ios/chrome/browser/regional_capabilities/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/supervised_user/model",
   "+ios/chrome/browser/sync/model",
@@ -51,8 +54,6 @@ include_rules = [
   "+ios/chrome/browser/web/model/annotations/annotations_util.h",
   "+ios/chrome/browser/web/model/features.h",
   "+ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h",
-  "+ios/chrome/browser/download/ui/auto_deletion",
-  "+ios/chrome/browser/download/coordinator/auto_deletion",
 ]
 
 specific_include_rules = {

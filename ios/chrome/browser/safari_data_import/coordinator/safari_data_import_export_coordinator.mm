@@ -7,6 +7,7 @@
 #import "base/check_op.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_child_coordinator_delegate.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_import_coordinator.h"
+#import "ios/chrome/browser/safari_data_import/public/metrics.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_export_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/public/provider/chrome/browser/safari_data_import/safari_data_import_api.h"
@@ -51,10 +52,14 @@
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  RecordActionOnSafariExportEducationScreen(
+      SafariDataImportExportEducationAction::kGoToSetting);
   ios::provider::OpenSettingsToExportDataFromSafari();
 }
 
 - (void)confirmationAlertSecondaryAction {
+  RecordActionOnSafariExportEducationScreen(
+      SafariDataImportExportEducationAction::kContinue);
   CHECK(!_importCoordinator);
   _importCoordinator = [[SafariDataImportImportCoordinator alloc]
       initWithBaseNavigationController:_navigationController
@@ -64,6 +69,8 @@
 }
 
 - (void)confirmationAlertDismissAction {
+  RecordActionOnSafariExportEducationScreen(
+      SafariDataImportExportEducationAction::kCancel);
   [self.delegate safariDataImportCoordinatorWillDismissWorkflow:self];
 }
 

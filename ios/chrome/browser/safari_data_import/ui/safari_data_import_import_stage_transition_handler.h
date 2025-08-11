@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_UI_SAFARI_DATA_IMPORT_IMPORT_STAGE_TRANSITION_HANDLER_H_
 #define IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_UI_SAFARI_DATA_IMPORT_IMPORT_STAGE_TRANSITION_HANDLER_H_
 
-enum class SafariDataImportStage;
-
 /// Consumer that updates the UI to reflect import stage transition.
 @protocol SafariDataImportImportStageTransitionHandler
 
