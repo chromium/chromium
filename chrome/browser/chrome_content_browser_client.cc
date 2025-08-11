@@ -49,6 +49,9 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/actor_keyed_service.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -6819,6 +6822,23 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
     const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+
+#if !BUILDFLAG(IS_ANDROID)
+  content::WebContents* web_contents = web_contents_getter.Run();
+  if (web_contents) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
+    const auto* tab_interface =
+        tabs::TabInterface::MaybeGetFromContents(web_contents);
+    auto* actor_service = actor::ActorKeyedService::Get(profile);
+    // If actor is active, bail out early to prevent it from launching external
+    // applications.
+    if (tab_interface && actor_service &&
+        actor_service->IsAnyTaskActingOnTab(*tab_interface)) {
+      return false;
+    }
+  }
+#endif  //! BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // External protocols are disabled for guests. An exception is made for the

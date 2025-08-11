@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <script>
+        function launchProtocol(url) {
+            const iframe = document.createElement('iframe');
+            iframe.src = url;
+
+            document.body.appendChild(iframe);
+        }
+        launchProtocol('mailto:someone@example.com');
+    </script>
+</body>
+</html>
