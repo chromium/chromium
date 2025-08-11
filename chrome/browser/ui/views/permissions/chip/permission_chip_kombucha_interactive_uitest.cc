@@ -60,6 +60,10 @@ class PermissionChipKombuchaInteractiveUITest : public InteractiveBrowserTest {
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
+  ui::ElementContext context() const {
+    return browser()->window()->GetElementContext();
+  }
+
   GURL GetURL() {
     return https_server()->GetURL("a.test", "/permissions/requests.html");
   }

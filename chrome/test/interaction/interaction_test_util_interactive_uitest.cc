@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/base/interaction/interaction_test_util.h"
+
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -16,7 +17,6 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
-#include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
@@ -47,7 +47,7 @@ class InteractionTestUtilInteractiveUitest : public InProcessBrowserTest {
   }
 
   ui::ElementContext GetContext() {
-    return BrowserElements::From(browser())->GetContext();
+    return browser()->window()->GetElementContext();
   }
 
   ui::test::InteractionTestUtil test_util_;

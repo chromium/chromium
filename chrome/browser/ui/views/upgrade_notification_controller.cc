@@ -9,29 +9,30 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/outdated_upgrade_bubble.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/views/interaction/element_tracker_views.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #endif
 
 UpgradeNotificationController::~UpgradeNotificationController() = default;
 
 void UpgradeNotificationController::OnOutdatedInstall() {
   Browser* const browser = browser_->GetBrowserForMigrationOnly();
-  ShowOutdatedUpgradeBubble(browser, browser, true);
+  ShowOutdatedUpgradeBubble(GetBrowserElementContext(), browser, true);
 }
 
 void UpgradeNotificationController::OnOutdatedInstallNoAutoUpdate() {
   Browser* const browser = browser_->GetBrowserForMigrationOnly();
-  ShowOutdatedUpgradeBubble(browser, browser, false);
+  ShowOutdatedUpgradeBubble(GetBrowserElementContext(), browser, false);
 }
 
 void UpgradeNotificationController::OnCriticalUpgradeInstalled() {
 #if BUILDFLAG(IS_WIN)
-  auto* const anchor_view = BrowserElementsViews::From(&*browser_)
-                                ->GetView(kToolbarAppMenuButtonElementId);
+  views::View* anchor_view =
+      views::ElementTrackerViews::GetInstance()->GetUniqueView(
+          kToolbarAppMenuButtonElementId, GetBrowserElementContext());
   if (!anchor_view) {
     return;
   }
@@ -45,8 +46,9 @@ void UpgradeNotificationController::OnCriticalUpgradeInstalled() {
 #if BUILDFLAG(IS_WIN)
 std::unique_ptr<CriticalNotificationBubbleView>
 UpgradeNotificationController::GetCriticalNotificationBubbleViewForTest() {
-  views::View* const anchor_view = BrowserElementsViews::From(&*browser_)
-                                       ->GetView(kToolbarActionViewElementId);
+  views::View* anchor_view =
+      views::ElementTrackerViews::GetInstance()->GetUniqueView(
+          kToolbarAppMenuButtonElementId, GetBrowserElementContext());
   return std::make_unique<CriticalNotificationBubbleView>(anchor_view);
 }
 #endif
@@ -55,4 +57,8 @@ UpgradeNotificationController::UpgradeNotificationController(
     BrowserWindowInterface* browser)
     : browser_(CHECK_DEREF(browser)) {
   upgrade_detector_observation_.Observe(UpgradeDetector::GetInstance());
+}
+
+ui::ElementContext UpgradeNotificationController::GetBrowserElementContext() {
+  return browser_->GetBrowserForMigrationOnly()->window()->GetElementContext();
 }

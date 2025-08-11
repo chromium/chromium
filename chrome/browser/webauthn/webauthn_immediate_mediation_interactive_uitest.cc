@@ -6,7 +6,6 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_pin_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/combined_selector_sheet_view.h"
 #include "chrome/browser/webauthn/enclave_authenticator_browsertest_base.h"
@@ -105,9 +104,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnImmediateMediationTest,
                        ImmediateMediationNotAllowedIncognito) {
   Browser* incognito_browser = CreateIncognitoBrowser();
   ui_test_utils::BrowserActivationWaiter(incognito_browser).WaitForActivation();
-  RunTestSequenceInContext(
-      BrowserElements::From(incognito_browser)->GetContext(),
-      GetNotAllowedSteps());
+  RunTestSequence(InContext(incognito_browser->window()->GetElementContext(),
+                            GetNotAllowedSteps()));
 }
 
 class WebAuthnImmediateMediationWithBootstrappedEnclaveTest

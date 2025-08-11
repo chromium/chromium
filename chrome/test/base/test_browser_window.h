@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/common/buildflags.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -83,6 +84,7 @@ class TestBrowserWindow : public BrowserWindow {
   ui::NativeTheme* GetNativeTheme() override;
   const ui::ThemeProvider* GetThemeProvider() const override;
   const ui::ColorProvider* GetColorProvider() const override;
+  ui::ElementContext GetElementContext() override;
   int GetTopControlsHeight() const override;
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
   std::vector<StatusBubble*> GetStatusBubbles() override;
@@ -270,6 +272,10 @@ class TestBrowserWindow : public BrowserWindow {
 
   bool IsClosed() const { return is_closed_; }
 
+  void set_element_context(ui::ElementContext element_context) {
+    element_context_ = element_context;
+  }
+
  protected:
   void DestroyBrowser() override {}
 
@@ -308,6 +314,7 @@ class TestBrowserWindow : public BrowserWindow {
   bool is_tab_strip_editable_ = true;
   bool is_tab_modal_popup_deprecated_ = false;
 
+  ui::ElementContext element_context_;
   base::OnceClosure close_callback_;
 };
 

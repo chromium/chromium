@@ -7,7 +7,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -126,15 +126,15 @@ IN_PROC_BROWSER_TEST_F(SettingsInteractiveUiTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsInteractionTestUtilTestId);
   util->LoadPage(cookie_setting_url);
-  const auto context = BrowserElements::From(browser())->GetContext();
   auto util2 = WebContentsInteractionTestUtil::ForNextTabInContext(
-      context, kWebContentsInteractionTestUtilTestId2);
+      browser()->window()->GetElementContext(),
+      kWebContentsInteractionTestUtilTestId2);
 
   auto sequence =
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(context)
+          .SetContext(browser()->window()->GetElementContext())
           // Click on 'Cookies and other site data'.
           .AddStep(WaitFor(cookies_link_row))
           .AddStep(Click(cookies_link_row))
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(ThemeSettingsInteractiveUiTest,
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(BrowserElements::From(browser())->GetContext())
+          .SetContext(browser()->window()->GetElementContext())
           // Verify the current theme is not set as default.
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetElementID(kWebContentsInteractionTestUtilTestId)

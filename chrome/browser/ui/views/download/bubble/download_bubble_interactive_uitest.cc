@@ -501,7 +501,8 @@ IN_PROC_BROWSER_TEST_F(
   auto tab_fullscreen_waiter = std::make_unique<FullscreenWaiter>(
       browser(), FullscreenWaiter::Expectation{.tab_fullscreen = true});
 
-  RunTestSequence(
+  RunTestSequenceInContext(
+      browser()->window()->GetElementContext(),
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId,
                           embedded_test_server()->GetURL("/empty.html")),

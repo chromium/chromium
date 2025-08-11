@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
@@ -116,7 +115,7 @@ class WebAppFrameToolbarInteractiveUITest
   }
 
   ui::ElementContext GetAppWindowElementContext() {
-    return BrowserElements::From(helper()->app_browser())->GetContext();
+    return helper()->app_browser()->window()->GetElementContext();
   }
 
  private:

@@ -106,6 +106,10 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::TearDownOnMainThread();
   }
 
+  ui::ElementContext context() const {
+    return browser()->window()->GetElementContext();
+  }
+
   GURL GetNotificationSettingsUrl() {
     return GURL("chrome://settings/content/notifications");
   }
@@ -453,19 +457,33 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
                        TestNotificationSettingsPrefs) {
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId,
-                          GURL("chrome://settings/content/notifications")),
-      WaitFor(kBlockButton), TestBlockStatePreferences(),
-      WaitFor(kLoudButton, ui::InteractionSequence::StepType::kHidden),
-      TestAskStatePreferences());
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+      browser(), kWebContentsElementId);
+
+  util->LoadPage(GURL("chrome://settings/content/notifications"));
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(WaitFor(kBlockButton))
+          .AddStep(TestBlockStatePreferences())
+          .AddStep(
+              WaitFor(kLoudButton, ui::InteractionSequence::StepType::kHidden))
+          .AddStep(TestAskStatePreferences())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
                        TestDefaultRadioGroupState) {
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetNotificationSettingsUrl()),
       WaitFor(kBlockButton),
       TestRadioGroupState(true, true, false, true, false));
@@ -473,8 +491,9 @@ IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
                        TestQuiteRadioGroupState) {
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId), SetPrefs(true, true, false),
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
+      SetPrefs(true, true, false),
       NavigateWebContents(kWebContentsElementId, GetNotificationSettingsUrl()),
       WaitFor(kBlockButton),
       TestRadioGroupState(true, true, true, false, false));
@@ -482,8 +501,9 @@ IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
                        TestLoudRadioGroupState) {
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId), SetPrefs(true, false, false),
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
+      SetPrefs(true, false, false),
       NavigateWebContents(kWebContentsElementId, GetNotificationSettingsUrl()),
       WaitFor(kBlockButton),
       TestRadioGroupState(true, true, false, false, true));
@@ -491,8 +511,9 @@ IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
                        TestBlockRadioGroupState) {
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId), SetPrefs(false, false, false),
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
+      SetPrefs(false, false, false),
       NavigateWebContents(kWebContentsElementId, GetNotificationSettingsUrl()),
       WaitFor(kBlockButton),
       TestRadioGroupState(false, false, false, false, false));
@@ -501,8 +522,8 @@ IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
 IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
                        TestNotificationLoudRadioGroupStateForMetrics) {
   base::HistogramTester histogram_tester;
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetNotificationSettingsUrl()),
       WaitFor(kLoudButton), TestClickLoud(), Do([&]() {
         histogram_tester.ExpectBucketCount(
@@ -514,8 +535,8 @@ IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
 IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
                        TestNotificationQuietRadioGroupStateForMetrics) {
   base::HistogramTester histogram_tester;
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetNotificationSettingsUrl()),
       WaitFor(kQuietButton), TestClickQuiet(), Do([&]() {
         histogram_tester.ExpectBucketCount(
@@ -527,8 +548,9 @@ IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
 IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
                        TestNotificationCPSSRadioGroupStateForMetrics) {
   base::HistogramTester histogram_tester;
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId), SetPrefs(true, false, false),
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
+      SetPrefs(true, false, false),
       NavigateWebContents(kWebContentsElementId, GetNotificationSettingsUrl()),
       WaitFor(kCpssButton), TestClickCPSS(), Do([&]() {
         histogram_tester.ExpectBucketCount(

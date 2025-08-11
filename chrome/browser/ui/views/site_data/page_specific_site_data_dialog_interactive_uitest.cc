@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
@@ -226,6 +225,9 @@ class PageSpecificSiteDataDialogInteractiveUiTest
   }
 
   const base::UserActionTester& user_actions() const { return *user_actions_; }
+  ui::ElementContext context() const {
+    return browser()->window()->GetElementContext();
+  }
 
  protected:
   virtual void SetUpFeatureList() { feature_list_.InitWithFeatures({}, {}); }
@@ -252,7 +254,8 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        FirstPartyAllowed) {
   CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
-  RunTestSequence(
+  RunTestSequenceInContext(
+      context(),
       NavigateAndOpenDialog(kPageSpecificSiteDataDialogFirstPartySection,
                             &observer),
       // Name the first row in the first-party section.
@@ -289,7 +292,8 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        ThirdPartyBlocked) {
   CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
-  RunTestSequence(
+  RunTestSequenceInContext(
+      context(),
       NavigateAndOpenDialog(kPageSpecificSiteDataDialogThirdPartySection,
                             &observer),
       // Name the third-party cookies row.
@@ -324,7 +328,8 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        OnlyPartitionedBlockedThirdPartyCookies) {
   CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
-  RunTestSequence(
+  RunTestSequenceInContext(
+      context(),
       NavigateAndOpenDialog(kPageSpecificSiteDataDialogThirdPartySection,
                             &observer),
       // Find the third party section and name the row with partitioned only
@@ -355,7 +360,8 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        MixedPartitionedBlockedThirdPartyCookies) {
   CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
-  RunTestSequence(
+  RunTestSequenceInContext(
+      context(),
       NavigateAndOpenDialog(kPageSpecificSiteDataDialogThirdPartySection,
                             &observer),
       // Find the third party section and name the row with mixed storage
@@ -479,7 +485,8 @@ IN_PROC_BROWSER_TEST_F(
   auto app_id = web_app::test::InstallDummyWebApp(
       browser()->profile(), GetDummyAppName(), GetDummyAppUrl());
 
-  RunTestSequence(
+  RunTestSequenceInContext(
+      context(),
       LaunchBrowserForWebAppInTabAndOpenDialog(app_id, kWebContentsElementId),
       // Name the first row in the Related Apps section.
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogRelatedAppsSection,
@@ -526,8 +533,7 @@ IN_PROC_BROWSER_TEST_F(
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAppWindowId);
 
   RunTestSequenceInContext(
-      BrowserElements::From(app_browser)->GetContext(),
-      InstrumentTab(kAppWindowId),
+      app_browser->window()->GetElementContext(), InstrumentTab(kAppWindowId),
       // Open the ... menu, web app info, cookies & site data, etc.
       PressButton(kToolbarAppMenuButtonElementId),
       WithView(kToolbarAppMenuButtonElementId,
@@ -651,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(
     MAYBE_AppNameIsDisplayedInsteadOfHostname) {
   Browser* iwa_browser = InstallAndLaunchIsolatedWebApp();
   RunTestSequenceInContext(
-      BrowserElements::From(iwa_browser)->GetContext(),
+      iwa_browser->window()->GetElementContext(),
       NavigateAndOpenDialog(iwa_browser,
                             kPageSpecificSiteDataDialogFirstPartySection),
       // Name the first row in the first-party section.
@@ -701,7 +707,8 @@ IN_PROC_BROWSER_TEST_F(
   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
       ->SetAllPrivacySandboxAttestedForTesting(true);
 
-  RunTestSequence(
+  RunTestSequenceInContext(
+      context(),
       NavigateAndOpenDialog(kPageSpecificSiteDataDialogFirstPartySection),
       // Name the first row in the first-party section.
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogFirstPartySection,

@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "chrome/common/chrome_switches.h"
@@ -251,7 +250,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ClickLanguageTab) {
   // If translate bubble changes to another context, the tests will have to be
   // modified to fix context handling, so best to put a sanity check here to
   // eliminate unexplained errors later.
-  ASSERT_EQ(BrowserElements::From(browser())->GetContext(),
+  ASSERT_EQ(browser()->window()->GetElementContext(),
             views::ElementTrackerViews::GetContextForView(translate_bubble));
 
   RunTestSequence(

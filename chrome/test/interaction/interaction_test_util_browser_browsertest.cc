@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -62,10 +62,9 @@ class InteractionTestUtilBrowserTest : public InteractiveBrowserTest {
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, GetBrowserFromContext) {
   Browser* const other_browser = CreateBrowser(browser()->profile());
   EXPECT_EQ(browser(), InteractionTestUtilBrowser::GetBrowserFromContext(
-                           BrowserElements::From(browser())->GetContext()));
-  EXPECT_EQ(other_browser,
-            InteractionTestUtilBrowser::GetBrowserFromContext(
-                BrowserElements::From(other_browser)->GetContext()));
+                           browser()->window()->GetElementContext()));
+  EXPECT_EQ(other_browser, InteractionTestUtilBrowser::GetBrowserFromContext(
+                               other_browser->window()->GetElementContext()));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, CompareScreenshot_View) {

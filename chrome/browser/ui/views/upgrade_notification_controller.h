@@ -19,6 +19,10 @@
 
 class BrowserWindowInterface;
 
+namespace ui {
+class ElementContext;
+}
+
 // Responsible for observing outdated install and critical upgrade notifications
 // from the UpgradeDetector and updating browser UI appropriately.
 class UpgradeNotificationController : public UpgradeObserver {
@@ -38,6 +42,8 @@ class UpgradeNotificationController : public UpgradeObserver {
   GetCriticalNotificationBubbleViewForTest();
 #endif
  private:
+  ui::ElementContext GetBrowserElementContext();
+
   const raw_ref<BrowserWindowInterface> browser_;
   base::ScopedObservation<UpgradeDetector, UpgradeObserver>
       upgrade_detector_observation_{this};

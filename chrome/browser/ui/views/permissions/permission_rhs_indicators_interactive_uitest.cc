@@ -83,6 +83,10 @@ class PermissionRHSIndicatorsInteractiveUITest : public InteractiveBrowserTest {
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
+  ui::ElementContext context() const {
+    return browser()->window()->GetElementContext();
+  }
+
   // Navigates a tab to `GetURL()` and opens PageInfo.
   auto NavigateAndOpenPageInfo() {
     return Steps(InstrumentTab(kWebContentsElementId),
@@ -111,8 +115,8 @@ class PermissionRHSIndicatorsInteractiveUITest : public InteractiveBrowserTest {
 // Tests that by default PageInfo has no visible permission.
 IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
                        PageInfoWithEmptyPermissionsTest) {
-  RunTestSequence(
-      NavigateAndOpenPageInfo(),
+  RunTestSequenceInContext(
+      context(), NavigateAndOpenPageInfo(),
       // There are no permissions in PageInfo as all of them have default state.
       CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
                         &PageInfoMainView::GetVisiblePermissionsCountForTesting,
@@ -124,8 +128,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
   // Set Camera permission to Allow so it becomes visible in PageInfo.
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_ALLOW);
 
-  RunTestSequence(
-      NavigateAndOpenPageInfo(),
+  RunTestSequenceInContext(
+      context(), NavigateAndOpenPageInfo(),
       CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
                         &PageInfoMainView::GetVisiblePermissionsCountForTesting,
                         1),
@@ -147,8 +151,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
   SetPermission(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                 CONTENT_SETTING_ALLOW);
 
-  RunTestSequence(
-      NavigateAndOpenPageInfo(),
+  RunTestSequenceInContext(
+      context(), NavigateAndOpenPageInfo(),
       CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
                         &PageInfoMainView::GetVisiblePermissionsCountForTesting,
                         1),
@@ -169,8 +173,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
 // prompt, and verifies that a new entry for Notifications appeared in PageInfo.
 IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
                        NotificationsPermissionRequestTest) {
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
       ExecuteJs(kWebContentsElementId, "requestNotification"),
@@ -193,8 +197,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
                        CameraPermissionRequestTest) {
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
       ExecuteJs(kWebContentsElementId, "requestCamera"),
@@ -217,8 +221,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
                        CameraActivityIndicatorTest) {
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
       ExecuteJs(kWebContentsElementId, "requestCamera"),
@@ -237,8 +241,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
                        MicrophoneActivityIndicatorTest) {
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
       ExecuteJs(kWebContentsElementId, "requestMicrophone"),
@@ -257,8 +261,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
                        CameraAndMicrophoneActivityIndicatorTest) {
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
       ExecuteJs(kWebContentsElementId, "requestCameraAndMicrophone"),

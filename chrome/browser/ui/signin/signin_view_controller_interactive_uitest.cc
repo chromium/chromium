@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
@@ -46,6 +45,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -175,9 +175,12 @@ class SignInViewControllerInteractiveBrowserTest
 
   void SendCustomEvent(ui::ElementIdentifier element,
                        ui::CustomElementEventType event_type) {
-    const bool result =
-        BrowserElements::From(browser())->NotifyEvent(element, event_type);
-    CHECK(result);
+    auto* const target =
+        ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+            element, browser()->window()->GetElementContext());
+    ASSERT_NE(nullptr, target);
+    ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(target,
+                                                                  event_type);
   }
 };
 

@@ -10,7 +10,6 @@
 #include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -122,10 +121,10 @@ IN_PROC_BROWSER_TEST_F(TabAlertControllerInteractiveUiTest,
       ClickMockGlicElement(kMockGlicContextAccessButton),
       WaitForState(kTab1AlertState,
                    std::make_optional(tabs::TabAlert::GLIC_ACCESSING)),
-      InContext(BrowserElements::From(browser2)->GetContext(),
+      InContext(browser2->window()->GetElementContext(),
                 ActivateSurface(kBrowserViewElementId)),
       WaitForState(kTab1AlertState, std::nullopt),
-      InContext(BrowserElements::From(browser2)->GetContext(),
+      InContext(browser2->window()->GetElementContext(),
                 SelectTab(kTabStripElementId, 0)),
       WaitForState(kTab2AlertState,
                    std::make_optional(tabs::TabAlert::GLIC_ACCESSING)));

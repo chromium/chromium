@@ -292,6 +292,10 @@ class PageInfoBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
+  ui::ElementContext context() const {
+    return browser()->window()->GetElementContext();
+  }
+
   // Navigates a tab to `GetURL()` and opens PageInfo.
   auto NavigateAndOpenPageInfo() {
     return Steps(InstrumentTab(kWebContentsElementId),
@@ -388,8 +392,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
   // Set Notifications permission to Allow so it becomes visible in PageInfo.
   SetPermission(ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW);
 
-  RunTestSequence(
-      NavigateAndOpenPageInfo(),
+  RunTestSequenceInContext(
+      context(), NavigateAndOpenPageInfo(),
       CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
                         &PageInfoMainView::GetVisiblePermissionsCountForTesting,
                         1),
@@ -436,8 +440,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
   host_content_settings_map()->SetDefaultContentSetting(
       ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_BLOCK);
 
-  RunTestSequence(
-      NavigateAndOpenPageInfo(),
+  RunTestSequenceInContext(
+      context(), NavigateAndOpenPageInfo(),
       CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
                         &PageInfoMainView::GetVisiblePermissionsCountForTesting,
                         1),
@@ -494,8 +498,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
   // Set up a broad content setting exception for IMAGES.
   SetBroadException(ContentSettingsType::IMAGES, CONTENT_SETTING_BLOCK);
 
-  RunTestSequence(
-      NavigateAndOpenPageInfo(),
+  RunTestSequenceInContext(
+      context(), NavigateAndOpenPageInfo(),
       CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
                         &PageInfoMainView::GetVisiblePermissionsCountForTesting,
                         1),
@@ -544,8 +548,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
   host_content_settings_map()->SetDefaultContentSetting(
       ContentSettingsType::IMAGES, CONTENT_SETTING_BLOCK);
 
-  RunTestSequence(
-      NavigateAndOpenPageInfo(),
+  RunTestSequenceInContext(
+      context(), NavigateAndOpenPageInfo(),
       CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
                         &PageInfoMainView::GetVisiblePermissionsCountForTesting,
                         1),
@@ -597,32 +601,33 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
   GrantSmartCardReaderPermission("Reader 1");
   GrantSmartCardReaderPermission("Reader 2");
 
-  RunTestSequence(NavigateAndOpenPageInfo(),
-                  // A view with permissions in PageInfo.
-                  WaitForShow(PageInfoMainView::kPermissionsElementId),
-                  // Set id to the first child of `kPermissionsElementId` -
-                  // should be first reader grant.
-                  NameChildView(PageInfoMainView::kPermissionsElementId,
-                                kFirstPermissionRow, 0u),
-                  // Verify the first row is the Reader 1 grant.
-                  CheckViewProperty(kFirstPermissionRow,
-                                    &ChosenObjectView::GetObjectNameForTesting,
-                                    u"Reader 1"),
-                  // Set id to the second child of `kPermissionsElementId` -
-                  // should be the second reader grant.
-                  NameChildView(PageInfoMainView::kPermissionsElementId,
-                                kSecondPermissionRow, 1u),
-                  // Verify the second row is the Reader 2 grant.
-                  CheckViewProperty(kSecondPermissionRow,
-                                    &ChosenObjectView::GetObjectNameForTesting,
-                                    u"Reader 2"),
-                  // Click the button deleting grant.
-                  DeleteGrant(kFirstPermissionRow),
-                  // Row with Reader 1 should disappear.
-                  WaitForHide(kFirstPermissionRow),
-                  // Permissions should align with what is visible.
-                  EnsureSmartCardReaderGrantStatus("Reader 1", false),
-                  EnsureSmartCardReaderGrantStatus("Reader 2", true));
+  RunTestSequenceInContext(
+      context(), NavigateAndOpenPageInfo(),
+      // A view with permissions in PageInfo.
+      WaitForShow(PageInfoMainView::kPermissionsElementId),
+      // Set id to the first child of `kPermissionsElementId` -
+      // should be first reader grant.
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kFirstPermissionRow, 0u),
+      // Verify the first row is the Reader 1 grant.
+      CheckViewProperty(kFirstPermissionRow,
+                        &ChosenObjectView::GetObjectNameForTesting,
+                        u"Reader 1"),
+      // Set id to the second child of `kPermissionsElementId` -
+      // should be the second reader grant.
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kSecondPermissionRow, 1u),
+      // Verify the second row is the Reader 2 grant.
+      CheckViewProperty(kSecondPermissionRow,
+                        &ChosenObjectView::GetObjectNameForTesting,
+                        u"Reader 2"),
+      // Click the button deleting grant.
+      DeleteGrant(kFirstPermissionRow),
+      // Row with Reader 1 should disappear.
+      WaitForHide(kFirstPermissionRow),
+      // Permissions should align with what is visible.
+      EnsureSmartCardReaderGrantStatus("Reader 1", false),
+      EnsureSmartCardReaderGrantStatus("Reader 2", true));
 
   ResetSmartCardReaderGrants();
 }
@@ -646,8 +651,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
   SetPermission(ContentSettingsType::CLIPBOARD_READ_WRITE,
                 CONTENT_SETTING_ALLOW);
 
-  RunTestSequence(
-      NavigateAndOpenPageInfo(),
+  RunTestSequenceInContext(
+      context(), NavigateAndOpenPageInfo(),
       CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
                         &PageInfoMainView::GetVisiblePermissionsCountForTesting,
                         1),

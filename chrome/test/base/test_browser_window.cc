@@ -16,6 +16,7 @@
 #include "components/sharing_message/sharing_dialog_data.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
@@ -113,6 +114,10 @@ const ui::ThemeProvider* TestBrowserWindow::GetThemeProvider() const {
 const ui::ColorProvider* TestBrowserWindow::GetColorProvider() const {
   return ui::ColorProviderManager::Get().GetColorProviderFor(
       ui::ColorProviderKey());
+}
+
+ui::ElementContext TestBrowserWindow::GetElementContext() {
+  return element_context_;
 }
 
 int TestBrowserWindow::GetTopControlsHeight() const {

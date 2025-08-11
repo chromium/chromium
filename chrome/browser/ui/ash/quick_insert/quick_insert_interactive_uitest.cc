@@ -23,8 +23,7 @@
 #include "base/time/time_override.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
@@ -166,12 +165,6 @@ class QuickInsertInteractiveUiTest : public InteractiveAshTest {
           return false;
         }));
   }
-
-  ui::ElementContext GetLastActiveContext() {
-    return BrowserElements::From(
-               GetLastActiveBrowserWindowInterfaceWithAnyProfile())
-        ->GetContext();
-  }
 };
 
 // Searches for 'thumbs up', checks the top emoji result is '👍', and inserts it
@@ -179,7 +172,8 @@ class QuickInsertInteractiveUiTest : public InteractiveAshTest {
 IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertEmoji) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
-  const ui::ElementContext browser_context = GetLastActiveContext();
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
   constexpr std::string_view kFirstEmojiResultName = "FirstEmojiResult";
   constexpr std::u16string_view kExpectedFirstEmoji = u"👍";
   views::Textfield* quick_insert_search_field = nullptr;
@@ -213,7 +207,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertEmoji) {
 IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertSymbol) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
-  const ui::ElementContext browser_context = GetLastActiveContext();
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
   constexpr std::string_view kFirstSymbolResultName = "FirstSymbolResult";
   constexpr std::u16string_view kExpectedFirstSymbol = u"α";
   views::Textfield* quick_insert_search_field = nullptr;
@@ -248,7 +243,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertSymbol) {
 IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertEmoticon) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
-  const ui::ElementContext browser_context = GetLastActiveContext();
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
   constexpr std::string_view kFirstEmoticonResultName = "FirstEmoticonResult";
   constexpr std::u16string_view kExpectedFirstEmoticon = u"ಠωಠ";
   views::Textfield* quick_insert_search_field = nullptr;
@@ -282,7 +278,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
                        SearchAndSelectMoreEmojis) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
-  const ui::ElementContext browser_context = GetLastActiveContext();
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
   views::Textfield* quick_insert_search_field = nullptr;
 
   RunTestSequence(
@@ -318,7 +315,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsDisabledInteractiveUiTest,
                        SearchGifs) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
-  const ui::ElementContext browser_context = GetLastActiveContext();
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
   views::Textfield* quick_insert_search_field = nullptr;
 
   RunTestSequence(
@@ -426,7 +424,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsEnabledInteractiveUiTest,
   // inserted.
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
-  const ui::ElementContext browser_context = GetLastActiveContext();
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
   views::Textfield* quick_insert_search_field = nullptr;
   constexpr std::string_view kGifName = "Gif";
 
@@ -463,7 +462,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsEnabledInteractiveUiTest,
   // inserted.
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
-  const ui::ElementContext browser_context = GetLastActiveContext();
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
   views::Textfield* quick_insert_search_field = nullptr;
   constexpr std::string_view kGifName = "Gif";
 
@@ -497,7 +497,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsEnabledInteractiveUiTest,
   // inserted.
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
-  const ui::ElementContext browser_context = GetLastActiveContext();
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
   views::Textfield* quick_insert_search_field = nullptr;
 
   RunTestSequence(
@@ -531,7 +532,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchBrowsingHistory) {
   AddUrlToHistory(GetActiveUserProfile(), GURL("https://foo.com/history"));
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
-  const ui::ElementContext browser_context = GetLastActiveContext();
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
   constexpr std::string_view kHistoryResultName = "HistoryResult";
   views::Textfield* quick_insert_search_field = nullptr;
 
@@ -563,7 +565,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
   AddUrlToHistory(GetActiveUserProfile(), GURL("https://foo.com/history"));
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
-  const ui::ElementContext browser_context = GetLastActiveContext();
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
   constexpr std::string_view kHistoryCategoryResultName =
       "HistoryCategoryResult";
   constexpr std::string_view kHistoryResultName = "HistoryResult";
@@ -608,7 +611,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchLocalFile) {
   // inserted.
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
-  const ui::ElementContext browser_context = GetLastActiveContext();
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
   constexpr std::string_view kFileResultName = "FileResult";
   views::Textfield* quick_insert_search_field = nullptr;
 
@@ -638,7 +642,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchLocalFileCategory) {
   // inserted.
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
-  const ui::ElementContext browser_context = GetLastActiveContext();
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
   constexpr std::string_view kFileCategoryResultName = "FileCategoryResult";
   constexpr std::string_view kFileResultName = "FileResult";
   views::Textfield* quick_insert_search_field = nullptr;
@@ -678,7 +683,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchLocalFileCategory) {
 IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertDate) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
-  const ui::ElementContext browser_context = GetLastActiveContext();
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
   constexpr std::string_view kDateResultName = "DateResult";
   constexpr std::u16string_view kExpectedDate = u"Feb 19";
   views::Textfield* quick_insert_search_field = nullptr;
@@ -721,7 +727,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
                        DISABLED_SearchAndInsertMath) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
-  const ui::ElementContext browser_context = GetLastActiveContext();
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
   constexpr std::string_view kMathResultName = "MathResult";
   constexpr std::u16string_view kExpectedResult = u"2";
   views::Textfield* quick_insert_search_field = nullptr;
@@ -756,7 +763,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
   ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test3.png"));
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
-  const ui::ElementContext browser_context = GetLastActiveContext();
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
   constexpr std::string_view kFile1Name = "File1";
   constexpr std::string_view kFile2Name = "File2";
   constexpr std::string_view kFile3Name = "File3";
@@ -795,7 +803,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
                        KeyboardNavigationInZeroState) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
-  const ui::ElementContext browser_context = GetLastActiveContext();
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
   constexpr std::string_view kItem1Name = "Item1";
   constexpr std::string_view kItem2Name = "Item2";
   constexpr std::string_view kEmoji1Name = "Emoji1";

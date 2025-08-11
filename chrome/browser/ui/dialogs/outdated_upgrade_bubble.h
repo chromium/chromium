@@ -9,12 +9,14 @@ namespace content {
 class PageNavigator;
 }
 
-class BrowserWindowInterface;
+namespace ui {
+class ElementContext;
+}
 
 // OutdatedUpgradeBubbleView warns the user that an upgrade is long overdue.
 // It is intended to be used as the content of a bubble anchored off of the
 // Chrome toolbar.
-void ShowOutdatedUpgradeBubble(BrowserWindowInterface* browser,
+void ShowOutdatedUpgradeBubble(ui::ElementContext element_context,
                                content::PageNavigator* page_navigator,
                                bool auto_update_enabled);
 

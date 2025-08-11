@@ -18,7 +18,6 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/test/base/test_switches.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/test/browser_test.h"
@@ -98,7 +97,7 @@ class InteractiveBrowserTestBrowsertest : public InteractiveBrowserTest {
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, DumpElements) {
   auto* const incog = CreateIncognitoBrowser();
   RunTestSequence(InstrumentTab(kWebContentsId),
-                  InContext(BrowserElements::From(incog)->GetContext(),
+                  InContext(incog->window()->GetElementContext(),
                             PressButton(kToolbarAppMenuButtonElementId)),
                   DumpElements());
 }
@@ -525,13 +524,13 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
       // Instrument the next tab in any browser, then insert the tab and verify
       // it's there.
       InstrumentNextTab(kIncognito1Id, AnyBrowser()),
-      NameView(
-          kIncognitoNtbName, base::BindLambdaForTesting([incognito_browser]() {
-            return AsView(
-                ui::ElementTracker::GetElementTracker()->GetUniqueElement(
-                    kNewTabButtonElementId,
-                    BrowserElements::From(incognito_browser)->GetContext()));
-          })),
+      NameView(kIncognitoNtbName,
+               base::BindLambdaForTesting([incognito_browser]() {
+                 return AsView(
+                     ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                         kNewTabButtonElementId,
+                         incognito_browser->window()->GetElementContext()));
+               })),
       PressButton(kIncognitoNtbName),
       InAnyContext(verify_is_at_tab_index(incognito_browser, kIncognito1Id, 1)),
 
@@ -1266,5 +1265,5 @@ IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestDialogBrowsertest,
           CheckElement(
               InteractiveBrowserTestDialog::kElementId,
               [](ui::TrackedElement* el) { return el->context(); },
-              GetContext())));
+              browser()->window()->GetElementContext())));
 }

@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
@@ -957,8 +956,7 @@ void TabSearchPageHandler::StartTabGroupTutorial() {
                              : nullptr;
   CHECK(tutorial_service);
 
-  const ui::ElementContext context =
-      BrowserElements::From(browser_)->GetContext();
+  const ui::ElementContext context = browser_->window()->GetElementContext();
   CHECK(context);
 
   user_education::TutorialIdentifier tutorial_id = kTabGroupTutorialId;

@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_interactive_test_mixin.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
@@ -230,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
   RunTestSequence(
       InContext(
-          BrowserElements::From(GetBrowser(1))->GetContext(),
+          GetBrowser(1)->window()->GetElementContext(),
           AddInstrumentedTab(kFirstTab, GURL(chrome::kChromeUINewTabURL), 1),
           WaitForWebContentsReady(kFirstTab),
           AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUINewTabURL), 2),

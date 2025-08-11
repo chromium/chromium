@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
@@ -186,7 +185,7 @@ IN_PROC_BROWSER_TEST_P(FooterInteractiveTest, FooterHidesInGuestProfile) {
 
   RunTestSequenceInContext(
       // Run the following steps with the guest browser as the default context.
-      BrowserElements::From(guest_browser)->GetContext(),
+      guest_browser->window()->GetElementContext(),
       // Open NTP in guest profile.
       AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
       // Ensure footer is not present.
@@ -202,7 +201,7 @@ IN_PROC_BROWSER_TEST_P(FooterInteractiveTest, FooterHidesInIncognito) {
   RunTestSequenceInContext(
       // Run the following steps with the incognito browser as the default
       // context.
-      BrowserElements::From(incognito_browser)->GetContext(),
+      incognito_browser->window()->GetElementContext(),
       // Open NTP in incognito window.
       AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
       // Ensure footer is not present.
@@ -461,7 +460,7 @@ IN_PROC_BROWSER_TEST_P(FooterEnterpriseInteractiveTest,
   Browser* guest_browser = CreateManagedGuestBrowser();
   RunTestSequenceInContext(
       // Run the following steps with the guest browser as the default context.
-      BrowserElements::From(guest_browser)->GetContext(),
+      guest_browser->window()->GetElementContext(),
       // Open NTP in guest profile.
       AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
       // Ensure footer shows.
@@ -474,7 +473,7 @@ IN_PROC_BROWSER_TEST_P(FooterEnterpriseInteractiveTest,
   RunTestSequenceInContext(
       // Run the following steps with the incognito browser as the default
       // context.
-      BrowserElements::From(incognito_browser)->GetContext(),
+      incognito_browser->window()->GetElementContext(),
       // Open NTP in incognito window.
       AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
       // Ensure footer shows.

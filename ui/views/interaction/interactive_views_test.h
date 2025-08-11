@@ -442,7 +442,6 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   // the mouse functions.
   void SetContextWidget(Widget* context_widget);
   Widget* context_widget() { return context_widget_.get(); }
-  ui::ElementContext GetContext() const;
 
  protected:
   explicit InteractiveViewsTestApi(
@@ -541,7 +540,9 @@ template <typename... Args>
   requires(sizeof...(Args) > 0 &&
            (ui::test::internal::IsValueOrRvalue<Args> && ...))
 bool InteractiveViewsTestApi::RunTestSequence(Args&&... steps) {
-  return RunTestSequenceInContext(GetContext(), std::forward<Args>(steps)...);
+  return RunTestSequenceInContext(
+      ElementTrackerViews::GetContextForWidget(context_widget()),
+      std::forward<Args>(steps)...);
 }
 
 // static

@@ -11,10 +11,8 @@
 #include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -331,7 +329,7 @@ Browser* FindBrowserWithGroup(tab_groups::TabGroupId group, Profile* profile) {
 
 Browser* FindBrowserWithUiElementContext(ui::ElementContext context) {
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (BrowserElements::From(browser)->GetContext() == context) {
+    if (browser->window()->GetElementContext() == context) {
       return browser;
     }
   }

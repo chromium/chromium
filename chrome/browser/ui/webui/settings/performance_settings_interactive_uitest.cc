@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/performance_controls/test_support/battery_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_interactive_test_mixin.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -197,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsCrosInteractiveTest,
   ASSERT_NE(browser, nullptr);
 
   RunTestSequence(
-      InContext(BrowserElements::From(browser)->GetContext(),
+      InContext(browser->window()->GetElementContext(),
                 InstrumentTab(kPerformanceSettingsPage)),
       WaitForElementToRender(kPerformanceSettingsPage,
                              kPerformanceFeedbackButton),
@@ -342,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(MemorySettingsCrosInteractiveTest,
   ASSERT_NE(browser, nullptr);
 
   RunTestSequence(
-      InContext(BrowserElements::From(browser)->GetContext(),
+      InContext(browser->window()->GetElementContext(),
                 InstrumentTab(kPerformanceSettingsPage)),
       WaitForElementToRender(kPerformanceSettingsPage,
                              kMemorySaverFeedbackButton),
@@ -641,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
   ASSERT_NE(browser, nullptr);
 
   RunTestSequence(
-      InContext(BrowserElements::From(browser)->GetContext(),
+      InContext(browser->window()->GetElementContext(),
                 InstrumentTab(kPerformanceSettingsPage)),
       WaitForElementToRender(kPerformanceSettingsPage, battery_saver_link_row),
       InstrumentNextTab(kOsSettingsElementId, AnyBrowser()),
@@ -664,7 +663,7 @@ IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
   ASSERT_NE(browser, nullptr);
 
   RunTestSequence(
-      InContext(BrowserElements::From(browser)->GetContext(),
+      InContext(browser->window()->GetElementContext(),
                 InstrumentTab(kPerformanceSettingsPage)),
       WaitForElementToRender(kPerformanceSettingsPage,
                              kBatterySaverFeedbackButton),

@@ -15,7 +15,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 
-// Provides Views-specific extensions to `BrowserElements` so it can
+// Provides Views-specific extensions to `BrowserElementProvider` so it can
 // provide a context, elements, and Views.
 class BrowserElementsViews : public BrowserElements {
  public:

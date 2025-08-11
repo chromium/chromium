@@ -28,7 +28,6 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
@@ -501,7 +500,7 @@ class BrowserFeaturePromoController2xTestBase
     EXPECT_TRUE(promo_handle.is_valid());
     EXPECT_EQ(FeaturePromoStatus::kContinued,
               controller_->GetPromoStatus(*feature));
-    EXPECT_EQ(BrowserElements::From(browser())->GetContext(),
+    EXPECT_EQ(browser()->window()->GetElementContext(),
               context->GetElementContext());
     promo_handle.Release();
     EXPECT_EQ(FeaturePromoStatus::kNotRunning,
@@ -575,7 +574,7 @@ class BrowserFeaturePromoController2xTest
     // Ensure that tests start after the grace period. The grace period itself
     // will be tested in the policy tests.
     ResetSessionDataImpl(kMoreThanGracePeriod, base::TimeDelta(),
-                         BrowserView::GetBrowserViewForBrowser(browser()));
+                         browser()->window()->AsBrowserView());
   }
 
   void TimeOutQueuedPromo() {

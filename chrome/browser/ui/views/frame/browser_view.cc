@@ -785,7 +785,7 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
     // TODO(crbug.com/40102629): Make PWAs set the visibility of the ToolbarView
     // based on whether it is visible instead of setting the height to 0px. This
     // will enable BrowserViewLayout to hide the contents separator on its own
-    // using the same logic used by normal BrowserElementsViews.
+    // using the same logic used by normal BrowserViews.
     // The separator should not be shown when in split view.
     return !browser_view_->browser()->app_controller() && !IsActiveTabSplit();
   }

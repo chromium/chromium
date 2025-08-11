@@ -12,10 +12,10 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
-#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
@@ -86,8 +86,10 @@ IN_PROC_BROWSER_TEST_F(FeatureFirstRunDialogHelperBrowserTest,
   EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(expected_skia),
                                         gfx::Image(banner_view->GetImage())));
 
-  auto* actual_content_view = BrowserElementsViews::From(browser())->GetView(
-      kFeatureFirstRunDialogContentViewElementId);
+  auto* actual_content_view =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kFeatureFirstRunDialogContentViewElementId,
+          browser()->window()->GetElementContext());
   EXPECT_EQ(expected_content_view, actual_content_view);
 }
 

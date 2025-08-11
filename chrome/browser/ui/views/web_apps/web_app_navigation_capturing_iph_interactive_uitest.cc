@@ -137,7 +137,9 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
   auto OpenApp(const webapps::AppId& app_id) {
     auto steps =
         Steps(InstrumentNextTab(kAppPageId, AnyBrowser()), Do([this, app_id]() {
-                web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+                web_app::LaunchWebAppBrowser(browser()->profile(), app_id)
+                    ->window()
+                    ->GetElementContext();
               }),
               InAnyContext(WaitForShow(kAppPageId)));
     AddDescriptionPrefix(steps, base::StrCat({"OpenApp( ", app_id, " )"}));

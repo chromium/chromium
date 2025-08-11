@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
 #include "chrome/test/base/chromeos/crosier/aura_window_title_observer.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -215,7 +214,7 @@ ui::ElementContext InteractiveAshTest::FindSystemWebApp(
   CHECK(profile);
   Browser* browser = FindSystemWebAppBrowser(profile, type);
   CHECK(browser);
-  return BrowserElements::From(browser)->GetContext();
+  return browser->window()->GetElementContext();
 }
 
 void InteractiveAshTest::CloseSystemWebApp(ash::SystemWebAppType type) {
