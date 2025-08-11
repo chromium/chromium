@@ -25,6 +25,9 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger;
+import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.Event;
+import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.FlowVariant;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignOutCallback;
@@ -392,6 +395,8 @@ public class FullscreenSigninMediator
         // This is needed to get metrics/crash reports from the sign-in flow itself.
         mDelegate.acceptTermsOfService(mAllowMetricsAndCrashUploading);
         mDelegate.recordUserSignInHistograms(getSigninPromoAction());
+        SigninFlowTimestampsLogger signinTimestampsLogger =
+                SigninFlowTimestampsLogger.startLogging(FlowVariant.FULLSCREEN);
         // If the user signs into an account on the FRE, goes to the next page and presses
         // back to come back to the welcome screen, then there will already be an account signed in.
         @Nullable CoreAccountInfo signedInAccount =
@@ -416,6 +421,7 @@ public class FullscreenSigninMediator
                 new SignInCallback() {
                     @Override
                     public void onSignInComplete() {
+                        signinTimestampsLogger.recordTimestamp(Event.SIGNIN_COMPLETED);
                         if (mDestroyed) {
                             // FirstRunActivity was destroyed while we were waiting for sign-in.
                             return;
@@ -425,6 +431,7 @@ public class FullscreenSigninMediator
 
                     @Override
                     public void onSignInAborted() {
+                        signinTimestampsLogger.recordTimestamp(Event.SIGNIN_ABORTED);
                         // TODO(crbug.com/40790332): For now we enable the buttons again to not
                         // block the
                         // users from continuing to the next page. Should show a dialog with the
@@ -446,11 +453,16 @@ public class FullscreenSigninMediator
                 // If there already exists another signed-in account, first sign-out and then
                 // sign-in with the selected account.
                 signOutThenSignInWithSelectedAccount(
-                        mSelectedAccount, signinManager, accessPoint, signInCallback);
+                        mSelectedAccount,
+                        signinManager,
+                        accessPoint,
+                        signinTimestampsLogger,
+                        signInCallback);
             } else {
                 FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                         mSelectedAccount,
                         signinManager,
+                        signinTimestampsLogger,
                         accessPoint,
                         signInCallback,
                         mContext,
@@ -463,12 +475,14 @@ public class FullscreenSigninMediator
             CoreAccountInfo selectedAccount,
             SigninManager signinManager,
             @SigninAccessPoint int accessPoint,
+            SigninFlowTimestampsLogger signinTimestampsLogger,
             @Nullable SignInCallback signInCallback) {
         SignOutCallback signOutCallback =
                 () ->
                         FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                                 selectedAccount,
                                 signinManager,
+                                signinTimestampsLogger,
                                 accessPoint,
                                 signInCallback,
                                 mContext,

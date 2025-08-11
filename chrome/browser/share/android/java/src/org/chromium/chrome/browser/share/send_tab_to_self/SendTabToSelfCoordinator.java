@@ -132,6 +132,7 @@ public class SendTabToSelfCoordinator {
         public void onSignInComplete(
                 CoreAccountInfo accountInfo,
                 AccountPickerDelegate.SigninStateController controller) {
+            controller.onSigninComplete();
             mOnSignInCompleteCallback.run();
         }
     }

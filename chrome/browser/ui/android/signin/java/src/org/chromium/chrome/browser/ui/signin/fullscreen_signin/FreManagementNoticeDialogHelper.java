@@ -12,6 +12,8 @@ import androidx.annotation.IntDef;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger;
+import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.Event;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.ui.signin.ConfirmManagedSyncDataDialogCoordinator;
@@ -87,6 +89,7 @@ final class FreManagementNoticeDialogHelper {
     static void checkAccountManagementAndSignIn(
             CoreAccountInfo coreAccountInfo,
             SigninManager signinManager,
+            SigninFlowTimestampsLogger signinFlowLogger,
             @SigninAccessPoint int accessPoint,
             @Nullable SignInCallback callback,
             Context context,
@@ -122,6 +125,7 @@ final class FreManagementNoticeDialogHelper {
                             isAccountManaged,
                             coreAccountInfo,
                             signinManager,
+                            signinFlowLogger,
                             accessPoint,
                             callback,
                             context,
@@ -134,11 +138,13 @@ final class FreManagementNoticeDialogHelper {
             Boolean isAccountManaged,
             CoreAccountInfo coreAccountInfo,
             SigninManager signinManager,
+            SigninFlowTimestampsLogger signinFlowLogger,
             @SigninAccessPoint int accessPoint,
             @Nullable SignInCallback callback,
             Context context,
             ModalDialogManager modalDialogManager,
             long startTimeMillis) {
+        signinFlowLogger.recordTimestamp(Event.MANAGEMENT_STATUS_LOADED);
         if (!isAccountManaged) {
             SignInCallback wrappedCallback =
                     new WrappedSigninCallback(callback) {
@@ -183,6 +189,7 @@ final class FreManagementNoticeDialogHelper {
                 new ConfirmManagedSyncDataDialogCoordinator.Listener() {
                     @Override
                     public void onConfirm() {
+                        signinFlowLogger.onManagementNoticeAccepted();
                         signinManager.setUserAcceptedAccountManagement(true);
                         recordFREEvent(FRESigninEvents.SIGNING_IN_MANAGED);
                         signinManager.signin(coreAccountInfo, accessPoint, wrappedCallback);
@@ -200,6 +207,7 @@ final class FreManagementNoticeDialogHelper {
                 modalDialogManager,
                 listener,
                 signinManager.extractDomainName(coreAccountInfo.getEmail()));
+        signinFlowLogger.onManagementNoticeShown();
     }
 
     private static void recordFREEvent(@FRESigninEvents int event) {

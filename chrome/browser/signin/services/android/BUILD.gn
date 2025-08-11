@@ -20,6 +20,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/signin/services/IdentityServicesProvider.java",
     "java/src/org/chromium/chrome/browser/signin/services/ProfileDataCache.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninChecker.java",
+    "java/src/org/chromium/chrome/browser/signin/services/SigninFlowTimestampsLogger.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninManager.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtils.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninPreferencesManager.java",
@@ -96,6 +97,7 @@ android_library("unit_device_javatests") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.signin.services"
   sources = [
+    "java/src/org/chromium/chrome/browser/signin/services/SigninFlowTimestampsLoggerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/ProfileDataCacheUnitTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/WebSigninBridgeTest.java",
   ]
@@ -103,6 +105,7 @@ robolectric_library("junit") {
     ":java",
     ":java_resources",
     "//base:base_java_test_support",
+    "//base:base_java_test_support_uncommon",
     "//base:base_junit_test_support",
     "//base:callback_java",
     "//chrome/android:chrome_app_java_resources",

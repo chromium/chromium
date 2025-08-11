@@ -104,6 +104,7 @@ public class WebSigninAccountPickerDelegateTest {
 
         mWebSigninCallbackCaptor.getValue().onResult(WebSigninTrackerResult.SUCCESS);
 
+        verify(mSigninStateControllerMock).onSigninComplete();
         verify(mTabMock).loadUrl(mLoadUrlParamsCaptor.capture());
         LoadUrlParams loadUrlParams = mLoadUrlParamsCaptor.getValue();
         Assert.assertEquals("Continue url does not match!", CONTINUE_URL, loadUrlParams.getUrl());

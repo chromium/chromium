@@ -145,6 +145,9 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
                         .expectIntRecord(
                                 "Signin.AccountConsistencyPromoAction.DismissedButton",
                                 mSigninAccessPoint)
+                        .expectNoRecords(
+                                "Signin.SignIn.Timestamps.Fullscreen.ManagementStatusLoaded")
+                        .expectNoRecords("Signin.SignIn.Timestamps.Fullscreen.SigninCompleted")
                         .build();
         HistogramWatcher accountStartedHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -182,6 +185,9 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
                         .expectIntRecord(
                                 "Signin.AccountConsistencyPromoAction.SignedInWithDefaultAccount",
                                 mSigninAccessPoint)
+                        .expectAnyRecord(
+                                "Signin.SignIn.Timestamps.Fullscreen.ManagementStatusLoaded")
+                        .expectAnyRecord("Signin.SignIn.Timestamps.Fullscreen.SigninCompleted")
                         .build();
         HistogramWatcher accountStartedHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -287,6 +293,9 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord("Signin.Timestamps.Android.Fullscreen.NativeInitialized")
                         .expectAnyRecord("Signin.Timestamps.Android.Fullscreen.LoadCompleted")
+                        .expectAnyRecord(
+                                "Signin.SignIn.Timestamps.Fullscreen.ManagementStatusLoaded")
+                        .expectAnyRecord("Signin.SignIn.Timestamps.Fullscreen.SigninCompleted")
                         .build();
         mHistoryOptInMode = HistorySyncConfig.OptInMode.NONE;
 
@@ -369,6 +378,9 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
                         .expectIntRecord(
                                 "Signin.SyncButtons.Clicked",
                                 SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED)
+                        .expectNoRecords(
+                                "Signin.SignIn.Timestamps.Fullscreen.ManagementStatusLoaded")
+                        .expectNoRecords("Signin.SignIn.Timestamps.Fullscreen.SigninCompleted")
                         .build();
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(false);

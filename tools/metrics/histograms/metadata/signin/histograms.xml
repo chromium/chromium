@@ -2917,6 +2917,40 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
+<!-- LINT.IfChange(SigninFlowTimestamps) -->
+
+<histogram name="Signin.SignIn.Timestamps.{FlowVariant}.{Event}" units="ms"
+    expires_after="2026-04-01">
+  <owner>myuu@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Logs the duration of the Android sign-in flow, from when the user triggers
+    {FlowVariant} sign-in until {Event} occurs, recorded when the {Event}
+    occurs. The time spent on the management notice is excluded.
+
+    Only recorded on Android.
+  </summary>
+  <token key="FlowVariant">
+    <variant name="Fullscreen" summary="Fullscreen sign-in flow"/>
+    <variant name="Other" summary="Other sign-in flows"/>
+    <variant name="Web" summary="Web sign-in flow"/>
+  </token>
+  <token key="Event">
+    <variant name="ManagementStatusLoaded"
+        summary="the account's management status is loaded"/>
+    <variant name="SigninAborted"
+        summary="The sign-in flow is aborted due to error. The duration of
+                 the user interaction on the management notice, if any is
+                 shown, is subtracted from the total duration."/>
+    <variant name="SigninCompleted"
+        summary="The sign-in flow is completed. The duration of the user
+                 interaction on the management notice, if any is shown, is
+                 subtracted from the total duration."/>
+  </token>
+</histogram>
+
+<!-- LINT.ThenChange(//chrome/browser/signin/services/android/java/src/org/chromium/chrome/browser/signin/services/SigninFlowTimestampsLogger.java:SigninFlowTimestamps) -->
+
 <histogram name="Signin.SigninAbortedAccessPoint" enum="SigninAccessPoint"
     expires_after="2025-11-26">
   <owner>bsazonov@chromium.org</owner>

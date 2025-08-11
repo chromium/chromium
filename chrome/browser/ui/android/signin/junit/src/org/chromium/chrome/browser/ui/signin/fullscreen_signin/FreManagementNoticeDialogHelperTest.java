@@ -31,6 +31,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -50,6 +51,7 @@ public class FreManagementNoticeDialogHelperTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     @Mock private SigninManager mSigninManager;
+    @Mock private SigninFlowTimestampsLogger mTimestampLogger;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Context mContext;
 
@@ -115,6 +117,7 @@ public class FreManagementNoticeDialogHelperTest {
         FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                 mCoreAccountInfo,
                 mSigninManager,
+                mTimestampLogger,
                 accessPoint,
                 mCallback,
                 mContext,
@@ -153,6 +156,7 @@ public class FreManagementNoticeDialogHelperTest {
         FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                 mCoreAccountInfo,
                 mSigninManager,
+                mTimestampLogger,
                 accessPoint,
                 mCallback,
                 mContext,
@@ -182,6 +186,7 @@ public class FreManagementNoticeDialogHelperTest {
         FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                 mCoreAccountInfo,
                 mSigninManager,
+                mTimestampLogger,
                 accessPoint,
                 mCallback,
                 mContext,
@@ -200,6 +205,7 @@ public class FreManagementNoticeDialogHelperTest {
         FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                 mCoreAccountInfo,
                 mSigninManager,
+                mTimestampLogger,
                 accessPoint,
                 mCallback,
                 mContext,

@@ -801,9 +801,12 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     }
 
     private void verifyCollapsedBottomSheetAndSignin(CoreAccountInfo accountInfo) {
-        HistogramWatcher signinStartedWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SignIn.Started", mSigninAccessPoint);
+        HistogramWatcher signinHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Signin.SignIn.Started", mSigninAccessPoint)
+                        .expectAnyRecord("Signin.SignIn.Timestamps.Other.ManagementStatusLoaded")
+                        .expectAnyRecord("Signin.SignIn.Timestamps.Other.SigninCompleted")
+                        .build();
 
         // Start sign-in from the collapsed sign-in bottom-sheet shown.
         onView(
@@ -813,7 +816,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                                 isCompletelyDisplayed()))
                 .perform(click());
 
-        signinStartedWatcher.assertExpected();
+        signinHistogramWatcher.assertExpected();
 
         // Verify signed-in state.
         mSigninTestRule.waitForSignin(accountInfo);
@@ -824,17 +827,17 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     }
 
     private void verifyNoAccountBottomSheetAndSignin() {
-        HistogramWatcher signinStartedWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SignIn.Started", mSigninAccessPoint);
-        HistogramWatcher addAccountStateWatcher =
+        HistogramWatcher signinHistogramWatcher =
                 HistogramWatcher.newBuilder()
+                        .expectIntRecords("Signin.SignIn.Started", mSigninAccessPoint)
                         .expectIntRecords(
                                 "Signin.AddAccountState",
                                 State.REQUESTED,
                                 State.STARTED,
                                 State.SUCCEEDED,
                                 State.ACTIVITY_SURVIVED)
+                        .expectAnyRecord("Signin.SignIn.Timestamps.Other.ManagementStatusLoaded")
+                        .expectAnyRecord("Signin.SignIn.Timestamps.Other.SigninCompleted")
                         .build();
 
         // Start sign-in from the 0-account sign-in bottom-sheet shown.
@@ -847,8 +850,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         mSigninTestRule.setAddAccountFlowResult(TestAccounts.AADC_ADULT_ACCOUNT);
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
-        signinStartedWatcher.assertExpected();
-        addAccountStateWatcher.assertExpected();
+        signinHistogramWatcher.assertExpected();
 
         mSigninTestRule.waitForSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         if (BuildInfo.getInstance().isAutomotive) {

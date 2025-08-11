@@ -9,6 +9,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.FlowVariant;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
@@ -88,6 +89,7 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
             ThreadUtils.assertOnUiThread();
             switch (result) {
                 case WebSigninTrackerResult.SUCCESS:
+                    controller.onSigninComplete();
                     if (!tab.isDestroyed()) {
                         // This code path may be called asynchronously, so check that the tab is
                         // still alive.
@@ -116,5 +118,10 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
             mWebSigninBridge.destroy();
             mWebSigninBridge = null;
         }
+    }
+
+    @Override
+    public @FlowVariant String getSigninFlowVariant() {
+        return FlowVariant.WEB;
     }
 }

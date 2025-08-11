@@ -203,6 +203,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     @Override
     public void onSignInComplete(
             CoreAccountInfo accountInfo, AccountPickerDelegate.SigninStateController controller) {
+        controller.onSigninComplete();
         BottomSheetContent content = mBottomSheetController.getCurrentSheetContent();
         if (content != null) {
             mBottomSheetController.hideContent(
