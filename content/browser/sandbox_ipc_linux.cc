@@ -14,6 +14,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/linux_util.h"
 #include "base/logging.h"
@@ -108,7 +109,7 @@ void SandboxIPCHandler::HandleRequestFromChild(int fd) {
     return;
 
   base::Pickle pickle = base::Pickle::WithUnownedBuffer(
-      UNSAFE_TODO(base::span(buf, base::checked_cast<size_t>(len))));
+      base::span(buf).first(base::checked_cast<size_t>(len)));
   base::PickleIterator iter(pickle);
 
   int kind;
@@ -159,8 +160,7 @@ void SandboxIPCHandler::SendRendererReply(
     const std::vector<base::ScopedFD>& fds,
     const base::Pickle& reply,
     int reply_fd) {
-  struct msghdr msg;
-  UNSAFE_TODO(memset(&msg, 0, sizeof(msg)));
+  struct msghdr msg = {};
   struct iovec iov = {const_cast<uint8_t*>(reply.data()), reply.size()};
   msg.msg_iov = &iov;
   msg.msg_iovlen = 1;
