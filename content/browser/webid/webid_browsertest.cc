@@ -2322,6 +2322,7 @@ IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, IdpLoginClosed) {
             return modal->web_contents();
           }));
   EXPECT_CALL(*controller, ShowLoadingDialog).WillOnce(Return(true));
+  EXPECT_CALL(*controller, DidShowUi).WillRepeatedly(Return(true));
 
   // Now run the actual test.
   base::RunLoop run_loop;

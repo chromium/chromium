@@ -306,6 +306,9 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // Notifies when the autofill data source is ready to be queried.
   virtual void NotifyAutofillSourceReadyForTesting();
 
+  // Whether UI has been shown or not.
+  virtual bool DidShowUi() const;
+
  protected:
   bool is_interception_enabled_{false};
 };

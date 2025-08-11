@@ -546,9 +546,6 @@ void FederatedAuthRequestImpl::RequestToken(
                            weak_ptr_factory_.GetWeakPtr()))) {
       return;
     }
-    // Because the loading dialog is not interactable, we do not count it for
-    // did_show_ui_, as it is not useful for IDPs in calculating a click-through
-    // rate.
   }
 
   if (IsFedCmMultipleIdentityProvidersEnabled()) {
@@ -1207,8 +1204,6 @@ void FederatedAuthRequestImpl::OnShouldShowAccountsPassiveDialogResult(
 
 void FederatedAuthRequestImpl::AfterAccountsDialogShown(
     bool did_succeed_for_at_least_one_idp) {
-  did_show_ui_ = true;
-
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
 
   if (identity_selection_type_ == kExplicit &&
@@ -1374,7 +1369,6 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
                               /*can_append_hints=*/true))) {
     return;
   }
-  did_show_ui_ = true;
 
   CHECK_EQ(idp_data_for_display_.size(), 1u);
   fedcm_metrics_->RecordSingleIdpMismatchDialogShown(
@@ -1619,7 +1613,6 @@ void FederatedAuthRequestImpl::ShowModalDialog(DialogType dialog_type,
       url_to_show, rp_mode_,
       base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
                      weak_ptr_factory_.GetWeakPtr()));
-  did_show_ui_ = true;
   // This may be null on Android, as the method cannot return the WebContents of
   // the CCT that will be created.
   if (web_contents) {
@@ -1711,7 +1704,6 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
               : base::NullCallback())) {
     return;
   }
-  did_show_ui_ = true;
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
 }
 
@@ -1925,7 +1917,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
             : FedCmThirdPartyCookiesStatus::kDisabledInSettings,
         webid::ComputeRequesterFrameType(render_frame_host(), origin(),
                                          GetEmbeddingOrigin()),
-        has_signin_account, did_show_ui_);
+        has_signin_account, request_dialog_controller_->DidShowUi());
   }
 
   if (result == FederatedAuthRequestResult::kSuccess) {
@@ -1940,7 +1932,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
           id_assertion_response_time_ - start_time_ -
               (accounts_dialog_display_time_ -
                ready_to_display_accounts_dialog_time_),
-          did_show_ui_);
+          request_dialog_controller_->DidShowUi());
     }
   } else if (!errors_logged_to_console_) {
     errors_logged_to_console_ = true;
@@ -1951,8 +1943,8 @@ void FederatedAuthRequestImpl::CompleteRequest(
     // fedcm_accounts_fetcher_ could be null if configs were not fetched, e.g.
     // because of cooldown.
     if (IsFedCmMetricsEndpointEnabled() && fedcm_accounts_fetcher_) {
-      fedcm_accounts_fetcher_->SendAllFailedTokenRequestMetrics(result,
-                                                                did_show_ui_);
+      fedcm_accounts_fetcher_->SendAllFailedTokenRequestMetrics(
+          result, request_dialog_controller_->DidShowUi());
     }
   }
 
@@ -2035,7 +2027,6 @@ void FederatedAuthRequestImpl::CleanUp() {
   dialog_type_ = kNone;
   identity_selection_type_ = kExplicit;
   had_transient_user_activation_ = false;
-  did_show_ui_ = false;
   rp_mode_ = RpMode::kPassive;
 }
 
