@@ -1233,8 +1233,8 @@ void AttributionManagerImpl::SendReport(base::OnceClosure web_ui_callback,
   // Drop the report on the floor if the report is expired. We need to make sure
   // we forward that the report was "sent" to ensure it is deleted from storage,
   // etc. This simulates sending the report through a null channel.
-  if (base::FeatureList::IsEnabled(kAttributionReportExpiry) &&
-      now > GetReportExpiryTime(report)) {
+
+  if (now > GetReportExpiryTime(report)) {
     OnReportSent(std::move(web_ui_callback), std::move(report),
                  SendResult(SendResult::Expired()));
     return;

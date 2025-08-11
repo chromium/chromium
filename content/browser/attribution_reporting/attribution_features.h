@@ -11,8 +11,6 @@
 
 namespace content {
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kAttributionReportExpiry);
-
 // Feature flag that controls whether reports that fail a delivery follow the
 // navigation-based retry system, where the last retry for a report is only
 // attempted when a new navigation successfully commits.
