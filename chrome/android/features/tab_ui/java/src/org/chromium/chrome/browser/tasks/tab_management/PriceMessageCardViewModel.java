@@ -13,7 +13,9 @@ import android.content.Context;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -24,15 +26,14 @@ public class PriceMessageCardViewModel {
      * Create a {@link PropertyModel} for PriceMessageCardView.
      *
      * @param context The {@link Context} to use.
-     * @param messageServiceDismissActionProvider The {@link
-     *     MessageCardView.ServiceDismissActionProvider} to set.
+     * @param messageServiceDismissActionProvider The {@link ServiceDismissActionProvider} to set.
      * @param data The {@link PriceMessageService.PriceMessageData} to use.
      * @param notificationManager The {@link PriceDropNotificationManager} handling notifications.
      * @return A {@link PropertyModel} for the given {@code data}.
      */
     public static PropertyModel create(
             Context context,
-            MessageCardView.ServiceDismissActionProvider messageServiceDismissActionProvider,
+            ServiceDismissActionProvider<@MessageType Integer> messageServiceDismissActionProvider,
             PriceMessageService.PriceMessageData data,
             PriceDropNotificationManager notificationManager) {
         boolean isIconVisible = data.getType() != PriceMessageType.PRICE_WELCOME;
@@ -43,9 +44,7 @@ public class PriceMessageCardViewModel {
                 context.getString(R.string.accessibility_tab_suggestion_dismiss_button);
 
         return new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
-                .with(
-                        MessageCardViewProperties.MESSAGE_TYPE,
-                        MessageService.MessageType.PRICE_MESSAGE)
+                .with(MessageCardViewProperties.MESSAGE_TYPE, MessageType.PRICE_MESSAGE)
                 .with(MessageCardViewProperties.MESSAGE_IDENTIFIER, data.getType())
                 .with(
                         MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER,

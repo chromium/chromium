@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -82,7 +83,7 @@ class LargeMessageCardViewBinder {
         MessageCardView.ActionProvider uiProvider =
                 model.get(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER);
         if (uiProvider != null) uiProvider.action();
-        MessageCardView.ServiceDismissActionProvider serviceProvider =
+        MessageCardView.ServiceDismissActionProvider<@MessageType Integer> serviceProvider =
                 model.get(MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER);
         if (serviceProvider != null) serviceProvider.dismiss(type);
     }

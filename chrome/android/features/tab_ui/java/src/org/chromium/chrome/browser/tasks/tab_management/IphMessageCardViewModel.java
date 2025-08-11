@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -28,7 +29,8 @@ public class IphMessageCardViewModel {
      */
     public static PropertyModel create(
             Context context,
-            MessageCardView.ServiceDismissActionProvider msgServiceDismissActionProvider,
+            MessageCardView.ServiceDismissActionProvider<@MessageType Integer>
+                    msgServiceDismissActionProvider,
             IphMessageService.IphMessageData data) {
         String descriptionText = context.getString(R.string.iph_drag_and_drop_introduction);
         String actionText = context.getString(R.string.iph_drag_and_drop_show_me);
@@ -36,7 +38,7 @@ public class IphMessageCardViewModel {
                 context.getString(R.string.accessibility_tab_suggestion_dismiss_button);
 
         return new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
-                .with(MessageCardViewProperties.MESSAGE_TYPE, MessageService.MessageType.IPH)
+                .with(MessageCardViewProperties.MESSAGE_TYPE, MessageType.IPH)
                 .with(
                         MessageCardViewProperties.MESSAGE_IDENTIFIER,
                         MessageService.DEFAULT_MESSAGE_IDENTIFIER)

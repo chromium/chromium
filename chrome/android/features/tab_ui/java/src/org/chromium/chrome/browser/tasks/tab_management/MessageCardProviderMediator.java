@@ -14,6 +14,9 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageModelFactory;
+import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -24,17 +27,23 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This is a {@link MessageService.MessageObserver} that creates and owns different {@link
- * PropertyModel} based on the message type.
+ * This is a {@link MessageObserver} that creates and owns different {@link PropertyModel} based on
+ * the message type.
+ *
+ * @param <T> The message type.
  */
 @NullMarked
-public class MessageCardProviderMediator implements MessageService.MessageObserver {
-    /** A class represents a Message. */
-    public static class Message {
-        public final @MessageService.MessageType int type;
+public class MessageCardProviderMediator<T> implements MessageObserver<T> {
+    /**
+     * A class represents a Message.
+     *
+     * @param <T> The message type.
+     */
+    public static class Message<T> {
+        public final T type;
         public final PropertyModel model;
 
-        Message(int type, PropertyModel model) {
+        Message(T type, PropertyModel model) {
             this.type = type;
             this.model = model;
         }
@@ -42,14 +51,14 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
 
     private final Context mContext;
     private final Supplier<Profile> mProfileSupplier;
-    private final Map<Integer, List<Message>> mMessageItems = new LinkedHashMap<>();
-    private final Map<Integer, Message> mShownMessageItems = new LinkedHashMap<>();
-    private final MessageCardView.ServiceDismissActionProvider mServiceDismissActionProvider;
+    private final Map<T, List<Message<T>>> mMessageItems = new LinkedHashMap<>();
+    private final Map<T, Message<T>> mShownMessageItems = new LinkedHashMap<>();
+    private final ServiceDismissActionProvider<T> mServiceDismissActionProvider;
 
     public MessageCardProviderMediator(
             Context context,
             Supplier<Profile> profileSupplier,
-            MessageCardView.ServiceDismissActionProvider serviceDismissActionProvider) {
+            ServiceDismissActionProvider<T> serviceDismissActionProvider) {
         mContext = context;
         mProfileSupplier = profileSupplier;
         mServiceDismissActionProvider = serviceDismissActionProvider;
@@ -58,12 +67,12 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
     /**
      * @return A list of {@link Message} that can be shown.
      */
-    public List<Message> getMessageItems() {
-        for (Iterator<Integer> it = mMessageItems.keySet().iterator(); it.hasNext(); ) {
-            int key = it.next();
+    public List<Message<T>> getMessageItems() {
+        for (Iterator<T> it = mMessageItems.keySet().iterator(); it.hasNext(); ) {
+            T key = it.next();
             if (mShownMessageItems.containsKey(key)) continue;
 
-            List<Message> messages = mMessageItems.get(key);
+            List<Message<T>> messages = mMessageItems.get(key);
 
             assumeNonNull(messages);
             assert !messages.isEmpty();
@@ -72,7 +81,7 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
             if (messages.isEmpty()) it.remove();
         }
 
-        for (Message message : mShownMessageItems.values()) {
+        for (Message<T> message : mShownMessageItems.values()) {
             PropertyModel model = message.model;
             if (!model.containsKey(MessageCardViewProperties.IS_INCOGNITO)) continue;
             model.set(
@@ -84,11 +93,11 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
         return new ArrayList<>(mShownMessageItems.values());
     }
 
-    @Nullable Message getNextMessageItemForType(@MessageService.MessageType int messageType) {
+    @Nullable Message<T> getNextMessageItemForType(T messageType) {
         if (!mShownMessageItems.containsKey(messageType)) {
             if (!mMessageItems.containsKey(messageType)) return null;
 
-            List<Message> messages = mMessageItems.get(messageType);
+            List<Message<T>> messages = mMessageItems.get(messageType);
 
             assert !messages.isEmpty();
             mShownMessageItems.put(messageType, messages.remove(0));
@@ -96,7 +105,7 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
             if (messages.isEmpty()) mMessageItems.remove(messageType);
         }
 
-        Message message = mShownMessageItems.get(messageType);
+        Message<T> message = mShownMessageItems.get(messageType);
         PropertyModel model = message.model;
         if (model.containsKey(MessageCardViewProperties.IS_INCOGNITO)) {
             model.set(
@@ -106,7 +115,7 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
         return message;
     }
 
-    boolean isMessageShown(@MessageService.MessageType int messageType, int identifier) {
+    boolean isMessageShown(T messageType, int identifier) {
         if (!mShownMessageItems.containsKey(messageType)) return false;
         return mShownMessageItems
                         .get(messageType)
@@ -118,11 +127,11 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
     // MessageObserver implementations.
 
     @Override
-    public void messageReady(
-            @MessageService.MessageType int type, MessageService.MessageModelFactory factory) {
+    public void messageReady(T type, MessageModelFactory<T> factory) {
         assert !mShownMessageItems.containsKey(type);
 
-        Message message = new Message(type, factory.build(mContext, this::invalidateShownMessage));
+        Message<T> message =
+                new Message<>(type, factory.build(mContext, this::invalidateShownMessage));
         if (mMessageItems.containsKey(type)) {
             mMessageItems.get(type).add(message);
         } else {
@@ -131,7 +140,7 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
     }
 
     @Override
-    public void messageInvalidate(@MessageService.MessageType int type) {
+    public void messageInvalidate(T type) {
         if (mMessageItems.containsKey(type)) {
             mMessageItems.remove(type);
         }
@@ -141,16 +150,16 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
     }
 
     @VisibleForTesting
-    void invalidateShownMessage(@MessageService.MessageType int type) {
+    void invalidateShownMessage(T type) {
         mShownMessageItems.remove(type);
         mServiceDismissActionProvider.dismiss(type);
     }
 
-    Map<Integer, List<Message>> getReadyMessageItemsForTesting() {
+    Map<T, List<Message<T>>> getReadyMessageItemsForTesting() {
         return mMessageItems;
     }
 
-    Map<Integer, Message> getShownMessageItemsForTesting() {
+    Map<T, Message<T>> getShownMessageItemsForTesting() {
         return mShownMessageItems;
     }
 }

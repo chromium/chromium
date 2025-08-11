@@ -37,6 +37,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -77,8 +79,8 @@ public class LargeMessageCardViewBinderTest {
             () -> mDismissButtonClicked.set(true);
     private final MessageCardView.ActionProvider mMessageServiceActionHandler =
             () -> mMessageServiceReviewCallbackRan.set(true);
-    private final MessageCardView.ServiceDismissActionProvider mMessageServiceDismissHandler =
-            (int messageType) -> mMessageServiceDismissCallbackRan.set(true);
+    private final ServiceDismissActionProvider<@MessageType Integer> mMessageServiceDismissHandler =
+            messageType -> mMessageServiceDismissCallbackRan.set(true);
     private final OnClickListener mSecondaryActionButtonClickListener =
             view -> mSecondaryActionButtonClicked.set(true);
 

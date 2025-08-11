@@ -973,7 +973,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     /**
      * @see TabListMediator#specialItemExistsInModel(int)
      */
-    boolean specialItemExists(@MessageService.MessageType int itemIdentifier) {
+    boolean specialItemExists(@TabSwitcherMessageManager.MessageType int itemIdentifier) {
         return mMediator.specialItemExistsInModel(itemIdentifier);
     }
 

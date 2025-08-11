@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageReviewActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.PriceWelcomeMessageController.PriceMessageUpdateObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 
 /** Unit tests for {@link PriceWelcomeMessageController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -112,8 +113,7 @@ public class PriceWelcomeMessageControllerUnitTest {
         verify(mPriceMessageService)
                 .preparePriceMessage(
                         eq(PriceMessageService.PriceMessageType.PRICE_WELCOME), eq(mPriceTabData));
-        verify(mTabSwitcherMessageManager)
-                .appendNextMessage(eq(MessageService.MessageType.PRICE_MESSAGE));
+        verify(mTabSwitcherMessageManager).appendNextMessage(eq(MessageType.PRICE_MESSAGE));
         verify(mActionProvider).scrollToTab(5);
         verify(mPriceMessageUpdateObserver).onShowPriceWelcomeMessage();
     }
@@ -153,8 +153,7 @@ public class PriceWelcomeMessageControllerUnitTest {
 
         verify(mTabListCoordinator)
                 .removeSpecialListItem(
-                        eq(TabProperties.UiType.PRICE_MESSAGE),
-                        eq(MessageService.MessageType.PRICE_MESSAGE));
+                        eq(TabProperties.UiType.PRICE_MESSAGE), eq(MessageType.PRICE_MESSAGE));
         verify(mPriceMessageUpdateObserver).onRemovePriceWelcomeMessage();
     }
 
@@ -162,8 +161,7 @@ public class PriceWelcomeMessageControllerUnitTest {
     public void testRestorePriceWelcomeMessage() {
         mController.restorePriceWelcomeMessage();
 
-        verify(mTabSwitcherMessageManager)
-                .appendNextMessage(eq(MessageService.MessageType.PRICE_MESSAGE));
+        verify(mTabSwitcherMessageManager).appendNextMessage(eq(MessageType.PRICE_MESSAGE));
         verify(mPriceMessageUpdateObserver).onRestorePriceWelcomeMessage();
     }
 

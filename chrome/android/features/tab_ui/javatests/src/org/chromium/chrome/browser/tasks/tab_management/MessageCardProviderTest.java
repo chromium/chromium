@@ -42,8 +42,10 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageData;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -71,14 +73,14 @@ public class MessageCardProviderTest {
     private TabListModel mModelList;
     private SimpleRecyclerViewAdapter mAdapter;
 
-    private MessageCardProviderCoordinator mCoordinator;
-    private MessageService mTestingService;
-    private MessageService mPriceService;
+    private MessageCardProviderCoordinator<@MessageType Integer> mCoordinator;
+    private MessageService<@MessageType Integer> mTestingService;
+    private MessageService<@MessageType Integer> mPriceService;
 
-    private final MessageCardView.ServiceDismissActionProvider mServiceDismissActionProvider =
+    private final ServiceDismissActionProvider<@MessageType Integer> mServiceDismissActionProvider =
             (messageType) -> {};
 
-    @Mock private PriceMessageService.PriceMessageData mPriceMessageData;
+    @Mock private PriceMessageData mPriceMessageData;
 
     @Mock private Profile mProfile;
 
@@ -140,11 +142,11 @@ public class MessageCardProviderTest {
 
                     view.addView(mRecyclerView);
 
-                    mTestingService = new MessageService(MessageType.FOR_TESTING);
-                    mPriceService = new MessageService(MessageType.PRICE_MESSAGE);
+                    mTestingService = new MessageService<>(MessageType.FOR_TESTING);
+                    mPriceService = new MessageService<>(MessageType.PRICE_MESSAGE);
 
                     mCoordinator =
-                            new MessageCardProviderCoordinator(
+                            new MessageCardProviderCoordinator<>(
                                     sActivity, () -> mProfile, mServiceDismissActionProvider);
                     mCoordinator.subscribeMessageService(mTestingService);
                     mCoordinator.subscribeMessageService(mPriceService);
@@ -202,9 +204,10 @@ public class MessageCardProviderTest {
     }
 
     private void addMessageCards() {
-        List<MessageCardProviderMediator.Message> messageList = mCoordinator.getMessageItems();
+        List<MessageCardProviderMediator.Message<@MessageType Integer>> messageList =
+                mCoordinator.getMessageItems();
         for (int i = 0; i < messageList.size(); i++) {
-            MessageCardProviderMediator.Message message = messageList.get(i);
+            MessageCardProviderMediator.Message<@MessageType Integer> message = messageList.get(i);
             if (message.type == MessageType.PRICE_MESSAGE) {
                 mModelList.add(new MVCListAdapter.ListItem(UiType.PRICE_MESSAGE, message.model));
             } else {

@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ import java.util.List;
  * of tabs.
  */
 @NullMarked
-public class TabGroupSuggestionMessageService extends MessageService {
+public class TabGroupSuggestionMessageService extends MessageService<@MessageType Integer> {
     /** Callback to start the merge animation which runs upon accepting a suggestion. */
     @FunctionalInterface
     public interface StartMergeAnimation {

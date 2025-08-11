@@ -10,6 +10,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -37,10 +38,11 @@ class MessageCardViewBinder {
                                 model.get(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER);
                         if (uiProvider != null) uiProvider.action();
 
-                        MessageCardView.ServiceDismissActionProvider serviceProvider =
-                                model.get(
-                                        MessageCardViewProperties
-                                                .MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER);
+                        MessageCardView.ServiceDismissActionProvider<@MessageType Integer>
+                                serviceProvider =
+                                        model.get(
+                                                MessageCardViewProperties
+                                                        .MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER);
                         if (serviceProvider != null) serviceProvider.dismiss(type);
                     });
         } else if (CARD_ALPHA == propertyKey) {

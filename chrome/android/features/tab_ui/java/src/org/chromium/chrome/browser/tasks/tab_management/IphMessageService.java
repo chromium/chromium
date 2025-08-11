@@ -16,13 +16,15 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherIphController;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** One of the concrete {@link MessageService} that only serves {@link MessageType.IPH}. */
 @NullMarked
-public class IphMessageService extends MessageService {
+public class IphMessageService extends MessageService<@MessageType Integer> {
     private static boolean sSkipIphInTests = true;
 
     private final TabSwitcherIphController mIphController;
@@ -56,7 +58,7 @@ public class IphMessageService extends MessageService {
         }
 
         /**
-         * @return The {@link MessageCardView.ServiceDismissActionProvider} for the associated IPH.
+         * @return The {@link ServiceDismissActionProvider} for the associated IPH.
          */
         MessageCardView.ActionProvider getDismissActionProvider() {
             return mDismissActionProvider;
@@ -82,7 +84,7 @@ public class IphMessageService extends MessageService {
     }
 
     @Override
-    public void addObserver(MessageObserver observer) {
+    public void addObserver(MessageObserver<@MessageType Integer> observer) {
         super.addObserver(observer);
         if (mTracker.isInitialized()) {
             mInitializedCallback.onResult(true);
@@ -114,7 +116,8 @@ public class IphMessageService extends MessageService {
     }
 
     private PropertyModel buildModel(
-            Context context, MessageCardView.ServiceDismissActionProvider serviceActionProvider) {
+            Context context,
+            ServiceDismissActionProvider<@MessageType Integer> serviceActionProvider) {
         return IphMessageCardViewModel.create(
                 context, serviceActionProvider, new IphMessageData(this::review, this::dismiss));
     }

@@ -18,9 +18,9 @@ import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewPr
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.SHOULD_KEEP_AFTER_REVIEW;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.UI_ACTION_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.TAB_GROUP_SUGGESTION_MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType.TAB_GROUP_SUGGESTION_MESSAGE;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MessageCardScope;

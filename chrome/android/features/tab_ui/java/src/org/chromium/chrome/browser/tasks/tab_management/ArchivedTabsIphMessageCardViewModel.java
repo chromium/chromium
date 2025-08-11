@@ -15,6 +15,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -32,14 +33,12 @@ public class ArchivedTabsIphMessageCardViewModel {
     public static PropertyModel create(
             Context context,
             ActionProvider actionProvider,
-            ServiceDismissActionProvider serviceDismissActionProvider) {
+            ServiceDismissActionProvider<@MessageType Integer> serviceDismissActionProvider) {
         String dismissButtonContextDescription =
                 context.getString(R.string.accessibility_tab_suggestion_dismiss_button);
 
         return new PropertyModel.Builder(ResizableMessageCardViewProperties.ALL_KEYS)
-                .with(
-                        MessageCardViewProperties.MESSAGE_TYPE,
-                        MessageService.MessageType.ARCHIVED_TABS_IPH_MESSAGE)
+                .with(MessageCardViewProperties.MESSAGE_TYPE, MessageType.ARCHIVED_TABS_IPH_MESSAGE)
                 .with(
                         MessageCardViewProperties.MESSAGE_IDENTIFIER,
                         MessageService.DEFAULT_MESSAGE_IDENTIFIER)

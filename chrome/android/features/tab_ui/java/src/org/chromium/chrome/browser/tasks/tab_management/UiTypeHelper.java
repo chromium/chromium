@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 
 /** List of helper methods for operations involving {@link UiType}. */
 @NullMarked

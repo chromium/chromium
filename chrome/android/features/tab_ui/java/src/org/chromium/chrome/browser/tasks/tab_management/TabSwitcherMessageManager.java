@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.UiTypeHelper.mess
 import android.app.Activity;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -44,8 +45,8 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardProviderMediator.Message;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MessageCardScope;
-import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageReviewActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
@@ -58,11 +59,40 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.List;
 
 /** Manages message related glue for the {@link TabSwitcher}. */
 @NullMarked
 public class TabSwitcherMessageManager {
+    /** Represents the types of messages that can be shown in the tab switcher. */
+    @IntDef({
+        MessageType.IPH,
+        MessageType.PRICE_MESSAGE,
+        MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE,
+        MessageType.ARCHIVED_TABS_MESSAGE,
+        MessageType.ARCHIVED_TABS_IPH_MESSAGE,
+        MessageType.COLLABORATION_ACTIVITY,
+        MessageType.TAB_GROUP_SUGGESTION_MESSAGE,
+        MessageType.ALL
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @Target({ElementType.TYPE_USE})
+    public @interface MessageType {
+        int FOR_TESTING = 0;
+        int IPH = 1;
+        int PRICE_MESSAGE = 2;
+        int INCOGNITO_REAUTH_PROMO_MESSAGE = 3;
+        int ARCHIVED_TABS_MESSAGE = 4;
+        int ARCHIVED_TABS_IPH_MESSAGE = 5;
+        int COLLABORATION_ACTIVITY = 6;
+        int TAB_GROUP_SUGGESTION_MESSAGE = 7;
+        int ALL = 8;
+    }
+
     /** Used to observe updates to message cards. */
     public interface MessageUpdateObserver {
         /** Invoked when messages are added. */
@@ -121,7 +151,8 @@ public class TabSwitcherMessageManager {
     private final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     private final SnackbarManager mSnackbarManager;
     private final ModalDialogManager mModalDialogManager;
-    private final MessageCardProviderCoordinator mMessageCardProviderCoordinator;
+    private final MessageCardProviderCoordinator<@MessageType Integer>
+            mMessageCardProviderCoordinator;
     private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
     private final ObservableSupplierImpl<@Nullable PriceWelcomeMessageReviewActionProvider>
@@ -209,7 +240,8 @@ public class TabSwitcherMessageManager {
                     return assumeNonNull(tabGroupModelFilter.getTabModel().getProfile());
                 };
         mMessageCardProviderCoordinator =
-                new MessageCardProviderCoordinator(activity, profileSupplier, this::dismissHandler);
+                new MessageCardProviderCoordinator<@MessageType Integer>(
+                        activity, profileSupplier, this::dismissHandler);
 
         mTabGridIphDialogCoordinator =
                 new TabGridIphDialogCoordinator(activity, mModalDialogManager);
@@ -455,7 +487,7 @@ public class TabSwitcherMessageManager {
         TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
         if (tabListCoordinator == null) return;
 
-        MessageCardProviderMediator.Message nextMessage =
+        Message nextMessage =
                 mMessageCardProviderCoordinator.getNextMessageItemForType(messageType);
         if (nextMessage == null || !shouldAppendMessage(nextMessage)) return;
         switch (messageType) {
@@ -482,7 +514,7 @@ public class TabSwitcherMessageManager {
         assert tabListCoordinator != null;
 
         sAppendedMessagesForTesting = false;
-        List<MessageCardProviderMediator.Message> messages =
+        List<Message<@MessageType Integer>> messages =
                 mMessageCardProviderCoordinator.getMessageItems();
         for (int i = 0; i < messages.size(); i++) {
             if (!shouldAppendMessage(messages.get(i))) continue;
@@ -523,7 +555,7 @@ public class TabSwitcherMessageManager {
         return false;
     }
 
-    private boolean shouldAppendMessage(MessageCardProviderMediator.Message message) {
+    private boolean shouldAppendMessage(Message<@MessageType Integer> message) {
         TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
         assert tabListCoordinator != null;
         if (tabListCoordinator.specialItemExists(message.type)) return false;
@@ -580,7 +612,7 @@ public class TabSwitcherMessageManager {
                 != null;
 
         sAppendedMessagesForTesting = false;
-        List<MessageCardProviderMediator.Message> messages =
+        List<Message<@MessageType Integer>> messages =
                 mMessageCardProviderCoordinator.getMessageItems();
         for (int i = 0; i < messages.size(); i++) {
             if (!shouldAppendMessage(messages.get(i))) continue;
@@ -663,7 +695,7 @@ public class TabSwitcherMessageManager {
         TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
         if (tabListCoordinator == null) return;
 
-        MessageCardProviderMediator.Message nextMessage =
+        Message nextMessage =
                 mMessageCardProviderCoordinator.getNextMessageItemForType(messageType);
         if (nextMessage == null || !shouldAppendMessage(nextMessage)) return;
 

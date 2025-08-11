@@ -30,7 +30,7 @@ import androidx.annotation.PluralsRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
-import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 

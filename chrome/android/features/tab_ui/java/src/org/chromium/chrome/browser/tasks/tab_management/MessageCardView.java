@@ -44,8 +44,8 @@ class MessageCardView extends LinearLayout {
     }
 
     /** An interface to handle the dismiss action. */
-    public interface ServiceDismissActionProvider {
-        void dismiss(@MessageService.MessageType int messageType);
+    public interface ServiceDismissActionProvider<T> {
+        void dismiss(T messageType);
     }
 
     private ChromeImageView mIcon;

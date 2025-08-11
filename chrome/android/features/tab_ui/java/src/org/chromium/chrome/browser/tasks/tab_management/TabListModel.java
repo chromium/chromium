@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.ARCHIVED_TABS_MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ANIMATION_STATUS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
@@ -14,6 +13,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB_GROUP;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_GROUP_SYNC_ID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType.ARCHIVED_TABS_MESSAGE;
 
 import android.util.Pair;
 
@@ -259,7 +259,8 @@ class TabListModel extends ModelList {
      * @param messageType The message type to match.
      * @return The index within the model.
      */
-    public int lastIndexForMessageItemFromType(@MessageService.MessageType int messageType) {
+    public int lastIndexForMessageItemFromType(
+            @TabSwitcherMessageManager.MessageType int messageType) {
         for (int i = size() - 1; i >= 0; i--) {
             PropertyModel model = get(i).model;
             if (model.get(CARD_TYPE) == MESSAGE && model.get(MESSAGE_TYPE) == messageType) {

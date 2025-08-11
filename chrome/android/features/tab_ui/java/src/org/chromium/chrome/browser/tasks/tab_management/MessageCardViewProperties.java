@@ -13,6 +13,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -34,7 +35,7 @@ class MessageCardViewProperties {
         int BOTH = 2;
     }
 
-    /** This corresponds to the {@link MessageService.MessageType}. */
+    /** This corresponds to the {@link MessageType}. */
     public static final PropertyModel.ReadableIntPropertyKey MESSAGE_TYPE =
             new PropertyModel.ReadableIntPropertyKey();
 
@@ -59,7 +60,7 @@ class MessageCardViewProperties {
     public static final PropertyModel.WritableObjectPropertyKey<MessageCardView.ActionProvider>
             MESSAGE_SERVICE_ACTION_PROVIDER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<
-                    MessageCardView.ServiceDismissActionProvider>
+                    MessageCardView.ServiceDismissActionProvider<@MessageType Integer>>
             MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER =
                     new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<String>

@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageReviewActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 
 /** Controller for the price welcome message in the grid tab switcher. */
 @NullMarked
@@ -125,7 +126,7 @@ public class PriceWelcomeMessageController {
     public static PriceWelcomeMessageController build(
             TabSwitcherMessageManager tabSwitcherMessageManager,
             ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
-            MessageCardProviderCoordinator messageCardProviderCoordinator,
+            MessageCardProviderCoordinator<@MessageType Integer> messageCardProviderCoordinator,
             ObservableSupplierImpl<@Nullable PriceWelcomeMessageReviewActionProvider>
                     priceWelcomeMessageReviewActionProviderSupplier,
             Profile profile,
@@ -184,14 +185,14 @@ public class PriceWelcomeMessageController {
         if (mPriceMessageService == null
                 || !PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile)
                 || mMessageCardProviderCoordinator.isMessageShown(
-                        MessageService.MessageType.PRICE_MESSAGE,
+                        MessageType.PRICE_MESSAGE,
                         PriceMessageService.PriceMessageType.PRICE_WELCOME)) {
             return;
         }
 
         if (mPriceMessageService.preparePriceMessage(
                 PriceMessageService.PriceMessageType.PRICE_WELCOME, priceTabData)) {
-            mTabSwitcherMessageManager.appendNextMessage(MessageService.MessageType.PRICE_MESSAGE);
+            mTabSwitcherMessageManager.appendNextMessage(MessageType.PRICE_MESSAGE);
             // To make the message card in view when user enters tab switcher, we should scroll to
             // current tab with 0 offset. See {@link
             // TabSwitcherMediator#setInitialScrollIndexOffset} for more details.
@@ -209,7 +210,7 @@ public class PriceWelcomeMessageController {
         TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
         if (tabListCoordinator != null) {
             tabListCoordinator.removeSpecialListItem(
-                    TabProperties.UiType.PRICE_MESSAGE, MessageService.MessageType.PRICE_MESSAGE);
+                    TabProperties.UiType.PRICE_MESSAGE, MessageType.PRICE_MESSAGE);
         }
 
         for (PriceMessageUpdateObserver observer : mObservers) {
@@ -219,7 +220,7 @@ public class PriceWelcomeMessageController {
 
     /** Restores the price welcome message to the tab grid. */
     public void restorePriceWelcomeMessage() {
-        mTabSwitcherMessageManager.appendNextMessage(MessageService.MessageType.PRICE_MESSAGE);
+        mTabSwitcherMessageManager.appendNextMessage(MessageType.PRICE_MESSAGE);
         for (PriceMessageUpdateObserver observer : mObservers) {
             observer.onRestorePriceWelcomeMessage();
         }

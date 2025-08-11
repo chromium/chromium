@@ -10,27 +10,30 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardProviderMediator.Message;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * This is the coordinator for MessageCardProvider component. This component is used to build a
- * TabGridMessageCardView for each {@link MessageService.MessageType}. This coordinator manages the
- * life-cycle of all shared components and the connection between all subscribed {@link
- * MessageService}.
+ * TabGridMessageCardView for each message type. This coordinator manages the life-cycle of all
+ * shared components and the connection between all subscribed {@link MessageService}.
+ *
+ * @param <T> The message type.
  */
 @NullMarked
-public class MessageCardProviderCoordinator {
-    private final MessageCardProviderMediator mMediator;
-    private final List<MessageService> mMessageServices = new ArrayList<>();
+public class MessageCardProviderCoordinator<T> {
+    private final MessageCardProviderMediator<T> mMediator;
+    private final List<MessageService<T>> mMessageServices = new ArrayList<>();
 
     MessageCardProviderCoordinator(
             Context context,
             Supplier<Profile> profileSupplier,
-            MessageCardView.ServiceDismissActionProvider serviceDismissActionProvider) {
+            ServiceDismissActionProvider<T> serviceDismissActionProvider) {
         mMediator =
-                new MessageCardProviderMediator(
+                new MessageCardProviderMediator<>(
                         context, profileSupplier, serviceDismissActionProvider);
     }
 
@@ -39,35 +42,35 @@ public class MessageCardProviderCoordinator {
      *
      * @param service The {@link MessageService} to subscribe.
      */
-    public void subscribeMessageService(MessageService service) {
+    public void subscribeMessageService(MessageService<T> service) {
         mMessageServices.add(service);
         service.addObserver(mMediator);
     }
 
     /**
      * Get all messages.
-     * @return a list of {@link MessageCardProviderMediator.Message}.
+     *
+     * @return a list of {@link Message}.
      */
-    public List<MessageCardProviderMediator.Message> getMessageItems() {
+    public List<Message<T>> getMessageItems() {
         return mMediator.getMessageItems();
     }
 
     /**
-     * @param messageType The {@link MessageService#mMessageType} associates with the message.
-     * @return The next {@link MessageCardProviderMediator.Message} for the given messageType, if
-     *     there is any. Otherwise returns null.
+     * @param messageType The message type associates with the message.
+     * @return The next {@link Message} for the given messageType, if there is any. Otherwise
+     *     returns null.
      */
-    public MessageCardProviderMediator.@Nullable Message getNextMessageItemForType(
-            @MessageService.MessageType int messageType) {
+    public @Nullable Message<T> getNextMessageItemForType(T messageType) {
         return mMediator.getNextMessageItemForType(messageType);
     }
 
     /**
-     * @param messageType The {@link MessageService.MessageType} associated with the message.
+     * @param messageType The message type associated with the message.
      * @param identifier The identifier associated with the message.
      * @return Whether the given message is shown.
      */
-    boolean isMessageShown(@MessageService.MessageType int messageType, int identifier) {
+    boolean isMessageShown(T messageType, int identifier) {
         return mMediator.isMessageShown(messageType, identifier);
     }
 

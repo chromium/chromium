@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -60,7 +61,8 @@ import java.util.List;
 
 /** A message service to surface information about archived tabs. */
 @NullMarked
-public class ArchivedTabsMessageService extends MessageService implements MessageUpdateObserver {
+public class ArchivedTabsMessageService extends MessageService<@MessageType Integer>
+        implements MessageUpdateObserver {
 
     /** Provides message data for the archived message card. */
     public static class ArchivedTabsMessageData {
@@ -288,7 +290,7 @@ public class ArchivedTabsMessageService extends MessageService implements Messag
     }
 
     @Override
-    public void addObserver(MessageService.MessageObserver obs) {
+    public void addObserver(MessageService.MessageObserver<@MessageType Integer> obs) {
         super.addObserver(obs);
         maybeSendMessageToQueue(mTabCountSupplier.get());
     }

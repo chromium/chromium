@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -37,7 +38,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Message service class to show the Incognito re-auth promo inside the incognito tab switcher. */
 @NullMarked
-public class IncognitoReauthPromoMessageService extends MessageService
+public class IncognitoReauthPromoMessageService extends MessageService<@MessageType Integer>
         implements PauseResumeWithNativeObserver {
     /** TODO(crbug.com/40056462): Remove this when we support all the Android versions. */
     public static @Nullable Boolean sIsPromoEnabledForTesting;
@@ -202,7 +203,7 @@ public class IncognitoReauthPromoMessageService extends MessageService
     }
 
     @Override
-    public void addObserver(MessageObserver observer) {
+    public void addObserver(MessageObserver<@MessageType Integer> observer) {
         super.addObserver(observer);
         preparePromoMessage();
     }

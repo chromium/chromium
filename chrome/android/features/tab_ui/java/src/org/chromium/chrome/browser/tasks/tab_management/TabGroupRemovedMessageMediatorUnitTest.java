@@ -12,9 +12,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.ALL;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListCoordinator.RowType.TAB_GROUP_REMOVED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType.ALL;
 
 import android.content.Context;
 
@@ -31,7 +31,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
-import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.MessageAttribution;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
