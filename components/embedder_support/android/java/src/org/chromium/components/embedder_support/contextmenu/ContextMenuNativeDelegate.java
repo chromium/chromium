@@ -61,4 +61,11 @@ public interface ContextMenuNativeDelegate {
      * @return {@link RenderFrameHost}.
      */
     RenderFrameHost getRenderFrameHost();
+
+    /**
+     * Toggles Picture-in-Picture for the video.
+     *
+     * @param isInPip Whether the video is currently in Picture-in-Picture.
+     */
+    void togglePictureInPicture(boolean isInPip);
 }

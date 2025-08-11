@@ -25,13 +25,13 @@ class ContextMenuNativeDelegateImpl {
 
   void RetrieveImageForContextMenu(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jrender_frame_host,
+      content::RenderFrameHost* render_frame_host,
       const base::android::JavaParamRef<jobject>& jcallback,
       jint max_width_px,
       jint max_height_px);
   void RetrieveImageForShare(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jrender_frame_host,
+      content::RenderFrameHost* render_frame_host,
       const base::android::JavaParamRef<jobject>& jcallback,
       jint max_width_px,
       jint max_height_px,
@@ -39,14 +39,14 @@ class ContextMenuNativeDelegateImpl {
   void StartDownload(JNIEnv* env,
                      const GURL& gurl,
                      jboolean jis_media);
-  void SearchForImage(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jrender_frame_host);
-  void InspectElement(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jrender_frame_host,
-      jint x,
-      jint y);
+  void SearchForImage(JNIEnv* env, content::RenderFrameHost* render_frame_host);
+  void InspectElement(JNIEnv* env,
+                      content::RenderFrameHost* render_frame_host,
+                      jint x,
+                      jint y);
+  void TogglePictureInPicture(JNIEnv* env,
+                              content::RenderFrameHost* render_frame_host,
+                              jboolean is_in_pip);
 
  protected:
   using ImageRetrieveCallback = base::OnceCallback<void(
@@ -63,7 +63,7 @@ class ContextMenuNativeDelegateImpl {
   void RetrieveImageInternal(
       JNIEnv* env,
       ImageRetrieveCallback retrieve_callback,
-      const base::android::JavaParamRef<jobject>& jrender_frame_host,
+      content::RenderFrameHost* render_frame_host,
       const base::android::JavaParamRef<jobject>& jcallback,
       jint max_width_px,
       jint max_height_px,

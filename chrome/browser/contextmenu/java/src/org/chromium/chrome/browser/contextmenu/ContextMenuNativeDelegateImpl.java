@@ -126,6 +126,14 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
         return mRenderFrameHost;
     }
 
+    @Override
+    public void togglePictureInPicture(boolean isInPip) {
+        if (mNativePtr == 0) return;
+
+        ContextMenuNativeDelegateImplJni.get()
+                .togglePictureInPicture(mNativePtr, mRenderFrameHost, isInPip);
+    }
+
     /** The class hold the |retrieveImageForShare| callback result. */
     @VisibleForTesting
     static class ImageCallbackResult {
@@ -153,11 +161,13 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
 
     @NativeMethods
     interface Natives {
-        long init(WebContents webContents, ContextMenuParams contextMenuParams);
+        long init(
+                @JniType("content::WebContents*") WebContents webContents,
+                ContextMenuParams contextMenuParams);
 
         void retrieveImageForShare(
                 long nativeContextMenuNativeDelegateImpl,
-                RenderFrameHost renderFrameHost,
+                @JniType("content::RenderFrameHost*") RenderFrameHost renderFrameHost,
                 Callback<ImageCallbackResult> callback,
                 int maxWidthPx,
                 int maxHeightPx,
@@ -165,7 +175,7 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
 
         void retrieveImageForContextMenu(
                 long nativeContextMenuNativeDelegateImpl,
-                RenderFrameHost renderFrameHost,
+                @JniType("content::RenderFrameHost*") RenderFrameHost renderFrameHost,
                 Callback<Bitmap> callback,
                 int maxWidthPx,
                 int maxHeightPx);
@@ -176,12 +186,18 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
                 boolean isMedia);
 
         void searchForImage(
-                long nativeContextMenuNativeDelegateImpl, RenderFrameHost renderFrameHost);
+                long nativeContextMenuNativeDelegateImpl,
+                @JniType("content::RenderFrameHost*") RenderFrameHost renderFrameHost);
 
         void inspectElement(
                 long nativeContextMenuNativeDelegateImpl,
-                RenderFrameHost renderFrameHost,
+                @JniType("content::RenderFrameHost*") RenderFrameHost renderFrameHost,
                 int x,
                 int y);
+
+        void togglePictureInPicture(
+                long nativeContextMenuNativeDelegateImpl,
+                @JniType("content::RenderFrameHost*") RenderFrameHost renderFrameHost,
+                boolean isInPip);
     }
 }

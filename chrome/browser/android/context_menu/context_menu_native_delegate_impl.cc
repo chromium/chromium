@@ -16,9 +16,12 @@
 #include "components/embedder_support/android/contextmenu/context_menu_builder.h"
 #include "components/embedder_support/android/contextmenu/context_menu_image_format.h"
 #include "components/lens/lens_metadata.mojom.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/buildflags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
+#include "third_party/blink/public/mojom/frame/media_player_action.mojom.h"
 #include "ui/gfx/android/java_bitmap.h"
 
 #if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
@@ -123,9 +126,7 @@ void ContextMenuNativeDelegateImpl::StartDownload(JNIEnv* env,
 
 void ContextMenuNativeDelegateImpl::SearchForImage(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jrender_frame_host) {
-  auto* render_frame_host =
-      content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
+    content::RenderFrameHost* render_frame_host) {
   if (!render_frame_host)
     return;
 
@@ -135,12 +136,10 @@ void ContextMenuNativeDelegateImpl::SearchForImage(
 
 void ContextMenuNativeDelegateImpl::InspectElement(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jrender_frame_host,
+    content::RenderFrameHost* render_frame_host,
     jint x,
     jint y) {
 #if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
-  auto* render_frame_host =
-      content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
   if (!render_frame_host) {
     return;
   }
@@ -152,38 +151,36 @@ void ContextMenuNativeDelegateImpl::InspectElement(
 
 void ContextMenuNativeDelegateImpl::RetrieveImageForShare(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jrender_frame_host,
+    content::RenderFrameHost* render_frame_host,
     const JavaParamRef<jobject>& jcallback,
     jint max_width_px,
     jint max_height_px,
     jint jimage_format) {
   RetrieveImageInternal(env, base::BindOnce(&OnRetrieveImageForShare),
-                        jrender_frame_host, jcallback, max_width_px,
+                        render_frame_host, jcallback, max_width_px,
                         max_height_px, ToChromeMojomImageFormat(jimage_format));
 }
 
 void ContextMenuNativeDelegateImpl::RetrieveImageForContextMenu(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jrender_frame_host,
+    content::RenderFrameHost* render_frame_host,
     const JavaParamRef<jobject>& jcallback,
     jint max_width_px,
     jint max_height_px) {
   // For context menu, Image needs to be PNG for receiving transparency pixels.
   RetrieveImageInternal(env, base::BindOnce(&OnRetrieveImageForContextMenu),
-                        jrender_frame_host, jcallback, max_width_px,
+                        render_frame_host, jcallback, max_width_px,
                         max_height_px, chrome::mojom::ImageFormat::PNG);
 }
 
 void ContextMenuNativeDelegateImpl::RetrieveImageInternal(
     JNIEnv* env,
     ImageRetrieveCallback retrieve_callback,
-    const JavaParamRef<jobject>& jrender_frame_host,
+    content::RenderFrameHost* render_frame_host,
     const JavaParamRef<jobject>& jcallback,
     jint max_width_px,
     jint max_height_px,
     chrome::mojom::ImageFormat image_format) {
-  auto* render_frame_host =
-      content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
   if (!render_frame_host)
     return;
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
@@ -201,13 +198,24 @@ void ContextMenuNativeDelegateImpl::RetrieveImageInternal(
           base::android::ScopedJavaGlobalRef<jobject>(env, jcallback)));
 }
 
+void ContextMenuNativeDelegateImpl::TogglePictureInPicture(
+    JNIEnv* env,
+    content::RenderFrameHost* render_frame_host,
+    jboolean is_in_pip) {
+  if (!render_frame_host) {
+    return;
+  }
+
+  render_frame_host->ExecuteMediaPlayerActionAtLocation(
+      gfx::Point(context_menu_params_->x, context_menu_params_->y),
+      blink::mojom::MediaPlayerAction(
+          blink::mojom::MediaPlayerActionType::kPictureInPicture, !is_in_pip));
+}
+
 static jlong JNI_ContextMenuNativeDelegateImpl_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
+    content::WebContents* web_contents,
     const JavaParamRef<jobject>& jcontext_menu_params) {
-  if (jweb_contents.is_null())
-    return reinterpret_cast<intptr_t>(nullptr);
-  auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
   auto* params =
       context_menu::ContextMenuParamsFromJavaObject(jcontext_menu_params);
