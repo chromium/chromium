@@ -31,6 +31,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="asm.js instantiation failed"/>
 </enum>
 
+<enum name="GarbageCollectionPriority">
+  <int value="0" label="BestEffort"/>
+  <int value="1" label="UserBlocking"/>
+  <int value="2" label="UserVisible"/>
+</enum>
+
 <enum name="GarbageCollectionReason">
   <int value="0" label="kUnknown"/>
   <int value="1" label="kAllocationFailure"/>
