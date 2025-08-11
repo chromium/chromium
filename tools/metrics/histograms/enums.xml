@@ -12403,6 +12403,7 @@ from previous Chrome versions.
       label="FedCmIdentityCredentialAutoSelectedFlag:disabled"/>
   <int value="-624221121" label="CommandLineOnNonRooted:enabled"/>
   <int value="-623859488" label="SysUiShouldHoldbackGifRecording:disabled"/>
+  <int value="-623837922" label="BrowsingHistoryActorIntegrationM1:disabled"/>
   <int value="-623611759" label="TabSelectionEditorV2:enabled"/>
   <int value="-623364791" label="ClickToCallReceiver:disabled"/>
   <int value="-622685174" label="enable-pdf-material-ui"/>
@@ -13242,6 +13243,7 @@ from previous Chrome versions.
   <int value="-312144677" label="TFLiteLanguageDetectionEnabled:disabled"/>
   <int value="-311509777"
       label="CustomizeChromeWallpaperSearchInspirationCard:disabled"/>
+  <int value="-311262273" label="BrowsingHistoryActorIntegrationM1:enabled"/>
   <int value="-311148335" label="v8-pac-mojo-out-of-process"/>
   <int value="-310908854" label="new-wallpaper-picker"/>
   <int value="-310615515" label="EnableSuggestedFiles:disabled"/>

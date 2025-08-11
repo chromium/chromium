@@ -13105,6 +13105,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kAndroidAudioDeviceListener)}
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"browsing-history-actor-integration-M1",
+     flag_descriptions::kBrowsingHistoryActorIntegrationM1Name,
+     flag_descriptions::kBrowsingHistoryActorIntegrationM1Description,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         browsing_data::features::kBrowsingHistoryActorIntegrationM1)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

@@ -283,6 +283,11 @@ const char kBiometricAuthIdentityCheckDescription[] =
 const char kBookmarksTreeViewName[] = "Top Chrome Bookmarks Tree View";
 const char kBookmarksTreeViewDescription[] =
     "Show the bookmarks side panel in a tree view while in compact mode.";
+
+const char kBrowsingHistoryActorIntegrationM1Name[] =
+    "Browsing History Actor Integration M1";
+const char kBrowsingHistoryActorIntegrationM1Description[] =
+    "Enables the browsing history glic actor integration M1";
 #endif
 
 const char kBundledSecuritySettingsName[] = "Bundled Security Settings";

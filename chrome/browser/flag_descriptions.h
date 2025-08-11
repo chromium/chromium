@@ -190,6 +190,9 @@ extern const char kByDateHistoryInSidePanelDescription[];
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kBookmarksTreeViewName[];
 extern const char kBookmarksTreeViewDescription[];
+
+extern const char kBrowsingHistoryActorIntegrationM1Name[];
+extern const char kBrowsingHistoryActorIntegrationM1Description[];
 #endif
 
 extern const char kBundledSecuritySettingsName[];
