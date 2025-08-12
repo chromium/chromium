@@ -89,7 +89,7 @@ void ThreadSchedulerBase::SetMaxVirtualTimeTaskStarvationCount(
 
 WebScopedVirtualTimePauser
 ThreadSchedulerBase::CreateWebScopedVirtualTimePauser(
-    const WTF::String& name,
+    const String& name,
     WebScopedVirtualTimePauser::VirtualTaskDuration duration) {
   return WebScopedVirtualTimePauser(this, duration, name);
 }

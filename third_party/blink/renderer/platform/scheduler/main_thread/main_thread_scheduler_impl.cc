@@ -770,7 +770,7 @@ void MainThreadSchedulerImpl::ShutdownEmptyDetachedTaskQueues() {
   if (main_thread_only().detached_task_queues.empty()) {
     return;
   }
-  WTF::Vector<scoped_refptr<MainThreadTaskQueue>> queues_to_delete;
+  Vector<scoped_refptr<MainThreadTaskQueue>> queues_to_delete;
   for (auto& queue : main_thread_only().detached_task_queues) {
     if (queue->IsEmpty()) {
       queues_to_delete.push_back(queue);
@@ -2727,7 +2727,7 @@ const char* MainThreadSchedulerImpl::TimeDomainTypeToString(
   }
 }
 
-WTF::Vector<base::OnceClosure>&
+Vector<base::OnceClosure>&
 MainThreadSchedulerImpl::GetOnTaskCompletionCallbacks() {
   return main_thread_only().on_task_completion_callbacks;
 }

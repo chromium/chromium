@@ -380,7 +380,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
  protected:
   // ThreadSchedulerBase implementation:
-  WTF::Vector<base::OnceClosure>& GetOnTaskCompletionCallbacks() override;
+  Vector<base::OnceClosure>& GetOnTaskCompletionCallbacks() override;
 
   scoped_refptr<MainThreadTaskQueue> ControlTaskQueue();
   scoped_refptr<MainThreadTaskQueue> DefaultTaskQueue();
@@ -746,7 +746,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
         running_queues;
 
     // List of callbacks to execute after the current task.
-    WTF::Vector<base::OnceClosure> on_task_completion_callbacks;
+    Vector<base::OnceClosure> on_task_completion_callbacks;
 
     bool main_thread_compositing_is_fast;
 
@@ -772,20 +772,20 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // the last frame.
     base::TimeDelta rendering_blocking_duration_since_last_frame;
 
-    WTF::Vector<AgentGroupSchedulerScope> agent_group_scheduler_scope_stack;
+    Vector<AgentGroupSchedulerScope> agent_group_scheduler_scope_stack;
 
     Persistent<GCedHeapHashSet<WeakMember<AgentGroupSchedulerImpl>>>
         agent_group_schedulers;
     // Task queues that have been detached from their scheduler and may have
     // pending tasks that need to run.
-    WTF::HashSet<scoped_refptr<MainThreadTaskQueue>> detached_task_queues;
+    HashSet<scoped_refptr<MainThreadTaskQueue>> detached_task_queues;
 
     // Temporarily boosts the main thread priority. Only used if
     // kInputScenarioPriorityBoost is enabled.
     std::optional<base::ScopedBoostPriority> main_thread_priority_boost;
 
     // `WidgetScheduler`s that have not been shut down.
-    WTF::HashSet<scoped_refptr<WidgetSchedulerImpl>> widget_schedulers;
+    HashSet<scoped_refptr<WidgetSchedulerImpl>> widget_schedulers;
     raw_ptr<base::MessagePump> message_pump;
   };
 

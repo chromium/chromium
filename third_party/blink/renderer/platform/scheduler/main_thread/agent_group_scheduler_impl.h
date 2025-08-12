@@ -98,7 +98,7 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
   std::map<base::UnguessableToken, int> num_visible_frames_per_agent_
       ALLOW_DISCOURAGED_TYPE(
           "There is no compelling reason to make base::UnguessableToken "
-          "compatible with WTF::HashMap");
+          "compatible with blink::HashMap");
   bool is_updating_policy_ = false;
 };
 

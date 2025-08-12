@@ -132,8 +132,7 @@ class FrameTaskQueueControllerTest : public testing::Test,
 TEST_F(FrameTaskQueueControllerTest, CreateAllTaskQueues) {
   enum class QueueCheckResult { kDidNotSeeQueue, kDidSeeQueue };
 
-  WTF::HashMap<scoped_refptr<MainThreadTaskQueue>, QueueCheckResult>
-      all_task_queues;
+  HashMap<scoped_refptr<MainThreadTaskQueue>, QueueCheckResult> all_task_queues;
 
   scoped_refptr<MainThreadTaskQueue> task_queue = LoadingTaskQueue();
   EXPECT_FALSE(all_task_queues.Contains(task_queue));
@@ -315,7 +314,7 @@ TEST_P(TaskQueueCreationFromQueueTraitsTest,
         AddAndRetrieveAllTaskQueues) {
   // Create queues for all combination of queue traits for all combinations of
   // the 6 QueueTraits bits with different PrioritisationTypes.
-  WTF::HashSet<scoped_refptr<MainThreadTaskQueue>> all_task_queues;
+  HashSet<scoped_refptr<MainThreadTaskQueue>> all_task_queues;
   constexpr size_t kTotalUniqueQueueTraits = 1 << 6;
   for (size_t i = 0; i < kTotalUniqueQueueTraits; i++) {
     QueueTraits::PrioritisationType prioritisation_type = GetParam();

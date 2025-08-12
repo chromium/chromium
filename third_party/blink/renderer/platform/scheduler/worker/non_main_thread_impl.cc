@@ -108,7 +108,7 @@ void NonMainThreadImpl::ShutdownOnThread() {
 }
 
 NonMainThreadImpl::SimpleThreadImpl::SimpleThreadImpl(
-    const WTF::String& name_prefix,
+    const String& name_prefix,
     const base::SimpleThread ::Options& options,
     base::TimeDelta realtime_period,
     bool supports_gc,

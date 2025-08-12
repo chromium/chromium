@@ -243,7 +243,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
     bool operator==(const QueueTraits& other) const = default;
 
-    // Return a key suitable for WTF::HashMap.
+    // Return a key suitable for HashMap.
     QueueTraitsKeyType Key() const {
       // offset for shifting bits to compute |key|.
       // |key| starts at 1 since 0 and -1 are used for empty/deleted values.

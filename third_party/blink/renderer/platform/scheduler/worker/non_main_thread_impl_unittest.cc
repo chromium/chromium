@@ -124,7 +124,7 @@ TEST_F(NonMainThreadImplTest, TestDefaultTask) {
 
   PostCrossThreadTask(
       *thread_->GetTaskRunner(), FROM_HERE,
-      CrossThreadBindOnce(&MockTask::Run, WTF::CrossThreadUnretained(&task)));
+      CrossThreadBindOnce(&MockTask::Run, CrossThreadUnretained(&task)));
   completion.Wait();
 }
 
@@ -136,7 +136,7 @@ TEST_F(NonMainThreadImplTest, TestTaskObserver) {
                     base::BindOnce(&AddTaskObserver, thread_.get(), &observer));
   PostCrossThreadTask(
       *thread_->GetTaskRunner(), FROM_HERE,
-      CrossThreadBindOnce(&RunTestTask, WTF::CrossThreadUnretained(&calls)));
+      CrossThreadBindOnce(&RunTestTask, CrossThreadUnretained(&calls)));
   RunOnWorkerThread(
       FROM_HERE, base::BindOnce(&RemoveTaskObserver, thread_.get(), &observer));
 
@@ -160,11 +160,10 @@ TEST_F(NonMainThreadImplTest, TestShutdown) {
                     base::BindOnce(&ShutdownOnThread, thread_.get()));
   PostCrossThreadTask(
       *thread_->GetTaskRunner(), FROM_HERE,
-      CrossThreadBindOnce(&MockTask::Run, WTF::CrossThreadUnretained(&task)));
+      CrossThreadBindOnce(&MockTask::Run, CrossThreadUnretained(&task)));
   PostDelayedCrossThreadTask(
       *thread_->GetTaskRunner(), FROM_HERE,
-      CrossThreadBindOnce(&MockTask::Run,
-                          WTF::CrossThreadUnretained(&delayed_task)),
+      CrossThreadBindOnce(&MockTask::Run, CrossThreadUnretained(&delayed_task)),
       base::Milliseconds(50));
   thread_.reset();
 }

@@ -162,8 +162,8 @@ class WorkerSchedulerImplTest : public testing::Test {
                     const String& task_descriptor,
                     base::SingleThreadTaskRunner& task_runner) {
     task_runner.PostTask(
-        FROM_HERE, WTF::BindOnce(&AppendToVectorTestTask,
-                                 WTF::Unretained(run_order), task_descriptor));
+        FROM_HERE, BindOnce(&AppendToVectorTestTask, Unretained(run_order),
+                            task_descriptor));
   }
 
  protected:

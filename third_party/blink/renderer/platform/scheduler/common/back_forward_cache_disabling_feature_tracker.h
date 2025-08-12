@@ -66,7 +66,7 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
   void Remove(FeatureAndJSLocationBlockingBFCache feature_and_js_location);
 
   // Gets a hash set of feature usages for metrics.
-  WTF::HashSet<SchedulingPolicy::Feature>
+  HashSet<SchedulingPolicy::Feature>
   GetActiveFeaturesTrackedForBackForwardCacheMetrics();
 
   // Gets a list of non sticky features and their JS locations.

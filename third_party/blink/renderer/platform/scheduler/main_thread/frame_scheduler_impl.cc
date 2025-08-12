@@ -714,7 +714,7 @@ void FrameSchedulerImpl::DidCommitProvisionalLoad(
 }
 
 WebScopedVirtualTimePauser FrameSchedulerImpl::CreateWebScopedVirtualTimePauser(
-    const WTF::String& name,
+    const String& name,
     WebScopedVirtualTimePauser::VirtualTaskDuration duration) {
   return WebScopedVirtualTimePauser(main_thread_scheduler_, duration, name);
 }
@@ -1329,7 +1329,7 @@ void FrameSchedulerImpl::OnIPCTaskPostedWhileInBackForwardCache(
       duration, base::TimeDelta(), base::Minutes(5), 100);
 }
 
-WTF::HashSet<SchedulingPolicy::Feature>
+HashSet<SchedulingPolicy::Feature>
 FrameSchedulerImpl::GetActiveFeaturesTrackedForBackForwardCacheMetrics() {
   return back_forward_cache_disabling_feature_tracker_
       .GetActiveFeaturesTrackedForBackForwardCacheMetrics();

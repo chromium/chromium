@@ -126,7 +126,7 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
       return details_list == other.details_list;
     }
 
-    WTF::Vector<FeatureAndJSLocationBlockingBFCache> details_list;
+    Vector<FeatureAndJSLocationBlockingBFCache> details_list;
   };
 
   class PLATFORM_EXPORT Delegate {

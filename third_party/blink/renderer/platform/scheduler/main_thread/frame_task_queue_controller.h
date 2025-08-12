@@ -116,14 +116,13 @@ class PLATFORM_EXPORT FrameTaskQueueController {
   const raw_ptr<FrameSchedulerImpl> frame_scheduler_impl_;
   const raw_ptr<Delegate> delegate_;
 
-  using TaskQueueMap =
-      WTF::HashMap<MainThreadTaskQueue::QueueTraitsKeyType,
-                   scoped_refptr<MainThreadTaskQueue>>;
+  using TaskQueueMap = HashMap<MainThreadTaskQueue::QueueTraitsKeyType,
+                               scoped_refptr<MainThreadTaskQueue>>;
 
   // Map of all TaskQueues, indexed by QueueTraits.
   TaskQueueMap task_queues_;
 
-  using TaskQueueEnabledVoterMap = WTF::HashMap<
+  using TaskQueueEnabledVoterMap = HashMap<
       scoped_refptr<MainThreadTaskQueue>,
       std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>>;
 

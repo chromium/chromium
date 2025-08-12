@@ -17,14 +17,14 @@ namespace blink {
 // For cross-thread posting. Can be called from any thread.
 inline bool PostCrossThreadTask(base::SequencedTaskRunner& task_runner,
                                 const base::Location& location,
-                                WTF::CrossThreadOnceClosure task) {
+                                CrossThreadOnceClosure task) {
   return task_runner.PostTask(location,
                               ConvertToBaseOnceCallback(std::move(task)));
 }
 
 inline bool PostDelayedCrossThreadTask(base::SequencedTaskRunner& task_runner,
                                        const base::Location& location,
-                                       WTF::CrossThreadOnceClosure task,
+                                       CrossThreadOnceClosure task,
                                        base::TimeDelta delay) {
   return task_runner.PostDelayedTask(
       location, ConvertToBaseOnceCallback(std::move(task)), delay);
@@ -32,8 +32,8 @@ inline bool PostDelayedCrossThreadTask(base::SequencedTaskRunner& task_runner,
 
 inline bool PostCrossThreadTaskAndReply(base::SequencedTaskRunner& task_runner,
                                         const base::Location& location,
-                                        WTF::CrossThreadOnceClosure task,
-                                        WTF::CrossThreadOnceClosure reply) {
+                                        CrossThreadOnceClosure task,
+                                        CrossThreadOnceClosure reply) {
   return task_runner.PostTaskAndReply(
       location, ConvertToBaseOnceCallback(std::move(task)),
       ConvertToBaseOnceCallback(std::move(reply)));

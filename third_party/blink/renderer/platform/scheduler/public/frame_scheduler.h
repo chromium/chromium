@@ -182,7 +182,7 @@ class FrameScheduler : public FrameOrWorkerScheduler {
 
   // Returns the list of active features which currently tracked by the
   // scheduler for back-forward cache metrics.
-  virtual WTF::HashSet<SchedulingPolicy::Feature>
+  virtual HashSet<SchedulingPolicy::Feature>
   GetActiveFeaturesTrackedForBackForwardCacheMetrics() = 0;
 
   // TODO(altimin): Move FrameScheduler object to oilpan.
