@@ -304,7 +304,7 @@ void PermissionToggleRowView::UpdateUiOnPermissionChanged() {
 
   // Reset |state_label_|, readd it after if needed.
   if (state_label_) {
-    row_view_->RemoveChildView(std::exchange(state_label_, nullptr));
+    delete std::exchange(state_label_, nullptr);
   }
 
   // Add explanation for the user-managed permission state if needed. This would
