@@ -139,8 +139,8 @@ public class ReaderModeToolbarButtonControllerTest {
         when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
         controller.getTabSupplierObserverForTesting().onUrlUpdated(mMockTab);
         assertEquals(
-                R.string.hide_reading_mode_text,
-                controller.getButtonDataForTesting().getButtonSpec().getActionChipLabelResId());
+                "Hide Reading Mode",
+                controller.getButtonDataForTesting().getButtonSpec().getContentDescription());
 
         // Simulate the url changing to something else, and verify that the button was swapped back.
         when(mMockTab.getUrl()).thenReturn(new GURL("http://test.com"));
@@ -155,8 +155,8 @@ public class ReaderModeToolbarButtonControllerTest {
         when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
         controller.getTabSupplierObserverForTesting().onUrlUpdated(mMockTab);
         assertEquals(
-                R.string.hide_reading_mode_text,
-                controller.getButtonDataForTesting().getButtonSpec().getActionChipLabelResId());
+                "Hide Reading Mode",
+                controller.getButtonDataForTesting().getButtonSpec().getContentDescription());
 
         // Now do the same thing with a null tab.
         when(mMockActivityTabProvider.get()).thenReturn(null);
