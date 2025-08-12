@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -130,10 +131,9 @@ class GeneratedCodeCacheTest : public testing::TestWithParam<bool> {
       received_response_time_ = response_time;
       return;
     }
-    std::string str(data.data(), UNSAFE_TODO(data.data() + data.size()));
     received_ = true;
     received_null_ = false;
-    received_data_ = str;
+    received_data_ = base::as_string_view(base::span(data));
     received_response_time_ = response_time;
   }
 
