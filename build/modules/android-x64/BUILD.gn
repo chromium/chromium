@@ -199,10 +199,7 @@ libcxx_module("std_wctype_h") {
 }
 
 sysroot_module("sys_stage1") {
-  public_deps = [
-    ":_Builtin_stddef",
-    ":sys_stage2",
-  ]
+  public_deps = [ ":_Builtin_stddef" ]
 }
 
 sysroot_module("sys_stage2") {

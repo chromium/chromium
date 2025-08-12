@@ -116,11 +116,6 @@ module sys_stage1 [system] [extern_c] {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/page_size.h"
     export *
   }
-  module sysroot_bits_pthread_types_h {
-    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/pthread_types.h"
-    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/types.h"
-    export *
-  }
   module sysroot_bits_seek_constants_h {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/seek_constants.h"
     export *
@@ -205,11 +200,6 @@ module sys_stage1 [system] [extern_c] {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/setjmp.h"
     export *
   }
-  module sysroot_sys_cdefs_h {
-    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/api-level.h"
-    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/cdefs.h"
-    export *
-  }
   module sysroot_xlocale_h {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/xlocale.h"
     export *
@@ -237,6 +227,11 @@ module sys_stage2 [system] [extern_c] {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/lockf.h"
     export *
   }
+  module sysroot_bits_pthread_types_h {
+    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/pthread_types.h"
+    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/types.h"
+    export *
+  }
   module sysroot_bits_signal_types_h {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/signal_types.h"
     export *
@@ -258,11 +253,6 @@ module sys_stage2 [system] [extern_c] {
     export *
   }
   module sysroot_linux_time_h {
-    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/time.h"
-    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/time_types.h"
-    export *
-  }
-  module sysroot_linux_time_types_h {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/time.h"
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/time_types.h"
     export *
@@ -302,16 +292,6 @@ module sys_stage2 [system] [extern_c] {
   }
   module sysroot_sys_time_h {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/time.h"
-    export *
-  }
-  module sysroot_sys_types_h {
-    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/pthread_types.h"
-    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/types.h"
-    export *
-  }
-  module sysroot_sys_ucontext_h {
-    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/signal.h"
-    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/ucontext.h"
     export *
   }
   module sysroot_sys_user_h {

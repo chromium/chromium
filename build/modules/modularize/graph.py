@@ -215,20 +215,50 @@ def run_build(graph: dict[str, Header]) -> list[Target]:
         if (header.root_module is None or header.root_module != dep.root_module)
         and dep != header)
 
+  # Perform a union find to find all dependency loops.
+  # Since we can easily tell if a given edge represents a dependency loop, we
+  # simply union together all pairs of nodes on loop edges.
+  # We perform a simple form of union find where we don't bother with rank or
+  # size, and only do path compression (always on the lexicographically first
+  # header). It's slower but still plenty fast and simplifies things.
+  parents = {}
+
+  def find(header):
+    if header in parents:
+      # Optimization: path compression
+      parents[header] = find(parents[header])
+      return parents[header]
+    else:
+      return header
+
+  for header in sorted(unbuilt_headers):
+    for dep in header.required_deps:
+      if dep > header and header in dep.deps:
+        assert header.include_dir == IncludeDir.Sysroot and dep.include_dir == IncludeDir.Sysroot, (
+            header, dep)
+        # Perform the 'union' operation.
+        x, y = sorted([find(header), find(dep)])
+        if x != y:
+          parents[y] = x
+
+  loops = collections.defaultdict(list)
+  for header in unbuilt_headers:
+    loops[find(header)].append(header)
+
+  for headers in loops.values():
+    # Not a loop
+    if len(headers) == 1:
+      continue
+    headers.sort()
+    headers[0].group = headers
+    headers[0].unbuilt_deps = set.union(
+        *[header.unbuilt_deps for header in headers]) - set(headers)
+    for header in headers[1:]:
+      unbuilt_headers.remove(header)
+
   for header in all_headers(graph):
     for dep in header.unbuilt_deps:
       dep.rdeps.add(header)
-
-  # Break dependency loops.
-  for header in sorted(all_headers(graph)):
-    for dep in list(header.unbuilt_deps):
-      # If we're in a dependency loop, pick the lexicographically first header.
-      # We replace all edges to that header with edges to the first header.
-      if dep < header and header in dep.deps and header.include_dir == IncludeDir.Sysroot and dep.include_dir == IncludeDir.Sysroot:
-        header.group.append(dep)
-        dep.group = header.group
-        dep.unbuilt_deps.discard(header)
-        header.rdeps.discard(dep)
 
   build_gn = []
 
@@ -263,12 +293,13 @@ def run_build(graph: dict[str, Header]) -> list[Target]:
       n_remaining = len(unbuilt_headers)
       for header in list(unbuilt_headers):
         if not header.unbuilt_deps:
-          header.root_module = sysroot_mod
           build_gn[-1].headers.append(header)
           unbuilt_headers.remove(header)
-          for rdep in header.rdeps:
-            rdep.mod_deps.add(header.root_module)
-            rdep.unbuilt_deps.remove(header)
+          for header in header.group:
+            header.root_module = sysroot_mod
+            for rdep in header.rdeps:
+              rdep.mod_deps.add(header.root_module)
+              rdep.unbuilt_deps.remove(header)
 
       if n_remaining == len(unbuilt_headers):
         break
