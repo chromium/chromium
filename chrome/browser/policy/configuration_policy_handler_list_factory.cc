@@ -546,6 +546,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDefaultFileSystemWriteGuardSetting,
     prefs::kManagedDefaultFileSystemWriteGuardSetting,
     base::Value::Type::INTEGER },
+  { key::kOriginKeyedProcessesEnabled,
+    prefs::kOriginKeyedProcessesEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // !BUILDFLAG(IS_ANDROID)
   { key::kDefaultImagesSetting,
     prefs::kManagedDefaultImagesSetting,

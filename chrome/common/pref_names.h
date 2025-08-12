@@ -4293,6 +4293,10 @@ inline constexpr char kServiceWorkerAutoPreloadEnabled[] =
     "worker.service_worker_auto_preload_enabled";
 
 #if !BUILDFLAG(IS_ANDROID)
+// Boolean that specifies whether OriginKeyedProcessesByDefault is enabled.
+inline constexpr char kOriginKeyedProcessesEnabled[] =
+    "site_isolation.origin_keyed_processes_enabled";
+
 // Version string in MAJOR.MINOR.BUILD.PATCH format for the last shown non
 // milestone update toast version. If there's new non milestone update a toast
 // will be shown and this pref will set to the new version.
