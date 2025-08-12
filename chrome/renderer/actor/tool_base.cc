@@ -109,6 +109,7 @@ void ToolBase::EnsureTargetInView() {
 base::expected<ToolBase::ResolvedTarget, mojom::ActionResultPtr>
 ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
   if (!observed_target_ || !observed_target_->node_attribute->dom_node_id) {
+    journal_->Log(task_id_, "TimeOfUseValidation", "No valid APC node.");
     return resolved_target;
   }
 
@@ -140,13 +141,13 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
             resolved_target.point);
     const blink::WebElement hit_element = hit_test_result.GetElement();
     // The action target from APC is not as granular as the live DOM hit test.
-    if (target_node.Contains(&hit_element)) {
+    if (!target_node.Contains(&hit_element)) {
       journal_->Log(
           task_id_, "TimeOfUseValidation",
-          base::StrCat({"Observed Target Node:",
+          base::StrCat({"Target Node:",
                         base::NumberToString(
                             *observed_target_->node_attribute->dom_node_id),
-                        " Hit Test Node:",
+                        " interaction point occluded by Hit Test Node:",
                         base::NumberToString(target_node.GetDomNodeId())}));
       // TODO(crbug.com/418280472): return error after retry for failed task is
       // landed.
@@ -167,7 +168,7 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
     }
 
     // Check that the interaction point is inside the observed target bounding
-    // box.
+    // box from last APC.
     const gfx::Rect observed_bounds =
         observed_target_->node_attribute->geometry->outer_bounding_box;
     if (!observed_bounds.Contains(gfx::ToFlooredPoint(resolved_target.point))) {
