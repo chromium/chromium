@@ -15,6 +15,7 @@
 #include "services/webnn/public/mojom/webnn_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
+#include "services/webnn/webnn_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -62,7 +63,8 @@ TEST_F(WebNNContextProviderImplTest, NotSupported) {
 
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
 
-  WebNNContextProviderImpl::CreateForTesting(
+  test::WebNNTestEnvironment webnn_test_environment;
+  webnn_test_environment.BindWebNNContextProvider(
       provider_remote.BindNewPipeAndPassReceiver());
 
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
@@ -82,8 +84,8 @@ TEST_F(WebNNContextProviderImplTest, NotSupported) {
 
 TEST_F(WebNNContextProviderImplTest, CPUIsSupported) {
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
-
-  WebNNContextProviderImpl::CreateForTesting(
+  test::WebNNTestEnvironment webnn_test_environment;
+  webnn_test_environment.BindWebNNContextProvider(
       provider_remote.BindNewPipeAndPassReceiver());
 
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
@@ -103,9 +105,10 @@ TEST_F(WebNNContextProviderImplTest, CPUIsSupported) {
 TEST_F(WebNNContextProviderImplTest, GPUNotSupported) {
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
 
-  WebNNContextProviderImpl::CreateForTesting(
-      provider_remote.BindNewPipeAndPassReceiver(),
+  test::WebNNTestEnvironment webnn_test_environment(
       WebNNContextProviderImpl::WebNNStatus::kWebNNGpuDisabled);
+  webnn_test_environment.BindWebNNContextProvider(
+      provider_remote.BindNewPipeAndPassReceiver());
 
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
   provider_remote->CreateWebNNContext(
@@ -124,9 +127,10 @@ TEST_F(WebNNContextProviderImplTest, GPUNotSupported) {
 TEST_F(WebNNContextProviderImplTest, NPUNotSupported) {
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
 
-  WebNNContextProviderImpl::CreateForTesting(
-      provider_remote.BindNewPipeAndPassReceiver(),
+  test::WebNNTestEnvironment webnn_test_environment(
       WebNNContextProviderImpl::WebNNStatus::kWebNNNpuDisabled);
+  webnn_test_environment.BindWebNNContextProvider(
+      provider_remote.BindNewPipeAndPassReceiver());
 
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
   provider_remote->CreateWebNNContext(
@@ -145,9 +149,10 @@ TEST_F(WebNNContextProviderImplTest, NPUNotSupported) {
 TEST_F(WebNNContextProviderImplTest, GpuFeatureStatusDisabled) {
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
 
-  WebNNContextProviderImpl::CreateForTesting(
-      provider_remote.BindNewPipeAndPassReceiver(),
+  test::WebNNTestEnvironment webnn_test_environment(
       WebNNContextProviderImpl::WebNNStatus::kWebNNGpuFeatureStatusDisabled);
+  webnn_test_environment.BindWebNNContextProvider(
+      provider_remote.BindNewPipeAndPassReceiver());
 
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
   provider_remote->CreateWebNNContext(

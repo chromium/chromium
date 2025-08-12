@@ -34,6 +34,7 @@
 #include "services/webnn/webnn_graph_builder_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_graph_mojolpm_fuzzer.pb.h"
+#include "services/webnn/webnn_test_environment.h"
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 
 namespace {
@@ -68,7 +69,7 @@ class WebnnGraphLPMFuzzer {
       : testcase_(testcase) {
     input_generator_.ReseedForTesting(testcase_->seed_for_input_data());
 
-    webnn::WebNNContextProviderImpl::CreateForTesting(
+    webnn_test_environment_.BindWebNNContextProvider(
         provider_remote_.BindNewPipeAndPassReceiver());
 
     base::test::TestFuture<webnn::mojom::CreateContextResultPtr>
@@ -123,7 +124,7 @@ class WebnnGraphLPMFuzzer {
         webnn_graph_builder_remote;
     mojo::AssociatedRemote<webnn::mojom::WebNNGraph> webnn_graph_remote;
 
-    webnn::WebNNContextProviderImpl::CreateForTesting(
+    webnn_test_environment_.BindWebNNContextProvider(
         webnn_provider_remote.BindNewPipeAndPassReceiver());
 
     // Create the ContextImpl through context provider.
@@ -261,6 +262,7 @@ class WebnnGraphLPMFuzzer {
   int action_index_ = 0;
   base::test::InsecureRandomGenerator input_generator_;
 
+  webnn::test::WebNNTestEnvironment webnn_test_environment_;
   mojo::Remote<webnn::mojom::WebNNContextProvider> provider_remote_;
   mojo::Remote<webnn::mojom::WebNNContext> webnn_context_;
 };

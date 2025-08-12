@@ -218,6 +218,23 @@ component("webnn_service") {
   }
 }
 
+source_set("webnn_test_support") {
+  testonly = true
+  sources = [
+    "webnn_test_environment.cc",
+    "webnn_test_environment.h",
+  ]
+
+  deps = [
+    ":webnn_service",
+    "//base",
+    "//gpu/command_buffer/service",
+    "//gpu/config",
+    "//mojo/public/cpp/bindings",
+    "//services/webnn/public/mojom",
+  ]
+}
+
 source_set("tests") {
   testonly = true
 
@@ -263,6 +280,7 @@ source_set("tests") {
     ":buildflags",
     ":webnn_headers",
     ":webnn_service",
+    ":webnn_test_support",
     "//base",
     "//base/test:test_support",
     "//mojo/public/cpp/bindings",
@@ -291,6 +309,7 @@ mojolpm_fuzzer_test("webnn_graph_mojolpm_fuzzer") {
       [ "webnn_graph_mojolpm_fuzzer_seed_corpus/simple.textproto" ]
   deps = [
     ":webnn_service",
+    ":webnn_test_support",
     "//base",
     "//base/test:test_support",
     "//content/test/fuzzer:mojolpm_fuzzer_support",

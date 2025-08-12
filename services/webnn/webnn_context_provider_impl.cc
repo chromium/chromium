@@ -127,56 +127,6 @@ void WebNNContextProviderImpl::BindWebNNContextProvider(
   provider_receivers_.Add(this, std::move(receiver));
 }
 
-// static
-base::optional_ref<WebNNContextProviderImpl>
-WebNNContextProviderImpl::CreateForTesting(
-    mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
-    WebNNStatus status,
-    LoseAllContextsCallback lose_all_contexts_callback) {
-  gpu::GpuFeatureInfo gpu_feature_info;
-  gpu::GPUInfo gpu_info;
-
-  for (auto& status_value : gpu_feature_info.status_values) {
-    status_value = gpu::GpuFeatureStatus::kGpuFeatureStatusDisabled;
-  }
-  if (status != WebNNStatus::kWebNNGpuFeatureStatusDisabled) {
-    gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_WEBNN] =
-        gpu::kGpuFeatureStatusEnabled;
-  }
-  if (status == WebNNStatus::kWebNNGpuDisabled) {
-    gpu_feature_info.enabled_gpu_driver_bug_workarounds.push_back(
-        DISABLE_WEBNN_FOR_GPU);
-  }
-  if (status == WebNNStatus::kWebNNNpuDisabled) {
-    gpu_feature_info.enabled_gpu_driver_bug_workarounds.push_back(
-        DISABLE_WEBNN_FOR_NPU);
-  }
-
-  // Initialize a Gpu Scheduler so tests can also use a scheduler
-  // runner without the Gpu service. We only need to initialize once for the
-  // whole GPU process and no teardown logic is needed, so use a global
-  // singleton here. The sync point manager must come first since it is
-  // passed to the scheduler as a naked pointer.
-  static base::NoDestructor<gpu::SyncPointManager> g_webnn_sync_point_manager;
-  static base::NoDestructor<gpu::Scheduler> g_webnn_scheduler{
-      g_webnn_sync_point_manager.get()};
-
-  // All tests use the same client ID since no other client exists.
-  constexpr int32_t kFakeClientIdForTesting = 0;
-
-  // Cast is safe because only a WebNNContextProviderImpl can be created.
-  return static_cast<WebNNContextProviderImpl*>(
-      mojo::MakeSelfOwnedReceiver<mojom::WebNNContextProvider>(
-          base::WrapUnique(new WebNNContextProviderImpl(
-              /*shared_context_state=*/nullptr, std::move(gpu_feature_info),
-              std::move(gpu_info), /*shared_image_manager=*/nullptr,
-              std::move(lose_all_contexts_callback),
-              base::SingleThreadTaskRunner::GetCurrentDefault(),
-              g_webnn_scheduler.get(), kFakeClientIdForTesting)),
-          std::move(receiver))
-          ->impl());
-}
-
 void WebNNContextProviderImpl::OnConnectionError(WebNNContextImpl* impl) {
   auto it = impls_.find(impl->handle());
   CHECK(it != impls_.end());

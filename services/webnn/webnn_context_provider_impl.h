@@ -63,15 +63,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
     kWebNNEnabled = 3,
   };
 
-  // Called to create a WebNNContextProviderImpl as a self-owned receiver.
-  // Optionally returns a reference to the WebNNContextProviderImpl to test
-  // interop.
-  static base::optional_ref<WebNNContextProviderImpl> CreateForTesting(
-      mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
-      WebNNStatus status = WebNNStatus::kWebNNEnabled,
-      LoseAllContextsCallback lose_all_contexts_callback = base::BindOnce([]() {
-      }));
-
   // Called when a WebNNContextImpl has a connection error. After this call, it
   // is no longer safe to access |impl|.
   void OnConnectionError(WebNNContextImpl* impl);

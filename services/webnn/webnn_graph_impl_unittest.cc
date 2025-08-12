@@ -38,6 +38,7 @@
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_tensor_impl.h"
+#include "services/webnn/webnn_test_environment.h"
 #include "services/webnn/webnn_test_utils.h"
 #include "services/webnn/webnn_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -284,7 +285,7 @@ class WebNNGraphImplTest : public testing::Test {
   void SetUp() override {
     WebNNContextProviderImpl::SetBackendForTesting(&backend_for_testing_);
 
-    WebNNContextProviderImpl::CreateForTesting(
+    webnn_test_environment_.BindWebNNContextProvider(
         provider_remote_.BindNewPipeAndPassReceiver());
 
     base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
@@ -318,6 +319,7 @@ class WebNNGraphImplTest : public testing::Test {
 
   FakeWebNNBackend backend_for_testing_;
 
+  test::WebNNTestEnvironment webnn_test_environment_;
   mojo::Remote<mojom::WebNNContextProvider> provider_remote_;
   mojo::Remote<mojom::WebNNContext> webnn_context_;
 };
@@ -7523,8 +7525,9 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
                                  output_2_operand_id);
   EXPECT_TRUE(builder.IsValidGraphForTesting(context_properties));
 
+  test::WebNNTestEnvironment webnn_test_enviroment;
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
-  WebNNContextProviderImpl::CreateForTesting(
+  webnn_test_enviroment.BindWebNNContextProvider(
       provider_remote.BindNewPipeAndPassReceiver());
 
   {
