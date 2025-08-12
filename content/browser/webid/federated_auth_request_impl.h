@@ -16,8 +16,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "content/browser/webid/accounts_fetcher.h"
 #include "content/browser/webid/delegation/federated_sd_jwt_handler.h"
-#include "content/browser/webid/fedcm_accounts_fetcher.h"
 #include "content/browser/webid/fedcm_idp_registration_handler.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/fedcm_url_computations.h"
@@ -46,7 +46,7 @@ class RenderFrameHost;
 
 using blink::mojom::IdentityProviderGetParametersPtr;
 using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
-using IdentityProviderGetInfo = FedCmAccountsFetcher::IdentityProviderGetInfo;
+using IdentityProviderGetInfo = webid::AccountsFetcher::IdentityProviderGetInfo;
 using IdentityRequestAccountPtr =
     scoped_refptr<content::IdentityRequestAccount>;
 using MediationRequirement = ::password_manager::CredentialMediationRequirement;
@@ -523,7 +523,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   OnFederatedTokenReceivedCallback token_received_callback_for_autofill_;
 
-  std::unique_ptr<FedCmAccountsFetcher> fedcm_accounts_fetcher_;
+  std::unique_ptr<webid::AccountsFetcher> fedcm_accounts_fetcher_;
 
   std::unique_ptr<FederatedSdJwtHandler> federated_sdjwt_handler_;
 

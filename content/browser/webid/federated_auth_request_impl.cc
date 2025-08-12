@@ -742,10 +742,10 @@ void FederatedAuthRequestImpl::FetchEndpointsForIdps(
   fetch_data_ = FetchData();
   fetch_data_.pending_idps = std::move(pending_idps);
 
-  fedcm_accounts_fetcher_ = std::make_unique<FedCmAccountsFetcher>(
+  fedcm_accounts_fetcher_ = std::make_unique<webid::AccountsFetcher>(
       render_frame_host(), network_manager_.get(), api_permission_delegate_,
       permission_delegate_,
-      FedCmAccountsFetcher::FedCmFetchingParams(
+      webid::AccountsFetcher::FedCmFetchingParams(
           rp_mode_, icon_ideal_size, icon_minimum_size, mediation_requirement_),
       this);
   fedcm_accounts_fetcher_->FetchEndpointsForIdps(idp_config_urls);

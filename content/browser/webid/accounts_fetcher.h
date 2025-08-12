@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_FEDCM_ACCOUNTS_FETCHER_H_
-#define CONTENT_BROWSER_FEDCM_ACCOUNTS_FETCHER_H_
+#ifndef CONTENT_BROWSER_WEBID_ACCOUNTS_FETCHER_H_
+#define CONTENT_BROWSER_WEBID_ACCOUNTS_FETCHER_H_
 
 #include <set>
 
@@ -21,10 +21,12 @@ class FederatedIdentityApiPermissionContextDelegate;
 class FederatedAuthRequestImpl;
 class RenderFrameHost;
 
+namespace webid {
+
 // A class that fetches accounts from a set of IDPs. Currently only handles
 // config and well-known fetches.
 // TODO(crbug.com/417197032): handle accounts fetches in this class.
-class FedCmAccountsFetcher {
+class AccountsFetcher {
  public:
   struct IdentityProviderGetInfo {
     IdentityProviderGetInfo(blink::mojom::IdentityProviderRequestOptionsPtr,
@@ -54,14 +56,14 @@ class FedCmAccountsFetcher {
     MediationRequirement mediation_requirement;
   };
 
-  FedCmAccountsFetcher(
+  AccountsFetcher(
       RenderFrameHost& render_frame_host,
       IdpNetworkRequestManager* network_manager,
       FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       FedCmFetchingParams fetching_params,
       FederatedAuthRequestImpl* federated_auth_request_impl);
-  ~FedCmAccountsFetcher();
+  ~AccountsFetcher();
 
   // Fetch well-known, config, accounts and client metadata endpoints for
   // passed-in IdPs. Uses parameters from `token_request_get_infos_`.
@@ -82,7 +84,7 @@ class FedCmAccountsFetcher {
 
  private:
   void OnAllConfigAndWellKnownFetched(
-      std::vector<webid::ConfigFetcher::FetchResult> fetch_results);
+      std::vector<ConfigFetcher::FetchResult> fetch_results);
 
   void OnAccountsResponseReceived(
       std::unique_ptr<IdentityProviderInfo> idp_info,
@@ -138,7 +140,7 @@ class FedCmAccountsFetcher {
       blink::mojom::FederatedAuthRequestResult result,
       bool did_show_ui);
 
-  std::unique_ptr<webid::ConfigFetcher> config_fetcher_;
+  std::unique_ptr<ConfigFetcher> config_fetcher_;
 
   // Populated in OnAllConfigAndWellKnownFetched().
   base::flat_map<GURL, GURL> metrics_endpoints_;
@@ -154,9 +156,10 @@ class FedCmAccountsFetcher {
 
   raw_ptr<FederatedAuthRequestImpl> federated_auth_request_impl_;
 
-  base::WeakPtrFactory<FedCmAccountsFetcher> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AccountsFetcher> weak_ptr_factory_{this};
 };
 
+}  // namespace webid
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_FEDCM_ACCOUNTS_FETCHER_H_
+#endif  // CONTENT_BROWSER_WEBID_ACCOUNTS_FETCHER_H_
