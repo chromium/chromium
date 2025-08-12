@@ -14,21 +14,31 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 
 namespace ash {
 namespace {
 
-class IMEDetailedViewPixelTest : public AshTestBase {
+class IMEDetailedViewPixelTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*enable_system_blur=*/bool> {
  public:
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = GetParam();
+    return init_params;
   }
 };
 
-TEST_F(IMEDetailedViewPixelTest, Basics) {
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    IMEDetailedViewPixelTest,
+    testing::Bool());
+
+TEST_P(IMEDetailedViewPixelTest, Basics) {
   // Set up some IMEs.
   std::vector<ImeInfo> available_imes;
   ImeInfo ime1;
@@ -67,8 +77,9 @@ TEST_F(IMEDetailedViewPixelTest, Basics) {
 
   ASSERT_TRUE(detailed_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "check_view",
-      /*revision_number=*/13, detailed_view));
+      GenerateScreenshotName("check_view"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 13 : 0,
+      detailed_view));
 }
 
 }  // namespace

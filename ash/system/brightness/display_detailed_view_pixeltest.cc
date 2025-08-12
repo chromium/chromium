@@ -7,24 +7,32 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
 // Pixel tests for the quick settings display detailed view.
-class DisplayDetailedViewPixelTest : public AshTestBase {
+class DisplayDetailedViewPixelTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*enable_system_blur=*/bool> {
  public:
-  DisplayDetailedViewPixelTest() = default;
-
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = GetParam();
+    return init_params;
   }
 };
 
-TEST_F(DisplayDetailedViewPixelTest, Basics) {
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    DisplayDetailedViewPixelTest,
+    testing::Bool());
+
+TEST_P(DisplayDetailedViewPixelTest, Basics) {
   UnifiedSystemTray* system_tray = GetPrimaryUnifiedSystemTray();
   system_tray->ShowBubble();
   ASSERT_TRUE(system_tray->bubble());
@@ -40,8 +48,9 @@ TEST_F(DisplayDetailedViewPixelTest, Basics) {
   ASSERT_TRUE(detailed_view);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "qs_display_detailed_view",
-      /*revision_number=*/13, detailed_view));
+      GenerateScreenshotName("qs_display_detailed_view"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 13 : 0,
+      detailed_view));
 }
 
 }  // namespace ash

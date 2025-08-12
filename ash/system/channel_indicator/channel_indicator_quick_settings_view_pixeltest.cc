@@ -2,22 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/channel_indicator/channel_indicator_quick_settings_view.h"
-#include "base/memory/raw_ptr.h"
-
 #include "ash/public/cpp/test/test_system_tray_client.h"
+#include "ash/system/channel_indicator/channel_indicator_quick_settings_view.h"
 #include "ash/system/unified/quick_settings_header.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test_shell_delegate.h"
+#include "base/memory/raw_ptr.h"
 #include "components/version_info/channel.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
-class ChannelIndicatorQuickSettingsViewPixelTest : public AshTestBase {
+class ChannelIndicatorQuickSettingsViewPixelTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*enable_system_blur=*/bool> {
  public:
   ChannelIndicatorQuickSettingsViewPixelTest() = default;
   ChannelIndicatorQuickSettingsViewPixelTest(
@@ -50,7 +52,9 @@ class ChannelIndicatorQuickSettingsViewPixelTest : public AshTestBase {
 
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = GetParam();
+    return init_params;
   }
 
   void TearDown() override {
@@ -74,10 +78,15 @@ class ChannelIndicatorQuickSettingsViewPixelTest : public AshTestBase {
   raw_ptr<QuickSettingsHeader, DanglingUntriaged> header_ = nullptr;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ChannelIndicatorQuickSettingsViewPixelTest,
+    testing::Bool());
+
 // Verifies the UI when the feedback button is visible.
-TEST_F(ChannelIndicatorQuickSettingsViewPixelTest, FeedbackButtonVisible) {
+TEST_P(ChannelIndicatorQuickSettingsViewPixelTest, FeedbackButtonVisible) {
   // Basic verification that buttons are visible before taking screenshot.
-    ASSERT_TRUE(header()->GetVisible());
+  ASSERT_TRUE(header()->GetVisible());
   ASSERT_TRUE(view());
   ASSERT_TRUE(view()->version_button_for_test());
   ASSERT_TRUE(view()->version_button_for_test()->GetVisible());
@@ -87,8 +96,9 @@ TEST_F(ChannelIndicatorQuickSettingsViewPixelTest, FeedbackButtonVisible) {
   // Don't capture any part of the UI except for
   // `ChannelIndicatorQuickSettingsView`.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "feedback_button_visible",
-      /*revision_number=*/9, view()));
+      GenerateScreenshotName("feedback_button_visible"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 13 : 0,
+      view()));
 }
 
 }  // namespace ash

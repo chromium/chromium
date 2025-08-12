@@ -10,6 +10,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/test_shell_delegate.h"
 #include "components/session_manager/session_manager_types.h"
@@ -22,7 +23,10 @@ namespace ash {
 class ChannelIndicatorPixelTest
     : public AshTestBase,
       public testing::WithParamInterface<
-          std::tuple<version_info::Channel, bool, bool>> {
+          std::tuple<version_info::Channel,
+                     /*IsHorizontal()=*/bool,
+                     /*IsLoggedIn()=*/bool,
+                     /*IsSystemBlurEnabled()=*/bool>> {
  public:
   ChannelIndicatorPixelTest() = default;
 
@@ -43,19 +47,20 @@ class ChannelIndicatorPixelTest
 
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = IsSystemBlurEnabled();
+    return init_params;
   }
 
-  version_info::Channel GetChannel() { return std::get<0>(GetParam()); }
-  bool IsHorizontal() { return std::get<1>(GetParam()); }
-  bool IsLoggedIn() { return std::get<2>(GetParam()); }
+  version_info::Channel GetChannel() const { return std::get<0>(GetParam()); }
+  bool IsHorizontal() const { return std::get<1>(GetParam()); }
+  bool IsLoggedIn() const { return std::get<2>(GetParam()); }
+  bool IsSystemBlurEnabled() const { return std::get<3>(GetParam()); }
 
-  std::string GenerateTestName() {
-    return l10n_util::GetStringUTF8(
-               channel_indicator_utils::GetChannelNameStringResourceID(
-                   GetChannel(), false)) +
-           (IsHorizontal() ? "Horizontal" : "Vertical") +
-           (IsLoggedIn() ? "LoggedIn" : "LoggedOut");
+  std::string GenerateScreenshotName(const std::string& title) override {
+    return pixel_test_helper()->GenerateScreenshotName(
+        title + (IsHorizontal() ? "_Horizontal" : "_Vertical") +
+        (IsLoggedIn() ? "_LoggedIn" : "_LoggedOut"));
   }
 };
 
@@ -65,11 +70,13 @@ const version_info::Channel kVersions[] = {version_info::Channel::BETA,
 
 // Run the `Visible` test below for each combination of Channel, shelf alignment
 // and login state.
-INSTANTIATE_TEST_SUITE_P(All,
-                         ChannelIndicatorPixelTest,
-                         testing::Combine(testing::ValuesIn(kVersions),
-                                          testing::Bool(),
-                                          testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ChannelIndicatorPixelTest,
+    testing::Combine(testing::ValuesIn(kVersions),
+                     /*IsHorizontal()=*/testing::Bool(),
+                     /*IsLoggedIn()=*/testing::Bool(),
+                     /*IsSystemBlurEnabled()=*/testing::Bool()));
 
 TEST_P(ChannelIndicatorPixelTest, ChannelIndicatorArea) {
   // The shelf can not be vertical on the login screen so skip this case.
@@ -78,8 +85,11 @@ TEST_P(ChannelIndicatorPixelTest, ChannelIndicatorArea) {
   }
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateTestName(),
-      /*revision_number=*/2, GetPrimaryShelf()->GetStatusAreaWidget()));
+      GenerateScreenshotName(l10n_util::GetStringUTF8(
+          channel_indicator_utils::GetChannelNameStringResourceID(GetChannel(),
+                                                                  false))),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 2 : 0,
+      GetPrimaryShelf()->GetStatusAreaWidget()));
 }
 
 }  // namespace ash
