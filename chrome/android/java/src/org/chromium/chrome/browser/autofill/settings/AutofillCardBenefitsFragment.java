@@ -112,7 +112,9 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
         createCardBenefitSwitch();
         createLearnAboutCardBenefitsLink();
         createPreferencesForCardBenefitTerms();
-        drawBottomDivider();
+        if (!ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            drawBottomDivider();
+        }
     }
 
     private Context getStyledContext() {
