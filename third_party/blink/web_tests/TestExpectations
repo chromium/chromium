@@ -9635,4 +9635,5 @@ crbug.com/435121429 external/wpt/web-animations/timing-model/animations/setting-
 
 # Gardener 2025-08-12
 crbug.com/437996042 [ Mac12 ] virtual/text-antialias/mac-system-ui-width.html [ Failure ]
+crbug.com/437996042 [ Mac12-arm64 ] virtual/text-antialias/mac-system-ui-width.html [ Failure ]
 crbug.com/437996042 [ Mac13 ] virtual/text-antialias/mac-system-ui-width.html [ Failure ]
