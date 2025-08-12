@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -353,6 +354,18 @@ DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
         kBrowserInstanceUnavailable;
   }
 
+  AvatarToolbarButton* avatar_button =
+      BrowserView::GetBrowserViewForBrowser(browser)
+          ->toolbar_button_provider()
+          ->GetAvatarToolbarButton();
+  // Skip showing the dialog if the avatar button is not available.
+  // Some browsers, such as web apps, don't have an avatar toolbar button to
+  // anchor the bubble. Even if a web app has an avatar toolbar button, avoid
+  // showing the dialog to keep the behavior consistent.
+  if (!avatar_button || web_app::AppBrowserController::IsWebApp(browser)) {
+    return DiceMigrationService::DialogNotShownReason::kAvatarButtonUnavailable;
+  }
+
   ui::DialogModelLabel::TextReplacement learn_more_link =
       ui::DialogModelLabel::CreateLink(
           IDS_LEARN_MORE,
@@ -383,19 +396,8 @@ DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
             .SetId(kCancelButtonElementId)
             .SetLabel(l10n_util::GetStringUTF16(IDS_NOT_NOW)));
   }
-
-  // TODO(crbug.com/399838468): Refine the dialog behavior.
   builder.DisableCloseOnDeactivate();
   builder.SetIsAlertDialog();
-
-  AvatarToolbarButton* avatar_button =
-      BrowserView::GetBrowserViewForBrowser(browser)
-          ->toolbar_button_provider()
-          ->GetAvatarToolbarButton();
-  if (!avatar_button) {
-    // Skip showing the dialog if the avatar button is not available.
-    return DiceMigrationService::DialogNotShownReason::kAvatarButtonUnavailable;
-  }
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       builder.Build(), avatar_button, views::BubbleBorder::TOP_RIGHT);

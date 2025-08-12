@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/signin/dice_migration_service_factory.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -1502,6 +1504,47 @@ IN_PROC_BROWSER_TEST_F(
 
   histogram_tester_.ExpectUniqueSample(kUserMigratedHistogram, true, 1);
   histogram_tester_.ExpectTotalCount(kRestoredFromBackupHistogram, 0);
+}
+
+// Regression test for crbug.com/437344538. The dialog should not be shown if
+// the avatar button is not unavailable. This test reproduces it with a web
+// app window, which has no avatar button.
+class DiceMigrationServiceBrowserTestWithWebApps
+    : public DiceMigrationServiceBrowserTest {
+ public:
+  void InstallAndLaunchWebApp() {
+    web_app_frame_toolbar_helper_.InstallAndLaunchWebApp(
+        browser(), GURL("https://test.org"));
+  }
+
+ private:
+  WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
+};
+
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTestWithWebApps,
+                      NoDialogShown) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  InstallAndLaunchWebApp();
+
+  ASSERT_TRUE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+
+  // Show the migration dialog.
+  FireDialogTriggerTimer();
+
+  // The dialog is not shown.
+  EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+
+  histogram_tester_.ExpectUniqueSample(kDialogShownHistogram, false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kDialogNotShownReasonHistogram,
+      DiceMigrationService::DialogNotShownReason::kAvatarButtonUnavailable, 1);
 }
 
 }  // namespace
