@@ -235,6 +235,7 @@ void ChangePasswordFormFinder::OnButtonClicked(bool result) {
 
 void ChangePasswordFormFinder::OnSubsequentFormWaitingResult(
     password_manager::PasswordFormManager* form_manager) {
+  form_waiter_.reset();
   if (auto logger = GetLoggerIfAvailable(client_)) {
     logger->LogBoolean(
         Logger::STRING_PASSWORD_CHANGE_SUBSEQUENT_FORM_WAITING_RESULT,
