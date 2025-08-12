@@ -3291,8 +3291,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationFailsOnCrash) {
 
 TEST_F(OnDeviceModelServiceControllerTest, SendsPerformanceHint) {
   FakeBaseModelAsset base_model(
-      {.supported_performance_hint =
-           proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE});
+      std::vector<proto::OnDeviceModelPerformanceHint>{
+          proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE});
   Initialize(InitializeParams{
       .base_model = &base_model,
       .safety = &standard_assets_.safety,
@@ -3313,8 +3313,8 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesCpuModel) {
       {{"on_device_cpu_ram_threshold_mb", "0"},
        {"on_device_cpu_processor_count_threshold", "0"}});
   FakeBaseModelAsset base_model(
-      {.supported_performance_hint =
-           proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU});
+      std::vector<proto::OnDeviceModelPerformanceHint>{
+          proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU});
   Initialize(InitializeParams{
       .base_model = &base_model,
       .safety = &standard_assets_.safety,

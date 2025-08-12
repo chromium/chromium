@@ -33,8 +33,6 @@ class FakeBaseModelAsset {
     uint32_t cache_weight = 0;
     uint32_t encoder_cache_weight = 0;
     uint32_t adapter_cache_weight = 0;
-    proto::OnDeviceModelPerformanceHint supported_performance_hint =
-        proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY;
   };
   FakeBaseModelAsset();
   explicit FakeBaseModelAsset(Content&& content);

@@ -40,13 +40,14 @@ constexpr char kBaseModelName[] = "Test";
 constexpr char kBaseModelVersion[] = "0.0.1";
 
 proto::Any CreateOnDeviceBaseModelMetadata(
-    const OnDeviceBaseModelSpec& model_spec) {
+    const std::string& base_model_name,
+    const std::string& base_model_version,
+    std::vector<proto::OnDeviceModelPerformanceHint> hints) {
   proto::OnDeviceBaseModelMetadata model_metadata;
-  model_metadata.set_base_model_name(model_spec.model_name);
-  model_metadata.set_base_model_version(model_spec.model_version);
-  *model_metadata.mutable_supported_performance_hints() = {
-      model_spec.supported_performance_hints.begin(),
-      model_spec.supported_performance_hints.end()};
+  model_metadata.set_base_model_name(base_model_name);
+  model_metadata.set_base_model_version(base_model_version);
+  *model_metadata.mutable_supported_performance_hints() = {hints.begin(),
+                                                           hints.end()};
 
   std::string serialized_metadata;
   model_metadata.SerializeToString(&serialized_metadata);
@@ -220,7 +221,7 @@ TEST_F(OnDeviceModelAdaptationLoaderTest, AdaptationModelIncompatible) {
   TestModelInfoBuilder model_info_builder;
   model_info_builder
       .SetModelMetadata(CreateOnDeviceBaseModelMetadata(
-          {"different_base_model_name", kBaseModelVersion, {}}))
+          "different_base_model_name", kBaseModelVersion, {}))
       .SetAdditionalFiles({
           temp_dir().Append(kOnDeviceModelAdaptationWeightsFile),
       });
@@ -234,9 +235,9 @@ TEST_F(OnDeviceModelAdaptationLoaderTest, AdaptationModelIncompatible) {
 
 TEST_F(OnDeviceModelAdaptationLoaderTest,
        AdaptationModelIncompatiblePerformanceHint) {
-  FakeBaseModelAsset base_model_asset(
-      {.supported_performance_hint =
-           proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY});
+  std::vector<proto::OnDeviceModelPerformanceHint> supported_hints = {
+      proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY};
+  FakeBaseModelAsset base_model_asset(supported_hints);
   SetBaseModelStateChanged(base_model_asset);
   EXPECT_EQ(proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION,
             model_provider_.optimization_target_);
@@ -245,9 +246,8 @@ TEST_F(OnDeviceModelAdaptationLoaderTest,
   TestModelInfoBuilder model_info_builder;
   model_info_builder
       .SetModelMetadata(CreateOnDeviceBaseModelMetadata(
-          {kBaseModelName,
-           kBaseModelVersion,
-           {proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE}}))
+          kBaseModelName, kBaseModelVersion,
+          {proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE}))
       .SetAdditionalFiles({
           temp_dir().Append(kOnDeviceModelAdaptationWeightsFile),
       });
@@ -269,8 +269,8 @@ TEST_F(OnDeviceModelAdaptationLoaderTest,
 
   TestModelInfoBuilder model_info_builder;
   model_info_builder
-      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(
-          {kBaseModelName, kBaseModelVersion, {}}))
+      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(kBaseModelName,
+                                                        kBaseModelVersion, {}))
       .SetAdditionalFiles({
           temp_dir().Append(kOnDeviceModelAdaptationWeightsFile),
           temp_dir().Append(kOnDeviceModelExecutionConfigFile),
@@ -296,8 +296,8 @@ TEST_F(OnDeviceModelAdaptationLoaderTest,
 
   TestModelInfoBuilder model_info_builder;
   model_info_builder
-      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(
-          {kBaseModelName, kBaseModelVersion, {}}))
+      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(kBaseModelName,
+                                                        kBaseModelVersion, {}))
       .SetAdditionalFiles({
           temp_dir().Append(kOnDeviceModelAdaptationWeightsFile),
       });
@@ -325,8 +325,8 @@ TEST_F(OnDeviceModelAdaptationLoaderTest,
 
   TestModelInfoBuilder model_info_builder;
   model_info_builder
-      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(
-          {kBaseModelName, kBaseModelVersion, {}}))
+      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(kBaseModelName,
+                                                        kBaseModelVersion, {}))
       .SetAdditionalFiles({
           temp_dir().Append(kOnDeviceModelAdaptationWeightsFile),
       });
@@ -357,8 +357,8 @@ TEST_F(OnDeviceModelAdaptationLoaderTest, AdaptationModelValid) {
 
   TestModelInfoBuilder model_info_builder;
   model_info_builder
-      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(
-          {kBaseModelName, kBaseModelVersion, {}}))
+      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(kBaseModelName,
+                                                        kBaseModelVersion, {}))
       .SetAdditionalFiles({
           temp_dir().Append(kOnDeviceModelAdaptationWeightsFile),
           temp_dir().Append(kOnDeviceModelExecutionConfigFile),
@@ -389,8 +389,8 @@ TEST_F(OnDeviceModelAdaptationLoaderTest, AdaptationModelValidWithoutWeights) {
 
   TestModelInfoBuilder model_info_builder;
   model_info_builder
-      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(
-          {kBaseModelName, kBaseModelVersion, {}}))
+      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(kBaseModelName,
+                                                        kBaseModelVersion, {}))
       .SetAdditionalFiles({
           temp_dir().Append(kOnDeviceModelExecutionConfigFile),
       });
@@ -413,9 +413,9 @@ TEST_F(OnDeviceModelAdaptationLoaderTest, AdaptationModelValidWithoutWeights) {
 
 TEST_F(OnDeviceModelAdaptationLoaderTest,
        AdaptationModelValidWithNoPerfHintsInMetadata) {
-  FakeBaseModelAsset base_model_asset(
-      {.supported_performance_hint =
-           proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY});
+  std::vector<proto::OnDeviceModelPerformanceHint> supported_hints = {
+      proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY};
+  FakeBaseModelAsset base_model_asset(supported_hints);
   SetBaseModelStateChanged(base_model_asset);
 
   EXPECT_EQ(proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION,
@@ -423,8 +423,8 @@ TEST_F(OnDeviceModelAdaptationLoaderTest,
 
   TestModelInfoBuilder model_info_builder;
   model_info_builder
-      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(
-          {kBaseModelName, kBaseModelVersion, {}}))
+      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(kBaseModelName,
+                                                        kBaseModelVersion, {}))
       .SetAdditionalFiles({
           temp_dir().Append(kOnDeviceModelExecutionConfigFile),
       });
@@ -467,8 +467,8 @@ TEST_F(OnDeviceModelAdaptationLoaderTest,
 
   TestModelInfoBuilder model_info_builder;
   model_info_builder
-      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(
-          {kBaseModelName, kBaseModelVersion, {}}))
+      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(kBaseModelName,
+                                                        kBaseModelVersion, {}))
       .SetAdditionalFiles({
           temp_dir().Append(kOnDeviceModelAdaptationWeightsFile),
           temp_dir().Append(kOnDeviceModelExecutionConfigFile),

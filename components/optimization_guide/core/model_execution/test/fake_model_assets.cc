@@ -26,7 +26,12 @@ FakeBaseModelAsset::FakeBaseModelAsset()
     : FakeBaseModelAsset(FakeBaseModelAsset::Content{}) {}
 FakeBaseModelAsset::FakeBaseModelAsset(Content&& content) {
   CHECK(temp_dir_.CreateUniqueTempDir());
-  supported_performance_hints_.Append(content.supported_performance_hint);
+  // Support all performance hints by default.
+  supported_performance_hints_ =
+      base::Value::List()
+          .Append(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY)
+          .Append(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE)
+          .Append(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU);
   Write(std::move(content));
 }
 FakeBaseModelAsset::FakeBaseModelAsset(

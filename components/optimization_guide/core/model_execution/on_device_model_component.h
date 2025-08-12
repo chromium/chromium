@@ -77,19 +77,18 @@ enum class OnDeviceModelStatus {
 
 std::ostream& operator<<(std::ostream& out, OnDeviceModelStatus status);
 
-// Wraps the specification needed to determine compatibility of the
-// on-device base model with any feature specific code.
+// Identifies a specific on-device base model and the performance hint that
+// it will be used with.
 struct OnDeviceBaseModelSpec {
   using PerformanceHints =
       base::EnumSet<proto::OnDeviceModelPerformanceHint,
                     proto::OnDeviceModelPerformanceHint_MIN,
                     proto::OnDeviceModelPerformanceHint_MAX>;
 
-  OnDeviceBaseModelSpec();
   OnDeviceBaseModelSpec(
       const std::string& model_name,
       const std::string& model_version,
-      PerformanceHints supported_performance_hints);
+      proto::OnDeviceModelPerformanceHint selected_performance_hint);
   ~OnDeviceBaseModelSpec();
   OnDeviceBaseModelSpec(const OnDeviceBaseModelSpec&);
 
@@ -99,8 +98,8 @@ struct OnDeviceBaseModelSpec {
   std::string model_name;
   // The version of the base model currently available on-device.
   std::string model_version;
-  // The supported performance hints for this device and base model.
-  PerformanceHints supported_performance_hints;
+  // The selected performance hint for this device and base model.
+  proto::OnDeviceModelPerformanceHint selected_performance_hint;
 };
 
 // Manages the state of the on-device component.
@@ -314,7 +313,9 @@ class OnDeviceModelComponentStateManager final {
 // State of the on-device model component.
 class OnDeviceModelComponentState {
  public:
-  OnDeviceModelComponentState();
+  OnDeviceModelComponentState(base::FilePath install_dir,
+                              base::Version component_version,
+                              OnDeviceBaseModelSpec model_spec);
   OnDeviceModelComponentState(const OnDeviceModelComponentState&);
   ~OnDeviceModelComponentState();
 

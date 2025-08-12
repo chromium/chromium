@@ -563,10 +563,8 @@ OnDeviceModelServiceController::BaseModelController::PopulateModelPaths() {
   model_paths.weights = model_metadata_->model_path().Append(kWeightsFile);
 
   // TODO(crbug.com/400998489): Cache files are experimental for now.
-  if (base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelForceCpuBackend) ||
-      base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelCpuBackend)) {
+  if (model_metadata_->performance_hint() ==
+      proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU) {
     model_paths.cache =
         model_metadata_->model_path().Append(kExperimentalCacheFile);
   }
@@ -589,23 +587,7 @@ void OnDeviceModelServiceController::BaseModelController::OnModelAssetsLoaded(
   params->adaptation_ranks = supported_adaptation_ranks_;
 
   proto::OnDeviceModelPerformanceHint hint =
-      proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY;
-  auto state_manager = controller_->on_device_component_state_manager_;
-  if (base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelForceCpuBackend)) {
-    hint = proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU;
-  } else if (state_manager && state_manager->GetState() &&
-             !state_manager->GetState()
-                  ->GetBaseModelSpec()
-                  .supported_performance_hints.empty()) {
-    DCHECK_EQ(state_manager->GetState()
-                  ->GetBaseModelSpec()
-                  .supported_performance_hints.size(),
-              1u);
-    hint = *state_manager->GetState()
-                ->GetBaseModelSpec()
-                .supported_performance_hints.begin();
-  }
+      model_metadata_->performance_hint();
   if (hint == proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU) {
     params->backend_type = ml::ModelBackendType::kCpuBackend;
   } else if (hint ==

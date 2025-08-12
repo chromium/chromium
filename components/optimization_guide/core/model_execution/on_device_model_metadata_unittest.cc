@@ -68,13 +68,13 @@ class OnDeviceModelMetadataTest : public testing::Test {
 TEST_F(OnDeviceModelMetadataTest, EmptyFilePath) {
   loader().Load(base::FilePath(), "test", kModelSpec);
   RunUntilIdle();
-  EXPECT_EQ(0, metadata()->validation_config().validation_prompts().size());
+  ASSERT_FALSE(metadata());
 }
 
 TEST_F(OnDeviceModelMetadataTest, ConfigFileNotInProvidedPath) {
   loader().Load(temp_dir(), "test", kModelSpec);
   RunUntilIdle();
-  EXPECT_EQ(0, metadata()->validation_config().validation_prompts().size());
+  ASSERT_FALSE(metadata());
 }
 
 TEST_F(OnDeviceModelMetadataTest, ValidConfig) {
