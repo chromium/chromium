@@ -619,8 +619,11 @@ export class SpeechController {
   private stopSpeech_(pauseSource: PauseActionSource) {
     // Pause source needs to be set before updating isSpeechActive so that
     // listeners get the correct source when listening for isSpeechActive
-    // changes.
-    this.model_.setPauseSource(pauseSource);
+    // changes. Only update the pause source to the one that actually stopped
+    // speech.
+    if (this.isSpeechActive()) {
+      this.model_.setPauseSource(pauseSource);
+    }
     this.setIsSpeechActive_(false);
     this.setIsAudioCurrentlyPlaying_(false);
 

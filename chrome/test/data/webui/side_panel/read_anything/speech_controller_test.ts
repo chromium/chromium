@@ -101,10 +101,31 @@ suite('SpeechController', () => {
 
     speechController.onPlayPauseToggle(null, 'No matter how many times');
     speechController.onPlayPauseToggle(null, 'No matter how many times');
+
+    assertTrue(speechController.isPausedFromButton());
+  });
+
+  test('pause source is not updated if already paused', () => {
+    assertFalse(speechController.isPausedFromButton());
+
+    speechController.onPlayPauseToggle(null, 'No matter how many times');
+    speechController.onPlayPauseToggle(null, 'No matter how many times');
     assertTrue(speechController.isPausedFromButton());
 
     speechController.previewVoice(null);
-    assertFalse(speechController.isPausedFromButton());
+    assertTrue(speechController.isPausedFromButton());
+  });
+
+  test('isTemporaryPause', () => {
+    assertFalse(speechController.isTemporaryPause());
+
+    speechController.onPlayPauseToggle(null, 'No matter how many times');
+    speechController.onPlayPauseToggle(null, 'No matter how many times');
+    assertFalse(speechController.isTemporaryPause());
+
+    speechController.onPlayPauseToggle(null, 'No matter how many times');
+    speechController.previewVoice(null);
+    assertTrue(speechController.isTemporaryPause());
   });
 
   test('previewVoice stops speech', () => {
@@ -206,7 +227,7 @@ suite('SpeechController', () => {
     assertFalse(speechController.isSpeechActive());
     assertFalse(speechController.isAudioCurrentlyPlaying());
     assertFalse(speechController.isPausedFromButton());
-    assertTrue(speechController.isTemporaryPause());
+    assertFalse(speechController.isTemporaryPause());
     assertEquals(0, speech.getCallCount('pause'));
     assertEquals(1, speech.getCallCount('cancel'));
     assertEquals(0, speech.getCallCount('speak'));
