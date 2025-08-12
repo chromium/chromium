@@ -5703,9 +5703,10 @@
     "name": "https-first-dialog-ui",
     "owners": [
       "jdeblasio@chromium.org",
+      "cthomp@chromium.org",
       "chrome-secure-web-and-net@chromium.org"
     ],
-    "expiry_milestone": 133
+    "expiry_milestone": 150
   },
   {
     "name": "https-first-mode-for-typically-secure-users",

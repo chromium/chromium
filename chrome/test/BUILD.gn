@@ -11127,6 +11127,7 @@ if (!is_android && !is_chromeos_device) {
       "../browser/sessions/session_restore_interactive_uitest.cc",
       "../browser/site_isolation/site_per_process_interactive_browsertest.cc",
       "../browser/site_isolation/site_per_process_text_input_browsertest.cc",
+      "../browser/ssl/ask_before_http_dialog_controller_uitest.cc",
       "../browser/ssl/typed_navigation_upgrade_throttle_browsertest.cc",
       "../browser/supervised_user/incognito_mode_interactive_uitest.cc",
       "../browser/ui/browser_command_controller_interactive_browsertest.cc",

@@ -94,6 +94,7 @@ void SecurityInterstitialControllerClient::GoBackAfterNavigationCommitted() {
   content::RenderFrameHost* render_frame_host = InterstitialRenderFrameHost();
   auto& controller = render_frame_host->GetController();
 
+  // LINT.IfChange(InterstitialGoBackLogic)
   if (controller.CanGoBack()) {
     controller.GoBack();
   } else {
@@ -107,6 +108,7 @@ void SecurityInterstitialControllerClient::GoBackAfterNavigationCommitted() {
     controller.LoadURL(url_to_load, content::Referrer(),
                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
   }
+  // LINT.ThenChange(chrome/browser/ssl/ask_before_http_dialog_controller.cc:HttpsFirstModeGoBackLogic)
 }
 
 void SecurityInterstitialControllerClient::Proceed() {

@@ -16,6 +16,10 @@
 class PrefService;
 class Profile;
 
+namespace content {
+class WebContents;
+}
+
 // Helper for applying the HttpAllowlist enterprise policy. Checks if the
 // hostname of `url` matches any of the hostnames or hostname patterns in the
 // `allowed_hosts` list. Does not allow blanket host wildcards (i.e., "*" which
@@ -32,6 +36,11 @@ void AllowHttpForHostnamesForTesting(const std::vector<std::string>& hostnames,
 
 // Clears HttpAllowlist enterprise policy for testing.
 void ClearHttpAllowlistForHostnamesForTesting(PrefService* prefs);
+
+// Computes the HttpInterstitialState for the given WebContents and URL being
+// navigated to.
+security_interstitials::https_only_mode::HttpInterstitialState
+ComputeInterstitialState(content::WebContents* web_contents, const GURL& url);
 
 // Returns true if the HTTPS-First Balanced Mode feature flag is enabled.
 bool IsBalancedModeAvailable();

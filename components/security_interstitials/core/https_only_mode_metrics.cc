@@ -8,36 +8,6 @@
 
 namespace security_interstitials::https_only_mode {
 
-namespace {
-
-InterstitialReason GetInterstitialReason(
-    const HttpInterstitialState& interstitial_state) {
-  // This should follow the order in
-  // PopulateHttpsOnlyModeStringsForBlockingPage() in
-  // https_only_mode_ui_utils.cc.
-  if (interstitial_state.enabled_by_advanced_protection) {
-    return InterstitialReason::kAdvancedProtection;
-  }
-  if (interstitial_state.enabled_by_engagement_heuristic) {
-    return InterstitialReason::kSiteEngagementHeuristic;
-  }
-  if (interstitial_state.enabled_by_typically_secure_browsing) {
-    return InterstitialReason::kTypicallySecureUserHeuristic;
-  }
-  if (interstitial_state.enabled_by_pref) {
-    return InterstitialReason::kPref;
-  }
-  if (interstitial_state.enabled_by_incognito) {
-    return InterstitialReason::kIncognito;
-  }
-  if (interstitial_state.enabled_in_balanced_mode) {
-    return InterstitialReason::kBalanced;
-  }
-  return InterstitialReason::kUnknown;
-}
-
-}  // namespace
-
 const char kEventHistogram[] = "Security.HttpsFirstMode.NavigationEvent";
 const char kEventHistogramWithEngagementHeuristic[] =
     "Security.HttpsFirstModeWithEngagementHeuristic.NavigationEvent";
@@ -99,6 +69,35 @@ void RecordSiteEngagementHeuristicEnforcementDuration(
     base::TimeDelta enforcement_duration) {
   base::UmaHistogramTimes(kSiteEngagementHeuristicEnforcementDurationHistogram,
                           enforcement_duration);
+}
+
+InterstitialReason GetInterstitialReason(
+    const HttpInterstitialState& interstitial_state) {
+  // Multiple interstitial flags might be true here, but we assign higher
+  // priority to Site Engagement heuristic because we expect SE interstitials
+  // to be rare. Advanced Protection locks the HTTPS-First Mode UI setting so
+  // it's higher priority than the HFM string as well. The lowest priority is
+  // given to HFM-in-Incognito, where we want to use different strings only if
+  // the user is not opted in to HFM for any other reason.
+  if (interstitial_state.enabled_by_advanced_protection) {
+    return InterstitialReason::kAdvancedProtection;
+  }
+  if (interstitial_state.enabled_by_engagement_heuristic) {
+    return InterstitialReason::kSiteEngagementHeuristic;
+  }
+  if (interstitial_state.enabled_by_typically_secure_browsing) {
+    return InterstitialReason::kTypicallySecureUserHeuristic;
+  }
+  if (interstitial_state.enabled_by_pref) {
+    return InterstitialReason::kPref;
+  }
+  if (interstitial_state.enabled_in_balanced_mode) {
+    return InterstitialReason::kBalanced;
+  }
+  if (interstitial_state.enabled_by_incognito) {
+    return InterstitialReason::kIncognito;
+  }
+  return InterstitialReason::kUnknown;
 }
 
 void RecordInterstitialReason(const HttpInterstitialState& interstitial_state) {

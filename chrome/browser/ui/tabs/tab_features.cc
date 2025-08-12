@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -362,6 +363,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   if (base::FeatureList::IsEnabled(net::features::kVerifyQWACs)) {
     qwac_web_contents_observer_ =
         std::make_unique<QwacWebContentsObserver>(tab);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kHttpsFirstDialogUi)) {
+    ask_before_http_dialog_controller_ =
+        std::make_unique<AskBeforeHttpDialogController>(&tab);
   }
 }
 

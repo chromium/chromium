@@ -4229,6 +4229,8 @@ static_library("browser") {
       "speech/speech_recognition_service.h",
       "speech/speech_recognition_service_factory.cc",
       "speech/speech_recognition_service_factory.h",
+      "ssl/ask_before_http_dialog_controller.cc",
+      "ssl/ask_before_http_dialog_controller.h",
       "ssl/generated_https_first_mode_pref.cc",
       "ssl/generated_https_first_mode_pref.h",
       "ssl/ssl_client_auth_observer.cc",

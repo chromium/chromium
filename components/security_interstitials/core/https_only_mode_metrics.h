@@ -240,6 +240,9 @@ enum class InterstitialReason {
   kMaxValue = kBalanced,
 };
 
+InterstitialReason GetInterstitialReason(
+    const HttpInterstitialState& interstitial_state);
+
 void RecordInterstitialReason(const HttpInterstitialState& interstitial_state);
 
 // Used for UKM. There is only a single BlockingResult per navigation.

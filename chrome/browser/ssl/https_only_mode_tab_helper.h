@@ -27,6 +27,8 @@ class HttpsOnlyModeTabHelper
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // HTTPS-Only Mode metadata getters and setters:
   void set_is_navigation_upgraded(bool upgraded) {
