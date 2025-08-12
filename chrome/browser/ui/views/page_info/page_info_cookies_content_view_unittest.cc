@@ -161,7 +161,7 @@ class PageInfoCookiesContentViewBaseTestClass : public TestWithBrowserView {
   std::unique_ptr<PageInfoCookiesContentView> content_view_;
 };
 
-class PageInfoCookiesContentViewPre3pcdTest
+class PageInfoCookiesContentViewTest
     : public PageInfoCookiesContentViewBaseTestClass {
   std::vector<base::test::FeatureRefAndParams> EnabledFeatures() override {
     return {
@@ -169,8 +169,7 @@ class PageInfoCookiesContentViewPre3pcdTest
   }
 };
 
-TEST_F(PageInfoCookiesContentViewPre3pcdTest,
-       ThirdPartyCookiesAllowedByDefault) {
+TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedByDefault) {
   PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.controls_state = CookieControlsState::kHidden;
@@ -178,6 +177,11 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
 
   // Third-party cookies section:
   EXPECT_FALSE(third_party_cookies_container()->GetVisible());
+  EXPECT_EQ(
+      third_party_cookies_description_label()->GetText(),
+      l10n_util::GetStringFUTF16(
+          IDS_PAGE_INFO_COOKIES_DESCRIPTION,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
 
   // Manage cookies button:
   auto subtitle = GetManageButtonSubtitle(content_view());
@@ -186,14 +190,17 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
                           cookie_info.allowed_sites_count));
 }
 
-TEST_F(PageInfoCookiesContentViewPre3pcdTest, ThirdPartyCookiesBlocked) {
+TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlocked) {
   PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   content_view()->SetCookieInfo(cookie_info);
 
-  // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
-
+  EXPECT_EQ(
+      third_party_cookies_description_label()->GetText(),
+      l10n_util::GetStringFUTF16(
+          IDS_PAGE_INFO_COOKIES_DESCRIPTION,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
   EXPECT_EQ(
       third_party_cookies_title()->GetText(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE));
@@ -219,16 +226,18 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest, ThirdPartyCookiesBlocked) {
                 cookie_info.allowed_sites_count));
 }
 
-TEST_F(PageInfoCookiesContentViewPre3pcdTest,
-       ThirdPartyCookiesAllowedPermanent) {
+TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedPermanent) {
   PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
   content_view()->SetCookieInfo(cookie_info);
 
-  // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
-
+  EXPECT_EQ(
+      third_party_cookies_description_label()->GetText(),
+      l10n_util::GetStringFUTF16(
+          IDS_PAGE_INFO_COOKIES_DESCRIPTION,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
   EXPECT_EQ(third_party_cookies_title()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_PAGE_INFO_TRACKING_PROTECTION_PERMANENT_ALLOWED_TITLE));
@@ -254,16 +263,18 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
                 cookie_info.allowed_sites_count));
 }
 
-TEST_F(PageInfoCookiesContentViewPre3pcdTest,
-       ThirdPartyCookiesAllowedTemporary) {
+TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedTemporary) {
   PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests(kDaysToExpiration);
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
   content_view()->SetCookieInfo(cookie_info);
 
-  // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
-
+  EXPECT_EQ(
+      third_party_cookies_description_label()->GetText(),
+      l10n_util::GetStringFUTF16(
+          IDS_PAGE_INFO_COOKIES_DESCRIPTION,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
   EXPECT_EQ(third_party_cookies_title()->GetText(),
             l10n_util::GetPluralStringFUTF16(
                 IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED_RESTART_TITLE,
@@ -289,15 +300,18 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
                 cookie_info.allowed_sites_count));
 }
 
-TEST_F(PageInfoCookiesContentViewPre3pcdTest,
-       ThirdPartyCookiesBlockedByPolicy) {
+TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlockedByPolicy) {
   PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
   content_view()->SetCookieInfo(cookie_info);
 
-  // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
+  EXPECT_EQ(
+      third_party_cookies_description_label()->GetText(),
+      l10n_util::GetStringFUTF16(
+          IDS_PAGE_INFO_COOKIES_DESCRIPTION,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
   EXPECT_EQ(third_party_cookies_row()->GetIconForTesting(),
             GetImageModel(views::kEyeCrossedRefreshIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
@@ -322,16 +336,19 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
                 cookie_info.allowed_sites_count));
 }
 
-TEST_F(PageInfoCookiesContentViewPre3pcdTest,
-       ThirdPartyCookiesAllowedByPolicy) {
+TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedByPolicy) {
   PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
   content_view()->SetCookieInfo(cookie_info);
 
-  // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
+  EXPECT_EQ(
+      third_party_cookies_description_label()->GetText(),
+      l10n_util::GetStringFUTF16(
+          IDS_PAGE_INFO_COOKIES_DESCRIPTION,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
   EXPECT_EQ(third_party_cookies_row()->GetIconForTesting(),
             GetImageModel(views::kEyeRefreshIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
@@ -356,15 +373,18 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
                 cookie_info.allowed_sites_count));
 }
 
-TEST_F(PageInfoCookiesContentViewPre3pcdTest,
-       ThirdPartyCookiesBlockedByExtension) {
+TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlockedByExtension) {
   PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByExtension;
   content_view()->SetCookieInfo(cookie_info);
 
-  // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
+  EXPECT_EQ(
+      third_party_cookies_description_label()->GetText(),
+      l10n_util::GetStringFUTF16(
+          IDS_PAGE_INFO_COOKIES_DESCRIPTION,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
   EXPECT_EQ(third_party_cookies_row()->GetIconForTesting(),
             GetImageModel(views::kEyeCrossedRefreshIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
@@ -389,16 +409,19 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
                 cookie_info.allowed_sites_count));
 }
 
-TEST_F(PageInfoCookiesContentViewPre3pcdTest,
-       ThirdPartyCookiesAllowedByExtension) {
+TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedByExtension) {
   PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByExtension;
   content_view()->SetCookieInfo(cookie_info);
 
-  // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
+  EXPECT_EQ(
+      third_party_cookies_description_label()->GetText(),
+      l10n_util::GetStringFUTF16(
+          IDS_PAGE_INFO_COOKIES_DESCRIPTION,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
   EXPECT_EQ(third_party_cookies_row()->GetIconForTesting(),
             GetImageModel(views::kEyeRefreshIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
@@ -423,8 +446,7 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
                 cookie_info.allowed_sites_count));
 }
 
-TEST_F(PageInfoCookiesContentViewPre3pcdTest,
-       ThirdPartyCookiesBlockedBySetting) {
+TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlockedBySetting) {
   // This is not be possible, but the UI still should be able to handle this
   // state correctly.
   PageInfoCookiesContentView::CookiesInfo cookie_info =
@@ -432,8 +454,12 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByCookieSetting;
   content_view()->SetCookieInfo(cookie_info);
 
-  // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
+  EXPECT_EQ(
+      third_party_cookies_description_label()->GetText(),
+      l10n_util::GetStringFUTF16(
+          IDS_PAGE_INFO_COOKIES_DESCRIPTION,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
   EXPECT_EQ(third_party_cookies_row()->GetIconForTesting(),
             GetImageModel(views::kEyeCrossedRefreshIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
@@ -459,16 +485,19 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
                 cookie_info.allowed_sites_count));
 }
 
-TEST_F(PageInfoCookiesContentViewPre3pcdTest,
-       ThirdPartyCookiesAllowedBySetting) {
+TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedBySetting) {
   PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByCookieSetting;
   content_view()->SetCookieInfo(cookie_info);
 
-  // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
+  EXPECT_EQ(
+      third_party_cookies_description_label()->GetText(),
+      l10n_util::GetStringFUTF16(
+          IDS_PAGE_INFO_COOKIES_DESCRIPTION,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
   EXPECT_EQ(third_party_cookies_row()->GetIconForTesting(),
             GetImageModel(views::kEyeRefreshIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
@@ -661,35 +690,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
                          testing::Values(CookieBlocking3pcdStatus::kLimited,
                                          CookieBlocking3pcdStatus::kAll));
-
-class PageInfoCookiesContentViewAlwaysBlock3pcsIncognito
-    : public PageInfoCookiesContentViewBaseTestClass {
-  std::vector<base::test::FeatureRefAndParams> EnabledFeatures() override {
-    return {{privacy_sandbox::kAlwaysBlock3pcsIncognito, {}}};
-  }
-};
-
-TEST_F(PageInfoCookiesContentViewAlwaysBlock3pcsIncognito,
-       DisplaysIncognitoDescriptionWhenInIncognito) {
-  PageInfoCookiesContentView::CookiesInfo cookie_info =
-      DefaultCookieInfoForTests();
-  cookie_info.is_incognito = true;
-  content_view()->SetCookieInfo(cookie_info);
-  EXPECT_EQ(
-      third_party_cookies_description_label()->GetText(),
-      l10n_util::GetStringFUTF16(
-          IDS_PAGE_INFO_COOKIES_DESCRIPTION,
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
-}
-
-TEST_F(PageInfoCookiesContentViewAlwaysBlock3pcsIncognito,
-       DisplaysStandardDescriptionWhenInRegularMode) {
-  EXPECT_EQ(
-      third_party_cookies_description_label()->GetText(),
-      l10n_util::GetStringFUTF16(
-          IDS_PAGE_INFO_COOKIES_DESCRIPTION,
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
-}
 
 class PageInfoCookiesContentView3pcdCookieToggleTest
     : public PageInfoCookiesContentViewBaseTestClass,
