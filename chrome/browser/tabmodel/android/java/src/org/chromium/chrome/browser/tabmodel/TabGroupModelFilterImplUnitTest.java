@@ -16,7 +16,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -33,9 +32,6 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.MockitoHelper.doFunction;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-
 import androidx.annotation.Nullable;
 import androidx.collection.ArraySet;
 
@@ -51,10 +47,10 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.mockito.verification.VerificationMode;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
@@ -138,19 +134,15 @@ public class TabGroupModelFilterImplUnitTest {
     private static final String TAB_GROUP_SYNC_IDS_FILE_NAME = "tab_group_sync_ids";
     private static final String TAB_GROUP_COLLAPSED_FILE_NAME = "tab_group_collapsed";
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
+
     @Mock Profile mProfile;
     @Mock Token.Natives mTokenJniMock;
     @Mock TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
     @Spy TabModelInternal mTabModel;
     @Spy TabList mComprehensiveModel;
     @Mock TabGroupModelFilterObserver mTabGroupModelFilterObserver;
-    @Mock Context mContext;
-    @Mock SharedPreferences mSharedPreferencesTitle;
-    @Mock SharedPreferences mSharedPreferencesColor;
-    @Mock SharedPreferences mSharedPreferencesSyncId;
-    @Mock SharedPreferences mSharedPreferencesCollapsed;
-    @Mock SharedPreferences.Editor mEditor;
     @Mock TabStateAttributes.Observer mAttributesObserver;
     @Mock TabUngrouper mTabUngrouper;
 
@@ -374,32 +366,6 @@ public class TabGroupModelFilterImplUnitTest {
             mTabGroupModelFilter.restoreCompleted();
             assertTrue(mTabGroupModelFilter.isTabModelRestored());
         }
-
-        doReturn(mSharedPreferencesTitle)
-                .when(mContext)
-                .getSharedPreferences(TAB_GROUP_TITLES_FILE_NAME, Context.MODE_PRIVATE);
-        doReturn(mSharedPreferencesColor)
-                .when(mContext)
-                .getSharedPreferences(TAB_GROUP_COLORS_FILE_NAME, Context.MODE_PRIVATE);
-        doReturn(mSharedPreferencesSyncId)
-                .when(mContext)
-                .getSharedPreferences(TAB_GROUP_SYNC_IDS_FILE_NAME, Context.MODE_PRIVATE);
-        doReturn(mSharedPreferencesCollapsed)
-                .when(mContext)
-                .getSharedPreferences(TAB_GROUP_COLLAPSED_FILE_NAME, Context.MODE_PRIVATE);
-        ContextUtils.initApplicationContextForTests(mContext);
-        when(mSharedPreferencesTitle.getString(anyString(), any())).thenReturn(TAB_TITLE);
-        when(mSharedPreferencesColor.getInt(anyString(), anyInt()))
-                .thenReturn(TabGroupColorUtils.INVALID_COLOR_ID);
-        when(mSharedPreferencesCollapsed.getBoolean(anyString(), anyBoolean())).thenReturn(true);
-        when(mSharedPreferencesTitle.edit()).thenReturn(mEditor);
-        when(mSharedPreferencesColor.edit()).thenReturn(mEditor);
-        when(mSharedPreferencesSyncId.edit()).thenReturn(mEditor);
-        when(mSharedPreferencesCollapsed.edit()).thenReturn(mEditor);
-        when(mEditor.putString(anyString(), anyString())).thenReturn(mEditor);
-        when(mEditor.putInt(anyString(), anyInt())).thenReturn(mEditor);
-        when(mEditor.putBoolean(anyString(), anyBoolean())).thenReturn(mEditor);
-        when(mEditor.remove(anyString())).thenReturn(mEditor);
 
         mModelAndObserverInOrder = inOrder(mTabModel, mTabGroupModelFilterObserver);
     }
@@ -1320,22 +1286,24 @@ public class TabGroupModelFilterImplUnitTest {
 
     @Test
     public void mergeTabsToGroup_Collapsed() {
+        TabGroupVisualDataStore.storeTabGroupCollapsed(TAB2_ROOT_ID, true);
+        TabGroupVisualDataStore.storeTabGroupCollapsed(TAB5_ROOT_ID, true);
         mTabGroupModelFilter.mergeTabsToGroup(mTab5.getId(), mTab2.getId());
         verifyUndoGroupSnackbarTitleCollapsed(true);
     }
 
     @Test
     public void mergeTabsToGroup_SourceExpanded() {
-        when(mSharedPreferencesCollapsed.getBoolean(eq(String.valueOf(TAB5_ROOT_ID)), anyBoolean()))
-                .thenReturn(false);
+        TabGroupVisualDataStore.storeTabGroupCollapsed(TAB2_ROOT_ID, true);
+        TabGroupVisualDataStore.storeTabGroupCollapsed(TAB5_ROOT_ID, false);
         mTabGroupModelFilter.mergeTabsToGroup(mTab5.getId(), mTab2.getId());
         verifyUndoGroupSnackbarTitleCollapsed(true);
     }
 
     @Test
     public void mergeTabsToGroup_DestinationExpanded() {
-        when(mSharedPreferencesCollapsed.getBoolean(eq(String.valueOf(TAB2_ROOT_ID)), anyBoolean()))
-                .thenReturn(false);
+        TabGroupVisualDataStore.storeTabGroupCollapsed(TAB2_ROOT_ID, false);
+        TabGroupVisualDataStore.storeTabGroupCollapsed(TAB5_ROOT_ID, true);
         mTabGroupModelFilter.mergeTabsToGroup(mTab5.getId(), mTab2.getId());
         verifyUndoGroupSnackbarTitleCollapsed(false);
     }
@@ -1572,6 +1540,8 @@ public class TabGroupModelFilterImplUnitTest {
 
     @Test
     public void mergeListOfTabsToGroup_Collapsed() {
+        TabGroupVisualDataStore.storeTabGroupCollapsed(TAB4_ROOT_ID, true);
+        TabGroupVisualDataStore.storeTabGroupCollapsed(TAB5_ROOT_ID, true);
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab5, mTab6));
         mTabGroupModelFilter.mergeListOfTabsToGroup(
                 tabsToMerge, mTab4, /* indexInGroup= */ null, true);
@@ -1580,8 +1550,8 @@ public class TabGroupModelFilterImplUnitTest {
 
     @Test
     public void mergeListOfTabsToGroup_SourceExpanded() {
-        when(mSharedPreferencesCollapsed.getBoolean(eq(String.valueOf(TAB5_ROOT_ID)), anyBoolean()))
-                .thenReturn(false);
+        TabGroupVisualDataStore.storeTabGroupCollapsed(TAB4_ROOT_ID, true);
+        TabGroupVisualDataStore.storeTabGroupCollapsed(TAB5_ROOT_ID, false);
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab5, mTab6));
         mTabGroupModelFilter.mergeListOfTabsToGroup(
                 tabsToMerge, mTab4, /* indexInGroup= */ null, true);
@@ -2279,9 +2249,12 @@ public class TabGroupModelFilterImplUnitTest {
 
     @Test
     public void mergeGroupToGroupNonAdjacent_notifyFilterObserver() {
-        // Override the setup behaviour for color SharedPreferences since after #didCreateNewGroup
-        // is emitted, a color will have been set.
-        when(mSharedPreferencesColor.getInt(anyString(), anyInt())).thenReturn(COLOR_ID);
+        TabGroupVisualDataStore.storeTabGroupColor(mTab2.getRootId(), COLOR_ID);
+        TabGroupVisualDataStore.storeTabGroupTitle(mTab2.getRootId(), TAB_TITLE);
+        TabGroupVisualDataStore.storeTabGroupCollapsed(mTab2.getRootId(), true);
+        TabGroupVisualDataStore.storeTabGroupColor(mTab5.getRootId(), COLOR_ID);
+        TabGroupVisualDataStore.storeTabGroupTitle(mTab5.getRootId(), TAB_TITLE);
+        TabGroupVisualDataStore.storeTabGroupCollapsed(mTab5.getRootId(), true);
 
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab5, mTab6, mTab2, mTab3));
         List<Tab> expectedSourceTabs = mTabGroupModelFilter.getRelatedTabList(mTab2.getId());
@@ -2336,22 +2309,23 @@ public class TabGroupModelFilterImplUnitTest {
 
     @Test
     public void mergeGroupToGroupNonAdjacent_doNotNotifyFilterObserver() {
-        SharedPreferences.Editor titleEditor = mock(SharedPreferences.Editor.class);
-        when(mSharedPreferencesTitle.edit()).thenReturn(titleEditor);
-        when(titleEditor.remove(anyString())).thenReturn(titleEditor);
+        TabGroupVisualDataStore.storeTabGroupTitle(TAB2_ROOT_ID, TAB_TITLE);
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab2.getId(), mTab5.getId(), true);
         verify(mTabGroupModelFilterObserver, never())
                 .didCreateNewGroup(mTab2, mTabGroupModelFilter);
         verify(mTabGroupModelFilterObserver, never()).showUndoGroupSnackbar(any());
-        verify(titleEditor, times(2)).remove(String.valueOf(TAB2_ROOT_ID));
+        assertNull(TabGroupVisualDataStore.getTabGroupTitle(TAB2_ROOT_ID));
     }
 
     @Test
     public void mergeGroupToTabAdjacent_notifyFilterObserver() {
-        // Override the setup behaviour for color SharedPreferences since after #didCreateNewGroup
-        // is emitted, a color will have been set.
-        when(mSharedPreferencesColor.getInt(anyString(), anyInt())).thenReturn(COLOR_ID);
+        TabGroupVisualDataStore.storeTabGroupColor(mTab3.getRootId(), COLOR_ID);
+        TabGroupVisualDataStore.storeTabGroupTitle(mTab3.getRootId(), TAB_TITLE);
+        TabGroupVisualDataStore.storeTabGroupCollapsed(mTab3.getRootId(), true);
+        TabGroupVisualDataStore.storeTabGroupColor(mTab4.getRootId(), COLOR_ID);
+        TabGroupVisualDataStore.storeTabGroupTitle(mTab4.getRootId(), TAB_TITLE);
+        TabGroupVisualDataStore.storeTabGroupCollapsed(mTab4.getRootId(), true);
 
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab4, mTab2, mTab3));
         List<Tab> expectedSourceTabs = mTabGroupModelFilter.getRelatedTabList(mTab3.getId());
@@ -2401,10 +2375,6 @@ public class TabGroupModelFilterImplUnitTest {
 
     @Test
     public void mergeTabToTab_notifyFilterObserver() {
-        // Override the setup behaviour for color SharedPreferences since after #didCreateNewGroup
-        // is emitted, a color will have been set.
-        when(mSharedPreferencesColor.getInt(anyString(), anyInt())).thenReturn(COLOR_ID);
-
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab4, mTab1));
         Token tabGroupId = new Token(33L, 82L);
         when(mTokenJniMock.createRandom()).thenReturn(tabGroupId);
@@ -2589,8 +2559,7 @@ public class TabGroupModelFilterImplUnitTest {
                 TabGroupColorId.GREY,
                 mTabGroupModelFilter.getTabGroupColorWithFallback(TAB1_ROOT_ID));
 
-        when(mSharedPreferencesColor.getInt(eq(String.valueOf(TAB2_ROOT_ID)), anyInt()))
-                .thenReturn(TabGroupColorId.BLUE);
+        TabGroupVisualDataStore.storeTabGroupColor(TAB2_ROOT_ID, TabGroupColorId.BLUE);
         assertEquals(
                 TabGroupColorId.BLUE,
                 mTabGroupModelFilter.getTabGroupColorWithFallback(TAB2_ROOT_ID));
