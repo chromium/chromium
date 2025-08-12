@@ -604,6 +604,19 @@ export class AppElement extends AppElementBase {
         changedPrivateProperties.has('showComposebox_')) {
       this.updateOneGoogleBarAppearance_();
     }
+
+    if (changedPrivateProperties.has('showComposebox_')) {
+      if (this.showComposebox_) {
+        // Set Timeout since browser needs time to render the initial
+        // state before the final state is applied to run the transition.
+        setTimeout(() => {
+          const composeboxScrim =
+              this.shadowRoot.querySelector<HTMLElement>('#composeboxScrim');
+          assert(composeboxScrim);
+          composeboxScrim.classList.add('fade');
+        }, 0);
+      }
+    }
   }
 
   // Called to update the OGB of relevant NTP state changes.
@@ -722,7 +735,7 @@ export class AppElement extends AppElementBase {
         this.closingComposebox = false;
       }
     });
-    composeboxScrim.classList.add('fade-out');
+    composeboxScrim.classList.remove('fade');
     const composebox = this.shadowRoot.querySelector('#composebox');
     assert(composebox);
     composebox.classList.add('fade-out');
