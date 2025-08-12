@@ -8,16 +8,16 @@
 This script allows you to install extensions from the 'agents/extensions'
 directory into the Gemini CLI extensions directory. You can install
 configurations at the project level (in the '.gemini/extensions' folder at the
-root of the git repository) or globally (in '~/.gemini/extensions').
+root of the repository) or globally (in '~/.gemini/extensions').
 """
-
 import argparse
+import hashlib
 import json
 import os
+from pathlib import Path
 import shutil
 import subprocess
 import sys
-from pathlib import Path
 
 
 def get_extensions_from_dir(extensions_dir: Path) -> list[str]:
@@ -36,34 +36,45 @@ def get_extensions_from_dir(extensions_dir: Path) -> list[str]:
     ]
 
 
-def get_git_repo_root() -> Path | None:
-    """Returns the root of the git repository."""
+def get_project_root() -> Path | None:
+    """Gets the project root using `gclient root`."""
     try:
-        return Path(
-            subprocess.check_output(['git', 'rev-parse', '--show-toplevel'],
-                                    encoding='utf-8').strip())
+        gclient_root = subprocess.check_output(
+            ['gclient', 'root'], encoding='utf-8'
+        ).strip()
+        if gclient_root:
+            project_root = Path(gclient_root) / 'src'
+            if project_root.is_dir():
+                return project_root
     except (subprocess.CalledProcessError, FileNotFoundError):
-        return None
+        print(
+            "Error: Could not determine project root. Please ensure 'gclient' "
+            "is in your PATH and that you are in a gclient project.",
+            file=sys.stderr)
+    return None
 
 
-def get_extensions_dirs() -> list[Path]:
+def get_extensions_dirs(project_root: Path | None) -> list[Path]:
     """Returns a list of all extension directories."""
-    extensions_dirs = []
-    # The primary extensions dir is the one containing this script.
-    primary_extensions_dir = Path(__file__).parent.resolve()
-    extensions_dirs.append(primary_extensions_dir)
+    if not project_root:
+        return []
 
-    # Check for internal extensions.
-    if repo_root := get_git_repo_root():
-        internal_extensions_dir = (repo_root / 'internal' / 'agents' /
-                                   'extensions')
-        if internal_extensions_dir.exists():
-            extensions_dirs.append(internal_extensions_dir)
+    extensions_dirs = []
+    primary_extensions_dir = project_root / 'agents' / 'extensions'
+    if primary_extensions_dir.exists():
+        extensions_dirs.append(primary_extensions_dir)
+
+    internal_extensions_dir = (project_root / 'internal' / 'agents' /
+                               'extensions')
+    if internal_extensions_dir.exists():
+        extensions_dirs.append(internal_extensions_dir)
     return extensions_dirs
 
 
 def find_extensions_dir_for_extension(
-        extension_name: str, extensions_dirs: list[Path]) -> Path | None:
+        extension_name: str,
+        extensions_dirs: list[Path]
+    ) -> Path | None:
     """Finds the extensions directory for a given extension."""
     for extensions_dir in extensions_dirs:
         if (extensions_dir / extension_name).exists():
@@ -71,13 +82,14 @@ def find_extensions_dir_for_extension(
     return None
 
 
-def get_extension_dir(use_global: bool = False) -> Path:
+def get_extension_dir(project_root: Path | None,
+                        use_global: bool = False) -> Path | None:
     """Returns the Gemini CLI extension directory."""
     if use_global:
         return Path.home() / '.gemini' / 'extensions'
-    if repo_root := get_git_repo_root():
-        return repo_root / '.gemini' / 'extensions'
-    return Path('.gemini/extensions')
+    if project_root:
+        return project_root / '.gemini' / 'extensions'
+    return None
 
 
 def get_installed_extensions(extensions_dir: Path) -> list[str]:
@@ -101,7 +113,7 @@ def get_extension_version(extension_path: Path) -> str:
     manifest_path = extension_path / 'gemini-extension.json'
     if not manifest_path.exists():
         return '-'
-    with open(manifest_path, 'r', encoding='utf-8') as f:
+    with open(manifest_path, encoding='utf-8') as f:
         try:
             data = json.load(f)
             return data.get('version', '-')
@@ -125,10 +137,10 @@ def get_dir_hash(directory: Path) -> bytes | None:
         try:
             hashes.append(
                 subprocess.check_output(['git', 'hash-object',
-                                         str(path)]).strip())
+                                         str(path)],
+                                        stderr=subprocess.DEVNULL).strip())
         except (subprocess.CalledProcessError, FileNotFoundError):
             # Fallback for non-git environments
-            import hashlib
             hasher = hashlib.sha1()
             with open(path, 'rb') as f:
                 while chunk := f.read(8192):
@@ -146,7 +158,6 @@ def get_dir_hash(directory: Path) -> bytes | None:
         return hasher.stdout.strip()
     else:
         # Fallback for non-git environments
-        import hashlib
         hasher = hashlib.sha1()
         for h in hashes:
             hasher.update(h)
@@ -168,7 +179,8 @@ def is_up_to_date(extension_name: str, source_extensions_dir: Path,
     return source_hash == dest_hash
 
 
-def list_extensions(extensions_dirs: list[Path]) -> None:
+def list_extensions(project_root: Path | None,
+                      extensions_dirs: list[Path]) -> None:
     """Lists all available and installed extensions."""
     # Get available, local, and global extensions
     available_extensions = {}
@@ -177,16 +189,19 @@ def list_extensions(extensions_dirs: list[Path]) -> None:
             available_extensions[name] = get_extension_version(
                 extensions_dir / name)
 
-    local_extensions_dir = get_extension_dir(use_global=False)
-    local_extensions = {
-        name: get_extension_version(local_extensions_dir / name)
-        for name in get_installed_extensions(local_extensions_dir)
-    }
-    global_extensions_dir = get_extension_dir(use_global=True)
-    global_extensions = {
-        name: get_extension_version(global_extensions_dir / name)
-        for name in get_installed_extensions(global_extensions_dir)
-    }
+    local_extensions_dir = get_extension_dir(project_root, use_global=False)
+    if local_extensions_dir:
+        local_extensions = {
+            name: get_extension_version(local_extensions_dir / name)
+            for name in get_installed_extensions(local_extensions_dir)
+        }
+
+    global_extensions_dir = get_extension_dir(project_root, use_global=True)
+    if global_extensions_dir:
+        global_extensions = {
+            name: get_extension_version(global_extensions_dir / name)
+            for name in get_installed_extensions(global_extensions_dir)
+        }
 
     all_extension_names = sorted(
         (set(available_extensions)
@@ -228,9 +243,10 @@ def add_extension(extension_name: str, source_extensions_dir: Path,
     if symlink:
         os.symlink(source_dir, dest_dir)
     else:
-        shutil.copytree(source_dir,
-                        dest_dir,
-                        ignore=shutil.ignore_patterns('tests'))
+        shutil.copytree(
+            source_dir,
+            dest_dir,
+            ignore=shutil.ignore_patterns('tests'))
     print(f"Added/updated '{extension_name}' to {dest_dir}")
 
 
@@ -283,7 +299,8 @@ def remove_extension(extension_name: str, target_extensions_dir: Path) -> None:
 
 def main() -> None:
     """Installs and manages extension."""
-    extensions_dirs = get_extensions_dirs()
+    project_root = get_project_root()
+    extensions_dirs = get_extensions_dirs(project_root)
 
     parser = argparse.ArgumentParser(
         description='Install and manage extensions.')
@@ -344,7 +361,14 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.command in ('add', 'update', 'remove'):
-        target_extensions_dir = get_extension_dir(args.use_global)
+        target_extensions_dir = get_extension_dir(project_root, args.use_global)
+        if not target_extensions_dir:
+            print(
+                'Error: Could not determine target directory for local '
+                'extensions. Please run from within a gclient project.',
+                file=sys.stderr)
+            sys.exit(1)
+
         if args.command in ('add', 'update'):
             target_extensions_dir.mkdir(parents=True, exist_ok=True)
 
@@ -371,7 +395,7 @@ def main() -> None:
                 remove_extension(extension, target_extensions_dir)
 
     elif args.command == 'list':
-        list_extensions(extensions_dirs)
+        list_extensions(project_root, extensions_dirs)
     else:
         parser.print_help()
         sys.exit(1)

@@ -5,12 +5,12 @@
 # found in the LICENSE file.
 """Integration tests for install.py."""
 
-import unittest
+import io
 import os
+from pathlib import Path
 import shutil
 import tempfile
-import io
-from pathlib import Path
+import unittest
 from unittest.mock import patch
 
 import install
@@ -68,20 +68,20 @@ class InstallIntegrationTest(unittest.TestCase):
                                               self.source_extensions_dir,
                                               self.internal_extensions_dir
                                           ])
-        self.mock_git_root = patch('install.get_git_repo_root',
-                                   return_value=Path(self.tmpdir))
+        self.mock_project_root = patch('install.get_project_root',
+                                     return_value=Path(self.tmpdir))
         self.mock_home = patch('pathlib.Path.home',
                                return_value=Path(self.tmpdir) / 'home')
 
         self.mock_extensions_dirs.start()
-        self.mock_git_root.start()
+        self.mock_project_root.start()
         self.mock_home.start()
 
     def tearDown(self):
         """Tears down the test environment."""
         shutil.rmtree(self.tmpdir)
         self.mock_extensions_dirs.stop()
-        self.mock_git_root.stop()
+        self.mock_project_root.stop()
         self.mock_home.stop()
 
     def test_list_from_multiple_sources(self):

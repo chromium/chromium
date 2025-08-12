@@ -5,13 +5,13 @@
 # found in the LICENSE file.
 """Unit tests for install.py."""
 
-import unittest
-import os
-import shutil
-import tempfile
 import io
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+import shutil
+import subprocess
+import tempfile
+import unittest
+from unittest.mock import patch
 
 import install
 
@@ -22,11 +22,19 @@ class InstallTest(unittest.TestCase):
     def setUp(self):
         """Sets up the test environment."""
         self.tmpdir = tempfile.mkdtemp()
-        self.source_extensions_dir = Path(
-            self.tmpdir) / 'agents' / 'extensions'
-        self.source_extensions_dir.mkdir(parents=True)
-        self.target_extensions_dir = Path(
-            self.tmpdir) / '.gemini' / 'extensions'
+        self.gclient_root = Path(self.tmpdir)
+        self.project_root = self.gclient_root / 'src'
+        self.project_root.mkdir()
+        (self.project_root / '.gn').touch()
+        (self.project_root / 'DEPS').touch()
+
+        self.source_extensions_dir = self.project_root / 'agents' / 'extensions'
+        self.install_script_path = self.source_extensions_dir / 'install.py'
+        self.install_script_path.parent.mkdir(parents=True, exist_ok=True)
+        self.install_script_path.touch()
+
+        self.target_extensions_dir = (self.project_root / '.gemini' /
+                                        'extensions')
         self.target_extensions_dir.mkdir(parents=True)
         self.global_extension_dir = Path(
             self.tmpdir) / 'home' / '.gemini' / 'extensions'
@@ -49,8 +57,8 @@ class InstallTest(unittest.TestCase):
                   encoding='utf-8') as f:
             f.write('{"name": "sample_2", "version": "2.0.0"}')
 
-        self.internal_extensions_dir = Path(
-            self.tmpdir) / 'internal' / 'agents' / 'extensions'
+        self.internal_extensions_dir = (self.project_root / 'internal' /
+                                        'agents' / 'extensions')
         self.internal_extensions_dir.mkdir(parents=True)
         self.extension3_dir = self.internal_extensions_dir / 'sample_3'
         self.extension3_dir.mkdir()
@@ -92,15 +100,16 @@ class InstallTest(unittest.TestCase):
             install.find_extensions_dir_for_extension('non_existent_extension',
                                                       extensions_dirs))
 
-    @patch('install.get_git_repo_root')
-    @patch('pathlib.Path.resolve')
-    def test_get_extensions_dirs(self, mock_resolve, mock_get_git_repo_root):
+    def test_get_extensions_dirs(self):
         """Tests the get_extensions_dirs function."""
-        mock_resolve.return_value = self.source_extensions_dir
-        mock_get_git_repo_root.return_value = Path(self.tmpdir)
-        extensions_dirs = install.get_extensions_dirs()
+        extensions_dirs = install.get_extensions_dirs(self.project_root)
         self.assertIn(self.source_extensions_dir, extensions_dirs)
         self.assertIn(self.internal_extensions_dir, extensions_dirs)
+
+    def test_get_extensions_dirs_no_project_root(self):
+        """Tests get_extensions_dirs() when no project root is found."""
+        extensions_dirs = install.get_extensions_dirs(None)
+        self.assertEqual(extensions_dirs, [])
 
     def test_get_dir_hash_ignores_tests(self):
         """Tests that get_dir_hash ignores the 'tests' directory."""
@@ -172,8 +181,7 @@ class InstallTest(unittest.TestCase):
     @patch('install.is_up_to_date', return_value=False)
     def test_add_extension_decline_update(self, mock_is_up_to_date,
                                           mock_input):
-        """Tests that adding an existing extension is skipped if the user
-        declines."""
+        """Adding an existing extension is skipped if the user declines."""
         install.add_extension('sample_1', self.source_extensions_dir,
                               self.target_extensions_dir, False)
         with patch('shutil.copytree') as mock_copy:
@@ -205,40 +213,43 @@ class InstallTest(unittest.TestCase):
             install.remove_extension('sample_1', self.target_extensions_dir)
             self.assertIn('not found', mock_stderr.getvalue())
 
+    @patch('install.get_project_root')
     @patch('install.get_extension_dir')
     @patch('install.add_extension')
     @patch('install.find_extensions_dir_for_extension')
     def test_main_add_global(self, mock_find_extensions, mock_add_extension,
-                             mock_get_extension_dir):
+                             mock_get_extension_dir, mock_get_project_root):
         """Tests the main function with the add command and --global flag."""
         mock_find_extensions.return_value = self.source_extensions_dir
         mock_get_extension_dir.return_value = self.global_extension_dir
+        mock_get_project_root.return_value = self.project_root
         with patch('sys.argv', ['install.py', 'add', '-g', 'sample_1']):
-            with patch('install.get_extensions_dirs',
-                       return_value=[self.source_extensions_dir]):
-                install.main()
+            install.main()
         mock_add_extension.assert_called_once_with('sample_1',
                                                    self.source_extensions_dir,
                                                    self.global_extension_dir,
                                                    False)
 
+    @patch('install.get_project_root')
     @patch('install.update_extension')
     @patch('install.get_installed_extensions', return_value=['sample_1'])
     @patch('install.find_extensions_dir_for_extension')
     def test_main_update_all(self, mock_find_extensions, mock_get_installed,
-                             mock_update_extension):
+                             mock_update_extension, mock_get_project_root):
         """Tests the main function with the update command and no extensions."""
         mock_find_extensions.return_value = self.source_extensions_dir
+        mock_get_project_root.return_value = self.project_root
         with patch('sys.argv', ['install.py', 'update']):
-            with patch('install.get_extensions_dirs',
-                       return_value=[self.source_extensions_dir]):
-                install.main()
+            install.main()
         mock_update_extension.assert_called_once()
 
     @patch('sys.stderr', new_callable=io.StringIO)
+    @patch('install.get_project_root')
     @patch('install.find_extensions_dir_for_extension')
-    def test_main_invalid_extension(self, mock_find_extensions, mock_stderr):
+    def test_main_invalid_extension(self, mock_find_extensions,
+                                    mock_get_project_root, mock_stderr):
         """Tests that main handles invalid extension names gracefully."""
+        mock_get_project_root.return_value = self.project_root
         mock_find_extensions.return_value = None
         with patch('sys.argv', ['install.py', 'add', 'invalid_extension']):
             with patch('install.get_extensions_dirs',
@@ -246,6 +257,16 @@ class InstallTest(unittest.TestCase):
                 install.main()
         self.assertIn("Error: Extension 'invalid_extension' not found",
                       mock_stderr.getvalue())
+
+    @patch('install.get_project_root', return_value=None)
+    def test_main_no_project_root(self, mock_get_project_root):
+        """Tests that main exits if no project root is found for a local op."""
+        with patch('sys.stderr', new_callable=io.StringIO) as mock_stderr:
+            with patch('sys.argv', ['install.py', 'add', 'sample_1']):
+                with self.assertRaises(SystemExit):
+                    install.main()
+            self.assertIn('Could not determine target directory',
+                          mock_stderr.getvalue())
 
     def test_list_extensions_excludes_example_server(self):
         """Tests that the list_extensions function excludes 'example_server'."""
@@ -264,12 +285,38 @@ class InstallTest(unittest.TestCase):
         with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
             with patch('install.get_extension_dir',
                        return_value=self.target_extensions_dir):
-                install.list_extensions(extensions_dirs)
+                install.list_extensions(self.project_root, extensions_dirs)
                 output = mock_stdout.getvalue()
                 self.assertNotIn('example_server', output)
                 self.assertIn('sample_1', output)
                 self.assertIn('sample_2', output)
                 self.assertIn('sample_3', output)
+
+    @patch('subprocess.check_output')
+    def test_get_project_root(self, mock_check_output):
+        """get_project_root() can find the root using `gclient root`."""
+        mock_check_output.return_value = str(self.gclient_root)
+        project_root = install.get_project_root()
+        self.assertEqual(project_root, self.project_root)
+
+    @patch('subprocess.check_output', side_effect=FileNotFoundError)
+    def test_get_project_root_gclient_not_found(self, mock_check_output):
+        """Tests get_project_root() when gclient is not found."""
+        with patch('sys.stderr', new_callable=io.StringIO) as mock_stderr:
+            project_root = install.get_project_root()
+            self.assertIsNone(project_root)
+            self.assertIn('Could not determine project root',
+                          mock_stderr.getvalue())
+
+    @patch('subprocess.check_output',
+           side_effect=subprocess.CalledProcessError(1, 'gclient'))
+    def test_get_project_root_gclient_fails(self, mock_check_output):
+        """Tests get_project_root() when gclient fails."""
+        with patch('sys.stderr', new_callable=io.StringIO) as mock_stderr:
+            project_root = install.get_project_root()
+            self.assertIsNone(project_root)
+            self.assertIn('Could not determine project root',
+                          mock_stderr.getvalue())
 
 
 if __name__ == '__main__':
