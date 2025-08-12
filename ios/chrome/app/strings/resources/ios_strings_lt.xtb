@@ -1517,6 +1517,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6794476726485507147">Pasirinkite datą ir laiką, kad gautumėte priminimo pranešimą ir galėtumėte dar kartą apsilankyti šiame puslapyje</translation>
 <translation id="6795481620482106033">Netinkami duomenys</translation>
 <translation id="6797543908718012274">Įjungti teksto perskaitymo režimą</translation>
+<translation id="6806550742467879742">Puslapio įrankiai</translation>
 <translation id="6807287147325542056">Kitų programų slaptažodžiai</translation>
 <translation id="681368974849482173">Elementas sukurtas</translation>
 <translation id="6825078212112407882">{count,plural, =1{Žymė išsaugota „Google“ paskyroje {email}}one{{count} žymė išsaugota „Google“ paskyroje {email}}few{{count} žymės išsaugotos „Google“ paskyroje {email}}many{{count} žymės išsaugota „Google“ paskyroje {email}}other{{count} žymių išsaugota „Google“ paskyroje {email}}}</translation>

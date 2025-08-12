@@ -3237,7 +3237,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3226487301970807183">Ativar/desativar o painel lateral alinhado à esquerda</translation>
 <translation id="322708765617468434">É possível adicionar mais alguém ao dispositivo após a configuração. Cada pessoa pode personalizar a própria experiência e manter os dados privados.</translation>
 <translation id="3227137524299004712">Microfone</translation>
-<translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Remova ou substitua por extensões semelhantes da <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}one{Remova ou substitua por extensões semelhantes da <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}other{Remova ou substitua por extensões semelhantes da <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}}</translation>
+<translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Remova ou substitua por extensões semelhantes da <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}one{Remova ou substitua por extensões semelhantes da <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}other{Remova ou substitua por extensões semelhantes da <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Confira a data</translation>
 <translation id="3230539834943294477">Encontar artigos de ajuda ou suporte para dispositivos</translation>
 <translation id="3232168089952388105">Compartilhar informações sobre o dispositivo?</translation>

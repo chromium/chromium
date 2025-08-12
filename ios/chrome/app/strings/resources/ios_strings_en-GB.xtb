@@ -1517,6 +1517,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6794476726485507147">Choose a date and time to receive a reminder notification to revisit this page</translation>
 <translation id="6795481620482106033">Invalid data</translation>
 <translation id="6797543908718012274">Turn on reading mode</translation>
+<translation id="6806550742467879742">Page tools</translation>
 <translation id="6807287147325542056">Passwords in other apps</translation>
 <translation id="681368974849482173">Item created</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bookmark saved in your Google Account, {email}}other{{count} bookmarks saved in your Google Account, {email}}}</translation>
@@ -2095,7 +2096,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8975015774710126284">Browsing data was deleted</translation>
 <translation id="8976382372951310360">Help</translation>
 <translation id="8976414606286374109">Cards are saved to your Google Account.</translation>
-<translation id="8981454092730389528">Google Activity Controls</translation>
+<translation id="8981454092730389528">Google Activity controls</translation>
 <translation id="8984627322964256190">Hide Follow <ph name="DOMAIN_NAME" /></translation>
 <translation id="8998289560386111590">Not available on your device</translation>
 <translation id="9000089900434778519">Your search engine is <ph name="DSE_NAME" />. See their instructions for deleting your search history, if applicable.</translation>

@@ -513,6 +513,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2931440415625410757">Pokaż instrukcje</translation>
 <translation id="2952278131021475699">Wyszukiwanie za pomocą aparatu i Obiektywu</translation>
 <translation id="2962516096219646456">Zobacz wszystkie dane autouzupełniania</translation>
+<translation id="2965594942405840553">Nie można tego cofnąć</translation>
 <translation id="2969979262385602596">Nie udało się zalogować. Spróbuj ponownie później.</translation>
 <translation id="2975761176769946178">Podanie URL-a jest wymagane</translation>
 <translation id="297667759942911166">Współpraca w grupach kart</translation>
@@ -664,6 +665,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3596414637720633074">Blokuj pliki cookie innych firm w trybie incognito</translation>
 <translation id="3602260545951981695">Wybierz opcję „Silniejsza ochrona”</translation>
 <translation id="3610041351087301930">Ukryj czytnik</translation>
+<translation id="3610866916973186448">Tak, usuń</translation>
 <translation id="3622175633937495219">Historia wyszukiwania (liczba wyników: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Aby wrócić, możesz przesunąć palcem po krawędzi.</translation>
 <translation id="362709345066740529">Tutaj możesz dostosować karty, kanał i inne elementy</translation>
@@ -1973,6 +1975,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8561999115126307258">{count,plural, =1{Nad klawiaturą dostępna jest {count} opcja hasła.}few{Nad klawiaturą dostępne są {count} opcje hasła.}many{Nad klawiaturą dostępnych jest {count} opcji hasła.}other{Nad klawiaturą dostępne jest {count} opcji hasła.}}</translation>
 <translation id="8564894539416715395">Nowa karta</translation>
 <translation id="8569721750632860947">Jaki URL chcesz dodać do listy Do przeczytania?</translation>
+<translation id="8571019948162152515">Usunąć „<ph name="FILENAME" />”?</translation>
 <translation id="8571213806525832805">Ostatnie 4 tygodnie</translation>
 <translation id="8577056989960190117">Automatycznie uzupełnij rok ważności (<ph name="YEAR" />)</translation>
 <translation id="8588404856427128947">Wyłączono</translation>

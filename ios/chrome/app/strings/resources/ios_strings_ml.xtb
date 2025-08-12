@@ -513,6 +513,7 @@
 <translation id="2931440415625410757">നിർദ്ദേശങ്ങൾ കാണിക്കുക</translation>
 <translation id="2952278131021475699">Lens ക്യാമറ ഉപയോഗിച്ചുള്ള തിരയൽ</translation>
 <translation id="2962516096219646456">എല്ലാ സ്വയമേവ പൂരിപ്പിക്കൽ ഡാറ്റയും കാണുക</translation>
+<translation id="2965594942405840553">ഈ പ്രവർത്തനം പഴയപടിയാക്കാനാകില്ല</translation>
 <translation id="2969979262385602596">സൈൻ ഇൻ ചെയ്യുന്നത് പരാജയപ്പെട്ടു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2975761176769946178">URL ആവശ്യമാണ്</translation>
 <translation id="297667759942911166">ടാബ് ഗ്രൂപ്പുകളിൽ സഹകരിക്കൂ</translation>
@@ -664,6 +665,7 @@
 <translation id="3596414637720633074">അദൃശ്യ മോഡിൽ മൂന്നാം കക്ഷി കുക്കികളെ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="3602260545951981695">"മെച്ചപ്പെടുത്തിയ പരിരക്ഷ" തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3610041351087301930">റീഡർ മറയ്‌ക്കുക</translation>
+<translation id="3610866916973186448">ഉവ്വ്, ഇല്ലാതാക്കുക</translation>
 <translation id="3622175633937495219">തിരയൽ ചരിത്രം (<ph name="COUNT" /> കണ്ടെത്തി)</translation>
 <translation id="3625008969091706597">പിന്നിലേക്ക് പോകാൻ അറ്റത്ത് സ്വൈപ്പ് ചെയ്യാം.</translation>
 <translation id="362709345066740529">നിങ്ങളുടെ കാർഡുകളും ഫീഡും മറ്റും ഇവിടെ ഇഷ്ടാനുസൃതമാക്കുക</translation>
@@ -1973,6 +1975,7 @@
 <translation id="8561999115126307258">{count,plural, =1{നിങ്ങളുടെ കീബോർഡിന് മുകളിൽ, പാസ്‌വേഡിനുള്ള {count} ഓപ്ഷൻ ലഭ്യമാണ്.}other{നിങ്ങളുടെ കീബോർഡിന് മുകളിൽ, പാസ്‌വേഡിനുള്ള {count} ഓപ്ഷനുകൾ ലഭ്യമാണ്.}}</translation>
 <translation id="8564894539416715395">പുതിയ ടാബ് പേജ്</translation>
 <translation id="8569721750632860947">നിങ്ങൾക്ക് വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിലേക്ക് ഏത് URL ആണ് ചേർക്കേണ്ടത്?</translation>
+<translation id="8571019948162152515">"<ph name="FILENAME" />" ഇല്ലാതാക്കണോ?</translation>
 <translation id="8571213806525832805">കഴിഞ്ഞ 4 ആഴ്ച</translation>
 <translation id="8577056989960190117">കാലഹരണപ്പെടുന്ന വർഷം <ph name="YEAR" /> സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="8588404856427128947">ഓഫാണ്</translation>

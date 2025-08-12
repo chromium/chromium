@@ -3272,7 +3272,7 @@
 <translation id="3253225298092156258">רשת לא זמינה</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{צריך לפנות מקום ב-<ph name="CLOUD_PROVIDER" /> כדי להעתיק את הקובץ הזה}one{צריך לפנות מקום ב-<ph name="CLOUD_PROVIDER" /> כדי להעתיק את הקבצים האלה}two{צריך לפנות מקום ב-<ph name="CLOUD_PROVIDER" /> כדי להעתיק את הקבצים האלה}other{צריך לפנות מקום ב-<ph name="CLOUD_PROVIDER" /> כדי להעתיק את הקבצים האלה}}</translation>
 <translation id="3253448572569133955">חשבון לא ידוע</translation>
-<translation id="3253746622312821295">אוזניות חוטיות</translation>
+<translation id="3253746622312821295">אוזניות</translation>
 <translation id="3254451942070605467">מתבצעת הורדה לקובץ <ph name="FILE_NAME" />, נשארו <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="3254516606912442756">זיהוי אוטומטי של אזור הזמן מושבת</translation>
 <translation id="3255747772218936245">התקנת העדכון</translation>

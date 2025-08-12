@@ -513,6 +513,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2931440415625410757">Vis veiledning</translation>
 <translation id="2952278131021475699">Lens-kamerasøk</translation>
 <translation id="2962516096219646456">Se alle autofylldata</translation>
+<translation id="2965594942405840553">Du kan ikke angre denne handlingen</translation>
 <translation id="2969979262385602596">Kunne ikke logge på. Prøv på nytt senere.</translation>
 <translation id="2975761176769946178">En nettadresse kreves</translation>
 <translation id="297667759942911166">Samarbeid i fanegrupper</translation>
@@ -664,6 +665,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3596414637720633074">Blokkér informasjonskapsler fra tredjepart i inkognitomodus</translation>
 <translation id="3602260545951981695">Velg «Økt beskyttelse»</translation>
 <translation id="3610041351087301930">Skjul leser</translation>
+<translation id="3610866916973186448">Ja, slett</translation>
 <translation id="3622175633937495219">Søkelogg (fant <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Du kan sveipe på kanten for å gå tilbake.</translation>
 <translation id="362709345066740529">Tilpass kortene, feeden med mer her</translation>
@@ -1973,6 +1975,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8561999115126307258">{count,plural, =1{{count} alternativ for passord er tilgjengelig over tastaturet.}other{{count} alternativer for passord er tilgjengelige over tastaturet.}}</translation>
 <translation id="8564894539416715395">Ny fane-siden</translation>
 <translation id="8569721750632860947">Hvilken nettadresse vil du legge til på leselisten?</translation>
+<translation id="8571019948162152515">Vil du slette «<ph name="FILENAME" />»?</translation>
 <translation id="8571213806525832805">Siste 4 uker</translation>
 <translation id="8577056989960190117">Autofyll utløpsåret <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Av</translation>

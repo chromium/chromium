@@ -1517,6 +1517,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="6794476726485507147">Dewiswch ddyddiad ac amser i dderbyn hysbysiad atgoffa i ailymweld â'r dudalen hon</translation>
 <translation id="6795481620482106033">Data Annilys</translation>
 <translation id="6797543908718012274">Troi Modd Darllen ymlaen</translation>
+<translation id="6806550742467879742">Offer tudalen</translation>
 <translation id="6807287147325542056">Cyfrineiriau mewn apiau eraill</translation>
 <translation id="681368974849482173">Wedi creu'r eitem</translation>
 <translation id="6825078212112407882">{count,plural, =1{Mae'r nod tudalen wedi'i gadw yn eich Cyfrif Google, {email}}zero{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}two{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}few{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}many{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}other{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}}</translation>
