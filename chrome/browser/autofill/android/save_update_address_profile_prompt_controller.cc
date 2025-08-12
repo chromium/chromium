@@ -303,8 +303,13 @@ void SaveUpdateAddressProfilePromptController::OnUserEdited(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jprofile) {
   had_user_interaction_ = true;
-  AutofillProfile* existing_profile =
-      original_profile_.has_value() ? &original_profile_.value() : nullptr;
+  AutofillProfile* existing_profile = nullptr;
+  // For Home and Work profiles, edits can happen, so we treat this flow as a
+  // new profile creation.
+  if (original_profile_.has_value() &&
+      !original_profile_->IsHomeAndWorkProfile()) {
+    existing_profile = &original_profile_.value();
+  }
   AutofillProfile edited_profile = AutofillProfile::CreateFromJavaObject(
       jprofile, existing_profile, g_browser_process->GetApplicationLocale());
   profile_ = edited_profile;
