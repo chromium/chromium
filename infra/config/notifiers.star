@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/notifiers.star", "notifiers")
+load("@chromium-luci//notifiers.star", "notifiers")
 
 luci.notifier(
     name = "chromesec-lkgr-failures",
