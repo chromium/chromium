@@ -17,6 +17,8 @@
 
 namespace optimization_guide {
 
+class ChromeModelComponentStateManagerObserver;
+
 // This holds the ModelBrokerState and other common objects shared between
 // profiles. Since some of the membersit hold raw_ptr to browser process level
 // objects, such as local state prefs, profile manager, it must not outlive the
@@ -64,6 +66,9 @@ class OptimizationGuideGlobalState final
   ModelBrokerState model_broker_state_;
 
   ChromePredictionModelStore prediction_model_store_;
+
+  std::unique_ptr<ChromeModelComponentStateManagerObserver>
+      component_state_manager_observer_;
 
   base::WeakPtrFactory<OptimizationGuideGlobalState> weak_ptr_factory_{this};
 };
