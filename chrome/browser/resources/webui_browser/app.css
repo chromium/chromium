@@ -7,10 +7,6 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-#exampleDiv {
-  color: blue;
-}
-
 #exampleWebview {
   height: 400px;
 }

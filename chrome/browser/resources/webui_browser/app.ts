@@ -39,12 +39,10 @@ export class WebuiBrowserAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      message_: {type: String},
       guestId_: {type: Number},
     };
   }
 
-  protected accessor message_: string = loadTimeData.getString('message');
   protected accessor guestId_: number = loadTimeData.getInteger('testGuestId');
 
   protected onLaunchDevtoolsClick_(_: Event) {

@@ -29,7 +29,6 @@ export function getHtml(this: WebuiBrowserAppElement) {
   <div id="searchBar">
     <cr-searchbox id="address"></cr-searchbox>
   </div>
-  <div id="exampleDiv">${this.message_}</div>
   <cr-webview id="exampleWebview" guest-id="${this.guestId_}"></cr-webview>
 </div>
 <!--_html_template_end_-->`;

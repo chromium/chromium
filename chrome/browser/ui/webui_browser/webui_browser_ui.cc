@@ -52,10 +52,6 @@ WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
 
   SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
 
-  // As a demonstration of passing a variable for JS to use we pass in some
-  // a simple message.
-  source->AddString("message", "Hello World from C++!");
-
   // Make a guest contents handle for a test guest contents.
   // TODO(webium): Remove once the tab strip is integrated.
   test_guest_contents_ = content::WebContents::Create(
