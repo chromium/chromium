@@ -42,6 +42,7 @@ source_set("searchbox") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/new_tab_page:resources",
     "//chrome/browser/resources/new_tab_page:resources_grit",
+    "//chrome/browser/safe_browsing",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/omnibox",

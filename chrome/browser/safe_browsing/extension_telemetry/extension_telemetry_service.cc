@@ -46,6 +46,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
@@ -675,6 +676,14 @@ void ExtensionTelemetryService::AddSignal(
     AddSignalHelper(*signal, enterprise_extension_store_,
                     enterprise_signal_subscribers_);
   }
+}
+
+void ExtensionTelemetryService::OnOmniboxSearch(
+    const AutocompleteMatch& match) {
+  // TODO(crbug.com/437345485): Check if this is a DSE search,
+  // increment a search event counter and persist it to prefs. The event counts
+  // will be checked for a search hijacking heuristics match in a separate
+  // class periodically (implementation in a separate CL).
 }
 
 void ExtensionTelemetryService::AddSignalHelper(
