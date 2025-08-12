@@ -3,18 +3,19 @@
 # found in the LICENSE file.
 """Definitions of builders in the blink.infra builder group."""
 
-load("//lib/builders.star", "os")
-load("//lib/ci.star", "ci")
-load("//lib/consoles.star", "consoles")
-load("//lib/builder_health_indicators.star", "health_spec")
+load("@chromium-luci//builder_health_indicators.star", "health_spec")
+load("@chromium-luci//builders.star", "os")
+load("@chromium-luci//ci.star", "ci")
+load("@chromium-luci//consoles.star", "consoles")
+load("//lib/ci_constants.star", "ci_constants")
 
 ci.defaults.set(
-    pool = ci.DEFAULT_POOL,
+    pool = ci_constants.DEFAULT_POOL,
     builderless = True,
     os = os.LINUX_DEFAULT,
     console_view = "blink.infra",
     execution_timeout = 10 * time.hour,
-    health_spec = health_spec.DEFAULT,
+    health_spec = health_spec.default(),
 )
 
 consoles.console_view(

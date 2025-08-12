@@ -2,9 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "cpu", "os", "siso")
-load("//lib/try.star", "try_")
-load("//lib/gn_args.star", "gn_args")
+load("@chromium-luci//builders.star", "cpu", "os")
+load("@chromium-luci//gn_args.star", "gn_args")
+load("@chromium-luci//try.star", "try_")
+load("//lib/siso.star", "siso")
 
 try_.defaults.set(
     bucket = "try",
