@@ -146,9 +146,17 @@ TEST_F(BtmServiceTest, DeleteDbFilesIfPersistenceDisabled) {
   EXPECT_FALSE(base::PathExists(GetBtmFilePath(profile.get())));
 }
 
+#if BUILDFLAG(IS_FUCHSIA) && defined(IS_WEB_ENGINE)
+// See crbug.com/434764000, file based BTM is disabled on web engine on fuchsia
+// due to the storage constraint.
+#define MAYBE_PreserveRegularProfileDbFiles \
+  DISABLED_PreserveRegularProfileDbFiles
+#else
+#define MAYBE_PreserveRegularProfileDbFiles PreserveRegularProfileDbFiles
+#endif
 // Verifies that when an OTR profile is opened, the BTM database file for
 // the underlying regular profile is NOT deleted.
-TEST_F(BtmServiceTest, PreserveRegularProfileDbFiles) {
+TEST_F(BtmServiceTest, MAYBE_PreserveRegularProfileDbFiles) {
   base::FilePath data_path = base::CreateUniqueTempDirectoryScopedToTest();
 
   // Ensure the BTM feature is enabled and the database is set to be persisted.

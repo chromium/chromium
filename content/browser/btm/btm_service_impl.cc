@@ -310,7 +310,13 @@ BtmServiceImpl::BtmServiceImpl(base::PassKey<BrowserContextImpl>,
     // profile.
     wait_for_file_deletion_.Quit();
   } else {
-    if (features::kBtmPersistedDatabaseEnabled.Get()) {
+    const bool persisted_database_enabled =
+#if BUILDFLAG(IS_FUCHSIA) && defined(IS_WEB_ENGINE)
+        false;
+#else
+        features::kBtmPersistedDatabaseEnabled.Get();
+#endif
+    if (persisted_database_enabled) {
       path_to_use = dips_path;
       // Existing database files won't be deleted, so quit the
       // `wait_for_file_deletion_` RunLoop.
