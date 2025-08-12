@@ -617,7 +617,6 @@ chrome_java_resources = [
   "java/res/xml/homepage_preferences.xml",
   "java/res/xml/legal_information_preferences.xml",
   "java/res/xml/main_preferences.xml",
-  "java/res/xml/main_preferences_legacy.xml",
   "java/res/xml/manage_sync_preferences.xml",
   "java/res/xml/personalize_google_services_preferences.xml",
   "java/res/xml/privacy_preferences.xml",

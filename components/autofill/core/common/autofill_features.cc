@@ -953,13 +953,6 @@ BASE_FEATURE(kAutofillThirdPartyModeContentProvider,
              "AutofillThirdPartyModeContentProvider",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls the whether the Chrome may provide a virtual view structure for
-// Android Autofill.
-// TODO: crbug.com/409579377 - Delete after M139.
-BASE_FEATURE(kAutofillVirtualViewStructureAndroid,
-             "AutofillVirtualViewStructureAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace test {

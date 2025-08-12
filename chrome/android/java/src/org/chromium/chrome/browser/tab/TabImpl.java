@@ -76,7 +76,6 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage.SmoothTransitionDelegate;
-import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.AutofillManagerWrapper;
 import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.autofill.AutofillProviderUMA;
@@ -1447,10 +1446,7 @@ class TabImpl implements Tab {
      * @return iff the AutofillProvider should provide a ViewStructure when prompted.
      */
     boolean providesAutofillStructure() {
-        if (!ChromeFeatureList.isEnabled(
-                AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)) {
-            return false;
-        }
+
         if (mProfile == null || !mProfile.isNativeInitialized()) {
             return false;
         }
@@ -2273,10 +2269,7 @@ class TabImpl implements Tab {
     }
 
     private void maybeLogAutofillProviderDoesntUseVirtualStructureMetric() {
-        if (!ChromeFeatureList.isEnabled(
-                AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)) {
-            return;
-        }
+
         AutofillManager manager =
                 ContextUtils.getApplicationContext().getSystemService(AutofillManager.class);
         if (!AutofillManagerWrapper.isAutofillSupported(manager)) {

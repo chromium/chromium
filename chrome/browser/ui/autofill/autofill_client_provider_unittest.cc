@@ -100,48 +100,11 @@ TEST_F(AutofillClientProviderBaseTest, UsesBuiltInAutofillForDisabledPref) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-class AutofillClientProviderLegacyTest : public AutofillClientProviderBaseTest {
- public:
-  void SetUp() override {
-    AutofillClientProviderBaseTest::SetUp();
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kAutofillVirtualViewStructureAndroid,
-             features::kAutofillThirdPartyModeContentProvider,
-             features::kAutofillDeepLinkAutofillOptions});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(AutofillClientProviderLegacyTest, AlwaysCreatesChromeClient) {
-  base::HistogramTester histogram_tester;
-  // The pref is irrelevant if the feature is disabled.
-  prefs().SetBoolean(prefs::kAutofillUsingVirtualViewStructure, true);
-  EXPECT_FALSE(provider().uses_platform_autofill());
-  EXPECT_FALSE(prefs().GetBoolean(prefs::kAutofillUsingVirtualViewStructure));
-  histogram_tester.ExpectUniqueSample(
-      kAvailabilityMetric, AndroidAutofillAvailabilityStatus::kSettingTurnedOff,
-      1);
-}
-
-// The pref should not be set on Android since 3P providers can read it. It
-// should not exist while the feature is turned off.
-TEST_F(AutofillClientProviderLegacyTest, UnsetsShared3pModePref) {
-  EXPECT_FALSE(provider().uses_platform_autofill());
-
-  EXPECT_FALSE(prefs().GetBoolean(prefs::kAutofillUsingVirtualViewStructure));
-  base::android::SharedPreferencesManager prefs =
-      android::shared_preferences::GetChromeSharedPreferences();
-  ASSERT_FALSE(prefs.ContainsKey(kAutofillThirdPartyModeState));
-}
-
 class AutofillClientProviderTest : public AutofillClientProviderBaseTest {
  public:
   AutofillClientProviderTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kAutofillVirtualViewStructureAndroid,
-         features::kAutofillThirdPartyModeContentProvider,
+        {features::kAutofillThirdPartyModeContentProvider,
          features::kAutofillDeepLinkAutofillOptions},
         {});
   }

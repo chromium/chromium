@@ -14,14 +14,12 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -43,7 +41,6 @@ public class VirtualViewStructureInstrumentationTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID})
     @DisabledTest(message = "https://crbug.com/414988519")
     public void testLogs3PModeDisabledMetrics() {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
@@ -65,7 +62,6 @@ public class VirtualViewStructureInstrumentationTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID})
     public void testDoesntLog3PModeDisabledMetricsWhen3PModeEnabled() {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
 

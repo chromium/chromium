@@ -2879,14 +2879,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-autofill-virtual-view-structure",
-    "owners": [
-      "friedrichh@chromium.org",
-      "//components/autofill/android/OWNERS"
-    ],
-    "expiry_milestone": 138
-  },
-  {
     "name": "enable-auxiliary-navigation-stays-in-browser",
     "owners": [
       "muratori@google.org",

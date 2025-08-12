@@ -588,9 +588,6 @@ extern const char kAutofillUnmaskCardRequestTimeoutDescription[];
 extern const char kAutofillVcnEnrollStrikeExpiryTimeName[];
 extern const char kAutofillVcnEnrollStrikeExpiryTimeDescription[];
 
-extern const char kAutofillVirtualViewStructureAndroidName[];
-extern const char kAutofillVirtualViewStructureAndroidDescription[];
-
 extern const char kAutoPictureInPictureForVideoPlaybackName[];
 extern const char kAutoPictureInPictureForVideoPlaybackDescription[];
 

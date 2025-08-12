@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.settings_promo_card.SettingsPromoCardPreference;
 import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
-import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
@@ -214,9 +213,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     private void createPreferences() {
         mManagedPreferenceDelegate = createManagedPreferenceDelegate();
 
-        SettingsUtils.addPreferencesFromResource(
-                this,
-                useLegacySettingsOrder() ? R.xml.main_preferences_legacy : R.xml.main_preferences);
+        SettingsUtils.addPreferencesFromResource(this, R.xml.main_preferences);
 
         ProfileDataCache profileDataCache =
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
@@ -442,25 +439,20 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     private void updateAutofillPreferences() {
-        if (ChromeFeatureList.isEnabled(AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)) {
-            addPreferenceIfAbsent(PREF_AUTOFILL_SECTION);
-            addPreferenceIfAbsent(PREF_AUTOFILL_OPTIONS);
-            Preference preference = findPreference(PREF_AUTOFILL_OPTIONS);
-            preference.setFragment(null);
-            preference.setOnPreferenceClickListener(
-                    unused -> {
-                        SettingsNavigationFactory.createSettingsNavigation()
-                                .startSettings(
-                                        getContext(),
-                                        AutofillOptionsFragment.class,
-                                        AutofillOptionsFragment.createRequiredArgs(
-                                                AutofillOptionsReferrer.SETTINGS));
-                        return true; // Means event is consumed.
-                    });
-        } else {
-            removePreferenceIfPresent(PREF_AUTOFILL_SECTION);
-            removePreferenceIfPresent(PREF_AUTOFILL_OPTIONS);
-        }
+        addPreferenceIfAbsent(PREF_AUTOFILL_SECTION);
+        addPreferenceIfAbsent(PREF_AUTOFILL_OPTIONS);
+        Preference autofillOptionsPreference = findPreference(PREF_AUTOFILL_OPTIONS);
+        autofillOptionsPreference.setFragment(null);
+        autofillOptionsPreference.setOnPreferenceClickListener(
+                unused -> {
+                    SettingsNavigationFactory.createSettingsNavigation()
+                            .startSettings(
+                                    getContext(),
+                                    AutofillOptionsFragment.class,
+                                    AutofillOptionsFragment.createRequiredArgs(
+                                            AutofillOptionsReferrer.SETTINGS));
+                    return true; // Means event is consumed.
+                });
         findPreference(PREF_AUTOFILL_PAYMENTS)
                 .setOnPreferenceClickListener(
                         preference ->
@@ -695,11 +687,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public void setModalDialogManagerSupplier(
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-    }
-
-    private boolean useLegacySettingsOrder() {
-        return !ChromeFeatureList.isEnabled(
-                AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID);
     }
 
     @Override

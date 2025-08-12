@@ -18,7 +18,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -70,8 +69,7 @@ public class AutofillOptionsCoordinator {
             AutofillOptionsFragment fragment,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Runnable restartRunnable) {
-        assert ChromeFeatureList.isEnabled(
-                AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID);
+
         mFragment = fragment;
         mMediator =
                 new AutofillOptionsMediator(

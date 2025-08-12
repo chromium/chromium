@@ -58,18 +58,15 @@ std::string GetTrialGroupForPackage() {
 void SetSharedPrefForDeepLink() {
   Java_AutofillClientProviderUtils_setAutofillOptionsDeepLinkPref(
       base::android::AttachCurrentThread(),
+
       base::FeatureList::IsEnabled(
-          autofill::features::kAutofillVirtualViewStructureAndroid) &&
-          base::FeatureList::IsEnabled(
-              autofill::features::kAutofillDeepLinkAutofillOptions));
+          autofill::features::kAutofillDeepLinkAutofillOptions));
 }
 
 // Sets a shared pref that allows external apps to use a ContentResolver to
 // figure out whether Chrome is using platform autofill over the default.
 void SetSharedPrefForSettingsContentProvider(bool uses_platform_autofill) {
   if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillVirtualViewStructureAndroid) &&
-      base::FeatureList::IsEnabled(
           autofill::features::kAutofillThirdPartyModeContentProvider)) {
     Java_AutofillClientProviderUtils_setThirdPartyModePref(
         base::android::AttachCurrentThread(), uses_platform_autofill);
@@ -81,35 +78,9 @@ void SetSharedPrefForSettingsContentProvider(bool uses_platform_autofill) {
 
 AndroidAutofillAvailabilityStatus GetAndroidAutofillAvailabilityStatus(
     PrefService& prefs) {
-  AndroidAutofillAvailabilityStatus availability = static_cast<
-      AndroidAutofillAvailabilityStatus>(
+  return static_cast<AndroidAutofillAvailabilityStatus>(
       Java_AutofillClientProviderUtils_getAndroidAutofillFrameworkAvailability(
           base::android::AttachCurrentThread(), &prefs));
-  // Check whether the returned availability is affected by feature parameters
-  // that skip some checks on this client.
-  switch (availability) {
-    case AndroidAutofillAvailabilityStatus::kAndroidAutofillServiceIsGoogle:
-      if (features::kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck
-              .Get() ==
-          features::VirtualViewStructureSkipChecks::kOnlySkipAwGCheck) {
-        availability = AndroidAutofillAvailabilityStatus::kAvailable;
-      }
-      ABSL_FALLTHROUGH_INTENDED;  // No skip-awg-check but skip-all may apply.
-    case AndroidAutofillAvailabilityStatus::kAndroidAutofillManagerNotAvailable:
-    case AndroidAutofillAvailabilityStatus::kAndroidAutofillNotSupported:
-    case AndroidAutofillAvailabilityStatus::kUnknownAndroidAutofillService:
-      if (features::kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck
-              .Get() ==
-          features::VirtualViewStructureSkipChecks::kSkipAllChecks) {
-        availability = AndroidAutofillAvailabilityStatus::kAvailable;
-      }
-      return availability;
-    case AndroidAutofillAvailabilityStatus::kAvailable:
-    case AndroidAutofillAvailabilityStatus::kSettingTurnedOff:
-    case AndroidAutofillAvailabilityStatus::kNotAllowedByPolicy:
-      return availability;
-  }
-  NOTREACHED();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

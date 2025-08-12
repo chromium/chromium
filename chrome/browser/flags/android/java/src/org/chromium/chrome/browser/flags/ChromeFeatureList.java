@@ -276,8 +276,6 @@ public abstract class ChromeFeatureList {
     public static final String AUTOFILL_SYNC_EWALLET_ACCOUNTS = "AutofillSyncEwalletAccounts";
     public static final String AUTOFILL_THIRD_PARTY_MODE_CONTENT_PROVIDER =
             "AutofillThirdPartyModeContentProvider";
-    public static final String AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID =
-            "AutofillVirtualViewStructureAndroid";
     public static final String AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE =
             "AutomotiveBackButtonBarStreamline";
     public static final String AVOID_RELAYOUT_DURING_FOCUS_ANIMATION =

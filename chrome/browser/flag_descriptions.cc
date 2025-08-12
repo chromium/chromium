@@ -978,12 +978,6 @@ const char kAutofillVcnEnrollStrikeExpiryTimeDescription[] =
     "When enabled, changes the amount of time required for VCN enrollment "
     "prompt strikes to expire.";
 
-const char kAutofillVirtualViewStructureAndroidName[] =
-    "Enable the setting to provide a virtual view structure for Autofill";
-const char kAutofillVirtualViewStructureAndroidDescription[] =
-    "When enabled, a setting allows to switch to using Android Autofill. Chrome"
-    " then provides a virtual view structure but no own suggestions.";
-
 const char kAutoPictureInPictureForVideoPlaybackName[] =
     "Auto picture in picture for video playback";
 const char kAutoPictureInPictureForVideoPlaybackDescription[] =

@@ -3952,24 +3952,6 @@ const FeatureEntry::FeatureVariation kLinkPreviewTriggerTypeVariations[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-inline constexpr flags_ui::FeatureEntry::FeatureParam
-    kAutofillVirtualViewStructureAndroidSkipCompatibilityCheck = {
-        autofill::features::
-            kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck.name,
-        "skip_all_checks"};
-inline constexpr flags_ui::FeatureEntry::FeatureParam
-    kAutofillVirtualViewStructureAndroidOnlySkipAwgCheck = {
-        autofill::features::
-            kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck.name,
-        "only_skip_awg_check"};
-
-inline constexpr flags_ui::FeatureEntry::FeatureVariation
-    kAutofillVirtualViewStructureVariation[] = {
-        {" without any compatibility check",
-         &kAutofillVirtualViewStructureAndroidSkipCompatibilityCheck, 1,
-         nullptr},
-        {" without AwG restriction",
-         &kAutofillVirtualViewStructureAndroidOnlySkipAwgCheck, 1, nullptr}};
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -6554,17 +6536,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUiDevToolsDescription, kOsCrOS,
      SINGLE_VALUE_TYPE(ui_devtools::switches::kEnableUiDevTools)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_ANDROID)
-    {"enable-autofill-virtual-view-structure",
-     flag_descriptions::kAutofillVirtualViewStructureAndroidName,
-     flag_descriptions::kAutofillVirtualViewStructureAndroidDescription,
-     kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         autofill::features::kAutofillVirtualViewStructureAndroid,
-         kAutofillVirtualViewStructureVariation,
-         "Skip AutofillService Check")},
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-touchscreen-calibration",

@@ -862,8 +862,6 @@ class AndroidAutofillProviderWithCredManTest
 
  private:
   FormData test_webauthn_form_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillVirtualViewStructureAndroid};
 };
 
 TEST_F(AndroidAutofillProviderWithCredManTest, CallsCredManOnlyOnce) {

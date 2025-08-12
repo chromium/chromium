@@ -341,29 +341,6 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSecurityTouchEventFilteringAndroid);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillThirdPartyModeContentProvider);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillVirtualViewStructureAndroid);
-
-// Used as param for `kAutofillVirtualViewStructureAndroid` to allow
-// skipping certain checks when testing manually.
-enum class VirtualViewStructureSkipChecks {
-  kDontSkip = 0,
-  kSkipAllChecks = 1,
-  kOnlySkipAwGCheck = 2,
-};
-
-inline constexpr base::FeatureParam<VirtualViewStructureSkipChecks>::Option
-    kVirtualViewStructureSkipChecksOption[] = {
-        {VirtualViewStructureSkipChecks::kDontSkip, "dont_skip"},
-        {VirtualViewStructureSkipChecks::kSkipAllChecks, "skip_all_checks"},
-        {VirtualViewStructureSkipChecks::kOnlySkipAwGCheck,
-         "only_skip_awg_check"},
-};
-inline constexpr base::FeatureParam<VirtualViewStructureSkipChecks>
-    kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck{
-        &kAutofillVirtualViewStructureAndroid, "skip_compatibility_check",
-        VirtualViewStructureSkipChecks::kDontSkip,
-        &kVirtualViewStructureSkipChecksOption};
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

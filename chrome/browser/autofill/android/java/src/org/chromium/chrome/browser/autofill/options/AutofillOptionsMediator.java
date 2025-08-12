@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.prefs.PrefService;
@@ -47,9 +46,6 @@ import org.chromium.ui.text.SpanApplier;
 @NullMarked
 class AutofillOptionsMediator implements ModalDialogProperties.Controller {
     private static final String NON_PACKAGE_NAME = "package:not.a.package.so.all.providers.show";
-    private static final String SKIP_COMPATIBILITY_CHECK_PARAM_NAME = "skip_compatibility_check";
-    private static final String SKIP_ALL_CHECKS_PARAM_VALUE = "skip_all_checks";
-    private static final String ONLY_SKIP_AWG_CHECK_PARAM_VALUE = "only_skip_awg_check";
 
     @VisibleForTesting
     static final String HISTOGRAM_USE_THIRD_PARTY_FILLING =
@@ -134,26 +130,14 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
         }
         switch (AutofillClientProviderUtils.getAndroidAutofillFrameworkAvailability(prefs())) {
             case AndroidAutofillAvailabilityStatus.NOT_ALLOWED_BY_POLICY:
+            case AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_MANAGER_NOT_AVAILABLE:
+            case AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_NOT_SUPPORTED:
+            case AndroidAutofillAvailabilityStatus.UNKNOWN_ANDROID_AUTOFILL_SERVICE:
+            case AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_SERVICE_IS_GOOGLE:
                 return true;
             case AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF: // Pref may be changed!
             case AndroidAutofillAvailabilityStatus.AVAILABLE:
                 return false;
-            case AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_MANAGER_NOT_AVAILABLE:
-            case AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_NOT_SUPPORTED:
-            case AndroidAutofillAvailabilityStatus.UNKNOWN_ANDROID_AUTOFILL_SERVICE:
-                return !SKIP_ALL_CHECKS_PARAM_VALUE.equals(
-                        ChromeFeatureList.getFieldTrialParamByFeature(
-                                ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID,
-                                SKIP_COMPATIBILITY_CHECK_PARAM_NAME));
-            case AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_SERVICE_IS_GOOGLE:
-                return !SKIP_ALL_CHECKS_PARAM_VALUE.equals(
-                                ChromeFeatureList.getFieldTrialParamByFeature(
-                                        ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID,
-                                        SKIP_COMPATIBILITY_CHECK_PARAM_NAME))
-                        && !ONLY_SKIP_AWG_CHECK_PARAM_VALUE.equals(
-                                ChromeFeatureList.getFieldTrialParamByFeature(
-                                        ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID,
-                                        SKIP_COMPATIBILITY_CHECK_PARAM_NAME));
         }
         assert false : "Unhandled AndroidAutofillFrameworkAvailability state!";
         return false;

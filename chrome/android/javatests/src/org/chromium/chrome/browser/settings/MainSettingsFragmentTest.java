@@ -129,7 +129,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.feature_engagement.Tracker;
@@ -269,7 +268,6 @@ public class MainSettingsFragmentTest {
      */
     @Test
     @SmallTest
-    @EnableFeatures(AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)
     @DisableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testStartup() {
         startSettings();
@@ -333,31 +331,6 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.SAFETY_HUB,
-        AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID
-    })
-    public void testLegacyOrderRemainsConsistent() {
-        startSettings();
-        @Nullable Preference prevPref = null;
-        for (int i = 0; i < mMainSettings.getPreferenceScreen().getPreferenceCount(); ++i) {
-            Preference pref = mMainSettings.getPreferenceScreen().getPreference(i);
-            if (!pref.isShown()) { // Skip invisible prefs.
-                continue;
-            }
-            if (prevPref == null) { // Skip first pref.
-                prevPref = pref;
-                continue;
-            }
-            assertTrue(
-                    prevPref.getTitle() + " should precede " + pref.getTitle(),
-                    pref.getOrder() > prevPref.getOrder());
-        }
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)
     @DisableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testConsistentOrder() {
         startSettings();
