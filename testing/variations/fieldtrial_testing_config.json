@@ -6074,21 +6074,6 @@
             ]
         }
     ],
-    "ClassManagementEnabledMetricsProvider": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ClassManagementEnabledMetricsProvider"
-                    ]
-                }
-            ]
-        }
-    ],
     "CleanupToBeNormalTermination": [
         {
             "platforms": [
