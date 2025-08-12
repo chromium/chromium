@@ -24,6 +24,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/functional/bind.h"
@@ -44,20 +45,23 @@ class AppListItemViewPixelTestBase : public AshTestBase {
                                bool use_rtl,
                                bool is_new_install,
                                bool has_notification,
-                               bool enable_promise_icons)
+                               bool enable_promise_icons,
+                               bool enable_system_blur)
       : use_folder_icon_refresh_(use_folder_icon_refresh),
         use_tablet_mode_(use_tablet_mode),
         use_dense_ui_(use_dense_ui),
         use_rtl_(use_rtl),
         is_new_install_(is_new_install),
         has_notification_(has_notification),
-        enable_promise_icons_(enable_promise_icons) {}
+        enable_promise_icons_(enable_promise_icons),
+        enable_system_blur_(enable_system_blur) {}
 
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
     init_params.under_rtl = use_rtl();
+    init_params.system_blur_enabled = enable_system_blur();
     return init_params;
   }
 
@@ -132,10 +136,11 @@ class AppListItemViewPixelTestBase : public AshTestBase {
   std::string GenerateScreenshotName(const std::string& title) override {
     std::vector<std::string> parameters = {
         use_tablet_mode() ? "tablet_mode" : "clamshell_mode",
-        use_dense_ui() ? "dense_ui" : "regular_ui", use_rtl() ? "rtl" : "ltr",
+        use_dense_ui() ? "dense_ui" : "regular_ui",
+        use_rtl() ? "rtl" : "ltr",
         is_new_install() ? "new_install=true" : "new_install=false",
-        has_notification() ? "has_notification=true"
-                           : "has_notification=false"};
+        has_notification() ? "has_notification=true" : "has_notification=false",
+        enable_system_blur() ? "with_system_blur" : "without_system_blur"};
     std::string stringified_params = base::JoinString(parameters, "|");
     return base::JoinString({title, stringified_params}, ".");
   }
@@ -151,6 +156,7 @@ class AppListItemViewPixelTestBase : public AshTestBase {
   bool is_new_install() const { return is_new_install_; }
   bool has_notification() const { return has_notification_; }
   bool enable_promise_icons() const { return enable_promise_icons_; }
+  bool enable_system_blur() const { return enable_system_blur_; }
 
  private:
   const bool use_folder_icon_refresh_;
@@ -160,6 +166,7 @@ class AppListItemViewPixelTestBase : public AshTestBase {
   const bool is_new_install_;
   const bool has_notification_;
   const bool enable_promise_icons_;
+  const bool enable_system_blur_;
 
   std::unique_ptr<DragDropControllerTestApi> drag_drop_controller_test_api_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -173,7 +180,8 @@ class AppListItemViewPixelTest
                      /*use_dense_ui=*/bool,
                      /*use_rtl=*/bool,
                      /*is_new_install=*/bool,
-                     /*has_notification=*/bool>> {
+                     /*has_notification=*/bool,
+                     /*enable_system_blur=*/bool>> {
  public:
   AppListItemViewPixelTest()
       : AppListItemViewPixelTestBase(
@@ -183,7 +191,8 @@ class AppListItemViewPixelTest
             /*use_rtl=*/std::get<3>(GetParam()),
             /*is_new_install=*/std::get<4>(GetParam()),
             /*has_notification=*/std::get<5>(GetParam()),
-            /*enable_promise_icons=*/false) {}
+            /*enable_promise_icons=*/false,
+            /*enable_system_blur=*/std::get<6>(GetParam())) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -194,7 +203,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                              /*use_dense_ui=*/testing::Bool(),
                              /*use_rtl=*/testing::Bool(),
                              /*is_new_install=*/testing::Bool(),
-                             /*has_notification=*/testing::Bool()));
+                             /*has_notification=*/testing::Bool(),
+                             /*enable_system_blur=*/testing::Bool()));
 
 TEST_P(AppListItemViewPixelTest, AppListItemView) {
   CreateAppListItem("App");
@@ -202,7 +212,8 @@ TEST_P(AppListItemViewPixelTest, AppListItemView) {
 
   ShowAppList();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName("app_list_item_view"), /*revision_number=*/6,
+      GenerateScreenshotName("app_list_item_view"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 0,
       GetItemViewAt(0), GetItemViewAt(1)));
 }
 
@@ -226,7 +237,8 @@ TEST_P(AppListItemViewPixelTest, AppListFolderItemsLayoutInIcon) {
   ShowAppList();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName("app_list_item_view"), /*revision_number=*/10,
+      GenerateScreenshotName("app_list_item_view"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 10 : 0,
       GetItemViewAt(0), GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
       GetItemViewAt(4)));
 }
@@ -264,7 +276,8 @@ TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
   }
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName("app_list_item_view"), /*revision_number=*/12,
+      GenerateScreenshotName("app_list_item_view"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 12 : 0,
       GetItemViewAt(0), GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
       GetItemViewAt(4)));
 
@@ -314,7 +327,9 @@ TEST_P(AppListItemViewPixelTest, DraggedAppListFolderIcon) {
         EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
             base::JoinString(
                 {GenerateScreenshotName("app_list_item_view"), filename}, "."),
-            /*revision_number=*/6, GetDraggedWidget()));
+            /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6
+                                                                           : 0,
+            GetDraggedWidget()));
       };
 
   for (size_t i = 0; i < max_items_in_folder; ++i) {
@@ -360,7 +375,8 @@ class AppListViewPromiseAppPixelTest
       public testing::WithParamInterface<std::tuple<
           /*use_tablet_mode=*/bool,
           /*use_dense_ui=*/bool,
-          /*use_rtl=*/bool>> {
+          /*use_rtl=*/bool,
+          /*enable_system_blur=*/bool>> {
  public:
   AppListViewPromiseAppPixelTest()
       : AppListItemViewPixelTestBase(
@@ -370,7 +386,8 @@ class AppListViewPromiseAppPixelTest
             /*use_rtl=*/std::get<2>(GetParam()),
             /*is_new_install=*/false,
             /*has_notification=*/false,
-            /*enable_promise_icons=*/true) {}
+            /*enable_promise_icons=*/true,
+            /*enable_system_blur=*/std::get<3>(GetParam())) {}
 
   AppListItem* CreateAppListPromiseItem(const std::string& name) {
     return GetAppListTestHelper()->model()->CreateAndAddPromiseItem(name +
@@ -383,7 +400,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Combine(
                              /*use_tablet_mode=*/testing::Bool(),
                              /*use_dense_ui=*/testing::Bool(),
-                             /*use_rtl=*/testing::Bool()));
+                             /*use_rtl=*/testing::Bool(),
+                             /*enable_system_blur=*/testing::Bool()));
 
 TEST_P(AppListViewPromiseAppPixelTest, PromiseAppWaiting) {
   // Reset any configs set by previous tests so that
@@ -405,7 +423,8 @@ TEST_P(AppListViewPromiseAppPixelTest, PromiseAppWaiting) {
       base::JoinString(
           {"promise_app_waiting", GenerateScreenshotName("app_list_item_view")},
           "."),
-      /*revision_number=*/4, GetItemViewAt(0), GetItemViewAt(1)));
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 0,
+      GetItemViewAt(0), GetItemViewAt(1)));
 }
 
 TEST_P(AppListViewPromiseAppPixelTest, PromiseAppInstalling) {
@@ -434,7 +453,8 @@ TEST_P(AppListViewPromiseAppPixelTest, PromiseAppInstalling) {
       base::JoinString({"promise_app_installing",
                         GenerateScreenshotName("app_list_item_view")},
                        "."),
-      /*revision_number=*/4, GetItemViewAt(0), GetItemViewAt(1)));
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 0,
+      GetItemViewAt(0), GetItemViewAt(1)));
 }
 
 }  // namespace ash
