@@ -96,7 +96,10 @@ constexpr CGFloat kShadowOpacity = 0.12;
     _pasteTarget = pasteTarget;
     _textField = textField;
     self.translatesAutoresizingMaskIntoConstraints = NO;
-    self.allowsSelfSizing = YES;
+    // When the glass effect is enabled, the view's height is explicitly managed
+    // by a height constraint, so self-sizing must be disabled. For the default
+    // style, self-sizing is allowed.
+    self.allowsSelfSizing = !GlassEffectEnabled();
     self.templateURLService = templateURLService;
     self.helpHandler = helpHandler;
     [self addSubviews];
@@ -136,14 +139,12 @@ constexpr CGFloat kShadowOpacity = 0.12;
   const CGFloat kButtonHeight = 36.0;
   const CGFloat kBetweenShortcutButtonSpacing = 5.0;
   const CGFloat kBetweenSearchButtonSpacing = 12.0;
-  const CGFloat kSearchStackViewLeadingMargin =
-      GlassEffectEnabled() ? 22.0 : 10.0;
-  const CGFloat kShortcutStackViewTrailingMargin =
-      GlassEffectEnabled() ? 22.0 : 10.0;
+  const CGFloat kSearchStackViewLeadingMargin = 10.0;
+  const CGFloat kShortcutStackViewTrailingMargin = 10.0;
   const CGFloat kSearchStackViewTopMargin = 4.0;
-  const CGFloat kSearchStackViewBottomMargin =
-      GlassEffectEnabled() ? 16.0 : 4.0;
+  const CGFloat kSearchStackViewBottomMargin = 4.0;
 
+  UIVisualEffectView* effectView = nil;
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     // Create glass effect
@@ -151,29 +152,30 @@ constexpr CGFloat kShadowOpacity = 0.12;
     glassEffect.interactive = YES;
     glassEffect.tintColor = [[UIColor colorNamed:kSecondaryBackgroundColor]
         colorWithAlphaComponent:kGlassTintAlpha];
-    UIVisualEffectView* effectView =
-        [[UIVisualEffectView alloc] initWithEffect:glassEffect];
-    effectView.layer.shadowRadius = kShadowRadius;
-    effectView.layer.shadowOffset = CGSizeMake(0, kShadowVerticalOffset);
-    effectView.layer.shadowOpacity = kShadowOpacity;
-    effectView.layer.shadowColor =
+    effectView = [[UIVisualEffectView alloc] initWithEffect:glassEffect];
+    self.layer.shadowRadius = kShadowRadius;
+    self.layer.shadowOffset = CGSizeMake(0, kShadowVerticalOffset);
+    self.layer.shadowOpacity = kShadowOpacity;
+    self.layer.shadowColor =
         [UIColor colorNamed:kBackgroundShadowColor].CGColor;
-    effectView.layer.masksToBounds = NO;
+    self.layer.masksToBounds = NO;
     effectView.cornerConfiguration = [UICornerConfiguration
         configurationWithRadius:
             [UICornerRadius
                 containerConcentricRadiusWithMinimum:kCornerRadius]];
     effectView.translatesAutoresizingMaskIntoConstraints = NO;
-    [effectView.heightAnchor constraintEqualToConstant:kGlassEffectViewHeight]
-        .active = YES;
 
     [self addSubview:effectView];
 
     // Insets around the effectView to keep it floating above keyboard.
     const NSDirectionalEdgeInsets effectViewInsets =
         NSDirectionalEdgeInsetsMake(0, 12., 12., 12.);
-    AddSameConstraintsWithInsets(effectView, self.safeAreaLayoutGuide,
-                                 effectViewInsets);
+    NSLayoutConstraint* heightConstraint =
+        [self.heightAnchor constraintEqualToConstant:kGlassEffectViewHeight +
+                                                     effectViewInsets.bottom];
+    heightConstraint.priority = UILayoutPriorityRequired;
+    heightConstraint.active = YES;
+    AddSameConstraintsWithInsets(effectView, self, effectViewInsets);
   }
 #endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
         // __IPHONE_26_0
@@ -191,7 +193,8 @@ constexpr CGFloat kShadowOpacity = 0.12;
     [button.heightAnchor constraintEqualToConstant:kButtonHeight].active = YES;
     [shortcutStackView addArrangedSubview:button];
   }
-  [self addSubview:shortcutStackView];
+  UIView* container = effectView ? effectView.contentView : self;
+  [container addSubview:shortcutStackView];
   self.shortcutStackView = shortcutStackView;
 
   // Create and add a stackview containing the leading assistive buttons, i.e.
@@ -208,11 +211,12 @@ constexpr CGFloat kShadowOpacity = 0.12;
   for (UIControl* button in leadingControls) {
     [searchStackView addArrangedSubview:button];
   }
-  [self addSubview:searchStackView];
+  [container addSubview:searchStackView];
   self.searchStackView = searchStackView;
 
   // Position the stack views.
-  id<LayoutGuideProvider> layoutGuide = self.safeAreaLayoutGuide;
+  id<LayoutGuideProvider> layoutGuide =
+      effectView ? effectView.contentView : self.safeAreaLayoutGuide;
   [NSLayoutConstraint activateConstraints:@[
     [searchStackView.leadingAnchor
         constraintEqualToAnchor:layoutGuide.leadingAnchor
