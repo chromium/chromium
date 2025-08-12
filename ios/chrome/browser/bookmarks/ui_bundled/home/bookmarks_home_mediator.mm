@@ -215,7 +215,8 @@ bool IsABookmarkNodeSectionForIdentifier(
   // While sign-in is in progress, the UI should be frozen.
   // The promo manager is in charge of displaying the activity overlay, but
   // we’re still in charge of stopping dismiss from occurring.
-  return !_bookmarkPromoController.signinInProgress;
+  // In case of doubt, let dismissal occur, so that we don’t froze the UI.
+  return _bookmarkPromoController.signinInProgress != signin::Tribool::kTrue;
 }
 
 #pragma mark - Initial Model Setup

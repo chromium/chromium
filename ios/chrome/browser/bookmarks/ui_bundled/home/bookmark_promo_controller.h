@@ -13,10 +13,12 @@ class Browser;
 @class SigninPromoViewConfigurator;
 @class SigninPromoViewMediator;
 @protocol SigninPromoViewMediatorDelegate;
-
+namespace signin {
+enum class Tribool;
+}  // namespace signin
 namespace syncer {
 class SyncService;
-}
+}  // namespace syncer
 
 @protocol BookmarkPromoControllerDelegate
 
@@ -46,7 +48,7 @@ class SyncService;
 
 @property(nonatomic, readonly) SigninPromoViewMediator* signinPromoViewMediator;
 
-@property(nonatomic, readonly) BOOL signinInProgress;
+@property(nonatomic, readonly) signin::Tribool signinInProgress;
 
 // See `-[BookmarkPromoController initWithBrowser:delegate:presenter:
 // baseViewController:]`.

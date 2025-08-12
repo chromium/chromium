@@ -378,7 +378,9 @@
 }
 
 - (BOOL)canDismiss {
-  return !_signinPromoViewMediator.signinInProgress;
+  // In case we don’t know, allow the view to be dismissed in order not to block
+  // the user on a frozen view if sign-in is acciddentally stopped.
+  return _signinPromoViewMediator.signinInProgress != signin::Tribool::kTrue;
 }
 
 #pragma mark - URL Loading Helpers

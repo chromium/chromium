@@ -160,7 +160,7 @@
 
 #pragma mark - Property
 
-- (BOOL)signinInProgress {
+- (signin::Tribool)signinInProgress {
   return _signinPromoViewMediator.signinInProgress;
 }
 
