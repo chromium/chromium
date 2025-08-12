@@ -32,7 +32,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -49,6 +48,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionToolbarCoordinator;
+import org.chromium.chrome.browser.toolbar.incognito.IncognitoIndicatorCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
@@ -76,7 +76,6 @@ public class ToolbarTablet extends ToolbarLayout {
     private ChromeImageButton mForwardButton;
     private ImageButton mReloadButton;
     private ImageButton mBookmarkButton;
-    private @Nullable View mIncognitoIndicator;
 
     private boolean mIsInTabSwitcherMode;
     private boolean mToolbarButtonsVisible;
@@ -85,10 +84,11 @@ public class ToolbarTablet extends ToolbarLayout {
 
     private @Nullable NavigationPopup mNavigationPopup;
 
-    private Boolean mIsIncognitoBranded;
+    private @Nullable Boolean mIsIncognitoBranded;
     private LocationBarCoordinator mLocationBar;
     private ReloadButtonCoordinator mReloadButtonCoordinator;
     private BackButtonCoordinator mBackButtonCoordinator;
+    private IncognitoIndicatorCoordinator mIncognitoIndicatorCoordinator;
 
     private final int mStartPaddingWithButtons;
     private final int mStartPaddingWithoutButtons;
@@ -123,7 +123,6 @@ public class ToolbarTablet extends ToolbarLayout {
         mReloadButton = findViewById(R.id.refresh_button);
 
         mBookmarkButton = findViewById(R.id.bookmark_button);
-        setIncognitoIndicatorVisibility();
 
         // Initialize values needed for showing/hiding toolbar buttons when the activity size
         // changes.
@@ -261,8 +260,6 @@ public class ToolbarTablet extends ToolbarLayout {
             updateRippleBackground();
             mIsIncognitoBranded = incognitoBranded;
         }
-        setIncognitoIndicatorVisibility();
-
         updateNtp();
     }
 
@@ -421,6 +418,13 @@ public class ToolbarTablet extends ToolbarLayout {
         mBackButtonCoordinator = assertNonNull(backButtonCoordinator);
         menuButtonCoordinator.setVisibility(true);
         mExtensionToolbarCoordinator = extensionToolbarCoordinator;
+
+        mIncognitoIndicatorCoordinator =
+                new IncognitoIndicatorCoordinator(
+                        /* parentToolbar= */ this,
+                        themeColorProvider,
+                        incognitoStateProvider,
+                        mToolbarButtonsVisible);
     }
 
     @Override
@@ -563,19 +567,6 @@ public class ToolbarTablet extends ToolbarLayout {
         // behavior is fixed.
     }
 
-    private void setIncognitoIndicatorVisibility() {
-        if (mIsIncognitoBranded == null
-                || !ChromeFeatureList.sTabStripIncognitoMigration.isEnabled()) return;
-        if (mIncognitoIndicator == null && mIsIncognitoBranded) {
-            ViewStub stub = findViewById(R.id.incognito_indicator_stub);
-            mIncognitoIndicator = stub.inflate();
-        }
-        if (mIncognitoIndicator != null) {
-            mIncognitoIndicator.setVisibility(
-                    mIsIncognitoBranded && mToolbarButtonsVisible ? VISIBLE : GONE);
-        }
-    }
-
     private void setToolbarButtonsVisible(boolean visible) {
         if (mToolbarButtonsVisible == visible) return;
 
@@ -589,7 +580,7 @@ public class ToolbarTablet extends ToolbarLayout {
             mBackButtonCoordinator.setVisibility(visible);
             mLocationBar.setShouldShowButtonsWhenUnfocusedForTablet(visible);
             setStartPaddingBasedOnButtonVisibility(visible);
-            setIncognitoIndicatorVisibility();
+            mIncognitoIndicatorCoordinator.setVisibility(visible);
         }
     }
 
@@ -643,7 +634,7 @@ public class ToolbarTablet extends ToolbarLayout {
                             // buttons don't jump when the animation ends.
                             setStartPaddingBasedOnButtonVisibility(true);
                         }
-                        setIncognitoIndicatorVisibility();
+                        mIncognitoIndicatorCoordinator.setVisibility(mToolbarButtonsVisible);
                     }
 
                     @Override
@@ -703,5 +694,9 @@ public class ToolbarTablet extends ToolbarLayout {
     @VisibleForTesting
     void setBackButtonCoordinator(BackButtonCoordinator coordinator) {
         mBackButtonCoordinator = coordinator;
+    }
+
+    void setIncognitoIndicatorCoordinatorForTesting(IncognitoIndicatorCoordinator coordinator) {
+        mIncognitoIndicatorCoordinator = coordinator;
     }
 }
