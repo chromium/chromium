@@ -10977,14 +10977,14 @@ void RenderFrameHostImpl::InitializeCrashReportStorage(
   // backing memory is a `std::map`, but in the future when the backing memory
   // might be a shared memory buffer, this becomes more important. See
   // `CrashReportStorage::initialize()`.
-  if (crash_storage_requested_length_) {
+  if (document_associated_data_->crash_storage_requested_length()) {
     bad_message::ReceivedBadMessage(
         GetProcess(),
         bad_message::RFH_CRASH_REPORT_STORAGE_ALREADY_INITIALIZED);
     return;
   }
 
-  crash_storage_requested_length_ = length;
+  document_associated_data_->set_crash_storage_requested_length(length);
   std::move(callback).Run();
 }
 
@@ -10992,22 +10992,23 @@ void RenderFrameHostImpl::SetCrashReportStorageKey(
     const std::string& key,
     const std::string& value,
     SetCrashReportStorageKeyCallback callback) {
-  if (!crash_storage_requested_length_) {
+  if (!document_associated_data_->crash_storage_requested_length()) {
     mojo::ReportBadMessage("Must call InitializeCrashReportStorage() first");
   }
 
-  crash_storage_map_.insert(std::make_pair(key, value));
+  document_associated_data_->crash_storage_map().insert(
+      std::make_pair(key, value));
   std::move(callback).Run();
 }
 
 void RenderFrameHostImpl::RemoveCrashReportStorageKey(
     const std::string& key,
     RemoveCrashReportStorageKeyCallback callback) {
-  if (!crash_storage_requested_length_) {
+  if (!document_associated_data_->crash_storage_requested_length()) {
     mojo::ReportBadMessage("Must call InitializeCrashReportStorage() first");
   }
 
-  crash_storage_map_.erase(key);
+  document_associated_data_->crash_storage_map().erase(key);
   std::move(callback).Run();
 }
 
@@ -16125,7 +16126,7 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
   }
 
   base::Value::Dict crash_report_api_body;
-  for (const auto& pair : crash_storage_map_) {
+  for (const auto& pair : document_associated_data_->crash_storage_map()) {
     crash_report_api_body.Set(pair.first, pair.second);
   }
   body.Set("crash_report_api", std::move(crash_report_api_body));

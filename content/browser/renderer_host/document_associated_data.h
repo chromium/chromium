@@ -195,6 +195,17 @@ class DocumentAssociatedData : public base::SupportsUserData {
   void RemoveCookieSettingOverride(
       net::CookieSettingOverride cookie_setting_override);
 
+  std::map<std::string, std::string>& crash_storage_map() {
+    return crash_storage_map_;
+  }
+
+  std::optional<uint64_t> crash_storage_requested_length() {
+    return crash_storage_requested_length_;
+  }
+  void set_crash_storage_requested_length(uint64_t length) {
+    crash_storage_requested_length_ = length;
+  }
+
  private:
   const blink::DocumentToken token_;
   std::unique_ptr<PageImpl> owned_page_;
@@ -216,6 +227,18 @@ class DocumentAssociatedData : public base::SupportsUserData {
   // augmented/modified before being returned via
   // `RenderFrameHostImpl::GetCookieSettingOverrides`.
   net::CookieSettingOverrides cookie_setting_overrides_;
+  // This is written to by the `SetCrashReportStorageKey()` IPC, with data
+  // supplied by the renderer, and read from during
+  // `RenderFrameHostImpl::MaybeGenerateCrashReport()`, to supplement crash
+  // reports with this data.
+  std::map<std::string, std::string> crash_storage_map_;
+  // For now, this member is *only* used to track whether initialization has
+  // already occurred via this method. It will be more useful soon when it is
+  // used by `SetCrashReportStorageKey()` to actually enforce a cap on the
+  // number of bytes written to the backing crash report storage memory (for
+  // now, this is `crash_storage_map_`, but in the future it could be a shared
+  // memory region; see https://crrev.com/c/6788146 which is exploring this).
+  std::optional<uint64_t> crash_storage_requested_length_;
 
   base::WeakPtrFactory<RenderFrameHostImpl> weak_factory_;
 };
