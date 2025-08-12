@@ -1557,8 +1557,6 @@ bool NavigationControllerImpl::RendererDidNavigate(
 
   bool is_main_frame_navigation = !rfh->GetParent();
 
-  // TODO(altimin, crbug.com/933147): Remove this logic after we are done with
-  // implementing back-forward cache.
   // For primary frame tree navigations, choose an appropriate
   // BackForwardCacheMetrics to be associated with the new navigation's
   // NavigationEntry, by either creating a new object or reusing the previous
@@ -1746,8 +1744,6 @@ bool NavigationControllerImpl::RendererDidNavigate(
   active_entry->SetTimestamp(timestamp);
   active_entry->SetHttpStatusCode(params.http_status_code);
 
-  // TODO(altimin, crbug.com/933147): Remove this logic after we are done with
-  // implementing back-forward cache.
   if (back_forward_cache_metrics &&
       !active_entry->back_forward_cache_metrics()) {
     active_entry->set_back_forward_cache_metrics(

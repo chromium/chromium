@@ -1958,8 +1958,6 @@ NavigationRequest::NavigationRequest(
   // Add necessary headers that may not be present in the
   // blink::mojom::BeginNavigationParams.
   if (entry) {
-    // TODO(altimin, crbug.com/933147): Remove this logic after we are done
-    // with implementing back-forward cache.
     if (frame_tree_node->IsOutermostMainFrame() &&
         entry->back_forward_cache_metrics()) {
       entry->back_forward_cache_metrics()

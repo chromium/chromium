@@ -40,9 +40,6 @@ struct BackForwardCacheCanStoreDocumentResultWithTree;
 // Associated with a main frame document and shared between all
 // NavigationEntries with the same document_sequence_number for the main
 // document.
-//
-// TODO(altimin, crbug.com/933147): Remove this class after we are done
-// with implementing back-forward cache.
 class BackForwardCacheMetrics
     : public base::RefCounted<BackForwardCacheMetrics> {
  public:

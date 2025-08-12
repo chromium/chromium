@@ -649,8 +649,6 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // TODO(shivanisha): Persist this field once the intervention is stable.
   bool should_skip_on_back_forward_ui_;
 
-  // TODO(altimin, crbug.com/933147): Remove this logic after we are done
-  // with implement back-forward cache.
   // It is preserved at commit but not persisted.
   scoped_refptr<BackForwardCacheMetrics> back_forward_cache_metrics_;
 
