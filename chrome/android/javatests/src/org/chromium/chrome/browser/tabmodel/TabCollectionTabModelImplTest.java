@@ -54,6 +54,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Integration test for {@link TabCollectionTabModelImpl}. */
@@ -1961,7 +1962,7 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(groupId2, tab0.getTabGroupId());
                     assertEquals(groupId2, tab1.getTabGroupId());
                     assertEquals(4, mCollectionModel.getTabsInGroup(groupId2).size());
-                    assertTrue(mCollectionModel.detachedTabGroupExistsForTesting(groupId1));
+                    assertTrue(mCollectionModel.detachedTabGroupExists(groupId1));
                     // The group is detached, but not closed yet. The tabGroupExists check is based
                     // on number of tabs so it will be false.
                     assertFalse(mCollectionModel.tabGroupExists(groupId1));
@@ -2099,12 +2100,10 @@ public class TabCollectionTabModelImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assertTrue(
-                            mCollectionModel.detachedTabGroupExistsForTesting(groupId1Ref.get()));
+                    assertTrue(mCollectionModel.detachedTabGroupExists(groupId1Ref.get()));
 
                     mCollectionModel.undoGroupOperationExpired(undoGroupMetadataRef.get());
-                    assertFalse(
-                            mCollectionModel.detachedTabGroupExistsForTesting(groupId1Ref.get()));
+                    assertFalse(mCollectionModel.detachedTabGroupExists(groupId1Ref.get()));
                 });
     }
 
@@ -2874,5 +2873,345 @@ public class TabCollectionTabModelImplTest {
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
 
         ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR})
+    public void testCloseTabGroup_UndoableHiding() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        List<Tab> groupTabs = List.of(tab0, tab1);
+        mergeListOfTabsToGroup(groupTabs, tab0);
+        Token tabGroupId = tab0.getTabGroupId();
+        assertNotNull(tabGroupId);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+        // Select a tab outside the group to be closed.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mCollectionModel.setIndex(2, TabSelectionType.FROM_USER));
+        assertEquals(tab2, getCurrentTab());
+
+        CallbackHelper willCloseTabGroupHelper = new CallbackHelper();
+        CallbackHelper onTabPendingClosureHelper = new CallbackHelper();
+        CallbackHelper onTabCloseUndoneHelper = new CallbackHelper();
+        AtomicBoolean hidingInWillClose = new AtomicBoolean();
+
+        TabGroupModelFilterObserver groupObserver =
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void willCloseTabGroup(Token id, boolean hiding) {
+                        assertEquals(tabGroupId, id);
+                        hidingInWillClose.set(hiding);
+                        willCloseTabGroupHelper.notifyCalled();
+                    }
+                };
+
+        TabModelObserver modelObserver =
+                new TabModelObserver() {
+                    @Override
+                    public void onTabClosePending(
+                            List<Tab> tabs,
+                            boolean isAllTabs,
+                            @TabClosingSource int closingSource) {
+                        assertEquals(2, tabs.size());
+                        assertTrue(new HashSet<>(tabs).equals(new HashSet<>(groupTabs)));
+                        onTabPendingClosureHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void onTabCloseUndone(List<Tab> tabs, boolean isAllTabs) {
+                        assertEquals(1, tabs.size()); // It's called for each tab.
+                        onTabCloseUndoneHelper.notifyCalled();
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addTabGroupObserver(groupObserver);
+                    mCollectionModel.addObserver(modelObserver);
+                    mCollectionModel.closeTabs(
+                            TabClosureParams.closeTabs(groupTabs)
+                                    .allowUndo(true)
+                                    .hideTabGroups(true)
+                                    .build());
+                });
+
+        willCloseTabGroupHelper.waitForOnly();
+        onTabPendingClosureHelper.waitForOnly();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(hidingInWillClose.get());
+                    assertTrue(mCollectionModel.isTabGroupHiding(tabGroupId));
+                    assertTrue(mCollectionModel.detachedTabGroupExists(tabGroupId));
+                    assertFalse(mCollectionModel.tabGroupExists(tabGroupId));
+                    assertTrue(mCollectionModel.isClosurePending(tab0.getId()));
+                    assertTrue(mCollectionModel.isClosurePending(tab1.getId()));
+                });
+
+        // Undo the closure
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.cancelTabClosure(tab0.getId());
+                    mCollectionModel.cancelTabClosure(tab1.getId());
+                });
+        onTabCloseUndoneHelper.waitForCallback(0, 2);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(mCollectionModel.isTabGroupHiding(tabGroupId));
+                    assertTrue(mCollectionModel.tabGroupExists(tabGroupId));
+                    assertFalse(mCollectionModel.detachedTabGroupExists(tabGroupId));
+                    assertFalse(mCollectionModel.isClosurePending(tab0.getId()));
+                    assertFalse(mCollectionModel.isClosurePending(tab1.getId()));
+
+                    mCollectionModel.removeTabGroupObserver(groupObserver);
+                    mCollectionModel.removeObserver(modelObserver);
+                });
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+    }
+
+    @Test
+    @MediumTest
+    public void testCloseTabGroup_CommitHiding() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        List<Tab> groupTabs = List.of(tab0, tab1);
+        mergeListOfTabsToGroup(groupTabs, tab0);
+        Token tabGroupId = tab0.getTabGroupId();
+        assertNotNull(tabGroupId);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        CallbackHelper willCloseTabGroupHelper = new CallbackHelper();
+        CallbackHelper committedTabGroupClosureHelper = new CallbackHelper();
+        AtomicBoolean hidingInWillClose = new AtomicBoolean();
+        AtomicBoolean hidingInCommitted = new AtomicBoolean();
+
+        TabGroupModelFilterObserver groupObserver =
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void willCloseTabGroup(Token id, boolean hiding) {
+                        assertEquals(tabGroupId, id);
+                        hidingInWillClose.set(hiding);
+                        willCloseTabGroupHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void committedTabGroupClosure(Token id, boolean hiding) {
+                        assertEquals(tabGroupId, id);
+                        hidingInCommitted.set(hiding);
+                        committedTabGroupClosureHelper.notifyCalled();
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addTabGroupObserver(groupObserver);
+                    mCollectionModel.closeTabs(
+                            TabClosureParams.closeTabs(groupTabs)
+                                    .allowUndo(true)
+                                    .hideTabGroups(true)
+                                    .build());
+                });
+
+        willCloseTabGroupHelper.waitForOnly();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(hidingInWillClose.get());
+                    assertTrue(mCollectionModel.isTabGroupHiding(tabGroupId));
+                    assertTrue(mCollectionModel.detachedTabGroupExists(tabGroupId));
+                });
+
+        // Commit the closure
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.commitTabClosure(tab0.getId());
+                    mCollectionModel.commitTabClosure(tab1.getId());
+                });
+        committedTabGroupClosureHelper.waitForOnly();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(mCollectionModel.isTabGroupHiding(tabGroupId));
+                    assertFalse(mCollectionModel.detachedTabGroupExists(tabGroupId));
+                    assertFalse(mCollectionModel.isClosurePending(tab0.getId()));
+                    assertFalse(mCollectionModel.isClosurePending(tab1.getId()));
+                    assertTrue(tab0.isDestroyed());
+                    assertTrue(tab1.isDestroyed());
+
+                    mCollectionModel.removeTabGroupObserver(groupObserver);
+                });
+        assertEquals(1, getCount());
+        assertTabsInOrderAre(List.of(tab2));
+    }
+
+    @Test
+    @MediumTest
+    public void testCloseTabGroup_NotUndoableHiding() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        List<Tab> groupTabs = List.of(tab0, tab1);
+        mergeListOfTabsToGroup(groupTabs, tab0);
+        Token tabGroupId = tab0.getTabGroupId();
+        assertNotNull(tabGroupId);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        CallbackHelper willCloseTabGroupHelper = new CallbackHelper();
+        CallbackHelper committedTabGroupClosureHelper = new CallbackHelper();
+        AtomicBoolean hidingInWillClose = new AtomicBoolean();
+        AtomicBoolean hidingInCommitted = new AtomicBoolean();
+
+        TabGroupModelFilterObserver groupObserver =
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void willCloseTabGroup(Token id, boolean hiding) {
+                        assertEquals(tabGroupId, id);
+                        hidingInWillClose.set(hiding);
+                        willCloseTabGroupHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void committedTabGroupClosure(Token id, boolean hiding) {
+                        assertEquals(tabGroupId, id);
+                        hidingInCommitted.set(hiding);
+                        committedTabGroupClosureHelper.notifyCalled();
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addTabGroupObserver(groupObserver);
+                    mCollectionModel.closeTabs(
+                            TabClosureParams.closeTabs(groupTabs)
+                                    .allowUndo(false)
+                                    .hideTabGroups(true)
+                                    .build());
+                });
+
+        willCloseTabGroupHelper.waitForOnly();
+        committedTabGroupClosureHelper.waitForOnly();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(hidingInWillClose.get());
+                    assertTrue(hidingInCommitted.get());
+                    assertFalse(mCollectionModel.isTabGroupHiding(tabGroupId));
+                    assertFalse(mCollectionModel.detachedTabGroupExists(tabGroupId));
+                    assertTrue(tab0.isDestroyed());
+                    assertTrue(tab1.isDestroyed());
+
+                    mCollectionModel.removeTabGroupObserver(groupObserver);
+                });
+        assertEquals(1, getCount());
+        assertTabsInOrderAre(List.of(tab2));
+    }
+
+    @Test
+    @MediumTest
+    public void testCloseTabGroup_Partial() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        List<Tab> groupTabs = List.of(tab0, tab1, tab2);
+        mergeListOfTabsToGroup(groupTabs, tab0);
+        Token tabGroupId = tab0.getTabGroupId();
+        assertNotNull(tabGroupId);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        TabGroupModelFilterObserver groupObserver =
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void willCloseTabGroup(Token id, boolean hiding) {
+                        fail("willCloseTabGroup should not be called for partial closure.");
+                    }
+
+                    @Override
+                    public void committedTabGroupClosure(Token id, boolean hiding) {
+                        fail("committedTabGroupClosure should not be called for partial closure.");
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addTabGroupObserver(groupObserver);
+                    mCollectionModel.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tab0, tab1))
+                                    .allowUndo(true)
+                                    .hideTabGroups(true)
+                                    .build());
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(mCollectionModel.isClosurePending(tab0.getId()));
+                    assertTrue(mCollectionModel.isClosurePending(tab1.getId()));
+                    assertFalse(mCollectionModel.isTabGroupHiding(tabGroupId));
+                    assertTrue(mCollectionModel.tabGroupExists(tabGroupId));
+                    assertFalse(mCollectionModel.detachedTabGroupExists(tabGroupId));
+
+                    mCollectionModel.removeTabGroupObserver(groupObserver);
+                });
+        assertEquals(1, getCount());
+        assertTabsInOrderAre(List.of(tab2));
+        assertEquals(tabGroupId, tab2.getTabGroupId());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.commitTabClosure(tab0.getId());
+                    mCollectionModel.commitTabClosure(tab1.getId());
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testCloseTabGroup_HidingDisabled() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        List<Tab> groupTabs = List.of(tab0, tab1);
+        mergeListOfTabsToGroup(groupTabs, tab0);
+        Token tabGroupId = tab0.getTabGroupId();
+        assertNotNull(tabGroupId);
+
+        CallbackHelper willCloseTabGroupHelper = new CallbackHelper();
+        // Should get reset to false.
+        AtomicBoolean hidingInWillClose = new AtomicBoolean(true);
+
+        TabGroupModelFilterObserver groupObserver =
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void willCloseTabGroup(Token id, boolean hiding) {
+                        assertEquals(tabGroupId, id);
+                        hidingInWillClose.set(hiding);
+                        willCloseTabGroupHelper.notifyCalled();
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addTabGroupObserver(groupObserver);
+                    mCollectionModel.closeTabs(
+                            TabClosureParams.closeTabs(groupTabs).hideTabGroups(false).build());
+                });
+
+        willCloseTabGroupHelper.waitForOnly();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(hidingInWillClose.get());
+                    assertFalse(mCollectionModel.isTabGroupHiding(tabGroupId));
+                    // A detached group is still created for undo.
+                    assertTrue(mCollectionModel.detachedTabGroupExists(tabGroupId));
+
+                    mCollectionModel.commitTabClosure(tab0.getId());
+                    mCollectionModel.commitTabClosure(tab1.getId());
+
+                    assertFalse(mCollectionModel.detachedTabGroupExists(tabGroupId));
+
+                    mCollectionModel.removeTabGroupObserver(groupObserver);
+                });
     }
 }

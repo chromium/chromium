@@ -10,6 +10,8 @@ import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.areAnyTabsPartO
 
 import android.text.TextUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -34,6 +36,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.PendingTabClosureManager.PendingTabClosureDelegate;
@@ -158,6 +161,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             if (noTabIsActivated) {
                 mCurrentTabSupplier.set(tab);
             }
+            Token tabGroupId = tab.getTabGroupId();
+            if (tabGroupId != null) {
+                mHidingTabGroups.remove(tabGroupId);
+            }
 
             // Alert observers the tab closure was undone before calling setIndex if necessary as
             // * Observers may rely on this signal to re-introduce the tab to their visibility if it
@@ -225,6 +232,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     private final ObservableSupplierImpl<Integer> mTabCountSupplier =
             new ObservableSupplierImpl<>(0);
     private final Set<Integer> mMultiSelectedTabs = new HashSet<>();
+    private final Set<Token> mHidingTabGroups = new HashSet<>();
 
     // Efficient lookup of tabs by id rather than index (stored in C++). Also ensures the Java Tab
     // objects are not GC'd as the C++ TabAndroid objects only hold weak references to their Java
@@ -725,11 +733,26 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
         if (mNativeTabCollectionTabModelImplPtr == 0) return false;
 
+        boolean canHideTabGroups = params.hideTabGroups && canHideTabGroups();
+
         final List<Tab> tabsToClose;
         if (params.isAllTabs) {
             tabsToClose = getAllTabs();
+            if (canHideTabGroups) {
+                for (Token tabGroupId : getAllTabGroupIds()) {
+                    mHidingTabGroups.add(tabGroupId);
+                }
+            }
         } else {
             tabsToClose = new ArrayList<>(assumeNonNull(params.tabs));
+            if (canHideTabGroups) {
+                Set<Tab> closingTabIds = new HashSet<>(tabsToClose);
+                for (Token tabGroupId : getAllTabGroupIds()) {
+                    if (closingTabIds.containsAll(getTabsInGroup(tabGroupId))) {
+                        mHidingTabGroups.add(tabGroupId);
+                    }
+                }
+            }
         }
 
         tabsToClose.removeIf(
@@ -750,6 +773,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         }
 
         // TODO(crbug.com/381471263): Simplify the observer calls.
+        maybeSendCloseTabGroupEvent(tabsToClose, /* committing= */ false);
         if (params.tabCloseType == TabCloseType.MULTIPLE) {
             for (TabModelObserver obs : mTabModelObservers) {
                 obs.willCloseMultipleTabs(false, tabsToClose);
@@ -778,8 +802,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 tabsToClose,
                 params.recommendedNextTab,
                 selectionType,
-                /* pauseMedia= */ allowUndo,
-                /* updatePendingTabClosureManager= */ !allowUndo,
+                allowUndo,
                 params.tabCloseType);
 
         if (allowUndo) {
@@ -829,8 +852,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 Collections.singletonList(tab),
                 /* recommendedNextTab= */ null,
                 TabSelectionType.FROM_CLOSE,
-                /* pauseMedia= */ false,
-                /* updatePendingTabClosureManager= */ true,
+                /* isUndoable= */ false,
                 TabCloseType.SINGLE);
 
         for (TabModelObserver obs : mTabModelObservers) obs.tabRemoved(tab);
@@ -1209,8 +1231,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             deleteTabGroupTitle(tabGroupId);
         }
         if (undoGroupMetadataImpl.didCreateNewGroup) {
-            TabCollectionTabModelImplJni.get()
-                    .closeDetachedTabGroup(mNativeTabCollectionTabModelImplPtr, tabGroupId);
+            closeDetachedTabGroup(tabGroupId);
         } else if (undoGroupMetadataImpl.wasDestinationTabGroupCollapsed) {
             setTabGroupCollapsed(tabGroupId, true);
         }
@@ -1223,8 +1244,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
         UndoGroupMetadataImpl undoGroupMetadataImpl = (UndoGroupMetadataImpl) undoGroupMetadata;
         for (Token removedTabGroupId : undoGroupMetadataImpl.removedTabGroupIds) {
-            TabCollectionTabModelImplJni.get()
-                    .closeDetachedTabGroup(mNativeTabCollectionTabModelImplPtr, removedTabGroupId);
+            closeDetachedTabGroup(removedTabGroupId);
         }
     }
 
@@ -1253,11 +1273,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public boolean isTabGroupHiding(@Nullable Token tabGroupId) {
-        // TODO(crbug.com/428977566): This is used to differentiate a deletion from a hide.
-        // Presently all tab group closures are treated as deletions. This should be tracked
-        // based on the parameters provided in closeTabs() and the tracking information can be
-        // dropped once the tab closure is complete.
-        return false;
+        assertOnUiThread();
+        if (tabGroupId == null) return false;
+
+        return mHidingTabGroups.contains(tabGroupId);
     }
 
     @Override
@@ -1468,17 +1487,26 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         tab.destroy();
     }
 
+    private boolean canHideTabGroups() {
+        Profile profile = getProfile();
+        if (profile == null || !profile.isNativeInitialized()) return false;
+
+        return !isIncognito() && TabGroupSyncFeatures.isTabGroupSyncEnabled(profile);
+    }
+
     private void removeTabsAndSelectNext(
             List<Tab> tabsToRemove,
             @Nullable Tab recommendedNextTab,
             @TabSelectionType int selectionType,
-            boolean pauseMedia,
-            boolean updatePendingTabClosureManager,
+            boolean isUndoable,
             @TabCloseType int closeType) {
         assert selectionType == TabSelectionType.FROM_CLOSE
                 || selectionType == TabSelectionType.FROM_EXIT;
 
         if (tabsToRemove.isEmpty()) return;
+
+        boolean pauseMedia = isUndoable;
+        boolean updatePendingTabClosureManager = !isUndoable;
 
         Tab currentTabInModel = mCurrentTabSupplier.get();
         if (recommendedNextTab != null && tabsToRemove.contains(recommendedNextTab)) {
@@ -1513,7 +1541,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             if (pauseMedia) TabUtils.pauseMedia(tab);
 
             Token tabGroupId = tab.getTabGroupId();
-            if (tabGroupId != null && tabGroupShownTabs.containsKey(tabGroupId)) {
+            if (tabGroupId != null && !tabGroupShownTabs.containsKey(tabGroupId)) {
                 Tab nextGroupTab = getNextLastShownTabForGroup(tabGroupId, tabsToRemove);
                 setLastShownTabForGroup(tabGroupId, nextGroupTab);
                 tabGroupShownTabs.put(tabGroupId, nextGroupTab);
@@ -1548,12 +1576,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             }
         }
 
-        for (Map.Entry<Token, @Nullable Tab> tabGroupShownTab : tabGroupShownTabs.entrySet()) {
-            // TODO(crbug.com/429145597): Keep these open for undoable closures.
-            if (tabGroupShownTab.getValue() == null) {
-                TabCollectionTabModelImplJni.get()
-                        .closeDetachedTabGroup(
-                                mNativeTabCollectionTabModelImplPtr, tabGroupShownTab.getKey());
+        if (!isUndoable) {
+            for (Map.Entry<Token, @Nullable Tab> tabGroupShownTab : tabGroupShownTabs.entrySet()) {
+                if (tabGroupShownTab.getValue() == null) {
+                    closeDetachedTabGroup(tabGroupShownTab.getKey());
+                }
             }
         }
     }
@@ -1793,8 +1820,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             }
         } else {
             for (Token tabGroupId : candidateTabGroupIds) {
-                TabCollectionTabModelImplJni.get()
-                        .closeDetachedTabGroup(mNativeTabCollectionTabModelImplPtr, tabGroupId);
+                closeDetachedTabGroup(tabGroupId);
             }
         }
     }
@@ -2004,11 +2030,49 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         for (TabModelObserver obs : mTabModelObservers) {
             obs.onFinishingMultipleTabClosure(tabs, saveToTabRestoreService);
         }
+        maybeSendCloseTabGroupEvent(tabs, /* committing= */ true);
     }
 
-    // Testing methods.
+    private void maybeSendCloseTabGroupEvent(List<Tab> tabs, boolean committing) {
+        LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
+                getLazyAllTabGroupIds(tabs, /* includePendingClosures= */ committing);
+        Set<Token> processedTabGroups = new HashSet<>();
+        for (Tab tab : tabs) {
+            @Nullable Token tabGroupId = tab.getTabGroupId();
+            if (tabGroupId == null) continue;
 
-    public boolean detachedTabGroupExistsForTesting(Token tabGroupId) {
+            boolean alreadyProcessed = !processedTabGroups.add(tabGroupId);
+            if (alreadyProcessed) continue;
+
+            // If the tab group still exists in the comprehensive tab model we should not send an
+            // event.
+            if (assumeNonNull(tabGroupIdsInComprehensiveModel.get()).contains(tabGroupId)) continue;
+
+            boolean hiding;
+            if (committing) {
+                hiding = mHidingTabGroups.remove(tabGroupId);
+                if (detachedTabGroupExists(tabGroupId)) {
+                    closeDetachedTabGroup(tabGroupId);
+                }
+                for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
+                    observer.committedTabGroupClosure(tabGroupId, hiding);
+                }
+            } else {
+                hiding = mHidingTabGroups.contains(tabGroupId);
+                for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
+                    observer.willCloseTabGroup(tabGroupId, hiding);
+                }
+            }
+        }
+    }
+
+    private void closeDetachedTabGroup(Token tabGroupId) {
+        TabCollectionTabModelImplJni.get()
+                .closeDetachedTabGroup(mNativeTabCollectionTabModelImplPtr, tabGroupId);
+    }
+
+    @VisibleForTesting
+    boolean detachedTabGroupExists(Token tabGroupId) {
         assertOnUiThread();
         assert mNativeTabCollectionTabModelImplPtr != 0;
         return TabCollectionTabModelImplJni.get()
