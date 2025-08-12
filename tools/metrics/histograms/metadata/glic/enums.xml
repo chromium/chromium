@@ -409,6 +409,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:ScrollToErrorReason) -->
 
+<!-- LINT.IfChange(GlicTabPinnedForSharingResult) -->
+
+<enum name="GlicTabPinnedForSharingResult">
+  <int value="0" label="PinTabForSharingFailedTooManyTabs"/>
+  <int value="1" label="PinTabForSharingFailedNotValidForSharing"/>
+  <int value="2" label="PinTabForSharingSucceeded"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:GlicTabPinnedForSharingResult) -->
+
 <!-- LINT.IfChange(TieredRolloutEnablementStatus) -->
 
 <enum name="GlicTieredRolloutEnablementStatus">

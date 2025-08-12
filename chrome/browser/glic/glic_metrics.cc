@@ -736,6 +736,10 @@ void GlicMetrics::OnPinningPrefChanged() {
   }
 }
 
+void GlicMetrics::OnTabPinnedForSharing(GlicTabPinnedForSharingResult result) {
+  base::UmaHistogramEnumeration("Glic.Sharing.TabPinnedForSharing", result);
+}
+
 void GlicMetrics::OnTabContextEnabledPrefChanged() {
   bool is_panel_open = !session_start_time_.is_null();
   bool is_enabled =

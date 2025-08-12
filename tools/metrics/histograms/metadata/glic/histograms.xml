@@ -1131,6 +1131,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Glic.Sharing.TabPinnedForSharing"
+    enum="GlicTabPinnedForSharingResult" expires_after="2026-03-15">
+  <owner>wry@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records when a tab is attempted to be pinned for sharing with Glic. Records
+    true if the pinning was successful; records false otherwise.
+  </summary>
+</histogram>
+
 <histogram name="Glic.TabContext.PdfContentsRequested" enum="PdfRequestStates"
     expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>

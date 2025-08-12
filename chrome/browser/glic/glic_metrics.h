@@ -210,6 +210,15 @@ enum class GlicGetContextFromFocusedTabError {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicGetContextFromFocusedTabError)
 
+// LINT.IfChange(GlicTabPinnedForSharingResult)
+enum class GlicTabPinnedForSharingResult {
+  kPinTabForSharingFailedTooManyTabs = 0,
+  kPinTabForSharingFailedNotValidForSharing = 1,
+  kPinTabForSharingSucceeded = 2,
+  kMaxValue = kPinTabForSharingSucceeded,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicTabPinnedForSharingResult)
+
 // The different states of active tab sharing.
 // LINT.IfChange(ActiveTabSharingState)
 enum class ActiveTabSharingState {
@@ -290,6 +299,10 @@ class GlicMetrics {
   // the operation fails. `success` is true if a scroll was successfully
   // triggered.
   void OnGlicScrollComplete(bool success);
+
+  // Called when a tab is pinned for sharing with glic. `success` is true if the
+  // pinning was successful.
+  void OnTabPinnedForSharing(GlicTabPinnedForSharingResult result);
 
   // Called when a response is received with closed captions showing.
   void LogClosedCaptionsShown();

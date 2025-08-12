@@ -50,7 +50,7 @@ GlicSharingManagerImpl::GlicSharingManagerImpl(
     GlicMetrics* metrics)
     : focused_browser_manager_(window_controller),
       focused_tab_manager_(&focused_browser_manager_),
-      pinned_tab_manager_(profile, window_controller),
+      pinned_tab_manager_(profile, window_controller, metrics),
       profile_(profile),
       metrics_(metrics) {}
 
