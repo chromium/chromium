@@ -72,18 +72,6 @@ if (use_clang_modules) {
     }
   }
 
-  # When I change sysroot_features from an alias to a group, it omits
-  # -fmodule-file for the aliased target from the command-line.
-  # This seems like it might be a bug in GN, but I'm not waiting for a fix
-  # before submitting this.
-  template("alias") {
-    source_set(target_name) {
-      forward_variables_from(invoker, [ "public_configs" ])
-      public_deps = invoker.actual
-      use_libcxx_modules = false
-    }
-  }
-
   template("builtin_module") {
     # This is a template to build modules that reside in clang builtin's module file.
     clang_module(target_name) {
