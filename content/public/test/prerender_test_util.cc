@@ -498,7 +498,7 @@ ScopedPrerenderFeatureList::ScopedPrerenderFeatureList(
 PrerenderTestHelper::PrerenderTestHelper(const WebContents::Getter& fn)
     : feature_list_(ScopedPrerenderFeatureList(
           /*force_disable_prerender2_fallback=*/true,
-          /*force_enable_prerender2_in_new_tab*/ true)),
+          /*force_enable_prerender2_in_new_tab=*/true)),
       get_web_contents_fn_(fn) {}
 
 PrerenderTestHelper::PrerenderTestHelper(
@@ -647,7 +647,8 @@ FrameTreeNodeId PrerenderTestHelper::AddPrerender(
 
 void PrerenderTestHelper::AddPrerenderAsync(const GURL& prerendering_url,
                                             int32_t world_id) {
-  AddPrerendersAsync({prerendering_url}, std::nullopt, std::string(), world_id);
+  AddPrerendersAsync({prerendering_url}, /*eagerness=*/std::nullopt,
+                     /*target_hint=*/std::string(), world_id);
 }
 
 void PrerenderTestHelper::AddPrerendersAsync(
