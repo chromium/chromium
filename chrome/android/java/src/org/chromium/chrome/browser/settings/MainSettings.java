@@ -377,6 +377,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
         } else {
             removePreferenceIfPresent(PREF_DEVELOPER);
         }
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            updateBackgrounds(getListView());
+        }
     }
 
     private Preference addPreferenceIfAbsent(String key) {

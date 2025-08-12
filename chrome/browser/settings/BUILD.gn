@@ -35,12 +35,15 @@ android_library("java") {
     "//base:base_java",
     "//chrome/browser/feedback/android:factory_java",
     "//chrome/browser/feedback/android:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/favicon:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/settings/android:managed_prefs_java_resources",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/cached_flags:java",
     "//components/favicon/android:java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
@@ -49,6 +52,7 @@ android_library("java") {
     "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.chrome.browser.settings"

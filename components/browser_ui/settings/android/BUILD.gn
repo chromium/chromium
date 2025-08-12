@@ -15,6 +15,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/settings/SettingsCustomTabLauncher.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsFragment.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsNavigation.java",
+    "java/src/org/chromium/components/browser_ui/settings/SettingsStylingController.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsUtils.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ButtonPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/CardPreference.java",
@@ -30,6 +31,7 @@ android_library("java") {
     "widget/java/src/org/chromium/components/browser_ui/settings/LearnMorePreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/LongSummaryTextMessagePreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/PaddedItemDecorationWithDivider.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/SettingsItemBackgroundDecoration.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/SpinnerPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/TextMessagePreference.java",
   ]
@@ -116,6 +118,7 @@ android_resources("managed_prefs_java_resources") {
 android_library("unit_device_javatests") {
   testonly = true
   sources = [
+    "javatests/src/org/chromium/components/browser_ui/settings/SettingsStylingControllerTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/CardWithButtonPreferenceTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBaseCheckBoxPreferenceTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBasePreferenceTest.java",

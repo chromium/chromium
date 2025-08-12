@@ -113,7 +113,7 @@ public class AutofillOptionsTest {
                         AutofillOptionsFragment.class,
                         AutofillOptionsFragment.createRequiredArgs(
                                 AutofillOptionsReferrer.SETTINGS),
-                        R.style.Theme_MaterialComponents);
+                        R.style.Theme_BrowserUI_DayNight);
         mScenario.onFragment(
                 fragment -> {
                     mFragment =

@@ -15,4 +15,8 @@ found in the LICENSE file.
     <dimen name="card_with_button_pref_horizontal_padding">16dp</dimen>
     <dimen name="card_with_button_pref_title_padding_bottom">8dp</dimen>
     <dimen name="card_with_button_pref_summary_padding_bottom">12dp</dimen>
+    <dimen name="settings_item_rounded_corner_radius_outer">16dp</dimen>
+    <dimen name="settings_item_rounded_corner_radius_inner">4dp</dimen>
+    <dimen name="settings_item_horizontal_margin">16dp</dimen>
+    <dimen name="settings_item_vertical_margin">1dp</dimen>
 </resources>

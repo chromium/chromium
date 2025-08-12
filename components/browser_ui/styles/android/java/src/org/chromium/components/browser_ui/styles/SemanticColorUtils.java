@@ -233,6 +233,11 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorSurfaceContainerLow, context);
     }
 
+    /** Returns the semantic color values that correspond to colorSurfaceContainerLowest. */
+    public static @ColorInt int getColorSurfaceContainerLowest(Context context) {
+        return resolve(R.attr.colorSurfaceContainerLowest, context);
+    }
+
     /** Returns the semantic color values that correspond to colorSurfaceContainer. */
     public static @ColorInt int getColorSurfaceContainer(Context context) {
         return resolve(R.attr.colorSurfaceContainer, context);
