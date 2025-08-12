@@ -271,7 +271,7 @@ void WebSettingsImpl::SetShouldReuseGlobalForUnownedMainFrame(bool enabled) {
 }
 
 void WebSettingsImpl::SetPluginsEnabled(bool enabled) {
-  dev_tools_emulator_->SetPluginsEnabled(enabled);
+  settings_->SetPluginsEnabled(enabled);
 }
 
 void WebSettingsImpl::SetAvailablePointerTypes(int pointers) {

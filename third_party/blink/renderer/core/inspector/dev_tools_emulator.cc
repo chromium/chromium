@@ -125,8 +125,6 @@ DevToolsEmulator::DevToolsEmulator(WebViewImpl* web_view)
           web_view->GetPage()->GetSettings().GetLCDTextPreference()),
       embedder_viewport_style_(
           web_view->GetPage()->GetSettings().GetViewportStyle()),
-      embedder_plugins_enabled_(
-          web_view->GetPage()->GetSettings().GetPluginsEnabled()),
       embedder_available_pointer_types_(
           web_view->GetPage()->GetSettings().GetAvailablePointerTypes()),
       embedder_primary_pointer_type_(
@@ -214,13 +212,6 @@ void DevToolsEmulator::SetViewportStyle(mojom::blink::ViewportStyle style) {
   embedder_viewport_style_ = style;
   if (!emulate_mobile_enabled()) {
     web_view_->GetPage()->GetSettings().SetViewportStyle(style);
-  }
-}
-
-void DevToolsEmulator::SetPluginsEnabled(bool enabled) {
-  embedder_plugins_enabled_ = enabled;
-  if (!emulate_mobile_enabled()) {
-    web_view_->GetPage()->GetSettings().SetPluginsEnabled(enabled);
   }
 }
 
@@ -407,7 +398,6 @@ void DevToolsEmulator::EnableMobileEmulation() {
   web_view_->GetPage()->GetSettings().SetTextAutosizingEnabled(true);
   web_view_->GetPage()->GetSettings().SetLCDTextPreference(
       LCDTextPreference::kIgnored);
-  web_view_->GetPage()->GetSettings().SetPluginsEnabled(false);
   web_view_->GetPage()->GetSettings().SetMainFrameResizesAreOrientationChanges(
       true);
   web_view_->SetZoomFactorOverride(1);
@@ -445,8 +435,6 @@ void DevToolsEmulator::DisableMobileEmulation() {
       embedder_lcd_text_preference_);
   web_view_->GetPage()->GetSettings().SetViewportStyle(
       embedder_viewport_style_);
-  web_view_->GetPage()->GetSettings().SetPluginsEnabled(
-      embedder_plugins_enabled_);
   web_view_->GetPage()->GetSettings().SetMainFrameResizesAreOrientationChanges(
       embedder_main_frame_resizes_are_orientation_changes_);
   web_view_->SetZoomFactorOverride(0);

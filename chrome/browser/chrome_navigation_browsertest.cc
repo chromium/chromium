@@ -1814,33 +1814,6 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest, CrossSiteRedirectionToPDF) {
 
 using ChromeNavigationBrowserTestWithMobileEmulation = DevToolsProtocolTestBase;
 
-// Tests the behavior of navigating to a PDF when mobile emulation is enabled.
-IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTestWithMobileEmulation,
-                       NavigateToPDFWithMobileEmulation) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  GURL initial_url = embedded_test_server()->GetURL("/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-
-  Attach();
-  base::Value::Dict params;
-  params.Set("width", 400);
-  params.Set("height", 800);
-  params.Set("deviceScaleFactor", 1.0);
-  params.Set("mobile", true);
-  SendCommandSync("Emulation.setDeviceMetricsOverride", std::move(params));
-
-  GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
-
-  EXPECT_EQ(pdf_url, web_contents()->GetLastCommittedURL());
-  EXPECT_EQ(
-      "<head></head>"
-      "<body><!-- no enabled plugin supports this MIME type --></body>",
-      content::EvalJs(web_contents(), "document.documentElement.innerHTML")
-          .ExtractString());
-}
-
 // Tests the behavior of cross origin redirection to a PDF with mobile emulation
 // is enabled.
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTestWithMobileEmulation,

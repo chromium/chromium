@@ -37,7 +37,6 @@ class CORE_EXPORT DevToolsEmulator final
   void SetDeviceScaleAdjustment(float);
   void SetLCDTextPreference(LCDTextPreference);
   void SetViewportStyle(mojom::blink::ViewportStyle);
-  void SetPluginsEnabled(bool);
   void SetScriptEnabled(bool);
   void SetHideScrollbars(bool);
   void SetCookieEnabled(bool);
@@ -135,7 +134,6 @@ class CORE_EXPORT DevToolsEmulator final
   float embedder_device_scale_adjustment_;
   LCDTextPreference embedder_lcd_text_preference_;
   mojom::blink::ViewportStyle embedder_viewport_style_;
-  bool embedder_plugins_enabled_;
   int embedder_available_pointer_types_;
   mojom::blink::PointerType embedder_primary_pointer_type_;
   int embedder_available_hover_types_;
