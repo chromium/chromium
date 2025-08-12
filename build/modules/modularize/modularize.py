@@ -11,10 +11,11 @@ import pathlib
 import shutil
 import sys
 import tempfile
+
 from config import fix_graph
+from graph import IncludeDir
 from graph import run_build
-from render import render_build_gn
-from render import render_modulemap
+import render
 from compiler import Compiler
 
 SOURCE_ROOT = pathlib.Path(__file__).parents[3].resolve()
@@ -51,13 +52,15 @@ def main(args):
   fix_graph(graph, compiler)
   targets = run_build(graph)
   out_dir.mkdir(exist_ok=True, parents=False)
-  # Since apple provides a modulemap, we only need to create a BUILD.gn file.
-  if compiler.os not in ['mac', 'ios']:
-    render_modulemap(out_dir=out_dir, sysroot=compiler.sysroot, targets=targets)
-  textual_headers = [hdr for hdr in graph.values() if hdr.textual]
-  render_build_gn(out_dir=out_dir,
-                  textual_headers=textual_headers,
-                  targets=targets)
+  if compiler.sysroot_dir == IncludeDir.Sysroot:
+    render.render_modulemap(out_dir=out_dir,
+                            sysroot=compiler.sysroot,
+                            targets=targets)
+  render.render_build_gn(
+      out_dir=out_dir,
+      targets=targets,
+      compiler=compiler,
+  )
 
 
 if __name__ == '__main__':
