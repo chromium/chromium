@@ -569,7 +569,6 @@ static_library("test_support") {
     ":content_test_mojo_bindings",
     ":web_ui_mojo_test_resources",
     "//build:chromeos_buildflags",
-    "//build/config/linux/dbus:buildflags",
     "//cc:test_support",
     "//cc/slim",
     "//components/attribution_reporting:data_host_mojom",
