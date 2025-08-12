@@ -238,9 +238,11 @@ class UninstallDialogHelper : public ExtensionUninstallDialog::Delegate {
 
   // Kicks off the asynchronous process to confirm and uninstall the given
   // |extension|.
-  static void UninstallExtension(Browser* browser, const Extension* extension) {
+  static void UninstallExtension(Profile* profile,
+                                 gfx::NativeWindow parent,
+                                 const Extension* extension) {
     UninstallDialogHelper* helper = new UninstallDialogHelper();
-    helper->BeginUninstall(browser, extension);
+    helper->BeginUninstall(profile, parent, extension);
   }
 
  private:
@@ -248,9 +250,10 @@ class UninstallDialogHelper : public ExtensionUninstallDialog::Delegate {
   UninstallDialogHelper() = default;
   ~UninstallDialogHelper() override = default;
 
-  void BeginUninstall(Browser* browser, const Extension* extension) {
-    uninstall_dialog_ = ExtensionUninstallDialog::Create(
-        browser->profile(), browser->window()->GetNativeWindow(), this);
+  void BeginUninstall(Profile* profile,
+                      gfx::NativeWindow parent,
+                      const Extension* extension) {
+    uninstall_dialog_ = ExtensionUninstallDialog::Create(profile, parent, this);
     uninstall_dialog_->ConfirmUninstall(extension,
                                         UNINSTALL_REASON_USER_INITIATED,
                                         UNINSTALL_SOURCE_TOOLBAR_CONTEXT_MENU);
@@ -397,7 +400,7 @@ bool ExtensionContextMenuModel::IsCommandIdEnabled(int command_id) const {
     // Extension pinning/unpinning is not available for Incognito as this
     // leaves a trace of user activity.
     case TOGGLE_VISIBILITY:
-      return !browser_->profile()->IsOffTheRecord() &&
+      return !profile_->IsOffTheRecord() &&
              !IsExtensionForcePinned(*extension, profile_);
     // Manage extensions and view web permissions are always enabled.
     case MANAGE_EXTENSIONS:
@@ -435,13 +438,14 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       break;
     case TOGGLE_VISIBILITY: {
       bool visible = !is_pinned_;
-      ToolbarActionsModel::Get(browser_->profile())
-          ->SetActionVisibility(extension->id(), visible);
+      ToolbarActionsModel::Get(profile_)->SetActionVisibility(extension->id(),
+                                                              visible);
       LogToggleVisibility(visible);
       break;
     }
     case UNINSTALL: {
-      UninstallDialogHelper::UninstallExtension(browser_, extension);
+      UninstallDialogHelper::UninstallExtension(
+          profile_, browser_->window()->GetNativeWindow(), extension);
       break;
     }
     case TOGGLE_SIDE_PANEL_VISIBILITY: {
