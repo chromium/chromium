@@ -3835,6 +3835,13 @@ const FeatureEntry::FeatureVariation kAndroidThemeModuleVariations[] = {
      std::size(sAndroidThemeModuleParams), nullptr},
 };
 
+const FeatureEntry::FeatureParam sAndroidThemeResourceProviderParams[] = {
+    {"force_light_theme", "true"}};
+const FeatureEntry::FeatureVariation kAndroidThemeResourceProviderVariations[] = {
+    {"force light theme", sAndroidThemeResourceProviderParams,
+     std::size(sAndroidThemeResourceProviderParams), nullptr},
+};
+
 const FeatureEntry::FeatureParam
     kAuxiliaryNavigationStaysInBrowserOnForDesktopWindowing[] = {
         {"auxiliary_navigation_stays_in_browser", "desktop_wm"}};
@@ -12313,8 +12320,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-theme-resource-provider",
      flag_descriptions::kAndroidThemeResourceProviderName,
      flag_descriptions::kAndroidThemeResourceProviderDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidThemeResourceProvider)},
-
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidThemeResourceProvider,
+                                    kAndroidThemeResourceProviderVariations,
+                                    "AndroidThemeResourceProvider")},
     {"display-edge-to-edge-fullscreen",
      flag_descriptions::kDisplayEdgeToEdgeFullscreenName,
      flag_descriptions::kDisplayEdgeToEdgeFullscreenDescription, kOsAndroid,

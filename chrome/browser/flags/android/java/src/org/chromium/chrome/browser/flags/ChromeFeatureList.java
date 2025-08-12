@@ -753,6 +753,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH, true, true);
     public static final CachedFlag sAndroidThemeModule =
             newCachedFlag(ANDROID_THEME_MODULE, false, /* defaultValueInTests= */ true);
+    public static final CachedFlag sAndroidThemeResourceProvider =
+            newCachedFlag(ANDROID_THEME_RESOURCE_PROVIDER, false, /* defaultValueInTests= */ false);
     public static final CachedFlag sAndroidUseAdminsForEnterpriseInfo =
             newCachedFlag(
                     ANDROID_USE_ADMINS_FOR_ENTERPRISE_INFO,
@@ -1090,6 +1092,7 @@ public abstract class ChromeFeatureList {
                     sAndroidTabGroupsColorUpdateGm3,
                     sAndroidTabSkipSaveTabsKillswitch,
                     sAndroidThemeModule,
+                    sAndroidThemeResourceProvider,
                     sAndroidUseAdminsForEnterpriseInfo,
                     sAndroidWebAppLaunchHandler,
                     sAndroidWindowPopupLargeScreen,
@@ -1336,6 +1339,9 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sAndroidThemeModuleForceDependencies =
             newBooleanCachedFeatureParam(
                     ANDROID_THEME_MODULE, "force_theme_module_dependencies", false);
+    public static final BooleanCachedFeatureParam sAndroidThemeResourceProviderForceLight =
+            newBooleanCachedFeatureParam(
+                    ANDROID_THEME_RESOURCE_PROVIDER, "force_light_theme", false);
     public static final BooleanCachedFeatureParam sCctAdaptiveButtonEnableOpenInBrowser =
             newBooleanCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "open_in_browser", false);
     public static final BooleanCachedFeatureParam sCctAdaptiveButtonEnableVoice =
@@ -1739,6 +1745,7 @@ public abstract class ChromeFeatureList {
                     sAndroidComposeplateSkipLocaleCheck,
                     sAndroidComposeplateHideIncognitoButton,
                     sAndroidThemeModuleForceDependencies,
+                    sAndroidThemeResourceProviderForceLight,
                     sBackgroundThreadPoolFieldTrialConfig,
                     sBatchTabRestoreBatchSize,
                     sCctAdaptiveButtonContextualOnly,
