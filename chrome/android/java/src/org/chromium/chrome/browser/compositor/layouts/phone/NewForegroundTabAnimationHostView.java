@@ -191,21 +191,17 @@ public class NewForegroundTabAnimationHostView extends FrameLayout implements Ru
         mFadeAnimator.setDuration(FADE_DURATION_MS);
         mFadeAnimator.addListener(
                 new CancelAwareAnimatorListener() {
-                    private void finishAnimation() {
+                    @Override
+                    public void onEnd(Animator animation) {
+                        if (mLogsEnabled) Log.i(TAG, "mFadeAnimator#onEnd");
                         mListener.onForegroundAnimationFinished();
                         mFadeAnimator = null;
                     }
 
                     @Override
-                    public void onEnd(Animator animation) {
-                        if (mLogsEnabled) Log.i(TAG, "mFadeAnimator#onEnd");
-                        finishAnimation();
-                    }
-
-                    @Override
                     public void onCancel(Animator animation) {
                         if (mLogsEnabled) Log.i(TAG, "mFadeAnimator#onCancel");
-                        finishAnimation();
+                        mFadeAnimator = null;
                     }
                 });
 
@@ -234,12 +230,10 @@ public class NewForegroundTabAnimationHostView extends FrameLayout implements Ru
                     @Override
                     public void onCancel(Animator animation) {
                         if (mLogsEnabled) Log.i(TAG, "mExpandAnimatorSet#onCancel");
-                        mListener.onForegroundAnimationFinished();
                         clearAnimators();
                         mFadeAnimator = null;
                     }
                 });
-
         mRectView.setVisibility(View.VISIBLE);
         mExpandAnimatorSet.start();
     }
@@ -268,8 +262,7 @@ public class NewForegroundTabAnimationHostView extends FrameLayout implements Ru
     /**
      * Forces the animation to finish. If the expand animation is running, it will be canceled, and
      * the fade-out animation will be skipped. If the fade-out animation is running, it will be
-     * fast-forwarded to the end. In both cases, {@link Listener#onForegroundAnimationFinished()}
-     * will be called to notify {@link NewTabAnimationLayout} to remove the view.
+     * cancelled.
      */
     /* package */ void forceAnimationToFinish() {
         if (mExpandAnimatorSet != null) {
@@ -277,7 +270,7 @@ public class NewForegroundTabAnimationHostView extends FrameLayout implements Ru
             mExpandAnimatorSet.cancel();
         } else if (mFadeAnimator != null) {
             if (mLogsEnabled) Log.i(TAG, "forceAnimationToFinish: mFadeAnimator#end");
-            mFadeAnimator.end();
+            mFadeAnimator.cancel();
         }
     }
 }
