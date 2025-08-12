@@ -171,14 +171,14 @@
   </Type>
 
   <Type Name="std::__Cr::map&lt;*&gt;">
-    <Intrinsic Name="size" Expression="*(size_type*)&amp;__tree_.__pair3_" />
+    <Intrinsic Name="size" Expression="__tree_.__size_" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>
       <Item Name="[size]">size()</Item>
       <TreeItems>
         <Size>size()</Size>
         <HeadPointer>
-          ((__node_pointer)&amp;__tree_.__pair1_)-&gt;__left_
+          ((__node_pointer)&amp;__tree_.__end_node_)-&gt;__left_
         </HeadPointer>
         <LeftPointer>
           ((std::__Cr::map&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
@@ -190,21 +190,21 @@
         </RightPointer>
         <ValueNode>
           ((std::__Cr::map&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
-              -&gt;__value_.__cc_
+              -&gt;__value_
         </ValueNode>
       </TreeItems>
     </Expand>
   </Type>
 
   <Type Name="std::__Cr::multimap&lt;*&gt;">
-    <Intrinsic Name="size" Expression="*(size_type*)&amp;__tree_.__pair3_" />
+    <Intrinsic Name="size" Expression="__tree_.__size_" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>
       <Item Name="[size]">size()</Item>
       <TreeItems>
         <Size>size()</Size>
         <HeadPointer>
-          ((__node_pointer)&amp;__tree_.__pair1_)-&gt;__left_
+          ((__node_pointer)&amp;__tree_.__end_node_)-&gt;__left_
         </HeadPointer>
         <LeftPointer>
           ((std::__Cr::multimap&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
@@ -216,21 +216,21 @@
         </RightPointer>
         <ValueNode>
           ((std::__Cr::multimap&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
-              -&gt;__value_.__cc_
+              -&gt;__value_
         </ValueNode>
       </TreeItems>
     </Expand>
   </Type>
 
   <Type Name="std::__Cr::multiset&lt;*&gt;">
-    <Intrinsic Name="size" Expression="*(size_type*)&amp;__tree_.__pair3_" />
+    <Intrinsic Name="size" Expression="__tree_.__size_" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>
       <Item Name="[size]">size()</Item>
       <TreeItems>
         <Size>size()</Size>
         <HeadPointer>
-          ((__base::__node_pointer)&amp;__tree_.__pair1_)-&gt;__left_
+          ((__base::__node_pointer)&amp;__tree_.__end_node_)-&gt;__left_
         </HeadPointer>
         <LeftPointer>
           ((std::__Cr::multiset&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
@@ -338,14 +338,14 @@
   </Type>
 
   <Type Name="std::__Cr::set&lt;*&gt;">
-    <Intrinsic Name="size" Expression="*(size_type*)&amp;__tree_.__pair3_" />
+    <Intrinsic Name="size" Expression="__tree_.__size_" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>
       <Item Name="[size]">size()</Item>
       <TreeItems>
         <Size>size()</Size>
         <HeadPointer>
-          ((__base::__node_pointer)&amp;__tree_.__pair1_)-&gt;__left_
+          ((__base::__node_pointer)&amp;__tree_.__end_node_)-&gt;__left_
         </HeadPointer>
         <LeftPointer>
           ((std::__Cr::set&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
