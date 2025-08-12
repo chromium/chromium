@@ -121,8 +121,6 @@ class VpnService : public extensions::api::VpnServiceInterface,
   void OnListenerAdded(const extensions::EventListenerInfo&) override;
 
  private:
-  class VpnServiceProxyImpl;
-  class PepperVpnProxyAdapter;
   friend class VpnProviderApiTest;
   friend class VpnServiceForExtension;
   friend class VpnServiceFactory;
@@ -139,13 +137,6 @@ class VpnService : public extensions::api::VpnServiceInterface,
   void SendOnPlatformMessageToExtension(const std::string& extension_id,
                                         const std::string& configuration_name,
                                         uint32_t platform_message);
-
-  void OnBindPepperVpnProxy(
-      SuccessCallback,
-      FailureCallback,
-      std::unique_ptr<PepperVpnProxyAdapter>,
-      mojo::PendingReceiver<crosapi::mojom::PepperVpnProxyObserver>,
-      crosapi::mojom::VpnErrorResponsePtr);
 
   raw_ptr<content::BrowserContext> browser_context_;
 
