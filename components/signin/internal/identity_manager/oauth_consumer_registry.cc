@@ -8,6 +8,7 @@
 #include "google_apis/gaia/gaia_constants.h"
 
 namespace {
+
 constexpr char kSyncOAuthConsumerName[] = "sync";
 constexpr char kWallpaperGooglePhotosFetcherName[] =
     "wallpaper_google_photos_fetcher";
@@ -23,7 +24,13 @@ constexpr char kProjectorTokenFetcherName[] = "projector_token_fetcher";
 constexpr char kAddSupervisionName[] = "add_supervision";
 constexpr char kParentAccessName[] = "parent_access";
 constexpr char kDataSharingName[] = "data_sharing";
-}
+constexpr char kLauncherItemSuggestName[] = "launcher_item_suggest";
+constexpr char kMarketingBackendConnectorName[] = "marketing_backend_connector";
+constexpr char kPasswordSyncTokenFetcherName[] = "password_sync_token_fetcher";
+constexpr char kLocaleSwitchScreenName[] = "locale_switch_screen";
+constexpr char kTokenHandleServiceName[] = "token_handle_service";
+
+}  // namespace
 
 namespace signin {
 
@@ -103,6 +110,29 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
           /*scopes=*/{GaiaConstants::kPeopleApiReadWriteOAuth2Scope,
                       GaiaConstants::kPeopleApiReadOnlyOAuth2Scope,
                       GaiaConstants::kClearCutOAuth2Scope});
+    case OAuthConsumerId::kLauncherItemSuggest:
+      return OAuthConsumer(
+          /*name=*/kLauncherItemSuggestName,
+          /*scopes=*/{GaiaConstants::kDriveReadOnlyOAuth2Scope});
+    case OAuthConsumerId::kMarketingBackendConnector:
+      return OAuthConsumer(
+          /*name=*/kMarketingBackendConnectorName,
+          /*scopes=*/{GaiaConstants::kChromebookOAuth2Scope});
+    case OAuthConsumerId::kPasswordSyncTokenFetcher:
+      return OAuthConsumer(
+          /*name=*/kPasswordSyncTokenFetcherName,
+          /*scopes=*/{GaiaConstants::kGoogleUserInfoEmail,
+                      GaiaConstants::kDeviceManagementServiceOAuth});
+    case OAuthConsumerId::kLocaleSwitchScreen:
+      return OAuthConsumer(
+          /*name=*/kLocaleSwitchScreenName,
+          /*scopes=*/{GaiaConstants::kPeopleApiReadOnlyOAuth2Scope,
+                      GaiaConstants::kGoogleUserInfoProfile,
+                      GaiaConstants::kProfileLanguageReadOnlyOAuth2Scope});
+    case OAuthConsumerId::kTokenHandleService:
+      return OAuthConsumer(
+          /*name=*/kTokenHandleServiceName,
+          /*scopes=*/{GaiaConstants::kOAuth1LoginScope});
   }
   NOTREACHED();
 }

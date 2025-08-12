@@ -36,7 +36,6 @@ namespace ash {
 namespace {
 
 const int kMaxRetries = 3;
-const char kAccessTokenFetchId[] = "token_handle_fetcher";
 
 // A dictionary pref that stores the mapping from (access) token handles to a
 // hash of the OAuth refresh token from which the token handle was derived.
@@ -108,19 +107,13 @@ void LegacyTokenHandleFetcher::BackfillToken(TokenFetchingCallback callback) {
                 base::Unretained(this)));
   }
 
-  // Now we can request the token, knowing that it will be immediately requested
-  // if the refresh token is available, or that it will be requested once the
-  // refresh token is available for the primary account.
-  signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kOAuth1LoginScope);
-
   // We can use base::Unretained(this) below because `access_token_fetcher_` is
   // owned by this object (thus destroyed when this object is destroyed) and
   // PrimaryAccountAccessTokenFetcher guarantees that it doesn't invoke its
   // callback after it is destroyed.
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          kAccessTokenFetchId, identity_manager_, scopes,
+          signin::OAuthConsumerId::kTokenHandleService, identity_manager_,
           base::BindOnce(&LegacyTokenHandleFetcher::OnAccessTokenFetchComplete,
                          base::Unretained(this)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,

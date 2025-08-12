@@ -716,6 +716,11 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Add Supervision"/>
   <int value="10" label="Parent Access"/>
   <int value="11" label="Data Sharing"/>
+  <int value="12" label="Launcher item suggest"/>
+  <int value="13" label="Marketing backend connector"/>
+  <int value="14" label="Password Sync token fetcher"/>
+  <int value="15" label="Locale Switch Screen"/>
+  <int value="16" label="Token Handle Service"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->

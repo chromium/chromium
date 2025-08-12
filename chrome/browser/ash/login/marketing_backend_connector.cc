@@ -31,10 +31,6 @@
 namespace ash {
 namespace {
 
-// The scope that will be used to access the ChromebookEmailService API.
-const char kChromebookOAuth2Scope[] =
-    "https://www.googleapis.com/auth/chromebook.email";
-
 // API Endpoint
 const char kAccessPointsApiEndpoint[] = "https://accesspoints.googleapis.com/";
 const char kChromebookEmailServicePath[] = "v2/chromebookEmailPreferences";
@@ -120,10 +116,8 @@ void MarketingBackendConnector::StartTokenFetch() {
     return;
   }
 
-  signin::ScopeSet chromebook_scope;
-  chromebook_scope.insert(kChromebookOAuth2Scope);
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      "MarketingBackendConnector", identity_manager, chromebook_scope,
+      signin::OAuthConsumerId::kMarketingBackendConnector, identity_manager,
       base::BindOnce(&MarketingBackendConnector::OnAccessTokenRequestCompleted,
                      this),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,

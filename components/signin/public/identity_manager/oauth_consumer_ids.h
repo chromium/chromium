@@ -23,7 +23,12 @@ enum class OAuthConsumerId {
   kAddSupervision = 9,
   kParentAccess = 10,
   kDataSharing = 11,
-  kMaxValue = kDataSharing,
+  kLauncherItemSuggest = 12,
+  kMarketingBackendConnector = 13,
+  kPasswordSyncTokenFetcher = 14,
+  kLocaleSwitchScreen = 15,
+  kTokenHandleService = 16,
+  kMaxValue = kTokenHandleService,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

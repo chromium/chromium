@@ -213,6 +213,10 @@ const char kGeminiOAuth2Scope[] = "https://www.googleapis.com/auth/gemini";
 const char kChromeMemexOAuth2Scope[] =
     "https://www.googleapis.com/auth/chromememex";
 
+// OAuth2 scope to access the ChromebookEmailService API.
+const char kChromebookOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chromebook.email";
+
 // OAuth 2 scopes for Google Tasks API.
 const char kTasksReadOnlyOAuth2Scope[] =
     "https://www.googleapis.com/auth/tasks.readonly";
