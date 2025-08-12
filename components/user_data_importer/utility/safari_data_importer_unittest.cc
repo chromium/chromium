@@ -1090,6 +1090,23 @@ TEST_F(SafariDataImporterTest, DuplicateBookmarkFolders) {
 #endif
 }
 
+// Tests that an empty "Imported from Safari" folder is not created when there
+// are no bookmarks to import.
+TEST_F(SafariDataImporterTest, ImportWithNoBookmarks) {
+  ExpectBookmarksReady(0u);
+  PrepareBookmarks("");
+
+  EXPECT_CALL(client_, OnBookmarksImported(0u));
+  EXPECT_CALL(client_, OnHistoryImported(0));
+  EXPECT_CALL(client_, OnPaymentCardsImported(0));
+  EXPECT_CALL(client_, OnPasswordsImported(
+                           AllOf(Field(&ImportResults::number_imported, 0u),
+                                 Field(&ImportResults::number_to_import, 0u))));
+  CompleteImport({});
+
+  EXPECT_THAT(GetOtherBookmarkNode()->children(), IsEmpty());
+}
+
 // Tests that passwords are imported to the account store when sync is on.
 TEST_F(SafariDataImporterTest,
        PasswordsImportedToAccountStoreWhenSyncIsEnabled) {

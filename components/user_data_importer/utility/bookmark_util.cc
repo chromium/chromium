@@ -56,14 +56,14 @@ size_t ImportBookmarks(BookmarkModel* bookmark_model,
   CHECK(bookmark_model);
   CHECK(bookmark_model->loaded());
 
+  if (bookmarks.empty()) {
+    return 0;
+  }
+
   const BookmarkNode* import_folder =
       CreateImportBookmarksFolder(bookmark_model, import_folder_title);
 
   CHECK(import_folder);
-
-  if (bookmarks.empty()) {
-    return 0;
-  }
 
   std::map<std::u16string, const BookmarkNode*> folder_cache;
   folder_cache[EscapeAndJoinPath({})] = import_folder;
