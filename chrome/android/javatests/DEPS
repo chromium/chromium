@@ -80,6 +80,12 @@ specific_include_rules = {
   "WebappNavigationTest\.java": [
     "+content/public/android/java/src/org/chromium/content_public/common/ContentSwitches.java",
   ],
+  "PageContentProtoViewStructureBuilderTest\.java":[
+    "+components/android_autofill/browser/test_support/java/src/org/chromium/components/autofill/TestViewStructure.java",
+  ],
+  "TabImplTest\.java":[
+    "+components/android_autofill/browser/test_support/java/src/org/chromium/components/autofill/TestViewStructure.java",
+  ],
   "WebApkIntegrationTest\.java": [
     "+content/public/android/java/src/org/chromium/content_public/common/ContentSwitches.java",
   ],

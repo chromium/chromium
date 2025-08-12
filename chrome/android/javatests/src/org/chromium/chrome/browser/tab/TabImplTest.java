@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -21,12 +22,14 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.autofill.TestViewStructure;
 
 /** Tests for the {@link TabImpl} class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -100,5 +103,33 @@ public class TabImplTest {
 
         assertFalse(mActivityTestRule.getActivity().getActivityTab().isTabInPWA());
         assertTrue(mActivityTestRule.getActivity().getActivityTab().isTabInBrowser());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
+    @EnableFeatures({"AnnotatedPageContentsVirtualStructure"})
+    public void testOnProvideVirtualStructure() {
+        var url = mActivityTestRule.getTestServer().getURL(TEST_PATH);
+        mActivityTestRule.loadUrl(url);
+        TabImpl tabImpl = (TabImpl) mActivityTestRule.getActivity().getActivityTab();
+        TestViewStructure viewStructure = new TestViewStructure();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    tabImpl.getContentView().onProvideVirtualStructure(viewStructure);
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(viewStructure.getChildCount(), Matchers.equalTo(1)),
+                DEFAULT_MAX_TIME_TO_WAIT_IN_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
+        assertEquals(1, viewStructure.getChildCount());
+        var rootNode = viewStructure.getChild(0);
+        assertTrue(rootNode.hasExtras());
+        assertTrue(
+                rootNode.getExtras()
+                        .containsKey("org.chromium.chrome.browser.AnnotatedPageContents"));
     }
 }

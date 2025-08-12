@@ -245,6 +245,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidXRUsesSurfaceControl,
     &kAnimatedGifRefactor,
     &kAnimatedImageDragShadow,
+    &kAnnotatedPageContentsVirtualStructure,
     &kAppSpecificHistory,
     &kAppSpecificHistoryViewIntent,
     &kAsyncNotificationManager,
@@ -710,6 +711,10 @@ BASE_FEATURE(kAnimatedGifRefactor,
 
 BASE_FEATURE(kAnimatedImageDragShadow,
              "AnimatedImageDragShadow",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAnnotatedPageContentsVirtualStructure,
+             "AnnotatedPageContentsVirtualStructure",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAppSpecificHistory,
