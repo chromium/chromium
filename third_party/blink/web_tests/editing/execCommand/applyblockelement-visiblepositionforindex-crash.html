@@ -4,7 +4,7 @@ if (window.testRunner)
     testRunner.dumpAsText();
 
 function runTest() {
-    window.getSelection().setBaseAndExtent(start, 0, null, 0);
+    window.getSelection().setBaseAndExtent(start, 0, start, 0);
     document.execCommand("Indent");
     document.body.innerHTML = "PASS. WebKit didn't crash.";
 }

@@ -3,6 +3,9 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script>
+if (window.internals) {
+  internals.runtimeFlags.selectionSetBaseAndExtentNonNullNodeEnabled = false;
+}
 test(function() {
   var SelectionCollapseNull = 1083; // From UseCounter.h
   assert_false(internals.isUseCounted(document, SelectionCollapseNull));

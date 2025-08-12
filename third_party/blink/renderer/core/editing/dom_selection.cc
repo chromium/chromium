@@ -370,14 +370,31 @@ void DOMSelection::setBaseAndExtent(Node* base_node,
 
   // TODO(editing-dev): Behavior on where base or extent is null is still
   // under discussion: https://github.com/w3c/selection-api/issues/72
-  if (!base_node) {
-    UseCounter::Count(DomWindow(), WebFeature::kSelectionSetBaseAndExtentNull);
-    Selection().Clear();
-    return;
-  }
-  if (!extent_node) {
-    UseCounter::Count(DomWindow(), WebFeature::kSelectionSetBaseAndExtentNull);
-    extent_offset = 0;
+  if (RuntimeEnabledFeatures::SelectionSetBaseAndExtentNonNullNodeEnabled()) {
+    if (!base_node) {
+      UseCounter::Count(DomWindow(),
+                        WebFeature::kSelectionSetBaseAndExtentNull);
+      exception_state.ThrowTypeError("anchorNode is null");
+      return;
+    }
+    if (!extent_node) {
+      UseCounter::Count(DomWindow(),
+                        WebFeature::kSelectionSetBaseAndExtentNull);
+      exception_state.ThrowTypeError("focusNode is null");
+      return;
+    }
+  } else {
+    if (!base_node) {
+      UseCounter::Count(DomWindow(),
+                        WebFeature::kSelectionSetBaseAndExtentNull);
+      Selection().Clear();
+      return;
+    }
+    if (!extent_node) {
+      UseCounter::Count(DomWindow(),
+                        WebFeature::kSelectionSetBaseAndExtentNull);
+      extent_offset = 0;
+    }
   }
 
   // 1. If anchorOffset is longer than anchorNode's length or if focusOffset is

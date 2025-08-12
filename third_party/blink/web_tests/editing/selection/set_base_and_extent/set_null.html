@@ -4,6 +4,9 @@
 <script src="../../assert_selection.js"></script>
 <div id="log"></div>
 <script>
+if (window.internals) {
+  internals.runtimeFlags.selectionSetBaseAndExtentNonNullNodeEnabled = false;
+}
 test(() => {
 assert_selection(
   '<div>^foo|</div>',

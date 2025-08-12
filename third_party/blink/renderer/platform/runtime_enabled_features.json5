@@ -4336,6 +4336,12 @@
       status: "stable",
     },
     {
+      // https://issues.chromium.org/issues/40502558
+      name: "SelectionSetBaseAndExtentNonNullNode",
+      status: "experimental",
+      settable_from_internals: true,
+    },
+    {
       // See https://crbug.com/395544401
       name: "SelectionUpdateToInitialSelectionInListify",
       status: "stable",
