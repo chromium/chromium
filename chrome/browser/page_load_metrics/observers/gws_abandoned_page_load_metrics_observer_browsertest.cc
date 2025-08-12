@@ -324,23 +324,14 @@ std::vector<std::pair<std::string, int>>
 GWSAbandonedPageLoadMetricsObserverBrowserTest::ExpandHistograms(
     std::vector<std::string> histogram_names,
     bool is_incognito) {
-  std::vector<std::string> with_incognito;
+  std::vector<std::pair<std::string, int>> with_incognito;
   for (std::string& histogram_name : histogram_names) {
-    with_incognito.push_back(histogram_name);
+    with_incognito.emplace_back(histogram_name, 1);
     if (is_incognito) {
-      with_incognito.push_back(histogram_name + ".Incognito");
+      with_incognito.emplace_back(histogram_name + ".Incognito", 1);
     }
   }
-  std::vector<std::pair<std::string, int>> histogram_names_expanded;
-  for (std::string& histogram_name : with_incognito) {
-    histogram_names_expanded.emplace_back(histogram_name, 1);
-    histogram_names_expanded.emplace_back(
-        histogram_name +
-            ChromeGWSAbandonedPageLoadMetricsObserver::GetSuffixForRTT(
-                g_browser_process->network_quality_tracker()->GetHttpRTT()),
-        1);
-  }
-  return histogram_names_expanded;
+  return with_incognito;
 }
 
 void GWSAbandonedPageLoadMetricsObserverBrowserTest::TestNavigationAbandonment(
@@ -839,11 +830,6 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 2);
-  // Since we made a backward navigation, we will have metrics with
-  // `ResponseFromCache`.
-  ExpectTotalCountForAllNavigationMilestones(
-      /*include_redirect=*/false, 1,
-      std::string(internal::kSuffixResponseFromCache));
   ExpectEmptyNavigationAbandonmentUntilCommit();
 
   // SRP Navigation #3: Go back to SRP, potentially restoring from BFCache.
@@ -863,10 +849,6 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
   ExpectTotalCountForAllNavigationMilestones(
       /*include_redirect=*/false,
       content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 2 : 3);
-  ExpectTotalCountForAllNavigationMilestones(
-      /*include_redirect=*/false,
-      content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 1 : 2,
-      std::string(internal::kSuffixResponseFromCache));
 
   ExpectEmptyNavigationAbandonmentUntilCommit();
 }
@@ -1324,16 +1306,8 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
       GetMilestoneToAbandonHistogramName(NavigationMilestone::kAFTEnd);
   auto abandoned_milesone_name = GetMilestoneToAbandonHistogramName(
       NavigationMilestone::kAFTEnd, AbandonReason::kHidden);
-  EXPECT_THAT(
-      histogram_tester.GetTotalCountsForPrefix(milesone_name),
-      testing::ElementsAre(
-          testing::Pair(abandoned_milesone_name, 1),
-          testing::Pair(
-              abandoned_milesone_name +
-                  ChromeGWSAbandonedPageLoadMetricsObserver::GetSuffixForRTT(
-                      g_browser_process->network_quality_tracker()
-                          ->GetHttpRTT()),
-              1)));
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(milesone_name),
+              testing::ElementsAre(testing::Pair(abandoned_milesone_name, 1)));
 
   // There should be a new entry for all the navigation and loading milestones
   // metrics achieved before abandonment.
