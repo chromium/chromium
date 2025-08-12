@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/renderer/set_icon_natives.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
@@ -137,8 +133,8 @@ bool SetIconNatives::ConvertImageDataToBitmapValue(
   }
   bitmap.eraseARGB(0, 0, 0, 0);
 
-  base::span pixels(bitmap.getAddr32(0, 0),
-                    base::checked_cast<uint32_t>(width * height));
+  base::span UNSAFE_TODO(pixels(bitmap.getAddr32(0, 0),
+                                base::checked_cast<uint32_t>(width * height)));
   auto image_data_bytes = [&](size_t index) {
     return GetIntPropertyFromV8Object(data, v8_context, index) & 0xFF;
   };
@@ -153,7 +149,7 @@ bool SetIconNatives::ConvertImageDataToBitmapValue(
   // Construct the Value object.
   std::vector<uint8_t> s = skia::mojom::InlineBitmap::Serialize(&bitmap);
   blink::WebArrayBuffer buffer = blink::WebArrayBuffer::Create(s.size(), 1);
-  memcpy(buffer.Data(), s.data(), s.size());
+  UNSAFE_TODO(memcpy(buffer.Data(), s.data(), s.size()));
   *image_data_bitmap =
       blink::WebArrayBufferConverter::ToV8Value(&buffer, isolate);
 
