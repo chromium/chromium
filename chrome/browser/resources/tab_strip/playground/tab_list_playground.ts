@@ -13,7 +13,7 @@ import {Color as TabGroupColor} from '../tab_group_types.mojom-webui.js';
 import {getTemplate} from '../tab_list.html.js';
 import type {TabGroupVisualData} from '../tab_strip.mojom-webui.js';
 import type {TabsSnapshot} from '../tab_strip_api.mojom-webui.js';
-import type {Container, Tab, TabCollectionContainer, TabCreatedContainer, TabGroup} from '../tab_strip_api_data_model.mojom-webui.js';
+import type {Container, Data, Tab, TabCreatedContainer, TabGroup} from '../tab_strip_api_data_model.mojom-webui.js';
 import type {OnTabDataChangedEvent, OnTabGroupCreatedEvent, OnTabGroupVisualsChangedEvent, OnTabMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from '../tab_strip_api_events.mojom-webui.js';
 import type {NodeId, Position} from '../tab_strip_api_types.mojom-webui.js';
 
@@ -154,7 +154,7 @@ export class TabListPlaygroundElement extends CustomElement {
 
   private onTabGroupVisualsChanged_(event: OnTabGroupVisualsChangedEvent) {
     console.info('onTabGroupVisualsChanged_', event);
-    const {tabGroup} = event.tabCollection;
+    const {tabGroup} = event.data;
     if (tabGroup) {
       this.findOrCreateTabGroupElement_(tabGroup.id)
           .updateVisuals(this.toTabGroupVisualData_(tabGroup));
@@ -207,39 +207,49 @@ export class TabListPlaygroundElement extends CustomElement {
       this.clearChildren_(this.unpinnedTabsElement_);
 
       const processContainer =
-          (container: TabCollectionContainer, parentIsPinned: boolean) => {
-            if (!container || !container.elements) {
+          (container: Container, parentIsPinned: boolean) => {
+            if (!container || !container.data) {
               return;
             }
-            container.elements.forEach(
-                (containerElement: Container, index: number) => {
-                  if (containerElement.tabContainer) {
-                    const newTab = containerElement.tabContainer.tab;
-                    const isPinned = parentIsPinned ||
-                        (container.collection &&
-                         !!container.collection.pinnedTabs);
+            const data: Data = container.data;
+            let isPinned = parentIsPinned;
+            let groupId: string|null = null;
 
-                    let tabElement = this.findTabElement_(newTab.id);
-                    if (tabElement) {
-                      tabElement.tab = newTab;
-                      tabElement.isPinned = isPinned;
+            // Determine the current node's type and update state accordingly.
+            if (data.pinnedTabs) {
+              isPinned = true;
+            } else if (data.tabGroup) {
+              groupId = data.tabGroup.id;
+            } else if (data.tab) {
+              const newTab = data.tab;
+              let tabElement = this.findTabElement_(newTab.id);
+              if (tabElement) {
+                tabElement.tab = newTab;
+                tabElement.isPinned = isPinned;
+              } else {
+                tabElement = this.createTabElement_(newTab, isPinned);
+              }
+              // The index is determined by its position in the parent's
+              // children array. This part of the logic needs to be handled by
+              // the parent loop.
+            }
+
+            // Recursively process all children of the current node.
+            if (container.children) {
+              container.children.forEach(
+                  (childNode: Container, index: number) => {
+                    if (childNode.data.tab) {
+                      // If the child is a tab, place it.
+                      const tabElement =
+                          this.createTabElement_(childNode.data.tab, isPinned);
+                      this.placeTabElement(
+                          tabElement, index, isPinned, groupId);
                     } else {
-                      tabElement = this.createTabElement_(newTab, isPinned);
+                      // If the child is another collection, recurse.
+                      processContainer(childNode, isPinned);
                     }
-                    this.placeTabElement(
-                        tabElement, index, isPinned,
-                        container.collection.tabGroup ?
-                            container.collection.tabGroup.id :
-                            null);
-                  } else if (containerElement.tabCollectionContainer) {
-                    const nestedContainer =
-                        containerElement.tabCollectionContainer;
-                    const collectionIsPinned = parentIsPinned ||
-                        (nestedContainer.collection &&
-                         !!nestedContainer.collection.pinnedTabs);
-                    processContainer(nestedContainer, collectionIsPinned);
-                  }
-                });
+                  });
+            }
           };
       if (tabsSnapshot.tabStrip) {
         processContainer(tabsSnapshot.tabStrip, false);

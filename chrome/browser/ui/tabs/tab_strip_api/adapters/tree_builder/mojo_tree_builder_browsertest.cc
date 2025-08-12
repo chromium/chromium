@@ -48,39 +48,26 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceMojoTreeBuilderBrowserTest,
 
   // First layer is just pinned/unpinned.
   // Pinned is idx 0, unpinned is idx1.
-  ASSERT_EQ(2ul, result->elements.size());
-  ASSERT_TRUE(result->elements.at(1)->is_tab_collection_container());
-
-  auto unpinned =
-      std::move(result->elements.at(1)->get_tab_collection_container());
-  ASSERT_EQ(3ul, unpinned->elements.size());
+  ASSERT_EQ(2ul, result->children.size());
+  const auto& unpinned = result->children.at(1);
+  ASSERT_TRUE(unpinned->data->is_unpinned_tabs());
+  ASSERT_EQ(3ul, unpinned->children.size());
 
   // First branch.
-  ASSERT_TRUE(unpinned->elements.at(0)->is_tab_container());
+  ASSERT_TRUE(unpinned->children.at(0)->data->is_tab());
 
   // Second branch.
-  ASSERT_TRUE(unpinned->elements.at(1)->is_tab_collection_container());
-  ASSERT_EQ(1ul, unpinned->elements.at(1)
-                     ->get_tab_collection_container()
-                     ->elements.size());
-  ASSERT_TRUE(unpinned->elements.at(1)
-                  ->get_tab_collection_container()
-                  ->elements.at(0)
-                  ->is_tab_container());
+  const auto& group_one = unpinned->children.at(1);
+  ASSERT_TRUE(group_one->data->is_tab_group());
+  ASSERT_EQ(1ul, group_one->children.size());
+  ASSERT_TRUE(group_one->children.at(0)->data->is_tab());
 
   // Third branch.
-  ASSERT_TRUE(unpinned->elements.at(2)->is_tab_collection_container());
-  ASSERT_EQ(2ul, unpinned->elements.at(2)
-                     ->get_tab_collection_container()
-                     ->elements.size());
-  ASSERT_TRUE(unpinned->elements.at(2)
-                  ->get_tab_collection_container()
-                  ->elements.at(0)
-                  ->is_tab_container());
-  ASSERT_TRUE(unpinned->elements.at(2)
-                  ->get_tab_collection_container()
-                  ->elements.at(1)
-                  ->is_tab_container());
+  const auto& group_two = unpinned->children.at(2);
+  ASSERT_TRUE(group_two->data->is_tab_group());
+  ASSERT_EQ(2ul, group_two->children.size());
+  ASSERT_TRUE(group_two->children.at(0)->data->is_tab());
+  ASSERT_TRUE(group_two->children.at(1)->data->is_tab());
 }
 
 }  // namespace

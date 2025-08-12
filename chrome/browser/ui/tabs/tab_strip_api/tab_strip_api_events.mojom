@@ -24,13 +24,13 @@ struct OnTabDataChangedEvent {
 };
 
 struct OnTabGroupCreatedEvent {
-  TabCollection tab_collection;
+  Data data;
   // Position of the group in the tab strip.
   Position position;
 };
 
 struct OnTabGroupVisualsChangedEvent {
-  TabCollection tab_collection;
+  Data data;
 };
 
 struct OnTabActiveChangedEvent {
