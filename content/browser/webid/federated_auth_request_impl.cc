@@ -664,7 +664,7 @@ void FederatedAuthRequestImpl::RegisterIdP(const GURL& idp,
 void FederatedAuthRequestImpl::OnIdpRegistrationConfigFetched(
     RegisterIdPCallback callback,
     const GURL& idp,
-    std::vector<FedCmConfigFetcher::FetchResult> fetch_results) {
+    std::vector<webid::ConfigFetcher::FetchResult> fetch_results) {
   CHECK_EQ(fetch_results.size(), 1u);
   fedcm_idp_registration_handler_.reset();
   if (fetch_results[0].error) {

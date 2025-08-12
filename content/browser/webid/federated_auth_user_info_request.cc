@@ -164,9 +164,9 @@ void FederatedAuthUserInfoRequest::SetCallbackAndStart(
     return;
   }
 
-  // FedCmConfigFetcher is stored as a member so that it is destroyed when
+  // ConfigFetcher is stored as a member so that it is destroyed when
   // FederatedAuthRequestImpl is destroyed.
-  config_fetcher_ = std::make_unique<FedCmConfigFetcher>(
+  config_fetcher_ = std::make_unique<webid::ConfigFetcher>(
       *render_frame_host_, network_manager_.get());
   // TODO(crbug.com/390626180): It seems ok to ignore the well-known checks in
   // all cases here. However, keeping this unchanged for now when the IDP
@@ -182,7 +182,7 @@ void FederatedAuthUserInfoRequest::SetCallbackAndStart(
 }
 
 void FederatedAuthUserInfoRequest::OnAllConfigAndWellKnownFetched(
-    std::vector<FedCmConfigFetcher::FetchResult> fetch_results) {
+    std::vector<webid::ConfigFetcher::FetchResult> fetch_results) {
   config_fetcher_.reset();
 
   if (fetch_results.size() != 1u) {

@@ -7,7 +7,7 @@
 #include <set>
 
 #include "base/containers/contains.h"
-#include "content/browser/webid/fedcm_config_fetcher.h"
+#include "content/browser/webid/config_fetcher.h"
 #include "content/browser/webid/fedcm_mappers.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/flags.h"
@@ -87,7 +87,7 @@ FedCmAccountsFetcher::~FedCmAccountsFetcher() = default;
 
 void FedCmAccountsFetcher::FetchEndpointsForIdps(
     const std::set<GURL>& idp_config_urls) {
-  std::vector<FedCmConfigFetcher::FetchRequest> idps;
+  std::vector<webid::ConfigFetcher::FetchRequest> idps;
   base::flat_map<GURL, IdentityProviderGetInfo>& token_request_get_infos =
       federated_auth_request_impl_->GetTokenRequestGetInfos();
   for (const auto& idp : idp_config_urls) {
@@ -97,8 +97,8 @@ void FedCmAccountsFetcher::FetchEndpointsForIdps(
         idp, idp_get->second.provider->config->from_idp_registration_api);
   }
 
-  config_fetcher_ = std::make_unique<FedCmConfigFetcher>(*render_frame_host_,
-                                                         network_manager_);
+  config_fetcher_ = std::make_unique<webid::ConfigFetcher>(*render_frame_host_,
+                                                           network_manager_);
   config_fetcher_->Start(
       idps, params_.rp_mode, params_.icon_ideal_size, params_.icon_minimum_size,
       base::BindOnce(&FedCmAccountsFetcher::OnAllConfigAndWellKnownFetched,
@@ -148,7 +148,7 @@ void FedCmAccountsFetcher::SendSuccessfulTokenRequestMetrics(
 }
 
 void FedCmAccountsFetcher::OnAllConfigAndWellKnownFetched(
-    std::vector<FedCmConfigFetcher::FetchResult> fetch_results) {
+    std::vector<webid::ConfigFetcher::FetchResult> fetch_results) {
   config_fetcher_.reset();
 
   base::TimeTicks well_known_and_config_fetched_time = base::TimeTicks::Now();
@@ -157,7 +157,7 @@ void FedCmAccountsFetcher::OnAllConfigAndWellKnownFetched(
 
   base::flat_map<GURL, IdentityProviderGetInfo>& token_request_get_infos =
       federated_auth_request_impl_->GetTokenRequestGetInfos();
-  for (const FedCmConfigFetcher::FetchResult& fetch_result : fetch_results) {
+  for (const webid::ConfigFetcher::FetchResult& fetch_result : fetch_results) {
     const GURL& identity_provider_config_url =
         fetch_result.identity_provider_config_url;
     auto get_info_it =
@@ -176,7 +176,7 @@ void FedCmAccountsFetcher::OnAllConfigAndWellKnownFetched(
             get_info_it->second.format);
 
     if (fetch_result.error) {
-      const FedCmConfigFetcher::FetchError& fetch_error = *fetch_result.error;
+      const webid::ConfigFetcher::FetchError& fetch_error = *fetch_result.error;
       if (fetch_error.additional_console_error_message) {
         render_frame_host_->AddMessageToConsole(
             blink::mojom::ConsoleMessageLevel::kError,

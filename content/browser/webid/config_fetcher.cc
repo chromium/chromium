@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/fedcm_config_fetcher.h"
+#include "content/browser/webid/config_fetcher.h"
 
 #include "base/check.h"
 #include "content/browser/webid/flags.h"
@@ -11,7 +11,7 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "ui/gfx/color_utils.h"
 
-namespace content {
+namespace content::webid {
 
 namespace {
 
@@ -19,11 +19,11 @@ namespace {
 // TODO(cbiesinger): Determine what the right number is.
 static constexpr size_t kMaxProvidersInWellKnownFile = 1ul;
 
-void SetError(FedCmConfigFetcher::FetchResult& fetch_result,
+void SetError(ConfigFetcher::FetchResult& fetch_result,
               blink::mojom::FederatedAuthRequestResult result,
               content::FedCmRequestIdTokenStatus token_status,
               std::optional<std::string> additional_console_error_message) {
-  fetch_result.error = FedCmConfigFetcher::FetchError(
+  fetch_result.error = ConfigFetcher::FetchError(
       result, token_status, additional_console_error_message);
 }
 
@@ -32,9 +32,9 @@ void SetError(FedCmConfigFetcher::FetchResult& fetch_result,
 using blink::mojom::FederatedAuthRequestResult;
 using TokenStatus = FedCmRequestIdTokenStatus;
 
-FedCmConfigFetcher::FetchError::FetchError(const FetchError&) = default;
+ConfigFetcher::FetchError::FetchError(const FetchError&) = default;
 
-FedCmConfigFetcher::FetchError::FetchError(
+ConfigFetcher::FetchError::FetchError(
     blink::mojom::FederatedAuthRequestResult result,
     FedCmRequestIdTokenStatus token_status,
     std::optional<std::string> additional_console_error_message)
@@ -43,26 +43,24 @@ FedCmConfigFetcher::FetchError::FetchError(
       additional_console_error_message(
           std::move(additional_console_error_message)) {}
 
-FedCmConfigFetcher::FetchError::~FetchError() = default;
+ConfigFetcher::FetchError::~FetchError() = default;
 
-FedCmConfigFetcher::FetchResult::FetchResult() = default;
-FedCmConfigFetcher::FetchResult::FetchResult(const FetchResult&) = default;
-FedCmConfigFetcher::FetchResult::~FetchResult() = default;
+ConfigFetcher::FetchResult::FetchResult() = default;
+ConfigFetcher::FetchResult::FetchResult(const FetchResult&) = default;
+ConfigFetcher::FetchResult::~FetchResult() = default;
 
-FedCmConfigFetcher::FedCmConfigFetcher(
-    RenderFrameHost& render_frame_host,
-    IdpNetworkRequestManager* network_manager)
+ConfigFetcher::ConfigFetcher(RenderFrameHost& render_frame_host,
+                             IdpNetworkRequestManager* network_manager)
     : render_frame_host_(render_frame_host),
       network_manager_(network_manager) {}
 
-FedCmConfigFetcher::~FedCmConfigFetcher() = default;
+ConfigFetcher::~ConfigFetcher() = default;
 
-void FedCmConfigFetcher::Start(
-    const std::vector<FetchRequest>& requested_providers,
-    blink::mojom::RpMode rp_mode,
-    int icon_ideal_size,
-    int icon_minimum_size,
-    RequesterCallback callback) {
+void ConfigFetcher::Start(const std::vector<FetchRequest>& requested_providers,
+                          blink::mojom::RpMode rp_mode,
+                          int icon_ideal_size,
+                          int icon_minimum_size,
+                          RequesterCallback callback) {
   callback_ = std::move(callback);
 
   for (const auto& request : requested_providers) {
@@ -82,17 +80,17 @@ void FedCmConfigFetcher::Start(
   for (FetchResult& fetch_result : fetch_results_) {
     network_manager_->FetchWellKnown(
         fetch_result.identity_provider_config_url,
-        base::BindOnce(&FedCmConfigFetcher::OnWellKnownFetched,
+        base::BindOnce(&ConfigFetcher::OnWellKnownFetched,
                        weak_ptr_factory_.GetWeakPtr(), std::ref(fetch_result)));
     network_manager_->FetchConfig(
         fetch_result.identity_provider_config_url, rp_mode, icon_ideal_size,
         icon_minimum_size,
-        base::BindOnce(&FedCmConfigFetcher::OnConfigFetched,
+        base::BindOnce(&ConfigFetcher::OnConfigFetched,
                        weak_ptr_factory_.GetWeakPtr(), std::ref(fetch_result)));
   }
 }
 
-void FedCmConfigFetcher::OnWellKnownFetched(
+void ConfigFetcher::OnWellKnownFetched(
     FetchResult& fetch_result,
     IdpNetworkRequestManager::FetchStatus status,
     const IdpNetworkRequestManager::WellKnown& well_known) {
@@ -151,7 +149,7 @@ void FedCmConfigFetcher::OnWellKnownFetched(
   RunCallbackIfDone();
 }
 
-void FedCmConfigFetcher::OnConfigFetched(
+void ConfigFetcher::OnConfigFetched(
     FetchResult& fetch_result,
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::Endpoints endpoints,
@@ -226,7 +224,7 @@ void FedCmConfigFetcher::OnConfigFetched(
   RunCallbackIfDone();
 }
 
-void FedCmConfigFetcher::OnError(
+void ConfigFetcher::OnError(
     FetchResult& fetch_result,
     blink::mojom::FederatedAuthRequestResult result,
     content::FedCmRequestIdTokenStatus token_status,
@@ -236,7 +234,7 @@ void FedCmConfigFetcher::OnError(
   RunCallbackIfDone();
 }
 
-void FedCmConfigFetcher::ValidateAndMaybeSetError(FetchResult& result) {
+void ConfigFetcher::ValidateAndMaybeSetError(FetchResult& result) {
   // This function validates fetch results, by analyzing the config file and
   // the well-known file.
   // If the validation fails, this function sets the "error" property in the
@@ -362,7 +360,7 @@ void FedCmConfigFetcher::ValidateAndMaybeSetError(FetchResult& result) {
   }
 }
 
-void FedCmConfigFetcher::RunCallbackIfDone() {
+void ConfigFetcher::RunCallbackIfDone() {
   if (!pending_config_fetches_.empty() ||
       !pending_well_known_fetches_.empty()) {
     return;
@@ -375,7 +373,7 @@ void FedCmConfigFetcher::RunCallbackIfDone() {
   std::move(callback_).Run(std::move(fetch_results_));
 }
 
-bool FedCmConfigFetcher::ShouldSkipWellKnownEnforcementForIdp(
+bool ConfigFetcher::ShouldSkipWellKnownEnforcementForIdp(
     const FetchResult& fetch_result) {
   if (IsFedCmWithoutWellKnownEnforcementEnabled()) {
     return true;
@@ -390,4 +388,4 @@ bool FedCmConfigFetcher::ShouldSkipWellKnownEnforcementForIdp(
       url::Origin::Create(fetch_result.identity_provider_config_url));
 }
 
-}  // namespace content
+}  // namespace content::webid

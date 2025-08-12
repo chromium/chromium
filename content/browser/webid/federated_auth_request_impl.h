@@ -436,7 +436,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnIdpRegistrationConfigFetched(
       RegisterIdPCallback callback,
       const GURL& idp,
-      std::vector<FedCmConfigFetcher::FetchResult> fetch_results);
+      std::vector<webid::ConfigFetcher::FetchResult> fetch_results);
   void OnRegisterIdPPermissionResponse(RegisterIdPCallback callback,
                                        const GURL& idp,
                                        bool accepted);

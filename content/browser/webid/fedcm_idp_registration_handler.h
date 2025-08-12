@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_WEBID_FEDCM_IDP_REGISTRATION_HANDLER_H_
 #define CONTENT_BROWSER_WEBID_FEDCM_IDP_REGISTRATION_HANDLER_H_
 
-#include "content/browser/webid/fedcm_config_fetcher.h"
+#include "content/browser/webid/config_fetcher.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -23,7 +23,7 @@ class CONTENT_EXPORT FedCmIdpRegistrationHandler {
   FedCmIdpRegistrationHandler& operator=(const FedCmIdpRegistrationHandler&) =
       delete;
 
-  void FetchConfig(FedCmConfigFetcher::RequesterCallback callback);
+  void FetchConfig(webid::ConfigFetcher::RequesterCallback callback);
 
  private:
   // Owned by FederatedAuthRequestImpl.
@@ -31,7 +31,7 @@ class CONTENT_EXPORT FedCmIdpRegistrationHandler {
   raw_ptr<IdpNetworkRequestManager> network_manager_;
 
   GURL idp_url_;
-  std::unique_ptr<FedCmConfigFetcher> config_fetcher_;
+  std::unique_ptr<webid::ConfigFetcher> config_fetcher_;
 };
 
 }  // namespace content

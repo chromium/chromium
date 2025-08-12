@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBID_FEDCM_CONFIG_FETCHER_H_
-#define CONTENT_BROWSER_WEBID_FEDCM_CONFIG_FETCHER_H_
+#ifndef CONTENT_BROWSER_WEBID_CONFIG_FETCHER_H_
+#define CONTENT_BROWSER_WEBID_CONFIG_FETCHER_H_
 
 #include <memory>
 #include <optional>
@@ -21,9 +21,11 @@
 namespace content {
 class RenderFrameHost;
 
+namespace webid {
+
 // Fetches the config and well-known files for a list of identity providers.
 // Validates returned information and calls callback when done.
-class CONTENT_EXPORT FedCmConfigFetcher {
+class CONTENT_EXPORT ConfigFetcher {
  public:
   struct CONTENT_EXPORT FetchError {
     FetchError(const FetchError& info);
@@ -62,15 +64,15 @@ class CONTENT_EXPORT FedCmConfigFetcher {
 
   // TODO(crbug.com/40283354): Remove |render_frame_host| when the IDP signin
   // status API is enabled by default.
-  FedCmConfigFetcher(RenderFrameHost& render_frame_host,
-                     IdpNetworkRequestManager* network_manager);
-  ~FedCmConfigFetcher();
+  ConfigFetcher(RenderFrameHost& render_frame_host,
+                IdpNetworkRequestManager* network_manager);
+  ~ConfigFetcher();
 
-  FedCmConfigFetcher(const FedCmConfigFetcher&) = delete;
-  FedCmConfigFetcher& operator=(const FedCmConfigFetcher&) = delete;
+  ConfigFetcher(const ConfigFetcher&) = delete;
+  ConfigFetcher& operator=(const ConfigFetcher&) = delete;
 
   // Starts fetch of config and well-known files. Start() should be called at
-  // most once per FedCmConfigFetcher instance.
+  // most once per ConfigFetcher instance.
   void Start(const std::vector<FetchRequest>& requested_providers,
              blink::mojom::RpMode rp_mode,
              int icon_ideal_size,
@@ -119,9 +121,10 @@ class CONTENT_EXPORT FedCmConfigFetcher {
   // Fetches the config and well-known files.
   raw_ptr<IdpNetworkRequestManager, DanglingUntriaged> network_manager_;
 
-  base::WeakPtrFactory<FedCmConfigFetcher> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ConfigFetcher> weak_ptr_factory_{this};
 };
 
+}  // namespace webid
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_WEBID_FEDCM_CONFIG_FETCHER_H_
+#endif  // CONTENT_BROWSER_WEBID_CONFIG_FETCHER_H_

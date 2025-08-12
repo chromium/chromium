@@ -10,7 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/webid/fedcm_config_fetcher.h"
+#include "content/browser/webid/config_fetcher.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "url/gurl.h"
 
@@ -82,7 +82,7 @@ class FedCmAccountsFetcher {
 
  private:
   void OnAllConfigAndWellKnownFetched(
-      std::vector<FedCmConfigFetcher::FetchResult> fetch_results);
+      std::vector<webid::ConfigFetcher::FetchResult> fetch_results);
 
   void OnAccountsResponseReceived(
       std::unique_ptr<IdentityProviderInfo> idp_info,
@@ -138,7 +138,7 @@ class FedCmAccountsFetcher {
       blink::mojom::FederatedAuthRequestResult result,
       bool did_show_ui);
 
-  std::unique_ptr<FedCmConfigFetcher> config_fetcher_;
+  std::unique_ptr<webid::ConfigFetcher> config_fetcher_;
 
   // Populated in OnAllConfigAndWellKnownFetched().
   base::flat_map<GURL, GURL> metrics_endpoints_;

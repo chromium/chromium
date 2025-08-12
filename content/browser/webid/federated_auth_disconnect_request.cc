@@ -111,7 +111,7 @@ void FederatedAuthDisconnectRequest::SetCallbackAndStart(
     return;
   }
 
-  config_fetcher_ = std::make_unique<FedCmConfigFetcher>(
+  config_fetcher_ = std::make_unique<webid::ConfigFetcher>(
       *render_frame_host_, network_manager_.get());
   GURL config_url = options_->config->config_url;
   // TODO(crbug.com/390626180): It seems ok to ignore the well-known checks in
@@ -128,12 +128,12 @@ void FederatedAuthDisconnectRequest::SetCallbackAndStart(
 }
 
 void FederatedAuthDisconnectRequest::OnAllConfigAndWellKnownFetched(
-    std::vector<FedCmConfigFetcher::FetchResult> fetch_results) {
+    std::vector<webid::ConfigFetcher::FetchResult> fetch_results) {
   config_fetcher_.reset();
   DCHECK_EQ(fetch_results.size(), 1u);
-  const FedCmConfigFetcher::FetchResult& fetch_result = fetch_results[0];
+  const webid::ConfigFetcher::FetchResult& fetch_result = fetch_results[0];
   if (fetch_result.error) {
-    const FedCmConfigFetcher::FetchError& fetch_error = *fetch_result.error;
+    const webid::ConfigFetcher::FetchError& fetch_error = *fetch_result.error;
     if (fetch_error.additional_console_error_message) {
       render_frame_host_->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
@@ -187,7 +187,7 @@ void FederatedAuthDisconnectRequest::OnAllConfigAndWellKnownFetched(
         break;
       }
       default: {
-        // The FedCmConfigFetcher does not return any other type of
+        // The ConfigFetcher does not return any other type of
         // result.
         NOTREACHED();
       }
