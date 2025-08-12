@@ -1680,7 +1680,8 @@ bool WebLocalFrameImpl::SetEditableSelectionOffsets(int start, int end) {
   TRACE_EVENT0("blink", "WebLocalFrameImpl::setEditableSelectionOffsets");
   if (EditContext* edit_context =
           GetFrame()->GetInputMethodController().GetActiveEditContext()) {
-    edit_context->SetSelection(start, end, /*dispatch_text_update_event=*/true);
+    edit_context->SetSelection(start, end, /*sync_selection=*/true,
+                               /*dispatch_text_update_event=*/true);
     return true;
   }
 

@@ -563,7 +563,7 @@ void EditContext::DeleteBackward() {
   if (selection_start_ == selection_end_) {
     SetSelection(FindNextBoundaryOffset<BackwardGraphemeBoundaryStateMachine>(
                      text_, selection_start_),
-                 selection_end_);
+                 selection_end_, /*sync_selection=*/false);
   }
 
   DeleteCurrentSelection();
@@ -573,7 +573,8 @@ void EditContext::DeleteForward() {
   if (selection_start_ == selection_end_) {
     SetSelection(selection_start_,
                  FindNextBoundaryOffset<ForwardGraphemeBoundaryStateMachine>(
-                     text_, selection_start_));
+                     text_, selection_start_),
+                 /*sync_selection=*/false);
   }
 
   DeleteCurrentSelection();
@@ -585,7 +586,7 @@ void EditContext::DeleteWordBackward() {
     text16bit.Ensure16Bit();
     // TODO(shihken): implement platform behaviors when the spec is finalized.
     SetSelection(FindNextWordBackward(text16bit.Span16(), selection_end_),
-                 selection_end_);
+                 selection_end_, /*sync_selection=*/false);
   }
 
   DeleteCurrentSelection();
@@ -597,7 +598,8 @@ void EditContext::DeleteWordForward() {
     text16bit.Ensure16Bit();
     // TODO(shihken): implement platform behaviors when the spec is finalized.
     SetSelection(selection_start_,
-                 FindNextWordForward(text16bit.Span16(), selection_start_));
+                 FindNextWordForward(text16bit.Span16(), selection_start_),
+                 /*sync_selection=*/false);
   }
 
   DeleteCurrentSelection();
@@ -715,6 +717,7 @@ void EditContext::DeleteSurroundingText(int before, int after) {
 
 void EditContext::SetSelection(int start,
                                int end,
+                               bool sync_selection,
                                bool dispatch_text_update_event) {
   TRACE_EVENT1("ime", "EditContext::SetSelection", "start, end",
                std::to_string(start) + ", " + std::to_string(end));
@@ -727,7 +730,7 @@ void EditContext::SetSelection(int start,
   selection_start_ = start;
   selection_end_ = end;
 
-  if (DomWindow() && DomWindow()->GetFrame()) {
+  if (sync_selection && DomWindow() && DomWindow()->GetFrame()) {
     DomWindow()->GetFrame()->Client()->DidChangeSelection(
         /*is_selection_empty=*/selection_start_ == selection_end_,
         blink::SyncCondition::kNotForced);

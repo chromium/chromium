@@ -955,6 +955,12 @@ void Editor::RespondToChangedSelection() {
 
 void Editor::SyncSelection(SyncCondition force_sync) {
   TRACE_EVENT0("blink", "Editor::SyncSelection");
+
+  // When EditContext is active, it takes care of selection synchronization.
+  if (frame_->GetInputMethodController().GetActiveEditContext()) {
+    return;
+  }
+
   frame_->Client()->DidChangeSelection(
       !GetFrameSelection().GetSelectionInDOMTree().IsRange(), force_sync);
 }

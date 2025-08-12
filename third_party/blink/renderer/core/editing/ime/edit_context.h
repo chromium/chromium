@@ -204,6 +204,7 @@ class CORE_EXPORT EditContext final : public EventTarget,
   // page that the selection has changed.
   void SetSelection(int start,
                     int end,
+                    bool sync_selection = true,
                     bool dispatch_text_update_event = false);
 
   // Sets rect_in_viewport to the surrounding rect, in physical pixels,
