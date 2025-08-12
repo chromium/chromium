@@ -50,7 +50,7 @@ wheel: <
 # become available.
 wheel: <
   name: "infra/python/wheels/six-py2_py3"
-  version: "version:1.15.0"
+  version: "version:1.17.0"
 >
 
 # These wheels are necessary to run pytype, i.e. enforce Python 3 type hinting.
