@@ -206,7 +206,7 @@
 //! function that returns Anyhow's error type, as the trait that `?`-based error
 //! conversions are defined by is only available in std in those old versions.
 
-#![doc(html_root_url = "https://docs.rs/anyhow/1.0.98")]
+#![doc(html_root_url = "https://docs.rs/anyhow/1.0.99")]
 #![cfg_attr(error_generic_member_access, feature(error_generic_member_access))]
 #![no_std]
 #![deny(dead_code, unused_imports, unused_mut)]
@@ -238,6 +238,7 @@
     clippy::wildcard_imports,
     clippy::wrong_self_convention
 )]
+#![allow(unknown_lints, mismatched_lifetime_syntaxes)]
 
 #[cfg(all(
     anyhow_nightly_testing,

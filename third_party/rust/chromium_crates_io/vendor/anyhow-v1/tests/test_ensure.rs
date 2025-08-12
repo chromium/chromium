@@ -668,7 +668,7 @@ fn test_as() {
     assert_err(test, "Condition failed: `0 as int![...] != 0` (0 vs 0)");
 
     let test = || Ok(ensure!(0 as int! {...} != 0));
-    assert_err(test, "Condition failed: `0 as int! { ... } != 0` (0 vs 0)");
+    assert_err(test, "Condition failed: `0 as int! {...} != 0` (0 vs 0)");
 }
 
 #[test]

@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [nightly, beta, stable, 1.80.0, 1.70.0]
+        rust: [nightly, beta, stable, 1.82.0, 1.80.0, 1.70.0]
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -41,6 +41,7 @@ jobs:
       - run: cargo test
       - run: cargo check --no-default-features
       - run: cargo check --features backtrace
+        if: matrix.rust != '1.80.0' && matrix.rust != '1.70.0'
       - uses: actions/upload-artifact@v4
         if: matrix.rust == 'nightly' && always()
         with:
@@ -66,8 +67,6 @@ jobs:
           components: rust-src
       - run: cargo check --manifest-path tests/crate/Cargo.toml
       - run: cargo check --manifest-path tests/crate/Cargo.toml --no-default-features
-      - run: cargo check --manifest-path tests/crate/Cargo.toml --features backtrace
-        if: matrix.rust != '1.65.0' && matrix.rust != '1.52.0' && matrix.rust != '1.51.0' && matrix.rust != '1.50.0' && matrix.rust != '1.39.0'
 
   minimal:
     name: Minimal versions
