@@ -114,7 +114,6 @@ if (enable_extensions_core) {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/chrome_extension.xml",
-    "java/res/drawable/extensions_menu_bg_tinted.xml",
     "java/res/drawable/ic_close.xml",
     "java/res/drawable/ic_more_vert.xml",
     "java/res/drawable/ic_settings.xml",

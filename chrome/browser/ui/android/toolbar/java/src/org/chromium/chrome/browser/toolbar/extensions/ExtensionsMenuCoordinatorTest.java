@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -40,7 +41,7 @@ import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridgeRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.listmenu.ListMenuButton;
-import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.listmenu.ListMenuHost;
 
 /** Unit tests for ExtensionsMenuCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -54,12 +55,10 @@ public class ExtensionsMenuCoordinatorTest {
     private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
     private ListMenuButton mExtensionsMenuButton;
     private MaterialDivider mExtensionsMenuTabSwitcherDivider;
-    @Mock private AnchoredPopupWindow mMenuWindow;
     @Mock private TabCreator mTabCreator;
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
     @Mock private Tab mNewTab;
-    @Mock private Profile mAnotherProfile;
     @Mock private Tab mAnotherTab;
     @Mock private ThemeColorProvider mThemeColorProvider;
 
@@ -99,8 +98,10 @@ public class ExtensionsMenuCoordinatorTest {
                         mThemeColorProvider,
                         mProfileSupplier,
                         mCurrentTabSupplier,
-                        mTabCreator,
-                        mMenuWindow);
+                        mTabCreator);
+
+        // Ensure the tab / profile suppliers have triggered their initial callbacks.
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
     }
 
     @Test
@@ -118,12 +119,15 @@ public class ExtensionsMenuCoordinatorTest {
                         mThemeColorProvider,
                         mProfileSupplier,
                         mCurrentTabSupplier,
-                        mTabCreator,
-                        mMenuWindow);
+                        mTabCreator);
 
-        // Call showMenu(). At this point, the data is not ready, so the menu should not appear.
-        mExtensionsMenuCoordinator.showMenu();
-        verify(mMenuWindow, never()).show();
+        ListMenuHost.PopupMenuShownListener shownListener =
+                Mockito.mock(ListMenuHost.PopupMenuShownListener.class);
+        mExtensionsMenuButton.addPopupListener(shownListener);
+
+        // Click on the button. At this point, the data is not ready, so the menu should not appear.
+        mExtensionsMenuButton.performClick();
+        verify(shownListener, never()).onPopupMenuShown();
 
         // Simulate callbacks that happen after the construction of the mediator by manually setting
         // new variables.
@@ -132,36 +136,55 @@ public class ExtensionsMenuCoordinatorTest {
         Shadows.shadowOf(Looper.getMainLooper()).idle();
 
         // The callback should have triggered the menu to finally show.
-        verify(mMenuWindow).show();
+        verify(shownListener).onPopupMenuShown();
     }
 
     @Test
     public void testCloseMenu() {
+        ListMenuHost.PopupMenuShownListener shownListener =
+                Mockito.mock(ListMenuHost.PopupMenuShownListener.class);
+        mExtensionsMenuButton.addPopupListener(shownListener);
+        mExtensionsMenuButton.performClick();
+        verify(shownListener).onPopupMenuShown();
+
         mExtensionsMenuCoordinator
                 .getContentView()
                 .findViewById(R.id.extensions_menu_close_button)
                 .performClick();
-        verify(mMenuWindow).dismiss();
+
+        verify(shownListener).onPopupMenuDismissed();
     }
 
     @Test
     public void testManageExtensions() {
+        ListMenuHost.PopupMenuShownListener shownListener =
+                Mockito.mock(ListMenuHost.PopupMenuShownListener.class);
+        mExtensionsMenuButton.addPopupListener(shownListener);
+        mExtensionsMenuButton.performClick();
+        verify(shownListener).onPopupMenuShown();
+
         mExtensionsMenuCoordinator
                 .getContentView()
                 .findViewById(R.id.extensions_menu_manage_extensions_button)
                 .performClick();
-        verify(mMenuWindow).dismiss();
+        verify(shownListener).onPopupMenuDismissed();
         verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
         assertEquals(UrlConstants.CHROME_EXTENSIONS_URL, mLoadUrlParamsCaptor.getValue().getUrl());
     }
 
     @Test
     public void testDiscoverExtensions() {
+        ListMenuHost.PopupMenuShownListener shownListener =
+                Mockito.mock(ListMenuHost.PopupMenuShownListener.class);
+        mExtensionsMenuButton.addPopupListener(shownListener);
+        mExtensionsMenuButton.performClick();
+        verify(shownListener).onPopupMenuShown();
+
         mExtensionsMenuCoordinator
                 .getContentView()
                 .findViewById(R.id.extensions_menu_discover_extensions_button)
                 .performClick();
-        verify(mMenuWindow).dismiss();
+        verify(shownListener).onPopupMenuDismissed();
         verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
         assertEquals(UrlConstants.CHROME_WEBSTORE_URL, mLoadUrlParamsCaptor.getValue().getUrl());
     }

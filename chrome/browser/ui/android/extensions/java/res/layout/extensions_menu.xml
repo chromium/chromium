@@ -12,8 +12,9 @@ found in the LICENSE file.
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp">
+    android:clipToOutline="true"
+    android:background="@drawable/default_popup_menu_bg"
+    android:elevation="@dimen/app_menu_elevation">
 
     <include
         android:id="@+id/extensions_menu_header"
@@ -38,6 +39,7 @@ found in the LICENSE file.
         android:id="@+id/extensions_menu_items"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minWidth="320dp"
         app:layout_constraintTop_toBottomOf="@+id/extensions_menu_header_divider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -64,6 +66,7 @@ found in the LICENSE file.
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:paddingBottom="8dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

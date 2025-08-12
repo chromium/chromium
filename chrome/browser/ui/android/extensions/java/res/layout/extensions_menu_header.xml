@@ -14,6 +14,7 @@ found in the LICENSE file.
     android:gravity="center_vertical"
     android:paddingStart="@dimen/extensions_menu_horizontal_padding"
     android:paddingEnd="16dp"
+    android:paddingTop="8dp"
     tools:ignore="UnusedResources">
 
     <TextView
