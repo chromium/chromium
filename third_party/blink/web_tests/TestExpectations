@@ -2879,11 +2879,11 @@ crbug.com/435704771 external/wpt/navigation-api/navigation-methods/return-value/
 crbug.com/435620308 external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/css/filter-effects/fecomponenttransfer-display-p3.html [ Failure ]
-[ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-link.https.tentative.window.html [ Crash ]
-[ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Timeout ]
-[ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-insecure.sub.window.html [ Timeout ]
-virtual/scalefactor200/external/wpt/css/filter-effects/fecomponenttransfer-display-p3.html [ Failure ]
+crbug.com/438146769 external/wpt/css/filter-effects/fecomponenttransfer-display-p3.html [ Failure ]
+crbug.com/437940964 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-link.https.tentative.window.html [ Crash ]
+crbug.com/437926453 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Timeout ]
+crbug.com/437926453 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-insecure.sub.window.html [ Timeout ]
+crbug.com/438146769 virtual/scalefactor200/external/wpt/css/filter-effects/fecomponenttransfer-display-p3.html [ Failure ]
 crbug.com/437940952 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-script.https.tentative.window.html [ Timeout ]
 crbug.com/437940952 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/isolate-and-require-corp.tentative.https.html [ Skip Timeout ]
 crbug.com/437953151 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/set-early-challenge.https.html [ Crash ]
