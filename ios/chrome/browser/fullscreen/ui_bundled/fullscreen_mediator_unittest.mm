@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "testing/platform_test.h"
 
 // Test fixture for FullscreenMediator.
@@ -21,6 +22,7 @@ class FullscreenMediatorTest : public PlatformTest {
   FullscreenMediatorTest() {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
+    ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());
     TestFullscreenController::CreateForBrowser(browser_.get());
     mediator_ = std::make_unique<TestFullscreenMediator>(controller(), model());
     observer_ = std::make_unique<TestFullscreenControllerObserver>();

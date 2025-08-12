@@ -59,6 +59,7 @@ source_set("model") {
     "//ios/chrome/browser/tab_insertion/model",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/tabs/model:features",
+    "//ios/chrome/browser/toolbar/ui_bundled/fullscreen",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/view_source/model",
     "//ios/chrome/browser/web/model",

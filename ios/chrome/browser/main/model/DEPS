@@ -48,6 +48,7 @@ specific_include_rules = {
     "+ios/chrome/browser/web/model/web_state_delegate_browser_agent.h",
     "+ios/chrome/browser/web/model/web_state_update_browser_agent.h",
     "+ios/chrome/browser/web_state_list/model/session_metrics.h",
+    "+ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_browser_agent.h",
     "+ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h",
   ],
   "^browser_impl.mm": [

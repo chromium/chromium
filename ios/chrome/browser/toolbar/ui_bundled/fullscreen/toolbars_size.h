@@ -9,6 +9,7 @@
 
 class ToolbarsSizeObserver;
 
+// TODO(crbug.com/438115053): Rename ToolbarsSize to ToolbarSizes.
 // Toolbars' size. Almost constants.
 @interface ToolbarsSize : NSObject
 
