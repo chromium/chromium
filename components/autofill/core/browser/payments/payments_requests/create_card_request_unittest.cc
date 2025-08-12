@@ -62,7 +62,7 @@ std::unique_ptr<CreateCardRequest> BuildCreateCardRequest(
     request_details.profiles.emplace_back(
         test::GetFullProfile(AddressCountryCode("US")));
   }
-  request_details.upload_card_source = UploadCardSource::UPSTREAM_SAVE_AND_FILL;
+  request_details.upload_card_source = UploadCardSource::kUpstreamSaveAndFill;
 
   return std::make_unique<CreateCardRequest>(request_details,
                                              base::DoNothing());

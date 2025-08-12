@@ -514,7 +514,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
                      weak_ptr_factory_.GetWeakPtr(), ukm_source_id),
       payments::kUploadPaymentMethodBillableServiceNumber,
       payments::GetBillingCustomerId(payments_data_manager()),
-      payments::UploadCardSource::UPSTREAM_CHECKOUT_FLOW);
+      payments::UploadCardSource::kUpstreamCheckoutFlow);
 }
 
 void CreditCardSaveManager::AttemptToOfferCvcUploadSave(

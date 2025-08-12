@@ -59,10 +59,10 @@ std::string GetDetailsForCreateCardRequest::GetRequestContent() {
   base::Value::Dict card_info;
   card_info.Set("unique_country_code", unique_country_code_);
   switch (upload_card_source_) {
-    case UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE:
+    case UploadCardSource::kUnknown:
       card_info.Set("upload_card_source", "UNKNOWN_UPLOAD_CARD_SOURCE");
       break;
-    case UploadCardSource::UPSTREAM_SAVE_AND_FILL:
+    case UploadCardSource::kUpstreamSaveAndFill:
       card_info.Set("upload_card_source", "UPSTREAM_SAVE_AND_FILL");
       break;
     default:

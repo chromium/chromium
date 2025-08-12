@@ -360,15 +360,15 @@ void CreditCardFidoAuthenticator::OptChange(
     case OPT_IN_WITH_CHALLENGE_FLOW:
     case OPT_IN_FETCH_CHALLENGE_FLOW:
       request_details.reason =
-          payments::OptChangeRequestDetails::ENABLE_FIDO_AUTH;
+          payments::OptChangeRequestDetails::Reason::kEnableFidoAuth;
       break;
     case OPT_OUT_FLOW:
       request_details.reason =
-          payments::OptChangeRequestDetails::DISABLE_FIDO_AUTH;
+          payments::OptChangeRequestDetails::Reason::kDisableFidoAuth;
       break;
     case FOLLOWUP_AFTER_CVC_AUTH_FLOW:
       request_details.reason =
-          payments::OptChangeRequestDetails::ADD_CARD_FOR_FIDO_AUTH;
+          payments::OptChangeRequestDetails::Reason::kAddCardForFidoAuth;
       break;
     default:
       NOTREACHED();

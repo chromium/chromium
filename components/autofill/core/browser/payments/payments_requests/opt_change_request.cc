@@ -47,13 +47,13 @@ std::string OptChangeRequest::GetRequestContent() {
 
   std::string reason;
   switch (request_details_.reason) {
-    case OptChangeRequestDetails::ENABLE_FIDO_AUTH:
+    case OptChangeRequestDetails::Reason::kEnableFidoAuth:
       reason = "ENABLE_FIDO_AUTH";
       break;
-    case OptChangeRequestDetails::DISABLE_FIDO_AUTH:
+    case OptChangeRequestDetails::Reason::kDisableFidoAuth:
       reason = "DISABLE_FIDO_AUTH";
       break;
-    case OptChangeRequestDetails::ADD_CARD_FOR_FIDO_AUTH:
+    case OptChangeRequestDetails::Reason::kAddCardForFidoAuth:
       reason = "ADD_CARD_FOR_FIDO_AUTH";
       break;
     default:

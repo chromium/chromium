@@ -181,7 +181,7 @@ void SaveAndFillManagerImpl::PopulateInitialUploadDetails() {
   // TODO(crbug.com/432100446): Add kShowAccountEmailInLegalMessage to
   // `client_behavior_signals` when feature launched to mobile.
 
-  upload_details_.upload_card_source = UploadCardSource::UPSTREAM_SAVE_AND_FILL;
+  upload_details_.upload_card_source = UploadCardSource::kUpstreamSaveAndFill;
   upload_details_.billing_customer_number = payments::GetBillingCustomerId(
       payments_autofill_client()->GetPaymentsDataManager());
   upload_details_.app_locale = autofill_client_->GetAppLocale();

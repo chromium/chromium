@@ -5457,7 +5457,7 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Confirm that the preflight request contained the correct UploadCardSource.
   FormSubmitted(credit_card_form);
-  EXPECT_EQ(payments::UploadCardSource::UPSTREAM_CHECKOUT_FLOW,
+  EXPECT_EQ(payments::UploadCardSource::kUpstreamCheckoutFlow,
             payments_network_interface().upload_card_source_in_request());
 }
 

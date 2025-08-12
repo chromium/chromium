@@ -336,7 +336,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
         /*billable_service_number=*/12345,
         /*billing_customer_number=*/111222333444L,
         /*upload_card_source=*/
-        UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE);
+        UploadCardSource::kUnknown);
   }
 
   // Issue an UploadCard request. This requires an OAuth token before starting
@@ -913,7 +913,7 @@ TEST_F(PaymentsNetworkInterfaceTest,
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, OptInSuccess) {
-  StartOptChangeRequest(OptChangeRequestDetails::ENABLE_FIDO_AUTH);
+  StartOptChangeRequest(OptChangeRequestDetails::Reason::kEnableFidoAuth);
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"fido_authentication_info\": { \"user_status\": "
@@ -923,7 +923,7 @@ TEST_F(PaymentsNetworkInterfaceTest, OptInSuccess) {
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, OptInServerUnresponsive) {
-  StartOptChangeRequest(OptChangeRequestDetails::ENABLE_FIDO_AUTH);
+  StartOptChangeRequest(OptChangeRequestDetails::Reason::kEnableFidoAuth);
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_REQUEST_TIMEOUT,
                  "");
@@ -932,7 +932,7 @@ TEST_F(PaymentsNetworkInterfaceTest, OptInServerUnresponsive) {
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, OptOutSuccess) {
-  StartOptChangeRequest(OptChangeRequestDetails::DISABLE_FIDO_AUTH);
+  StartOptChangeRequest(OptChangeRequestDetails::Reason::kDisableFidoAuth);
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"fido_authentication_info\": { \"user_status\": "
@@ -942,7 +942,8 @@ TEST_F(PaymentsNetworkInterfaceTest, OptOutSuccess) {
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, EnrollAttemptReturnsCreationOptions) {
-  StartOptChangeRequest(OptChangeRequestDetails::ENABLE_FIDO_AUTH);
+  StartOptChangeRequest(OptChangeRequestDetails::Reason::kEnableFidoAuth);
+
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"fido_authentication_info\": { \"user_status\": "

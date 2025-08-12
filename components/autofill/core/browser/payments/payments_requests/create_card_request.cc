@@ -96,10 +96,10 @@ std::string CreateCardRequest::GetRequestContent() {
   }
 
   switch (request_details_.upload_card_source) {
-    case UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE:
+    case UploadCardSource::kUnknown:
       card_info.Set("upload_card_source", "UNKNOWN_UPLOAD_CARD_SOURCE");
       break;
-    case UploadCardSource::UPSTREAM_SAVE_AND_FILL:
+    case UploadCardSource::kUpstreamSaveAndFill:
       card_info.Set("upload_card_source", "UPSTREAM_SAVE_AND_FILL");
       break;
     default:

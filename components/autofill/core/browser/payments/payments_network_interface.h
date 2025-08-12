@@ -122,8 +122,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
       GetCardUploadDetailsCallback callback,
       const int billable_service_number,
       const int64_t billing_customer_number,
-      UploadCardSource upload_card_source =
-          UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE);
+      UploadCardSource upload_card_source = UploadCardSource::kUnknown);
 
   // The user has indicated that they would like to upload a card with the given
   // cvc. This request will fail server-side if a successful call to

@@ -59,7 +59,7 @@ class TestPaymentsNetworkInterface : public payments::PaymentsNetworkInterface {
       const int billable_service_number,
       const int64_t billing_customer_number,
       UploadCardSource upload_card_source =
-          UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE) override;
+          UploadCardSource::kUnknown) override;
 
   void UploadCard(
       const payments::UploadCardRequestDetails& request_details,

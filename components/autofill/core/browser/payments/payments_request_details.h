@@ -153,19 +153,18 @@ struct OptChangeRequestDetails {
 
   std::string app_locale;
 
-  // TODO(crbug.com/428228981): Update to use enum class, kCamelCase, and add
-  // kMaxValue.
   // The reason for making the request.
-  enum Reason {
+  enum class Reason {
     // Unknown default.
-    UNKNOWN_REASON = 0,
+    kUnknownReason = 0,
     // The user wants to enable FIDO authentication for card unmasking.
-    ENABLE_FIDO_AUTH = 1,
+    kEnableFidoAuth = 1,
     // The user wants to disable FIDO authentication for card unmasking.
-    DISABLE_FIDO_AUTH = 2,
+    kDisableFidoAuth = 2,
     // The user is authorizing a new card for future FIDO authentication
     // unmasking.
-    ADD_CARD_FOR_FIDO_AUTH = 3,
+    kAddCardForFidoAuth = 3,
+    kMaxValue = kAddCardForFidoAuth,
   };
 
   // Reason for the request.
@@ -302,24 +301,23 @@ struct GetDetailsForEnrollmentResponseDetails {
   LegalMessageLines issuer_legal_message;
 };
 
-// TODO(crbug.com/428228981): Update to use enum class, kCamelCase, and add
-// kMaxValue.
 // An enum set in the GetCardUploadDetailsRequest indicating the source of the
 // request when uploading a card to Google Payments. It should stay consistent
 // with the same enum in Google Payments server code.
-enum UploadCardSource {
+enum class UploadCardSource {
   // Source unknown.
-  UNKNOWN_UPLOAD_CARD_SOURCE,
+  kUnknown,
   // Single card is being uploaded from the normal credit card offer-to-save
   // prompt during a checkout flow.
-  UPSTREAM_CHECKOUT_FLOW,
+  kUpstreamCheckoutFlow,
   // Single card is being uploaded from chrome://settings/payments.
-  UPSTREAM_SETTINGS_PAGE,
+  kUpstreamSettingsPage,
   // Single card is being uploaded after being scanned by OCR.
-  UPSTREAM_CARD_OCR,
+  kUpstreamCardOcr,
   // Single card is being uploaded from the Save and Fill dialog during a
   // non-post-checkout flow.
-  UPSTREAM_SAVE_AND_FILL,
+  kUpstreamSaveAndFill,
+  kMaxValue = kUpstreamSaveAndFill,
 };
 
 // A collection of the information required to make a credit card upload
@@ -338,8 +336,7 @@ struct UploadCardRequestDetails {
   std::string risk_data;
   std::string app_locale;
   std::vector<ClientBehaviorConstants> client_behavior_signals;
-  UploadCardSource upload_card_source =
-      UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE;
+  UploadCardSource upload_card_source = UploadCardSource::kUnknown;
 };
 
 // A collection of information required to make an IBAN upload request.

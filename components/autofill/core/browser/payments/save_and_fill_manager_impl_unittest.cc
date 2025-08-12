@@ -351,8 +351,7 @@ TEST_F(SaveAndFillManagerImplTest,
   save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
       fill_card_callback_.Get());
 
-  EXPECT_EQ(details.upload_card_source,
-            UploadCardSource::UPSTREAM_SAVE_AND_FILL);
+  EXPECT_EQ(details.upload_card_source, UploadCardSource::kUpstreamSaveAndFill);
   EXPECT_EQ(
       details.billing_customer_number,
       payments::GetBillingCustomerId(

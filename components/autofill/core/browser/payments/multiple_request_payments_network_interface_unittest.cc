@@ -52,7 +52,7 @@ class CreateCardTest : public MultipleRequestPaymentsNetworkInterfaceTest {
  protected:
   void SendGetDetailsForCreateCardRequest() {
     UploadCardRequestDetails details;
-    details.upload_card_source = UploadCardSource::UPSTREAM_SAVE_AND_FILL;
+    details.upload_card_source = UploadCardSource::kUpstreamSaveAndFill;
     details.client_behavior_signals = {};
     details.app_locale = "language-LOCALE";
     details.billing_customer_number = 111222333444L;
@@ -76,8 +76,7 @@ class CreateCardTest : public MultipleRequestPaymentsNetworkInterfaceTest {
     request_details.app_locale = "en";
     request_details.profiles.emplace_back(
         test::GetFullProfile(AddressCountryCode("US")));
-    request_details.upload_card_source =
-        UploadCardSource::UPSTREAM_SAVE_AND_FILL;
+    request_details.upload_card_source = UploadCardSource::kUpstreamSaveAndFill;
 
     id_ = payments_network_interface_->CreateCard(
         request_details,
