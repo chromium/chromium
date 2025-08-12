@@ -225,18 +225,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.Branding.BrandingCheckDuration" units="ms"
-    expires_after="2025-08-10">
-  <owner>wenyufu@chromium.org</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    For every CCT launch, Chrome will start an async task in the background
-    checking the last time branding is shown for the client app. Record the
-    duration of this background async task when it completes, regardless whether
-    it is canceled. Record for Android CCT only.
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.ClientAppId" enum="ClientAppId"
     expires_after="2026-01-18">
   <owner>yusufo@chromium.org</owner>

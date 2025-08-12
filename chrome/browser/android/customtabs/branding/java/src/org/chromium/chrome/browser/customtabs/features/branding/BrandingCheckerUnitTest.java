@@ -262,7 +262,7 @@ public class BrandingCheckerUnitTest {
 
     private HistogramWatcher newHistogramWatcher() {
         return HistogramWatcher.newBuilder()
-                .expectAnyRecord("CustomTabs.Branding.BrandingCheckDuration")
+                .expectAnyRecord("CustomTabs.Branding.AppIdType")
                 .build();
     }
 
