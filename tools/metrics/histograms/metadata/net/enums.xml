@@ -670,6 +670,26 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Waiting for refresh validation"/>
 </enum>
 
+<!-- LINT.IfChange(NeedsObserverCheckReason) -->
+
+<enum name="NeedsObserverCheckReason">
+  <int value="0" label="NotNeeded">The case where it returns false.</int>
+  <int value="1" label="NoEnabledClientHints">
+    No enabled client hints were provided.
+  </int>
+  <int value="2" label="MainFrameOriginMismatch">
+    The origin of the request does not match the main frame origin.
+  </int>
+  <int value="3" label="SubframeFeatureDisabled">
+    The optimization for subframes is disabled.
+  </int>
+  <int value="4" label="HintNotEnabled">
+    One or more hints in the Accept-CH frame are not in the enabled hints list.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/accept_ch_frame_interceptor.h:NeedsObserverCheckReason) -->
+
 <enum name="NegotiatedHttpDatagramVersion">
   <int value="0" label="Not supported"/>
   <int value="1" label="draft-04"/>
