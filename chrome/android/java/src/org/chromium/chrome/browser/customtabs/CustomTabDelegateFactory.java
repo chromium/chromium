@@ -507,7 +507,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 mActivityType,
                 tab,
                 tabModelSelector,
-                mEphemeralTabCoordinatorSupplier,
+                () -> mEphemeralTabCoordinatorSupplier.get(),
                 CallbackUtils.emptyRunnable(),
                 () -> mSnackbarManager.get(),
                 () -> mBottomSheetController.get());

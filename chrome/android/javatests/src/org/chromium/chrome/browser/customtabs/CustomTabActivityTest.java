@@ -471,6 +471,22 @@ public class CustomTabActivityTest {
         Assert.assertNotNull(linkMenu.findItem(R.id.contextmenu_copy_link_address));
     }
 
+    @Test
+    @SmallTest
+    public void testContextMenuPreviewPage() throws Exception {
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
+        ContextMenuUtils.selectContextMenuItem(
+                getInstrumentation(),
+                null,
+                mCustomTabActivityTestRule.getActivity().getActivityTab(),
+                "aboutLink",
+                R.id.contextmenu_open_in_ephemeral_tab);
+        var ephemeralTabCoordinator =
+                mCustomTabActivityTestRule.getActivity().getEphemeralTabCoordinatorSupplier().get();
+        CriteriaHelper.pollUiThread(ephemeralTabCoordinator::isOpened);
+        ThreadUtils.runOnUiThreadBlocking(ephemeralTabCoordinator::close);
+    }
+
     /**
      * Test whether the color of the toolbar is correctly customized. For L or later releases,
      * status bar color is also tested.
