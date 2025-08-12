@@ -323,6 +323,12 @@ void PdfViewerStreamManager::SetPluginCanSave(
   stream_info->set_plugin_can_save(plugin_can_save);
 }
 
+bool PdfViewerStreamManager::ContainsUnclaimedStreamInfo(
+    content::FrameTreeNodeId frame_tree_node_id) const {
+  return base::Contains(stream_infos_,
+                        GetUnclaimedEmbedderHostInfo(frame_tree_node_id));
+}
+
 void PdfViewerStreamManager::DeleteUnclaimedStreamInfo(
     content::FrameTreeNodeId frame_tree_node_id) {
   CHECK(stream_infos_.erase(GetUnclaimedEmbedderHostInfo(frame_tree_node_id)));
@@ -630,12 +636,6 @@ PdfViewerStreamManager::GetClaimedStreamInfoFromPdfContentNavigation(
   CHECK(embedder_host);
 
   return GetClaimedStreamInfo(embedder_host);
-}
-
-bool PdfViewerStreamManager::ContainsUnclaimedStreamInfo(
-    content::FrameTreeNodeId frame_tree_node_id) const {
-  return base::Contains(stream_infos_,
-                        GetUnclaimedEmbedderHostInfo(frame_tree_node_id));
 }
 
 PdfViewerStreamManager::StreamInfo* PdfViewerStreamManager::ClaimStreamInfo(

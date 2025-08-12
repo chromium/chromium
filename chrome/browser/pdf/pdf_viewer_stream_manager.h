@@ -174,8 +174,14 @@ class PdfViewerStreamManager
   void SetPluginCanSave(content::RenderFrameHost* embedder_host,
                         bool plugin_can_save);
 
+  // Returns whether there's an unclaimed stream info with the default embedder
+  // host info.
+  bool ContainsUnclaimedStreamInfo(
+      content::FrameTreeNodeId frame_tree_node_id) const;
+
   // Deletes the unclaimed stream info associated with `frame_tree_node_id`, and
-  // deletes `this` if there are no remaining stream infos.
+  // deletes `this` if there are no remaining stream infos. Callers must ensure
+  // such a stream info exists before calling this, otherwise crashes.
   void DeleteUnclaimedStreamInfo(content::FrameTreeNodeId frame_tree_node_id);
 
   // WebContentsObserver overrides.
@@ -342,11 +348,6 @@ class PdfViewerStreamManager
 
   friend class content::WebContentsUserData<PdfViewerStreamManager>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  // Returns whether there's an unclaimed stream info with the default embedder
-  // host info.
-  bool ContainsUnclaimedStreamInfo(
-      content::FrameTreeNodeId frame_tree_node_id) const;
 
   // Mark an unclaimed stream info with the same frame tree node ID as
   // `embedder_host` as claimed by `embedder_host`. Returns a pointer to the

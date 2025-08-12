@@ -55,8 +55,14 @@ PdfNavigationThrottle::WillProcessResponse() {
     return PROCEED;
   }
 
-  stream_delegate_->OnPdfEmbedderSandboxed(
-      navigation_handle()->GetFrameTreeNodeId());
+  // If there is a PDF stream, then the navigation is for a PDF in a sandboxed
+  // iframe and should be canceled. Otherwise, the navigation is for PDFs that
+  // are not meant to be viewed inline (e.g. downloads) and should be allowed to
+  // proceed.
+  if (!stream_delegate_->MaybeDeleteSandboxedStream(
+          navigation_handle()->GetFrameTreeNodeId())) {
+    return PROCEED;
+  }
   return ThrottleCheckResult(CANCEL, net::ERR_BLOCKED_BY_CLIENT);
 }
 
