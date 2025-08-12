@@ -11400,7 +11400,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "glic-panel-reset-session-timeout-delay-h": "0"
+                        "glic-panel-reset-session-timeout-delay-h": "1"
                     },
                     "enable_features": [
                         "GlicResetPanelOnSessionTimeout"
