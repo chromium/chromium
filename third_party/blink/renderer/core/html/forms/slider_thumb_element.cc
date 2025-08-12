@@ -448,6 +448,7 @@ void SliderContainerElement::UpdateTouchEventHandlerRegistry() {
 }
 
 void SliderContainerElement::DidMoveToNewDocument(Document& old_document) {
+  has_touch_event_handler_ = false;
   UpdateTouchEventHandlerRegistry();
   HTMLElement::DidMoveToNewDocument(old_document);
 }
