@@ -1314,9 +1314,9 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sTabFreezeOnUndoableClosureKillSwitch =
             newMutableFlagWithSafeDefault(TAB_FREEZE_ON_UNDOABLE_CLOSURE_KILL_SWITCH, true);
     public static final MutableFlagWithSafeDefault sTabGroupEntryPointsAndroid =
-            newMutableFlagWithSafeDefault(TAB_GROUP_ENTRY_POINTS_ANDROID, false);
+            newMutableFlagWithSafeDefault(TAB_GROUP_ENTRY_POINTS_ANDROID, true);
     public static final MutableFlagWithSafeDefault sTabGroupParityBottomSheetAndroid =
-            newMutableFlagWithSafeDefault(TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID, false);
+            newMutableFlagWithSafeDefault(TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID, true);
     public static final MutableFlagWithSafeDefault sTabStorageSqlitePrototype =
             newMutableFlagWithSafeDefault(TAB_STORAGE_SQLITE_PROTOTYPE, false);
     public static final MutableFlagWithSafeDefault sTabSwitcherGroupSuggestionsAndroid =

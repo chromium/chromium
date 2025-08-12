@@ -166,6 +166,10 @@ import java.util.List;
     DomDistillerFeatures.READER_MODE_IMPROVEMENTS,
     DomDistillerFeatures.READER_MODE_DISTILL_IN_APP
 })
+@EnableFeatures({
+    ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID,
+    ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID
+})
 public class TabbedAppMenuPropertiesDelegateUnitTest {
     // Constants defining flags that determines multi-window menu items visibility.
     private static final boolean TAB_M = true; // multiple tabs
@@ -527,6 +531,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.icon_row_menu_id,
                                 R.id.new_tab_menu_id,
                                 R.id.new_incognito_tab_menu_id,
+                                R.id.add_to_group_menu_id,
                                 R.id.divider_line_id,
                                 R.id.open_history_menu_id,
                                 R.id.quick_delete_menu_id,
@@ -565,6 +570,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.icon_row_menu_id,
                                 R.id.new_tab_menu_id,
                                 R.id.new_incognito_tab_menu_id,
+                                R.id.add_to_group_menu_id,
                                 R.id.divider_line_id,
                                 R.id.open_history_menu_id,
                                 R.id.quick_delete_menu_id,
@@ -609,6 +615,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(R.string.menu_new_tab);
         expectedItems.add(R.id.new_incognito_tab_menu_id);
         expectedTitles.add(R.string.menu_new_incognito_tab);
+        expectedItems.add(R.id.add_to_group_menu_id);
+        expectedTitles.add(R.string.menu_add_tab_to_new_group);
         expectedItems.add(R.id.pin_tab_menu_id);
         expectedTitles.add(R.string.menu_pin_tab);
         expectedItems.add(R.id.divider_line_id);
@@ -686,6 +694,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(R.string.menu_new_tab);
         expectedItems.add(R.id.new_incognito_tab_menu_id);
         expectedTitles.add(R.string.menu_new_incognito_tab);
+        expectedItems.add(R.id.add_to_group_menu_id);
+        expectedTitles.add(R.string.menu_add_tab_to_new_group);
         expectedItems.add(R.id.divider_line_id);
         expectedTitles.add(0);
         expectedItems.add(R.id.open_history_menu_id);
@@ -759,6 +769,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.icon_row_menu_id,
                                 R.id.new_tab_menu_id,
                                 R.id.new_incognito_tab_menu_id,
+                                R.id.add_to_group_menu_id,
                                 R.id.divider_line_id,
                                 R.id.open_history_menu_id,
                                 R.id.quick_delete_menu_id,
@@ -817,6 +828,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.update_menu_id,
                                 R.id.new_tab_menu_id,
                                 R.id.new_incognito_tab_menu_id,
+                                R.id.add_to_group_menu_id,
                                 R.id.open_history_menu_id,
                                 R.id.quick_delete_menu_id,
                                 R.id.downloads_menu_id,
@@ -987,6 +999,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.icon_row_menu_id,
                                 R.id.new_tab_menu_id,
                                 R.id.new_incognito_tab_menu_id,
+                                R.id.add_to_group_menu_id,
                                 R.id.divider_line_id,
                                 R.id.open_history_menu_id,
                                 R.id.quick_delete_menu_id,
@@ -1062,6 +1075,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.icon_row_menu_id,
                                 R.id.new_tab_menu_id,
                                 R.id.new_incognito_tab_menu_id,
+                                R.id.add_to_group_menu_id,
                                 R.id.divider_line_id,
                                 R.id.open_history_menu_id,
                                 R.id.quick_delete_menu_id,
@@ -1112,6 +1126,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.icon_row_menu_id,
                                 R.id.new_tab_menu_id,
                                 R.id.new_incognito_tab_menu_id,
+                                R.id.add_to_group_menu_id,
                                 R.id.divider_line_id,
                                 R.id.open_history_menu_id,
                                 R.id.quick_delete_menu_id,

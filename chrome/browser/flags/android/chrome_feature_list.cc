@@ -1336,11 +1336,11 @@ BASE_FEATURE(kTabFreezeOnUndoableClosureKillSwitch,
 
 BASE_FEATURE(kTabGroupEntryPointsAndroid,
              "TabGroupEntryPointsAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabGroupParityBottomSheetAndroid,
              "TabGroupParityBottomSheetAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabModelInitFixes,
              "TabModelInitFixes",
