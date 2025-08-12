@@ -25,12 +25,18 @@ export class TabElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
-  static override properties = {
-    active: {type: Boolean},
-  };
+  static override get properties() {
+    return {
+      active: {
+        type: Boolean,
+        reflect: true,
+      },
+    };
+  }
 
   tabId: NodeId;
-  active: boolean = false;
+  accessor active: boolean = false;
+
   faviconUrl: string = 'chrome://favicon2/';
   tabTitle: string = '';
 
