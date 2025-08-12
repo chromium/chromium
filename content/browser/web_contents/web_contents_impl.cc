@@ -1191,8 +1191,18 @@ void WebContentsImpl::WebContentsTreeNode::OnFrameTreeNodeDestroyed(
          "FrameTreeNode in its outer WebContents that hosts it.";
 
   node->RemoveObserver(this);
-  // Deletes |this| too.
-  outer_web_contents_->node_.DetachInnerWebContents(current_web_contents_);
+
+  if (outer_web_contents_->node_.IsUnownedInnerWebContents(
+          current_web_contents_)) {
+    // Detach at all levels (WebContentsTreeNode and FrameTreeNode,
+    // RenderFrameProxyHost, etc.). This will not delete `this` (the inner
+    // WebContents).
+    outer_web_contents_->DetachUnownedInnerWebContents(current_web_contents_);
+  } else {
+    // Detach only at the WebContentsTreeNode level. This will delete `this` (
+    // the inner WebContents).
+    outer_web_contents_->node_.DetachInnerWebContents(current_web_contents_);
+  }
 }
 
 FrameTree* WebContentsImpl::WebContentsTreeNode::focused_frame_tree() {
@@ -3397,10 +3407,15 @@ void WebContentsImpl::DetachUnownedInnerWebContents(
   inner_web_contents_impl->GetPrimaryFrameTree().ForEachRenderViewHost(
       [&list_of_rvh_with_rwhv](RenderViewHostImpl* rvh) {
         if (rvh->GetWidget() && rvh->GetWidget()->GetView()) {
-          CHECK(
-              rvh->GetWidget()->GetView()->IsRenderWidgetHostViewChildFrame());
+          // While in theory only child frame RWHVs should exist at this stage,
+          // in practice, a race with navigation cleanup could result in a main
+          // frame RWHV that is pending deletion still existing here.
+          // This might happen when a WebContents is destroyed immediately
+          // after it navigates and then attaches to an outer WebContents.
+          if (rvh->GetWidget()->GetView()->IsRenderWidgetHostViewChildFrame()) {
+            list_of_rvh_with_rwhv.push_back(rvh);
+          }
           rvh->GetWidget()->GetView()->Destroy();
-          list_of_rvh_with_rwhv.push_back(rvh);
         }
       });
 
