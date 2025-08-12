@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/try.star", "location_filters_without_defaults", "try_")
+load("@chromium-luci//try.star", "location_filters_without_defaults", "try_")
 load("//outages/config.star", outages_config = "config")
 
 _MD_HEADER = """\

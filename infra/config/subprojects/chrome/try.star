@@ -7,8 +7,8 @@
 # certain ACL restrictions. For more info, see
 # http://go/chromium-cq#internal-builders-on-the-cq.
 
-load("//lib/branches.star", "branches")
-load("//lib/try.star", "default_location_filters", "try_")
+load("@chromium-luci//branches.star", "branches")
+load("@chromium-luci//try.star", "default_location_filters", "try_")
 load("//project.star", "settings")
 
 def chrome_internal_verifier(

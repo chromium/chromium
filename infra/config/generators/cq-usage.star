@@ -10,8 +10,8 @@ cq-usage/default.cfg. This enables applying limited owners for changes that
 would impact the CQ for all users.
 """
 
+load("@chromium-luci//try.star", "location_filters_without_defaults")
 load("@stdlib//internal/luci/proto.star", "cq_pb")
-load("//lib/try.star", "location_filters_without_defaults")
 load("//subprojects/chromium/fallback-cq.star", "fallback_cq")
 
 def _remove_none(l):

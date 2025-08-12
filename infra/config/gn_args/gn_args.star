@@ -4,7 +4,7 @@
 
 # Execute this file to set up some common GN arg configs for Chromium builders.
 
-load("//lib/gn_args.star", "gn_args")
+load("@chromium-luci//gn_args.star", "gn_args")
 
 gn_args.config(
     name = "afl",

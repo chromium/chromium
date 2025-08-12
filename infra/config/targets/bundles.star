@@ -6,7 +6,7 @@
 # be referenced by other bundles or by builders. Bundles cannot be used in
 # //testing/buildbot
 
-load("//lib/targets.star", "targets")
+load("@chromium-luci//targets.star", "targets")
 
 targets.bundle(
     name = "android_10_rel_gtests",

@@ -2,12 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/branches.star", "branches")
-load("//lib/builders.star", "cpu")
-load("//lib/consoles.star", "consoles")
-load("//lib/try.star", "try_")
-load("//project.star", "ACTIVE_MILESTONES", "settings")
+load("@chromium-luci//branches.star", "branches")
+load("@chromium-luci//builders.star", "cpu")
+load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//try.star", "try_")
 load("./fallback-cq.star", "fallback_cq")
+load("//project.star", "ACTIVE_MILESTONES", "settings")
 
 try_.defaults.set(
     bucket = "try",

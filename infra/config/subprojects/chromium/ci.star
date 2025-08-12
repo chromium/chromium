@@ -2,10 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/branches.star", "branches")
-load("//lib/builders.star", "builders", "cpu", "siso")
-load("//lib/ci.star", "ci")
-load("//lib/consoles.star", "consoles")
+load("@chromium-luci//branches.star", "branches")
+load("@chromium-luci//builders.star", "builders", "cpu")
+load("@chromium-luci//ci.star", "ci")
+load("@chromium-luci//consoles.star", "consoles")
+load("//lib/ci_constants.star", "ci_constants")
+load("//lib/gpu.star", "gpu")
+load("//lib/siso.star", "siso")
 load("//project.star", "settings")
 
 # Bucket-wide defaults
@@ -78,15 +81,15 @@ luci.bucket(
                 "chromium-led-users",
             ],
             users = [
-                ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
-                ci.gpu.SHADOW_SERVICE_ACCOUNT,
+                ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+                gpu.ci.SHADOW_SERVICE_ACCOUNT,
             ],
         ),
         luci.binding(
             roles = "role/buildbucket.triggerer",
             users = [
-                ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
-                ci.gpu.SHADOW_SERVICE_ACCOUNT,
+                ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+                gpu.ci.SHADOW_SERVICE_ACCOUNT,
             ],
         ),
         # TODO(crbug.com/40941662): Remove this binding after shadow bucket
@@ -101,8 +104,8 @@ luci.bucket(
         luci.binding(
             roles = "role/resultdb.invocationCreator",
             users = [
-                ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
-                ci.gpu.SHADOW_SERVICE_ACCOUNT,
+                ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+                gpu.ci.SHADOW_SERVICE_ACCOUNT,
             ],
         ),
     ],

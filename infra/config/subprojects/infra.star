@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 """Definitions of builders in the infra bucket."""
 
-load("//lib/builders.star", "builders", "cpu", "os")
-load("//lib/consoles.star", "consoles")
+load("@chromium-luci//builders.star", "builders", "cpu", "os")
+load("@chromium-luci//consoles.star", "consoles")
 
 consoles.console_view(
     name = "infra",

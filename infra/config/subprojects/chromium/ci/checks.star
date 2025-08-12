@@ -3,17 +3,19 @@
 # found in the LICENSE file.
 """Definitions of builders in the presubmit.linux builder group."""
 
-load("//lib/builders.star", "gardener_rotations", "os")
-load("//lib/ci.star", "ci")
-load("//lib/consoles.star", "consoles")
-load("//lib/builder_health_indicators.star", "health_spec")
+load("@chromium-luci//builder_health_indicators.star", "health_spec")
+load("@chromium-luci//builders.star", "os")
+load("@chromium-luci//ci.star", "ci")
+load("@chromium-luci//consoles.star", "consoles")
+load("//lib/ci_constants.star", "ci_constants")
+load("//lib/gardener_rotations.star", "gardener_rotations")
 
 ci.defaults.set(
-    pool = ci.DEFAULT_POOL,
+    pool = ci_constants.DEFAULT_POOL,
     console_view = "checks",
-    health_spec = health_spec.DEFAULT,
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
-    shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+    health_spec = health_spec.default(),
+    service_account = ci_constants.DEFAULT_SERVICE_ACCOUNT,
+    shadow_service_account = ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(
@@ -33,7 +35,7 @@ ci.builder(
         short_name = "linux",
     ),
     contact_team_email = "chrome-browser-infra-team@google.com",
-    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    execution_timeout = ci_constants.DEFAULT_EXECUTION_TIMEOUT,
     properties = {
         "$depot_tools/presubmit": {
             "runhooks": True,
@@ -81,6 +83,6 @@ ci.builder(
         short_name = "linux",
     ),
     contact_team_email = "chops-security-core@google.com",
-    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    execution_timeout = ci_constants.DEFAULT_EXECUTION_TIMEOUT,
     notifies = ["peeps-security-core-ssci"],
 )

@@ -3,30 +3,33 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.gpu.fyi builder group."""
 
-load("//lib/args.star", "args")
-load("//lib/branches.star", "branches")
-load("//lib/builder_config.star", "builder_config")
-load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "cpu", "gardener_rotations", "siso")
-load("//lib/ci.star", "ci")
-load("//lib/consoles.star", "consoles")
-load("//lib/gn_args.star", "gn_args")
-load("//lib/targets.star", "targets")
+load("@chromium-luci//args.star", "args")
+load("@chromium-luci//branches.star", "branches")
+load("@chromium-luci//builder_config.star", "builder_config")
+load("@chromium-luci//builder_health_indicators.star", "health_spec")
+load("@chromium-luci//builders.star", "cpu")
+load("@chromium-luci//ci.star", "ci")
+load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//gn_args.star", "gn_args")
+load("@chromium-luci//targets.star", "targets")
+load("//lib/ci_constants.star", "ci_constants")
+load("//lib/gardener_rotations.star", "gardener_rotations")
+load("//lib/gpu.star", "gpu")
+load("//lib/siso.star", "siso")
 
 ci.defaults.set(
-    executable = ci.DEFAULT_EXECUTABLE,
+    executable = ci_constants.DEFAULT_EXECUTABLE,
     builder_group = "chromium.gpu.fyi",
-    pool = ci.gpu.POOL,
+    pool = gpu.ci.POOL,
     gardener_rotations = gardener_rotations.CHROMIUM_GPU,
     contact_team_email = "chrome-gpu-infra@google.com",
     execution_timeout = 6 * time.hour,
-    health_spec = health_spec.DEFAULT,
+    health_spec = health_spec.default(),
     properties = {
         "perf_dashboard_machine_group": "ChromiumGPUFYI",
     },
-    service_account = ci.gpu.SERVICE_ACCOUNT,
-    shadow_service_account = ci.gpu.SHADOW_SERVICE_ACCOUNT,
-    siso_enabled = True,
+    service_account = gpu.ci.SERVICE_ACCOUNT,
+    shadow_service_account = gpu.ci.SHADOW_SERVICE_ACCOUNT,
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
     thin_tester_cores = 2,
@@ -78,8 +81,8 @@ consoles.console_view(
 )
 
 def gpu_fyi_windows_builder(*, name, **kwargs):
-    kwargs.setdefault("execution_timeout", ci.DEFAULT_EXECUTION_TIMEOUT)
-    return ci.gpu.windows_builder(name = name, **kwargs)
+    kwargs.setdefault("execution_timeout", ci_constants.DEFAULT_EXECUTION_TIMEOUT)
+    return gpu.ci.windows_builder(name = name, **kwargs)
 
 ci.thin_tester(
     name = "Android FYI Release (NVIDIA Shield TV)",
@@ -660,7 +663,7 @@ ci.thin_tester(
     ),
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "ChromeOS FYI Release (amd64-generic)",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -753,7 +756,7 @@ ci.gpu.linux_builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "ChromeOS FYI Release Skylab (volteer)",
     description_html = "Runs standard GPU tests on Skylab-hosted volteer devices",
     builder_spec = builder_config.builder_spec(
@@ -808,7 +811,7 @@ ci.gpu.linux_builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "GPU Flake Finder",
     executable = "recipe:chromium_expectation_files/expectation_file_scripts",
     # This will eventually be set up to run on a schedule, but only support
@@ -840,7 +843,7 @@ ci.gpu.linux_builder(
     service_account = "chromium-automated-expectation@chops-service-accounts.iam.gserviceaccount.com",
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "GPU FYI Android arm Builder",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -876,7 +879,7 @@ ci.gpu.linux_builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "GPU FYI Android arm64 Builder",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
@@ -916,7 +919,7 @@ ci.gpu.linux_builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "GPU FYI Linux Wayland Builder",
     description_html = "Parent GPU builder for Linux Wayland builds",
     builder_spec = builder_config.builder_spec(
@@ -952,7 +955,7 @@ ci.gpu.linux_builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "GPU FYI Linux Builder",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -988,7 +991,7 @@ ci.gpu.linux_builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "GPU FYI Linux Builder (dbg)",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -1021,7 +1024,7 @@ ci.gpu.linux_builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "Linux FYI GPU TSAN Release",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -1069,7 +1072,7 @@ ci.gpu.linux_builder(
     ),
 )
 
-ci.gpu.mac_builder(
+gpu.ci.mac_builder(
     name = "GPU FYI Mac Builder",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -1102,7 +1105,7 @@ ci.gpu.mac_builder(
     ),
 )
 
-ci.gpu.mac_builder(
+gpu.ci.mac_builder(
     name = "GPU FYI Mac Builder (asan)",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -1136,7 +1139,7 @@ ci.gpu.mac_builder(
     ),
 )
 
-ci.gpu.mac_builder(
+gpu.ci.mac_builder(
     name = "GPU FYI Mac Builder (dbg)",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -1171,7 +1174,7 @@ ci.gpu.mac_builder(
     ),
 )
 
-ci.gpu.mac_builder(
+gpu.ci.mac_builder(
     name = "GPU FYI Mac arm64 Builder",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
