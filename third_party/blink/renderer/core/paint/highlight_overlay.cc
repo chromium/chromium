@@ -461,7 +461,7 @@ HeapVector<HighlightLayer> HighlightOverlay::ComputeLayers(
         layers[i].type == HighlightLayerType::kSearchTextActiveMatch
             ? originating_style.HighlightData().SearchTextCurrent()
             : HighlightStyleUtils::HighlightPseudoStyle(
-                  node, originating_style, layers[i].PseudoId(),
+                  originating_style, layers[i].PseudoId(),
                   layers[i].PseudoArgument());
     layers[i].text_style = HighlightStyleUtils::HighlightPaintingStyle(
         document, originating_style, layers[i].style, node,

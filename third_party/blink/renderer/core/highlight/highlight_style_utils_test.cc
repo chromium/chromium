@@ -56,8 +56,8 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextInputShadow) {
                        /*descendant_painting_blocked=*/false);
   TextPaintStyle paint_style;
 
-  const ComputedStyle* pseudo_style = HighlightStyleUtils::HighlightPseudoStyle(
-      text_node, text_style, kPseudoIdSelection);
+  const ComputedStyle* pseudo_style =
+      HighlightStyleUtils::HighlightPseudoStyle(text_style, kPseudoIdSelection);
   paint_style = HighlightStyleUtils::HighlightPaintingStyle(
                     GetDocument(), text_style, pseudo_style, text_node,
                     kPseudoIdSelection, paint_style, paint_info,
@@ -115,8 +115,7 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
           ->firstChild();
   const ComputedStyle& div1_style = div1_text->GetLayoutObject()->StyleRef();
   const ComputedStyle* div1_pseudo_style =
-      HighlightStyleUtils::HighlightPseudoStyle(div1_text, div1_style,
-                                                kPseudoIdSelection);
+      HighlightStyleUtils::HighlightPseudoStyle(div1_style, kPseudoIdSelection);
   paint_style = HighlightStyleUtils::HighlightPaintingStyle(
                     GetDocument(), div1_style, div1_pseudo_style, div1_text,
                     kPseudoIdSelection, paint_style, paint_info,
@@ -133,8 +132,7 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
           ->firstChild();
   const ComputedStyle& div2_style = div2_text->GetLayoutObject()->StyleRef();
   const ComputedStyle* div2_pseudo_style =
-      HighlightStyleUtils::HighlightPseudoStyle(div2_text, div2_style,
-                                                kPseudoIdSelection);
+      HighlightStyleUtils::HighlightPseudoStyle(div2_style, kPseudoIdSelection);
   paint_style = HighlightStyleUtils::HighlightPaintingStyle(
                     GetDocument(), div2_style, div2_pseudo_style, div2_text,
                     kPseudoIdSelection, paint_style, paint_info,
@@ -152,8 +150,7 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
           ->firstChild();
   const ComputedStyle& div3_style = div3_text->GetLayoutObject()->StyleRef();
   const ComputedStyle* div3_pseudo_style =
-      HighlightStyleUtils::HighlightPseudoStyle(div3_text, div3_style,
-                                                kPseudoIdSelection);
+      HighlightStyleUtils::HighlightPseudoStyle(div3_style, kPseudoIdSelection);
   paint_style = HighlightStyleUtils::HighlightPaintingStyle(
                     GetDocument(), div3_style, div3_pseudo_style, div3_text,
                     kPseudoIdSelection, paint_style, paint_info,
@@ -221,8 +218,8 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingAll) {
   auto* div_text = div_node->firstChild();
   const ComputedStyle& div_style = div_text->GetLayoutObject()->StyleRef();
   const ComputedStyle* div_pseudo_style =
-      HighlightStyleUtils::HighlightPseudoStyle(
-          div_text, div_style, kPseudoIdHighlight, AtomicString("highlight1"));
+      HighlightStyleUtils::HighlightPseudoStyle(div_style, kPseudoIdHighlight,
+                                                AtomicString("highlight1"));
   HighlightStyleUtils::HighlightTextPaintStyle highlight_paint_style =
       HighlightStyleUtils::HighlightPaintingStyle(
           GetDocument(), div_style, div_pseudo_style, div_text,
@@ -256,8 +253,7 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingAll) {
       HighlightStyleUtils::HighlightColorProperty::kSelectionDecorationColor));
 #else
   const ComputedStyle* selection_pseudo_style =
-      HighlightStyleUtils::HighlightPseudoStyle(div_text, div_style,
-                                                kPseudoIdSelection);
+      HighlightStyleUtils::HighlightPseudoStyle(div_style, kPseudoIdSelection);
   HighlightStyleUtils::HighlightTextPaintStyle selection_paint_style =
       HighlightStyleUtils::HighlightPaintingStyle(
           GetDocument(), div_style, selection_pseudo_style, div_text,
@@ -305,8 +301,8 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingSome) {
           ->firstChild();
   const ComputedStyle& div_style = div_text->GetLayoutObject()->StyleRef();
   const ComputedStyle* div_pseudo_style =
-      HighlightStyleUtils::HighlightPseudoStyle(
-          div_text, div_style, kPseudoIdHighlight, AtomicString("highlight1"));
+      HighlightStyleUtils::HighlightPseudoStyle(div_style, kPseudoIdHighlight,
+                                                AtomicString("highlight1"));
   HighlightStyleUtils::HighlightTextPaintStyle highlight_paint_style =
       HighlightStyleUtils::HighlightPaintingStyle(
           GetDocument(), div_style, div_pseudo_style, div_text,
@@ -362,8 +358,7 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritance) {
   TextPaintStyle paint_style;
   const ComputedStyle& div_style = div_node->ComputedStyleRef();
   const ComputedStyle* div_pseudo_style =
-      HighlightStyleUtils::HighlightPseudoStyle(div_node, div_style,
-                                                kPseudoIdSelection);
+      HighlightStyleUtils::HighlightPseudoStyle(div_style, kPseudoIdSelection);
   paint_style = HighlightStyleUtils::HighlightPaintingStyle(
                     GetDocument(), div_style, div_pseudo_style, div_node,
                     kPseudoIdSelection, paint_style, paint_info,
@@ -492,7 +487,7 @@ TEST_F(HighlightStyleUtilsTest, FontMetricsFromOriginatingElement) {
   EXPECT_EQ(div_style.SpecifiedFontSize(), 40);
 
   const ComputedStyle* pseudo_style = HighlightStyleUtils::HighlightPseudoStyle(
-      div_node, div_style, kPseudoIdHighlight, AtomicString("highlight1"));
+      div_style, kPseudoIdHighlight, AtomicString("highlight1"));
 
   EXPECT_TRUE(pseudo_style->HasAppliedTextDecorations());
   const AppliedTextDecoration& text_decoration =
@@ -636,8 +631,8 @@ TEST_F(HighlightStyleUtilsTest, ContainerMetricsFromOriginatingElement) {
   const ComputedStyle& div_style = div_node->ComputedStyleRef();
 
   const ComputedStyle* div_pseudo_style =
-      HighlightStyleUtils::HighlightPseudoStyle(
-          div_node, div_style, kPseudoIdHighlight, AtomicString("highlight1"));
+      HighlightStyleUtils::HighlightPseudoStyle(div_style, kPseudoIdHighlight,
+                                                AtomicString("highlight1"));
 
   EXPECT_TRUE(div_pseudo_style->HasAppliedTextDecorations());
   const AppliedTextDecoration& text_decoration =
@@ -691,8 +686,8 @@ TEST_F(HighlightStyleUtilsTest, ContainerIsOriginatingElement) {
   const ComputedStyle& div_style = div_node->ComputedStyleRef();
 
   const ComputedStyle* div_pseudo_style =
-      HighlightStyleUtils::HighlightPseudoStyle(
-          div_node, div_style, kPseudoIdHighlight, AtomicString("highlight1"));
+      HighlightStyleUtils::HighlightPseudoStyle(div_style, kPseudoIdHighlight,
+                                                AtomicString("highlight1"));
 
   EXPECT_TRUE(div_pseudo_style);
   EXPECT_TRUE(div_pseudo_style->HasAppliedTextDecorations());
@@ -739,8 +734,7 @@ TEST_F(HighlightStyleUtilsTest, LigthDarkColor) {
   TextPaintStyle paint_style;
   const ComputedStyle& div_style = div_node->ComputedStyleRef();
   const ComputedStyle* div_pseudo_style =
-      HighlightStyleUtils::HighlightPseudoStyle(div_node, div_style,
-                                                kPseudoIdSelection);
+      HighlightStyleUtils::HighlightPseudoStyle(div_style, kPseudoIdSelection);
   paint_style = HighlightStyleUtils::HighlightPaintingStyle(
                     GetDocument(), div_style, div_pseudo_style, div_node,
                     kPseudoIdSelection, paint_style, paint_info,

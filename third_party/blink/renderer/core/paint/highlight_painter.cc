@@ -89,7 +89,7 @@ bool HasNonTrivialSpellingGrammarStyles(const FragmentItem& fragment_item,
                                         PseudoId pseudo) {
   DCHECK(pseudo == kPseudoIdSpellingError || pseudo == kPseudoIdGrammarError);
   if (const ComputedStyle* pseudo_style =
-          HighlightStyleUtils::HighlightPseudoStyle(node, originating_style,
+          HighlightStyleUtils::HighlightPseudoStyle(originating_style,
                                                     pseudo)) {
     const Document& document = node->GetDocument();
     // If the ‘color’, ‘-webkit-text-fill-color’, ‘-webkit-text-stroke-color’,
@@ -304,8 +304,8 @@ void HighlightPainter::SelectionPaintState::ComputeSelectionStyle(
     Node* node,
     const PaintInfo& paint_info,
     const TextPaintStyle& text_style) {
-  const ComputedStyle* pseudo_style = HighlightStyleUtils::HighlightPseudoStyle(
-      node, style, kPseudoIdSelection);
+  const ComputedStyle* pseudo_style =
+      HighlightStyleUtils::HighlightPseudoStyle(style, kPseudoIdSelection);
   selection_style_ = HighlightStyleUtils::HighlightPaintingStyle(
       document, style, pseudo_style, node, kPseudoIdSelection, text_style,
       paint_info, SearchTextIsActiveMatch::kNo);
@@ -658,7 +658,7 @@ HighlightPainter::Case HighlightPainter::ComputePaintCase() const {
 
   if (selection_ && spelling_.empty() && grammar_.empty()) {
     const ComputedStyle* pseudo_style =
-        HighlightStyleUtils::HighlightPseudoStyle(node_, originating_style_,
+        HighlightStyleUtils::HighlightPseudoStyle(originating_style_,
                                                   kPseudoIdSelection);
 
     // If we only have a selection, and there are no selection or originating
@@ -733,7 +733,7 @@ void HighlightPainter::PaintOneSpellingGrammarDecoration(
 
   if (!text_painter_.GetSvgState()) {
     if (const auto* pseudo_style = HighlightStyleUtils::HighlightPseudoStyle(
-            node_, originating_style_, PseudoFor(type))) {
+            originating_style_, PseudoFor(type))) {
       const TextPaintStyle text_style =
           HighlightStyleUtils::HighlightPaintingStyle(
               node_->GetDocument(), originating_style_, pseudo_style, node_,

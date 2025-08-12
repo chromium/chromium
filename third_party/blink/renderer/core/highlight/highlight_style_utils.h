@@ -103,7 +103,6 @@ class CORE_EXPORT HighlightStyleUtils {
       const PaintInfo&,
       SearchTextIsActiveMatch);
   static const ComputedStyle* HighlightPseudoStyle(
-      Node* node,
       const ComputedStyle& style,
       PseudoId pseudo,
       const AtomicString& pseudo_argument = g_null_atom);

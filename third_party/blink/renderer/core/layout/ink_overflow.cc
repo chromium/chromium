@@ -687,7 +687,7 @@ LogicalRect InkOverflow::ComputeMarkerOverflow(
   DCHECK(!fragment_item->IsSvgText());
   LogicalRect accumulated_bound = ink_overflow;
   auto* pseudo_style = HighlightStyleUtils::HighlightPseudoStyle(
-      text_node, style, HighlightPainter::PseudoFor(type));
+      style, HighlightPainter::PseudoFor(type));
   const ShadowList* text_shadow =
       pseudo_style ? pseudo_style->TextShadow() : nullptr;
   bool has_pseudo_decorations =
@@ -751,8 +751,7 @@ LogicalRect InkOverflow::ComputeCustomHighlightOverflow(
     const CustomHighlightMarker& highlight_marker =
         To<CustomHighlightMarker>(*marker);
     const auto* pseudo_style = HighlightStyleUtils::HighlightPseudoStyle(
-        text_node, style, kPseudoIdHighlight,
-        highlight_marker.GetHighlightName());
+        style, kPseudoIdHighlight, highlight_marker.GetHighlightName());
 
     LogicalRect decoration_bound;
     if (pseudo_style && pseudo_style->HasAppliedTextDecorations()) {

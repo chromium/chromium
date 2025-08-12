@@ -299,7 +299,6 @@ std::optional<Color> HighlightStyleUtils::MaybeResolveColor(
 // Returns highlight styles for the given node, inheriting through the “tree” of
 // highlight pseudo styles mirroring the originating element tree.
 const ComputedStyle* HighlightStyleUtils::HighlightPseudoStyle(
-    Node* node,
     const ComputedStyle& style,
     PseudoId pseudo,
     const AtomicString& pseudo_argument) {
@@ -335,7 +334,7 @@ Color HighlightStyleUtils::HighlightBackgroundColor(
     }
   }
 
-  const ComputedStyle* pseudo_style = HighlightPseudoStyle(node, style, pseudo);
+  const ComputedStyle* pseudo_style = HighlightPseudoStyle(style, pseudo);
   Color result = ResolveColor(document, style, pseudo_style, pseudo,
                               GetCSSPropertyBackgroundColor(),
                               current_layer_color, search_text_is_active_match);
