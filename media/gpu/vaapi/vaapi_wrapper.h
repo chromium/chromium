@@ -45,6 +45,10 @@ class NativePixmapDmaBuf;
 class Rect;
 }
 
+namespace viz {
+class SharedImageFormat;
+}
+
 #define MAYBE_ASSERT_ACQUIRED(lock) \
   if (lock)                         \
     lock->AssertAcquired()
@@ -313,7 +317,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
 
   static VAEntrypoint GetDefaultVaEntryPoint(CodecMode mode, VAProfile profile);
 
-  static uint32_t BufferFormatToVARTFormat(gfx::BufferFormat fmt);
+  static uint32_t SharedImageFormatToVARTFormat(viz::SharedImageFormat format);
 
   // Creates |num_surfaces| VASurfaceIDs of |va_format|, |size| and
   // |surface_usage_hints| and, if successful, creates a |va_context_id_| of the

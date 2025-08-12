@@ -23,6 +23,7 @@
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
@@ -197,8 +198,8 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   gfx::Size input_size = input_frame->coded_size();
-  gfx::BufferFormat buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
-  uint32_t va_format = VaapiWrapper::BufferFormatToVARTFormat(buffer_format);
+  viz::SharedImageFormat si_format = viz::MultiPlaneFormat::kNV12;
+  uint32_t va_format = VaapiWrapper::SharedImageFormatToVARTFormat(si_format);
   bool context_changed = input_size != input_size_ || va_format != va_format_;
   if (context_changed) {
     vaapi_wrapper_->DestroyContextAndSurfaces(

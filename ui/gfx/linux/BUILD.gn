@@ -16,6 +16,7 @@ source_set("drm") {
   deps = [
     "//base",
     "//build/config/linux/libdrm",
+    "//components/viz/common:shared_image_format",
     "//ui/gfx:buffer_types",
   ]
 }
