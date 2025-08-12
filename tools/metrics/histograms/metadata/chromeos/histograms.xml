@@ -3728,6 +3728,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.SixPackKeys.{Key}.Changed"
     enum="SixPackKeyModifier" expires_after="2026-03-22">
   <owner>michaelcheco@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the configured modifier remapping for the {Key} key when the
@@ -3752,6 +3753,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.SixPackKeys.{Key}.Initial"
     enum="SixPackKeyModifier" expires_after="2026-03-22">
   <owner>michaelcheco@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the configured modifier remapping for the {Key} key when the
@@ -3814,8 +3816,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.{Key}.{State}"
-    enum="ExtendedFkeysModifier" expires_after="2025-09-12">
+    enum="ExtendedFkeysModifier" expires_after="2026-09-12">
   <owner>michaelcheco@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the {Key} setting for the {KeyboardType} keyboard when
@@ -3840,6 +3843,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.SimulateRightClick.Changed"
     enum="SimulateRightClickModifier" expires_after="2026-01-26">
   <owner>michaelcheco@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the simulate right-click setting when the
@@ -3855,6 +3859,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.SimulateRightClick.Initial"
     enum="SimulateRightClickModifier" expires_after="2026-01-26">
   <owner>michaelcheco@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the simulate right-click setting when the
