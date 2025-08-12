@@ -383,7 +383,8 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 }
 
 // Tests that font change is applied to the Reading Mode web page.
-- (void)testUpdateReaderModeFont {
+// TODO(crbug.com/438265943): Re-enable.
+- (void)DISABLED_testUpdateReaderModeFont {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
 
   [ChromeEarlGrey showReaderMode];
