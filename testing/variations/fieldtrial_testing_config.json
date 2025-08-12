@@ -28244,42 +28244,6 @@
             ]
         }
     ],
-    "ZramHugePageRecompression": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "DisableHugePageRecompression",
-                    "params": {
-                        "recompression_huge": "false"
-                    },
-                    "enable_features": [
-                        "CrOSLateBootSwapZramRecompression"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ZramHugePageWriteback": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "DisableHugePageWriteback",
-                    "params": {
-                        "writeback_huge": "false"
-                    },
-                    "enable_features": [
-                        "CrOSLateBootSwapZramWriteback"
-                    ]
-                }
-            ]
-        }
-    ],
     "iOSCPEPerformanceImprovements": [
         {
             "platforms": [
