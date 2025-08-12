@@ -10,16 +10,6 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-component("features") {
-  output_name = "plus_addresses_features"
-  defines = [ "IS_PLUS_ADDRESSES_FEATURES_IMPL" ]
-  sources = [
-    "features.cc",
-    "features.h",
-  ]
-  public_deps = [ "//base" ]
-}
-
 source_set("types") {
   sources = [
     "plus_address_types.cc",
@@ -45,7 +35,7 @@ source_set("parsing") {
     "plus_address_parsing_utils.h",
   ]
 
-  deps = [ ":features" ]
+  deps = [ "//components/plus_addresses/core/common:features" ]
   public_deps = [
     ":types",
     "//base",
@@ -130,14 +120,15 @@ source_set("plus_addresses") {
     "//ui/base",
   ]
   public_deps = [
-    # While not strictly public by h file inclusion, this is a temporary move
-    # of features.h out of sources. Allowing those depending on
-    # :plus_addresses to also depend on its features to reduce churn.
-    ":features",
     ":types",
     "//base",
     "//components/autofill/core/browser",
     "//components/keyed_service/core",
+
+    # While not strictly public by h file inclusion, this is a temporary move
+    # of features.h out of sources. Allowing those depending on
+    # :plus_addresses to also depend on its features to reduce churn.
+    "//components/plus_addresses/core/common:features",
     "//third_party/abseil-cpp:absl",
     "//url",
   ]
@@ -164,7 +155,6 @@ source_set("unit_tests") {
 
   deps = [
     ":blocklist_data",
-    ":features",
     ":hats_utils",
     ":parsing",
     ":plus_addresses",
@@ -176,6 +166,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser:test_support",
     "//components/feature_engagement/public",
     "//components/os_crypt/async/browser:test_support",
+    "//components/plus_addresses/core/common:features",
     "//components/plus_addresses/metrics",
     "//components/plus_addresses/resources/strings",
     "//components/plus_addresses/settings:test_support",

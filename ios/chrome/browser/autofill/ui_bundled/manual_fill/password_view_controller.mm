@@ -12,7 +12,7 @@
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/google/core/common/google_util.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
-#import "components/plus_addresses/features.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"

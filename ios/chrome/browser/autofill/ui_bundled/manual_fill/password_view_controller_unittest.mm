@@ -7,7 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/with_feature_override.h"
-#import "components/plus_addresses/features.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credential.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_cell.h"

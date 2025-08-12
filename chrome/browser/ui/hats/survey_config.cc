@@ -21,7 +21,7 @@
 #include "components/page_info/core/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_hats_trigger_helper.h"
-#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/signin/public/base/signin_switches.h"

@@ -114,7 +114,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_requirements_service.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/prefs/pref_service.h"

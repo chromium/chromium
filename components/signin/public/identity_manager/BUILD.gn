@@ -60,7 +60,7 @@ source_set("identity_manager") {
 
   deps = [
     "//components/image_fetcher/core",
-    "//components/plus_addresses:features",
+    "//components/plus_addresses/core/common:features",
     "//components/prefs",
     "//components/signin/internal/identity_manager",
     "//components/signin/public/webdata",

@@ -18,7 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_http_client_impl_test_api.h"

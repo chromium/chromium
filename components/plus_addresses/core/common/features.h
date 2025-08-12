@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PLUS_ADDRESSES_FEATURES_H_
-#define COMPONENTS_PLUS_ADDRESSES_FEATURES_H_
+#ifndef COMPONENTS_PLUS_ADDRESSES_CORE_COMMON_FEATURES_H_
+#define COMPONENTS_PLUS_ADDRESSES_CORE_COMMON_FEATURES_H_
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
@@ -58,4 +58,4 @@ extern const base::FeatureParam<int> kPlusAddressPreallocationMinimumSize;
 
 }  // namespace plus_addresses::features
 
-#endif  // COMPONENTS_PLUS_ADDRESSES_FEATURES_H_
+#endif  // COMPONENTS_PLUS_ADDRESSES_CORE_COMMON_FEATURES_H_

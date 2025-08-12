@@ -9,7 +9,7 @@
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_test_util.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_util.h"

@@ -3554,7 +3554,7 @@ static_library("browser") {
       "//components/payments/content/android/ui",
       "//components/payments/content/browser_binding:browser_bound_keys_deleter_factory",
       "//components/permissions/android:native",
-      "//components/plus_addresses:features",
+      "//components/plus_addresses/core/common:features",
       "//components/plus_addresses/resources/strings",
       "//components/power_bookmarks/core",
       "//components/power_bookmarks/storage",

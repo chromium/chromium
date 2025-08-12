@@ -17,7 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/plus_addresses/mock_plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_allocator.h"
 #include "components/plus_addresses/plus_address_http_client.h"

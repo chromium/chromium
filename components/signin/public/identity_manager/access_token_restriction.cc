@@ -8,7 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "google_apis/gaia/gaia_constants.h"
 
 namespace signin {

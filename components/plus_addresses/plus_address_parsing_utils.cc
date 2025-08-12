@@ -14,7 +14,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 

@@ -43,7 +43,7 @@
 #include "components/autofill/core/common/html_field_types.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/plus_addresses/blocked_facets.pb.h"
-#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/plus_address_blocklist_data.h"
 #include "components/plus_addresses/plus_address_hats_utils.h"

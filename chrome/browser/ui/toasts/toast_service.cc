@@ -32,7 +32,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/data_sharing/public/features.h"
 #include "components/omnibox/browser/vector_icons.h"
-#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"

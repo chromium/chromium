@@ -6,7 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
-#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"

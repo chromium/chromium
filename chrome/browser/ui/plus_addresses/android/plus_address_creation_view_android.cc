@@ -13,7 +13,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/plus_addresses/android/plus_address_creation_controller_android.h"
-#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "content/public/browser/web_contents.h"

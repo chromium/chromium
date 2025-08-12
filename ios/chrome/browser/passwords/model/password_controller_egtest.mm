@@ -20,7 +20,7 @@
 #import "components/enterprise/connectors/core/realtime_reporting_test_environment.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
-#import "components/plus_addresses/features.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"

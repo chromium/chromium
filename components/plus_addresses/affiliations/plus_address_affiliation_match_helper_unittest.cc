@@ -12,7 +12,7 @@
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
-#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/plus_addresses/mock_plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_service_impl.h"
 #include "components/plus_addresses/plus_address_test_environment.h"

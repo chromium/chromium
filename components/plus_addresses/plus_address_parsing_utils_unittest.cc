@@ -10,7 +10,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
-#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"

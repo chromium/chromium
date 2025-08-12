@@ -111,7 +111,7 @@ source_set("unit_tests") {
     "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
-    "//components/plus_addresses:features",
+    "//components/plus_addresses/core/common:features",
     "//components/plus_addresses/resources/strings",
     "//components/strings",
     "//ios/chrome/app/strings",

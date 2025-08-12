@@ -21,7 +21,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_service.h"

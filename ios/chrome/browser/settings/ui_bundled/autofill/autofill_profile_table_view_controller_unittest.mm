@@ -15,7 +15,7 @@
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #import "components/autofill/core/common/autofill_features.h"
-#import "components/plus_addresses/features.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "components/plus_addresses/grit/plus_addresses_strings.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"

@@ -6,7 +6,7 @@
 
 #import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
-#import "components/plus_addresses/features.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_coordinator.h"

@@ -31,7 +31,7 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/plus_address_survey_type.h"
-#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_allocator.h"
 #include "components/plus_addresses/plus_address_blocklist_data.h"

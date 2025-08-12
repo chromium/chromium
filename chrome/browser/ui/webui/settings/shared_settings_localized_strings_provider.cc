@@ -21,7 +21,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/google/core/common/google_util.h"
 #include "components/live_caption/caption_util.h"
-#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/soda/constants.h"
 #include "components/strings/grit/components_strings.h"
