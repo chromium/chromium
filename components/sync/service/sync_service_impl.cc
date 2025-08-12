@@ -838,10 +838,23 @@ SyncService::TransportState SyncServiceImpl::GetTransportState() const {
 
 SyncService::UserActionableError SyncServiceImpl::GetUserActionableError()
     const {
+#if !BUILDFLAG(IS_IOS)
+  if (HasSyncConsent()) {
+    if (!GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
+      return UserActionableError::kNeedsSettingsConfirmation;
+    }
+    // RequiresClientUpgrade() is unrecoverable, but is treated separately
+    // below.
+    if (HasUnrecoverableError() && !RequiresClientUpgrade()) {
+      return UserActionableError::kUnrecoverableError;
+    }
+  }
+#endif  // !BUILDFLAG(IS_IOS)
+
   if (GetAuthError().state() != GoogleServiceAuthError::NONE) {
     return UserActionableError::kSignInNeedsUpdate;
   }
-  if (last_actionable_error_.action == UPGRADE_CLIENT) {
+  if (RequiresClientUpgrade()) {
     return UserActionableError::kNeedsClientUpgrade;
   }
   if (user_settings_->IsPassphraseRequiredForPreferredDataTypes()) {
