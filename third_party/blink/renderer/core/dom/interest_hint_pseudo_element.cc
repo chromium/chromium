@@ -43,7 +43,7 @@ void InterestHintPseudoElement::DefaultEventHandler(Event& event) {
     should_intercept |= event.type() == event_type_names::kKeydown &&
                         (key_code == VKEY_RETURN || key_code == VKEY_SPACE);
   }
-  if (event.target() == this && should_intercept) {
+  if (event.RawTarget() == this && should_intercept) {
     HandleButtonActivation();
     event.SetDefaultHandled();
   }
