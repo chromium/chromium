@@ -57,7 +57,7 @@ chrome.test.runTests([
     chrome.test.runWithUserGesture(async () => {
       await chrome.test.assertPromiseRejects(
           chrome.sidePanel.open({tabId: fakeTabId}),
-          `Error: No tab with tabId: ${fakeTabId}`);
+          `Error: No tab with id: ${fakeTabId}.`);
       chrome.test.succeed();
     });
   },

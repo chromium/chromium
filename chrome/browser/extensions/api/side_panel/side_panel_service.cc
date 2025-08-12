@@ -256,8 +256,8 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanelForTab(
                                     include_incognito_information, &window,
                                     &web_contents, nullptr) ||
       !window) {
-    return base::unexpected(
-        base::StringPrintf("No tab with tabId: %d", tab_id));
+    return base::unexpected(ErrorUtils::FormatErrorMessage(
+        ExtensionTabUtil::kTabNotFoundError, base::ToString(tab_id)));
   }
 
   Browser* browser = window->GetBrowser();
