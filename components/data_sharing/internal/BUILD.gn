@@ -116,6 +116,7 @@ source_set("unit_tests") {
     "group_data_store_unittest.cc",
     "logger_impl_unittest.cc",
     "personal_collaboration_data/personal_collaboration_data_service_impl_unittest.cc",
+    "personal_collaboration_data/personal_collaboration_data_sync_bridge_unittest.cc",
     "preview_server_proxy_unittest.cc",
   ]
 
@@ -132,6 +133,7 @@ source_set("unit_tests") {
     ":personal_collaboration_data_internal",
     "//base",
     "//base/test:test_support",
+    "//components/data_sharing:personal_collaboration_data_test_support_proto",
     "//components/data_sharing:test_support",
     "//components/data_sharing/public:logger",
     "//components/endpoint_fetcher",

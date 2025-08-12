@@ -24,13 +24,6 @@
 namespace data_sharing::personal_collaboration_data {
 namespace {
 
-// Returns the client tag for this specifics object. Note that
-// SharedTabGroupAccountDataSpecifics uses the client tag as a storage key.
-std::string GetClientTagFromSpecifics(
-    const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
-  return specifics.guid() + "|" + specifics.collaboration_id();
-}
-
 // Trim specifics for use in TrimAllSupportedFieldsFromRemoteSpecifics.
 // LINT.IfChange(TrimSpecifics)
 sync_pb::SharedTabGroupAccountDataSpecifics TrimSpecifics(
@@ -203,25 +196,24 @@ PersonalCollaborationDataSyncBridge::GetAllDataForDebugging() {
 
 std::string PersonalCollaborationDataSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetClientTagFromSpecifics(
-      entity_data.specifics.shared_tab_group_account_data());
+  // Client tags are not computed from the specifics.
+  NOTREACHED();
 }
 
 std::string PersonalCollaborationDataSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetClientTag(entity_data);
+  // Storage keys are not computed from the specifics.
+  NOTREACHED();
 }
 
 bool PersonalCollaborationDataSyncBridge::SupportsGetClientTag() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return true;
+  return false;
 }
 
 bool PersonalCollaborationDataSyncBridge::SupportsGetStorageKey() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return true;
+  return false;
 }
 
 void PersonalCollaborationDataSyncBridge::ApplyDisableSyncChanges(
@@ -353,12 +345,7 @@ void PersonalCollaborationDataSyncBridge::OnReadAllDataAndMetadata(
       // Ignore invalid entries.
       continue;
     }
-    const std::string storage_key = GetClientTagFromSpecifics(specifics);
-    if (storage_key != r.id) {
-      // GUID is used as a storage key, so it should always match.
-      continue;
-    }
-
+    const std::string storage_key = r.id;
     specifics_[storage_key] = specifics;
   }
 
