@@ -13,6 +13,7 @@
 #include "build/buildflag.h"
 #include "components/input/timeout_monitor.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
+#include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
@@ -21,8 +22,10 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/fake_local_frame.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
+#include "content/test/test_page_broadcast.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -61,6 +64,13 @@ void AddHostPermissions(const std::string& host, RenderFrameHost* rfh) {
   run_loop.Run();
 }
 
+std::optional<uint64_t> NavigateAndGetCanvasNoiseToken(
+    const GURL& url,
+    RenderFrameHost* frame_host) {
+  return GetCanvasNoiseTokenForPage(
+      NavigationSimulator::NavigateAndCommitFromDocument(url, frame_host)
+          ->GetPage());
+}
 }  // namespace
 
 class RenderFrameHostImplTest : public RenderViewHostImplTestHarness {
@@ -1804,6 +1814,62 @@ TEST_F(RenderFrameHostImplTest, CapturedMediaStreamAddedRemoved) {
   EXPECT_CALL(observer, OnFrameIsCapturingMediaStreamChanged(main_rfh, false));
   main_rfh->OnMediaStreamRemoved(
       RenderFrameHostImpl::MediaStreamType::kCapturingMediaStream);
+}
+
+class MockPageBroadcastForCanvasNoise : public TestPageBroadcast {
+ public:
+  using TestPageBroadcast::TestPageBroadcast;
+  MOCK_METHOD(void,
+              UpdateCanvasNoiseToken,
+              (const std::optional<uint64_t> canvas_noise_token),
+              (override));
+};
+
+class CanvasNoiseTestContentBrowserClient : public ContentBrowserClient {
+ public:
+  CanvasNoiseTestContentBrowserClient() = default;
+  ~CanvasNoiseTestContentBrowserClient() override = default;
+
+ private:
+  bool ShouldEnableCanvasNoise(content::BrowserContext* browser_context,
+                               const GURL& origin) override {
+    return false;
+  }
+};
+
+TEST_F(RenderFrameHostImplTest,
+       CanvasNoiseToken_PageBroadcastCalledPerMainFrameNavigation) {
+  GURL initial_url = GURL("https://initial.example.test/");
+  GURL next_url = GURL("https://next.example.test/");
+
+  CanvasNoiseTestContentBrowserClient modified_client;
+  ContentBrowserClient* regular_client =
+      SetBrowserClientForTesting(&modified_client);
+
+  mojo::AssociatedRemote<blink::mojom::PageBroadcast> broadcast_remote;
+  testing::NiceMock<MockPageBroadcastForCanvasNoise> mock_page_broadcast(
+      broadcast_remote.BindNewEndpointAndPassDedicatedReceiver());
+  contents()->GetRenderViewHost()->BindPageBroadcast(broadcast_remote.Unbind());
+
+  // In this test, the kCanvasNoise feature is not enabled therefore
+  // NavigateAndGetCanvasNoiseToken should return std::nullopt. This is fine as
+  // this test only checks to ensure the PageBroadcast gets called when
+  // navigating to different origins and std::nullopt is a valid value for
+  // UpdateCanvasNoiseToken PageBroadcast method.
+  std::optional<uint64_t> token_init =
+      NavigateAndGetCanvasNoiseToken(initial_url, main_rfh());
+  EXPECT_EQ(token_init, std::nullopt);
+
+  std::optional<uint64_t> token_next =
+      NavigateAndGetCanvasNoiseToken(next_url, main_rfh());
+  EXPECT_EQ(token_next, std::nullopt);
+  // Since token_init == token_next == std::nullopt, this is fine.
+  EXPECT_CALL(mock_page_broadcast, UpdateCanvasNoiseToken(token_init)).Times(2);
+
+  EXPECT_EQ(token_init, token_next);
+
+  SetBrowserClientForTesting(regular_client);
+  mock_page_broadcast.FlushForTesting();
 }
 
 }  // namespace content

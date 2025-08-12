@@ -12287,6 +12287,22 @@ void RenderFrameHostImpl::CommitNavigation(
     }
   }
 
+  if (is_main_frame()) {
+    // Ensures the blink::Page is set with the correct canvas noise token for
+    // main frames by syncing the value with the frame's associated
+    // blink::WebView prior to commit. This must be done at CommitNavigation
+    // time as the origin will not be available when the blink::Page is created
+    // earlier.
+    std::optional<uint64_t> canvas_noise_token =
+        navigation_request->canvas_noise_token();
+    frame_tree()->root()->render_manager()->ExecutePageBroadcastMethod(
+        [canvas_noise_token](RenderViewHostImpl* rvh) {
+          if (auto& broadcast = rvh->GetAssociatedPageBroadcast()) {
+            broadcast->UpdateCanvasNoiseToken(canvas_noise_token);
+          }
+        });
+  }
+
   bool is_srcdoc = common_params->url.IsAboutSrcdoc();
   if (is_srcdoc) {
     // TODO(wjmaclean): initialize this in NavigationRequest's constructor
@@ -15704,6 +15720,15 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     document_associated_data_->owned_page()->set_last_main_document_source_id(
         ukm::ConvertToSourceId(navigation_request->GetNavigationId(),
                                ukm::SourceIdType::NAVIGATION_ID));
+
+    // Set this on content::Page so that all subframes can inherit the same
+    // canvas noise token. Note that the content::Page may have been swapped
+    // above (earlier in DidCommitNavigationInternal()) in cases like
+    // prerendering.  At this point in the navigation, the content::Page should
+    // be set and can be inherited for subframe navigations.
+    // TODO(crbug.com/434006731): Assign this state earlier once RenderDocument
+    // ships and content::Page doesn't need to swap.
+    GetPage().set_canvas_noise_token(navigation_request->canvas_noise_token());
   }
 
   if (is_same_document_navigation) {

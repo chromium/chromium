@@ -181,6 +181,10 @@ struct CreateViewParams {
   // A snapshot of the history information when this view was created.
   int32 history_index = -1;
   int32 history_length = 0;
+
+  // The 64 bit hash value for canvas noising from the current page. A nullopt
+  // indicates canvas noising should be disabled for this page.
+  uint64? canvas_noise_token;
 };
 
 // A union to distinguish between parameters specific to local main frame

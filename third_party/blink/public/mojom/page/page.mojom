@@ -175,4 +175,9 @@ interface PageBroadcast {
   // 2. The ColorProvider associated with the WebContents changes as a result
   // of theme changes.
   UpdateColorProviders(ColorProviderColorMaps color_provider_colors);
+
+  // Update the page's canvas noise token. This allows the browser to compute
+  // the noise token at ReadyToCommit time and update blink::WebViews that
+  // were made at request time.
+  UpdateCanvasNoiseToken(uint64? canvas_noise_token);
 };

@@ -163,6 +163,11 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
               (network::mojom::AttributionSupport support),
               (override));
 
+  MOCK_METHOD(void,
+              UpdateCanvasNoiseToken,
+              (const std::optional<uint64_t> canvas_noise_token),
+              (override));
+
   mojo::PendingAssociatedRemote<blink::mojom::PageBroadcast> GetRemote() {
     return receiver_.BindNewEndpointAndPassDedicatedRemote();
   }

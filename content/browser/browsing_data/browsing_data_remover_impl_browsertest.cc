@@ -37,6 +37,7 @@
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/prefetch_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
@@ -1213,7 +1214,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrefetchHoldbackBrowserTest,
 
 class BrowsingDataRemoverCanvasNoiseTokenBrowserTest
     : public CookiesBrowsingDataRemoverImplBrowserTest {
- private:
   base::test::ScopedFeatureList features_{
       fingerprinting_protection_interventions::features::kCanvasNoise};
 };
@@ -1222,15 +1222,16 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverCanvasNoiseTokenBrowserTest,
                        CanvasNoiseTokenRegeneratesOnCookieRemoval) {
   // Set a cookie.
   GURL url = ssl_server().GetURL("/browsing_data/site_data.html");
-  ASSERT_TRUE(NavigateToURL(shell(), url));
 
   content::BrowserContext* browser_context =
       shell()->web_contents()->GetBrowserContext();
-  content::WebContents* tab = shell()->web_contents();
 
-  uint64_t original_token = tab->GetMutableRendererPrefs()->canvas_noise_token;
-  EXPECT_EQ(original_token,
-            content::CanvasNoiseTokenData::GetToken(browser_context));
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  url::Origin origin = url::Origin::Create(url);
+
+  uint64_t original_token =
+      content::CanvasNoiseTokenData::GetToken(browser_context, origin);
 
   constexpr uint64_t kRemoveMask =
       content::BrowsingDataRemover::DATA_TYPE_COOKIES;
@@ -1246,12 +1247,10 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverCanvasNoiseTokenBrowserTest,
   completion_observer.BlockUntilCompletion();
 
   // Next navigation should update the token.
-  ASSERT_TRUE(NavigateToURL(tab, url));
+  ASSERT_TRUE(NavigateToURL(shell(), url));
 
-  uint64_t updated_token = tab->GetMutableRendererPrefs()->canvas_noise_token;
-  EXPECT_EQ(updated_token,
-            content::CanvasNoiseTokenData::GetToken(browser_context));
-  EXPECT_NE(updated_token, original_token);
+  EXPECT_NE(content::CanvasNoiseTokenData::GetToken(browser_context, origin),
+            original_token);
 }
 
 }  // namespace content

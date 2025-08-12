@@ -54,7 +54,6 @@
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "components/attribution_reporting/features.h"
 #include "components/download/public/common/download_stats.h"
-#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "components/input/cursor_manager.h"
 #include "components/input/features.h"
 #include "components/input/render_widget_host_input_event_router.h"
@@ -87,7 +86,6 @@
 #include "content/browser/download/save_package.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/find_request_manager.h"
-#include "content/browser/fingerprinting_protection/canvas_noise_token_data.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/guest_page_holder_impl.h"
 #include "content/browser/host_zoom_map_impl.h"
@@ -1436,12 +1434,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
 
   if (base::FeatureList::IsEnabled(network::features::kSharedStorageAPI)) {
     SharedStorageBudgetCharger::CreateForWebContents(this);
-  }
-
-  if (base::FeatureList::IsEnabled(
-          fingerprinting_protection_interventions::features::kCanvasNoise)) {
-    renderer_preferences_.canvas_noise_token =
-        CanvasNoiseTokenData::GetToken(browser_context);
   }
 }
 
@@ -9078,11 +9070,6 @@ const blink::RendererPreferences& WebContentsImpl::GetRendererPrefs(
   if (auto* guest = GuestPageHolderImpl::FromRenderFrameHost(
           *render_view_host->frame_tree()->GetMainFrame())) {
     return guest->GetRendererPrefs();
-  }
-  if (base::FeatureList::IsEnabled(
-          fingerprinting_protection_interventions::features::kCanvasNoise)) {
-    renderer_preferences_.canvas_noise_token =
-        CanvasNoiseTokenData::GetToken(GetBrowserContext());
   }
   RenderViewHostImpl::GetPlatformSpecificPrefs(&renderer_preferences_);
   return renderer_preferences_;

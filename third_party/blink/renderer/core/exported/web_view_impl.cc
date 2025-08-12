@@ -502,7 +502,8 @@ WebView* WebView::Create(
     const ColorProviderColorMaps* color_provider_colors,
     blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
     int32_t history_index,
-    int32_t history_length) {
+    int32_t history_length,
+    const std::optional<uint64_t>& canvas_noise_token) {
   return WebViewImpl::Create(
       client,
       is_hidden ? mojom::blink::PageVisibilityState::kHidden
@@ -512,7 +513,7 @@ WebView* WebView::Create(
       agent_group_scheduler, session_storage_namespace_id,
       std::move(page_base_background_color), browsing_context_group_token,
       color_provider_colors, std::move(partitioned_popin_params), history_index,
-      history_length);
+      history_length, canvas_noise_token);
 }
 
 WebViewImpl* WebViewImpl::Create(
@@ -532,14 +533,16 @@ WebViewImpl* WebViewImpl::Create(
     const ColorProviderColorMaps* color_provider_colors,
     blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
     int32_t history_index,
-    int32_t history_length) {
+    int32_t history_length,
+    const std::optional<uint64_t>& canvas_noise_token) {
   return new WebViewImpl(
       client, visibility, std::move(prerender_param), fenced_frame_mode,
       compositing_enabled, widgets_never_composited, opener,
       std::move(page_handle), agent_group_scheduler,
       session_storage_namespace_id, std::move(page_base_background_color),
       browsing_context_group_token, color_provider_colors,
-      std::move(partitioned_popin_params), history_index, history_length);
+      std::move(partitioned_popin_params), history_index, history_length,
+      canvas_noise_token);
 }
 
 size_t WebView::GetWebViewCount() {
@@ -606,7 +609,8 @@ WebViewImpl::WebViewImpl(
     const ColorProviderColorMaps* color_provider_colors,
     blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
     int32_t history_index,
-    int32_t history_length)
+    int32_t history_length,
+    const std::optional<uint64_t>& canvas_noise_token)
     : widgets_never_composited_(widgets_never_composited),
       web_view_client_(client),
       chrome_client_(MakeGarbageCollected<ChromeClientImpl>(this)),
@@ -640,7 +644,7 @@ WebViewImpl::WebViewImpl(
       *chrome_client_, opener ? opener->GetPage() : nullptr,
       agent_group_scheduler.GetAgentGroupScheduler(),
       browsing_context_group_token, color_provider_colors,
-      std::move(partitioned_popin_params));
+      std::move(partitioned_popin_params), canvas_noise_token);
   CoreInitializer::GetInstance().ProvideModulesToPage(
       *page_, session_storage_namespace_id_);
 
@@ -3462,6 +3466,15 @@ void WebViewImpl::UpdateUseOverlayScrollbar(bool use_overlay_scrollbar) {
 }
 #endif
 
+void WebViewImpl::UpdateCanvasNoiseToken(
+    std::optional<uint64_t> canvas_noise_token) {
+  GetPage()->SetCanvasNoiseToken(canvas_noise_token);
+}
+
+std::optional<uint64_t> WebViewImpl::CanvasNoiseTokenForTesting() {
+  return GetPage()->CanvasNoiseToken();
+}
+
 void WebViewImpl::ActivatePrerenderedPage(
     mojom::blink::PrerenderPageActivationParamsPtr
         prerender_page_activation_params,
@@ -3592,7 +3605,6 @@ void WebViewImpl::UpdateRendererPreferences(
   }
 #endif
 
-  CanvasNoiseToken::Set(renderer_preferences_.canvas_noise_token);
   ViewSourceLineWrappingPreference::Set(
       renderer_preferences_.view_source_line_wrap_enabled);
 

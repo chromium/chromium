@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_view.h"
 
 namespace content {
 
@@ -24,6 +25,12 @@ RenderFrameTestHelper::~RenderFrameTestHelper() {}
 void RenderFrameTestHelper::GetDocumentToken(
     GetDocumentTokenCallback callback) {
   std::move(callback).Run(render_frame()->GetWebFrame()->GetDocument().Token());
+}
+
+void RenderFrameTestHelper::GetCanvasNoiseToken(
+    GetCanvasNoiseTokenCallback callback) {
+  std::move(callback).Run(
+      render_frame()->GetWebView()->CanvasNoiseTokenForTesting());
 }
 
 void RenderFrameTestHelper::OnDestruct() {

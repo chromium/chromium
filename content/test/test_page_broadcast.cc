@@ -69,4 +69,7 @@ void TestPageBroadcast::SetPageAttributionSupport(
 void TestPageBroadcast::UpdateColorProviders(
     const blink::ColorProviderColorMaps& color_provider_colors) {}
 
+void TestPageBroadcast::UpdateCanvasNoiseToken(
+    std::optional<uint64_t> canvas_noise_token) {}
+
 }  // namespace content

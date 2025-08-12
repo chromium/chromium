@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 
 #include <algorithm>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -12,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -461,6 +463,17 @@ bool RenderViewHostImpl::CreateRenderView(
       frame_tree_node->current_frame_host()->devtools_frame_token();
   DCHECK_EQ(&frame_tree_node->frame_tree(), frame_tree_);
   params->navigation_metrics_token = navigation_metrics_token;
+
+  // When a new RenderViewHost creates a RenderView for a subframe, inherit the
+  // current content::Page's token. This is not done for main frames (i.e., when
+  // main_rfh is defined instead of main_rfph), because the new content::Page
+  // hasn't committed to be the current page yet. Additionally, the token
+  // usually has not been computed yet (only until the origin is known when
+  // navigation at ready to commit time).
+  params->canvas_noise_token = main_rfph ? frame_tree_node->current_frame_host()
+                                               ->GetPage()
+                                               .canvas_noise_token()
+                                         : std::nullopt;
 
   if (frame_tree_->is_prerendering() ||
       frame_tree_->page_delegate()->IsPageInPreviewMode()) {

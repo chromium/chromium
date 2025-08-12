@@ -20,18 +20,9 @@ namespace {
 // FNV constants
 // https://datatracker.ietf.org/doc/html/draft-eastlake-fnv#name-fnv-constants
 constexpr uint64_t kFnvPrime = 0x00000100000001b3;
-constexpr uint64_t kFnvOffset = 0xcbf29ce484222325;
 }  // namespace
 
-NoiseHash::NoiseHash(const uint64_t token, const String& partition) {
-  token_hash_ = kFnvOffset;
-  auto hasher = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-  hasher->Update(base::U64ToLittleEndian(token));
-  hasher->Update(partition.RawByteSpan());
-  std::array<uint8_t, crypto::kSHA256Length> digest;
-  hasher->Finish(digest);
-  Update(base::U64FromLittleEndian(base::span(digest).first<8>()));
-}
+NoiseHash::NoiseHash(const uint64_t token) : token_hash_(token) {}
 
 void NoiseHash::Update(const uint64_t value) {
   token_hash_ ^= value;

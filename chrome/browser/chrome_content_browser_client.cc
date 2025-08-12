@@ -237,6 +237,7 @@
 #include "components/error_page/common/error_page_switches.h"
 #include "components/error_page/common/localized_error.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
+#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -8788,4 +8789,23 @@ ChromeContentBrowserClient::GetClipboardTypesIfPolicyApplied(
   }
 
   return std::nullopt;
+}
+
+bool ChromeContentBrowserClient::ShouldEnableCanvasNoise(
+    content::BrowserContext* browser_context,
+    const GURL& url) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  bool feature_enable = fingerprinting_protection_interventions::features::
+      IsCanvasInterventionsEnabledForIncognitoState(
+          profile->IsIncognitoProfile());
+  // System profiles are considered incognito, but will not query from
+  // ProfileKeyedServices and will return nullptr. We should only check user
+  // bypass if the profile returns TrackingProtectionSettings.
+  privacy_sandbox::TrackingProtectionSettings* tracking_protections_settings =
+      TrackingProtectionSettingsFactory::GetForProfile(profile);
+  if (tracking_protections_settings) {
+    return feature_enable &&
+           !tracking_protections_settings->HasTrackingProtectionException(url);
+  }
+  return feature_enable;
 }

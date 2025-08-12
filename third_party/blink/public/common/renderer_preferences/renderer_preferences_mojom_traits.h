@@ -280,11 +280,6 @@ struct BLINK_COMMON_EXPORT
     return data.explicitly_allowed_network_ports;
   }
 
-  static const uint64_t& canvas_noise_token(
-      const ::blink::RendererPreferences& data) {
-    return data.canvas_noise_token;
-  }
-
   static bool view_source_line_wrap_enabled(
       const ::blink::RendererPreferences& data) {
     return data.view_source_line_wrap_enabled;

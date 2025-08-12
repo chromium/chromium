@@ -206,10 +206,6 @@ struct RendererPreferences {
 
   array<uint16> explicitly_allowed_network_ports;
 
-  // A randomized 64 bit token that is generated per browser session,
-  // used for canvas noising.
-  uint64 canvas_noise_token = 0;
-
   // Whether line wrapping should be enabled by default in view source pages.
   bool view_source_line_wrap_enabled = false;
 };

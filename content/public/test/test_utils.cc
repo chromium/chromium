@@ -24,6 +24,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
+#include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/site_info.h"
@@ -34,6 +35,7 @@
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -320,6 +322,10 @@ void FocusWebContentsOnFrame(WebContents* web_contents, RenderFrameHost* rfh) {
   CHECK_EQ(node->current_frame_host(), rfh);
   contents->GetPrimaryFrameTree().SetFocusedFrame(
       node, node->current_frame_host()->GetSiteInstance()->group());
+}
+
+std::optional<uint64_t> GetCanvasNoiseTokenForPage(const Page& page) {
+  return static_cast<const PageImpl&>(page).canvas_noise_token();
 }
 
 MessageLoopRunner::MessageLoopRunner(QuitMode quit_mode)

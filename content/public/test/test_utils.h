@@ -159,6 +159,10 @@ void AwaitDocumentOnLoadCompleted(WebContents* web_contents);
 // the focused frame not being null.
 void FocusWebContentsOnFrame(WebContents* web_contents, RenderFrameHost* rfh);
 
+// Gets the CanvasNoiseToken value from the `page` for tests that rely on the
+// CanvasNoiseToken value and do not reside in //content/browser.
+std::optional<uint64_t> GetCanvasNoiseTokenForPage(const Page& page);
+
 // Helper class to Run and Quit the message loop. Run and Quit can only happen
 // once per instance. Make a new instance for each use. Calling Quit after Run
 // has returned is safe and has no effect.

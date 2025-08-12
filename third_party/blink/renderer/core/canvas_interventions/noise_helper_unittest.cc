@@ -40,27 +40,6 @@ std::vector<uint8_t> GetRandomPixels(uint32_t width, uint32_t height) {
   return pixels;
 }
 
-TEST_F(NoiseHelperTest, SeedHashFromSite) {
-  String site1("https://a.test");
-  String site2("https://b.test");
-  const uint64_t token = 0x01234678901234567;
-  auto noise_hash1 = std::make_unique<NoiseHash>(token, site1);
-  auto noise_hash2 = std::make_unique<NoiseHash>(token, site2);
-  // For the same token but different site, the seeds should differ.
-  EXPECT_NE(noise_hash1->GetTokenHashForTesting(),
-            noise_hash2->GetTokenHashForTesting());
-  // The seed should be the same for the same site and token.
-  auto noise_hash1_again = std::make_unique<NoiseHash>(token, site1);
-  EXPECT_EQ(noise_hash1->GetTokenHashForTesting(),
-            noise_hash1_again->GetTokenHashForTesting());
-  const uint64_t token2 = token ^ 0xffffffffffffffff;
-  // When the token differs, so should the seed even if the site remains the
-  // same.
-  auto noise_hash1_different_token = std::make_unique<NoiseHash>(token2, site1);
-  EXPECT_NE(noise_hash1->GetTokenHashForTesting(),
-            noise_hash1_different_token->GetTokenHashForTesting());
-}
-
 TEST_F(NoiseHelperTest, NoisePixels) {
   const uint32_t width = 50u;
   const uint32_t height = 150u;
@@ -74,7 +53,7 @@ TEST_F(NoiseHelperTest, NoisePixels) {
 
   // When noised, the pixels should be perturbed by at most kMaxNoisePerChannel.
   const uint64_t token = 0x01234678901234567;
-  const auto token_hash = NoiseHash(token, "https://a.test");
+  const auto token_hash = NoiseHash(token);
   NoisePixels(token_hash, pixels, width, height);
   EXPECT_NE(pixels, pixels_orig);
   double num_diff = 0;
@@ -100,7 +79,8 @@ TEST_F(NoiseHelperTest, NoisePixels) {
   EXPECT_EQ(pixels, pixels2);
 
   // Using a different token hash should result in different noise being added.
-  const auto token_hash2 = NoiseHash(token, "https://b.test");
+  const uint64_t other_token = 0x02234561728192389;
+  const auto token_hash2 = NoiseHash(other_token);
   pixels2.copy_from(pixels_orig);
   NoisePixels(token_hash2, pixels2, width, height);
   EXPECT_NE(pixels, pixels2);
@@ -114,7 +94,7 @@ TEST_F(NoiseHelperTest, NoisePixelsAllSameValue) {
   std::ranges::fill(pixel_arr, channel_value);
   base::span<uint8_t> pixels(pixel_arr);
   const uint64_t token = 0x01234678901234567;
-  auto token_hash = NoiseHash(token, "https://a.test");
+  auto token_hash = NoiseHash(token);
   std::array<uint8_t, 4> first_pixel;
   std::ranges::fill(first_pixel, channel_value);
   // It's possible that the first pixel remains unaltered (when noise for the 4
@@ -135,7 +115,7 @@ TEST_F(NoiseHelperTest, NoisePixelsVerticalStripes) {
   const size_t width = 16u;
   const size_t height = 16u;
   const uint64_t token = 0x01234678901234567;
-  auto token_hash = NoiseHash(token, "https://a.test");
+  auto token_hash = NoiseHash(token);
 
   const std::vector<uint8_t> image_data_orig = GetRandomPixels(width, height);
   const base::span pixels_orig(image_data_orig);
@@ -162,7 +142,7 @@ TEST_F(NoiseHelperTest, NoisePixelsHorizontalStripes) {
   const size_t width = 16u;
   const size_t height = 16u;
   const uint64_t token = 0x01234678901234567;
-  auto token_hash = NoiseHash(token, "https://a.test");
+  auto token_hash = NoiseHash(token);
 
   const std::vector<uint8_t> image_data_orig = GetRandomPixels(width, height);
   const base::span pixels_orig(image_data_orig);
@@ -204,7 +184,7 @@ TEST_F(NoiseHelperTest, NoisePixelsSingleNeighbor) {
   for (const auto& [changed, checked] : changed_to_checked) {
     pixels.copy_from(pixel_arr_orig);
     const uint64_t token = 0x01234678901234567;
-    auto token_hash = NoiseHash(token, "https://a.test");
+    auto token_hash = NoiseHash(token);
     auto changed_pixel =
         pixels.subspan((changed.first + changed.second * width) * 4, 4u);
     auto checked_pixel =
@@ -259,7 +239,7 @@ TEST_F(NoiseHelperTest, NoisePixelsAlphaNonZero) {
 
   // When noised, the alpha channel should remain > 0.
   const uint64_t token = 0x01234678901234567;
-  const auto token_hash = NoiseHash(token, "https://a.test");
+  const auto token_hash = NoiseHash(token);
   NoisePixels(token_hash, pixels, width, height);
   EXPECT_NE(pixels, pixels_orig);
   ASSERT_EQ(pixels.size(), pixels_orig.size());

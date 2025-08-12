@@ -61,9 +61,7 @@ bool ShouldApplyNoise(HighEntropyCanvasOpType canvas_operations,
     UseCounter::Count(execution_context,
                       WebFeature::kCanvasReadbackNoiseMatchesHeuristics);
   }
-  if (execution_context &&
-      !execution_context->GetRuntimeFeatureStateOverrideContext()
-           ->IsCanvasInterventionsForceEnabled()) {
+  if (execution_context && !execution_context->CanvasNoiseToken().has_value()) {
     noise_reason |= CanvasNoiseReason::kNotEnabledInMode;
   }
 
@@ -76,24 +74,6 @@ bool ShouldApplyNoise(HighEntropyCanvasOpType canvas_operations,
 
   return noise_reason == CanvasNoiseReason::kAllConditionsMet;
 }
-
-String GetDomainFromSecurityOrigin(const SecurityOrigin* security_origin) {
-  const SecurityOrigin* precursor_origin =
-      security_origin->GetOriginOrPrecursorOriginIfOpaque();
-  if (precursor_origin->IsOpaque()) {
-    return String::Format(
-        "opaque || %u",
-        GetHash(scoped_refptr<const SecurityOrigin>(precursor_origin)));
-  }
-  // RegistrableDomain() returns null in a couple of cases, such as URLs with IP
-  // addresses. In these cases we can safely return the host.
-  String domain = precursor_origin->RegistrableDomain();
-  if (!domain.IsNull()) {
-    return domain;
-  }
-  return precursor_origin->Host();
-}
-
 }  // namespace
 
 // static
@@ -137,23 +117,8 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
   base::span<uint8_t> modify_pixels =
       gfx::SkPixmapToWritableSpan(pixmap_to_noise);
 
-  // TODO(crbug.com/377325952): Extend domain part to follow the general
-  // partitioning properties.
-  String noise_domain;
-  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
-    Frame& top_frame = window->GetFrame()->Tree().Top();
-    noise_domain = GetDomainFromSecurityOrigin(
-        top_frame.GetSecurityContext()->GetSecurityOrigin());
-  } else if (auto* worker = DynamicTo<WorkerGlobalScope>(execution_context)) {
-    noise_domain =
-        GetDomainFromSecurityOrigin(worker->top_level_frame_security_origin());
-  } else {
-    NOTREACHED();
-  }
-
-  // TODO(crbug.com/392627601): Use the token that is piped down from the
-  // browser.
-  auto token_hash = NoiseHash(CanvasNoiseToken::Get(), noise_domain);
+  // Guaranteed to have a value, as per |ShouldApplyNoise|.
+  auto token_hash = NoiseHash(execution_context->CanvasNoiseToken().value());
   NoisePixels(token_hash, modify_pixels, pixmap_to_noise.width(),
               pixmap_to_noise.height());
 

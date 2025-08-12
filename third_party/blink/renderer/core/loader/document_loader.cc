@@ -2840,6 +2840,9 @@ void DocumentLoader::CommitNavigation() {
       ->GetRuntimeFeatureStateOverrideContext()
       ->ApplyOverrideValuesFromParams(modified_runtime_features_);
 
+  frame_->DomWindow()->SetCanvasNoiseToken(
+      frame_->GetPage()->CanvasNoiseToken());
+
   // Previous same-document navigation tasks are not relevant once a
   // cross-document navigation has happened.
   if (auto* tracker = scheduler::TaskAttributionTracker::From(

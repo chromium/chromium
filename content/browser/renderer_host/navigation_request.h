@@ -1487,6 +1487,17 @@ class CONTENT_EXPORT NavigationRequest
     return frame_entry_document_sequence_number_;
   }
 
+  // Returns the canvas noise token used for canvas noising on the renderer.
+  // Only one token should be generated per page and should use the main frame's
+  // origin to generate such. Main frames should use this accessor to populate
+  // the content::Page and subsequent blink::Pages. Subframes should not use
+  // this accessor, but instead should use `PageImpl::canvas_noise_token()` to
+  // get the canvas noise token.
+  std::optional<uint64_t> canvas_noise_token() {
+    CHECK(IsInMainFrame());
+    return canvas_noise_token_;
+  }
+
   // Called when the browser process is about to process beforeunload handlers
   // for this navigation, including sending an IPC to the renderer process to
   // run beforeunload handlers when necessary.
@@ -3331,6 +3342,10 @@ class CONTENT_EXPORT NavigationRequest
   // instantiated.
   blink::mojom::ConfidenceLevel confidence_level_ =
       blink::mojom::ConfidenceLevel::kHigh;
+
+  // The token value for canvas noising. This should only be set on main frame
+  // navigations that subsequently set the token value on the page.
+  std::optional<uint64_t> canvas_noise_token_ = std::nullopt;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

@@ -17,8 +17,7 @@ namespace blink {
 // token hash have been consumed by |GetValueBelow|.
 class CORE_EXPORT NoiseHash {
  public:
-  // This hashes the provided token with the partition string.
-  NoiseHash(const uint64_t token, const String& partition);
+  explicit NoiseHash(const uint64_t token);
 
   // Computes a new pseudo-random value by hashing with the provided value.
   void Update(const uint64_t value);

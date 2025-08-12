@@ -92,7 +92,6 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   bool caret_browsing_enabled{false};
   bool uses_platform_autofill{false};
   std::vector<uint16_t> explicitly_allowed_network_ports;
-  uint64_t canvas_noise_token{0};
   // The default value must be false to avoid performance problems on very large
   // source pages.
   bool view_source_line_wrap_enabled{false};

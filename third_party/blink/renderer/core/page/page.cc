@@ -21,6 +21,8 @@
 
 #include "third_party/blink/renderer/core/page/page.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -213,6 +215,7 @@ Page* Page::CreateNonOrdinary(
       /*browsing_context_group_token=*/base::UnguessableToken::Create(),
       color_provider_colors,
       /*partitioned_popin_params=*/nullptr,
+      /*canvas_noise_token=*/std::nullopt,
       /*is_ordinary=*/false);
 }
 
@@ -222,11 +225,13 @@ Page* Page::CreateOrdinary(
     AgentGroupScheduler& agent_group_scheduler,
     const base::UnguessableToken& browsing_context_group_token,
     const ColorProviderColorMaps* color_provider_colors,
-    blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params) {
+    blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
+    const std::optional<uint64_t>& canvas_noise_token) {
   Page* page = MakeGarbageCollected<Page>(
       base::PassKey<Page>(), chrome_client, agent_group_scheduler,
       browsing_context_group_token, color_provider_colors,
-      std::move(partitioned_popin_params), /*is_ordinary=*/true);
+      std::move(partitioned_popin_params), canvas_noise_token,
+      /*is_ordinary=*/true);
   page->opener_ = opener;
 
   OrdinaryPages().insert(page);
@@ -251,6 +256,7 @@ Page::Page(base::PassKey<Page>,
            const base::UnguessableToken& browsing_context_group_token,
            const ColorProviderColorMaps* color_provider_colors,
            blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
+           const std::optional<uint64_t>& canvas_noise_token,
            bool is_ordinary)
     : SettingsDelegate(std::make_unique<Settings>()),
       main_frame_(nullptr),
@@ -287,6 +293,7 @@ Page::Page(base::PassKey<Page>,
       next_related_page_(this),
       prev_related_page_(this),
       autoplay_flags_(0),
+      canvas_noise_token_(canvas_noise_token),
       web_text_autosizer_page_info_({0, 0, 1.f}),
       v8_compile_hints_producer_(
           MakeGarbageCollected<
@@ -537,6 +544,14 @@ Page::GetPartitionedPopinOpenerProperties() const {
   CHECK(IsPartitionedPopin());
 
   return *partitioned_popin_opener_properties_;
+}
+
+void Page::SetCanvasNoiseToken(std::optional<uint64_t> canvas_noise_token) {
+  canvas_noise_token_ = canvas_noise_token;
+}
+
+const std::optional<uint64_t> Page::CanvasNoiseToken() {
+  return canvas_noise_token_;
 }
 
 LocalFrame* Page::DeprecatedLocalMainFrame() const {

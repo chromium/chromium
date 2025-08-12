@@ -23,6 +23,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PAGE_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 
@@ -139,7 +140,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
       AgentGroupScheduler& agent_group_scheduler,
       const base::UnguessableToken& browsing_context_group_token,
       const ColorProviderColorMaps* color_provider_colors,
-      blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params);
+      blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
+      const std::optional<uint64_t>& canvas_noise_token);
 
   Page(base::PassKey<Page>,
        ChromeClient& chrome_client,
@@ -147,6 +149,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
        const base::UnguessableToken& browsing_context_group_token,
        const ColorProviderColorMaps* color_provider_colors,
        blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
+       const std::optional<uint64_t>& canvas_noise_token,
        bool is_ordinary);
   Page(const Page&) = delete;
   Page& operator=(const Page&) = delete;
@@ -559,6 +562,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   const PartitionedPopinOpenerProperties& GetPartitionedPopinOpenerProperties()
       const;
 
+  void SetCanvasNoiseToken(std::optional<uint64_t> canvas_noise_token);
+  const std::optional<uint64_t> CanvasNoiseToken();
+
  private:
   friend class ScopedPagePauser;
   class CloseTaskHandler;
@@ -732,6 +738,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // This tracks the mode that the fenced frame is set to.
   blink::FencedFrame::DeprecatedFencedFrameMode fenced_frame_mode_ =
       blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;
+
+  std::optional<uint64_t> canvas_noise_token_;
 
   mojom::blink::TextAutosizerPageInfo web_text_autosizer_page_info_;
 

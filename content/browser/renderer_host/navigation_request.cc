@@ -54,6 +54,7 @@
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/download/download_manager_impl.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
+#include "content/browser/fingerprinting_protection/canvas_noise_token_data.h"
 #include "content/browser/interest_group/ad_auction_headers_util.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/loader/cached_navigation_url_loader.h"
@@ -8702,6 +8703,23 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
           GetParentFrameOrOuterDocument()->GetPermissionsPolicy(),
           GetParentFrameOrOuterDocument()->GetLastCommittedOrigin());
     }
+  }
+
+  // Populate the canvas noise token if this is a main frame navigation. Canvas
+  // noise tokens should be generated based on the resolved origin, which is
+  // available at |ReadyToCommit| time. Eventually, prior to commit, this value
+  // will be used to sync blink::Pages with this token value, and subsequent
+  // subframe navigations will inherit this token to populate their
+  // blink::Pages.
+  if (IsInMainFrame()) {
+    BrowserContext* browser_context =
+        frame_tree_node()->navigator().controller().GetBrowserContext();
+    canvas_noise_token_ =
+        GetContentClient()->browser()->ShouldEnableCanvasNoise(
+            browser_context, origin_to_commit->GetURL())
+            ? std::optional(CanvasNoiseTokenData::GetToken(
+                  browser_context, origin_to_commit.value()))
+            : std::nullopt;
   }
 
   if (ready_to_commit_callback_for_testing_)

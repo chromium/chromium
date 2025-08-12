@@ -20,6 +20,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
@@ -55,6 +56,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
+#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -1716,6 +1718,83 @@ TEST_F(ChromeContentBrowserClientTest, ShouldUseSpareRenderProcessHost) {
   EXPECT_EQ(SpareProcessRefusedByEmbedderReason::ExtensionProcess,
             refused_reason);
 #endif
+}
+
+class CanvasInterventionsContentBrowserClientTest
+    : public ChromeContentBrowserClientTest,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+ public:
+  CanvasInterventionsContentBrowserClientTest() {
+    std::tie(enable_canvas_interventions_, feature_enabled_in_regular_mode_,
+             run_in_regular_mode_) = GetParam();
+    SetFeatureFlags(enable_canvas_interventions_,
+                    feature_enabled_in_regular_mode_);
+  }
+
+  void SetFeatureFlags(bool is_canvas_interventions_feature_enabled,
+                       bool enable_in_regular_mode) {
+    if (is_canvas_interventions_feature_enabled) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          {
+              {fingerprinting_protection_interventions::features::kCanvasNoise,
+               {{"enable_in_regular_mode",
+                 base::ToString(enable_in_regular_mode)}}},
+          },
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              fingerprinting_protection_interventions::features::kCanvasNoise});
+    }
+  }
+
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    auto [enable_canvas_interventions_, feature_enabled_in_regular_mode_,
+          run_in_regular_mode_] = info.param;
+    return base::StringPrintf(
+        "%s_%s_%s",
+        enable_canvas_interventions_ ? "CanvasInterventionsEnabled"
+                                     : "CanvasInterventionsDisabled",
+        feature_enabled_in_regular_mode_ ? "EnabledInRegularMode"
+                                         : "DisabledInRegularMode",
+        run_in_regular_mode_ ? "RunInRegularMode" : "RunInIncognitoMode");
+  }
+
+ protected:
+  bool enable_canvas_interventions_;
+  bool feature_enabled_in_regular_mode_;
+  bool run_in_regular_mode_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+static auto kCanvasInterventionsTestParams =
+    testing::Combine(testing::Bool(), testing::Bool(), testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CanvasInterventionsContentBrowserClientTest,
+    kCanvasInterventionsTestParams,
+    CanvasInterventionsContentBrowserClientTest::DescribeParams);
+
+TEST_P(CanvasInterventionsContentBrowserClientTest,
+       InterventionsNavigationPropagatesCanvasInterventionsFeature) {
+  ChromeContentBrowserClient client;
+  const GURL some_url("http://example.test");
+
+  if (run_in_regular_mode_) {
+    EXPECT_EQ(enable_canvas_interventions_ && feature_enabled_in_regular_mode_,
+              client.ShouldEnableCanvasNoise(profile_.GetOriginalProfile(),
+                                             some_url));
+  } else {
+    EXPECT_EQ(enable_canvas_interventions_,
+              client.ShouldEnableCanvasNoise(
+                  profile_.GetOriginalProfile()->GetPrimaryOTRProfile(
+                      /*create_if_needed=*/true),
+                  some_url));
+  }
 }
 
 class WillComputeSiteForNavigationTest : public ChromeContentBrowserClientTest {

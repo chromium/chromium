@@ -1200,6 +1200,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::optional<std::vector<std::u16string>> GetClipboardTypesIfPolicyApplied(
       const ui::ClipboardSequenceNumberToken& seqno) override;
 
+  bool ShouldEnableCanvasNoise(content::BrowserContext* browser_context,
+                               const GURL& origin) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

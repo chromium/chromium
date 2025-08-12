@@ -10,17 +10,14 @@
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
-class NavigationHandle;
 class WebContents;
 }  // namespace content
 
 namespace fingerprinting_protection_interventions {
 
-// The InterventionsWebContentsHelper facilitates browser-side decisions such as
-// propagating and determining blink::RuntimeFeature enabled state overrides to
-// subsequent navigations. This is used primarily to ensure Navigations receive
-// the correct enablement state of the RuntimeFeature, with regard to other
-// factors such as URL-level exceptions and incognito.
+// TODO(https://crbug.com/377325952): Remove InterventionsWebContentsHelper as
+// it's no longer needed.
+
 class InterventionsWebContentsHelper
     : public content::WebContentsUserData<InterventionsWebContentsHelper>,
       public content::WebContentsObserver {
@@ -40,10 +37,6 @@ class InterventionsWebContentsHelper
  protected:
   InterventionsWebContentsHelper(content::WebContents* web_contents,
                                  bool is_incognito);
-
-  // content::WebContentsObserver:
-  void ReadyToCommitNavigation(
-      content::NavigationHandle* navigation_handle) override;
 
  private:
   friend class content::WebContentsUserData<InterventionsWebContentsHelper>;
