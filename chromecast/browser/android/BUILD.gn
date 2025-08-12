@@ -139,6 +139,7 @@ common_android_library_deps = [
   "//components/embedder_support/android:view_java",
   "//components/module_installer/android:module_installer_java",
   "//components/module_installer/android:module_interface_java",
+  "//components/viz/service:service_java",
   "//content/public/android:content_java",
   "//media/base/android:media_java",
   "//net/android:net_java",
