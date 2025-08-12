@@ -473,6 +473,14 @@
       base_feature: "none",
     },
     {
+      // Enables the new behavior for this spec change:
+      // https://github.com/whatwg/html/pull/11457
+      // https://issues.chromium.org/issues/433545121
+      // https://chromestatus.com/feature/5179013869993984
+      name: "AncestorRevealingNewSpec",
+      status: "stable",
+    },
+    {
       // Kill switch for https://crbug.com/415834974 which changes anchor
       // positioning adjustments to occur even in cases where there is no
       // scrollable overflow.

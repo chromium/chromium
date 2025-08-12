@@ -94,17 +94,17 @@ static void AutoExpandSearchableHiddenElementsUpFrameTree(Range* range) {
     needs_layout_shift_allowance = true;
   }
 
-  // If the active match is hidden inside a <details> element, then we should
-  // expand it so find-in-page can scroll to it.
-  if (HTMLDetailsElement::ExpandDetailsAncestors(first_node)) {
+  // If the active match is hidden inside a closed <details> element or
+  // hidden=until-found element, then we should expand it so find-in-page can
+  // scroll to it.
+  DisplayLockUtilities::RevealResult reveal_result =
+      DisplayLockUtilities::RevealAutoExpandableAncestors(first_node);
+  if (reveal_result.revealed_details) {
     needs_layout_shift_allowance = true;
     UseCounter::Count(first_node.GetDocument(),
                       WebFeature::kAutoExpandedDetailsForFindInPage);
   }
-
-  // If the active match is hidden inside a hidden=until-found element, then we
-  // should reveal it so find-in-page can scroll to it.
-  if (DisplayLockUtilities::RevealHiddenUntilFoundAncestors(first_node)) {
+  if (reveal_result.revealed_hidden_until_found) {
     needs_layout_shift_allowance = true;
     UseCounter::Count(first_node.GetDocument(),
                       WebFeature::kBeforematchRevealedHiddenMatchable);
@@ -134,12 +134,10 @@ static void AutoExpandSearchableHiddenElementsUpFrameTree(Range* range) {
       HTMLFrameOwnerElement* frame_element =
           local_frame->DeprecatedLocalOwner();
       DCHECK(frame_element);
-      bool frame_needs_style_and_layout = false;
-      frame_needs_style_and_layout |=
-          HTMLDetailsElement::ExpandDetailsAncestors(*frame_element);
-      frame_needs_style_and_layout |=
-          DisplayLockUtilities::RevealHiddenUntilFoundAncestors(*frame_element);
-      if (frame_needs_style_and_layout) {
+      reveal_result =
+          DisplayLockUtilities::RevealAutoExpandableAncestors(*frame_element);
+      if (reveal_result.revealed_details ||
+          reveal_result.revealed_hidden_until_found) {
         frame_element->GetDocument().UpdateStyleAndLayoutForNode(
             frame_element, DocumentUpdateReason::kFindInPage);
         needs_layout_shift_allowance = true;

@@ -537,17 +537,15 @@ void AnnotationAgentImpl::PerformPreAttachDOMMutation() {
     DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
         pending_range_->ToEphemeralRange());
 
-    // If the active match is hidden inside a <details> element, then we should
-    // expand it so we can scroll to it.
-    if (HTMLDetailsElement::ExpandDetailsAncestors(first_node)) {
+    // If the active match is hidden inside a <details> element or a
+    // hidden=until-found element, then we should expand it so we can scroll to
+    // it.
+    if (DisplayLockUtilities::RevealAutoExpandableAncestors(first_node)
+            .revealed_details) {
       UseCounter::Count(
           first_node.GetDocument(),
           WebFeature::kAutoExpandedDetailsForScrollToTextFragment);
     }
-
-    // If the active match is hidden inside a hidden=until-found element, then
-    // we should reveal it so we can scroll to it.
-    DisplayLockUtilities::RevealHiddenUntilFoundAncestors(first_node);
 
     // Ensure we leave clean layout since we'll be applying markers after this.
     first_node.GetDocument().UpdateStyleAndLayout(

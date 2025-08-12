@@ -292,42 +292,6 @@ bool HTMLDetailsElement::IsInteractiveContent() const {
   return true;
 }
 
-// static
-bool HTMLDetailsElement::ExpandDetailsAncestors(const Node& node) {
-  CHECK(&node);
-  // Since setting the open attribute could fire synchronous events (e.g.
-  // `blur`), which could mess with the FlatTreeTraversal iterator, we should
-  // first iterate details elements to open and then open them all.
-  HeapVector<Member<HTMLDetailsElement>> details_to_open;
-
-  for (Node& parent : FlatTreeTraversal::AncestorsOf(node)) {
-    if (HTMLDetailsElement* details = DynamicTo<HTMLDetailsElement>(parent)) {
-      // If the active match is inside the <summary> of a <details>, then we
-      // shouldn't expand the <details> because the active match is already
-      // visible.
-      bool inside_summary = false;
-      Element& summary = *details->FindMainSummary();
-      for (Node& ancestor : FlatTreeTraversal::AncestorsOf(node)) {
-        if (&ancestor == &summary) {
-          inside_summary = true;
-          break;
-        }
-      }
-
-      if (!inside_summary &&
-          !details->FastHasAttribute(html_names::kOpenAttr)) {
-        details_to_open.push_back(details);
-      }
-    }
-  }
-
-  for (HTMLDetailsElement* details : details_to_open) {
-    details->setAttribute(html_names::kOpenAttr, g_empty_atom);
-  }
-
-  return details_to_open.size();
-}
-
 bool HTMLDetailsElement::IsValidBuiltinCommand(HTMLElement& invoker,
                                                CommandEventType command) {
   bool parent_is_valid = HTMLElement::IsValidBuiltinCommand(invoker, command);
@@ -374,6 +338,10 @@ bool HTMLDetailsElement::HandleCommandInternal(HTMLElement& invoker,
   }
 
   return true;
+}
+
+bool HTMLDetailsElement::IsAssignedToContentSlot(const Node& node) const {
+  return node.AssignedSlot() == content_slot_;
 }
 
 }  // namespace blink

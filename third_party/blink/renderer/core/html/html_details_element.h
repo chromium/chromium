@@ -42,12 +42,6 @@ class HTMLDetailsElement final : public HTMLElement {
 
   void Trace(Visitor*) const override;
 
-  // Walks up the ancestor chain and expands all <details> elements found along
-  // the way by setting the open attribute. If any were expanded, returns true.
-  // This method may run script because of the synchronous events fired when
-  // setting the open attribute.
-  static bool ExpandDetailsAncestors(const Node&);
-
   bool IsValidBuiltinCommand(HTMLElement& invoker,
                              CommandEventType command) override;
   bool HandleCommandInternal(HTMLElement& invoker,
@@ -58,6 +52,10 @@ class HTMLDetailsElement final : public HTMLElement {
   const AtomicString& GetName() const {
     return FastGetAttribute(html_names::kNameAttr);
   }
+
+  // Returns true if `node` is a child of this details element which is slotted
+  // into the content slot, as opposed to the summary slot.
+  bool IsAssignedToContentSlot(const Node& node) const;
 
  private:
   void DispatchPendingEvent(const AttributeModificationReason);

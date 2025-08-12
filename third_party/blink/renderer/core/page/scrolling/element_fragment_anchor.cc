@@ -81,8 +81,7 @@ ElementFragmentAnchor* ElementFragmentAnchor::TryCreate(const KURL& url,
   if (!should_scroll)
     return nullptr;
 
-  HTMLDetailsElement::ExpandDetailsAncestors(*anchor_node);
-  DisplayLockUtilities::RevealHiddenUntilFoundAncestors(*anchor_node);
+  DisplayLockUtilities::RevealAutoExpandableAncestors(*anchor_node);
 
   return MakeGarbageCollected<ElementFragmentAnchor>(*anchor_node, frame);
 }

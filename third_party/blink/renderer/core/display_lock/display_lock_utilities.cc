@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/editing/editing_boundary.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
@@ -836,13 +837,53 @@ bool DisplayLockUtilities::IsAutoWithoutLayout(const LayoutObject& object) {
          !context->HadLifecycleUpdateSinceLastUnlock();
 }
 
-bool DisplayLockUtilities::RevealHiddenUntilFoundAncestors(const Node& node) {
+namespace {
+
+// This method follows the old spec and will be removed, hence the "Legacy"
+// name.
+bool LegacyExpandDetailsAncestors(const Node& node) {
   // Since setting the open attribute could fire synchronous events (e.g.
   // `blur`), which could mess with the FlatTreeTraversal iterator, we should
-  // first iterate details elements to open and then open them all.
+  // first iterate details elements and then open them all.
+  HeapVector<Member<HTMLDetailsElement>> details_to_open;
+
+  for (Node& parent : FlatTreeTraversal::AncestorsOf(node)) {
+    if (HTMLDetailsElement* details = DynamicTo<HTMLDetailsElement>(parent)) {
+      // If the active match is inside the <summary> of a <details>, then we
+      // shouldn't expand the <details> because the active match is already
+      // visible.
+      bool inside_summary = false;
+      Element& summary = *details->FindMainSummary();
+      for (Node& ancestor : FlatTreeTraversal::AncestorsOf(node)) {
+        if (&ancestor == &summary) {
+          inside_summary = true;
+          break;
+        }
+      }
+
+      if (!inside_summary &&
+          !details->FastHasAttribute(html_names::kOpenAttr)) {
+        details_to_open.push_back(details);
+      }
+    }
+  }
+
+  for (HTMLDetailsElement* details : details_to_open) {
+    details->SetBooleanAttribute(html_names::kOpenAttr, true);
+  }
+
+  return details_to_open.size();
+}
+
+// This method follows the old spec and will be removed, hence the "Legacy"
+// name.
+bool LegacyRevealHiddenUntilFoundAncestors(const Node& node) {
+  // Since setting the open attribute could fire synchronous events (e.g.
+  // `blur`), which could mess with the FlatTreeTraversal iterator, we should
+  // first iterate details elements and then open them all.
   HeapVector<Member<HTMLElement>> elements_to_reveal;
 
-  for (Node& parent : AncestorTraversal(&node, true)) {
+  for (Node& parent : AncestorTraversal<FlatTreeTraversal>(&node, true)) {
     if (HTMLElement* element = DynamicTo<HTMLElement>(parent)) {
       if (EqualIgnoringASCIICase(
               element->FastGetAttribute(html_names::kHiddenAttr),
@@ -862,6 +903,82 @@ bool DisplayLockUtilities::RevealHiddenUntilFoundAncestors(const Node& node) {
   }
 
   return elements_to_reveal.size();
+}
+
+}  // namespace
+
+// static
+DisplayLockUtilities::RevealResult
+DisplayLockUtilities::RevealAutoExpandableAncestors(const Node& target) {
+  if (!RuntimeEnabledFeatures::AncestorRevealingNewSpecEnabled()) {
+    RevealResult reveal_result;
+    reveal_result.revealed_details = LegacyExpandDetailsAncestors(target);
+    reveal_result.revealed_hidden_until_found =
+        LegacyRevealHiddenUntilFoundAncestors(target);
+    return reveal_result;
+  }
+
+  // https://html.spec.whatwg.org/#ancestor-revealing-algorithm
+  enum class AncestorType {
+    kDetails = 0,
+    kHiddenUntilFound = 1,
+  };
+  HeapVector<std::pair<Member<HTMLElement>, AncestorType>> ancestors_to_reveal;
+
+  for (Node& ancestor : AncestorTraversal<FlatTreeTraversal>(&target, true)) {
+    if (HTMLElement* element = DynamicTo<HTMLElement>(ancestor)) {
+      if (EqualIgnoringASCIICase(
+              element->FastGetAttribute(html_names::kHiddenAttr),
+              keywords::kUntilFound)) {
+        ancestors_to_reveal.push_back(
+            std::make_pair(element, AncestorType::kHiddenUntilFound));
+      }
+    }
+    if (auto* parent_details =
+            DynamicTo<HTMLDetailsElement>(ancestor.parentNode())) {
+      if (!parent_details->FastHasAttribute(html_names::kOpenAttr) &&
+          parent_details->IsAssignedToContentSlot(ancestor)) {
+        ancestors_to_reveal.push_back(
+            std::make_pair(parent_details, AncestorType::kDetails));
+      }
+    }
+  }
+
+  RevealResult reveal_result;
+
+  for (auto& reveal_pair : ancestors_to_reveal) {
+    if (!reveal_pair.first->isConnected()) {
+      return reveal_result;
+    }
+    if (reveal_pair.second == AncestorType::kHiddenUntilFound) {
+      if (!EqualIgnoringASCIICase(
+              reveal_pair.first->FastGetAttribute(html_names::kHiddenAttr),
+              keywords::kUntilFound)) {
+        return reveal_result;
+      }
+
+      reveal_pair.first->DispatchEvent(
+          *Event::CreateBubble(event_type_names::kBeforematch));
+      if (!reveal_pair.first->isConnected() ||
+          !EqualIgnoringASCIICase(
+              reveal_pair.first->FastGetAttribute(html_names::kHiddenAttr),
+              keywords::kUntilFound)) {
+        return reveal_result;
+      }
+
+      reveal_pair.first->removeAttribute(html_names::kHiddenAttr);
+      reveal_result.revealed_hidden_until_found = true;
+    } else {
+      CHECK_EQ(reveal_pair.second, AncestorType::kDetails);
+      if (reveal_pair.first->FastHasAttribute(html_names::kOpenAttr)) {
+        return reveal_result;
+      }
+      reveal_pair.first->SetBooleanAttribute(html_names::kOpenAttr, true);
+      reveal_result.revealed_details = true;
+    }
+  }
+
+  return reveal_result;
 }
 
 static bool CheckSelf(const Node* node) {
