@@ -15,6 +15,7 @@
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -68,10 +69,14 @@ const std::string GetNameForFeatureStatus(phonehub::FeatureStatus status) {
 // on the shelf and the Phone Hub bubble opened upon clicking that icon.
 class PhoneHubPixelTest : public AshTestBase {
  public:
+  explicit PhoneHubPixelTest(bool enable_system_blur)
+      : enable_system_blur_(enable_system_blur) {}
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = enable_system_blur_;
+    return init_params;
   }
 
   // AshTestBase:
@@ -115,6 +120,7 @@ class PhoneHubPixelTest : public AshTestBase {
   }
 
  protected:
+  const bool enable_system_blur_;
   raw_ptr<PhoneHubTray> phone_hub_tray_ = nullptr;
   phonehub::FakePhoneHubManager phone_hub_manager_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
@@ -125,21 +131,30 @@ class PhoneHubPixelTest : public AshTestBase {
 class PhoneHubParameterizedPixelTest
     : public PhoneHubPixelTest,
       public testing::WithParamInterface<
-          std::tuple<ShelfAlignment, phonehub::FeatureStatus>> {
+          std::tuple<ShelfAlignment,
+                     phonehub::FeatureStatus,
+                     /*enable_system_blur=*/bool>> {
  public:
-  const std::string GetScreenshotNameSuffix() {
-    return GetNameForShelfAlignment(GetShelfAlignment()) +
-           GetNameForFeatureStatus(GetFeatureStatus());
+  PhoneHubParameterizedPixelTest() : PhoneHubPixelTest(IsSystemBlurEnabled()) {}
+
+  std::string GenerateScreenshotName(const std::string& title) override {
+    return pixel_test_helper()->GenerateScreenshotName(
+        title + GetNameForShelfAlignment(GetShelfAlignment()) +
+        GetNameForFeatureStatus(GetFeatureStatus()));
   }
 
-  ShelfAlignment GetShelfAlignment() { return std::get<0>(GetParam()); }
-  phonehub::FeatureStatus GetFeatureStatus() { return std::get<1>(GetParam()); }
+  ShelfAlignment GetShelfAlignment() const { return std::get<0>(GetParam()); }
+  phonehub::FeatureStatus GetFeatureStatus() const {
+    return std::get<1>(GetParam());
+  }
+  bool IsSystemBlurEnabled() const { return std::get<2>(GetParam()); }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PhoneHubParameterizedPixelTest,
                          testing::Combine(testing::ValuesIn(kShelfAlignments),
-                                          testing::ValuesIn(kFeatureStatuses)));
+                                          testing::ValuesIn(kFeatureStatuses),
+                                          testing::Bool()));
 
 TEST_P(PhoneHubParameterizedPixelTest, PhoneHubTrayOnShelf) {
   GetPrimaryShelf()->SetAlignment(GetShelfAlignment());
@@ -148,8 +163,9 @@ TEST_P(PhoneHubParameterizedPixelTest, PhoneHubTrayOnShelf) {
   GetPhoneHubTray()->SetIsActive(true);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "phone_hub_tray" + GetScreenshotNameSuffix(),
-      /* revision_number= */ 0, GetPhoneHubTray()));
+      GenerateScreenshotName("phone_hub_tray"),
+      /* revision_number= */ pixel_test_helper()->IsSystemBlurEnabled() ? 0 : 0,
+      GetPhoneHubTray()));
 }
 
 // TODO(b:383384907) disable animations before enabling this test.
@@ -166,9 +182,9 @@ TEST_P(PhoneHubParameterizedPixelTest,
   LeftClickOn(phone_hub_tray);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "phone_hub_bubble" + GetScreenshotNameSuffix(),
-      /* revision_number= */ 1, phone_hub_tray,
-      phone_hub_tray->GetBubbleView()));
+      GenerateScreenshotName("phone_hub_bubble"),
+      /* revision_number= */ pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
+      phone_hub_tray, phone_hub_tray->GetBubbleView()));
 }
 
 }  // namespace ash

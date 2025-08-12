@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
+
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/shelf.h"
@@ -21,6 +23,7 @@
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/i18n/rtl.h"
 #include "base/test/scoped_feature_list.h"
@@ -49,10 +52,14 @@ const std::string GetNameForShelfAlignment(ShelfAlignment alignment) {
 // the bottom right corner.
 class StatusAreaPixelTest : public AshTestBase {
  public:
+  explicit StatusAreaPixelTest(bool enable_system_blur)
+      : enable_system_blur_(enable_system_blur) {}
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = enable_system_blur_;
+    return init_params;
   }
 
   // AshTestBase:
@@ -76,21 +83,28 @@ class StatusAreaPixelTest : public AshTestBase {
 
  private:
   std::unique_ptr<NotificationCenterTestApi> notification_test_api_;
+  const bool enable_system_blur_;
 };
 
 class StatusAreaParameterizedPixelTest
     : public StatusAreaPixelTest,
-      public testing::WithParamInterface<std::tuple<ShelfAlignment,
-                                                    bool /*IsTabletMode()*/,
-                                                    bool /*IsRTL()*/,
-                                                    bool /*IsActive()*/>> {
+      public testing::WithParamInterface<
+          std::tuple<ShelfAlignment,
+                     bool /*IsTabletMode()*/,
+                     bool /*IsRTL()*/,
+                     bool /*IsActive()*/,
+                     bool /*IsSystemBlurEnabled()*/>> {
  public:
-  ShelfAlignment GetShelfAlignment() { return std::get<0>(GetParam()); }
-  bool IsTabletMode() { return std::get<1>(GetParam()); }
-  bool IsRTL() { return std::get<2>(GetParam()); }
-  bool IsActive() { return std::get<3>(GetParam()); }
+  StatusAreaParameterizedPixelTest()
+      : StatusAreaPixelTest(IsSystemBlurEnabled()) {}
 
-  const std::string GetScreenshotNameSuffix() {
+  ShelfAlignment GetShelfAlignment() const { return std::get<0>(GetParam()); }
+  bool IsTabletMode() const { return std::get<1>(GetParam()); }
+  bool IsRTL() const { return std::get<2>(GetParam()); }
+  bool IsActive() const { return std::get<3>(GetParam()); }
+  bool IsSystemBlurEnabled() const { return std::get<4>(GetParam()); }
+
+  std::string GenerateScreenshotName(const std::string& title) override {
     std::string screenshot_name_prefix =
         GetNameForShelfAlignment(GetShelfAlignment());
 
@@ -106,19 +120,22 @@ class StatusAreaParameterizedPixelTest
       screenshot_name_prefix += "_active";
     }
 
-    return screenshot_name_prefix;
+    return pixel_test_helper()->GenerateScreenshotName(title +
+                                                       screenshot_name_prefix);
   }
 };
 
 const ShelfAlignment kShelfAlignments[] = {
     ShelfAlignment::kBottom, ShelfAlignment::kLeft, ShelfAlignment::kRight};
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         StatusAreaParameterizedPixelTest,
-                         testing::Combine(testing::ValuesIn(kShelfAlignments),
-                                          testing::Bool() /*IsTabletMode()*/,
-                                          testing::Bool() /*IsRTL()*/,
-                                          testing::Bool() /*IsActive()*/));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    StatusAreaParameterizedPixelTest,
+    testing::Combine(testing::ValuesIn(kShelfAlignments),
+                     testing::Bool() /*IsTabletMode()*/,
+                     testing::Bool() /*IsRTL()*/,
+                     testing::Bool() /*IsActive()*/,
+                     testing::Bool() /*IsSystemBlurEnabled()*/));
 
 TEST_P(StatusAreaParameterizedPixelTest, SystemTrayTest) {
   GetPrimaryShelf()->SetAlignment(GetShelfAlignment());
@@ -129,7 +146,8 @@ TEST_P(StatusAreaParameterizedPixelTest, SystemTrayTest) {
   system_tray->SetIsActive(IsActive());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "system_tray" + GetScreenshotNameSuffix(), /*revision_number=*/6,
+      GenerateScreenshotName("system_tray"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 0,
       system_tray));
 }
 
@@ -142,7 +160,8 @@ TEST_P(StatusAreaParameterizedPixelTest, DateTrayTest) {
   date_tray->SetIsActive(IsActive());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "date_tray" + GetScreenshotNameSuffix(), /*revision_number=*/6,
+      GenerateScreenshotName("date_tray"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 0,
       date_tray));
 }
 
@@ -158,24 +177,32 @@ TEST_P(StatusAreaParameterizedPixelTest,
   notification_tray->SetIsActive(IsActive());
   EXPECT_TRUE(notification_tray->GetVisible());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "notification_tray" + GetScreenshotNameSuffix(), /*revision_number=*/1,
+      GenerateScreenshotName("notification_tray"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
       notification_tray));
 }
 
 class StatusAreaParamerterizedAlignmentPixelTest
     : public StatusAreaPixelTest,
-      public testing::WithParamInterface<ShelfAlignment> {
+      public testing::WithParamInterface<
+          std::tuple<ShelfAlignment, /*enable_system_blur=*/bool>> {
  public:
-  ShelfAlignment GetShelfAlignment() { return GetParam(); }
+  StatusAreaParamerterizedAlignmentPixelTest()
+      : StatusAreaPixelTest(EnableSystemBlur()) {}
 
-  const std::string GetScreenshotNameSuffix() {
-    return GetNameForShelfAlignment(GetShelfAlignment());
+  ShelfAlignment GetShelfAlignment() { return std::get<0>(GetParam()); }
+  bool EnableSystemBlur() { return std::get<1>(GetParam()); }
+
+  std::string GenerateScreenshotName(const std::string& title) override {
+    return pixel_test_helper()->GenerateScreenshotName(
+        title + GetNameForShelfAlignment(GetShelfAlignment()));
   }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          StatusAreaParamerterizedAlignmentPixelTest,
-                         testing::ValuesIn(kShelfAlignments));
+                         testing::Combine(testing::ValuesIn(kShelfAlignments),
+                                          testing::Bool()));
 
 // TODO(crbug.com/40934073): Disabled due to excessive flakiness.
 TEST_P(StatusAreaParamerterizedAlignmentPixelTest, DISABLED_OverflowTray) {
@@ -196,14 +223,21 @@ TEST_P(StatusAreaParamerterizedAlignmentPixelTest, DISABLED_OverflowTray) {
   ASSERT_TRUE(overflow_tray->GetVisible());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "overflow_tray" + GetScreenshotNameSuffix(),
-      /*revision_number=*/0, overflow_tray));
+      GenerateScreenshotName("overflow_tray"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 0 : 0,
+      overflow_tray));
 }
 
-class StatusAreaBatteryPixelTest : public StatusAreaPixelTest,
-                                   public testing::WithParamInterface<bool> {
+class StatusAreaBatteryPixelTest
+    : public StatusAreaPixelTest,
+      public testing::WithParamInterface<
+          std::tuple</*battery_badge_icon_enabled=*/bool,
+                     /*enable_system_blur=*/bool>> {
  public:
-  bool IsBatteryBadgeIconEnabled() { return GetParam(); }
+  StatusAreaBatteryPixelTest() : StatusAreaPixelTest(EnableSystemBlur()) {}
+
+  bool IsBatteryBadgeIconEnabled() { return std::get<0>(GetParam()); }
+  bool EnableSystemBlur() { return std::get<1>(GetParam()); }
 
   FakePowerStatus* GetFakePowerStatus() {
     return scoped_fake_power_status_->fake_power_status();
@@ -229,8 +263,9 @@ class StatusAreaBatteryPixelTest : public StatusAreaPixelTest,
     AshTestBase::TearDown();
   }
 
-  std::string GetScreenshotName(const std::string& test_name, bool new_icon) {
-    return test_name + (new_icon ? "_new" : "_old");
+  std::string GenerateScreenshotName(const std::string& title) override {
+    return pixel_test_helper()->GenerateScreenshotName(
+        title + (IsBatteryBadgeIconEnabled() ? "_new" : "_old"));
   }
 
  private:
@@ -238,40 +273,46 @@ class StatusAreaBatteryPixelTest : public StatusAreaPixelTest,
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         StatusAreaBatteryPixelTest,
-                         /*IsBatteryBadgeIconEnabled()=*/testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    StatusAreaBatteryPixelTest,
+    testing::Combine(/*IsBatteryBadgeIconEnabled()=*/testing::Bool(),
+                     /*EnableSystemBlur=*/testing::Bool()));
 
 TEST_P(StatusAreaBatteryPixelTest, BoltIcon) {
   auto* fake_power_status = GetFakePowerStatus();
   fake_power_status->SetIsLinePowerConnected(true);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetScreenshotName("bolt_icon", IsBatteryBadgeIconEnabled()),
-      /*revision_number=*/0, power_tray_view()));
+      GenerateScreenshotName("bolt_icon"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 0 : 0,
+      power_tray_view()));
 }
 
 TEST_P(StatusAreaBatteryPixelTest, UnreliableIcon) {
   auto* fake_power_status = GetFakePowerStatus();
   fake_power_status->SetIsUsbChargerConnected(true);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetScreenshotName("unreliable_icon", IsBatteryBadgeIconEnabled()),
-      /*revision_number=*/0, power_tray_view()));
+      GenerateScreenshotName("unreliable_icon"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 0 : 0,
+      power_tray_view()));
 }
 
 TEST_P(StatusAreaBatteryPixelTest, BatterySaverPlusIcon) {
   FakePowerStatus* fake_power_status = GetFakePowerStatus();
   fake_power_status->SetIsBatterySaverActive(true);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetScreenshotName("battery_saver_plus_icon", IsBatteryBadgeIconEnabled()),
-      /*revision_number=*/0, power_tray_view()));
+      GenerateScreenshotName("battery_saver_plus_icon"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 0 : 0,
+      power_tray_view()));
 }
 
 TEST_P(StatusAreaBatteryPixelTest, AlertIcon) {
   auto* fake_power_status = GetFakePowerStatus();
   fake_power_status->SetBatteryPercent(1);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetScreenshotName("alert_icon", IsBatteryBadgeIconEnabled()),
-      /*revision_number=*/0, power_tray_view()));
+      GenerateScreenshotName("alert_icon"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 0 : 0,
+      power_tray_view()));
 }
 
 }  // namespace ash

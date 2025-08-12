@@ -8,6 +8,7 @@
 #include "ash/system/toast/system_nudge_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
@@ -42,7 +43,9 @@ const std::u16string long_body_text =
 
 }  // namespace
 
-class SystemNudgeViewPixelTest : public AshTestBase {
+class SystemNudgeViewPixelTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*enable_system_blur=*/bool> {
  public:
   void SetUp() override {
     AshTestBase::SetUp();
@@ -69,14 +72,21 @@ class SystemNudgeViewPixelTest : public AshTestBase {
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = GetParam();
+    return init_params;
   }
 
  private:
   std::unique_ptr<views::Widget> test_widget_;
 };
 
-TEST_F(SystemNudgeViewPixelTest, TextOnly) {
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    SystemNudgeViewPixelTest,
+    testing::Bool());
+
+TEST_P(SystemNudgeViewPixelTest, TextOnly) {
   // Set up base nudge data, which has an id, a catalog name and a body text.
   auto nudge_data = CreateBaseNudgeData();
 
@@ -84,10 +94,12 @@ TEST_F(SystemNudgeViewPixelTest, TextOnly) {
       std::make_unique<SystemNudgeView>(nudge_data));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/1, GetContentsView()));
+      GenerateScreenshotName("screenshot"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
+      GetContentsView()));
 }
 
-TEST_F(SystemNudgeViewPixelTest, TextOnly_LongText) {
+TEST_P(SystemNudgeViewPixelTest, TextOnly_LongText) {
   // Set up base nudge data and set a long text.
   auto nudge_data = CreateBaseNudgeData();
   nudge_data.body_text = long_body_text;
@@ -96,10 +108,12 @@ TEST_F(SystemNudgeViewPixelTest, TextOnly_LongText) {
       std::make_unique<SystemNudgeView>(nudge_data));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/1, GetContentsView()));
+      GenerateScreenshotName("screenshot"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
+      GetContentsView()));
 }
 
-TEST_F(SystemNudgeViewPixelTest, WithButtons) {
+TEST_P(SystemNudgeViewPixelTest, WithButtons) {
   // Set up base nudge data, set a long text and add buttons.
   auto nudge_data = CreateBaseNudgeData();
   nudge_data.body_text = long_body_text;
@@ -110,10 +124,12 @@ TEST_F(SystemNudgeViewPixelTest, WithButtons) {
       std::make_unique<SystemNudgeView>(nudge_data));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/1, GetContentsView()));
+      GenerateScreenshotName("screenshot"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
+      GetContentsView()));
 }
 
-TEST_F(SystemNudgeViewPixelTest, TitleAndLeadingImage) {
+TEST_P(SystemNudgeViewPixelTest, TitleAndLeadingImage) {
   // Set up base nudge data, set a long text, a title and a leading image.
   auto nudge_data = CreateBaseNudgeData();
   nudge_data.image_model = ui::ImageModel::FromVectorIcon(
@@ -126,10 +142,12 @@ TEST_F(SystemNudgeViewPixelTest, TitleAndLeadingImage) {
       std::make_unique<SystemNudgeView>(nudge_data));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/1, GetContentsView()));
+      GenerateScreenshotName("screenshot"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
+      GetContentsView()));
 }
 
-TEST_F(SystemNudgeViewPixelTest, TitleAndLeadingImageWithButtons) {
+TEST_P(SystemNudgeViewPixelTest, TitleAndLeadingImageWithButtons) {
   // Set up base nudge data, set a long text, title, leading image and buttons.
   auto nudge_data = CreateBaseNudgeData();
   nudge_data.image_model = ui::ImageModel::FromVectorIcon(
@@ -144,10 +162,12 @@ TEST_F(SystemNudgeViewPixelTest, TitleAndLeadingImageWithButtons) {
       std::make_unique<SystemNudgeView>(nudge_data));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/1, GetContentsView()));
+      GenerateScreenshotName("screenshot"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
+      GetContentsView()));
 }
 
-TEST_F(SystemNudgeViewPixelTest, AnchoredNudgeWithPointyCorner) {
+TEST_P(SystemNudgeViewPixelTest, AnchoredNudgeWithPointyCorner) {
   // Set up base nudge data and add an anchor view.
   auto nudge_data = CreateBaseNudgeData();
   auto* anchor_view =
@@ -160,7 +180,9 @@ TEST_F(SystemNudgeViewPixelTest, AnchoredNudgeWithPointyCorner) {
       std::make_unique<SystemNudgeView>(nudge_data));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/1, GetContentsView()));
+      GenerateScreenshotName("screenshot"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
+      GetContentsView()));
 }
 
 }  // namespace ash

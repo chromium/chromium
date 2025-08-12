@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/unified/date_tray.h"
-
 #include "ash/shelf/shelf.h"
+#include "ash/system/unified/date_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 
 namespace ash {
 
-class DateTrayPixelTest : public AshTestBase {
+class DateTrayPixelTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*enable_system_blur=*/bool> {
  public:
   DateTrayPixelTest() = default;
   DateTrayPixelTest(const DateTrayPixelTest&) = delete;
@@ -21,7 +23,9 @@ class DateTrayPixelTest : public AshTestBase {
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = GetParam();
+    return init_params;
   }
 
  protected:
@@ -30,9 +34,14 @@ class DateTrayPixelTest : public AshTestBase {
   }
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    DateTrayPixelTest,
+    testing::Bool());
+
 // Tests the inactive date tray UI for bottom shelf alignment and side shelf
 // alignment.
-TEST_F(DateTrayPixelTest, InactiveDateTrayInBottomAndSideShelfPositions) {
+TEST_P(DateTrayPixelTest, InactiveDateTrayInBottomAndSideShelfPositions) {
   auto* shelf = GetPrimaryShelf();
 
   // Tests the bottom shelf.
@@ -42,7 +51,8 @@ TEST_F(DateTrayPixelTest, InactiveDateTrayInBottomAndSideShelfPositions) {
   // By default `bottom_date_tray` should be inactive.
   ASSERT_FALSE(bottom_date_tray->is_active());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bottom_shelf_inactive_date_tray", /*revision_number=*/1,
+      GenerateScreenshotName("bottom_shelf_inactive_date_tray"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
       bottom_date_tray));
 
   // Tests the side shelf.
@@ -52,12 +62,14 @@ TEST_F(DateTrayPixelTest, InactiveDateTrayInBottomAndSideShelfPositions) {
   // `side_date_tray` should remain inactive.
   ASSERT_FALSE(side_date_tray->is_active());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "side_shelf_inactive_date_tray", /*revision_number=*/1, side_date_tray));
+      GenerateScreenshotName("side_shelf_inactive_date_tray"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
+      side_date_tray));
 }
 
 // Tests the active date tray UI for bottom shelf alignment and side shelf
 // alignment.
-TEST_F(DateTrayPixelTest, ActiveDateTrayInBottomAndSideShelfPositions) {
+TEST_P(DateTrayPixelTest, ActiveDateTrayInBottomAndSideShelfPositions) {
   auto* shelf = GetPrimaryShelf();
 
   // Tests the bottom shelf.
@@ -68,7 +80,8 @@ TEST_F(DateTrayPixelTest, ActiveDateTrayInBottomAndSideShelfPositions) {
   bottom_date_tray->SetIsActive(/*is_active=*/true);
   ASSERT_TRUE(bottom_date_tray->is_active());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bottom_shelf_active_date_tray", /*revision_number=*/1,
+      GenerateScreenshotName("bottom_shelf_active_date_tray"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
       bottom_date_tray));
 
   // Tests the side shelf.
@@ -79,7 +92,9 @@ TEST_F(DateTrayPixelTest, ActiveDateTrayInBottomAndSideShelfPositions) {
   side_date_tray->SetIsActive(/*is_active=*/true);
   ASSERT_TRUE(side_date_tray->is_active());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "side_shelf_active_date_tray", /*revision_number=*/1, side_date_tray));
+      GenerateScreenshotName("side_shelf_active_date_tray"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
+      side_date_tray));
 }
 
 }  // namespace ash
