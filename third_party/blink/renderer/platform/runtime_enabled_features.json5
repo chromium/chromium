@@ -3949,6 +3949,12 @@
       name: "RemoveCharsetAutoDetectionForISO2022JP",
       status: "stable",
     },
+    // After paste operation removes the placeholder <br> tag
+    // that gets inserted in contenteditable as placeholder for newline
+    {
+      name: "RemoveCollapsedPlaceholderForContentEditable",
+      status: "stable"
+    },
     {
       name: "RemoveDanglingMarkupInTarget",
       status: "stable",

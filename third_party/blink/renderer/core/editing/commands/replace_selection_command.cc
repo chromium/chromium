@@ -1359,7 +1359,16 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
-  Position placeholder = ComputePlaceholderToCollapseAt(insertion_pos);
+  Position placeholder;
+  if (RuntimeEnabledFeatures::
+          RemoveCollapsedPlaceholderForContentEditableEnabled()) {
+    placeholder = IsEditablePosition(insertion_pos) &&
+                          IsRichlyEditablePosition(insertion_pos)
+                      ? ComputePlaceholderToCollapseAt(insertion_pos)
+                      : Position();
+  } else {
+    placeholder = ComputePlaceholderToCollapseAt(insertion_pos);
+  }
 
   // If the downstream node has been removed there's no point in continuing.
   if (!MostForwardCaretPosition(insertion_pos).AnchorNode())
