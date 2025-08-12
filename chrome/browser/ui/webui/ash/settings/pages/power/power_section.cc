@@ -177,6 +177,8 @@ void PowerSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_POWER_OPTIMIZED_CHARGING_LABEL},
       {"powerOptimizedChargingChangeLabel",
        IDS_SETTINGS_POWER_OPTIMIZED_CHARGING_MODE_CHANGE_LABEL},
+      {"powerOptimizedChargingChangeAriaLabel",
+       IDS_SETTINGS_POWER_OPTIMIZED_CHARGING_MODE_CHANGE_ARIA_LABEL},
       {"powerOptimizedChargingDialogCancelLabel", IDS_SETTINGS_CANCEL_BUTTON},
       {"powerOptimizedChargingDialogDoneLabel", IDS_SETTINGS_DONE_BUTTON},
       {"powerBatteryChargeLimitLabel",

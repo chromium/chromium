@@ -5935,6 +5935,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_POWER_OPTIMIZED_CHARGING_MODE_CHANGE_LABEL" desc="In Device Settings > Power, the text of the optimized charging change mode button, which creates a dialog that allows the user to pick between adaptive charging and a charge limit." translateable="false">
     Change
   </message>
+  <message name="IDS_SETTINGS_POWER_OPTIMIZED_CHARGING_MODE_CHANGE_ARIA_LABEL" desc="In Device Settings > Power, aria label for the button which changes the optimized charging strategy." translateable="false">
+    Change the optimized charging strategy.
+  </message>
   <message name="IDS_SETTINGS_POWER_BATTERY_CHARGE_LIMIT_LABEL" desc="In Device Settings > Power > Optimized Charging > Change, the title of the battery charge limit feature, which explicitly limits the battery charging to 80%." translateable="false">
     Charge limit
   </message>
