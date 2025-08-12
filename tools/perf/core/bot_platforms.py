@@ -1112,6 +1112,22 @@ ANDROID_PIXEL9_PRO_XL = PerfPlatform(
     'android',
     executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
     crossbench=_CROSSBENCH_PIXEL9)
+ANDROID_PIXEL25_ULTRA = PerfPlatform(
+    'android-pixel25-ultra-perf',
+    'Android B',
+    _ANDROID_PIXEL9_BENCHMARK_CONFIGS,
+    4,
+    'android',
+    executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
+    crossbench=_CROSSBENCH_PIXEL9)
+ANDROID_PIXEL25_ULTRA_XL = PerfPlatform(
+    'android-pixel25-ultra-xl-perf',
+    'Android B',
+    _ANDROID_PIXEL9_BENCHMARK_CONFIGS,
+    3,
+    'android',
+    executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
+    crossbench=_CROSSBENCH_PIXEL9)
 # Cros
 FUCHSIA_PERF_NELSON = PerfPlatform('fuchsia-perf-nsn',
                                    '',

@@ -15,6 +15,8 @@
  * [android-nissa-uldren-8gb-perf](https://ci.chromium.org/p/chrome/builders/ci/android-nissa-uldren-8gb-perf): Nissa SKU uldren_99C4LZ/Q1XT/6W_8GB.
  * [android-pixel-fold-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel-fold-perf): Android U.
  * [android-pixel-tangor-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel-tangor-perf): Android U.
+ * [android-pixel25-ultra-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel25-ultra-perf): Android B.
+ * [android-pixel25-ultra-xl-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel25-ultra-xl-perf): Android B.
  * [android-pixel4-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4-perf): Android R.
  * [android-pixel4_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4_webview-perf): Android R.
  * [android-pixel4_webview-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4_webview-perf-pgo): Android R.

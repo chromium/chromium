@@ -125,6 +125,8 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset([
     'android-pixel9-perf',
     'android-pixel9-pro-perf',
     'android-pixel9-pro-xl-perf',
+    'android-pixel25-ultra-perf',
+    'android-pixel25-ultra-xl-perf',
     'android-brya-kano-i5-8gb-perf',
     'android-corsola-steelix-8gb-perf',
     'android-nissa-uldren-8gb-perf',
@@ -872,6 +874,36 @@ BUILDERS = {
             'pool': 'chrome.tests.perf',
             'os': 'Android',
             'device_type': 'komodo',
+            'device_os': 'B',
+            'device_os_flavor': 'google',
+        },
+    },
+    'android-pixel25-ultra-perf': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
+        }],
+        'platform':
+        'android-trichrome-chrome-google-64-32-bundle',
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Android',
+            'device_type': 'mustang',
+            'device_os': 'B',
+            'device_os_flavor': 'google',
+        },
+    },
+    'android-pixel25-ultra-xl-perf': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
+        }],
+        'platform':
+        'android-trichrome-chrome-google-64-32-bundle',
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Android',
+            'device_type': 'blazer',
             'device_os': 'B',
             'device_os_flavor': 'google',
         },
