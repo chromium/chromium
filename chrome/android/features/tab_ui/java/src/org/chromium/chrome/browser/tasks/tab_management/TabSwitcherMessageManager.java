@@ -384,17 +384,16 @@ public class TabSwitcherMessageManager {
                             mLifecycleDispatcher);
             mMessageCardProviderCoordinator.subscribeMessageService(
                     mIncognitoReauthPromoMessageService);
-
-            if (ChromeFeatureList.sTabSwitcherGroupSuggestionsAndroid.isEnabled()) {
-                mTabGroupSuggestionMessageService =
-                        new TabGroupSuggestionMessageService(
-                                mActivity,
-                                mCurrentTabGroupModelFilterSupplier,
-                                this::addTabGroupSuggestionMessage,
-                                this::translateStartMergeAnimation);
-                mMessageCardProviderCoordinator.subscribeMessageService(
-                        mTabGroupSuggestionMessageService);
-            }
+        }
+        if (ChromeFeatureList.sTabSwitcherGroupSuggestionsAndroid.isEnabled()) {
+            mTabGroupSuggestionMessageService =
+                    new TabGroupSuggestionMessageService(
+                            mActivity,
+                            mCurrentTabGroupModelFilterSupplier,
+                            this::addTabGroupSuggestionMessage,
+                            this::translateStartMergeAnimation);
+            mMessageCardProviderCoordinator.subscribeMessageService(
+                    mTabGroupSuggestionMessageService);
         }
         mPriceWelcomeMessageController =
                 PriceWelcomeMessageController.build(
