@@ -3199,7 +3199,6 @@ crbug.com/429130576 [ Mac14 ] virtual/web-bluetooth-new-permissions-backend/exte
 crbug.com/429130576 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/service/getCharacteristic/characteristic-found.https.window.html [ Crash ]
 crbug.com/428969818 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/format.py [ Failure ]
 crbug.com/428969818 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/frame_tentative.py [ Failure ]
-crbug.com/428759817 [ Win11-arm64 ] external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html [ Timeout ]
 crbug.com/428754582 [ Mac13 ] external/wpt/fetch/metadata/generated/window-location.https.sub.html [ Skip Timeout ]
 crbug.com/428769113 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-shared-worker.https.tentative.window.html?request_origin=cross_origin&worker_dip=credentialless&window_dip=credentialless [ Skip Timeout ]
 crbug.com/428769113 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-shared-worker.https.tentative.window.html?request_origin=cross_origin&worker_dip=none&window_dip=credentialless [ Skip Timeout ]
