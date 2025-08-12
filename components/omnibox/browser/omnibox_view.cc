@@ -227,6 +227,8 @@ void OmniboxView::RevertAll() {
 
 void OmniboxView::CloseOmniboxPopup() {
   controller()->StopAutocomplete(/*clear_result=*/true);
+  // Reset focus ring for the AIM button if it was set.
+  ApplyFocusRingToAimButton(false);
 }
 
 bool OmniboxView::IsImeShowingPopup() const {

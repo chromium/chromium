@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/branding_buildflags.h"
@@ -70,6 +71,7 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
+#include "components/search_engines/util.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/cookies/cookie_util.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
@@ -739,9 +741,35 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
                    u"");
 }
 
+void OmniboxEditModel::OpenAiMode() {
+  constexpr char kEntrypointParameterValue[] = "48";
+
+  std::u16string query_text;
+  if (popup_selection_.line != OmniboxPopupSelection::kNoMatch) {
+    query_text = autocomplete_controller()
+                     ->result()
+                     .match_at(popup_selection_.line)
+                     .contents;
+  }
+
+  GURL ai_mode_url =
+      GetUrlForAim(controller_->client()->GetTemplateURLService(),
+                   kEntrypointParameterValue,
+                   /*query_start_time=*/base::Time::Now(), query_text);
+  controller_->client()->OpenUrl(ai_mode_url);
+}
+
 void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
                                      base::TimeTicks timestamp,
                                      WindowOpenDisposition disposition) {
+  // Check for AIM button focus state first, since it can have a line selection
+  // of `kNoMatch`, which would otherwise be handled by the `AcceptInput` case
+  // below.
+  if (selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM) {
+    OpenAiMode();
+    return;
+  }
+
   // Intentionally accept input when selection has no line.
   // This will usually reach `OpenMatch` indirectly.
   if (selection.line >= autocomplete_controller()->result().size()) {
@@ -1761,9 +1789,15 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
   popup_selection_ = new_selection;
   popup_view_->OnSelectionChanged(old_selection, popup_selection_);
 
-  // Special case for transferring focus to the AIM button.
+  // Special case for removing focus ring from the AIM button.
+  if (old_selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM) {
+    view_->ApplyFocusRingToAimButton(false);
+    return;
+  }
+
+  // Special case for applying focus to the AIM button.
   if (popup_selection_.state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM) {
-    view_->RequestAimButtonFocus();
+    view_->ApplyFocusRingToAimButton(true);
     return;
   }
 

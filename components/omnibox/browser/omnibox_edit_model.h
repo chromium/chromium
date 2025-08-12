@@ -199,6 +199,10 @@ class OmniboxEditModel {
                       AutocompleteMatch* match,
                       GURL* alternate_nav_url) const;
 
+  // Navigates to AI Mode, with the contents of the currently selected match, if
+  // any.
+  void OpenAiMode();
+
   // Opens given selection. Most kinds of selection invoke an action or
   // otherwise call `OpenMatch`, but some may `AcceptInput` which is not
   // guaranteed to open a match or commit the omnibox.

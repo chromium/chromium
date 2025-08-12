@@ -1305,14 +1305,6 @@ bool LocationBarView::RefreshContentSettingViews() {
   return visibility_changed;
 }
 
-void LocationBarView::RefreshAimPageActionIcon() {
-  PageActionIconView* aim_page_action_icon_view =
-      page_action_icon_controller_->GetIconView(PageActionIconType::kAiMode);
-  if (aim_page_action_icon_view) {
-    aim_page_action_icon_view->Update();
-  }
-}
-
 void LocationBarView::RefreshPageActionIconViews() {
   if (web_app::AppBrowserController::IsWebApp(browser_)) {
     // For web apps, the location bar is normally hidden and icons appear in
@@ -1588,9 +1580,6 @@ void LocationBarView::OnOmniboxFocused() {
   // the omnibox is intentional, snapping is better than transitioning here.
   hover_animation_.Reset();
   RefreshBackground();
-
-  // Ensure AIM page action button reacts to changes in Omnibox focus state.
-  RefreshAimPageActionIcon();
 }
 
 void LocationBarView::OnOmniboxBlurred() {
@@ -1598,9 +1587,6 @@ void LocationBarView::OnOmniboxBlurred() {
     views::FocusRing::Get(this)->SchedulePaint();
   }
   RefreshBackground();
-
-  // Ensure AIM page action button reacts to changes in Omnibox focus state.
-  RefreshAimPageActionIcon();
 }
 
 void LocationBarView::OnOmniboxHovered(bool is_hovering) {
