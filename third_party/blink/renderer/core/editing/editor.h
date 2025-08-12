@@ -129,7 +129,8 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
       const String&,
       bool select_inserted_text,
       TextEvent* triggering_event,
-      InputEvent::InputType = InputEvent::InputType::kInsertText);
+      InputEvent::InputType = InputEvent::InputType::kInsertText,
+      DataTransfer* = nullptr);
   bool InsertLineBreak();
   bool InsertParagraphSeparator();
 

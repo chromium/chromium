@@ -33,6 +33,8 @@
 
 namespace blink {
 
+class DataTransfer;
+
 class CORE_EXPORT TypingCommand final : public CompositeEditCommand {
  public:
   enum CommandType {
@@ -81,7 +83,8 @@ class CORE_EXPORT TypingCommand final : public CompositeEditCommand {
       EditingState*,
       TextCompositionType = kTextCompositionNone,
       const bool is_incremental_insertion = false,
-      InputEvent::InputType = InputEvent::InputType::kInsertText);
+      InputEvent::InputType = InputEvent::InputType::kInsertText,
+      DataTransfer* = nullptr);
   static bool InsertLineBreak(Document&);
   static bool InsertParagraphSeparator(Document&);
   static bool InsertParagraphSeparatorInQuotedContent(Document&);
@@ -97,7 +100,8 @@ class CORE_EXPORT TypingCommand final : public CompositeEditCommand {
                 const String& text = g_empty_string,
                 Options options = 0,
                 TextGranularity granularity = TextGranularity::kCharacter,
-                TextCompositionType = kTextCompositionNone);
+                TextCompositionType = kTextCompositionNone,
+                DataTransfer* = nullptr);
 
   void InsertTextRunWithoutNewlines(const String& text,
                                     EditingState*);
