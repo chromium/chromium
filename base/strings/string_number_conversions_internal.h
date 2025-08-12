@@ -19,9 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/third_party/double_conversion/double-conversion/double-conversion.h"
 
-namespace base {
-
-namespace internal {
+namespace base::internal {
 
 template <typename STR, typename INT>
 static STR IntToStringT(INT value) {
@@ -235,6 +233,14 @@ StringT DoubleToStringT(double value) {
   return ToString<StringT>(buffer, static_cast<size_t>(builder.position()));
 }
 
+template <typename StringT>
+StringT DoubleToStringFixedT(double value, int digits) {
+  char buffer[32];
+  double_conversion::StringBuilder builder(buffer, sizeof(buffer));
+  GetDoubleToStringConverter()->ToFixed(value, digits, &builder);
+  return ToString<StringT>(buffer, static_cast<size_t>(builder.position()));
+}
+
 template <typename STRING, typename CHAR>
 bool StringToDoubleImpl(STRING input, const CHAR* data, double& output) {
   static double_conversion::StringToDoubleConverter converter(
@@ -281,8 +287,6 @@ static bool HexStringToByteContainer(std::string_view input, OutIter output) {
   return true;
 }
 
-}  // namespace internal
-
-}  // namespace base
+}  // namespace base::internal
 
 #endif  // BASE_STRINGS_STRING_NUMBER_CONVERSIONS_INTERNAL_H_

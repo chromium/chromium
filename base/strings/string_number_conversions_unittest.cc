@@ -932,6 +932,23 @@ TEST(StringNumberConversionsTest, DoubleToString) {
   EXPECT_EQ("1.33489033216e+12", NumberToString(input));
 }
 
+TEST(StringNumberConversionsTest, DoubleToStringFixedPrecision) {
+  static const struct {
+    double input;
+    int digits;
+    const char* expected;
+  } cases[] = {
+      {0.0, 0, "0"},      {0.0, 3, "0.000"},     {0.5, 3, "0.500"},
+      {1.25, 3, "1.250"}, {1.33518, 3, "1.335"}, {1.33578, 3, "1.336"},
+  };
+
+  for (const auto& i : cases) {
+    EXPECT_EQ(i.expected, NumberToStringWithFixedPrecision(i.input, i.digits));
+    EXPECT_EQ(i.expected, UTF16ToUTF8(NumberToString16WithFixedPrecision(
+                              i.input, i.digits)));
+  }
+}
+
 TEST(StringNumberConversionsTest, AppendHexEncodedByte) {
   std::string hex;
   AppendHexEncodedByte(0, hex);

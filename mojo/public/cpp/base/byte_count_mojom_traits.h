@@ -12,7 +12,7 @@
 namespace mojo {
 
 template <>
-struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
+struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
     StructTraits<mojo_base::mojom::ByteCountDataView, base::ByteCount> {
   static int64_t count(const base::ByteCount& byte_count) {
     return byte_count.InBytes();

@@ -60,8 +60,6 @@ component("typemap_traits") {
     "battery_power_status_traits.h",
     "big_string_mojom_traits.cc",
     "big_string_mojom_traits.h",
-    "byte_count_mojom_traits.cc",
-    "byte_count_mojom_traits.h",
     "memory_allocator_dump_cross_process_uid_mojom_traits.cc",
     "memory_allocator_dump_cross_process_uid_mojom_traits.h",
     "memory_pressure_level_mojom_traits.cc",
@@ -120,6 +118,8 @@ component("shared_typemap_traits") {
   sources = [
     "big_buffer_mojom_traits.cc",
     "big_buffer_mojom_traits.h",
+    "byte_count_mojom_traits.cc",
+    "byte_count_mojom_traits.h",
     "byte_string_mojom_traits.cc",
     "byte_string_mojom_traits.h",
     "file_info_mojom_traits.cc",

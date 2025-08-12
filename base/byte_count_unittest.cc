@@ -137,11 +137,23 @@ TEST(ByteCount, InFloating) {
   EXPECT_THAT(bytes.InKiBF(), testing::DoubleEq(3355443.19921875));
   EXPECT_THAT(bytes.InMiBF(), testing::DoubleEq(3276.7999992370605));
   EXPECT_THAT(bytes.InGiBF(), testing::DoubleEq(3.1999999992549419));
+  constexpr ByteCount morebytes(3435973836343597383);
+  EXPECT_THAT(morebytes.InTiBF(), testing::DoubleEq(3124999.9995849044));
+  EXPECT_THAT(morebytes.InPiBF(), testing::DoubleEq(3051.7578120946332));
+  EXPECT_THAT(morebytes.InEiBF(), testing::DoubleEq(2.9802322383736652));
 }
 
 TEST(ByteCountDeathTest, InUnsignedInvalid) {
   ByteCount bytes(-2);
   BASE_EXPECT_DEATH(bytes.InBytesUnsigned(), "");
+}
+
+TEST(ByteCount, UnarySigns) {
+  ByteCount bytes(42);
+  EXPECT_EQ(bytes, +bytes);
+
+  ByteCount negative_bytes(-42);
+  EXPECT_EQ(-bytes, negative_bytes);
 }
 
 TEST(ByteCount, Arithmetic) {
@@ -155,6 +167,9 @@ TEST(ByteCount, Arithmetic) {
 
   ByteCount mul = bytes * 10;
   EXPECT_EQ(420, mul.InBytes());
+
+  ByteCount mul2 = 10 * bytes;
+  EXPECT_EQ(420, mul2.InBytes());
 
   ByteCount div = bytes / 2;
   EXPECT_EQ(21, div.InBytes());
@@ -217,40 +232,63 @@ TEST(ByteCount, Comparison) {
 }
 
 TEST(ByteCount, StreamOperator) {
-  {
+  struct TestValue {
+    int64_t bytes;
+    const char* expected;
+  } kTestValues[] = {
+      {-1, "-1B"},
+      {0, "0B"},
+      {1, "1B"},
+
+      {1024 - 1, "1023B"},
+      {1024, "1KiB"},
+      {1024 + 1, "1025B (1.001KiB)"},
+      {-(1024 - 1), "-1023B"},
+      {-(1024), "-1KiB"},
+      {-(1024 + 1), "-1025B (-1.001KiB)"},
+
+      {1024 * 1024 - 1, "1048575B (1023.999KiB)"},
+      {1024 * 1024, "1MiB"},
+      {1024 * 1024 + 1'000, "1049576B (1.001MiB)"},
+      {-(1024 * 1024 - 1), "-1048575B (-1023.999KiB)"},
+      {-(1024 * 1024), "-1MiB"},
+      {-(1024 * 1024 + 1'000), "-1049576B (-1.001MiB)"},
+
+      {1024LL * 1024 * 1024 - 1'000, "1073740824B (1023.999MiB)"},
+      {1024LL * 1024 * 1024, "1GiB"},
+      {1024LL * 1024 * 1024 + 1'000'000, "1074741824B (1.001GiB)"},
+
+      {1024LL * 1024 * 1024 * 1024 - 1'000'000, "1099510627776B (1023.999GiB)"},
+      {1024LL * 1024 * 1024 * 1024, "1TiB"},
+      {1024LL * 1024 * 1024 * 1024 + 1'000'000'000,
+       "1100511627776B (1.001TiB)"},
+
+      {1024LL * 1024 * 1024 * 1024 * 1024 - 1'000'000'000,
+       "1125898906842624B (1023.999TiB)"},
+      {1024LL * 1024 * 1024 * 1024 * 1024, "1PiB"},
+      {1024LL * 1024 * 1024 * 1024 * 1024 + 1'000'000'000'000,
+       "1126899906842624B (1.001PiB)"},
+
+      {1024LL * 1024 * 1024 * 1024 * 1024 * 1024 - 1'000'000'000'000,
+       "1152920504606846976B (1023.999PiB)"},
+      {1024LL * 1024 * 1024 * 1024 * 1024 * 1024, "1EiB"},
+      {1024LL * 1024 * 1024 * 1024 * 1024 * 1024 + 1'000'000'000'000'000,
+       "1153921504606846976B (1.001EiB)"},
+      {-(1024LL * 1024 * 1024 * 1024 * 1024 * 1024 - 1'000'000'000'000),
+       "-1152920504606846976B (-1023.999PiB)"},
+      {-(1024LL * 1024 * 1024 * 1024 * 1024 * 1024), "-1EiB"},
+      {-(1024LL * 1024 * 1024 * 1024 * 1024 * 1024 + 1'000'000'000'000'000),
+       "-1153921504606846976B (-1.001EiB)"},
+
+      {ByteCount::Max().InBytes(), "9223372036854775807B (8.000EiB)"},
+      {std::numeric_limits<int64_t>::min(), "-8EiB"},
+      {std::numeric_limits<int64_t>::min() + 1,
+       "-9223372036854775807B (-8.000EiB)"},
+  };
+  for (const auto& test_value : kTestValues) {
     std::stringstream ss;
-    ss << ByteCount(3);
-    EXPECT_EQ("3B", ss.str());
-  }
-  {
-    std::stringstream ss;
-    ss << ByteCount(1024);
-    EXPECT_EQ("1KiB", ss.str());
-  }
-  {
-    std::stringstream ss;
-    ss << ByteCount(1025);
-    EXPECT_EQ("1025B (1.001KiB)", ss.str());
-  }
-  {
-    std::stringstream ss;
-    ss << ByteCount(1024 * 1024);
-    EXPECT_EQ("1MiB", ss.str());
-  }
-  {
-    std::stringstream ss;
-    ss << ByteCount(1024 * 1024 + 1000);
-    EXPECT_EQ("1049576B (1.001MiB)", ss.str());
-  }
-  {
-    std::stringstream ss;
-    ss << ByteCount(1024LL * 1024 * 1024);
-    EXPECT_EQ("1GiB", ss.str());
-  }
-  {
-    std::stringstream ss;
-    ss << ByteCount(1024LL * 1024 * 1024 + 1000000);
-    EXPECT_EQ("1074741824B (1.001GiB)", ss.str());
+    ss << ByteCount(test_value.bytes);
+    EXPECT_EQ(test_value.expected, ss.str());
   }
 }
 

@@ -39,6 +39,10 @@ std::wstring NumberToWString(double value) {
   return internal::DoubleToStringT<std::wstring>(value);
 }
 
+std::wstring NumberToWStringWithFixedPrecision(double value, int digits) {
+  return internal::DoubleToStringFixedT<std::wstring>(value, digits);
+}
+
 bool StringToInt(std::wstring_view input, int* output) {
   return internal::StringToIntImpl(input, *output);
 }

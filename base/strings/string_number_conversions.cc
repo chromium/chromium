@@ -70,6 +70,13 @@ std::u16string NumberToString16(double value) {
   return internal::DoubleToStringT<std::u16string>(value);
 }
 
+std::string NumberToStringWithFixedPrecision(double value, int digits) {
+  return internal::DoubleToStringFixedT<std::string>(value, digits);
+}
+std::u16string NumberToString16WithFixedPrecision(double value, int digits) {
+  return internal::DoubleToStringFixedT<std::u16string>(value, digits);
+}
+
 bool StringToInt(std::string_view input, int* output) {
   return internal::StringToIntImpl(input, *output);
 }
