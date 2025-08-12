@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "content/public/app/content_main.h"
 
 #include <memory>
@@ -109,7 +104,7 @@ void SetupSignalHandlers() {
   CHECK_EQ(0, sigprocmask(SIG_SETMASK, &empty_signal_set, nullptr));
 
   struct sigaction sigact;
-  memset(&sigact, 0, sizeof(sigact));
+  UNSAFE_TODO(memset(&sigact, 0, sizeof(sigact)));
   sigact.sa_handler = SIG_DFL;
   static const int signals_to_reset[] = {SIGHUP,  SIGINT,  SIGQUIT, SIGILL,
                                          SIGABRT, SIGFPE,  SIGSEGV, SIGALRM,

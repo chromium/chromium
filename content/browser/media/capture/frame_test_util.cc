@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/media/capture/frame_test_util.h"
 
 #include <stdint.h>
@@ -14,6 +9,7 @@
 #include <array>
 #include <cmath>
 
+#include "base/compiler_specific.h"
 #include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
@@ -48,8 +44,9 @@ void LoadStimsFromYUV(const uint8_t y_src[],
   CHECK(spanification_suspected_redundant_width == stims.size(),
         base::NotFatalUntil::M143);
   for (int i = 0; i < spanification_suspected_redundant_width; ++i) {
-    stims[i].SetPoint(y_src[i] / 255.0f, u_src[i / 2] / 255.0f,
-                      v_src[i / 2] / 255.0f);
+    stims[i].SetPoint(UNSAFE_TODO(y_src[i]) / 255.0f,
+                      UNSAFE_TODO(u_src[i / 2]) / 255.0f,
+                      UNSAFE_TODO(v_src[i / 2]) / 255.0f);
   }
 }
 
@@ -77,10 +74,10 @@ void LoadStimsFromYUV(const uint8_t y_src[],
   }
 #else
   for (int i = 0; i < spanification_suspected_redundant_width; ++i) {
-    stims[i].SetPoint(
-        y_src[i] / 255.0f,
-        (uv_src[i / 2] & 0xFF) / 255.0f,  // LSB contains U values on LE
-        (uv_src[i / 2] >> 8) / 255.0f);
+    stims[i].SetPoint(UNSAFE_TODO(y_src[i]) / 255.0f,
+                      (UNSAFE_TODO(uv_src[i / 2]) & 0xFF) /
+                          255.0f,  // LSB contains U values on LE
+                      (UNSAFE_TODO(uv_src[i / 2]) >> 8) / 255.0f);
   }
 #endif
 }
@@ -137,21 +134,21 @@ SkBitmap FrameTestUtil::ConvertToBitmap(const media::VideoFrame& frame) {
   for (int row = 0; row < bitmap.height(); ++row) {
     if (frame.format() == media::VideoPixelFormat::PIXEL_FORMAT_I420) {
       LoadStimsFromYUV(
-          frame.visible_data(media::VideoFrame::Plane::kY) +
-              row * frame.stride(media::VideoFrame::Plane::kY),
-          frame.visible_data(media::VideoFrame::Plane::kU) +
-              (row / 2) * frame.stride(media::VideoFrame::Plane::kU),
-          frame.visible_data(media::VideoFrame::Plane::kV) +
-              (row / 2) * frame.stride(media::VideoFrame::Plane::kV),
+          UNSAFE_TODO(frame.visible_data(media::VideoFrame::Plane::kY) +
+                      row * frame.stride(media::VideoFrame::Plane::kY)),
+          UNSAFE_TODO(frame.visible_data(media::VideoFrame::Plane::kU) +
+                      (row / 2) * frame.stride(media::VideoFrame::Plane::kU)),
+          UNSAFE_TODO(frame.visible_data(media::VideoFrame::Plane::kV) +
+                      (row / 2) * frame.stride(media::VideoFrame::Plane::kV)),
           bitmap.width(), stims);
     } else {
       CHECK_EQ(frame.format(), media::VideoPixelFormat::PIXEL_FORMAT_NV12);
       LoadStimsFromYUV(
-          frame.visible_data(media::VideoFrame::Plane::kY) +
-              row * frame.stride(media::VideoFrame::Plane::kY),
-          reinterpret_cast<const uint16_t*>(
+          UNSAFE_TODO(frame.visible_data(media::VideoFrame::Plane::kY) +
+                      row * frame.stride(media::VideoFrame::Plane::kY)),
+          reinterpret_cast<const uint16_t*>(UNSAFE_TODO(
               frame.visible_data(media::VideoFrame::Plane::kUV) +
-              (row / 2) * frame.stride(media::VideoFrame::Plane::kUV)),
+              (row / 2) * frame.stride(media::VideoFrame::Plane::kUV))),
           bitmap.width(), stims);
     }
     transform->Transform(stims.data(), stims.size());

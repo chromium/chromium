@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "content/browser/renderer_host/media/video_capture_controller.h"
 
 #include <stdint.h>
@@ -17,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -402,7 +398,8 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
             result_code);
   auto buffer_access = buffer.handle_provider->GetHandleForInProcessAccess();
   ASSERT_EQ(1.0 / kPoolSize, device_client_->GetBufferPoolUtilization());
-  memset(buffer_access->data(), buffer_no++, buffer_access->mapped_size());
+  UNSAFE_TODO(
+      memset(buffer_access->data(), buffer_no++, buffer_access->mapped_size()));
   {
     InSequence s;
     EXPECT_CALL(*client_a_, DoBufferCreated(client_a_route_1, _));
@@ -453,7 +450,8 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
   ASSERT_EQ(media::VideoCaptureDevice::Client::ReserveResult::kSucceeded,
             result_code_2);
   auto buffer2_access = buffer2.handle_provider->GetHandleForInProcessAccess();
-  memset(buffer2_access->data(), buffer_no++, buffer2_access->mapped_size());
+  UNSAFE_TODO(memset(buffer2_access->data(), buffer_no++,
+                     buffer2_access->mapped_size()));
 
   client_a_->feedback_ = media::VideoCaptureFeedback(0.5, 60, 1000);
   client_a_->feedback_.frame_id = arbitrary_frame_feedback_id_2;
@@ -503,7 +501,8 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
               result_code_3);
     auto buffer3_access =
         buffer3.handle_provider->GetHandleForInProcessAccess();
-    memset(buffer3_access->data(), buffer_no++, buffer3_access->mapped_size());
+    UNSAFE_TODO(memset(buffer3_access->data(), buffer_no++,
+                       buffer3_access->mapped_size()));
     device_client_->OnIncomingCapturedBuffer(
         std::move(buffer3), device_format, arbitrary_reference_time_,
         arbitrary_timestamp_, /*capture_begin_timestamp=*/std::nullopt,
@@ -559,7 +558,8 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
   ASSERT_EQ(media::VideoCaptureDevice::Client::ReserveResult::kSucceeded,
             result_code_3);
   auto buffer3_access = buffer3.handle_provider->GetHandleForInProcessAccess();
-  memset(buffer3_access->data(), buffer_no++, buffer3_access->mapped_size());
+  UNSAFE_TODO(memset(buffer3_access->data(), buffer_no++,
+                     buffer3_access->mapped_size()));
   device_client_->OnIncomingCapturedBuffer(
       std::move(buffer3), device_format, arbitrary_reference_time_,
       arbitrary_timestamp_, /*capture_begin_timestamp=*/std::nullopt,
@@ -579,7 +579,8 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
   ASSERT_EQ(media::VideoCaptureDevice::Client::ReserveResult::kSucceeded,
             result_code_4);
   auto buffer4_access = buffer4.handle_provider->GetHandleForInProcessAccess();
-  memset(buffer4_access->data(), buffer_no++, buffer4_access->mapped_size());
+  UNSAFE_TODO(memset(buffer4_access->data(), buffer_no++,
+                     buffer4_access->mapped_size()));
   device_client_->OnIncomingCapturedBuffer(
       std::move(buffer4), device_format, arbitrary_reference_time_,
       arbitrary_timestamp_, /*capture_begin_timestamp=*/std::nullopt,

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "content/browser/service_host/utility_process_host.h"
 
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -160,7 +156,8 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     DCHECK(mojo::core::IsMojoIpczEnabled());
     auto region = base::WritableSharedMemoryRegion::Create(kTestMessage.size());
     auto mapping = region.Map();
-    memcpy(mapping.memory(), kTestMessage.data(), kTestMessage.size());
+    UNSAFE_TODO(
+        memcpy(mapping.memory(), kTestMessage.data(), kTestMessage.size()));
     service_->CloneSharedMemoryContents(
         base::WritableSharedMemoryRegion::ConvertToReadOnly(std::move(region)),
         base::BindOnce(&UtilityProcessHostBrowserTest::OnMemoryCloneReceived,

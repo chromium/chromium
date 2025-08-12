@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "content/public/test/network_service_test_helper.h"
 
 #include <optional>
@@ -14,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -119,7 +115,7 @@ class SimpleCacheEntry : public network::mojom::SimpleCacheEntry {
 
     auto data_to_pass =
         base::MakeRefCounted<net::IOBufferWithSize>(data.size());
-    memcpy(data_to_pass->data(), data.data(), data.size());
+    UNSAFE_TODO(memcpy(data_to_pass->data(), data.data(), data.size()));
     int rv = entry_->WriteData(index, offset, data_to_pass.get(), data.size(),
                                base::BindOnce(&SimpleCacheEntry::OnDataWritten,
                                               weak_factory_.GetWeakPtr(),
@@ -168,7 +164,7 @@ class SimpleCacheEntry : public network::mojom::SimpleCacheEntry {
 
     auto data_to_pass =
         base::MakeRefCounted<net::IOBufferWithSize>(data.size());
-    memcpy(data_to_pass->data(), data.data(), data.size());
+    UNSAFE_TODO(memcpy(data_to_pass->data(), data.data(), data.size()));
     int rv =
         entry_->WriteSparseData(offset, data_to_pass.get(), data.size(),
                                 base::BindOnce(&SimpleCacheEntry::OnDataWritten,
@@ -227,7 +223,7 @@ class SimpleCacheEntry : public network::mojom::SimpleCacheEntry {
       return;
     }
     std::vector<uint8_t> data(result);
-    memcpy(data.data(), buffer->data(), result);
+    UNSAFE_TODO(memcpy(data.data(), buffer->data(), result));
     std::move(callback).Run(data, result);
   }
 

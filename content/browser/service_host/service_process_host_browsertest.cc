@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "content/public/browser/service_process_host.h"
 
 #include <string.h>
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/process.h"
@@ -174,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, AllMessagesReceived) {
   });
   auto region = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
   base::WritableSharedMemoryMapping mapping = region.Map();
-  memset(mapping.memory(), 0, kBufferSize);
+  UNSAFE_TODO(memset(mapping.memory(), 0, kBufferSize));
 
   // Send several messages, since it helps to verify a lack of raciness between
   // service-side message dispatch and service termination.
@@ -186,8 +182,8 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, AllMessagesReceived) {
   observer.WaitForDeath();
 
   const std::string& kLastMessage = kMessages[std::size(kMessages) - 1];
-  EXPECT_EQ(0,
-            memcmp(mapping.memory(), kLastMessage.data(), kLastMessage.size()));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(mapping.memory(), kLastMessage.data(), kLastMessage.size())));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, ObserveCrash) {

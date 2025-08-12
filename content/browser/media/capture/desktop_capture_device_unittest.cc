@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/media/capture/desktop_capture_device.h"
 
 #include <stddef.h>
@@ -21,6 +16,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -98,10 +94,10 @@ std::unique_ptr<webrtc::BasicDesktopFrame> CreateBasicFrame(
       new webrtc::BasicDesktopFrame(size));
   DCHECK_EQ(frame->size().width() * webrtc::DesktopFrame::kBytesPerPixel,
             frame->stride());
-  memset(frame->data(), kFakePixelValue,
-         frame->stride() * frame->size().height());
-  memset(frame->data(), kFakePixelValueFirst,
-         webrtc::DesktopFrame::kBytesPerPixel);
+  UNSAFE_TODO(memset(frame->data(), kFakePixelValue,
+                     frame->stride() * frame->size().height()));
+  UNSAFE_TODO(memset(frame->data(), kFakePixelValueFirst,
+                     webrtc::DesktopFrame::kBytesPerPixel));
   frame->mutable_updated_region()->SetRect(webrtc::DesktopRect::MakeSize(size));
   return frame;
 }
@@ -115,7 +111,8 @@ class InvertedDesktopFrame : public webrtc::DesktopFrame {
       : webrtc::DesktopFrame(
             frame->size(),
             -frame->stride(),
-            frame->data() + (frame->size().height() - 1) * frame->stride(),
+            UNSAFE_TODO(frame->data() +
+                        (frame->size().height() - 1) * frame->stride()),
             frame->shared_memory()) {
     set_dpi(frame->dpi());
     set_capture_time_ms(frame->capture_time_ms());
@@ -144,7 +141,7 @@ class UnpackedDesktopFrame : public webrtc::DesktopFrame {
             new uint8_t[frame->stride() * 2 * frame->size().height()],
             nullptr) {
     set_device_scale_factor(frame->device_scale_factor());
-    memset(data(), kFramePaddingValue, stride() * size().height());
+    UNSAFE_TODO(memset(data(), kFramePaddingValue, stride() * size().height()));
     CopyPixelsFrom(*frame, webrtc::DesktopVector(),
                    webrtc::DesktopRect::MakeSize(size()));
   }
@@ -299,7 +296,7 @@ class DesktopCaptureDeviceTest : public testing::Test {
     ASSERT_EQ(metadata->source_size->width(), output_frame_->size().width());
     ASSERT_EQ(metadata->source_size->height(), output_frame_->size().height());
     ASSERT_EQ(metadata->device_scale_factor, 2.0f);
-    memcpy(output_frame_->data(), frame, size);
+    UNSAFE_TODO(memcpy(output_frame_->data(), frame, size));
   }
 
  protected:
@@ -565,8 +562,8 @@ TEST_F(DesktopCaptureDeviceTest, UnpackedFrame) {
       webrtc::DesktopSize(kTestFrameWidth1, kTestFrameHeight1));
   EXPECT_EQ(output_frame_->stride() * output_frame_->size().height(),
             frame_size);
-  EXPECT_EQ(
-      0, memcmp(output_frame_->data(), expected_frame->data(), frame_size));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(output_frame_->data(), expected_frame->data(), frame_size)));
 }
 
 // The test verifies that a bottom-to-top frame is converted to top-to-bottom.
@@ -615,10 +612,10 @@ TEST_F(DesktopCaptureDeviceTest, InvertedFrame) {
   EXPECT_EQ(output_frame_->stride() * output_frame_->size().height(),
             frame_size);
   for (int i = 0; i < output_frame_->size().height(); ++i) {
-    EXPECT_EQ(0,
-        memcmp(inverted_frame->data() + i * inverted_frame->stride(),
-               output_frame_->data() + i * output_frame_->stride(),
-               output_frame_->stride()));
+    UNSAFE_TODO(EXPECT_EQ(
+        0, memcmp(inverted_frame->data() + i * inverted_frame->stride(),
+                  output_frame_->data() + i * output_frame_->stride(),
+                  output_frame_->stride())));
   }
 }
 

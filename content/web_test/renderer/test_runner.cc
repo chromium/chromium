@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/web_test/renderer/test_runner.h"
 
 #include <stddef.h>
@@ -19,6 +14,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback_helpers.h"
@@ -3574,7 +3570,7 @@ void TestRunner::DumpIconChanges(WebFrameTestProxy& source) {
 void TestRunner::SetAudioData(const gin::ArrayBufferView& view) {
   uint8_t* bytes = static_cast<uint8_t*>(view.bytes());
   audio_data_.resize(view.num_bytes());
-  std::copy(bytes, bytes + view.num_bytes(), audio_data_.begin());
+  std::copy(bytes, UNSAFE_TODO(bytes + view.num_bytes()), audio_data_.begin());
   dump_as_audio_ = true;
 }
 
@@ -3895,8 +3891,9 @@ void TestRunner::FinishTest(WebFrameTestProxy& source) {
         DCHECK_GT(actual.info().height(), 0);
 
         base::MD5Digest digest;
-        auto bytes = base::span(static_cast<const uint8_t*>(actual.getPixels()),
-                                actual.computeByteSize());
+        auto bytes = UNSAFE_TODO(
+            base::span(static_cast<const uint8_t*>(actual.getPixels()),
+                       actual.computeByteSize()));
         base::MD5Sum(bytes, &digest);
         dump_result->actual_pixel_hash = base::MD5DigestToBase16(digest);
 

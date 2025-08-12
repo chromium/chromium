@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 
 #include <stddef.h>
@@ -19,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -906,8 +902,8 @@ TEST(IndexedDBLevelDBCodingTest, EncodeAndCompareIDBKeysWithSentinels) {
     EXPECT_TRUE(encoded_b.size());
 
     auto sqlite_compare = [](const std::string& a, const std::string& b) {
-      return std::memcmp(a.c_str(), b.c_str(),
-                         std::min(a.length(), b.length()));
+      return UNSAFE_TODO(
+          std::memcmp(a.c_str(), b.c_str(), std::min(a.length(), b.length())));
     };
 
     EXPECT_LT(sqlite_compare(encoded_a, encoded_b), 0);
@@ -991,8 +987,8 @@ TEST(IndexedDBLevelDBCodingTest, EncodeSortableDoubles) {
       EXPECT_EQ(encoded_a.size(), encoded_b.size());
 
       auto sqlite_compare = [](const std::string& a, const std::string& b) {
-        return std::memcmp(a.c_str(), b.c_str(),
-                           std::min(a.length(), b.length()));
+        return UNSAFE_TODO(std::memcmp(a.c_str(), b.c_str(),
+                                       std::min(a.length(), b.length())));
       };
 
       if (value_a < value_b) {

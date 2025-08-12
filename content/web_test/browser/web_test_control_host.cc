@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/341324165): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/web_test/browser/web_test_control_host.h"
 
 #include <stddef.h>
@@ -25,6 +20,7 @@
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -1412,9 +1408,9 @@ void WebTestControlHost::ReportResults() {
     // pixels are in fact initialized.
     MSAN_UNPOISON(pixel_dump_->getPixels(), pixel_dump_->computeByteSize());
     base::MD5Digest digest;
-    auto bytes =
+    auto bytes = UNSAFE_TODO(
         base::span(static_cast<const uint8_t*>(pixel_dump_->getPixels()),
-                   pixel_dump_->computeByteSize());
+                   pixel_dump_->computeByteSize()));
     base::MD5Sum(bytes, &digest);
     actual_pixel_hash_ = base::MD5DigestToBase16(digest);
 
