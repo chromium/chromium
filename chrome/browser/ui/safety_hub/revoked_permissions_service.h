@@ -127,9 +127,10 @@ class RevokedPermissionsService final : public SafetyHubService,
   // Called by TabHelper when a URL was visited.
   void OnPageVisited(const url::Origin& origin);
 
-  // Removes a pattern from the list of revoked permissions so that the entry is
-  // no longer shown to the user. Does not affect permissions themselves.
-  void DeletePatternFromRevokedPermissionList(
+  // Removes a pattern from the list of revoked unused site permissions so
+  // that the entry is no longer shown to the user. Does not affect permissions
+  // themselves.
+  void DeletePatternFromRevokedUnusedSitePermissionList(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern);
 

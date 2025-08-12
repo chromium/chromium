@@ -49,7 +49,7 @@ void ContentSettingPermissionContextBase::UpdateContentSetting(
 
   // The Permissions module in Safety check will revoke permissions after
   // a finite amount of time if the permission can be revoked.
-  if (content_settings::CanBeAutoRevoked(
+  if (content_settings::CanBeAutoRevokedAsUnusedPermission(
           content_settings_type(),
           content_settings::ContentSettingToValue(content_setting),
           is_one_time)) {

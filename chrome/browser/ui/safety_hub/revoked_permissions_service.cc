@@ -246,61 +246,48 @@ void RevokedPermissionsService::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsTypeSet content_type_set) {
-  // When permissions change for a pattern it is either (1) through resetting
-  // permissions, e.g. in page info or site settings, (2) user modifying
-  // permissions manually, (3) through auto-revocation of unused site
-  // permissions that this module performs, (4) through auto-revocation of
-  // abusive notifications that this module performs, or (5) through
-  // auto-revocation of disruptive notifications that this module performs. In
-  // (1) and (2) the pattern should no longer be shown to the user.
-  bool should_clean_revoked_permission_data = true;
+  // When content settings change for a permissions that we might have
+  // autorevoked, unless this happens because of autorevocation itself, we clean
+  // it up, since we assume the user is taking an active decision on that
+  // revocation (they are either changing settings or visiting the page and
+  // reacting to a permission prompt). We handle notifications separately than
+  // other permissions since they are revoked separately and treated separately
+  // in Safety Check.
 
-  // If `content_type_set` contains all types, all permissions are changed at
-  // once and all revoked permissions should be cleaned up. Since `GetType()`
-  // can only be called when `ContainsAllTypes()` is false, skip the switch in
-  // this case.
-  if (!content_type_set.ContainsAllTypes()) {
-    switch (content_type_set.GetType()) {
-      case ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS:
-      case ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS:
-      case ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS:
-        // If content setting is changed because of auto revocation, the revoked
-        // permission data should not be deleted.
-        should_clean_revoked_permission_data = false;
-        break;
-      default:
-        // If the permission is changed by users, then clean up the
-        // revoked permissions data. However if the permission is changed
-        // because of Safety Hub revocation, then the revoked permission
-        // data should not be revoked.
-        const bool is_unused_site_revocation_running =
-            unused_site_permissions_manager_
-                ? !unused_site_permissions_manager_->IsRevocationRunning()
-                : false;
-        const bool is_abusive_revocation_running =
-            IsAbusiveNotificationAutoRevocationEnabled()
-                ? abusive_notification_manager_->IsRevocationRunning()
-                : false;
-        const bool is_disruptive_revocation_running =
-            disruptive_notification_manager_
-                ? disruptive_notification_manager_->IsRunning()
-                : false;
-        should_clean_revoked_permission_data =
-            !is_unused_site_revocation_running_ &&
-            is_unused_site_revocation_running &&
-            !is_abusive_revocation_running && !is_disruptive_revocation_running;
-        break;
-    }
+  if (content_type_set.ContainsAllTypes()) {
+    // This only happens on initialization, so we do nothing.
+    return;
   }
 
-  if (should_clean_revoked_permission_data) {
-    DeletePatternFromRevokedPermissionList(primary_pattern, secondary_pattern);
+  const bool is_revocation_running =
+      (unused_site_permissions_manager_ &&
+       unused_site_permissions_manager_->IsRevocationRunning()) ||
+      (IsAbusiveNotificationAutoRevocationEnabled() &&
+       abusive_notification_manager_->IsRevocationRunning()) ||
+      (disruptive_notification_manager_ &&
+       disruptive_notification_manager_->IsChangingContentSettings());
+  if (is_revocation_running) {
+    return;
+  }
+
+  if (content_settings::IsPermissionEligibleForAutoRevocation(
+          content_type_set.GetType())) {
+    DeletePatternFromRevokedUnusedSitePermissionList(primary_pattern,
+                                                     secondary_pattern);
+  }
+
+  if (content_type_set.GetType() == ContentSettingsType::NOTIFICATIONS) {
+    // There should be at most one active revocation per site: either abusive or
+    // disruptive.
     if (IsAbusiveNotificationAutoRevocationEnabled()) {
       abusive_notification_manager_
           ->DeletePatternFromRevokedAbusiveNotificationList(primary_pattern,
                                                             secondary_pattern);
     }
-    // TODO(crbug.com/406475122): Clean up the disruptive notification list.
+    if (disruptive_notification_manager_) {
+      disruptive_notification_manager_->OnPermissionChanged(primary_pattern,
+                                                            secondary_pattern);
+    }
   }
 }
 
@@ -375,8 +362,8 @@ void RevokedPermissionsService::RegrantPermissionsForOrigin(
   IgnoreOriginForAutoRevocation(origin);
 
   // Remove origin from revoked permissions list.
-  DeletePatternFromRevokedPermissionList(info.primary_pattern,
-                                         info.secondary_pattern);
+  DeletePatternFromRevokedUnusedSitePermissionList(info.primary_pattern,
+                                                   info.secondary_pattern);
 
   // Record the days elapsed from auto-revocation to regrant.
   base::Time revoked_time =
@@ -456,7 +443,7 @@ void RevokedPermissionsService::ClearRevokedPermissionsList() {
 
   for (const auto& revoked_permissions : hcsm()->GetSettingsForOneType(
            ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS)) {
-    DeletePatternFromRevokedPermissionList(
+    DeletePatternFromRevokedUnusedSitePermissionList(
         revoked_permissions.primary_pattern,
         revoked_permissions.secondary_pattern);
   }
@@ -487,9 +474,10 @@ void RevokedPermissionsService::OnPageVisited(const url::Origin& origin) {
   unused_site_permissions_manager_->OnPageVisited(origin);
 }
 
-void RevokedPermissionsService::DeletePatternFromRevokedPermissionList(
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern) {
+void RevokedPermissionsService::
+    DeletePatternFromRevokedUnusedSitePermissionList(
+        const ContentSettingsPattern& primary_pattern,
+        const ContentSettingsPattern& secondary_pattern) {
   hcsm()->SetWebsiteSettingCustomScope(
       primary_pattern, secondary_pattern,
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, {});

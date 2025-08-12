@@ -583,22 +583,24 @@ void DisruptiveNotificationPermissionsManager::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsTypeSet content_type_set) {
-  if (content_type_set.ContainsAllTypes() ||
+  if (!content_type_set.ContainsAllTypes() &&
       content_type_set.GetType() ==
           ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS) {
     UpdateNotificationCount();
   }
-  if (!IsRunning() && !is_changing_notification_permission_ &&
-      !content_type_set.ContainsAllTypes() &&
-      content_type_set.GetType() == ContentSettingsType::NOTIFICATIONS &&
-      content_settings::PatternAppliesToSingleOrigin(primary_pattern,
+}
+
+void DisruptiveNotificationPermissionsManager::OnPermissionChanged(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern) {
+  if (content_settings::PatternAppliesToSingleOrigin(primary_pattern,
                                                      secondary_pattern)) {
     GURL url = primary_pattern.ToRepresentativeUrl();
     std::optional<RevocationEntry> revocation_entry =
         ContentSettingHelper(*hcsm_).GetRevocationEntry(url);
     // If the user explicitly regranted notification permission and there is a
     // revocation entry for this url, don't revoke for this url anymore in the
-    // future.
+    // future. The entry has to be retained for us to remember this.
     if (revocation_entry &&
         revocation_entry->revocation_state == RevocationState::kRevoked &&
         hcsm_->GetContentSetting(url, url,
@@ -606,8 +608,15 @@ void DisruptiveNotificationPermissionsManager::OnContentSettingChanged(
             ContentSetting::CONTENT_SETTING_ALLOW) {
       OnPermissionRegranted(url, *revocation_entry,
                             /*regranted_in_safety_hub=*/false);
+      return;
     }
   }
+
+  // Otherwise, the user is manually changing notification permissions for these
+  // patterns, so let's clean up any revocation entries that we have for them.
+  hcsm_->SetWebsiteSettingCustomScope(
+      primary_pattern, secondary_pattern,
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, {});
 }
 
 void DisruptiveNotificationPermissionsManager::UpdateNotificationCount() {
@@ -638,8 +647,8 @@ DisruptiveNotificationPermissionsManager::GetRevokedNotifications() {
   return result;
 }
 
-bool DisruptiveNotificationPermissionsManager::IsRunning() {
-  return is_revocation_running_;
+bool DisruptiveNotificationPermissionsManager::IsChangingContentSettings() {
+  return is_revocation_running_ || is_changing_notification_permission_;
 }
 
 void DisruptiveNotificationPermissionsManager::RegrantPermissionForUrl(

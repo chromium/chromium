@@ -209,9 +209,18 @@ base::TimeDelta GetCoarseVisitedTimePrecision() {
   return base::Days(7);
 }
 
-bool CanBeAutoRevoked(ContentSettingsType type,
-                      const base::Value& value,
-                      bool is_one_time) {
+bool IsPermissionEligibleForAutoRevocation(ContentSettingsType type) {
+  DCHECK(WebsiteSettingsRegistry::GetInstance()->Get(type)) << type;
+
+  auto* permission_settings_info =
+      PermissionSettingsRegistry::GetInstance()->Get(type);
+  return (permission_settings_info && CanTrackLastVisit(type)) ||
+         IsChooserPermissionEligibleForAutoRevocation(type);
+}
+
+bool CanBeAutoRevokedAsUnusedPermission(ContentSettingsType type,
+                                        const base::Value& value,
+                                        bool is_one_time) {
   DCHECK(WebsiteSettingsRegistry::GetInstance()->Get(type)) << type;
 
   // The Permissions module in Safety check will revoke permissions after
@@ -242,11 +251,11 @@ bool CanBeAutoRevoked(ContentSettingsType type,
                setting.value()) &&
            CanTrackLastVisit(type);
   } else {
-      // If the value is already empty, no need to revoke the permission.
-      return IsChooserPermissionEligibleForAutoRevocation(type) &&
-             !value.is_none();
-    }
+    // If the value is already empty, no need to revoke the permission.
+    return IsChooserPermissionEligibleForAutoRevocation(type) &&
+           !value.is_none();
   }
+}
 
 bool IsChooserPermissionEligibleForAutoRevocation(ContentSettingsType type) {
   // Currently, only File System Access is allowlisted for auto-revoking unused

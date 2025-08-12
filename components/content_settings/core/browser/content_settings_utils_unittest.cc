@@ -126,49 +126,65 @@ TEST(ContentSettingsUtilsTest, IsMorePermissive) {
 }
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-TEST(ContentSettingsUtilsTest, CanBeAutoRevoked) {
+TEST(ContentSettingsUtilsTest, CanBeAutoRevokedAsUnusedPermission) {
   ContentSettingsRegistry::GetInstance();
-  EXPECT_TRUE(CanBeAutoRevoked(ContentSettingsType::GEOLOCATION,
-                               ContentSettingToValue(CONTENT_SETTING_ALLOW)));
+  EXPECT_TRUE(
+      IsPermissionEligibleForAutoRevocation(ContentSettingsType::GEOLOCATION));
+  EXPECT_TRUE(CanBeAutoRevokedAsUnusedPermission(
+      ContentSettingsType::GEOLOCATION,
+      ContentSettingToValue(CONTENT_SETTING_ALLOW)));
 
   // One-time grants should not be auto revoked.
-  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::GEOLOCATION,
-                                ContentSettingToValue(CONTENT_SETTING_ALLOW),
-                                true));
+  EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(
+      ContentSettingsType::GEOLOCATION,
+      ContentSettingToValue(CONTENT_SETTING_ALLOW), true));
 
   // Only allowed permissions should be auto revoked.
-  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::GEOLOCATION,
-                                ContentSettingToValue(CONTENT_SETTING_ASK)));
+  EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(
+      ContentSettingsType::GEOLOCATION,
+      ContentSettingToValue(CONTENT_SETTING_ASK)));
 
-  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::GEOLOCATION,
-                                ContentSettingToValue(CONTENT_SETTING_BLOCK)));
+  EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(
+      ContentSettingsType::GEOLOCATION,
+      ContentSettingToValue(CONTENT_SETTING_BLOCK)));
 
   // Notification permissions should not be auto revoked.
-  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::NOTIFICATION_INTERACTIONS,
-                                ContentSettingToValue(CONTENT_SETTING_ALLOW)));
+  EXPECT_FALSE(IsPermissionEligibleForAutoRevocation(
+      ContentSettingsType::NOTIFICATION_INTERACTIONS));
+  EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(
+      ContentSettingsType::NOTIFICATION_INTERACTIONS,
+      ContentSettingToValue(CONTENT_SETTING_ALLOW)));
 
   // Permissions that are not ask by default should not be auto revoked. IMAGES
   // permission is allowed by default, and ADS  permission is blocked by
   // default.
-  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::IMAGES,
-                                ContentSettingToValue(CONTENT_SETTING_ALLOW)));
+  EXPECT_FALSE(
+      IsPermissionEligibleForAutoRevocation(ContentSettingsType::IMAGES));
+  EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(
+      ContentSettingsType::IMAGES,
+      ContentSettingToValue(CONTENT_SETTING_ALLOW)));
 
-  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::ADS,
-                                ContentSettingToValue(CONTENT_SETTING_ALLOW)));
+  EXPECT_FALSE(IsPermissionEligibleForAutoRevocation(ContentSettingsType::ADS));
+  EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(
+      ContentSettingsType::ADS, ContentSettingToValue(CONTENT_SETTING_ALLOW)));
 
   // Chooser permissions that are allowlisted should be auto-revoked.
-  EXPECT_TRUE(
-      CanBeAutoRevoked(ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA,
-                       base::Value("foo")));
+  EXPECT_TRUE(IsPermissionEligibleForAutoRevocation(
+      ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA));
+  EXPECT_TRUE(CanBeAutoRevokedAsUnusedPermission(
+      ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA,
+      base::Value("foo")));
 
   // Chooser permissions that are allowlisted but without any value
   // should not be auto-revoked.
-  EXPECT_FALSE(CanBeAutoRevoked(
+  EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(
       ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA, base::Value()));
 
   // Chooser permissions that are not allowlisted should not be auto-revoked.
-  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::USB_CHOOSER_DATA,
-                                base::Value("foo")));
+  EXPECT_FALSE(IsPermissionEligibleForAutoRevocation(
+      ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(
+      ContentSettingsType::USB_CHOOSER_DATA, base::Value("foo")));
 }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 

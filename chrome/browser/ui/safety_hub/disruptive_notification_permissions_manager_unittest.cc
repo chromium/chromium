@@ -1118,29 +1118,26 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
        SetIgnoreOnContentSettingsChanged) {
   for (auto [initial_state, new_content_setting, expected_state] :
-       std::initializer_list<
-           std::tuple<RevocationState, ContentSetting, RevocationState>>{
+       std::initializer_list<std::tuple<RevocationState, ContentSetting,
+                                        std::optional<RevocationState>>>{
            {RevocationState::kRevoked, ContentSetting::CONTENT_SETTING_ALLOW,
             RevocationState::kIgnoreOutsideSH},
            {RevocationState::kRevoked, ContentSetting::CONTENT_SETTING_BLOCK,
-            RevocationState::kRevoked},
+            std::nullopt},
            {RevocationState::kRevoked, ContentSetting::CONTENT_SETTING_ASK,
-            RevocationState::kRevoked},
+            std::nullopt},
            {RevocationState::kProposed, ContentSetting::CONTENT_SETTING_ALLOW,
-            RevocationState::kProposed},
+            std::nullopt},
            {RevocationState::kProposed, ContentSetting::CONTENT_SETTING_BLOCK,
-            RevocationState::kProposed},
+            std::nullopt},
            {RevocationState::kProposed, ContentSetting::CONTENT_SETTING_ASK,
-            RevocationState::kProposed},
+            std::nullopt},
            {RevocationState::kIgnoreOutsideSH,
-            ContentSetting::CONTENT_SETTING_ALLOW,
-            RevocationState::kIgnoreOutsideSH},
+            ContentSetting::CONTENT_SETTING_ALLOW, std::nullopt},
            {RevocationState::kIgnoreOutsideSH,
-            ContentSetting::CONTENT_SETTING_BLOCK,
-            RevocationState::kIgnoreOutsideSH},
+            ContentSetting::CONTENT_SETTING_BLOCK, std::nullopt},
            {RevocationState::kIgnoreOutsideSH,
-            ContentSetting::CONTENT_SETTING_ASK,
-            RevocationState::kIgnoreOutsideSH},
+            ContentSetting::CONTENT_SETTING_ASK, std::nullopt},
        }) {
     GURL url("https://www.example1.com");
     ContentSettingHelper(*hcsm()).PersistRevocationEntry(
@@ -1148,12 +1145,21 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
                  /*revocation_state=*/initial_state,
                  /*site_engagement=*/0.0,
                  /*daily_notification_count=*/3));
+
     SetNotificationPermission(url, new_content_setting);
-    std::optional revocation_entry =
+    manager()->OnPermissionChanged(
+        ContentSettingsPattern::FromURLNoWildcard(url),
+        ContentSettingsPattern::Wildcard());
+
+    std::optional<RevocationEntry> revocation_entry =
         ContentSettingHelper(*hcsm()).GetRevocationEntry(url);
-    EXPECT_THAT(
-        revocation_entry,
-        Optional(Field(&RevocationEntry::revocation_state, expected_state)));
+    if (expected_state) {
+      EXPECT_THAT(
+          revocation_entry,
+          Optional(Field(&RevocationEntry::revocation_state, expected_state)));
+    } else {
+      EXPECT_EQ(revocation_entry, std::nullopt);
+    }
 
     // Clean up.
     ContentSettingHelper(*hcsm()).DeleteRevocationEntry(url);
@@ -1172,6 +1178,9 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   clock()->Advance(base::Days(5));
   site_engagement_service()->ResetBaseScoreForURL(url, 7.0);
   SetNotificationPermission(url, ContentSetting::CONTENT_SETTING_ALLOW);
+  manager()->OnPermissionChanged(ContentSettingsPattern::FromURLNoWildcard(url),
+                                 ContentSettingsPattern::Wildcard());
+
   t.ExpectUniqueSample(
       "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
       "OutsideSafetyHub.DaysSinceProposedRevocation",

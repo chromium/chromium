@@ -716,11 +716,11 @@ void PermissionContextBase::UpdateSetting(
       is_one_time ? content_settings::mojom::SessionModel::ONE_TIME
                   : content_settings::mojom::SessionModel::DURABLE);
 
-  // The Permissions module in Safety check will revoke permissions after
-  // a finite amount of time if the permission can be revoked.
+  // The unused permissions module in Safety check will revoke unused site
+  // permissions after a finite amount of time if the permission can be revoked.
   auto* info = content_settings::PermissionSettingsRegistry::GetInstance()->Get(
       content_settings_type_);
-  if (info && content_settings::CanBeAutoRevoked(
+  if (info && content_settings::CanBeAutoRevokedAsUnusedPermission(
                   content_settings_type(), info->delegate().ToValue(setting),
                   is_one_time)) {
     // For #2, by definition, that should be all of them. If that changes in

@@ -1324,17 +1324,16 @@ TEST_P(RevokedPermissionsServiceTest,
     ExpectRevokedAbusiveNotificationSettingValues(url3);
   }
 
-  // If we grant revoked unused permission again for `url3`, it will be removed
-  // the list of revoked abusive and unused sites.
+  // If we grant revoked unused permission (geolocation) again for `url3`, it
+  // will be removed from the list of revoked unused sites but not from the list
+  // of revoked abusive notification sites.
   hcsm()->SetContentSettingDefaultScope(
       GURL(url3), GURL(url3), geolocation_type, CONTENT_SETTING_ALLOW);
   if (ShouldSetupUnusedSites()) {
     EXPECT_EQ(1U, GetRevokedUnusedPermissions(hcsm()).size());
   }
   if (ShouldSetupSafeBrowsing()) {
-    ExpectRevokedAbusiveNotificationPermissionSize(0U);
-    ExpectCleanedUpAbusiveNotificationSettingValues(url3,
-                                                    /*is_regranted=*/false);
+    ExpectRevokedAbusiveNotificationPermissionSize(1U);
   }
 
   // Grant the revoked chooser permissions again from url5, and check that
@@ -1645,14 +1644,7 @@ TEST_P(RevokedPermissionsServiceTest, ChangingSettingOnRevokedSettingClearsIt) {
   }
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
   if (ShouldSetupUnusedSites()) {
-    // If notifications were set up for `url2`, then remove it from the list of
-    // revoked unused permissions.
-    if (ShouldSetupSafeBrowsing()) {
-      EXPECT_EQ(1U, GetRevokedUnusedPermissions(hcsm()).size());
-
-    } else {
-      EXPECT_EQ(2U, GetRevokedUnusedPermissions(hcsm()).size());
-    }
+    EXPECT_EQ(2U, GetRevokedUnusedPermissions(hcsm()).size());
   }
   // Whether `url2` was removed from revoked unused permissions or not, it
   // should be in the list of revoked abusive notifications.
@@ -1679,6 +1671,119 @@ TEST_P(RevokedPermissionsServiceTest, ChangingSettingOnRevokedSettingClearsIt) {
   }
   if (ShouldSetupSafeBrowsing()) {
     ExpectRevokedAbusiveNotificationPermissionSize(0U);
+  }
+}
+
+TEST_P(RevokedPermissionsServiceTest, OnContentSettingsChanged_Notifications) {
+  if (ShouldSetupUnusedSites()) {
+    SetupRevokedUnusedPermissionSite(url1);
+    EXPECT_EQ(1U, GetRevokedUnusedPermissions(hcsm()).size());
+  }
+  if (ShouldSetupSafeBrowsing()) {
+    SetupAbusiveNotificationSite(url2, ContentSetting::CONTENT_SETTING_ASK);
+    SetupRevokedAbusiveNotificationSite(url2);
+    ExpectRevokedAbusiveNotificationPermissionSize(1U);
+  }
+  if (ShouldSetupDisruptiveSites()) {
+    SetupRevokedDisruptiveNotificationSite(url3);
+    ExpectRevokedDisruptiveNotificationSettingValues(url3);
+    EXPECT_EQ(GetRevokedDisruptiveNotificationPermissionSize(), 1);
+  }
+
+  hcsm()->SetContentSettingDefaultScope(GURL(url1), GURL(url1),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        ContentSetting::CONTENT_SETTING_ALLOW);
+  hcsm()->SetContentSettingDefaultScope(GURL(url2), GURL(url2),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        ContentSetting::CONTENT_SETTING_ALLOW);
+  hcsm()->SetContentSettingDefaultScope(GURL(url3), GURL(url3),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        ContentSetting::CONTENT_SETTING_ALLOW);
+
+  if (ShouldSetupUnusedSites()) {
+    EXPECT_EQ(1U, GetRevokedUnusedPermissions(hcsm()).size());
+  }
+  if (ShouldSetupSafeBrowsing()) {
+    ExpectRevokedAbusiveNotificationPermissionSize(0U);
+  }
+  if (ShouldSetupDisruptiveSites()) {
+    EXPECT_FALSE(DisruptiveNotificationPermissionsManager::
+                     IsUrlRevokedDisruptiveNotification(hcsm(), GURL(url3)));
+  }
+}
+
+TEST_P(RevokedPermissionsServiceTest,
+       OnContentSettingsChanged_NonNotificationsPermission) {
+  if (ShouldSetupUnusedSites()) {
+    SetupRevokedUnusedPermissionSite(url1);
+    EXPECT_EQ(1U, GetRevokedUnusedPermissions(hcsm()).size());
+  }
+  if (ShouldSetupSafeBrowsing()) {
+    SetupAbusiveNotificationSite(url2, ContentSetting::CONTENT_SETTING_ASK);
+    SetupRevokedAbusiveNotificationSite(url2);
+    ExpectRevokedAbusiveNotificationPermissionSize(1U);
+  }
+  if (ShouldSetupDisruptiveSites()) {
+    SetupRevokedDisruptiveNotificationSite(url3);
+    ExpectRevokedDisruptiveNotificationSettingValues(url3);
+    EXPECT_EQ(GetRevokedDisruptiveNotificationPermissionSize(), 1);
+  }
+
+  hcsm()->SetContentSettingDefaultScope(GURL(url1), GURL(url1),
+                                        ContentSettingsType::GEOLOCATION,
+                                        ContentSetting::CONTENT_SETTING_ALLOW);
+  hcsm()->SetContentSettingDefaultScope(GURL(url2), GURL(url2),
+                                        ContentSettingsType::GEOLOCATION,
+                                        ContentSetting::CONTENT_SETTING_ALLOW);
+  hcsm()->SetContentSettingDefaultScope(GURL(url3), GURL(url3),
+                                        ContentSettingsType::GEOLOCATION,
+                                        ContentSetting::CONTENT_SETTING_ALLOW);
+
+  if (ShouldSetupUnusedSites()) {
+    EXPECT_EQ(0U, GetRevokedUnusedPermissions(hcsm()).size());
+  }
+  if (ShouldSetupSafeBrowsing()) {
+    ExpectRevokedAbusiveNotificationPermissionSize(1U);
+  }
+  if (ShouldSetupDisruptiveSites()) {
+    EXPECT_EQ(GetRevokedDisruptiveNotificationPermissionSize(), 1);
+  }
+}
+
+TEST_P(RevokedPermissionsServiceTest, OnContentSettingsChanged_WebsiteSetting) {
+  if (ShouldSetupUnusedSites()) {
+    SetupRevokedUnusedPermissionSite(url1);
+    EXPECT_EQ(1U, GetRevokedUnusedPermissions(hcsm()).size());
+  }
+  if (ShouldSetupSafeBrowsing()) {
+    SetupAbusiveNotificationSite(url2, ContentSetting::CONTENT_SETTING_ASK);
+    SetupRevokedAbusiveNotificationSite(url2);
+    ExpectRevokedAbusiveNotificationPermissionSize(1U);
+  }
+  if (ShouldSetupDisruptiveSites()) {
+    SetupRevokedDisruptiveNotificationSite(url3);
+    ExpectRevokedDisruptiveNotificationSettingValues(url3);
+    EXPECT_EQ(GetRevokedDisruptiveNotificationPermissionSize(), 1);
+  }
+
+  hcsm()->SetWebsiteSettingDefaultScope(
+      GURL(url1), GURL(url1), ContentSettingsType::COOKIE_CONTROLS_METADATA,
+      base::Value());
+  hcsm()->SetWebsiteSettingDefaultScope(
+      GURL(url2), GURL(url2), ContentSettingsType::COOKIE_CONTROLS_METADATA,
+      base::Value());
+  hcsm()->SetWebsiteSettingDefaultScope(
+      GURL(url3), GURL(url3), ContentSettingsType::COOKIE_CONTROLS_METADATA,
+      base::Value());
+
+  if (ShouldSetupUnusedSites()) {
+    EXPECT_EQ(1U, GetRevokedUnusedPermissions(hcsm()).size());
+  }
+  if (ShouldSetupSafeBrowsing()) {
+    ExpectRevokedAbusiveNotificationPermissionSize(1U);
+  }
+  if (ShouldSetupDisruptiveSites()) {
+    EXPECT_EQ(GetRevokedDisruptiveNotificationPermissionSize(), 1);
   }
 }
 

@@ -267,7 +267,7 @@ void UnusedSitePermissionsManager::RevokeUnusedPermissions(
          permission_itr != unused_site_permissions.end();) {
       const ContentSettingEntry& entry = *permission_itr;
       // Check if the current permission can be auto revoked.
-      if (!content_settings::CanBeAutoRevoked(
+      if (!content_settings::CanBeAutoRevokedAsUnusedPermission(
               /*type=*/entry.type, /*value=*/entry.source.setting_value)) {
         permission_itr++;
         continue;

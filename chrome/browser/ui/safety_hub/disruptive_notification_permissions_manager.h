@@ -121,8 +121,10 @@ class DisruptiveNotificationPermissionsManager
   // revocations and false positives.
   ContentSettingsForOneType GetRevokedNotifications();
 
-  // Returns true if settings are being changed due to auto revocation;
-  bool IsRunning();
+  // Returns true if settings are being changed due to auto revocation or if
+  // this service is responsible for changing notification permissions
+  // (regrants, undoing regrants etc).
+  bool IsChangingContentSettings();
 
   // If the url has a revoked disruptive notification permission, this method
   // allows the notification permissions again and adds a constraint so that
@@ -150,6 +152,12 @@ class DisruptiveNotificationPermissionsManager
   void RestoreDeletedRevokedPermission(
       const ContentSettingsPattern& primary_pattern,
       content_settings::ContentSettingConstraints constraints);
+
+  // Called when the notification content setting was changed outside of the
+  // service. Either record the regrant of the notification permission or clean
+  // up the matching revocation entries.
+  void OnPermissionChanged(const ContentSettingsPattern& primary_pattern,
+                           const ContentSettingsPattern& secondary_pattern);
 
   // If the URL is in the revoke or proposed revoke list, report a false
   // positive and record metrics.
