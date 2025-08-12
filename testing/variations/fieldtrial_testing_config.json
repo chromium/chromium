@@ -27610,6 +27610,24 @@
             ]
         }
     ],
+    "WebViewPrefetchHighestPrefetchPriority": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "WebViewPrefetchHighestPrefetchPriorityBurstLimit": "1"
+                    },
+                    "enable_features": [
+                        "WebViewPrefetchHighestPrefetchPriority"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewPrefetchNativeLibrary": [
         {
             "platforms": [
