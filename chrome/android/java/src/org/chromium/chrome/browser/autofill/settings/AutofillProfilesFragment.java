@@ -190,33 +190,48 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     }
 
     private void rebuildProfileList() {
-        getPreferenceScreen().removeAll();
-        getPreferenceScreen().setOrderingAsAdded(true);
-
+        PreferenceScreen screen = getPreferenceScreen();
+        screen.removeAll();
+        screen.setOrderingAsAdded(true);
         if (disabledSettingsInThirdPartyMode()) {
-            // Add the information card at the top.
-            CardWithButtonPreference disabled_settings_info_pref =
-                    new CardWithButtonPreference(getStyledContext(), null);
-            disabled_settings_info_pref.setKey(DISABLED_SETTINGS_INFO);
-            disabled_settings_info_pref.setTitle(
-                    R.string.autofill_disable_settings_explanation_title);
-            disabled_settings_info_pref.setSummary(R.string.autofill_disable_settings_explanation);
-            disabled_settings_info_pref.setButtonText(
-                    getResources().getString(R.string.autofill_disable_settings_button_label));
-            disabled_settings_info_pref.setIconResource(R.drawable.ic_google_services_48dp);
-            disabled_settings_info_pref.setOnButtonClick(
-                    () -> {
-                        SettingsNavigation settingsNavigation =
-                                SettingsNavigationFactory.createSettingsNavigation();
-                        settingsNavigation.startSettings(
-                                getPreferenceManager().getContext(),
-                                AutofillOptionsFragment.class,
-                                AutofillOptionsFragment.createRequiredArgs(
-                                        AutofillOptionsReferrer.AUTOFILL_PROFILES_FRAGMENT));
-                    });
-            getPreferenceScreen().addPreference(disabled_settings_info_pref);
+            addDisabledSettingsInfoCard(screen);
         }
+        addAutofillSwitch(screen);
+        addProfilePreferences(screen);
+        if (!disabledSettingsInThirdPartyMode()) {
+            addAddAddressButton(screen);
+        }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESSES_ENABLED)) {
+            addPlusAddressesPreference(screen);
+        }
+    }
 
+    /** Adds an information card if settings are disabled in third-party mode. */
+    private void addDisabledSettingsInfoCard(PreferenceScreen screen) {
+        CardWithButtonPreference disabledSettingsInfoPref =
+                new CardWithButtonPreference(getStyledContext(), null);
+        disabledSettingsInfoPref.setKey(DISABLED_SETTINGS_INFO);
+        disabledSettingsInfoPref.setTitle(R.string.autofill_disable_settings_explanation_title);
+        disabledSettingsInfoPref.setSummary(R.string.autofill_disable_settings_explanation);
+        disabledSettingsInfoPref.setButtonText(
+                getResources().getString(R.string.autofill_disable_settings_button_label));
+        disabledSettingsInfoPref.setIconResource(R.drawable.ic_google_services_48dp);
+        disabledSettingsInfoPref.setOnButtonClick(
+                () -> {
+                    SettingsNavigation settingsNavigation =
+                            SettingsNavigationFactory.createSettingsNavigation();
+                    settingsNavigation.startSettings(
+                            getPreferenceManager().getContext(),
+                            AutofillOptionsFragment.class,
+                            AutofillOptionsFragment.createRequiredArgs(
+                                    AutofillOptionsReferrer.AUTOFILL_PROFILES_FRAGMENT));
+                });
+
+        screen.addPreference(disabledSettingsInfoPref);
+    }
+
+    /** Adds the "Save and fill addresses" toggle. */
+    private void addAutofillSwitch(PreferenceScreen screen) {
         PersonalDataManager personalDataManager =
                 PersonalDataManagerFactory.getForProfile(getProfile());
         ChromeSwitchPreference autofillSwitch =
@@ -249,8 +264,13 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             autofillSwitch.setEnabled(false);
         }
 
-        getPreferenceScreen().addPreference(autofillSwitch);
+        screen.addPreference(autofillSwitch);
+    }
 
+    /** Adds a preference for each saved Autofill profile. */
+    private void addProfilePreferences(PreferenceScreen screen) {
+        PersonalDataManager personalDataManager =
+                PersonalDataManagerFactory.getForProfile(getProfile());
         for (AutofillProfile profile : personalDataManager.getProfilesForSettings()) {
             // Add a preference for the profile.
             AutofillProfileEditorPreference pref =
@@ -269,38 +289,44 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             }
             Bundle args = pref.getExtras();
             args.putString(AutofillEditorBase.AUTOFILL_GUID, profile.getGUID());
-            getPreferenceScreen().addPreference(pref);
+
+            screen.addPreference(pref);
         }
+    }
 
-        if (!disabledSettingsInThirdPartyMode()) {
-            // Add 'Add address' button. Tap of it brings up address editor which allows users type
-            // in new addresses.
-            if (personalDataManager.isAutofillProfileEnabled()) {
-                AutofillProfileEditorPreference pref =
-                        new AutofillProfileEditorPreference(getStyledContext());
-                Drawable plusIcon =
-                        ApiCompatibilityUtils.getDrawable(getResources(), R.drawable.plus);
-                plusIcon.mutate();
-                plusIcon.setColorFilter(
-                        SemanticColorUtils.getDefaultControlColorActive(getContext()),
-                        PorterDuff.Mode.SRC_IN);
-                pref.setIcon(plusIcon);
-                pref.setTitle(R.string.autofill_create_profile);
-                pref.setKey(PREF_NEW_PROFILE); // For testing.
+    /**
+     * Add 'Add address' button. Tapping on it brings up address editor which allows users to type
+     * in new addresses.
+     */
+    private void addAddAddressButton(PreferenceScreen screen) {
+        PersonalDataManager personalDataManager =
+                PersonalDataManagerFactory.getForProfile(getProfile());
 
-                getPreferenceScreen().addPreference(pref);
-            }
-        }
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESSES_ENABLED)) {
+        if (personalDataManager.isAutofillProfileEnabled()) {
             AutofillProfileEditorPreference pref =
                     new AutofillProfileEditorPreference(getStyledContext());
-            pref.setTitle(R.string.plus_address_settings_entry_title);
-            pref.setSummary(R.string.plus_address_settings_entry_summary);
-            pref.setKey(MANAGE_PLUS_ADDRESSES);
+            Drawable plusIcon = ApiCompatibilityUtils.getDrawable(getResources(), R.drawable.plus);
+            plusIcon.mutate();
+            plusIcon.setColorFilter(
+                    SemanticColorUtils.getDefaultControlColorActive(getContext()),
+                    PorterDuff.Mode.SRC_IN);
+            pref.setIcon(plusIcon);
+            pref.setTitle(R.string.autofill_create_profile);
+            pref.setKey(PREF_NEW_PROFILE); // For testing.
 
-            getPreferenceScreen().addPreference(pref);
+            screen.addPreference(pref);
         }
+    }
+
+    /** Adds the "Manage plus addresses" link if the feature is enabled. */
+    private void addPlusAddressesPreference(PreferenceScreen screen) {
+        AutofillProfileEditorPreference pref =
+                new AutofillProfileEditorPreference(getStyledContext());
+        pref.setTitle(R.string.plus_address_settings_entry_title);
+        pref.setSummary(R.string.plus_address_settings_entry_summary);
+        pref.setKey(MANAGE_PLUS_ADDRESSES);
+
+        screen.addPreference(pref);
     }
 
     @Override
