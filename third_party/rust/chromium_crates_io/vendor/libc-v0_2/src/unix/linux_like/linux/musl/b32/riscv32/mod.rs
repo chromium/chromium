@@ -102,7 +102,6 @@ s! {
 }
 
 s_no_extra_traits! {
-    #[allow(missing_debug_implementations)]
     #[repr(align(8))]
     pub struct max_align_t {
         priv_: (i64, f64),
@@ -634,3 +633,23 @@ pub const SYS_faccessat2: c_long = 439;
 pub const SYS_process_madvise: c_long = 440;
 pub const SYS_epoll_pwait2: c_long = 441;
 pub const SYS_mount_setattr: c_long = 442;
+
+// Plain syscalls aliased to their time64 variants
+pub const SYS_clock_gettime: c_long = SYS_clock_gettime64;
+pub const SYS_clock_settime: c_long = SYS_clock_settime64;
+pub const SYS_clock_adjtime: c_long = SYS_clock_adjtime64;
+pub const SYS_clock_getres: c_long = SYS_clock_getres_time64;
+pub const SYS_clock_nanosleep: c_long = SYS_clock_nanosleep_time64;
+pub const SYS_timer_gettime: c_long = SYS_timer_gettime64;
+pub const SYS_timer_settime: c_long = SYS_timer_settime64;
+pub const SYS_timerfd_gettime: c_long = SYS_timerfd_gettime64;
+pub const SYS_timerfd_settime: c_long = SYS_timerfd_settime64;
+pub const SYS_utimensat: c_long = SYS_utimensat_time64;
+pub const SYS_pselect6: c_long = SYS_pselect6_time64;
+pub const SYS_ppoll: c_long = SYS_ppoll_time64;
+pub const SYS_recvmmsg: c_long = SYS_recvmmsg_time64;
+pub const SYS_mq_timedsend: c_long = SYS_mq_timedsend_time64;
+pub const SYS_mq_timedreceive: c_long = SYS_mq_timedreceive_time64;
+pub const SYS_rt_sigtimedwait: c_long = SYS_rt_sigtimedwait_time64;
+pub const SYS_futex: c_long = SYS_futex_time64;
+pub const SYS_sched_rr_get_interval: c_long = SYS_sched_rr_get_interval_time64;

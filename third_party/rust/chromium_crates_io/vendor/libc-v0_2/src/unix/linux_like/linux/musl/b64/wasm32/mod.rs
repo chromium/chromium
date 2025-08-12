@@ -441,7 +441,6 @@ pub const SYS_set_mempolicy_home_node: c_long = 450;
 pub const SYS_fadvise: c_long = SYS_fadvise64;
 
 pub const MADV_SOFT_OFFLINE: c_int = 101;
-pub const MAP_32BIT: c_int = 0x0040;
 pub const O_APPEND: c_int = 1024;
 pub const O_DIRECT: c_int = 0x4000;
 pub const O_DIRECTORY: c_int = 0x10000;

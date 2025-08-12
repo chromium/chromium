@@ -315,7 +315,6 @@ s! {
         pub ha: [c_uchar; crate::MAX_ADDR_LEN],
     }
 
-    #[allow(missing_debug_implementations)]
     #[repr(align(4))]
     pub struct pthread_mutex_t {
         size: [u8; crate::__SIZEOF_PTHREAD_MUTEX_T],
@@ -382,7 +381,6 @@ s_no_extra_traits! {
         size: [u8; crate::__SIZEOF_PTHREAD_COND_T],
     }
 
-    #[allow(missing_debug_implementations)]
     #[repr(align(8))]
     pub struct max_align_t {
         priv_: [f64; 3],
@@ -1365,7 +1363,7 @@ pub const SOMAXCONN: c_int = 128;
 
 f! {
     pub fn CMSG_NXTHDR(mhdr: *const msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
-        if ((*cmsg).cmsg_len as usize) < mem::size_of::<cmsghdr>() {
+        if ((*cmsg).cmsg_len as usize) < size_of::<cmsghdr>() {
             return core::ptr::null_mut::<cmsghdr>();
         }
         let next = (cmsg as usize + super::CMSG_ALIGN((*cmsg).cmsg_len as usize)) as *mut cmsghdr;
@@ -1384,21 +1382,21 @@ f! {
     }
 
     pub fn CPU_SET(cpu: usize, cpuset: &mut cpu_set_t) -> () {
-        let size_in_bits = 8 * mem::size_of_val(&cpuset.bits[0]); // 32, 64 etc
+        let size_in_bits = 8 * size_of_val(&cpuset.bits[0]); // 32, 64 etc
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         cpuset.bits[idx] |= 1 << offset;
         ()
     }
 
     pub fn CPU_CLR(cpu: usize, cpuset: &mut cpu_set_t) -> () {
-        let size_in_bits = 8 * mem::size_of_val(&cpuset.bits[0]); // 32, 64 etc
+        let size_in_bits = 8 * size_of_val(&cpuset.bits[0]); // 32, 64 etc
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         cpuset.bits[idx] &= !(1 << offset);
         ()
     }
 
     pub fn CPU_ISSET(cpu: usize, cpuset: &cpu_set_t) -> bool {
-        let size_in_bits = 8 * mem::size_of_val(&cpuset.bits[0]);
+        let size_in_bits = 8 * size_of_val(&cpuset.bits[0]);
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         0 != (cpuset.bits[idx] & (1 << offset))
     }

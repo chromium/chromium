@@ -4,7 +4,7 @@ version = 3
 
 [[package]]
 name = "libc"
-version = "0.2.174"
+version = "0.2.175"
 dependencies = [
  "rustc-std-workspace-core",
 ]

@@ -3271,18 +3271,18 @@ extern "C" {
     pub fn sceRtcGetWin32FileTime(date: *mut ScePspDateTime, time: *mut u64) -> i32;
     pub fn sceRtcParseDateTime(dest_tick: *mut u64, date_string: *const u8) -> i32;
     pub fn sceRtcFormatRFC3339(
-        psz_date_time: *mut char,
+        psz_date_time: *mut c_char,
         p_utc: *const u64,
         time_zone_minutes: i32,
     ) -> i32;
-    pub fn sceRtcFormatRFC3339LocalTime(psz_date_time: *mut char, p_utc: *const u64) -> i32;
+    pub fn sceRtcFormatRFC3339LocalTime(psz_date_time: *mut c_char, p_utc: *const u64) -> i32;
     pub fn sceRtcParseRFC3339(p_utc: *mut u64, psz_date_time: *const u8) -> i32;
     pub fn sceRtcFormatRFC2822(
-        psz_date_time: *mut char,
+        psz_date_time: *mut c_char,
         p_utc: *const u64,
         time_zone_minutes: i32,
     ) -> i32;
-    pub fn sceRtcFormatRFC2822LocalTime(psz_date_time: *mut char, p_utc: *const u64) -> i32;
+    pub fn sceRtcFormatRFC2822LocalTime(psz_date_time: *mut c_char, p_utc: *const u64) -> i32;
 
     pub fn sceIoOpen(file: *const u8, flags: i32, permissions: IoPermissions) -> SceUid;
     pub fn sceIoOpenAsync(file: *const u8, flags: i32, permissions: IoPermissions) -> SceUid;

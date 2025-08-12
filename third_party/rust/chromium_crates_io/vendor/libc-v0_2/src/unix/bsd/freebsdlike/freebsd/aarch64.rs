@@ -33,7 +33,7 @@ s_no_extra_traits! {
     }
 }
 
-pub(crate) const _ALIGNBYTES: usize = mem::size_of::<c_longlong>() - 1;
+pub(crate) const _ALIGNBYTES: usize = size_of::<c_longlong>() - 1;
 
 cfg_if! {
     if #[cfg(feature = "extra_traits")] {

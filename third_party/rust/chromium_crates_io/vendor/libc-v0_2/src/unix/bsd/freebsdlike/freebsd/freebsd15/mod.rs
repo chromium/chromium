@@ -226,6 +226,8 @@ s! {
         // This is normally "struct pwddesc".
         /// Pointer to process paths info.
         pub ki_pd: *mut c_void,
+        /// Address of the ext err msg place
+        pub ki_uerrmsg: *mut c_void,
         pub ki_spareptrs: [*mut c_void; crate::KI_NSPARE_PTR],
         pub ki_sparelongs: [c_long; crate::KI_NSPARE_LONG],
         /// PS_* flags.
@@ -445,7 +447,7 @@ pub const KF_TYPE_EVENTFD: c_int = 13;
 
 /// max length of devicename
 pub const SPECNAMELEN: c_int = 255;
-pub const KI_NSPARE_PTR: usize = 5;
+pub const KI_NSPARE_PTR: usize = 4;
 
 /// domainset policies
 pub const DOMAINSET_POLICY_INVALID: c_int = 0;

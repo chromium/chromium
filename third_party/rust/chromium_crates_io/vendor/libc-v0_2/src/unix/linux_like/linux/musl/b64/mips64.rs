@@ -4,7 +4,7 @@ use crate::prelude::*;
 pub type wchar_t = i32;
 pub type __u64 = c_ulong;
 pub type __s64 = c_long;
-pub type nlink_t = u64;
+pub type nlink_t = c_uint;
 pub type blksize_t = i64;
 
 s! {
@@ -56,6 +56,12 @@ s! {
         __pad5: [c_int; 14],
     }
 
+    pub struct stack_t {
+        pub ss_sp: *mut c_void,
+        pub ss_size: size_t,
+        pub ss_flags: c_int,
+    }
+
     pub struct ipc_perm {
         #[cfg(musl_v1_2_3)]
         pub __key: crate::key_t,
@@ -75,6 +81,36 @@ s! {
         __pad1: c_int,
         __unused1: c_ulong,
         __unused2: c_ulong,
+    }
+
+    pub struct statfs {
+        pub f_type: c_ulong,
+        pub f_bsize: c_ulong,
+        pub f_frsize: c_ulong,
+        pub f_blocks: crate::fsblkcnt_t,
+        pub f_bfree: crate::fsblkcnt_t,
+        pub f_files: crate::fsfilcnt_t,
+        pub f_ffree: crate::fsfilcnt_t,
+        pub f_bavail: crate::fsblkcnt_t,
+        pub f_fsid: crate::fsid_t,
+        pub f_namelen: c_ulong,
+        pub f_flags: c_ulong,
+        pub f_spare: [c_ulong; 5],
+    }
+
+    pub struct statfs64 {
+        pub f_type: c_ulong,
+        pub f_bsize: c_ulong,
+        pub f_frsize: c_ulong,
+        pub f_blocks: crate::fsblkcnt64_t,
+        pub f_bfree: crate::fsblkcnt64_t,
+        pub f_files: crate::fsfilcnt64_t,
+        pub f_ffree: crate::fsfilcnt64_t,
+        pub f_bavail: crate::fsblkcnt64_t,
+        pub f_fsid: crate::fsid_t,
+        pub f_namelen: c_ulong,
+        pub f_flags: c_ulong,
+        pub f_spare: [c_ulong; 5],
     }
 }
 

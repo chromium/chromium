@@ -138,7 +138,6 @@ s_no_extra_traits! {
         __private: [u8; 112],
     }
 
-    #[allow(missing_debug_implementations)]
     #[repr(align(8))]
     pub struct max_align_t {
         priv_: [f64; 3],

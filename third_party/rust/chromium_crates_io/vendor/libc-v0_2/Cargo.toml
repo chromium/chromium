@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.63"
 name = "libc"
-version = "0.2.174"
+version = "0.2.175"
 authors = ["The Rust Project Developers"]
 build = "build.rs"
 exclude = [
@@ -109,6 +109,7 @@ targets = [
     "powerpc64-unknown-linux-gnu",
     "powerpc64-wrs-vxworks",
     "powerpc64le-unknown-linux-gnu",
+    "powerpc64le-unknown-linux-musl",
     "riscv32gc-unknown-linux-gnu",
     "riscv32i-unknown-none-elf",
     "riscv32imac-unknown-none-elf",
@@ -179,7 +180,7 @@ name = "const_fn"
 path = "tests/const_fn.rs"
 
 [dependencies.rustc-std-workspace-core]
-version = "1.0.0"
+version = "1.0.1"
 optional = true
 
 [lints.clippy]

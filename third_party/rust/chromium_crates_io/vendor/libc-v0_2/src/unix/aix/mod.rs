@@ -463,9 +463,9 @@ s! {
         pub st_gid: crate::gid_t,
         pub st_rdev: dev_t,
         pub st_ssize: c_int,
-        pub st_atim: st_timespec,
-        pub st_mtim: st_timespec,
-        pub st_ctim: st_timespec,
+        pub st_atim: crate::timespec,
+        pub st_mtim: crate::timespec,
+        pub st_ctim: crate::timespec,
         pub st_blksize: blksize_t,
         pub st_blocks: blkcnt_t,
         pub st_vfstype: c_int,
@@ -825,20 +825,20 @@ pub const DLT_PPP: c_int = 0x17;
 pub const DLT_FDDI: c_int = 0xf;
 pub const DLT_ATM: c_int = 0x25;
 pub const DLT_IPOIB: c_int = 0xc7;
-pub const BIOCSETF: c_long = -2146418073;
-pub const BIOCGRTIMEOUT: c_long = 1074807406;
-pub const BIOCGBLEN: c_long = 1074020966;
-pub const BIOCSBLEN: c_long = -1073462682;
-pub const BIOCFLUSH: c_long = 536887912;
-pub const BIOCPROMISC: c_long = 536887913;
-pub const BIOCGDLT: c_long = 1074020970;
-pub const BIOCSRTIMEOUT: c_long = -2146418067;
-pub const BIOCGSTATS: c_long = 1074283119;
-pub const BIOCIMMEDIATE: c_long = -2147204496;
-pub const BIOCVERSION: c_long = 1074020977;
-pub const BIOCSDEVNO: c_long = 536887922;
-pub const BIOCGETIF: c_long = 1075855979;
-pub const BIOCSETIF: c_long = -2145369492;
+pub const BIOCSETF: c_int = 0x80104267;
+pub const BIOCGRTIMEOUT: c_int = 0x4010426e;
+pub const BIOCGBLEN: c_int = 0x40044266;
+pub const BIOCSBLEN: c_int = 0xc0044266;
+pub const BIOCFLUSH: c_int = 0x20004268;
+pub const BIOCPROMISC: c_int = 0x20004269;
+pub const BIOCGDLT: c_int = 0x4004426a;
+pub const BIOCSRTIMEOUT: c_int = 0x8010426d;
+pub const BIOCGSTATS: c_int = 0x4008426f;
+pub const BIOCIMMEDIATE: c_int = 0x80044270;
+pub const BIOCVERSION: c_int = 0x40044271;
+pub const BIOCSDEVNO: c_int = 0x20004272;
+pub const BIOCGETIF: c_int = 0x4020426b;
+pub const BIOCSETIF: c_int = 0x8020426c;
 pub const BPF_ABS: c_int = 32;
 pub const BPF_ADD: c_int = 0;
 pub const BPF_ALIGNMENT: c_ulong = 4;
@@ -1159,10 +1159,6 @@ pub const NFSMNT_ACDIRMAX: c_int = 0x0800;
 // rpcsvc/rstat.h
 pub const CPUSTATES: c_int = 4;
 
-// search.h
-pub const FIND: c_int = 0;
-pub const ENTER: c_int = 1;
-
 // semaphore.h
 pub const SEM_FAILED: *mut sem_t = -1isize as *mut crate::sem_t;
 
@@ -1264,12 +1260,11 @@ pub const ENOLCK: c_int = 49;
 pub const ENOCONNECT: c_int = 50;
 pub const ESTALE: c_int = 52;
 pub const EDIST: c_int = 53;
-pub const EWOULDBLOCK: c_int = EAGAIN;
+pub const EWOULDBLOCK: c_int = 54;
 pub const EINPROGRESS: c_int = 55;
 pub const EALREADY: c_int = 56;
 pub const ENOTSOCK: c_int = 57;
 pub const EDESTADDRREQ: c_int = 58;
-pub const EDESTADDREQ: c_int = EDESTADDRREQ;
 pub const EMSGSIZE: c_int = 59;
 pub const EPROTOTYPE: c_int = 60;
 pub const ENOPROTOOPT: c_int = 61;
@@ -1298,7 +1293,7 @@ pub const EPROCLIM: c_int = 83;
 pub const EUSERS: c_int = 84;
 pub const ELOOP: c_int = 85;
 pub const ENAMETOOLONG: c_int = 86;
-pub const ENOTEMPTY: c_int = EEXIST;
+pub const ENOTEMPTY: c_int = 87;
 pub const EDQUOT: c_int = 88;
 pub const ECORRUPT: c_int = 89;
 pub const ESYSERROR: c_int = 90;
@@ -1321,7 +1316,6 @@ pub const EBADMSG: c_int = 120;
 pub const EPROTO: c_int = 121;
 pub const ENODATA: c_int = 122;
 pub const ENOSTR: c_int = 123;
-pub const ECLONEME: c_int = ERESTART;
 pub const ENOTSUP: c_int = 124;
 pub const EMULTIHOP: c_int = 125;
 pub const ENOLINK: c_int = 126;
@@ -1364,22 +1358,22 @@ pub const Q_SETQUOTA: c_int = 0x400;
 
 // sys/ioctl.h
 pub const IOCPARM_MASK: c_int = 0x7f;
-pub const IOC_VOID: c_long = 536870912;
-pub const IOC_OUT: c_long = 1073741824;
-pub const IOC_IN: c_long = -2147483648;
-pub const IOC_INOUT: c_long = IOC_IN | IOC_OUT;
-pub const FIOCLEX: c_long = 536897025;
-pub const FIONCLEX: c_long = 536897026;
-pub const FIONREAD: c_long = 1074030207;
-pub const FIONBIO: c_long = -2147195266;
-pub const FIOASYNC: c_long = -2147195267;
-pub const FIOSETOWN: c_long = -2147195268;
-pub const FIOGETOWN: c_long = 1074030203;
-pub const TIOCGETD: c_long = 1074033664;
-pub const TIOCSETD: c_long = -2147191807;
-pub const TIOCHPCL: c_long = 536900610;
-pub const TIOCMODG: c_long = 1074033667;
-pub const TIOCMODS: c_long = -2147191804;
+pub const IOC_VOID: c_int = 0x20000000;
+pub const IOC_OUT: c_int = 0x40000000;
+pub const IOC_IN: c_int = 0x40000000 << 1;
+pub const IOC_INOUT: c_int = IOC_IN | IOC_OUT;
+pub const FIOCLEX: c_int = 0x20006601;
+pub const FIONCLEX: c_int = 0x20006602;
+pub const FIONREAD: c_int = 0x4004667f;
+pub const FIONBIO: c_int = 0x8004667e;
+pub const FIOASYNC: c_int = 0x8004667d;
+pub const FIOSETOWN: c_int = 0x8004667c;
+pub const FIOGETOWN: c_int = 0x4004667b;
+pub const TIOCGETD: c_int = 0x40047400;
+pub const TIOCSETD: c_int = 0x80047401;
+pub const TIOCHPCL: c_int = 0x20007402;
+pub const TIOCMODG: c_int = 0x40047403;
+pub const TIOCMODS: c_int = 0x80047404;
 pub const TIOCM_LE: c_int = 0x1;
 pub const TIOCM_DTR: c_int = 0x2;
 pub const TIOCM_RTS: c_int = 0x4;
@@ -1391,46 +1385,46 @@ pub const TIOCM_CD: c_int = 0x40;
 pub const TIOCM_RNG: c_int = 0x80;
 pub const TIOCM_RI: c_int = 0x80;
 pub const TIOCM_DSR: c_int = 0x100;
-pub const TIOCGETP: c_long = 1074164744;
-pub const TIOCSETP: c_long = -2147060727;
-pub const TIOCSETN: c_long = -2147060726;
-pub const TIOCEXCL: c_long = 536900621;
-pub const TIOCNXCL: c_long = 536900622;
-pub const TIOCFLUSH: c_long = -2147191792;
-pub const TIOCSETC: c_long = -2147060719;
-pub const TIOCGETC: c_long = 1074164754;
+pub const TIOCGETP: c_int = 0x40067408;
+pub const TIOCSETP: c_int = 0x80067409;
+pub const TIOCSETN: c_int = 0x8006740a;
+pub const TIOCEXCL: c_int = 0x2000740d;
+pub const TIOCNXCL: c_int = 0x2000740e;
+pub const TIOCFLUSH: c_int = 0x80047410;
+pub const TIOCSETC: c_int = 0x80067411;
+pub const TIOCGETC: c_int = 0x40067412;
 pub const TANDEM: c_int = 0x1;
 pub const CBREAK: c_int = 0x2;
 pub const LCASE: c_int = 0x4;
 pub const MDMBUF: c_int = 0x800000;
 pub const XTABS: c_int = 0xc00;
-pub const SIOCADDMULTI: c_long = -2145359567;
-pub const SIOCADDRT: c_long = -2143784438;
-pub const SIOCDARP: c_long = -2142476000;
-pub const SIOCDELMULTI: c_long = -2145359566;
-pub const SIOCDELRT: c_long = -2143784437;
-pub const SIOCDIFADDR: c_long = -2144835303;
-pub const SIOCGARP: c_long = -1068734170;
-pub const SIOCGIFADDR: c_long = -1071093471;
-pub const SIOCGIFBRDADDR: c_long = -1071093469;
-pub const SIOCGIFCONF: c_long = -1072666299;
-pub const SIOCGIFDSTADDR: c_long = -1071093470;
-pub const SIOCGIFFLAGS: c_long = -1071093487;
-pub const SIOCGIFHWADDR: c_long = -1068209771;
-pub const SIOCGIFMETRIC: c_long = -1071093481;
-pub const SIOCGIFMTU: c_long = -1071093418;
-pub const SIOCGIFNETMASK: c_long = -1071093467;
-pub const SIOCSARP: c_long = -2142476002;
-pub const SIOCSIFADDR: c_long = -2144835316;
-pub const SIOCSIFBRDADDR: c_long = -2144835309;
-pub const SIOCSIFDSTADDR: c_long = -2144835314;
-pub const SIOCSIFFLAGS: c_long = -2144835312;
-pub const SIOCSIFMETRIC: c_long = -2144835304;
-pub const SIOCSIFMTU: c_long = -2144835240;
-pub const SIOCSIFNETMASK: c_long = -2144835306;
-pub const TIOCUCNTL: c_long = -2147191706;
-pub const TIOCCONS: c_long = -2147191710;
-pub const TIOCPKT: c_long = -2147191696;
+pub const SIOCADDMULTI: c_int = 0x80206931;
+pub const SIOCADDRT: c_int = 0x8038720a;
+pub const SIOCDARP: c_int = 0x804c6920;
+pub const SIOCDELMULTI: c_int = 0x80206932;
+pub const SIOCDELRT: c_int = 0x8038720b;
+pub const SIOCDIFADDR: c_int = 0x80286919;
+pub const SIOCGARP: c_int = 0xc04c6926;
+pub const SIOCGIFADDR: c_int = 0xc0286921;
+pub const SIOCGIFBRDADDR: c_int = 0xc0286923;
+pub const SIOCGIFCONF: c_int = 0xc0106945;
+pub const SIOCGIFDSTADDR: c_int = 0xc0286922;
+pub const SIOCGIFFLAGS: c_int = 0xc0286911;
+pub const SIOCGIFHWADDR: c_int = 0xc0546995;
+pub const SIOCGIFMETRIC: c_int = 0xc0286917;
+pub const SIOCGIFMTU: c_int = 0xc0286956;
+pub const SIOCGIFNETMASK: c_int = 0xc0286925;
+pub const SIOCSARP: c_int = 0x804c691e;
+pub const SIOCSIFADDR: c_int = 0x8028690c;
+pub const SIOCSIFBRDADDR: c_int = 0x80286913;
+pub const SIOCSIFDSTADDR: c_int = 0x8028690e;
+pub const SIOCSIFFLAGS: c_int = 0x80286910;
+pub const SIOCSIFMETRIC: c_int = 0x80286918;
+pub const SIOCSIFMTU: c_int = 0x80286958;
+pub const SIOCSIFNETMASK: c_int = 0x80286916;
+pub const TIOCUCNTL: c_int = 0x80047466;
+pub const TIOCCONS: c_int = 0x80047462;
+pub const TIOCPKT: c_int = 0x80047470;
 pub const TIOCPKT_DATA: c_int = 0;
 pub const TIOCPKT_FLUSHREAD: c_int = 1;
 pub const TIOCPKT_FLUSHWRITE: c_int = 2;
@@ -2094,31 +2088,31 @@ pub const TCOON: c_int = 1;
 pub const TCIOFF: c_int = 2;
 pub const TCION: c_int = 3;
 pub const TIOC: c_int = 0x5400;
-pub const TIOCGWINSZ: c_long = 1074295912;
-pub const TIOCSWINSZ: c_long = -2146929561;
-pub const TIOCLBIS: c_long = -2147191681;
-pub const TIOCLBIC: c_long = -2147191682;
-pub const TIOCLSET: c_long = -2147191683;
-pub const TIOCLGET: c_long = 1074033788;
-pub const TIOCSBRK: c_long = 536900731;
-pub const TIOCCBRK: c_long = 536900730;
-pub const TIOCSDTR: c_long = 536900729;
-pub const TIOCCDTR: c_long = 536900728;
-pub const TIOCSLTC: c_long = -2147060619;
-pub const TIOCGLTC: c_long = 1074164852;
-pub const TIOCOUTQ: c_long = 1074033779;
-pub const TIOCNOTTY: c_long = 536900721;
-pub const TIOCSTOP: c_long = 536900719;
-pub const TIOCSTART: c_long = 536900718;
-pub const TIOCGPGRP: c_long = 1074033783;
-pub const TIOCSPGRP: c_long = -2147191690;
-pub const TIOCGSID: c_long = 1074033736;
-pub const TIOCSTI: c_long = -2147388302;
-pub const TIOCMSET: c_long = -2147191699;
-pub const TIOCMBIS: c_long = -2147191700;
-pub const TIOCMBIC: c_long = -2147191701;
-pub const TIOCMGET: c_long = 1074033770;
-pub const TIOCREMOTE: c_long = -2147191703;
+pub const TIOCGWINSZ: c_int = 0x40087468;
+pub const TIOCSWINSZ: c_int = 0x80087467;
+pub const TIOCLBIS: c_int = 0x8004747f;
+pub const TIOCLBIC: c_int = 0x8004747e;
+pub const TIOCLSET: c_int = 0x8004747d;
+pub const TIOCLGET: c_int = 0x4004747c;
+pub const TIOCSBRK: c_int = 0x2000747b;
+pub const TIOCCBRK: c_int = 0x2000747a;
+pub const TIOCSDTR: c_int = 0x20007479;
+pub const TIOCCDTR: c_int = 0x20007478;
+pub const TIOCSLTC: c_int = 0x80067475;
+pub const TIOCGLTC: c_int = 0x40067474;
+pub const TIOCOUTQ: c_int = 0x40047473;
+pub const TIOCNOTTY: c_int = 0x20007471;
+pub const TIOCSTOP: c_int = 0x2000746f;
+pub const TIOCSTART: c_int = 0x2000746e;
+pub const TIOCGPGRP: c_int = 0x40047477;
+pub const TIOCSPGRP: c_int = 0x80047476;
+pub const TIOCGSID: c_int = 0x40047448;
+pub const TIOCSTI: c_int = 0x80017472;
+pub const TIOCMSET: c_int = 0x8004746d;
+pub const TIOCMBIS: c_int = 0x8004746c;
+pub const TIOCMBIC: c_int = 0x8004746b;
+pub const TIOCMGET: c_int = 0x4004746a;
+pub const TIOCREMOTE: c_int = 0x80047469;
 
 // sys/user.h
 pub const MAXCOMLEN: c_int = 32;
@@ -2436,7 +2430,7 @@ pub const ACCOUNTING: c_short = 9;
 
 f! {
     pub fn CMSG_FIRSTHDR(mhdr: *const msghdr) -> *mut cmsghdr {
-        if (*mhdr).msg_controllen as usize >= mem::size_of::<cmsghdr>() {
+        if (*mhdr).msg_controllen as usize >= size_of::<cmsghdr>() {
             (*mhdr).msg_control as *mut cmsghdr
         } else {
             core::ptr::null_mut::<cmsghdr>()
@@ -2447,7 +2441,7 @@ f! {
         if cmsg.is_null() {
             CMSG_FIRSTHDR(mhdr)
         } else {
-            if (cmsg as usize + (*cmsg).cmsg_len as usize + mem::size_of::<cmsghdr>())
+            if (cmsg as usize + (*cmsg).cmsg_len as usize + size_of::<cmsghdr>())
                 > ((*mhdr).msg_control as usize + (*mhdr).msg_controllen as usize)
             {
                 core::ptr::null_mut::<cmsghdr>()
@@ -2459,15 +2453,15 @@ f! {
     }
 
     pub fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
-        (cmsg as *mut c_uchar).offset(mem::size_of::<cmsghdr>() as isize)
+        (cmsg as *mut c_uchar).offset(size_of::<cmsghdr>() as isize)
     }
 
     pub {const} fn CMSG_LEN(length: c_uint) -> c_uint {
-        mem::size_of::<cmsghdr>() as c_uint + length
+        size_of::<cmsghdr>() as c_uint + length
     }
 
     pub {const} fn CMSG_SPACE(length: c_uint) -> c_uint {
-        mem::size_of::<cmsghdr>() as c_uint + length
+        size_of::<cmsghdr>() as c_uint + length
     }
 
     pub fn FD_ZERO(set: *mut fd_set) -> () {
@@ -2477,21 +2471,21 @@ f! {
     }
 
     pub fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
-        let bits = mem::size_of::<c_long>() * 8;
+        let bits = size_of::<c_long>() * 8;
         let fd = fd as usize;
         (*set).fds_bits[fd / bits] |= 1 << (fd % bits);
         return;
     }
 
     pub fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
-        let bits = mem::size_of::<c_long>() * 8;
+        let bits = size_of::<c_long>() * 8;
         let fd = fd as usize;
         (*set).fds_bits[fd / bits] &= !(1 << (fd % bits));
         return;
     }
 
     pub fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
-        let bits = mem::size_of::<c_long>() * 8;
+        let bits = size_of::<c_long>() * 8;
         let fd = fd as usize;
         return ((*set).fds_bits[fd / bits] & (1 << (fd % bits))) != 0;
     }
@@ -2949,6 +2943,7 @@ extern "C" {
         flags: c_int,
     ) -> c_int;
     pub fn getpagesize() -> c_int;
+    pub fn getpeereid(socket: c_int, euid: *mut crate::uid_t, egid: *mut crate::gid_t) -> c_int;
     pub fn getpriority(which: c_int, who: crate::id_t) -> c_int;
     pub fn getpwent() -> *mut crate::passwd;
     #[link_name = "_posix_getpwnam_r"]
@@ -3251,15 +3246,15 @@ extern "C" {
     #[link_name = "nsendmsg"]
     pub fn sendmsg(sockfd: c_int, msg: *const msghdr, flags: c_int) -> ssize_t;
     pub fn setcontext(ucp: *const ucontext_t) -> c_int;
-    pub fn setdomainname(name: *mut c_char, len: c_int) -> c_int;
-    pub fn setgroups(ngroups: c_int, ptr: *mut crate::gid_t) -> c_int;
+    pub fn setdomainname(name: *const c_char, len: c_int) -> c_int;
+    pub fn setgroups(ngroups: c_int, ptr: *const crate::gid_t) -> c_int;
     pub fn setgrent();
     pub fn setmntent(filename: *const c_char, ty: *const c_char) -> *mut crate::FILE;
     pub fn setpriority(which: c_int, who: id_t, priority: c_int) -> c_int;
     pub fn setpwent();
     pub fn setrlimit(resource: c_int, rlim: *const crate::rlimit) -> c_int;
     pub fn setrlimit64(resource: c_int, rlim: *const rlimit64) -> c_int;
-    pub fn settimeofday(tv: *mut crate::timeval, tz: *mut crate::timezone) -> c_int;
+    pub fn settimeofday(tv: *const crate::timeval, tz: *const crate::timezone) -> c_int;
     pub fn setitimer(
         which: c_int,
         new_value: *const crate::itimerval,
@@ -3286,10 +3281,10 @@ extern "C" {
     pub fn srand48(seed: c_long);
     pub fn stat64(path: *const c_char, buf: *mut stat64) -> c_int;
     pub fn stat64at(dirfd: c_int, path: *const c_char, buf: *mut stat64, flags: c_int) -> c_int;
-    pub fn statfs(path: *mut c_char, buf: *mut statfs) -> c_int;
-    pub fn statfs64(path: *mut c_char, buf: *mut statfs64) -> c_int;
+    pub fn statfs(path: *const c_char, buf: *mut statfs) -> c_int;
+    pub fn statfs64(path: *const c_char, buf: *mut statfs64) -> c_int;
     pub fn statvfs64(path: *const c_char, buf: *mut statvfs64) -> c_int;
-    pub fn statx(path: *mut c_char, buf: *mut stat, length: c_int, command: c_int) -> c_int;
+    pub fn statx(path: *const c_char, buf: *mut stat, length: c_int, command: c_int) -> c_int;
     pub fn strcasecmp_l(
         string1: *const c_char,
         string2: *const c_char,
@@ -3311,8 +3306,8 @@ extern "C" {
     pub fn strptime(s: *const c_char, format: *const c_char, tm: *mut crate::tm) -> *mut c_char;
     pub fn strsep(string: *mut *mut c_char, delim: *const c_char) -> *mut c_char;
     pub fn swapcontext(uocp: *mut ucontext_t, ucp: *const ucontext_t) -> c_int;
-    pub fn swapoff(puath: *mut c_char) -> c_int;
-    pub fn swapon(path: *mut c_char) -> c_int;
+    pub fn swapoff(path: *const c_char) -> c_int;
+    pub fn swapon(path: *const c_char) -> c_int;
     pub fn sync();
     pub fn telldir(dirp: *mut crate::DIR) -> c_long;
     pub fn timer_create(
@@ -3333,7 +3328,7 @@ extern "C" {
     pub fn uname(buf: *mut crate::utsname) -> c_int;
     pub fn updwtmp(file: *const c_char, u: *const utmp);
     pub fn uselocale(loc: crate::locale_t) -> crate::locale_t;
-    pub fn utmpname(file: *mut c_char) -> c_int;
+    pub fn utmpname(file: *const c_char) -> c_int;
     pub fn utimensat(
         dirfd: c_int,
         path: *const c_char,

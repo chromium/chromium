@@ -92,7 +92,6 @@ s_no_extra_traits! {
         pub a_un: __c_anonymous_elf64_auxv_union,
     }
 
-    #[allow(missing_debug_implementations)]
     #[repr(align(16))]
     pub struct max_align_t {
         priv_: [f64; 4],
@@ -137,7 +136,8 @@ s_no_extra_traits! {
         pub mc_gsbase: register_t,
         pub mc_xfpustate: register_t,
         pub mc_xfpustate_len: register_t,
-        pub mc_spare: [c_long; 4],
+        pub mc_tlsbase: register_t,
+        pub mc_spare: [c_long; 3],
     }
 }
 
@@ -316,7 +316,7 @@ cfg_if! {
     }
 }
 
-pub(crate) const _ALIGNBYTES: usize = mem::size_of::<c_long>() - 1;
+pub(crate) const _ALIGNBYTES: usize = size_of::<c_long>() - 1;
 
 pub const BIOCSRTIMEOUT: c_ulong = 0x8010426d;
 pub const BIOCGRTIMEOUT: c_ulong = 0x4010426e;

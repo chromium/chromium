@@ -151,16 +151,16 @@ cfg_if! {
         // // catch the fact that llvm and gcc disagree on how x64 __int128
         // // is actually *passed* on the stack (clang underaligns it for
         // // the same reason that rustc *never* properly aligns it).
-        // static_assert_eq!(core::mem::size_of::<__int128>(), _SIZE_128);
-        // static_assert_eq!(core::mem::align_of::<__int128>(), _ALIGN_128);
+        // static_assert_eq!(size_of::<__int128>(), _SIZE_128);
+        // static_assert_eq!(align_of::<__int128>(), _ALIGN_128);
 
-        // static_assert_eq!(core::mem::size_of::<__uint128>(), _SIZE_128);
-        // static_assert_eq!(core::mem::align_of::<__uint128>(), _ALIGN_128);
+        // static_assert_eq!(size_of::<__uint128>(), _SIZE_128);
+        // static_assert_eq!(align_of::<__uint128>(), _ALIGN_128);
 
-        // static_assert_eq!(core::mem::size_of::<__int128_t>(), _SIZE_128);
-        // static_assert_eq!(core::mem::align_of::<__int128_t>(), _ALIGN_128);
+        // static_assert_eq!(size_of::<__int128_t>(), _SIZE_128);
+        // static_assert_eq!(align_of::<__int128_t>(), _ALIGN_128);
 
-        // static_assert_eq!(core::mem::size_of::<__uint128_t>(), _SIZE_128);
-        // static_assert_eq!(core::mem::align_of::<__uint128_t>(), _ALIGN_128);
+        // static_assert_eq!(size_of::<__uint128_t>(), _SIZE_128);
+        // static_assert_eq!(align_of::<__uint128_t>(), _ALIGN_128);
     }
 }

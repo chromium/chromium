@@ -949,7 +949,7 @@ pub const CPUCTL_MSRSBIT: c_int = 0xc0106305;
 pub const CPUCTL_MSRCBIT: c_int = 0xc0106306;
 pub const CPUCTL_CPUID_COUNT: c_int = 0xc0106307;
 
-pub const CPU_SETSIZE: size_t = mem::size_of::<crate::cpumask_t>() * 8;
+pub const CPU_SETSIZE: size_t = size_of::<crate::cpumask_t>() * 8;
 
 pub const EVFILT_READ: i16 = -1;
 pub const EVFILT_WRITE: i16 = -2;
@@ -1421,23 +1421,23 @@ pub const RTAX_MAX: c_int = 11;
 
 const_fn! {
     {const} fn _CMSG_ALIGN(n: usize) -> usize {
-        (n + (mem::size_of::<c_long>() - 1)) & !(mem::size_of::<c_long>() - 1)
+        (n + (size_of::<c_long>() - 1)) & !(size_of::<c_long>() - 1)
     }
 }
 
 f! {
     pub fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
-        (cmsg as *mut c_uchar).offset(_CMSG_ALIGN(mem::size_of::<cmsghdr>()) as isize)
+        (cmsg as *mut c_uchar).offset(_CMSG_ALIGN(size_of::<cmsghdr>()) as isize)
     }
 
     pub {const} fn CMSG_LEN(length: c_uint) -> c_uint {
-        (_CMSG_ALIGN(mem::size_of::<cmsghdr>()) + length as usize) as c_uint
+        (_CMSG_ALIGN(size_of::<cmsghdr>()) + length as usize) as c_uint
     }
 
     pub fn CMSG_NXTHDR(mhdr: *const crate::msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
         let next = cmsg as usize
             + _CMSG_ALIGN((*cmsg).cmsg_len as usize)
-            + _CMSG_ALIGN(mem::size_of::<cmsghdr>());
+            + _CMSG_ALIGN(size_of::<cmsghdr>());
         let max = (*mhdr).msg_control as usize + (*mhdr).msg_controllen as usize;
         if next <= max {
             (cmsg as usize + _CMSG_ALIGN((*cmsg).cmsg_len as usize)) as *mut cmsghdr
@@ -1447,7 +1447,7 @@ f! {
     }
 
     pub {const} fn CMSG_SPACE(length: c_uint) -> c_uint {
-        (_CMSG_ALIGN(mem::size_of::<cmsghdr>()) + _CMSG_ALIGN(length as usize)) as c_uint
+        (_CMSG_ALIGN(size_of::<cmsghdr>()) + _CMSG_ALIGN(length as usize)) as c_uint
     }
 
     pub fn CPU_ZERO(cpuset: &mut cpu_set_t) -> () {

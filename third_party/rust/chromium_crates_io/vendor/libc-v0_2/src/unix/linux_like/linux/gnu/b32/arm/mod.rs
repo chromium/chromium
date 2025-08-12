@@ -232,13 +232,11 @@ s! {
 }
 
 s_no_extra_traits! {
-    #[allow(missing_debug_implementations)]
     #[repr(align(8))]
     pub struct max_align_t {
         priv_: [i64; 2],
     }
 
-    #[allow(missing_debug_implementations)]
     #[repr(align(8))]
     pub struct ucontext_t {
         pub uc_flags: c_ulong,

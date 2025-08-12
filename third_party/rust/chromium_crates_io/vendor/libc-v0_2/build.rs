@@ -95,7 +95,7 @@ fn main() {
     let musl_v1_2_3 = env::var("RUST_LIBC_UNSTABLE_MUSL_V1_2_3").is_ok();
     println!("cargo:rerun-if-env-changed=RUST_LIBC_UNSTABLE_MUSL_V1_2_3");
     // loongarch64 and ohos have already updated
-    if musl_v1_2_3 || target_os == "loongarch64" || target_env == "ohos" {
+    if musl_v1_2_3 || target_arch == "loongarch64" || target_env == "ohos" {
         // FIXME(musl): enable time64 api as well
         set_cfg("musl_v1_2_3");
     }

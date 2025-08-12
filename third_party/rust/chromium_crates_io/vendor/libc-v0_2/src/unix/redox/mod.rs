@@ -67,7 +67,7 @@ s_no_extra_traits! {
 
     pub struct sockaddr_storage {
         pub ss_family: crate::sa_family_t,
-        __ss_padding: [u8; 128 - mem::size_of::<sa_family_t>() - mem::size_of::<c_ulong>()],
+        __ss_padding: [u8; 128 - size_of::<sa_family_t>() - size_of::<c_ulong>()],
         __ss_align: c_ulong,
     }
 }
@@ -1020,32 +1020,32 @@ pub const PRIO_USER: c_int = 2;
 f! {
     //sys/socket.h
     pub {const} fn CMSG_ALIGN(len: size_t) -> size_t {
-        (len + mem::size_of::<size_t>() - 1) & !(mem::size_of::<size_t>() - 1)
+        (len + size_of::<size_t>() - 1) & !(size_of::<size_t>() - 1)
     }
     pub {const} fn CMSG_LEN(length: c_uint) -> c_uint {
-        (CMSG_ALIGN(mem::size_of::<cmsghdr>()) + length as usize) as c_uint
+        (CMSG_ALIGN(size_of::<cmsghdr>()) + length as usize) as c_uint
     }
     pub {const} fn CMSG_SPACE(len: c_uint) -> c_uint {
-        (CMSG_ALIGN(len as size_t) + CMSG_ALIGN(mem::size_of::<cmsghdr>())) as c_uint
+        (CMSG_ALIGN(len as size_t) + CMSG_ALIGN(size_of::<cmsghdr>())) as c_uint
     }
 
     // wait.h
     pub fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
-        let size = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let size = size_of_val(&(*set).fds_bits[0]) * 8;
         (*set).fds_bits[fd / size] &= !(1 << (fd % size));
         return;
     }
 
     pub fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
         let fd = fd as usize;
-        let size = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let size = size_of_val(&(*set).fds_bits[0]) * 8;
         return ((*set).fds_bits[fd / size] & (1 << (fd % size))) != 0;
     }
 
     pub fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
-        let size = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let size = size_of_val(&(*set).fds_bits[0]) * 8;
         (*set).fds_bits[fd / size] |= 1 << (fd % size);
         return;
     }

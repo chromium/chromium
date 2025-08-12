@@ -11,6 +11,9 @@ pub type fixpt_t = __fixpt_t;
 pub type __lwpid_t = i32;
 pub type lwpid_t = __lwpid_t;
 pub type blksize_t = i32;
+pub type ksize_t = u64;
+pub type inp_gen_t = u64;
+pub type so_gen_t = u64;
 pub type clockid_t = c_int;
 pub type sem_t = _sem;
 pub type timer_t = *mut __c_anonymous__timer;
@@ -1700,6 +1703,75 @@ s_no_extra_traits! {
         pub uc_stack: crate::stack_t,
         pub uc_flags: c_int,
         __spare__: [c_int; 4],
+    }
+
+    #[repr(align(8))]
+    pub struct xinpgen {
+        pub xig_len: ksize_t,
+        pub xig_count: u32,
+        _xig_spare32: u32,
+        pub xig_gen: inp_gen_t,
+        pub xig_sogen: so_gen_t,
+        _xig_spare64: [u64; 4],
+    }
+
+    pub struct in_addr_4in6 {
+        _ia46_pad32: [u32; 3],
+        pub ia46_addr4: crate::in_addr,
+    }
+
+    pub union in_dependaddr {
+        pub id46_addr: crate::in_addr_4in6,
+        pub id6_addr: crate::in6_addr,
+    }
+
+    pub struct in_endpoints {
+        pub ie_fport: u16,
+        pub ie_lport: u16,
+        pub ie_dependfaddr: crate::in_dependaddr,
+        pub ie_dependladdr: crate::in_dependaddr,
+        pub ie6_zoneid: u32,
+    }
+
+    pub struct in_conninfo {
+        pub inc_flags: u8,
+        pub inc_len: u8,
+        pub inc_fibnum: u16,
+        pub inc_ie: crate::in_endpoints,
+    }
+
+    pub struct xktls_session_onedir {
+        // Note: this field is called `gen` in upstream FreeBSD, but `gen` is
+        // reserved keyword in Rust since the 2024 Edition, hence `gennum`.
+        pub gennum: u64,
+        _rsrv1: [u64; 8],
+        _rsrv2: [u32; 8],
+        pub iv: [u8; 32],
+        pub cipher_algorithm: i32,
+        pub auth_algorithm: i32,
+        pub cipher_key_len: u16,
+        pub iv_len: u16,
+        pub auth_key_len: u16,
+        pub max_frame_len: u16,
+        pub tls_vmajor: u8,
+        pub tls_vminor: u8,
+        pub tls_hlen: u8,
+        pub tls_tlen: u8,
+        pub tls_bs: u8,
+        pub flags: u8,
+        pub drv_st_len: u16,
+        pub ifnet: [c_char; 16],
+    }
+
+    pub struct xktls_session {
+        pub tsz: u32,
+        pub fsz: u32,
+        pub inp_gencnt: u64,
+        pub so_pcb: kvaddr_t,
+        pub coninf: crate::in_conninfo,
+        pub rx_vlan_id: c_ushort,
+        pub rcv: crate::xktls_session_onedir,
+        pub snd: crate::xktls_session_onedir,
     }
 }
 
@@ -3566,6 +3638,26 @@ pub const TCP_BBR_USEDEL_RATE: c_int = 1079;
 pub const TCP_BBR_MIN_RTO: c_int = 1080;
 pub const TCP_BBR_MAX_RTO: c_int = 1081;
 pub const TCP_BBR_ALGORITHM: c_int = 1083;
+pub const TCP_BBR_PACE_PER_SEC: c_int = 1086;
+pub const TCP_BBR_PACE_DEL_TAR: c_int = 1087;
+pub const TCP_BBR_PACE_SEG_MAX: c_int = 1088;
+pub const TCP_BBR_PACE_SEG_MIN: c_int = 1089;
+pub const TCP_BBR_PACE_CROSS: c_int = 1090;
+pub const TCP_BBR_TMR_PACE_OH: c_int = 1096;
+pub const TCP_BBR_RACK_RTT_USE: c_int = 1098;
+pub const TCP_BBR_RETRAN_WTSO: c_int = 1099;
+pub const TCP_BBR_PROBE_RTT_GAIN: c_int = 1101;
+pub const TCP_BBR_PROBE_RTT_LEN: c_int = 1102;
+pub const TCP_BBR_SEND_IWND_IN_TSO: c_int = 1103;
+pub const TCP_BBR_USE_RACK_RR: c_int = 1104;
+pub const TCP_BBR_HDWR_PACE: c_int = 1105;
+pub const TCP_BBR_UTTER_MAX_TSO: c_int = 1106;
+pub const TCP_BBR_EXTRA_STATE: c_int = 1107;
+pub const TCP_BBR_FLOOR_MIN_TSO: c_int = 1108;
+pub const TCP_BBR_MIN_TOPACEOUT: c_int = 1109;
+pub const TCP_BBR_TSTMP_RAISES: c_int = 1110;
+pub const TCP_BBR_POLICER_DETECT: c_int = 1111;
+pub const TCP_BBR_RACK_INIT_RATE: c_int = 1112;
 
 pub const IP_BINDANY: c_int = 24;
 pub const IP_BINDMULTI: c_int = 25;
@@ -4147,7 +4239,9 @@ pub const TDI_IWAIT: c_int = 0x0010;
 pub const P_ADVLOCK: c_int = 0x00000001;
 pub const P_CONTROLT: c_int = 0x00000002;
 pub const P_KPROC: c_int = 0x00000004;
+#[deprecated(since = "1.0", note = "Replaced in FreeBSD 15 by P_IDLEPROC")]
 pub const P_UNUSED3: c_int = 0x00000008;
+pub const P_IDLEPROC: c_int = 0x00000008;
 pub const P_PPWAIT: c_int = 0x00000010;
 pub const P_PROFIL: c_int = 0x00000020;
 pub const P_STOPPROF: c_int = 0x00000040;
@@ -4618,6 +4712,10 @@ pub const RB_POWERCYCLE: c_int = 0x400000;
 pub const RB_PROBE: c_int = 0x10000000;
 pub const RB_MULTIPLE: c_int = 0x20000000;
 
+// netinet/in_pcb.h
+pub const INC_ISIPV6: c_uchar = 0x01;
+pub const INC_IPV6MINMTU: c_uchar = 0x02;
+
 // sys/time.h
 pub const CLOCK_BOOTTIME: crate::clockid_t = crate::CLOCK_UPTIME;
 pub const CLOCK_REALTIME_COARSE: crate::clockid_t = crate::CLOCK_REALTIME_FAST;
@@ -4652,19 +4750,18 @@ const_fn! {
 
 f! {
     pub fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
-        (cmsg as *mut c_uchar).add(_ALIGN(mem::size_of::<cmsghdr>()))
+        (cmsg as *mut c_uchar).add(_ALIGN(size_of::<cmsghdr>()))
     }
 
     pub {const} fn CMSG_LEN(length: c_uint) -> c_uint {
-        _ALIGN(mem::size_of::<cmsghdr>()) as c_uint + length
+        _ALIGN(size_of::<cmsghdr>()) as c_uint + length
     }
 
     pub fn CMSG_NXTHDR(mhdr: *const crate::msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
         if cmsg.is_null() {
             return crate::CMSG_FIRSTHDR(mhdr);
         }
-        let next =
-            cmsg as usize + _ALIGN((*cmsg).cmsg_len as usize) + _ALIGN(mem::size_of::<cmsghdr>());
+        let next = cmsg as usize + _ALIGN((*cmsg).cmsg_len as usize) + _ALIGN(size_of::<cmsghdr>());
         let max = (*mhdr).msg_control as usize + (*mhdr).msg_controllen as usize;
         if next > max {
             core::ptr::null_mut::<cmsghdr>()
@@ -4674,7 +4771,7 @@ f! {
     }
 
     pub {const} fn CMSG_SPACE(length: c_uint) -> c_uint {
-        (_ALIGN(mem::size_of::<cmsghdr>()) + _ALIGN(length as usize)) as c_uint
+        (_ALIGN(size_of::<cmsghdr>()) + _ALIGN(length as usize)) as c_uint
     }
 
     pub fn MALLOCX_ALIGN(lg: c_uint) -> c_int {
@@ -4691,7 +4788,7 @@ f! {
 
     pub fn SOCKCREDSIZE(ngrps: usize) -> usize {
         let ngrps = if ngrps > 0 { ngrps - 1 } else { 0 };
-        mem::size_of::<sockcred>() + mem::size_of::<crate::gid_t>() * ngrps
+        size_of::<sockcred>() + size_of::<crate::gid_t>() * ngrps
     }
 
     pub fn uname(buf: *mut crate::utsname) -> c_int {
@@ -4711,27 +4808,27 @@ f! {
     }
 
     pub fn CPU_SET(cpu: usize, cpuset: &mut cpuset_t) -> () {
-        let bitset_bits = 8 * mem::size_of::<c_long>();
+        let bitset_bits = 8 * size_of::<c_long>();
         let (idx, offset) = (cpu / bitset_bits, cpu % bitset_bits);
         cpuset.__bits[idx] |= 1 << offset;
     }
 
     pub fn CPU_CLR(cpu: usize, cpuset: &mut cpuset_t) -> () {
-        let bitset_bits = 8 * mem::size_of::<c_long>();
+        let bitset_bits = 8 * size_of::<c_long>();
         let (idx, offset) = (cpu / bitset_bits, cpu % bitset_bits);
         cpuset.__bits[idx] &= !(1 << offset);
     }
 
     pub fn CPU_ISSET(cpu: usize, cpuset: &cpuset_t) -> bool {
-        let bitset_bits = 8 * mem::size_of::<c_long>();
+        let bitset_bits = 8 * size_of::<c_long>();
         let (idx, offset) = (cpu / bitset_bits, cpu % bitset_bits);
         0 != cpuset.__bits[idx] & (1 << offset)
     }
 
     pub fn CPU_COUNT(cpuset: &cpuset_t) -> c_int {
         let mut s: u32 = 0;
-        let cpuset_size = mem::size_of::<cpuset_t>();
-        let bitset_size = mem::size_of::<c_long>();
+        let cpuset_size = size_of::<cpuset_t>();
+        let bitset_size = size_of::<c_long>();
 
         for i in cpuset.__bits[..(cpuset_size / bitset_size)].iter() {
             s += i.count_ones();
@@ -4741,7 +4838,7 @@ f! {
 
     pub fn SOCKCRED2SIZE(ngrps: usize) -> usize {
         let ngrps = if ngrps > 0 { ngrps - 1 } else { 0 };
-        mem::size_of::<sockcred2>() + mem::size_of::<crate::gid_t>() * ngrps
+        size_of::<sockcred2>() + size_of::<crate::gid_t>() * ngrps
     }
 
     pub fn PROT_MAX(x: c_int) -> c_int {

@@ -133,7 +133,6 @@ s! {
 }
 
 s_no_extra_traits! {
-    #[allow(missing_debug_implementations)]
     pub struct ucontext_t {
         pub uc_flags: c_ulong,
         pub uc_link: *mut ucontext_t,
@@ -143,7 +142,6 @@ s_no_extra_traits! {
         pub uc_regspace: [c_ulonglong; 64],
     }
 
-    #[allow(missing_debug_implementations)]
     #[repr(align(8))]
     pub struct max_align_t {
         priv_: (i64, i64),

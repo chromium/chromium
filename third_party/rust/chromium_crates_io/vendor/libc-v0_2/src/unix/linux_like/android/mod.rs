@@ -1,6 +1,7 @@
 //! Android-specific definitions for linux-like values
 
 use crate::prelude::*;
+use crate::{cmsghdr, msghdr};
 
 cfg_if! {
     if #[cfg(doc)] {
@@ -72,22 +73,6 @@ s! {
 
     pub struct __fsid_t {
         __val: [c_int; 2],
-    }
-
-    pub struct msghdr {
-        pub msg_name: *mut c_void,
-        pub msg_namelen: crate::socklen_t,
-        pub msg_iov: *mut crate::iovec,
-        pub msg_iovlen: size_t,
-        pub msg_control: *mut c_void,
-        pub msg_controllen: size_t,
-        pub msg_flags: c_int,
-    }
-
-    pub struct cmsghdr {
-        pub cmsg_len: size_t,
-        pub cmsg_level: c_int,
-        pub cmsg_type: c_int,
     }
 
     pub struct termios {
@@ -201,12 +186,6 @@ s! {
     pub struct itimerspec {
         pub it_interval: crate::timespec,
         pub it_value: crate::timespec,
-    }
-
-    pub struct ucred {
-        pub pid: crate::pid_t,
-        pub uid: crate::uid_t,
-        pub gid: crate::gid_t,
     }
 
     pub struct genlmsghdr {
@@ -1343,6 +1322,15 @@ pub const SOL_AX25: c_int = 257;
 pub const SOL_ATALK: c_int = 258;
 pub const SOL_NETROM: c_int = 259;
 pub const SOL_ROSE: c_int = 260;
+
+/* UDP socket options */
+// include/uapi/linux/udp.h
+pub const UDP_CORK: c_int = 1;
+pub const UDP_ENCAP: c_int = 100;
+pub const UDP_NO_CHECK6_TX: c_int = 101;
+pub const UDP_NO_CHECK6_RX: c_int = 102;
+pub const UDP_SEGMENT: c_int = 103;
+pub const UDP_GRO: c_int = 104;
 
 /* DCCP socket options */
 pub const DCCP_SOCKOPT_PACKET_SIZE: c_int = 1;
@@ -2896,6 +2884,8 @@ pub const SCHED_DEADLINE: c_int = 6;
 pub const SCHED_RESET_ON_FORK: c_int = 0x40000000;
 
 pub const CLONE_PIDFD: c_int = 0x1000;
+pub const CLONE_CLEAR_SIGHAND: c_ulonglong = 0x100000000;
+pub const CLONE_INTO_CGROUP: c_ulonglong = 0x200000000;
 
 // linux/membarrier.h
 pub const MEMBARRIER_CMD_QUERY: c_int = 0;
@@ -2931,29 +2921,178 @@ pub const PF_VSOCK: c_int = AF_VSOCK;
 
 pub const SOMAXCONN: c_int = 128;
 
-// sys/prctl.h
-pub const PR_SET_PDEATHSIG: c_int = 1;
-pub const PR_GET_PDEATHSIG: c_int = 2;
-pub const PR_GET_SECUREBITS: c_int = 27;
-pub const PR_SET_SECUREBITS: c_int = 28;
-
 // sys/system_properties.h
 pub const PROP_VALUE_MAX: c_int = 92;
 pub const PROP_NAME_MAX: c_int = 32;
 
 // sys/prctl.h
-pub const PR_SET_VMA: c_int = 0x53564d41;
-pub const PR_SET_VMA_ANON_NAME: c_int = 0;
-pub const PR_SET_NO_NEW_PRIVS: c_int = 38;
-pub const PR_GET_NO_NEW_PRIVS: c_int = 39;
-pub const PR_GET_SECCOMP: c_int = 21;
-pub const PR_SET_SECCOMP: c_int = 22;
+pub const PR_SET_PDEATHSIG: c_int = 1;
+pub const PR_GET_PDEATHSIG: c_int = 2;
+pub const PR_GET_DUMPABLE: c_int = 3;
+pub const PR_SET_DUMPABLE: c_int = 4;
+pub const PR_GET_UNALIGN: c_int = 5;
+pub const PR_SET_UNALIGN: c_int = 6;
+pub const PR_UNALIGN_NOPRINT: c_int = 1;
+pub const PR_UNALIGN_SIGBUS: c_int = 2;
+pub const PR_GET_KEEPCAPS: c_int = 7;
+pub const PR_SET_KEEPCAPS: c_int = 8;
+pub const PR_GET_FPEMU: c_int = 9;
+pub const PR_SET_FPEMU: c_int = 10;
+pub const PR_FPEMU_NOPRINT: c_int = 1;
+pub const PR_FPEMU_SIGFPE: c_int = 2;
+pub const PR_GET_FPEXC: c_int = 11;
+pub const PR_SET_FPEXC: c_int = 12;
+pub const PR_FP_EXC_SW_ENABLE: c_int = 0x80;
+pub const PR_FP_EXC_DIV: c_int = 0x010000;
+pub const PR_FP_EXC_OVF: c_int = 0x020000;
+pub const PR_FP_EXC_UND: c_int = 0x040000;
+pub const PR_FP_EXC_RES: c_int = 0x080000;
+pub const PR_FP_EXC_INV: c_int = 0x100000;
+pub const PR_FP_EXC_DISABLED: c_int = 0;
+pub const PR_FP_EXC_NONRECOV: c_int = 1;
+pub const PR_FP_EXC_ASYNC: c_int = 2;
+pub const PR_FP_EXC_PRECISE: c_int = 3;
 pub const PR_GET_TIMING: c_int = 13;
 pub const PR_SET_TIMING: c_int = 14;
 pub const PR_TIMING_STATISTICAL: c_int = 0;
 pub const PR_TIMING_TIMESTAMP: c_int = 1;
 pub const PR_SET_NAME: c_int = 15;
 pub const PR_GET_NAME: c_int = 16;
+pub const PR_GET_ENDIAN: c_int = 19;
+pub const PR_SET_ENDIAN: c_int = 20;
+pub const PR_ENDIAN_BIG: c_int = 0;
+pub const PR_ENDIAN_LITTLE: c_int = 1;
+pub const PR_ENDIAN_PPC_LITTLE: c_int = 2;
+pub const PR_GET_SECCOMP: c_int = 21;
+pub const PR_SET_SECCOMP: c_int = 22;
+pub const PR_CAPBSET_READ: c_int = 23;
+pub const PR_CAPBSET_DROP: c_int = 24;
+pub const PR_GET_TSC: c_int = 25;
+pub const PR_SET_TSC: c_int = 26;
+pub const PR_TSC_ENABLE: c_int = 1;
+pub const PR_TSC_SIGSEGV: c_int = 2;
+pub const PR_GET_SECUREBITS: c_int = 27;
+pub const PR_SET_SECUREBITS: c_int = 28;
+pub const PR_SET_TIMERSLACK: c_int = 29;
+pub const PR_GET_TIMERSLACK: c_int = 30;
+pub const PR_TASK_PERF_EVENTS_DISABLE: c_int = 31;
+pub const PR_TASK_PERF_EVENTS_ENABLE: c_int = 32;
+pub const PR_MCE_KILL: c_int = 33;
+pub const PR_MCE_KILL_CLEAR: c_int = 0;
+pub const PR_MCE_KILL_SET: c_int = 1;
+pub const PR_MCE_KILL_LATE: c_int = 0;
+pub const PR_MCE_KILL_EARLY: c_int = 1;
+pub const PR_MCE_KILL_DEFAULT: c_int = 2;
+pub const PR_MCE_KILL_GET: c_int = 34;
+pub const PR_SET_MM: c_int = 35;
+pub const PR_SET_MM_START_CODE: c_int = 1;
+pub const PR_SET_MM_END_CODE: c_int = 2;
+pub const PR_SET_MM_START_DATA: c_int = 3;
+pub const PR_SET_MM_END_DATA: c_int = 4;
+pub const PR_SET_MM_START_STACK: c_int = 5;
+pub const PR_SET_MM_START_BRK: c_int = 6;
+pub const PR_SET_MM_BRK: c_int = 7;
+pub const PR_SET_MM_ARG_START: c_int = 8;
+pub const PR_SET_MM_ARG_END: c_int = 9;
+pub const PR_SET_MM_ENV_START: c_int = 10;
+pub const PR_SET_MM_ENV_END: c_int = 11;
+pub const PR_SET_MM_AUXV: c_int = 12;
+pub const PR_SET_MM_EXE_FILE: c_int = 13;
+pub const PR_SET_MM_MAP: c_int = 14;
+pub const PR_SET_MM_MAP_SIZE: c_int = 15;
+pub const PR_SET_PTRACER: c_int = 0x59616d61;
+pub const PR_SET_PTRACER_ANY: c_ulong = 0xffffffffffffffff;
+pub const PR_SET_CHILD_SUBREAPER: c_int = 36;
+pub const PR_GET_CHILD_SUBREAPER: c_int = 37;
+pub const PR_SET_NO_NEW_PRIVS: c_int = 38;
+pub const PR_GET_NO_NEW_PRIVS: c_int = 39;
+pub const PR_GET_TID_ADDRESS: c_int = 40;
+pub const PR_SET_THP_DISABLE: c_int = 41;
+pub const PR_GET_THP_DISABLE: c_int = 42;
+pub const PR_MPX_ENABLE_MANAGEMENT: c_int = 43;
+pub const PR_MPX_DISABLE_MANAGEMENT: c_int = 44;
+pub const PR_SET_FP_MODE: c_int = 45;
+pub const PR_GET_FP_MODE: c_int = 46;
+pub const PR_FP_MODE_FR: c_int = 1 << 0;
+pub const PR_FP_MODE_FRE: c_int = 1 << 1;
+pub const PR_CAP_AMBIENT: c_int = 47;
+pub const PR_CAP_AMBIENT_IS_SET: c_int = 1;
+pub const PR_CAP_AMBIENT_RAISE: c_int = 2;
+pub const PR_CAP_AMBIENT_LOWER: c_int = 3;
+pub const PR_CAP_AMBIENT_CLEAR_ALL: c_int = 4;
+pub const PR_SVE_SET_VL: c_int = 50;
+pub const PR_SVE_SET_VL_ONEXEC: c_int = 1 << 18;
+pub const PR_SVE_GET_VL: c_int = 51;
+pub const PR_SVE_VL_LEN_MASK: c_int = 0xffff;
+pub const PR_SVE_VL_INHERIT: c_int = 1 << 17;
+pub const PR_GET_SPECULATION_CTRL: c_int = 52;
+pub const PR_SET_SPECULATION_CTRL: c_int = 53;
+pub const PR_SPEC_STORE_BYPASS: c_int = 0;
+pub const PR_SPEC_INDIRECT_BRANCH: c_int = 1;
+pub const PR_SPEC_L1D_FLUSH: c_int = 2;
+pub const PR_SPEC_NOT_AFFECTED: c_int = 0;
+pub const PR_SPEC_PRCTL: c_ulong = 1 << 0;
+pub const PR_SPEC_ENABLE: c_ulong = 1 << 1;
+pub const PR_SPEC_DISABLE: c_ulong = 1 << 2;
+pub const PR_SPEC_FORCE_DISABLE: c_ulong = 1 << 3;
+pub const PR_SPEC_DISABLE_NOEXEC: c_ulong = 1 << 4;
+pub const PR_PAC_RESET_KEYS: c_int = 54;
+pub const PR_PAC_APIAKEY: c_ulong = 1 << 0;
+pub const PR_PAC_APIBKEY: c_ulong = 1 << 1;
+pub const PR_PAC_APDAKEY: c_ulong = 1 << 2;
+pub const PR_PAC_APDBKEY: c_ulong = 1 << 3;
+pub const PR_PAC_APGAKEY: c_ulong = 1 << 4;
+pub const PR_SET_TAGGED_ADDR_CTRL: c_int = 55;
+pub const PR_GET_TAGGED_ADDR_CTRL: c_int = 56;
+pub const PR_TAGGED_ADDR_ENABLE: c_ulong = 1 << 0;
+pub const PR_MTE_TCF_NONE: c_ulong = 0;
+pub const PR_MTE_TCF_SYNC: c_ulong = 1 << 1;
+pub const PR_MTE_TCF_ASYNC: c_ulong = 1 << 2;
+pub const PR_MTE_TCF_MASK: c_ulong = PR_MTE_TCF_SYNC | PR_MTE_TCF_ASYNC;
+pub const PR_MTE_TAG_SHIFT: c_ulong = 3;
+pub const PR_MTE_TAG_MASK: c_ulong = 0xffff << PR_MTE_TAG_SHIFT;
+pub const PR_MTE_TCF_SHIFT: c_ulong = 1;
+pub const PR_SET_IO_FLUSHER: c_int = 57;
+pub const PR_GET_IO_FLUSHER: c_int = 58;
+pub const PR_SET_SYSCALL_USER_DISPATCH: c_int = 59;
+pub const PR_SYS_DISPATCH_OFF: c_int = 0;
+pub const PR_SYS_DISPATCH_ON: c_int = 1;
+pub const SYSCALL_DISPATCH_FILTER_ALLOW: c_int = 0;
+pub const SYSCALL_DISPATCH_FILTER_BLOCK: c_int = 1;
+pub const PR_PAC_SET_ENABLED_KEYS: c_int = 60;
+pub const PR_PAC_GET_ENABLED_KEYS: c_int = 61;
+pub const PR_SCHED_CORE: c_int = 62;
+pub const PR_SCHED_CORE_GET: c_int = 0;
+pub const PR_SCHED_CORE_CREATE: c_int = 1;
+pub const PR_SCHED_CORE_SHARE_TO: c_int = 2;
+pub const PR_SCHED_CORE_SHARE_FROM: c_int = 3;
+pub const PR_SCHED_CORE_MAX: c_int = 4;
+pub const PR_SCHED_CORE_SCOPE_THREAD: c_int = 0;
+pub const PR_SCHED_CORE_SCOPE_THREAD_GROUP: c_int = 1;
+pub const PR_SCHED_CORE_SCOPE_PROCESS_GROUP: c_int = 2;
+pub const PR_SME_SET_VL: c_int = 63;
+pub const PR_SME_SET_VL_ONEXEC: c_int = 1 << 18;
+pub const PR_SME_GET_VL: c_int = 64;
+pub const PR_SME_VL_LEN_MASK: c_int = 0xffff;
+pub const PR_SME_VL_INHERIT: c_int = 1 << 17;
+pub const PR_SET_MDWE: c_int = 65;
+pub const PR_MDWE_REFUSE_EXEC_GAIN: c_ulong = 1 << 0;
+pub const PR_MDWE_NO_INHERIT: c_ulong = 1 << 1;
+pub const PR_GET_MDWE: c_int = 66;
+pub const PR_SET_VMA: c_int = 0x53564d41;
+pub const PR_SET_VMA_ANON_NAME: c_int = 0;
+pub const PR_GET_AUXV: c_int = 0x41555856;
+pub const PR_SET_MEMORY_MERGE: c_int = 67;
+pub const PR_GET_MEMORY_MERGE: c_int = 68;
+pub const PR_RISCV_V_SET_CONTROL: c_int = 69;
+pub const PR_RISCV_V_GET_CONTROL: c_int = 70;
+pub const PR_RISCV_V_VSTATE_CTRL_DEFAULT: c_int = 0;
+pub const PR_RISCV_V_VSTATE_CTRL_OFF: c_int = 1;
+pub const PR_RISCV_V_VSTATE_CTRL_ON: c_int = 2;
+pub const PR_RISCV_V_VSTATE_CTRL_INHERIT: c_int = 1 << 4;
+pub const PR_RISCV_V_VSTATE_CTRL_CUR_MASK: c_int = 0x3;
+pub const PR_RISCV_V_VSTATE_CTRL_NEXT_MASK: c_int = 0xc;
+pub const PR_RISCV_V_VSTATE_CTRL_MASK: c_int = 0x1f;
 
 // linux/if_addr.h
 pub const IFA_UNSPEC: c_ushort = 0;
@@ -3400,7 +3539,7 @@ f! {
 
     pub fn CPU_ALLOC_SIZE(count: c_int) -> size_t {
         let _dummy: cpu_set_t = mem::zeroed();
-        let size_in_bits = 8 * mem::size_of_val(&_dummy.__bits[0]);
+        let size_in_bits = 8 * size_of_val(&_dummy.__bits[0]);
         ((count as size_t + size_in_bits - 1) / 8) as size_t
     }
 
@@ -3411,28 +3550,28 @@ f! {
     }
 
     pub fn CPU_SET(cpu: usize, cpuset: &mut cpu_set_t) -> () {
-        let size_in_bits = 8 * mem::size_of_val(&cpuset.__bits[0]); // 32, 64 etc
+        let size_in_bits = 8 * size_of_val(&cpuset.__bits[0]); // 32, 64 etc
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         cpuset.__bits[idx] |= 1 << offset;
         ()
     }
 
     pub fn CPU_CLR(cpu: usize, cpuset: &mut cpu_set_t) -> () {
-        let size_in_bits = 8 * mem::size_of_val(&cpuset.__bits[0]); // 32, 64 etc
+        let size_in_bits = 8 * size_of_val(&cpuset.__bits[0]); // 32, 64 etc
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         cpuset.__bits[idx] &= !(1 << offset);
         ()
     }
 
     pub fn CPU_ISSET(cpu: usize, cpuset: &cpu_set_t) -> bool {
-        let size_in_bits = 8 * mem::size_of_val(&cpuset.__bits[0]);
+        let size_in_bits = 8 * size_of_val(&cpuset.__bits[0]);
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         0 != (cpuset.__bits[idx] & (1 << offset))
     }
 
     pub fn CPU_COUNT_S(size: usize, cpuset: &cpu_set_t) -> c_int {
         let mut s: u32 = 0;
-        let size_of_mask = mem::size_of_val(&cpuset.__bits[0]);
+        let size_of_mask = size_of_val(&cpuset.__bits[0]);
         for i in cpuset.__bits[..(size / size_of_mask)].iter() {
             s += i.count_ones();
         }
@@ -3440,7 +3579,7 @@ f! {
     }
 
     pub fn CPU_COUNT(cpuset: &cpu_set_t) -> c_int {
-        CPU_COUNT_S(mem::size_of::<cpu_set_t>(), cpuset)
+        CPU_COUNT_S(size_of::<cpu_set_t>(), cpuset)
     }
 
     pub fn CPU_EQUAL(set1: &cpu_set_t, set2: &cpu_set_t) -> bool {
@@ -3499,14 +3638,6 @@ extern "C" {
     pub fn madvise(addr: *mut c_void, len: size_t, advice: c_int) -> c_int;
     pub fn msync(addr: *mut c_void, len: size_t, flags: c_int) -> c_int;
     pub fn mprotect(addr: *mut c_void, len: size_t, prot: c_int) -> c_int;
-    pub fn recvfrom(
-        socket: c_int,
-        buf: *mut c_void,
-        len: size_t,
-        flags: c_int,
-        addr: *mut crate::sockaddr,
-        addrlen: *mut crate::socklen_t,
-    ) -> ssize_t;
     pub fn getnameinfo(
         sa: *const crate::sockaddr,
         salen: crate::socklen_t,
@@ -3819,19 +3950,6 @@ extern "C" {
     ) -> c_int;
     pub fn __errno() -> *mut c_int;
     pub fn inotify_rm_watch(fd: c_int, wd: u32) -> c_int;
-    pub fn sendmmsg(
-        sockfd: c_int,
-        msgvec: *const crate::mmsghdr,
-        vlen: c_uint,
-        flags: c_int,
-    ) -> c_int;
-    pub fn recvmmsg(
-        sockfd: c_int,
-        msgvec: *mut crate::mmsghdr,
-        vlen: c_uint,
-        flags: c_int,
-        timeout: *const crate::timespec,
-    ) -> c_int;
     pub fn inotify_init() -> c_int;
     pub fn inotify_init1(flags: c_int) -> c_int;
     pub fn inotify_add_watch(fd: c_int, path: *const c_char, mask: u32) -> c_int;

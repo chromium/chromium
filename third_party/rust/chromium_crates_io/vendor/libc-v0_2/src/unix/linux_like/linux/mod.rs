@@ -1,7 +1,5 @@
 //! Linux-specific definitions for linux-like values
 
-use core::mem::size_of;
-
 use crate::prelude::*;
 use crate::{sock_filter, _IO, _IOR, _IOW, _IOWR};
 
@@ -60,15 +58,6 @@ cfg_if! {
     }
 }
 
-// linux/can.h
-pub type canid_t = u32;
-
-// linux/can/j1939.h
-pub type can_err_mask_t = u32;
-pub type pgn_t = u32;
-pub type priority_t = u8;
-pub type name_t = u64;
-
 pub type iconv_t = *mut c_void;
 
 // linux/sctp.h
@@ -95,7 +84,7 @@ e! {
 }
 
 c_enum! {
-    pid_type {
+    pub enum pid_type {
         PIDTYPE_PID,
         PIDTYPE_TGID,
         PIDTYPE_PGID,
@@ -732,33 +721,6 @@ s! {
         pub ee_data: u32,
     }
 
-    // linux/can.h
-    pub struct __c_anonymous_sockaddr_can_tp {
-        pub rx_id: canid_t,
-        pub tx_id: canid_t,
-    }
-
-    pub struct __c_anonymous_sockaddr_can_j1939 {
-        pub name: u64,
-        pub pgn: u32,
-        pub addr: u8,
-    }
-
-    pub struct can_filter {
-        pub can_id: canid_t,
-        pub can_mask: canid_t,
-    }
-
-    // linux/can/j1939.h
-    pub struct j1939_filter {
-        pub name: name_t,
-        pub name_mask: name_t,
-        pub pgn: pgn_t,
-        pub pgn_mask: pgn_t,
-        pub addr: u8,
-        pub addr_mask: u8,
-    }
-
     // linux/seccomp.h
     pub struct seccomp_data {
         pub nr: c_int,
@@ -1220,6 +1182,7 @@ s! {
         size: [u8; crate::__SIZEOF_PTHREAD_BARRIERATTR_T],
     }
 
+    #[cfg(not(target_env = "musl"))]
     #[repr(align(8))]
     pub struct fanotify_event_metadata {
         pub event_len: __u32,
@@ -1575,18 +1538,15 @@ s_no_extra_traits! {
         pub sched_period: crate::__u64,
     }
 
-    #[allow(missing_debug_implementations)]
     pub union tpacket_req_u {
         pub req: crate::tpacket_req,
         pub req3: crate::tpacket_req3,
     }
 
-    #[allow(missing_debug_implementations)]
     pub union tpacket_bd_header_u {
         pub bh1: crate::tpacket_hdr_v1,
     }
 
-    #[allow(missing_debug_implementations)]
     pub struct tpacket_block_desc {
         pub version: __u32,
         pub offset_to_priv: __u32,
@@ -1747,58 +1707,9 @@ s_no_extra_traits! {
     }
 
     // linux/net_tstamp.h
-    #[allow(missing_debug_implementations)]
     pub struct sock_txtime {
         pub clockid: crate::clockid_t,
         pub flags: __u32,
-    }
-
-    // linux/can.h
-    #[repr(align(8))]
-    #[allow(missing_debug_implementations)]
-    pub struct can_frame {
-        pub can_id: canid_t,
-        // FIXME(1.0): this field was renamed to `len` in Linux 5.11
-        pub can_dlc: u8,
-        __pad: u8,
-        __res0: u8,
-        pub len8_dlc: u8,
-        pub data: [u8; CAN_MAX_DLEN],
-    }
-
-    #[repr(align(8))]
-    #[allow(missing_debug_implementations)]
-    pub struct canfd_frame {
-        pub can_id: canid_t,
-        pub len: u8,
-        pub flags: u8,
-        __res0: u8,
-        __res1: u8,
-        pub data: [u8; CANFD_MAX_DLEN],
-    }
-
-    #[repr(align(8))]
-    #[allow(missing_debug_implementations)]
-    pub struct canxl_frame {
-        pub prio: canid_t,
-        pub flags: u8,
-        pub sdt: u8,
-        pub len: u16,
-        pub af: u32,
-        pub data: [u8; CANXL_MAX_DLEN],
-    }
-
-    #[allow(missing_debug_implementations)]
-    pub union __c_anonymous_sockaddr_can_can_addr {
-        pub tp: __c_anonymous_sockaddr_can_tp,
-        pub j1939: __c_anonymous_sockaddr_can_j1939,
-    }
-
-    #[allow(missing_debug_implementations)]
-    pub struct sockaddr_can {
-        pub can_family: crate::sa_family_t,
-        pub can_ifindex: c_int,
-        pub can_addr: __c_anonymous_sockaddr_can_can_addr,
     }
 
     // linux/wireless.h
@@ -1849,7 +1760,6 @@ s_no_extra_traits! {
         pub rsv: [c_uint; 4],
     }
 
-    #[allow(missing_debug_implementations)]
     pub struct ptp_perout_request {
         pub anonymous_1: __c_anonymous_ptp_perout_request_1,
         pub period: ptp_clock_time,
@@ -1859,7 +1769,6 @@ s_no_extra_traits! {
     }
 
     // linux/if_xdp.h
-    #[allow(missing_debug_implementations)]
     pub struct xsk_tx_metadata {
         pub flags: crate::__u64,
         pub xsk_tx_metadata_union: __c_anonymous_xsk_tx_metadata_union,
@@ -4559,14 +4468,12 @@ pub const RTNLGRP_STATS: c_uint = 0x24;
 
 // linux/cn_proc.h
 c_enum! {
-    proc_cn_mcast_op {
+    pub enum proc_cn_mcast_op {
         PROC_CN_MCAST_LISTEN = 1,
         PROC_CN_MCAST_IGNORE = 2,
     }
-}
 
-c_enum! {
-    proc_cn_event {
+    pub enum proc_cn_event {
         PROC_EVENT_NONE = 0x00000000,
         PROC_EVENT_FORK = 0x00000001,
         PROC_EVENT_EXEC = 0x00000002,
@@ -4846,6 +4753,61 @@ pub const IN_IGNORED: u32 = 0x0000_8000;
 pub const IN_ONLYDIR: u32 = 0x0100_0000;
 pub const IN_DONT_FOLLOW: u32 = 0x0200_0000;
 pub const IN_EXCL_UNLINK: u32 = 0x0400_0000;
+
+// uapi/linux/securebits.h
+const SECURE_NOROOT: c_int = 0;
+const SECURE_NOROOT_LOCKED: c_int = 1;
+
+pub const SECBIT_NOROOT: c_int = issecure_mask(SECURE_NOROOT);
+pub const SECBIT_NOROOT_LOCKED: c_int = issecure_mask(SECURE_NOROOT_LOCKED);
+
+const SECURE_NO_SETUID_FIXUP: c_int = 2;
+const SECURE_NO_SETUID_FIXUP_LOCKED: c_int = 3;
+
+pub const SECBIT_NO_SETUID_FIXUP: c_int = issecure_mask(SECURE_NO_SETUID_FIXUP);
+pub const SECBIT_NO_SETUID_FIXUP_LOCKED: c_int = issecure_mask(SECURE_NO_SETUID_FIXUP_LOCKED);
+
+const SECURE_KEEP_CAPS: c_int = 4;
+const SECURE_KEEP_CAPS_LOCKED: c_int = 5;
+
+pub const SECBIT_KEEP_CAPS: c_int = issecure_mask(SECURE_KEEP_CAPS);
+pub const SECBIT_KEEP_CAPS_LOCKED: c_int = issecure_mask(SECURE_KEEP_CAPS_LOCKED);
+
+const SECURE_NO_CAP_AMBIENT_RAISE: c_int = 6;
+const SECURE_NO_CAP_AMBIENT_RAISE_LOCKED: c_int = 7;
+
+pub const SECBIT_NO_CAP_AMBIENT_RAISE: c_int = issecure_mask(SECURE_NO_CAP_AMBIENT_RAISE);
+pub const SECBIT_NO_CAP_AMBIENT_RAISE_LOCKED: c_int =
+    issecure_mask(SECURE_NO_CAP_AMBIENT_RAISE_LOCKED);
+
+const SECURE_EXEC_RESTRICT_FILE: c_int = 8;
+const SECURE_EXEC_RESTRICT_FILE_LOCKED: c_int = 9;
+
+pub const SECBIT_EXEC_RESTRICT_FILE: c_int = issecure_mask(SECURE_EXEC_RESTRICT_FILE);
+pub const SECBIT_EXEC_RESTRICT_FILE_LOCKED: c_int = issecure_mask(SECURE_EXEC_RESTRICT_FILE_LOCKED);
+
+const SECURE_EXEC_DENY_INTERACTIVE: c_int = 10;
+const SECURE_EXEC_DENY_INTERACTIVE_LOCKED: c_int = 11;
+
+pub const SECBIT_EXEC_DENY_INTERACTIVE: c_int = issecure_mask(SECURE_EXEC_DENY_INTERACTIVE);
+pub const SECBIT_EXEC_DENY_INTERACTIVE_LOCKED: c_int =
+    issecure_mask(SECURE_EXEC_DENY_INTERACTIVE_LOCKED);
+
+pub const SECUREBITS_DEFAULT: c_int = 0x00000000;
+pub const SECURE_ALL_BITS: c_int = SECBIT_NOROOT
+    | SECBIT_NO_SETUID_FIXUP
+    | SECBIT_KEEP_CAPS
+    | SECBIT_NO_CAP_AMBIENT_RAISE
+    | SECBIT_EXEC_RESTRICT_FILE
+    | SECBIT_EXEC_DENY_INTERACTIVE;
+pub const SECURE_ALL_LOCKS: c_int = SECURE_ALL_BITS << 1;
+
+pub const SECURE_ALL_UNPRIVILEGED: c_int =
+    issecure_mask(SECURE_EXEC_RESTRICT_FILE) | issecure_mask(SECURE_EXEC_DENY_INTERACTIVE);
+
+const fn issecure_mask(x: c_int) -> c_int {
+    1 << x
+}
 
 // linux/keyctl.h
 pub const KEY_SPEC_THREAD_KEYRING: i32 = -1;
@@ -5378,112 +5340,6 @@ pub const EDOM: c_int = 33;
 pub const ERANGE: c_int = 34;
 pub const EWOULDBLOCK: c_int = EAGAIN;
 
-// linux/can.h
-pub const CAN_EFF_FLAG: canid_t = 0x80000000;
-pub const CAN_RTR_FLAG: canid_t = 0x40000000;
-pub const CAN_ERR_FLAG: canid_t = 0x20000000;
-pub const CAN_SFF_MASK: canid_t = 0x000007FF;
-pub const CAN_EFF_MASK: canid_t = 0x1FFFFFFF;
-pub const CAN_ERR_MASK: canid_t = 0x1FFFFFFF;
-pub const CANXL_PRIO_MASK: crate::canid_t = CAN_SFF_MASK;
-
-pub const CAN_SFF_ID_BITS: c_int = 11;
-pub const CAN_EFF_ID_BITS: c_int = 29;
-pub const CANXL_PRIO_BITS: c_int = CAN_SFF_ID_BITS;
-
-pub const CAN_MAX_DLC: c_int = 8;
-pub const CAN_MAX_DLEN: usize = 8;
-pub const CANFD_MAX_DLC: c_int = 15;
-pub const CANFD_MAX_DLEN: usize = 64;
-
-pub const CANFD_BRS: c_int = 0x01;
-pub const CANFD_ESI: c_int = 0x02;
-pub const CANFD_FDF: c_int = 0x04;
-
-pub const CANXL_MIN_DLC: c_int = 0;
-pub const CANXL_MAX_DLC: c_int = 2047;
-pub const CANXL_MAX_DLC_MASK: c_int = 0x07FF;
-pub const CANXL_MIN_DLEN: usize = 1;
-pub const CANXL_MAX_DLEN: usize = 2048;
-
-pub const CANXL_XLF: c_int = 0x80;
-pub const CANXL_SEC: c_int = 0x01;
-
-pub const CAN_MTU: usize = size_of::<can_frame>();
-pub const CANFD_MTU: usize = size_of::<canfd_frame>();
-pub const CANXL_MTU: usize = size_of::<canxl_frame>();
-// FIXME(offset_of): use `core::mem::offset_of!` once that is available
-// https://github.com/rust-lang/rfcs/pull/3308
-// pub const CANXL_HDR_SIZE: usize = core::mem::offset_of!(canxl_frame, data);
-pub const CANXL_HDR_SIZE: usize = 12;
-pub const CANXL_MIN_MTU: usize = CANXL_HDR_SIZE + 64;
-pub const CANXL_MAX_MTU: usize = CANXL_MTU;
-
-pub const CAN_RAW: c_int = 1;
-pub const CAN_BCM: c_int = 2;
-pub const CAN_TP16: c_int = 3;
-pub const CAN_TP20: c_int = 4;
-pub const CAN_MCNET: c_int = 5;
-pub const CAN_ISOTP: c_int = 6;
-pub const CAN_J1939: c_int = 7;
-pub const CAN_NPROTO: c_int = 8;
-
-pub const SOL_CAN_BASE: c_int = 100;
-
-pub const CAN_INV_FILTER: canid_t = 0x20000000;
-pub const CAN_RAW_FILTER_MAX: c_int = 512;
-
-// linux/can/raw.h
-pub const SOL_CAN_RAW: c_int = SOL_CAN_BASE + CAN_RAW;
-pub const CAN_RAW_FILTER: c_int = 1;
-pub const CAN_RAW_ERR_FILTER: c_int = 2;
-pub const CAN_RAW_LOOPBACK: c_int = 3;
-pub const CAN_RAW_RECV_OWN_MSGS: c_int = 4;
-pub const CAN_RAW_FD_FRAMES: c_int = 5;
-pub const CAN_RAW_JOIN_FILTERS: c_int = 6;
-pub const CAN_RAW_XL_FRAMES: c_int = 7;
-
-// linux/can/j1939.h
-pub const SOL_CAN_J1939: c_int = SOL_CAN_BASE + CAN_J1939;
-
-pub const J1939_MAX_UNICAST_ADDR: c_uchar = 0xfd;
-pub const J1939_IDLE_ADDR: c_uchar = 0xfe;
-pub const J1939_NO_ADDR: c_uchar = 0xff;
-pub const J1939_NO_NAME: c_ulong = 0;
-pub const J1939_PGN_REQUEST: c_uint = 0x0ea00;
-pub const J1939_PGN_ADDRESS_CLAIMED: c_uint = 0x0ee00;
-pub const J1939_PGN_ADDRESS_COMMANDED: c_uint = 0x0fed8;
-pub const J1939_PGN_PDU1_MAX: c_uint = 0x3ff00;
-pub const J1939_PGN_MAX: c_uint = 0x3ffff;
-pub const J1939_NO_PGN: c_uint = 0x40000;
-
-pub const SO_J1939_FILTER: c_int = 1;
-pub const SO_J1939_PROMISC: c_int = 2;
-pub const SO_J1939_SEND_PRIO: c_int = 3;
-pub const SO_J1939_ERRQUEUE: c_int = 4;
-
-pub const SCM_J1939_DEST_ADDR: c_int = 1;
-pub const SCM_J1939_DEST_NAME: c_int = 2;
-pub const SCM_J1939_PRIO: c_int = 3;
-pub const SCM_J1939_ERRQUEUE: c_int = 4;
-
-pub const J1939_NLA_PAD: c_int = 0;
-pub const J1939_NLA_BYTES_ACKED: c_int = 1;
-pub const J1939_NLA_TOTAL_SIZE: c_int = 2;
-pub const J1939_NLA_PGN: c_int = 3;
-pub const J1939_NLA_SRC_NAME: c_int = 4;
-pub const J1939_NLA_DEST_NAME: c_int = 5;
-pub const J1939_NLA_SRC_ADDR: c_int = 6;
-pub const J1939_NLA_DEST_ADDR: c_int = 7;
-
-pub const J1939_EE_INFO_NONE: c_int = 0;
-pub const J1939_EE_INFO_TX_ABORT: c_int = 1;
-pub const J1939_EE_INFO_RX_RTS: c_int = 2;
-pub const J1939_EE_INFO_RX_DPO: c_int = 3;
-pub const J1939_EE_INFO_RX_ABORT: c_int = 4;
-
-pub const J1939_FILTER_MAX: c_int = 512;
-
 // linux/sctp.h
 pub const SCTP_FUTURE_ASSOC: c_int = 0;
 pub const SCTP_CURRENT_ASSOC: c_int = 1;
@@ -5924,7 +5780,7 @@ f! {
 
     pub fn CPU_ALLOC_SIZE(count: c_int) -> size_t {
         let _dummy: cpu_set_t = mem::zeroed();
-        let size_in_bits = 8 * mem::size_of_val(&_dummy.bits[0]);
+        let size_in_bits = 8 * size_of_val(&_dummy.bits[0]);
         ((count as size_t + size_in_bits - 1) / 8) as size_t
     }
 
@@ -5935,26 +5791,26 @@ f! {
     }
 
     pub fn CPU_SET(cpu: usize, cpuset: &mut cpu_set_t) -> () {
-        let size_in_bits = 8 * mem::size_of_val(&cpuset.bits[0]); // 32, 64 etc
+        let size_in_bits = 8 * size_of_val(&cpuset.bits[0]); // 32, 64 etc
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         cpuset.bits[idx] |= 1 << offset;
     }
 
     pub fn CPU_CLR(cpu: usize, cpuset: &mut cpu_set_t) -> () {
-        let size_in_bits = 8 * mem::size_of_val(&cpuset.bits[0]); // 32, 64 etc
+        let size_in_bits = 8 * size_of_val(&cpuset.bits[0]); // 32, 64 etc
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         cpuset.bits[idx] &= !(1 << offset);
     }
 
     pub fn CPU_ISSET(cpu: usize, cpuset: &cpu_set_t) -> bool {
-        let size_in_bits = 8 * mem::size_of_val(&cpuset.bits[0]);
+        let size_in_bits = 8 * size_of_val(&cpuset.bits[0]);
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         0 != (cpuset.bits[idx] & (1 << offset))
     }
 
     pub fn CPU_COUNT_S(size: usize, cpuset: &cpu_set_t) -> c_int {
         let mut s: u32 = 0;
-        let size_of_mask = mem::size_of_val(&cpuset.bits[0]);
+        let size_of_mask = size_of_val(&cpuset.bits[0]);
         for i in &cpuset.bits[..(size / size_of_mask)] {
             s += i.count_ones();
         }

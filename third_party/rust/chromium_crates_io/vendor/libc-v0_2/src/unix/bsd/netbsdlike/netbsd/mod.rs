@@ -39,6 +39,7 @@ pub type Elf64_Xword = u64;
 pub type iconv_t = *mut c_void;
 
 e! {
+    #[repr(C)]
     pub enum fae_action {
         FAE_OPEN,
         FAE_DUP2,
@@ -1712,6 +1713,29 @@ pub const MNT_WAIT: c_int = 1;
 pub const MNT_NOWAIT: c_int = 2;
 pub const MNT_LAZY: c_int = 3;
 
+// sys/ioccom.h
+pub const IOCPARM_SHIFT: u32 = 16;
+pub const IOCGROUP_SHIFT: u32 = 8;
+
+pub const fn IOCPARM_LEN(x: u32) -> u32 {
+    (x >> IOCPARM_SHIFT) & crate::IOCPARM_MASK
+}
+
+pub const fn IOCBASECMD(x: u32) -> u32 {
+    x & (!(crate::IOCPARM_MASK << IOCPARM_SHIFT))
+}
+
+pub const fn IOCGROUP(x: u32) -> u32 {
+    (x >> IOCGROUP_SHIFT) & 0xff
+}
+
+pub const fn _IOC(inout: c_ulong, group: c_ulong, num: c_ulong, len: c_ulong) -> c_ulong {
+    (inout)
+        | (((len) & crate::IOCPARM_MASK as c_ulong) << IOCPARM_SHIFT)
+        | ((group) << IOCGROUP_SHIFT)
+        | (num)
+}
+
 //<sys/timex.h>
 pub const CLOCK_PROCESS_CPUTIME_ID: crate::clockid_t = 2;
 pub const CLOCK_THREAD_CPUTIME_ID: crate::clockid_t = 4;
@@ -2285,19 +2309,18 @@ const_fn! {
 
 f! {
     pub fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
-        (cmsg as *mut c_uchar).add(_ALIGN(mem::size_of::<cmsghdr>()))
+        (cmsg as *mut c_uchar).add(_ALIGN(size_of::<cmsghdr>()))
     }
 
     pub {const} fn CMSG_LEN(length: c_uint) -> c_uint {
-        _ALIGN(mem::size_of::<cmsghdr>()) as c_uint + length
+        _ALIGN(size_of::<cmsghdr>()) as c_uint + length
     }
 
     pub fn CMSG_NXTHDR(mhdr: *const crate::msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
         if cmsg.is_null() {
             return crate::CMSG_FIRSTHDR(mhdr);
         }
-        let next =
-            cmsg as usize + _ALIGN((*cmsg).cmsg_len as usize) + _ALIGN(mem::size_of::<cmsghdr>());
+        let next = cmsg as usize + _ALIGN((*cmsg).cmsg_len as usize) + _ALIGN(size_of::<cmsghdr>());
         let max = (*mhdr).msg_control as usize + (*mhdr).msg_controllen as usize;
         if next > max {
             core::ptr::null_mut::<cmsghdr>()
@@ -2307,7 +2330,7 @@ f! {
     }
 
     pub {const} fn CMSG_SPACE(length: c_uint) -> c_uint {
-        (_ALIGN(mem::size_of::<cmsghdr>()) + _ALIGN(length as usize)) as c_uint
+        (_ALIGN(size_of::<cmsghdr>()) + _ALIGN(length as usize)) as c_uint
     }
 
     // dirfd() is a macro on netbsd to access
@@ -2319,7 +2342,7 @@ f! {
 
     pub fn SOCKCREDSIZE(ngrps: usize) -> usize {
         let ngrps = if ngrps > 0 { ngrps - 1 } else { 0 };
-        mem::size_of::<sockcred>() + mem::size_of::<crate::gid_t>() * ngrps
+        size_of::<sockcred>() + size_of::<crate::gid_t>() * ngrps
     }
 
     pub fn PROT_MPROTECT(x: c_int) -> c_int {
@@ -2473,6 +2496,8 @@ extern "C" {
         termp: *mut crate::termios,
         winp: *mut crate::winsize,
     ) -> crate::pid_t;
+
+    pub fn ptsname_r(fd: c_int, buf: *mut c_char, buflen: size_t) -> c_int;
 
     #[link_name = "__lutimes50"]
     pub fn lutimes(file: *const c_char, times: *const crate::timeval) -> c_int;

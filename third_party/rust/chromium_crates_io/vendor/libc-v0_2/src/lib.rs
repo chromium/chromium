@@ -4,11 +4,19 @@
 #![allow(
     renamed_and_removed_lints, // Keep this order.
     unknown_lints, // Keep this order.
-    bad_style,
+    nonstandard_style,
     overflowing_literals,
-    improper_ctypes,
     unused_macros,
     unused_macro_rules,
+)]
+// Prepare for a future upgrade
+#![warn(rust_2024_compatibility)]
+// Things missing for 2024 that are blocked on MSRV or breakage
+#![allow(
+    missing_unsafe_on_extern,
+    edition_2024_expr_fragment_specifier,
+    // Allowed globally, the warning is enabled in individual modules as we work through them
+    unsafe_op_in_unsafe_fn
 )]
 #![cfg_attr(libc_deny_warnings, deny(warnings))]
 // Attributes needed when building as part of the standard library
@@ -25,6 +33,7 @@
 
 #[macro_use]
 mod macros;
+mod new;
 
 cfg_if! {
     if #[cfg(feature = "rustc-dep-of-std")] {
@@ -33,6 +42,9 @@ cfg_if! {
 }
 
 pub use core::ffi::c_void;
+
+#[allow(unused_imports)] // needed while the module is empty on some platforms
+pub use new::*;
 
 cfg_if! {
     if #[cfg(windows)] {

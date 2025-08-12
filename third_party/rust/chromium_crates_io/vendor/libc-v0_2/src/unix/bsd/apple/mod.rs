@@ -4642,7 +4642,7 @@ pub const PROC_PIDVNODEPATHINFO: c_int = 9;
 pub const PROC_PIDPATHINFO_MAXSIZE: c_int = 4096;
 
 pub const PROC_PIDLISTFDS: c_int = 1;
-pub const PROC_PIDLISTFD_SIZE: c_int = mem::size_of::<proc_fdinfo>() as c_int;
+pub const PROC_PIDLISTFD_SIZE: c_int = size_of::<proc_fdinfo>() as c_int;
 pub const PROX_FDTYPE_ATALK: c_int = 0;
 pub const PROX_FDTYPE_VNODE: c_int = 1;
 pub const PROX_FDTYPE_SOCKET: c_int = 2;
@@ -5129,48 +5129,42 @@ pub const VMADDR_CID_HOST: c_uint = 2;
 pub const VMADDR_PORT_ANY: c_uint = 0xFFFFFFFF;
 
 const fn __DARWIN_ALIGN32(p: usize) -> usize {
-    const __DARWIN_ALIGNBYTES32: usize = mem::size_of::<u32>() - 1;
+    const __DARWIN_ALIGNBYTES32: usize = size_of::<u32>() - 1;
     (p + __DARWIN_ALIGNBYTES32) & !__DARWIN_ALIGNBYTES32
 }
 
 pub const THREAD_EXTENDED_POLICY_COUNT: mach_msg_type_number_t =
-    (mem::size_of::<thread_extended_policy_data_t>() / mem::size_of::<integer_t>())
-        as mach_msg_type_number_t;
+    (size_of::<thread_extended_policy_data_t>() / size_of::<integer_t>()) as mach_msg_type_number_t;
 pub const THREAD_TIME_CONSTRAINT_POLICY_COUNT: mach_msg_type_number_t =
-    (mem::size_of::<thread_time_constraint_policy_data_t>() / mem::size_of::<integer_t>())
+    (size_of::<thread_time_constraint_policy_data_t>() / size_of::<integer_t>())
         as mach_msg_type_number_t;
 pub const THREAD_PRECEDENCE_POLICY_COUNT: mach_msg_type_number_t =
-    (mem::size_of::<thread_precedence_policy_data_t>() / mem::size_of::<integer_t>())
+    (size_of::<thread_precedence_policy_data_t>() / size_of::<integer_t>())
         as mach_msg_type_number_t;
 pub const THREAD_AFFINITY_POLICY_COUNT: mach_msg_type_number_t =
-    (mem::size_of::<thread_affinity_policy_data_t>() / mem::size_of::<integer_t>())
-        as mach_msg_type_number_t;
+    (size_of::<thread_affinity_policy_data_t>() / size_of::<integer_t>()) as mach_msg_type_number_t;
 pub const THREAD_BACKGROUND_POLICY_COUNT: mach_msg_type_number_t =
-    (mem::size_of::<thread_background_policy_data_t>() / mem::size_of::<integer_t>())
+    (size_of::<thread_background_policy_data_t>() / size_of::<integer_t>())
         as mach_msg_type_number_t;
 pub const THREAD_LATENCY_QOS_POLICY_COUNT: mach_msg_type_number_t =
-    (mem::size_of::<thread_latency_qos_policy_data_t>() / mem::size_of::<integer_t>())
+    (size_of::<thread_latency_qos_policy_data_t>() / size_of::<integer_t>())
         as mach_msg_type_number_t;
 pub const THREAD_THROUGHPUT_QOS_POLICY_COUNT: mach_msg_type_number_t =
-    (mem::size_of::<thread_throughput_qos_policy_data_t>() / mem::size_of::<integer_t>())
+    (size_of::<thread_throughput_qos_policy_data_t>() / size_of::<integer_t>())
         as mach_msg_type_number_t;
 pub const THREAD_BASIC_INFO_COUNT: mach_msg_type_number_t =
-    (mem::size_of::<thread_basic_info_data_t>() / mem::size_of::<integer_t>())
-        as mach_msg_type_number_t;
+    (size_of::<thread_basic_info_data_t>() / size_of::<integer_t>()) as mach_msg_type_number_t;
 pub const THREAD_IDENTIFIER_INFO_COUNT: mach_msg_type_number_t =
-    (mem::size_of::<thread_identifier_info_data_t>() / mem::size_of::<integer_t>())
-        as mach_msg_type_number_t;
+    (size_of::<thread_identifier_info_data_t>() / size_of::<integer_t>()) as mach_msg_type_number_t;
 pub const THREAD_EXTENDED_INFO_COUNT: mach_msg_type_number_t =
-    (mem::size_of::<thread_extended_info_data_t>() / mem::size_of::<integer_t>())
-        as mach_msg_type_number_t;
+    (size_of::<thread_extended_info_data_t>() / size_of::<integer_t>()) as mach_msg_type_number_t;
 
 pub const TASK_THREAD_TIMES_INFO_COUNT: u32 =
-    (mem::size_of::<task_thread_times_info_data_t>() / mem::size_of::<natural_t>()) as u32;
+    (size_of::<task_thread_times_info_data_t>() / size_of::<natural_t>()) as u32;
 pub const MACH_TASK_BASIC_INFO_COUNT: u32 =
-    (mem::size_of::<mach_task_basic_info_data_t>() / mem::size_of::<natural_t>()) as u32;
-pub const HOST_VM_INFO64_COUNT: mach_msg_type_number_t = (mem::size_of::<vm_statistics64_data_t>()
-    / mem::size_of::<integer_t>())
-    as mach_msg_type_number_t;
+    (size_of::<mach_task_basic_info_data_t>() / size_of::<natural_t>()) as u32;
+pub const HOST_VM_INFO64_COUNT: mach_msg_type_number_t =
+    (size_of::<vm_statistics64_data_t>() / size_of::<integer_t>()) as mach_msg_type_number_t;
 
 // bsd/net/if_mib.h
 /// Non-interface-specific
@@ -5209,7 +5203,7 @@ f! {
         let cmsg_len = (*cmsg).cmsg_len as usize;
         let next = cmsg as usize + __DARWIN_ALIGN32(cmsg_len);
         let max = (*mhdr).msg_control as usize + (*mhdr).msg_controllen as usize;
-        if next + __DARWIN_ALIGN32(mem::size_of::<cmsghdr>()) > max {
+        if next + __DARWIN_ALIGN32(size_of::<cmsghdr>()) > max {
             core::ptr::null_mut()
         } else {
             next as *mut cmsghdr
@@ -5217,15 +5211,15 @@ f! {
     }
 
     pub fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
-        (cmsg as *mut c_uchar).add(__DARWIN_ALIGN32(mem::size_of::<cmsghdr>()))
+        (cmsg as *mut c_uchar).add(__DARWIN_ALIGN32(size_of::<cmsghdr>()))
     }
 
     pub {const} fn CMSG_SPACE(length: c_uint) -> c_uint {
-        (__DARWIN_ALIGN32(mem::size_of::<cmsghdr>()) + __DARWIN_ALIGN32(length as usize)) as c_uint
+        (__DARWIN_ALIGN32(size_of::<cmsghdr>()) + __DARWIN_ALIGN32(length as usize)) as c_uint
     }
 
     pub {const} fn CMSG_LEN(length: c_uint) -> c_uint {
-        (__DARWIN_ALIGN32(mem::size_of::<cmsghdr>()) + length as usize) as c_uint
+        (__DARWIN_ALIGN32(size_of::<cmsghdr>()) + length as usize) as c_uint
     }
 
     pub {const} fn VM_MAKE_TAG(id: u8) -> u32 {

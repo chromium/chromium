@@ -287,7 +287,6 @@ s_no_extra_traits! {
         __ssp: [c_ulong; 4],
     }
 
-    #[allow(missing_debug_implementations)]
     #[repr(align(16))]
     pub struct max_align_t {
         priv_: [f64; 6],

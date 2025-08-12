@@ -142,6 +142,17 @@ s! {
         __dummy4: [c_char; 16],
     }
 
+    #[repr(align(8))]
+    pub struct fanotify_event_metadata {
+        pub event_len: c_uint,
+        pub vers: c_uchar,
+        pub reserved: c_uchar,
+        pub metadata_len: c_ushort,
+        pub mask: c_ulonglong,
+        pub fd: c_int,
+        pub pid: c_int,
+    }
+
     // FIXME(1.0): This should not implement `PartialEq`
     #[allow(unpredictable_function_pointer_comparisons)]
     pub struct sigaction {
@@ -157,10 +168,10 @@ s! {
     // FIXME(union): C implementation uses unions
     pub struct siginfo_t {
         pub si_signo: c_int,
-        #[cfg(not(target_arch = "mips"))]
+        #[cfg(not(any(target_arch = "mips", target_arch = "mips64")))]
         pub si_errno: c_int,
         pub si_code: c_int,
-        #[cfg(target_arch = "mips")]
+        #[cfg(any(target_arch = "mips", target_arch = "mips64"))]
         pub si_errno: c_int,
         #[doc(hidden)]
         #[deprecated(
@@ -212,6 +223,8 @@ s! {
         __f_reserved: [c_int; 6],
     }
 
+    // PowerPC implementations are special, see the subfolders
+    #[cfg(not(any(target_arch = "powerpc", target_arch = "powerpc64")))]
     pub struct termios {
         pub c_iflag: crate::tcflag_t,
         pub c_oflag: crate::tcflag_t,
@@ -380,7 +393,7 @@ s! {
     }
 
     // MIPS implementation is special (see mips arch folders)
-    #[cfg(not(target_arch = "mips"))]
+    #[cfg(not(any(target_arch = "mips", target_arch = "mips64")))]
     pub struct statfs {
         pub f_type: c_ulong,
         pub f_bsize: c_ulong,
@@ -397,7 +410,7 @@ s! {
     }
 
     // MIPS implementation is special (see mips arch folders)
-    #[cfg(not(target_arch = "mips"))]
+    #[cfg(not(any(target_arch = "mips", target_arch = "mips64")))]
     pub struct statfs64 {
         pub f_type: c_ulong,
         pub f_bsize: c_ulong,
@@ -599,7 +612,10 @@ pub const ACCOUNTING: c_short = 9;
 
 pub const SFD_CLOEXEC: c_int = 0x080000;
 
+#[cfg(not(any(target_arch = "powerpc", target_arch = "powerpc64")))]
 pub const NCCS: usize = 32;
+#[cfg(any(target_arch = "powerpc", target_arch = "powerpc64"))]
+pub const NCCS: usize = 19;
 
 pub const O_TRUNC: c_int = 512;
 pub const O_NOATIME: c_int = 0o1000000;
@@ -670,6 +686,7 @@ pub const __SIZEOF_PTHREAD_MUTEXATTR_T: usize = 4;
 pub const __SIZEOF_PTHREAD_RWLOCKATTR_T: usize = 8;
 pub const __SIZEOF_PTHREAD_BARRIERATTR_T: usize = 4;
 
+// FIXME(musl): Value is 1024 for all architectures since 1.2.4
 #[cfg(not(target_arch = "loongarch64"))]
 pub const CPU_SETSIZE: c_int = 128;
 #[cfg(target_arch = "loongarch64")]

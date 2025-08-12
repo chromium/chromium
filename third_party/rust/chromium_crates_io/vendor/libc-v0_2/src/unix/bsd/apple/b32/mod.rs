@@ -60,7 +60,6 @@ s_no_extra_traits! {
         __opaque: [c_char; crate::__PTHREAD_ONCE_SIZE__],
     }
 
-    #[allow(missing_debug_implementations)]
     #[repr(align(16))]
     pub struct max_align_t {
         priv_: [f64; 2],

@@ -1,19 +1,7 @@
 use crate::off_t;
 use crate::prelude::*;
 
-// This module contains bindings to the native Haiku API. The Haiku API
-// originates from BeOS, and it was the original way to perform low level
-// system and IO operations. The POSIX API was in that era was like a
-// compatibility layer. In current Haiku development, both the POSIX API and
-// the Haiku API are considered to be co-equal status. However, they are not
-// integrated like they are on other UNIX platforms, which means that for many
-// low level concepts there are two versions, like processes (POSIX) and
-// teams (Haiku), or pthreads and native threads.
-//
-// Both the POSIX API and the Haiku API live in libroot.so, the library that is
-// linked to any binary by default.
-//
-// This file follows the Haiku API for Haiku R1 beta 2. It is organized by the
+// This file follows the Haiku API for Haiku R1 beta 5. It is organized by the
 // C/C++ header files in which the concepts can be found, while adhering to the
 // style guide for this crate.
 
@@ -46,7 +34,7 @@ pub type thread_func = extern "C" fn(*mut c_void) -> status_t;
 // kernel/image.h
 pub type image_id = i32;
 
-e! {
+c_enum! {
     // kernel/OS.h
     pub enum thread_state {
         B_THREAD_RUNNING = 1,
@@ -1298,17 +1286,12 @@ extern "C" {
 // The following functions are defined as macros in C/C++
 #[inline]
 pub unsafe fn get_cpu_info(firstCPU: u32, cpuCount: u32, info: *mut cpu_info) -> status_t {
-    _get_cpu_info_etc(
-        firstCPU,
-        cpuCount,
-        info,
-        core::mem::size_of::<cpu_info>() as size_t,
-    )
+    _get_cpu_info_etc(firstCPU, cpuCount, info, size_of::<cpu_info>() as size_t)
 }
 
 #[inline]
 pub unsafe fn get_area_info(id: area_id, info: *mut area_info) -> status_t {
-    _get_area_info(id, info, core::mem::size_of::<area_info>() as usize)
+    _get_area_info(id, info, size_of::<area_info>() as usize)
 }
 
 #[inline]
@@ -1317,17 +1300,12 @@ pub unsafe fn get_next_area_info(
     cookie: *mut isize,
     info: *mut area_info,
 ) -> status_t {
-    _get_next_area_info(
-        team,
-        cookie,
-        info,
-        core::mem::size_of::<area_info>() as usize,
-    )
+    _get_next_area_info(team, cookie, info, size_of::<area_info>() as usize)
 }
 
 #[inline]
 pub unsafe fn get_port_info(port: port_id, buf: *mut port_info) -> status_t {
-    _get_port_info(port, buf, core::mem::size_of::<port_info>() as size_t)
+    _get_port_info(port, buf, size_of::<port_info>() as size_t)
 }
 
 #[inline]
@@ -1336,12 +1314,7 @@ pub unsafe fn get_next_port_info(
     cookie: *mut i32,
     portInfo: *mut port_info,
 ) -> status_t {
-    _get_next_port_info(
-        port,
-        cookie,
-        portInfo,
-        core::mem::size_of::<port_info>() as size_t,
-    )
+    _get_next_port_info(port, cookie, portInfo, size_of::<port_info>() as size_t)
 }
 
 #[inline]
@@ -1354,7 +1327,7 @@ pub unsafe fn get_port_message_info_etc(
     _get_port_message_info_etc(
         port,
         info,
-        core::mem::size_of::<port_message_info>() as size_t,
+        size_of::<port_message_info>() as size_t,
         flags,
         timeout,
     )
@@ -1362,42 +1335,32 @@ pub unsafe fn get_port_message_info_etc(
 
 #[inline]
 pub unsafe fn get_sem_info(id: sem_id, info: *mut sem_info) -> status_t {
-    _get_sem_info(id, info, core::mem::size_of::<sem_info>() as size_t)
+    _get_sem_info(id, info, size_of::<sem_info>() as size_t)
 }
 
 #[inline]
 pub unsafe fn get_next_sem_info(team: team_id, cookie: *mut i32, info: *mut sem_info) -> status_t {
-    _get_next_sem_info(
-        team,
-        cookie,
-        info,
-        core::mem::size_of::<sem_info>() as size_t,
-    )
+    _get_next_sem_info(team, cookie, info, size_of::<sem_info>() as size_t)
 }
 
 #[inline]
 pub unsafe fn get_team_info(team: team_id, info: *mut team_info) -> status_t {
-    _get_team_info(team, info, core::mem::size_of::<team_info>() as size_t)
+    _get_team_info(team, info, size_of::<team_info>() as size_t)
 }
 
 #[inline]
 pub unsafe fn get_next_team_info(cookie: *mut i32, info: *mut team_info) -> status_t {
-    _get_next_team_info(cookie, info, core::mem::size_of::<team_info>() as size_t)
+    _get_next_team_info(cookie, info, size_of::<team_info>() as size_t)
 }
 
 #[inline]
 pub unsafe fn get_team_usage_info(team: team_id, who: i32, info: *mut team_usage_info) -> status_t {
-    _get_team_usage_info(
-        team,
-        who,
-        info,
-        core::mem::size_of::<team_usage_info>() as size_t,
-    )
+    _get_team_usage_info(team, who, info, size_of::<team_usage_info>() as size_t)
 }
 
 #[inline]
 pub unsafe fn get_thread_info(id: thread_id, info: *mut thread_info) -> status_t {
-    _get_thread_info(id, info, core::mem::size_of::<thread_info>() as size_t)
+    _get_thread_info(id, info, size_of::<thread_info>() as size_t)
 }
 
 #[inline]
@@ -1406,18 +1369,13 @@ pub unsafe fn get_next_thread_info(
     cookie: *mut i32,
     info: *mut thread_info,
 ) -> status_t {
-    _get_next_thread_info(
-        team,
-        cookie,
-        info,
-        core::mem::size_of::<thread_info>() as size_t,
-    )
+    _get_next_thread_info(team, cookie, info, size_of::<thread_info>() as size_t)
 }
 
 // kernel/image.h
 #[inline]
 pub unsafe fn get_image_info(image: image_id, info: *mut image_info) -> status_t {
-    _get_image_info(image, info, core::mem::size_of::<image_info>() as size_t)
+    _get_image_info(image, info, size_of::<image_info>() as size_t)
 }
 
 #[inline]
@@ -1426,10 +1384,5 @@ pub unsafe fn get_next_image_info(
     cookie: *mut i32,
     info: *mut image_info,
 ) -> status_t {
-    _get_next_image_info(
-        team,
-        cookie,
-        info,
-        core::mem::size_of::<image_info>() as size_t,
-    )
+    _get_next_image_info(team, cookie, info, size_of::<image_info>() as size_t)
 }

@@ -1,5 +1,29 @@
 use crate::prelude::*;
 
+// This module contains bindings to the native Haiku API. The Haiku API
+// originates from BeOS, and it was the original way to perform low level
+// system and IO operations. The POSIX API was in that era was like a
+// compatibility layer. In current Haiku development, both the POSIX API and
+// the Haiku API are considered to be co-equal status. However, they are not
+// integrated like they are on other UNIX platforms, which means that for many
+// low level concepts there are two versions, like processes (POSIX) and
+// teams (Haiku), or pthreads and native threads.
+//
+// Both the POSIX API and the Haiku API live in libroot.so, the library that is
+// linked to any binary by default. Additionally, Haiku supports several
+// non-POSIX APIs from BSD and GNU, which live in libbsd.so and libgnu.so. These
+// modules are also supported.
+//
+// The module is comprised of the following files:
+// - `mod.rs` (this file) implements the C11 and POSIX API found in
+//     `headers/posix`
+// - `b32.rs`, `b64.rs` and `x86_64.rs` contain platform-specific definitions
+//      of the C11 and POSIX APIs
+// - `native.rs` defines the native Haiku API that is implemented in
+//     `libroot.so` and that are found in `headers/os`.
+// - `bsd.rs` defines the BSD customizations available on Haiku found in
+//     `headers/compatibility/bsd`
+
 pub type rlim_t = crate::uintptr_t;
 pub type sa_family_t = u8;
 pub type pthread_key_t = c_int;
@@ -55,8 +79,6 @@ pub type ACTION = c_int;
 
 pub type posix_spawnattr_t = *mut c_void;
 pub type posix_spawn_file_actions_t = *mut c_void;
-
-pub type StringList = _stringlist;
 
 #[cfg_attr(feature = "extra_traits", derive(Debug))]
 pub enum timezone {}
@@ -439,19 +461,6 @@ s! {
         pub has_arg: c_int,
         pub flag: *mut c_int,
         pub val: c_int,
-    }
-
-    pub struct _stringlist {
-        pub sl_str: *mut *mut c_char,
-        pub sl_max: size_t,
-        pub sl_cur: size_t,
-    }
-
-    pub struct dl_phdr_info {
-        pub dlpi_addr: crate::Elf_Addr,
-        pub dlpi_name: *const c_char,
-        pub dlpi_phdr: *const crate::Elf_Phdr,
-        pub dlpi_phnum: crate::Elf_Half,
     }
 }
 
@@ -1505,13 +1514,13 @@ pub const POSIX_SPAWN_SETSID: c_int = 0x40;
 
 const_fn! {
     {const} fn CMSG_ALIGN(len: usize) -> usize {
-        len + mem::size_of::<usize>() - 1 & !(mem::size_of::<usize>() - 1)
+        len + size_of::<usize>() - 1 & !(size_of::<usize>() - 1)
     }
 }
 
 f! {
     pub fn CMSG_FIRSTHDR(mhdr: *const msghdr) -> *mut cmsghdr {
-        if (*mhdr).msg_controllen as usize >= mem::size_of::<cmsghdr>() {
+        if (*mhdr).msg_controllen as usize >= size_of::<cmsghdr>() {
             (*mhdr).msg_control as *mut cmsghdr
         } else {
             core::ptr::null_mut::<cmsghdr>()
@@ -1519,15 +1528,15 @@ f! {
     }
 
     pub fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
-        (cmsg as *mut c_uchar).offset(CMSG_ALIGN(mem::size_of::<cmsghdr>()) as isize)
+        (cmsg as *mut c_uchar).offset(CMSG_ALIGN(size_of::<cmsghdr>()) as isize)
     }
 
     pub {const} fn CMSG_SPACE(length: c_uint) -> c_uint {
-        (CMSG_ALIGN(length as usize) + CMSG_ALIGN(mem::size_of::<cmsghdr>())) as c_uint
+        (CMSG_ALIGN(length as usize) + CMSG_ALIGN(size_of::<cmsghdr>())) as c_uint
     }
 
     pub {const} fn CMSG_LEN(length: c_uint) -> c_uint {
-        CMSG_ALIGN(mem::size_of::<cmsghdr>()) as c_uint + length
+        CMSG_ALIGN(size_of::<cmsghdr>()) as c_uint + length
     }
 
     pub fn CMSG_NXTHDR(mhdr: *const msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
@@ -1536,7 +1545,7 @@ f! {
         }
         let next = cmsg as usize
             + CMSG_ALIGN((*cmsg).cmsg_len as usize)
-            + CMSG_ALIGN(mem::size_of::<cmsghdr>());
+            + CMSG_ALIGN(size_of::<cmsghdr>());
         let max = (*mhdr).msg_control as usize + (*mhdr).msg_controllen as usize;
         if next > max {
             core::ptr::null_mut::<cmsghdr>()
@@ -1547,20 +1556,20 @@ f! {
 
     pub fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
-        let size = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let size = size_of_val(&(*set).fds_bits[0]) * 8;
         (*set).fds_bits[fd / size] &= !(1 << (fd % size));
         return;
     }
 
     pub fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
         let fd = fd as usize;
-        let size = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let size = size_of_val(&(*set).fds_bits[0]) * 8;
         return ((*set).fds_bits[fd / size] & (1 << (fd % size))) != 0;
     }
 
     pub fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
-        let size = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let size = size_of_val(&(*set).fds_bits[0]) * 8;
         (*set).fds_bits[fd / size] |= 1 << (fd % size);
         return;
     }
@@ -1772,7 +1781,6 @@ extern "C" {
         addr: *mut crate::sockaddr,
         addrlen: *mut crate::socklen_t,
     ) -> ssize_t;
-    pub fn mkstemps(template: *mut c_char, suffixlen: c_int) -> c_int;
     pub fn nl_langinfo(item: crate::nl_item) -> *mut c_char;
 
     pub fn bind(
@@ -2032,46 +2040,6 @@ extern "C" {
     pub fn getentropy(buf: *mut c_void, buflen: size_t) -> c_int;
 }
 
-#[link(name = "bsd")]
-extern "C" {
-    pub fn lutimes(file: *const c_char, times: *const crate::timeval) -> c_int;
-    pub fn daemon(nochdir: c_int, noclose: c_int) -> c_int;
-    pub fn forkpty(
-        amaster: *mut c_int,
-        name: *mut c_char,
-        termp: *mut termios,
-        winp: *mut crate::winsize,
-    ) -> crate::pid_t;
-    pub fn openpty(
-        amaster: *mut c_int,
-        aslave: *mut c_int,
-        name: *mut c_char,
-        termp: *mut termios,
-        winp: *mut crate::winsize,
-    ) -> c_int;
-    pub fn strsep(string: *mut *mut c_char, delimiters: *const c_char) -> *mut c_char;
-    pub fn explicit_bzero(buf: *mut c_void, len: size_t);
-    pub fn login_tty(_fd: c_int) -> c_int;
-
-    pub fn sl_init() -> *mut StringList;
-    pub fn sl_add(sl: *mut StringList, n: *mut c_char) -> c_int;
-    pub fn sl_free(sl: *mut StringList, i: c_int);
-    pub fn sl_find(sl: *mut StringList, n: *mut c_char) -> *mut c_char;
-
-    pub fn getprogname() -> *const c_char;
-    pub fn setprogname(progname: *const c_char);
-    pub fn dl_iterate_phdr(
-        callback: Option<
-            unsafe extern "C" fn(info: *mut dl_phdr_info, size: usize, data: *mut c_void) -> c_int,
-        >,
-        data: *mut c_void,
-    ) -> c_int;
-
-    pub fn arc4random() -> u32;
-    pub fn arc4random_uniform(upper_bound: u32) -> u32;
-    pub fn arc4random_buf(buf: *mut c_void, n: size_t);
-}
-
 #[link(name = "gnu")]
 extern "C" {
     pub fn memmem(
@@ -2114,6 +2082,9 @@ cfg_if! {
         // pub use self::aarch64::*;
     }
 }
+
+mod bsd;
+pub use self::bsd::*;
 
 mod native;
 pub use self::native::*;

@@ -161,7 +161,6 @@ s! {
 }
 
 s_no_extra_traits! {
-    #[allow(missing_debug_implementations)]
     #[repr(align(2))]
     pub struct max_align_t {
         priv_: [i8; 20],
@@ -191,7 +190,6 @@ pub const O_NDELAY: c_int = 0x800;
 pub const MADV_SOFT_OFFLINE: c_int = 101;
 pub const MAP_LOCKED: c_int = 0x02000;
 pub const MAP_NORESERVE: c_int = 0x04000;
-pub const MAP_32BIT: c_int = 0x0040;
 pub const MAP_ANON: c_int = 0x0020;
 pub const MAP_ANONYMOUS: c_int = 0x0020;
 pub const MAP_DENYWRITE: c_int = 0x0800;

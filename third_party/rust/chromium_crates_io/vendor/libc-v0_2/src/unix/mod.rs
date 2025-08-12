@@ -160,7 +160,6 @@ s! {
         pub revents: c_short,
     }
 
-    #[cfg(not(target_os = "aix"))]
     pub struct winsize {
         pub ws_row: c_ushort,
         pub ws_col: c_ushort,

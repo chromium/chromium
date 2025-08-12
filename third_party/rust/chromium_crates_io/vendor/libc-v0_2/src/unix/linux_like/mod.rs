@@ -234,7 +234,11 @@ cfg_if! {
 }
 
 cfg_if! {
-    if #[cfg(any(target_env = "gnu", target_os = "android"))] {
+    if #[cfg(any(
+        target_env = "gnu",
+        target_os = "android",
+        all(target_env = "musl", musl_v1_2_3)
+    ))] {
         s! {
             pub struct statx {
                 pub stx_mask: crate::__u32,
@@ -1269,7 +1273,11 @@ pub const SI_USER: c_int = 0;
 pub const SI_KERNEL: c_int = 0x80;
 pub const SI_QUEUE: c_int = -1;
 cfg_if! {
-    if #[cfg(not(any(target_arch = "mips", target_arch = "mips32r6")))] {
+    if #[cfg(not(any(
+        target_arch = "mips",
+        target_arch = "mips32r6",
+        target_arch = "mips64"
+    )))] {
         pub const SI_TIMER: c_int = -2;
         pub const SI_MESGQ: c_int = -3;
         pub const SI_ASYNCIO: c_int = -4;
@@ -1659,7 +1667,11 @@ cfg_if! {
 }
 
 cfg_if! {
-    if #[cfg(any(target_env = "gnu", target_os = "android"))] {
+    if #[cfg(any(
+        target_env = "gnu",
+        target_os = "android",
+        all(target_env = "musl", musl_v1_2_3)
+    ))] {
         pub const AT_STATX_SYNC_TYPE: c_int = 0x6000;
         pub const AT_STATX_SYNC_AS_STAT: c_int = 0x0000;
         pub const AT_STATX_FORCE_SYNC: c_int = 0x2000;
@@ -1761,17 +1773,17 @@ cfg_if! {
 
         /// Build an ioctl number for an read-only ioctl.
         pub const fn _IOR<T>(ty: u32, nr: u32) -> Ioctl {
-            _IOC(_IOC_READ, ty, nr, mem::size_of::<T>())
+            _IOC(_IOC_READ, ty, nr, size_of::<T>())
         }
 
         /// Build an ioctl number for an write-only ioctl.
         pub const fn _IOW<T>(ty: u32, nr: u32) -> Ioctl {
-            _IOC(_IOC_WRITE, ty, nr, mem::size_of::<T>())
+            _IOC(_IOC_WRITE, ty, nr, size_of::<T>())
         }
 
         /// Build an ioctl number for a read-write ioctl.
         pub const fn _IOWR<T>(ty: u32, nr: u32) -> Ioctl {
-            _IOC(_IOC_READ | _IOC_WRITE, ty, nr, mem::size_of::<T>())
+            _IOC(_IOC_READ | _IOC_WRITE, ty, nr, size_of::<T>())
         }
 
         extern "C" {
@@ -1783,47 +1795,47 @@ cfg_if! {
 
 const_fn! {
     {const} fn CMSG_ALIGN(len: usize) -> usize {
-        (len + mem::size_of::<usize>() - 1) & !(mem::size_of::<usize>() - 1)
+        (len + size_of::<usize>() - 1) & !(size_of::<usize>() - 1)
     }
 }
 
 f! {
-    pub fn CMSG_FIRSTHDR(mhdr: *const msghdr) -> *mut cmsghdr {
-        if (*mhdr).msg_controllen as usize >= mem::size_of::<cmsghdr>() {
-            (*mhdr).msg_control.cast::<cmsghdr>()
+    pub fn CMSG_FIRSTHDR(mhdr: *const crate::msghdr) -> *mut crate::cmsghdr {
+        if (*mhdr).msg_controllen as usize >= size_of::<crate::cmsghdr>() {
+            (*mhdr).msg_control.cast::<crate::cmsghdr>()
         } else {
-            core::ptr::null_mut::<cmsghdr>()
+            core::ptr::null_mut::<crate::cmsghdr>()
         }
     }
 
-    pub fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
+    pub fn CMSG_DATA(cmsg: *const crate::cmsghdr) -> *mut c_uchar {
         cmsg.offset(1) as *mut c_uchar
     }
 
     pub {const} fn CMSG_SPACE(length: c_uint) -> c_uint {
-        (CMSG_ALIGN(length as usize) + CMSG_ALIGN(mem::size_of::<cmsghdr>())) as c_uint
+        (CMSG_ALIGN(length as usize) + CMSG_ALIGN(size_of::<crate::cmsghdr>())) as c_uint
     }
 
     pub {const} fn CMSG_LEN(length: c_uint) -> c_uint {
-        CMSG_ALIGN(mem::size_of::<cmsghdr>()) as c_uint + length
+        CMSG_ALIGN(size_of::<crate::cmsghdr>()) as c_uint + length
     }
 
     pub fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
-        let size = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let size = size_of_val(&(*set).fds_bits[0]) * 8;
         (*set).fds_bits[fd / size] &= !(1 << (fd % size));
         return;
     }
 
     pub fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
         let fd = fd as usize;
-        let size = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let size = size_of_val(&(*set).fds_bits[0]) * 8;
         return ((*set).fds_bits[fd / size] & (1 << (fd % size))) != 0;
     }
 
     pub fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
-        let size = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let size = size_of_val(&(*set).fds_bits[0]) * 8;
         (*set).fds_bits[fd / size] |= 1 << (fd % size);
         return;
     }
@@ -2177,7 +2189,11 @@ cfg_if! {
 
 // The statx syscall, available on some libcs.
 cfg_if! {
-    if #[cfg(any(target_env = "gnu", target_os = "android"))] {
+    if #[cfg(any(
+        target_env = "gnu",
+        target_os = "android",
+        all(target_env = "musl", musl_v1_2_3)
+    ))] {
         extern "C" {
             pub fn statx(
                 dirfd: c_int,

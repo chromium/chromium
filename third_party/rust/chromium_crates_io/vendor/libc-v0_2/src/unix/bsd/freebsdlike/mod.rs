@@ -427,7 +427,7 @@ cfg_if! {
 }
 
 // Non-public helper constant
-const SIZEOF_LONG: usize = mem::size_of::<c_long>();
+const SIZEOF_LONG: usize = size_of::<c_long>();
 
 #[deprecated(
     since = "0.2.64",

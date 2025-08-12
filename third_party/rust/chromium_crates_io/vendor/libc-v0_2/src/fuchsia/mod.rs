@@ -3250,20 +3250,20 @@ cfg_if! {
 f! {
     pub fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
-        let size = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let size = size_of_val(&(*set).fds_bits[0]) * 8;
         (*set).fds_bits[fd / size] &= !(1 << (fd % size));
         return;
     }
 
     pub fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
         let fd = fd as usize;
-        let size = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let size = size_of_val(&(*set).fds_bits[0]) * 8;
         return ((*set).fds_bits[fd / size] & (1 << (fd % size))) != 0;
     }
 
     pub fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
-        let size = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let size = size_of_val(&(*set).fds_bits[0]) * 8;
         (*set).fds_bits[fd / size] |= 1 << (fd % size);
         return;
     }
@@ -3281,21 +3281,21 @@ f! {
     }
 
     pub fn CPU_SET(cpu: usize, cpuset: &mut cpu_set_t) -> () {
-        let size_in_bits = 8 * mem::size_of_val(&cpuset.bits[0]); // 32, 64 etc
+        let size_in_bits = 8 * size_of_val(&cpuset.bits[0]); // 32, 64 etc
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         cpuset.bits[idx] |= 1 << offset;
         ()
     }
 
     pub fn CPU_CLR(cpu: usize, cpuset: &mut cpu_set_t) -> () {
-        let size_in_bits = 8 * mem::size_of_val(&cpuset.bits[0]); // 32, 64 etc
+        let size_in_bits = 8 * size_of_val(&cpuset.bits[0]); // 32, 64 etc
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         cpuset.bits[idx] &= !(1 << offset);
         ()
     }
 
     pub fn CPU_ISSET(cpu: usize, cpuset: &cpu_set_t) -> bool {
-        let size_in_bits = 8 * mem::size_of_val(&cpuset.bits[0]);
+        let size_in_bits = 8 * size_of_val(&cpuset.bits[0]);
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         0 != (cpuset.bits[idx] & (1 << offset))
     }
@@ -3309,9 +3309,9 @@ f! {
     }
 
     pub fn CMSG_NXTHDR(mhdr: *const msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
-        if ((*cmsg).cmsg_len as size_t) < mem::size_of::<cmsghdr>() {
+        if ((*cmsg).cmsg_len as size_t) < size_of::<cmsghdr>() {
             core::ptr::null_mut::<cmsghdr>()
-        } else if __CMSG_NEXT(cmsg).add(mem::size_of::<cmsghdr>()) >= __MHDR_END(mhdr) {
+        } else if __CMSG_NEXT(cmsg).add(size_of::<cmsghdr>()) >= __MHDR_END(mhdr) {
             core::ptr::null_mut::<cmsghdr>()
         } else {
             __CMSG_NEXT(cmsg).cast()
@@ -3319,7 +3319,7 @@ f! {
     }
 
     pub fn CMSG_FIRSTHDR(mhdr: *const msghdr) -> *mut cmsghdr {
-        if (*mhdr).msg_controllen as size_t >= mem::size_of::<cmsghdr>() {
+        if (*mhdr).msg_controllen as size_t >= size_of::<cmsghdr>() {
             (*mhdr).msg_control.cast()
         } else {
             core::ptr::null_mut::<cmsghdr>()
@@ -3327,15 +3327,15 @@ f! {
     }
 
     pub {const} fn CMSG_ALIGN(len: size_t) -> size_t {
-        (len + mem::size_of::<size_t>() - 1) & !(mem::size_of::<size_t>() - 1)
+        (len + size_of::<size_t>() - 1) & !(size_of::<size_t>() - 1)
     }
 
     pub {const} fn CMSG_SPACE(len: c_uint) -> c_uint {
-        (CMSG_ALIGN(len as size_t) + CMSG_ALIGN(mem::size_of::<cmsghdr>())) as c_uint
+        (CMSG_ALIGN(len as size_t) + CMSG_ALIGN(size_of::<cmsghdr>())) as c_uint
     }
 
     pub {const} fn CMSG_LEN(len: c_uint) -> c_uint {
-        (CMSG_ALIGN(mem::size_of::<cmsghdr>()) + len as size_t) as c_uint
+        (CMSG_ALIGN(size_of::<cmsghdr>()) + len as size_t) as c_uint
     }
 }
 
@@ -3403,8 +3403,8 @@ safe_f! {
 }
 
 fn __CMSG_LEN(cmsg: *const cmsghdr) -> ssize_t {
-    ((unsafe { (*cmsg).cmsg_len as size_t } + mem::size_of::<c_long>() - 1)
-        & !(mem::size_of::<c_long>() - 1)) as ssize_t
+    ((unsafe { (*cmsg).cmsg_len as size_t } + size_of::<c_long>() - 1) & !(size_of::<c_long>() - 1))
+        as ssize_t
 }
 
 fn __CMSG_NEXT(cmsg: *const cmsghdr) -> *mut c_uchar {

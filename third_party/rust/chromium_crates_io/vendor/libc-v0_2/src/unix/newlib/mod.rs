@@ -837,20 +837,20 @@ pub const PRIO_USER: c_int = 2;
 
 f! {
     pub fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
-        let bits = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
         (*set).fds_bits[fd / bits] &= !(1 << (fd % bits));
         return;
     }
 
     pub fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
-        let bits = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
         return ((*set).fds_bits[fd / bits] & (1 << (fd % bits))) != 0;
     }
 
     pub fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
-        let bits = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
         (*set).fds_bits[fd / bits] |= 1 << (fd % bits);
         return;

@@ -1633,7 +1633,7 @@ pub const NTFS_MFLAG_ALLNAMES: c_int = 0x2;
 pub const TMPFS_ARGS_VERSION: c_int = 1;
 
 const SI_MAXSZ: size_t = 128;
-const SI_PAD: size_t = (SI_MAXSZ / mem::size_of::<c_int>()) - 3;
+const SI_PAD: size_t = (SI_MAXSZ / size_of::<c_int>()) - 3;
 
 pub const MAP_STACK: c_int = 0x4000;
 pub const MAP_CONCEAL: c_int = 0x8000;
@@ -1737,6 +1737,23 @@ pub const PF_W: u32 = 0x2;
 pub const PF_R: u32 = 0x4;
 pub const PF_MASKOS: u32 = 0x0ff00000;
 pub const PF_MASKPROC: u32 = 0xf0000000;
+
+// sys/ioccom.h
+pub const fn IOCPARM_LEN(x: u32) -> u32 {
+    (x >> 16) & crate::IOCPARM_MASK
+}
+
+pub const fn IOCBASECMD(x: u32) -> u32 {
+    x & (!(crate::IOCPARM_MASK << 16))
+}
+
+pub const fn IOCGROUP(x: u32) -> u32 {
+    (x >> 8) & 0xff
+}
+
+pub const fn _IOC(inout: c_ulong, group: c_ulong, num: c_ulong, len: c_ulong) -> c_ulong {
+    (inout) | (((len) & crate::IOCPARM_MASK as c_ulong) << 16) | ((group) << 8) | (num)
+}
 
 // sys/mount.h
 pub const MNT_NOPERM: c_int = 0x00000020;
@@ -1859,19 +1876,18 @@ const_fn! {
 
 f! {
     pub fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
-        (cmsg as *mut c_uchar).offset(_ALIGN(mem::size_of::<cmsghdr>()) as isize)
+        (cmsg as *mut c_uchar).offset(_ALIGN(size_of::<cmsghdr>()) as isize)
     }
 
     pub {const} fn CMSG_LEN(length: c_uint) -> c_uint {
-        _ALIGN(mem::size_of::<cmsghdr>()) as c_uint + length
+        _ALIGN(size_of::<cmsghdr>()) as c_uint + length
     }
 
     pub fn CMSG_NXTHDR(mhdr: *const crate::msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
         if cmsg.is_null() {
             return crate::CMSG_FIRSTHDR(mhdr);
         }
-        let next =
-            cmsg as usize + _ALIGN((*cmsg).cmsg_len as usize) + _ALIGN(mem::size_of::<cmsghdr>());
+        let next = cmsg as usize + _ALIGN((*cmsg).cmsg_len as usize) + _ALIGN(size_of::<cmsghdr>());
         let max = (*mhdr).msg_control as usize + (*mhdr).msg_controllen as usize;
         if next > max {
             core::ptr::null_mut::<cmsghdr>()
@@ -1881,7 +1897,7 @@ f! {
     }
 
     pub {const} fn CMSG_SPACE(length: c_uint) -> c_uint {
-        (_ALIGN(mem::size_of::<cmsghdr>()) + _ALIGN(length as usize)) as c_uint
+        (_ALIGN(size_of::<cmsghdr>()) + _ALIGN(length as usize)) as c_uint
     }
 }
 
