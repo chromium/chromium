@@ -4,6 +4,7 @@
 
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/animation/timeline_offset.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
 #include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -3879,12 +3880,13 @@ const CSSValue* TextDecoration::CSSValueFromComputedStyleInternal(
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   for (const CSSProperty* const longhand : shorthand.properties()) {
+    const CSSPropertyID property_id = longhand->PropertyID();
     const CSSValue* value = longhand->CSSValueFromComputedStyle(
         style, layout_object, allow_visited_style, value_phase);
     // Do not include initial value 'auto' for thickness.
     // TODO(https://crbug.com/1093826): general shorthand serialization issues
     // remain, in particular for text-decoration.
-    if (longhand->PropertyID() == CSSPropertyID::kTextDecorationThickness) {
+    if (property_id == CSSPropertyID::kTextDecorationThickness) {
       if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
         CSSValueID value_id = identifier_value->GetValueID();
         if (value_id == CSSValueID::kAuto) {
@@ -3893,25 +3895,34 @@ const CSSValue* TextDecoration::CSSValueFromComputedStyleInternal(
       }
     } else if (RuntimeEnabledFeatures::
                    TextDecorationShortSerializationEnabled()) {
-      if (longhand->PropertyID() == CSSPropertyID::kTextDecorationLine) {
+      if (property_id == CSSPropertyID::kTextDecorationLine) {
         if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
           // Skip the initial value.
           if (identifier_value->GetValueID() == CSSValueID::kNone) {
             continue;
           }
         }
-      } else if (longhand->PropertyID() ==
-                 CSSPropertyID::kTextDecorationStyle) {
+      } else if (property_id == CSSPropertyID::kTextDecorationStyle) {
         if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
           // Skip the initial value.
           if (identifier_value->GetValueID() == CSSValueID::kSolid) {
             continue;
           }
         }
+      } else if (RuntimeEnabledFeatures::
+                     TextDecorationOmitCurrentColorEnabled() &&
+                 property_id == CSSPropertyID::kTextDecorationColor) {
+        // Skip currentColor, which is the initial value.
+        if (style.TextDecorationColor().IsCurrentColor()) {
+          continue;
+        }
       }
     }
     DCHECK(value);
     list->Append(*value);
+  }
+  if (list->length() == 0) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
   }
   return list;
 }

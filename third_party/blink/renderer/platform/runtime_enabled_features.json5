@@ -4837,6 +4837,11 @@
       status: "stable",
     },
     {
+      // crbug.com/435186193
+      name: "TextDecorationOmitCurrentColor",
+      status: "stable",
+    },
+    {
       // crbug.com/40098316
       name: "TextDecorationShortSerialization",
       status: "stable",

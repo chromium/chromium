@@ -383,7 +383,7 @@ text-anchor: start
 text-autospace: no-autospace
 text-box-edge: auto
 text-box-trim: none
-text-decoration: rgb(0, 0, 0)
+text-decoration: none
 text-decoration-color: rgb(0, 0, 0)
 text-decoration-line: none
 text-decoration-skip-ink: auto
