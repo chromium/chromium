@@ -8897,12 +8897,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(display::features::kPanelSelfRefresh2)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {"automatic-fullscreen-content-setting",
-     flag_descriptions::kAutomaticFullscreenContentSettingName,
-     flag_descriptions::kAutomaticFullscreenContentSettingDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kAutomaticFullscreenContentSetting)},
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     {"run-video-capture-service-in-browser",
      flag_descriptions::kRunVideoCaptureServiceInBrowserProcessName,

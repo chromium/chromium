@@ -2477,12 +2477,6 @@ const char kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionDescription[] =
     "different device will not be considered valid, leading to the choice "
     "screen potentially retriggering.";
 
-const char kAutomaticFullscreenContentSettingName[] =
-    "Automatic Fullscreen Content Setting";
-const char kAutomaticFullscreenContentSettingDescription[] =
-    "Enables a new Automatic Fullscreen content setting that lets allowlisted "
-    "origins use the HTML Fullscreen API without transient activation.";
-
 const char kJapaneseOSSettingsName[] = "Japanese OS Settings Page";
 const char kJapaneseOSSettingsDescription[] =
     "Enable OS Settings Page for Japanese input methods";

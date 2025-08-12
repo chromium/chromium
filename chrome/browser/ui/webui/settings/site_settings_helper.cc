@@ -673,9 +673,7 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
 
   // The permission categories below are only shown for certain origins.
   std::vector<ContentSettingsType> types_for_origin = *base_types;
-  if (base::FeatureList::IsEnabled(
-          features::kAutomaticFullscreenContentSetting) &&
-      ShouldShowIwaContentSettingForOrigin(
+  if (ShouldShowIwaContentSettingForOrigin(
           profile, origin, ContentSettingsType::AUTOMATIC_FULLSCREEN)) {
     types_for_origin.push_back(ContentSettingsType::AUTOMATIC_FULLSCREEN);
   }

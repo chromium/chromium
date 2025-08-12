@@ -1437,9 +1437,6 @@ extern const char kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionName[];
 extern const char
     kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionDescription[];
 
-extern const char kAutomaticFullscreenContentSettingName[];
-extern const char kAutomaticFullscreenContentSettingDescription[];
-
 extern const char kJapaneseOSSettingsName[];
 extern const char kJapaneseOSSettingsDescription[];
 

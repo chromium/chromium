@@ -2944,20 +2944,14 @@ void Browser::SetWebContentsBlocked(content::WebContents* web_contents,
   // Skip fullscreen-within-tab, which shows the browser frame.
   if (blocked && GetFullscreenState(web_contents).target_mode ==
                      content::FullscreenMode::kContent) {
-    bool exit_fullscreen = true;
-    if (base::FeatureList::IsEnabled(
-            features::kAutomaticFullscreenContentSetting)) {
-      // Skip URLs with the automatic fullscreen content setting granted.
-      const GURL& url = web_contents->GetLastCommittedURL();
-      const HostContentSettingsMap* const content_settings =
-          HostContentSettingsMapFactory::GetForProfile(
-              web_contents->GetBrowserContext());
-      exit_fullscreen =
-          content_settings->GetContentSetting(
-              url, url, ContentSettingsType::AUTOMATIC_FULLSCREEN) !=
-          CONTENT_SETTING_ALLOW;
-    }
-    if (exit_fullscreen) {
+    // Skip URLs with the automatic fullscreen content setting granted.
+    const GURL& url = web_contents->GetLastCommittedURL();
+    const HostContentSettingsMap* const content_settings =
+        HostContentSettingsMapFactory::GetForProfile(
+            web_contents->GetBrowserContext());
+    if (content_settings->GetContentSetting(
+            url, url, ContentSettingsType::AUTOMATIC_FULLSCREEN) !=
+        CONTENT_SETTING_ALLOW) {
       web_contents->ExitFullscreen(true);
     }
   }

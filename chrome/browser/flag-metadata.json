@@ -1024,11 +1024,6 @@
     "expiry_milestone": 147
   },
   {
-    "name": "automatic-fullscreen-content-setting",
-    "owners": [ "msw@chromium.org", "web-windowing-team@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "automatic-usb-detach",
     "owners": ["ovn@google.com", "lt-web-apps-team@google.com"],
     "expiry_milestone": 160

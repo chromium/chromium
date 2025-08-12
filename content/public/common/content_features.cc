@@ -570,13 +570,6 @@ BASE_FEATURE(kIsolatedWebApps,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// Enables a new Automatic Fullscreen content setting that lets allowlisted
-// origins use the HTML Fullscreen API without transient activation.
-// https://chromestatus.com/feature/6218822004768768
-BASE_FEATURE(kAutomaticFullscreenContentSetting,
-             "AutomaticFullscreenContentSetting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables process isolation of fenced content (content inside fenced frames)
 // from non-fenced content. See
 // https://github.com/WICG/fenced-frame/blob/master/explainer/process_isolation.md

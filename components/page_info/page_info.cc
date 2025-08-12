@@ -1391,12 +1391,6 @@ bool PageInfo::ShouldShowPermission(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  if (info.type == ContentSettingsType::AUTOMATIC_FULLSCREEN &&
-      !base::FeatureList::IsEnabled(
-          features::kAutomaticFullscreenContentSetting)) {
-    return false;
-  }
-
 #if BUILDFLAG(IS_CHROMEOS)
   if (info.type == ContentSettingsType::WEB_PRINTING &&
       !base::FeatureList::IsEnabled(blink::features::kWebPrinting)) {

@@ -875,9 +875,7 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
  public:
   AutomaticFullscreenTest() {
     feature_list_.InitWithFeatures(
-        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode,
-         features::kAutomaticFullscreenContentSetting},
-        {});
+        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
   }
 
   void SetUpOnMainThread() override {

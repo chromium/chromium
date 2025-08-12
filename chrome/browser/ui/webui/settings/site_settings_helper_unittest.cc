@@ -988,8 +988,6 @@ TEST_F(SiteSettingsHelperTest, AutomaticFullscreenVisibility) {
   TestingProfile profile;
   profile.SetPermissionControllerDelegate(
       permissions::GetPermissionControllerDelegate(&profile));
-  base::test::ScopedFeatureList feature_list{
-      features::kAutomaticFullscreenContentSetting};
   const ContentSettingsType type = ContentSettingsType::AUTOMATIC_FULLSCREEN;
 
   // Automatic Fullscreen is visible for non-origin-specific lists.
@@ -1604,8 +1602,6 @@ TEST_F(SiteSettingsHelperIsolatedWebAppTest,
 }
 
 TEST_F(SiteSettingsHelperIsolatedWebAppTest, AutomaticFullscreenVisibility) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutomaticFullscreenContentSetting};
   const ContentSettingsType type = ContentSettingsType::AUTOMATIC_FULLSCREEN;
   web_app::IsolatedWebAppUrlInfo app_url_info = InstallIsolatedWebApp(kAppName);
 

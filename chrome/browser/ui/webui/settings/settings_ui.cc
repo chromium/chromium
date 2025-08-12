@@ -502,9 +502,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           base::FeatureList::IsEnabled(
                               features::kCapturedSurfaceControlKillswitch));
 
-  html_source->AddBoolean("enableAutomaticFullscreenContentSetting",
-                          base::FeatureList::IsEnabled(
-                              features::kAutomaticFullscreenContentSetting));
+  // TODO(crbug.com/427262650): Remove this flag and dependent checks.
+  html_source->AddBoolean("enableAutomaticFullscreenContentSetting", true);
 
   html_source->AddBoolean(
       "enablePermissionSiteSettingsRadioButton",
