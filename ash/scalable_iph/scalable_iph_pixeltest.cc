@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
+
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -20,16 +23,16 @@ namespace ash {
 namespace {
 constexpr char kTestNotificationId[] = "TestNotificationId";
 
-std::string GetScreenshotName(const std::string& test_name, bool new_width) {
-  return test_name + (new_width ? "_new_width" : "_old_width");
-}
-
 }  // namespace
 
-class ScalableIphPixelTest : public AshTestBase,
-                             public testing::WithParamInterface<bool> {
+class ScalableIphPixelTest
+    : public AshTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  bool IsNotificationWidthIncreaseEnabled() { return GetParam(); }
+  bool IsNotificationWidthIncreaseEnabled() const {
+    return std::get<0>(GetParam());
+  }
+  bool IsSystemBlurEnabled() const { return std::get<1>(GetParam()); }
 
   void SetUp() override {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
@@ -40,10 +43,19 @@ class ScalableIphPixelTest : public AshTestBase,
     test_api_ = std::make_unique<NotificationCenterTestApi>();
   }
 
+  // AshTestBase:
+  std::string GenerateScreenshotName(const std::string& title) override {
+    return pixel_test_helper()->GenerateScreenshotName(
+        title +
+        (IsNotificationWidthIncreaseEnabled() ? "_new_width" : "_old_width"));
+  }
+
  protected:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = IsSystemBlurEnabled();
+    return init_params;
   }
 
  private:
@@ -54,7 +66,8 @@ class ScalableIphPixelTest : public AshTestBase,
 INSTANTIATE_TEST_SUITE_P(
     All,
     ScalableIphPixelTest,
-    /*IsNotificationWidthIncreaseEnabled()=*/testing::Bool());
+    testing::Combine(/*IsNotificationWidthIncreaseEnabled()=*/testing::Bool(),
+                     /*IsSystemBlurEnabled()=*/testing::Bool()));
 
 // To show a notification with no body text, we set an empty string to message
 // field. Make sure that it shows our desired UI output.
@@ -82,8 +95,8 @@ TEST_P(ScalableIphPixelTest, NotificationNoBodyText) {
   ASSERT_TRUE(message_view);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetScreenshotName("scalable_iph_notification_no_body_text",
-                        IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/4, message_view));
+      GenerateScreenshotName("scalable_iph_notification_no_body_text"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 0,
+      message_view));
 }
 }  // namespace ash
