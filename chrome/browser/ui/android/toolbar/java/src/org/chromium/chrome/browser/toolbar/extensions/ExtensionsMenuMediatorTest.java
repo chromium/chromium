@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,10 +26,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -59,9 +62,11 @@ public class ExtensionsMenuMediatorTest {
     private static final Bitmap ICON_WHITE = createSimpleIcon(Color.WHITE);
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Profile mProfile;
     @Mock private ExtensionActionsBridge.Natives mActionsBridgeJniMock;
     @Mock private Runnable mDataReadyCallback;
+    @Mock private Callback<Boolean> mOnExtensionsSupportedCallback;
 
     private ExtensionActionsBridge mActionsBridge;
     private MockTab mTab1;
@@ -79,6 +84,7 @@ public class ExtensionsMenuMediatorTest {
         mActionsBridge = new ExtensionActionsBridge(ACTIONS_BRIDGE_POINTER);
         when(mActionsBridgeJniMock.get(mProfile)).thenReturn(mActionsBridge);
         when(mActionsBridgeJniMock.areActionsInitialized(ACTIONS_BRIDGE_POINTER)).thenReturn(true);
+        when(mActionsBridgeJniMock.extensionsEnabled(ACTIONS_BRIDGE_POINTER)).thenReturn(true);
         when(mActionsBridgeJniMock.getActionIds(ACTIONS_BRIDGE_POINTER))
                 .thenReturn(new String[] {"a", "b"});
         when(mActionsBridgeJniMock.getAction(ACTIONS_BRIDGE_POINTER, "a", TAB1_ID))
@@ -114,7 +120,11 @@ public class ExtensionsMenuMediatorTest {
         mModels = new ModelList();
         mMediator =
                 new ExtensionsMenuMediator(
-                        mProfileSupplier, mCurrentTabSupplier, mModels, mDataReadyCallback);
+                        mProfileSupplier,
+                        mCurrentTabSupplier,
+                        mModels,
+                        mDataReadyCallback,
+                        mOnExtensionsSupportedCallback);
 
         // Wait for the main thread to settle.
         shadowOf(Looper.getMainLooper()).idle();
@@ -123,6 +133,27 @@ public class ExtensionsMenuMediatorTest {
     @After
     public void tearDown() {
         mMediator.destroy();
+    }
+
+    @Test
+    public void testExtensionsSupportedCallback() {
+        Mockito.clearInvocations(mOnExtensionsSupportedCallback);
+        mProfileSupplier.set(mProfile);
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mOnExtensionsSupportedCallback).onResult(true);
+
+        mProfileSupplier.set(null);
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mOnExtensionsSupportedCallback).onResult(false);
+
+        long otherBridgePtr = ACTIONS_BRIDGE_POINTER + 1;
+        Profile otherProfile = mock(Profile.class);
+        ExtensionActionsBridge otherBridge = new ExtensionActionsBridge(otherBridgePtr);
+        when(mActionsBridgeJniMock.get(otherProfile)).thenReturn(otherBridge);
+        when(mActionsBridgeJniMock.extensionsEnabled(otherBridgePtr)).thenReturn(false);
+        mProfileSupplier.set(otherProfile);
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mOnExtensionsSupportedCallback).onResult(true);
     }
 
     @Test

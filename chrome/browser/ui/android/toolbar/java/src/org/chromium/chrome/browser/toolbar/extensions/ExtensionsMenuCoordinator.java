@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.divider.MaterialDivider;
 
-import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -27,7 +26,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
-import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
 import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -53,7 +51,6 @@ public class ExtensionsMenuCoordinator implements Destroyable {
     private final ListMenuButton mExtensionsMenuButton;
     private final MaterialDivider mExtensionsMenuTabSwitcherDivider;
     private final ThemeColorProvider mThemeColorProvider;
-    private final ObservableSupplier<Profile> mProfileSupplier;
     private final ObservableSupplier<Tab> mCurrentTabSupplier;
     private final TabCreator mTabCreator;
     private final View mContentView;
@@ -61,9 +58,7 @@ public class ExtensionsMenuCoordinator implements Destroyable {
     private final ModelList mExtensionModels;
 
     private final ThemeColorProvider.TintObserver mTintObserver = this::onTintChanged;
-    private final Callback<Profile> mProfileUpdatedCallback = this::onProfileUpdated;
 
-    @Nullable private Profile mProfile;
     @Nullable @VisibleForTesting ExtensionsMenuMediator mMediator;
 
     private boolean mShouldShowMenuOnInit;
@@ -102,9 +97,6 @@ public class ExtensionsMenuCoordinator implements Destroyable {
         mThemeColorProvider = themeColorProvider;
         mThemeColorProvider.addTintObserver(mTintObserver);
 
-        mProfileSupplier = profileSupplier;
-        mProfileSupplier.addObserver(mProfileUpdatedCallback);
-
         mContentView = LayoutInflater.from(mContext).inflate(R.layout.extensions_menu, null, false);
 
         PropertyModel model = createMenuPropertyModel();
@@ -135,7 +127,7 @@ public class ExtensionsMenuCoordinator implements Destroyable {
 
         mMediator =
                 new ExtensionsMenuMediator(
-                        mProfileSupplier,
+                        profileSupplier,
                         mCurrentTabSupplier,
                         mExtensionModels,
                         () -> {
@@ -157,27 +149,12 @@ public class ExtensionsMenuCoordinator implements Destroyable {
                                 mExtensionsMenuButton.showMenu();
                                 mShouldShowMenuOnInit = false;
                             }
+                        },
+                        (extensionsSupported) -> {
+                            int visibility = extensionsSupported ? View.VISIBLE : View.GONE;
+                            mExtensionsMenuButton.setVisibility(visibility);
+                            mExtensionsMenuTabSwitcherDivider.setVisibility(visibility);
                         });
-    }
-
-    private void onProfileUpdated(@Nullable Profile profile) {
-        if (profile == mProfile) {
-            return;
-        }
-
-        mProfile = profile;
-
-        // TODO(crbug.com/422307625): Remove this check once extensions are ready for dogfooding.
-        int visibility = View.GONE;
-        if (mProfile != null) {
-            ExtensionActionsBridge extensionActionsBridge = ExtensionActionsBridge.get(mProfile);
-            if (extensionActionsBridge != null && extensionActionsBridge.extensionsEnabled()) {
-                visibility = View.VISIBLE;
-            }
-        }
-
-        mExtensionsMenuButton.setVisibility(visibility);
-        mExtensionsMenuTabSwitcherDivider.setVisibility(visibility);
     }
 
     private void openUrlFromMenu(String url) {
@@ -243,8 +220,6 @@ public class ExtensionsMenuCoordinator implements Destroyable {
         }
         mExtensionsMenuButton.setOnClickListener(null);
         mThemeColorProvider.removeTintObserver(mTintObserver);
-        mProfileSupplier.removeObserver(mProfileUpdatedCallback);
-        mProfile = null;
         mChangeProcessor.destroy();
     }
 
