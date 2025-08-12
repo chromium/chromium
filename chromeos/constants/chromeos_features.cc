@@ -570,9 +570,7 @@ bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled() {
 }
 
 bool IsRoundedWindowsEnabled() {
-  static bool is_enabled =
-      base::FeatureList::IsEnabled(kFeatureManagementRoundedWindows);
-  return is_enabled;
+  return base::FeatureList::IsEnabled(kFeatureManagementRoundedWindows);
 }
 
 bool IsSystemBlurEnabled() {
