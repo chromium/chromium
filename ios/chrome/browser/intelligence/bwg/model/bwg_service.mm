@@ -56,6 +56,7 @@ bool BwgService::IsProfileEligibleForBwg() {
           : false;
 
   // Checks the Chrome and Gemini Enterprise policies.
+  // kGeminiEnabledByPolicy is 0 for allowed, 1 for disallowed.
   bool is_disabled_by_policy =
       pref_service_->GetInteger(prefs::kGeminiEnabledByPolicy) == 1 ||
       is_disabled_by_gemini_policy_;
@@ -69,7 +70,7 @@ bool BwgService::IsProfileEligibleForBwg() {
 }
 
 bool BwgService::IsBwgAvailableForWebState(web::WebState* web_state) {
-  if (!IsProfileEligibleForBwg()) {
+  if (!web_state || !IsProfileEligibleForBwg()) {
     return false;
   }
   // The web state is eligible for HTML and images that use http/https schemes.
