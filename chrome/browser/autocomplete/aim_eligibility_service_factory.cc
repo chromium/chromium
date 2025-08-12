@@ -6,12 +6,12 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -39,7 +39,6 @@ AimEligibilityServiceFactory::AimEligibilityServiceFactory()
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(TemplateURLServiceFactory::GetInstance());
-  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 AimEligibilityServiceFactory::~AimEligibilityServiceFactory() = default;
@@ -49,8 +48,8 @@ AimEligibilityServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<AimEligibilityService>(
-      profile->GetPrefs(), TemplateURLServiceFactory::GetForProfile(profile),
-      IdentityManagerFactory::GetForProfile(profile),
+      CHECK_DEREF(profile->GetPrefs()),
+      CHECK_DEREF(TemplateURLServiceFactory::GetForProfile(profile)),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
 }

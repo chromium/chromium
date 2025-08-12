@@ -7,16 +7,17 @@
 #include <memory>
 #include <string>
 
+#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_observer.h"
 #include "chrome/browser/browser_process.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/service/variations_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -78,24 +79,93 @@ const net::NetworkTrafficAnnotationTag kGwsRequestTrafficAnnotation =
 
 }  // namespace
 
+// static
+void AimEligibilityService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(kResponsePrefName, "");
+}
+
 AimEligibilityService::AimEligibilityService(
-    PrefService* pref_service,
-    TemplateURLService* template_url_service,
-    signin::IdentityManager* identity_manager,
+    PrefService& pref_service,
+    TemplateURLService& template_url_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : pref_service_(pref_service),
       template_url_service_(template_url_service),
-      url_loader_factory_(url_loader_factory),
-      identity_manager_(identity_manager) {
+      url_loader_factory_(url_loader_factory) {
   // TODO(crbug.com/436898763): Call `StartGwsRequest()` to refresh the server
   //   response when service is constructed and when user state changes. E.g.
   //   user signs in/out, starts/stops syncing, switches profiles. Some of those
   //   actions may create a new service; if so, we don't need to listen to those
   //   events and start StartGwsRequest manually, because it'll be called in the
   //   constructor anyways. Switching profiles probably creates a new service.
+  ReadFromPref();
 }
 
 AimEligibilityService::~AimEligibilityService() = default;
+
+void AimEligibilityService::AddObserver(
+    AimEligibilityServiceObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AimEligibilityService::RemoveObserver(
+    AimEligibilityServiceObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+// static
+bool AimEligibilityService::IsCountryAndLocale(const std::string& country,
+                                               const std::string& locale) {
+  return g_browser_process &&
+         g_browser_process->GetApplicationLocale() == locale &&
+         GetCountryCode() == country;
+}
+
+bool AimEligibilityService::IsAimEligible() {
+  // TODO(crbug.com/436901669): Conditionally check
+  //   `most_recent_response_.is_eligible()` and `IsCountryAndLocale()`
+  //   depending on feature param state.
+  StartGwsRequest();
+
+  const bool client_locale_eligible =
+      !omnibox_feature_configs::AiMode::Get().check_ai_locale_client_side ||
+      IsCountryAndLocale("us", "en-*");
+  const bool server_locale_eligible =
+      !omnibox_feature_configs::AiMode::Get().check_ai_eligibility_gws_side ||
+      most_recent_response_.is_eligible();
+  const bool locale_eligible = client_locale_eligible || server_locale_eligible;
+
+  return search::DefaultSearchProviderIsGoogle(&template_url_service_.get()) &&
+         locale_eligible && omnibox::IsAimAllowedByPolicy(&pref_service_.get());
+}
+
+void AimEligibilityService::NotifyObservers() const {
+  for (auto& observer : observers_)
+    observer.OnAimEligibilityServiceChanged();
+}
+
+bool AimEligibilityService::ParseResponseString(
+    const std::string& response_string) {
+  // Parse into a temporary variable 1st so that if parsing fails,
+  // `most_recent_response_` isn't cleared.
+  omnibox::AimEligibilityResponse response_proto;
+  if (!response_proto.ParseFromString(response_string))
+    return false;
+  most_recent_response_ = response_proto;
+  return true;
+}
+
+void AimEligibilityService::WriteToPref(
+    const std::string& response_string) const {
+  pref_service_->SetString(kResponsePrefName,
+                           base::Base64Encode(response_string));
+}
+
+void AimEligibilityService::ReadFromPref() {
+  const std::string& read_string = pref_service_->GetString(kResponsePrefName);
+  std::string decoded;
+  if (base::Base64Decode(read_string, &decoded))
+    ParseResponseString(decoded);
+}
 
 void AimEligibilityService::StartGwsRequest() {
   std::unique_ptr<network::ResourceRequest> request =
@@ -108,7 +178,7 @@ void AimEligibilityService::StartGwsRequest() {
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&AimEligibilityService::OnGwsResponse,
-                     base::Unretained(this), std::move(loader)));
+                     weak_factory_.GetWeakPtr(), std::move(loader)));
 }
 
 void AimEligibilityService::OnGwsResponse(
@@ -119,55 +189,10 @@ void AimEligibilityService::OnGwsResponse(
   //   This will let us know how watered down UMA and finch are compared due to
   //   mismatched GWS eligibility criteria and estimate the actual population
   //   size.
-  // TODO(crbug.com/436899694): Save the response to disk so we can enable AI
-  //   features on startup without having to wait for a successful GWS response.
   if (!response_string)
     return;
-  // Parse into a temporary variable 1st so that if parsing fails,
-  // `most_recent_aim_eligibility_response` isn't cleared.
-  omnibox::AimEligibilityResponse response_proto;
-  if (!response_proto.ParseFromString(*response_string))
+  if (!ParseResponseString(*response_string))
     return;
-  most_recent_aim_eligibility_response = response_proto;
+  WriteToPref(*response_string);
   NotifyObservers();
-}
-
-void AimEligibilityService::AddObserver(
-    AimEligibilityServiceObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void AimEligibilityService::RemoveObserver(
-    AimEligibilityServiceObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
-
-bool AimEligibilityService::IsCountryAndLocale(const std::string& country,
-                                               const std::string& locale) {
-  return g_browser_process &&
-         g_browser_process->GetApplicationLocale() == locale &&
-         GetCountryCode() == country;
-}
-
-bool AimEligibilityService::IsAimEligible() const {
-  // TODO(crbug.com/436901669): Conditionally check
-  //   `most_recent_aim_eligibility_response.is_eligible()` and
-  //   `IsCountryAndLocale()` depending on feature param state.
-  const bool client_locale_eligible =
-      !omnibox_feature_configs::AiMode::Get().check_ai_locale_client_side ||
-      IsCountryAndLocale("us", "en-*");
-
-  const bool server_locale_eligible =
-      !omnibox_feature_configs::AiMode::Get().check_ai_eligibility_gws_side ||
-      most_recent_aim_eligibility_response.is_eligible();
-
-  const bool locale_eligible = client_locale_eligible || server_locale_eligible;
-
-  return search::DefaultSearchProviderIsGoogle(template_url_service_) &&
-         locale_eligible && omnibox::IsAimAllowedByPolicy(pref_service_);
-}
-
-void AimEligibilityService::NotifyObservers() const {
-  for (auto& observer : observers_)
-    observer.OnAimEligibilityServiceChanged();
 }
