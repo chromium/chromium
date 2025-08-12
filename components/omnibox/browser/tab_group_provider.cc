@@ -62,7 +62,8 @@ std::pair<int, std::u16string> Score(
   query_parser::Snippet::MatchPositions url_matches;
   if (!std::ranges::all_of(input_query_nodes, [&](const auto& query_node) {
         // Search for a matching URL and early return once one is found but do
-        // not consider chrome prefixed tabs during matching.
+        // not consider chrome prefixed tabs during matching. The URL provided
+        // by saved_tab will include user queries for search result pages.
         bool has_url_match;
         for (auto& saved_tab : group.saved_tabs()) {
 #if BUILDFLAG(IS_ANDROID)
@@ -150,7 +151,7 @@ void TabGroupProvider::Start(const AutocompleteInput& input,
       &input_query_nodes);
 
   for (auto& group : client_->GetTabGroupSyncService()->GetAllGroups()) {
-    const auto [score, matching_url] = Score(input, input_query_nodes, group);
+    const auto& [score, matching_url] = Score(input, input_query_nodes, group);
     if (score > 0) {
       matches_.push_back(
           CreateTabGroupMatch(input, group, score, matching_url));
