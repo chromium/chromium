@@ -158,7 +158,8 @@ FederatedAuthRequestImpl::FederatedAuthRequestImpl(
       api_permission_delegate_(api_permission_context),
       auto_reauthn_permission_delegate_(auto_reauthn_permission_context),
       permission_delegate_(permission_context),
-      identity_registry_(identity_registry) {}
+      identity_registry_(identity_registry),
+      perfetto_track_(webid::CreatePerfettoTrackForFedCM(this)) {}
 
 FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
   // Ensures key data members are destructed in proper order and resolves any
@@ -360,6 +361,10 @@ void FederatedAuthRequestImpl::RequestToken(
                             /*is_auto_selected=*/false);
     return;
   }
+
+  // From here on out, all failures go through CompleteRequest, so this is
+  // where we start the trace event.
+  TRACE_EVENT_BEGIN("content.fedcm", "FedCM get", perfetto_track_);
 
   should_complete_request_immediately_ = should_complete_request_immediately;
   mediation_requirement_ = requirement;
@@ -1977,12 +1982,17 @@ void FederatedAuthRequestImpl::CompleteRequest(
         .Run(status, selected_idp_config_url, id_token, std::move(error),
              is_auto_selected);
     auth_request_token_callback_.Reset();
+
+    TRACE_EVENT_END("content.fedcm", perfetto_track_);
   } else {
+    base::TimeDelta delay = GetRandomRejectionTime();
+    TRACE_EVENT_INSTANT("content.fedcm", "Delaying FedCM rejection",
+                        perfetto_track_, "delay", delay);
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&FederatedAuthRequestImpl::OnRejectRequest,
                        weak_ptr_factory_.GetWeakPtr()),
-        GetRandomRejectionTime());
+        delay);
   }
 }
 

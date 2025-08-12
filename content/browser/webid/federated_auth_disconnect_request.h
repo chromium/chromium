@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/webid/fedcm_config_fetcher.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
@@ -92,6 +93,8 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
   // Whether the disconnect fetch request is sent. Used to know whether to
   // record the disconnect call duration.
   bool disconnect_request_sent_ = false;
+
+  perfetto::NamedTrack perfetto_track_;
 
   base::WeakPtrFactory<FederatedAuthDisconnectRequest> weak_ptr_factory_{this};
 };

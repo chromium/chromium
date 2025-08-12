@@ -17,6 +17,10 @@ enum class FederatedAuthRequestResult;
 enum class IdpSigninStatus;
 }  // namespace blink::mojom
 
+namespace perfetto {
+class NamedTrack;
+}  // namespace perfetto
+
 namespace content {
 class BrowserContext;
 enum class FedCmDisconnectStatus;
@@ -110,6 +114,9 @@ FedCmRequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
 void MaybeAddResponseCodeToConsole(RenderFrameHost& render_frame_host,
                                    const char* fetch_description,
                                    int response_code);
+
+// Creates a Perfetto track for the class pointed to by `class_pointer`.
+perfetto::NamedTrack CreatePerfettoTrackForFedCM(void* class_pointer);
 
 }  // namespace webid
 

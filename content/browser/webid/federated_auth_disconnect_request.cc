@@ -5,6 +5,7 @@
 #include "content/browser/webid/federated_auth_disconnect_request.h"
 
 #include "base/notreached.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/render_frame_host.h"
@@ -55,7 +56,8 @@ FederatedAuthDisconnectRequest::FederatedAuthDisconnectRequest(
       fedcm_metrics_(std::move(fedcm_metrics)),
       options_(std::move(options)),
       origin_(render_frame_host->GetLastCommittedOrigin()),
-      start_time_(base::TimeTicks::Now()) {
+      start_time_(base::TimeTicks::Now()),
+      perfetto_track_(webid::CreatePerfettoTrackForFedCM(this)) {
   RenderFrameHost* main_frame = render_frame_host->GetMainFrame();
   DCHECK(main_frame->IsInPrimaryMainFrame());
   embedding_origin_ = main_frame->GetLastCommittedOrigin();
@@ -64,6 +66,8 @@ FederatedAuthDisconnectRequest::FederatedAuthDisconnectRequest(
 void FederatedAuthDisconnectRequest::SetCallbackAndStart(
     blink::mojom::FederatedAuthRequest::DisconnectCallback callback,
     FederatedIdentityApiPermissionContextDelegate* api_permission_delegate) {
+  TRACE_EVENT_BEGIN("content.fedcm", "FedCM disconnect", perfetto_track_);
+
   callback_ = std::move(callback);
 
   url::Origin config_origin = url::Origin::Create(options_->config->config_url);
@@ -241,6 +245,8 @@ void FederatedAuthDisconnectRequest::Complete(
   if (!callback_) {
     return;
   }
+
+  TRACE_EVENT_END("content.fedcm", perfetto_track_);
   if (disconnect_status_for_metrics != FedCmDisconnectStatus::kSuccess) {
     AddConsoleErrorMessage(disconnect_status_for_metrics);
   }

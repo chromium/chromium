@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -466,6 +467,11 @@ void MaybeAddResponseCodeToConsole(RenderFrameHost& render_frame_host,
     render_frame_host.AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError, *console_message);
   }
+}
+
+perfetto::NamedTrack CreatePerfettoTrackForFedCM(void* class_pointer) {
+  return perfetto::NamedTrack::ThreadScoped(
+      "FedCM", reinterpret_cast<uintptr_t>(class_pointer));
 }
 
 }  // namespace content::webid

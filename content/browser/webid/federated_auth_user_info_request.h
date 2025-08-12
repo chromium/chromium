@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/webid/fedcm_config_fetcher.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
@@ -99,6 +100,8 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
   base::TimeTicks request_start_time_;
 
   blink::mojom::FederatedAuthRequest::RequestUserInfoCallback callback_;
+
+  perfetto::NamedTrack perfetto_track_;
 
   base::WeakPtrFactory<FederatedAuthUserInfoRequest> weak_ptr_factory_{this};
 };

@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/webid/fedcm_accounts_fetcher.h"
 #include "content/browser/webid/fedcm_idp_registration_handler.h"
 #include "content/browser/webid/fedcm_metrics.h"
@@ -606,6 +607,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Keeps track of the state of the verifying dialog. Is std::nullopt when the
   // verifying dialog has not been shown.
   std::optional<FedCmVerifyingDialogResult> verifying_dialog_result_;
+
+  perfetto::NamedTrack perfetto_track_;
 
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};
 };
