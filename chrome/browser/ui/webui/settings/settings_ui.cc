@@ -474,10 +474,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       TrackingProtectionSettingsFactory::GetForProfile(profile)
           ->IsTrackingProtection3pcdEnabled());
 
-  html_source->AddBoolean(
-      "isAlwaysBlock3pcsIncognitoEnabled",
-      base::FeatureList::IsEnabled(privacy_sandbox::kAlwaysBlock3pcsIncognito));
-
   // ACT UX
   bool ipp_ux = base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx);
   bool fpp_ux = base::FeatureList::IsEnabled(

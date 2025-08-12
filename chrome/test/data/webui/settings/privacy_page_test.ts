@@ -420,11 +420,9 @@ suite('CookiesSubpageRedesignDisabled', function() {
   }
 
   test(
-      'cookiesLinkRowSublabelAlwaysBlock3pcsIncognitoDisabled',
-      async function() {
+      'cookiesLinkRowSublabel', async function() {
         loadTimeData.overrideValues({
           is3pcdCookieSettingsRedesignEnabled: false,
-          isAlwaysBlock3pcsIncognitoEnabled: false,
         });
         resetRouterForTesting();
 
@@ -444,7 +442,7 @@ suite('CookiesSubpageRedesignDisabled', function() {
             'prefs.profile.cookie_controls_mode.value',
             CookieControlsMode.INCOGNITO_ONLY);
         assertEquals(
-            page.i18n('thirdPartyCookiesLinkRowSublabelDisabledIncognito'),
+            page.i18n('thirdPartyCookiesLinkRowSublabelEnabled'),
             thirdPartyCookiesLinkRow.subLabel,
         );
 
@@ -455,27 +453,6 @@ suite('CookiesSubpageRedesignDisabled', function() {
             page.i18n('thirdPartyCookiesLinkRowSublabelDisabled'),
             thirdPartyCookiesLinkRow.subLabel);
       });
-
-  test('cookiesLinkRowSublabel', async function() {
-    loadTimeData.overrideValues({
-      is3pcdCookieSettingsRedesignEnabled: false,
-      isAlwaysBlock3pcsIncognitoEnabled: true,
-    });
-    resetRouterForTesting();
-
-    await createPage();
-
-    page.set(
-        'prefs.profile.cookie_controls_mode.value',
-        CookieControlsMode.INCOGNITO_ONLY);
-    const thirdPartyCookiesLinkRow =
-        page.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#thirdPartyCookiesLinkRow');
-    assertTrue(!!thirdPartyCookiesLinkRow);
-    assertEquals(
-        page.i18n('thirdPartyCookiesLinkRowSublabelEnabled'),
-        thirdPartyCookiesLinkRow.subLabel);
-  });
 });
 
 suite(`IncognitoTrackingProtectionsSubpage`, function() {

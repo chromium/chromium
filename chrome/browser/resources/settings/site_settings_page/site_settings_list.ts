@@ -326,12 +326,9 @@ class SettingsSiteSettingsListElement extends
       }
     } else {
       const state = this.getPref('profile.cookie_controls_mode').value;
-      if (state === CookieControlsMode.OFF) {
+      if (state === CookieControlsMode.OFF ||
+          state === CookieControlsMode.INCOGNITO_ONLY) {
         label = 'thirdPartyCookiesLinkRowSublabelEnabled';
-      } else if (state === CookieControlsMode.INCOGNITO_ONLY) {
-        label = loadTimeData.getBoolean('isAlwaysBlock3pcsIncognitoEnabled') ?
-            'thirdPartyCookiesLinkRowSublabelEnabled' :
-            'thirdPartyCookiesLinkRowSublabelDisabledIncognito';
       } else if (state === CookieControlsMode.BLOCK_THIRD_PARTY) {
         label = 'thirdPartyCookiesLinkRowSublabelDisabled';
       }

@@ -101,40 +101,6 @@ suite('SiteSettingsPage', function() {
     assertEquals('c', defaultSettingLabel(ContentSetting.ASK, 'a', 'b', 'c'));
   });
 
-  test('CookiesLinkRowSublabel', async function() {
-    // This test verifies the pre-3PCD label.
-    loadTimeData.overrideValues({
-      is3pcdCookieSettingsRedesignEnabled: false,
-      isAlwaysBlock3pcsIncognitoEnabled: false,
-    });
-    setupPage();
-    const cookiesLinkRow = getCookiesLinkRow();
-
-    page.set(
-        'prefs.profile.cookie_controls_mode.value',
-        CookieControlsMode.BLOCK_THIRD_PARTY);
-    await flushTasks();
-    assertEquals(
-        loadTimeData.getString('thirdPartyCookiesLinkRowSublabelDisabled'),
-        cookiesLinkRow.subLabel);
-
-    page.set(
-        'prefs.profile.cookie_controls_mode.value',
-        CookieControlsMode.INCOGNITO_ONLY);
-    await flushTasks();
-    assertEquals(
-        loadTimeData.getString(
-            'thirdPartyCookiesLinkRowSublabelDisabledIncognito'),
-        cookiesLinkRow.subLabel);
-
-    page.set(
-        'prefs.profile.cookie_controls_mode.value', CookieControlsMode.OFF);
-    await flushTasks();
-    assertEquals(
-        loadTimeData.getString('thirdPartyCookiesLinkRowSublabelEnabled'),
-        cookiesLinkRow.subLabel);
-  });
-
   test('CookiesLinkRowSublabelInModeB', async function() {
     // This test verifies the Tracking Protection rewind label.
     loadTimeData.overrideValues({
@@ -162,10 +128,9 @@ suite('SiteSettingsPage', function() {
         cookiesLinkRow.subLabel);
   });
 
-  test('CookiesLinkRowSublabelAlwaysBlock3pcsIncognito', async function() {
+  test('CookiesLinkRowSublabel', async function() {
     loadTimeData.overrideValues({
       is3pcdCookieSettingsRedesignEnabled: false,
-      isAlwaysBlock3pcsIncognitoEnabled: true,
     });
     setupPage();
     const cookiesLinkRow = getCookiesLinkRow();

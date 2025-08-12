@@ -500,11 +500,8 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         this.getPref('profile.cookie_controls_mode').value;
     switch (currentCookieSetting) {
       case CookieControlsMode.OFF:
-        return this.i18n('thirdPartyCookiesLinkRowSublabelEnabled');
       case CookieControlsMode.INCOGNITO_ONLY:
-        return loadTimeData.getBoolean('isAlwaysBlock3pcsIncognitoEnabled') ?
-            this.i18n('thirdPartyCookiesLinkRowSublabelEnabled') :
-            this.i18n('thirdPartyCookiesLinkRowSublabelDisabledIncognito');
+        return this.i18n('thirdPartyCookiesLinkRowSublabelEnabled');
       case CookieControlsMode.BLOCK_THIRD_PARTY:
         return this.i18n('thirdPartyCookiesLinkRowSublabelDisabled');
       default:
