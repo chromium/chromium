@@ -350,11 +350,14 @@ PowerSaveBlocker::PowerSaveBlocker(
     : delegate_(
           base::MakeRefCounted<Delegate>(type, description, ui_task_runner)),
       ui_task_runner_(ui_task_runner) {
-  delegate_->Init();
+  ui_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&PowerSaveBlocker::Delegate::Init, delegate_));
 }
 
 PowerSaveBlocker::~PowerSaveBlocker() {
-  delegate_->CleanUp();
+  ui_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PowerSaveBlocker::Delegate::CleanUp, delegate_));
 }
 
 }  // namespace device
