@@ -28,11 +28,6 @@ class TestOrderfileGenerator(unittest.TestCase):
     self.assertLess(0, step_recorder.timings[1][1])
     self.assertTrue(step_recorder.ErrorRecorded())
 
-  def testGetFileExtension(self):
-    self.assertEqual(
-        'zip',
-        generate_orderfile_full._GetFileExtension('/foo/bar/baz.blub.zip'))
-
   def testGenerateHash(self):
     try:
       with tempfile.NamedTemporaryFile(mode='w', delete=False) as handle:

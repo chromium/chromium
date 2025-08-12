@@ -95,25 +95,6 @@ def _GenerateHash(file_path):
   return sha1.hexdigest()
 
 
-def _GetFileExtension(file_name):
-  """Calculates the file extension from a file name.
-
-  Args:
-    file_name: The source file name.
-  Returns:
-    The part of file_name after the dot (.) or None if the file has no
-    extension.
-    Examples: /home/user/foo.bar     -> bar
-              /home/user.name/foo    -> None
-              /home/user/.foo        -> None
-              /home/user/foo.bar.baz -> baz
-  """
-  file_name_parts = os.path.basename(file_name).split('.')
-  if len(file_name_parts) > 1:
-    return file_name_parts[-1]
-  return None
-
-
 class StepRecorder:
   """Records steps and timings."""
 
@@ -379,130 +360,6 @@ class ClankCompiler:
     return target
 
 
-class OrderfileUpdater:
-  """Handles uploading and committing a new orderfile in the repository.
-
-  Only used for testing or on a bot.
-  """
-
-  _CLOUD_STORAGE_BUCKET_FOR_DEBUG = None
-  _CLOUD_STORAGE_BUCKET = None
-  _UPLOAD_TO_CLOUD_COMMAND = 'upload_to_google_storage.py'
-  _UPLOAD_TO_NEW_CLOUD_COMMAND = 'upload_to_google_storage_first_class.py'
-
-  def __init__(self, repository_root, step_recorder: StepRecorder):
-    """Constructor.
-
-    Args:
-      repository_root: (str) Root of the target repository.
-      step_recorder: (StepRecorder) Step recorder, for logging.
-    """
-    self._repository_root = repository_root
-    self._step_recorder = step_recorder
-
-  def UploadToCloudStorage(self, filename, use_debug_location):
-    """Uploads a file to cloud storage.
-
-    Here's an example of what the JSON object looks like for the new cloud: # pylint: disable=line-too-long
-    {
-      "path": {
-        "dep_type": "gcs",
-        "bucket": "orderfile-test",
-        "objects": [
-          {
-            "object_name": "e8e5ffb467e8cd784a7a7fbe8c4e840118306959c4b01c810eb6af9169b4c624",
-            "sha256sum": "e8e5ffb467e8cd784a7a7fbe8c4e840118306959c4b01c810eb6af9169b4c624",
-            "size_bytes": 32374172,
-            "generation": 1715099523335361
-          }
-        ]
-      }
-    }
-    See https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/docs/gcs_dependencies.md
-
-    Args:
-      filename: (str) File to upload.
-      use_debug_location: (bool) Whether to use the debug location.
-      use_new_cloud: (bool) Whether to use the new workflow and modify DEPS.
-    """
-    bucket = (self._CLOUD_STORAGE_BUCKET_FOR_DEBUG
-              if use_debug_location else self._CLOUD_STORAGE_BUCKET)
-    extension = _GetFileExtension(filename)
-    cmd = [self._UPLOAD_TO_CLOUD_COMMAND, '--bucket', bucket]
-    if extension:
-      cmd.extend(['-z', extension])
-    cmd.append(filename)
-    # Keep both upload paths working as the upload script updates .sha1 files.
-    self._step_recorder.RunCommand(cmd)
-    if use_new_cloud:
-      logging.info('Uploading using the new cloud:')
-      bucket_name, prefix = bucket.split('/', 1)
-      new_cmd = [
-          self._UPLOAD_TO_NEW_CLOUD_COMMAND, '--bucket', bucket_name,
-          '--prefix', prefix
-      ]
-      if extension:
-        new_cmd.extend(['-z', extension])
-      new_cmd.append(filename)
-      stdout: str = self._step_recorder.RunCommand(new_cmd,
-                                                   capture_output=True).stdout
-      # The first line is "Uploading ... ", the rest of the lines is valid json.
-      json_string = stdout.split('\n', 1)[1]
-      logging.info(json_string)
-      json_object = json.loads(json_string)['path']['objects'][0]
-      logging.info(json_object)
-      output_file = os.path.basename(filename)
-      logging.info(output_file)
-      # Load existing objects to avoid overwriting other arch's objects.
-      getdep_cmd = ['gclient', 'getdep', '-r', 'orderfile_binaries']
-      dep_str: str = self._step_recorder.RunCommand(getdep_cmd,
-                                                    cwd=self._repository_root,
-                                                    capture_output=True).stdout
-      # dep_str is a python representation of the object, not valid JSON.
-      dep_objects = ast.literal_eval(dep_str)
-      values = []
-      # Same set as depot_tools/gclient.py (CMDsetdep).
-      allowed_keys = ['object_name', 'sha256sum', 'size_bytes', 'generation']
-      # Order matters here, so preserve the order in dep_objects.
-      for dep_object in dep_objects:
-        if dep_object['output_file'] == output_file:
-          # Use our newly uploaded info to update DEPS.
-          dep_object = json_object
-          # For 'gcs' deps `gclient setdep` only allows these specific keys.
-        values.append(','.join(str(dep_object[k]) for k in allowed_keys))
-      setdep_cmd = [
-          'gclient', 'setdep', '-r', f'orderfile_binaries@{"?".join(values)}'
-      ]
-      self._step_recorder.RunCommand(setdep_cmd, cwd=self._repository_root)
-    logging.info('Download: https://sandbox.google.com/storage/%s/%s', bucket,
-                 _GenerateHash(filename))
-
-  def _GitStash(self):
-    """Git stash the current clank tree.
-
-    Raises:
-      NotImplementedError when the stash logic hasn't been overridden.
-    """
-    raise NotImplementedError
-
-  def _CommitStashedFiles(self, expected_files_in_stash):
-    """Commits stashed files.
-
-    The local repository is updated and then the files to commit are taken from
-    modified files from the git stash. The modified files should be a subset of
-    |expected_files_in_stash|. If there are unexpected modified files, this
-    function may raise. This is meant to be paired with _GitStash().
-
-    Args:
-      expected_files_in_stash: [str] paths to a possible superset of files
-        expected to be stashed & committed.
-
-    Raises:
-      NotImplementedError when the commit logic hasn't been overridden.
-    """
-    raise NotImplementedError
-
-
 class OrderfileGenerator:
   """A utility for generating a new orderfile for Clank.
 
@@ -513,8 +370,6 @@ class OrderfileGenerator:
 
   # Previous orderfile_generator debug files would be overwritten.
   _DIRECTORY_FOR_DEBUG_FILES = '/tmp/orderfile_generator_debug_files'
-
-  _CLOUD_STORAGE_BUCKET_FOR_DEBUG = None
 
   def _PrepareOrderfilePaths(self):
     if self._options.public:
@@ -560,7 +415,7 @@ class OrderfileGenerator:
 
     return devices[0]
 
-  def __init__(self, options, orderfile_updater_class):
+  def __init__(self, options):
     self._options = options
     self._native_library_build_variant = NativeLibraryBuildVariant.TRICHROME
     if options.native_lib_variant == 'monochrome':
@@ -595,11 +450,6 @@ class OrderfileGenerator:
     self._output_data = {}
     self._step_recorder = StepRecorder()
     self._compiler = None
-    if orderfile_updater_class is None:
-      orderfile_updater_class = OrderfileUpdater
-    assert issubclass(orderfile_updater_class, OrderfileUpdater)
-    self._orderfile_updater = orderfile_updater_class(self._clank_dir,
-                                                      self._step_recorder)
     assert _SRC_PATH.is_dir(), 'No src directory found'
 
   @staticmethod
@@ -611,16 +461,8 @@ class OrderfileGenerator:
       dest_file: The name of the file to write the output without blanks.
     """
     assert src_file != dest_file, 'Source and destination need to be distinct'
-
-    try:
-      src = open(src_file, 'r')
-      dest = open(dest_file, 'w')
-      for line in src:
-        if line and not line.isspace():
-          dest.write(line)
-    finally:
-      src.close()
-      dest.close()
+    with open(src_file) as src, open(dest_file, 'w') as dest:
+      dest.writelines(line for line in src if line.strip())
 
   def _GenerateAndProcessProfile(self):
     """Invokes a script to merge the per-thread traces into one file.
@@ -697,7 +539,7 @@ class OrderfileGenerator:
 
   def _AddDummyFunctions(self):
     # TODO(crbug.com/340534475): Stop writing the `unpatched_orderfile` and
-    # uploading it to the cloud storage.
+    # saving it locally.
     self._step_recorder.BeginStep('Add dummy functions')
     assert self._compiler is not None
     symbols = _ReadNonEmptyStrippedFromFile(
@@ -707,8 +549,7 @@ class OrderfileGenerator:
       # after everything else.
       # See the comment in //base/android/library_loader/anchor_functions.cc.
       f.write('dummy_function_start_of_ordered_text\n')
-      for sym in symbols:
-        f.write(sym + '\n')
+      f.writelines(s + '\n' for s in symbols)
       f.write('dummy_function_end_of_ordered_text\n')
 
   def _VerifySymbolOrder(self):
@@ -738,42 +579,14 @@ class OrderfileGenerator:
                  self._DIRECTORY_FOR_DEBUG_FILES, file_sha1)
 
   def _SaveForDebugging(self, filename: str):
-    """Uploads the file to cloud storage or saves to a temporary location."""
+    """Saves the file to a temporary location."""
     file_sha1 = _GenerateHash(filename)
     self._SaveFileLocally(filename, file_sha1)
 
-  def _SaveForDebuggingWithOverwrite(self, file_name):
-    """Uploads and overwrites the file in cloud storage or copies locally.
-
-    Should be used for large binaries like lib_chrome_so.
-
-    Args:
-      file_name: (str) File to upload.
-    """
-    file_sha1 = _GenerateHash(file_name)
-    self._SaveFileLocally(file_name, file_sha1)
-
-  def _MaybeArchiveOrderfile(self, filename):
-    """In buildbot configuration, uploads the generated orderfile to
-    Google Cloud Storage.
-
-    Args:
-      filename: (str) Orderfile to upload.
-      use_new_cloud: (bool) Whether to upload using the new flow.
-    """
-    # First compute hashes so that we can download them later if we need to.
-    self._step_recorder.BeginStep('Compute hash for ' + filename)
+  def _MaybeArchiveOrderfile(self, filename: str):
+    """Computes and records the hash of the generated orderfile."""
+    self._step_recorder.BeginStep(f'Compute hash for {filename}')
     self._RecordHash(filename)
-
-
-  def UploadReadyOrderfiles(self):
-    self._step_recorder.BeginStep('Upload Ready Orderfiles')
-    for file_name in [
-        self._GetUnpatchedOrderfileFilename(),
-        self._GetPathToOrderfile()
-    ]:
-      self._orderfile_updater.UploadToCloudStorage(file_name,
-                                                   use_debug_location=False)
 
   def _WebViewStartupBenchmark(self, apk: str):
     """Runs system_health.webview_startup benchmark.
@@ -1022,119 +835,122 @@ class OrderfileGenerator:
     self._output_data['timings'] = self._step_recorder.timings
     return self._output_data
 
-  def CommitStashedOrderfileHashes(self):
-    """Commit any orderfile hash files in the current checkout.
-
-    Only possible if running on the buildbot.
-
-    Returns: true on success.
-    """
-    logging.error('Trying to commit when not running on the buildbot')
-    return False
-
 
 def CreateArgumentParser():
   """Creates and returns the argument parser."""
   parser = argparse.ArgumentParser()
-  parser.add_argument('--no-benchmark',
-                      action='store_false',
-                      dest='benchmark',
-                      default=True,
-                      help='Disables running benchmarks.')
-  parser.add_argument('--device',
-                      default=None,
-                      type=str,
-                      help='Device serial number on which to run profiling.')
   parser.add_argument(
-      '--verify',
-      action='store_true',
-      help='If true, the script only verifies the current orderfile')
-  parser.add_argument('--target-arch',
-                      action='store',
-                      dest='arch',
-                      default='arm',
-                      choices=list(_ARCH_GN_ARGS.keys()),
-                      help='The target architecture for which to build.')
-  parser.add_argument('--output-json',
-                      action='store',
-                      dest='json_file',
-                      help='Location to save stats in json format')
-  parser.add_argument(
-      '--skip-profile',
-      action='store_false',
-      dest='profile',
+      "--no-benchmark",
+      action="store_false",
+      dest="benchmark",
       default=True,
-      help='Don\'t generate a profile on the device. Only patch from the '
-      'existing profile.')
-  parser.add_argument('--use-remoteexec',
-                      action='store_true',
-                      help='Enable remoteexec. see //build/toolchain/rbe.gni.',
-                      default=False)
-  parser.add_argument('--adb-path', help='Path to the adb binary.')
-
-  parser.add_argument('--public',
-                      action='store_true',
-                      help='Build non-internal APK and change the orderfile '
-                      'location. Required if your checkout is non-internal.',
-                      default=False)
+      help="Disables running benchmarks.",
+  )
   parser.add_argument(
-      '--native-lib-variant',
-      choices=['monochrome', 'trichrome'],
-      default='monochrome',
-      help=(
-          'The shared library build variant for chrome on android. See '
-          'https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_native_libraries.md '  # pylint: disable=line-too-long
-          'for more details.'))
-  parser.add_argument('--profile-webview',
-                      action='store_true',
-                      default=False,
-                      help='Use the WebView benchmark profiles to generate the '
-                      'orderfile.')
-  parser.add_argument('--pregenerated-profiles',
-                      default=None,
-                      type=str,
-                      help=('Pregenerated profiles to use instead of running '
-                            'profile step. Cannot be used with '
-                            '--skip-profiles.'))
-  parser.add_argument('--profile-save-dir',
-                      default=None,
-                      type=str,
-                      help=('Directory to save any profiles created. These can '
-                            'be used with --pregenerated-profiles.  Cannot be '
-                            'used with --skip-profiles.'))
-  parser.add_argument('--upload-ready-orderfiles',
-                      action='store_true',
-                      help=('Skip orderfile generation and manually upload '
-                            'the orderfile from its normal location in '
-                            'the tree to the cloud storage. '
-                            'DANGEROUS! USE WITH CARE!'))
-  parser.add_argument('--streamline-for-debugging',
-                      action='store_true',
-                      help=('Streamline where possible the run for faster '
-                            'iteration while debugging. The orderfile '
-                            'generated will be valid and nontrivial, but '
-                            'may not be based on a representative profile '
-                            'or other such considerations. Use with caution.'))
-  parser.add_argument('--commit-hashes',
-                      action='store_true',
-                      help=('Commit any orderfile hash files in the current '
-                            'checkout; performs no other action'))
-  parser.add_argument('-v',
-                      '--verbose',
-                      dest='verbosity',
-                      action='count',
-                      default=0,
-                      help='>=1 to print debug logging, this will also be '
-                      'passed to run_benchmark calls.')
+      "--device",
+      default=None,
+      type=str,
+      help="Device serial number on which to run profiling.",
+  )
+  parser.add_argument(
+      "--verify",
+      action="store_true",
+      help="If true, the script only verifies the current orderfile",
+  )
+  parser.add_argument(
+      "--target-arch",
+      action="store",
+      dest="arch",
+      default="arm",
+      choices=list(_ARCH_GN_ARGS.keys()),
+      help="The target architecture for which to build.",
+  )
+  parser.add_argument(
+      "--output-json",
+      action="store",
+      dest="json_file",
+      help="Location to save stats in json format",
+  )
+  parser.add_argument(
+      "--skip-profile",
+      action="store_false",
+      dest="profile",
+      default=True,
+      help="Don't generate a profile on the device. Only patch from the "
+      "existing profile.",
+  )
+  parser.add_argument(
+      "--use-remoteexec",
+      action="store_true",
+      help="Enable remoteexec. see //build/toolchain/rbe.gni.",
+      default=False,
+  )
+  parser.add_argument("--adb-path", help="Path to the adb binary.")
+
+  parser.add_argument(
+      "--public",
+      action="store_true",
+      help="Build non-internal APK and change the orderfile "
+      "location. Required if your checkout is non-internal.",
+      default=False,
+  )
+  parser.add_argument(
+      "--native-lib-variant",
+      choices=["monochrome", "trichrome"],
+      default="monochrome",
+      help="The shared library build variant for chrome on android. See "
+      "https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_native_libraries.md "  # pylint: disable=line-too-long
+      "for more details.",
+  )
+  parser.add_argument(
+      "--profile-webview",
+      action="store_true",
+      default=False,
+      help="Use the WebView benchmark profiles to generate the "
+      "orderfile.",
+  )
+  parser.add_argument(
+      "--pregenerated-profiles",
+      default=None,
+      type=str,
+      help="Pregenerated profiles to use instead of running "
+      "profile step. Cannot be used with "
+      "--skip-profiles.",
+  )
+  parser.add_argument(
+      "--profile-save-dir",
+      default=None,
+      type=str,
+      help="Directory to save any profiles created. These can "
+      "be used with --pregenerated-profiles.  Cannot be "
+      "used with --skip-profiles.",
+  )
+  parser.add_argument(
+      "--streamline-for-debugging",
+      action="store_true",
+      help="Streamline where possible the run for faster "
+      "iteration while debugging. The orderfile "
+      "generated will be valid and nontrivial, but "
+      "may not be based on a representative profile "
+      "or other such considerations. Use with caution.",
+  )
+  parser.add_argument(
+      "-v",
+      "--verbose",
+      dest="verbosity",
+      action="count",
+      default=0,
+      help=">=1 to print debug logging, this will also be "
+      "passed to run_benchmark calls.",
+  )
   return parser
 
 
-def CreateOrderfile(options, orderfile_updater_class=None):
+def CreateOrderfile(options):
   """Creates an orderfile.
 
   Args:
     options: As returned from optparse.OptionParser.parse_args()
-    orderfile_updater_class: (OrderfileUpdater) subclass of OrderfileUpdater.
 
   Returns:
     True iff success.
@@ -1146,14 +962,10 @@ def CreateOrderfile(options, orderfile_updater_class=None):
   logging.basicConfig(level=level)
   devil_chromium.Initialize(adb_path=options.adb_path)
 
-  generator = OrderfileGenerator(options, orderfile_updater_class)
+  generator = OrderfileGenerator(options)
   try:
     if options.verify:
       generator._VerifySymbolOrder()
-    elif options.commit_hashes:
-      return generator.CommitStashedOrderfileHashes()
-    elif options.upload_ready_orderfiles:
-      return generator.UploadReadyOrderfiles()
     else:
       return generator.Generate()
   except Exception:
