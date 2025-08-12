@@ -209,7 +209,9 @@ void BrowserFrame::InitBrowserFrame() {
 }
 
 int BrowserFrame::GetMinimizeButtonOffset() const {
-  return native_browser_frame_->GetMinimizeButtonOffset();
+  return native_browser_frame_
+             ? native_browser_frame_->GetMinimizeButtonOffset()
+             : 0;
 }
 
 gfx::Rect BrowserFrame::GetBoundsForTabStripRegion(
@@ -304,11 +306,12 @@ BrowserNonClientFrameView* BrowserFrame::GetFrameView() const {
 }
 
 bool BrowserFrame::UseCustomFrame() const {
-  return native_browser_frame_->UseCustomFrame();
+  return native_browser_frame_ && native_browser_frame_->UseCustomFrame();
 }
 
 bool BrowserFrame::ShouldSaveWindowPlacement() const {
-  return native_browser_frame_->ShouldSaveWindowPlacement();
+  return native_browser_frame_ &&
+         native_browser_frame_->ShouldSaveWindowPlacement();
 }
 
 bool BrowserFrame::ShouldDrawFrameHeader() const {
@@ -318,17 +321,22 @@ bool BrowserFrame::ShouldDrawFrameHeader() const {
 void BrowserFrame::GetWindowPlacement(
     gfx::Rect* bounds,
     ui::mojom::WindowShowState* show_state) const {
-  return native_browser_frame_->GetWindowPlacement(bounds, show_state);
+  if (native_browser_frame_) {
+    native_browser_frame_->GetWindowPlacement(bounds, show_state);
+  }
 }
 
 content::KeyboardEventProcessingResult BrowserFrame::PreHandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
-  return native_browser_frame_->PreHandleKeyboardEvent(event);
+  return native_browser_frame_
+             ? native_browser_frame_->PreHandleKeyboardEvent(event)
+             : content::KeyboardEventProcessingResult::NOT_HANDLED;
 }
 
 bool BrowserFrame::HandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
-  return native_browser_frame_->HandleKeyboardEvent(event);
+  return native_browser_frame_ &&
+         native_browser_frame_->HandleKeyboardEvent(event);
 }
 
 void BrowserFrame::OnBrowserViewInitViewsComplete() {
