@@ -49,7 +49,16 @@ def ReadConfig():
 
 def main():
   parser = argparse.ArgumentParser(description="configure siso")
-  parser.add_argument("--rbe_instance", help="RBE instance to use for Siso")
+  parser.add_argument("--rbe_instance",
+                      help="RBE instance to use for Siso." +
+                      "Ignored if --reapi_address is set for non-RBE address.")
+  parser.add_argument("--reapi_instance",
+                      default="",
+                      help="REAPI instance to use for Siso.")
+  parser.add_argument("--reapi_address",
+                      help="REAPI address to use for " +
+                      "Siso. If set for non-RBE address, rbe_instance is " +
+                      "ignored.")
   parser.add_argument("--get-siso-project",
                       help="Print the currently configured siso project to "
                       "stdout",
@@ -64,27 +73,32 @@ def main():
     return 0
 
   project = None
-  rbe_instance = args.rbe_instance
-  if rbe_instance:
-    elems = rbe_instance.split("/")
+  reapi_instance = args.reapi_instance
+  reapi_address = args.reapi_address
+  if not reapi_address or \
+    reapi_address.endswith("remotebuildexecution.googleapis.com:443") and \
+    args.rbe_instance:
+    elems = args.rbe_instance.split("/")
     if len(elems) == 4 and elems[0] == "projects":
       project = elems[1]
-      rbe_instance = elems[-1]
+      reapi_instance = elems[-1]
 
   with open(SISO_ENV, "w") as f:
     if project:
       f.write("%s=%s\n" % (SISO_PROJECT_CFG, project))
-    if rbe_instance:
-      f.write("SISO_REAPI_INSTANCE=%s\n" % rbe_instance)
+    f.write("SISO_REAPI_INSTANCE=%s\n" % reapi_instance)
+    if reapi_address:
+      f.write("SISO_REAPI_ADDRESS=%s\n" % reapi_address)
 
-  if project in _KNOWN_GOOGLE_PROJECTS:
-    if os.path.exists(_BACKEND_STAR):
-      os.remove(_BACKEND_STAR)
-    shutil.copy2(_GOOGLE_STAR, _BACKEND_STAR)
-  elif project.startswith('chromeos-') and project.endswith('-bot'):
-    if os.path.exists(_BACKEND_STAR):
-      os.remove(_BACKEND_STAR)
-    shutil.copy2(_GOOGLE_CROS_STAR, _BACKEND_STAR)
+  if project:
+    if project in _KNOWN_GOOGLE_PROJECTS:
+      if os.path.exists(_BACKEND_STAR):
+        os.remove(_BACKEND_STAR)
+      shutil.copy2(_GOOGLE_STAR, _BACKEND_STAR)
+    elif project.startswith('chromeos-') and project.endswith('-bot'):
+      if os.path.exists(_BACKEND_STAR):
+        os.remove(_BACKEND_STAR)
+      shutil.copy2(_GOOGLE_CROS_STAR, _BACKEND_STAR)
 
   if not os.path.exists(_BACKEND_STAR):
     print('Need to provide {} for your backend {}'.format(

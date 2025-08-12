@@ -221,8 +221,22 @@ solutions = [
 ]
 ```
 
+For own REAPI backend other than Google RBE, set `reapi_address` and
+`reapi_instance`.
+
+```
+solutions = [
+  {
+    "custom_vars": {
+      "reapi_instance": "default",
+      "reapi_address": "remotebuild.example.com:443",
+    },
+  }
+]
+```
+
 And run `gclient sync`. This will regenerate the config files in
-`build/config/siso/backend_config/backend.star` to use the `rbe_instance`
+`build/config/siso/backend_config/backend.star` to use the REAPI instance
 that you just added to your `.gclient` file.
 
 If `rbe_instance` is not owned by Google, you may need to create your

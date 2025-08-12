@@ -252,7 +252,17 @@ vars = {
   # Fetch configuration files required for the 'use_remoteexec' gn arg
   'download_remoteexec_cfg': False,
   # RBE instance to use for running remote builds
+  # Ignored if reapi_instance is configured for non-RBE address.
   'rbe_instance': Str('projects/rbe-chrome-untrusted/instances/default_instance'),
+  # REAPI instance for non-RBE backends.
+  # need to set reapi_address too.
+  'reapi_instance': Str(''),
+  # REAPI address for REAPI backends.
+  'reapi_address': Str(''),
+  # siso CIPD package version.
+  'siso_version': 'git_revision:036cd5f39e6b81724e5af3ef37f4fa432b5405e6',
+
+  # reclient options.
   # RBE project to download rewrapper config files for. Only needed if
   # different from the project used in 'rbe_instance'
   'rewrapper_cfg_project': Str(''),
@@ -267,9 +277,6 @@ vars = {
   'screen_ai_macos_arm64': 'version:140.02',
   'screen_ai_windows_amd64': 'version:140.02',
   'screen_ai_windows_386': 'version:140.02',
-
-  # siso CIPD package version.
-  'siso_version': 'git_revision:036cd5f39e6b81724e5af3ef37f4fa432b5405e6',
 
   # download libaom test data
   'download_libaom_testdata': False,
@@ -4781,6 +4788,10 @@ hooks = [
                'src/build/config/siso/configure_siso.py',
                '--rbe_instance',
                Var('rbe_instance'),
+	       '--reapi_instance',
+	       Var('reapi_instance'),
+	       '--reapi_address',
+	       Var('reapi_address'),
                ],
   },
   {
