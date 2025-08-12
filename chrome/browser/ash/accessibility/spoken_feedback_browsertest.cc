@@ -2982,6 +2982,18 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo,
                                                kTestAsGuestUser)));
 
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3NormalUser,
+    SpokenFeedbackWithMagnifierTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
+                                               kTestAsNormalUser)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3GuestUser,
+    SpokenFeedbackWithMagnifierTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
+                                               kTestAsGuestUser)));
+
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackWithMagnifierTest,
                        FullscreenMagnifierButton) {
   gfx::Rect focus_bounds;
