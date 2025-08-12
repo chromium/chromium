@@ -3071,3 +3071,132 @@ TEST_F(AutocompleteControllerTest, CheckWhetherDefaultMatchChanged) {
     EXPECT_FALSE(check_change(match, u"assoc1"));
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(AutocompleteControllerTest,
+       AttachContextualSearchOpenLensActionToMatches) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::ContextualSearch>
+      contextual_search_config;
+  contextual_search_config.Get().contextual_zero_suggest_lens_fulfillment =
+      true;
+  contextual_search_config.Get().suggestions_fulfilled_by_lens_supported = true;
+
+  // Create a zero-suggest input.
+  controller_.input_ = AutocompleteInput(u"", metrics::OmniboxEventProto::OTHER,
+                                         TestSchemeClassifier());
+  controller_.input_.set_focus_type(
+      metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  ACMatches matches;
+
+  // Match 1: Contextual search suggestion with Lens action.
+  AutocompleteMatch match1;
+  match1.subtypes.insert(omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
+  match1.suggest_template = omnibox::SuggestTemplateInfo();
+  auto* action1 = match1.suggest_template->add_action_suggestions();
+  action1->set_action_type(
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS);
+  matches.push_back(match1);
+
+  // Match 2: Contextual search suggestion without Lens action.
+  AutocompleteMatch match2;
+  match2.subtypes.insert(omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
+  matches.push_back(match2);
+
+  // Match 3: Non-contextual search suggestion with Lens action.
+  AutocompleteMatch match3;
+  match3.suggest_template = omnibox::SuggestTemplateInfo();
+  auto* action3 = match3.suggest_template->add_action_suggestions();
+  action3->set_action_type(
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS);
+  matches.push_back(match3);
+
+  // Match 4: Non-contextual search suggestion without Lens action.
+  AutocompleteMatch match4;
+  matches.push_back(match4);
+
+  SetAutocompleteMatches(matches);
+  controller_.AttachActions();
+
+  ASSERT_EQ(4u, controller_.internal_result_.size());
+
+  // Match 1 should have the open Lens takeover action.
+  EXPECT_TRUE(controller_.internal_result_.match_at(0)->takeover_action);
+  EXPECT_EQ(
+      controller_.internal_result_.match_at(0)->takeover_action->ActionId(),
+      OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS);
+
+  // Others should not.
+  EXPECT_FALSE(
+      controller_.internal_result_.match_at(1)->takeover_action->ActionId() ==
+      OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS);
+  EXPECT_FALSE(controller_.internal_result_.match_at(2)->takeover_action);
+  EXPECT_FALSE(controller_.internal_result_.match_at(3)->takeover_action);
+}
+
+TEST_F(AutocompleteControllerTest,
+       ContextualSearchOpenLensActionAttachedPageKeywordMode) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::ContextualSearch>
+      contextual_search_config;
+  contextual_search_config.Get().suggestions_fulfilled_by_lens_supported = true;
+
+  // Create a pedal provider to ensure that the contextual search action takes
+  // precedence over the pedal.
+  std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
+  const auto add = [&](OmniboxPedal* pedal) {
+    pedals.insert(
+        std::make_pair(pedal->PedalId(), base::WrapRefCounted(pedal)));
+  };
+  add(new TestOmniboxPedalClearBrowsingData());
+  provider_client()->set_pedal_provider(std::make_unique<OmniboxPedalProvider>(
+      *provider_client(), std::move(pedals)));
+  EXPECT_NE(nullptr, provider_client()->GetPedalProvider());
+
+  // Populate template URL service with starter pack entries.
+  for (auto& turl_data :
+       template_url_starter_pack_data::GetStarterPackEngines()) {
+    controller_.template_url_service_->Add(
+        std::make_unique<TemplateURL>(std::move(*turl_data)));
+  }
+
+  // Create input with lens searchbox page classification.
+  controller_.input_ =
+      AutocompleteInput(u"@page Summar", metrics::OmniboxEventProto::OTHER,
+                        TestSchemeClassifier());
+  controller_.input_.set_keyword_mode_entry_method(
+      metrics::OmniboxEventProto::SPACE_AT_END);
+
+  AutocompleteMatch match1 = CreateContextualSearchMatch(u"Summary");
+  match1.suggest_template = omnibox::SuggestTemplateInfo();
+  auto* action1 = match1.suggest_template->add_action_suggestions();
+  action1->set_action_type(
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS);
+
+  AutocompleteMatch match2 =
+      CreateContextualSearchMatch(u"Summarize this page");
+  match2.suggest_template = omnibox::SuggestTemplateInfo();
+  auto* action2 = match2.suggest_template->add_action_suggestions();
+  action2->set_action_type(
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS);
+
+  SetAutocompleteMatches({match1, match2});
+
+  static_cast<FakeTabMatcher&>(
+      const_cast<TabMatcher&>(provider_client()->GetTabMatcher()))
+      .set_url_substring_match("matches");
+
+  controller_.AttachActions();
+
+  // The takeover action should be for the contextual search action, not pedals.
+  ASSERT_TRUE(controller_.internal_result_.match_at(0)->takeover_action);
+  EXPECT_EQ(
+      OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS,
+      controller_.internal_result_.match_at(0)->takeover_action->ActionId());
+  ASSERT_TRUE(controller_.internal_result_.match_at(1)->takeover_action);
+  EXPECT_EQ(
+      OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS,
+      controller_.internal_result_.match_at(1)->takeover_action->ActionId());
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

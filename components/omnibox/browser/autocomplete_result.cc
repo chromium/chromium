@@ -936,11 +936,20 @@ void AutocompleteResult::AttachAimAction(
 
 void AutocompleteResult::AttachContextualSearchFulfillmentActionToMatches() {
   for (AutocompleteMatch& match : matches_) {
-    if (match.IsContextualSearchSuggestion()) {
+    if (match.IsContextualSearchSuggestion() && !match.HasLensSearchAction()) {
       match.takeover_action =
           base::MakeRefCounted<ContextualSearchFulfillmentAction>(
               match.destination_url, match.type,
               match.subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX));
+    }
+  }
+}
+
+void AutocompleteResult::AttachContextualSearchOpenLensActionToMatches() {
+  for (AutocompleteMatch& match : matches_) {
+    if (match.IsContextualSearchSuggestion() && match.HasLensSearchAction()) {
+      match.takeover_action =
+          base::MakeRefCounted<ContextualSearchOpenLensAction>();
     }
   }
 }

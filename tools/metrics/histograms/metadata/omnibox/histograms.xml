@@ -319,6 +319,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     <variant name="AIM"/>
     <variant name="Call"/>
     <variant name="Directions"/>
+    <variant name="Lens"/>
     <variant name="Reviews"/>
   </token>
 </histogram>

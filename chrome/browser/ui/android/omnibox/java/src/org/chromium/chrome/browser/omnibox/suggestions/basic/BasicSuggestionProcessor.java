@@ -89,6 +89,10 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
             case SuggestTemplateInfo.IconType.TRENDING_VALUE:
                 return R.drawable.trending_up_black_24dp;
 
+            case SuggestTemplateInfo.IconType.SUB_ARROW_RIGHT_VALUE:
+                // TODO(crbug.com/437177158): Replace with the correct symbol when it's available.
+                return R.drawable.ic_suggestion_magnifier;
+
             default: // Icon type is specified, but not recognized
                 assert false : "Unrecognized IconType: " + iconType;
                 return 0;

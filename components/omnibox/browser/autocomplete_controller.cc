@@ -1697,6 +1697,13 @@ void AutocompleteController::AttachActions() {
           .contextual_zero_suggest_lens_fulfillment &&
       input_.IsZeroSuggest()) {
     internal_result_.AttachContextualSearchFulfillmentActionToMatches();
+
+    // This should intentionally override the fulfillment action if present.
+    if (omnibox_feature_configs::ContextualSearch::Get()
+            .suggestions_fulfilled_by_lens_supported) {
+      internal_result_.AttachContextualSearchOpenLensActionToMatches();
+    }
+
   } else if (input_.InKeywordMode()) {
     AutocompleteInput keyword_input = input_;
     const TemplateURL* keyword_turl =
@@ -1707,6 +1714,12 @@ void AutocompleteController::AttachActions() {
     if (keyword_turl && keyword_turl->starter_pack_id() ==
                             template_url_starter_pack_data::kPage) {
       internal_result_.AttachContextualSearchFulfillmentActionToMatches();
+
+      // This should intentionally override the fulfillment action if present.
+      if (omnibox_feature_configs::ContextualSearch::Get()
+              .suggestions_fulfilled_by_lens_supported) {
+        internal_result_.AttachContextualSearchOpenLensActionToMatches();
+      }
       return;
     }
   }

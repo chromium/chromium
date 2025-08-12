@@ -1162,3 +1162,21 @@ TEST_F(AutocompleteMatchTest, IsClipboardType) {
         clipboard_types.contains(type));
   }
 }
+
+TEST_F(AutocompleteMatchTest, HasLensSearchAction) {
+  AutocompleteMatch match;
+  EXPECT_FALSE(match.HasLensSearchAction());
+
+  match.suggest_template = omnibox::SuggestTemplateInfo();
+  EXPECT_FALSE(match.HasLensSearchAction());
+
+  auto* action = match.suggest_template->add_action_suggestions();
+  action->set_action_type(
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS);
+  EXPECT_FALSE(match.HasLensSearchAction());
+
+  action = match.suggest_template->add_action_suggestions();
+  action->set_action_type(
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS);
+  EXPECT_TRUE(match.HasLensSearchAction());
+}

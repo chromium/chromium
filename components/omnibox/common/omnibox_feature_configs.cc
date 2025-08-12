@@ -145,6 +145,10 @@ BASE_FEATURE(ContextualSearch::kOpenLensActionUITweaks,
              "OpenLensActionUITweaks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(ContextualSearch::kSuggestionsFulfilledByLensSupported,
+             "SuggestionsFulfilledByLensSupported",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ContextualSearch::ContextualSearch() {
   // Meta-feature turns on/off other features, but only if it's overridden by
   // the user. If not then each feature is controlled separately.
@@ -198,6 +202,8 @@ ContextualSearch::ContextualSearch() {
       base::FeatureList::IsEnabled(kShowSuggestionsOnNoApc);
   open_lens_action_ui_tweaks =
       base::FeatureList::IsEnabled(kOpenLensActionUITweaks);
+  suggestions_fulfilled_by_lens_supported =
+      base::FeatureList::IsEnabled(kSuggestionsFulfilledByLensSupported);
 }
 
 ContextualSearch::ContextualSearch(const ContextualSearch&) = default;

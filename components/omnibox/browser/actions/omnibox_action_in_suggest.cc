@@ -35,9 +35,10 @@ enum class ActionInSuggestUmaType {
   kWebsite,
   kReviews,
   kAim,
+  kLens,
 
   // Sentinel value. Must be set to the last valid ActionInSuggestUmaType.
-  kMaxValue = kAim
+  kMaxValue = kLens
 };
 
 constexpr const char* ToUmaUsageHistogramName(
@@ -51,6 +52,8 @@ constexpr const char* ToUmaUsageHistogramName(
       return "Omnibox.ActionInSuggest.UsageByType.Reviews";
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM:
       return "Omnibox.ActionInSuggest.UsageByType.AIM";
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS:
+      return "Omnibox.ActionInSuggest.UsageByType.Lens";
   }
   NOTREACHED() << "Unexpected type of Action: " << (int)type;
 }
@@ -67,6 +70,8 @@ constexpr ActionInSuggestUmaType ToUmaActionType(
       return ActionInSuggestUmaType::kReviews;
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM:
       return ActionInSuggestUmaType::kAim;
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS:
+      return ActionInSuggestUmaType::kLens;
   }
   NOTREACHED() << "Unrecognized action type: " << action_type;
 }
@@ -82,6 +87,8 @@ constexpr int ToActionHint(
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_HINT;
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM:
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_HINT;
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS:
+      return IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_HINT;
   }
   NOTREACHED() << "Unrecognized action type: " << action_type;
 }
@@ -97,6 +104,8 @@ constexpr int ToActionContents(
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS;
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM:
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_CONTENTS;
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS:
+      return IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_SUGGESTION_CONTENTS;
   }
   NOTREACHED() << "Unrecognized action type: " << action_type;
 }

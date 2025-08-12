@@ -40,6 +40,8 @@ message SuggestTemplateInfo {
     SEARCH_LOOP_WITH_SPARKLE = 3;
     // Trending icon.
     TRENDING = 4;
+    // A sub arrow right icon.
+    SUB_ARROW_RIGHT = 5;
   }
 
   // The icon type of the suggestion, this is typically the icon in front of
@@ -84,6 +86,7 @@ message SuggestTemplateInfo {
       CALL = 3;
       REVIEWS = 20;
       CHROME_AIM = 1000;
+      CHROME_LENS = 1001;
     }
 
     // The URI to open when the action is invoked.
