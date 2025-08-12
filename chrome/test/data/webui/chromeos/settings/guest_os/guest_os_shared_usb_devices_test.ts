@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import type {SettingsGuestOsSharedUsbDevicesElement} from 'chrome://os-settings/lazy_load.js';
-import {GuestOsBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import {GuestOsBrowserProxyImpl, VmType} from 'chrome://os-settings/lazy_load.js';
 import type {CrDialogElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
@@ -29,6 +29,7 @@ suite('<settings-guest-os-shared-usb-devices>', () => {
         guestId: {
           vm_name: '',
           container_name: '',
+          vm_type: VmType.UNKNOWN,
         },
         vendorId: '0000',
         productId: '0000',
@@ -41,6 +42,7 @@ suite('<settings-guest-os-shared-usb-devices>', () => {
         guestId: {
           vm_name: 'PvmDefault',
           container_name: '',
+          vm_type: VmType.PLUGIN_VM,
         },
         vendorId: '0000',
         productId: '0000',
@@ -53,6 +55,7 @@ suite('<settings-guest-os-shared-usb-devices>', () => {
         guestId: {
           vm_name: 'otherVm',
           container_name: '',
+          vm_type: VmType.UNKNOWN,
         },
         vendorId: '0000',
         productId: '0000',
@@ -97,6 +100,7 @@ suite('<settings-guest-os-shared-usb-devices>', () => {
         guestId: {
           vm_name: 'PvmDefault',
           container_name: '',
+          vm_type: VmType.PLUGIN_VM,
         },
         vendorId: '0000',
         productId: '0000',
@@ -175,6 +179,7 @@ suite('<settings-guest-os-shared-usb-devices> multi-container', () => {
         guestId: {
           vm_name: '',
           container_name: '',
+          vm_type: VmType.UNKNOWN,
         },
         vendorId: '0000',
         productId: '0000',
@@ -187,6 +192,7 @@ suite('<settings-guest-os-shared-usb-devices> multi-container', () => {
         guestId: {
           vm_name: 'termina',
           container_name: 'penguin',
+          vm_type: VmType.TERMINA,
         },
         vendorId: '0000',
         productId: '0000',
@@ -199,6 +205,7 @@ suite('<settings-guest-os-shared-usb-devices> multi-container', () => {
         guestId: {
           vm_name: 'not-termina',
           container_name: 'not-penguin',
+          vm_type: VmType.UNKNOWN,
         },
         vendorId: '0000',
         productId: '0000',
@@ -213,12 +220,14 @@ suite('<settings-guest-os-shared-usb-devices> multi-container', () => {
     page.defaultGuestId = {
       'vm_name': 'termina',
       'container_name': 'penguin',
+      vm_type: VmType.TERMINA,
     };
     page['onContainerInfo_']([
       {
         id: {
           vm_name: 'termina',
           container_name: 'penguin',
+          vm_type: VmType.TERMINA,
         },
         ipv4: '1.2.3.4',
       },
@@ -226,6 +235,7 @@ suite('<settings-guest-os-shared-usb-devices> multi-container', () => {
         id: {
           vm_name: 'not-termina',
           container_name: 'not-penguin',
+          vm_type: VmType.UNKNOWN,
         },
         ipv4: '1.2.3.5',
       },
@@ -310,6 +320,7 @@ suite('<settings-guest-os-shared-usb-devices> multi-container', () => {
         structuredClone(guestOsBrowserProxy.sharedUsbDevices);
     updatedDevices[0]!.guestId!.vm_name = 'termina';
     updatedDevices[0]!.guestId!.container_name = 'penguin';
+    updatedDevices[0]!.guestId!.vm_type = VmType.TERMINA;
     updatedDevices[0]!.promptBeforeSharing = true;
     webUIListenerCallback(
         'guest-os-shared-usb-devices-changed', updatedDevices);
@@ -384,6 +395,7 @@ suite('<settings-guest-os-shared-usb-devices> multi-container', () => {
         structuredClone(guestOsBrowserProxy.sharedUsbDevices);
     updatedDevices[1]!.guestId!.vm_name = 'not-termina';
     updatedDevices[1]!.guestId!.container_name = 'not-penguin';
+    updatedDevices[1]!.guestId!.vm_type = VmType.UNKNOWN;
     webUIListenerCallback(
         'guest-os-shared-usb-devices-changed', updatedDevices);
     flush();

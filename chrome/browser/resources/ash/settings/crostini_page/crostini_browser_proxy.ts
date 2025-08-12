@@ -15,13 +15,38 @@ import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mo
 
 import {type GuestId, TERMINA_VM_TYPE} from '../guest_os/guest_os_browser_proxy.js';
 
+/**
+ * Type of VM.
+ * These values must be kept in sync with the VmType enum in
+ * third_party/cros_system_api/dbus/vm_applications/apps.proto
+ */
+export enum VmType {
+  TERMINA = 0,
+  PLUGIN_VM = 1,
+  BOREALIS = 2,
+  BRUSCHETTA = 3,
+  UNKNOWN = 4,
+  ARCVM = 5,
+  BAGUETTE = 6,
+}
+
 // Identifiers for the default Crostini VM and container.
 export const DEFAULT_CROSTINI_VM = TERMINA_VM_TYPE;
 export const DEFAULT_CROSTINI_CONTAINER = 'penguin';
 
+export const DEFAULT_BAGUETTE_VM = TERMINA_VM_TYPE;
+export const DEFAULT_BAGUETTE_CONTAINER = 'penguin';
+
 export const DEFAULT_CROSTINI_GUEST_ID: GuestId = {
   vm_name: DEFAULT_CROSTINI_VM,
+  vm_type: VmType.TERMINA,
   container_name: DEFAULT_CROSTINI_CONTAINER,
+};
+
+export const DEFAULT_BAGUETTE_GUEST_ID: GuestId = {
+  vm_name: DEFAULT_BAGUETTE_VM,
+  vm_type: VmType.BAGUETTE,
+  container_name: DEFAULT_BAGUETTE_CONTAINER,
 };
 
 /**
@@ -110,6 +135,18 @@ export interface CrostiniBrowserProxy {
    * @param containerId container id of container to import.
    */
   importCrostiniContainer(containerId: GuestId): void;
+
+  /**
+   * Export guest disk image.
+   * @param containerId container id of container to export disk image from..
+   */
+  exportDiskImage(containerId: GuestId): void;
+
+  /**
+   * Import guest disk image.
+   * @param containerId container id of container to import disk image into.
+   */
+  importDiskImage(containerId: GuestId): void;
 
   /** Queries the current status of ARC ADB Sideloading. */
   requestArcAdbSideloadStatus(): void;
@@ -344,6 +381,14 @@ export class CrostiniBrowserProxyImpl implements CrostiniBrowserProxy {
 
   importCrostiniContainer(containerId: GuestId): void {
     chrome.send('importCrostiniContainer', [containerId]);
+  }
+
+  exportDiskImage(containerId: GuestId): void {
+    chrome.send('exportDiskImage', [containerId]);
+  }
+
+  importDiskImage(containerId: GuestId): void {
+    chrome.send('importDiskImage', [containerId]);
   }
 
   requestArcAdbSideloadStatus(): void {
