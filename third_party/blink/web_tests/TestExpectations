@@ -2879,6 +2879,11 @@ crbug.com/435704771 external/wpt/navigation-api/navigation-methods/return-value/
 crbug.com/435620308 external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/filter-effects/fecomponenttransfer-display-p3.html [ Failure ]
+[ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-link.https.tentative.window.html [ Crash ]
+[ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Timeout ]
+[ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-insecure.sub.window.html [ Timeout ]
+virtual/scalefactor200/external/wpt/css/filter-effects/fecomponenttransfer-display-p3.html [ Failure ]
 crbug.com/437940952 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-script.https.tentative.window.html [ Timeout ]
 crbug.com/437940952 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/isolate-and-require-corp.tentative.https.html [ Skip Timeout ]
 crbug.com/437953151 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/set-early-challenge.https.html [ Crash ]
@@ -2936,7 +2941,6 @@ crbug.com/431827600 [ Mac14 ] external/wpt/secure-payment-confirmation/authentic
 crbug.com/431827600 [ Linux ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Timeout ]
 crbug.com/431827600 [ Win ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Timeout ]
 crbug.com/431827599 [ Mac14 ] external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Crash Pass ]
-crbug.com/431827599 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Crash Pass ]
 crbug.com/431611657 [ Mac12 ] external/wpt/css/filter-effects/crashtests/filter-primitive-crash.html [ Crash ]
 crbug.com/431611657 [ Linux ] external/wpt/css/filter-effects/crashtests/filter-primitive-crash.html [ Crash ]
 crbug.com/431611657 [ Win ] external/wpt/css/filter-effects/crashtests/filter-primitive-crash.html [ Crash ]
@@ -3230,7 +3234,6 @@ crbug.com/427271307 [ Android ] external/wpt/webdriver/tests/bidi/external/bluet
 crbug.com/427271307 [ Android ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_service/simulate_service.py [ Failure ]
 crbug.com/425827681 [ Win11-arm64 ] external/wpt/cookies/attributes/max-age.html [ Crash ]
 crbug.com/426509690 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-cache-storage-from-none.https.tentative.window.html?document [ Crash ]
-crbug.com/426509690 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-link.https.tentative.window.html [ Timeout ]
 crbug.com/426648863 [ Win11-arm64 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol.https.html [ Crash ]
 crbug.com/426648863 [ Win11-arm64 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol.tentative.https.html [ Timeout ]
 crbug.com/426648863 [ Win11-arm64 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/secure_context.html [ Crash ]

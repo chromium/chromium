@@ -5822,6 +5822,13 @@
         {}
        ]
       ],
+      "size-container-transition-crash.html": [
+       "36cbba42bb0e74eed472d37c9e70c0ae96ea1dc5",
+       [
+        null,
+        {}
+       ]
+      ],
       "transition-during-style-attr-mutation.html": [
        "255794bfa86d8e24c2bad9a6e59d1f12338b1d00",
        [
@@ -176242,7 +176249,7 @@
        ]
       ],
       "line-clamp-010.html": [
-       "edeb89897bc610f093b7a5e8a7d49125ec480a74",
+       "1386b147ce639f511fa1fc58e0c0cd75ab99efc2",
        [
         null,
         [
@@ -176255,7 +176262,7 @@
        ]
       ],
       "line-clamp-011.tentative.html": [
-       "69effbcca17061a7519316ef097b9903fbe7968e",
+       "953f0c4faa9e57975cfabfd10d20ae4e1f9c45a3",
        [
         null,
         [
@@ -176560,19 +176567,6 @@
         [
          [
           "/css/css-overflow/line-clamp/reference/webkit-line-clamp-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "line-clamp-035.tentative.html": [
-       "feb4aac618a21851ad1fb1fe8aa7a3ce80c8e045",
-       [
-        null,
-        [
-         [
-          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
           "=="
          ]
         ],
@@ -177769,6 +177763,19 @@
         [
          [
           "/css/css-overflow/line-clamp/reference/line-clamp-with-floats-010-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-text-overflow-string.html": [
+       "ebe6f798d90c164873a3e8be40aab71ce1d5c04b",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
           "=="
          ]
         ],
@@ -215220,7 +215227,7 @@
        ]
       ],
       "text-spacing-trim-fallback-001.html": [
-       "3c31fec2cb05cecf05034419a7592f7c96c8d2af",
+       "6054636301475c4adee794e0be6bb892908319d9",
        [
         null,
         [
@@ -252633,6 +252640,84 @@
        {}
       ]
      ],
+     "text-overflow-string-001.html": [
+      "fb2846a1ab6cd6228174c38875cfecd4734189d5",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/reference/text-overflow-string-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-overflow-string-002.html": [
+      "839ea1a2d50344bd8d2fd8872ae24ef5a9f477ae",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/reference/text-overflow-string-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-overflow-string-003.html": [
+      "e60561578196c179c6b0df8e7086a8b2d51417d3",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/reference/text-overflow-string-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-overflow-string-004.html": [
+      "1bbaf13f5a936abc7570276473f06e6d95741d39",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/reference/text-overflow-string-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-overflow-string-005.html": [
+      "9f8866f2a7b8bf4b0da130ee23d72ef59325866a",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/reference/text-overflow-string-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-overflow-string-006.tentative.html": [
+      "8bb46f6fa1ed7ab694cf68ea5c2ca79cf069fe32",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/reference/text-overflow-string-006.tentative-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "text-overflow.html": [
       "88bc91157b40c2588e61f17ef73bee86402bf64a",
       [
@@ -281612,6 +281697,19 @@
        {}
       ]
      ],
+     "drop-shadow-with-3d-transform.html": [
+      "8da4c55861fd0d87742cd9ded9c91517f47c0744",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/reference/drop-shadow-with-3d-transform-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "dynamic-filter-changes-001.html": [
       "e2a28a3fe45ba90ad512e47b8756a01680b36511",
       [
@@ -281990,6 +282088,35 @@
         ]
        ],
        {}
+      ]
+     ],
+     "fecomponenttransfer-display-p3.html": [
+      "857cb1e633683e3d3cfc487a1a0c24d9b827509f",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/fecolormatrix-display-p3-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            2
+           ],
+           [
+            0,
+            19200
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "fecomposite-non-zero-inoffset-001.html": [
@@ -331535,6 +331662,12 @@
       ]
      }
     },
+    "prefix": {
+     "__Host-Http.https-expected.txt": [
+      "c17df746438e4c724438d60ac1942a3bcc2a3381",
+      []
+     ]
+    },
     "resources": {
      "__init__.py": [
       "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
@@ -331797,6 +331930,14 @@
     ],
     "cookieStore_set_arguments.https.any.serviceworker-expected.txt": [
      "29f84f00feb47f68a2cbaa3357ecebaebcb8d111",
+     []
+    ],
+    "cookieStore_special_names.https.any-expected.txt": [
+     "143225fbb3537de1f9fb3328305f4c2505bacf1a",
+     []
+    ],
+    "cookieStore_special_names.https.any.serviceworker-expected.txt": [
+     "143225fbb3537de1f9fb3328305f4c2505bacf1a",
      []
     ],
     "resources": {
@@ -360722,7 +360863,7 @@
        []
       ],
       "text-box-trim-line-clamp-001-ref.html": [
-       "c24d6197fc1f293fe1c3268902c82db045980e53",
+       "9d03140f4d7454f77e960816b8fe96d05f2aec89",
        []
       ],
       "text-box-trim-line-clamp-auto-001-ref.html": [
@@ -363895,7 +364036,7 @@
         []
        ],
        "line-clamp-011-ref.html": [
-        "02ef71d56193c97f8662f1ddd81633181deaf7b5",
+        "04297fff2b5538a8be020d780cba3d82aa30fa9e",
         []
        ],
        "line-clamp-012-ref.html": [
@@ -373484,6 +373625,10 @@
        []
       ],
       "support": {
+       "highlight-chars.js": [
+        "07172f021aaaf58554fe6237994442423549623a",
+        []
+       ],
        "variant-class.js": [
         "28cf85ff9f65b4b962250104080c9990382a28db",
         []
@@ -373510,7 +373655,7 @@
        []
       ],
       "text-spacing-trim-fallback-001-ref.html": [
-       "cf5086157127d353204396127dee1c6701e5899a",
+       "efd326dcf4cdd0e6f234353ad22ae83d6f96d10f",
        []
       ],
       "text-spacing-trim-feature-001-ref.html": [
@@ -375057,14 +375202,6 @@
      "parsing": {
       "WEB_FEATURES.yml": [
        "bc8409c24dd3ea29cd8ed34d071e9e1102860b30",
-       []
-      ],
-      "text-decoration-computed-expected.txt": [
-       "eb86551ea9eb846f65ae6da32e420fbb6d01e4a3",
-       []
-      ],
-      "text-decoration-valid-expected.txt": [
-       "bbee844876a0b5172e9048f0ce46fb59027dcf9f",
        []
       ],
       "text-emphasis-position-valid-expected.txt": [
@@ -378527,6 +378664,30 @@
       ],
       "text-overflow-ellipsis-multiline-001-ref.html": [
        "a26b8260eae55de6c9a9e0d2f3b6df3bb439b93b",
+       []
+      ],
+      "text-overflow-string-001-ref.html": [
+       "a8b579cda6ba6ef566c98cacdb212b244ebc0277",
+       []
+      ],
+      "text-overflow-string-002-ref.html": [
+       "d390913e4d99a7a76bdeabb8434b4b46eb07581e",
+       []
+      ],
+      "text-overflow-string-003-ref.html": [
+       "696517d343ea46d93a41591eabf135b90206b354",
+       []
+      ],
+      "text-overflow-string-004-ref.html": [
+       "313ff6c8f2d92c16838f6ceb347ac87f3125d70c",
+       []
+      ],
+      "text-overflow-string-005-ref.html": [
+       "d51e51ae5b754d40367424593a51eb76eb38d2a3",
+       []
+      ],
+      "text-overflow-string-006.tentative-ref.html": [
+       "a1ce3f907c5f7ad8ab32174b3b369b0d47049de0",
        []
       ],
       "transparent-accent-color-001-ref.html": [
@@ -385038,6 +385199,10 @@
       "182b4b547c0d8f45c0b55a290d7d5b83e297364c",
       []
      ],
+     "fecomponenttransfer-display-p3-ref.html": [
+      "e5b3d92908148fedf6d627554859ae2cd8b8e1e5",
+      []
+     ],
      "filter-cb-abspos-inline-001-ref.html": [
       "d092a401e4f1ced778b6445f7d92b72d6c2baabf",
       []
@@ -385275,6 +385440,10 @@
       ],
       "drop-shadow-clipped-001-ref.html": [
        "305b1d2233de6845713fd43f2cfc1f72b1afdb60",
+       []
+      ],
+      "drop-shadow-with-3d-transform-ref.html": [
+       "4a3727c0b515ec5775d30c7a784d412abf8c11c9",
        []
       ],
       "dynamic-filter-changes-001-ref.html": [
@@ -386386,6 +386555,10 @@
      ],
      "has-visited-ref.html": [
       "3f54e2e3914f62a81c3199bbe3d8c0339b9c2ba8",
+      []
+     ],
+     "heading-expected.txt": [
+      "289e8df5e1d40f79cc039820910664b761a7eb8f",
       []
      ],
      "i18n": {
@@ -389710,10 +389883,6 @@
       "d4eff9d116410742b7a62e406decbc75c8ffe492",
       []
      ],
-     "paste-with-newline-three-times-expected.txt": [
-      "4190aba5a75429e8a94a6dac381d52cb46c54495",
-      []
-     ],
      "restoration-expected.txt": [
       "120c34c5cfd9f5c92fbcebaf270eb3d8272c22e4",
       []
@@ -389777,19 +389946,19 @@
     },
     "plaintext-only": {
      "insertHTML_white-space=normal-expected.txt": [
-      "92770ded7a3435cb3524e5b692e6225d4205ad3c",
+      "71f15ae8eaeaa37ff0a4893fa999a9cc91a5e95e",
       []
      ],
      "insertHTML_white-space=pre-expected.txt": [
-      "c9755cfe4d0fab2cfb23cb6a4463ef125f86e08b",
+      "d2d53cab3ce2daf0a49e535862ecb20fbddb5dcc",
       []
      ],
      "insertHTML_white-space=pre-line-expected.txt": [
-      "e9f662e6ab1ff3eba4ba064c59c74d48a5ede08a",
+      "3db57d1b8d191957860b8671e4347bbe253641b8",
       []
      ],
      "insertHTML_white-space=pre-wrap-expected.txt": [
-      "c9755cfe4d0fab2cfb23cb6a4463ef125f86e08b",
+      "d2d53cab3ce2daf0a49e535862ecb20fbddb5dcc",
       []
      ],
      "insertLineBreak_white-space=normal-expected.txt": [
@@ -429317,10 +429486,6 @@
     ],
     "selection-range-in-shadow-after-the-shadow-removed.tentative_mode=open-expected.txt": [
      "c085d44010f677c179d1ee6bc58db490a04348b1",
-     []
-    ],
-    "setBaseAndExtent-expected.txt": [
-     "e79a48d8711dd527299c06b1f65d546e386deb9b",
      []
     ],
     "shadow-dom": {
@@ -497628,8 +497793,8 @@
      ]
     },
     "prefix": {
-     "__HostHttp.https.html": [
-      "462ae8f19f0c1993c15f20702667e20dfad94d28",
+     "__Host-Http.https.html": [
+      "71d8c4471d06a53a335e399bace5c8f1a70994a9",
       [
        null,
        {}
@@ -498832,7 +498997,7 @@
      ]
     ],
     "cookieStore_special_names.https.any.js": [
-     "36761b4493995e1bc41d56068b95b745b4cea3c5",
+     "7431609df6e4d40d2b752ea67567e8914dbe34e4",
      [
       "cookiestore/cookieStore_special_names.https.any.html",
       {
@@ -508993,6 +509158,13 @@
       ],
       "content-visibility-forced-layout-client-rects.html": [
        "60e68498924d0f5dbbadf002ca78a37b6c3cf191",
+       [
+        null,
+        {}
+       ]
+      ],
+      "content-visibility-hidden-boundingbox-query.html": [
+       "9b8e25b79140554995da5c57ab93767644f2e2a2",
        [
         null,
         {}
@@ -532505,7 +532677,7 @@
        ]
       ],
       "text-decoration-computed.html": [
-       "94804170b4bb20908ef5db558cf2051e80833c4f",
+       "edfdaa4ec2491c9cbb9aef2a4c8371f68259f004",
        [
         null,
         {}
@@ -532589,7 +532761,7 @@
        ]
       ],
       "text-decoration-valid.html": [
-       "35fd8f3b906e9ef258bbb859752503fe41670446",
+       "8b0416d959e23dcc0fa6306985bf18c2134708fc",
        [
         null,
         {}
@@ -532659,13 +532831,6 @@
        ]
       ]
      },
-     "text-decoration-serialization.tentative.html": [
-      "73cb5cc5cea7c6f63609bcf32f34e9096e479a2f",
-      [
-       null,
-       {}
-      ]
-     ],
      "text-decoration-skip-ink.html": [
       "2d6a5d3671f40e2389e916f204ad353402bca799",
       [
@@ -545015,6 +545180,13 @@
      ],
      "hash-collision.html": [
       "04f15e75887383457b51f5e165e15778afddc574",
+      [
+       null,
+       {}
+      ]
+     ],
+     "heading.html": [
+      "70afef0c4a6bc1c0dbdd4c2e3c443e805b94a6a2",
       [
        null,
        {}
@@ -574292,7 +574464,7 @@
     ],
     "fedcm-authz": {
      "fedcm-continue-on-disallowed.https.html": [
-      "fcda3a3dd591c694d341f5a04fa42ce667ea1ad6",
+      "71b6d578fa6019a73f924bafdf1c0b05d03e7a91",
       [
        null,
        {
@@ -574687,7 +574859,7 @@
       ]
      ],
      "fedcm-multi-idp-mediation-silent.https.html": [
-      "2fd2a47ad8666893e6ed67c107ed790713072dfa",
+      "411fcf8642a8d02d6ae80fd3954c9b21d15f0294",
       [
        null,
        {
@@ -574697,7 +574869,7 @@
       ]
      ],
      "fedcm-too-many-idps.https.html": [
-      "ad646910b64aa5166fb8ff8a48c1bc7f3750fbf1",
+      "e55cd0781a23f49bd2b67cc2414bba2f05e0bb2b",
       [
        null,
        {
@@ -677473,7 +677645,7 @@
      ]
     ],
     "resized-image-not-reconsidered.html": [
-     "6e195b89f9ef5dfbfc126e3fe7170d00dc93376f",
+     "5d43cafdf1f1576364a7e4c3fe801ddfa3f1aed4",
      [
       null,
       {}
@@ -728373,7 +728545,7 @@
      ]
     ],
     "estimate-usage-details-indexeddb.https.tentative.any.js": [
-     "551cede9c6d1dce91b2323f9f6953d6f0142760b",
+     "d89a78e0956ebb6ad6b88be1fcff8ab03b4d0ad0",
      [
       "storage/estimate-usage-details-indexeddb.https.tentative.any.html",
       {
@@ -745480,6 +745652,24 @@
     "name": {
      "comp_host_language_label.html": [
       "81f9dab2e6b6a2be5984d1afea6ce8038eda2b68",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "comp_label.html": [
+      "011ab1561ffbc71d22b4bb4582200cc8f1b928f2",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "comp_labelledby.html": [
+      "7d31677a95220621e5832082f7d3adafc1d57edb",
       [
        null,
        {
