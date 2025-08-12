@@ -72,6 +72,18 @@ using storage::FileSystemURL;
 using testing::_;
 using testing::FieldsAre;
 
+namespace {
+struct WriteModeTestParams {
+  const char* test_name_suffix;
+  bool is_feature_enabled;
+};
+
+constexpr WriteModeTestParams kTestParams[] = {
+    {"WriteModeDisabled", false},
+    {"WriteModeEnabled", true},
+};
+}  // namespace
+
 // A matcher to check if a `RequestPermission()` call is successful and
 // returns the expected permission status.
 MATCHER_P(IsOkAndPermissionStatus, status, "") {
@@ -1682,5 +1694,53 @@ TEST_F(FileSystemAccessFileHandleImplRequestPermissionTest,
                         blink::mojom::FileSystemAccessPermissionMode::kWrite),
       IsOkAndPermissionStatus(PermissionStatus::DENIED));
 }
+
+class FileSystemAccessFileHandleImplRemovePermissionTest
+    : public FileSystemAccessFileHandleImplPermissionTest,
+      public testing::WithParamInterface<WriteModeTestParams> {
+ public:
+  FileSystemAccessFileHandleImplRemovePermissionTest() {
+    if (GetParam().is_feature_enabled) {
+      scoped_feature_list_.InitAndEnableFeature(
+          blink::features::kFileSystemAccessWriteMode);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          blink::features::kFileSystemAccessWriteMode);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that `Remove()` requests the correct permissions before removing a
+// file. When `kFileSystemAccessWriteMode` is
+// - disabled: it should request both read and write permissions.
+// - enabled: it should only request write permission.
+TEST_P(FileSystemAccessFileHandleImplRemovePermissionTest,
+       RequestsCorrectPermissions) {
+  auto handle = CreateHandle();
+  if (!GetParam().is_feature_enabled) {
+    SetUpGrantExpectations(*mock_read_grant_, PermissionStatus::GRANTED,
+                           FileSystemAccessPermissionGrant::
+                               PermissionRequestOutcome::kUserGranted);
+  }
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Remove(future.GetCallback());
+  EXPECT_EQ(future.Get()->status, FileSystemAccessStatus::kOk);
+  EXPECT_FALSE(base::PathExists(dir_.GetPath().AppendASCII("test_file")));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FileSystemAccessFileHandleImplRemovePermissionTest,
+    testing::ValuesIn(kTestParams),
+    [](const testing::TestParamInfo<WriteModeTestParams>& info) {
+      return info.param.test_name_suffix;
+    });
 
 }  // namespace content

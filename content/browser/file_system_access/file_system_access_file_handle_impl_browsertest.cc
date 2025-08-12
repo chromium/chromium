@@ -135,6 +135,42 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessFileHandleImplWriteModeBrowserTest,
                      "})()"));
 }
 
+// Verifies that `remove()` on a local FS requests the correct
+// permission mode depending on whether the `kFileSystemAccessWriteMode`
+// feature is enabled.
+IN_PROC_BROWSER_TEST_P(FileSystemAccessFileHandleImplWriteModeBrowserTest,
+                       Local_Remove_RequestsCorrectPermissions) {
+  CreateTestFileInDirectory(temp_dir_.GetPath(), "test file");
+
+  ExpectGetPermissionStatusAndReturnGranted(GetParam().expected_mode);
+
+  EXPECT_TRUE(
+      ExecJs(shell(), "(async () => { await self.localFile.remove(); })()"));
+}
+
+// Verifies that `remove()` on a sandboxed FS requests the correct
+// permission mode depending on whether the `kFileSystemAccessWriteMode`
+// feature is enabled.
+IN_PROC_BROWSER_TEST_P(FileSystemAccessFileHandleImplWriteModeBrowserTest,
+                       Sandboxed_Remove_RequestsCorrectPermissions) {
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_));
+  ASSERT_TRUE(ExecJs(shell(), R"((async () => {
+      self.sandboxDir = await navigator.storage.getDirectory();
+      self.fileHandle = await self.sandboxDir.getFileHandle(
+          'test.txt', {create: true});
+      const writable = await self.fileHandle.createWritable();
+      await writable.write('some content');
+      await writable.close();
+    })())"));
+
+  ExpectGetPermissionStatusAndReturnGranted(GetParam().expected_mode);
+
+  EXPECT_TRUE(ExecJs(shell(),
+                     "(async () => {"
+                     "  await self.fileHandle.remove();"
+                     "})()"));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     FileSystemAccessFileHandleImplWriteModeBrowserTest,

@@ -250,9 +250,8 @@ void FileSystemAccessFileHandleImpl::Rename(const std::string& new_entry_name,
 void FileSystemAccessFileHandleImpl::Remove(RemoveCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/40276567): Review whether to switch to write-only.
   RunWithPermission(
-      blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+      FileSystemAccessManagerImpl::GetEffectiveWritePermissionMode(),
       base::BindOnce(&FileSystemAccessHandleBase::DoRemove,
                      weak_factory_.GetWeakPtr(), url(), /*recurse=*/false),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
