@@ -15,6 +15,11 @@ source_set("page_action") {
     "action_ids.h",
     "page_action_container_view.h",
     "page_action_controller.h",
+    "page_action_icon_container.h",
+    "page_action_icon_loading_indicator_view.h",
+    "page_action_icon_params.h",
+    "page_action_icon_view.h",
+    "page_action_icon_view_observer.h",
     "page_action_observer.h",
     "page_action_properties_provider.h",
     "page_action_triggers.h",
@@ -26,6 +31,10 @@ source_set("page_action") {
     "page_action_container_view.cc",
     "page_action_controller.cc",
     "page_action_enums.h",
+    "page_action_icon_container.cc",
+    "page_action_icon_loading_indicator_view.cc",
+    "page_action_icon_params.cc",
+    "page_action_icon_view.cc",
     "page_action_metrics_recorder.cc",
     "page_action_metrics_recorder.h",
     "page_action_metrics_recorder_interface.h",
@@ -55,6 +64,9 @@ source_set("page_action") {
   ]
 
   deps = [
+    "//chrome/browser:primitives",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/views/location_bar",
     "//ui/gfx",
   ]
