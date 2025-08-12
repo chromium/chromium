@@ -251,7 +251,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(2);
   return [UIMenu
       menuWithTitle:l10n_util::GetNSString(
                         IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_MENU_TITLE)
-           children:@[ sansSerifAction, serifAction, monospaceAction ]];
+           children:@[ monospaceAction, sansSerifAction, serifAction ]];
 }
 
 // Returns the action to select the Sans-serif font family.
