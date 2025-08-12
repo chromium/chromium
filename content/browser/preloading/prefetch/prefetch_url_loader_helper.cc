@@ -85,7 +85,6 @@ void OnGotCookiesForValidation(
 void OnProbeComplete(std::unique_ptr<OnGotPrefetchToServeState> state,
                      base::TimeTicks probe_start_time,
                      PrefetchProbeResult probe_result);
-void EnsureCookiesCopied(std::unique_ptr<OnGotPrefetchToServeState>& state);
 void OnCookieCopyComplete(std::unique_ptr<OnGotPrefetchToServeState> state,
                           base::TimeTicks cookie_copy_start_time);
 
@@ -155,12 +154,32 @@ void ContinueOnGotPrefetchToServe(
   }
 
   // Copy isolated cookies, if required.
+  // Ensures that the cookies for prefetch are copied from its isolated
+  // network context to the default network context.
   if (!state->cookie_copy_complete_if_required) {
-    EnsureCookiesCopied(state);
-    if (!state) {
-      // Cookie copy is happening and this function will continue later.
-      return;
+    if (state->serving_handle) {
+      if (!state->serving_handle.HasIsolatedCookieCopyStarted()) {
+        // Start the cookie copy for the next redirect hop.
+        if (PrefetchService* prefetch_service =
+                PrefetchService::GetFromFrameTreeNodeId(
+                    state->frame_tree_node_id)) {
+          prefetch_service->CopyIsolatedCookies(state->serving_handle);
+        }
+      }
+
+      state->serving_handle.OnInterceptorCheckCookieCopy();
+
+      if (state->serving_handle.IsIsolatedCookieCopyInProgress()) {
+        // Cookie copy is happening and this function will continue later.
+        state->serving_handle.SetOnCookieCopyCompleteCallback(
+            base::BindOnce(&OnCookieCopyComplete, std::move(state),
+                           /*cookie_copy_start_time=*/base::TimeTicks::Now()));
+        return;
+      }
     }
+
+    RecordCookieWaitTime(base::TimeDelta());
+    state->cookie_copy_complete_if_required = true;
   }
 
   // All prerequisites should now be complete.
@@ -270,35 +289,6 @@ void OnProbeComplete(std::unique_ptr<OnGotPrefetchToServeState> state,
 }
 
 // ISOLATED COOKIE COPYING
-
-// Ensures that the cookies for prefetch are copied from its isolated
-// network context to the default network context.
-void EnsureCookiesCopied(std::unique_ptr<OnGotPrefetchToServeState>& state) {
-  PrefetchServingHandle& serving_handle = state->serving_handle;
-
-  // Start the cookie copy for the next redirect hop of |state->serving_handle|.
-  if (serving_handle && !serving_handle.HasIsolatedCookieCopyStarted()) {
-    PrefetchService* prefetch_service =
-        PrefetchService::GetFromFrameTreeNodeId(state->frame_tree_node_id);
-    if (prefetch_service) {
-      prefetch_service->CopyIsolatedCookies(serving_handle);
-    }
-  }
-
-  if (serving_handle) {
-    serving_handle.OnInterceptorCheckCookieCopy();
-  }
-
-  if (!serving_handle || !serving_handle.IsIsolatedCookieCopyInProgress()) {
-    RecordCookieWaitTime(base::TimeDelta());
-    state->cookie_copy_complete_if_required = true;
-    return;
-  }
-
-  serving_handle.SetOnCookieCopyCompleteCallback(
-      base::BindOnce(&OnCookieCopyComplete, std::move(state),
-                     /*cookie_copy_start_time=*/base::TimeTicks::Now()));
-}
 
 void OnCookieCopyComplete(std::unique_ptr<OnGotPrefetchToServeState> state,
                           base::TimeTicks cookie_copy_start_time) {
