@@ -28,8 +28,17 @@ cr-searchbox[dropdown-is-visible] {
   --cr-searchbox-shadow: 0 3px 7px 0px #20212451;
 }
 
+.activeFrame {
+  /* Everything below the tab strip is the active frame, so give it the active
+   * background color. */
+  background-color: var(--color-tab-background-active-frame-active);
+}
+
 .titlebarDiv {
   display: flex;
+  /* The tab strip is by default mostly inactive content, so give it the
+   * inactive background color. */
+  background-color: var(--color-tab-background-inactive-frame-active);
 }
 
 .tabstripDiv {
@@ -46,4 +55,10 @@ cr-searchbox[dropdown-is-visible] {
 
 .captionButtonsDiv cr-button {
   app-region: no-drag;
+}
+
+#searchBar {
+  display: flex;
+  flex: none;
+  padding: 7px;
 }
