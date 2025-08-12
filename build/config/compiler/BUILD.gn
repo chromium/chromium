@@ -272,7 +272,6 @@ assert(!(llvm_force_head_revision && use_remoteexec && host_os != "linux"),
 # Since this is referenced both when passing the file and when deciding which
 # warnings to enable, store it in a separate variable here.
 use_clang_warning_suppression_file =
-    default_toolchain != "//build/toolchain/cros:target" &&
     !llvm_android_mainline && is_clang && clang_warning_suppression_file != ""
 
 # default_include_dirs ---------------------------------------------------------
@@ -687,14 +686,12 @@ config("compiler") {
       cflags += [ "-ffp-contract=off" ]
     }
 
-    # Enable ELF CREL (see crbug.com/357878242) for all platforms that use ELF
-    # (excluding toolchains that use an older version of LLVM).
+    # Enable ELF CREL (see crbug.com/357878242) for all platforms that use ELF.
     # TODO(crbug.com/376278218): This causes segfault on Linux ARM builds.
     # It also causes segfault on Linux s390x:
     # https://github.com/llvm/llvm-project/issues/149511
     if (is_linux && use_lld && !llvm_android_mainline && current_cpu != "arm" &&
-        current_cpu != "s390x" &&
-        default_toolchain != "//build/toolchain/cros:target") {
+        current_cpu != "s390x") {
       cflags += [ "-Wa,--crel,--allow-experimental-crel" ]
     }
   }
