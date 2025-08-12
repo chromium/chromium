@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -182,6 +183,20 @@ void ChangePasswordFormFillingSubmissionHelper::TriggerFilling(
   }
 
   observed_fields_.push_back(form.new_password_element_renderer_id);
+
+  if (auto logger = GetLoggerIfAvailable(client_)) {
+    logger->LogString(
+        Logger::STRING_PASSWORD_CHANGE_CURRENT_PASSWORD_RENDERER_ID,
+        base::NumberToString(form.password_element_renderer_id.value()));
+    logger->LogString(
+        Logger::STRING_PASSWORD_CHANGE_NEW_PASSWORD_RENDERER_ID,
+        base::NumberToString(form.new_password_element_renderer_id.value()));
+    logger->LogString(
+        Logger::STRING_PASSWORD_CHANGE_CONFIRMATION_PASSWORD_RENDERER_ID,
+        base::NumberToString(
+            form.confirmation_password_element_renderer_id.value()));
+  }
+
   driver->FillChangePasswordForm(
       form.password_element_renderer_id, form.new_password_element_renderer_id,
       form.confirmation_password_element_renderer_id, login_password_,

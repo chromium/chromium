@@ -473,6 +473,13 @@ std::string SavePasswordProgressLogger::GetStringFromID(
     case STRING_RESOURCE_FAILED_LOADING_LOGIN_FAILED:
       return "POST error with 400-403 status is detected, considering "
              "current submission failed";
+    case STRING_PASSWORD_CHANGE_CURRENT_PASSWORD_RENDERER_ID:
+      return "Automated password change: Current password element renderer id";
+    case STRING_PASSWORD_CHANGE_NEW_PASSWORD_RENDERER_ID:
+      return "Automated password change: New password element renderer id";
+    case STRING_PASSWORD_CHANGE_CONFIRMATION_PASSWORD_RENDERER_ID:
+      return "Automated password change: Confirmation password element "
+             "renderer id";
     case STRING_PASSWORD_CHANGE_FORM_FILLING_RESULT:
       return "Automated password change: Result of password change form "
              "filling";
