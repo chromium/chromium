@@ -8929,33 +8929,37 @@ class DeclarativeNetRequestThrottledRulesetLoadBrowserTest
     return test_data_dir_.AppendASCII("declarative_net_request/rule_updates");
   }
 
+  // Installs v1 of `kUpdateFlowExtensionId` and waits for its ruleset to load.
+  void SetupExtensionAndWaitForRulesetLoad() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::ScopedTempDir scoped_temp_dir;
+    EXPECT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+
+    base::FilePath pem_path =
+        update_flow_extension_path().AppendASCII("pem.pem");
+    base::FilePath crx_path = scoped_temp_dir.GetPath().AppendASCII("v1.crx");
+    base::FilePath result_path =
+        PackExtensionWithOptions(update_flow_extension_path().AppendASCII("v1"),
+                                 crx_path, pem_path, base::FilePath());
+    EXPECT_EQ(crx_path, result_path);
+
+    const Extension* extension =
+        InstallExtensionWithPermissionsGranted(crx_path, /*expected_change=*/1);
+    ASSERT_TRUE(extension);
+    EXPECT_EQ(extension->id(), kUpdateFlowExtensionId);
+    EXPECT_TRUE(extension_registry()->enabled_extensions().Contains(
+        kUpdateFlowExtensionId));
+    WaitForExtensionsWithRulesetsCount(1u);
+  }
+
  private:
   std::optional<ScopedIncrementRulesetVersion> increment_ruleset_version_;
   std::optional<RulesetLoaderThrottle> ruleset_loader_throttle_;
 };
 
-// Setup: Installs v1 of `kUpdateFlowExtensionId` and waits for its ruleset to
-// load.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestThrottledRulesetLoadBrowserTest,
                        PRE_RulesetLoadFromOldExtensionVersion) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir scoped_temp_dir;
-  EXPECT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
-
-  base::FilePath pem_path = update_flow_extension_path().AppendASCII("pem.pem");
-  base::FilePath crx_path = scoped_temp_dir.GetPath().AppendASCII("v1.crx");
-  base::FilePath result_path =
-      PackExtensionWithOptions(update_flow_extension_path().AppendASCII("v1"),
-                               crx_path, pem_path, base::FilePath());
-  EXPECT_EQ(crx_path, result_path);
-
-  const Extension* extension =
-      InstallExtensionWithPermissionsGranted(crx_path, /*expected_change=*/1);
-  ASSERT_TRUE(extension);
-  EXPECT_EQ(extension->id(), kUpdateFlowExtensionId);
-  EXPECT_TRUE(extension_registry()->enabled_extensions().Contains(
-      kUpdateFlowExtensionId));
-  WaitForExtensionsWithRulesetsCount(1u);
+  SetupExtensionAndWaitForRulesetLoad();
 }
 
 // Test that if a ruleset load initiated from an older extension version
@@ -9009,6 +9013,68 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestThrottledRulesetLoadBrowserTest,
 
   // Attempt to enable the ruleset from `extension` v2. It should still succeed.
   UpdateEnabledRulesets(kUpdateFlowExtensionId, {}, {"ruleset"});
+}
+
+// Setup is same as the `RulesetLoadFromOldExtensionVersion` test.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestThrottledRulesetLoadBrowserTest,
+                       PRE_RulesetLoadFromSameExtensionVersion) {
+  SetupExtensionAndWaitForRulesetLoad();
+}
+
+// Test that if an extension gets force installed again with the same version,
+// which is possible for policy installs, will no-op a ruleset load initiated
+// from the extension before the force install and will allow the more recent
+// ruleset load to go through.
+// Regression for crbug.com/358617943.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestThrottledRulesetLoadBrowserTest,
+                       RulesetLoadFromSameExtensionVersion) {
+  scoped_refptr<const Extension> extension =
+      extension_registry()->enabled_extensions().GetByID(
+          kUpdateFlowExtensionId);
+  ASSERT_TRUE(extension);
+  EXPECT_EQ("1", extension->version().GetString());
+
+  // Wait for `extension` to start loading its rulesets.
+  ruleset_loader_throttle().WaitForLoaderRequest();
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir scoped_temp_dir;
+  EXPECT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+
+  // "Update" the extension with the same version. This replicates some policy
+  // extension force installs that could still install the extension with the
+  // same version.
+  base::FilePath pem_path = update_flow_extension_path().AppendASCII("pem.pem");
+  base::FilePath crx_path = scoped_temp_dir.GetPath().AppendASCII("v1.crx");
+  base::FilePath result_path =
+      PackExtensionWithOptions(update_flow_extension_path().AppendASCII("v1"),
+                               crx_path, pem_path, base::FilePath());
+  EXPECT_EQ(crx_path, result_path);
+  UpdateExtension(kUpdateFlowExtensionId, crx_path, /*expected_change=*/0);
+
+  extension = extension_registry()->enabled_extensions().GetByID(
+      kUpdateFlowExtensionId);
+  ASSERT_TRUE(extension);
+  EXPECT_EQ("1", extension->version().GetString());
+
+  // Wait for the extension to "start" by waiting for its background service
+  // worker.
+  ExtensionBackgroundPageWaiter(profile(), *extension)
+      .WaitForBackgroundInitialized();
+
+  RulesetLoadObserver ruleset_load_observer(rules_monitor_service(),
+                                            kUpdateFlowExtensionId);
+
+  // `extension` v1's ruleset should still be loading after being re-indexed as
+  // a result of the simulated force install of the extension with the same
+  // version.
+  ruleset_loader_throttle().Resume();
+
+  // Let the ruleset loads finish.
+  ruleset_load_observer.Wait();
+
+  // Attempt to enable the other ruleset from `extension` v1. It should succeed.
+  UpdateEnabledRulesets(kUpdateFlowExtensionId, {}, {"forgotten_ruleset"});
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

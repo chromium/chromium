@@ -22,6 +22,7 @@
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/token.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
@@ -48,6 +49,7 @@
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/api_permission.h"
@@ -181,23 +183,51 @@ class RulesMonitorService::FileSequenceBridge {
     file_task_runner_->DeleteSoon(FROM_HERE, std::move(file_sequence_helper_));
   }
 
-  void LoadRulesets(
-      LoadRequestData load_data,
-      FileSequenceHelper::LoadRulesetsUICallback ui_callback) const {
-    // Throttle the `ui_callback` if one is set. Otherwise, this is just a
-    // trivial wrapper that immediately runs `ui_callback` with the `load_data`.
+  // Called when the extension is unloaded. This invalidates all loads that
+  // started before the extension unload since those load request IDs will no
+  // longer be in the set.
+  void OnExtensionUnloaded(const ExtensionId& extension_id) {
+    load_ruleset_tasks_.erase(extension_id);
+  }
+
+  void OnRulesetsLoaded(FileSequenceHelper::LoadRulesetsUICallback ui_callback,
+                        LoadRequestData load_data) {
+    CHECK(!load_data.load_request_id.is_zero());
+    auto it = load_ruleset_tasks_.find(load_data.extension_id);
+
+    // Invalidate the load if it is no longer in `load_ruleset_tasks_`.
+    if (it == load_ruleset_tasks_.end() ||
+        !it->second.erase(load_data.load_request_id)) {
+      load_data.load_request_id = base::Token();
+    }
+    std::move(ui_callback).Run(std::move(load_data));
+  }
+
+  // Throttle `OnRulesetsLoaded` if one is set. Otherwise, this is just a
+  // trivial wrapper that immediately runs `OnRulesetsLoaded` with the
+  // `ui_callback` and `load_data`.
+  void MaybeThrottleOnRulesetsLoaded(
+      FileSequenceHelper::LoadRulesetsUICallback ui_callback,
+      LoadRequestData load_data) {
+    if (g_test_throttle_override_) {
+      g_test_throttle_override_->Run(base::BindOnce(
+          &RulesMonitorService::FileSequenceBridge::OnRulesetsLoaded,
+          weak_factory_.GetWeakPtr(), std::move(ui_callback),
+          std::move(load_data)));
+    } else {
+      OnRulesetsLoaded(std::move(ui_callback), std::move(load_data));
+    }
+  }
+
+  void LoadRulesets(LoadRequestData load_data,
+                    FileSequenceHelper::LoadRulesetsUICallback ui_callback) {
+    CHECK(!load_data.load_request_id.is_zero());
+    load_ruleset_tasks_[load_data.extension_id].insert(
+        load_data.load_request_id);
     FileSequenceHelper::LoadRulesetsUICallback callback_wrapper =
-        base::BindOnce(
-            [](FileSequenceHelper::LoadRulesetsUICallback original_callback,
-               LoadRequestData load_data) {
-              if (g_test_throttle_override_) {
-                g_test_throttle_override_->Run(base::BindOnce(
-                    std::move(original_callback), std::move(load_data)));
-              } else {
-                std::move(original_callback).Run(std::move(load_data));
-              }
-            },
-            std::move(ui_callback));
+        base::BindOnce(&RulesMonitorService::FileSequenceBridge::
+                           MaybeThrottleOnRulesetsLoaded,
+                       weak_factory_.GetWeakPtr(), std::move(ui_callback));
 
     // base::Unretained is safe here because we trigger the destruction of
     // |file_sequence_helper_| on |file_task_runner_| from our destructor. Hence
@@ -233,6 +263,13 @@ class RulesMonitorService::FileSequenceBridge {
   // Created on the UI thread. Accessed and destroyed on |file_task_runner_|.
   // Maintains state needed on |file_task_runner_|.
   std::unique_ptr<FileSequenceHelper> file_sequence_helper_;
+
+  // Tracks ruleset loads for each extension. If a load is not in this set
+  // anymore when it returns from the IO --> UI thread then it is no longer
+  // valid.
+  std::map<ExtensionId, std::set<base::Token>> load_ruleset_tasks_;
+
+  base::WeakPtrFactory<FileSequenceBridge> weak_factory_{this};
 };
 
 // Helps to ensure FIFO ordering of api calls and that only a single api call
@@ -627,6 +664,10 @@ void RulesMonitorService::OnExtensionUnloaded(
   update_enabled_rulesets_queue_map_.erase(extension->id());
   update_dynamic_or_session_rules_queue_map_.erase(extension->id());
 
+  // Notify the `file_sequence_bridge_` to invalidate any loads that started
+  // before the extension was unloaded.
+  file_sequence_bridge_->OnExtensionUnloaded(extension->id());
+
   // Return early if the extension does not have an active indexed ruleset.
   if (!ruleset_manager_.GetMatcherForExtension(extension->id())) {
     return;
@@ -912,11 +953,10 @@ void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(
   // ruleset request, or the extension was updated to a new version while the
   // ruleset for the old version was still loading (and is thus stale). In
   // either case, do nothing.
-  // TODO(crbug.com/1493992, crbug.com/1386010): Add a test which will cause
-  // this block to be hit when the extension updates.
   const Extension* extension =
       extension_registry_->enabled_extensions().GetByID(load_data.extension_id);
-  if (!extension || load_data.extension_version != extension->version()) {
+  if (!extension || load_data.extension_version != extension->version() ||
+      load_data.load_request_id.is_zero()) {
     return;
   }
 
@@ -1034,9 +1074,10 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
   // do nothing.
   const Extension* extension =
       extension_registry_->enabled_extensions().GetByID(load_data.extension_id);
-  if (!extension || load_data.extension_version != extension->version()) {
-    // Still dispatch the |callback|, even though it's probably a no-op.
-    std::move(callback).Run(std::nullopt /* error */);
+  if (!extension || load_data.extension_version != extension->version() ||
+      load_data.load_request_id.is_zero()) {
+    // Still dispatch the `callback`, even though it's probably a no-op.
+    std::move(callback).Run(/*error=*/std::nullopt);
     return;
   }
 

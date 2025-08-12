@@ -393,7 +393,8 @@ LoadRequestData::LoadRequestData(ExtensionId extension_id,
                                  LoadRulesetRequestSource request_source)
     : extension_id(std::move(extension_id)),
       extension_version(std::move(extension_version)),
-      request_source(request_source) {}
+      request_source(request_source),
+      load_request_id(base::Token::CreateRandom()) {}
 LoadRequestData::~LoadRequestData() = default;
 LoadRequestData::LoadRequestData(LoadRequestData&&) = default;
 LoadRequestData& LoadRequestData::operator=(LoadRequestData&&) = default;
