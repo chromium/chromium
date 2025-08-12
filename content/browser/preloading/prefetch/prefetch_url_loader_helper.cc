@@ -11,6 +11,7 @@
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
+#include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
@@ -151,12 +152,12 @@ void ContinueOnGotPrefetchToServe(
   }
 
   switch (state->reader.GetServableState(PrefetchCacheableDuration())) {
-    case PrefetchContainer::ServableState::kNotServable:
-    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
-    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+    case PrefetchServableState::kNotServable:
+    case PrefetchServableState::kShouldBlockUntilEligibilityGot:
+    case PrefetchServableState::kShouldBlockUntilHeadReceived:
       std::move(state->callback).Run({});
       return;
-    case PrefetchContainer::ServableState::kServable:
+    case PrefetchServableState::kServable:
       break;
   }
 
@@ -345,12 +346,12 @@ void OnGotPrefetchToServe(
   }
 
   switch (reader.GetServableState(PrefetchCacheableDuration())) {
-    case PrefetchContainer::ServableState::kNotServable:
-    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
-    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+    case PrefetchServableState::kNotServable:
+    case PrefetchServableState::kShouldBlockUntilEligibilityGot:
+    case PrefetchServableState::kShouldBlockUntilHeadReceived:
       std::move(get_prefetch_callback).Run({});
       return;
-    case PrefetchContainer::ServableState::kServable:
+    case PrefetchServableState::kServable:
       break;
   }
 

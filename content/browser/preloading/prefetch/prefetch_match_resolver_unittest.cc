@@ -20,7 +20,7 @@ class MockContainer {
   struct Args {
     blink::DocumentToken document_token;
     GURL url;
-    PrefetchContainer::ServableState servable_state;
+    PrefetchServableState servable_state;
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint;
     std::optional<net::HttpNoVarySearchData> no_vary_search_data;
   };
@@ -35,7 +35,7 @@ class MockContainer {
 
   const GURL& GetURL() const { return key_.url(); }
 
-  PrefetchContainer::ServableState GetServableState(
+  PrefetchServableState GetServableState(
       base::TimeDelta cacheable_duration) const {
     return servable_state_;
   }
@@ -59,7 +59,7 @@ class MockContainer {
     // It's not trivial to implement `PrefetchContainer::GetNonRedirectHead()`.
     // Use `servable_state_` instead.
     bool simulate_get_non_redirect_head_is_null =
-        (servable_state_ != PrefetchContainer::ServableState::kServable);
+        (servable_state_ != PrefetchServableState::kServable);
     return simulate_get_non_redirect_head_is_null && no_vary_search_hint &&
            no_vary_search_hint->AreEquivalent(url, GetURL());
   }
@@ -81,7 +81,7 @@ class MockContainer {
 
  private:
   PrefetchContainer::Key key_;
-  PrefetchContainer::ServableState servable_state_;
+  PrefetchServableState servable_state_;
   std::optional<net::HttpNoVarySearchData> no_vary_search_hint_;
   std::optional<net::HttpNoVarySearchData> no_vary_search_data_;
   std::optional<PrefetchStatus> prefetch_status_;
@@ -144,12 +144,12 @@ TEST(CollectMatchCandidates, DistinguishesDocumentToken) {
   helper.Add({
       .document_token = document_token1,
       .url = GURL("https://a.example.com/"),
-      .servable_state = PrefetchContainer::ServableState::kServable,
+      .servable_state = PrefetchServableState::kServable,
   });
   helper.Add({
       .document_token = document_token2,
       .url = GURL("https://a.example.com/"),
-      .servable_state = PrefetchContainer::ServableState::kServable,
+      .servable_state = PrefetchServableState::kServable,
   });
 
   helper.Assert(FROM_HERE, Key(document_token1, GURL("https://a.example.com/")),
@@ -169,12 +169,12 @@ TEST(CollectMatchCandidates, DistingushesUrl) {
   helper.Add({
       .document_token = document_token,
       .url = GURL("https://a.example.com/"),
-      .servable_state = PrefetchContainer::ServableState::kServable,
+      .servable_state = PrefetchServableState::kServable,
   });
   helper.Add({
       .document_token = document_token,
       .url = GURL("https://b.example.com/"),
-      .servable_state = PrefetchContainer::ServableState::kServable,
+      .servable_state = PrefetchServableState::kServable,
   });
 
   helper.Assert(FROM_HERE, Key(document_token, GURL("https://a.example.com/")),
@@ -194,18 +194,17 @@ TEST(CollectMatchCandidates, RejectsNotServable) {
   helper.Add({
       .document_token = document_token,
       .url = GURL("https://servable.example.com/"),
-      .servable_state = PrefetchContainer::ServableState::kServable,
+      .servable_state = PrefetchServableState::kServable,
   });
   helper.Add({
       .document_token = document_token,
       .url = GURL("https://not-servable.example.com/"),
-      .servable_state = PrefetchContainer::ServableState::kNotServable,
+      .servable_state = PrefetchServableState::kNotServable,
   });
   helper.Add({
       .document_token = document_token,
       .url = GURL("https://should-block-until-head-received.example.com/"),
-      .servable_state =
-          PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived,
+      .servable_state = PrefetchServableState::kShouldBlockUntilHeadReceived,
   });
 
   helper.Assert(FROM_HERE,
@@ -236,14 +235,12 @@ TEST(CollectMatchCandidates,
   helper.Add({
       .document_token = document_token,
       .url = GURL("https://prerender.example.com/"),
-      .servable_state =
-          PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot,
+      .servable_state = PrefetchServableState::kShouldBlockUntilEligibilityGot,
   });
   helper.Add({
       .document_token = document_token,
       .url = GURL("https://not-prerender.example.com/"),
-      .servable_state =
-          PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot,
+      .servable_state = PrefetchServableState::kShouldBlockUntilEligibilityGot,
   });
 
   helper.Assert(FROM_HERE,
@@ -265,21 +262,21 @@ TEST(CollectMatchCandidates, ChecksNoVarySearchHintAndHeader) {
   helper.Add({
       .document_token = document_token,
       .url = GURL("https://a.example.com/"),
-      .servable_state = PrefetchContainer::ServableState::kServable,
+      .servable_state = PrefetchServableState::kServable,
       .no_vary_search_hint = std::nullopt,
       .no_vary_search_data = std::nullopt,
   });
   helper.Add({
       .document_token = document_token,
       .url = GURL("https://a.example.com/?distinguish=true"),
-      .servable_state = PrefetchContainer::ServableState::kServable,
+      .servable_state = PrefetchServableState::kServable,
       .no_vary_search_hint = std::nullopt,
       .no_vary_search_data = std::nullopt,
   });
   helper.Add({
       .document_token = document_token,
       .url = GURL("https://a.example.com/?ignore=onlyHeader"),
-      .servable_state = PrefetchContainer::ServableState::kServable,
+      .servable_state = PrefetchServableState::kServable,
       .no_vary_search_hint = std::nullopt,
       .no_vary_search_data =
           net::HttpNoVarySearchData::CreateFromNoVaryParams({"ignore"}, true),
@@ -287,8 +284,7 @@ TEST(CollectMatchCandidates, ChecksNoVarySearchHintAndHeader) {
   helper.Add({
       .document_token = document_token,
       .url = GURL("https://a.example.com/?ignore=onlyHint"),
-      .servable_state =
-          PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived,
+      .servable_state = PrefetchServableState::kShouldBlockUntilHeadReceived,
       .no_vary_search_hint =
           net::HttpNoVarySearchData::CreateFromNoVaryParams({"ignore"}, true),
       .no_vary_search_data = std::nullopt,
@@ -296,8 +292,7 @@ TEST(CollectMatchCandidates, ChecksNoVarySearchHintAndHeader) {
   helper.Add({
       .document_token = document_token,
       .url = GURL("https://a.example.com/?ignore=bothHintAndHeader"),
-      .servable_state =
-          PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived,
+      .servable_state = PrefetchServableState::kShouldBlockUntilHeadReceived,
       .no_vary_search_hint =
           net::HttpNoVarySearchData::CreateFromNoVaryParams({"ignore"}, true),
       .no_vary_search_data =
@@ -306,7 +301,7 @@ TEST(CollectMatchCandidates, ChecksNoVarySearchHintAndHeader) {
   helper.Add({
       .document_token = document_token,
       .url = GURL("https://a.example.com/?distinguish=hintButContradictHeader"),
-      .servable_state = PrefetchContainer::ServableState::kServable,
+      .servable_state = PrefetchServableState::kServable,
       .no_vary_search_hint = net::HttpNoVarySearchData::CreateFromNoVaryParams(
           {"distinguish"}, true),
       .no_vary_search_data = std::nullopt,

@@ -43,8 +43,8 @@ class BrowserContext;
 class PrefetchMatchResolver;
 class PrefetchOriginProber;
 class PrefetchProxyConfigurator;
-class PrefetchServiceDelegate;
 class PrefetchScheduler;
+class PrefetchServiceDelegate;
 class ServiceWorkerContext;
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -204,12 +204,12 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // Note that `PrefetchContainer::GetServableState()` depends on
   // `base::TimeTicks::now()` and can expire (can change from `kServable` to
   // `kNotServable`) in the minute between two calls. Deciding something with
-  // multiple `PrefetchContainer::GetServableState()` calls can lead
-  // inconsistent state. To avoid that, we record `ServableState` in the
-  // `flat_map` at the beginning of matching process and refer to it.
-  std::pair<
-      std::vector<PrefetchContainer*>,
-      base::flat_map<PrefetchContainer::Key, PrefetchContainer::ServableState>>
+  // multiple `PrefetchContainer::GetServableState()` calls can
+  // lead inconsistent state. To avoid that, we record
+  // `PrefetchServableState` in the `flat_map` at the beginning of
+  // matching process and refer to it.
+  std::pair<std::vector<PrefetchContainer*>,
+            base::flat_map<PrefetchContainer::Key, PrefetchServableState>>
   CollectMatchCandidates(const PrefetchContainer::Key& key,
                          bool is_nav_prerender,
                          base::WeakPtr<PrefetchServingPageMetricsContainer>

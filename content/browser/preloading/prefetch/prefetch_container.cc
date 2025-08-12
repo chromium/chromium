@@ -28,6 +28,7 @@
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
+#include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
@@ -1440,13 +1441,13 @@ void PrefetchContainer::UpdatePrefetchRequestMetrics(
         head->load_timing.receive_headers_end - head->load_timing.request_start;
 }
 
-PrefetchContainer::ServableState PrefetchContainer::GetServableState(
+PrefetchServableState PrefetchContainer::GetServableState(
     base::TimeDelta cacheable_duration) const {
   // Servable if the non-redirect response (either fully or partially
   // received body) is servable.
   if (GetNonRedirectResponseReader() &&
       GetNonRedirectResponseReader()->Servable(cacheable_duration)) {
-    return ServableState::kServable;
+    return PrefetchServableState::kServable;
   }
 
   DVLOG(1) << *this << "(GetServableState)"
@@ -1456,14 +1457,14 @@ PrefetchContainer::ServableState PrefetchContainer::GetServableState(
   // streaming URL loader and head/failure/redirect hasn't been received yet.
   if (GetStreamingURLLoader() &&
       redirect_chain_.back()->response_reader_->IsWaitingForResponse()) {
-    return ServableState::kShouldBlockUntilHeadReceived;
+    return PrefetchServableState::kShouldBlockUntilHeadReceived;
   }
 
   if (features::UsePrefetchPrerenderIntegration()) {
     switch (load_state_) {
       case LoadState::kNotStarted:
       case LoadState::kEligible:
-        return ServableState::kShouldBlockUntilEligibilityGot;
+        return PrefetchServableState::kShouldBlockUntilEligibilityGot;
       case LoadState::kFailedIneligible:
       case LoadState::kStarted:
       case LoadState::kDeterminedHead:
@@ -1474,7 +1475,7 @@ PrefetchContainer::ServableState PrefetchContainer::GetServableState(
     }
   }
 
-  return ServableState::kNotServable;
+  return PrefetchServableState::kNotServable;
 }
 
 bool PrefetchContainer::Reader::DoesCurrentURLToServeMatch(
@@ -1657,7 +1658,7 @@ PrefetchContainer::Reader::GetCurrentResponseReaderToServeForTesting() {
   return GetCurrentSinglePrefetchToServe().response_reader_->GetWeakPtr();
 }
 
-PrefetchContainer::ServableState PrefetchContainer::Reader::GetServableState(
+PrefetchServableState PrefetchContainer::Reader::GetServableState(
     base::TimeDelta cacheable_duration) const {
   return GetPrefetchContainer()->GetServableState(cacheable_duration);
 }
@@ -1899,21 +1900,6 @@ std::ostream& operator<<(std::ostream& ostream,
       return ostream << "CompletedOrFailed";
     case PrefetchContainer::LoadState::kFailedHeldback:
       return ostream << "FailedHeldback";
-  }
-}
-
-CONTENT_EXPORT std::ostream& operator<<(
-    std::ostream& ostream,
-    PrefetchContainer::ServableState servable_state) {
-  switch (servable_state) {
-    case PrefetchContainer::ServableState::kNotServable:
-      return ostream << "NotServable";
-    case PrefetchContainer::ServableState::kServable:
-      return ostream << "Servable";
-    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
-      return ostream << "ShouldBlockUntilHeadReceived";
-    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
-      return ostream << "ShouldBlockUntilEligibilityGot";
   }
 }
 

@@ -32,6 +32,7 @@
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_scheduler.h"
+#include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
@@ -1102,7 +1103,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
               PrefetchStatus::kPrefetchSuccessful);
     EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
-              PrefetchContainer::ServableState::kServable);
+              PrefetchServableState::kServable);
     ASSERT_TRUE(serveable_reader.GetPrefetchContainer()->GetNonRedirectHead());
     EXPECT_TRUE(serveable_reader.GetPrefetchContainer()
                     ->GetNonRedirectHead()
@@ -3440,7 +3441,7 @@ TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(StreamingURLLoaderSuccessCase)) {
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchNotFinishedInTime);
   EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
-            PrefetchContainer::ServableState::kServable);
+            PrefetchServableState::kServable);
   EXPECT_TRUE(serveable_reader.GetPrefetchContainer()->GetNonRedirectHead());
   EXPECT_TRUE(serveable_reader.GetPrefetchContainer()
                   ->GetNonRedirectHead()
@@ -7182,10 +7183,10 @@ TEST_P(
   redirect_eligibility_check_callback_future.Take().Run();
   task_environment()->RunUntilIdle();
 
-  // Now `ServableState` should be `kNotServable` since we don't have a
-  // non-redirect response but `PrefetchStreamingURLLoader` is gone.
+  // Now `PrefetchServableState` should be `kNotServable` since we don't
+  // have a non-redirect response but `PrefetchStreamingURLLoader` is gone.
   EXPECT_EQ(prefetch_container->GetServableState(base::TimeDelta::Max()),
-            PrefetchContainer::ServableState::kNotServable);
+            PrefetchServableState::kNotServable);
 
   // Start a navigation. The prefetch should not be served.
   std::unique_ptr<NavigationResult> navigation_result =
@@ -7277,9 +7278,9 @@ TEST_P(
   ASSERT_TRUE(disconnect_future.Wait());
   // `PrefetchStreamingURLLoader::DisconnectPrefetchURLLoaderMojo` will directly
   // invoke `PrefetchMatchResolver::OnHeadDetermine`. At this point the
-  // container's `ServableState` should be `kShouldBlockUntilHeadReceived` (same
-  // with a normal case of an ineligible redirect), so it should be unblocked
-  // for unmatched.
+  // container's `PrefetchServableState` should be
+  // `kShouldBlockUntilHeadReceived` (same with a normal case of an ineligible
+  // redirect), so it should be unblocked for unmatched.
   // TODO(crbug.com/396133768): Explicitly check more detailed Servable/Load
   // states.
   redirect_eligibility_check_callback_future.Take().Run();

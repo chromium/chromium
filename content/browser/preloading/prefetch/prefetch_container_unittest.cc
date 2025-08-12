@@ -14,6 +14,7 @@
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
+#include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
@@ -408,9 +409,9 @@ TEST_F(PrefetchContainerTest, Servable) {
   task_environment()->FastForwardBy(base::Minutes(2));
 
   EXPECT_NE(prefetch_container->GetServableState(base::Minutes(1)),
-            PrefetchContainer::ServableState::kServable);
+            PrefetchServableState::kServable);
   EXPECT_EQ(prefetch_container->GetServableState(base::Minutes(3)),
-            PrefetchContainer::ServableState::kServable);
+            PrefetchServableState::kServable);
   EXPECT_TRUE(prefetch_container->GetNonRedirectHead());
 }
 
@@ -1372,14 +1373,14 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
   EXPECT_FALSE(prefetch_container->GetStreamingURLLoader());
 
   EXPECT_NE(prefetch_container->GetServableState(base::TimeDelta::Max()),
-            PrefetchContainer::ServableState::kServable);
+            PrefetchServableState::kServable);
   EXPECT_FALSE(prefetch_container->GetNonRedirectHead());
 
   prefetch_container->SimulatePrefetchEligibleForTest();
   MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
       prefetch_container.get(), kTestUrl1, kTestUrl2);
   EXPECT_EQ(prefetch_container->GetServableState(base::TimeDelta::Max()),
-            PrefetchContainer::ServableState::kServable);
+            PrefetchServableState::kServable);
   EXPECT_TRUE(prefetch_container->GetNonRedirectHead());
 
   // As the prefetch is already completed, the streaming loader is deleted
@@ -1404,7 +1405,7 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
   // `CreateRequestHandler()` itself doesn't make the PrefetchContainer
   // non-servable.
   EXPECT_EQ(prefetch_container->GetServableState(base::TimeDelta::Max()),
-            PrefetchContainer::ServableState::kServable);
+            PrefetchServableState::kServable);
   EXPECT_TRUE(prefetch_container->GetNonRedirectHead());
 
   std::unique_ptr<PrefetchTestURLLoaderClient> first_serving_url_loader_client =
@@ -1479,7 +1480,7 @@ TEST_F(PrefetchContainerTest, CancelAndClearStreamingLoader) {
   base::WeakPtr<PrefetchStreamingURLLoader> streaming_loader =
       prefetch_container->GetStreamingURLLoader();
   EXPECT_EQ(prefetch_container->GetServableState(base::TimeDelta::Max()),
-            PrefetchContainer::ServableState::kServable);
+            PrefetchServableState::kServable);
 
   prefetch_container->CancelStreamingURLLoaderIfNotServing();
 
@@ -1487,7 +1488,7 @@ TEST_F(PrefetchContainerTest, CancelAndClearStreamingLoader) {
   EXPECT_FALSE(prefetch_container->GetStreamingURLLoader());
   EXPECT_TRUE(streaming_loader);
   EXPECT_EQ(prefetch_container->GetServableState(base::TimeDelta::Max()),
-            PrefetchContainer::ServableState::kServable);
+            PrefetchServableState::kServable);
 
   task_environment()->RunUntilIdle();
 
@@ -1495,7 +1496,7 @@ TEST_F(PrefetchContainerTest, CancelAndClearStreamingLoader) {
   // is canceled. This itself doesn't make PrefetchContainer non-servable.
   EXPECT_FALSE(streaming_loader);
   EXPECT_EQ(prefetch_container->GetServableState(base::TimeDelta::Max()),
-            PrefetchContainer::ServableState::kServable);
+            PrefetchServableState::kServable);
 }
 
 // To test lifetime and ownership issues, all possible event orderings for
@@ -1627,7 +1628,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
   }
 
   EXPECT_NE(prefetch_container->GetServableState(base::TimeDelta::Max()),
-            PrefetchContainer::ServableState::kServable);
+            PrefetchServableState::kServable);
   EXPECT_FALSE(prefetch_container->GetNonRedirectHead());
 
   pending_request.client->OnReceiveResponse(
@@ -1636,7 +1637,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(prefetch_container->GetServableState(base::TimeDelta::Max()),
-            PrefetchContainer::ServableState::kServable);
+            PrefetchServableState::kServable);
   EXPECT_TRUE(prefetch_container->GetNonRedirectHead());
 
   PrefetchContainer::Reader reader = prefetch_container->CreateReader();
@@ -1674,7 +1675,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
         ASSERT_FALSE(request_handler);
         ASSERT_TRUE(prefetch_container);
         EXPECT_EQ(prefetch_container->GetServableState(base::TimeDelta::Max()),
-                  PrefetchContainer::ServableState::kServable);
+                  PrefetchServableState::kServable);
         request_handler = reader.CreateRequestHandler().first;
         ASSERT_TRUE(request_handler);
         break;
@@ -1722,7 +1723,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
       case Event::kSecondClient:
         ASSERT_TRUE(prefetch_container);
         EXPECT_EQ(prefetch_container->GetServableState(base::TimeDelta::Max()),
-                  PrefetchContainer::ServableState::kServable);
+                  PrefetchServableState::kServable);
 
         // The second request is servable if the body data pipe is finished and
         // the whole body fits within the data pipe tee size limit.

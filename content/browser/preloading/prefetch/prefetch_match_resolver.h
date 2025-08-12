@@ -11,6 +11,7 @@
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
+#include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle_user_data.h"
@@ -49,7 +50,8 @@ enum class PrefetchPotentialCandidateServingResult {
   kNotServedIneligiblePrefetch = 4,
 
   // The candidate is not served because the candidate received
-  // `OnDeterminedHead()` but its associated `ServableState` is not `kServable`.
+  // `OnDeterminedHead()` but its associated `PrefetchServableState` is
+  // not `kServable`.
   kNotServedUnsatisfiedPrefetchServeableState = 5,
 
   // The candidate is not served because the candidate's
@@ -166,7 +168,7 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   // -> `UnregisterCandidate()` (required)
   void RegisterCandidate(PrefetchContainer& prefetch_container);
   void StartWaitFor(const PrefetchContainer::Key& prefetch_key,
-                    PrefetchContainer::ServableState servable_state);
+                    PrefetchServableState servable_state);
   void UnregisterCandidate(
       const PrefetchContainer::Key& prefetch_key,
       bool is_served,
@@ -290,22 +292,22 @@ std::vector<T*> CollectPotentialMatchPrefetchContainers(
 template <class T>
   requires MatchCandidate<T>
 bool IsCandidateAvailable(const T& candidate,
-                          PrefetchContainer::ServableState servable_state,
+                          PrefetchServableState servable_state,
                           bool is_nav_prerender) {
   switch (servable_state) {
-    case PrefetchContainer::ServableState::kNotServable:
+    case PrefetchServableState::kNotServable:
       DVLOG(1) << "CollectMatchCandidatesGeneric: skipped because not "
                   "servable: candidate = "
                << candidate;
       return false;
-    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
-    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
-    case PrefetchContainer::ServableState::kServable:
+    case PrefetchServableState::kShouldBlockUntilEligibilityGot:
+    case PrefetchServableState::kShouldBlockUntilHeadReceived:
+    case PrefetchServableState::kServable:
       break;
   }
 
   switch (servable_state) {
-    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
+    case PrefetchServableState::kShouldBlockUntilEligibilityGot:
       if (!is_nav_prerender) {
         DVLOG(1)
             << "CollectMatchCandidatesGeneric: skipped because it's checking "
@@ -314,9 +316,9 @@ bool IsCandidateAvailable(const T& candidate,
         return false;
       }
       break;
-    case PrefetchContainer::ServableState::kServable:
-    case PrefetchContainer::ServableState::kNotServable:
-    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+    case PrefetchServableState::kServable:
+    case PrefetchServableState::kNotServable:
+    case PrefetchServableState::kShouldBlockUntilHeadReceived:
       break;
   }
 
@@ -351,9 +353,8 @@ bool IsCandidateAvailable(const T& candidate,
 // `PrefetchMatchResolver::FindPrefetch()` with mock `PrefetchContainer`.
 template <class T>
   requires MatchCandidate<T>
-std::pair<
-    std::vector<T*>,
-    base::flat_map<PrefetchContainer::Key, PrefetchContainer::ServableState>>
+std::pair<std::vector<T*>,
+          base::flat_map<PrefetchContainer::Key, PrefetchServableState>>
 CollectMatchCandidatesGeneric(
     const std::map<PrefetchContainer::Key, std::unique_ptr<T>>& prefetches,
     const PrefetchContainer::Key& navigated_key,
@@ -370,10 +371,9 @@ CollectMatchCandidatesGeneric(
 
   std::vector<T*> candidates_available;
   // See the comment of `PrefetchService::CollectMatchCandidates()`.
-  base::flat_map<PrefetchContainer::Key, PrefetchContainer::ServableState>
-      servable_states;
+  base::flat_map<PrefetchContainer::Key, PrefetchServableState> servable_states;
   for (T* candidate : candidates) {
-    PrefetchContainer::ServableState servable_state =
+    PrefetchServableState servable_state =
         candidate->GetServableState(PrefetchCacheableDuration());
     if (IsCandidateAvailable(*candidate, servable_state, is_nav_prerender)) {
       candidates_available.push_back(candidate);

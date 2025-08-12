@@ -57,6 +57,7 @@ class RenderFrameHost;
 class RenderFrameHostImpl;
 class ServiceWorkerClient;
 enum class PrefetchPotentialCandidateServingResult;
+enum class PrefetchServableState;
 
 // Holds the relevant size information of the prefetched response. The struct is
 // installed onto `PrefetchContainer`, and gets passed into
@@ -505,43 +506,11 @@ class CONTENT_EXPORT PrefetchContainer {
   void OnPrefetchComplete(
       const network::URLLoaderCompletionStatus& completion_status);
 
-  // TODO(crbug.com/372186548): Revisit the shape of ServableState.
-  //
-  // See also https://crrev.com/c/5831122
-  enum class ServableState {
-    // `PrefetchService` is checking eligibility of the prefetch or waiting load
-    // start after eligibility check.
-    //
-    // Prefetch matching process should block until eligibility is got (and load
-    // start)
-    // not to fall back normal navigation without waiting prefetch ahead of
-    // prerender and send a duplicated fetch request.
-    //
-    // This state occurs only if `kPrerender2FallbackPrefetchSpecRules` is
-    // enabled. Otherwise, `kNotServable` is returned for this period.
-    kShouldBlockUntilEligibilityGot,
-
-    // The load is started but non redirect header is not received yet.
-    //
-    // Prefetch matching process should block until the head of this is received
-    // on a navigation to a matching URL, as a server can send a response header
-    // including NoVarySearch header that contradicts NoVarySearch hint.
-    kShouldBlockUntilHeadReceived,
-
-    // This received non redirect header and is not expired.
-    //
-    // Note that it needs more checks to serve, e.g. cookie check. See also e.g.
-    // `PrefetchMatchResolver::OnDeterminedHead()`.
-    kServable,
-
-    // Not other states.
-    kNotServable,
-  };
-
   // Note: Even if this returns `kServable`, `CreateRequestHandler()` can still
   // fail (returning null handler) due to final checks. See also the comment for
   // `PrefetchResponseReader::CreateRequestHandler()`.
-  ServableState GetServableState(base::TimeDelta cacheable_duration) const;
+  PrefetchServableState GetServableState(
+      base::TimeDelta cacheable_duration) const;
 
   // Starts blocking `PrefetchMatchResolver` until non-redirect response header
   // is determined or timeouted. `on_maybe_determined_head_callback` will be
@@ -676,7 +645,7 @@ class CONTENT_EXPORT PrefetchContainer {
     explicit operator bool() const { return GetPrefetchContainer(); }
 
     // Methods redirecting to `prefetch_container_`.
-    PrefetchContainer::ServableState GetServableState(
+    PrefetchServableState GetServableState(
         base::TimeDelta cacheable_duration) const;
     bool HasPrefetchStatus() const;
     PrefetchStatus GetPrefetchStatus() const;
@@ -1180,10 +1149,6 @@ CONTENT_EXPORT std::ostream& operator<<(
 CONTENT_EXPORT std::ostream& operator<<(
     std::ostream& ostream,
     const PrefetchContainer::Key& prefetch_key);
-
-CONTENT_EXPORT std::ostream& operator<<(
-    std::ostream& ostream,
-    PrefetchContainer::ServableState servable_state);
 
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& ostream,
                                         PrefetchContainer::LoadState state);

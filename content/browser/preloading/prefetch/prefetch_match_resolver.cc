@@ -134,17 +134,17 @@ void PrefetchMatchResolver::FindPrefetchInternal(
   // `kNotServable`.
   for (auto& candidate : candidates_) {
     switch (servable_states.at(candidate.first)) {
-      case PrefetchContainer::ServableState::kServable:
+      case PrefetchServableState::kServable:
         if (candidate.second->prefetch_container->CreateReader()
                 .HaveDefaultContextCookiesChanged()) {
           UnblockForCookiesChanged(candidate.second->prefetch_container->key());
           return;
         }
         break;
-      case PrefetchContainer::ServableState::kNotServable:
+      case PrefetchServableState::kNotServable:
         NOTREACHED();
-      case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
-      case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
+      case PrefetchServableState::kShouldBlockUntilHeadReceived:
+      case PrefetchServableState::kShouldBlockUntilEligibilityGot:
         // nop
         break;
     }
@@ -152,14 +152,14 @@ void PrefetchMatchResolver::FindPrefetchInternal(
 
   for (auto& candidate : candidates_) {
     switch (servable_states.at(candidate.first)) {
-      case PrefetchContainer::ServableState::kServable:
+      case PrefetchServableState::kServable:
         // Got matching and servable.
         UnblockForMatch(candidate.first);
         return;
-      case PrefetchContainer::ServableState::kNotServable:
+      case PrefetchServableState::kNotServable:
         NOTREACHED();
-      case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
-      case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
+      case PrefetchServableState::kShouldBlockUntilHeadReceived:
+      case PrefetchServableState::kShouldBlockUntilEligibilityGot:
         // nop
         break;
     }
@@ -196,7 +196,7 @@ void PrefetchMatchResolver::RegisterCandidate(
 
 void PrefetchMatchResolver::StartWaitFor(
     const PrefetchContainer::Key& prefetch_key,
-    PrefetchContainer::ServableState servable_state) {
+    PrefetchServableState servable_state) {
   // By #prefetch-key-availability
   CHECK(candidates_.contains(prefetch_key));
   auto& candidate_data = candidates_[prefetch_key];
@@ -208,11 +208,11 @@ void PrefetchMatchResolver::StartWaitFor(
   CHECK_EQ(prefetch_container.GetServableState(PrefetchCacheableDuration()),
            servable_state);
   switch (servable_state) {
-    case PrefetchContainer::ServableState::kServable:
-    case PrefetchContainer::ServableState::kNotServable:
+    case PrefetchServableState::kServable:
+    case PrefetchServableState::kNotServable:
       NOTREACHED();
-    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
-    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
+    case PrefetchServableState::kShouldBlockUntilHeadReceived:
+    case PrefetchServableState::kShouldBlockUntilEligibilityGot:
       // nop
       break;
   }
@@ -302,7 +302,7 @@ void PrefetchMatchResolver::OnDeterminedHead(
   }
 
   switch (prefetch_container.GetServableState(PrefetchCacheableDuration())) {
-    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
+    case PrefetchServableState::kShouldBlockUntilEligibilityGot:
       // All callsites of `PrefetchContainer::OnDeterminedHead()` are
       // `PrefetchStreamingURLLoader`, which implies the prefetch passed
       // eligibility check.
@@ -314,13 +314,13 @@ void PrefetchMatchResolver::OnDeterminedHead(
     // -> PrefetchStreamingURLLoader::HandleRedirect(kFail)
     // -> PrefetchContainer::OnDeterminedHead()
     // -> here
-    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
-    case PrefetchContainer::ServableState::kNotServable:
+    case PrefetchServableState::kShouldBlockUntilHeadReceived:
+    case PrefetchServableState::kNotServable:
       MaybeUnblockForUnmatch(prefetch_container.key(),
                              PrefetchPotentialCandidateServingResult::
                                  kNotServedUnsatisfiedPrefetchServeableState);
       return;
-    case PrefetchContainer::ServableState::kServable:
+    case PrefetchServableState::kServable:
       // Proceed.
       break;
   }

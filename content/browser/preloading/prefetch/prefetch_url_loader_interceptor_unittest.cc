@@ -26,6 +26,7 @@
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
+#include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
@@ -1497,7 +1498,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   auto weak_prefetch_container = prefetch_container->GetWeakPtr();
   AddPrefetch(std::move(prefetch_container));
   ASSERT_EQ(weak_prefetch_container->GetServableState(base::TimeDelta::Max()),
-            PrefetchContainer::ServableState::kServable);
+            PrefetchServableState::kServable);
 
   CreateInterceptor(MainDocumentToken());
   MaybeCreateLoader(kTestUrl);
@@ -1570,7 +1571,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   auto weak_prefetch_container = prefetch_container->GetWeakPtr();
   AddPrefetch(std::move(prefetch_container));
   ASSERT_EQ(weak_prefetch_container->GetServableState(base::TimeDelta::Max()),
-            PrefetchContainer::ServableState::kServable);
+            PrefetchServableState::kServable);
 
   CreateInterceptor(MainDocumentToken());
   MaybeCreateLoader(kTestUrl);
