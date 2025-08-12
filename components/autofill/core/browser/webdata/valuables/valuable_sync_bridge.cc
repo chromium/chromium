@@ -34,6 +34,23 @@ bool AreAnyItemsDifferent(const std::vector<Item>& old_data,
   return base::MakeFlatSet<Item>(old_data) != base::MakeFlatSet<Item>(new_data);
 }
 
+// Tests if the valuable `specifics` are valid and can be converted into an
+// Autofill class instance using `CreateAutofillLoyaltyCardFromSpecifics()`.
+bool AreAutofillLoyaltyCardSpecificsValid(
+    const sync_pb::AutofillValuableSpecifics& specifics) {
+  const auto HasEmptyOrValidProgramLogo =
+      [](const sync_pb::AutofillValuableSpecifics& specifics) {
+        return !specifics.loyalty_card().has_program_logo() ||
+               specifics.loyalty_card().program_logo().empty() ||
+               GURL(specifics.loyalty_card().program_logo()).is_valid();
+      };
+
+  return !specifics.id().empty() && specifics.has_loyalty_card() &&
+         !specifics.loyalty_card().loyalty_card_number().empty() &&
+         !specifics.loyalty_card().merchant_name().empty() &&
+         HasEmptyOrValidProgramLogo(specifics);
+}
+
 }  // namespace
 
 ValuableSyncBridge::ValuableSyncBridge(

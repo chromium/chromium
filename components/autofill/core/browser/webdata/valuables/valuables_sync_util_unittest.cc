@@ -14,9 +14,6 @@
 namespace autofill {
 namespace {
 constexpr char kId1[] = "1";
-constexpr char kValidProgramLogo[] = "http://foobar.com/logo.png";
-constexpr char kInvalidProgramLogo[] = "logo.png";
-
 }  // namespace
 
 class LoyaltyCardSyncUtilTest : public testing::Test {};
@@ -67,30 +64,6 @@ TEST_F(LoyaltyCardSyncUtilTest, CreateEntityDataFromLoyaltyCard) {
 TEST_F(LoyaltyCardSyncUtilTest, CreateAutofillLoyaltyCardFromSpecifics) {
   EXPECT_EQ(TestLoyaltyCard(), CreateAutofillLoyaltyCardFromSpecifics(
                                    TestLoyaltyCardSpecifics(kId1)));
-}
-
-TEST_F(LoyaltyCardSyncUtilTest, AreAutofillLoyaltyCardSpecificsValid) {
-  EXPECT_FALSE(AreAutofillLoyaltyCardSpecificsValid(
-      TestLoyaltyCardSpecifics(/*id=*/"")));
-  EXPECT_FALSE(AreAutofillLoyaltyCardSpecificsValid(
-      TestLoyaltyCardSpecifics(kId1, kInvalidProgramLogo)));
-  EXPECT_FALSE(AreAutofillLoyaltyCardSpecificsValid(
-      TestLoyaltyCardSpecifics(kId1, kInvalidProgramLogo)));
-  EXPECT_FALSE(AreAutofillLoyaltyCardSpecificsValid(
-      TestLoyaltyCardSpecifics(kId1, kValidProgramLogo, /*number=*/"")));
-
-  EXPECT_TRUE(
-      AreAutofillLoyaltyCardSpecificsValid(TestLoyaltyCardSpecifics(kId1)));
-
-  sync_pb::AutofillValuableSpecifics specifics = TestLoyaltyCardSpecifics(kId1);
-  specifics.mutable_loyalty_card()->clear_program_logo();
-  EXPECT_TRUE(AreAutofillLoyaltyCardSpecificsValid(specifics));
-  EXPECT_TRUE(AreAutofillLoyaltyCardSpecificsValid(
-      TestLoyaltyCardSpecifics(kId1, /*program_logo=*/"")));
-
-  sync_pb::AutofillValuableSpecifics empty_merchant_name_specifics =
-      TestLoyaltyCardSpecifics(kId1);
-  empty_merchant_name_specifics.mutable_loyalty_card()->clear_merchant_name();
 }
 
 TEST_F(LoyaltyCardSyncUtilTest, TrimAutofillValuableSpecificsDataForCaching) {

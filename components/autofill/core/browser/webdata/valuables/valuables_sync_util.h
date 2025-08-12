@@ -24,11 +24,6 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCard(
 LoyaltyCard CreateAutofillLoyaltyCardFromSpecifics(
     const sync_pb::AutofillValuableSpecifics& specifics);
 
-// Tests if the valuable `specifics` are valid and can be converted into an
-// Autofill class instance using `CreateAutofillLoyaltyCardFromSpecifics()`.
-bool AreAutofillLoyaltyCardSpecificsValid(
-    const sync_pb::AutofillValuableSpecifics& specifics);
-
 // Clears all supported fields from `specifics`. Supported
 // fields are all fields in the protobuf definition that have already been
 // included in the client version.
