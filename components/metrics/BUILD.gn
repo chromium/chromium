@@ -305,13 +305,6 @@ if (!is_cronet_build || is_ios) {
       sources += [ "clean_exit_beacon_ios.mm" ]
     }
 
-    if (is_linux || is_chromeos) {
-      sources += [
-        "psi_memory_parser.h",
-        "psi_memory_parser_linux.cc",
-      ]
-    }
-
     if (is_chromeos) {
       sources += [
         "call_stacks/stack_sampling_recorder.cc",
@@ -668,10 +661,7 @@ if (!is_cronet_build) {
     }
 
     if (is_linux || is_chromeos) {
-      sources += [
-        "psi_memory_parser_linux_unittest.cc",
-        "serialization/serialization_utils_unittest.cc",
-      ]
+      sources += [ "serialization/serialization_utils_unittest.cc" ]
       deps += [ ":serialization" ]
     }
 

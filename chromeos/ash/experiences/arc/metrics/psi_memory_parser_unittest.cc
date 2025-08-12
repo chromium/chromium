@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/psi_memory_parser.h"
+#include "chromeos/ash/experiences/arc/metrics/psi_memory_parser.h"
 
 #include <memory>
 
@@ -11,7 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace metrics {
+namespace arc {
 
 namespace {
 
@@ -160,4 +160,4 @@ TEST_F(PSIMemoryParserTest, ParseResultCounter) {
                                  ParsePSIMemStatus::kInvalidMetricFormat, 2);
 }
 
-}  // namespace metrics
+}  // namespace arc

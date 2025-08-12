@@ -30,11 +30,11 @@
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_anr.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_wm_metrics.h"
+#include "chromeos/ash/experiences/arc/metrics/psi_memory_parser.h"
 #include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "components/exo/wm_helper.h"
-#include "components/metrics/psi_memory_parser.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
@@ -244,8 +244,8 @@ ArcMetricsService::ArcMetricsService(content::BrowserContext* context,
       NativeBridgeType::UNKNOWN);
 
   if (base::FeatureList::IsEnabled(kVmMemoryPSIReports)) {
-    psi_parser_ = std::make_unique<metrics::PSIMemoryParser>(
-        kVmMemoryPSIReportsPeriod.Get());
+    psi_parser_ =
+        std::make_unique<arc::PSIMemoryParser>(kVmMemoryPSIReportsPeriod.Get());
   }
 
   arc_wm_metrics_ = std::make_unique<ArcWmMetrics>();
@@ -801,16 +801,16 @@ void ArcMetricsService::ReportMemoryPressure(
       &metric_full);
   psi_parser_->LogParseStatus(
       stat);  // Log success and failure, for histograms.
-  if (stat != metrics::ParsePSIMemStatus::kSuccess) {
+  if (stat != arc::ParsePSIMemStatus::kSuccess) {
     return;
   }
 
   base::UmaHistogramCustomCounts(
-      kPSIMemoryPressureSomeARC, metric_some, metrics::kMemPressureMin,
-      metrics::kMemPressureExclusiveMax, metrics::kMemPressureHistogramBuckets);
+      kPSIMemoryPressureSomeARC, metric_some, arc::kMemPressureMin,
+      arc::kMemPressureExclusiveMax, arc::kMemPressureHistogramBuckets);
   base::UmaHistogramCustomCounts(
-      kPSIMemoryPressureFullARC, metric_full, metrics::kMemPressureMin,
-      metrics::kMemPressureExclusiveMax, metrics::kMemPressureHistogramBuckets);
+      kPSIMemoryPressureFullARC, metric_full, arc::kMemPressureMin,
+      arc::kMemPressureExclusiveMax, arc::kMemPressureHistogramBuckets);
 }
 
 void ArcMetricsService::SetPrefService(PrefService* prefs) {

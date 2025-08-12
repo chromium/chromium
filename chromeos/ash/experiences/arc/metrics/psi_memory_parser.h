@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_METRICS_PSI_MEMORY_PARSER_H_
-#define COMPONENTS_METRICS_PSI_MEMORY_PARSER_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_METRICS_PSI_MEMORY_PARSER_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_METRICS_PSI_MEMORY_PARSER_H_
 
 #include <cstdint>
 #include <string>
@@ -11,7 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 
-namespace metrics {
+namespace arc {
 
 // Items in internal are - as the name implies - NOT for outside consumption.
 // Defined here to allow access to unit test.
@@ -33,9 +33,9 @@ bool FindMiddleString(std::string_view content,
 }  // namespace internal
 
 // Values as logged in the histogram for memory pressure.
-constexpr int kMemPressureMin = 1;  // As 0 is for underflow.
-constexpr int kMemPressureExclusiveMax = 10000;
-constexpr int kMemPressureHistogramBuckets = 100;
+inline constexpr int kMemPressureMin = 1;  // As 0 is for underflow.
+inline constexpr int kMemPressureExclusiveMax = 10000;
+inline constexpr int kMemPressureHistogramBuckets = 100;
 
 // Enumeration representing success and various failure modes for parsing PSI
 // memory data. These values are persisted to logs. Entries should not be
@@ -102,6 +102,6 @@ class PSIMemoryParser {
   uint32_t period_;
 };
 
-}  // namespace metrics
+}  // namespace arc
 
-#endif  // COMPONENTS_METRICS_PSI_MEMORY_PARSER_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_METRICS_PSI_MEMORY_PARSER_H_

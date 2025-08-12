@@ -2,23 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/psi_memory_parser.h"
-
-#include <stddef.h>
+#include "chromeos/ash/experiences/arc/metrics/psi_memory_parser.h"
 
 #include <cinttypes>
-#include <map>
-#include <memory>
 #include <string>
 #include <string_view>
 
-#include "base/metrics/histogram.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "components/metrics/metrics_log_store.h"
 
-namespace metrics {
+namespace arc {
 
 namespace {
 
@@ -169,4 +164,4 @@ bool FindMiddleString(std::string_view content,
 
 }  // namespace internal
 
-}  // namespace metrics
+}  // namespace arc
