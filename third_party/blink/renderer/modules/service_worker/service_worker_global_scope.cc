@@ -1169,7 +1169,7 @@ void ServiceWorkerGlobalScope::DidHandlePushEvent(
                           TRACE_ID_LOCAL(event_id)),
       TRACE_EVENT_FLAG_FLOW_IN, "status", MojoEnumToString(status));
   if (should_record_network_requests_ ==
-      mojom::blink::RecordNetworkRequestsDuringPushEvent::kRecord) {
+      RecordNetworkRequestsDuringPushEvent::kRecord) {
     RunEventCallback(&push_event_recording_network_requests_callback_,
                      event_queue_.get(), event_id, status,
                      std::make_optional(push_event_network_request_urls_));
@@ -2163,7 +2163,7 @@ void ServiceWorkerGlobalScope::DispatchPushEventRecordingNetworkRequests(
     DispatchPushEventRecordingNetworkRequestsCallback callback) {
   DCHECK(IsContextThread());
   should_record_network_requests_ =
-      mojom::blink::RecordNetworkRequestsDuringPushEvent::kRecord;
+      RecordNetworkRequestsDuringPushEvent::kRecord;
   const int event_id = event_queue_->NextEventId();
   push_event_recording_network_requests_callback_.Set(event_id,
                                                       std::move(callback));
@@ -2179,7 +2179,7 @@ void ServiceWorkerGlobalScope::DispatchPushEventRecordingNetworkRequests(
 void ServiceWorkerGlobalScope::MaybeRecordNetworkRequestUrlForPushEvents(
     const KURL& url) {
   if (should_record_network_requests_ ==
-      mojom::blink::RecordNetworkRequestsDuringPushEvent::kRecord) {
+      RecordNetworkRequestsDuringPushEvent::kRecord) {
     push_event_network_request_urls_.push_back(url);
   }
 }

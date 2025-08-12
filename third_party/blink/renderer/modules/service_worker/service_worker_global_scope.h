@@ -769,9 +769,12 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
 
   // Whether network requests made during a push event should be recorded for
   // later forwarding to the browser process.
-  mojom::blink::RecordNetworkRequestsDuringPushEvent
-      should_record_network_requests_ =
-          mojom::blink::RecordNetworkRequestsDuringPushEvent::kDoNotRecord;
+  enum class RecordNetworkRequestsDuringPushEvent {
+    kDoNotRecord,
+    kRecord,
+  };
+  RecordNetworkRequestsDuringPushEvent should_record_network_requests_ =
+      RecordNetworkRequestsDuringPushEvent::kDoNotRecord;
 
   // The collection of network request urls contacted during the life of a push
   // event.
