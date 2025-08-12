@@ -5929,6 +5929,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_POWER_ADAPTIVE_CHARGING_SUBTEXT" desc="In Device Settings > Power, description of the behavior of the adaptive charging feature.">
     Extends battery life by keeping your battery around 80%. Battery will fully charge before you typically disconnect from power.
   </message>
+  <message name="IDS_SETTINGS_POWER_ADAPTIVE_CHARGING_LEARN_MORE_ARIA_LABEL" desc="In Device Settings > Power > Optimized Charging > Change, aria label for the learn more link for adaptive charging." translateable="false">
+    Learn more about Adaptive charging.
+  </message>
   <message name="IDS_SETTINGS_POWER_OPTIMIZED_CHARGING_LABEL" desc="In Device Settings > Power, the title of the settings row of the optimized charging feature." translateable="false">
     Optimized charging
   </message>

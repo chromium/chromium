@@ -173,6 +173,8 @@ void PowerSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_POWER_ADAPTIVE_CHARGING_LABEL},
       {"powerAdaptiveChargingSubtext",
        IDS_SETTINGS_POWER_ADAPTIVE_CHARGING_SUBTEXT},
+      {"powerAdaptiveChargingLearnMoreAriaLabel",
+       IDS_SETTINGS_POWER_ADAPTIVE_CHARGING_LEARN_MORE_ARIA_LABEL},
       {"powerOptimizedChargingLabel",
        IDS_SETTINGS_POWER_OPTIMIZED_CHARGING_LABEL},
       {"powerOptimizedChargingChangeLabel",
