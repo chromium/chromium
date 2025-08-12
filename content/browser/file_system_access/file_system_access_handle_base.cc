@@ -628,8 +628,7 @@ void FileSystemAccessHandleBase::DoRemove(
     bool recurse,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/40276567): Update if this only needs write-only permission
-  DCHECK_EQ(GetReadWritePermissionStatus(),
+  DCHECK_EQ(GetEffectiveWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   // A locked file cannot be removed. Acquire a lock and release it after the

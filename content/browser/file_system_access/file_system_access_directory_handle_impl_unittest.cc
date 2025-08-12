@@ -37,6 +37,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -566,12 +567,20 @@ TEST_P(FileSystemAccessDirectoryHandleImplRemoveTest, NonExistent) {
             blink::mojom::FileSystemAccessStatus::kFileError);
 }
 
+// Verifies that `Remove()` requests the correct permissions before removing a
+// directory. When `kFileSystemAccessWriteMode` is
+// - disabled: it should request both read and write permissions.
+// - enabled: it should only request write permission.
 TEST_P(FileSystemAccessDirectoryHandleImplRemoveTest,
-       RemoveRequestsCorrectPermissions) {
+       RequestsCorrectPermissions) {
   auto handle = CreateHandle();
+  auto test_dir_path = dir_.GetPath().AppendASCII("test_dir");
 
-  EXPECT_CALL(*mock_read_grant_, GetStatus())
-      .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));
+  if (!GetParam().is_feature_enabled) {
+    SetUpGrantExpectations(*mock_read_grant_, PermissionStatus::GRANTED,
+                           FileSystemAccessPermissionGrant::
+                               PermissionRequestOutcome::kUserGranted);
+  }
   SetUpGrantExpectations(
       *mock_write_grant_, PermissionStatus::GRANTED,
       FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
@@ -579,6 +588,7 @@ TEST_P(FileSystemAccessDirectoryHandleImplRemoveTest,
   base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
   handle->Remove(/*recurse=*/false, future.GetCallback());
   EXPECT_EQ(future.Get()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_FALSE(base::PathExists(test_dir_path));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -751,15 +761,22 @@ TEST_P(FileSystemAccessDirectoryHandleImplRemoveEntryTest,
   EXPECT_TRUE(base::DirectoryExists(subdir_path));
 }
 
+// Verifies that `RemoveEntry()` requests the correct permissions before
+// removing an entry. When `kFileSystemAccessWriteMode` is
+// - disabled: it should request both read and write permissions.
+// - enabled: it should only request write permission.
 TEST_P(FileSystemAccessDirectoryHandleImplRemoveEntryTest,
-       RemoveEntryRequestsCorrectPermissions) {
+       RequestsCorrectPermissions) {
   auto handle = CreateHandle();
   base::FilePath test_dir = dir_.GetPath().AppendASCII("test_dir");
   base::FilePath file_path = test_dir.AppendASCII("test_file.txt");
   ASSERT_TRUE(base::WriteFile(file_path, "test data"));
 
-  EXPECT_CALL(*mock_read_grant_, GetStatus())
-      .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));
+  if (!GetParam().is_feature_enabled) {
+    SetUpGrantExpectations(*mock_read_grant_, PermissionStatus::GRANTED,
+                           FileSystemAccessPermissionGrant::
+                               PermissionRequestOutcome::kUserGranted);
+  }
   SetUpGrantExpectations(
       *mock_write_grant_, PermissionStatus::GRANTED,
       FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
@@ -767,6 +784,7 @@ TEST_P(FileSystemAccessDirectoryHandleImplRemoveEntryTest,
   base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
   handle->RemoveEntry("test_file.txt", /*recurse=*/false, future.GetCallback());
   EXPECT_EQ(future.Get()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_FALSE(base::PathExists(file_path));
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -1910,6 +1910,12 @@ FileSystemAccessManagerImpl::GetSharedHandleStateForNonSandboxedPath(
         break;
     }
   }
+
+  if (shared_handle_state_callback_for_test_) {
+    return shared_handle_state_callback_for_test_.Run(read_grant,  // IN-TEST
+                                                      write_grant);
+  }
+
   return SharedHandleState(std::move(read_grant), std::move(write_grant));
 }
 
@@ -1932,6 +1938,12 @@ FileSystemAccessManagerImpl::GetSharedHandleStateForSandboxedPath() {
   auto permission_grant =
       base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
           PermissionStatus::GRANTED, PathInfo());
+
+  if (shared_handle_state_callback_for_test_) {
+    return shared_handle_state_callback_for_test_.Run(  // IN-TEST
+        permission_grant, permission_grant);
+  }
+
   return SharedHandleState(permission_grant, permission_grant);
 }
 
