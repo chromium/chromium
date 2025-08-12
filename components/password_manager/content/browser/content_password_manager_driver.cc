@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -242,9 +243,11 @@ void ContentPasswordManagerDriver::FocusNextFieldAfterPasswords() {
 void ContentPasswordManagerDriver::FillField(
     autofill::FieldRendererId triggering_field_id,
     const std::u16string& value,
-    autofill::FieldPropertiesFlags field_flags) {
+    autofill::FieldPropertiesFlags field_flags,
+    base::OnceCallback<void(bool)> success_callback) {
   if (const auto& agent = GetPasswordAutofillAgent()) {
-    agent->FillField(triggering_field_id, value, field_flags);
+    agent->FillField(triggering_field_id, value, field_flags,
+                     std::move(success_callback));
   }
 }
 

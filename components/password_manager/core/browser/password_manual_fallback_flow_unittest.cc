@@ -133,7 +133,8 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               FillField,
               (autofill::FieldRendererId,
                const std::u16string&,
-               autofill::FieldPropertiesFlags field_flags),
+               autofill::FieldPropertiesFlags field_flags,
+               base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const override));
 };
@@ -622,7 +623,8 @@ TEST_F(PasswordManualFallbackFlowTest, AcceptUsernameFieldByFieldSuggestion) {
   EXPECT_CALL(driver(),
               FillField(field_id, std::u16string(u"username@example.com"),
                         autofill::FieldPropertiesFlags::
-                            kAutofilledPasswordFormFilledViaManualFallback));
+                            kAutofilledPasswordFormFilledViaManualFallback,
+                        _));
   EXPECT_CALL(
       autofill_client(),
       HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
@@ -953,7 +955,8 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthNotAvailable) {
   EXPECT_CALL(driver(),
               FillField(field_id, std::u16string(u"password"),
                         autofill::FieldPropertiesFlags::
-                            kAutofilledPasswordFormFilledViaManualFallback));
+                            kAutofilledPasswordFormFilledViaManualFallback,
+                        _));
   ShowAndAcceptSuggestion(autofill::test::CreateAutofillSuggestion(
                               SuggestionType::kFillPassword, u"Fill password",
                               CreateTestPasswordDetails()),
@@ -1071,7 +1074,8 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthSucceeds) {
   EXPECT_CALL(driver(),
               FillField(field_id, std::u16string(u"password"),
                         autofill::FieldPropertiesFlags::
-                            kAutofilledPasswordFormFilledViaManualFallback));
+                            kAutofilledPasswordFormFilledViaManualFallback,
+                        _));
   base::HistogramTester histograms;
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
   ShowAndAcceptSuggestion(autofill::test::CreateAutofillSuggestion(
@@ -1114,7 +1118,8 @@ TEST_F(PasswordManualFallbackFlowTest,
   EXPECT_CALL(driver(),
               FillField(field_id, std::u16string(u"password"),
                         autofill::FieldPropertiesFlags::
-                            kAutofilledPasswordFormFilledViaManualFallback));
+                            kAutofilledPasswordFormFilledViaManualFallback,
+                        _));
   base::HistogramTester histograms;
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
   ShowAndAcceptSuggestion(autofill::test::CreateAutofillSuggestion(

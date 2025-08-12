@@ -2231,9 +2231,12 @@ TEST_F(PasswordAutofillAgentTest, FillIntoReadonlyTextField) {
 
   // If the field is readonly, it should not be affected.
   SetElementReadOnly(username_element_, true);
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_reply;
+  EXPECT_CALL(mock_reply, Run(false));
   password_autofill_agent_->FillField(
       form_util::GetFieldRendererId(username_element_), kAliceUsername16,
-      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger,
+      mock_reply.Get());
   CheckTextFieldsDOMState(
       /*username=*/std::string(), /*username_autofilled=*/false,
       /*password=*/std::string(), /*password_autofilled=*/false);
@@ -2246,9 +2249,12 @@ TEST_F(PasswordAutofillAgentTest, FillIntoUsernameField) {
       /*username=*/std::string(), /*username_autofilled=*/false,
       /*password=*/std::string(), /*password_autofilled=*/false);
 
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_reply;
+  EXPECT_CALL(mock_reply, Run(true));
   password_autofill_agent_->FillField(
       form_util::GetFieldRendererId(username_element_), kAliceUsername16,
-      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger,
+      mock_reply.Get());
   CheckTextFieldsDOMState(
       /*username=*/kAliceUsername, /*username_autofilled=*/true,
       /*password=*/std::string(), /*password_autofilled=*/false);
@@ -2261,9 +2267,12 @@ TEST_F(PasswordAutofillAgentTest, FillIntoPasswordField) {
       /*username=*/std::string(), /*username_autofilled=*/false,
       /*password=*/std::string(), /*password_autofilled=*/false);
 
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_reply;
+  EXPECT_CALL(mock_reply, Run(true));
   password_autofill_agent_->FillField(
       form_util::GetFieldRendererId(password_element_), kAlicePassword16,
-      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger,
+      mock_reply.Get());
   CheckTextFieldsDOMState(
       /*username=*/std::string(), /*username_autofilled=*/false,
       /*password=*/kAlicePassword, /*password_autofilled=*/true);
@@ -2276,9 +2285,12 @@ TEST_F(PasswordAutofillAgentTest, FillIntoRandomField) {
   // The field should not be autocompleted.
   EXPECT_EQ(std::string(), random_element.Value().Utf8());
 
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_reply;
+  EXPECT_CALL(mock_reply, Run(true));
   password_autofill_agent_->FillField(
       form_util::GetFieldRendererId(random_element), kAliceUsername16,
-      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger,
+      mock_reply.Get());
   EXPECT_EQ(kAliceUsername, random_element.Value().Utf8());
 }
 
@@ -2292,9 +2304,12 @@ TEST_F(PasswordAutofillAgentTest, FillIntoNonExistingField) {
       /*password=*/std::string(), /*password_autofilled=*/false);
   EXPECT_EQ(std::string(), random_element.Value().Utf8());
 
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_reply;
+  EXPECT_CALL(mock_reply, Run(false));
   password_autofill_agent_->FillField(
       FieldRendererId(), kAliceUsername16,
-      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger,
+      mock_reply.Get());
   // Neither field should be autocompleted.
   CheckTextFieldsDOMState(
       /*username=*/std::string(), /*username_autofilled=*/false,

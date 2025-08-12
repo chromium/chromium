@@ -32,7 +32,8 @@ void StubPasswordManagerDriver::FocusNextFieldAfterPasswords() {}
 void StubPasswordManagerDriver::FillField(
     autofill::FieldRendererId triggering_field_id,
     const std::u16string& value,
-    autofill::FieldPropertiesFlags field_properties) {}
+    autofill::FieldPropertiesFlags field_properties,
+    base::OnceCallback<void(bool)> success_callback) {}
 
 void StubPasswordManagerDriver::FillSuggestion(
     const std::u16string& username,

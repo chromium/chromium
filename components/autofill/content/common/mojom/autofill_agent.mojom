@@ -155,7 +155,7 @@ interface PasswordAutofillAgent {
   // metadata about filling. See `FieldPropertiesFlags` for potential
   // values.
   FillField(FieldRendererId field_id, mojo_base.mojom.String16 value,
-    uint32 field_properties);
+    uint32 field_properties) => (bool success);
 
   // Fills a given change password form, specifically `password_element_id` with
   // `old_password` and `new_password_element_id`, `confirm_password_element_id`

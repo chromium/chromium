@@ -138,7 +138,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
                     const std::u16string& value) override;
   void FillField(FieldRendererId field_id,
                  const std::u16string& value,
-                 FieldPropertiesMask field_properties) override;
+                 FieldPropertiesMask field_properties,
+                 base::OnceCallback<void(bool)> success_callback) override;
   void FillChangePasswordForm(FieldRendererId password_element_id,
                               FieldRendererId new_password_element_id,
                               FieldRendererId confirm_password_element_id,

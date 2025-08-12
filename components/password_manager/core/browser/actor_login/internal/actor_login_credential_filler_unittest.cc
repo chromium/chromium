@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_credential_filler.h"
 
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
@@ -29,6 +31,7 @@ namespace actor_login {
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::test::CreateTestFormField;
+using base::test::RunOnceCallback;
 using password_manager::FakeFormFetcher;
 using password_manager::MockPasswordFormCache;
 using password_manager::MockPasswordManager;
@@ -46,6 +49,10 @@ using testing::ReturnRef;
 
 namespace {
 
+constexpr char16_t kTestUsername[] = u"username";
+constexpr char16_t kTestPassword[] = u"password";
+constexpr char kLoginUrl[] = "https://example.com/login";
+
 class MockStubPasswordManagerDriver
     : public password_manager::StubPasswordManagerDriver {
  public:
@@ -57,8 +64,10 @@ class MockStubPasswordManagerDriver
               FillField,
               (autofill::FieldRendererId,
                const std::u16string&,
-               autofill::FieldPropertiesFlags),
+               autofill::FieldPropertiesFlags,
+               base::OnceCallback<void(bool)>),
               (override));
+  MOCK_METHOD(bool, IsInPrimaryMainFrame, (), (const, override));
 };
 
 password_manager::PasswordForm CreateSavedPasswordForm(
@@ -74,6 +83,15 @@ password_manager::PasswordForm CreateSavedPasswordForm(
   return form;
 }
 
+void SetSavedCredential(FakeFormFetcher* form_fetcher,
+                        const GURL& url,
+                        const std::u16string& username,
+                        const std::u16string& password) {
+  std::vector<password_manager::PasswordForm> saved_forms;
+  PasswordForm form = CreateSavedPasswordForm(url, username, password);
+  form_fetcher->SetBestMatches({std::move(form)});
+}
+
 }  // namespace
 
 class ActorLoginCredentialFillerTest : public ::testing::Test {
@@ -87,6 +105,7 @@ class ActorLoginCredentialFillerTest : public ::testing::Test {
 
     ON_CALL(mock_password_manager_, GetPasswordFormCache())
         .WillByDefault(Return(&mock_form_cache_));
+    ON_CALL(mock_driver_, IsInPrimaryMainFrame).WillByDefault(Return(true));
   }
 
   void TearDown() override { OSCryptMocker::TearDown(); }
@@ -118,14 +137,14 @@ class ActorLoginCredentialFillerTest : public ::testing::Test {
 };
 
 TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_NoManagers) {
-  url::Origin origin = url::Origin::Create(GURL("https://example.com/login"));
-  Credential credential = CreateTestCredential(u"username", origin.GetURL());
+  url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
+  Credential credential = CreateTestCredential(kTestUsername, origin.GetURL());
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
   ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
 
-  EXPECT_CALL(mock_form_cache_, GetFormManagers())
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(mock_callback, Run(Eq(LoginStatusResult::kErrorNoSigninForm)));
   filler.AttemptLogin(&mock_password_manager_);
@@ -135,7 +154,7 @@ TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_DifferentOrigin) {
   url::Origin origin = url::Origin::Create(GURL("https://example.com/login"));
   url::Origin other_origin =
       url::Origin::Create(GURL("https://other.com/login"));
-  Credential credential = CreateTestCredential(u"username", origin.GetURL());
+  Credential credential = CreateTestCredential(kTestUsername, origin.GetURL());
 
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
   std::unique_ptr<PasswordFormManager> form_manager =
@@ -146,15 +165,15 @@ TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_DifferentOrigin) {
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
   ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
 
-  EXPECT_CALL(mock_form_cache_, GetFormManagers())
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(mock_callback, Run(Eq(LoginStatusResult::kErrorNoSigninForm)));
   filler.AttemptLogin(&mock_password_manager_);
 }
 
 TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_NoParsedForm) {
-  url::Origin origin = url::Origin::Create(GURL("https://example.com/login"));
-  Credential credential = CreateTestCredential(u"username", origin.GetURL());
+  url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
+  Credential credential = CreateTestCredential(kTestUsername, origin.GetURL());
   FormData form_data = CreateSigninFormData(origin.GetURL());
 
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
@@ -170,15 +189,15 @@ TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_NoParsedForm) {
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
   ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
-  EXPECT_CALL(mock_form_cache_, GetFormManagers())
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(mock_callback, Run(Eq(LoginStatusResult::kErrorNoSigninForm)));
   filler.AttemptLogin(&mock_password_manager_);
 }
 
 TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_NotLoginForm) {
-  url::Origin origin = url::Origin::Create(GURL("https://example.com/login"));
-  Credential credential = CreateTestCredential(u"username", origin.GetURL());
+  url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
+  Credential credential = CreateTestCredential(kTestUsername, origin.GetURL());
 
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
   std::unique_ptr<PasswordFormManager> form_manager =
@@ -188,7 +207,7 @@ TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_NotLoginForm) {
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
   ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
-  EXPECT_CALL(mock_form_cache_, GetFormManagers())
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(mock_callback, Run(Eq(LoginStatusResult::kErrorNoSigninForm)));
   filler.AttemptLogin(&mock_password_manager_);
@@ -196,11 +215,9 @@ TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_NotLoginForm) {
 
 TEST_F(ActorLoginCredentialFillerTest,
        CredentialNotSavedForOrigin_MultipleCredentials) {
-  const url::Origin origin =
-      url::Origin::Create(GURL("https://example.com/login"));
-  const std::u16string username_to_find = u"targetuser";
+  const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
   const Credential credential =
-      CreateTestCredential(username_to_find, origin.GetURL());
+      CreateTestCredential(kTestUsername, origin.GetURL());
   const FormData form_data = CreateSigninFormData(origin.GetURL());
   std::vector<password_manager::PasswordForm> saved_forms;
   saved_forms.push_back(CreateSavedPasswordForm(origin.GetURL(), u"user1"));
@@ -212,7 +229,7 @@ TEST_F(ActorLoginCredentialFillerTest,
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
   ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
-  EXPECT_CALL(mock_form_cache_, GetFormManagers())
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(mock_callback,
               Run(Eq(LoginStatusResult::kErrorInvalidCredential)));
@@ -221,10 +238,9 @@ TEST_F(ActorLoginCredentialFillerTest,
 
 TEST_F(ActorLoginCredentialFillerTest,
        CredentialNotSavedForOrigin_NoSavedCredentialsForOrigin) {
-  const url::Origin origin =
-      url::Origin::Create(GURL("https://example.com/login"));
-  const std::u16string username = u"testuser";
-  const Credential credential = CreateTestCredential(username, origin.GetURL());
+  const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
+  const Credential credential =
+      CreateTestCredential(kTestUsername, origin.GetURL());
   const FormData form_data = CreateSigninFormData(origin.GetURL());
   // No saved forms for this origin (empty vector)
   std::vector<password_manager::PasswordForm> saved_forms;
@@ -235,7 +251,7 @@ TEST_F(ActorLoginCredentialFillerTest,
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
   ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
-  EXPECT_CALL(mock_form_cache_, GetFormManagers())
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(mock_callback,
               Run(Eq(LoginStatusResult::kErrorInvalidCredential)));
@@ -246,14 +262,14 @@ TEST_F(ActorLoginCredentialFillerTest,
        CredentialNotSavedForOrigin_SuppliedAndStoredCredentialOriginDiffers) {
   const url::Origin origin =
       url::Origin::Create(GURL("https://example.com/login"));
-  const std::u16string username = u"testuser";
   const Credential credential =
-      CreateTestCredential(username, GURL("https://otherexample.com"));
+      CreateTestCredential(kTestUsername, GURL("https://otherexample.com"));
   const FormData form_data = CreateSigninFormData(origin.GetURL());
   // Prepare a saved credential that does match the requested username, but not
   // the origin
   std::vector<password_manager::PasswordForm> saved_forms;
-  saved_forms.push_back(CreateSavedPasswordForm(origin.GetURL(), username));
+  saved_forms.push_back(
+      CreateSavedPasswordForm(origin.GetURL(), kTestUsername));
   form_fetcher_.SetBestMatches(saved_forms);
 
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
@@ -261,7 +277,7 @@ TEST_F(ActorLoginCredentialFillerTest,
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
   ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
-  EXPECT_CALL(mock_form_cache_, GetFormManagers())
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(mock_callback,
               Run(Eq(LoginStatusResult::kErrorInvalidCredential)));
@@ -269,19 +285,14 @@ TEST_F(ActorLoginCredentialFillerTest,
 }
 
 TEST_F(ActorLoginCredentialFillerTest, FillUsernameAndPassword) {
-  const url::Origin origin =
-      url::Origin::Create(GURL("https://example.com/login"));
-  const std::u16string username_to_find = u"username";
+  const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
   const Credential credential =
-      CreateTestCredential(username_to_find, origin.GetURL());
+      CreateTestCredential(kTestUsername, origin.GetURL());
   const FormData form_data = CreateSigninFormData(origin.GetURL());
 
   // Make sure a saved credential with a matching username exists.
-  std::vector<password_manager::PasswordForm> saved_forms;
-  const std::u16string saved_password = u"password";
-  saved_forms.push_back(CreateSavedPasswordForm(
-      origin.GetURL(), username_to_find, saved_password));
-  form_fetcher_.SetBestMatches(saved_forms);
+  SetSavedCredential(&form_fetcher_, origin.GetURL(), kTestUsername,
+                     kTestPassword);
 
   // Simulate a signin form existing on the page.
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
@@ -290,37 +301,39 @@ TEST_F(ActorLoginCredentialFillerTest, FillUsernameAndPassword) {
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
   ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
-  EXPECT_CALL(mock_form_cache_, GetFormManagers())
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
 
   EXPECT_FALSE(parsed_form->username_element_renderer_id.is_null());
   EXPECT_FALSE(parsed_form->password_element_renderer_id.is_null());
-  EXPECT_CALL(
-      mock_driver_,
-      FillField(parsed_form->username_element_renderer_id, Eq(username_to_find),
-                autofill::FieldPropertiesFlags::kAutofilledActorLogin));
-  EXPECT_CALL(
-      mock_driver_,
-      FillField(parsed_form->password_element_renderer_id, Eq(saved_password),
-                autofill::FieldPropertiesFlags::kAutofilledActorLogin));
 
+  EXPECT_CALL(
+      mock_driver_,
+      FillField(parsed_form->username_element_renderer_id, Eq(kTestUsername),
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
+      .WillOnce(RunOnceCallback<3>(true));
+  EXPECT_CALL(
+      mock_driver_,
+      FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
+      .WillOnce(RunOnceCallback<3>(true));
   EXPECT_CALL(mock_callback,
               Run(Eq(LoginStatusResult::kSuccessUsernameAndPasswordFilled)));
+
   filler.AttemptLogin(&mock_password_manager_);
 }
 
-TEST_F(ActorLoginCredentialFillerTest,
-       FindMatchingCredential_FillOnlyUsername) {
-  const url::Origin origin =
-      url::Origin::Create(GURL("https://example.com/login"));
-  const std::u16string username = u"testuser";
-  const Credential credential = CreateTestCredential(username, origin.GetURL());
-  const FormData form_data = CreateUsernameOnlyFormData(origin.GetURL());
-  std::vector<password_manager::PasswordForm> saved_forms;
-  const std::u16string saved_password = u"password";
-  saved_forms.push_back(
-      CreateSavedPasswordForm(origin.GetURL(), username, saved_password));
-  form_fetcher_.SetBestMatches(saved_forms);
+TEST_F(ActorLoginCredentialFillerTest, FillOnlyUsernameField) {
+  const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
+  const Credential credential =
+      CreateTestCredential(kTestUsername, origin.GetURL());
+
+  // Create a form with only a username field.
+  FormData form_data = CreateUsernameOnlyFormData(origin.GetURL());
+
+  // Make sure a saved credential with a matching username exists.
+  SetSavedCredential(&form_fetcher_, origin.GetURL(), kTestUsername,
+                     kTestPassword);
 
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
   form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
@@ -330,34 +343,39 @@ TEST_F(ActorLoginCredentialFillerTest,
   ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers())
       .WillOnce(Return(base::span(form_managers)));
+
   EXPECT_FALSE(parsed_form->username_element_renderer_id.is_null());
   EXPECT_TRUE(parsed_form->password_element_renderer_id.is_null());
-  EXPECT_CALL(mock_driver_,
-              FillField(parsed_form->username_element_renderer_id, Eq(username),
-                        autofill::FieldPropertiesFlags::kAutofilledActorLogin));
+
   EXPECT_CALL(
       mock_driver_,
-      FillField(parsed_form->password_element_renderer_id, Eq(saved_password),
-                autofill::FieldPropertiesFlags::kAutofilledActorLogin))
+      FillField(parsed_form->username_element_renderer_id, Eq(kTestUsername),
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
+      .WillOnce(RunOnceCallback<3>(true));
+  ;
+  EXPECT_CALL(
+      mock_driver_,
+      FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .Times(0);
   EXPECT_CALL(mock_callback,
               Run(Eq(LoginStatusResult::kSuccessUsernameFilled)));
   filler.AttemptLogin(&mock_password_manager_);
 }
 
-TEST_F(ActorLoginCredentialFillerTest,
-       FindMatchingCredential_FillOnlyPassword) {
-  const url::Origin origin =
-      url::Origin::Create(GURL("https://example.com/login"));
-  const std::u16string username = u"testuser";
-  const Credential credential = CreateTestCredential(username, origin.GetURL());
-  const FormData form_data = CreatePasswordOnlyFormData(origin.GetURL());
-  std::vector<password_manager::PasswordForm> saved_forms;
-  const std::u16string saved_password = u"password";
-  saved_forms.push_back(
-      CreateSavedPasswordForm(origin.GetURL(), username, saved_password));
-  form_fetcher_.SetBestMatches(saved_forms);
+TEST_F(ActorLoginCredentialFillerTest, FillOnlyPasswordField) {
+  const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
+  const Credential credential =
+      CreateTestCredential(kTestUsername, origin.GetURL());
 
+  // Create a form with only a password field.
+  FormData form_data = CreatePasswordOnlyFormData(origin.GetURL());
+
+  // Make sure a saved credential with a matching username exists.
+  SetSavedCredential(&form_fetcher_, origin.GetURL(), kTestUsername,
+                     kTestPassword);
+
+  // Simulate a signin form existing on the page
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
   form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
@@ -366,18 +384,125 @@ TEST_F(ActorLoginCredentialFillerTest,
   ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers())
       .WillOnce(Return(base::span(form_managers)));
+
   EXPECT_TRUE(parsed_form->username_element_renderer_id.is_null());
   EXPECT_FALSE(parsed_form->password_element_renderer_id.is_null());
-  EXPECT_CALL(mock_driver_,
-              FillField(parsed_form->username_element_renderer_id, Eq(username),
-                        autofill::FieldPropertiesFlags::kAutofilledActorLogin))
+
+  EXPECT_CALL(
+      mock_driver_,
+      FillField(parsed_form->username_element_renderer_id, Eq(kTestUsername),
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .Times(0);
   EXPECT_CALL(
       mock_driver_,
-      FillField(parsed_form->password_element_renderer_id, Eq(saved_password),
-                autofill::FieldPropertiesFlags::kAutofilledActorLogin));
+      FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
+      .WillOnce(RunOnceCallback<3>(true));
   EXPECT_CALL(mock_callback,
               Run(Eq(LoginStatusResult::kSuccessPasswordFilled)));
+  filler.AttemptLogin(&mock_password_manager_);
+}
+
+TEST_F(ActorLoginCredentialFillerTest, FillUsernameFails) {
+  const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
+  const Credential credential =
+      CreateTestCredential(kTestUsername, origin.GetURL());
+  const FormData form_data = CreateSigninFormData(origin.GetURL());
+
+  // Make sure a saved credential with a matching username exists.
+  SetSavedCredential(&form_fetcher_, origin.GetURL(), kTestUsername,
+                     kTestPassword);
+
+  // Simulate a signin form existing on the page.
+  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
+  form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
+  const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
+
+  base::MockCallback<LoginStatusResultOrErrorReply> callback;
+  ActorLoginCredentialFiller filler(origin, credential, callback.Get());
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
+      .WillOnce(Return(base::span(form_managers)));
+
+  EXPECT_CALL(
+      mock_driver_,
+      FillField(parsed_form->username_element_renderer_id, Eq(kTestUsername),
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
+      .WillOnce(RunOnceCallback<3>(false));
+  EXPECT_CALL(
+      mock_driver_,
+      FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
+      .WillOnce(RunOnceCallback<3>(true));
+  EXPECT_CALL(callback, Run(Eq(LoginStatusResult::kSuccessPasswordFilled)));
+  filler.AttemptLogin(&mock_password_manager_);
+}
+
+TEST_F(ActorLoginCredentialFillerTest, FillPasswordFails) {
+  const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
+  const Credential credential =
+      CreateTestCredential(kTestUsername, origin.GetURL());
+  const FormData form_data = CreateSigninFormData(origin.GetURL());
+
+  // Make sure a saved credential with a matching username exists.
+  SetSavedCredential(&form_fetcher_, origin.GetURL(), kTestUsername,
+                     kTestPassword);
+
+  // Simulate a signin form existing on the page.
+  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
+  form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
+  const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
+
+  base::MockCallback<LoginStatusResultOrErrorReply> callback;
+  ActorLoginCredentialFiller filler(origin, credential, callback.Get());
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
+      .WillOnce(Return(base::span(form_managers)));
+
+  EXPECT_CALL(
+      mock_driver_,
+      FillField(parsed_form->username_element_renderer_id, Eq(kTestUsername),
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
+      .WillOnce(RunOnceCallback<3>(true));
+  EXPECT_CALL(
+      mock_driver_,
+      FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
+      .WillOnce(RunOnceCallback<3>(false));
+  EXPECT_CALL(callback, Run(Eq(LoginStatusResult::kSuccessUsernameFilled)));
+  filler.AttemptLogin(&mock_password_manager_);
+}
+
+TEST_F(ActorLoginCredentialFillerTest, FillBothFails) {
+  const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
+  const Credential credential =
+      CreateTestCredential(kTestUsername, origin.GetURL());
+  const FormData form_data = CreateSigninFormData(origin.GetURL());
+
+  // Make sure a saved credential with a matching username exists.
+  SetSavedCredential(&form_fetcher_, origin.GetURL(), kTestUsername,
+                     kTestPassword);
+
+  // Simulate a signin form existing on the page.
+  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
+  form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
+  const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
+
+  base::MockCallback<LoginStatusResultOrErrorReply> callback;
+  ActorLoginCredentialFiller filler(origin, credential, callback.Get());
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
+      .WillOnce(Return(base::span(form_managers)));
+
+  EXPECT_CALL(
+      mock_driver_,
+      FillField(parsed_form->username_element_renderer_id, Eq(kTestUsername),
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
+      .WillOnce(RunOnceCallback<3>(false));
+
+  EXPECT_CALL(
+      mock_driver_,
+      FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
+      .WillOnce(RunOnceCallback<3>(false));
+  EXPECT_CALL(callback, Run(Eq(LoginStatusResult::kErrorNoFillableFields)));
   filler.AttemptLogin(&mock_password_manager_);
 }
 

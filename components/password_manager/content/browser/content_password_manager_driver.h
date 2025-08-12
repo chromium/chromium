@@ -76,7 +76,8 @@ class ContentPasswordManagerDriver final
   void FocusNextFieldAfterPasswords() override;
   void FillField(autofill::FieldRendererId triggering_field_id,
                  const std::u16string& value,
-                 autofill::FieldPropertiesFlags field_properties) override;
+                 autofill::FieldPropertiesFlags field_properties,
+                 base::OnceCallback<void(bool)> success_callback) override;
   void TriggerPasswordRecoverySuggestions(
       autofill::FieldRendererId field_id) override;
   void FillChangePasswordForm(

@@ -986,17 +986,21 @@ void PasswordAutofillAgent::PreviewField(FieldRendererId field_id,
       /*is_password=*/input.FormControlTypeForAutofill() == kInputPassword);
 }
 
-void PasswordAutofillAgent::FillField(FieldRendererId field_id,
-                                      const std::u16string& value,
-                                      FieldPropertiesMask field_properties) {
+void PasswordAutofillAgent::FillField(
+    FieldRendererId field_id,
+    const std::u16string& value,
+    FieldPropertiesMask field_properties,
+    base::OnceCallback<void(bool)> success_callback) {
   WebFormControlElement form_control =
       form_util::GetFormControlByRendererId(field_id);
   WebInputElement input_element = form_control.DynamicTo<WebInputElement>();
   if (!input_element || input_element.IsReadOnly()) {
+    std::move(success_callback).Run(false);
     // Early return for non-input fields such as textarea.
     return;
   }
   DoFillField(input_element, value, field_properties);
+  std::move(success_callback).Run(true);
 }
 
 void PasswordAutofillAgent::FillChangePasswordForm(

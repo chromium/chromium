@@ -91,10 +91,12 @@ class PasswordManagerDriver {
 
   // Tells the renderer to fill the given `value` into the triggering field.
   // Also includes the `FieldPropertiesFlags` used to update the
-  // `FieldPropertiesMask` of the filled field.
+  // `FieldPropertiesMask` of the filled field. It invokes `success_callback`
+  // with true if the filling could be performed and false otherwise.
   virtual void FillField(autofill::FieldRendererId triggering_field_id,
                          const std::u16string& value,
-                         autofill::FieldPropertiesFlags field_flags) {}
+                         autofill::FieldPropertiesFlags field_flags,
+                         base::OnceCallback<void(bool)> success_callback) {}
 
   // Tells the renderer to open the suggestions popup on the login field
   // specified in `field_id`.

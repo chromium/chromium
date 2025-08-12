@@ -44,6 +44,12 @@ class ActorLoginCredentialFiller {
   void FillForm(const password_manager::PasswordFormManager& manager,
                 const password_manager::PasswordForm& stored_credential);
 
+  // Called with the success status of filling the respective field.
+  // Once both methods have been invoked, the result is passed on via
+  // `callback_`.
+  void OnUsernameFillingDone(bool success);
+  void OnPasswordFillingDone(bool success);
+
   // The origin of the primary main frame.
   const url::Origin origin_;
 
@@ -51,8 +57,18 @@ class ActorLoginCredentialFiller {
   // matching the `origin_`.
   const Credential credential_;
 
+  // Populated once the request to fill the field comes back with a success
+  // reply from the renderer.
+  std::optional<bool> username_filled_;
+  std::optional<bool> password_filled_;
+
   // The callback to call with the result of the login attempt.
   LoginStatusResultOrErrorReply callback_;
+
+  // Member variables should appear before the WeakPtrFactory, to ensure
+  // that any WeakPtrs to `ActorLoginCredentialFiller` are invalidated before
+  // its member variables' destructors are executed, rendering them invalid.
+  base::WeakPtrFactory<ActorLoginCredentialFiller> weak_ptr_factory_{this};
 };
 
 }  // namespace actor_login

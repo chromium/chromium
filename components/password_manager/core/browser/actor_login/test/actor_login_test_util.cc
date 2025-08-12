@@ -30,7 +30,8 @@ FormData CreateSigninFormData(const GURL& url) {
   std::vector<autofill::FormFieldData> fields;
   fields.push_back(CreateTestFormField(
       /*label=*/"Username:", /*name=*/"username",
-      /*value=*/"", autofill::FormControlType::kInputEmail));
+      /*value=*/"", autofill::FormControlType::kInputEmail,
+      /*autocomplete=*/"username"));
   fields.push_back(CreateTestFormField(
       /*label=*/"Password:", /*name=*/"password",
       /*value=*/"", autofill::FormControlType::kInputPassword));

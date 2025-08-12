@@ -302,7 +302,8 @@ class FakePasswordAutofillAgent
                     const std::u16string& value) override {}
   void FillField(autofill::FieldRendererId field_id,
                  const std::u16string& value,
-                 autofill::FieldPropertiesMask field_properties) override {}
+                 autofill::FieldPropertiesMask field_properties,
+                 base::OnceCallback<void(bool)> success_callback) override {}
   void FillChangePasswordForm(
       FieldRendererId password_element_id,
       FieldRendererId new_password_element_id,
