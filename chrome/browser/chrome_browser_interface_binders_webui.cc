@@ -1449,7 +1449,8 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
     registry.ForWebUI<WebUIBrowserUI>()
         .Add<webui_browser::mojom::PageHandlerFactory>()
         .Add<searchbox::mojom::PageHandler>()
-        .Add<metrics_reporter::mojom::PageMetricsHost>();
+        .Add<metrics_reporter::mojom::PageMetricsHost>()
+        .Add<tabs_api::mojom::TabStripService>();
   }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

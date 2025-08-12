@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '/strings.m.js';
+import './tab_strip.js';
 import './webview.js';
 import '//resources/cr_components/searchbox/searchbox.js';
 
@@ -12,6 +13,8 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BrowserProxy} from './browser_proxy.js';
+import type {TabStrip} from './tab_strip.js';
+import {TabStripController} from './tab_strip_controller.js';
 
 export class WebuiBrowserAppElement extends CrLitElement {
   static get is() {
@@ -24,6 +27,14 @@ export class WebuiBrowserAppElement extends CrLitElement {
 
   override render() {
     return getHtml.bind(this)();
+  }
+
+  private tabStripController_: TabStripController;
+
+  constructor() {
+    super();
+
+    this.tabStripController_ = new TabStripController();
   }
 
   static override get properties() {
@@ -58,6 +69,28 @@ export class WebuiBrowserAppElement extends CrLitElement {
 
   protected onCloseClick_(_: Event) {
     BrowserProxy.getPageHandler().close();
+  }
+
+  protected onTabstripAdded_(e: CustomEvent) {
+    const tabstrip: TabStrip = e.detail.tabstrip;
+    this.tabStripController_.init(tabstrip);
+  }
+
+  protected onTabClick_(e: CustomEvent) {
+    this.tabStripController_.onTabClick(e);
+  }
+
+  protected onTabDragOutOfBounds_(e: CustomEvent) {
+    this.tabStripController_.onTabDragOutOfBounds(e);
+  }
+
+  protected onTabClosed_(e: CustomEvent) {
+    const tabId = e.detail.tabId;
+    this.tabStripController_.removeTab(tabId);
+  }
+
+  protected onAddTabClick_(_: Event) {
+    this.tabStripController_.addNewTab();
   }
 }
 

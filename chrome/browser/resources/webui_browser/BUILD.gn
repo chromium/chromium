@@ -23,20 +23,40 @@ if (is_chrome_branded) {
       "app.ts",
       "app.html.ts",
       "browser_proxy.ts",
+      "tab_element.ts",
+      "tab_element.html.ts",
+      "tab_strip.ts",
+      "tab_strip.html.ts",
+      "tab_strip_api.ts",
+      "tab_strip_controller.ts",
       "webui_browser.ts",
       "webview.ts",
     ]
     css_files = [
       "app.css",
+      "tab_element.css",
+      "tab_strip.css",
       "webview.css",
     ]
 
     mojo_files = [
+      "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom-webui.ts",
+      "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/node_id_converter.ts",
+      "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_data_model.mojom-webui.ts",
       "$root_gen_dir/chrome/browser/ui/webui_browser/browser.mojom-webui.ts",
+      "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_events.mojom-webui.ts",
+      "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_types.mojom-webui.ts",
+      "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_types.mojom-converters.ts",
+      "$root_gen_dir/chrome/browser/ui/webui/tabs/tabs.mojom-webui.ts",
+      "$root_gen_dir/components/tab_groups/public/mojom/tab_group_types.mojom-webui.ts",
     ]
 
     mojo_files_deps = [
+      "//chrome/browser/ui/tabs/tab_strip_api:mojom_ts__copy_converters",
+      "//chrome/browser/ui/tabs/tab_strip_api:mojom_ts__generator",
+      "//chrome/browser/ui/webui/tabs:mojo_bindings_ts__generator",
       "//chrome/browser/ui/webui_browser:browser_mojo_bindings_ts__generator",
+      "//components/tab_groups/public/mojom:mojo_bindings_ts__generator",
     ]
 
     webui_context_type = "trusted"

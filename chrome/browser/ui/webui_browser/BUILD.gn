@@ -54,6 +54,7 @@ source_set("impl") {
     "//chrome/browser/resources/webui_browser:resources",
     "//chrome/browser/themes",
     "//chrome/browser/ui/location_bar",
+    "//chrome/browser/ui/tabs/tab_strip_api",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/web_applications",

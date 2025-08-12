@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui_browser/browser.mojom.h"
@@ -56,6 +57,9 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<metrics_reporter::mojom::PageMetricsHost> receiver);
   void BindInterface(
       mojo::PendingReceiver<guest_contents::mojom::GuestContentsHost> receiver);
+
+  void BindInterface(
+      mojo::PendingReceiver<tabs_api::mojom::TabStripService> receiver);
 
   void ShowSidePanel(SidePanelEntryKey side_panel_entry_key);
   void CloseSidePanel();

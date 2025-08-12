@@ -6,6 +6,8 @@
 
 #include "base/notimplemented.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_register.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
@@ -94,6 +96,15 @@ void WebUIBrowserUI::BindInterface(
     mojo::PendingReceiver<guest_contents::mojom::GuestContentsHost> receiver) {
   guest_contents::GuestContentsHostImpl::Create(web_ui()->GetWebContents(),
                                                 std::move(receiver));
+}
+
+void WebUIBrowserUI::BindInterface(
+    mojo::PendingReceiver<tabs_api::mojom::TabStripService> receiver) {
+  auto* tab_strip_service =
+      browser_->browser_window_features()->tab_strip_service();
+  CHECK(tab_strip_service) << "Browser missing TabStripService, did you enable "
+                              "TabStripBrowserApi feature flag?";
+  tab_strip_service->Accept(std::move(receiver));
 }
 
 base::WeakPtr<WebUIBrowserUI> WebUIBrowserUI::GetWeakPtr() {

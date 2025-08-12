@@ -9,11 +9,22 @@ import type {WebuiBrowserAppElement} from './app.js';
 export function getHtml(this: WebuiBrowserAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<h1>WebUI Browser
- <cr-button type="button" @click="${this.onMinimizeClick_}">[-]</cr-button>
- <cr-button type="button" @click="${this.onMaximizeClick_}">[+]</cr-button>
- <cr-button type="button" @click="${this.onCloseClick_}">[X]</cr-button>
-</h1>
+<div class="titlebarDiv">
+  <div class="tabstripDiv">
+    <webui-browser-tabstrip
+      @tabstrip-added="${this.onTabstripAdded_}"
+      @tab-click="${this.onTabClick_}"
+      @tab-drag-out-of-bounds="${this.onTabDragOutOfBounds_}"
+      @tab-close="${this.onTabClosed_}"
+      @tab-add="${this.onAddTabClick_}">
+    </webui-browser-tabstrip>
+  </div>
+  <div class="captionButtonsDiv">
+    <cr-button type="button" @click="${this.onMinimizeClick_}">[-]</cr-button>
+    <cr-button type="button" @click="${this.onMaximizeClick_}">[+]</cr-button>
+    <cr-button type="button" @click="${this.onCloseClick_}">[X]</cr-button>
+  </div>
+</div>
 <div style="display: flex; flex: none; padding: 7px;">
   <cr-searchbox id="address"></cr-searchbox>
 </div>

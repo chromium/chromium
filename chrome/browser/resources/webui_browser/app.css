@@ -27,3 +27,23 @@ cr-searchbox {
 cr-searchbox[dropdown-is-visible] {
   --cr-searchbox-shadow: 0 3px 7px 0px #20212451;
 }
+
+.titlebarDiv {
+  display: flex;
+}
+
+.tabstripDiv {
+  float: left;
+  text-align: left;
+}
+
+.captionButtonsDiv {
+  float: right;
+  flex: 1;
+  text-align: right;
+  app-region: drag;
+}
+
+.captionButtonsDiv cr-button {
+  app-region: no-drag;
+}
