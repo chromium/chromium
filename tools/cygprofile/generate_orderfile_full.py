@@ -13,7 +13,6 @@ Example usage:
 """
 
 import argparse
-import ast
 import csv
 import hashlib
 import json
@@ -44,8 +43,6 @@ import devil_chromium
 _OUT_PATH = _SRC_PATH / 'out'
 # use depot_tools/gn to find actual binary path for any platforms.
 _GN_PATH = _SRC_PATH / 'third_party/depot_tools/gn.py'
-_NINJA_PATH = _SRC_PATH / 'third_party/ninja/ninja'
-_SISO_PATH = _SRC_PATH / 'third_party/siso/cipd/siso'
 
 # Architecture specific GN args. Trying to build an orderfile for an
 # architecture not listed here will eventually throw.
@@ -182,25 +179,15 @@ class StepRecorder:
     return process
 
 
-class NativeLibraryBuildVariant:
-  """Native library build versions.
-  See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_native_libraries.md # pylint: disable=line-too-long
-  for more details.
-  """
-  MONOCHROME = 0
-  TRICHROME = 1
-
-
 class ClankCompiler:
   """Handles compilation of clank."""
 
   def __init__(self, out_dir: pathlib.Path, step_recorder: StepRecorder,
-               options, orderfile_location, native_library_build_variant):
+               options, orderfile_location):
     self._out_dir = out_dir
     self._step_recorder = step_recorder
     self._options = options
     self._orderfile_location = orderfile_location
-    self._native_library_build_variant = native_library_build_variant
 
     self._ninja_command = ['autoninja']
     # use ninja_path if it is explicitly given.
@@ -209,7 +196,7 @@ class ClankCompiler:
 
     # WebView targets
     self._webview_target, webview_apk = self._GetWebViewTargetAndApk(
-        native_library_build_variant, options.public, options.arch)
+        options.public, options.arch)
     self.webview_apk_path = str(out_dir / 'apks' / webview_apk)
     self.webview_installer_path = str(self._out_dir / 'bin' /
                                       self._webview_target)
@@ -332,10 +319,8 @@ class ClankCompiler:
     return _camel_case.replace('Apk', '.apk')
 
   @staticmethod
-  def _GetWebViewTargetAndApk(native_library_build_variant, public, arch):
+  def _GetWebViewTargetAndApk(public, arch):
     target = 'trichrome_webview_google_apk'
-    if native_library_build_variant == NativeLibraryBuildVariant.MONOCHROME:
-      target = 'monochrome_apk'
     if public:
       target = ClankCompiler._MakePublicTarget(target)
     apk = ClankCompiler._GetApkFromTarget(target)
@@ -346,7 +331,7 @@ class ClankCompiler:
 
   @staticmethod
   def _GetChromeTargetAndApk(public):
-    target = 'monochrome_apk'
+    target = 'trichrome_chrome_google_apk'
     if public:
       target = ClankCompiler._MakePublicTarget(target)
     return target, ClankCompiler._GetApkFromTarget(target)
@@ -355,7 +340,7 @@ class ClankCompiler:
   def _GetLibchromeTarget(arch):
     target = 'libmonochrome'
     if '64' in arch:
-      # Monochrome has a _64 suffix for arm64 and x64 builds.
+      # Trichrome has a _64 suffix for arm64 and x64 builds.
       return target + '_64'
     return target
 
@@ -406,20 +391,13 @@ class OrderfileGenerator:
     devices = device_utils.DeviceUtils.HealthyDevices()
     assert devices, 'Expected at least one connected device'
 
-    if (self._native_library_build_variant ==
-        NativeLibraryBuildVariant.TRICHROME):
-      for device in devices:
-        if device.build_version_sdk >= version_codes.Q:
-          return device
-      raise Exception('No device running Android Q+ found to build trichrome.')
-
-    return devices[0]
+    for device in devices:
+      if device.build_version_sdk >= version_codes.Q:
+        return device
+    raise Exception('No device running Android Q+ found to build trichrome.')
 
   def __init__(self, options):
     self._options = options
-    self._native_library_build_variant = NativeLibraryBuildVariant.TRICHROME
-    if options.native_lib_variant == 'monochrome':
-      self._native_library_build_variant = NativeLibraryBuildVariant.MONOCHROME
     self._instrumented_out_dir = (
         _OUT_PATH / f'orderfile_{self._options.arch}_instrumented_out')
 
@@ -739,8 +717,7 @@ class OrderfileGenerator:
     benchmark_results = {}
     try:
       self._compiler = ClankCompiler(out_directory, self._step_recorder,
-                                     self._options, self._GetPathToOrderfile(),
-                                     self._native_library_build_variant)
+                                     self._options, self._GetPathToOrderfile())
 
       if no_orderfile:
         orderfile_path = self._GetPathToOrderfile()
@@ -794,8 +771,7 @@ class OrderfileGenerator:
     if self._options.profile:
       self._compiler = ClankCompiler(self._instrumented_out_dir,
                                      self._step_recorder, self._options,
-                                     self._GetPathToOrderfile(),
-                                     self._native_library_build_variant)
+                                     self._GetPathToOrderfile())
       if not self._options.pregenerated_profiles:
         # If there are pregenerated profiles, the instrumented build should
         # not be changed to avoid invalidating the pregenerated profile
@@ -812,8 +788,7 @@ class OrderfileGenerator:
                          self._GetPathToOrderfile())
     self._compiler = ClankCompiler(self._uninstrumented_out_dir,
                                    self._step_recorder, self._options,
-                                   self._GetPathToOrderfile(),
-                                   self._native_library_build_variant)
+                                   self._GetPathToOrderfile())
     self._AddDummyFunctions()
     self._compiler.CompileLibchrome(instrumented=False, force_relink=False)
     if self._VerifySymbolOrder():
@@ -855,7 +830,7 @@ def CreateArgumentParser():
   parser.add_argument(
       "--verify",
       action="store_true",
-      help="If true, the script only verifies the current orderfile",
+      help="If true, the script only verifies the current orderfile.",
   )
   parser.add_argument(
       "--target-arch",
@@ -864,12 +839,6 @@ def CreateArgumentParser():
       default="arm",
       choices=list(_ARCH_GN_ARGS.keys()),
       help="The target architecture for which to build.",
-  )
-  parser.add_argument(
-      "--output-json",
-      action="store",
-      dest="json_file",
-      help="Location to save stats in json format",
   )
   parser.add_argument(
       "--skip-profile",
@@ -890,49 +859,36 @@ def CreateArgumentParser():
   parser.add_argument(
       "--public",
       action="store_true",
-      help="Build non-internal APK and change the orderfile "
-      "location. Required if your checkout is non-internal.",
+      help="Build non-internal APK and change the orderfile location. "
+      "Required if your checkout is non-internal.",
       default=False,
-  )
-  parser.add_argument(
-      "--native-lib-variant",
-      choices=["monochrome", "trichrome"],
-      default="monochrome",
-      help="The shared library build variant for chrome on android. See "
-      "https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_native_libraries.md "  # pylint: disable=line-too-long
-      "for more details.",
   )
   parser.add_argument(
       "--profile-webview",
       action="store_true",
       default=False,
-      help="Use the WebView benchmark profiles to generate the "
-      "orderfile.",
+      help="Use the WebView benchmark profiles to generate the orderfile.",
   )
   parser.add_argument(
       "--pregenerated-profiles",
       default=None,
       type=str,
-      help="Pregenerated profiles to use instead of running "
-      "profile step. Cannot be used with "
-      "--skip-profiles.",
+      help="Pregenerated profiles to use instead of running the profile step. "
+      "Cannot be used with --skip-profiles.",
   )
   parser.add_argument(
       "--profile-save-dir",
       default=None,
       type=str,
-      help="Directory to save any profiles created. These can "
-      "be used with --pregenerated-profiles.  Cannot be "
-      "used with --skip-profiles.",
+      help="Directory to save any profiles created. These can be used with "
+      "--pregenerated-profiles. Cannot be used with --skip-profiles.",
   )
   parser.add_argument(
       "--streamline-for-debugging",
       action="store_true",
-      help="Streamline where possible the run for faster "
-      "iteration while debugging. The orderfile "
-      "generated will be valid and nontrivial, but "
-      "may not be based on a representative profile "
-      "or other such considerations. Use with caution.",
+      help="Streamline the run for faster iteration while debugging. The "
+      "orderfile will be valid and non-trivial, but may not be "
+      "representative.",
   )
   parser.add_argument(
       "-v",
@@ -940,21 +896,15 @@ def CreateArgumentParser():
       dest="verbosity",
       action="count",
       default=0,
-      help=">=1 to print debug logging, this will also be "
-      "passed to run_benchmark calls.",
+      help=">=1 to print debug logging, this will also be passed to "
+      "run_benchmark calls.",
   )
   return parser
 
 
-def CreateOrderfile(options):
-  """Creates an orderfile.
-
-  Args:
-    options: As returned from optparse.OptionParser.parse_args()
-
-  Returns:
-    True iff success.
-  """
+def main():
+  parser = CreateArgumentParser()
+  options = parser.parse_args()
   if options.verbosity >= 1:
     level = logging.DEBUG
   else:
@@ -963,27 +913,11 @@ def CreateOrderfile(options):
   devil_chromium.Initialize(adb_path=options.adb_path)
 
   generator = OrderfileGenerator(options)
-  try:
-    if options.verify:
-      generator._VerifySymbolOrder()
-    else:
-      return generator.Generate()
-  except Exception:
-    logging.exception('Generator failure')
-  finally:
-    json_output = json.dumps(generator.GetReportingData(), indent=2) + '\n'
-    if options.json_file:
-      with open(options.json_file, 'w') as f:
-        f.write(json_output)
-    logging.info('\n%s\n', json_output)
-  return False
-
-
-def main():
-  parser = CreateArgumentParser()
-  options = parser.parse_args()
-  return 0 if CreateOrderfile(options) else 1
+  if options.verify:
+    generator._VerifySymbolOrder()
+  else:
+    generator.Generate()
 
 
 if __name__ == '__main__':
-  sys.exit(main())
+  main()
