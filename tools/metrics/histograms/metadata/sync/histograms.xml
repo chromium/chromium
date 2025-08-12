@@ -1009,7 +1009,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeUniquePositionError" enum="SyncDataTypes"
-    expires_after="2025-09-22">
+    expires_after="2026-09-22">
   <owner>rushans@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
@@ -1022,7 +1022,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeUniquePositionIncorrectOrder"
-    enum="SyncDataTypes" expires_after="2025-09-22">
+    enum="SyncDataTypes" expires_after="2026-09-22">
   <owner>rushans@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
