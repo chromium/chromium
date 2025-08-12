@@ -77,7 +77,7 @@ struct OnGotPrefetchToServeState {
 // appearing in the order they occur.
 void ContinueOnGotPrefetchToServe(
     std::unique_ptr<OnGotPrefetchToServeState> state);
-void StartCookieValidation(std::unique_ptr<OnGotPrefetchToServeState>& state);
+void StartCookieValidation(std::unique_ptr<OnGotPrefetchToServeState> state);
 void OnGotCookiesForValidation(
     std::unique_ptr<OnGotPrefetchToServeState> state,
     const std::vector<net::CookieWithAccessResult>& cookies,
@@ -98,8 +98,16 @@ void ContinueOnGotPrefetchToServe(
   // correct.
   if (base::FeatureList::IsEnabled(features::kPrefetchCookieIndices)) {
     if (!state->cookies_matched.has_value()) {
-      StartCookieValidation(state);
-      if (!state) {
+      WebContents* web_contents =
+          WebContents::FromFrameTreeNodeId(state->frame_tree_node_id);
+      if (!web_contents || !state->serving_handle) {
+        // We can't confirm that the cookies matched. But probably everything is
+        // being torn down, anyway.
+        state->cookies_matched = false;
+      } else if (!state->serving_handle.VariesOnCookieIndices()) {
+        state->cookies_matched = true;
+      } else {
+        StartCookieValidation(std::move(state));
         // Fetching the cookies asynchronously. Continue later.
         return;
       }
@@ -179,19 +187,9 @@ void ContinueOnGotPrefetchToServe(
 
 // COOKIE VALIDATION
 
-void StartCookieValidation(std::unique_ptr<OnGotPrefetchToServeState>& state) {
+void StartCookieValidation(std::unique_ptr<OnGotPrefetchToServeState> state) {
   WebContents* web_contents =
       WebContents::FromFrameTreeNodeId(state->frame_tree_node_id);
-  if (!web_contents || !state->serving_handle) {
-    // We can't confirm that the cookies matched. But probably everything is
-    // being torn down, anyway.
-    state->cookies_matched = false;
-    return;
-  }
-  if (!state->serving_handle.VariesOnCookieIndices()) {
-    state->cookies_matched = true;
-    return;
-  }
   network::mojom::CookieManager* cookie_manager =
       web_contents->GetBrowserContext()
           ->GetDefaultStoragePartition()
