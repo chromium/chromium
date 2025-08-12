@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/autofill/bubble_controller_base.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
@@ -66,7 +67,8 @@ class ManagePasswordsUIController
       public password_manager::PasswordStoreInterface::Observer,
       public PasswordsLeakDialogDelegate,
       public PasswordsModelDelegate,
-      public PasswordsClientUIDelegate {
+      public PasswordsClientUIDelegate,
+      public autofill::BubbleControllerBase {
  public:
   ManagePasswordsUIController(const ManagePasswordsUIController&) = delete;
   ManagePasswordsUIController& operator=(const ManagePasswordsUIController&) =
@@ -227,6 +229,13 @@ class ManagePasswordsUIController
   }
 #endif  // defined(UNIT_TEST)
 
+  // BubbleControllerBase:
+  void ShowBubble() override;
+  void HideBubble() override;
+  autofill::BubbleType GetBubbleType() const override;
+  bool IsShowingBubble() const override;
+  base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
+
   // Hides the bubble if opened. Mocked in the tests.
   virtual void HidePasswordBubble();
 
@@ -234,11 +243,6 @@ class ManagePasswordsUIController
   // should be displayed on it.
   void ShowChangePasswordBubble(const std::u16string& username,
                                 const std::u16string& new_password);
-
-  bool IsShowingBubble() const {
-    return bubble_status_ == BubbleStatus::SHOWN ||
-           bubble_status_ == BubbleStatus::SHOWN_PENDING_ICON_UPDATE;
-  }
 
  protected:
   explicit ManagePasswordsUIController(content::WebContents* web_contents);

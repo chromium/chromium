@@ -1519,4 +1519,26 @@ bool ManagePasswordsUIController::IsPasswordChangeOngoing() const {
   return GetPasswordChangeDelegate();
 }
 
+void ManagePasswordsUIController::ShowBubble() {
+  // TODO(crbug.com/432429605): Implement.
+}
+
+void ManagePasswordsUIController::HideBubble() {
+  HidePasswordBubble();
+}
+
+autofill::BubbleType ManagePasswordsUIController::GetBubbleType() const {
+  return autofill::BubbleType::kPassword;
+}
+
+bool ManagePasswordsUIController::IsShowingBubble() const {
+  return bubble_status_ == BubbleStatus::SHOWN ||
+         bubble_status_ == BubbleStatus::SHOWN_PENDING_ICON_UPDATE;
+}
+
+base::WeakPtr<autofill::BubbleControllerBase>
+ManagePasswordsUIController::GetBubbleControllerBaseWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ManagePasswordsUIController);
