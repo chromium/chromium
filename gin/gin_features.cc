@@ -134,6 +134,10 @@ BASE_FEATURE(kV8MemoryReducer,
 const base::FeatureParam<int> kV8MemoryReducerGCCount{
     &kV8MemoryReducer, "V8MemoryReducerGCCount", 3};
 
+BASE_FEATURE(kV8MemoryPoolReleaseOnMallocFailures,
+             "V8MemoryPoolReleaseOnMallocFailures",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kV8PreconfigureOldGen,
              "V8PreconfigureOldGen",
              kFeatureDefaultStateControlledByV8);
