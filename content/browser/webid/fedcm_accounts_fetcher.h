@@ -106,19 +106,13 @@ class FedCmAccountsFetcher {
       std::unique_ptr<IdentityProviderInfo> idp_info,
       const gfx::Image& rp_brand_icon);
 
-  // Returns whether the algorithm should terminate after applying the account
-  // label filter.
-  bool FilterAccountsWithLabel(
+  void FilterAccountsWithLabel(
       const std::string& label,
       std::vector<IdentityRequestAccountPtr>& accounts);
-  // Returns whether the algorithm should terminate after applying the login
-  // hint filter.
-  bool FilterAccountsWithLoginHint(
+  void FilterAccountsWithLoginHint(
       const std::string& login_hint,
       std::vector<IdentityRequestAccountPtr>& accounts);
-  // Returns whether the algorithm should terminate after applying the domain
-  // hint filter.
-  bool FilterAccountsWithDomainHint(
+  void FilterAccountsWithDomainHint(
       const std::string& domain_hint,
       std::vector<IdentityRequestAccountPtr>& accounts);
 

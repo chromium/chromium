@@ -44,10 +44,6 @@ bool IsFedCmSameSiteLaxEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmSameSiteLax);
 }
 
-bool IsFedCmShowFilteredAccountsEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmShowFilteredAccounts);
-}
-
 bool IsFedCmLightweightModeEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmLightweightMode);
 }

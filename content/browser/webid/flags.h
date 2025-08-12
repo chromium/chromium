@@ -32,9 +32,6 @@ bool IsWebIdentityDigitalCredentialsCreationEnabled();
 // Whether sending of SameSite=Lax cookies is enabled.
 bool IsFedCmSameSiteLaxEnabled();
 
-// Whether showing filtered accounts is enabled.
-bool IsFedCmShowFilteredAccountsEnabled();
-
 // Whether lightweight FedCM credentials are enabled.
 bool IsFedCmLightweightModeEnabled();
 

@@ -284,51 +284,13 @@ void FedCmAccountsFetcher::OnAccountsResponseReceived(
     return;
   }
   RecordRawAccountsSize(accounts.size());
-  if (!FilterAccountsWithLabel(idp_info->metadata.requested_label, accounts)) {
-    // No accounts remain, so treat as account fetch failure.
-    render_frame_host_->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kError,
-        "Accounts were received, but none matched the label.");
-    // If there are no accounts after filtering based on the label,
-    // treat this exactly the same as if we had received an empty accounts
-    // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
-    HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
-                               FederatedAuthRequestResult::kAccountsListEmpty,
-                               TokenStatus::kAccountsListEmpty, status);
-    return;
-  }
-  if (!FilterAccountsWithLoginHint(idp_info->provider->login_hint, accounts)) {
-    // No accounts remain, so treat as account fetch failure.
-    render_frame_host_->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kError,
-        "Accounts were received, but none matched the loginHint.");
-    // If there are no accounts after filtering based on the login hint,
-    // treat this exactly the same as if we had received an empty accounts
-    // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
-    HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
-                               FederatedAuthRequestResult::kAccountsListEmpty,
-                               TokenStatus::kAccountsListEmpty, status);
-    return;
-  }
-  if (!FilterAccountsWithDomainHint(idp_info->provider->domain_hint,
-                                    accounts)) {
-    // No accounts remain, so treat as account fetch failure.
-    render_frame_host_->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kError,
-        "Accounts were received, but none matched the domainHint.");
-    // If there are no accounts after filtering based on the domain hint,
-    // treat this exactly the same as if we had received an empty accounts
-    // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
-    HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
-                               FederatedAuthRequestResult::kAccountsListEmpty,
-                               TokenStatus::kAccountsListEmpty, status);
-    return;
-  }
+  FilterAccountsWithLabel(idp_info->metadata.requested_label, accounts);
+  FilterAccountsWithLoginHint(idp_info->provider->login_hint, accounts);
+  FilterAccountsWithDomainHint(idp_info->provider->domain_hint, accounts);
   auto filter = [](const IdentityRequestAccountPtr& account) {
     return account->is_filtered_out;
   };
-  if (!IsFedCmShowFilteredAccountsEnabled() ||
-      !federated_auth_request_impl_->HasUserTriedToSignInToIdp(
+  if (!federated_auth_request_impl_->HasUserTriedToSignInToIdp(
           idp_config_url) ||
       federated_auth_request_impl_->login_url() !=
           idp_info->metadata.idp_login_url) {
@@ -468,11 +430,11 @@ void FedCmAccountsFetcher::OnFetchDataForIdpSucceeded(
                                                            std::move(idp_info));
 }
 
-bool FedCmAccountsFetcher::FilterAccountsWithLabel(
+void FedCmAccountsFetcher::FilterAccountsWithLabel(
     const std::string& label,
     std::vector<IdentityRequestAccountPtr>& accounts) {
   if (label.empty()) {
-    return true;
+    return;
   }
 
   // Filter out all accounts whose labels do not match the requested label.
@@ -489,14 +451,13 @@ bool FedCmAccountsFetcher::FilterAccountsWithLabel(
   }
   federated_auth_request_impl_->fedcm_metrics()->RecordNumMatchingAccounts(
       accounts_remaining, "AccountLabel");
-  return IsFedCmShowFilteredAccountsEnabled() || accounts_remaining > 0u;
 }
 
-bool FedCmAccountsFetcher::FilterAccountsWithLoginHint(
+void FedCmAccountsFetcher::FilterAccountsWithLoginHint(
     const std::string& login_hint,
     std::vector<IdentityRequestAccountPtr>& accounts) {
   if (login_hint.empty()) {
-    return true;
+    return;
   }
 
   // Filter out all accounts whose ID and whose email do not match the login
@@ -516,14 +477,13 @@ bool FedCmAccountsFetcher::FilterAccountsWithLoginHint(
   }
   federated_auth_request_impl_->fedcm_metrics()->RecordNumMatchingAccounts(
       accounts_remaining, "LoginHint");
-  return IsFedCmShowFilteredAccountsEnabled() || accounts_remaining > 0u;
 }
 
-bool FedCmAccountsFetcher::FilterAccountsWithDomainHint(
+void FedCmAccountsFetcher::FilterAccountsWithDomainHint(
     const std::string& domain_hint,
     std::vector<IdentityRequestAccountPtr>& accounts) {
   if (domain_hint.empty()) {
-    return true;
+    return;
   }
 
   size_t accounts_remaining = 0u;
@@ -544,7 +504,6 @@ bool FedCmAccountsFetcher::FilterAccountsWithDomainHint(
   }
   federated_auth_request_impl_->fedcm_metrics()->RecordNumMatchingAccounts(
       accounts_remaining, "DomainHint");
-  return IsFedCmShowFilteredAccountsEnabled() || accounts_remaining > 0u;
 }
 
 void FedCmAccountsFetcher::ComputeLoginStates(
