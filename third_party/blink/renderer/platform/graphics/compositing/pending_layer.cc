@@ -44,18 +44,18 @@ void PreserveNearIntegralBounds(gfx::RectF& bounds) {
 PendingLayer::PendingLayer(const PaintArtifact& artifact,
                            const PaintChunk& first_chunk,
                            CompositingType compositing_type)
-    : bounds_(first_chunk.bounds),
+    : chunks_(artifact, first_chunk),
+      property_tree_state_(first_chunk.properties.Unalias()),
+      bounds_(first_chunk.bounds),
       rect_known_to_be_opaque_(first_chunk.rect_known_to_be_opaque),
+      solid_color_chunk_index_(
+          first_chunk.background_color.is_solid_color ? 0 : kNotFound),
+      compositing_type_(compositing_type),
+      hit_test_opaqueness_(first_chunk.hit_test_opaqueness),
       has_text_(first_chunk.has_text),
       draws_content_(first_chunk.DrawsContent()),
       text_known_to_be_on_opaque_background_(
-          first_chunk.text_known_to_be_on_opaque_background),
-      solid_color_chunk_index_(
-          first_chunk.background_color.is_solid_color ? 0 : kNotFound),
-      chunks_(artifact, first_chunk),
-      property_tree_state_(first_chunk.properties.Unalias()),
-      compositing_type_(compositing_type),
-      hit_test_opaqueness_(first_chunk.hit_test_opaqueness) {
+          first_chunk.text_known_to_be_on_opaque_background) {
   DCHECK(!ChunkRequiresOwnLayer() || first_chunk.size() <= 1u);
   // Though text_known_to_be_on_opaque_background is only meaningful when
   // has_text is true, we expect text_known_to_be_on_opaque_background to be

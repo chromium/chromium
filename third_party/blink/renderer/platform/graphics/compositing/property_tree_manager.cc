@@ -26,10 +26,10 @@
 namespace blink {
 
 PropertyTreeManager::EffectState::EffectState(const CurrentEffectState& other)
-    : effect_id(other.effect_id),
-      effect(other.effect),
+    : effect(other.effect),
       clip(other.clip),
       transform(other.transform),
+      effect_id(other.effect_id),
       may_be_2d_axis_misaligned_to_render_surface(
           other.may_be_2d_axis_misaligned_to_render_surface),
       contained_by_non_render_surface_synthetic_rounded_clip(
@@ -37,10 +37,10 @@ PropertyTreeManager::EffectState::EffectState(const CurrentEffectState& other)
 
 PropertyTreeManager::CurrentEffectState::CurrentEffectState(
     const EffectState& other)
-    : effect_id(other.effect_id),
-      effect(other.effect),
+    : effect(other.effect),
       clip(other.clip),
       transform(other.transform),
+      effect_id(other.effect_id),
       may_be_2d_axis_misaligned_to_render_surface(
           other.may_be_2d_axis_misaligned_to_render_surface),
       contained_by_non_render_surface_synthetic_rounded_clip(
