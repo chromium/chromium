@@ -78,6 +78,15 @@ id<GREYMatcher> OtpNewCodeLink() {
                     grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
 }
 
+// Matcher for the activity indicator.
+id<GREYMatcher> ActivityIndicatorMatcher() {
+  return grey_allOf(
+      grey_kindOfClassName(@"UIActivityIndicatorView"),
+      grey_accessibilityID(
+          kOtpInputNavigationBarPendingButtonAccessibilityIdentifier),
+      nil);
+}
+
 }  // namespace
 
 @interface OtpInputDialogEgtest : ChromeTestCase
@@ -244,8 +253,7 @@ id<GREYMatcher> OtpNewCodeLink() {
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
   [[EarlGrey selectElementWithMatcher:OtpInputDialogPendingButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_kindOfClassName(@"UIActivityIndicatorView")]
+  [[EarlGrey selectElementWithMatcher:ActivityIndicatorMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

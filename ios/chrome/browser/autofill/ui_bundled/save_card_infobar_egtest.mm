@@ -104,6 +104,15 @@ id<GREYMatcher> UploadBottomSheetCancelButtonMatcher() {
       IDS_AUTOFILL_NO_THANKS_MOBILE_UPLOAD_SAVE);
 }
 
+// Matcher for the activity indicator.
+id<GREYMatcher> ActivityIndicatorMatcher() {
+  return grey_allOf(
+      grey_kindOfClassName(@"UIActivityIndicatorView"),
+      grey_ancestor(grey_accessibilityID(
+          kConfirmationAlertPrimaryActionAccessibilityIdentifier)),
+      nil);
+}
+
 id<GREYMatcher> LocalBannerLabelsMatcher() {
   NSString* bannerLabel = [NSString
       stringWithFormat:
@@ -842,15 +851,11 @@ void FillAndSubmitXframeCreditCardForm() {
       performAction:grey_tap()];
 
   // Assert an activity indicator view is being shown in the loading state.
-  id<GREYMatcher> activityIndicatorView =
-      grey_kindOfClassName(@"UIActivityIndicatorView");
   GREYAssertTrue(
-      [self waitForUIElementToAppearWithMatcher:activityIndicatorView],
+      [self waitForUIElementToAppearWithMatcher:ActivityIndicatorMatcher()],
       @"Save card bottomsheet failed to show activity indicator in loading "
       @"state.");
-  [[[EarlGrey selectElementWithMatcher:activityIndicatorView]
-      inRoot:grey_accessibilityID(
-                 kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:ActivityIndicatorMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Assert the accept button is disabled and has accessibility label for
@@ -1263,9 +1268,7 @@ void FillAndSubmitXframeCreditCardForm() {
       performAction:grey_tap()];
 
   GREYAssertFalse(
-      [self
-          waitForUIElementToAppearWithMatcher:grey_kindOfClassName(
-                                                  @"UIActivityIndicatorView")],
+      [self waitForUIElementToAppearWithMatcher:ActivityIndicatorMatcher()],
       @"Local save card bottomsheet should not show activity indicator.");
 
   // Wait for bottomsheet to auto-dismiss.

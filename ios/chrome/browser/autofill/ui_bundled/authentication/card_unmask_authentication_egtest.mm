@@ -69,6 +69,12 @@ id<GREYMatcher> CardUnmaskAuthenticationSelectionCancelButton() {
       nil);
 }
 
+// Matcher for the activity indicator.
+id<GREYMatcher> ActivityIndicatorMatcher() {
+  return grey_accessibilityID(
+      kCardUnmaskAuthenticationActivityIndicatorAccessibilityIdentifier);
+}
+
 @interface CardUnmaskAuthenticationSelectionEgtest : ChromeTestCase
 @end
 
@@ -252,8 +258,7 @@ id<GREYMatcher> CardUnmaskAuthenticationSelectionCancelButton() {
       performAction:grey_tap()];
 
   // Verify the activity indicator has been set.
-  [[EarlGrey
-      selectElementWithMatcher:grey_kindOfClassName(@"UIActivityIndicatorView")]
+  [[EarlGrey selectElementWithMatcher:ActivityIndicatorMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

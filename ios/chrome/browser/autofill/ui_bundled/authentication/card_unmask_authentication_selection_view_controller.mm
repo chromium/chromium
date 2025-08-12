@@ -124,6 +124,8 @@ static NSString* kSectionIdChallengeOptions = @"SectionIdChallengeOptions";
   self.tableView.allowsSelection = NO;
   UIActivityIndicatorView* activityIndicator = [[UIActivityIndicatorView alloc]
       initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+  activityIndicator.accessibilityIdentifier =
+      kCardUnmaskAuthenticationActivityIndicatorAccessibilityIdentifier;
   [activityIndicator startAnimating];
   self.navigationItem.rightBarButtonItem =
       [[UIBarButtonItem alloc] initWithCustomView:activityIndicator];

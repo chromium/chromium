@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_cell.h"
 
-#import <MaterialComponents/MaterialActivityIndicator.h>
-
 #import <ostream>
 
 #import "base/check.h"
@@ -30,8 +28,8 @@ namespace {
 // The size of symbol icons.
 NSInteger kIconSymbolPointSize = 13;
 
-// Size of activity indicator replacing fav icon when active.
-const CGFloat kIndicatorSize = 16.0;
+// Scale of activity indicator replacing fav icon when active.
+const CGFloat kIndicatorScale = 0.75;
 
 // Frame-based layout utilities for GridTransitionCell.
 // Scales the size of `view`'s frame by `factor` in both height and width. This
@@ -81,7 +79,7 @@ void PositionView(UIView* view, CGPoint point) {
 @property(nonatomic, weak) UILabel* titleLabel;
 @property(nonatomic, weak) UIImageView* closeIconView;
 @property(nonatomic, weak) UIImageView* selectIconView;
-@property(nonatomic, weak) MDCActivityIndicator* activityIndicator;
+@property(nonatomic, weak) UIActivityIndicatorView* activityIndicator;
 // Since the close icon dimensions are smaller than the recommended tap target
 // size, use an overlaid tap target button.
 @property(nonatomic, weak) UIButton* closeTapTargetButton;
@@ -409,12 +407,12 @@ void PositionView(UIView* view, CGPoint point) {
   iconView.backgroundColor = UIColor.clearColor;
   iconView.tintColor = [UIColor colorNamed:kGrey400Color];
 
-  CGRect indicatorFrame = CGRectMake(0, 0, kIndicatorSize, kIndicatorSize);
-  MDCActivityIndicator* activityIndicator =
-      [[MDCActivityIndicator alloc] initWithFrame:indicatorFrame];
+  UIActivityIndicatorView* activityIndicator =
+      [[UIActivityIndicatorView alloc] init];
   activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
-  activityIndicator.cycleColors = @[ [UIColor colorNamed:kBlueColor] ];
-  activityIndicator.radius = ui::AlignValueToUpperPixel(kIndicatorSize / 2);
+  activityIndicator.color = [UIColor colorNamed:kBlueColor];
+  activityIndicator.transform = CGAffineTransformScale(
+      activityIndicator.transform, kIndicatorScale, kIndicatorScale);
 
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
