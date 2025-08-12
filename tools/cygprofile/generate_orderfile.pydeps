@@ -67,5 +67,6 @@
 //tools/cygprofile/android_profile_tool.py
 //tools/cygprofile/cluster.py
 //tools/cygprofile/generate_orderfile.py
+//tools/cygprofile/orderfile_shared.py
 //tools/cygprofile/process_profiles.py
 //tools/cygprofile/symbol_extractor.py

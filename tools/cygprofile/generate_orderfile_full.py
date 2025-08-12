@@ -26,11 +26,10 @@ import subprocess
 import sys
 import tempfile
 import time
-from typing import Dict, List
+from typing import Dict, List, Union
 
-import cluster
-import process_profiles
 import android_profile_tool
+import orderfile_shared
 
 _SRC_PATH = pathlib.Path(__file__).resolve().parents[2]
 sys.path.append(str(_SRC_PATH / 'third_party/catapult/devil'))
@@ -56,27 +55,6 @@ _ARCH_GN_ARGS = {
 }
 
 _RESULTS_KEY_SPEEDOMETER = 'Speedometer2.0'
-
-
-def _ReadNonEmptyStrippedFromFile(file_name):
-  stripped_lines = []
-  with open(file_name, 'r') as file:
-    for line in file:
-      stripped_line = line.strip()
-      if stripped_line:
-        stripped_lines.append(stripped_line)
-  return stripped_lines
-
-
-class CommandError(Exception):
-  """Indicates that a dispatched shell command exited with a non-zero status."""
-
-  def __init__(self, value):
-    super().__init__()
-    self.value = value
-
-  def __str__(self):
-    return repr(self.value)
 
 
 def _GenerateHash(file_path):
@@ -173,7 +151,7 @@ class StepRecorder:
         self.FailStep(str(process.stdout) + str(process.stderr))
       else:
         self.FailStep()
-      raise CommandError('Exception executing command %s' % ' '.join(cmd))
+      raise Exception('Exception executing command %s' % ' '.join(cmd))
     if capture_output:
       logging.error('Output:\n%s', process.stdout)
     return process
@@ -206,9 +184,9 @@ class ClankCompiler:
         options.public)
     self.chrome_apk_path = str(out_dir / 'apks' / chrome_apk)
 
-    self._libchrome_target = self._GetLibchromeTarget(options.arch)
-    self.lib_chrome_so = str(out_dir /
-                             f'lib.unstripped/{self._libchrome_target}.so')
+    self._libchrome_target = orderfile_shared.GetLibchromeTarget(options.arch)
+    self.lib_chrome_so = orderfile_shared.GetLibchromeSoPath(
+        out_dir, options.arch)
 
   def _GenerateGnArgs(self, instrumented):
     # Set the "Release Official" flavor, the parts affecting performance.
@@ -336,14 +314,6 @@ class ClankCompiler:
       target = ClankCompiler._MakePublicTarget(target)
     return target, ClankCompiler._GetApkFromTarget(target)
 
-  @staticmethod
-  def _GetLibchromeTarget(arch):
-    target = 'libmonochrome'
-    if '64' in arch:
-      # Trichrome has a _64 suffix for arm64 and x64 builds.
-      return target + '_64'
-    return target
-
 
 class OrderfileGenerator:
   """A utility for generating a new orderfile for Clank.
@@ -460,17 +430,10 @@ class OrderfileGenerator:
 
     assert self._compiler is not None, (
         'A valid compiler is needed to generate profiles.')
-    if self._options.profile_webview:
-      self._profiler.InstallAndSetWebViewProvider(
-          self._compiler.webview_installer_path)
-      files = self._profiler.CollectWebViewStartupProfile(
-          self._compiler.webview_apk_path)
-    elif self._options.arch == 'arm64':
-      files = self._profiler.CollectSpeedometerProfile(
-          self._compiler.chrome_apk_path)
-    else:
-      files = self._profiler.CollectSystemHealthProfile(
-          self._compiler.chrome_apk_path)
+    files = orderfile_shared.CollectProfiles(
+        self._profiler, self._options.profile_webview,
+        self._options.arch, self._compiler.chrome_apk_path,
+        str(self._instrumented_out_dir), self._compiler.webview_installer_path)
     self._MaybeSaveProfile()
     try:
       self._ProcessPhasedOrderfile(files)
@@ -480,7 +443,8 @@ class OrderfileGenerator:
       self._SaveForDebugging(self._compiler.lib_chrome_so)
       raise
     finally:
-      self._profiler.Cleanup()
+      if not self._options.save_profile_data:
+        self._profiler.Cleanup()
     logging.getLogger().setLevel(logging.INFO)
 
   def _ProcessPhasedOrderfile(self, files):
@@ -493,18 +457,9 @@ class OrderfileGenerator:
     """
     self._step_recorder.BeginStep('Process Phased Orderfile')
     assert self._compiler is not None
-    profiles = process_profiles.ProfileManager(files)
-    processor = process_profiles.SymbolOffsetProcessor(
-        self._compiler.lib_chrome_so)
-    ordered_symbols = cluster.ClusterOffsets(profiles, processor)
-    if not ordered_symbols:
-      raise Exception('Failed to get ordered symbols')
-    for sym in ordered_symbols:
-      assert not sym.startswith('OUTLINED_FUNCTION_'), (
-          'Outlined function found in instrumented function, very likely '
-          'something has gone very wrong!')
-    self._output_data['offsets_kib'] = processor.SymbolsSize(
-        ordered_symbols) / 1024
+    ordered_symbols, symbols_size = orderfile_shared.ProcessProfiles(
+        files, self._compiler.lib_chrome_so)
+    self._output_data['offsets_kib'] = symbols_size / 1024
     with open(self._GetUnpatchedOrderfileFilename(), 'w') as orderfile:
       orderfile.write('\n'.join(ordered_symbols))
 
@@ -519,16 +474,8 @@ class OrderfileGenerator:
     # TODO(crbug.com/340534475): Stop writing the `unpatched_orderfile` and
     # saving it locally.
     self._step_recorder.BeginStep('Add dummy functions')
-    assert self._compiler is not None
-    symbols = _ReadNonEmptyStrippedFromFile(
-        self._GetUnpatchedOrderfileFilename())
-    with open(self._GetPathToOrderfile(), 'w') as f:
-      # Make sure the anchor functions are located in the right place, here and
-      # after everything else.
-      # See the comment in //base/android/library_loader/anchor_functions.cc.
-      f.write('dummy_function_start_of_ordered_text\n')
-      f.writelines(s + '\n' for s in symbols)
-      f.write('dummy_function_end_of_ordered_text\n')
+    orderfile_shared.AddDummyFunctions(self._GetUnpatchedOrderfileFilename(),
+                                       self._GetPathToOrderfile())
 
   def _VerifySymbolOrder(self):
     self._step_recorder.BeginStep('Verify Symbol Order')
@@ -655,7 +602,7 @@ class OrderfileGenerator:
     finally:
       shutil.rmtree(out_dir)
 
-  def _PerformanceBenchmark(self, apk: str) -> List[float]:
+  def _PerformanceBenchmark(self, apk: str) -> Union[List[float], str]:
     """Runs Speedometer2.0 to assess performance.
 
     Args:
@@ -814,6 +761,7 @@ class OrderfileGenerator:
 def CreateArgumentParser():
   """Creates and returns the argument parser."""
   parser = argparse.ArgumentParser()
+  orderfile_shared.AddCommonArguments(parser)
   parser.add_argument(
       "--no-benchmark",
       action="store_false",
@@ -831,14 +779,6 @@ def CreateArgumentParser():
       "--verify",
       action="store_true",
       help="If true, the script only verifies the current orderfile.",
-  )
-  parser.add_argument(
-      "--target-arch",
-      action="store",
-      dest="arch",
-      default="arm",
-      choices=list(_ARCH_GN_ARGS.keys()),
-      help="The target architecture for which to build.",
   )
   parser.add_argument(
       "--skip-profile",
@@ -864,12 +804,6 @@ def CreateArgumentParser():
       default=False,
   )
   parser.add_argument(
-      "--profile-webview",
-      action="store_true",
-      default=False,
-      help="Use the WebView benchmark profiles to generate the orderfile.",
-  )
-  parser.add_argument(
       "--pregenerated-profiles",
       default=None,
       type=str,
@@ -882,22 +816,6 @@ def CreateArgumentParser():
       type=str,
       help="Directory to save any profiles created. These can be used with "
       "--pregenerated-profiles. Cannot be used with --skip-profiles.",
-  )
-  parser.add_argument(
-      "--streamline-for-debugging",
-      action="store_true",
-      help="Streamline the run for faster iteration while debugging. The "
-      "orderfile will be valid and non-trivial, but may not be "
-      "representative.",
-  )
-  parser.add_argument(
-      "-v",
-      "--verbose",
-      dest="verbosity",
-      action="count",
-      default=0,
-      help=">=1 to print debug logging, this will also be passed to "
-      "run_benchmark calls.",
   )
   return parser
 
