@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "services/tracing/perfetto/consumer_host.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
@@ -511,7 +507,7 @@ void ConsumerHost::TracingSession::ExportJson() {
 
   if (!json_agent_label_filter_.empty()) {
     label_filter = [this](const char* label) {
-      return strcmp(label, json_agent_label_filter_.c_str()) == 0;
+      return UNSAFE_TODO(strcmp(label, json_agent_label_filter_.c_str())) == 0;
     };
   }
 
@@ -559,11 +555,11 @@ void ConsumerHost::TracingSession::OnTraceData(
     for (perfetto::TracePacket& packet : packets) {
       auto [preamble, preamble_size] = packet.GetProtoPreamble();
       DCHECK_LT(position + preamble_size, max_size);
-      memcpy(&data[position], preamble, preamble_size);
+      UNSAFE_TODO(memcpy(&data[position], preamble, preamble_size));
       position += preamble_size;
       for (const perfetto::Slice& slice : packet.slices()) {
         DCHECK_LT(position + slice.size, max_size);
-        memcpy(&data[position], slice.start, slice.size);
+        UNSAFE_TODO(memcpy(&data[position], slice.start, slice.size));
         position += slice.size;
       }
     }

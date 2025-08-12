@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/audio/input_sync_writer.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/format_macros.h"
@@ -103,7 +99,7 @@ InputSyncWriter::InputSyncWriter(
     media::AudioInputBuffer* buffer =
         reinterpret_cast<media::AudioInputBuffer*>(ptr);
     bus = media::AudioBus::WrapMemory(params, buffer->audio);
-    ptr += shared_memory_segment_size_;
+    UNSAFE_TODO(ptr += shared_memory_segment_size_);
   }
 }
 
@@ -423,7 +419,7 @@ media::AudioInputBuffer* InputSyncWriter::GetSharedInputBuffer(
     uint32_t segment_id) {
   uint8_t* ptr = static_cast<uint8_t*>(shared_memory_mapping_.memory());
   CHECK_LT(segment_id, audio_buses_.size());
-  ptr += segment_id * shared_memory_segment_size_;
+  UNSAFE_TODO(ptr += segment_id * shared_memory_segment_size_);
   return reinterpret_cast<media::AudioInputBuffer*>(ptr);
 }
 

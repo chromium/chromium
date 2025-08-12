@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/hid/hid_connection_linux.h"
 
 #include <errno.h>
@@ -18,6 +13,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -105,7 +101,8 @@ class HidConnectionLinux::BlockingTaskRunnerHelper {
       // Linux adds a 0 to the beginning of the data received from the device.
       auto copied_buffer =
           base::MakeRefCounted<base::RefCountedBytes>(result - 1);
-      memcpy(copied_buffer->as_vector().data(), buffer->data() + 1, result - 1);
+      UNSAFE_TODO(memcpy(copied_buffer->as_vector().data(), buffer->data() + 1,
+                         result - 1));
       return std::make_tuple(true, std::move(copied_buffer), result - 1);
     } else {
       return std::make_tuple(true, std::move(buffer), result);

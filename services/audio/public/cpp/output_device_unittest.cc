@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/audio/public/cpp/output_device.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -255,8 +251,8 @@ TEST_F(AudioServiceOutputDeviceTest, MAYBE_VerifyDataFlow) {
 
     Mock::VerifyAndClear(&env.render_callback);
     for (int frame = 0; frame < kFrames; ++frame) {
-      EXPECT_EQ(kAudioData, test_bus->channel(0)[frame]);
-      EXPECT_EQ(kAudioData, test_bus->channel(1)[frame]);
+      UNSAFE_TODO(EXPECT_EQ(kAudioData, test_bus->channel(0)[frame]));
+      UNSAFE_TODO(EXPECT_EQ(kAudioData, test_bus->channel(1)[frame]));
     }
   }
 }

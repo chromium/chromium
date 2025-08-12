@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <stdint.h>
 
 #include <cmath>
 #include <concepts>
 #include <type_traits>
 
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/notreached.h"
@@ -110,7 +106,7 @@ TensorRemoteAndHandle CreateTensorWithValues(
 template <typename T>
 std::vector<T> BigBufferToVector(const mojo_base::BigBuffer& big_buffer) {
   std::vector<T> data(big_buffer.size() / sizeof(T));
-  memcpy(data.data(), big_buffer.data(), big_buffer.size());
+  UNSAFE_TODO(memcpy(data.data(), big_buffer.data(), big_buffer.size()));
   return data;
 }
 

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "services/screen_ai/screen_ai_library_wrapper_impl.h"
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -217,8 +213,8 @@ ScreenAILibraryWrapperImpl::ExtractMainContent(
 
   node_ids = std::vector<int32_t>(nodes_count);
   if (nodes_count != 0) {
-    memcpy(node_ids->data(), library_buffer.get(),
-           nodes_count * sizeof(int32_t));
+    UNSAFE_TODO(memcpy(node_ids->data(), library_buffer.get(),
+                       nodes_count * sizeof(int32_t)));
   }
 
   free_library_allocated_int32_array_(library_buffer.release());

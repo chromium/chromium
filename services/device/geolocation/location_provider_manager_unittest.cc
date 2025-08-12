@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/geolocation/location_provider_manager.h"
 
 #include <algorithm>
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -179,9 +175,9 @@ class GeolocationLocationProviderManagerTest : public testing::Test {
   // (as defined in the FeatureParam options) are used, simplifying test setup
   // and avoiding invalid configurations.
   bool SetExperimentMode(mojom::LocationProviderManagerMode mode) {
-    auto options =
+    auto options = UNSAFE_TODO(
         base::span(features::kLocationProviderManagerParam.options.get(),
-                   features::kLocationProviderManagerParam.option_count);
+                   features::kLocationProviderManagerParam.option_count));
     auto it = std::ranges::find(
         options, mode,
         &base::FeatureParam<

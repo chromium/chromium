@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/audio/input_controller.h"
 
 #include <inttypes.h>
@@ -17,6 +12,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -127,7 +123,7 @@ float AveragePower(const media::AudioBus& buffer) {
   for (int ch = 0; ch < channels; ++ch) {
     const float* channel_data = buffer.channel(ch);
     for (int i = 0; i < frames; i++) {
-      const float sample = channel_data[i];
+      const float sample = UNSAFE_TODO(channel_data[i]);
       sum_power += sample * sample;
     }
   }
