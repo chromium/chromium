@@ -2383,7 +2383,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.CreditCard.{CardIssuer}.{FormEventWithMetadata}"
     enum="Boolean" expires_after="2026-06-01">
-  <owner>vishwasuppoor@chromium.org</owner>
+  <owner>viplavkadam@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Emits true if a {CardIssuer}:
@@ -2617,7 +2617,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.CvcInfoBar.{AutofillSaveCreditCardPromptDestination}"
     enum="AutofillCreditCardInfoBar" expires_after="2026-06-01">
   <owner>yishuil@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
+  <owner>koulvipul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     The relative frequency with which users accept, deny, or ignore the Autofill
@@ -3957,7 +3957,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     name="Autofill.ImageFetcher.{AutofillImage}.OverallResultOnBrowserStart"
     enum="BooleanSuccess" expires_after="2026-06-01">
   <owner>siyua@chromium.org</owner>
-  <owner>vishwasuppoor@google.org</owner>
+  <owner>siashah@google.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the image fetching overall result for a {AutofillImage} on browser
@@ -3972,7 +3972,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.ImageFetcher.{AutofillImage}.Result"
     enum="BooleanSuccess" expires_after="2026-06-01">
   <owner>siyua@chromium.org</owner>
-  <owner>vishwasuppoor@google.org</owner>
+  <owner>siashah@google.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the image fetch result of a {AutofillImage} image. Logged every time
@@ -6149,7 +6149,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram
     name="Autofill.SaveCvcPromptOffer.{AutofillSaveCreditCardPromptDestination}.{ShowType}"
     enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2026-06-01">
-  <owner>vishwasuppoor@google.com</owner>
+  <owner>koulvipul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -6165,7 +6165,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram
     name="Autofill.SaveCvcPromptResult.{AutofillSaveCreditCardPromptDestination}.{ShowType}"
     enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2026-06-01">
-  <owner>vishwasuppoor@google.com</owner>
+  <owner>koulvipul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -6402,7 +6402,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.SettingsPage.ButtonClicked.{CardType}.{Button}"
     enum="BooleanAttempted" expires_after="2026-06-01">
-  <owner>vishwasuppoor@chromium.org</owner>
   <owner>siashah@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -7789,7 +7788,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.VirtualCard.{Dialog}" enum="BooleanAccepted"
     expires_after="2026-06-01">
-  <owner>vishwasuppoor@chromium.org</owner>
   <owner>siashah@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -7801,7 +7799,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.VirtualCard.{Dialog}.LinkClicked"
     enum="AutofillVirtualCardDialogLinkClicked" expires_after="2026-06-01">
-  <owner>vishwasuppoor@chromium.org</owner>
   <owner>siashah@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>

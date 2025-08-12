@@ -9175,7 +9175,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="FacilitatedPayments.Pix.FopSelectorResult">
-  <owner>vishwasuppoor@google.com</owner>
   <owner>siashah@google.com</owner>
   <owner>rouslan@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -9191,7 +9190,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="FacilitatedPayments.Pix.FopSelectorShown">
-  <owner>vishwasuppoor@google.com</owner>
   <owner>siashah@google.com</owner>
   <owner>rouslan@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -9207,7 +9205,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="FacilitatedPayments.Pix.InitiatePurchaseActionResult">
-  <owner>vishwasuppoor@google.com</owner>
   <owner>siashah@google.com</owner>
   <owner>rouslan@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -9230,7 +9227,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="FacilitatedPayments.PixCodeCopied">
-  <owner>vishwasuppoor@google.com</owner>
   <owner>siashah@google.com</owner>
   <owner>rouslan@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>

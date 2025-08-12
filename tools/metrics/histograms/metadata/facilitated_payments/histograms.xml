@@ -368,7 +368,6 @@ reviewer.
 <histogram name="FacilitatedPayments.Pix.FopSelected.Latency" units="ms"
     expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -383,7 +382,6 @@ reviewer.
 <histogram name="FacilitatedPayments.Pix.FopSelector.UserAction"
     enum="FacilitatedPayments.FopSelectorAction" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -397,7 +395,6 @@ reviewer.
 <histogram name="FacilitatedPayments.Pix.FopSelectorShown.LatencyAfterCopy"
     units="ms" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -413,7 +410,6 @@ reviewer.
     name="FacilitatedPayments.Pix.InitiatePurchaseAction.{Result}.Latency"
     units="ms" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -430,7 +426,6 @@ reviewer.
 <histogram name="FacilitatedPayments.Pix.PayflowExitedReason"
     enum="FacilitatedPayments.PixFlowExitedReason" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -444,7 +439,6 @@ reviewer.
     name="FacilitatedPayments.Pix.PaymentCodeValidation.{PaymentCodeValidationResult}.Latency"
     units="ms" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -468,7 +462,6 @@ reviewer.
 <histogram name="FacilitatedPayments.Pix.PixCodeCopied" enum="Boolean"
     expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -485,7 +478,6 @@ reviewer.
 <histogram name="FacilitatedPayments.Pix.Transaction.{Result}.Latency"
     units="ms" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -556,7 +548,6 @@ reviewer.
 <histogram name="FacilitatedPayments.SettingsPage.Shown" enum="BooleanShown"
     expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -571,7 +562,6 @@ reviewer.
     name="FacilitatedPayments.SettingsPage.{FacilitatedPaymentsType}.ToggleUpdated"
     enum="Boolean" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -587,7 +577,6 @@ reviewer.
     name="FacilitatedPayments.{FacilitatedPaymentsType}.GetClientToken.{Result}.Latency"
     units="ms" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -606,7 +595,6 @@ reviewer.
     name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.Attempt"
     enum="BooleanAttempted" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -622,7 +610,6 @@ reviewer.
     name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.{Result}.Latency"
     units="ms" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -640,7 +627,6 @@ reviewer.
     name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePurchaseAction.Attempt"
     enum="BooleanAttempted" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -658,7 +644,6 @@ reviewer.
     name="FacilitatedPayments.{FacilitatedPaymentsType}.IsApiAvailable.{Result}.Latency"
     units="ms" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -677,7 +662,6 @@ reviewer.
     name="FacilitatedPayments.{FacilitatedPaymentsType}.LoadRiskData.{Result}.Latency"
     units="ms" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -694,7 +678,6 @@ reviewer.
 <histogram name="FacilitatedPayments.{FacilitatedPaymentsType}.UiScreenShown"
     enum="FacilitatedPayments.UiScreen" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
