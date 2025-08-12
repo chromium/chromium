@@ -593,5 +593,40 @@ public class MiniOriginBarControllerTest {
         verify(mLocationBar, never()).setShowOriginOnly(anyBoolean());
     }
 
-    // show again, start, finish showing (predictive back)
+    @Test
+    public void testAnimationReplacement() {
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsSizer).getControlsPosition();
+        mMiniOriginBarController.onControlsPositionChanged(ControlsPosition.BOTTOM);
+        final MiniOriginWindowInsetsAnimationListener animationListener =
+                mMiniOriginBarController.getAnimationListenerForTesting();
+
+        final int finalKeyboardHeight = 100;
+        final BoundsCompat bounds =
+                new BoundsCompat(Insets.NONE, Insets.of(0, 0, 0, finalKeyboardHeight));
+        mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
+
+        animationListener.onPrepare(mImeAnimation);
+        mKeyboardVisibilityDelegate.setVisibilityForTests(true);
+        animationListener.onStart(mImeAnimation, bounds);
+
+        int currentKeyboardHeight = 50;
+        WindowInsetsCompat insets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(
+                                WindowInsetsCompat.Type.ime(),
+                                Insets.of(0, 0, 0, currentKeyboardHeight))
+                        .build();
+        mImeAnimation.setFraction(0.5f);
+        animationListener.onProgress(insets, Collections.singletonList(mImeAnimation));
+
+        // Start a second animation, this time hiding the keyboard.
+        final WindowInsetsAnimationCompat secondImeAnimation =
+                new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 160);
+        mKeyboardVisibilityDelegate.setVisibilityForTests(false);
+        animationListener.onStart(secondImeAnimation, bounds);
+
+        secondImeAnimation.setFraction(0.5f);
+        animationListener.onProgress(insets, Collections.singletonList(secondImeAnimation));
+        assertEquals(-currentKeyboardHeight, (int) mControlContainerTranslationSupplier.get());
+    }
 }
