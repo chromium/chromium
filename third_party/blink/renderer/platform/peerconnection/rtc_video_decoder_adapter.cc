@@ -208,8 +208,7 @@ class RTCVideoDecoderAdapter::Impl {
        base::WeakPtr<Impl>& weak_this_for_client)
       : gpu_factories_(gpu_factories),
         frame_adapter_shared_resources_(
-            base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
-                gpu_factories_)),
+            WebRtcVideoFrameAdapter::SharedResources::Create(gpu_factories_)),
         change_status_callback_(std::move(change_status_callback)) {
     // This is called on webrtc decoder sequence.
     DETACH_FROM_SEQUENCE(media_sequence_checker_);

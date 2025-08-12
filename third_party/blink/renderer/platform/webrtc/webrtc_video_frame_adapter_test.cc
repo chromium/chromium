@@ -414,7 +414,7 @@ TEST_F(WebRtcVideoFrameAdapterTest, FrameFeedbackSetsRequireMappedFrame) {
   const gfx::Size kSize360p(640, 360);
 
   scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources =
-      base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(nullptr);
+      WebRtcVideoFrameAdapter::SharedResources::Create(nullptr);
   auto frame_720p = CreateTestFrame(kSize720p, kRect720p, kSize720p,
                                     media::VideoFrame::STORAGE_OWNED_MEMORY,
                                     media::VideoPixelFormat::PIXEL_FORMAT_NV12,

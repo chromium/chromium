@@ -63,9 +63,8 @@ class WebRtcVideoTrackSourceTest
           std::tuple<media::VideoFrame::StorageType, media::VideoPixelFormat>> {
  public:
   WebRtcVideoTrackSourceTest()
-      : shared_resources_(
-            base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
-                /*gpu_factories=*/nullptr)),
+      : shared_resources_(WebRtcVideoFrameAdapter::SharedResources::Create(
+            /*gpu_factories=*/nullptr)),
         track_source_(new webrtc::RefCountedObject<WebRtcVideoTrackSource>(
             /*is_screencast=*/false,
             /*needs_denoising=*/std::nullopt,

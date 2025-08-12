@@ -125,11 +125,10 @@ WebRtcVideoTrackSource::WebRtcVideoTrackSource(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> shared_resources)
     : AdaptedVideoTrackSource(/*required_alignment=*/1),
-      adapter_resources_(
-          shared_resources
-              ? shared_resources
-              : base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
-                    gpu_factories)),
+      adapter_resources_(shared_resources
+                             ? shared_resources
+                             : WebRtcVideoFrameAdapter::SharedResources::Create(
+                                   gpu_factories)),
       is_screencast_(is_screencast),
       needs_denoising_(needs_denoising),
       feedback_callback_(std::move(feedback_callback)),

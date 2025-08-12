@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -69,7 +68,9 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
   class PLATFORM_EXPORT SharedResources
       : public ThreadSafeRefCounted<SharedResources> {
    public:
-    explicit SharedResources(
+    // Construct a new instance that preemptively requests the raster context
+    // provider.
+    static scoped_refptr<SharedResources> Create(
         media::GpuVideoAcceleratorFactories* gpu_factories);
 
     // Create frames for requested output format and resolution.
@@ -118,6 +119,11 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
 
    protected:
     friend class ThreadSafeRefCounted<SharedResources>;
+    template <typename T, typename... Args>
+    friend scoped_refptr<T> base::MakeRefCounted(Args&&... args);
+
+    explicit SharedResources(
+        media::GpuVideoAcceleratorFactories* gpu_factories);
     virtual ~SharedResources();
 
    private:
@@ -143,7 +149,6 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
 
     // Contains feedback from the most recently destroyed Adapter.
     media::VideoCaptureFeedback last_feedback_ GUARDED_BY(feedback_lock_);
-    base::WeakPtrFactory<SharedResources> weak_factory_{this};
   };
 
   struct PLATFORM_EXPORT ScaledBufferSize {

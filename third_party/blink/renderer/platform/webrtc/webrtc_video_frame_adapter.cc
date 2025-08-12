@@ -101,6 +101,17 @@ void WebRtcVideoFrameAdapter::SharedResources::SetRasterContextProvider(
   raster_context_provider_ = provider;
 }
 
+scoped_refptr<WebRtcVideoFrameAdapter::SharedResources>
+WebRtcVideoFrameAdapter::SharedResources::Create(
+    media::GpuVideoAcceleratorFactories* gpu_factories) {
+  scoped_refptr<SharedResources> instance =
+      base::MakeRefCounted<SharedResources>(gpu_factories);
+
+  // Preemptively request a raster context provider from the main thread.
+  instance->RequestRasterContextProvider();
+  return instance;
+}
+
 scoped_refptr<media::VideoFrame>
 WebRtcVideoFrameAdapter::SharedResources::CreateFrame(
     media::VideoPixelFormat format,
@@ -167,14 +178,9 @@ void WebRtcVideoFrameAdapter::SharedResources::RequestRasterContextProvider() {
               return blink::Platform::Current()
                   ->SharedCompositorWorkerContextProvider(nullptr);
             }),
-            base::BindOnce(
-                [](base::WeakPtr<SharedResources> weak_ptr,
-                   scoped_refptr<viz::RasterContextProvider> provider) {
-                  if (weak_ptr) {
-                    weak_ptr->SetRasterContextProvider(provider);
-                  }
-                },
-                weak_factory_.GetWeakPtr()));
+            base::BindOnce(&WebRtcVideoFrameAdapter::SharedResources::
+                               SetRasterContextProvider,
+                           this));
   }
 }
 
@@ -347,10 +353,7 @@ WebRtcVideoFrameAdapter::SharedResources::GetFeedback() {
 
 WebRtcVideoFrameAdapter::SharedResources::SharedResources(
     media::GpuVideoAcceleratorFactories* gpu_factories)
-    : gpu_factories_(gpu_factories) {
-  // Preemptively request a raster context provider from the main thread.
-  RequestRasterContextProvider();
-}
+    : gpu_factories_(gpu_factories) {}
 
 WebRtcVideoFrameAdapter::SharedResources::~SharedResources() = default;
 
