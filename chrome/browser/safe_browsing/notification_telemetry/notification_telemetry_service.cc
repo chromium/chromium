@@ -161,7 +161,8 @@ void NotificationTelemetryService::OnRegistrationStored(
     // GlobalCacheListForGatingNotificationProtections launch.
     if (database_manager_ == nullptr) {
       MaybeStoreServiceWorkerInfo(
-          service_worker_info, IsDomainInNotificationsGlobalCacheList(scope));
+          service_worker_info,
+          ShouldSkipNotificationProtectionsDueToGlobalCacheList(scope));
     } else {
       database_manager_->CheckUrlForHighConfidenceAllowlist(
           scope,

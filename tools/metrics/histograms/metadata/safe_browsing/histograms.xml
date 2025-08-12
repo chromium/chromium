@@ -2162,6 +2162,28 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.NotificationsGlobalCacheList.OriginIsListed"
+    enum="BooleanMatched" expires_after="2026-08-11">
+  <owner>skrakowi@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether an origin is on the notifications global cache list. Logged
+    when checking if an origin is on the notifications global cache list, only
+    when the list has more than 0 entries.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.NotificationsGlobalCacheList.Size"
+    units="entries" expires_after="2026-08-11">
+  <owner>skrakowi@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the number of entries in the notifications global cache list of top
+    legitimate notification senders. Logged when checking if an origin is on the
+    notifications global cache list.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.NotificationTelemetry.NetworkResult"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-04-27">
   <owner>psarouthakis@google.com</owner>

@@ -47,7 +47,8 @@ void NotificationContentDetectionService::
     OnCheckUrlForHighConfidenceAllowlist(
         notification_data_copy, base::TimeTicks::Now(), origin,
         is_allowlisted_by_user, std::move(model_verdict_callback),
-        IsDomainInNotificationsGlobalCacheList(origin), std::nullopt);
+        ShouldSkipNotificationProtectionsDueToGlobalCacheList(origin),
+        std::nullopt);
   } else {
     database_manager_->CheckUrlForHighConfidenceAllowlist(
         origin,

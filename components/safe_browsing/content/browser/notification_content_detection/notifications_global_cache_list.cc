@@ -4,10 +4,20 @@
 
 #include "components/safe_browsing/content/browser/notification_content_detection/notifications_global_cache_list.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_tokenizer.h"
 #include "components/grit/components_resources.h"
 #include "ui/base/resource/resource_bundle.h"
+
+namespace {
+
+const char kNotificationsGlobalCacheListSize[] =
+    "SafeBrowsing.NotificationsGlobalCacheList.Size";
+const char kNotificationsGlobalCacheListOriginIsListed[] =
+    "SafeBrowsing.NotificationsGlobalCacheList.OriginIsListed";
+
+}  // namespace
 
 namespace safe_browsing {
 
@@ -32,15 +42,25 @@ void SetNotificationsGlobalCacheListDomainsForTesting(
   GetNotificationsGlobalCacheListDomains().swap(domains);
 }
 
-bool IsDomainInNotificationsGlobalCacheList(const GURL& url) {
+bool ShouldSkipNotificationProtectionsDueToGlobalCacheList(const GURL& url) {
   const std::vector<std::string>& domains =
       GetNotificationsGlobalCacheListDomains();
+  base::UmaHistogramCounts100(kNotificationsGlobalCacheListSize,
+                              domains.size());
+  // Skip notification protections when the global cache list cannot be loaded.
+  if (domains.empty()) {
+    return true;
+  }
+  bool is_listed = false;
   for (const std::string& domain : domains) {
     if (url.DomainIs(domain)) {
-      return true;
+      is_listed = true;
+      break;
     }
   }
-  return false;
+  base::UmaHistogramBoolean(kNotificationsGlobalCacheListOriginIsListed,
+                            is_listed);
+  return is_listed;
 }
 
 }  // namespace safe_browsing
