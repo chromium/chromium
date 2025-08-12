@@ -21,6 +21,7 @@ class GPUMappedDOMArrayBuffer;
 struct BoxedMappableWGPUBufferHandles;
 class ScriptState;
 class V8GPUBufferMapState;
+class WebGPUMailboxBuffer;
 
 class GPUBuffer : public DawnObject<wgpu::Buffer> {
   DEFINE_WRAPPERTYPEINFO();
@@ -32,6 +33,10 @@ class GPUBuffer : public DawnObject<wgpu::Buffer> {
   GPUBuffer(GPUDevice* device,
             uint64_t size,
             wgpu::Buffer buffer,
+            const String& label);
+  GPUBuffer(GPUDevice* device,
+            uint64_t size,
+            scoped_refptr<WebGPUMailboxBuffer> mailbox_buffer,
             const String& label);
   ~GPUBuffer() override;
 
@@ -65,6 +70,10 @@ class GPUBuffer : public DawnObject<wgpu::Buffer> {
   // }}} End of WebIDL binding implementation.
 
   void DetachMappedArrayBuffers(v8::Isolate* isolate);
+
+  void DissociateMailbox();
+
+  scoped_refptr<WebGPUMailboxBuffer> GetMailboxBuffer();
 
  private:
   ScriptPromise<IDLUndefined> MapAsyncImpl(ScriptState* script_state,
@@ -104,6 +113,9 @@ class GPUBuffer : public DawnObject<wgpu::Buffer> {
 
   // List of ranges currently returned by getMappedRange, to avoid overlaps.
   Vector<std::pair<size_t, size_t>> mapped_ranges_;
+
+  // Buffer created from a shared image.
+  scoped_refptr<WebGPUMailboxBuffer> mailbox_buffer_;
 };
 
 }  // namespace blink

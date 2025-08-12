@@ -175,6 +175,9 @@ class GPUDevice final : public EventTarget,
   void TrackTextureWithMailbox(GPUTexture* texture);
   void UntrackTextureWithMailbox(GPUTexture* texture);
 
+  void TrackBufferWithMailbox(GPUBuffer* buffer);
+  void UntrackBufferWithMailbox(GPUBuffer* buffer);
+
   bool ValidateTextureFormatUsage(V8GPUTextureFormat format,
                                   ExceptionState& exception_state);
   bool ValidateBlendFactor(V8GPUBlendFactor blend_factor,
@@ -249,6 +252,9 @@ class GPUDevice final : public EventTarget,
 
   // Textures with mailboxes that should be dissociated before device.destroy().
   HeapHashSet<WeakMember<GPUTexture>> textures_with_mailbox_;
+
+  // Buffers with mailboxes that should be dissociated before device.destroy().
+  HeapHashSet<WeakMember<GPUBuffer>> buffers_with_mailbox_;
 
   HeapHashSet<WeakMember<GPUBuffer>> mappable_buffers_;
 

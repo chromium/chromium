@@ -735,6 +735,7 @@ void GPUDevice::Trace(Visitor* visitor) const {
   visitor->Trace(lost_property_);
   visitor->Trace(external_texture_cache_);
   visitor->Trace(textures_with_mailbox_);
+  visitor->Trace(buffers_with_mailbox_);
   visitor->Trace(mappable_buffers_);
   ExecutionContextClient::Trace(visitor);
   EventTarget::Trace(visitor);
@@ -753,6 +754,11 @@ void GPUDevice::DissociateMailboxes() {
     texture->DissociateMailbox();
   }
   textures_with_mailbox_.clear();
+
+  for (auto& buffer : buffers_with_mailbox_) {
+    buffer->DissociateMailbox();
+  }
+  buffers_with_mailbox_.clear();
 }
 
 void GPUDevice::UnmapAllMappableBuffers(v8::Isolate* isolate) {
@@ -777,6 +783,16 @@ void GPUDevice::TrackTextureWithMailbox(GPUTexture* texture) {
 void GPUDevice::UntrackTextureWithMailbox(GPUTexture* texture) {
   DCHECK(texture);
   textures_with_mailbox_.erase(texture);
+}
+
+void GPUDevice::TrackBufferWithMailbox(GPUBuffer* buffer) {
+  DCHECK(buffer);
+  buffers_with_mailbox_.insert(buffer);
+}
+
+void GPUDevice::UntrackBufferWithMailbox(GPUBuffer* buffer) {
+  DCHECK(buffer);
+  buffers_with_mailbox_.erase(buffer);
 }
 
 void GPUDevice::SetDescriptorCallbacks(wgpu::DeviceDescriptor& dawn_desc) {

@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_queue.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_buffer.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -183,10 +184,23 @@ GPUBuffer::GPUBuffer(GPUDevice* device,
                      const String& label)
     : DawnObject<wgpu::Buffer>(device, std::move(buffer), label), size_(size) {}
 
+GPUBuffer::GPUBuffer(GPUDevice* device,
+                     uint64_t size,
+                     scoped_refptr<WebGPUMailboxBuffer> mailbox_buffer,
+                     const String& label)
+    : DawnObject<wgpu::Buffer>(device, mailbox_buffer->GetBuffer(), label),
+      size_(size),
+      mailbox_buffer_(std::move(mailbox_buffer)) {
+  if (mailbox_buffer_) {
+    device_->TrackBufferWithMailbox(this);
+  }
+}
+
 GPUBuffer::~GPUBuffer() {
   if (mappable_buffer_handles_) {
     mappable_buffer_handles_->erase(GetHandle());
   }
+  DissociateMailbox();
 }
 
 void GPUBuffer::Trace(Visitor* visitor) const {
@@ -240,6 +254,11 @@ void GPUBuffer::destroy(v8::Isolate* isolate) {
   // Drop the reference to the mapped buffer handles. No longer
   // need to remove the wgpu::Buffer from this set in ~GPUBuffer.
   mappable_buffer_handles_ = nullptr;
+
+  if (mailbox_buffer_) {
+    DissociateMailbox();
+    device_->UntrackBufferWithMailbox(this);
+  }
 }
 
 uint64_t GPUBuffer::size() const {
@@ -252,6 +271,13 @@ uint32_t GPUBuffer::usage() const {
 
 V8GPUBufferMapState GPUBuffer::mapState() const {
   return FromDawnEnum(GetHandle().GetMapState());
+}
+
+void GPUBuffer::DissociateMailbox() {
+  if (mailbox_buffer_) {
+    mailbox_buffer_->Dissociate();
+    mailbox_buffer_ = nullptr;
+  }
 }
 
 ScriptPromise<IDLUndefined> GPUBuffer::MapAsyncImpl(
