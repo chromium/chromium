@@ -51,13 +51,13 @@ void AutofillBubbleControllerBase::ShowBubble() {
 }
 
 void AutofillBubbleControllerBase::HideBubble() {
-  if (IsShowing()) {
+  if (IsShowingBubble()) {
     bubble_view_->Hide();
     bubble_view_ = nullptr;
   }
 }
 
-bool AutofillBubbleControllerBase::IsShowing() const {
+bool AutofillBubbleControllerBase::IsShowingBubble() const {
   return bubble_view_ != nullptr;
 }
 

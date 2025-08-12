@@ -125,7 +125,8 @@ void BubbleManagerImpl::ShowAndSetCurrentActive(
 
 void BubbleManagerImpl::HideActiveBubbleForPreemption(
     base::WeakPtr<BubbleControllerBase> preempting_controller) {
-  CHECK(active_bubble_controller_ && active_bubble_controller_->IsShowing());
+  CHECK(active_bubble_controller_ &&
+        active_bubble_controller_->IsShowingBubble());
   CHECK(preempting_controller);
   CHECK(handling_show_request_);
 
@@ -170,7 +171,8 @@ void BubbleManagerImpl::AddToPendingQueue(
 
 void BubbleManagerImpl::ProcessPendingBubbles() {
   if (handling_show_request_ ||
-      (active_bubble_controller_ && active_bubble_controller_->IsShowing())) {
+      (active_bubble_controller_ &&
+       active_bubble_controller_->IsShowingBubble())) {
     // The bubble is hidden due to preemption and added to the queue. Therefore,
     // do not show any new bubbles.
     return;
