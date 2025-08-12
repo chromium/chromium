@@ -7,20 +7,15 @@
 #include <memory>
 #include <string>
 
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/task/updateable_sequenced_task_runner.h"
-#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "build/build_config.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom-shared.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom.h"
 #include "content/browser/indexed_db/instance/fake_transaction.h"
-#include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
-#include "content/browser/indexed_db/mock_mojo_indexed_db_factory_client.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,14 +26,6 @@ namespace content::indexed_db {
 
 using testing::SizeIs;
 using ITS = storage::mojom::IdbTransactionState;
-
-namespace {
-ACTION_TEMPLATE(MoveArgPointee,
-                HAS_1_TEMPLATE_PARAMS(int, k),
-                AND_1_VALUE_PARAMS(out)) {
-  *out = std::move(*::testing::get<k>(args));
-}
-}  // namespace
 
 class BucketContextTest : public testing::Test {
  public:
@@ -60,29 +47,16 @@ class BucketContextTest : public testing::Test {
         quota_manager_.get(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get());
 
-    CreateBucketContextForStorageKey(
-        blink::StorageKey::CreateFromStringForTesting("https://example.com"));
-  }
-
-  void CreateBucketContextForStorageKey(const blink::StorageKey& key) {
     storage::BucketInfo bucket_info = quota_manager_->CreateBucket(
-        storage::BucketInitParams::ForDefaultBucket(key));
-    if (factory_remote_.is_bound()) {
-      factory_remote_.FlushForTesting();
-    }
-
-    factory_remote_.reset();
+        storage::BucketInitParams::ForDefaultBucket(
+            blink::StorageKey::CreateFromStringForTesting(
+                "https://example.com")));
     bucket_context_ = std::make_unique<BucketContext>(
-        bucket_info, temp_dir_.GetPath(), BucketContext::Delegate(),
+        bucket_info, base::FilePath(), BucketContext::Delegate(),
         scoped_refptr<base::UpdateableSequencedTaskRunner>(),
         quota_manager_proxy_,
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote());
-    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        checker_remote;
-    bucket_context_->AddReceiver(storage::BucketClientInfo{},
-                                 std::move(checker_remote),
-                                 factory_remote_.BindNewPipeAndPassReceiver());
   }
 
   void SetQuotaLeft(int64_t quota_manager_response) {
@@ -97,7 +71,6 @@ class BucketContextTest : public testing::Test {
   scoped_refptr<storage::MockSpecialStoragePolicy> quota_policy_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
-  mojo::Remote<blink::mojom::IDBFactory> factory_remote_;
   std::unique_ptr<BucketContext> bucket_context_;
 };
 
@@ -362,89 +335,6 @@ TEST_F(BucketContextTest, OverrideShouldUseSqliteForTesting) {
     base::AutoReset<std::optional<bool>> scoped_override =
         BucketContext::OverrideShouldUseSqliteForTesting(true);
     EXPECT_TRUE(is_sqlite_used_by_new_bucket());
-  }
-}
-
-// See comments in bucket_context.cc for why these histograms are not logged on
-// Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_DatabasePathOverflowHistogram \
-  DISABLED_DatabasePathOverflowHistogram
-#else
-#define MAYBE_DatabasePathOverflowHistogram DatabasePathOverflowHistogram
-#endif
-TEST_F(BucketContextTest, MAYBE_DatabasePathOverflowHistogram) {
-  auto open_db = [this](std::u16string_view name) {
-    MockMojoFactoryClient client;
-    MockMojoDatabaseCallbacks database_callbacks;
-    mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
-    factory_remote_->Open(
-        client.CreateInterfacePtrAndBind(),
-        database_callbacks.CreateInterfacePtrAndBind(), std::u16string(name),
-        /*version=*/0, transaction_remote.BindNewEndpointAndPassReceiver(),
-        /*transaction_id=*/0, /*priority=*/0);
-    factory_remote_.FlushForTesting();
-  };
-
-  {
-    base::HistogramTester histograms;
-    open_db(u"db");
-    histograms.ExpectUniqueSample("IndexedDB.DatabasePathOverflow.SQLite", 0,
-                                  1);
-    histograms.ExpectUniqueSample("IndexedDB.DatabasePathOverflow.LevelDB", 0,
-                                  1);
-
-    // The LevelDB histogram is only logged when the backing store is first
-    // used; the SQLite one is logged for each DB.
-    open_db(u"other_db");
-    histograms.ExpectUniqueSample("IndexedDB.DatabasePathOverflow.SQLite", 0,
-                                  2);
-    histograms.ExpectUniqueSample("IndexedDB.DatabasePathOverflow.LevelDB", 0,
-                                  1);
-  }
-
-  // A really long origin causes a problem for both LevelDB and SQLite.
-  const int limit = base::GetMaximumPathComponentLength(temp_dir_.GetPath());
-  std::string origin(limit + 1, 'x');
-  const blink::StorageKey too_long_storage_key =
-      blink::StorageKey::CreateFromStringForTesting("http://" + origin +
-                                                    ":81/");
-  CreateBucketContextForStorageKey(too_long_storage_key);
-  {
-    base::HistogramTester histograms;
-    open_db(u"db");
-    // An error was logged for both cases.
-    histograms.ExpectBucketCount("IndexedDB.DatabasePathOverflow.SQLite", 0, 0);
-    histograms.ExpectTotalCount("IndexedDB.DatabasePathOverflow.SQLite", 1);
-    histograms.ExpectBucketCount("IndexedDB.DatabasePathOverflow.LevelDB", 0,
-                                 0);
-    histograms.ExpectTotalCount("IndexedDB.DatabasePathOverflow.LevelDB", 1);
-  }
-
-  // Now try with a shorter origin, which leaves enough room for LevelDB
-  // files but not the SQLite database on Windows. Note that Windows is
-  // the only system that has a limit on the overall path length; POSIX
-  // only limits individual path components.
-  const blink::StorageKey not_too_long_storage_key =
-      blink::StorageKey::CreateFromStringForTesting(
-          "http://" + origin.substr(0, limit - 45) + ":81/");
-  CreateBucketContextForStorageKey(not_too_long_storage_key);
-  {
-    base::HistogramTester histograms;
-    open_db(u"db");
-#if BUILDFLAG(IS_WIN)
-    // Error.
-    histograms.ExpectBucketCount("IndexedDB.DatabasePathOverflow.SQLite", 0, 0);
-    histograms.ExpectTotalCount("IndexedDB.DatabasePathOverflow.SQLite", 1);
-#else
-    // Success.
-    histograms.ExpectUniqueSample("IndexedDB.DatabasePathOverflow.SQLite", 0,
-                                  1);
-#endif
-
-    // Success for LevelDB.
-    histograms.ExpectUniqueSample("IndexedDB.DatabasePathOverflow.LevelDB", 0,
-                                  1);
   }
 }
 
