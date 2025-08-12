@@ -12,8 +12,7 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingHorizontal="24dp"
-    android:paddingBottom="24dp"
+    android:paddingHorizontal="16dp"
     android:background="@drawable/bottom_sheet_background">
 
     <ImageView
@@ -27,13 +26,15 @@ found in the LICENSE file.
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/reader_mode_bottom_sheet_title"
         android:textAppearance="@style/TextAppearance.Headline.Primary"
-        android:paddingVertical="24dp"
-        android:layout_gravity="start" />
-
+        android:drawableStart="@drawable/ic_mobile_friendly_24dp"
+        app:drawableTint="@macro/default_icon_color"
+        android:drawablePadding="16dp"
+        android:paddingVertical="16dp"
+        android:gravity="center_vertical"/>
 
     <FrameLayout
         android:id="@+id/controls_container"
