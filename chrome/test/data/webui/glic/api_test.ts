@@ -156,7 +156,7 @@ class ApiTestFixtureBase {
     const registry = await glicHostRegistry.promise;
     this.clientValue = client;
     await registry.registerWebClient(client);
-    assertTrue(!!this.clientValue);
+    assertDefined(this.clientValue);
   }
 
   // Performs setup for the test, called after `setUpClient()`.
@@ -169,12 +169,12 @@ class ApiTestFixtureBase {
 
   get host(): GlicBrowserHost {
     const h = this.client.host;
-    assertTrue(!!h);
+    assertDefined(h);
     return h;
   }
 
   get client(): WebClient {
-    assertTrue(!!this.clientValue);
+    assertDefined(this.clientValue);
     return this.clientValue;
   }
 
@@ -221,7 +221,7 @@ class ApiTests extends ApiTestFixtureBase {
   async testRequestHeader() {}
 
   async testCreateTab() {
-    assertTrue(!!this.host.createTab);
+    assertDefined(this.host.createTab);
     // Open a tab pointing to test.html.
     const url = location.href;
     const data = await this.host.createTab(url, {openInBackground: false});
@@ -229,7 +229,7 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testCreateTabFailsWithUnsupportedScheme() {
-    assertTrue(!!this.host.createTab);
+    assertDefined(this.host.createTab);
 
     this.assertCreateTabFails('chrome://settings');
     this.assertCreateTabFails('ftps://www.google.com');
@@ -241,7 +241,7 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testCreateTabInBackground() {
-    assertTrue(!!this.host.createTab);
+    assertDefined(this.host.createTab);
 
     await this.host.createTab(
         location.href + '#foreground', {openInBackground: false});
@@ -253,7 +253,7 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testCreateTabByClickingOnLink() {
-    assertTrue(!!this.host.setAudioDucking);
+    assertDefined(this.host.setAudioDucking);
     // Check that audio ducking still works after clicking a link.
     this.host.setAudioDucking(true);
     const link = document.createElement('a');
@@ -267,14 +267,14 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testCreateTabFailsIfNotActive() {
-    assertTrue(!!this.host.closePanel);
-    assertTrue(!!this.host.createTab);
+    assertDefined(this.host.closePanel);
+    assertDefined(this.host.createTab);
     await this.closePanelAndWaitUntilInactive();
     this.assertCreateTabFails(location.href);
   }
 
   async testOpenGlicSettingsPage() {
-    assertTrue(!!this.host.openGlicSettingsPage);
+    assertDefined(this.host.openGlicSettingsPage);
     this.host.openGlicSettingsPage();
     // There is a problem with InProcessBrowserTest::QuitBrowsers(). Opening a
     // browser at the same time as exiting a test results in QuitBrowsers()
@@ -283,7 +283,7 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testClosePanel() {
-    assertTrue(!!this.host.closePanel);
+    assertDefined(this.host.closePanel);
 
     // Close the panel, and verify notifyPanelWasClosed is called.
     const closedPromise = Promise.withResolvers<void>();
@@ -293,7 +293,7 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testShowProfilePicker() {
-    assertTrue(!!this.host.showProfilePicker);
+    assertDefined(this.host.showProfilePicker);
     this.host.showProfilePicker();
     // There is a problem with InProcessBrowserTest::QuitBrowsers(). Opening the
     // profile picker at the same time as exiting a test results in
@@ -302,9 +302,9 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testPanelActive() {
-    assertTrue(!!this.host.panelActive);
+    assertDefined(this.host.panelActive);
     const activeSequence = observeSequence(this.host.panelActive());
-    assertTrue(!!this.host.closePanel);
+    assertDefined(this.host.closePanel);
     await this.host.closePanel();
     assertTrue(await activeSequence.next());
     await this.advanceToNextStep();
@@ -312,7 +312,7 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testIsBrowserOpen() {
-    assertTrue(!!this.host.isBrowserOpen);
+    assertDefined(this.host.isBrowserOpen);
     const isBrowserOpen = observeSequence(this.host.isBrowserOpen());
     assertTrue(await isBrowserOpen.next());
     // Close the browser.
@@ -321,50 +321,50 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testEnableDragResize() {
-    assertTrue(!!this.host.enableDragResize);
+    assertDefined(this.host.enableDragResize);
 
     await this.host.enableDragResize(true);
   }
 
   async testDisableDragResize() {
-    assertTrue(!!this.host.enableDragResize);
+    assertDefined(this.host.enableDragResize);
 
     await this.host.enableDragResize(false);
   }
 
   async testGetZeroStateSuggestionsForFocusedTabApi() {
-    assertTrue(!!this.host.getZeroStateSuggestionsForFocusedTab);
+    assertDefined(this.host.getZeroStateSuggestionsForFocusedTab);
     const suggestions = await this.host.getZeroStateSuggestionsForFocusedTab();
-    assertTrue(!!suggestions);
+    assertDefined(suggestions);
     assertEquals(0, suggestions.suggestions.length);
   }
 
   async testGetZeroStateSuggestionsForFocusedTabFailsWhenHidden() {
-    assertTrue(!!this.host.getZeroStateSuggestionsForFocusedTab);
-    assertTrue(!!this.host.closePanel);
+    assertDefined(this.host.getZeroStateSuggestionsForFocusedTab);
+    assertDefined(this.host.closePanel);
     await this.closePanelAndWaitUntilInactive();
     const suggestions = await this.host.getZeroStateSuggestionsForFocusedTab();
-    assertTrue(!!suggestions);
+    assertDefined(suggestions);
     assertEquals(0, suggestions.suggestions.length);
   }
 
   async testGetZeroStateSuggestionsApi() {
-    assertTrue(!!this.host.getZeroStateSuggestions);
+    assertDefined(this.host.getZeroStateSuggestions);
     const sequence = observeSequence<ZeroStateSuggestionsV2>(
         this.host.getZeroStateSuggestions());
     const suggestions = await sequence.next();
-    assertTrue(!!suggestions);
+    assertDefined(suggestions);
     assertEquals(0, suggestions.suggestions.length);
     assertEquals(false, suggestions.isPending);
   }
 
   async testGetZeroStateSuggestionsMultipleNavigations() {
     // Initial state.
-    assertTrue(!!this.host.getZeroStateSuggestions);
+    assertDefined(this.host.getZeroStateSuggestions);
     const sequence = observeSequence<ZeroStateSuggestionsV2>(
         this.host.getZeroStateSuggestions());
     const suggestions = await sequence.next();
-    assertTrue(!!suggestions);
+    assertDefined(suggestions);
     assertEquals(0, suggestions.suggestions.length);
     assertEquals(false, suggestions.isPending);
 
@@ -373,28 +373,28 @@ class ApiTests extends ApiTestFixtureBase {
 
     // Should first get a pending state.
     const suggestions2 = await sequence.next();
-    assertTrue(!!suggestions2);
+    assertDefined(suggestions2);
     // We don't care about the suggestions here.
     assertEquals(true, suggestions2.isPending);
 
     // Should later get the actual suggestions.
     const suggestions3 = await sequence.next();
-    assertTrue(!!suggestions2);
+    assertDefined(suggestions3);
     assertEquals(3, suggestions3.suggestions.length);
     assertEquals(false, suggestions3.isPending);
   }
 
   async testGetZeroStateSuggestionsFailsWhenHidden() {
     // Initial state.
-    assertTrue(!!this.host.getZeroStateSuggestions);
+    assertDefined(this.host.getZeroStateSuggestions);
     const sequence = observeSequence<ZeroStateSuggestionsV2>(
         this.host.getZeroStateSuggestions());
     const suggestions = await sequence.next();
-    assertTrue(!!suggestions);
+    assertDefined(suggestions);
     assertEquals(0, suggestions.suggestions.length);
 
     // Close panel.
-    assertTrue(!!this.host.closePanel);
+    assertDefined(this.host.closePanel);
     await this.closePanelAndWaitUntilInactive();
 
     // After next navigation in focused tab occurs.
@@ -402,11 +402,11 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testGetFocusedTabStateV2() {
-    assertTrue(!!this.host.getFocusedTabStateV2);
+    assertDefined(this.host.getFocusedTabStateV2);
     const sequence =
         observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
     const focus = await sequence.next();
-    assertTrue(!!focus.hasFocus);
+    assertDefined(focus.hasFocus);
     assertEquals(
         new URL(focus.hasFocus.tabData.url).pathname, '/glic/test.html',
         `url=${focus.hasFocus.tabData.url}`);
@@ -416,11 +416,11 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testGetFocusedTabStateV2WithNavigation() {
     // Initial state.
-    assertTrue(!!this.host.getFocusedTabStateV2);
+    assertDefined(this.host.getFocusedTabStateV2);
     const sequence =
         observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
     const focus = await sequence.next();
-    assertTrue(!!focus.hasFocus);
+    assertDefined(focus.hasFocus);
     assertEquals(
         new URL(focus.hasFocus.tabData.url).pathname, '/glic/test.html',
         `url=${focus.hasFocus.tabData.url}`);
@@ -429,7 +429,7 @@ class ApiTests extends ApiTestFixtureBase {
     // After a second navigation occurs.
     await this.advanceToNextStep();
     const focus2 = await sequence.next();
-    assertTrue(!!focus2.hasFocus);
+    assertDefined(focus2.hasFocus);
     assertEquals(
         new URL(focus2.hasFocus.tabData.url).pathname,
         '/scrollable_page_with_content.html',
@@ -450,7 +450,7 @@ class ApiTests extends ApiTestFixtureBase {
     }
 
     // Final state, after the tab is fully loaded.
-    assertTrue(!!focus3.hasFocus);
+    assertDefined(focus3.hasFocus);
     assertEquals(
         new URL(focus3.hasFocus.tabData.url).pathname, '/glic/test.html',
         `url=${focus3.hasFocus.tabData.url}`);
@@ -459,12 +459,12 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testGetFocusedTabStateV2WithNavigationWhenInactive() {
     // Initial state.
-    assertTrue(!!this.host.getFocusedTabStateV2);
+    assertDefined(this.host.getFocusedTabStateV2);
     await this.closePanelAndWaitUntilInactive();
     const sequence =
         observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
     const focus = await sequence.next();
-    assertTrue(!!focus.hasFocus);
+    assertDefined(focus.hasFocus);
     assertEquals(
         new URL(focus.hasFocus.tabData.url).pathname, '/glic/test.html',
         `url=${focus.hasFocus.tabData.url}`);
@@ -494,7 +494,7 @@ class ApiTests extends ApiTestFixtureBase {
     });
 
     // Final state, after the tab is fully loaded.
-    assertTrue(!!focus2.hasFocus);
+    assertDefined(focus2.hasFocus);
     assertEquals(
         new URL(focus2.hasFocus.tabData.url).pathname, '/glic/test.html',
         `url=${focus2.hasFocus.tabData.url}`);
@@ -502,13 +502,13 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testSingleFocusedTabUpdatesOnTabEvents() {
-    assertTrue(!!this.host.getFocusedTabStateV2);
+    assertDefined(this.host.getFocusedTabStateV2);
     const sequence =
         observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
     // Check events from first tab.
     {
       const focus = await sequence.next();
-      assertTrue(
+      assertDefined(
           !!focus.hasFocus,
           `#1: should have a focused tab; FocusedTabData=${
               JSON.stringify(focus)}`);
@@ -523,7 +523,7 @@ class ApiTests extends ApiTestFixtureBase {
     {
       await this.advanceToNextStep();
       const focus = await sequence.next();
-      assertTrue(
+      assertDefined(
           !!focus.hasFocus,
           `#2: should have a focused tab; FocusedTabData=${
               JSON.stringify(focus)}`);
@@ -539,7 +539,7 @@ class ApiTests extends ApiTestFixtureBase {
     {
       await this.advanceToNextStep();
       const focus = await sequence.next();
-      assertTrue(
+      assertDefined(
           !!focus.hasFocus,
           `#3: should have a focused tab; FocusedTabData=${
               JSON.stringify(focus)}`);
@@ -552,18 +552,18 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testGetFocusedTabStateV2BrowserClosed() {
-    assertTrue(!!this.host.getFocusedTabStateV2);
+    assertDefined(this.host.getFocusedTabStateV2);
     const sequence =
         observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
     // Ignore the initial focus.
     await sequence.next();
     const focus = await sequence.next();
     assertFalse(!!focus.hasFocus);
-    assertTrue(!!focus.hasNoFocus);
+    assertDefined(focus.hasNoFocus);
   }
 
   async testGetContextFromFocusedTabWithoutPermission() {
-    assertTrue(!!this.host.getContextFromFocusedTab);
+    assertDefined(this.host.getContextFromFocusedTab);
     await this.host.setTabContextPermissionState(false);
 
     try {
@@ -577,29 +577,29 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testGetContextFromPinnedTabWithoutPermission() {
-    assertTrue(!!this.host.getContextFromTab);
-    assertTrue(!!this.host.getFocusedTabStateV2);
-    assertTrue(!!this.host.pinTabs);
+    assertDefined(this.host.getContextFromTab);
+    assertDefined(this.host.getFocusedTabStateV2);
+    assertDefined(this.host.pinTabs);
     await this.host.setTabContextPermissionState(false);
 
     const focusSequence =
         observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
     const focus = await focusSequence.next();
     const tabId = checkDefined(focus?.hasFocus?.tabData.tabId);
-    assertTrue(!!await this.host.pinTabs([tabId]));
+    assertTrue(await this.host.pinTabs([tabId]));
     const result = await this.host.getContextFromTab(tabId, {});
-    assertTrue(!!result);
+    assertDefined(result);
     assertEquals(
         new URL(result.tabData.url).pathname, '/glic/test.html',
         `Tab data has unexpected url ${result.tabData.url}`);
   }
 
   async testGetContextFromFocusedTabWithNoRequestedData() {
-    assertTrue(!!this.host.getContextFromFocusedTab);
+    assertDefined(this.host.getContextFromFocusedTab);
     await this.host.setTabContextPermissionState(true);
 
     const result = await this.host.getContextFromFocusedTab({});
-    assertTrue(!!result);
+    assertDefined(result);
     assertEquals(
         new URL(result.tabData.url).pathname, '/glic/test.html',
         `Tab data has unexpected url ${result.tabData.url}`);
@@ -620,16 +620,16 @@ class ApiTests extends ApiTestFixtureBase {
       pdfData: true,
     });
 
-    assertTrue(!!result);
+    assertDefined(result);
 
     assertEquals(
         new URL(result.tabData.url).pathname, '/glic/test.html',
         `Tab data has unexpected url ${result.tabData.url}`);
     assertFalse(!!result.pdfDocumentData);  // The page is not a PDF.
-    assertTrue(!!result.webPageData);
+    assertDefined(result.webPageData);
     assertEquals(
         'This is a test page', result.webPageData.mainDocument.innerText);
-    assertTrue(!!result.viewportScreenshot);
+    assertDefined(result.viewportScreenshot);
     assertTrue(
         (result.viewportScreenshot.data.byteLength ?? 0) > 0,
         `Expected viewport screenshot bytes, got ${
@@ -637,7 +637,7 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(result.viewportScreenshot.heightPixels > 0);
     assertTrue(result.viewportScreenshot.widthPixels > 0);
     assertEquals('image/jpeg', result.viewportScreenshot.mimeType);
-    assertTrue(!!result.annotatedPageData);
+    assertDefined(result.annotatedPageData);
     const annotatedPageContentSize =
         (await new Response(result.annotatedPageData.annotatedPageContent)
              .bytes())
@@ -645,16 +645,16 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(annotatedPageContentSize > 1);
 
     // Check metadata.
-    assertTrue(!!result.annotatedPageData.metadata);
-    assertTrue(!!result.annotatedPageData.metadata.frameMetadata);
+    assertDefined(result.annotatedPageData.metadata);
+    assertDefined(result.annotatedPageData.metadata.frameMetadata);
     assertEquals(result.annotatedPageData.metadata.frameMetadata.length, 1);
     const frameMetadata = result.annotatedPageData.metadata.frameMetadata[0];
-    assertTrue(!!frameMetadata);
+    assertDefined(frameMetadata);
     const url: URL = new URL(frameMetadata.url);
     assertEquals(url.pathname, '/');
     assertEquals(frameMetadata.metaTags.length, 1);
     const metaTag = frameMetadata.metaTags[0];
-    assertTrue(!!metaTag);
+    assertDefined(metaTag);
     assertEquals(metaTag.name, 'author');
     assertEquals(metaTag.content, 'George');
   }
@@ -693,13 +693,13 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testGetContextForActorFromFocusedTabWithoutPermission() {
     await this.host.setTabContextPermissionState(true);
-    assertTrue(!!this.host.getFocusedTabStateV2);
+    assertDefined(this.host.getFocusedTabStateV2);
     const focusedTab = await this.host.getFocusedTabStateV2().getCurrentValue();
-    assertTrue(!!focusedTab?.hasFocus?.tabData?.tabId);
+    assertDefined(focusedTab?.hasFocus?.tabData?.tabId);
     await this.host.setTabContextPermissionState(false);
     const result = await this.host.getContextForActorFromTab?.(
         focusedTab.hasFocus.tabData.tabId, {});
-    assertTrue(!!result);
+    assertDefined(result);
   }
 
   // TODO(crbug.com/422544382): add test for getContextForActorFromTab for the
@@ -707,9 +707,9 @@ class ApiTests extends ApiTestFixtureBase {
 
   // TODO(harringtond): This is disabled because it hangs. Fix it.
   async testCaptureScreenshot() {
-    assertTrue(!!this.host.captureScreenshot);
+    assertDefined(this.host.captureScreenshot);
     const screenshot = await this.host.captureScreenshot?.();
-    assertTrue(!!screenshot);
+    assertDefined(screenshot);
     assertTrue(screenshot.widthPixels > 0);
     assertTrue(screenshot.heightPixels > 0);
     assertTrue(screenshot.data.byteLength > 0);
@@ -717,9 +717,9 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testPermissionAccess() {
-    assertTrue(!!this.host.getMicrophonePermissionState);
-    assertTrue(!!this.host.getLocationPermissionState);
-    assertTrue(!!this.host.getTabContextPermissionState);
+    assertDefined(this.host.getMicrophonePermissionState);
+    assertDefined(this.host.getLocationPermissionState);
+    assertDefined(this.host.getTabContextPermissionState);
 
     const microphoneState =
         observeSequence<boolean>(this.host.getMicrophonePermissionState());
@@ -743,7 +743,7 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testGetOsHotkeyState() {
-    assertTrue(!!this.host.getOsHotkeyState);
+    assertDefined(this.host.getOsHotkeyState);
     const osHotkeyState = observeSequence(this.host.getOsHotkeyState());
     let hotkeyState = await osHotkeyState.next();
     const isMac = /Mac/.test(navigator.platform);
@@ -760,8 +760,8 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testClosedCaptioning() {
-    assertTrue(!!this.host.getClosedCaptioningSetting);
-    assertTrue(!!this.host.setClosedCaptioningSetting);
+    assertDefined(this.host.getClosedCaptioningSetting);
+    assertDefined(this.host.setClosedCaptioningSetting);
     const closedCaptioningState =
         observeSequence(this.host.getClosedCaptioningSetting());
     assertFalse(await closedCaptioningState.next());
@@ -770,7 +770,7 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testGetUserProfileInfo() {
-    assertTrue(!!this.host.getUserProfileInfo);
+    assertDefined(this.host.getUserProfileInfo);
     const profileInfo = await this.host.getUserProfileInfo();
 
     assertEquals('', profileInfo.displayName);
@@ -783,8 +783,8 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testGetUserProfileInfoDoesNotDeferWhenInactive() {
-    assertTrue(!!this.host.getUserProfileInfo);
-    assertTrue(!!this.host.closePanel);
+    assertDefined(this.host.getUserProfileInfo);
+    assertDefined(this.host.closePanel);
     await this.closePanelAndWaitUntilInactive();
     const profileInfo: UserProfileInfo = await this.host.getUserProfileInfo();
     assertEquals('glic-test@example.com', profileInfo.email);
@@ -793,13 +793,13 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testRefreshSignInCookies() {
-    assertTrue(!!this.host.refreshSignInCookies);
+    assertDefined(this.host.refreshSignInCookies);
 
     await this.host.refreshSignInCookies();
   }
 
   async testSignInPauseState() {
-    assertTrue(!!this.host.getUserProfileInfo);
+    assertDefined(this.host.getUserProfileInfo);
     const profileInfo = await this.host.getUserProfileInfo();
 
     assertEquals('', profileInfo.displayName);
@@ -810,13 +810,13 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testSetContextAccessIndicator() {
-    assertTrue(!!this.host.setContextAccessIndicator);
+    assertDefined(this.host.setContextAccessIndicator);
 
     await this.host.setContextAccessIndicator(true);
   }
 
   async testSetAudioDucking() {
-    assertTrue(!!this.host.setAudioDucking);
+    assertDefined(this.host.setAudioDucking);
 
     await this.host.setAudioDucking(true);
   }
@@ -850,20 +850,20 @@ class ApiTests extends ApiTestFixtureBase {
     const videoTracks = stream.getVideoTracks();
     assertTrue(videoTracks.length > 0);
     const track = videoTracks[0] as MediaStreamVideoTrack;
-    assertTrue(!!track);
+    assertDefined(track);
     assertTrue(await waitForFirstFrame(track));
   }
 
   async testMetrics() {
-    assertTrue(!!this.host.getMetrics);
+    assertDefined(this.host.getMetrics);
     const metrics = this.host.getMetrics();
-    assertTrue(!!metrics);
-    assertTrue(!!metrics.onResponseRated);
-    assertTrue(!!metrics.onUserInputSubmitted);
-    assertTrue(!!metrics.onResponseStarted);
-    assertTrue(!!metrics.onResponseStopped);
-    assertTrue(!!metrics.onSessionTerminated);
-    assertTrue(!!metrics.onClosedCaptionsShown);
+    assertDefined(metrics);
+    assertDefined(metrics.onResponseRated);
+    assertDefined(metrics.onUserInputSubmitted);
+    assertDefined(metrics.onResponseStarted);
+    assertDefined(metrics.onResponseStopped);
+    assertDefined(metrics.onSessionTerminated);
+    assertDefined(metrics.onClosedCaptionsShown);
     metrics.onResponseRated(true);
     metrics.onUserInputSubmitted(WebClientMode.AUDIO);
     metrics.onResponseStarted();
@@ -873,8 +873,8 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testScrollToFindsText() {
-    assertTrue(!!this.host.scrollTo);
-    assertTrue(!!this.host.setTabContextPermissionState);
+    assertDefined(this.host.scrollTo);
+    assertDefined(this.host.setTabContextPermissionState);
     await this.host.setTabContextPermissionState(true);
     await this.host.scrollTo({
       selector: {exactText: {text: 'Test Page'}},
@@ -884,7 +884,7 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testScrollToFindsTextNoTabContextPermission() {
-    assertTrue(!!this.host.scrollTo);
+    assertDefined(this.host.scrollTo);
     try {
       await this.host.scrollTo({
         selector: {exactText: {text: 'Abracadabra'}},
@@ -901,8 +901,8 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testScrollToFailsWhenInactive() {
-    assertTrue(!!this.host.scrollTo);
-    assertTrue(!!this.host.closePanel);
+    assertDefined(this.host.scrollTo);
+    assertDefined(this.host.closePanel);
     await this.closePanelAndWaitUntilInactive();
     try {
       await this.host.scrollTo({
@@ -919,8 +919,8 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testScrollToNoMatchFound() {
-    assertTrue(!!this.host.scrollTo);
-    assertTrue(!!this.host.setTabContextPermissionState);
+    assertDefined(this.host.scrollTo);
+    assertDefined(this.host.setTabContextPermissionState);
     await this.host.setTabContextPermissionState(true);
     try {
       await this.host.scrollTo({
@@ -937,19 +937,19 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testSetSyntheticExperimentState() {
-    assertTrue(!!this.host.setSyntheticExperimentState);
+    assertDefined(this.host.setSyntheticExperimentState);
     this.host.setSyntheticExperimentState('TestTrial', 'Enabled');
   }
 
   async testSetSyntheticExperimentStateMultiProfile() {
-    assertTrue(!!this.host.setSyntheticExperimentState);
+    assertDefined(this.host.setSyntheticExperimentState);
     this.host.setSyntheticExperimentState('TestTrial', 'Group1');
     this.host.setSyntheticExperimentState('TestTrial', 'Group2');
   }
 
   async testSetWindowDraggableAreas() {
     const draggableAreas = [{x: 10, y: 20, width: 30, height: 40}];
-    assertTrue(!!this.host.setWindowDraggableAreas);
+    assertDefined(this.host.setWindowDraggableAreas);
     await this.host.setWindowDraggableAreas(
         draggableAreas,
     );
@@ -957,19 +957,19 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testSetWindowDraggableAreasDefault() {
-    assertTrue(!!this.host.setWindowDraggableAreas);
+    assertDefined(this.host.setWindowDraggableAreas);
     await this.host.setWindowDraggableAreas([]);
   }
 
   async testSetMinimumWidgetSize() {
-    assertTrue(!!this.host.setMinimumWidgetSize);
+    assertDefined(this.host.setMinimumWidgetSize);
     const minSize = {width: 200, height: 100};
     await this.host.setMinimumWidgetSize(minSize.width, minSize.height);
     await this.advanceToNextStep(minSize);
   }
 
   async testManualResizeChanged() {
-    assertTrue(!!this.host.isManuallyResizing);
+    assertDefined(this.host.isManuallyResizing);
     await observeSequence(this.host.isManuallyResizing()).waitForValue(true);
 
     await this.advanceToNextStep();
@@ -977,38 +977,38 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testResizeWindowTooSmall() {
-    assertTrue(!!this.host.resizeWindow);
+    assertDefined(this.host.resizeWindow);
     await this.host.resizeWindow(0, 0);
   }
 
   async testResizeWindowTooLarge() {
-    assertTrue(!!this.host.resizeWindow);
+    assertDefined(this.host.resizeWindow);
     await this.host.resizeWindow(20000, 20000);
   }
 
   async testResizeWindowWithinBounds() {
-    assertTrue(!!this.host.resizeWindow);
-    assertTrue(!!this.testParams);
+    assertDefined(this.host.resizeWindow);
+    assertDefined(this.testParams);
     await this.host.resizeWindow(this.testParams.width, this.testParams.height);
   }
 
   async testOpenOsMediaPermissionSettings() {
-    assertTrue(!!this.host.openOsPermissionSettingsMenu);
+    assertDefined(this.host.openOsPermissionSettingsMenu);
     this.host.openOsPermissionSettingsMenu('media');
   }
 
   async testOpenOsGeoPermissionSettings() {
-    assertTrue(!!this.host.openOsPermissionSettingsMenu);
+    assertDefined(this.host.openOsPermissionSettingsMenu);
     this.host.openOsPermissionSettingsMenu('geolocation');
   }
 
   async testGetOsMicrophonePermissionStatusAllowed() {
-    assertTrue(!!this.host.getOsMicrophonePermissionStatus);
+    assertDefined(this.host.getOsMicrophonePermissionStatus);
     assertTrue(await this.host.getOsMicrophonePermissionStatus());
   }
 
   async testGetOsMicrophonePermissionStatusNotAllowed() {
-    assertTrue(!!this.host.getOsMicrophonePermissionStatus);
+    assertDefined(this.host.getOsMicrophonePermissionStatus);
     assertFalse(await this.host.getOsMicrophonePermissionStatus());
   }
 
@@ -1059,7 +1059,7 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testCallingApiWhileHiddenRecordsMetrics() {
-    assertTrue(!!this.host.createTab);
+    assertDefined(this.host.createTab);
     await this.advanceToNextStep();
     await runUntil(() => document.visibilityState === 'hidden');
     try {
@@ -1166,10 +1166,10 @@ class ApiTests extends ApiTestFixtureBase {
   // Helper for `testFetchInactiveTabScreenshot` and
   // `testFetchInactiveTabScreenshotWhileMinimized`.
   async fetchInactiveTabScreenshot() {
-    assertTrue(!!this.host.getFocusedTabStateV2);
-    assertTrue(!!this.host.getContextFromTab);
-    assertTrue(!!this.host.pinTabs);
-    assertTrue(!!this.host.getPinnedTabs);
+    assertDefined(this.host.getFocusedTabStateV2);
+    assertDefined(this.host.getContextFromTab);
+    assertDefined(this.host.pinTabs);
+    assertDefined(this.host.getPinnedTabs);
 
     // Pin the focused tab.
     const focusSequence = observeSequence(this.host.getFocusedTabStateV2());
@@ -1206,7 +1206,7 @@ class ApiTests extends ApiTestFixtureBase {
     const context = await this.fetchInactiveTabScreenshot();
 
     if (shouldGetScreenshot) {
-      assertTrue(!!context.viewportScreenshot);
+      assertDefined(context.viewportScreenshot);
     } else {
       // For platforms where screenshotting fails while minimized, it fails
       // randomly, so we don't assert anything here. This test at least confirms
@@ -1220,19 +1220,19 @@ class ApiTests extends ApiTestFixtureBase {
   async testReloadWebUi() {}
 
   private async assertCreateTabFails(url: string) {
-    assertTrue(!!this.host.createTab);
+    assertDefined(this.host.createTab);
     await assertRejects(
         this.host.createTab(url, {openInBackground: false}),
         {withErrorMessage: 'createTab: failed'});
   }
 
   async testMaybeRefreshUserStatus() {
-    assertTrue(!!this.host.maybeRefreshUserStatus);
+    assertDefined(this.host.maybeRefreshUserStatus);
     this.host.maybeRefreshUserStatus();
   }
 
   async testMaybeRefreshUserStatusThrottled() {
-    assertTrue(!!this.host.maybeRefreshUserStatus);
+    assertDefined(this.host.maybeRefreshUserStatus);
     for (let i = 0; i < 10; i++) {
       this.host.maybeRefreshUserStatus();
       await sleep(100);
@@ -1240,9 +1240,9 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testJournal() {
-    assertTrue(!!this.host.getJournalHost);
+    assertDefined(this.host.getJournalHost);
     const journalHost = this.host.getJournalHost();
-    assertTrue(!!journalHost);
+    assertDefined(journalHost);
     journalHost.start(64 * 1024 * 1024, true);
     let snapshot = await journalHost.snapshot(false);
     let lastJournalSize = snapshot.data.byteLength;
@@ -1264,7 +1264,7 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testGetHostCapabilities() {
-    assertTrue(!!this.host.getHostCapabilities);
+    assertDefined(this.host.getHostCapabilities);
     const capabilities: Set<HostCapability> =
         await this.host.getHostCapabilities();
     const expectedCapabilities: HostCapability[] = this.testParams ?? [];
@@ -1279,8 +1279,8 @@ class ApiTests extends ApiTestFixtureBase {
   // Test getPinCandidates() in some different scenarios where there is a single
   // browser tab.
   async testGetPinCandidatesSingleTab() {
-    assertTrue(!!this.host.pinTabs);
-    assertTrue(!!this.host.getPinCandidates);
+    assertDefined(this.host.pinTabs);
+    assertDefined(this.host.getPinCandidates);
 
     // Gets pinned candidates and asserts that their comma-separated titles
     // equal `expected`.
@@ -1327,8 +1327,8 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testGetPinCandidatesWithPanelClosed() {
-    assertTrue(!!this.host.pinTabs);
-    assertTrue(!!this.host.getPinCandidates);
+    assertDefined(this.host.pinTabs);
+    assertDefined(this.host.getPinCandidates);
 
     const sequence =
         observeSequence(this.host.getPinCandidates!({maxCandidates: 10}));
@@ -1348,13 +1348,13 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testGetModelQualityClientId() {
-    assertTrue(!!this.host.getModelQualityClientId);
+    assertDefined(this.host.getModelQualityClientId);
     const clientId = await this.host.getModelQualityClientId();
-    assertTrue(!!clientId);
+    assertDefined(clientId);
   }
 
   private async closePanelAndWaitUntilInactive() {
-    assertTrue(!!this.host.closePanel);
+    assertDefined(this.host.closePanel);
     await this.host.closePanel();
     await observeSequence(this.host.panelActive()).waitForValue(false);
   }
@@ -1387,17 +1387,17 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
 
   async testDeferredFocusedTabStateAtCreation() {
     // Initial state.
-    assertTrue(!!this.host.getFocusedTabStateV2);
+    assertDefined(this.host.getFocusedTabStateV2);
     const focusedTabStateV2Sequence =
         observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
     let focusedTabState = await focusedTabStateV2Sequence.next();
-    assertTrue(!!focusedTabState.hasNoFocus);
+    assertDefined(focusedTabState.hasNoFocus);
     const tabStatePromise = focusedTabStateV2Sequence.next();
     assertRejects(waitFor(tabStatePromise, 200));
     // We should only see the second page.
     await this.advanceToNextStep();
     focusedTabState = await tabStatePromise;
-    assertTrue(!!focusedTabState.hasFocus);
+    assertDefined(focusedTabState.hasFocus);
     assertEquals(
         new URL(focusedTabState.hasFocus.tabData.url).pathname,
         '/scrollable_page_with_content.html',
@@ -1405,10 +1405,10 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
   }
 
   async testNoExtractionWhileHidden() {
-    assertTrue(!!this.host.getContextFromFocusedTab);
-    assertTrue(!!this.host.getContextFromTab);
-    assertTrue(!!this.host.getFocusedTabStateV2);
-    assertTrue(!!this.host.pinTabs);
+    assertDefined(this.host.getContextFromFocusedTab);
+    assertDefined(this.host.getContextFromTab);
+    assertDefined(this.host.getFocusedTabStateV2);
+    assertDefined(this.host.pinTabs);
     await this.host.setTabContextPermissionState(true);
 
     // While still hidden (preloaded), focused tab extraction should fail.
@@ -1422,7 +1422,7 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
     await this.advanceToNextStep();
     await this.client.waitForFirstOpen();
     let result = await this.host.getContextFromFocusedTab({});
-    assertTrue(!!result);
+    assertDefined(result);
     assertEquals(
         new URL(result.tabData.url).pathname, '/glic/test.html',
         `Tab data has unexpected url ${result.tabData.url}`);
@@ -1430,7 +1430,7 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
     const tabId = checkDefined(focusedTab?.hasFocus?.tabData.tabId);
     assertTrue(await this.host.pinTabs([tabId]));
     result = await this.host.getContextFromTab(tabId, {});
-    assertTrue(!!result);
+    assertDefined(result);
     assertEquals(
         new URL(result.tabData.url).pathname, '/glic/test.html',
         `Tab data has unexpected url ${result.tabData.url}`);
