@@ -275,10 +275,11 @@ void OnGotAIPageContentForAllFrames(
   optimization_guide::AIPageContentResult page_content;
   optimization_guide::FrameTokenSet frame_token_set;
 
-  if (!optimization_guide::ConvertAIPageContentToProto(
+  if (auto result = optimization_guide::ConvertAIPageContentToProto(
           std::move(main_frame_options), main_frame_token, *page_content_map,
           base::BindRepeating(&GetRenderFrameInfo), frame_token_set,
-          page_content)) {
+          page_content);
+      !result.has_value()) {
     std::move(done_callback).Run(std::nullopt);
     return;
   }

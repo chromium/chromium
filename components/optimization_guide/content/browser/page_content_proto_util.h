@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
@@ -48,10 +49,9 @@ using GetRenderFrameInfo =
                                                            blink::FrameToken)>;
 
 // Converts the mojom data structure for AIPageContent to its equivalent proto
-// mapping.
-// Returns false if the conversion failed because the renderer provided invalid
-// inputs.
-bool ConvertAIPageContentToProto(
+// mapping. If conversion fails, the returned base::expected contains a
+// descriptive error message.
+base::expected<void, std::string> ConvertAIPageContentToProto(
     blink::mojom::AIPageContentOptionsPtr main_frame_options,
     content::GlobalRenderFrameHostToken main_frame_token,
     const AIPageContentMap& page_content_map,
