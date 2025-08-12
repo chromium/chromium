@@ -842,8 +842,8 @@ AudioOutputStream* AudioManagerMac::MakeLowLatencyOutputStream(
     current_sample_rate_ = params.sample_rate();
   }
 
-  // Use AVFoundationOutputStream for multichannel audio playback as it is able
-  // to tell the OS to use Spatial Audio.
+  // Use AVFoundationOutputStream for kPlayback audio output streams as it is
+  // able to tell the OS to use Spatial Audio.
   if (base::FeatureList::IsEnabled(features::kMacAVFoundationPlayback) &&
       params.latency_tag() == AudioLatency::Type::kPlayback) {
     DVLOG(1) << __func__ << ": Creating AVFoundationOutputStream for "
