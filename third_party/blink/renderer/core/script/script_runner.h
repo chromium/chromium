@@ -71,6 +71,11 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
     // Milestone is reached as defined by https://crbug.com/1340837.
     kMilestone = 1 << 1,
 
+    // Paused all JavasScript execution on prerendering pags until activation.
+    // It is an opt-in setting that triggers can specify. One of the triggers is
+    // prerender-until-script: see https://crbug.com/428500219 for details.
+    kPausedForPrerender = 1 << 2,
+
     kTest1 = 1 << 6,
     kTest2 = 1 << 7,
   };

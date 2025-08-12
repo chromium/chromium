@@ -2770,8 +2770,19 @@ class CORE_EXPORT Document : public ContainerNode,
 
   base::ElapsedTimer start_time_;
 
+  // The script runner is used to run scripts of the following scheduling types:
+  // - ScriptSchedulingType::kAsync
+  // - ScriptSchedulingType::kInOrder
+  // For other scheduling types, see ScriptLoader and HTMLParserScriptRunner.
   Member<ScriptRunner> script_runner_;
   Member<ScriptRunnerDelayer> script_runner_delayer_;
+
+  // Defers the script runner until prerender activation, triggered by
+  // prerender-until-script. See https://crbug.com/428500219 for details.
+  // There is another plan to allow other triggers to specify whether to delay
+  // async scripts during prerendering, so it is named as
+  // `prerender_script_runner_delayer_`.
+  Member<ScriptRunnerDelayer> prerender_script_runner_delayer_;
 
   HeapVector<Member<ScriptElementBase>> current_script_stack_;
 

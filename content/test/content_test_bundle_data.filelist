@@ -8171,6 +8171,7 @@ data/post_message.html
 data/post_message2.html
 data/preloading/preloading_decider.html
 data/preloading/preloading_decider_moderate.html
+data/prerender/async_script.html
 data/prerender/cross_origin_prerender.html
 data/prerender/cross_origin_srcdoc_sandboxed_postmessage.html
 data/prerender/doc-with-display-none-iframe.html
@@ -8190,6 +8191,7 @@ data/prerender/restriction-gamepad.html
 data/prerender/restriction_file_system.html
 data/prerender/session_storage.html
 data/prerender/simple_prerender.html
+data/prerender/status_script.js
 data/prerender/sw_fallback.js
 data/prerender/test_utils.js
 data/prerender/viewport.html

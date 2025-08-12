@@ -459,6 +459,12 @@ ScriptRunner::DelayReasons DetermineDelayReasonsToWait(
 
   DelayReasons reasons = static_cast<DelayReasons>(DelayReason::kLoad);
 
+  if (script_runner->IsActive(DelayReason::kPausedForPrerender)) {
+    reasons |= static_cast<DelayReasons>(DelayReason::kPausedForPrerender);
+  }
+  // TODO(https://crbug.com/428500219): is_eligible_for_delay may not be a
+  // proper name as all elements are eligible for delay in terms of
+  // DelayReason::kLoad.
   if (is_eligible_for_delay &&
       script_runner->IsActive(DelayReason::kMilestone)) {
     reasons |= static_cast<DelayReasons>(DelayReason::kMilestone);

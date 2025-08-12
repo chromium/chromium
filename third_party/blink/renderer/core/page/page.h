@@ -441,6 +441,11 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   bool ShouldPreparePaintTreeOnPrerender() const {
     return should_prepare_paint_tree_on_prerender_;
   }
+  // Whether the trigger of this prerendering page wants to pause JavaScript
+  // execution until activation.
+  bool ShouldPauseJavaScriptExecutionOnPrerender() const {
+    return should_pause_javascript_execution_on_prerender_;
+  }
 
   void SetTextAutosizerPageInfo(
       const mojom::blink::TextAutosizerPageInfo& page_info) {
