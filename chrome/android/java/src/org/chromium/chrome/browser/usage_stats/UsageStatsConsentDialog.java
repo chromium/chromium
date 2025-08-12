@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.res.Resources;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -29,7 +30,7 @@ public class UsageStatsConsentDialog {
     private final Callback<Boolean> mDidConfirmCallback;
 
     private ModalDialogManager mManager;
-    private PropertyModel mDialogModel;
+    private @Nullable PropertyModel mDialogModel;
 
     public static UsageStatsConsentDialog create(
             Activity activity,

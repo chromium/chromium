@@ -9,10 +9,12 @@ import android.content.ComponentName;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Activity that prompts the user for consent to share browsing activity with Digital Wellbeing. */
+@NullMarked
 public class UsageStatsConsentActivity extends SynchronousInitializationActivity {
     public static final String UNAUTHORIZE_ACTION =
             "org.chromium.chrome.browser.usage_stats.action.UNAUTHORIZE";

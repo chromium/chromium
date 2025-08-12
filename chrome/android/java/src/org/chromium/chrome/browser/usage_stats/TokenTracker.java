@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.usage_stats;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Promise;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import java.util.function.Function;
 /** Class that tracks the mapping between tokens and fully-qualified domain names (FQDNs). */
 public class TokenTracker {
     private final Promise<Map<String, String>> mRootPromise;
-    private TokenGenerator mTokenGenerator;
+    private @Nullable TokenGenerator mTokenGenerator;
     private final UsageStatsBridge mBridge;
 
     public TokenTracker(UsageStatsBridge bridge) {
@@ -76,12 +77,11 @@ public class TokenTracker {
     }
 
     /**
-     * Remove token and its associated FQDN, if we're  already tracking token.
-     * The returned promise will be fulfilled once persistence succeeds, and rejected if persistence
-     * fails.
+     * Remove token and its associated FQDN, if we're already tracking token. The returned promise
+     * will be fulfilled once persistence succeeds, and rejected if persistence fails.
      */
-    public Promise<Void> stopTrackingToken(String token) {
-        Promise<Void> writePromise = new Promise<>();
+    public Promise<@Nullable Void> stopTrackingToken(String token) {
+        Promise<@Nullable Void> writePromise = new Promise<>();
         mRootPromise.then(
                 (result) -> {
                     if (!result.containsKey(token)) {
@@ -110,7 +110,7 @@ public class TokenTracker {
     }
 
     /** Returns the token for a given FQDN, or null if we're not tracking that FQDN. */
-    public Promise<String> getTokenForFqdn(String fqdn) {
+    public Promise<String> getTokenForFqdn(@Nullable String fqdn) {
         return mRootPromise.then(
                 (Function<Map<String, String>, String>)
                         (result) -> {
@@ -127,7 +127,7 @@ public class TokenTracker {
                         });
     }
 
-    private static String getFirstKeyForValue(Map<String, String> map, String value) {
+    private static String getFirstKeyForValue(Map<String, String> map, @Nullable String value) {
         for (Map.Entry<String, String> entry : map.entrySet()) {
             if (entry.getValue().equals(value)) {
                 return entry.getKey();

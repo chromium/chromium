@@ -4,17 +4,19 @@
 
 package org.chromium.chrome.browser.usage_stats;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.SadTab;
@@ -33,6 +35,7 @@ import java.lang.reflect.Method;
  * visited fully-qualified domain name (FQDN).
  */
 @SuppressLint("NewApi")
+@NullMarked
 public class PageViewObserver extends EmptyTabObserver {
     private static final String TAG = "PageViewObserver";
 
@@ -43,12 +46,12 @@ public class PageViewObserver extends EmptyTabObserver {
     private final SuspensionTracker mSuspensionTracker;
     private final Supplier<TabContentManager> mTabContentManagerSupplier;
 
-    private Tab mCurrentTab;
-    private String mLastFqdn;
+    private @Nullable Tab mCurrentTab;
+    private @Nullable String mLastFqdn;
 
     PageViewObserver(
             Activity activity,
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             EventTracker eventTracker,
             TokenTracker tokenTracker,
             SuspensionTracker suspensionTracker,
@@ -168,12 +171,14 @@ public class PageViewObserver extends EmptyTabObserver {
     private void reportStop() {
         mEventTracker.addWebsiteEvent(
                 new WebsiteEvent(
-                        System.currentTimeMillis(), mLastFqdn, WebsiteEvent.EventType.STOP));
+                        System.currentTimeMillis(),
+                        assumeNonNull(mLastFqdn),
+                        WebsiteEvent.EventType.STOP));
         reportToPlatformIfDomainIsTracked("reportUsageStop", mLastFqdn);
         mLastFqdn = null;
     }
 
-    private void activeTabChanged(Tab tab) {
+    private void activeTabChanged(@Nullable Tab tab) {
         mCurrentTab = tab;
         if (mCurrentTab == null) {
             updateUrl(null);
@@ -187,7 +192,7 @@ public class PageViewObserver extends EmptyTabObserver {
         }
     }
 
-    private void reportToPlatformIfDomainIsTracked(String reportMethodName, String fqdn) {
+    private void reportToPlatformIfDomainIsTracked(String reportMethodName, @Nullable String fqdn) {
         mTokenTracker
                 .getTokenForFqdn(fqdn)
                 .then(
@@ -213,7 +218,7 @@ public class PageViewObserver extends EmptyTabObserver {
                         });
     }
 
-    private static String getValidFqdnOrEmptyString(GURL url) {
+    private static String getValidFqdnOrEmptyString(@Nullable GURL url) {
         if (GURL.isEmptyOrInvalid(url)) return "";
         return url.getHost();
     }

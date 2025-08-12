@@ -10,6 +10,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.usage_stats.WebsiteEventProtos.WebsiteEvent;
 
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Provides access to native implementation of usage stats storage. */
 @JNINamespace("usage_stats")
+@NullMarked
 public class UsageStatsBridge {
     private final UsageStatsService mUsageStatsService;
 

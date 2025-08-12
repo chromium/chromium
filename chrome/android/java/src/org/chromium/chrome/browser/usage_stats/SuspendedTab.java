@@ -14,13 +14,13 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.UserData;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroid;
@@ -70,7 +70,7 @@ public class SuspendedTab extends EmptyTabObserver implements UserData, TabViewP
         return suspendedTab;
     }
 
-    public static SuspendedTab get(Tab tab) {
+    public static @Nullable SuspendedTab get(Tab tab) {
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
@@ -81,8 +81,8 @@ public class SuspendedTab extends EmptyTabObserver implements UserData, TabViewP
 
     private final Tab mTab;
     private final Supplier<TabContentManager> mTabContentManagerSupplier;
-    private View mView;
-    private String mFqdn;
+    private @Nullable View mView;
+    private @Nullable String mFqdn;
 
     private SuspendedTab(Tab tab, Supplier<TabContentManager> tabContentManagerSupplier) {
         mTab = tab;
@@ -145,8 +145,10 @@ public class SuspendedTab extends EmptyTabObserver implements UserData, TabViewP
         mFqdn = null;
     }
 
-    /** @return the fqdn this SuspendedTab is currently showing for; null if not showing. */
-    public String getFqdn() {
+    /**
+     * @return the fqdn this SuspendedTab is currently showing for; null if not showing.
+     */
+    public @Nullable String getFqdn() {
         return mFqdn;
     }
 

@@ -15,6 +15,7 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -183,16 +184,17 @@ public class UsageStatsService implements Destroyable {
     }
 
     /**
-     * Stops tracking the site associated with the given token.
-     * If the token was not associated with a site, this does nothing.
+     * Stops tracking the site associated with the given token. If the token was not associated with
+     * a site, this does nothing.
      */
-    public Promise<Void> stopTrackingTokenAsync(String token) {
+    public Promise<@Nullable Void> stopTrackingTokenAsync(String token) {
         ThreadUtils.assertOnUiThread();
         return mTokenTracker.stopTrackingToken(token);
     }
 
     /** Suspend or unsuspend every site in FQDNs, depending on the value of {@code suspended}. */
-    public Promise<Void> setWebsitesSuspendedAsync(List<String> fqdns, boolean suspended) {
+    public Promise<@Nullable Void> setWebsitesSuspendedAsync(
+            List<String> fqdns, boolean suspended) {
         ThreadUtils.assertOnUiThread();
         notifyObserversOfSuspensions(fqdns, suspended);
 
