@@ -191,7 +191,7 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
   } else if (model_state == password_manager::ui::PASSWORD_CHANGE_STATE) {
     view = new SuccessfulPasswordChangeView(web_contents, anchor_view);
   } else {
-    NOTREACHED();
+    NOTREACHED() << model_state;
   }
 
   g_manage_passwords_bubble_ = view;
