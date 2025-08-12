@@ -60,7 +60,7 @@ class SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired
 };
 
 TEST_P(SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired,
-       DISABLED_IsGmsCoreUpdateRequired) {
+       IsGmsCoreUpdateRequired) {
   IsGmsCoreUpdateRequiredTestCase p = GetParam();
   base::test::ScopedFeatureList features;
   pref_service()->SetBoolean(
@@ -100,7 +100,7 @@ INSTANTIATE_TEST_SUITE_P(
             .test_case_desc = "FalseForGmsSupportSeparatedStoresForAuto",
             .gms_version = kSplitStoresUpmMinVersionForAuto,
             .is_login_db_empty = false,
-            .expected_is_update_required_automotive = true,
+            .expected_is_update_required_automotive = false,
             .expected_is_update_required = false}),
     [](const ::testing::TestParamInfo<IsGmsCoreUpdateRequiredTestCase>& info) {
       return info.param.test_case_desc;
