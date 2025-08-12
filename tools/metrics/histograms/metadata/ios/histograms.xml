@@ -246,6 +246,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.AutoDeletion.ServiceFileRemovalFailure"
+    enum="AutoDeletionServiceFileRemovalFailureType" expires_after="2026-08-01">
+  <owner>danieltwhite@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    This event is recorded each time the AutoDeletionService fails to remove a
+    file from the device. The enumeration indicates which reason was the cause
+    of the removal failure.
+  </summary>
+</histogram>
+
 <histogram name="IOS.BackgroundRefresh.BGTaskSchedulerError"
     enum="BGTaskSchedulerErrorType" expires_after="2025-12-06">
   <owner>fedegermi@google.com</owner>

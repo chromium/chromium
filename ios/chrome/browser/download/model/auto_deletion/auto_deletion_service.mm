@@ -58,20 +58,26 @@ void RemoveScheduledFilesHelper(
     NSString* path = URL.absoluteURL.path;
 
     if (![manager fileExistsAtPath:path]) {
-      // TODO(crbug.com/433728890): Log failure type to histogram.
+      base::UmaHistogramEnumeration(
+          kAutoDeletionServiceFileRemovalFailureHistogram,
+          AutoDeletionServiceFileRemovalFailures::kFileDoesNotExist);
       continue;
     }
 
     const std::string hash = HashDownloadData(base::as_byte_span(buffer));
     if (hash != file.hash()) {
-      // TODO(crbug.com/433728890): Log failure type to histogram.
+      base::UmaHistogramEnumeration(
+          kAutoDeletionServiceFileRemovalFailureHistogram,
+          AutoDeletionServiceFileRemovalFailures::kHashMismatch);
       return;
     }
 
     NSError* error;
     [manager removeItemAtPath:path error:&error];
     if (error) {
-      // TODO(crbug.com/433728890): Log failure type to histogram.
+      base::UmaHistogramEnumeration(
+          kAutoDeletionServiceFileRemovalFailureHistogram,
+          AutoDeletionServiceFileRemovalFailures::kGenericRemovalError);
       return;
     }
     base::UmaHistogramEnumeration(

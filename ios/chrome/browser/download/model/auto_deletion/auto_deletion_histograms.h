@@ -7,6 +7,7 @@
 
 // UMA histogram names.
 extern const char kAutoDeletionServiceActionsHistogram[];
+extern const char kAutoDeletionServiceFileRemovalFailureHistogram[];
 
 // Enum for the IOS.AutoDeletion.ServiceActions histogram. Keep in sync with
 // "AutoDeletionServiceActionsType" in tools/metrics/histograms/enums.xml
@@ -16,6 +17,18 @@ enum class AutoDeletionServiceActions {
   kScheduledFileIdentifiedForRemoval = 1,
   kScheduledFileRemovedFromDevice = 2,
   kMaxValue = kScheduledFileRemovedFromDevice,
+};
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml)
+
+// Enum for the IOS.AutoDeletion.FileRemovalFailure histogram. Keep in sync with
+// "AutoDeletionServiceFileRemovalFailureType" in
+// tools/metrics/histograms/enums.xml.
+// LINT.IfChange
+enum class AutoDeletionServiceFileRemovalFailures {
+  kHashMismatch = 0,
+  kFileDoesNotExist = 1,
+  kGenericRemovalError = 2,
+  kMaxValue = kGenericRemovalError,
 };
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml)
 

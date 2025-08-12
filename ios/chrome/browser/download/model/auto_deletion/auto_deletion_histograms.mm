@@ -6,3 +6,5 @@
 
 const char kAutoDeletionServiceActionsHistogram[] =
     "IOS.AutoDeletion.ServiceActions";
+const char kAutoDeletionServiceFileRemovalFailureHistogram[] =
+    "IOS.AutoDeletion.ServiceFileRemovalFailure";

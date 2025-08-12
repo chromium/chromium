@@ -787,6 +787,12 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="2" label="ScheduledFileRemovedFromDevice"/>
 </enum>
 
+<enum name="AutoDeletionServiceFileRemovalFailureType">
+  <int value="0" label="HashMismatch"/>
+  <int value="1" label="FileDoesNotExist"/>
+  <int value="2" label="GenericRemovalError"/>
+</enum>
+
 <enum name="AutofillSuggestionAcceptedMethod">
   <int value="0" label="Mouse"/>
   <int value="1" label="Keyboard"/>
