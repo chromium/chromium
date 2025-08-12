@@ -372,9 +372,9 @@ TEST(SmapsRollupTest, ReadAndParse) {
 
   SmapsRollup smaps_rollup = result.value();
 
-  EXPECT_GT(smaps_rollup.rss, 0u);
-  EXPECT_GT(smaps_rollup.pss, 0u);
-  EXPECT_GT(smaps_rollup.private_dirty, 0u);
+  EXPECT_GT(smaps_rollup.rss.InKiB(), 0u);
+  EXPECT_GT(smaps_rollup.pss.InKiB(), 0u);
+  EXPECT_GT(smaps_rollup.private_dirty.InKiB(), 0u);
 }
 
 TEST(SmapsRollupTest, Valid) {
@@ -411,14 +411,14 @@ Locked:                0 kB
 
   SmapsRollup smaps_rollup = result.value();
 
-  EXPECT_EQ(smaps_rollup.rss, 1024 * 1908u);
-  EXPECT_EQ(smaps_rollup.pss, 1024 * 573u);
-  EXPECT_EQ(smaps_rollup.private_dirty, 1024 * 104u);
-  EXPECT_EQ(smaps_rollup.pss_anon, 1024 * 100u);
-  EXPECT_EQ(smaps_rollup.pss_file, 1024 * 469u);
-  EXPECT_EQ(smaps_rollup.pss_shmem, 1024 * 12u);
-  EXPECT_EQ(smaps_rollup.swap, 1024 * 10u);
-  EXPECT_EQ(smaps_rollup.swap_pss, 1024 * 20u);
+  EXPECT_EQ(smaps_rollup.rss.InKiB(), 1908u);
+  EXPECT_EQ(smaps_rollup.pss.InKiB(), 573u);
+  EXPECT_EQ(smaps_rollup.private_dirty.InKiB(), 104u);
+  EXPECT_EQ(smaps_rollup.pss_anon.InKiB(), 100u);
+  EXPECT_EQ(smaps_rollup.pss_file.InKiB(), 469u);
+  EXPECT_EQ(smaps_rollup.pss_shmem.InKiB(), 12u);
+  EXPECT_EQ(smaps_rollup.swap.InKiB(), 10u);
+  EXPECT_EQ(smaps_rollup.swap_pss.InKiB(), 20u);
 }
 
 }  // namespace base::debug

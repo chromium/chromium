@@ -83,10 +83,6 @@ bool IsMadvisePageoutSupported() {
 // be more than enough.
 constexpr base::TimeDelta kCompactionTimeout = base::Seconds(10);
 
-uint64_t BytesToMiB(uint64_t v) {
-  return v / 1024 / 1024;
-}
-
 uint64_t MiBToBytes(uint64_t v) {
   return v * 1024 * 1024;
 }
@@ -515,11 +511,11 @@ void SelfCompactionManager::CompactionMetric::MaybeRecordCompactionMetrics() {
 }
 
 void SelfCompactionManager::CompactionMetric::RecordCompactionMetric(
-    size_t value_bytes,
+    ByteCount value_bytes,
     std::string_view metric_name,
     std::string_view suffix) {
   UmaHistogramMemoryMB(GetMetricName(metric_name, suffix),
-                       static_cast<int>(BytesToMiB(value_bytes)));
+                       static_cast<int>(value_bytes.InMiB()));
 }
 
 void SelfCompactionManager::CompactionMetric::RecordCompactionMetrics(
@@ -533,12 +529,13 @@ void SelfCompactionManager::CompactionMetric::RecordCompactionMetrics(
 }
 
 void SelfCompactionManager::CompactionMetric::RecordCompactionDiffMetric(
-    size_t before_value_bytes,
-    size_t after_value_bytes,
+    ByteCount before_value_bytes,
+    ByteCount after_value_bytes,
     std::string_view name,
     std::string_view suffix) {
-  size_t diff_non_negative = std::max(before_value_bytes, after_value_bytes) -
-                             std::min(before_value_bytes, after_value_bytes);
+  ByteCount diff_non_negative =
+      std::max(before_value_bytes, after_value_bytes) -
+      std::min(before_value_bytes, after_value_bytes);
   const std::string full_suffix = StrCat(
       {"Diff.", suffix, ".",
        before_value_bytes < after_value_bytes ? "Increase" : "Decrease"});

@@ -8,6 +8,7 @@
 // TODO(thiabaud): remove this include once we have separated the locks
 // between these two classes.
 #include "base/android/pre_freeze_background_memory_trimmer.h"
+#include "base/byte_count.h"
 #include "base/debug/proc_maps_linux.h"
 #include "base/no_destructor.h"
 #include "base/profiler/sample_metadata.h"
@@ -68,14 +69,14 @@ class BASE_EXPORT SelfCompactionManager {
                               std::string_view suffix) const;
     void RecordCompactionMetrics(const debug::SmapsRollup& value,
                                  std::string_view suffix);
-    void RecordCompactionMetric(size_t value_bytes,
+    void RecordCompactionMetric(ByteCount value_bytes,
                                 std::string_view metric_name,
                                 std::string_view suffix);
     void RecordCompactionDiffMetrics(const debug::SmapsRollup& before,
                                      const debug::SmapsRollup& after,
                                      std::string_view suffix);
-    void RecordCompactionDiffMetric(size_t before_value_bytes,
-                                    size_t after_value_bytes,
+    void RecordCompactionDiffMetric(ByteCount before_value_bytes,
+                                    ByteCount after_value_bytes,
                                     std::string_view name,
                                     std::string_view suffix);
 
