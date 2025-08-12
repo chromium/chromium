@@ -1541,6 +1541,10 @@ const char kSkipDefaultBrowserPromoInFirstRunDescription[] =
     "When enabled, users in the EEA will not see a Default Browser Promo in "
     "the FRE.";
 
+const char kStrokesAPIEnabledName[] = "Enable Strokes API for Lens";
+const char kStrokesAPIEnabledDescription[] =
+    "When enabled, Lens will use the Strokes API.";
+
 const char kNTPBackgroundCustomizationName[] =
     "Enable background customization menu on the NTP";
 const char kNTPBackgroundCustomizationDescription[] =

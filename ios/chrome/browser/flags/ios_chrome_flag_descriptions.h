@@ -902,6 +902,9 @@ extern const char kSignInButtonNoAvatarDescription[];
 extern const char kSkipDefaultBrowserPromoInFirstRunName[];
 extern const char kSkipDefaultBrowserPromoInFirstRunDescription[];
 
+extern const char kStrokesAPIEnabledName[];
+extern const char kStrokesAPIEnabledDescription[];
+
 extern const char kNTPBackgroundCustomizationName[];
 extern const char kNTPBackgroundCustomizationDescription[];
 

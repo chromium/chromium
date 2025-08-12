@@ -2870,6 +2870,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"page-context-anchor-tags", flag_descriptions::kPageContextAnchorTagsName,
      flag_descriptions::kPageContextAnchorTagsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kPageContextAnchorTags)},
+    {"lens-strokes-api-enabled",
+     flag_descriptions::kStrokesAPIEnabledName,
+     flag_descriptions::kStrokesAPIEnabledDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kLensStrokesAPIEnabled)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

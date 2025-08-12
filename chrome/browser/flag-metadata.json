@@ -6458,6 +6458,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "lens-strokes-api-enabled",
+    "owners": ["aboodmufti@google.com", "cmyang@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "lens-translate-toogle-mode-enabled",
     "owners": ["cmyang@google.com", "ericappelbaum@google.com"],
     "expiry_milestone": 145
