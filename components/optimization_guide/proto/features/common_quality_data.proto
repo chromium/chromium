@@ -1494,7 +1494,7 @@ enum AXStringAttribute {
 }
 
 // AX Int attribute enum.
-// Next ID: 68
+// Next ID: 69
 enum AXIntAttribute {
   AX_IA_NONE = 0;
 
