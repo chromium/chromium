@@ -1411,6 +1411,9 @@ extern const char kIgnoreGpuBlocklistDescription[];
 extern const char kIncognitoScreenshotName[];
 extern const char kIncognitoScreenshotDescription[];
 
+extern const char kIncognitoThemeOverlayTestingName[];
+extern const char kIncognitoThemeOverlayTestingDescription[];
+
 extern const char kInstanceSwitcherV2Name[];
 extern const char kInstanceSwitcherV2Description[];
 

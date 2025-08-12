@@ -341,6 +341,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kLockBackPressHandlerAtStart,
     &kLockTopControlsOnLargeTablets,
     &kIncognitoScreenshot,
+    &kIncognitoThemeOverlayTesting,
     &kInstanceSwitcherV2,
     &kKeyboardEscBackNavigation,
     &kLensOnQuickActionSearchWidget,
@@ -1095,6 +1096,10 @@ BASE_FEATURE(kLockTopControlsOnLargeTablets,
 
 BASE_FEATURE(kIncognitoScreenshot,
              "IncognitoScreenshot",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIncognitoThemeOverlayTesting,
+             "IncognitoThemeOverlayTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kInstanceSwitcherV2,

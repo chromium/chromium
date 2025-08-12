@@ -456,6 +456,7 @@ public abstract class ChromeFeatureList {
     public static final String HUB_BACK_BUTTON = "HubBackButton";
     public static final String HUB_SLIDE_ANIMATION = "HubSlideAnimation";
     public static final String INCOGNITO_SCREENSHOT = "IncognitoScreenshot";
+    public static final String INCOGNITO_THEME_OVERLAY_TESTING = "IncognitoThemeOverlayTesting";
     public static final String INSTANCE_SWITCHER_V2 = "InstanceSwitcherV2";
     public static final String IP_PROTECTION_UX = "IpProtectionUx";
     public static final String KEYBOARD_ESC_BACK_NAVIGATION = "KeyboardEscBackNavigation";
@@ -930,6 +931,8 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sHomepageIsNewTabPagePolicyAndroid =
             newCachedFlag(HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_ANDROID, true);
+    public static final CachedFlag sIncognitoThemeOverlayTesting =
+            newCachedFlag(INCOGNITO_THEME_OVERLAY_TESTING, false);
     public static final CachedFlag sKeyboardEscBackNavigation =
             newCachedFlag(KEYBOARD_ESC_BACK_NAVIGATION, true);
     public static final CachedFlag sLegacyTabStateDeprecation =
@@ -1169,6 +1172,7 @@ public abstract class ChromeFeatureList {
                     sHistoryPaneAndroid,
                     sHomepageIsNewTabPagePolicyAndroid,
                     sKeyboardEscBackNavigation,
+                    sIncognitoThemeOverlayTesting,
                     sLegacyTabStateDeprecation,
                     sLockBackPressHandlerAtStart,
                     sMagicStackAndroid,

@@ -5823,6 +5823,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "incognito-theme-overlay-testing",
+    "owners": ["jtanaristy@google.com", "wenyufu@chromium.org"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "infinite-tabs-freezing",
     "owners": [ "fdoray@chromium.org", "catan-team@chromium.org" ],
     "expiry_milestone": 142

@@ -76,6 +76,13 @@ public class IncognitoUtils {
         return ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled();
     }
 
+    /**
+     * @return Whether incognito theme overlay is enabled for testing on current window.
+     */
+    public static boolean isIncognitoThemeOverlayEnabledForTesting() {
+        return ChromeFeatureList.sIncognitoThemeOverlayTesting.isEnabled();
+    }
+
     @NativeMethods
     public interface Natives {
         boolean getIncognitoModeEnabled(@JniType("Profile*") Profile profile);

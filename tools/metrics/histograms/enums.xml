@@ -12987,6 +12987,7 @@ from previous Chrome versions.
   <int value="-419733676" label="IsolatePrerendersMustProbeOrigin:disabled"/>
   <int value="-419659180" label="ContextualSearchDelayedIntelligence:disabled"/>
   <int value="-419558747" label="AndroidBcivBottomControls:enabled"/>
+  <int value="-419525196" label="IncognitoThemeOverlayTesting:disabled"/>
   <int value="-419476022" label="RightEdgeGoesForwardGestureNav:enabled"/>
   <int value="-419199747"
       label="UseHardwareBufferUsageFlagsFromVulkan:disabled"/>
@@ -14408,6 +14409,7 @@ from previous Chrome versions.
   <int value="99177659" label="OmniboxUICuesForSearchHistoryMatches:disabled"/>
   <int value="99502850" label="TabGroupSyncServiceDesktopMigration:enabled"/>
   <int value="99660832" label="DockedMagnifierResizing:enabled"/>
+  <int value="99954367" label="IncognitoThemeOverlayTesting:enabled"/>
   <int value="100826234" label="WebAppDontAddExistingAppsToSync:disabled"/>
   <int value="101253756" label="RequestDesktopSiteDefaults:disabled"/>
   <int value="101364236" label="ParentAccessJelly:enabled"/>

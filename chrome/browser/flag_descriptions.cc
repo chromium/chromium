@@ -2432,6 +2432,11 @@ const char kIncognitoScreenshotDescription[] =
     "Enables Incognito screenshots on Android. It will also make Incognito "
     "thumbnails visible.";
 
+const char kIncognitoThemeOverlayTestingName[] =
+    "Incognito theme overlay for testing";
+const char kIncognitoThemeOverlayTestingDescription[] =
+    "Enables incognito theme overlay for testing on the current window.";
+
 const char kInstanceSwitcherV2Name[] = "Instance switcher v2";
 const char kInstanceSwitcherV2Description[] =
     "Enables the updated instance switcher dialog, that uses a new layout and "

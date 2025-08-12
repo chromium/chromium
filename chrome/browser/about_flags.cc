@@ -13093,6 +13093,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableSupportForHomeAndWork)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"incognito-theme-overlay-testing",
+     flag_descriptions::kIncognitoThemeOverlayTestingName,
+     flag_descriptions::kIncognitoThemeOverlayTestingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kIncognitoThemeOverlayTesting)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
