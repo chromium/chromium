@@ -69,7 +69,8 @@ class PaintPreviewClient
   // Captures a paint preview corresponding to the content of
   // |render_frame_host|. This will work for capturing entire documents if
   // passed the main frame or for just a specific subframe depending on
-  // |render_frame_host|. |callback| is invoked on completion.
+  // |render_frame_host|. |callback| is invoked on completion, and must be
+  // non-null.
   void CapturePaintPreview(const PaintPreviewParams& params,
                            content::RenderFrameHost* render_frame_host,
                            PaintPreviewCallback callback);
@@ -119,7 +120,7 @@ class PaintPreviewClient
     // Main frame capture time.
     base::TimeDelta main_frame_blink_recording_time;
 
-    // Callback that is invoked on completion of data.
+    // Callback that is invoked on completion of data. Always non-null.
     PaintPreviewCallback callback;
 
     // All the render frames that are still required.
@@ -155,6 +156,15 @@ class PaintPreviewClient
     // time of capture). See PaintPreviewBaseService::CaptureParams for a
     // description of the effects of this flag.
     bool skip_accelerated_content = false;
+
+    // Returns whether the given frame is allowed to be captured.
+    bool IsAllowedToCapture(const base::UnguessableToken& frame_token) const;
+
+    // Returns whether the given frame is finished being captured.
+    bool IsFinishedCapturing(const base::UnguessableToken& frame_token) const;
+
+    // Returns whether the given frame's capture is in progress.
+    bool IsCaptureInProgress(const base::UnguessableToken& frame_token) const;
 
     // Generates a file path based off |root_dir| and |frame_guid|. Will be in
     // the form "{hexadecimal}.skp".
@@ -220,11 +230,12 @@ class PaintPreviewClient
   // Marks a frame as having been processed, this should occur regardless of
   // whether the processed frame is valid as there is no retry.
   void MarkFrameAsProcessed(base::UnguessableToken guid,
-                            const base::UnguessableToken& frame_guid);
+                            const base::UnguessableToken& frame_guid,
+                            InProgressDocumentCaptureState* document_data);
 
   // Handles finishing the capture once all frames are received.
   void OnFinished(base::UnguessableToken guid,
-                  InProgressDocumentCaptureState* document_data);
+                  InProgressDocumentCaptureState& document_data);
 
   // Storage ------------------------------------------------------------------
 

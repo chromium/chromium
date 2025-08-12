@@ -208,6 +208,21 @@ PaintPreviewClient::InProgressDocumentCaptureState::
     InProgressDocumentCaptureState(
         InProgressDocumentCaptureState&& other) noexcept = default;
 
+bool PaintPreviewClient::InProgressDocumentCaptureState::IsAllowedToCapture(
+    const base::UnguessableToken& frame_token) const {
+  return base::Contains(accepted_tokens, frame_token);
+}
+
+bool PaintPreviewClient::InProgressDocumentCaptureState::IsFinishedCapturing(
+    const base::UnguessableToken& frame_token) const {
+  return base::Contains(finished_subframes, frame_token);
+}
+
+bool PaintPreviewClient::InProgressDocumentCaptureState::IsCaptureInProgress(
+    const base::UnguessableToken& frame_token) const {
+  return base::Contains(awaiting_subframes, frame_token);
+}
+
 base::FilePath
 PaintPreviewClient::InProgressDocumentCaptureState::FilePathForFrame(
     const base::UnguessableToken& frame_guid) const {
@@ -266,8 +281,8 @@ void PaintPreviewClient::InProgressDocumentCaptureState::RecordSuccessfulFrame(
   for (const auto& remote_frame_guid : remote_frame_guids) {
     // Don't wait again for a frame that was already captured. Also don't wait
     // on frames that navigated during capture and have new embedding tokens.
-    if (!base::Contains(finished_subframes, remote_frame_guid) &&
-        base::Contains(accepted_tokens, remote_frame_guid)) {
+    if (!IsFinishedCapturing(remote_frame_guid) &&
+        IsAllowedToCapture(remote_frame_guid)) {
       awaiting_subframes.insert(remote_frame_guid);
     }
   }
@@ -297,7 +312,9 @@ void PaintPreviewClient::CapturePaintPreview(
     content::RenderFrameHost* render_frame_host,
     PaintPreviewCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (base::Contains(all_document_data_, params.inner.document_guid)) {
+  CHECK(callback);
+  auto document_data_it = all_document_data_.find(params.inner.document_guid);
+  if (document_data_it != all_document_data_.end()) {
     std::move(callback).Run(params.inner.document_guid,
                             mojom::PaintPreviewStatus::kGuidCollision, {});
     return;
@@ -338,20 +355,17 @@ void PaintPreviewClient::CapturePaintPreview(
 
   document_data.accepted_tokens = CreateAcceptedTokenList(render_frame_host);
   auto token = render_frame_host->GetEmbeddingToken();
-  if (token.has_value()) {
-    document_data.root_frame_token = token.value();
-  } else {
-    // This should be impossible.
-    NOTREACHED() << "Error: Root frame does not have an embedding token.";
-  }
+  CHECK(token.has_value())
+      << "Error: Root frame does not have an embedding token.";
+  document_data.root_frame_token = token.value();
   document_data.capture_links = params.inner.capture_links;
   document_data.max_per_capture_size = params.inner.max_capture_size;
   document_data.max_decoded_image_size_bytes =
       params.inner.max_decoded_image_size_bytes;
   document_data.skip_accelerated_content =
       params.inner.skip_accelerated_content;
-  auto [document_data_it, inserted] = all_document_data_.insert(
-      {params.inner.document_guid, std::move(document_data)});
+  document_data_it = all_document_data_.insert(
+      document_data_it, {params.inner.document_guid, std::move(document_data)});
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("paint_preview",
                                     "PaintPreviewClient::CapturePaintPreview",
                                     TRACE_ID_LOCAL(&document_data_it->second));
@@ -417,9 +431,10 @@ void PaintPreviewClient::RenderFrameDeleted(
             pending_previews_on_subframe_.erase(subframe_guid);
           }
         }
+        document_data->awaiting_subframes.clear();
       }
       interface_ptrs_.erase(frame_guid);
-      OnFinished(document_guid, document_data);
+      OnFinished(document_guid, *document_data);
     }
   }
   pending_previews_on_subframe_.erase(frame_guid);
@@ -445,13 +460,13 @@ void PaintPreviewClient::CapturePaintPreviewInternal(
   // capture was started. If this is not the case then the frame may have
   // navigated. This is unsafe to capture.
   base::UnguessableToken frame_guid = token.value();
-  if (!base::Contains(document_data.accepted_tokens, frame_guid)) {
+  if (!document_data.IsAllowedToCapture(frame_guid)) {
     return;
   }
 
   // Deduplicate data if a subframe is required multiple times.
-  if (base::Contains(document_data.awaiting_subframes, frame_guid) ||
-      base::Contains(document_data.finished_subframes, frame_guid)) {
+  if (document_data.IsCaptureInProgress(frame_guid) ||
+      document_data.IsFinishedCapturing(frame_guid)) {
     return;
   }
 
@@ -474,9 +489,10 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
 
   auto* document_data =
       base::FindOrNull(all_document_data_, params.document_guid);
-  if (!document_data || !document_data->callback) {
+  if (!document_data) {
     return;
   }
+  CHECK(document_data->callback);
 
   if (status != mojom::PaintPreviewStatus::kOk) {
     std::move(document_data->callback).Run(params.document_guid, status, {});
@@ -527,9 +543,12 @@ void PaintPreviewClient::OnPaintPreviewCapturedCallback(
     const content::GlobalRenderFrameHostId& render_frame_id,
     mojom::PaintPreviewStatus status,
     mojom::PaintPreviewCaptureResponsePtr response) {
+  auto* document_data =
+      base::FindOrNull(all_document_data_, params.document_guid);
+
   // There is no retry logic so always treat a frame as processed regardless of
   // |status|
-  MarkFrameAsProcessed(params.document_guid, frame_guid);
+  MarkFrameAsProcessed(params.document_guid, frame_guid, document_data);
 
   // If the RenderFrameHost navigated or is no longer around treat this as a
   // failure as a navigation occurring during capture is bad.
@@ -539,8 +558,6 @@ void PaintPreviewClient::OnPaintPreviewCapturedCallback(
     status = mojom::PaintPreviewStatus::kCaptureFailed;
   }
 
-  auto* document_data =
-      base::FindOrNull(all_document_data_, params.document_guid);
   if (!document_data) {
     return;
   }
@@ -553,25 +570,26 @@ void PaintPreviewClient::OnPaintPreviewCapturedCallback(
 
     // If this is the main frame we should just abort the capture on failure.
     if (params.is_main_frame) {
-      OnFinished(params.document_guid, document_data);
+      document_data->awaiting_subframes.clear();
+      OnFinished(params.document_guid, *document_data);
       return;
     }
   }
 
   if (document_data->awaiting_subframes.empty()) {
-    OnFinished(params.document_guid, document_data);
+    OnFinished(params.document_guid, *document_data);
   }
 }
 
 void PaintPreviewClient::MarkFrameAsProcessed(
     base::UnguessableToken guid,
-    const base::UnguessableToken& frame_guid) {
+    const base::UnguessableToken& frame_guid,
+    InProgressDocumentCaptureState* document_data) {
   auto& tokens = pending_previews_on_subframe_[frame_guid];
   tokens.erase(guid);
   if (tokens.empty()) {
     interface_ptrs_.erase(frame_guid);
   }
-  auto* document_data = base::FindOrNull(all_document_data_, guid);
   if (!document_data) {
     return;
   }
@@ -581,44 +599,43 @@ void PaintPreviewClient::MarkFrameAsProcessed(
 
 void PaintPreviewClient::OnFinished(
     base::UnguessableToken guid,
-    InProgressDocumentCaptureState* document_data) {
-  if (!document_data || !document_data->callback) {
-    return;
-  }
+    InProgressDocumentCaptureState& document_data) {
+  CHECK_EQ(document_data.awaiting_subframes.size(), 0U);
+  CHECK(document_data.callback);
 
-  if (!PaintPreviewProtoValid(document_data->proto)) {
-    document_data->had_success = false;
+  if (!PaintPreviewProtoValid(document_data.proto)) {
+    document_data.had_success = false;
   }
 
   TRACE_EVENT_NESTABLE_ASYNC_END2(
       "paint_preview", "PaintPreviewClient::CapturePaintPreview",
-      TRACE_ID_LOCAL(document_data), "success", document_data->had_success,
-      "subframes", document_data->finished_subframes.size());
+      TRACE_ID_LOCAL(&document_data), "success", document_data.had_success,
+      "subframes", document_data.finished_subframes.size());
 
   base::UmaHistogramBoolean("Browser.PaintPreview.Capture.Success",
-                            document_data->had_success);
-  if (document_data->had_success) {
+                            document_data.had_success);
+  if (document_data.had_success) {
     base::UmaHistogramCounts100(
         "Browser.PaintPreview.Capture.NumberOfFramesCaptured",
-        document_data->finished_subframes.size());
+        document_data.finished_subframes.size());
 
-    RecordUkmCaptureData(document_data->source_id,
-                         document_data->main_frame_blink_recording_time);
+    RecordUkmCaptureData(document_data.source_id,
+                         document_data.main_frame_blink_recording_time);
 
     // At a minimum one frame was captured successfully, it is up to the
     // caller to decide if a partial success is acceptable based on what is
     // contained in the proto.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(document_data->callback), guid,
-                       document_data->had_error
+        base::BindOnce(std::move(document_data.callback), guid,
+                       document_data.had_error
                            ? mojom::PaintPreviewStatus::kPartialSuccess
                            : mojom::PaintPreviewStatus::kOk,
-                       std::move(*document_data).IntoCaptureResult()));
+                       std::move(document_data).IntoCaptureResult()));
   } else {
     // A proto could not be created indicating all frames failed to capture.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(document_data->callback), guid,
+        FROM_HERE, base::BindOnce(std::move(document_data.callback), guid,
                                   mojom::PaintPreviewStatus::kFailed, nullptr));
   }
   all_document_data_.erase(guid);
