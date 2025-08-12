@@ -5465,10 +5465,20 @@ void NavigationRequest::OnStartChecksComplete(
   bool report_raw_headers = false;
   std::optional<std::vector<net::SourceStreamType>>
       devtools_accepted_stream_types;
+  GURL devtools_referrer_override;
   devtools_instrumentation::ApplyNetworkRequestOverrides(
       frame_tree_node_, begin_params_.get(), &report_raw_headers,
       &devtools_accepted_stream_types, &devtools_user_agent_override_,
-      &devtools_accept_language_override_);
+      &devtools_accept_language_override_, &devtools_referrer_override);
+
+  if (!devtools_referrer_override.is_empty()) {
+    // When the `Referer` header is overridden by DevTools (e.g. by CDP command
+    // `Network.setExtraHTTPHeaders`), bypass referrer sanitization and set the
+    // custom referrer of the navigation params to the overridden referrer
+    // value. See crbug.com/437323961.
+    common_params_->referrer->url = devtools_referrer_override;
+  }
+
   devtools_instrumentation::OnNavigationRequestWillBeSent(*this);
 
   // Merge headers with embedder's headers.

@@ -226,7 +226,8 @@ class NetworkHandler : public DevToolsDomainHandler,
       net::HttpRequestHeaders* headers,
       bool* skip_service_worker,
       bool* disable_cache,
-      std::optional<std::vector<net::SourceStreamType>>* accepted_stream_types);
+      std::optional<std::vector<net::SourceStreamType>>* accepted_stream_types,
+      GURL* referrer_override);
   void ApplyCookieControlsOverrides(net::CookieSettingOverrides& overrides);
   void PrefetchRequestWillBeSent(
       const std::string& request_id,

@@ -96,7 +96,8 @@ void ApplyAuctionNetworkRequestOverrides(FrameTreeNode* frame_tree_node,
 // `devtools_user_agent_overridden` will be set to true; otherwise, it will be
 // set to false. If this function caused the Accept-Language header to be
 // overridden, `devtools_accept_language_overridden` will be set to true;
-// otherwise, it will be set to false.
+// otherwise, it will be set to false. If the Referrer header was overridden,
+// `referrer_override` will be set to the new Referrer header value.
 void ApplyNetworkRequestOverrides(
     FrameTreeNode* frame_tree_node,
     blink::mojom::BeginNavigationParams* begin_params,
@@ -104,7 +105,8 @@ void ApplyNetworkRequestOverrides(
     std::optional<std::vector<net::SourceStreamType>>*
         devtools_accepted_stream_types,
     bool* devtools_user_agent_overridden,
-    bool* devtools_accept_language_overridden);
+    bool* devtools_accept_language_overridden,
+    GURL* referrer_override);
 
 // Returns true if devtools want |*override_out| to be used.
 // (A true return and |*override_out| being nullopt means no user agent client
