@@ -1,8 +1,6 @@
 # These tests rely on LayerTreeHostImpl to produce CompositorFrames, which it
 # doesn't do in TreesInViz mode.
 -CommitToPendingTreeLayerTreeHostImplTest.FarAwayQuadsDontNeedAA
--LayerTreeHostImplTest.BlendingOffWhenDrawingOpaqueLayers/CommitToActiveTree
--LayerTreeHostImplTest.BlendingOffWhenDrawingOpaqueLayers/CommitToPendingTree
 -LayerTreeHostImplTest.DamageShouldNotCareAboutContributingLayers/CommitToActiveTree
 -LayerTreeHostImplTest.DamageShouldNotCareAboutContributingLayers/CommitToPendingTree
 -LayerTreeHostImplViewportCoveredTest.ActiveTreeGrowViewportInvalid
