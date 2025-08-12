@@ -10,8 +10,10 @@
 #include "base/containers/to_vector.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "cc/base/math_util.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/offset_tag.h"
@@ -311,11 +313,15 @@ void ResolvedFrameData::UpdateOffsetTags(OffsetTagLookupFn lookup_value_fn) {
   for (auto& tag_def : offset_tags_to_find) {
     auto offset = lookup_value_fn(tag_def);
     if (!tag_def.constraints.IsOffsetValid(offset)) {
-      SCOPED_CRASH_KEY_STRING32("BCIV", "offset", offset.ToString());
-      SCOPED_CRASH_KEY_STRING32("BCIV", "OffsetTagConstraints",
-                                tag_def.constraints.ToString());
-      base::debug::DumpWithoutCrashing();
-
+#if BUILDFLAG(IS_ANDROID)
+      if (base::FeatureList::IsEnabled(
+              features::kAndroidDumpForBadCompositedUiState)) {
+        SCOPED_CRASH_KEY_STRING32("BCIV", "offset", offset.ToString());
+        SCOPED_CRASH_KEY_STRING32("BCIV", "OffsetTagConstraints",
+                                  tag_def.constraints.ToString());
+        base::debug::DumpWithoutCrashing();
+      }
+#endif
       offset = tag_def.constraints.Clamp(offset);
     }
 
