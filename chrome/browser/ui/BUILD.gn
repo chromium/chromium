@@ -74,7 +74,6 @@ static_library("ui") {
     "passwords/settings/password_manager_porter.h",
     "passwords/settings/password_manager_porter_interface.h",
     "passwords/ui_utils.cc",
-    "passwords/ui_utils.h",
     "passwords/well_known_change_password_navigation_throttle.cc",
     "passwords/well_known_change_password_navigation_throttle.h",
     "recently_audible_helper.cc",
@@ -367,6 +366,7 @@ static_library("ui") {
     "//chrome/browser/ui/page_action:icon_type",
     "//chrome/browser/ui/page_info",
     "//chrome/browser/ui/page_info:impl",
+    "//chrome/browser/ui/passwords/",
     "//chrome/browser/ui/prefs",
     "//chrome/browser/ui/prefs:impl",
     "//chrome/browser/ui/profiles",
@@ -1024,27 +1024,6 @@ static_library("ui") {
       "focus_tab_after_navigation_helper.h",
       "intent_picker_tab_helper.cc",
       "intent_picker_tab_helper.h",
-      "passwords/bubble_controllers/add_username_bubble_controller.cc",
-      "passwords/bubble_controllers/add_username_bubble_controller.h",
-      "passwords/bubble_controllers/auto_sign_in_bubble_controller.cc",
-      "passwords/bubble_controllers/auto_sign_in_bubble_controller.h",
-      "passwords/bubble_controllers/common_saved_account_manager_bubble_controller.cc",
-      "passwords/bubble_controllers/common_saved_account_manager_bubble_controller.h",
-      "passwords/bubble_controllers/manage_passwords_bubble_controller.cc",
-      "passwords/bubble_controllers/manage_passwords_bubble_controller.h",
-      "passwords/bubble_controllers/move_to_account_store_bubble_controller.cc",
-      "passwords/bubble_controllers/move_to_account_store_bubble_controller.h",
-      "passwords/bubble_controllers/password_bubble_controller_base.cc",
-      "passwords/bubble_controllers/password_change/successful_password_change_bubble_controller.cc",
-      "passwords/bubble_controllers/password_change/successful_password_change_bubble_controller.h",
-      "passwords/bubble_controllers/post_save_compromised_bubble_controller.cc",
-      "passwords/bubble_controllers/post_save_compromised_bubble_controller.h",
-      "passwords/bubble_controllers/save_unsynced_credentials_locally_bubble_controller.cc",
-      "passwords/bubble_controllers/save_unsynced_credentials_locally_bubble_controller.h",
-      "passwords/bubble_controllers/save_update_bubble_controller.cc",
-      "passwords/bubble_controllers/save_update_bubble_controller.h",
-      "passwords/bubble_controllers/shared_passwords_notifications_bubble_controller.cc",
-      "passwords/bubble_controllers/shared_passwords_notifications_bubble_controller.h",
       "passwords/credential_leak_dialog_controller.h",
       "passwords/credential_leak_dialog_controller_impl.cc",
       "passwords/credential_leak_dialog_controller_impl.h",
@@ -1065,9 +1044,7 @@ static_library("ui") {
       "passwords/password_generation_popup_view.h",
       "passwords/passwords_client_ui_delegate.cc",
       "passwords/passwords_client_ui_delegate.h",
-      "passwords/passwords_leak_dialog_delegate.h",
       "passwords/passwords_model_delegate.cc",
-      "passwords/passwords_model_delegate.h",
       "sad_tab.cc",
       "sad_tab.h",
       "sad_tab_helper.cc",
@@ -1408,6 +1385,8 @@ static_library("ui") {
       "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/passwords/bubble_controllers",
+      "//chrome/browser/ui/passwords/bubble_controllers:impl",
+      "//chrome/browser/ui/passwords/bubble_controllers/password_change",
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/performance_controls:impl",
       "//chrome/browser/ui/search",
@@ -3014,10 +2993,6 @@ static_library("ui") {
 
   if (is_win || is_mac || is_chromeos) {
     sources += [
-      "passwords/bubble_controllers/biometric_authentication_confirmation_bubble_controller.cc",
-      "passwords/bubble_controllers/biometric_authentication_confirmation_bubble_controller.h",
-      "passwords/bubble_controllers/biometric_authentication_for_filling_bubble_controller.cc",
-      "passwords/bubble_controllers/biometric_authentication_for_filling_bubble_controller.h",
       "views/passwords/biometric_authentication_confirmation_bubble_view.cc",
       "views/passwords/biometric_authentication_confirmation_bubble_view.h",
       "views/passwords/biometric_authentication_for_filling_bubble_view.cc",
@@ -3303,8 +3278,6 @@ static_library("ui") {
 
   if (is_linux || is_mac) {
     sources += [
-      "passwords/bubble_controllers/relaunch_chrome_bubble_controller.cc",
-      "passwords/bubble_controllers/relaunch_chrome_bubble_controller.h",
       "views/first_run_dialog.cc",  # Dialog shows only on Linux and macOS.
       "views/first_run_dialog.h",
       "views/passwords/password_relaunch_chrome_view.cc",
@@ -5740,7 +5713,13 @@ static_library("test_support") {
       "//components/ukm:test_support",
       "//services/metrics/public/mojom",
     ]
-    public_deps += [ "//chrome/browser/ui/exclusive_access" ]
+    public_deps += [
+      "//chrome/browser/ui/exclusive_access",
+
+      # TODO(crbug.com/437811373): Remove this dependency when passwords test_support
+      # code above gets componentized.
+      "//chrome/browser/ui/passwords",
+    ]
   }
 }
 

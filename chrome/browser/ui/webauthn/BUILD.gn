@@ -70,6 +70,7 @@ source_set("impl") {
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
+      "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/passwords/bubble_controllers",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/views/frame:toolbar_button_provider",

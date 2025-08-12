@@ -144,6 +144,7 @@ source_set("impl") {
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/page_info",
+    "//chrome/browser/ui/passwords",
     "//chrome/browser/ui/plus_addresses",
     "//components/autofill/content/browser",
     "//components/autofill/content/browser:risk_proto",

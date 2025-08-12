@@ -2072,6 +2072,7 @@ static_library("browser") {
     "//chrome/browser/ui/omnibox:impl",
     "//chrome/browser/ui/page_info",
     "//chrome/browser/ui/page_info:impl",
+    "//chrome/browser/ui/passwords",
     "//chrome/browser/ui/prefs",
     "//chrome/browser/ui/prefs:impl",
     "//chrome/browser/ui/profiles",
@@ -4398,6 +4399,7 @@ static_library("browser") {
       "//chrome/browser/ui/media_router",
       "//chrome/browser/ui/media_router:impl",
       "//chrome/browser/ui/page_action:icon_type",
+      "//chrome/browser/ui/passwords/bubble_controllers:impl",
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/privacy_sandbox",
       "//chrome/browser/ui/search",
@@ -4651,6 +4653,10 @@ static_library("browser") {
       "//chrome/browser/ui/tabs/tab_strip_api:impl",
       "//chrome/browser/ui/bookmarks:impl",
       "//chrome/browser/ui/promos:impl",
+
+      # TODO(crbug.com/437811373): Remove this circular dependency when
+      # c/b/password_manager/password_store_utils.h gets componentized.
+      "//chrome/browser/ui/passwords/bubble_controllers:impl",
     ]
 
     #!is_android

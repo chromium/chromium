@@ -336,7 +336,13 @@ static_library("test_support") {
       "../browser/ui/passwords/manage_passwords_test.h",
     ]
 
-    deps += [ "//components/bookmarks/managed" ]
+    deps += [
+      "//components/bookmarks/managed",
+
+      # TODO(crbug.com/437811373): Remove this dependency when passwords test_support
+      # code above gets componentized.
+      "//chrome/browser/ui/passwords",
+    ]
   }
 
   if (enable_extensions_core) {
@@ -3932,6 +3938,7 @@ if (!is_android) {
       "//chrome/browser/supervised_user",
       "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui/extensions",
+      "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/passwords/bubble_controllers",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/search",
@@ -7313,6 +7320,10 @@ test("unit_tests") {
     "//v8",
   ]
 
+  # TODO(crbug.com/437811373): Remove this dependency when display_account_info_unittest.cc
+  # gets componentized.
+  deps += [ "//chrome/browser/ui/passwords" ]
+
   # Duplicate these tests here because PathService has more providers in
   # unit_tests than in base_unittests.
   deps += [ "//base:path_service_unittest" ]
@@ -8092,16 +8103,6 @@ test("unit_tests") {
       "../browser/ui/color/material_new_tab_page_color_mixer_unittest.cc",
       "../browser/ui/color/new_tab_page_color_mixer_unittest.cc",
       "../browser/ui/intent_picker_tab_helper_unittest.cc",
-      "../browser/ui/passwords/bubble_controllers/add_username_bubble_controller_unittest.cc",
-      "../browser/ui/passwords/bubble_controllers/auto_sign_in_bubble_controller_unittest.cc",
-      "../browser/ui/passwords/bubble_controllers/common_saved_account_manager_bubble_controller_unittest.cc",
-      "../browser/ui/passwords/bubble_controllers/manage_passwords_bubble_controller_unittest.cc",
-      "../browser/ui/passwords/bubble_controllers/move_to_account_store_bubble_controller_unittest.cc",
-      "../browser/ui/passwords/bubble_controllers/password_change/successful_password_change_bubble_controller_unittest.cc",
-      "../browser/ui/passwords/bubble_controllers/post_save_compromised_bubble_controller_unittest.cc",
-      "../browser/ui/passwords/bubble_controllers/save_unsynced_credentials_locally_bubble_controller_unittest.cc",
-      "../browser/ui/passwords/bubble_controllers/save_update_bubble_controller_unittest.cc",
-      "../browser/ui/passwords/bubble_controllers/shared_passwords_notifications_bubble_controller_unittest.cc",
       "../browser/ui/passwords/credential_leak_dialog_controller_impl_unittest.cc",
       "../browser/ui/passwords/credential_manager_dialog_controller_impl_unittest.cc",
       "../browser/ui/passwords/manage_passwords_ui_controller_unittest.cc",
@@ -8266,6 +8267,9 @@ test("unit_tests") {
       "//chrome/browser/ui/bookmarks:unit_tests",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/extensions:unit_tests",
+      "//chrome/browser/ui/passwords/bubble_controllers:unit_tests",
+      "//chrome/browser/ui/passwords/bubble_controllers/password_change",
+      "//chrome/browser/ui/passwords/bubble_controllers/password_change:unit_tests",
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/performance_controls:unit_tests",
       "//chrome/browser/ui/safety_hub",
@@ -10227,11 +10231,6 @@ test("unit_tests") {
     sources += [ "../browser/component_updater/updater_state_unittest.cc" ]
   }
   if (is_win || is_mac || is_chromeos) {
-    sources += [
-      "../browser/ui/passwords/bubble_controllers/biometric_authentication_confirmation_bubble_controller_unittest.cc",
-      "../browser/ui/passwords/bubble_controllers/biometric_authentication_for_filling_bubble_controller_unittest.cc",
-    ]
-
     deps += [ "//chrome/common/notifications:unit_tests" ]
   }
   if (enable_rlz) {
@@ -10542,10 +10541,7 @@ test("unit_tests") {
       ]
     }
     if (is_mac || is_linux) {
-      sources += [
-        "../browser/ui/passwords/bubble_controllers/relaunch_chrome_bubble_controller_unittest.cc",
-        "../browser/ui/webui/password_manager/promo_cards/relaunch_chrome_promo_unittest.cc",
-      ]
+      sources += [ "../browser/ui/webui/password_manager/promo_cards/relaunch_chrome_promo_unittest.cc" ]
     }
     if (!is_chromeos) {
       sources += [
