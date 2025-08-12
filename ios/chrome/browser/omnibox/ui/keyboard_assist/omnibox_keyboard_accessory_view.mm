@@ -36,10 +36,6 @@ constexpr CGFloat kGlassEffectViewHeight = 58;
 // Corner radius of the keyboard accessory on iOS 26.0+.
 constexpr CGFloat kCornerRadius = 24;
 
-// Alpha of the tint color for the glass effect. A lower alpha will produce a
-// more pronounced glass effect.
-constexpr CGFloat kGlassTintAlpha = 0.5;
-
 // Shadow parameters. Used when the liquid glass effect is enabled.
 constexpr CGFloat kShadowRadius = 16.0;
 constexpr CGFloat kShadowVerticalOffset = 4.0;
@@ -150,8 +146,7 @@ constexpr CGFloat kShadowOpacity = 0.12;
     // Create glass effect
     UIGlassEffect* glassEffect = [[UIGlassEffect alloc] init];
     glassEffect.interactive = YES;
-    glassEffect.tintColor = [[UIColor colorNamed:kSecondaryBackgroundColor]
-        colorWithAlphaComponent:kGlassTintAlpha];
+    glassEffect.tintColor = [UIColor colorNamed:kSecondaryBackgroundColor];
     effectView = [[UIVisualEffectView alloc] initWithEffect:glassEffect];
     self.layer.shadowRadius = kShadowRadius;
     self.layer.shadowOffset = CGSizeMake(0, kShadowVerticalOffset);
@@ -164,6 +159,8 @@ constexpr CGFloat kShadowOpacity = 0.12;
             [UICornerRadius
                 containerConcentricRadiusWithMinimum:kCornerRadius]];
     effectView.translatesAutoresizingMaskIntoConstraints = NO;
+    [effectView.heightAnchor constraintEqualToConstant:kGlassEffectViewHeight]
+        .active = YES;
 
     [self addSubview:effectView];
 
@@ -175,7 +172,11 @@ constexpr CGFloat kShadowOpacity = 0.12;
                                                      effectViewInsets.bottom];
     heightConstraint.priority = UILayoutPriorityRequired;
     heightConstraint.active = YES;
-    AddSameConstraintsWithInsets(effectView, self, effectViewInsets);
+    AddSameConstraintsToSidesWithInsets(
+        effectView, self,
+        LayoutSides::kTrailing | LayoutSides::kLeading | LayoutSides::kBottom,
+        effectViewInsets);
+    AddSameConstraints(effectView, effectView.contentView);
   }
 #endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
         // __IPHONE_26_0
