@@ -15,6 +15,7 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -31,6 +32,7 @@ import java.util.List;
  * Public interface for all usage stats related functionality. All calls to instances of
  * UsageStatsService must be made on the UI thread.
  */
+@NullMarked
 public class UsageStatsService implements Destroyable {
     private static final String TAG = "UsageStatsService";
 
@@ -48,7 +50,7 @@ public class UsageStatsService implements Destroyable {
     // references here.
     private final List<WeakReference<PageViewObserver>> mPageViewObservers;
 
-    private DigitalWellbeingClient mClient;
+    private final DigitalWellbeingClient mClient;
     private boolean mOptInState;
 
     /** Return the {@link UsageStatsService} for the given {@link Profile}. */
@@ -82,10 +84,11 @@ public class UsageStatsService implements Destroyable {
         mTokenTracker = new TokenTracker(mBridge);
         mPageViewObservers = new ArrayList<>();
 
-        mClient = ServiceLoaderUtil.maybeCreate(DigitalWellbeingClient.class);
-        if (mClient == null) {
-            mClient = new DigitalWellbeingClient();
+        DigitalWellbeingClient client = ServiceLoaderUtil.maybeCreate(DigitalWellbeingClient.class);
+        if (client == null) {
+            client = new DigitalWellbeingClient();
         }
+        mClient = client;
 
         mSuspensionTracker
                 .getAllSuspendedWebsites()

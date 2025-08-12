@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.usage_stats;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Promise;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.notifications.NotificationSuspender;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.function.Function;
 
 /** Class that tracks which sites are currently suspended. */
+@NullMarked
 public class SuspensionTracker {
     private final UsageStatsBridge mBridge;
     private final NotificationSuspender mNotificationSuspender;
@@ -82,7 +84,7 @@ public class SuspensionTracker {
                                 // on the returned promise, so they expect
                                 // there to be one on the root promise.
                             },
-                            CallbackUtils.emptyCallback());
+                            CallbackUtils.<@Nullable Exception>emptyCallback());
                 });
 
         mWritePromise = newWritePromise;
