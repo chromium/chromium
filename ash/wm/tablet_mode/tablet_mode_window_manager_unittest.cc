@@ -164,9 +164,9 @@ class TabletModeWindowManagerTest : public AshTestBase {
   // Create a window in one of the containers which are watched by the
   // TabletModeWindowManager. Note that this only works with one root window.
   aura::Window* CreateWindowInWatchedContainer(const InitParams& params) {
-    aura::test::TestWindowDelegate* delegate = NULL;
+    aura::test::TestWindowDelegate* delegate =
+        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate();
     if (!params.can_maximize) {
-      delegate = aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate();
       delegate->set_window_component(HTCAPTION);
       if (!params.max_size.IsEmpty())
         delegate->set_maximum_size(params.max_size);

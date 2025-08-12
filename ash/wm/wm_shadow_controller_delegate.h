@@ -24,6 +24,7 @@ class WmShadowControllerDelegate : public wm::ShadowControllerDelegate {
   ~WmShadowControllerDelegate() override;
 
   // wm::ShadowControllerDelegate:
+  bool ShouldObserveWindow(const aura::Window* window) override;
   bool ShouldShowShadowForWindow(const aura::Window* window) override;
   bool ShouldUpdateShadowOnWindowPropertyChange(const aura::Window* window,
                                                 const void* key,

@@ -11,6 +11,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor_extra/shadow.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_controller.h"
 #include "ui/wm/core/window_util.h"
@@ -109,6 +110,34 @@ TEST_F(WmShadowControllerDelegateTest, HideShadowForOccludedWindow) {
   window1->Hide();
   EXPECT_TRUE(shadow2->layer()->visible());
   EXPECT_TRUE(shadow3->layer()->visible());
+}
+
+TEST_F(WmShadowControllerDelegateTest, ContainerShouldHaveNoShadow) {
+  auto* shadow_controller = Shell::Get()->shadow_controller();
+
+  auto* primary_root = Shell::GetPrimaryRootWindow();
+
+  for (int id : desks_util::GetDesksContainersIds()) {
+    auto* container = Shell::GetContainer(primary_root, id);
+    EXPECT_FALSE(shadow_controller->IsShadowVisibleForWindow(container));
+    EXPECT_FALSE(shadow_controller->IsObservingWindowForTest(container));
+  }
+}
+
+TEST_F(WmShadowControllerDelegateTest, ControlShouldHaveNoShadow) {
+  auto* shadow_controller = Shell::Get()->shadow_controller();
+  auto window = CreateAppWindow({300, 200});
+
+  auto child = views::test::TestWidgetBuilder()
+                   .SetParent(window.get())
+                   .SetWidgetType(views::Widget::InitParams::TYPE_CONTROL)
+                   .BuildClientOwnsWidget();
+  ASSERT_EQ(aura::client::WINDOW_TYPE_CONTROL,
+            child->GetNativeWindow()->GetType());
+  EXPECT_FALSE(
+      shadow_controller->IsShadowVisibleForWindow(child->GetNativeWindow()));
+  EXPECT_FALSE(
+      shadow_controller->IsObservingWindowForTest(child->GetNativeWindow()));
 }
 
 }  // namespace ash
