@@ -9,33 +9,33 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "content/public/browser/web_contents_observer.h"
+
+class AnnotatedPageContentCapturer;
+class OptimizationGuideKeyedService;
 
 namespace content {
+class NavigationHandle;
 class WebContents;
-}
-
-class OptimizationGuideKeyedService;
+}  // namespace content
 
 // Helper class which checks if the user is fully signed in on the main tab
 // before starting a password change flow in a background tab.
-// The "main tab" refers to the tab the user is viewing when the flow is
-// offered.
-class LoginStateChecker {
+// If the initial check fails, it waits for a navigation to occur before
+// retrying.
+class LoginStateChecker : public content::WebContentsObserver {
  public:
+  // Maximum amount of login state checks.
+  static constexpr int kMaxLoginChecks = 5;
   using LoginStateResultCallback = base::OnceCallback<void(bool)>;
 
   LoginStateChecker(content::WebContents* web_contents,
                     LoginStateResultCallback callback);
 
-  LoginStateChecker(
-      content::WebContents* web_contents,
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
-          capture_annotated_page_content,
-      LoginStateResultCallback callback);
-
-  ~LoginStateChecker();
+  ~LoginStateChecker() override;
 
 #if defined(UNIT_TEST)
+  AnnotatedPageContentCapturer* capturer() { return capturer_.get(); }
   void RespondWithLoginStatus(bool is_logged_in) {
     std::move(callback_).Run(is_logged_in);
   }
@@ -45,8 +45,13 @@ class LoginStateChecker {
   OptimizationGuideKeyedService* GetOptimizationService();
 
   // Checks if the user is fully signed in on the site.
-  // The result will be passed to the callback.
+  // The result will be passed to the callback on success, otherwise it will
+  // set up a retry on the next navigation.
   void CheckLoginState();
+
+  // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   void OnPageContentReceived(
       std::optional<optimization_guide::AIPageContentResult> content);
@@ -58,12 +63,13 @@ class LoginStateChecker {
           optimization_guide::proto::PasswordChangeSubmissionLoggingData>
           logging_data);
 
-  const raw_ptr<content::WebContents> web_contents_;
-  // TODO(crbug.com/436537301): Use AnnotatedPageContentCapturer instead.
-  base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
-      capture_annotated_page_content_;
+  std::unique_ptr<AnnotatedPageContentCapturer> capturer_ = nullptr;
 
   LoginStateResultCallback callback_;
+
+  // The number of login state checks performed.
+  int state_checks_count_ = 0;
+
   base::WeakPtrFactory<LoginStateChecker> weak_ptr_factory_{this};
 };
 
