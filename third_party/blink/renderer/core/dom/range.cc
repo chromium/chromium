@@ -1812,18 +1812,15 @@ void Range::UpdateSelectionIfAddedToSelection() {
 
   Position start_position = StartPosition();
   Position end_position = EndPosition();
-  if (RuntimeEnabledFeatures::SelectionAcrossShadowDOMEnabled()) {
-    switch (update_selection_behavior_) {
-      case UpdateSelectionBehavior::kEndOnly:
-        start_position =
-            selection.GetSelectionInDOMTree().ComputeStartPosition();
-        break;
-      case UpdateSelectionBehavior::kStartOnly:
-        end_position = selection.GetSelectionInDOMTree().ComputeEndPosition();
-        break;
-      case UpdateSelectionBehavior::kAll:
-        break;
-    }
+  switch (update_selection_behavior_) {
+    case UpdateSelectionBehavior::kEndOnly:
+      start_position = selection.GetSelectionInDOMTree().ComputeStartPosition();
+      break;
+    case UpdateSelectionBehavior::kStartOnly:
+      end_position = selection.GetSelectionInDOMTree().ComputeEndPosition();
+      break;
+    case UpdateSelectionBehavior::kAll:
+      break;
   }
 
   selection.SetSelection(SelectionInDOMTree::Builder()

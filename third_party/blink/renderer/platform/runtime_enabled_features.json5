@@ -1475,23 +1475,8 @@
       status: "stable",
       depends_on: ["PseudoElementsFocusable"],
     },
-    {
-      // TODO(crbug.com/40932006): CSS 'reading-flow' property for reading order
-      // of grid, flexbox and block items.
-      // https://drafts.csswg.org/css-display-4/#reading-flow
-      // This should ship in M137, and it can be removed after M139.
-      name: "CSSReadingFlow",
-      status: "stable",
-    },
-    {
-      // TODO(crbug.com/393550130): CSS 'reading-order' property to overwrite
-      // reading-flow order.
-      // https://drafts.csswg.org/css-display-4/#reading-order
-      // This should ship in M137, and it can be removed after M139.
-      name: "CSSReadingOrder",
-      status: "stable",
-      depends_on: ["CSSReadingFlow"],
-    },
+    
+    
     {
       // Non-standard 'auto' keyword for the CSS resize property. Used for
       // selectively enable resize corner for textarea via UA stylesheet, but
@@ -1743,7 +1728,6 @@
     {
       name: "DialogNewFocusBehavior",
       status: "experimental",
-      depends_on: ["NewGetFocusableAreaBehavior"],
     },
     {
       // Prevents <form method=dialog> from submitting across shadow boundaries
@@ -2600,14 +2584,7 @@
       name: "HTMLElementScrollParent",
       status: "experimental",
     },
-    // The `<embed>` should follow the specification, layout is not forced
-    // when the `type` attribute is set to `image`.
-    // https://html.spec.whatwg.org/C/#the-embed-element
-    // This feature was shipped in M131, so this flag can be removed in M133.
-    {
-      name: "HTMLEmbedElementNotForceLayout",
-      status: "stable",
-    },
+    
     // Return a natural width/height of zero from
     // HTMLImageElement.naturalWidth/Height for SVG images that don't have a
     // natural width/height set.
@@ -2682,14 +2659,7 @@
       status: {"Android": "stable"},
       base_feature: "none",
     },
-    // This change, although technically breaking, is expected to be fully web-compatible
-    // due to how import attributes are currently used in the ecosystem. However, this is
-    // a killswitch just in case. This can be removed once it ships to stable and no
-    // regressions are reported.
-    {
-      name: "ImportAttributesDisallowUnknownKeys",
-      status: "stable"
-    },
+    
     {
       // Improved retargeting behavior of ToggleEvent.source and
       // CommandEvent.source to match Event.relatedTarget.
@@ -3164,13 +3134,7 @@
       name: "MessagePortCloseEvent",
       status: "test",
     },
-    // This is a killswitch for <meta http-equiv="refresh"> no
-    // longer accepting fractions, landed around M125.
-    // It can be removed in M127 if there are no problems.
-    {
-      name: "MetaRefreshNoFractional",
-      status: "stable",
-    },
+    
     // This is enabled by default on Windows only. The only part that's
     // "experimental" is the support on other platforms.
     {
@@ -3260,13 +3224,7 @@
       },
       base_feature: "none",
     },
-    {
-      // This is a killswitch for the behavior of Element::GetFocusableArea
-      // on delegatesFocus shadow hosts. This flag can be removed in M127 if
-      // things are stable.
-      name: "NewGetFocusableAreaBehavior",
-      status: "stable",
-    },
+    
     {
       // This turns off all font antialiasing for tests unless it is
       // explicitly required and enabled using the
@@ -3999,12 +3957,7 @@
       name: "RemoveDataUrlInSvgUse",
       status: "stable",
     },
-    {
-      // This feature was shipped in M138, so this flag can be removed in M140.
-      // See https://issues.chromium.org/issues/415911524.
-      name: "RemoveNodeDetermineNodeFullySelected",
-      status: "stable",
-    },
+    
     {
       // See https://issues.chromium.org/issues/41474791
       name: "RemoveSelectionCanonicalizationInMoveParagraph",
@@ -4085,18 +4038,8 @@
       name: "RestrictTabFocusForHiddenSVGElements",
       status: "stable",
     },
-    // Killswitch for retargeting drag events to UA shadow hosts.
-    // Added in M139, can be removed in M141.
-    {
-      name: "RetargetDragEvents",
-      status: "stable",
-    },
-    {
-      // Kill-switch for crbug.com/414129878.
-      // Added in M139, and it can be removed in M141.
-      name: "RevealSelectionInIframe",
-      status: "stable",
-    },
+    
+    
     {
       // New behavior when line breaker rewinds floats. crbug.com/1499290
       name: "RewindFloats",
@@ -4375,15 +4318,7 @@
       status: "test",
       depends_on: ["CustomizableSelect"],
     },
-    {
-      // Implement Selection API across shadow DOM: direction and
-      // getComposedRanges().
-      // https://w3c.github.io/selection-api/#dom-selection-getcomposedranges
-      // https://w3c.github.io/selection-api/#dom-selection-direction
-      // This should ship in M137, and it can be removed after M139.
-      name: "SelectionAcrossShadowDOM",
-      status: "stable",
-    },
+    
     {
       // See https://crbug.com/40664519
       name: "SelectionAndFocusedVisiblePositionMatch",
@@ -4404,14 +4339,7 @@
       name: "SelectivePermissionsIntervention",
       status: "experimental",
     },
-    {
-      // If enabled, the select element will not dispatch a mouseup event when
-      // an option is selected using the keyboard.
-      // This should ship in M135, and it can be removed after M137.
-      // http://crbug.com/396611142
-      name: "SelectNoMouseUpForKeyboardSelection",
-      status: "stable",
-    },
+    
     {
       // Makes the HTML parser allow most tags inside of <select> instead of
       // only <option>, <optgroup>, and <hr>.

@@ -1325,7 +1325,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kMostBlockSize ||
              value_id == CSSValueID::kMostInlineSize;
     case CSSPropertyID::kReadingFlow:
-      DCHECK(RuntimeEnabledFeatures::CSSReadingFlowEnabled());
       return value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kFlexVisual ||
              value_id == CSSValueID::kFlexFlow ||

@@ -4542,9 +4542,6 @@ PhysicalRect LayoutBox::BoundingBoxRelativeToFirstFragment() const {
 
 bool LayoutBox::IsReadingFlowContainer() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::CSSReadingFlowEnabled()) {
-    return false;
-  }
   const ComputedStyle& style = StyleRef();
   switch (style.ReadingFlow()) {
     case EReadingFlow::kNormal:

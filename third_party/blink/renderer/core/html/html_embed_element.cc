@@ -181,10 +181,6 @@ void HTMLEmbedElement::UpdatePluginInternal() {
 bool HTMLEmbedElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
   // In the current specification, there is no requirement for `ImageType` to
   // enforce layout.
-  if (!RuntimeEnabledFeatures::HTMLEmbedElementNotForceLayoutEnabled() &&
-      IsImageType()) {
-    return HTMLPlugInElement::LayoutObjectIsNeeded(style);
-  }
 
   // https://html.spec.whatwg.org/C/#the-embed-element
   // While any of the following conditions are occurring, any plugin

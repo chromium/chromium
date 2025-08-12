@@ -7220,11 +7220,7 @@ Element* Element::GetFocusableArea(bool in_descendant_traversal) const {
   }
 
   DCHECK(GetShadowRoot());
-  if (RuntimeEnabledFeatures::NewGetFocusableAreaBehaviorEnabled()) {
-    return GetFocusDelegate(in_descendant_traversal);
-  } else {
-    return FocusController::FindFocusableElementInShadowHost(*this);
-  }
+  return GetFocusDelegate(in_descendant_traversal);
 }
 
 Element* Element::GetFocusDelegate(bool in_descendant_traversal) const {
@@ -7535,8 +7531,7 @@ void Element::UpdateSelectionOnFocus(
     if (this == frame->Selection()
                     .ComputeVisibleSelectionInDOMTreeDeprecated()
                     .RootEditableElement()) {
-      if (!options->preventScroll() &&
-          RuntimeEnabledFeatures::RevealSelectionInIframeEnabled()) {
+      if (!options->preventScroll()) {
         frame->Selection().RevealSelection();
       }
       return;

@@ -465,9 +465,7 @@ bool ParseRefreshTime(const String& source, base::TimeDelta& delay) {
   }
   bool ok;
   double time = source.Left(number_end).ToDouble(&ok);
-  if (RuntimeEnabledFeatures::MetaRefreshNoFractionalEnabled()) {
-    time = floor(time);
-  }
+  time = floor(time);
   if (!ok)
     return false;
   delay = base::Seconds(time);

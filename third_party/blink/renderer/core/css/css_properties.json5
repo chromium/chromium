@@ -4905,7 +4905,6 @@
       typedom_types: ["Keyword"],
       default_value: "normal",
       invalidate: ["layout"],
-      runtime_flag: "CSSReadingFlow",
     },
     {
       name: "reading-order",
@@ -4917,7 +4916,6 @@
       default_value: "0",
       type_name: "int",
       invalidate: ["layout"],
-      runtime_flag: "CSSReadingOrder",
       valid_for_permission_element: true,
     },
     {
