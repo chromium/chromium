@@ -390,6 +390,7 @@
 #include "third_party/blink/public/public_buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -7533,7 +7534,7 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
 void ChromeContentBrowserClient::IsClipboardPasteAllowedByPolicy(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
-    const content::ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     ClipboardPasteData clipboard_paste_data,
     IsClipboardPasteAllowedCallback callback) {
 // TODO(b/352728209): Add Android-specific hook for Data Controls.
@@ -7555,7 +7556,7 @@ void ChromeContentBrowserClient::IsClipboardPasteAllowedByPolicy(
 
 void ChromeContentBrowserClient::IsClipboardCopyAllowedByPolicy(
     const content::ClipboardEndpoint& source,
-    const content::ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     const ClipboardPasteData& data,
     IsClipboardCopyAllowedCallback callback) {
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)

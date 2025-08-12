@@ -309,6 +309,7 @@
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
+#include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
@@ -18002,7 +18003,7 @@ void RenderFrameHostImpl::ReinitializeDocumentAssociatedDataForTesting() {
 void RenderFrameHostImpl::IsClipboardPasteAllowedByPolicy(
     const ClipboardEndpoint& source,
     const ClipboardEndpoint& destination,
-    const ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     ClipboardPasteData clipboard_paste_data,
     IsClipboardPasteAllowedCallback callback) {
   delegate_->IsClipboardPasteAllowedByPolicy(source, destination, metadata,

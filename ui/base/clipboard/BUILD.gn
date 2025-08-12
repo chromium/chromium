@@ -94,6 +94,7 @@ component("clipboard") {
     "clipboard.h",
     "clipboard_change_notifier.cc",
     "clipboard_change_notifier.h",
+    "clipboard_metadata.h",
     "clipboard_metrics.cc",
     "clipboard_metrics.h",
     "clipboard_monitor.cc",

@@ -7,6 +7,7 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/clipboard_types.h"
+#include "ui/base/clipboard/clipboard_metadata.h"
 
 namespace data_controls {
 
@@ -19,19 +20,19 @@ class ReportingServiceBase : public KeyedService {
 
   virtual void ReportPaste(const content::ClipboardEndpoint& source,
                            const content::ClipboardEndpoint& destination,
-                           const content::ClipboardMetadata& metadata,
+                           const ui::ClipboardMetadata& metadata,
                            const Verdict& verdict) = 0;
   virtual void ReportPasteWarningBypassed(
       const content::ClipboardEndpoint& source,
       const content::ClipboardEndpoint& destination,
-      const content::ClipboardMetadata& metadata,
+      const ui::ClipboardMetadata& metadata,
       const Verdict& verdict) = 0;
   virtual void ReportCopy(const content::ClipboardEndpoint& source,
-                          const content::ClipboardMetadata& metadata,
+                          const ui::ClipboardMetadata& metadata,
                           const Verdict& verdict) = 0;
   virtual void ReportCopyWarningBypassed(
       const content::ClipboardEndpoint& source,
-      const content::ClipboardMetadata& metadata,
+      const ui::ClipboardMetadata& metadata,
       const Verdict& verdict) = 0;
 
  protected:

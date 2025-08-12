@@ -212,6 +212,7 @@
 #include "ui/accessibility/ax_tree_combiner.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
+#include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/pointer/pointer_device.h"
@@ -11396,7 +11397,7 @@ std::vector<FrameTreeNode*> WebContentsImpl::GetUnattachedOwnedNodes(
 void WebContentsImpl::IsClipboardPasteAllowedByPolicy(
     const ClipboardEndpoint& source,
     const ClipboardEndpoint& destination,
-    const ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     ClipboardPasteData clipboard_paste_data,
     IsClipboardPasteAllowedCallback callback) {
   ++suppress_unresponsive_renderer_count_;

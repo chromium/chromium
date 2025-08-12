@@ -92,6 +92,7 @@
 #include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom-forward.h"
 #include "third_party/blink/public/mojom/payments/secure_payment_confirmation_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
+#include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -2737,7 +2738,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void IsClipboardPasteAllowedByPolicy(
       const ClipboardEndpoint& source,
       const ClipboardEndpoint& destination,
-      const ClipboardMetadata& metadata,
+      const ui::ClipboardMetadata& metadata,
       ClipboardPasteData clipboard_paste_data,
       IsClipboardPasteAllowedCallback callback);
 
@@ -2746,7 +2747,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // asynchronously.
   virtual void IsClipboardCopyAllowedByPolicy(
       const ClipboardEndpoint& source,
-      const ClipboardMetadata& metadata,
+      const ui::ClipboardMetadata& metadata,
       const ClipboardPasteData& data,
       IsClipboardCopyAllowedCallback callback);
 

@@ -51,6 +51,7 @@
 #include "services/video_effects/public/cpp/buildflags.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
+#include "ui/base/clipboard/clipboard_metadata.h"
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 #include "media/capture/mojom/video_effects_manager.mojom-forward.h"
@@ -917,13 +918,13 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void IsClipboardPasteAllowedByPolicy(
       const content::ClipboardEndpoint& source,
       const content::ClipboardEndpoint& destination,
-      const content::ClipboardMetadata& metadata,
+      const ui::ClipboardMetadata& metadata,
       ClipboardPasteData clipboard_paste_data,
       IsClipboardPasteAllowedCallback callback) override;
 
   void IsClipboardCopyAllowedByPolicy(
       const content::ClipboardEndpoint& source,
-      const content::ClipboardMetadata& metadata,
+      const ui::ClipboardMetadata& metadata,
       const ClipboardPasteData& data,
       IsClipboardCopyAllowedCallback callback) override;
 

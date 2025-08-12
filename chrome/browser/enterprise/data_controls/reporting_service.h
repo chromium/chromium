@@ -12,6 +12,7 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/data_controls/content/browser/reporting_service_base.h"
 #include "components/enterprise/data_controls/content/browser/reporting_service_base_factory.h"
+#include "ui/base/clipboard/clipboard_metadata.h"
 
 class Profile;
 
@@ -53,17 +54,17 @@ class ReportingService : public ReportingServiceBase {
   // data_controls::ReportingServiceBase:
   void ReportPaste(const content::ClipboardEndpoint& source,
                    const content::ClipboardEndpoint& destination,
-                   const content::ClipboardMetadata& metadata,
+                   const ui::ClipboardMetadata& metadata,
                    const Verdict& verdict) override;
   void ReportPasteWarningBypassed(const content::ClipboardEndpoint& source,
                                   const content::ClipboardEndpoint& destination,
-                                  const content::ClipboardMetadata& metadata,
+                                  const ui::ClipboardMetadata& metadata,
                                   const Verdict& verdict) override;
   void ReportCopy(const content::ClipboardEndpoint& source,
-                  const content::ClipboardMetadata& metadata,
+                  const ui::ClipboardMetadata& metadata,
                   const Verdict& verdict) override;
   void ReportCopyWarningBypassed(const content::ClipboardEndpoint& source,
-                                 const content::ClipboardMetadata& metadata,
+                                 const ui::ClipboardMetadata& metadata,
                                  const Verdict& verdict) override;
 
  protected:
@@ -75,7 +76,7 @@ class ReportingService : public ReportingServiceBase {
   void ReportCopyOrPaste(
       const content::ClipboardEndpoint& source,
       const std::optional<content::ClipboardEndpoint>& destination,
-      const content::ClipboardMetadata& metadata,
+      const ui::ClipboardMetadata& metadata,
       const Verdict& verdict,
       const std::string& trigger,
       enterprise_connectors::EventResult event_result);

@@ -52,6 +52,7 @@
 #include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -162,7 +163,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   using ClipboardPasteData = content::ClipboardPasteData;
   using ClipboardEndpoint = content::ClipboardEndpoint;
-  using ClipboardMetadata = content::ClipboardMetadata;
+  using ClipboardMetadata = ui::ClipboardMetadata;
 
   // This is used to give the delegate a chance to filter IPC messages.
   virtual bool OnMessageReceived(RenderFrameHostImpl* render_frame_host,

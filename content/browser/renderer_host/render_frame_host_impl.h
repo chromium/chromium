@@ -190,6 +190,7 @@
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
+#include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -663,7 +664,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void IsClipboardPasteAllowedByPolicy(
       const ClipboardEndpoint& source,
       const ClipboardEndpoint& destination,
-      const ClipboardMetadata& metadata,
+      const ui::ClipboardMetadata& metadata,
       ClipboardPasteData clipboard_paste_data,
       IsClipboardPasteAllowedCallback callback);
 

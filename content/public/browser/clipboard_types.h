@@ -12,7 +12,6 @@
 #include "content/common/content_export.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
-#include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
 namespace base {
@@ -128,22 +127,6 @@ class CONTENT_EXPORT ClipboardEndpoint {
 
   // null if the endpoint has no associated WebContents, or if it's been closed.
   base::WeakPtr<WebContents> web_contents_;
-};
-
-// Struct that holds metadata for data being copied or pasted that is relevant
-// to evaluating enterprise policies.
-struct ClipboardMetadata {
-  // Size of the clipboard data. null when files are copied, or sometimes when
-  // created from Android JNI.
-  // TODO(crbug.com/344593255): Ensure that Android JNI consistently passes in
-  //  non-null size.
-  std::optional<size_t> size;
-
-  // Format type of clipboard data.
-  ui::ClipboardFormatType format_type;
-
-  // Sequence number of the clipboard interaction.
-  ui::ClipboardSequenceNumberToken seqno;
 };
 
 // Chromium-only type to associate clipboard data to the RFH it originated from.

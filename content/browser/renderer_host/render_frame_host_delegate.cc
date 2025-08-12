@@ -21,6 +21,7 @@
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -159,7 +160,7 @@ std::vector<FrameTreeNode*> RenderFrameHostDelegate::GetUnattachedOwnedNodes(
 void RenderFrameHostDelegate::IsClipboardPasteAllowedByPolicy(
     const ClipboardEndpoint& source,
     const ClipboardEndpoint& destination,
-    const ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     ClipboardPasteData clipboard_paste_data,
     IsClipboardPasteAllowedCallback callback) {
   std::move(callback).Run(std::move(clipboard_paste_data));

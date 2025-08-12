@@ -21,6 +21,7 @@ source_set("browser") {
     "//components/enterprise/data_controls/core/browser:features",
     "//components/prefs",
     "//content/public/browser/",
+    "//ui/base/clipboard",
   ]
 }
 

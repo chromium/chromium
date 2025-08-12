@@ -183,7 +183,7 @@ ReportingService::~ReportingService() = default;
 void ReportingService::ReportPaste(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
-    const content::ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     const Verdict& verdict) {
   ReportCopyOrPaste(
       source, destination, metadata, verdict,
@@ -194,7 +194,7 @@ void ReportingService::ReportPaste(
 void ReportingService::ReportPasteWarningBypassed(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
-    const content::ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     const Verdict& verdict) {
   ReportCopyOrPaste(
       source, destination, metadata, verdict,
@@ -203,7 +203,7 @@ void ReportingService::ReportPasteWarningBypassed(
 }
 
 void ReportingService::ReportCopy(const content::ClipboardEndpoint& source,
-                                  const content::ClipboardMetadata& metadata,
+                                  const ui::ClipboardMetadata& metadata,
                                   const Verdict& verdict) {
   ReportCopyOrPaste(
       source, /*destination=*/std::nullopt, metadata, verdict,
@@ -213,7 +213,7 @@ void ReportingService::ReportCopy(const content::ClipboardEndpoint& source,
 
 void ReportingService::ReportCopyWarningBypassed(
     const content::ClipboardEndpoint& source,
-    const content::ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     const Verdict& verdict) {
   ReportCopyOrPaste(
       source, /*destination=*/std::nullopt, metadata, verdict,
@@ -224,7 +224,7 @@ void ReportingService::ReportCopyWarningBypassed(
 void ReportingService::ReportCopyOrPaste(
     const content::ClipboardEndpoint& source,
     const std::optional<content::ClipboardEndpoint>& destination,
-    const content::ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     const Verdict& verdict,
     const std::string& trigger,
     enterprise_connectors::EventResult event_result) {

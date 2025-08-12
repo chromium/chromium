@@ -27,6 +27,7 @@
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -1253,7 +1254,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                  })"},
                                  machine_scope());
 
-  content::ClipboardMetadata metadata = {
+  ui::ClipboardMetadata metadata = {
       .size = 1234,
       .format_type = ui::ClipboardFormatType::PlainTextType(),
       .seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(

@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/content_browser_client.h"
+#include "ui/base/clipboard/clipboard_metadata.h"
 
 namespace enterprise_data_protection {
 
@@ -38,7 +39,7 @@ class PasteAllowedRequest {
   static void StartPasteAllowedRequest(
       const content::ClipboardEndpoint& source,
       const content::ClipboardEndpoint& destination,
-      const content::ClipboardMetadata& metadata,
+      const ui::ClipboardMetadata& metadata,
       content::ClipboardPasteData clipboard_paste_data,
       IsClipboardPasteAllowedCallback callback);
 

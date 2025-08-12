@@ -28,6 +28,7 @@
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
@@ -150,7 +151,7 @@ void PasteIfAllowedByContentAnalysis(
     content::WebContents* web_contents,
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
-    const content::ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
   DCHECK(web_contents);
@@ -216,7 +217,7 @@ data_controls::DataControlsDialogFactory* GetDialogFactory() {
 
 void MaybeReportDataControlsPaste(const content::ClipboardEndpoint& source,
                                   const content::ClipboardEndpoint& destination,
-                                  const content::ClipboardMetadata& metadata,
+                                  const ui::ClipboardMetadata& metadata,
                                   const data_controls::Verdict& verdict,
                                   bool bypassed = false) {
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -240,7 +241,7 @@ void MaybeReportDataControlsPaste(const content::ClipboardEndpoint& source,
 }
 
 void MaybeReportDataControlsCopy(const content::ClipboardEndpoint& source,
-                                 const content::ClipboardMetadata& metadata,
+                                 const ui::ClipboardMetadata& metadata,
                                  const data_controls::Verdict& verdict,
                                  bool bypassed = false) {
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -265,7 +266,7 @@ void MaybeReportDataControlsCopy(const content::ClipboardEndpoint& source,
 void OnDataControlsPasteWarning(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
-    const content::ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     data_controls::Verdict verdict,
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback,
@@ -303,7 +304,7 @@ void OnDataControlsPasteWarning(
 void PasteIfAllowedByDataControls(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
-    const content::ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
   DCHECK(!SkipDataControlOrContentAnalysisChecks(destination));
@@ -371,7 +372,7 @@ void PasteIfAllowedByDataControls(
 void OnDlpRulesCheckDone(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
-    const content::ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback,
     bool allowed) {
@@ -391,7 +392,7 @@ void OnDlpRulesCheckDone(
 
 void IsCopyToOSClipboardRestricted(
     const content::ClipboardEndpoint& source,
-    const content::ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
   if (SkipDataControlOrContentAnalysisChecks(source)) {
@@ -422,7 +423,7 @@ void IsCopyToOSClipboardRestricted(
 
 void OnDataControlsCopyWarning(
     const content::ClipboardEndpoint& source,
-    const content::ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data,
     data_controls::Verdict verdict,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback,
@@ -443,7 +444,7 @@ void OnDataControlsCopyWarning(
 
 void IsCopyRestrictedByDialog(
     const content::ClipboardEndpoint& source,
-    const content::ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback,
     data_controls::DataControlsDialog::Type block_dialog_type,
@@ -500,7 +501,7 @@ void IsCopyRestrictedByDialog(
 void PasteIfAllowedByPolicy(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
-    const content::ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
@@ -555,7 +556,7 @@ void PasteIfAllowedByPolicy(
 
 void IsClipboardCopyAllowedByPolicy(
     const content::ClipboardEndpoint& source,
-    const content::ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
@@ -599,7 +600,7 @@ void IsClipboardCopyAllowedByPolicy(
 #if BUILDFLAG(IS_ANDROID)
 void IsClipboardShareAllowedByPolicy(
     const content::ClipboardEndpoint& source,
-    const content::ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
   if (!base::FeatureList::IsEnabled(
@@ -624,7 +625,7 @@ void IsClipboardShareAllowedByPolicy(
 
 void IsClipboardGenericCopyActionAllowedByPolicy(
     const content::ClipboardEndpoint& source,
-    const content::ClipboardMetadata& metadata,
+    const ui::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
   if (!base::FeatureList::IsEnabled(

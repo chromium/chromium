@@ -12,6 +12,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/clipboard_types.h"
+#include "ui/base/clipboard/clipboard_metadata.h"
 
 namespace base {
 template <typename T>
@@ -32,7 +33,7 @@ class ChromeRulesService : public RulesServiceBase {
   // `destination` is always expected to have a valid browser context.
   Verdict GetPasteVerdict(const content::ClipboardEndpoint& source,
                           const content::ClipboardEndpoint& destination,
-                          const content::ClipboardMetadata& metadata) const;
+                          const ui::ClipboardMetadata& metadata) const;
 
   // Returns true if rules indicate screenshots should be blocked. Only the
   // "block" level is supported, a "warn" screenshot rule will not make this
