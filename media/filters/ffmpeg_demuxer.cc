@@ -420,92 +420,92 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
     }
   }
 
-    // FFmpeg may return garbage packets for MP3 stream containers, so we need
-    // to drop these to avoid decoder errors. The ffmpeg team maintains that
-    // this behavior isn't ideal, but have asked for a significant refactoring
-    // of the AVParser infrastructure to fix this, which is overkill for now.
-    // See http://crbug.com/794782.
+  // FFmpeg may return garbage packets for MP3 stream containers, so we need
+  // to drop these to avoid decoder errors. The ffmpeg team maintains that
+  // this behavior isn't ideal, but have asked for a significant refactoring
+  // of the AVParser infrastructure to fix this, which is overkill for now.
+  // See http://crbug.com/794782.
+  //
+  // This behavior may also occur with ADTS streams, but is rarer in practice
+  // because ffmpeg's ADTS demuxer does more validation on the packets, so
+  // when invalid data is received, av_read_frame() fails and playback ends.
+  if (is_audio && demuxer_->container() ==
+                      container_names::MediaContainerName::kContainerMP3) {
+    DCHECK(!data_offset);  // Only set for containers supporting encryption...
+
+    // MP3 packets may be zero-padded according to ffmpeg, so trim until we
+    // have the packet; adjust |data_offset| too so this work isn't repeated.
+    uint8_t* packet_end = packet->data + packet->size;
+    uint8_t* header_start = packet->data;
+    while (header_start < packet_end && !*header_start) {
+      ++header_start;
+      ++data_offset;
+    }
+
+    if (packet_end - header_start < MPEG1AudioStreamParser::kHeaderSize ||
+        !MPEG1AudioStreamParser::ParseHeader(nullptr, nullptr, header_start,
+                                             nullptr)) {
+      LIMITED_MEDIA_LOG(INFO, media_log_, num_discarded_packet_warnings_, 5)
+          << "Discarding invalid MP3 packet, ts: "
+          << ConvertStreamTimestamp(stream_->time_base, packet->pts)
+          << ", duration: "
+          << ConvertStreamTimestamp(stream_->time_base, packet->duration);
+      return;
+    }
+  }
+
+  // If a packet is returned by FFmpeg's av_parser_parse2() the packet will
+  // reference inner memory of FFmpeg.  As such we should transfer the packet
+  // into memory we control.
+  buffer = DecoderBuffer::CopyFrom(AVPacketData(*packet).subspan(data_offset));
+  if (side_data.size() > 0) {
+    buffer->WritableSideData().alpha_data =
+        base::HeapArray<uint8_t>::CopiedFrom(side_data);
+  }
+
+  size_t skip_samples_size = 0;
+  const uint32_t* skip_samples_ptr =
+      reinterpret_cast<const uint32_t*>(av_packet_get_side_data(
+          packet.get(), AV_PKT_DATA_SKIP_SAMPLES, &skip_samples_size));
+  const int kSkipSamplesValidSize = 10;
+  const int kSkipEndSamplesOffset = 1;
+  if (skip_samples_size >= kSkipSamplesValidSize) {
+    // Because FFmpeg rolls codec delay and skip samples into one we can only
+    // allow front discard padding on the first buffer.  Otherwise the discard
+    // helper can't figure out which data to discard.  See AudioDiscardHelper.
     //
-    // This behavior may also occur with ADTS streams, but is rarer in practice
-    // because ffmpeg's ADTS demuxer does more validation on the packets, so
-    // when invalid data is received, av_read_frame() fails and playback ends.
-    if (is_audio && demuxer_->container() ==
-                        container_names::MediaContainerName::kContainerMP3) {
-      DCHECK(!data_offset);  // Only set for containers supporting encryption...
-
-      // MP3 packets may be zero-padded according to ffmpeg, so trim until we
-      // have the packet; adjust |data_offset| too so this work isn't repeated.
-      uint8_t* packet_end = packet->data + packet->size;
-      uint8_t* header_start = packet->data;
-      while (header_start < packet_end && !*header_start) {
-        ++header_start;
-        ++data_offset;
-      }
-
-      if (packet_end - header_start < MPEG1AudioStreamParser::kHeaderSize ||
-          !MPEG1AudioStreamParser::ParseHeader(nullptr, nullptr, header_start,
-                                               nullptr)) {
-        LIMITED_MEDIA_LOG(INFO, media_log_, num_discarded_packet_warnings_, 5)
-            << "Discarding invalid MP3 packet, ts: "
-            << ConvertStreamTimestamp(stream_->time_base, packet->pts)
-            << ", duration: "
-            << ConvertStreamTimestamp(stream_->time_base, packet->duration);
-        return;
-      }
+    // NOTE: Large values may end up as negative here, but negatives are
+    // discarded below.
+    auto discard_front_samples = static_cast<int>(*skip_samples_ptr);
+    if (last_packet_timestamp_ != kNoTimestamp && discard_front_samples) {
+      DLOG(ERROR) << "Skip samples are only allowed for the first packet.";
+      discard_front_samples = 0;
     }
 
-    // If a packet is returned by FFmpeg's av_parser_parse2() the packet will
-    // reference inner memory of FFmpeg.  As such we should transfer the packet
-    // into memory we control.
-    buffer =
-        DecoderBuffer::CopyFrom(AVPacketData(*packet).subspan(data_offset));
-    if (side_data.size() > 0) {
-      buffer->WritableSideData().alpha_data =
-          base::HeapArray<uint8_t>::CopiedFrom(side_data);
+    if (discard_front_samples < 0) {
+      // See https://crbug.com/1189939 and https://trac.ffmpeg.org/ticket/9622
+      DLOG(ERROR) << "Negative skip samples are not allowed.";
+      discard_front_samples = 0;
     }
 
-    size_t skip_samples_size = 0;
-    const uint32_t* skip_samples_ptr =
-        reinterpret_cast<const uint32_t*>(av_packet_get_side_data(
-            packet.get(), AV_PKT_DATA_SKIP_SAMPLES, &skip_samples_size));
-    const int kSkipSamplesValidSize = 10;
-    const int kSkipEndSamplesOffset = 1;
-    if (skip_samples_size >= kSkipSamplesValidSize) {
-      // Because FFmpeg rolls codec delay and skip samples into one we can only
-      // allow front discard padding on the first buffer.  Otherwise the discard
-      // helper can't figure out which data to discard.  See AudioDiscardHelper.
-      //
-      // NOTE: Large values may end up as negative here, but negatives are
-      // discarded below.
-      auto discard_front_samples = static_cast<int>(*skip_samples_ptr);
-      if (last_packet_timestamp_ != kNoTimestamp && discard_front_samples) {
-        DLOG(ERROR) << "Skip samples are only allowed for the first packet.";
-        discard_front_samples = 0;
-      }
+    // NOTE: Large values may end up as negative here, which could lead to
+    // a negative timestamp. It's not clear if this is intentional.
+    const auto discard_end_samples =
+        static_cast<int>(*(skip_samples_ptr + kSkipEndSamplesOffset));
 
-      if (discard_front_samples < 0) {
-        // See https://crbug.com/1189939 and https://trac.ffmpeg.org/ticket/9622
-        DLOG(ERROR) << "Negative skip samples are not allowed.";
-        discard_front_samples = 0;
-      }
-
-      // NOTE: Large values may end up as negative here, which could lead to
-      // a negative timestamp. It's not clear if this is intentional.
-      const auto discard_end_samples =
-          static_cast<int>(*(skip_samples_ptr + kSkipEndSamplesOffset));
-
-      if (discard_front_samples || discard_end_samples) {
-        DCHECK(is_audio);
-        const int samples_per_second =
-            audio_decoder_config().samples_per_second();
-        buffer->set_discard_padding(std::make_pair(
-            FramesToTimeDelta(discard_front_samples, samples_per_second),
-            FramesToTimeDelta(discard_end_samples, samples_per_second)));
-      }
+    if (discard_front_samples || discard_end_samples) {
+      DCHECK(is_audio);
+      const int samples_per_second =
+          audio_decoder_config().samples_per_second();
+      buffer->set_discard_padding(std::make_pair(
+          FramesToTimeDelta(discard_front_samples, samples_per_second),
+          FramesToTimeDelta(discard_end_samples, samples_per_second)));
     }
+  }
 
-    if (decrypt_config)
-      buffer->set_decrypt_config(std::move(decrypt_config));
+  if (decrypt_config) {
+    buffer->set_decrypt_config(std::move(decrypt_config));
+  }
 
   if (packet->duration >= 0) {
     // Treat durations under 1ms as not having duration, later stages of the
