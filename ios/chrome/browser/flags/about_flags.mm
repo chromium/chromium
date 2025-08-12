@@ -2410,13 +2410,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kManualLogUploadsInFREName,
      flag_descriptions::kManualLogUploadsInFREDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(first_run::kManualLogUploadsInTheFRE)},
-    {"autofill-disable-default-save-card-fix-flow-detection",
-     flag_descriptions::kAutofillDisableDefaultSaveCardFixFlowDetectionName,
-     flag_descriptions::
-         kAutofillDisableDefaultSaveCardFixFlowDetectionDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillDisableDefaultSaveCardFixFlowDetection)},
     {"lens-unary-api-salient-text-enabled",
      flag_descriptions::kLensUnaryApiSalientTextEnabledName,
      flag_descriptions::kLensUnaryApiSalientTextEnabledDescription,

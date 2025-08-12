@@ -12,12 +12,6 @@ namespace autofill::features {
 BASE_FEATURE(kAutofillCreditCardScannerIos,
              "AutofillCreditCardScannerIos",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, save card fix flow values for missing cardholder name and
-// expiry date won't be defaulted as detected on iOS.
-BASE_FEATURE(kAutofillDisableDefaultSaveCardFixFlowDetection,
-             "AutofillDisableDefaultSaveCardFixFlowDetection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // When enabled, card category benefits offered by BMO will be shown in Autofill

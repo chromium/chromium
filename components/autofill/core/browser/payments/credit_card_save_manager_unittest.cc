@@ -111,18 +111,6 @@ using UserProvidedCardDetails =
 base::TimeDelta kVeryLargeDelta = base::Days(365) * 75;
 #endif
 
-bool FixFlowDetectedValuesOverriddenOnIos() {
-#if BUILDFLAG(IS_IOS)
-  // On iOS, if the flag is disabled, `DetectedValues` for missing cardholder
-  // name and expiry date are defaulted as true. Tests verifying the detection
-  // bits for presence of a fix flow should skip running the test.
-  return !base::FeatureList::IsEnabled(
-      features::kAutofillDisableDefaultSaveCardFixFlowDetection);
-#else
-  return false;
-#endif
-}
-
 std::string FiveMonthsFromNow() {
   base::Time::Exploded now;
   base::Time::Now().LocalExplode(&now);
@@ -1963,11 +1951,6 @@ TEST_F(CreditCardSaveManagerTest,
 // Tests that if credit card form is submitted with a missing cardholder name,
 // the cardholder name is requested and card is uploaded on providing the name.
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoNameAvailable) {
-  if (FixFlowDetectedValuesOverriddenOnIos()) {
-    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
-                    "have been overridden.";
-  }
-
   // Add a profile without a name to the PersonalDataManager.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"77401");
@@ -2188,11 +2171,6 @@ TEST_F(CreditCardSaveManagerTest,
 // the cardholder name is requested and card is uploaded on providing the name.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_NoNameAvailableAndNoProfileAvailable) {
-  if (FixFlowDetectedValuesOverriddenOnIos()) {
-    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
-                    "have been overridden.";
-  }
-
   // Don't fill or submit an address form.
 
   // Set up our credit card form data.
@@ -2666,11 +2644,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoMiddleInitialInCCForm) {
 // name.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_CCFormHasCardholderMiddleNameNoAddressMiddleName) {
-  if (FixFlowDetectedValuesOverriddenOnIos()) {
-    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
-                    "have been overridden.";
-  }
-
   // Create, fill and submit address form without middle name.
   FormData address_form = CreateTestAddressFormData();
   FormsSeen({address_form});
@@ -2732,11 +2705,6 @@ TEST_F(CreditCardSaveManagerTest,
 // name.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_CCFormHasAddressMiddleNameNoCardholderMiddleName) {
-  if (FixFlowDetectedValuesOverriddenOnIos()) {
-    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
-                    "have been overridden.";
-  }
-
   // Create, fill and submit address form with middle name.
   FormData address_form = CreateTestAddressFormData();
   FormsSeen({address_form});
@@ -2797,11 +2765,6 @@ TEST_F(CreditCardSaveManagerTest,
 // name, the cardholder name is requested and card is uploaded on providing the
 // name.
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NamesCanMismatch) {
-  if (FixFlowDetectedValuesOverriddenOnIos()) {
-    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
-                    "have been overridden.";
-  }
-
   // Create, fill and submit two address forms with different names.
   FormData address_form1 = test::CreateTestAddressFormData("1");
   FormData address_form2 = test::CreateTestAddressFormData("2");
@@ -3108,11 +3071,6 @@ TEST_F(CreditCardSaveManagerTest,
 TEST_F(
     CreditCardSaveManagerTest,
     UploadCreditCard_DoNotRequestCardholderNameIfNameExistsAndNoPaymentsCustomer) {
-  if (FixFlowDetectedValuesOverriddenOnIos()) {
-    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
-                    "have been overridden.";
-  }
-
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -3400,11 +3358,6 @@ TEST_F(
 TEST_F(
     CreditCardSaveManagerTest,
     UploadCreditCard_ShouldRequestExpirationDate_ResetBetweenConsecutiveSaves) {
-  if (FixFlowDetectedValuesOverriddenOnIos()) {
-    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
-                    "have been overridden.";
-  }
-
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -3676,53 +3629,6 @@ TEST_F(CreditCardSaveManagerTest,
                 CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"),
             user_provided_details.expiration_date_year);
 }
-
-// Tests that DetectedValues for missing cardholder name and
-// expiry date are defaulted as true when
-// `kAutofillDisableDefaultSaveCardFixFlowDetection` is not enabled.
-TEST_F(
-    CreditCardSaveManagerTest,
-    UploadCreditCard_AlwaysDetectMissingCardholderNameAndExpirationDate_WhenFlagNotEnabledOnIOS) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillDisableDefaultSaveCardFixFlowDetection);
-
-  // Create, fill and submit an address form in order to establish a recent
-  // profile which can be selected for the upload request.
-  FormData address_form = CreateTestAddressFormData();
-  FormsSeen(std::vector<FormData>(1, address_form));
-  ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
-  FormSubmitted(address_form);
-
-  // Set up our credit card form data.
-  FormData credit_card_form = CreateTestCreditCardFormData();
-  FormsSeen(std::vector<FormData>(1, credit_card_form));
-
-  // Edit the data, and submit.
-  test_api(credit_card_form).field(0).set_value(u"John Smith");
-  test_api(credit_card_form).field(1).set_value(u"4111111111111111");
-  test_api(credit_card_form)
-      .field(2)
-      .set_value(ASCIIToUTF16(test::NextMonth()));
-  test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
-  test_api(credit_card_form).field(4).set_value(u"123");
-
-  base::HistogramTester histogram_tester;
-
-  EXPECT_CALL(payments_client(), ShowSaveCreditCardLocally).Times(0);
-
-  FormSubmitted(credit_card_form);
-
-  EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
-
-  // Verify fix flow DetectedValue bits are always set even when data is not
-  // missing.
-  EXPECT_TRUE(
-      payments_network_interface().detected_values_in_upload_details() &
-      CreditCardSaveManager::DetectedValue::USER_PROVIDED_EXPIRATION_DATE);
-  EXPECT_TRUE(payments_network_interface().detected_values_in_upload_details() &
-              CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
-}
 #endif  // BUILDFLAG(IS_IOS)
 
 // Tests that if credit card form is submitted without an expiry date, valid
@@ -3730,11 +3636,6 @@ TEST_F(
 // date.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_RequestExpirationDateViaExpDateFixFlow) {
-  if (FixFlowDetectedValuesOverriddenOnIos()) {
-    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
-                    "have been overridden.";
-  }
-
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -3797,11 +3698,6 @@ TEST_F(CreditCardSaveManagerTest,
 // month.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_RequestExpirationDateIfOnlyMonthMissing) {
-  if (FixFlowDetectedValuesOverriddenOnIos()) {
-    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
-                    "have been overridden.";
-  }
-
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -3864,11 +3760,6 @@ TEST_F(CreditCardSaveManagerTest,
 // year.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_RequestExpirationDateIfOnlyYearMissing) {
-  if (FixFlowDetectedValuesOverriddenOnIos()) {
-    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
-                    "have been overridden.";
-  }
-
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -3933,11 +3824,6 @@ TEST_F(CreditCardSaveManagerTest,
 // date.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_RequestExpirationDateIfExpirationDateInputIsExpired) {
-  if (FixFlowDetectedValuesOverriddenOnIos()) {
-    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
-                    "have been overridden.";
-  }
-
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -4001,11 +3887,6 @@ TEST_F(CreditCardSaveManagerTest,
 TEST_F(
     CreditCardSaveManagerTest,
     UploadCreditCard_RequestExpirationDateIfExpirationDateInputIsTwoDigitAndExpired) {
-  if (FixFlowDetectedValuesOverriddenOnIos()) {
-    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
-                    "have been overridden.";
-  }
-
   // Make sure that the card will be expired.
   task_environment_.FastForwardBy(base::Days(365 * 15));
 
@@ -5000,11 +4881,6 @@ TEST_F(CreditCardSaveManagerTest,
 // on providing the name.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_PaymentsDecidesOfferToSaveIfNoName) {
-  if (FixFlowDetectedValuesOverriddenOnIos()) {
-    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
-                    "have been overridden.";
-  }
-
   // Add a profile without a name to the PersonalDataManager.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"77401");
@@ -5068,11 +4944,6 @@ TEST_F(CreditCardSaveManagerTest,
 // uploaded on providing the name.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_PaymentsDecidesOfferToSaveIfConflictingNames) {
-  if (FixFlowDetectedValuesOverriddenOnIos()) {
-    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
-                    "have been overridden.";
-  }
-
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -5247,11 +5118,6 @@ TEST_F(CreditCardSaveManagerTest,
 // on providing the name.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_PaymentsDecidesOfferToSaveIfNothingFound) {
-  if (FixFlowDetectedValuesOverriddenOnIos()) {
-    GTEST_SKIP() << "Skip this test on iOS, since detected fix flow values "
-                    "have been overridden.";
-  }
-
   // Set up a new address profile without a name or postal code.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");

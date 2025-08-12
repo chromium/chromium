@@ -60,12 +60,6 @@ const char kAutofillCreditCardUploadDescription[] =
     "Offers uploading Autofilled credit cards to Google Payments after form "
     "submission.";
 
-const char kAutofillDisableDefaultSaveCardFixFlowDetectionName[] =
-    "Disables save card fix flow values as detected by default";
-const char kAutofillDisableDefaultSaveCardFixFlowDetectionDescription[] =
-    "When enabled, save card fix flow values for missing cardholder "
-    "name and expiry date won't be defaulted as detected.";
-
 const char kAutofillDisableProfileUpdatesName[] =
     "Disables Autofill profile updates from form submissions";
 const char kAutofillDisableProfileUpdatesDescription[] =

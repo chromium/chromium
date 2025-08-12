@@ -50,9 +50,6 @@ extern const char kAutofillCreditCardScannerIosDescription[];
 extern const char kAutofillCreditCardUploadName[];
 extern const char kAutofillCreditCardUploadDescription[];
 
-extern const char kAutofillDisableDefaultSaveCardFixFlowDetectionName[];
-extern const char kAutofillDisableDefaultSaveCardFixFlowDetectionDescription[];
-
 extern const char kAutofillDisableProfileUpdatesName[];
 extern const char kAutofillDisableProfileUpdatesDescription[];
 

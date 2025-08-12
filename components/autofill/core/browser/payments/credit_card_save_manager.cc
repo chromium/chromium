@@ -405,19 +405,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
       DetectedValue::USER_PROVIDED_EXPIRATION_DATE) {
     upload_decision_metrics_ |=
         autofill_metrics::USER_REQUESTED_TO_PROVIDE_EXPIRATION_DATE;
-    bool should_log_expiration_date_reason = true;
-#if BUILDFLAG(IS_IOS)
-    // If `kAutofillDisableDefaultSaveCardFixFlowDetection` is not enabled,
-    // `USER_PROVIDED_EXPIRATION_DATE` would always be set on iOS even when
-    // valid expiry date would have been detected during form submission and
-    // `LogSaveCardRequestExpirationDateReasonMetric` checks for invalid expiry
-    // date.
-    should_log_expiration_date_reason = base::FeatureList::IsEnabled(
-        features::kAutofillDisableDefaultSaveCardFixFlowDetection);
-#endif
-    if (should_log_expiration_date_reason) {
-      LogSaveCardRequestExpirationDateReasonMetric();
-    }
+    LogSaveCardRequestExpirationDateReasonMetric();
     should_request_expiration_date_from_user_ = true;
   }
 
@@ -1230,18 +1218,6 @@ int CreditCardSaveManager::GetDetectedValues() const {
   // missing, even if the user already has a Google Payments account.
   if (!(detected_values & DetectedValue::CARDHOLDER_NAME)) {
     detected_values |= DetectedValue::USER_PROVIDED_NAME;
-  }
-
-  // On iOS it isn't possible to save the card unless the user provides both a
-  // valid cardholder name and expiration date, so by default set the fix flow
-  // bits when the flag is disabled. When the flag is enabled, the bits won't be
-  // set by default, but only when the data would be missing so that iOS
-  // payments client can conditionally show save card bottomsheet when fix flow
-  // is not present.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillDisableDefaultSaveCardFixFlowDetection)) {
-    detected_values |= DetectedValue::USER_PROVIDED_NAME;
-    detected_values |= DetectedValue::USER_PROVIDED_EXPIRATION_DATE;
   }
 #endif  // BUILDFLAG(IS_IOS)
 
