@@ -91,9 +91,8 @@ class VideoMockCompositorFrameSink
   }
 
   MOCK_METHOD1(SetNeedsBeginFrame, void(bool));
-  MOCK_METHOD0(SetWantsAnimateOnlyBeginFrames, void());
-  MOCK_METHOD0(SetWantsBeginFrameAcks, void());
-  MOCK_METHOD0(SetAutoNeedsBeginFrame, void());
+  MOCK_METHOD1(SetParams,
+               void(viz::mojom::blink::CompositorFrameSinkParamsPtr));
   MOCK_METHOD0(NotifyNewLocalSurfaceIdExpectedWhilePaused, void());
 
   MOCK_METHOD2(DoSubmitCompositorFrame,

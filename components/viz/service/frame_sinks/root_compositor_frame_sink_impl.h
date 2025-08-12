@@ -113,9 +113,8 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
                          display::VariableRefreshRateState vrr_state) override;
 
   // mojom::CompositorFrameSink:
+  void SetParams(mojom::CompositorFrameSinkParamsPtr params) override;
   void SetNeedsBeginFrame(bool needs_begin_frame) override;
-  void SetWantsAnimateOnlyBeginFrames() override;
-  void SetAutoNeedsBeginFrame() override;
   void SubmitCompositorFrame(
       const LocalSurfaceId& local_surface_id,
       CompositorFrame frame,

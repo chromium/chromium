@@ -25,9 +25,8 @@ class TestFrameSinkImpl::TestMojoCompositorFrameSink
     : public viz::mojom::CompositorFrameSink {
  public:
   TestMojoCompositorFrameSink() = default;
+  void SetParams(viz::mojom::CompositorFrameSinkParamsPtr params) override {}
   void SetNeedsBeginFrame(bool needs_begin_frame) override {}
-  void SetWantsAnimateOnlyBeginFrames() override {}
-  void SetAutoNeedsBeginFrame() override {}
   void SubmitCompositorFrame(
       const viz::LocalSurfaceId& local_surface_id,
       viz::CompositorFrame frame,

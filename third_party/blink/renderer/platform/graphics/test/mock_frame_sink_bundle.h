@@ -37,7 +37,6 @@ class MockFrameSinkBundle : public viz::mojom::blink::FrameSinkBundle {
 
   // viz::mojom::blink::FrameSinkBundle implementation:
   MOCK_METHOD2(SetNeedsBeginFrame, void(uint32_t, bool));
-  MOCK_METHOD1(SetWantsBeginFrameAcks, void(uint32_t));
   MOCK_METHOD1(Submit,
                void(Vector<viz::mojom::blink::BundledFrameSubmissionPtr>));
 #if BUILDFLAG(IS_ANDROID)

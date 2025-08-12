@@ -86,6 +86,15 @@ class TestLayerTreeFrameSink::TestCompositorFrameSinkSupport
     }
   }
 
+  void SetParams(viz::mojom::CompositorFrameSinkParamsPtr params) {
+    if (params->wants_animate_only_begin_frames) {
+      SetWantsAnimateOnlyBeginFrames();
+    }
+    if (params->auto_needs_begin_frame) {
+      SetAutoNeedsBeginFrame();
+    }
+  }
+
  private:
   raw_ptr<viz::Display> display_;
   raw_ptr<TestLayerTreeFrameSinkClient> test_client_ = nullptr;
@@ -106,9 +115,8 @@ class TestLayerTreeFrameSink::TestCompositorFrameSinkImpl
 
  private:
   // viz::mojom::CompositorFrameSink:
+  void SetParams(viz::mojom::CompositorFrameSinkParamsPtr params) override {}
   void SetNeedsBeginFrame(bool needs_begin_frame) override {}
-  void SetWantsAnimateOnlyBeginFrames() override {}
-  void SetAutoNeedsBeginFrame() override {}
   void SubmitCompositorFrame(
       const viz::LocalSurfaceId& local_surface_id,
       viz::CompositorFrame frame,
@@ -254,7 +262,9 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
   support_ = std::make_unique<TestCompositorFrameSinkSupport>(
       this, test_client_, task_runner_provider_, frame_sink_manager_.get(),
       frame_sink_id_, is_root, display_.get());
-  support_->SetWantsAnimateOnlyBeginFrames();
+  auto params = viz::mojom::CompositorFrameSinkParams::New();
+  params->wants_animate_only_begin_frames = true;
+  support_->SetParams(std::move(params));
   client_->SetBeginFrameSource(&external_begin_frame_source_);
   if (display_begin_frame_source_) {
     frame_sink_manager_->RegisterBeginFrameSource(display_begin_frame_source_,

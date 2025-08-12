@@ -112,7 +112,6 @@ class PLATFORM_EXPORT VideoFrameSinkBundle
   // batched requests to Viz. These correspond closely to methods on the
   // CompositorFrameSink interface.
   void SetNeedsBeginFrame(uint32_t sink_id, bool needs_begin_frame);
-  void SetWantsBeginFrameAcks(uint32_t sink_id);
   void SubmitCompositorFrame(
       uint32_t sink_id,
       const viz::LocalSurfaceId& local_surface_id,

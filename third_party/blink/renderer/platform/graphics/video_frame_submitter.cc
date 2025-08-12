@@ -112,8 +112,10 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
   }
 
   // Not used by VideoFrameSubmitter.
-  void SetWantsAnimateOnlyBeginFrames() override { NOTREACHED(); }
-  void SetAutoNeedsBeginFrame() override { NOTREACHED(); }
+  void SetParams(
+      viz::mojom::blink::CompositorFrameSinkParamsPtr params) override {
+    NOTREACHED();
+  }
 
   void SubmitCompositorFrame(
       const viz::LocalSurfaceId& local_surface_id,

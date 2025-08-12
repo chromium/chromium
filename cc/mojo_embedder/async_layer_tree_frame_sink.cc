@@ -131,11 +131,11 @@ bool AsyncLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
     client->SetBeginFrameSource(begin_frame_source_.get());
   }
 
-  if (wants_animate_only_begin_frames_) {
-    compositor_frame_sink_->SetWantsAnimateOnlyBeginFrames();
-  }
-  if (auto_needs_begin_frame_) {
-    compositor_frame_sink_ptr_->SetAutoNeedsBeginFrame();
+  if (wants_animate_only_begin_frames_ || auto_needs_begin_frame_) {
+    auto params = viz::mojom::CompositorFrameSinkParams::New();
+    params->wants_animate_only_begin_frames = wants_animate_only_begin_frames_;
+    params->auto_needs_begin_frame = auto_needs_begin_frame_;
+    compositor_frame_sink_ptr_->SetParams(std::move(params));
   }
   if (num_did_not_produce_frame_before_internal_begin_frame_source_) {
     DCHECK(auto_needs_begin_frame_);

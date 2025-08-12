@@ -44,9 +44,8 @@ class CompositorFrameSinkImpl : public mojom::CompositorFrameSink {
   ~CompositorFrameSinkImpl() override;
 
   // mojom::CompositorFrameSink:
+  void SetParams(mojom::CompositorFrameSinkParamsPtr params) override;
   void SetNeedsBeginFrame(bool needs_begin_frame) override;
-  void SetWantsAnimateOnlyBeginFrames() override;
-  void SetAutoNeedsBeginFrame() override;
   void SubmitCompositorFrame(
       const LocalSurfaceId& local_surface_id,
       CompositorFrame frame,
@@ -73,6 +72,8 @@ class CompositorFrameSinkImpl : public mojom::CompositorFrameSink {
   // Must be destroyed before |compositor_frame_sink_client_|. This must never
   // change for the lifetime of CompositorFrameSinkImpl.
   const std::unique_ptr<CompositorFrameSinkSupport> support_;
+
+  bool params_set_ = false;
 };
 
 }  // namespace viz

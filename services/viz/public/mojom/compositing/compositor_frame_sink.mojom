@@ -20,25 +20,29 @@ struct LayerContextSettings {
   bool enable_edge_anti_aliasing;
 };
 
+struct CompositorFrameSinkParams {
+  // If true, the client also wants to receive BeginFrames with the
+  // animate_only flag set. Only clients that opt in will receive such
+  // BeginFrames.
+  bool wants_animate_only_begin_frames;
+  // If true, the client wants to use unsolicited compositor frame submission to
+  // indicate that it wants to receive subsequent BeginFrame events, as if
+  // SetNeedsBeginFrame(true) is called.
+  bool auto_needs_begin_frame;
+};
+
 // A CompositorFrameSink is an interface for receiving CompositorFrame
 // structs. A CompositorFrame contains the complete output meant for display.
 // Each time a client has a graphical update, and receives an OnBeginFrame, it
 // is responsible for creating a CompositorFrame to update its portion of the
 // screen.
 interface CompositorFrameSink {
+  // Sets parameters for the CompositorFrameSink.
+  SetParams(CompositorFrameSinkParams params);
+
   // Lets the display compositor know that the client wishes to receive the next
   // BeginFrame event.
   SetNeedsBeginFrame(bool needs_begin_frame);
-
-  // Lets the display compositor know that the client also wants to receive
-  // BeginFrames with the animate_only flag set. Only clients that opt in
-  // will receive such BeginFrames.
-  SetWantsAnimateOnlyBeginFrames();
-
-  // Lets the display compositor know that the client wants to use unsolicited
-  // compositor frame submission to indicate that it wants to receive subsequent
-  // BeginFrame events, as if SetNeedsBeginFrame(true) is called.
-  SetAutoNeedsBeginFrame();
 
   // Submits a CompositorFrame to the display compositor that will be presented
   // to screen the next time frames from all CompositorFrameSinks are aggregated

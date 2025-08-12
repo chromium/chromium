@@ -101,6 +101,10 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
     return last_activated_surface_id_.local_surface_id();
   }
 
+  const SurfaceId& last_created_surface_id() const {
+    return last_created_surface_id_;
+  }
+
   bool is_root() const { return is_root_; }
 
   FrameSinkManagerImpl* frame_sink_manager() { return frame_sink_manager_; }
