@@ -949,7 +949,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), ca);
         ChromeTabUtils.switchTabInCurrentTabModel(ca, 0);
 
-        int testTabId = ca.getActivityTab().getId();
+        int testTabId = mActivityTestRule.getActivityTab().getId();
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(),
                 ca,
@@ -960,7 +960,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         waitForTabs("CTA2", activity2, 1, testTabId);
 
         // Trigger on a word and wait for the selection to be established.
-        triggerNode(activity2.getActivityTab(), "search");
+        triggerNode(ThreadUtils.runOnUiThreadBlocking(() -> activity2.getActivityTab()), "search");
         CriteriaHelper.pollUiThread(
                 () -> {
                     String selection =

@@ -102,7 +102,7 @@ public class EmbeddedPermissionPromptTest {
     private void checkPermission(
             @ContentSettingsType.EnumType int type, String title, ChromeActivity activity)
             throws Exception {
-        final Tab tab = activity.getActivityTab();
+        final Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab());
         final PermissionUpdateWaiter permissionUpdateWaiter =
                 new PermissionUpdateWaiter(title, activity);
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(permissionUpdateWaiter));

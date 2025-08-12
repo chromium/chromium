@@ -107,7 +107,7 @@ public class DemoPaintPreviewTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> AppMenuTestSupport.callOnItemClick(coordinator, R.id.paint_preview_show_id));
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         TabbedPaintPreview tabbedPaintPreview =
                 ThreadUtils.runOnUiThreadBlocking(() -> TabbedPaintPreview.get(tab));
         assertAttachedAndShown(tabbedPaintPreview, true, true);

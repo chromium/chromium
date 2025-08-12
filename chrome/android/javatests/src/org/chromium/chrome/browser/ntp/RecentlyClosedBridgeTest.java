@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp;
 import static org.mockito.Mockito.when;
 
 import android.os.Build;
+import android.text.TextUtils;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -1342,8 +1343,10 @@ public class RecentlyClosedBridgeTest {
         Assert.assertEquals(groupUrls[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(2)).getSpec());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertNull(
-                            mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getTabGroupId()));
+                    Assert.assertTrue(
+                            TextUtils.isEmpty(
+                                    mTabGroupModelFilter.getTabGroupTitle(
+                                            tabs.get(1).getTabGroupId())));
                     Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
                     Assert.assertEquals(
                             Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
@@ -1432,8 +1435,10 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
-                    Assert.assertNull(
-                            mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getTabGroupId()));
+                    Assert.assertTrue(
+                            TextUtils.isEmpty(
+                                    mTabGroupModelFilter.getTabGroupTitle(
+                                            tabs.get(1).getTabGroupId())));
                     Assert.assertEquals(
                             Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
                             mTabGroupModelFilter.getRelatedTabList(tabs.get(1).getId()));

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.policy;
 
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -54,7 +56,7 @@ public class CombinedPolicyProviderTest {
                 mActivityTestRule.getActivity().getTabModelSelector().getModel(incognitoMode);
         mActivityTestRule.loadUrlInNewTab(DATA_URI, incognitoMode);
         mActivityTestRule.loadUrlInNewTab(DATA_URI, incognitoMode);
-        Assert.assertEquals(2, incognitoTabModel.getCount());
+        Assert.assertEquals(2, getTabCountOnUiThread(incognitoTabModel));
 
         final CombinedPolicyProvider provider = CombinedPolicyProvider.get();
         ThreadUtils.runOnUiThreadBlocking(
@@ -67,6 +69,6 @@ public class CombinedPolicyProviderTest {
                                     }
                                 }));
 
-        Assert.assertEquals(0, incognitoTabModel.getCount());
+        Assert.assertEquals(0, getTabCountOnUiThread(incognitoTabModel));
     }
 }

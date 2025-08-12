@@ -101,13 +101,17 @@ public class RecentTabsTest {
 
         // The tab should be foreground and so no snapshot should exist.
         TabModelSelector tabModelSelector = mActivityTestRule.getActivity().getTabModelSelector();
-        Assert.assertEquals(tabModelSelector.getCurrentTab(), tab);
+        Assert.assertEquals(
+                ThreadUtils.runOnUiThreadBlocking(() -> tabModelSelector.getCurrentTab()), tab);
         Assert.assertFalse(tab.isHidden());
         Assert.assertNull(OfflineTestUtil.getPageByClientId(firstTabClientId));
 
         // The tab model is expected to support pending closures.
-        final TabModel tabModel = tabModelSelector.getModelForTabId(tab.getId());
-        Assert.assertTrue(tabModel.supportsPendingClosures());
+        final TabModel tabModel =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> tabModelSelector.getModelForTabId(tab.getId()));
+        Assert.assertTrue(
+                ThreadUtils.runOnUiThreadBlocking(() -> tabModel.supportsPendingClosures()));
 
         // Requests closing of the tab allowing for closure undo and checks it's actually closing.
         ThreadUtils.runOnUiThreadBlocking(
@@ -132,11 +136,13 @@ public class RecentTabsTest {
                 });
         Assert.assertFalse(tab.isHidden());
         Assert.assertFalse(tab.isClosing());
-        Assert.assertEquals(tabModelSelector.getCurrentTab(), tab);
+        Assert.assertEquals(
+                ThreadUtils.runOnUiThreadBlocking(() -> tabModelSelector.getCurrentTab()), tab);
 
         // Finally switch to a new tab and check that a snapshot is created.
         Tab newTab = mActivityTestRule.loadUrlInNewTab("about:blank");
-        Assert.assertEquals(tabModelSelector.getCurrentTab(), newTab);
+        Assert.assertEquals(
+                ThreadUtils.runOnUiThreadBlocking(() -> tabModelSelector.getCurrentTab()), newTab);
         Assert.assertTrue(tab.isHidden());
         waitForPageWithClientId(firstTabClientId);
     }

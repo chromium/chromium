@@ -90,7 +90,7 @@ public class OmniboxTest {
         omnibox.checkSuggestionsShown();
 
         ChromeTabUtils.waitForTabPageLoadStart(
-                mActivityTestRule.getActivity().getActivityTab(),
+                mActivityTestRule.getActivityTab(),
                 null,
                 () -> omnibox.sendKey(KeyEvent.KEYCODE_ENTER),
                 20L);
@@ -140,7 +140,7 @@ public class OmniboxTest {
     public void testAltEnterOpensSearchResultInNewTab() {
         mActivityTestRule.startOnBlankPage();
         int tabCount = ChromeTabUtils.getNumOpenTabs(mActivityTestRule.getActivity());
-        Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
+        Tab currentTab = mActivityTestRule.getActivityTab();
 
         OmniboxTestUtils omnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
         omnibox.requestFocus();
@@ -150,7 +150,7 @@ public class OmniboxTest {
         // Dispatch ALT + ENTER key event.
         omnibox.sendKey(KeyEvent.KEYCODE_ENTER, KeyEvent.META_ALT_ON);
 
-        Tab resultTab = mActivityTestRule.getActivity().getActivityTab();
+        Tab resultTab = mActivityTestRule.getActivityTab();
         Assert.assertNotEquals(
                 "The result should be loaded in a new tab that is brought to the foreground.",
                 currentTab,

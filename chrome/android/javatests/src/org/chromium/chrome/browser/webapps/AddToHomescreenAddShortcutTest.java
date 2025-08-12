@@ -407,7 +407,8 @@ public class AddToHomescreenAddShortcutTest {
                 });
 
         TabModel tabModel = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
-        Assert.assertEquals(0, tabModel.indexOf(mTab));
+        int index = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.indexOf(mTab));
+        Assert.assertEquals(0, index);
         return mActivityTestRule.getActivity().getTabModelSelector().getModel(false).getTabAt(1);
     }
 }

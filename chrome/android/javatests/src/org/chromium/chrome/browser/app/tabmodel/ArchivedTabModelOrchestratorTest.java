@@ -39,6 +39,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
@@ -438,7 +439,8 @@ public class ArchivedTabModelOrchestratorTest {
     @MediumTest
     public void testGetModelIndex() {
         finishLoading();
-        assertEquals(INVALID_TAB_INDEX, mArchivedTabModel.index());
+        int index = ThreadUtils.runOnUiThreadBlocking(() -> mArchivedTabModel.index());
+        assertEquals(INVALID_TAB_INDEX, index);
     }
 
     @Test

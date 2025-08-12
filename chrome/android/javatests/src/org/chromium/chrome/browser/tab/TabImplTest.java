@@ -101,8 +101,8 @@ public class TabImplTest {
                 DEFAULT_MAX_TIME_TO_WAIT_IN_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
-        assertFalse(mActivityTestRule.getActivity().getActivityTab().isTabInPWA());
-        assertTrue(mActivityTestRule.getActivity().getActivityTab().isTabInBrowser());
+        assertFalse(mActivityTestRule.getActivityTab().isTabInPWA());
+        assertTrue(mActivityTestRule.getActivityTab().isTabInBrowser());
     }
 
     @Test

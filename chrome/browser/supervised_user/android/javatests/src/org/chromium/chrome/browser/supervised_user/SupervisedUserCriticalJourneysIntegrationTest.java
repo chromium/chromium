@@ -82,7 +82,7 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
 
         Tab tab = mActivityTestRule.getActivityTab();
         Assert.assertTrue(tab.isShowingErrorPage());
-        String title = mActivityTestRule.getActivity().getCurrentWebContents().getTitle();
+        String title = mActivityTestRule.getWebContents().getTitle();
         Assert.assertFalse(title.isEmpty());
         WebsiteParentApprovalTestUtils.checkLocalApprovalsButtonIsVisible(mWebContents);
         WebsiteParentApprovalTestUtils.checkRemoteApprovalsButtonIsVisible(mWebContents);
@@ -126,7 +126,7 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
 
         Tab tab = mActivityTestRule.getActivityTab();
         Assert.assertTrue(tab.isShowingErrorPage());
-        String title = mActivityTestRule.getActivity().getCurrentWebContents().getTitle();
+        String title = mActivityTestRule.getWebContents().getTitle();
         Assert.assertFalse(title.isEmpty());
         WebsiteParentApprovalTestUtils.checkLocalApprovalsButtonIsVisible(mWebContents);
         WebsiteParentApprovalTestUtils.checkRemoteApprovalsButtonIsVisible(mWebContents);
@@ -149,7 +149,7 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
 
         Tab tab = mActivityTestRule.getActivityTab();
         Assert.assertFalse(tab.isShowingErrorPage());
-        String title = mActivityTestRule.getActivity().getCurrentWebContents().getTitle();
+        String title = mActivityTestRule.getWebContents().getTitle();
         Assert.assertFalse(title.isEmpty());
     }
 }

@@ -219,7 +219,7 @@ public class ContextMenuLoadUrlParamsTest {
             throws TimeoutException {
         mActivityTestRule.loadUrl(url);
         mActivityTestRule.assertWaitForPageScaleFactorMatch(PAGE_SCALE_FACTOR);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         ContextMenuUtils.selectContextMenuItem(
                 InstrumentationRegistry.getInstrumentation(),
                 mActivityTestRule.getActivity(),

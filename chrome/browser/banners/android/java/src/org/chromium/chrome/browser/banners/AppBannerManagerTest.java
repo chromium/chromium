@@ -811,7 +811,13 @@ public class AppBannerManagerTest {
                 /* incognito= */ false,
                 /* waitForNtpLoad= */ true);
 
-        Tab backgroundTab = mTabbedActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0);
+        Tab backgroundTab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                mTabbedActivityTestRule
+                                        .getActivity()
+                                        .getCurrentTabModel()
+                                        .getTabAt(0));
         Assert.assertTrue(backgroundTab != null);
 
         ThreadUtils.runOnUiThreadBlocking(

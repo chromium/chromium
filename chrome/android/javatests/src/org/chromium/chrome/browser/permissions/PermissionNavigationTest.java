@@ -66,7 +66,7 @@ public class PermissionNavigationTest {
         mPermissionRule.runJavaScriptCodeInCurrentTab("requestGeolocationPermission()");
         mPermissionRule.waitForDialogShownState(true);
 
-        Tab tab = mPermissionRule.getActivity().getActivityTab();
+        Tab tab = mPermissionRule.getActivityTab();
         final CallbackHelper callbackHelper = new CallbackHelper();
         EmptyTabObserver navigationWaiter =
                 new EmptyTabObserver() {

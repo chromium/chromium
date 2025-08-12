@@ -74,8 +74,7 @@ public class PartnerHomepageIntegrationTest {
         Assert.assertEquals(
                 Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
                 Uri.parse(
-                        ChromeTabUtils.getUrlStringOnUiThread(
-                                mActivityTestRule.getActivity().getActivityTab())));
+                        ChromeTabUtils.getUrlStringOnUiThread(mActivityTestRule.getActivityTab())));
     }
 
     /** Clicking the homepage button should load homepage in the current tab. */
@@ -92,11 +91,10 @@ public class PartnerHomepageIntegrationTest {
         Assert.assertNotSame(
                 Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
                 Uri.parse(
-                        ChromeTabUtils.getUrlStringOnUiThread(
-                                mActivityTestRule.getActivity().getActivityTab())));
+                        ChromeTabUtils.getUrlStringOnUiThread(mActivityTestRule.getActivityTab())));
         // Click homepage button.
         ChromeTabUtils.waitForTabPageLoaded(
-                mActivityTestRule.getActivity().getActivityTab(),
+                mActivityTestRule.getActivityTab(),
                 TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI,
                 new Runnable() {
                     @Override
@@ -113,8 +111,7 @@ public class PartnerHomepageIntegrationTest {
         Assert.assertEquals(
                 Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
                 Uri.parse(
-                        ChromeTabUtils.getUrlStringOnUiThread(
-                                mActivityTestRule.getActivity().getActivityTab())));
+                        ChromeTabUtils.getUrlStringOnUiThread(mActivityTestRule.getActivityTab())));
     }
 
     /**

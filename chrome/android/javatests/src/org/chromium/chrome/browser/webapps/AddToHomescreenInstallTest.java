@@ -119,7 +119,7 @@ public class AddToHomescreenInstallTest {
         mServer = mActivityTestRule.getTestServer();
         mPage = mActivityTestRule.startOnBlankPage();
         mActivity = mActivityTestRule.getActivity();
-        mTab = mActivity.getActivityTab();
+        mTab = mActivityTestRule.getActivityTab();
         mInstallHistogramsWatcher =
                 HistogramWatcher.newSingleRecordWatcher("Webapp.Install.InstallEvent", 0);
     }

@@ -202,7 +202,7 @@ public class SadTabTest {
         FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(
                 mActivityTestRule.getActivity());
         FullscreenManagerTestUtils.scrollBrowserControls(mActivityTestRule.getActivity(), false);
-        simulateRendererKilled(mActivityTestRule.getActivity().getActivityTab(), true);
+        simulateRendererKilled(mActivityTestRule.getActivityTab(), true);
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(
                 mActivityTestRule.getActivity(), 0);
     }

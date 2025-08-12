@@ -180,9 +180,9 @@ public class ShowNtpAtStartupTest {
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
                 cta, 3, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
-        waitForNtpLoaded(cta.getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
         Assert.assertTrue(ntp.isMagicStackVisibleForTesting());
         View singleTabModule = cta.findViewById(R.id.single_tab_view);
         Assert.assertNotNull(singleTabModule.findViewById(R.id.tab_thumbnail));
@@ -240,9 +240,9 @@ public class ShowNtpAtStartupTest {
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
                 cta, 3, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
-        waitForNtpLoaded(cta.getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
         Assert.assertTrue(ntp.isMagicStackVisibleForTesting());
         onViewWaiting(allOf(withId(R.id.single_tab_view), isDisplayed()));
         View singleTabModule = cta.findViewById(R.id.single_tab_view);
@@ -264,7 +264,7 @@ public class ShowNtpAtStartupTest {
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
                 cta, 3, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
-        waitForNtpLoaded(cta.getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
         onViewWaiting(allOf(withId(R.id.home_modules_recycler_view), isDisplayed()));
         View singleTabModule = cta.findViewById(R.id.single_tab_view);
@@ -293,7 +293,7 @@ public class ShowNtpAtStartupTest {
         mActivityTestRule.startOnNtp();
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
         LogoView logoView = ntp.getView().findViewById(R.id.search_provider_logo);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -320,9 +320,9 @@ public class ShowNtpAtStartupTest {
         mActivityTestRule.startOnNtp();
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         HomeSurfaceTestUtils.waitForTabModel(cta);
-        waitForNtpLoaded(cta.getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
 
         // Verifies the vertical margins of the module most visited tiles is correct.
         verifyMvtAndSingleTabCardVerticalMargins(
@@ -346,7 +346,7 @@ public class ShowNtpAtStartupTest {
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
                 cta, 2, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
-        waitForNtpLoaded(cta.getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> cta.findViewById(R.id.single_tab_view).performClick());
@@ -359,9 +359,9 @@ public class ShowNtpAtStartupTest {
             int expectedLogoHeight, int expectedTopMargin, int expectedBottomMargin) {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         HomeSurfaceTestUtils.waitForTabModel(cta);
-        waitForNtpLoaded(cta.getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
         ViewGroup logoView = ntp.getView().findViewById(R.id.search_provider_logo);
 
         // Verifies the logo size and margins.
@@ -390,10 +390,10 @@ public class ShowNtpAtStartupTest {
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
                 cta, 2, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
-        waitForNtpLoaded(cta.getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
         Tab lastActiveTab = cta.getCurrentTabModel().getTabAt(0);
-        Tab ntpTab = cta.getActivityTab();
+        Tab ntpTab = mActivityTestRule.getActivityTab();
         NewTabPage ntp = (NewTabPage) ntpTab.getNativePage();
         Assert.assertTrue(
                 "The single tab card is still invisible after initialization.",
@@ -443,9 +443,9 @@ public class ShowNtpAtStartupTest {
         mActivityTestRule.startOnNtp();
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         HomeSurfaceTestUtils.waitForTabModel(cta);
-        waitForNtpLoaded(cta.getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
 
         Resources res = cta.getResources();
         int expectedTwoSideMargin =
@@ -464,9 +464,9 @@ public class ShowNtpAtStartupTest {
         mActivityTestRule.startOnNtp();
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         HomeSurfaceTestUtils.waitForTabModel(cta);
-        waitForNtpLoaded(cta.getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
 
         Resources res = cta.getResources();
         int expectedContainerTwoSideMargin = 0;

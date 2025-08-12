@@ -38,7 +38,7 @@ public class NotificationTest {
     @MediumTest
     @Feature({"Notifications"})
     public void testNotificationDialog() throws Exception {
-        Tab tab = mPermissionRule.getActivity().getActivityTab();
+        Tab tab = mPermissionRule.getActivityTab();
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter(
                         "request-callback-granted", mPermissionRule.getActivity());
