@@ -5212,7 +5212,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NetworkService.IpProtection.GeoChangeTokenPresence"
     enum="BooleanAvailable" expires_after="2026-01-07">
-  <owner>abhipatel@chromium.org</owner>
+  <owner>awillia@chromium.org</owner>
   <owner>src/components/ip_protection/OWNERS</owner>
   <summary>
     This histogram is emitted to when changing to a new geo, and tracks whether
@@ -5252,7 +5252,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NetworkService.IpProtection.GetAuthTokenResultForGeo"
     enum="IpProtectionGetAuthTokenResultForGeo" expires_after="2026-01-07">
-  <owner>abhipatel@chromium.org</owner>
+  <owner>awillia@chromium.org</owner>
   <owner>src/components/ip_protection/OWNERS</owner>
   <summary>
     This metric tracks the effectiveness of token caching in IpProtection,
