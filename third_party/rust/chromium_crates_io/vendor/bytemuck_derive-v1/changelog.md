@@ -1,6 +1,11 @@
 
 ## `bytemuck_derive` changelog
 
+## 1.10.1
+
+* changes the derive macros to not use `transmute` size matching when checking
+  fof padding in a type. instead, an actual assert is used in a const block.
+
 ## 1.10.0
 
 * add support for deriving NoUninit on enums with fields.

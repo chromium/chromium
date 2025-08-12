@@ -80,7 +80,7 @@ impl Derivable for Pod {
     match &input.data {
       Data::Struct(_) => {
         let assert_no_padding = if !completly_packed {
-          Some(generate_assert_no_padding(input, None)?)
+          Some(generate_assert_no_padding(input, None, "Pod")?)
         } else {
           None
         };
@@ -263,7 +263,8 @@ impl Derivable for NoUninit {
 
     match &input.data {
       Data::Struct(DataStruct { .. }) => {
-        let assert_no_padding = generate_assert_no_padding(&input, None)?;
+        let assert_no_padding =
+          generate_assert_no_padding(&input, None, "NoUninit")?;
         let assert_fields_are_no_padding = generate_fields_are_trait(
           &input,
           None,
@@ -281,7 +282,7 @@ impl Derivable for NoUninit {
           // There's `#[repr(C)]`/`[repr(C, int)]` and `#[repr(int)]`.
           // `#[repr(C)]` is equivalent to a struct containing the discriminant
           // and a union of structs representing each variant's fields.
-          // `#[repr(C)]` is equivalent to a union containing structs of the
+          // `#[repr(int)]` is equivalent to a union containing structs of the
           // discriminant and the fields.
           //
           // See https://doc.rust-lang.org/reference/type-layout.html#r-layout.repr.c.adt
@@ -312,7 +313,7 @@ impl Derivable for NoUninit {
             .iter()
             .map(|variant| {
               let assert_no_padding =
-                generate_assert_no_padding(&input, Some(variant))?;
+                generate_assert_no_padding(&input, Some(variant), "NoUninit")?;
               let assert_fields_are_no_padding = generate_fields_are_trait(
                 &input,
                 Some(variant),
@@ -1046,7 +1047,7 @@ fn generate_checked_bit_pattern_enum_with_fields(
 /// the type is equal to the sum of the size of it's fields and discriminant
 /// (for enums, this must be asserted for each variant).
 fn generate_assert_no_padding(
-  input: &DeriveInput, enum_variant: Option<&Variant>,
+  input: &DeriveInput, enum_variant: Option<&Variant>, for_trait: &str,
 ) -> Result<TokenStream> {
   let struct_type = &input.ident;
   let fields = get_fields(input, enum_variant)?;
@@ -1073,10 +1074,14 @@ fn generate_assert_no_padding(
     quote!(0)
   };
 
-  Ok(quote! {const _: fn() = || {
-    #[doc(hidden)]
-    struct TypeWithoutPadding([u8; #size_sum]);
-    let _ = ::core::mem::transmute::<#struct_type, TypeWithoutPadding>;
+  let message =
+    format!("derive({for_trait}) was applied to a type with padding");
+
+  Ok(quote! {const _: () = {
+    assert!(
+        ::core::mem::size_of::<#struct_type>() == (#size_sum),
+        #message,
+    );
   };})
 }
 

@@ -1,7 +1,7 @@
 Name: bytemuck_derive
 URL: https://crates.io/crates/bytemuck_derive
-Version: 1.10.0
-Revision: 1c9e7ba196bd2bee43704c166d84778e467cc6e8
+Version: 1.10.1
+Revision: 2524f62b76b0ec4804e3f4af4510fcd1253ffe66
 Update Mechanism: Manual
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/bytemuck_derive-v1/LICENSE-APACHE
