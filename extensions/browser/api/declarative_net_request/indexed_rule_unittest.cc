@@ -407,11 +407,13 @@ TEST_F(IndexedRuleTest, DomainsParsing) {
     dnr_api::Rule domains_rule = CreateGenericParsedRule();
     dnr_api::Rule initiator_domains_rule = CreateGenericParsedRule();
     dnr_api::Rule request_domains_rule = CreateGenericParsedRule();
+    dnr_api::Rule top_domains_rule = CreateGenericParsedRule();
 
     if (cases[i].domains) {
       domains_rule.condition.domains = *cases[i].domains;
       initiator_domains_rule.condition.initiator_domains = *cases[i].domains;
       request_domains_rule.condition.request_domains = *cases[i].domains;
+      top_domains_rule.condition.top_domains = *cases[i].domains;
     }
 
     if (cases[i].excluded_domains) {
@@ -419,6 +421,8 @@ TEST_F(IndexedRuleTest, DomainsParsing) {
       initiator_domains_rule.condition.excluded_initiator_domains =
           *cases[i].excluded_domains;
       request_domains_rule.condition.excluded_request_domains =
+          *cases[i].excluded_domains;
+      top_domains_rule.condition.excluded_top_domains =
           *cases[i].excluded_domains;
     }
 
@@ -437,6 +441,11 @@ TEST_F(IndexedRuleTest, DomainsParsing) {
         std::move(request_domains_rule), GetBaseURL(), kMinValidStaticRulesetID,
         &indexed_request_domains_rule);
 
+    IndexedRule indexed_top_domains_rule;
+    ParseResult top_domains_result = IndexedRule::CreateIndexedRule(
+        std::move(top_domains_rule), GetBaseURL(), kMinValidStaticRulesetID,
+        &indexed_top_domains_rule);
+
     EXPECT_EQ(cases[i].expected_result, domains_result);
 
     switch (cases[i].expected_result) {
@@ -445,22 +454,28 @@ TEST_F(IndexedRuleTest, DomainsParsing) {
                   initiator_domains_result);
         EXPECT_EQ(ParseResult::ERROR_EMPTY_REQUEST_DOMAINS_LIST,
                   request_domains_result);
+        EXPECT_EQ(ParseResult::ERROR_EMPTY_TOP_DOMAINS_LIST,
+                  top_domains_result);
         break;
       case ParseResult::ERROR_NON_ASCII_DOMAIN:
         EXPECT_EQ(ParseResult::ERROR_NON_ASCII_INITIATOR_DOMAIN,
                   initiator_domains_result);
         EXPECT_EQ(ParseResult::ERROR_NON_ASCII_REQUEST_DOMAIN,
                   request_domains_result);
+        EXPECT_EQ(ParseResult::ERROR_NON_ASCII_TOP_DOMAIN, top_domains_result);
         break;
       case ParseResult::ERROR_NON_ASCII_EXCLUDED_DOMAIN:
         EXPECT_EQ(ParseResult::ERROR_NON_ASCII_EXCLUDED_INITIATOR_DOMAIN,
                   initiator_domains_result);
         EXPECT_EQ(ParseResult::ERROR_NON_ASCII_EXCLUDED_REQUEST_DOMAIN,
                   request_domains_result);
+        EXPECT_EQ(ParseResult::ERROR_NON_ASCII_EXCLUDED_TOP_DOMAIN,
+                  top_domains_result);
         break;
       default:
         EXPECT_EQ(cases[i].expected_result, initiator_domains_result);
         EXPECT_EQ(cases[i].expected_result, request_domains_result);
+        EXPECT_EQ(cases[i].expected_result, top_domains_result);
     }
 
     if (cases[i].expected_result == ParseResult::SUCCESS) {
@@ -480,6 +495,11 @@ TEST_F(IndexedRuleTest, DomainsParsing) {
                 indexed_request_domains_rule.request_domains);
       EXPECT_EQ(cases[i].expected_excluded_domains,
                 indexed_request_domains_rule.excluded_request_domains);
+
+      EXPECT_EQ(cases[i].expected_domains,
+                indexed_top_domains_rule.top_domains);
+      EXPECT_EQ(cases[i].expected_excluded_domains,
+                indexed_top_domains_rule.excluded_top_domains);
     }
   }
 

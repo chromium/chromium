@@ -786,6 +786,15 @@ TEST_P(SingleRulesetTest, EmptyRequestDomainsList) {
                             *rule.id);
 }
 
+// Ensure that rules with an empty "top_domains" condition fail parsing.
+TEST_P(SingleRulesetTest, EmptyTopDomainsList) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->top_domains = std::vector<std::string>();
+  AddRule(rule);
+  LoadAndExpectParseFailure(ParseResult::ERROR_EMPTY_TOP_DOMAINS_LIST,
+                            *rule.id);
+}
+
 // Ensure that rules with a "domains" condition that contains non-ascii
 // characters fail parsing.
 TEST_P(SingleRulesetTest, NonAsciiDomainsList) {
@@ -845,6 +854,26 @@ TEST_P(SingleRulesetTest, NonAsciiExcludedRequestDomainsList) {
   AddRule(rule);
   LoadAndExpectParseFailure(
       ParseResult::ERROR_NON_ASCII_EXCLUDED_REQUEST_DOMAIN, *rule.id);
+}
+
+// Ensure that rules with a "top_domains" condition that contains non-ascii
+// characters fail parsing.
+TEST_P(SingleRulesetTest, NonAsciiTopDomainsList) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->top_domains = std::vector<std::string>({"😎.example"});
+  AddRule(rule);
+  LoadAndExpectParseFailure(ParseResult::ERROR_NON_ASCII_TOP_DOMAIN, *rule.id);
+}
+
+// Ensure that rules with a "excluded_top_domains" condition that contains
+// non-ascii characters fail parsing.
+TEST_P(SingleRulesetTest, NonAsciiExcludedTopDomainsList) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->excluded_top_domains =
+      std::vector<std::string>({"😎.example"});
+  AddRule(rule);
+  LoadAndExpectParseFailure(ParseResult::ERROR_NON_ASCII_EXCLUDED_TOP_DOMAIN,
+                            *rule.id);
 }
 
 TEST_P(SingleRulesetTest, EmptyResourceTypeList) {

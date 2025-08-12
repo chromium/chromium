@@ -58,6 +58,8 @@ struct TestRuleCondition : public DictionarySource {
   std::optional<std::vector<std::string>> excluded_initiator_domains;
   std::optional<std::vector<std::string>> request_domains;
   std::optional<std::vector<std::string>> excluded_request_domains;
+  std::optional<std::vector<std::string>> top_domains;
+  std::optional<std::vector<std::string>> excluded_top_domains;
   std::optional<std::vector<std::string>> request_methods;
   std::optional<std::vector<std::string>> excluded_request_methods;
   std::optional<std::vector<std::string>> resource_types;

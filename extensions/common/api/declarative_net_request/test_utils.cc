@@ -81,6 +81,8 @@ base::Value::Dict TestRuleCondition::ToValue() const {
   SetValue(dict, kExcludedInitiatorDomainsKey, excluded_initiator_domains);
   SetValue(dict, kRequestDomainsKey, request_domains);
   SetValue(dict, kExcludedRequestDomainsKey, excluded_request_domains);
+  SetValue(dict, kTopDomainsKey, top_domains);
+  SetValue(dict, kExcludedTopDomainsKey, excluded_top_domains);
   SetValue(dict, kRequestMethodsKey, request_methods);
   SetValue(dict, kExcludedRequestMethodsKey, excluded_request_methods);
   SetValue(dict, kResourceTypesKey, resource_types);

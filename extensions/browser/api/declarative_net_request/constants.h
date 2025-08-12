@@ -28,6 +28,7 @@ enum class ParseResult {
   ERROR_EMPTY_DOMAINS_LIST,
   ERROR_EMPTY_INITIATOR_DOMAINS_LIST,
   ERROR_EMPTY_REQUEST_DOMAINS_LIST,
+  ERROR_EMPTY_TOP_DOMAINS_LIST,
   ERROR_DOMAINS_AND_INITIATOR_DOMAINS_BOTH_SPECIFIED,
   ERROR_EXCLUDED_DOMAINS_AND_EXCLUDED_INITIATOR_DOMAINS_BOTH_SPECIFIED,
   ERROR_EMPTY_RESOURCE_TYPES_LIST,
@@ -44,6 +45,8 @@ enum class ParseResult {
   ERROR_NON_ASCII_EXCLUDED_INITIATOR_DOMAIN,
   ERROR_NON_ASCII_REQUEST_DOMAIN,
   ERROR_NON_ASCII_EXCLUDED_REQUEST_DOMAIN,
+  ERROR_NON_ASCII_TOP_DOMAIN,
+  ERROR_NON_ASCII_EXCLUDED_TOP_DOMAIN,
 
   ERROR_INVALID_URL_FILTER,
   ERROR_INVALID_REDIRECT,
@@ -264,6 +267,7 @@ extern const char kIncrementActionCountWithoutUseAsBadgeTextError[];
 extern const char kInvalidTestURLError[];
 extern const char kInvalidTestInitiatorError[];
 extern const char kInvalidTestTabIdError[];
+extern const char kInvalidTestTopURLError[];
 extern const char kInvalidResponseHeaderObjectError[];
 extern const char kInvalidResponseHeaderNameError[];
 extern const char kInvalidResponseHeaderValueError[];

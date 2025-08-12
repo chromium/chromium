@@ -78,6 +78,7 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/privacy_sandbox_coordinator_test_util.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -883,6 +884,10 @@ class DeclarativeNetRequestBrowserTest
     return https_server_.get();
   }
 
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
  private:
   enum class RulesetScope { kDynamic, kSession };
   void UpdateRules(const ExtensionId& extension_id,
@@ -1084,6 +1089,8 @@ class DeclarativeNetRequestBrowserTest
         base::BindRepeating(&DeclarativeNetRequestBrowserTest::MonitorRequest,
                             base::Unretained(this)));
   }
+
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
 
   base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir temp_dir_;
@@ -1454,6 +1461,119 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     EXPECT_TRUE(child);
     EXPECT_EQ(test_case.expect_frame_loaded, WasFrameWithScriptLoaded(child));
   }
+}
+
+// Tests the "topDomains" and "excludedTopDomains" properties of
+// declarativeNetRequest rule conditions.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
+                       BlockRequests_TopDomains) {
+  struct {
+    size_t id;
+    std::string url_filter;
+    std::vector<std::string> top_domains;
+    std::vector<std::string> excluded_top_domains;
+  } rules_data[] = {
+      {1, "script.js", {"x.com", "y.com"}, {"a.x.com"}},
+      {2, "script.js", {/* all domains */}, {"z.com", "a.x.com", "y.com"}},
+      {3, "xhr_target.txt?specific", {"x.com", "y.com"}, {"a.x.com"}},
+      {4, "xhr_target.txt?generic", {/* all domains */}, {"z.com"}},
+  };
+
+  std::vector<TestRule> rules;
+  for (const auto& rule_data : rules_data) {
+    TestRule rule = CreateGenericRule();
+    rule.condition->url_filter = rule_data.url_filter;
+    rule.id = rule_data.id;
+
+    // An empty list is not allowed for the "top_domains" property.
+    if (!rule_data.top_domains.empty()) {
+      rule.condition->top_domains = rule_data.top_domains;
+    }
+
+    rule.condition->excluded_top_domains = rule_data.excluded_top_domains;
+    rules.push_back(rule);
+  }
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(rules));
+
+  // Test requests made in tabs.
+  struct {
+    std::string domain;
+    bool expect_scripts_loaded;
+  } tab_test_cases[] = {
+      {"x.com", false /* Rule 1 */}, {"a.x.com", true},
+      {"y.com", false /* Rule 1 */}, {"z.com", true},
+      {"w.com", false /* Rule 2 */},
+  };
+
+  for (const auto& test_case : tab_test_cases) {
+    SCOPED_TRACE(
+        base::StringPrintf("Testing domain %s", test_case.domain.c_str()));
+
+    // Load the test page.
+    GURL url = embedded_test_server()->GetURL(
+        test_case.domain, "/request_domain_test.html?third-party.com");
+    ASSERT_TRUE(ExtensionBrowserTest::NavigateToURL(web_contents(), url));
+    ASSERT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
+
+    // Confirm the script was/wasn't loaded by main_frame as expected.
+    EXPECT_EQ(test_case.expect_scripts_loaded,
+              WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
+
+    // Check the test page's child frame also loaded/blocked the script
+    // request as expected.
+    content::RenderFrameHost* child = GetFrameByName("third-party.com");
+    EXPECT_TRUE(child);
+    EXPECT_EQ(test_case.expect_scripts_loaded, WasFrameWithScriptLoaded(child));
+
+    // Check the requests made via fencedframes are also loaded/blocked as
+    // expected.
+    GURL fencedframe_url =
+        embedded_test_server()->GetURL("third-party.test", "/child_frame.html");
+    content::RenderFrameHost* fencedframe =
+        fenced_frame_test_helper().CreateFencedFrame(GetPrimaryMainFrame(),
+                                                     fencedframe_url);
+    EXPECT_TRUE(fencedframe);
+    EXPECT_EQ(test_case.expect_scripts_loaded,
+              WasFrameWithScriptLoaded(fencedframe));
+  }
+
+  // Test requests made outside of tabs (from a shared worker).
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(https://crbug.com/40290702): Enable once SharedWorker support comes to
+  // Android.
+  struct {
+    std::string path;
+    bool expect_request_loaded;
+  } worker_test_cases[] = {
+      {"/subresources/xhr_target.txt?specific", true},
+      {"/subresources/xhr_target.txt?generic", false /* Rule 4 */},
+  };
+
+  for (const auto& test_case : worker_test_cases) {
+    SCOPED_TRACE(base::StringPrintf("Testing path %s", test_case.path.c_str()));
+
+    // Load the test page.
+    GURL test_page_url = embedded_test_server()->GetURL(
+        "example.com", "/fetch_from_shared_worker.html");
+    ASSERT_TRUE(
+        ExtensionBrowserTest::NavigateToURL(web_contents(), test_page_url));
+    ASSERT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
+
+    // Perform the test requests.
+    GURL fetch_url =
+        embedded_test_server()->GetURL("example.com", test_case.path);
+    auto actual_response = content::EvalJs(
+        web_contents(), base::StringPrintf("fetchFromSharedWorker('%s');",
+                                           fetch_url.spec().c_str()));
+
+    // Check the test requests passed/failed as expected.
+    if (test_case.expect_request_loaded) {
+      EXPECT_EQ(fetch_url, actual_response);
+    } else {
+      EXPECT_EQ("TypeError: Failed to fetch", actual_response);
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // Tests the "domainType" property of a declarative rule condition.

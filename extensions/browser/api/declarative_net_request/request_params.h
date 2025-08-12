@@ -40,6 +40,7 @@ struct RequestParams {
   RequestParams(
       const GURL& url,
       const url::Origin& initiator,
+      const url::Origin& top_origin,
       const api::declarative_net_request::ResourceType request_type,
       const api::declarative_net_request::RequestMethod request_method,
       int tab_id,

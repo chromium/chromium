@@ -785,6 +785,17 @@ DeclarativeNetRequestTestMatchOutcomeFunction::Run() {
     return RespondNow(Error(declarative_net_request::kInvalidTestTabIdError));
   }
 
+  url::Origin top_level_frame_origin;
+  if (params->request.top_url) {
+    GURL top_level_frame_url = GURL(*params->request.top_url);
+    if (!top_level_frame_url.is_valid()) {
+      return RespondNow(
+          Error(declarative_net_request::kInvalidTestTopURLError));
+    }
+    top_level_frame_origin =
+        url::Origin::Create(std::move(top_level_frame_url));
+  }
+
   auto method = params->request.method == dnr_api::RequestMethod::kNone
                     ? dnr_api::RequestMethod::kGet
                     : params->request.method;
@@ -807,7 +818,8 @@ DeclarativeNetRequestTestMatchOutcomeFunction::Run() {
   }
 
   declarative_net_request::RequestParams request_params(
-      url, initiator, params->request.type, method, tab_id, response_headers);
+      url, initiator, top_level_frame_origin, params->request.type, method,
+      tab_id, response_headers);
 
   // Set up the rule matcher.
 
