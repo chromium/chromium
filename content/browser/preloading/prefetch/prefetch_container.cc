@@ -762,20 +762,29 @@ PrefetchContainer::GetOrCreateNetworkContextForCurrentPrefetch() {
   bool is_isolated_network_context_required =
       IsIsolatedNetworkContextRequiredForCurrentPrefetch();
 
-  auto network_context_itr =
-      network_contexts_.find(is_isolated_network_context_required);
-  if (network_context_itr == network_contexts_.end()) {
-    network_context_itr =
-        network_contexts_
-            .emplace(is_isolated_network_context_required,
-                     std::make_unique<PrefetchNetworkContext>(
-                         is_isolated_network_context_required, prefetch_type_,
-                         referring_render_frame_host_id_, referring_origin_))
-            .first;
+  PrefetchNetworkContext* network_context =
+      GetNetworkContext(is_isolated_network_context_required);
+  if (network_context) {
+    return network_context;
   }
 
-  CHECK(network_context_itr != network_contexts_.end());
-  CHECK(network_context_itr->second);
+  auto owned_network_context = std::make_unique<PrefetchNetworkContext>(
+      is_isolated_network_context_required, prefetch_type_,
+      referring_render_frame_host_id_, referring_origin_);
+  network_context = owned_network_context.get();
+  network_contexts_.emplace(is_isolated_network_context_required,
+                            std::move(owned_network_context));
+
+  return network_context;
+}
+
+PrefetchNetworkContext* PrefetchContainer::GetNetworkContext(
+    bool is_isolated_network_context_required) const {
+  const auto network_context_itr =
+      network_contexts_.find(is_isolated_network_context_required);
+  if (network_context_itr == network_contexts_.end()) {
+    return nullptr;
+  }
   return network_context_itr->second.get();
 }
 
@@ -783,14 +792,8 @@ PrefetchNetworkContext*
 PrefetchContainer::Reader::GetCurrentNetworkContextToServe() const {
   const PrefetchSingleRedirectHop& this_prefetch =
       GetCurrentSingleRedirectHopToServe();
-
-  const auto& network_context_itr = prefetch_container_->network_contexts_.find(
+  return prefetch_container_->GetNetworkContext(
       this_prefetch.is_isolated_network_context_required_);
-  if (network_context_itr == prefetch_container_->network_contexts_.end()) {
-    // Not set in unit tests.
-    return nullptr;
-  }
-  return network_context_itr->second.get();
 }
 
 void PrefetchContainer::CloseIdleConnections() {

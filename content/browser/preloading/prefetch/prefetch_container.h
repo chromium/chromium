@@ -459,6 +459,11 @@ class CONTENT_EXPORT PrefetchContainer {
   void PauseAllCookieListeners();
   void ResumeAllCookieListeners();
 
+  // The network context used to make network requests, copy cookies, etc. for
+  // the given `is_isolated_network_context_required`.
+  PrefetchNetworkContext* GetNetworkContext(
+      bool is_isolated_network_context_required) const;
+
   // The network context used to make network requests for the next prefetch.
   PrefetchNetworkContext* GetOrCreateNetworkContextForCurrentPrefetch();
 
