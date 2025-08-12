@@ -1056,7 +1056,7 @@ TEST_F(DrawPropertiesTest, VisibleLayerRectForReferenceFilterUnderClip) {
   clip_node.pixel_moving_filter_id = filter_node.id;
 
   UpdateActiveTreeDrawProperties();
-  EXPECT_EQ(gfx::Rect(100, 100, 150, 150), child->visible_layer_rect());
+  EXPECT_EQ(gfx::Rect(50, 50, 200, 200), child->visible_layer_rect());
 }
 
 TEST_F(DrawPropertiesTest, RenderSurfaceForBlendMode) {

@@ -188,7 +188,7 @@ bool ExpandClipForPixelMovingFilter(const PropertyTrees* property_trees,
   SkMatrix filter_draw_matrix =
       SkMatrix::Scale(filter_node->surface_contents_scale.x(),
                       filter_node->surface_contents_scale.y());
-  gfx::RectF mapped_clip_in_mapping_space(filter_node->filters.MapRect(
+  gfx::RectF mapped_clip_in_mapping_space(filter_node->filters.ExpandRect(
       ToEnclosingClipRect(clip_rect_in_mapping_space), filter_draw_matrix));
 
   // Put the expanded clip back into the original target space.

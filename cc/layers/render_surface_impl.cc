@@ -221,7 +221,7 @@ gfx::Rect RenderSurfaceImpl::CalculateExpandedClipForFilters(
     const gfx::Transform& target_to_surface) {
   gfx::Rect clip_in_surface_space =
       MathUtil::ProjectEnclosingClippedRect(target_to_surface, clip_rect());
-  gfx::Rect expanded_clip_in_surface_space = Filters().MapRect(
+  gfx::Rect expanded_clip_in_surface_space = Filters().ExpandRect(
       clip_in_surface_space, gfx::TransformToFlattenedSkMatrix(SurfaceScale()));
   gfx::Rect expanded_clip_in_target_space = MathUtil::MapEnclosingClippedRect(
       draw_transform(), expanded_clip_in_surface_space);
