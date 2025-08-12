@@ -13,6 +13,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -25,6 +26,7 @@ namespace {
 // A fixed vertical offset from the top of the window, used when the tab
 // strip is not visible (e.g., in immersive fullscreen).
 constexpr int kHandoffButtonTopOffset = 8;
+constexpr int kHandoffbuttonPreferredHeight = 70;
 
 std::unique_ptr<views::NonClientFrameView> CreateHandoffButtonFrameView(
     views::Widget* widget) {
@@ -90,16 +92,18 @@ void HandoffButtonController::UpdateState(const HandoffButtonState& state,
 
   std::u16string text;
   ImageModel icon;
-  // TODO(crbug.com/422541242): Update icon color to match spec.
   switch (state.controller) {
     case kActor:
       text = TAKE_OVER_TASK_TEXT;
+      // TODO(crbug.com/422541242): Update icon to select_window_2.
       icon = ImageModel::FromVectorIcon(
-          vector_icons::kSelectWindowChromeRefreshIcon, SK_ColorDKGRAY);
+          vector_icons::kSelectWindowChromeRefreshIcon,
+          ::ui::kColorLabelForeground);
       break;
     case kClient:
       text = GIVE_TASK_BACK_TEXT;
-      icon = ImageModel::FromVectorIcon(kScreensaverAutoIcon, SK_ColorDKGRAY);
+      icon = ImageModel::FromVectorIcon(kScreensaverAutoIcon,
+                                        ::ui::kColorLabelForeground);
       break;
   }
 
@@ -130,8 +134,7 @@ void HandoffButtonController::CreateAndShowButton(const std::u16string& text,
                           weak_ptr_factory_.GetWeakPtr()),
       text);
   button_view_ = button_view.get();
-  // TODO(crbug.com/422541242): Update color to match spec.
-  button_view_->SetEnabledTextColors(SK_ColorDKGRAY);
+  button_view_->SetEnabledTextColors(::ui::kColorLabelForeground);
   button_view_->SetImageModel(views::Button::STATE_NORMAL, icon);
 
   auto widget_delegate = std::make_unique<views::WidgetDelegate>();
@@ -183,8 +186,8 @@ void HandoffButtonController::ShouldShowButton(bool& show) {
 
 gfx::Rect HandoffButtonController::GetHandoffButtonBounds(
     views::Widget* widget) {
-  const gfx::Size preferred_size =
-      widget->GetContentsView()->GetPreferredSize();
+  gfx::Size preferred_size = widget->GetContentsView()->GetPreferredSize();
+  preferred_size.set_height(kHandoffbuttonPreferredHeight);
 
   auto* anchor_view = tab_interface_->GetBrowserWindowInterface()->GetWebView();
   if (!anchor_view) {
