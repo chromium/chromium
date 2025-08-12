@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 
 #include "base/types/zip.h"
+#include "components/autofill/core/browser/webdata/valuables/valuables_sync_test_utils.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -12,37 +13,9 @@
 
 namespace autofill {
 namespace {
-
 constexpr char kId1[] = "1";
-constexpr char kInvalidId[] = "";
-
 constexpr char kValidProgramLogo[] = "http://foobar.com/logo.png";
 constexpr char kInvalidProgramLogo[] = "logo.png";
-constexpr char kValidCardNumber[] = "80974934820245";
-
-LoyaltyCard TestLoyaltyCard(std::string_view id = kId1) {
-  return LoyaltyCard(ValuableId(std::string(id)), "merchant_name",
-                     "program_name", GURL("http://foobar.com/logo.png"),
-                     kValidCardNumber, {GURL("https://domain.example")});
-}
-
-sync_pb::AutofillValuableSpecifics TestLoyaltyCardSpecifics(
-    std::string_view id = kId1,
-    std::string_view program_logo = kValidProgramLogo,
-    std::string_view number = kValidCardNumber) {
-  sync_pb::AutofillValuableSpecifics specifics =
-      sync_pb::AutofillValuableSpecifics();
-  specifics.set_id(std::string(id));
-
-  sync_pb::AutofillValuableSpecifics::LoyaltyCard* loyalty_card =
-      specifics.mutable_loyalty_card();
-  loyalty_card->set_merchant_name("merchant_name");
-  loyalty_card->set_program_name("program_name");
-  loyalty_card->set_program_logo(std::string(program_logo));
-  loyalty_card->set_loyalty_card_number(number);
-  *loyalty_card->add_merchant_domains() = "https://domain.example";
-  return specifics;
-}
 
 }  // namespace
 
@@ -98,7 +71,7 @@ TEST_F(LoyaltyCardSyncUtilTest, CreateAutofillLoyaltyCardFromSpecifics) {
 
 TEST_F(LoyaltyCardSyncUtilTest, AreAutofillLoyaltyCardSpecificsValid) {
   EXPECT_FALSE(AreAutofillLoyaltyCardSpecificsValid(
-      TestLoyaltyCardSpecifics(kInvalidId)));
+      TestLoyaltyCardSpecifics(/*id=*/"")));
   EXPECT_FALSE(AreAutofillLoyaltyCardSpecificsValid(
       TestLoyaltyCardSpecifics(kId1, kInvalidProgramLogo)));
   EXPECT_FALSE(AreAutofillLoyaltyCardSpecificsValid(

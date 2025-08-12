@@ -1251,6 +1251,8 @@ static_library("test_support") {
     "webdata/mock_autofill_webdata_service.h",
     "webdata/payments/payments_sync_bridge_test_util.cc",
     "webdata/payments/payments_sync_bridge_test_util.h",
+    "webdata/valuables/valuables_sync_test_utils.cc",
+    "webdata/valuables/valuables_sync_test_utils.h",
   ]
 
   public_deps = [
