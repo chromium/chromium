@@ -42,6 +42,12 @@ const char kFirstPromptSubmissionMethodHistogram[] =
 const char kPromptContextAttachmentHistogram[] =
     "IOS.Gemini.Prompt.ContextAttachment";
 
+const char kResponseLatencyWithContextHistogram[] =
+    "IOS.Gemini.Response.Latency.WithContext";
+
+const char kResponseLatencyWithoutContextHistogram[] =
+    "IOS.Gemini.Response.Latency.WithoutContext";
+
 void RecordFREPromoAction(IOSGeminiFREAction action) {
   switch (action) {
     case IOSGeminiFREAction::kAccept:
@@ -133,4 +139,14 @@ void RecordFREConsentLinkClick() {
 void RecordPromptContextAttachment(bool has_page_context) {
   base::UmaHistogramBoolean(kPromptContextAttachmentHistogram,
                             has_page_context);
+}
+
+void RecordResponseLatency(base::TimeDelta latency, bool had_page_context) {
+  if (had_page_context) {
+    base::UmaHistogramMediumTimes(kResponseLatencyWithContextHistogram,
+                                  latency);
+  } else {
+    base::UmaHistogramMediumTimes(kResponseLatencyWithoutContextHistogram,
+                                  latency);
+  }
 }

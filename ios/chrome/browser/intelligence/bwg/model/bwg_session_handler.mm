@@ -6,6 +6,7 @@
 
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_session_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
@@ -46,6 +47,9 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
   BOOL _hasReceivedFirstResponse;
   // Tracks if user has sent their first prompt in current session.
   BOOL _hasSubmittedFirstPrompt;
+  base::TimeTicks _lastPromptSentTime;
+  BOOL _lastPromptHadPageContext;
+  BOOL _waitingForResponse;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList {
@@ -91,11 +95,27 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
     RecordBWGSessionTime(session_duration);
     _sessionStartTime = base::TimeTicks();
   }
+  // Reset latency tracking on session end.
+  _waitingForResponse = NO;
+  _lastPromptSentTime = base::TimeTicks();
+  // TODO(crbug.com/435649967): log # of times users dismissed the floaty before
+  // receiving a response.
 }
 
 - (void)responseReceivedWithClientID:(NSString*)clientID
                             serverID:(NSString*)serverID {
   [self updateSessionWithClientID:clientID serverID:serverID];
+
+  // Calculate and record response latency.
+  if (_waitingForResponse && !_lastPromptSentTime.is_null()) {
+    base::TimeDelta latency = base::TimeTicks::Now() - _lastPromptSentTime;
+    RecordResponseLatency(latency, _lastPromptHadPageContext);
+
+    // Reset latency tracking.
+    _waitingForResponse = NO;
+    _lastPromptSentTime = base::TimeTicks();
+  }
+
   if (!_hasReceivedFirstResponse) {
     _hasReceivedFirstResponse = YES;
     RecordFirstResponseReceived();
@@ -119,6 +139,10 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
   }
   // Track context attachment for all prompts.
   RecordPromptContextAttachment(pageContextAttached);
+  // Start latency tracking.
+  _lastPromptSentTime = base::TimeTicks::Now();
+  _lastPromptHadPageContext = pageContextAttached;
+  _waitingForResponse = YES;
 }
 
 // Called when a new chat button is tapped.
