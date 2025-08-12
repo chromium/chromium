@@ -12,8 +12,7 @@ found in the LICENSE file.
     android:id="@+id/ntp_customization_feed_bottom_sheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
-    tools:ignore="UnusedResources">
+    android:paddingBottom="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom">
 
     <include layout="@layout/ntp_customization_drag_handle_bar" />
 

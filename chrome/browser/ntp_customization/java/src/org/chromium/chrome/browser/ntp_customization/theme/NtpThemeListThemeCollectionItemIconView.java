@@ -63,9 +63,8 @@ public class NtpThemeListThemeCollectionItemIconView extends FrameLayout {
         final Context context = getContext();
         final @ColorInt int surfaceColor =
                 ContextCompat.getColor(context, R.color.sheet_on_scrim_bg_color);
-        // TODO(crbug.com/423579377): confirm the color used here.
-        final @ColorInt int colorSurfaceContainerLow =
-                SemanticColorUtils.getColorSurfaceContainerLow(context);
+        final @ColorInt int colorSurfaceContainer =
+                SemanticColorUtils.getColorSurfaceContainerHigh(context);
 
         mNoImagePlaceholder = findViewById(R.id.no_image_placeholder_background);
         mNoImagePlaceholder.setOutlineProvider(mPrimaryImageOutline);
@@ -86,7 +85,7 @@ public class NtpThemeListThemeCollectionItemIconView extends FrameLayout {
         mBottomRightContainer.setBackgroundColor(surfaceColor);
 
         mBottomRightBackground = findViewById(R.id.bottom_right_background);
-        mBottomRightBackground.setBackgroundColor(colorSurfaceContainerLow);
+        mBottomRightBackground.setBackgroundColor(colorSurfaceContainer);
         mBottomRightBackground.setOutlineProvider(mBottomRightOutline);
         mBottomRightBackground.setClipToOutline(true);
 

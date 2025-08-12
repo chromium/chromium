@@ -88,6 +88,7 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/chrome_colors_icon_for_theme_bottom_sheet.xml",
     "java/res/drawable/edit_icon_circle_background.xml",
     "java/res/drawable/fitbit_heart_rate_icon.xml",
     "java/res/drawable/forward_arrow_icon.xml",
@@ -117,6 +118,7 @@ android_resources("java_resources") {
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
+    "java/res/values/styles.xml",
   ]
   deps = [
     "//components/browser_ui/strings/android:browser_ui_strings_grd",

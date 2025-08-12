@@ -7,11 +7,9 @@ found in the LICENSE file.
 
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottom_sheet_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:ignore="UnusedResources">
+    android:layout_height="match_parent">
     <ViewFlipper
         android:id="@+id/ntp_customization_view_flipper"
         android:layout_width="match_parent"

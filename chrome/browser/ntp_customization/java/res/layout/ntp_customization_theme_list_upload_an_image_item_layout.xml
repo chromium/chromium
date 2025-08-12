@@ -17,8 +17,8 @@ found in the LICENSE file.
 
   <ImageView
       android:id="@+id/leading_icon"
-      android:layout_width="@dimen/ntp_customization_theme_list_item_icon_size"
-      android:layout_height="@dimen/ntp_customization_theme_list_item_icon_size"
+      android:layout_width="@dimen/ntp_customization_theme_collections_list_item_leading_icon_size"
+      android:layout_height="@dimen/ntp_customization_theme_collections_list_item_leading_icon_size"
       android:scaleType="centerCrop"
       android:importantForAccessibility="no"
       android:src="@drawable/upload_an_image_icon_for_theme_bottom_sheet"/>
