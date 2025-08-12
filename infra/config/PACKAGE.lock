@@ -1,0 +1,28 @@
+{
+	"lucicfg": "1.45.3",
+	"packages": [
+		{
+			"name": "@chromium-project",
+			"lucicfg": "1.44.1",
+			"resources": [
+				"dev/chromium-header.textpb",
+				"lib/linux-default.json",
+				"luci-analysis-dev.cfg",
+				"luci-analysis.cfg",
+				"luci-bisection-dev.cfg",
+				"luci-bisection.cfg",
+				"milestones.json",
+				"settings.json",
+				"targets/autoshard_exceptions.json",
+				"templates/build_with_step_summary.template",
+				"templates/tree_closure_email.template",
+				"testhaus-staging.cfg",
+				"testhaus.cfg"
+			],
+			"entrypoints": [
+				"dev.star",
+				"main.star"
+			]
+		}
+	]
+}
