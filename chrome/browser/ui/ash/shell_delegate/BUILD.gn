@@ -53,6 +53,7 @@ static_library("shell_delegate") {
     "//chrome/browser/ui/ash/wm",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views",
+    "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/views/frame:immersive_mode_controller",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/browser/web_applications",

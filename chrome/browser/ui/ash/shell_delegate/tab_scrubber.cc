@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
@@ -284,7 +285,7 @@ void TabScrubber::BeginScrub(BrowserView* browser_view, float x_offset) {
         ImmersiveModeController::ANIMATE_REVEAL_YES);
   }
 
-  tab_strip_->SetTabStripObserver(this);
+  browser_view->tab_strip_view()->SetTabStripObserver(this);
 
   // Capture the event so that the scroll event will not be handled by other
   // clients. This is required to work well with overview mode gesture.
@@ -300,9 +301,9 @@ bool TabScrubber::FinishScrub(bool activate) {
 
     browser_view->GetWidget()->ReleaseCapture();
 
-    TabStrip* tab_strip = browser_view->tabstrip();
+    TabStripViewInterface* tab_strip_view = browser_view->tab_strip_view();
     if (activate && highlighted_tab_ != -1) {
-      Tab* tab = tab_strip->tab_at(highlighted_tab_);
+      Tab* tab = tab_strip_view->GetTabAnchorViewAt(highlighted_tab_);
       tab->tab_style_views()->HideHover(TabStyle::HideHoverStyle::kImmediate);
       int distance = std::abs(highlighted_tab_ -
                               browser_->tab_strip_model()->active_index());
@@ -314,7 +315,7 @@ bool TabScrubber::FinishScrub(bool activate) {
           TabStripUserGestureDetails(
               TabStripUserGestureDetails::GestureType::kOther));
     }
-    tab_strip->SetTabStripObserver(nullptr);
+    tab_strip_view->SetTabStripObserver(nullptr);
   }
 
   browser_ = nullptr;
