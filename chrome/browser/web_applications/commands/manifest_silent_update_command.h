@@ -30,6 +30,7 @@ enum class ManifestSilentUpdateCommandStage {
   kAcquiringAppLock,
   kComparingManifestData,
   kFinalizingSilentManifestChanges,
+  kWritingPendingUpdateIconBitmapsToDisk,
   kCompleteCommand,
 };
 
@@ -44,7 +45,10 @@ enum class ManifestSilentUpdateCheckResult {
   kWebContentsDestroyed = 6,
   kAppOnlyHasSecurityUpdate = 7,
   kAppHasNonSecurityAndSecurityChanges = 8,
-  kMaxValue = kAppHasNonSecurityAndSecurityChanges,
+  kPendingIconWriteToDiskFailed = 9,
+  kInvalidManifest = 10,
+  kInvalidPendingUpdateInfo = 11,
+  kMaxValue = kInvalidPendingUpdateInfo,
 };
 
 struct WebAppInstallInfo;
@@ -114,11 +118,14 @@ class ManifestSilentUpdateCommand
 
   // Stage: Finalize silent changes to web app.
   // (ManifestSilentUpdateCommandStage::kFinalizingSilentManifestChanges)
-  void NonSecuritySensitiveFieldsApplied(
-      bool silent_update_applied,
+  void UpdateFinalizedWritePendingInfoIfNeeded(
       std::optional<proto::PendingUpdateInfo> pending_update_info,
       const webapps::AppId& app_id,
       webapps::InstallResultCode code);
+
+  // Stage: Write pending trusted and pending manifest icon bitmaps to disk.
+  // (ManifestSilentUpdateCommandStage::kWritingPendingUpdateIconBitmapsToDisk)
+  void VerifyPendingUpdateIconBitmapsWrittenToDisk(bool bitmaps_write_success);
 
   // Stage: Update check complete.
   // (ManifestSilentUpdateCommandStage::kCompleteCommand)
@@ -143,15 +150,19 @@ class ManifestSilentUpdateCommand
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<WebAppIconDownloader> icon_downloader_;
   std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
-  std::optional<apps::IconInfo> new_manifest_trusted_icon_;
-  std::optional<apps::IconInfo> existing_manifest_trusted_icon_;
-  bool has_icon_url_changed_;
+  std::optional<apps::IconInfo> new_manifest_trusted_icon_metadata_;
+  std::optional<apps::IconInfo> existing_manifest_trusted_icon_metadata_;
 
   // Temporary variables stored here while the update check progresses
   // asynchronously.
   std::unique_ptr<WebAppInstallInfo> new_install_info_;
-  IconBitmaps existing_app_icon_bitmaps_;
+  IconBitmaps existing_manifest_icon_bitmaps_;
+  IconBitmaps existing_trusted_icon_bitmaps_;
+  IconBitmaps pending_trusted_icon_bitmaps_;
+  IconBitmaps pending_manifest_icon_bitmaps_;
   ShortcutsMenuIconBitmaps existing_shortcuts_menu_icon_bitmaps_;
+  bool has_icon_url_changed_ = false;
+  bool silent_update_required_ = false;
 
   // Debug info.
   ManifestSilentUpdateCommandStage stage_ =
