@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 
 #include <algorithm>
-#include <limits>
 #include <memory>
 #include <optional>
 #include <set>
@@ -13,16 +12,13 @@
 #include <variant>
 
 #include "base/auto_reset.h"
-#include "base/check_deref.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_auto_reset.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -32,7 +28,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organization/metrics.h"
@@ -42,17 +37,13 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/chrome_widget_sublevel.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_layout_helper.h"
-#include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/tabs/window_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -60,8 +51,6 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
@@ -76,16 +65,15 @@
 #include "ui/display/screen.h"
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/events/types/event_type.h"
-#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/range/range.h"
-#include "ui/views/controls/scroll_view.h"
 #include "ui/views/drag_utils.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
-#include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -105,10 +93,6 @@
 #include "ui/aura/env.h"                            // nogncheck
 #include "ui/aura/window.h"                         // nogncheck
 #include "ui/wm/core/window_modality_controller.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/public/ozone_platform.h"
 #endif
 
 using content::OpenURLParams;
@@ -1214,7 +1198,7 @@ TabDragController::GetDragTargetForPoint(gfx::Point point_in_screen) {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForNativeWindow(local_window);
     TabDragContext* destination_tab_strip =
-        browser_view->tabstrip()->GetDragContext();
+        browser_view->tab_strip_view()->GetDragContext();
     if (destination_tab_strip) {
       if (DoesTabStripContain(destination_tab_strip, point_in_screen)) {
         return std::tuple(Liveness::ALIVE, destination_tab_strip, nullptr);
@@ -1565,7 +1549,8 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
       can_release_capture_ ? RELEASE_CAPTURE : DONT_RELEASE_CAPTURE;
 #endif
   DetachAndAttachToNewContext(
-      release_capture, dragged_browser_view->tabstrip()->GetDragContext());
+      release_capture,
+      dragged_browser_view->tab_strip_view()->GetDragContext());
 
   if (ShouldDragWindowUsingSystemDnD()) {
     // Keep the new window hidden and start a system DnD session.

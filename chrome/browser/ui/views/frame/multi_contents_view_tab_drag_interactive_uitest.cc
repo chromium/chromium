@@ -4,7 +4,9 @@
 
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/test/split_tabs_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
@@ -97,8 +99,8 @@ void Poll(base::RepeatingCallback<bool()> condition,
 // This should be created before drag loop is started.
 class QuitTabDraggingObserver {
  public:
-  explicit QuitTabDraggingObserver(TabStrip* tab_strip) {
-    tab_strip->GetDragContext()->SetDragControllerCallbackForTesting(
+  explicit QuitTabDraggingObserver(TabStripViewInterface* tab_strip_view) {
+    tab_strip_view->GetDragContext()->SetDragControllerCallbackForTesting(
         base::BindOnce(&QuitTabDraggingObserver::OnDragControllerSet,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -256,10 +258,9 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
   SKIP_FOR_WAYLAND();
 
   BrowserView& browser_view = GetBrowserView();
-  TabStrip* tab_strip = browser_view.tabstrip();
   const auto drop_side = GetParam();
 
-  QuitTabDraggingObserver observer(tab_strip);
+  QuitTabDraggingObserver observer(browser_view.tab_strip_view());
   RunTestSequence(
       AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUISettingsURL), 1),
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUISettingsURL), 2),
@@ -285,10 +286,9 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
   SKIP_FOR_WAYLAND();
 
   BrowserView& browser_view = GetBrowserView();
-  TabStrip* tab_strip = browser_view.tabstrip();
   const auto drop_side = GetParam();
 
-  QuitTabDraggingObserver observer(tab_strip);
+  QuitTabDraggingObserver observer(browser_view.tab_strip_view());
   RunTestSequence(
       AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUISettingsURL), 1),
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUISettingsURL), 2),
