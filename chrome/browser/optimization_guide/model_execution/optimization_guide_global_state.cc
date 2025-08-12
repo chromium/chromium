@@ -5,6 +5,7 @@
 #include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -45,7 +46,8 @@ class OnDeviceModelComponentStateManagerDelegate
   }
 
   void GetFreeDiskSpace(const base::FilePath& path,
-                        base::OnceCallback<void(int64_t)> callback) override {
+                        base::OnceCallback<void(std::optional<base::ByteCount>)>
+                            callback) override {
     base::TaskTraits traits = {base::MayBlock(),
                                base::TaskPriority::BEST_EFFORT};
     if (optimization_guide::switches::
@@ -53,9 +55,22 @@ class OnDeviceModelComponentStateManagerDelegate
       traits.UpdatePriority(base::TaskPriority::USER_VISIBLE);
     }
 
+    // TODO(https://crbug.com/429140103): Convert
+    // base::SysInfo::AmountOfFreeDiskSpace to return
+    // std::optional<base::ByteCount> and remove this wrapper.
+    auto amount_of_free_disk_space_wrapper = base::BindOnce(
+        [](const base::FilePath& path) -> std::optional<base::ByteCount> {
+          int64_t amount_of_free_disk_space =
+              base::SysInfo::AmountOfFreeDiskSpace(path);
+          if (amount_of_free_disk_space < 0) {
+            return std::nullopt;
+          }
+          return base::ByteCount(amount_of_free_disk_space);
+        },
+        path);
+
     base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, traits,
-        base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace, path),
+        FROM_HERE, traits, std::move(amount_of_free_disk_space_wrapper),
         std::move(callback));
   }
 

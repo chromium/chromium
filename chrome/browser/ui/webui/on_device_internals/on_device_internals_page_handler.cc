@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_page_handler.h"
 
+#include "base/byte_count.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
@@ -95,13 +96,12 @@ base::flat_map<std::string, std::string> GetCriteria(
   std::string disk_space_string =
       base::ToString(criteria->disk_space_available);
   if (!criteria->disk_space_available) {
-    int disk_space_required_mb = optimization_guide::features::
-        GetDiskSpaceRequiredInMbForOnDeviceModelInstall();
-    int disk_space_available_mb =
-        debug_state.disk_space_available_ / (1024 * 1024);
+    base::ByteCount disk_space_required = optimization_guide::features::
+        GetDiskSpaceRequiredForOnDeviceModelInstall();
+    base::ByteCount disk_space_available = debug_state.disk_space_available_;
     disk_space_string = base::StrCat(
-        {" (", base::NumberToString(disk_space_available_mb),
-         " MiB available, ", base::NumberToString(disk_space_required_mb),
+        {" (", base::NumberToString(disk_space_available.InMiB()),
+         " MiB available, ", base::NumberToString(disk_space_required.InMiB()),
          " MiB required)"});
   }
   mojom_criteria["disk space available"] = disk_space_string;

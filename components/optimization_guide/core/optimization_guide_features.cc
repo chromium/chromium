@@ -6,6 +6,7 @@
 
 #include <cstring>
 
+#include "base/byte_count.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
@@ -587,24 +588,24 @@ base::TimeDelta GetOnDeviceModelRetentionTime() {
       base::Days(30));
 }
 
-int GetDiskSpaceRequiredInMbForOnDeviceModelInstall() {
-  return base::GetFieldTrialParamByFeatureAsInt(
+base::ByteCount GetDiskSpaceRequiredForOnDeviceModelInstall() {
+  return base::MiB(base::GetFieldTrialParamByFeatureAsInt(
       kOptimizationGuideOnDeviceModel,
-      "on_device_model_free_space_mb_required_to_install", 20 * 1024);
+      "on_device_model_free_space_mb_required_to_install",
+      base::GiB(20).InMiB()));
 }
 
 bool IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
-    int64_t free_disk_space_bytes) {
-  return GetDiskSpaceRequiredInMbForOnDeviceModelInstall() <=
-         free_disk_space_bytes / (1024 * 1024);
+    base::ByteCount free_disk_space_bytes) {
+  return GetDiskSpaceRequiredForOnDeviceModelInstall() <= free_disk_space_bytes;
 }
 
 bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
-    int64_t free_disk_space_bytes) {
-  return base::GetFieldTrialParamByFeatureAsInt(
+    base::ByteCount free_disk_space_bytes) {
+  return base::MiB(base::GetFieldTrialParamByFeatureAsInt(
              kOptimizationGuideOnDeviceModel,
              "on_device_model_free_space_mb_required_to_retain",
-             10 * 1024) >= free_disk_space_bytes / (1024 * 1024);
+             base::GiB(10).InMiB())) >= free_disk_space_bytes;
 }
 
 bool GetOnDeviceModelRetractUnsafeContent() {

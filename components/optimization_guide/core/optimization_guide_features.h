@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/component_export.h"
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
@@ -342,21 +343,21 @@ base::TimeDelta GetOnDeviceEligibleModelFeatureRecentUsePeriod();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta GetOnDeviceModelRetentionTime();
 
-// Return the disk space (in MiB) required for on device model install.
+// Return the disk space required for on device model install.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-int GetDiskSpaceRequiredInMbForOnDeviceModelInstall();
+base::ByteCount GetDiskSpaceRequiredForOnDeviceModelInstall();
 
 // Whether there is enough free disk space to allow on-device model
 // installation.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
-    int64_t free_disk_space_bytes);
+    base::ByteCount free_disk_space_bytes);
 
 // Whether there is too little disk space to retain the on-device model
 // installation.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
-    int64_t free_disk_space_bytes);
+    base::ByteCount free_disk_space_bytes);
 
 // Returns true if unsafe content should be removed.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

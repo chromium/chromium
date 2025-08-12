@@ -6,8 +6,10 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_COMPONENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "base/byte_count.h"
 #include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -122,7 +124,7 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
     // and calls `callback`.
     virtual void GetFreeDiskSpace(
         const base::FilePath& path,
-        base::OnceCallback<void(int64_t)> callback) = 0;
+        base::OnceCallback<void(std::optional<base::ByteCount>)> callback) = 0;
 
     // Registers the component installer. Calls
     // `OnDeviceModelComponentStateManager::SetReady` when the component is
@@ -230,7 +232,7 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
 
   // Exposed internal state for chrome://on-device-internals
   struct DebugState {
-    int64_t disk_space_available_;
+    base::ByteCount disk_space_available_;
     raw_ptr<const RegistrationCriteria> criteria_;
     OnDeviceModelStatus status_;
     bool has_override_;
@@ -265,14 +267,15 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
   };
 
   RegistrationCriteria ComputeRegistrationCriteria(
-      int64_t disk_space_free_bytes);
+      base::ByteCount disk_space_free_bytes);
 
   DebugState GetDebugState();
 
   // Installs the component installer if it needs installed.
   void BeginUpdateRegistration();
   // Continuation of `UpdateRegistration()` after async work.
-  void CompleteUpdateRegistration(int64_t disk_space_free_bytes);
+  void CompleteUpdateRegistration(
+      std::optional<base::ByteCount> disk_space_free);
 
   // UsageTracker::Observer:
   void OnDeviceEligibleFeatureUsed(ModelBasedCapabilityKey feature) override;
@@ -298,7 +301,7 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
   std::unique_ptr<RegistrationCriteria> registration_criteria_
       GUARDED_BY_CONTEXT(sequence_checker_);
   // Most recently queried disk space available for model install.
-  int64_t disk_space_available_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  base::ByteCount disk_space_available_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::raw_ref<UsageTracker> usage_tracker_

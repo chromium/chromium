@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/byte_count.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
@@ -276,11 +277,12 @@ void OnDeviceModelComponentStateManager::BeginUpdateRegistration() {
 }
 
 void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
-    int64_t disk_space_free_bytes) {
+    std::optional<base::ByteCount> disk_space_free) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  disk_space_available_ = disk_space_free_bytes;
-  RegistrationCriteria criteria =
-      ComputeRegistrationCriteria(disk_space_free_bytes);
+  // TODO(https://crbug.com/438265416): Handle failure to get free disk space.
+  disk_space_available_ = disk_space_free.value_or(base::ByteCount(-1));
+  RegistrationCriteria criteria = ComputeRegistrationCriteria(
+      disk_space_free.value_or(base::ByteCount(-1)));
   bool first_registration_attempt = !registration_criteria_;
   registration_criteria_ = std::make_unique<RegistrationCriteria>(criteria);
 
@@ -294,7 +296,7 @@ void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
     base::UmaHistogramCounts100(
         "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
         "AtRegistration.DiskSpaceWhenNotEnoughAvailable",
-        disk_space_free_bytes / (1024 * 1024 * 1024));
+        disk_space_free.value_or(base::ByteCount(-1)).InGiB());
   }
 
   bool was_allowed = is_model_allowed_;
@@ -337,7 +339,7 @@ void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
 
 OnDeviceModelComponentStateManager::RegistrationCriteria
 OnDeviceModelComponentStateManager::ComputeRegistrationCriteria(
-    int64_t disk_space_free_bytes) {
+    base::ByteCount disk_space_free_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RegistrationCriteria result;
   result.running_out_of_disk_space = optimization_guide::features::
