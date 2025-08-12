@@ -85,13 +85,14 @@ class SessionStorageDataMapTest : public testing::Test {
     loop.Run();
 
     database_->database().PostTaskWithThisObject(
-        base::BindOnce([](const DomStorageDatabase& db) {
+        base::BindOnce([](DomStorageDatabase* db) {
           // Should show up in first map.
-          DbStatus status = db.Put(MakeBytes("map-1-key1"), MakeBytes("data1"));
+          DbStatus status =
+              db->Put(MakeBytes("map-1-key1"), MakeBytes("data1"));
           ASSERT_TRUE(status.ok());
 
           // Dummy data to verify we don't delete everything.
-          status = db.Put(MakeBytes("map-3-key1"), MakeBytes("data3"));
+          status = db->Put(MakeBytes("map-3-key1"), MakeBytes("data3"));
           ASSERT_TRUE(status.ok());
         }));
   }

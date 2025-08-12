@@ -169,9 +169,9 @@ class LocalStorageImplTest : public testing::Test {
     WaitForDatabaseOpen();
     base::RunLoop loop;
     context()->GetDatabaseForTesting().PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
+        base::BindLambdaForTesting([&](DomStorageDatabase* db) {
           DbStatus status =
-              db.Put(base::as_byte_span(key), base::as_byte_span(value));
+              db->Put(base::as_byte_span(key), base::as_byte_span(value));
           ASSERT_TRUE(status.ok());
           loop.Quit();
         }));

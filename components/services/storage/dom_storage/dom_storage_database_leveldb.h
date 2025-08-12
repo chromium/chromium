@@ -74,7 +74,7 @@ class DomStorageDatabaseLevelDB
 
   // DomStorageDatabase implementation:
   DbStatus Get(KeyView key, Value* out_value) const override;
-  DbStatus Put(KeyView key, ValueView value) const override;
+  DbStatus Put(KeyView key, ValueView value) override;
   DbStatus GetPrefixed(KeyView prefix,
                        std::vector<KeyValuePair>* entries) const override;
   DbStatus RewriteDB() override;

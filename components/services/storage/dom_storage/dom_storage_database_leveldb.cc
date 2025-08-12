@@ -244,7 +244,7 @@ DbStatus DomStorageDatabaseLevelDB::Get(KeyView key, Value* out_value) const {
   return FromLevelDBStatus(status);
 }
 
-DbStatus DomStorageDatabaseLevelDB::Put(KeyView key, ValueView value) const {
+DbStatus DomStorageDatabaseLevelDB::Put(KeyView key, ValueView value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_) {
     return DbStatus::IOError(kInvalidDatabaseMessage);

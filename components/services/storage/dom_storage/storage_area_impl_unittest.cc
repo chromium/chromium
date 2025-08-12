@@ -178,8 +178,8 @@ class StorageAreaImplTest : public testing::Test,
                         const std::vector<uint8_t>& value) {
     base::RunLoop loop;
     db_->database().PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
-          ASSERT_TRUE(db.Put(key, value).ok());
+        base::BindLambdaForTesting([&](DomStorageDatabase* db) {
+          ASSERT_TRUE(db->Put(key, value).ok());
           loop.Quit();
         }));
     loop.Run();

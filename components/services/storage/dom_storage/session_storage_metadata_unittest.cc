@@ -115,34 +115,34 @@ class SessionStorageMetadataTest : public testing::Test {
     // | version                                | 1                  |
     base::RunLoop loop;
     database_->database().PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
-          db.Put(StdStringToUint8Vector(std::string("namespace-") +
-                                        test_namespace1_id_ + "-" +
-                                        test_storage_key1_.Serialize()),
-                 StdStringToUint8Vector("1"));
-          db.Put(StdStringToUint8Vector(std::string("namespace-") +
-                                        test_namespace1_id_ + "-" +
-                                        test_storage_key2_.Serialize()),
-                 StdStringToUint8Vector("3"));
-          db.Put(StdStringToUint8Vector(std::string("namespace-") +
-                                        test_namespace2_id_ + "-" +
-                                        test_storage_key1_.Serialize()),
-                 StdStringToUint8Vector("1"));
-          db.Put(StdStringToUint8Vector(std::string("namespace-") +
-                                        test_namespace2_id_ + "-" +
-                                        test_storage_key2_.Serialize()),
-                 StdStringToUint8Vector("4"));
+        base::BindLambdaForTesting([&](DomStorageDatabase* db) {
+          db->Put(StdStringToUint8Vector(std::string("namespace-") +
+                                         test_namespace1_id_ + "-" +
+                                         test_storage_key1_.Serialize()),
+                  StdStringToUint8Vector("1"));
+          db->Put(StdStringToUint8Vector(std::string("namespace-") +
+                                         test_namespace1_id_ + "-" +
+                                         test_storage_key2_.Serialize()),
+                  StdStringToUint8Vector("3"));
+          db->Put(StdStringToUint8Vector(std::string("namespace-") +
+                                         test_namespace2_id_ + "-" +
+                                         test_storage_key1_.Serialize()),
+                  StdStringToUint8Vector("1"));
+          db->Put(StdStringToUint8Vector(std::string("namespace-") +
+                                         test_namespace2_id_ + "-" +
+                                         test_storage_key2_.Serialize()),
+                  StdStringToUint8Vector("4"));
 
-          db.Put(next_map_id_key_, StdStringToUint8Vector("5"));
+          db->Put(next_map_id_key_, StdStringToUint8Vector("5"));
 
-          db.Put(StdStringToUint8Vector("map-1-key1"),
-                 StdStringToUint8Vector("data1"));
-          db.Put(StdStringToUint8Vector("map-3-key1"),
-                 StdStringToUint8Vector("data3"));
-          db.Put(StdStringToUint8Vector("map-4-key1"),
-                 StdStringToUint8Vector("data4"));
+          db->Put(StdStringToUint8Vector("map-1-key1"),
+                  StdStringToUint8Vector("data1"));
+          db->Put(StdStringToUint8Vector("map-3-key1"),
+                  StdStringToUint8Vector("data3"));
+          db->Put(StdStringToUint8Vector("map-4-key1"),
+                  StdStringToUint8Vector("data4"));
 
-          db.Put(database_version_key_, StdStringToUint8Vector("1"));
+          db->Put(database_version_key_, StdStringToUint8Vector("1"));
           loop.Quit();
         }));
     loop.Run();

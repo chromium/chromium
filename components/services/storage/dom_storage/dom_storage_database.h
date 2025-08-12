@@ -69,7 +69,7 @@ class DomStorageDatabase {
   virtual DbStatus Get(KeyView key, Value* out_value) const = 0;
 
   // Sets the database entry for |key| to |value|.
-  virtual DbStatus Put(KeyView key, ValueView value) const = 0;
+  virtual DbStatus Put(KeyView key, ValueView value) = 0;
 
   // Gets all database entries whose key starts with |prefix|.
   virtual DbStatus GetPrefixed(KeyView prefix,
