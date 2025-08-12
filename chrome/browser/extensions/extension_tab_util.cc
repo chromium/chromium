@@ -1491,8 +1491,8 @@ bool ExtensionTabUtil::OpenOptionsPage(const Extension* extension,
 }
 
 // static
-bool ExtensionTabUtil::BrowserSupportsTabs(Browser* browser) {
-  return browser && !browser->is_type_devtools();
+bool ExtensionTabUtil::BrowserSupportsTabs(BrowserWindowInterface* browser) {
+  return browser && browser->GetType() != BrowserWindowInterface::TYPE_DEVTOOLS;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -27,7 +27,8 @@ source_set("tab_groups") {
     "//components/tab_groups",
     "//extensions/browser",
 
-    # TODO(crbug.com/364501603) Remove this dependency when saved_tab_group_utils.h gets componentized.
+    # TODO(crbug.com/364501603) Remove this dependency when tab_groups_api.cc
+    # stop including browser_list.h and browser_window.h.
     "//chrome/browser/ui",
   ]
 
