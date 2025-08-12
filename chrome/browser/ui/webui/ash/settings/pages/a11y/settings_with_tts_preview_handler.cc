@@ -116,20 +116,16 @@ void SettingsWithTtsPreviewHandler::RegisterMessages() {
 }
 
 void SettingsWithTtsPreviewHandler::OnJavascriptAllowed() {
-  content::TtsController::GetInstance()->AddVoicesChangedDelegate(this);
+  tts_observation_.Observe(content::TtsController::GetInstance());
 }
 
 void SettingsWithTtsPreviewHandler::OnJavascriptDisallowed() {
-  RemoveTtsControllerDelegates();
+  tts_observation_.Reset();
 }
 
 void SettingsWithTtsPreviewHandler::RefreshTtsVoices(
     const base::Value::List& args) {
   content::TtsController::GetInstance()->RefreshVoices();
-}
-
-void SettingsWithTtsPreviewHandler::RemoveTtsControllerDelegates() {
-  content::TtsController::GetInstance()->RemoveVoicesChangedDelegate(this);
 }
 
 }  // namespace ash::settings
