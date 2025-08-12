@@ -23,13 +23,16 @@ BASE_FEATURE(kAutofillEnableAllowlistForBmoCardCategoryBenefits,
 // When enabled, Chrome will have the ability to load and query the allowlist
 // for checkout amount extraction, which will be used to check if the current
 // URL is eligible for products that use the checkout amount extraction
-// algorithm.
+// algorithm. The suffix `desktop` is kept, it was an error in original naming
+// that can not be updated due to ongoing gcl config experiments.
 BASE_FEATURE(kAutofillEnableAmountExtractionAllowlistDesktop,
              "AutofillEnableAmountExtractionAllowlistDesktop",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, Chrome will extract the checkout amount from the checkout page
-// of the allowlisted merchant websites.
+// of the allowlisted merchant websites. The suffix `desktop` is kept, it was an
+// error in original naming that can not be updated due to ongoing gcl config
+// experiments.
 BASE_FEATURE(kAutofillEnableAmountExtractionDesktop,
              "AutofillEnableAmountExtractionDesktop",
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -73,7 +76,12 @@ BASE_FEATURE(kAutofillEnableBuyNowPayLaterForKlarna,
 // When enabled, buy now pay later (BNPL) data will be synced to Chrome clients.
 BASE_FEATURE(kAutofillEnableBuyNowPayLaterSyncing,
              "AutofillEnableBuyNowPayLaterSyncing",
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // When enabled, card benefits offered by American Express will be shown in
 // Payments Autofill UI.
