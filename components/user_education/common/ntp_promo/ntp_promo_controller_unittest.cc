@@ -316,7 +316,7 @@ TEST_F(NtpPromoControllerTest, SetAllPromosSnoozed) {
             storage_service_.GetCurrentTime());
 }
 
-TEST_F(NtpPromoControllerTest, SetAllPromosSnoozedReset) {
+TEST_F(NtpPromoControllerTest, SetAllPromosSnoozedUnsnoozed) {
   controller_.SetAllPromosSnoozed(true);
   controller_.SetAllPromosSnoozed(false);
   EXPECT_EQ(storage_service_.ReadNtpPromoPreferences().last_snoozed,
@@ -325,10 +325,26 @@ TEST_F(NtpPromoControllerTest, SetAllPromosSnoozedReset) {
 
 TEST_F(NtpPromoControllerTest, SetAllPromosDisabled) {
   controller_.SetAllPromosDisabled(true);
-  EXPECT_TRUE(storage_service_.ReadNtpPromoPreferences().disabled);
+  const auto prefs = storage_service_.ReadNtpPromoPreferences();
+  EXPECT_TRUE(prefs.disabled);
 }
 
-TEST_F(NtpPromoControllerTest, SetAllPromosDisabledReset) {
+TEST_F(NtpPromoControllerTest, SetAllPromosDisabledClearsSnoozedState) {
+  controller_.SetAllPromosSnoozed(true);
+  controller_.SetAllPromosDisabled(true);
+  const auto prefs = storage_service_.ReadNtpPromoPreferences();
+  EXPECT_EQ(base::Time(), prefs.last_snoozed);
+}
+
+TEST_F(NtpPromoControllerTest, SetAllPromosUndisabledClearsSnoozedState) {
+  controller_.SetAllPromosDisabled(true);
+  controller_.SetAllPromosSnoozed(true);
+  controller_.SetAllPromosDisabled(false);
+  const auto prefs = storage_service_.ReadNtpPromoPreferences();
+  EXPECT_EQ(base::Time(), prefs.last_snoozed);
+}
+
+TEST_F(NtpPromoControllerTest, SetAllPromosDisabledUndisabled) {
   controller_.SetAllPromosDisabled(true);
   controller_.SetAllPromosDisabled(false);
   EXPECT_FALSE(storage_service_.ReadNtpPromoPreferences().disabled);

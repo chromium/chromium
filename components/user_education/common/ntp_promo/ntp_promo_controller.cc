@@ -118,30 +118,24 @@ NtpPromoController::NtpPromoController(
 NtpPromoController::~NtpPromoController() = default;
 
 bool NtpPromoController::HasShowablePromos(Profile* profile) {
-  if (ArePromosBlocked()) {
-    return false;
-  }
-
   // Generate promo lists here, since the Eligibility callback results are
-  // insufficient. Promo callbacks may report Eligible or Completed, but be
-  // suppressed for several reasons.
-  auto promos = GenerateShowablePromos(profile, /*apply_ordering=*/false);
-  return !promos.pending.empty() || !promos.completed.empty();
+  // insufficient. Promo callbacks may report Eligible or Completed, but promos
+  // may be suppressed for a number of reasons.
+  const auto promos = GenerateShowablePromos(profile, /*apply_ordering=*/false);
+  return !promos.empty();
 }
 
 NtpShowablePromos NtpPromoController::GenerateShowablePromos(Profile* profile) {
-  // This can happen if an NTP is loading while the user snoozes/disables
-  // all promos. If this situation is detected, just return an empty list.
-  if (ArePromosBlocked()) {
-    return NtpShowablePromos();
-  }
-
   return GenerateShowablePromos(profile, /*apply_ordering=*/true);
 }
 
 NtpShowablePromos NtpPromoController::GenerateShowablePromos(
     Profile* profile,
     bool apply_ordering) {
+  if (ArePromosBlocked()) {
+    return NtpShowablePromos();
+  }
+
   std::vector<NtpPromoIdentifier> pending_promo_ids;
   std::vector<NtpPromoIdentifier> completed_promo_ids;
   const auto now = base::Time::Now();

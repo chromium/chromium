@@ -47,6 +47,9 @@ struct NtpShowablePromos {
   NtpShowablePromos(NtpShowablePromos&&) noexcept;
   NtpShowablePromos& operator=(NtpShowablePromos&&) noexcept;
 
+  // Returns true if there are no promos to show.
+  bool empty() const { return pending.empty() && completed.empty(); }
+
   // Lists of promos, in descending priority order. Ie, if the UI chooses to
   // show only one promo from a list, choose the first one.
   std::vector<NtpShowablePromo> pending;
@@ -63,13 +66,15 @@ class NtpPromoController {
   NtpPromoController(NtpPromoRegistry& registry,
                      UserEducationStorageService& storage_service);
 
-  // Determines if there are any showable promos. For consistency, this is
-  // essentially a wrapper around promo-list-generation logic, which may mutate
-  // stored prefs.
+  // Determines if there are any showable promos. This may return false if
+  // promos are snoozed or disabled, or if there are no eligible promos to show.
   virtual bool HasShowablePromos(Profile* profile);
 
   // Provides ordered lists of eligible and completed promos, intended to be
   // displayed by the NTP. May update prefs as a side effect.
+  //
+  // If promos are snoozed or disabled, or there are no eligible promos, an
+  // empty list is returned.
   virtual NtpShowablePromos GenerateShowablePromos(Profile* profile);
 
   // Called when promos are shown by the NTP promo component.
