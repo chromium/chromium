@@ -128,7 +128,7 @@ void DrmThread::CreateBuffer(gfx::AcceleratedWidget widget,
                              const gfx::Size& size,
                              const gfx::Size& framebuffer_size,
                              gfx::BufferFormat format,
-                             gfx::BufferUsage usage,
+                             NativePixmapUsageSet usage,
                              uint32_t client_flags,
                              std::unique_ptr<GbmBuffer>* buffer,
                              scoped_refptr<DrmFramebuffer>* framebuffer) {
@@ -137,7 +137,7 @@ void DrmThread::CreateBuffer(gfx::AcceleratedWidget widget,
   CHECK(drm) << "No devices available for buffer allocation.";
 
   DrmWindow* window = screen_manager_->GetWindow(widget);
-  uint32_t flags = BufferUsageToGbmFlags(usage);
+  uint32_t flags = NativePixmapUsageToGbmFlags(usage);
   uint32_t fourcc_format = GetFourCCFormatFromBufferFormat(format);
 
   // Some modifiers are incompatible with some gbm_bo_flags.  If we give
@@ -161,14 +161,21 @@ void DrmThread::CreateBuffer(gfx::AcceleratedWidget widget,
   CreateBufferWithGbmFlags(drm, fourcc_format, size, framebuffer_size, flags,
                            modifiers, buffer, framebuffer);
 
-  // NOTE: BufferUsage::SCANOUT is used to create buffers that will be
-  // explicitly set via kms on a CRTC (e.g: BufferQueue buffers), therefore
-  // allocation should fail if it's not possible to allocate a BO_USE_SCANOUT
-  // buffer in that case.
-  if (!*buffer && usage != gfx::BufferUsage::SCANOUT &&
-      usage != gfx::BufferUsage::PROTECTED_SCANOUT &&
-      usage != gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE &&
-      usage != gfx::BufferUsage::SCANOUT_FRONT_RENDERING) {
+  // NativePixmapUsages corresponding to SCANOUT which is used to create buffers
+  // that will be explicitly set via kms on a CRTC (e.g: BufferQueue buffers).
+  // Therefore allocation should fail if it's not possible to allocate a buffer
+  // in that case.
+  NativePixmapUsageSet scanout_usages = {NativePixmapUsage::kScanout,
+                                         NativePixmapUsage::kTexturing,
+                                         NativePixmapUsage::kRendering};
+  // Cannot fallback for PROTECTED usages. If there is any other usage than
+  // Scanout usages then we perform fallback.
+  bool can_create_fallback = !usage.Has(NativePixmapUsage::kProtected) &&
+                             !base::Difference(usage, scanout_usages).empty();
+  // TODO(crbug.com/404958317): Historically, usages were checked
+  // opportunistically for SCANOUT and PROTECTED. Ideally, this should be
+  // checked by the caller using some Capabilities.
+  if (!*buffer && can_create_fallback) {
     flags &= ~GBM_BO_USE_SCANOUT;
     CreateBufferWithGbmFlags(drm, fourcc_format, size, framebuffer_size, flags,
                              modifiers, buffer, framebuffer);

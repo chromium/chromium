@@ -22,6 +22,7 @@
 #include "ui/ozone/platform/drm/gpu/drm_thread_proxy.h"
 #include "ui/ozone/platform/drm/gpu/drm_window_proxy.h"
 #include "ui/ozone/platform/drm/test/integration_test_helpers.h"
+#include "ui/ozone/public/native_pixmap_usage.h"
 
 class VKMSTest : public testing::Test {
  public:
@@ -132,9 +133,12 @@ TEST_F(VKMSTest, SinglePlanePageFlip) {
   // ui/gfx/linux/drm_util_linux.cc
   std::unique_ptr<ui::GbmBuffer> buffer;
   scoped_refptr<ui::DrmFramebuffer> framebuffer;
+  ui::NativePixmapUsageSet native_pixmap_usage = {
+      ui::NativePixmapUsage::kScanout, ui::NativePixmapUsage::kTexturing,
+      ui::NativePixmapUsage::kCpuRead};
   drm_thread_proxy_->CreateBuffer(
       kWidget, kWindowRect.size(), kWindowRect.size(),
-      gfx::BufferFormat::BGRX_8888, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
+      gfx::BufferFormat::BGRX_8888, native_pixmap_usage,
       /*flags=*/0, &buffer, &framebuffer);
 
   auto planes = std::vector<ui::DrmOverlayPlane>();

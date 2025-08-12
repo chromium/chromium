@@ -154,6 +154,7 @@ source_set("gbm") {
     "//ui/gfx/linux:drm",
     "//ui/gfx/linux:gbm",
     "//ui/gl",
+    "//ui/ozone:native_pixmap_usage",
     "//ui/ozone:ozone_base",
     "//ui/ozone/common",
     "//ui/ozone/platform/drm/mojom",

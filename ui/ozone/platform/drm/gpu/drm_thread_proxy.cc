@@ -73,7 +73,7 @@ void DrmThreadProxy::CreateBuffer(gfx::AcceleratedWidget widget,
                                   const gfx::Size& size,
                                   const gfx::Size& framebuffer_size,
                                   gfx::BufferFormat format,
-                                  gfx::BufferUsage usage,
+                                  NativePixmapUsageSet usage,
                                   uint32_t flags,
                                   std::unique_ptr<GbmBuffer>* buffer,
                                   scoped_refptr<DrmFramebuffer>* framebuffer) {

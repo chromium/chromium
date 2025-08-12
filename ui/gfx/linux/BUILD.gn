@@ -43,6 +43,7 @@ source_set("gbm") {
     "//ui/gfx:buffer_types",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
+    "//ui/ozone:native_pixmap_usage",
   ]
 }
 

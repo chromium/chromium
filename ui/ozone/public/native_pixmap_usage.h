@@ -5,29 +5,43 @@
 #ifndef UI_OZONE_PUBLIC_NATIVE_PIXMAP_USAGE_H_
 #define UI_OZONE_PUBLIC_NATIVE_PIXMAP_USAGE_H_
 
+#include <stdint.h>
+
+#include "base/component_export.h"
+#include "base/containers/enum_set.h"
+
 namespace ui {
 
 // Corresponds to how ui/ozone platforms "use" a native pixmap buffer.
 enum class NativePixmapUsage : uint32_t {
   // Buffer will be used as scanout buffer.
-  SCANOUT = 1 << 0,
+  kScanout,
   // Buffer will be used for rendering.
-  RENDERING = 1 << 1,
+  kRendering,
   // Buffer will be used as a texture that will be sampled from.
-  TEXTURING = 1 << 2,
-  // Buffer is linear i.e. not tiled.
-  LINEAR = 1 << 3,
+  kTexturing,
+  // Buffer is read by CPU and also linear i.e. not tiled.
+  kCpuRead,
   // Buffer will be written to by a camera subsystem.
-  CAMERA = 1 << 4,
+  kCamera,
   // Buffer will be protected i.e. inaccessible to unprivileged users.
-  PROTECTED = 1 << 5,
+  kProtected,
   // Buffer will be written by a video decode accelerator.
-  HW_VIDEO_DECODER = 1 << 6,
+  kHWVideoDecoder,
   // Buffer will be read by a video encode accelerator.
-  HW_VIDEO_ENCODER = 1 << 7,
+  kHWVideoEncoder,
   // Buffer will be read often by the CPU software.
-  SW_READ_OFTEN = 1 << 8,
+  kSWReadOften,
+  // Buffer will be used for front rendering.
+  kFrontRendering,
+
+  kLastNativePixmapUsage = kFrontRendering
 };
+
+using NativePixmapUsageSet =
+    base::EnumSet<NativePixmapUsage,
+                  NativePixmapUsage::kScanout,
+                  NativePixmapUsage::kLastNativePixmapUsage>;
 
 }  // namespace ui
 

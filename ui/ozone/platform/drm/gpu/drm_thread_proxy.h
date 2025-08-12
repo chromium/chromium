@@ -16,6 +16,7 @@
 #include "ui/ozone/platform/drm/mojom/device_cursor.mojom.h"
 #include "ui/ozone/public/drm_modifiers_filter.h"
 #include "ui/ozone/public/hardware_capabilities.h"
+#include "ui/ozone/public/native_pixmap_usage.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"
 
 namespace ui {
@@ -46,7 +47,7 @@ class DrmThreadProxy {
                     const gfx::Size& size,
                     const gfx::Size& framebuffer_size,
                     gfx::BufferFormat format,
-                    gfx::BufferUsage usage,
+                    NativePixmapUsageSet usage,
                     uint32_t flags,
                     std::unique_ptr<GbmBuffer>* buffer,
                     scoped_refptr<DrmFramebuffer>* framebuffer);

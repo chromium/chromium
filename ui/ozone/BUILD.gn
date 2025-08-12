@@ -88,7 +88,6 @@ component("ozone_base") {
     "public/input_controller.h",
     "public/native_pixmap_gl_binding.cc",
     "public/native_pixmap_gl_binding.h",
-    "public/native_pixmap_usage.h",
     "public/overlay_candidates_ozone.cc",
     "public/overlay_candidates_ozone.h",
     "public/overlay_manager_ozone.h",
@@ -128,6 +127,7 @@ component("ozone_base") {
 
   public_deps = [
     ":drm_modifiers_filter",
+    ":native_pixmap_usage",
     ":ozone_switches",
     "//base",
     "//gpu/vulkan:buildflags",
@@ -172,6 +172,31 @@ component("ozone_base") {
     "//ui/events/ozone/*",
     "//ui/ozone/common/*",
     "//ui/ozone/platform/*",
+  ]
+
+  # Out of tree platforms can depend on this.
+  visibility += ozone_external_platform_visibility
+}
+
+component("native_pixmap_usage") {
+  sources = [
+    "public/native_pixmap_usage.h",
+    "public/native_pixmap_usage_utils.cc",
+    "public/native_pixmap_usage_utils.h",
+  ]
+
+  defines = [ "IS_NATIVE_PIXMAP_USAGE_IMPL" ]
+
+  public_deps = [
+    "//base",
+    "//ui/gfx:buffer_types",
+  ]
+
+  visibility += [
+    "//ui/gfx/linux/*",
+    "//ui/ozone/common/*",
+    "//ui/ozone/platform/*",
+    "//ui/ozone/public/*",
   ]
 
   # Out of tree platforms can depend on this.
@@ -417,6 +442,7 @@ action("generate_test_support_constructor_list") {
 
 test("ozone_unittests") {
   deps = [
+    ":native_pixmap_usage",
     ":test_support",
     "//mojo/core/test:run_all_unittests",
     "//ui/ozone/common:unittests",
