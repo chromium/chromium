@@ -340,13 +340,6 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     private void finalizeCreatingTab(TabModelOrchestrator tabModelOrchestrator, TabModel tabModel) {
         Tab earlyCreatedTab = mTabProvider.getTab();
 
-        // This could occur if a CCT was used to pass the redirect to an external handler. This
-        // check prevents it from being added to the model which could result in an empty tab that
-        // persists on a back navigation from the external handler.
-        if (earlyCreatedTab != null && earlyCreatedTab.isDestroyed()) {
-            return;
-        }
-
         Tab tab = earlyCreatedTab;
         @TabCreationMode int mode = mTabProvider.getInitialTabCreationMode();
 
