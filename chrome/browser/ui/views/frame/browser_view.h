@@ -469,6 +469,9 @@ class BrowserView : public BrowserWindow,
   // Returns true if the browser is currently showing tabs in a split view.
   bool IsInSplitView() const;
 
+  // Convenience method for fetching the element context for the window.
+  ui::ElementContext GetElementContext();
+
   // BrowserWindow:
   void Show() override;
   void ShowInactive() override;
@@ -492,7 +495,6 @@ class BrowserView : public BrowserWindow,
   ui::NativeTheme* GetNativeTheme() override;
   const ui::ThemeProvider* GetThemeProvider() const override;
   const ui::ColorProvider* GetColorProvider() const override;
-  ui::ElementContext GetElementContext() override;
   int GetTopControlsHeight() const override;
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
   std::vector<StatusBubble*> GetStatusBubbles() override;

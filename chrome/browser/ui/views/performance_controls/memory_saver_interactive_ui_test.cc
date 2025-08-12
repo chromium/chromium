@@ -142,7 +142,7 @@ class MemorySaverDiscardPolicyInteractiveTest
     if (recently_audible) {
       ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
           ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
-              contents_id, browser()->window()->GetElementContext()),
+              contents_id, GetContext()),
           kAudioIsAudible);
     }
   }

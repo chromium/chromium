@@ -12,6 +12,7 @@
 #include "chrome/browser/shortcuts/shortcut_creation_test_support.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/shortcuts/shortcut_integration_interaction_test_base.h"
 #include "chrome/grit/branded_strings.h"
@@ -162,22 +163,23 @@ class ShortcutIntegrationMultiProfileInteractiveUiTest
 
   // Creates shortcuts in both profiles.
   [[nodiscard]] MultiStep CreateShortcuts() {
-    return Steps(InstrumentTab(kProfile1TabId, /*tab_index=*/std::nullopt,
-                               profile1_browser()),
-                 InstrumentTab(kProfile2TabId, /*tab_index=*/std::nullopt,
-                               profile2_browser()),
-                 NavigateWebContents(kProfile1TabId, profile1_shortcut_url()),
-                 NavigateWebContents(kProfile2TabId, profile2_shortcut_url()),
+    return Steps(
+        InstrumentTab(kProfile1TabId, /*tab_index=*/std::nullopt,
+                      profile1_browser()),
+        InstrumentTab(kProfile2TabId, /*tab_index=*/std::nullopt,
+                      profile2_browser()),
+        NavigateWebContents(kProfile1TabId, profile1_shortcut_url()),
+        NavigateWebContents(kProfile2TabId, profile2_shortcut_url()),
 
-                 InstrumentNextShortcut(kProfile2ShortcutId),
-                 InContext(profile2_browser()->window()->GetElementContext(),
-                           ShowAndAcceptCreateShortcutDialog()),
-                 InAnyContext(WaitForShow(kProfile2ShortcutId)),
+        InstrumentNextShortcut(kProfile2ShortcutId),
+        InContext(BrowserElements::From(profile2_browser())->GetContext(),
+                  ShowAndAcceptCreateShortcutDialog()),
+        InAnyContext(WaitForShow(kProfile2ShortcutId)),
 
-                 InstrumentNextShortcut(kProfile1ShortcutId),
-                 InContext(profile1_browser()->window()->GetElementContext(),
-                           ShowAndAcceptCreateShortcutDialog()),
-                 InAnyContext(WaitForShow(kProfile1ShortcutId)));
+        InstrumentNextShortcut(kProfile1ShortcutId),
+        InContext(BrowserElements::From(profile1_browser())->GetContext(),
+                  ShowAndAcceptCreateShortcutDialog()),
+        InAnyContext(WaitForShow(kProfile1ShortcutId)));
   }
 
   static base::FilePath ProfilePathFromWebContents(ui::TrackedElement* te) {

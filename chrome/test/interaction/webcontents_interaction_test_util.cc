@@ -35,7 +35,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
@@ -1081,7 +1081,7 @@ ui::ElementContext TabWebContentsInteractionTestUtil::GetElementContext()
     const {
   ui::ElementContext context;
   if (Browser* const browser = chrome::FindBrowserWithTab(web_contents())) {
-    context = browser->window()->GetElementContext();
+    context = BrowserElements::From(browser)->GetContext();
   }
   return context;
 }

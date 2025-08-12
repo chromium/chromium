@@ -212,9 +212,6 @@ class BrowserWindow : public ui::BaseWindow {
   // Returns the ColorProvider associated with the frame.
   virtual const ui::ColorProvider* GetColorProvider() const = 0;
 
-  // Returns the context for use with ElementTracker, InteractionSequence, etc.
-  virtual ui::ElementContext GetElementContext() = 0;
-
   // Returns the height of the browser's top controls. This height doesn't
   // change with the current shown ratio above. Renderers will call this to
   // calculate the top-chrome shown ratio from the gesture scroll offset.

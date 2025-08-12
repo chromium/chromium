@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -93,8 +94,6 @@ void ShowIdleBubble(Browser* browser,
 }
 
 views::BubbleFrameView* GetIdleBubble(Browser* browser) {
-  ui::ElementContext context = browser->window()->GetElementContext();
-  return views::ElementTrackerViews::GetInstance()
-      ->GetFirstMatchingViewAs<views::BubbleFrameView>(kIdleBubbleElementId,
-                                                       context);
+  return BrowserElementsViews::From(browser)->GetViewAs<views::BubbleFrameView>(
+      kIdleBubbleElementId);
 }

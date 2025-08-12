@@ -8,6 +8,7 @@
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
@@ -230,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                   LoadStartingPage(kSecondTabId, 0, browser2),
                   LoadStartingPage(kThirdTabId, 0, browser3),
                   OpenGlicWindow(GlicWindowMode::kDetached),
-                  InContext(browser2->window()->GetElementContext(),
+                  InContext(BrowserElements::From(browser2)->GetContext(),
                             ActivateSurface(kBrowserViewElementId)),
                   ObserveState(kTab1AlertState, browser(), 0),
                   ObserveState(kTab2AlertState, browser2, 0),
@@ -256,10 +257,9 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                   ObserveState(kTab1AlertState, browser(), 0),
                   ObserveState(kTab2AlertState, browser2, 0),
                   ClickMockGlicElement(kMockGlicContextAccessButton),
-                  InContext(browser()->window()->GetElementContext(),
-                            ActivateSurface(kBrowserViewElementId)),
+                  ActivateSurface(kBrowserViewElementId),
                   WaitForState(kTab1AlertState, IsAccessing()),
-                  InContext(browser2->window()->GetElementContext(),
+                  InContext(BrowserElements::From(browser2)->GetContext(),
                             ActivateSurface(kBrowserViewElementId)),
                   WaitForState(kTab1AlertState, IsNotAccessing()),
                   WaitForState(kTab2AlertState, IsNotAccessing()));
@@ -289,8 +289,7 @@ IN_PROC_BROWSER_TEST_F(
         ASSERT_TRUE(ui_test_utils::WaitForMinimized(browser2));
       }),
       WaitForState(kTab2AlertState, IsNotAccessing()),
-      InContext(browser()->window()->GetElementContext(),
-                ActivateSurface(kBrowserViewElementId)),
+      ActivateSurface(kBrowserViewElementId),
       WaitForState(kTab2AlertState, IsNotAccessing()),
       WaitForState(kTab1AlertState, IsAccessing()));
 }
@@ -322,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
       }),
       WaitForState(kTab3AlertState, IsAccessing()),
       WaitForState(kTab1AlertState, IsNotAccessing()),
-      InContext(browser2->window()->GetElementContext(),
+      InContext(BrowserElements::From(browser2)->GetContext(),
                 SelectTab(kTabStripElementId, 0)),
       WaitForState(kTab2AlertState, IsAccessing()));
 }

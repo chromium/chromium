@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -115,8 +116,7 @@ class BrowserFeaturePromoController2xUiTestBase
   void OnCustomUiCustomAction(
       const user_education::UserEducationContextPtr& context,
       user_education::FeaturePromoHandle promo_handle) {
-    EXPECT_EQ(browser()->window()->GetElementContext(),
-              context->GetElementContext());
+    EXPECT_EQ(GetContext(), context->GetElementContext());
     continued_promo_handle_ = std::move(promo_handle);
   }
 
@@ -536,10 +536,8 @@ IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
   Browser* const other = CreateBrowser(browser()->profile());
 
   // Hide the anchor element in the first browser.
-  auto* const app_menu_button =
-      views::ElementTrackerViews::GetInstance()->GetUniqueView(
-          kToolbarAppMenuButtonElementId,
-          browser()->window()->GetElementContext());
+  auto* const app_menu_button = BrowserElementsViews::From(browser())->GetView(
+      kToolbarAppMenuButtonElementId);
   app_menu_button->SetVisible(false);
 
   auto& context = BrowserUserEducationInterface::From(other)
@@ -567,10 +565,8 @@ IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
   Browser* const other = CreateBrowser(browser()->profile());
 
   // Hide the anchor element in the first browser.
-  auto* const app_menu_button =
-      views::ElementTrackerViews::GetInstance()->GetUniqueView(
-          kToolbarAppMenuButtonElementId,
-          browser()->window()->GetElementContext());
+  auto* const app_menu_button = BrowserElementsViews::From(browser())->GetView(
+      kToolbarAppMenuButtonElementId);
   app_menu_button->SetVisible(false);
 
   // The promo should now show in the second window.

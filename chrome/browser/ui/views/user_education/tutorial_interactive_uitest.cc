@@ -13,7 +13,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -88,8 +88,7 @@ class TutorialInteractiveUitest : public InProcessBrowserTest {
   }
 
   ui::TrackedElement* GetElement(ui::ElementIdentifier id) {
-    return ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
-        id, browser()->window()->GetElementContext());
+    return BrowserElements::From(browser())->GetElement(id);
   }
 
   TutorialDescription GetDefaultTutorialDescription() {
@@ -112,9 +111,9 @@ IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
   UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(TutorialService::AbortedCallback, aborted);
 
-  GetTutorialService()->StartTutorial(kTestTutorialId,
-                                      browser()->window()->GetElementContext(),
-                                      completed.Get(), aborted.Get());
+  GetTutorialService()->StartTutorial(
+      kTestTutorialId, BrowserElements::From(browser())->GetContext(),
+      completed.Get(), aborted.Get());
   ClearEventQueue();
   EXPECT_TRUE(GetTutorialService()->IsRunningTutorial());
 
@@ -191,7 +190,8 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
         Steps(Do([this]() {
                 auto* const service = GetTutorialService();
                 service->StartTutorial(
-                    kTestTutorialId, browser()->window()->GetElementContext());
+                    kTestTutorialId,
+                    BrowserElements::From(browser())->GetContext());
               }),
               WaitForStateChange(page_id, help_bubble_shown));
     AddDescriptionPrefix(steps, "StartTutorial()");

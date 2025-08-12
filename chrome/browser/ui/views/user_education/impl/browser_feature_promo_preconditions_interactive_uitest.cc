@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -101,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest,
       WaitForShow(kToolbarAppMenuButtonElementId),
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               "Linux window activation issues."),
-      InContext(incog->window()->GetElementContext(),
+      InContext(BrowserElements::From(incog)->GetContext(),
                 Steps(WaitForShow(kToolbarAppMenuButtonElementId),
                       ActivateSurface(kToolbarAppMenuButtonElementId))),
       WithElement(kToolbarAppMenuButtonElementId,

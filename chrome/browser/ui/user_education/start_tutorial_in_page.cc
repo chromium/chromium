@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/user_education/user_education_types.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -69,7 +69,7 @@ class StartTutorialInPageImpl : public StartTutorialInPage {
  private:
   std::optional<ui::ElementContext> GetUiElementContext() {
     if (browser_) {
-      return browser_->window()->GetElementContext();
+      return BrowserElements::From(browser_.get())->GetContext();
     }
     return std::nullopt;
   }

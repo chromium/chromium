@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/commerce/discounts_coupon_code_label_view.h"
 #include "chrome/browser/ui/views/commerce/discounts_icon_view.h"
 #include "chrome/browser/ui/views/controls/subpage_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -323,10 +324,8 @@ class DiscountsBubbleDialogInteractiveTest : public DiscountsInteractiveTest {
             }
           }));
       auto* widget =
-          static_cast<DiscountsBubbleDialogView*>(
-              views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-                  kDiscountsBubbleDialogId,
-                  browser()->window()->GetElementContext()))
+          BrowserElementsViews::From(browser())
+              ->GetViewAs<DiscountsBubbleDialogView>(kDiscountsBubbleDialogId)
               ->GetWidget();
       widget->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
       run_loop.Run();

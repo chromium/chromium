@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -366,8 +367,9 @@ Browser* InteractionTestUtilBrowser::GetBrowserFromContext(
     ui::ElementContext context) {
   BrowserList* const browsers = BrowserList::GetInstance();
   for (Browser* const browser : *browsers) {
-    if (browser->window()->GetElementContext() == context)
+    if (BrowserElements::From(browser)->GetContext() == context) {
       return browser;
+    }
   }
   return nullptr;
 }

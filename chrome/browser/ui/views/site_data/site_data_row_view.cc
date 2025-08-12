@@ -119,9 +119,8 @@ std::unique_ptr<views::TableLayout> SetupTableLayout() {
 }
 
 void NotifyMenuItemClicked(views::View* view) {
-  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-      views::ElementTrackerViews::GetInstance()->GetElementForView(view),
-      kSiteRowMenuItemClicked);
+  views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+      kSiteRowMenuItemClicked, view);
 }
 
 }  // namespace

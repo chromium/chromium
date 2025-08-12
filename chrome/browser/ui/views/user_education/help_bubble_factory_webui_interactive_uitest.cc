@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
                               ->GetBoundsInScreen();
                       return bubble_rect.Intersects(side_panel_rect);
                     },
-                    browser()->window()->GetElementContext())),
+                    GetContext())),
 
       CloseHelpBubble(),
 

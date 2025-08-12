@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/extensions/reload_page_dialog_controller.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
@@ -1209,7 +1210,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                     {.allow_in_incognito = true});
 
   RunTestSequence(InContext(
-      incognito_browser->window()->GetElementContext(),
+      BrowserElements::From(incognito_browser)->GetContext(),
       Steps(InstrumentTab(kTab), OpenExtensionsMenu(),
             // Verify toggle visibility entry in context menu is disabled.
             CheckResult(
