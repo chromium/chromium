@@ -59,6 +59,8 @@ component("app_shim") {
     "remote_cocoa_app_shim_export.h",
     "select_file_dialog_bridge.h",
     "select_file_dialog_bridge.mm",
+    "swizzle_ns_toolbar_view_hit_test.h",
+    "swizzle_ns_toolbar_view_hit_test.mm",
     "views_nswindow_delegate.h",
     "views_nswindow_delegate.mm",
     "views_scrollbar_bridge.h",
