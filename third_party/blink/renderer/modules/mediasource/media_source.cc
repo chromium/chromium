@@ -77,14 +77,9 @@ bool IsMp2tCodecSupported(std::string_view codec_id) {
     return true;
   }
 
-  auto audio_codec = media::AudioCodec::kUnknown;
-  bool is_codec_ambiguous = false;
-  if (media::ParseAudioCodecString("", codec_id, &is_codec_ambiguous,
-                                   &audio_codec)) {
-    if (is_codec_ambiguous) {
-      return false;
-    }
-
+  if (auto audio_type = media::ParseAudioCodecString(
+          "", codec_id, /*allow_ambiguous_matches=*/false)) {
+    const auto& audio_codec = audio_type->codec;
     if (audio_codec != media::AudioCodec::kAAC &&
         audio_codec != media::AudioCodec::kMP3) {
       return false;

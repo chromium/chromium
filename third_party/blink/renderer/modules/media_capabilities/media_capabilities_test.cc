@@ -15,6 +15,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "media/base/media_switches.h"
+#include "media/base/supported_types.h"
 #include "media/base/video_codecs.h"
 #include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom-blink.h"
@@ -489,6 +490,22 @@ TEST(MediaCapabilitiesTests, BasicAudio) {
   EXPECT_TRUE(info->supported());
   EXPECT_TRUE(info->smooth());
   EXPECT_TRUE(info->powerEfficient());
+}
+
+TEST(MediaCapabilitiesTests, BasicAudioWithProfile) {
+  test::TaskEnvironment task_environment;
+  MediaCapabilitiesTestContext context;
+  auto* decoding_config = CreateAudioConfig<MediaDecodingConfiguration>(
+      "audio/mp4; codecs=mp4a.40.42", V8MediaDecodingType::Enum::kMediaSource);
+  MediaCapabilitiesInfo* info = DecodingInfo(decoding_config, &context);
+
+  EXPECT_EQ(info->supported(),
+            media::IsDecoderSupportedAudioType(
+                {media::AudioCodec::kAAC, media::AudioCodecProfile::kXHE_AAC}));
+  if (info->supported()) {
+    EXPECT_TRUE(info->smooth());
+    EXPECT_TRUE(info->powerEfficient());
+  }
 }
 
 // Other tests will assume these match. Test to be sure they stay in sync.

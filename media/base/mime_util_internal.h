@@ -87,10 +87,10 @@ class MEDIA_EXPORT MimeUtil {
       std::string_view mime_type,
       std::string_view codec_id,
       bool allow_ambiguous_matches) const;
-  bool ParseAudioCodecString(std::string_view mime_type,
-                             std::string_view codec_id,
-                             bool* out_is_ambiguous,
-                             AudioCodec* out_codec) const;
+  std::optional<AudioType> ParseAudioCodecString(
+      std::string_view mime_type,
+      std::string_view codec_id,
+      bool allow_ambiguous_matches) const;
   SupportsType IsSupportedMediaFormat(std::string_view mime_type,
                                       const std::vector<std::string>& codecs,
                                       bool is_encrypted) const;

@@ -500,13 +500,10 @@ std::optional<VideoType> MimeUtil::ParseVideoCodecString(
   return parsed_results[0].video;
 }
 
-bool MimeUtil::ParseAudioCodecString(std::string_view mime_type,
-                                     std::string_view codec_id,
-                                     bool* out_is_ambiguous,
-                                     AudioCodec* out_codec) const {
-  DCHECK(out_is_ambiguous);
-  DCHECK(out_codec);
-
+std::optional<AudioType> MimeUtil::ParseAudioCodecString(
+    std::string_view mime_type,
+    std::string_view codec_id,
+    bool allow_ambiguous_matches) const {
   // Internal parsing API expects a vector of codecs.
   std::vector<ParsedCodecResult> parsed_results;
   std::vector<std::string> codec_strings;
@@ -518,20 +515,26 @@ bool MimeUtil::ParseAudioCodecString(std::string_view mime_type,
     DVLOG(3) << __func__ << " Failed to parse mime/codec pair:"
              << (mime_type.empty() ? "<empty mime>" : mime_type) << "; "
              << codec_id;
-    return false;
+    return std::nullopt;
   }
 
   CHECK_EQ(1U, parsed_results.size());
-  *out_is_ambiguous = parsed_results[0].is_ambiguous;
-  *out_codec = MimeUtilToAudioCodec(parsed_results[0].codec);
-
-  if (*out_codec == AudioCodec::kUnknown) {
+  auto codec = MimeUtilToAudioCodec(parsed_results[0].codec);
+  if (codec == AudioCodec::kUnknown) {
     DVLOG(3) << __func__ << " Codec string " << codec_id
              << " is not an AUDIO codec.";
-    return false;
+    return std::nullopt;
   }
 
-  return true;
+  if (!allow_ambiguous_matches && parsed_results[0].is_ambiguous) {
+    DVLOG(3) << __func__ << " Refusing to return ambiguous codec string match.";
+    return std::nullopt;
+  }
+
+  return AudioType{.codec = codec,
+                   .profile = parsed_results[0].codec == MimeUtil::MPEG4_XHE_AAC
+                                  ? AudioCodecProfile::kXHE_AAC
+                                  : AudioCodecProfile::kUnknown};
 }
 
 SupportsType MimeUtil::IsSupportedMediaFormat(
@@ -911,6 +914,8 @@ bool MimeUtil::ParseCodecHelper(std::string_view mime_type_lower_case,
 
 #if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
   if (ParseIamfCodecId(codec_id.data(), nullptr, nullptr)) {
+    // TODO(crbug.com/438106645): We'll need to handle IAMF profiles correctly
+    // here. Especially if they end up containing xHE-AAC audio.
     out_result->codec = MimeUtil::IAMF;
     return true;
   }
