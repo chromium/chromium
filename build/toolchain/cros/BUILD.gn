@@ -21,7 +21,6 @@ template("cros_toolchain") {
     clang_toolchain(target_name) {
       forward_variables_from(invoker, "*")
 
-      toolchain_args.cc_wrapper = ""
       toolchain_args.clang_use_chrome_plugins = false
     }
   }
