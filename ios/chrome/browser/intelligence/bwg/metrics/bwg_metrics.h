@@ -28,6 +28,12 @@ extern const char kPromoActionHistogram[];
 // UMA histogram key for IOS.Gemini.FRE.ConsentAction.
 extern const char kConsentActionHistogram[];
 
+// UMA histogram key for IOS.Gemini.Session.PromptCount.
+extern const char kSessionPromptCountHistogram[];
+
+// UMA histogram key for IOS.Gemini.Session.FirstPrompt.
+extern const char kSessionFirstPromptHistogram[];
+
 // Enum for the IOS.Gemini.FRE.PromoAction and IOS.Gemini.FRE.ConsentAction
 // histograms.
 // LINT.IfChange(IOSGeminiFREAction)
@@ -119,5 +125,11 @@ void RecordPromptContextAttachment(bool has_page_context);
 
 // Records the latency from prompt submission to response received.
 void RecordResponseLatency(base::TimeDelta latency, bool had_page_context);
+
+// Records the total number of prompts sent in a BWG session.
+void RecordSessionPromptCount(int prompt_count);
+
+// Records if a first prompt was sent in a BWG session.
+void RecordSessionFirstPrompt(bool had_first_prompt);
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_

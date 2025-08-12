@@ -48,6 +48,10 @@ const char kResponseLatencyWithContextHistogram[] =
 const char kResponseLatencyWithoutContextHistogram[] =
     "IOS.Gemini.Response.Latency.WithoutContext";
 
+const char kSessionPromptCountHistogram[] = "IOS.Gemini.Session.PromptCount";
+
+const char kSessionFirstPromptHistogram[] = "IOS.Gemini.Session.FirstPrompt";
+
 void RecordFREPromoAction(IOSGeminiFREAction action) {
   switch (action) {
     case IOSGeminiFREAction::kAccept:
@@ -149,4 +153,12 @@ void RecordResponseLatency(base::TimeDelta latency, bool had_page_context) {
     base::UmaHistogramMediumTimes(kResponseLatencyWithoutContextHistogram,
                                   latency);
   }
+}
+
+void RecordSessionPromptCount(int prompt_count) {
+  base::UmaHistogramCounts100(kSessionPromptCountHistogram, prompt_count);
+}
+
+void RecordSessionFirstPrompt(bool had_first_prompt) {
+  base::UmaHistogramBoolean(kSessionFirstPromptHistogram, had_first_prompt);
 }

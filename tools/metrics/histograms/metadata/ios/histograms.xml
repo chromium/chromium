@@ -2156,6 +2156,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.Session.FirstPrompt" enum="Boolean"
+    expires_after="2026-02-01">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <summary>
+    Records whether the user sent their first prompt in a Gemini session on iOS.
+    False indicates abandoned sessions.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.Session.PromptCount" units="count"
+    expires_after="2026-02-01">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <summary>
+    Records the total number of prompts sent by the user in a BWG (Gemini)
+    session on iOS. Includes 0 for abandoned sessions where no prompts were
+    sent.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.Session.Time" units="ms" expires_after="2026-07-21">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>

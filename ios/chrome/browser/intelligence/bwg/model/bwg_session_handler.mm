@@ -50,6 +50,8 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
   base::TimeTicks _lastPromptSentTime;
   BOOL _lastPromptHadPageContext;
   BOOL _waitingForResponse;
+  // Track prompts per session.
+  int _totalPromptsInSession;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList {
@@ -82,6 +84,8 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
   if (IsGeminiCrossTabEnabled()) {
     [self dismissOtherActiveSessionsUsingClientID:clientID];
   }
+  // Reset prompt counters for new session.
+  _totalPromptsInSession = 0;
 }
 
 - (void)UIDidDisappearWithClientID:(NSString*)clientID
@@ -100,6 +104,9 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
   _lastPromptSentTime = base::TimeTicks();
   // TODO(crbug.com/435649967): log # of times users dismissed the floaty before
   // receiving a response.
+  // Record prompt counts for the session.
+  RecordSessionPromptCount(_totalPromptsInSession);
+  RecordSessionFirstPrompt(_hasSubmittedFirstPrompt);
 }
 
 - (void)responseReceivedWithClientID:(NSString*)clientID
@@ -130,6 +137,7 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
 
 - (void)didSendQueryWithInputType:(BWGInputType)inputType
               pageContextAttached:(BOOL)pageContextAttached {
+  _totalPromptsInSession++;
   // Check if this is the user's first prompt.
   if (!_hasSubmittedFirstPrompt) {
     _hasSubmittedFirstPrompt = YES;
