@@ -2128,6 +2128,21 @@
             ]
         }
     ],
+    "AutofillAndroidDesktopKeyboardAccessoryRevamp": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAndroidDesktopKeyboardAccessoryRevamp"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAndroidDesktopSuppressAccessoryOnEmpty": [
         {
             "platforms": [

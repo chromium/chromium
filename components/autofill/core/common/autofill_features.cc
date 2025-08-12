@@ -923,6 +923,13 @@ BASE_FEATURE(kUseSettingsAddressEditorInPaymentsRequest,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
+// If enabled, on Android desktop, the Autofill keyboard accessory will have a
+// new behavior and design.
+// TODO(crbug.com/438125774): Remove when launched.
+BASE_FEATURE(kAutofillAndroidDesktopKeyboardAccessoryRevamp,
+             "AutofillAndroidDesktopKeyboardAccessoryRevamp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, on Android desktop, Autofill keyboard accessory will be
 // suppressed when there are no autofill suggestions.
 BASE_FEATURE(kAutofillAndroidDesktopSuppressAccessoryOnEmpty,
