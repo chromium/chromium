@@ -3408,12 +3408,78 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, BackAfterBackEntryRemoved) {
   menu_observer.WaitForMenuOpenAndClose();
 }
 
-// Given a URL, produces an HTML document which contains a cross-origin child
-// iframe which contains a link to that URL. Both the cross-origin child iframe
-// and the link inside that iframe fill the entire size of the parent frame so
-// they are easy to target with clicks.
-static std::string BuildCrossOriginChildFrameHTML(const GURL& link) {
-  constexpr char kMainFrameSource[] = R"(
+class SubframeContextMenuBrowserTest : public ContextMenuBrowserTest {
+ public:
+  void RunSubframeInitiatorTestForCommand(int command_id) {
+    // If a frame on example.com opens a subframe with a different opaque
+    // origin, the subframe origin should be passed through to a context menu on
+    // that initiator, so:
+    // 1. A request back to example.com from the subframe should be cross-origin
+    //    (which is what this test checks), and
+    // 2. The context menu on the subframe should have the initiator as an
+    // opaque
+    //    origin whose precursor origin is example.com (not tested here)
+    using BasicHttpResponse = net::test_server::BasicHttpResponse;
+    using HttpRequest = net::test_server::HttpRequest;
+    using HttpResponse = net::test_server::HttpResponse;
+    HttpRequest::HeaderMap logged_headers;
+
+    base::RunLoop danger_request_wait_loop;
+    embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+        [&](const HttpRequest& req) -> std::unique_ptr<HttpResponse> {
+          if (req.relative_url == "/danger") {
+            logged_headers = req.headers;
+            danger_request_wait_loop.Quit();
+            return nullptr;
+          } else if (req.relative_url == "/main") {
+            auto response = std::make_unique<BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content_type("text/html");
+            response->set_content(BuildCrossOriginChildFrameHTML(
+                embedded_test_server()->GetURL("/danger")));
+            return response;
+          } else {
+            return nullptr;
+          }
+        }));
+
+    auto handle = embedded_test_server()->StartAndReturnHandle();
+    ASSERT_TRUE(handle);
+
+    WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    GURL url(embedded_test_server()->GetURL("/main"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+    content::RenderFrameHost* main_frame =
+        ConvertToRenderFrameHost(web_contents);
+    content::RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
+
+    EXPECT_FALSE(main_frame->GetLastCommittedOrigin().IsSameOriginWith(
+        child_frame->GetLastCommittedOrigin()));
+
+    ContextMenuWaiter menu_observer(command_id);
+    content::SimulateMouseClickAt(web_contents, 0,
+                                  blink::WebMouseEvent::Button::kRight,
+                                  gfx::Point(15, 15));
+    menu_observer.WaitForMenuOpenAndClose();
+
+    // Wait for the request to "/danger" to be issued by the context menu click
+    // and handled by the EmbeddedTestServer, which logs the request headers as
+    // a side effect. Since that request is issued by a click on a link in a
+    // cross-origin iframe but is back to the same origin as "/main" was served
+    // from, it should be marked as cross-origin.
+    danger_request_wait_loop.Run();
+    EXPECT_EQ(logged_headers.at("sec-fetch-site"), "cross-site");
+  }
+
+ private:
+  // Given a URL, produces an HTML document which contains a cross-origin child
+  // iframe which contains a link to that URL. Both the cross-origin child
+  // iframe and the link inside that iframe fill the entire size of the parent
+  // frame so they are easy to target with clicks.
+  std::string BuildCrossOriginChildFrameHTML(const GURL& link) {
+    constexpr char kMainFrameSource[] = R"(
       <html>
         <!-- This document looks like:
           -
@@ -3446,7 +3512,7 @@ static std::string BuildCrossOriginChildFrameHTML(const GURL& link) {
       </html>
   )";
 
-  constexpr char kCrossOriginChildFrameSource[] = R"(
+    constexpr char kCrossOriginChildFrameSource[] = R"(
     <html>
       <head>
         <style>
@@ -3461,72 +3527,38 @@ static std::string BuildCrossOriginChildFrameHTML(const GURL& link) {
     </html>
   )";
 
-  std::string encoded_payload =
-      base::Base64Encode(base::ReplaceStringPlaceholders(
-          kCrossOriginChildFrameSource, {link.spec()}, nullptr));
-  return base::ReplaceStringPlaceholders(kMainFrameSource, {encoded_payload},
-                                         nullptr);
+    std::string encoded_payload =
+        base::Base64Encode(base::ReplaceStringPlaceholders(
+            kCrossOriginChildFrameSource, {link.spec()}, nullptr));
+    return base::ReplaceStringPlaceholders(kMainFrameSource, {encoded_payload},
+                                           nullptr);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SubframeContextMenuBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "LinkPreviewEnabled"
+                                             : "LinkPreviewDisabled";
+                         });
+
+IN_PROC_BROWSER_TEST_P(SubframeContextMenuBrowserTest,
+                       SubframeNewTabInitiator) {
+  RunSubframeInitiatorTestForCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB);
 }
 
-IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, SubframeNewTabInitiator) {
-  // If a frame on example.com opens a subframe with a different opaque origin,
-  // the subframe origin should be passed through to a context menu on that
-  // initiator, so:
-  // 1. A request back to example.com from the subframe should be cross-origin
-  //    (which is what this test checks), and
-  // 2. The context menu on the subframe should have the initiator as an opaque
-  //    origin whose precursor origin is example.com (not tested here)
-  using BasicHttpResponse = net::test_server::BasicHttpResponse;
-  using HttpRequest = net::test_server::HttpRequest;
-  using HttpResponse = net::test_server::HttpResponse;
-  HttpRequest::HeaderMap logged_headers;
+IN_PROC_BROWSER_TEST_P(SubframeContextMenuBrowserTest,
+                       SubframeNewSplitInitiator) {
+  RunSubframeInitiatorTestForCommand(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW);
+}
 
-  base::RunLoop danger_request_wait_loop;
-  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
-      [&](const HttpRequest& req) -> std::unique_ptr<HttpResponse> {
-        if (req.relative_url == "/danger") {
-          logged_headers = req.headers;
-          danger_request_wait_loop.Quit();
-          return nullptr;
-        } else if (req.relative_url == "/main") {
-          auto response = std::make_unique<BasicHttpResponse>();
-          response->set_code(net::HTTP_OK);
-          response->set_content_type("text/html");
-          response->set_content(BuildCrossOriginChildFrameHTML(
-              embedded_test_server()->GetURL("/danger")));
-          return response;
-        } else {
-          return nullptr;
-        }
-      }));
-
-  auto handle = embedded_test_server()->StartAndReturnHandle();
-  ASSERT_TRUE(handle);
-
-  WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  GURL url(embedded_test_server()->GetURL("/main"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  content::RenderFrameHost* main_frame = ConvertToRenderFrameHost(web_contents);
-  content::RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
-
-  EXPECT_FALSE(main_frame->GetLastCommittedOrigin().IsSameOriginWith(
-      child_frame->GetLastCommittedOrigin()));
-
-  ContextMenuWaiter menu_observer(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB);
-  content::SimulateMouseClickAt(web_contents, 0,
-                                blink::WebMouseEvent::Button::kRight,
-                                gfx::Point(15, 15));
-  menu_observer.WaitForMenuOpenAndClose();
-
-  // Wait for the request to "/danger" to be issued by the context menu click
-  // and handled by the EmbeddedTestServer, which logs the request headers as a
-  // side effect. Since that request is issued by a click on a link in a
-  // cross-origin iframe but is back to the same origin as "/main" was served
-  // from, it should be marked as cross-origin.
-  danger_request_wait_loop.Run();
-  EXPECT_EQ(logged_headers.at("sec-fetch-site"), "cross-site");
+IN_PROC_BROWSER_TEST_P(SubframeContextMenuBrowserTest,
+                       SubframeExistingSplitInitiator) {
+  chrome::NewSplitTab(browser(),
+                      split_tabs::SplitTabCreatedSource::kLinkContextMenu);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  RunSubframeInitiatorTestForCommand(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW);
 }
 
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,

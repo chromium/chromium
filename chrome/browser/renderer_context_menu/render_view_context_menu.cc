@@ -4860,29 +4860,32 @@ void RenderViewContextMenu::OpenLinkInSplitView() {
       if (tab != source_tab) {
         // Navigate the tab that wasn't the source of the context menu to the
         // URL
-        tab->GetContents()->GetController().LoadURL(
-            params_.link_url, content::Referrer(),
-            ui::PageTransition::PAGE_TRANSITION_LINK, std::string());
+        content::NavigationController::LoadURLParams params(params_.link_url);
+        params.initiator_origin = params_.frame_origin;
+        params.started_from_context_menu = true;
+        params.transition_type = ui::PAGE_TRANSITION_LINK;
+        params.referrer = CreateReferrer(params_.link_url, params_);
+        tab->GetContents()->GetController().LoadURLWithParams(params);
         break;
       }
     }
-  } else {  // Create new split tab
-    const int active_index = tab_strip_model->active_index();
-    // AddTabAt always adds an unpinned tab so if adding to an index within the
-    // pinned tabs, it will add to the first unpinned index instead.
-    // Additionally, it does not return a tab pointer or index, so we have to
-    // insert at the end of the tab strip, since it is the only place we can
-    // insert a tab and be guaranteed the final destination index is the same as
-    // the provided index.
-    const int new_tab_index = tab_strip_model->count();
-    tab_strip_model->delegate()->AddTabAt(
-        params_.link_url, new_tab_index, false,
-        tab_strip_model->GetTabGroupForTab(active_index));
-    tabs::TabInterface* new_tab = tab_strip_model->GetTabAtIndex(new_tab_index);
+  } else {
+    // Create new background tab.
+    OpenURLParams params = GetOpenURLParamsWithExtraHeaders(
+        params_.link_url, params_.frame_url, params_.frame_origin,
+        WindowOpenDisposition::NEW_BACKGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+        /*extra_headers=*/std::string(), /*started_from_context_menu=*/true);
+    const WebContents* new_web_contents =
+        browser->OpenURL(params, /*navigation_handle_callback=*/{});
+    const int new_tab_index =
+        tab_strip_model->GetIndexOfWebContents(new_web_contents);
+
+    // Create split and activate new tab.
     tab_strip_model->AddToNewSplit(
         {new_tab_index}, split_tabs::SplitTabVisualData(),
         split_tabs::SplitTabCreatedSource::kLinkContextMenu);
-    tab_strip_model->ActivateTabAt(tab_strip_model->GetIndexOfTab(new_tab));
+    tab_strip_model->ActivateTabAt(
+        tab_strip_model->GetIndexOfWebContents(new_web_contents));
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

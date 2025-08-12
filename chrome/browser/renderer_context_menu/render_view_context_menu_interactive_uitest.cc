@@ -22,9 +22,12 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -193,7 +196,9 @@ struct FencedFrameContextMenuTestCase {
 // Kombucha framework.
 class ContextMenuFencedFrameTest : public ContextMenuUiTest {
  public:
-  ContextMenuFencedFrameTest() = default;
+  ContextMenuFencedFrameTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kSideBySide);
+  }
   ~ContextMenuFencedFrameTest() override = default;
   ContextMenuFencedFrameTest(const ContextMenuFencedFrameTest&) = delete;
   ContextMenuFencedFrameTest& operator=(const ContextMenuFencedFrameTest&) =
@@ -481,6 +486,7 @@ class ContextMenuFencedFrameTest : public ContextMenuUiTest {
 
  private:
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   // OS integration is needed to be able to launch web applications. This
   // override ensures OS integration doesn't leave any traces.
   std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
@@ -677,7 +683,8 @@ IN_PROC_BROWSER_TEST_F(
   FencedFrameContextMenuTestCase test_case = {
       .command_ids = {IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
                       IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
-                      IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD},
+                      IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
+                      IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW},
       .relative_url = "/download-anchor-same-origin.html",
       .click_target = "anchor",
       .is_in_nested_iframe = false};
@@ -691,7 +698,40 @@ IN_PROC_BROWSER_TEST_F(
   FencedFrameContextMenuTestCase test_case = {
       .command_ids = {IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
                       IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
-                      IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD},
+                      IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
+                      IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW},
+      .relative_url = "/download-anchor-same-origin.html",
+      .click_target = "anchor",
+      .is_in_nested_iframe = true};
+
+  RunTest(test_case);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    CommonOpenLinkCommandsDisabledInFencedFrameAfterNetworkCutoffWithSplitActive) {
+  chrome::NewSplitTab(browser(),
+                      split_tabs::SplitTabCreatedSource::kLinkContextMenu);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW},
+      .relative_url = "/download-anchor-same-origin.html",
+      .click_target = "anchor",
+      .is_in_nested_iframe = false};
+
+  RunTest(test_case);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    CommonOpenLinkCommandsDisabledInNestedIframeAfterNetworkCutoffWithSplitActive) {
+  chrome::NewSplitTab(browser(),
+                      split_tabs::SplitTabCreatedSource::kLinkContextMenu);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW},
       .relative_url = "/download-anchor-same-origin.html",
       .click_target = "anchor",
       .is_in_nested_iframe = true};
