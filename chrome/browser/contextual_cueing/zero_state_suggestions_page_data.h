@@ -114,6 +114,9 @@ class ZeroStateSuggestionsPageData
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
+  // Give up on extracting page content. To be called after a delay.
+  void OnTimeout();
+
   // Notifies all page context callbacks that page context has been collected
   // for the page.
   void InvokePageContextCallbacksIfComplete();
@@ -161,6 +164,8 @@ class ZeroStateSuggestionsPageData
 
   // Tracks the state for a page context request.
   PageContextCallbackList page_context_callbacks_;
+
+  bool timeout_scheduled_ = false;
 
   bool is_focused_ = false;
   // Not owned and guaranteed to outlive `this`.

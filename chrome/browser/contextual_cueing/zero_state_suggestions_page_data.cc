@@ -150,6 +150,14 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
     return;
   }
 
+  if (!timeout_scheduled_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ZeroStateSuggestionsPageData::OnTimeout, AsWeakPtr()),
+        kZSSPageContextTimeout.Get());
+    timeout_scheduled_ = true;
+  }
+
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&(page().GetMainDocument()));
   bool has_first_contentful_paint = false;
@@ -206,6 +214,7 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
       ai_page_content_options =
           optimization_guide::DefaultAIPageContentOptions();
       ai_page_content_options->on_critical_path = true;
+
       optimization_guide::GetAIPageContent(
           web_contents, std::move(ai_page_content_options),
           base::BindOnce(
@@ -323,6 +332,20 @@ void ZeroStateSuggestionsPageData::OnReceivedOptimizationMetadata(
   optimization_metadata_ = metadata;
 
   InvokePageContextCallbacksIfComplete();
+}
+
+void ZeroStateSuggestionsPageData::OnTimeout() {
+  OPTIMIZATION_GUIDE_LOG(
+      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+      base::StringPrintf("ZeroStateSuggestionsPageData: Timed out waiting for "
+                         "annotated page content from %s.",
+                         GetUrl().spec()));
+  // If we've timed out, fail everything.
+  OnReceivedInnerText(nullptr);
+  OnReceivedOptimizationMetadata(
+      optimization_guide::OptimizationGuideDecision::kUnknown, {});
+  OnReceivedAnnotatedPageContent(/*content=*/std::nullopt);
 }
 
 void ZeroStateSuggestionsPageData::InvokePageContextCallbacksIfComplete() {
