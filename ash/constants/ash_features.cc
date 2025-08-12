@@ -2910,12 +2910,6 @@ BASE_FEATURE(kUseMessagesStagingUrl,
              "UseMessagesStagingUrl",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Use ML Service for non-Longform handwriting in CrOS 1P Virtual Keyboard on
-// all boards. When this flag is OFF, such usage exists on certain boards only.
-BASE_FEATURE(kUseMlServiceForNonLongformHandwritingOnAllBoards,
-             "UseMlServiceForNonLongformHandwritingOnAllBoards",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLiveCaptionUserMicrophone,
              "LiveCaptionUserMicrophone",
              base::FEATURE_DISABLED_BY_DEFAULT);

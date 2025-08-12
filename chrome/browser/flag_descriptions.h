@@ -4169,10 +4169,6 @@ extern const char kCrosComponentsDescription[];
 extern const char kLanguagePacksInSettingsName[];
 extern const char kLanguagePacksInSettingsDescription[];
 
-extern const char kUseMlServiceForNonLongformHandwritingOnAllBoardsName[];
-extern const char
-    kUseMlServiceForNonLongformHandwritingOnAllBoardsDescription[];
-
 extern const char kLauncherContinueSectionWithRecentsName[];
 extern const char kLauncherContinueSectionWithRecentsDescription[];
 
