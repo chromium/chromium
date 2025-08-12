@@ -23,6 +23,8 @@ static_library("osauth") {
     "profile_prefs_auth_policy_connector_factory.h",
     "recovery_factor_hsm_pubkey_migration.cc",
     "recovery_factor_hsm_pubkey_migration.h",
+    "recovery_id_migration.cc",
+    "recovery_id_migration.h",
   ]
 
   public_deps = [
@@ -74,7 +76,10 @@ source_set("browser_tests") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "auth_factor_migrator_unittest.cc" ]
+  sources = [
+    "auth_factor_migrator_unittest.cc",
+    "recovery_id_migration_unittest.cc",
+  ]
 
   deps = [
     ":osauth",

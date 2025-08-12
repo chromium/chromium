@@ -1611,6 +1611,14 @@ void FakeUserDataAuthClient::GetAuthFactorExtendedInfo(
   ReplyOnReturn auto_reply(&reply, std::move(callback));
 }
 
+void FakeUserDataAuthClient::GenerateFreshRecoveryId(
+    const ::user_data_auth::GenerateFreshRecoveryIdRequest& request,
+    GenerateFreshRecoveryIdCallback callback) {
+  RememberRequest<Operation::kGenerateFreshRecoveryId>(request);
+  ::user_data_auth::GenerateFreshRecoveryIdReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
+}
+
 void FakeUserDataAuthClient::GetAuthSessionStatus(
     const ::user_data_auth::GetAuthSessionStatusRequest& request,
     GetAuthSessionStatusCallback callback) {

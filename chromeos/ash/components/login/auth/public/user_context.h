@@ -177,6 +177,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
       const;
   const std::optional<SyncTrustedVaultKeys>& GetSyncTrustedVaultKeys() const;
   bool CanLockManagedGuestSession() const;
+  bool GenerateFreshRecoveryId() const;
   AuthSessionIntents GetAuthorizedIntents() const;
 
   void SetGaiaPassword(const GaiaPassword& password);
@@ -250,6 +251,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
       const SyncTrustedVaultKeys& sync_trusted_vault_keys);
   void SetIsUnderAdvancedProtection(bool is_under_advanced_protection);
   void SetCanLockManagedGuestSession(bool can_lock_managed_guest_session);
+  void SetGenerateFreshRecoveryId(bool generate_fresh_recovery_id);
   void SetSessionAuthFactors(SessionAuthFactors keys);
   void SetAuthFactorsConfiguration(AuthFactorsConfiguration auth_factors);
   void ClearAuthFactorsConfiguration();
@@ -299,6 +301,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   std::string reauth_proof_token_;
   bool is_under_advanced_protection_ = false;
   bool can_lock_managed_guest_session_ = false;
+  bool generate_fresh_recovery_id_ = false;
   // |login_input_method_id_used_| is non-empty if login password/code was used,
   // i.e. user used some input method to log in.
   std::string login_input_method_id_used_;
