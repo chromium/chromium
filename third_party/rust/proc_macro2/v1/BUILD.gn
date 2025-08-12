@@ -34,7 +34,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "proc-macro2"
   cargo_pkg_description = "A substitute implementation of the compiler's `proc_macro` API to decouple token-based libraries from the procedural macro use case."
   cargo_pkg_repository = "https://github.com/dtolnay/proc-macro2"
-  cargo_pkg_version = "1.0.95"
+  cargo_pkg_version = "1.0.97"
 
   allow_unsafe = true
 

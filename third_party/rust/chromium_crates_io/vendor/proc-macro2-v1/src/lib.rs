@@ -84,7 +84,7 @@
 //! a different thread.
 
 // Proc-macro2 types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/proc-macro2/1.0.95")]
+#![doc(html_root_url = "https://docs.rs/proc-macro2/1.0.97")]
 #![cfg_attr(any(proc_macro_span, super_unstable), feature(proc_macro_span))]
 #![cfg_attr(super_unstable, feature(proc_macro_def_site))]
 #![cfg_attr(docsrs, feature(doc_cfg))]
@@ -115,6 +115,7 @@
     clippy::used_underscore_binding,
     clippy::vec_init_then_push
 )]
+#![allow(unknown_lints, mismatched_lifetime_syntaxes)]
 
 #[cfg(all(procmacro2_semver_exempt, wrap_proc_macro, not(super_unstable)))]
 compile_error! {"\
