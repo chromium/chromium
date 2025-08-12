@@ -851,8 +851,9 @@ class PageContentProtoProviderBrowserTestMultiProcess
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
+// TODO(crbug.com/438250758): Test is flaky.
 IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
-                       AIPageContentMultipleCrossSiteFrames) {
+                       DISABLED_AIPageContentMultipleCrossSiteFrames) {
   LoadPage(https_server()->GetURL("a.com", "/iframe_cross_site.html"),
            GetActionableAIPageContentOptions());
 
