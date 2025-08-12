@@ -20,9 +20,18 @@ namespace {
 // Domains
 constexpr char kOrtDefaultDomain[] = "";
 constexpr char kMSDomain[] = "com.microsoft";
+// Domain "com.ms.internal.nhwc" provides alternative implementations of
+// operators that are compatible with NHWC layout. This domain is required for
+// certain operators when using WebGPU EP. See:
+// https://github.com/microsoft/onnxruntime/blob/main/js/web/docs/webgpu-operators.md
+constexpr char kMSInternalNhwcDomain[] = "com.ms.internal.nhwc";
 
 // Opset versions
 constexpr int32_t kOrtOpsetVersion = 21;
+// Domain "com.ms.internal.nhwc" provides operator implementations that are
+// functionally equivalent to the standard ai.onnx domain but optimized for NHWC
+// layout. So we should use the same opset version as the default domain.
+constexpr int32_t kMSInternalNhwcDomainOpsetVersion = kOrtOpsetVersion;
 
 // EPContext op is used for exporting the compiled model.
 // https://onnxruntime.ai/docs/execution-providers/EP-Context-Design.html#onnxruntime-ep-context-cache-feature-design
@@ -283,9 +292,11 @@ std::unique_ptr<ModelEditor::ModelInfo> ModelEditor::BuildAndTakeModelInfo() {
   CHECK_STATUS(ort_model_editor_api->SetGraphOutputs(
       graph_.get(), graph_outputs.data(), graph_outputs.size()));
 
-  std::array<const char*, 2> domains = {kOrtDefaultDomain, kMSDomain};
-  std::array<int32_t, 2> opset_versions = {kOrtOpsetVersion,
-                                           kEPContextOpsetVersion};
+  std::array<const char*, 3> domains = {kOrtDefaultDomain, kMSDomain,
+                                        kMSInternalNhwcDomain};
+  std::array<int32_t, 3> opset_versions = {kOrtOpsetVersion,
+                                           kEPContextOpsetVersion,
+                                           kMSInternalNhwcDomainOpsetVersion};
   CHECK_STATUS(ort_model_editor_api->CreateModel(
       domains.data(), opset_versions.data(), domains.size(),
       ScopedOrtModel::Receiver(model_info_->model).get()));
