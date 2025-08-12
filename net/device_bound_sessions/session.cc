@@ -112,6 +112,20 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
         SessionError{SessionError::ErrorType::kInvalidScopeOrigin});
   }
 
+  // If there is an origin in the scope, verify it has no path (including '/').
+  if (base::FeatureList::IsEnabled(
+          features::kDeviceBoundSessionsOriginTrialFeedback) &&
+      !params.scope.origin.empty()) {
+    std::string_view origin_view =
+        base::TrimWhitespaceASCII(params.scope.origin, base::TRIM_ALL);
+    if ((scope_origin_as_url.has_path() &&
+         scope_origin_as_url.path_piece() != "/") ||
+        base::EndsWith(origin_view, "/")) {
+      return base::unexpected(
+          SessionError{SessionError::ErrorType::kInvalidScopeOrigin});
+    }
+  }
+
   // Check if the scope-origin is samesite with fetcher URL.
   if (net::SchemefulSite(scope_origin_as_url) !=
       net::SchemefulSite(params.fetcher_url)) {

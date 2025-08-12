@@ -130,6 +130,43 @@ TEST_F(SessionTest, InvalidScopeOrigin) {
             SessionError::ErrorType::kInvalidScopeOrigin);
 }
 
+TEST_F(SessionTestWithOriginTrialFeedback, InvalidScopeOriginWithPath) {
+  auto params = CreateValidParams();
+  params.scope.origin = "https://example.test/path";
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_FALSE(session_or_error.has_value());
+  EXPECT_EQ(session_or_error.error().type,
+            SessionError::ErrorType::kInvalidScopeOrigin);
+}
+
+// This test should be deleted once kDeviceBoundSessionsOriginTrialFeedback is
+// enabled by default.
+TEST_F(SessionTest, ValidScopeOriginWithPath) {
+  auto params = CreateValidParams();
+  params.scope.origin = "https://example.test/path";
+  auto session_or_error = Session::CreateIfValid(params);
+  EXPECT_TRUE(session_or_error.has_value());
+}
+
+TEST_F(SessionTestWithOriginTrialFeedback,
+       InvalidScopeOriginWithTrailingSlash) {
+  auto params = CreateValidParams();
+  params.scope.origin = "https://example.test/";
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_FALSE(session_or_error.has_value());
+  EXPECT_EQ(session_or_error.error().type,
+            SessionError::ErrorType::kInvalidScopeOrigin);
+}
+
+// This test should be deleted once kDeviceBoundSessionsOriginTrialFeedback is
+// enabled by default.
+TEST_F(SessionTest, ValidScopeOriginWithTrailingSlash) {
+  auto params = CreateValidParams();
+  params.scope.origin = "https://example.test/";
+  auto session_or_error = Session::CreateIfValid(params);
+  EXPECT_TRUE(session_or_error.has_value());
+}
+
 TEST_F(SessionTest, ScopeOriginSameSiteMismatch) {
   auto params = CreateValidParams();
   params.fetcher_url = kTestUrlForWrongETLD;
