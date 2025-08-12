@@ -63,6 +63,10 @@ CWV_EXPORT
 @property(nonatomic, assign, getter=isPasswordAffiliationEnabled)
     BOOL passwordAffiliationEnabled;
 
+// Whether or not credit card virtual card usage is enabled.
+@property(nonatomic, assign, getter=isAutofillVCNUsageEnabled)
+    BOOL autofillVCNUsageEnabled;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 // Resets all translation settings back to default. In particular, this will

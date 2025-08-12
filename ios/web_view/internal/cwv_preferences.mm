@@ -105,6 +105,14 @@
   return safe_browsing::IsSafeBrowsingEnabled(*_prefService);
 }
 
+- (void)setAutofillVCNUsageEnabled:(BOOL)enabled {
+  ios_web_view::SetAutofillVCNUsageEnabled(_prefService, enabled);
+}
+
+- (BOOL)isAutofillVCNUsageEnabled {
+  return ios_web_view::IsAutofillVCNUsageEnabled(_prefService);
+}
+
 - (void)commitPendingWrite:(void (^)(void))completionHandler {
   _prefService->CommitPendingWrite(base::BindOnce(^{
     if (completionHandler) {

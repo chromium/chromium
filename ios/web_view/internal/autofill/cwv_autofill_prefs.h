@@ -17,12 +17,19 @@ namespace ios_web_view {
 inline constexpr char kCWVAutofillAddressSyncEnabled[] =
     "cwv.autofill.address_sync_enabled";
 
+inline constexpr char kCWVAutofillVCNUsageEnabled[] =
+    "cwv.autofill.vcn_usage_enabled";
+
 // Registers the CWVAutofill preferences for this `pref_registry`.
 void RegisterCWVAutofillPrefs(user_prefs::PrefRegistrySyncable* pref_registry);
 
 void SetAutofillAddressSyncEnabled(PrefService* prefs, bool value);
 
 bool IsAutofillAddressSyncEnabled(const PrefService* prefs);
+
+void SetAutofillVCNUsageEnabled(PrefService* prefs, bool value);
+
+bool IsAutofillVCNUsageEnabled(const PrefService* prefs);
 
 }  // namespace ios_web_view
 
