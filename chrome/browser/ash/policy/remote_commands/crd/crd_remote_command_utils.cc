@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_logging.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -37,15 +38,14 @@ using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;
 using remoting::features::kEnableCrdSharedSessionToUnattendedDevice;
 
-const ash::KioskAppManagerBase* GetKioskAppManager(
-    const user_manager::UserManager& user_manager) {
-  if (user_manager.IsLoggedInAsKioskChromeApp()) {
+const ash::KioskAppManagerBase* GetKioskAppManager() {
+  if (chromeos::IsChromeAppKioskSession()) {
     return ash::KioskChromeAppManager::Get();
   }
-  if (user_manager.IsLoggedInAsKioskWebApp()) {
+  if (chromeos::IsWebKioskSession()) {
     return ash::KioskWebAppManager::Get();
   }
-  if (user_manager.IsLoggedInAsKioskIWA()) {
+  if (chromeos::IsIwaKioskSession()) {
     return ash::KioskIwaManager::Get();
   }
 
@@ -54,8 +54,8 @@ const ash::KioskAppManagerBase* GetKioskAppManager(
   NOTREACHED();
 }
 
-bool IsRunningAutoLaunchedKiosk(const user_manager::UserManager& user_manager) {
-  const auto& kiosk_app_manager = CHECK_DEREF(GetKioskAppManager(user_manager));
+bool IsRunningAutoLaunchedKiosk() {
+  const auto& kiosk_app_manager = CHECK_DEREF(GetKioskAppManager());
   return kiosk_app_manager.current_app_was_auto_launched_with_zero_delay();
 }
 
@@ -134,7 +134,7 @@ UserSessionType GetCurrentUserSessionType() {
   }
 
   if (user_manager.IsLoggedInAsAnyKioskApp()) {
-    if (IsRunningAutoLaunchedKiosk(user_manager)) {
+    if (IsRunningAutoLaunchedKiosk()) {
       return UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION;
     } else {
       return UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION;

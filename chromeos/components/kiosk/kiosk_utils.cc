@@ -13,6 +13,11 @@ bool IsKioskSession() {
          user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp();
 }
 
+bool IsChromeAppKioskSession() {
+  return user_manager::UserManager::IsInitialized() &&
+         user_manager::UserManager::Get()->IsLoggedInAsKioskChromeApp();
+}
+
 bool IsWebKioskSession() {
   return user_manager::UserManager::IsInitialized() &&
          user_manager::UserManager::Get()->IsLoggedInAsKioskWebApp();

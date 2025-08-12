@@ -153,6 +153,7 @@ source_set("permissions") {
       "//chrome/browser/ash/privacy_hub",
       "//chrome/browser/ash/shimless_rma",
       "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/components/kiosk",
     ]
     allow_circular_includes_from += [
       "//chrome/browser/ash/app_mode/web_app",

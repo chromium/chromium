@@ -43,6 +43,7 @@ static_library("policy_util") {
     "//chrome/browser/ash/policy/core",
     "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
+    "//chromeos/components/kiosk",
     "//components/account_id",
     "//components/prefs",
     "//components/user_manager",

@@ -49,6 +49,7 @@ static_library("account_manager") {
     "//chrome/browser/profiles",
     "//chrome/browser/signin",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/components/kiosk",
     "//chromeos/components/mgs",
     "//components/user_manager",
     "//content/public/browser",

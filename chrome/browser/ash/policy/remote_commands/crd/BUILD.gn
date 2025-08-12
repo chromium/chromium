@@ -44,6 +44,7 @@ static_library("crd") {
     "//chrome/common:constants",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/services/network_config:in_process_instance",
+    "//chromeos/components/kiosk",
     "//components/policy/core/common",
     "//components/policy/proto:",
     "//components/prefs",

@@ -31,7 +31,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -44,6 +43,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #else
 #include <algorithm>
 #include "chrome/browser/profiles/gaia_info_update_service.h"
@@ -312,7 +312,7 @@ bool IsDemoSession() {
 
 bool IsChromeAppKioskSession() {
 #if BUILDFLAG(IS_CHROMEOS)
-  return user_manager::UserManager::Get()->IsLoggedInAsKioskChromeApp();
+  return chromeos::IsChromeAppKioskSession();
 #else
   return false;
 #endif

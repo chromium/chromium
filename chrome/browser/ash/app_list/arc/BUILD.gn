@@ -80,6 +80,7 @@ static_library("arc") {
     "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/session",
     "//chromeos/ash/experiences/arc/session:connection_holder",
+    "//chromeos/components/kiosk",
     "//components/app_restore",
     "//components/application_locale_storage",
     "//components/crx_file",
