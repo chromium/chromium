@@ -389,7 +389,6 @@ if (_is_default_toolchain) {
       # TODO(ssid): Decouple dependency on internal library.
       "//base:holder_java",
       "//chrome/browser/autofill/android:third_party_provider_java",
-      "//chrome/browser/collaboration:internal_java",
       "//chrome/browser/collaboration:utils_java",
       "//chrome/browser/data_sharing:data_sharing_public_java",
       "//chrome/browser/data_sharing:internal_library_java",
@@ -1585,7 +1584,6 @@ if (_is_default_toolchain) {
           "//components/messages/android/test:test_support_java",
           "//components/module_installer/android:module_installer_java",
           "//third_party/androidx:androidx_test_core_java",
-          "//third_party/androidx:androidx_test_core_java",
           "//ui/android:ui_java_test_support",
         ]
         deps += chrome_test_xr_java_deps
@@ -1874,6 +1872,10 @@ if (_is_default_toolchain) {
       ]
       disable_compression = true
 
+      if (enable_hidpi) {
+        sources += [ "$target_gen_dir/${_variant}_paks/chrome_200_percent.pak" ]
+      }
+
       deps = [
         ":${_variant}_locale_pak_assets",
         ":${_variant}_paks",
@@ -2057,7 +2059,6 @@ if (_is_default_toolchain) {
       ":base_module_java",
       "//android_webview:android_webview_no_weblayer_java",
       "//base:base_java",
-      "//base/version_info/android:version_constants_java",
       "//base/version_info/android:version_constants_java",
       "//build/android:build_java",
       "//chrome/browser/flags:java",

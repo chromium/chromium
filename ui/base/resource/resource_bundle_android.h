@@ -34,6 +34,11 @@ int GetMainAndroidPackFd(base::MemoryMappedFile::Region* out_region);
 COMPONENT_EXPORT(UI_BASE)
 int GetCommonResourcesPackFd(base::MemoryMappedFile::Region* out_region);
 
+// Returns the file descriptor and region for chrome_200_percent.pak.
+// This requires buildflag `enable_hidpi` to be set to `true`.
+COMPONENT_EXPORT(UI_BASE)
+int Get200PercentResourcesPackFd(base::MemoryMappedFile::Region* out_region);
+
 // Returns the file descriptors and regions for the locale .pak files. The first
 // item in the vector is the main translation, and if a string cannot be found
 // there, then we should fall back to the next item in the vector, and so on.

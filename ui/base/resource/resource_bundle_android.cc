@@ -17,6 +17,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "ui/base/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/data_pack.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -37,6 +38,7 @@ bool g_load_non_webview_locale_paks = false;
 // It is okay to cache and share these file descriptors since the
 // ResourceBundle singleton never closes the handles.
 FileDescriptor g_chrome_100_percent_fd = -1;
+FileDescriptor g_chrome_200_percent_fd = -1;
 FileDescriptor g_resources_pack_fd = -1;
 
 std::vector<ResourceBundle::FdAndRegion>& GetLocalePaksGlobal() {
@@ -48,6 +50,7 @@ std::vector<ResourceBundle::FdAndRegion>& GetLocalePaksGlobal() {
 }
 
 base::MemoryMappedFile::Region g_chrome_100_percent_region;
+base::MemoryMappedFile::Region g_chrome_200_percent_region;
 base::MemoryMappedFile::Region g_resources_pack_region;
 
 bool LoadFromApkOrFile(const char* apk_path,
@@ -257,6 +260,17 @@ void ResourceBundle::LoadCommonResources() {
 
   AddDataPackFromFileRegion(base::File(g_chrome_100_percent_fd),
                             g_chrome_100_percent_region, k100Percent);
+
+  if constexpr (BUILDFLAG(ENABLE_HIDPI)) {
+    disk_path = disk_path.DirName().AppendASCII("chrome_200_percent.pak");
+    success = LoadFromApkOrFile("assets/chrome_200_percent.pak", &disk_path,
+                                &g_chrome_200_percent_fd,
+                                &g_chrome_200_percent_region);
+    if (success) {
+      AddDataPackFromFileRegion(base::File(g_chrome_200_percent_fd),
+                                g_chrome_200_percent_region, k200Percent);
+    }
+  }
 }
 
 // static
@@ -373,6 +387,13 @@ FileDescriptor GetCommonResourcesPackFd(
   DCHECK_GE(g_chrome_100_percent_fd, 0);
   *out_region = g_chrome_100_percent_region;
   return g_chrome_100_percent_fd;
+}
+
+FileDescriptor Get200PercentResourcesPackFd(
+    base::MemoryMappedFile::Region* out_region) {
+  DCHECK_GE(g_chrome_200_percent_fd, 0);
+  *out_region = g_chrome_200_percent_region;
+  return g_chrome_200_percent_fd;
 }
 
 const std::vector<ResourceBundle::FdAndRegion>& GetLocalePaks() {

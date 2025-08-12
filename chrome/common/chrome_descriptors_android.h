@@ -28,6 +28,7 @@ enum {
   kAndroidFallbackNonWebViewLocalePakDescriptor,
 
   kAndroidChrome100PercentPakDescriptor,
+  kAndroidChrome200PercentPakDescriptor,
   kAndroidUIResourcesPakDescriptor,
   // DFMs with native resources typically do not share file descriptors with
   // child processes. Hence no corresponding *PakDescriptor is defined.

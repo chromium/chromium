@@ -7,9 +7,10 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#import "build/branding_buildflags.h"
+#include "build/branding_buildflags.h"
 #include "components/search_engines/template_url.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "url/android/gurl_android.h"
 
 #if BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS)
@@ -109,8 +110,8 @@ JNI_TemplateUrl_GetBuiltInSearchEngineIcon(JNIEnv* env,
 
   if (res_id) {
     return base::android::ToJavaByteArray(
-        env,
-        ui::ResourceBundle::GetSharedInstance().GetRawDataResource(res_id));
+        env, ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
+                 res_id, ui::k200Percent));
   }
 #endif
   return {};
