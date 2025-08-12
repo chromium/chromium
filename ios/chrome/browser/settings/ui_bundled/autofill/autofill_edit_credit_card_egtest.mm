@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/ios/ios_util.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -51,12 +52,19 @@ id<GREYMatcher> YearOfExpiryTextField() {
   return TextFieldForCellWithLabelId(IDS_IOS_AUTOFILL_EXP_YEAR);
 }
 
+// Matcher for the 'CVC' text field in the edit credit card view.
+id<GREYMatcher> CvcTextField() {
+  return TextFieldForCellWithLabelId(IDS_IOS_AUTOFILL_SECURITY_CODE);
+}
+
 }  // namespace
 
 @implementation AutofillEditCreditCardTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+  config.features_enabled.push_back(
+      autofill::features::kAutofillEnableCvcStorageAndFilling);
   // Add feature configs here.
   return config;
 }
@@ -121,6 +129,39 @@ id<GREYMatcher> YearOfExpiryTextField() {
                                    nil)];
 }
 
+// Tests that editing the credit card CVC is possible.
+- (void)testValidCvc {
+  [self typeCvc:@"123"];
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
+                                   nil)];
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()];
+}
+
+// Tests that invalid CVC are not allowed when editing a card.
+- (void)testInvalidCVC {
+  [self typeCvc:@"00000"];
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
+                                   grey_sufficientlyVisible(), nil)];
+}
+
+// Tests that clearing a CVC is allowed.
+- (void)testEmptyCvc {
+  [self typeCvc:@"123"];
+
+  [[EarlGrey selectElementWithMatcher:CvcTextField()]
+      performAction:grey_replaceText(@"")];
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
+                                   nil)];
+}
+
 // Tests that the Done button in the navigation bar is disabled on entering
 // invalid year of expiry in the edit credit card form.
 - (void)testDoneOnInvalidYearInEditCreditCard {
@@ -142,6 +183,14 @@ id<GREYMatcher> YearOfExpiryTextField() {
          usingSearchAction:ScrollDown()
       onElementWithMatcher:chrome_test_util::AutofillCreditCardEditTableView()]
       performAction:grey_replaceText(nickname)];
+}
+
+// Scrolls to CVC text field and types the string.
+- (void)typeCvc:(NSString*)cvc {
+  [[[EarlGrey selectElementWithMatcher:CvcTextField()]
+         usingSearchAction:ScrollDown()
+      onElementWithMatcher:chrome_test_util::AutofillCreditCardEditTableView()]
+      performAction:grey_replaceText(cvc)];
 }
 
 @end

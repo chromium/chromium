@@ -75,6 +75,9 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Returns the number of credit cards in the local store.
 + (NSInteger)localCreditCount;
 
+// Returns the CVC of the first saved local credit card.
++ (NSString*)firstLocalCreditCardCvc;
+
 // Saves a masked credit card that requires CVC to be used.
 // Returns the `card.NetworkAndLastFourDigits` of the card used in the UIs.
 + (NSString*)saveMaskedCreditCard;

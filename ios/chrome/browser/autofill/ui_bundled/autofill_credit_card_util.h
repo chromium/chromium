@@ -14,7 +14,8 @@
 @interface AutofillCreditCardUtil : NSObject
 
 // Returns a new autofill::CreditCard object with `cardHolderName`,
-// `cardNumber`, `expirationMonth`, `expirationYear`, `cardNickname`.
+// `cardNumber`, `expirationMonth`, `expirationYear`, `cardNickname`
+// `cardCvc`
 + (autofill::CreditCard)creditCardWithHolderName:(NSString*)cardHolderName
                                       cardNumber:(NSString*)cardNumber
                                  expirationMonth:(NSString*)expirationMonth
