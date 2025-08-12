@@ -43,9 +43,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingMultiTabTask;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabGroupTask;
-import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
+import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
@@ -214,11 +213,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     @Override
     public void moveTabsToOtherWindow(List<Tab> tabs) {
         if (MultiWindowUtils.getInstanceCount() == 1) {
-            if (tabs.size() == 1) {
-                moveTabToNewWindow(tabs.get(0));
-            } else {
-                moveTabsToNewWindow(tabs);
-            }
+            moveTabsToNewWindow(tabs);
 
             // Close the source instance window, if needed.
             closeChromeWindowIfEmpty(mInstanceId);
@@ -230,12 +225,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 mModalDialogManagerSupplier.get(),
                 new LargeIconBridge(getProfile()),
                 (instanceInfo) -> {
-                    if (tabs.size() == 1) {
-                        moveTabToWindow(instanceInfo, tabs.get(0), TabList.INVALID_TAB_INDEX);
-                    } else {
-                        moveTabsAction(instanceInfo, tabs, TabList.INVALID_TAB_INDEX);
-                    }
-
+                    moveTabsToWindow(instanceInfo, tabs, TabList.INVALID_TAB_INDEX);
                     // Close the source instance window, if needed.
                     closeChromeWindowIfEmpty(mInstanceId);
                 },
@@ -269,53 +259,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @Override
-    public void moveTabToWindow(InstanceInfo info, Tab tab, int tabAtIndex) {
-        Activity targetActivity = getActivityById(info.instanceId);
-        if (targetActivity != null) {
-            reparentTabToRunningActivity((ChromeTabbedActivity) targetActivity, tab, tabAtIndex);
-        } else {
-            TabModelSelector selector =
-                    TabWindowManagerSingleton.getInstance()
-                            .getTabModelSelectorById(getCurrentInstanceId());
-            // If the source Chrome instance still has tabs (including incognito), allow
-            // launching the new window adjacently. Otherwise, skip
-            // FLAG_ACTIVITY_LAUNCH_ADJACENT to avoid a black screen caused by the source
-            // window closing before the new one launches.
-            boolean openAdjacently = assumeNonNull(selector).getTotalTabCount() > 1;
-            moveAndReparentTabToNewWindow(
-                    tab,
-                    info.instanceId,
-                    /* preferNew= */ false,
-                    openAdjacently,
-                    /* addTrustedIntentExtras= */ true);
-        }
-    }
-
-    @Override
     public void moveTabsToWindow(InstanceInfo info, List<Tab> tabs, int tabAtIndex) {
-        Activity targetActivity = getActivityById(info.instanceId);
-        if (targetActivity != null) {
-            reparentTabsToRunningActivity((ChromeTabbedActivity) targetActivity, tabs, tabAtIndex);
-        } else {
-            TabModelSelector selector =
-                    TabWindowManagerSingleton.getInstance()
-                            .getTabModelSelectorById(getCurrentInstanceId());
-            // If the source Chrome instance still has tabs (including incognito), allow
-            // launching the new window adjacently. Otherwise, skip
-            // FLAG_ACTIVITY_LAUNCH_ADJACENT to avoid a black screen caused by the source
-            // window closing before the new one launches.
-            boolean openAdjacently = assumeNonNull(selector).getTotalTabCount() > 1;
-            moveAndReparentTabsToNewWindow(
-                    tabs,
-                    info.instanceId,
-                    /* preferNew= */ false,
-                    openAdjacently,
-                    /* addTrustedIntentExtras= */ true);
-        }
-    }
-
-    @VisibleForTesting
-    void moveTabsAction(InstanceInfo info, List<Tab> tabs, int tabAtIndex) {
         Activity targetActivity = getActivityById(info.instanceId);
         if (targetActivity != null) {
             reparentTabsToRunningActivity((ChromeTabbedActivity) targetActivity, tabs, tabAtIndex);
@@ -355,21 +299,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @VisibleForTesting
-    void moveAndReparentTabToNewWindow(
-            Tab tab,
-            int instanceId,
-            boolean preferNew,
-            boolean openAdjacently,
-            boolean addTrustedIntentExtras) {
-        onMultiInstanceModeStarted();
-        Intent intent =
-                MultiWindowUtils.createNewWindowIntent(
-                        mActivity, instanceId, preferNew, openAdjacently, addTrustedIntentExtras);
-        beginReparentingTab(
-                tab, intent, /* startActivityOptions= */ null, /* finalizeCallback= */ null);
-    }
-
-    @VisibleForTesting
     void moveAndReparentTabsToNewWindow(
             List<Tab> tabs,
             int instanceId,
@@ -380,7 +309,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         mActivity, instanceId, preferNew, openAdjacently, addTrustedIntentExtras);
-        beginReparentingTabs(tabs, intent);
+        beginReparentingTabs(tabs, intent, /* startActivityOptions= */ null, /* finalizeCallback= */ null);
     }
 
     @VisibleForTesting
@@ -395,16 +324,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 MultiWindowUtils.createNewWindowIntent(
                         mActivity, instanceId, preferNew, openAdjacently, addTrustedIntentExtras);
         beginReparentingTabGroup(tabGroupMetadata, intent);
-    }
-
-    @VisibleForTesting
-    void reparentTabToRunningActivity(
-            ChromeTabbedActivity targetActivity, Tab tab, int tabAtIndex) {
-        Intent intent = createIntentForGeneralReparenting(targetActivity, tabAtIndex);
-        setupIntentForTabReparenting(tab, intent, null);
-
-        targetActivity.onNewIntent(intent);
-        bringTaskForeground(targetActivity.getTaskId());
     }
 
     @VisibleForTesting
@@ -1263,14 +1182,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @VisibleForTesting
-    void setupIntentForTabReparenting(Tab tab, Intent intent, @Nullable Runnable finalizeCallback) {
-        ReparentingTask.from(tab).setupIntent(intent, finalizeCallback);
-    }
-
-    @VisibleForTesting
     void setupIntentForTabsReparenting(
             List<Tab> tabs, Intent intent, @Nullable Runnable finalizeCallback) {
-        ReparentingMultiTabTask.from(tabs).setupIntent(intent, finalizeCallback);
+        ReparentingTabsTask.from(tabs).setupIntent(intent, finalizeCallback);
     }
 
     @VisibleForTesting
@@ -1280,17 +1194,17 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @VisibleForTesting
-    void beginReparentingTab(
-            Tab tab,
+    void beginReparentingTabs(
+            List<Tab> tabs,
             Intent intent,
             @Nullable Bundle startActivityOptions,
             @Nullable Runnable finalizeCallback) {
-        ReparentingTask.from(tab).begin(mActivity, intent, startActivityOptions, finalizeCallback);
-    }
-
-    @VisibleForTesting
-    void beginReparentingTabs(List<Tab> tabs, Intent intent) {
-        ReparentingMultiTabTask.from(tabs).begin(mActivity, intent);
+        ReparentingTabsTask.from(tabs)
+                .begin(
+                        mActivity,
+                        intent,
+                        startActivityOptions,
+                        finalizeCallback);
     }
 
     @VisibleForTesting
@@ -1415,18 +1329,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @Override
-    public void moveTabToNewWindow(Tab tab) {
-        moveToNewWindowIfPossible(
-                () ->
-                        moveAndReparentTabToNewWindow(
-                                tab,
-                                INVALID_WINDOW_ID,
-                                /* preferNew= */ true,
-                                /* openAdjacently= */ false,
-                                /* addTrustedIntentExtras= */ true));
-    }
-
-    @Override
     public void moveTabsToNewWindow(List<Tab> tabs) {
         moveToNewWindowIfPossible(
                 () ->
@@ -1465,17 +1367,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             // limit is exceeded. This will pop up a toast message and the tab will not be removed
             // from the exiting window.
             openNewWindow("Android.WindowManager.NewWindow", /* incognito= */ false);
-        }
-    }
-
-    @Override
-    public void moveTabToWindow(@Nullable Activity activity, Tab tab, int atIndex) {
-        // Get the current instance and move tab there.
-        InstanceInfo info = getInstanceInfoFor(activity);
-        if (info != null) {
-            moveTabToWindow(info, tab, atIndex);
-        } else {
-            Log.w(TAG, "DnD: InstanceInfo of Chrome Window not found.");
         }
     }
 

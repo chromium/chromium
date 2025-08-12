@@ -25,6 +25,8 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.PageTransition;
 
+import java.util.Collections;
+
 /** Implementation of {@link ToolbarTabController}. */
 @NullMarked
 public class ToolbarTabControllerImpl implements ToolbarTabController {
@@ -110,7 +112,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             if (newTab == null) return false;
             newTab.goBack();
             if (mMultiInstanceManager == null) return false;
-            mMultiInstanceManager.moveTabToNewWindow(newTab);
+            mMultiInstanceManager.moveTabsToNewWindow(Collections.singletonList(newTab));
             // Don't run mOnSuccessRunnable since nothing happened in the current tab.
             return true;
         }
@@ -149,7 +151,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             if (newTab == null) return false;
             newTab.goForward();
             if (mMultiInstanceManager == null) return false;
-            mMultiInstanceManager.moveTabToNewWindow(newTab);
+            mMultiInstanceManager.moveTabsToNewWindow(Collections.singletonList(newTab));
             // Don't run mOnSuccessRunnable since nothing happened in the current tab.
             return true;
         }

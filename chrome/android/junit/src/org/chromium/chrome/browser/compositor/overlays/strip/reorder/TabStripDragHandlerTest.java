@@ -1708,7 +1708,7 @@ public class TabStripDragHandlerTest {
 
             // Verify - Move to new window not invoked.
             verify(mDestMultiInstanceManager, times(0))
-                    .moveTabToWindow(any(Activity.class), any(), anyInt());
+                    .moveTabsToWindow(any(Activity.class), any(), anyInt());
         }
     }
 
@@ -2110,7 +2110,7 @@ public class TabStripDragHandlerTest {
         } else {
             // Verify tab is not moved.
             verify(mSourceMultiInstanceManager, times(0))
-                    .moveTabToWindow(any(Activity.class), any(), anyInt());
+                    .moveTabsToWindow(any(Activity.class), any(), anyInt());
         }
     }
 
@@ -2122,7 +2122,7 @@ public class TabStripDragHandlerTest {
         } else {
             // Verify tab is moved.
             verify(mDestMultiInstanceManager, times(1))
-                    .moveTabToWindow(any(Activity.class), any(), eq(index));
+                    .moveTabsToWindow(any(Activity.class), any(), eq(index));
         }
     }
 

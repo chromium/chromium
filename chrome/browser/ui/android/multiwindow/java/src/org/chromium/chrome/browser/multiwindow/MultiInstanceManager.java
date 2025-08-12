@@ -90,16 +90,6 @@ public abstract class MultiInstanceManager {
     public abstract void maybeMergeTabs();
 
     /**
-     * Open a new instance of the ChromeTabbedActivity window and move the specified tab from
-     * existing instance to the new one.
-     *
-     * @param tab Tab that is to be moved to a new Chrome instance.
-     */
-    public void moveTabToNewWindow(Tab tab) {
-        // Not implemented
-    }
-
-    /**
      * Open a new instance of the ChromeTabbedActivity window and move the specified tabs from
      * existing instance to the new one.
      *
@@ -116,28 +106,6 @@ public abstract class MultiInstanceManager {
      * @param tabGroupMetadata The object containing the metadata of the tab group.
      */
     public void moveTabGroupToNewWindow(TabGroupMetadata tabGroupMetadata) {
-        // Not implemented
-    }
-
-    /**
-     * Move the specified tab to the current instance of the ChromeTabbedActivity window.
-     *
-     * @param activity Activity of the Chrome Window in which the tab is to be moved.
-     * @param tab Tab that is to be moved to the current instance.
-     * @param atIndex Tab position index in the destination window instance.
-     */
-    public void moveTabToWindow(@Nullable Activity activity, Tab tab, int atIndex) {
-        // Not implemented
-    }
-
-    /**
-     * Move the specified tab to the specified instance of the ChromeTabbedActivity window.
-     *
-     * @param info {@link InstanceInfo} describing the destination window.
-     * @param tab Tab that is to be moved to the current instance.
-     * @param atIndex Tab position index in the destination window instance.
-     */
-    public void moveTabToWindow(InstanceInfo info, Tab tab, int atIndex) {
         // Not implemented
     }
 

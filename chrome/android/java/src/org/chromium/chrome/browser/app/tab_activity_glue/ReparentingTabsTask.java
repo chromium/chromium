@@ -25,20 +25,20 @@ import java.util.List;
 
 /** Takes care of reparenting a list of Tab objects from one Activity to another. */
 @NullMarked
-public class ReparentingMultiTabTask {
+public class ReparentingTabsTask {
     private final List<Tab> mTabs;
 
     /**
      * Creates a new task to reparent a list of tabs.
      *
      * @param tabs The list of {@link Tab} objects to reparent.
-     * @return A new {@link ReparentingMultiTabTask} object.
+     * @return A new {@link ReparentingTabsTask} object.
      */
-    public static ReparentingMultiTabTask from(List<Tab> tabs) {
-        return new ReparentingMultiTabTask(tabs);
+    public static ReparentingTabsTask from(List<Tab> tabs) {
+        return new ReparentingTabsTask(tabs);
     }
 
-    private ReparentingMultiTabTask(List<Tab> tabs) {
+    private ReparentingTabsTask(List<Tab> tabs) {
         mTabs = tabs;
     }
 
@@ -50,10 +50,18 @@ public class ReparentingMultiTabTask {
      * @param intent An optional intent with the desired component, flags, or extras to use when
      *     launching the new host activity. This intent's URI and action will be overridden. This
      *     may be null if no intent customization is needed.
+     * @param startActivityOptions Options to pass to {@link Activity#startActivity(Intent, Bundle)}
+     * @param finalizeCallback A callback that will be called after the tab is attached to the new
+     *     host activity in {@link #attachAndFinishReparenting}.
      */
-    public void begin(Context context, Intent intent) {
-        setupIntent(intent, null);
-        context.startActivity(intent, null);
+    public void begin(
+            @Nullable Context context,
+            Intent intent,
+            @Nullable Bundle startActivityOptions,
+            @Nullable Runnable finalizeCallback) {
+        if (context == null) return;
+        setupIntent(intent, finalizeCallback);
+        context.startActivity(intent, startActivityOptions);
     }
 
     /**
@@ -67,6 +75,10 @@ public class ReparentingMultiTabTask {
      *     the new host activity.
      */
     public void setupIntent(Intent intent, @Nullable Runnable finalizeCallback) {
+        if (mTabs.size() == 1) {
+            ReparentingTask.from(mTabs.get(0)).setupIntent(intent, finalizeCallback);
+            return;
+        }
         if (intent == null) intent = new Intent();
         if (intent.getComponent() == null) {
             intent.setClass(ContextUtils.getApplicationContext(), ChromeLauncherActivity.class);

@@ -291,9 +291,9 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                                         .with(
                                                 CLICK_LISTENER,
                                                 (v) -> {
-                                                    mMultiInstanceManager.moveTabToWindow(
+                                                    mMultiInstanceManager.moveTabsToWindow(
                                                             instanceInfo,
-                                                            tab,
+                                                            Collections.singletonList(tab),
                                                             TabList.INVALID_TAB_INDEX);
                                                 })
                                         .with(ENABLED, true)

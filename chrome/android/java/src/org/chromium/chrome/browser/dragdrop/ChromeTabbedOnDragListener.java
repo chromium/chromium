@@ -30,6 +30,7 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropResult;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -131,8 +132,10 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                         mTabModelSelector);
 
         // Reparent the dragged tab to the destination window.
-        mMultiInstanceManager.moveTabToWindow(
-                mWindowAndroid.getActivity().get(), draggedTab, destIndex);
+        mMultiInstanceManager.moveTabsToWindow(
+                mWindowAndroid.getActivity().get(),
+                Collections.singletonList(draggedTab),
+                destIndex);
         DragDropMetricUtils.recordDragDropType(
                 DragDropType.TAB_STRIP_TO_CONTENT, isInDesktopWindow, /* isTabGroup= */ false);
         return true;

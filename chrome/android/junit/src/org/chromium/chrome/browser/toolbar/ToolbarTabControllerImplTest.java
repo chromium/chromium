@@ -45,6 +45,8 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
+import java.util.Collections;
+
 /** Unit tests for ToolbarTabControllerImpl. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -237,7 +239,7 @@ public class ToolbarTabControllerImplTest {
         inOrder.verify(mTabCreator)
                 .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
         inOrder.verify(mTab2).goBack();
-        inOrder.verify(mMultiInstanceManager).moveTabToNewWindow(mTab2);
+        inOrder.verify(mMultiInstanceManager).moveTabsToNewWindow(Collections.singletonList(mTab2));
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -295,7 +297,7 @@ public class ToolbarTabControllerImplTest {
         inOrder.verify(mTabCreator)
                 .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
         inOrder.verify(mTab2).goForward();
-        inOrder.verify(mMultiInstanceManager).moveTabToNewWindow(mTab2);
+        inOrder.verify(mMultiInstanceManager).moveTabsToNewWindow(Collections.singletonList(mTab2));
         inOrder.verifyNoMoreInteractions();
     }
 

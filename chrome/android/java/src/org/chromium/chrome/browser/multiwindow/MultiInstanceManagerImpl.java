@@ -32,8 +32,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingMultiTabTask;
-import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
+import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -438,11 +437,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
     @Override
     public void moveTabsToOtherWindow(List<Tab> tabs) {
         if (MultiWindowUtils.getInstanceCount() == 1) {
-            if (tabs.size() == 1) {
-                moveTabToNewWindow(tabs.get(0));
-            } else {
-                moveTabsToNewWindow(tabs);
-            }
+            moveTabsToNewWindow(tabs);
             return;
         }
 
@@ -450,18 +445,13 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
         if (intent == null) return;
 
         onMultiInstanceModeStarted();
-        if (tabs.size() == 1) {
-            ReparentingTask.from(tabs.get(0))
-                    .begin(
-                            mActivity,
-                            intent,
-                            /* startActivityOptions= */ null,
-                            /* finalizeCallback= */ null);
-            RecordUserAction.record("MobileMenuMoveToOtherWindow");
-        } else {
-            ReparentingMultiTabTask.from(tabs).begin(mActivity, intent);
-            RecordUserAction.record("MobileMenuMoveToOtherWindow");
-        }
+        ReparentingTabsTask.from(tabs)
+                .begin(
+                        mActivity,
+                        intent,
+                        /* startActivityOptions= */ null,
+                        /* finalizeCallback= */ null);
+        RecordUserAction.record("MobileMenuMoveToOtherWindow");
     }
 
     protected void openNewWindow(String umaAction, boolean incognito) {

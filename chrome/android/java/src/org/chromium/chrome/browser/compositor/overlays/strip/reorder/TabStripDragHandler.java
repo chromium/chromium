@@ -433,15 +433,16 @@ public class TabStripDragHandler extends TabDragHandlerBase {
 
         // Move tab to another window.
         if (!tabDraggedBelongToCurrentModel) {
-            mMultiInstanceManager.moveTabToWindow(
+            mMultiInstanceManager.moveTabsToWindow(
                     getActivity(),
-                    tabBeingDragged,
+                    Collections.singletonList(tabBeingDragged),
                     getTabModelSelector().getModel(tabBeingDragged.isIncognito()).getCount());
             showDroppedDifferentModelToast(getActivity());
         } else {
             // Reparent tab at drop index and merge to group on destination if needed.
             int tabIndex = helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp);
-            mMultiInstanceManager.moveTabToWindow(getActivity(), tabBeingDragged, tabIndex);
+            mMultiInstanceManager.moveTabsToWindow(
+                    getActivity(), Collections.singletonList(tabBeingDragged), tabIndex);
             helper.maybeMergeToGroupOnDrop(
                     Collections.singletonList(tabBeingDragged.getId()),
                     tabIndex,

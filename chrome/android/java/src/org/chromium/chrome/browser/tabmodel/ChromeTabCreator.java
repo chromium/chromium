@@ -53,6 +53,8 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.util.Collections;
+
 /** This class creates various kinds of new tabs and adds them to the right {@link TabModel}. */
 @NullMarked
 public class ChromeTabCreator extends TabCreator
@@ -459,7 +461,7 @@ public class ChromeTabCreator extends TabCreator
             mTabModel.addTab(tab, position, type, creationState);
             if (type == TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW
                     && mMultiInstanceManager != null) {
-                mMultiInstanceManager.moveTabToNewWindow(tab);
+                mMultiInstanceManager.moveTabsToNewWindow(Collections.singletonList(tab));
             }
             return tab;
         }
