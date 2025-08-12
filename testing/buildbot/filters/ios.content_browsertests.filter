@@ -74,7 +74,6 @@
 -KeyboardLockBrowserTest.LockRequestBeforeCrossOriginIFrameIsFullscreen
 -KeyboardLockBrowserTest.LockRequestWhileCrossOriginIFrameIsFullscreen
 -MemoryInstrumentationTest.PrivateFootprintComputation
--MojoSandboxTest.IsProcessSandboxed
 -NetworkResponseProtocolECHTest.SecurityDetailsECH
 -NoCompositingRenderWidgetHostViewBrowserTest.NoFallbackAfterHiddenNavigationFails
 -NoCompositingRenderWidgetHostViewBrowserTest.ValidLocalSurfaceIdAfterHiddenNavigation
@@ -488,3 +487,7 @@
 # https://crrev.com/c/6777074.
 -All/IndexedDBBrowserTest.SchedulingPriority/WithLevelDb
 -All/IndexedDBBrowserTest.SchedulingPriority/WithSqlite
+
+# TODO(crbug.com/437957113): The test has been failing since
+# https://crrev.com/c/6566111.
+-MojoSandboxTest.NotIsProcessSandboxed
