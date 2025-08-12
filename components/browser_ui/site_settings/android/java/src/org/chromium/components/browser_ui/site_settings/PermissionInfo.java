@@ -70,6 +70,7 @@ public class PermissionInfo implements Serializable {
             @ContentSettingsType.EnumType int mContentSettingsType,
             String origin,
             @Nullable String embeddingOrigin) {
+        assert mContentSettingsType != ContentSettingsType.GEOLOCATION_WITH_OPTIONS;
         return WebsitePreferenceBridgeJni.get()
                 .getPermissionSettingForOrigin(
                         browserContextHandle,

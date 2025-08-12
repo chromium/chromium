@@ -2,6 +2,7 @@ include_rules = [
   "+base/android/java/src/org/chromium/base",
   "+components/browser_ui/settings/android",
   "+components/browser_ui/share/android",
+  "+components/browser_ui/site_settings/android",
   "+components/browser_ui/styles/android",
   "+components/browser_ui/widget/android",
   "+components/embedder_support/android",
