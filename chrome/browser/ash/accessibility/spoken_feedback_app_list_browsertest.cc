@@ -313,6 +313,18 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo,
                                                kTestAsGuestUser)));
 
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3NormalUser,
+    SpokenFeedbackAppListTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
+                                               kTestAsNormalUser)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3GuestUser,
+    SpokenFeedbackAppListTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
+                                               kTestAsGuestUser)));
+
 class NotificationSpokenFeedbackAppListTest : public SpokenFeedbackAppListTest {
  protected:
   NotificationSpokenFeedbackAppListTest() = default;
