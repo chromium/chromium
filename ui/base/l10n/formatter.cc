@@ -17,6 +17,7 @@
 
 #include "base/check.h"
 #include "base/component_export.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/msgfmt.h"
@@ -25,7 +26,57 @@
 
 namespace ui {
 
-COMPONENT_EXPORT(UI_BASE) bool formatter_force_fallback = false;
+namespace {
+
+// Class to hold all Formatters, intended to be used in a global instance.
+class FormatterContainer {
+ public:
+  FormatterContainer() { Initialize(); }
+
+  FormatterContainer(const FormatterContainer&) = delete;
+  FormatterContainer& operator=(const FormatterContainer&) = delete;
+
+  ~FormatterContainer() = default;
+
+  const Formatter* Get(TimeFormat::Format format,
+                       TimeFormat::Length length) const {
+    return formatter_[format][length].get();
+  }
+
+  void ResetForTesting() {
+    Shutdown();
+    Initialize();
+  }
+
+ private:
+  void Initialize();
+  void Shutdown();
+
+  std::unique_ptr<Formatter> formatter_[TimeFormat::FORMAT_COUNT]
+                                       [TimeFormat::LENGTH_COUNT];
+};
+
+FormatterContainer& GetFormatterContainer() {
+  static base::NoDestructor<FormatterContainer> formatter_container;
+  return *formatter_container;
+}
+
+bool formatter_force_fallback = false;
+
+}  // namespace
+
+const Formatter* GetFormatter(TimeFormat::Format format,
+                              TimeFormat::Length length) {
+  return GetFormatterContainer().Get(format, length);
+}
+
+void ResetFormatterForTesting() {
+  GetFormatterContainer().ResetForTesting();  // IN-TEST
+}
+
+void SetFormatterForceFallbackForTesting(bool force_fallback) {
+  formatter_force_fallback = force_fallback;
+}
 
 struct Pluralities {
   int id;
@@ -324,18 +375,6 @@ std::unique_ptr<icu::MessageFormat> Formatter::InitFormat(
 
   std::unique_ptr<icu::PluralRules> rules(BuildPluralRules());
   return CreateFallbackFormat(*rules, pluralities);
-}
-
-const Formatter* FormatterContainer::Get(TimeFormat::Format format,
-                                         TimeFormat::Length length) const {
-  return formatter_[format][length].get();
-}
-
-FormatterContainer::FormatterContainer() {
-  Initialize();
-}
-
-FormatterContainer::~FormatterContainer() {
 }
 
 void FormatterContainer::Initialize() {
