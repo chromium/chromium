@@ -433,8 +433,12 @@ void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
       /*success=*/rendered_text_useful);
 
   if (rendered_text_useful) {
+    VLOG(1) << "[PermissionsAI] OnGetInnerTextForOnDeviceModel: "
+               "rendered_text_useful true";
     std::string inner_text = std::move(result->inner_text);
     if (model_data.model_type == PredictionModelType::kOnDeviceAiV1Model) {
+      VLOG(1) << "[PermissionsAIv1] OnGetInnerTextForOnDeviceModel: "
+                 "Continue AIv1 execution";
       if (inner_text.size() > kPageContentMaxLength) {
         inner_text.resize(kPageContentMaxLength);
       }
@@ -442,6 +446,8 @@ void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
       return std::move(model_execution_callback).Run(std::move(model_data));
     }
 
+    VLOG(1) << "[PermissionsAIv4] OnGetInnerTextForOnDeviceModel: "
+               "Continue AIv4 execution";
     // Aiv4.
     auto fallback_callback =
         base::BindOnce(&PredictionBasedPermissionUiSelector::InquireServerModel,
@@ -923,6 +929,7 @@ void PredictionBasedPermissionUiSelector::OnPassageEmbeddingsComputed(
     ModelExecutionData model_data,
     ModelExecutionCallback model_execution_callback,
     passage_embeddings::Embedding embedding) {
+  VLOG(1) << "[PermissionsAIv4] OnPassageEmbeddingsComputed";
   model_data.inner_text_embedding = std::move(embedding);
   std::move(model_execution_callback).Run(std::move(model_data));
 }

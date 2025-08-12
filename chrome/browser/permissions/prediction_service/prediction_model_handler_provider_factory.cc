@@ -55,11 +55,15 @@ PredictionModelHandlerProviderFactory::
 std::unique_ptr<KeyedService>
 PredictionModelHandlerProviderFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  VLOG(1) << "[PermissionsAI]: "
+             "PredictionModelHandlerProviderFactory::"
+             "BuildServiceInstanceForBrowserContext";
   Profile* profile = Profile::FromBrowserContext(context);
   OptimizationGuideKeyedService* optimization_guide =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
 
   if (!optimization_guide) {
+    VLOG(1) << "[PermissionsAI]: OptimizationGuideKeyedService not available.";
     return nullptr;
   }
   passage_embeddings::Embedder* passage_embedder = nullptr;
@@ -72,10 +76,19 @@ PredictionModelHandlerProviderFactory::BuildServiceInstanceForBrowserContext(
                    passage_embeddings::
                        ChromePassageEmbeddingsServiceController::Get()) {
       passage_embedder = passage_embeddings_service_controller->GetEmbedder();
+      VLOG(1)
+          << "[PermissionsAI]: PassageEmbeddingsServiceController available, "
+             "passage_embedder setup."
+          << (passage_embedder ? "true" : "false");
     } else {
       VLOG(1) << "[PermissionsAI]: PassageEmbeddingsServiceController not "
                  "available, passage embedder not setup.";
     }
+  } else {
+    VLOG(1) << "[PermissionsAI]: "
+               "PredictionModelHandlerProviderFactory::"
+               "BuildServiceInstanceForBrowserContext PermissionsAIv4 not "
+               "enabled, passage embedder not setup.";
   }
   return std::make_unique<permissions::PredictionModelHandlerProvider>(
       optimization_guide, passage_embedder);

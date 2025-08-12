@@ -22,6 +22,7 @@ void LanguageDetectionObserver::Init(
     content::WebContents* web_contents,
     base::OnceCallback<void()> on_english_detected,
     base::OnceCallback<void()> on_fallback) {
+  VLOG(1) << "[PermissionsAIv4] LanguageDetectionObserver::Init";
   web_contents_ = web_contents;
   on_english_detected_callback_ = std::move(on_english_detected);
   fallback_callback_ = std::move(on_fallback);
@@ -29,10 +30,14 @@ void LanguageDetectionObserver::Init(
       chrome_translate_client()->GetLanguageState().source_language();
 
   if (source_language.starts_with("en")) {
+    VLOG(1) << "[PermissionsAIv4] LanguageDetectionObserver::Init "
+               "immediately available English";
     RecordLanguageDetectionStatus(
         LanguageDetectionStatus::kImmediatelyAvailableEnglish);
     std::move(on_english_detected_callback_).Run();
   } else if (source_language.empty()) {
+    VLOG(1) << "[PermissionsAIv4] LanguageDetectionObserver::Init "
+               "start language detection";
     chrome_translate_client()
         ->GetTranslateDriver()
         ->AddLanguageDetectionObserver(this);
@@ -43,6 +48,8 @@ void LanguageDetectionObserver::Init(
                          base::BindOnce(&LanguageDetectionObserver::OnTimeout,
                                         weak_ptr_factory_.GetWeakPtr()));
   } else {
+    VLOG(1) << "[PermissionsAIv4] LanguageDetectionObserver::Init "
+               "immediately available NOT English";
     RecordLanguageDetectionStatus(
         LanguageDetectionStatus::kImmediatelyAvailableNotEnglish);
     std::move(fallback_callback_).Run();
@@ -67,6 +74,7 @@ void LanguageDetectionObserver::RemoveAsObserver() {
 }
 
 void LanguageDetectionObserver::OnTimeout() {
+  VLOG(1) << "[PermissionsAIv4] LanguageDetectionObserver::OnTimeout";
   RecordLanguageDetectionStatus(LanguageDetectionStatus::kNoResultDueToTimeout);
   if (on_english_detected_callback_) {
     std::move(fallback_callback_).Run();
@@ -82,10 +90,16 @@ void LanguageDetectionObserver::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
   if (details.adopted_language.starts_with("en") &&
       on_english_detected_callback_) {
+    VLOG(1)
+        << "[PermissionsAIv4] LanguageDetectionObserver::OnLanguageDetermined "
+           "English";
     RecordLanguageDetectionStatus(
         LanguageDetectionStatus::kDelayedDetectedEnglish);
     std::move(on_english_detected_callback_).Run();
   } else if (on_english_detected_callback_) {
+    VLOG(1)
+        << "[PermissionsAIv4] LanguageDetectionObserver::OnLanguageDetermined "
+           "NOT English";
     RecordLanguageDetectionStatus(
         LanguageDetectionStatus::kDelayedDetectedNotEnglish);
     std::move(fallback_callback_).Run();
