@@ -75,7 +75,7 @@ TabStripServiceImpl::~TabStripServiceImpl() {
 }
 
 void TabStripServiceImpl::GetTabs(GetTabsCallback callback) {
-  tabs_api::mojom::ContainerPtr topology =
+  tabs_api::mojom::TabCollectionContainerPtr topology =
       tab_strip_model_adapter_->GetTabStripTopology();
   auto snapshot = tabs_api::mojom::TabsSnapshot::New();
   snapshot->tab_strip = std::move(topology);

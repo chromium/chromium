@@ -75,11 +75,10 @@ struct SplitTabVisualData {
   double split_ratio;
 };
 
-// Data is the actual unit of any node in the tab strip tree. Using a
-// union enforces that a node must be exactly one of the types below thus
-// preventing inconsistent states.
-union Data {
-  Tab tab;
+// A TabCollection is a container in the tab strip tree. Using a union enforces
+// that a collection must be exactly one of the types below thus preventing
+// inconsistent states.
+union TabCollection {
   TabStrip tab_strip;
   PinnedTabs pinned_tabs;
   UnpinnedTabs unpinned_tabs;
@@ -87,13 +86,25 @@ union Data {
   SplitTab split_tab;
 };
 
-// Container represents a node in the tree hierarchy.
-// This struct is used to construct the tree snapshot for the initial GetTabs
-// call. For all other operations, use specific structs like Tab,
-// TabGroup or SplitTab as the base unit.
-struct Container {
-  Data data;
-  array<Container> children;
+// The TabCollection tree has child nodes that can be a Tab or a
+// TabCollection. This container is used to represents the child nodes of the
+// tab strip tree.
+union Container {
+  TabContainer tab_container;
+  TabCollectionContainer tab_collection_container;
+};
+
+// TabCollectionContainer represents a TabCollection's position within the tree.
+// It contains an array of elements that can be either a TabContainer or a
+// TabCollectionContainer.
+struct TabCollectionContainer {
+  TabCollection collection;
+  array<Container> elements;
+};
+
+// TabContainer represents the tab's position within the tree.
+struct TabContainer {
+  Tab tab;
 };
 
 // When a Tab is created, it also needs to know the position.

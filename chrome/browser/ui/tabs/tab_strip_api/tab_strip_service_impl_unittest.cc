@@ -82,12 +82,15 @@ TEST_F(TabStripServiceImplTest, GetTabs) {
   ASSERT_TRUE(success);
   const auto& snapshot = result.value();
   ASSERT_TRUE(snapshot->tab_strip);
-  ASSERT_TRUE(snapshot->tab_strip->data->is_tab_strip());
-  ASSERT_EQ(1u, snapshot->tab_strip->children.size());
-  ASSERT_TRUE(snapshot->tab_strip->children[0]->data->is_tab());
-  ASSERT_EQ("888", snapshot->tab_strip->children[0]->data->get_tab()->id.Id());
-  ASSERT_EQ(NodeId::Type::kContent,
-            snapshot->tab_strip->children[0]->data->get_tab()->id.Type());
+  ASSERT_TRUE(snapshot->tab_strip->collection->is_tab_strip());
+  ASSERT_EQ(1u, snapshot->tab_strip->elements.size());
+  ASSERT_TRUE(snapshot->tab_strip->elements[0]->is_tab_container());
+  ASSERT_EQ(
+      "888",
+      snapshot->tab_strip->elements[0]->get_tab_container()->tab->id.Id());
+  ASSERT_EQ(
+      NodeId::Type::kContent,
+      snapshot->tab_strip->elements[0]->get_tab_container()->tab->id.Type());
   // TODO(crbug.com/412709270): we can probably easily test the observation
   // in unit test as well. But it is already covered by the browser
   // test, so skipping for now.

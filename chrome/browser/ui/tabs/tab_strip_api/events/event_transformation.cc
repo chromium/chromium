@@ -107,7 +107,7 @@ mojom::OnTabGroupCreatedEventPtr ToTabGroupCreatedEvent(
   TabGroup* tab_group = tab_group_change.model->group_model()->GetTabGroup(
       tab_group_change.group);
   auto event = mojom::OnTabGroupCreatedEvent::New();
-  event->data = tabs_api::converters::BuildMojoTabCollectionData(
+  event->tab_collection = tabs_api::converters::BuildMojoTabCollection(
       tab_group->GetCollectionHandle());
   // TODO(crbug.com/412935315): Set the correct position.
   event->position =
@@ -154,7 +154,7 @@ mojom::OnTabGroupVisualsChangedEventPtr ToTabGroupVisualsChangedEvent(
   TabGroup* tab_group = tab_group_change.model->group_model()->GetTabGroup(
       tab_group_change.group);
   auto event = mojom::OnTabGroupVisualsChangedEvent::New();
-  event->data = tabs_api::converters::BuildMojoTabCollectionData(
+  event->tab_collection = tabs_api::converters::BuildMojoTabCollection(
       tab_group->GetCollectionHandle());
   return event;
 }

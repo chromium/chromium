@@ -148,7 +148,8 @@ void TabStripModelAdapterImpl::MoveCollection(const NodeId& id,
   }
 }
 
-tabs_api::mojom::ContainerPtr TabStripModelAdapterImpl::GetTabStripTopology() {
+tabs_api::mojom::TabCollectionContainerPtr
+TabStripModelAdapterImpl::GetTabStripTopology() {
   return MojoTreeBuilder(tab_strip_model_).Build();
 }
 

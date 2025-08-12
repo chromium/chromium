@@ -15,28 +15,32 @@ TabCollectionWalker::TabCollectionWalker(
     const tabs::TabCollection* collection)
     : factory_(factory), pass_key_(pass_key), target_(collection) {}
 
-mojom::ContainerPtr TabCollectionWalker::Walk() const {
-  auto node = tabs_api::mojom::Container::New();
-  node->data =
-      tabs_api::converters::BuildMojoTabCollectionData(target_->GetHandle());
+mojom::TabCollectionContainerPtr TabCollectionWalker::Walk() const {
+  auto mojo_tab_collection =
+      tabs_api::converters::BuildMojoTabCollection(target_->GetHandle());
+  auto mojo_tab_collection_container =
+      tabs_api::mojom::TabCollectionContainer::New();
+  mojo_tab_collection_container->collection = std::move(mojo_tab_collection);
 
   for (const auto& child : target_->GetChildren(pass_key_)) {
     if (std::holds_alternative<std::unique_ptr<tabs::TabInterface>>(child)) {
       auto* tab = std::get<std::unique_ptr<tabs::TabInterface>>(child).get();
       auto result = factory_->WalkerForTab(tab).Walk();
-      node->children.push_back(std::move(result));
+      mojo_tab_collection_container->elements.push_back(
+          mojom::Container::NewTabContainer(std::move(result)));
     } else if (std::holds_alternative<std::unique_ptr<tabs::TabCollection>>(
                    child)) {
       auto* collection =
           std::get<std::unique_ptr<tabs::TabCollection>>(child).get();
       auto result = factory_->WalkerForCollection(collection).Walk();
-      node->children.push_back(std::move(result));
+      mojo_tab_collection_container->elements.push_back(
+          mojom::Container::NewTabCollectionContainer(std::move(result)));
     } else {
       NOTREACHED() << "unknown node type";
     }
   }
 
-  return node;
+  return mojo_tab_collection_container;
 }
 
 }  // namespace tabs_api

@@ -33,7 +33,7 @@ class TabStripModelAdapterImpl : public TabStripModelAdapter {
   void ActivateTab(size_t index) override;
   void MoveTab(tabs::TabHandle handle, const Position& position) override;
   void MoveCollection(const NodeId& id, const Position& position) override;
-  mojom::ContainerPtr GetTabStripTopology() override;
+  mojom::TabCollectionContainerPtr GetTabStripTopology() override;
   std::optional<const tab_groups::TabGroupId> FindGroupIdFor(
       const tabs::TabCollection::Handle& collection_handle) override;
   void UpdateTabGroupVisuals(

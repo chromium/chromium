@@ -12,7 +12,7 @@ namespace tabs_api {
 
 MojoTreeBuilder::MojoTreeBuilder(const TabStripModel* model) : model_(model) {}
 
-mojom::ContainerPtr MojoTreeBuilder::Build() const {
+tabs_api::mojom::TabCollectionContainerPtr MojoTreeBuilder::Build() const {
   auto* root = model_->Root(base::PassKey<MojoTreeBuilder>());
   CHECK(root != nullptr);
   auto factory = WalkerFactory(model_, base::PassKey<MojoTreeBuilder>());

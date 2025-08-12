@@ -21,7 +21,7 @@ class TabCollectionWalker {
                                base::PassKey<MojoTreeBuilder> pass_key,
                                const tabs::TabCollection* collection);
 
-  mojom::ContainerPtr Walk() const;
+  mojom::TabCollectionContainerPtr Walk() const;
 
  private:
   raw_ptr<const WalkerFactory> factory_;
