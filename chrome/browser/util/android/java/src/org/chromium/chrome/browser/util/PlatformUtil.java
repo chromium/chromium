@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -19,6 +20,20 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class PlatformUtil {
     private static final String TAG = "PlatformUtil";
+
+    @CalledByNative
+    static void showItemInFolder(@JniType("std::string") String contentUriString) {
+        Context context = ContextUtils.getApplicationContext();
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(Uri.parse(contentUriString), "*/*");
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        try {
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Log.e(TAG, "cannot find activity to launch %s", contentUriString, e);
+        }
+    }
 
     @CalledByNative
     private static void launchExternalProtocol(String url) {

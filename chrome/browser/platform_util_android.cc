@@ -8,6 +8,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/notimplemented.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -23,7 +25,13 @@ namespace platform_util {
 // TODO: crbug/115682 to track implementation of the following methods.
 
 void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
-  NOTIMPLEMENTED();
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::optional<base::FilePath> contentUri =
+      base::ResolveToContentUri(full_path);
+  if (!contentUri) {
+    return;
+  }
+  Java_PlatformUtil_showItemInFolder(env, contentUri->value());
 }
 
 void OpenItem(Profile* profile,
