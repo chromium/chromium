@@ -356,7 +356,7 @@ ScriptPromise<AudioBuffer> BaseAudioContext::decodeAudioData(
     decode_audio_resolvers_.insert(resolver);
 
     audio_decoder_.DecodeAsync(audio, sampleRate(), success_callback,
-                               error_callback, resolver, this, exception_state);
+                               error_callback, resolver, this);
     return promise;
   }
 
@@ -374,8 +374,7 @@ void BaseAudioContext::HandleDecodeAudioData(
     AudioBuffer* audio_buffer,
     ScriptPromiseResolver<AudioBuffer>* resolver,
     V8DecodeSuccessCallback* success_callback,
-    V8DecodeErrorCallback* error_callback,
-    ExceptionContext exception_context) {
+    V8DecodeErrorCallback* error_callback) {
   DCHECK(IsMainThread());
   DCHECK(resolver);
 

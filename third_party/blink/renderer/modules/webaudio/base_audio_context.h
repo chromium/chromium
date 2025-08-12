@@ -216,9 +216,7 @@ class MODULES_EXPORT BaseAudioContext
   void HandleDecodeAudioData(AudioBuffer*,
                              ScriptPromiseResolver<AudioBuffer>*,
                              V8DecodeSuccessCallback*,
-                             V8DecodeErrorCallback*,
-                             ExceptionContext);
-
+                             V8DecodeErrorCallback*);
 
   virtual bool HasRealtimeConstraint() = 0;
 

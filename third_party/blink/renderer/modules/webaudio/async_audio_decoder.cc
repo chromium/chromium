@@ -50,8 +50,7 @@ void AsyncAudioDecoder::DecodeAsync(
     V8DecodeSuccessCallback* success_callback,
     V8DecodeErrorCallback* error_callback,
     ScriptPromiseResolver<AudioBuffer>* resolver,
-    BaseAudioContext* context,
-    ExceptionState& exception_state) {
+    BaseAudioContext* context) {
   DCHECK(IsMainThread());
   DCHECK(audio_data);
 
@@ -64,14 +63,13 @@ void AsyncAudioDecoder::DecodeAsync(
   ArrayBufferContents audio_data_contents = *audio_data->Content();
 
   worker_pool::PostTask(
-      FROM_HERE,
-      CrossThreadBindOnce(
-          &AsyncAudioDecoder::DecodeOnBackgroundThread,
-          std::move(audio_data_contents), sample_rate,
-          MakeCrossThreadHandle(success_callback),
-          MakeCrossThreadHandle(error_callback),
-          MakeCrossThreadHandle(resolver), MakeCrossThreadHandle(context),
-          std::move(task_runner), exception_state.GetContext()));
+      FROM_HERE, CrossThreadBindOnce(
+                     &AsyncAudioDecoder::DecodeOnBackgroundThread,
+                     std::move(audio_data_contents), sample_rate,
+                     MakeCrossThreadHandle(success_callback),
+                     MakeCrossThreadHandle(error_callback),
+                     MakeCrossThreadHandle(resolver),
+                     MakeCrossThreadHandle(context), std::move(task_runner)));
 }
 
 void AsyncAudioDecoder::DecodeOnBackgroundThread(
@@ -81,8 +79,7 @@ void AsyncAudioDecoder::DecodeOnBackgroundThread(
     CrossThreadHandle<V8DecodeErrorCallback> error_callback,
     CrossThreadHandle<ScriptPromiseResolver<AudioBuffer>> resolver,
     CrossThreadHandle<BaseAudioContext> context,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    const ExceptionContext& exception_context) {
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(!IsMainThread());
   scoped_refptr<AudioBus> bus = AudioBus::CreateBusFromInMemoryAudioFile(
       audio_data_contents.ByteSpan(), false, sample_rate);
@@ -91,13 +88,13 @@ void AsyncAudioDecoder::DecodeOnBackgroundThread(
   // after `NotifyComplete()` is done.
   PostCrossThreadTask(
       *task_runner, FROM_HERE,
-      CrossThreadBindOnce(
-          &AsyncAudioDecoder::NotifyComplete, std::move(audio_data_contents),
-          MakeUnwrappingCrossThreadHandle(success_callback),
-          MakeUnwrappingCrossThreadHandle(error_callback),
-          WTF::RetainedRef(std::move(bus)),
-          MakeUnwrappingCrossThreadHandle(resolver),
-          MakeUnwrappingCrossThreadHandle(context), exception_context));
+      CrossThreadBindOnce(&AsyncAudioDecoder::NotifyComplete,
+                          std::move(audio_data_contents),
+                          MakeUnwrappingCrossThreadHandle(success_callback),
+                          MakeUnwrappingCrossThreadHandle(error_callback),
+                          WTF::RetainedRef(std::move(bus)),
+                          MakeUnwrappingCrossThreadHandle(resolver),
+                          MakeUnwrappingCrossThreadHandle(context)));
 }
 
 void AsyncAudioDecoder::NotifyComplete(
@@ -106,8 +103,7 @@ void AsyncAudioDecoder::NotifyComplete(
     V8DecodeErrorCallback* error_callback,
     AudioBus* audio_bus,
     ScriptPromiseResolver<AudioBuffer>* resolver,
-    BaseAudioContext* context,
-    const ExceptionContext& exception_context) {
+    BaseAudioContext* context) {
   DCHECK(IsMainThread());
 
   AudioBuffer* audio_buffer = AudioBuffer::CreateFromAudioBus(audio_bus);
@@ -115,7 +111,7 @@ void AsyncAudioDecoder::NotifyComplete(
   // If the context is available, let the context finish the notification.
   if (context) {
     context->HandleDecodeAudioData(audio_buffer, resolver, success_callback,
-                                   error_callback, exception_context);
+                                   error_callback);
   }
 }
 
