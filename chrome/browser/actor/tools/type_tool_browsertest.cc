@@ -525,7 +525,9 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DomNodeIdTargetsNonEditable) {
 
 // Ensure the type tool emits events at the expected intervals when typing
 // incrementally.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_IncrementalTyping) {
+//
+// TODO(crbug.com/438242699): Re-enable it.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, DISABLED_TypeTool_IncrementalTyping) {
   if (!base::FeatureList::IsEnabled(features::kGlicActorIncrementalTyping)) {
     GTEST_SKIP() << "GlicActorIncrementalTyping feature is disabled";
   }
