@@ -298,7 +298,6 @@ void TapTabGridEditButton() {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
       data_sharing::features::kDataSharingFeature);
-  config.features_enabled.push_back(kContainedTabGroup);
   return config;
 }
 

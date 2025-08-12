@@ -325,34 +325,6 @@ using collaboration::CollaborationControllerDelegate;
       _tabGroupConfirmationCoordinator;
 }
 
-- (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
-                                    group:
-                                        (base::WeakPtr<const TabGroup>)tabGroup
-                         sourceButtonItem:(UIBarButtonItem*)sourceButtonItem {
-  CHECK(!IsContainedTabGroupEnabled());
-  if (!tabGroup) {
-    return;
-  }
-
-  _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                      actionType:actionType
-                sourceButtonItem:sourceButtonItem];
-  __weak BaseGridCoordinator* weakSelf = self;
-  _tabGroupConfirmationCoordinator.primaryAction = ^{
-    [weakSelf takeActionForActionType:actionType weakGroup:tabGroup];
-  };
-  _tabGroupConfirmationCoordinator.dismissAction = ^{
-    [weakSelf clearLeaveOrDeleteCompletion];
-  };
-  _tabGroupConfirmationCoordinator.tabGroupName = tabGroup->GetTitle();
-
-  [_tabGroupConfirmationCoordinator start];
-  self.gridViewController.tabGroupConfirmationHandler =
-      _tabGroupConfirmationCoordinator;
-}
-
 - (void)startLeaveOrDeleteSharedGroup:(base::WeakPtr<const TabGroup>)group
                             forAction:(TabGroupActionType)actionType
                            sourceView:(UIView*)sourceView {
@@ -374,32 +346,6 @@ using collaboration::CollaborationControllerDelegate;
         [strongSelf showTabGroupConfirmationForAction:actionType
                                                 group:group
                                            sourceView:sourceView];
-      });
-  [self startLeaveOrDeleteSharedGroup:group
-                   completionCallback:std::move(completionCallback)];
-}
-
-- (void)startLeaveOrDeleteSharedGroup:(base::WeakPtr<const TabGroup>)group
-                            forAction:(TabGroupActionType)actionType
-                     sourceButtonItem:(UIBarButtonItem*)sourceButtonItem {
-  CHECK(!IsContainedTabGroupEnabled());
-  __weak __typeof(self) weakSelf = self;
-  base::OnceCallback<void(ResultCallback)> completionCallback =
-      base::BindOnce(^(ResultCallback resultCallback) {
-        BaseGridCoordinator* strongSelf = weakSelf;
-        if (!strongSelf) {
-          std::move(resultCallback)
-              .Run(CollaborationControllerDelegate::Outcome::kCancel);
-          return;
-        }
-        auto completionBlock = base::CallbackToBlock(std::move(resultCallback));
-        strongSelf.leaveOrDeleteCompletion =
-            ^(CollaborationControllerDelegate::Outcome outcome) {
-              completionBlock(outcome);
-            };
-        [strongSelf showTabGroupConfirmationForAction:actionType
-                                                group:group
-                                     sourceButtonItem:sourceButtonItem];
       });
   [self startLeaveOrDeleteSharedGroup:group
                    completionCallback:std::move(completionCallback)];

@@ -1831,16 +1831,8 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)closeTabGroupButton {
-  if (IsContainedTabGroupEnabled()) {
-    return grey_allOf(grey_accessibilityID(kTabGroupCloseButtonIdentifier),
-                      grey_sufficientlyVisible(), nil);
-  } else {
-    return grey_allOf(
-        [ChromeMatchersAppInterface
-            buttonWithAccessibilityLabel:l10n_util::GetNSString(
-                                             IDS_IOS_ICON_ARROW_BACK)],
-        grey_kindOfClassName(@"UIAccessibilityBackButtonElement"), nil);
-  }
+  return grey_allOf(grey_accessibilityID(kTabGroupCloseButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)tabGroupActivitySummaryCell {

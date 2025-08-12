@@ -77,15 +77,13 @@
 
 - (LegacyGridTransitionLayout*)legacyTransitionLayout {
   LegacyGridTransitionLayout* transitionLayout = [super legacyTransitionLayout];
-  if (IsContainedTabGroupEnabled()) {
-    // When the user is entering the TabGrid from a Tab in a group, the
-    // non-selected tabs should not animate otherwise they will be
-    // displayed outside of the container.
-    transitionLayout = [LegacyGridTransitionLayout
-        layoutWithInactiveItems:@[]
-                     activeItem:transitionLayout.activeItem
-                  selectionItem:transitionLayout.selectionItem];
-  }
+  // When the user is entering the TabGrid from a Tab in a group, the
+  // non-selected tabs should not animate otherwise they will be
+  // displayed outside of the container.
+  transitionLayout = [LegacyGridTransitionLayout
+      layoutWithInactiveItems:@[]
+                   activeItem:transitionLayout.activeItem
+                selectionItem:transitionLayout.selectionItem];
   return transitionLayout;
 }
 

@@ -42,9 +42,6 @@ namespace {
 // Animation.
 constexpr CGFloat kSwipeAnimationDuration = 0.1;
 
-// Background.
-constexpr CGFloat kBackgroundAlpha = 0.6;
-
 // Top toolbar.
 constexpr CGFloat kTopToolbarHeight = 58;
 constexpr CGFloat kTopToolbarMargin = 16;
@@ -55,7 +52,6 @@ constexpr CGFloat kBottomToolbarMargin = 8;
 
 // Button.
 constexpr CGFloat kButtonSpacing = 10;
-constexpr CGFloat kLegacyMenuImageSize = 20;
 constexpr CGFloat kCloseImageSize = 12.5;
 constexpr CGFloat kMenuImageSize = 16;
 
@@ -67,10 +63,6 @@ constexpr CGFloat kOriginScale = 0.1;
 constexpr CGFloat kDotSize = 12;
 constexpr CGFloat kSpace = 8;
 
-// FacePile constraints.
-constexpr CGFloat kFacePileWidth = 84;
-constexpr CGFloat kFacePileHeight = 44;
-
 // Container constraints.
 constexpr CGFloat kContainerMargin = 12;
 constexpr CGFloat kContainerMultiplier = 0.8;
@@ -81,7 +73,6 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
 UIButton* TopToolbarButton(NSString* symbol_name,
                            UIAction* action,
                            CGFloat image_size) {
-  CHECK(IsContainedTabGroupEnabled());
   UIBackgroundConfiguration* background_configuration =
       [UIBackgroundConfiguration clearConfiguration];
   background_configuration.visualEffect = [UIBlurEffect
@@ -218,12 +209,8 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   // size of the collection view.
   [self gridViewControllerDidScroll];
 
-  if (IsContainedTabGroupEnabled()) {
-    _topToolbar.alpha = 0;
-    _containerBackground.alpha = 0;
-  } else {
-    _navigationBar.alpha = 0;
-  }
+  _topToolbar.alpha = 0;
+  _containerBackground.alpha = 0;
   _gridViewController.view.alpha = 0;
   CGPoint center = [_gridViewController.view convertPoint:self.view.center
                                                  fromView:self.view];
@@ -233,40 +220,22 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 }
 
 - (void)animateTopElementsPresentation {
-  if (IsContainedTabGroupEnabled()) {
-    _topToolbar.alpha = 1;
-  } else {
-    _navigationBar.alpha = 1;
-  }
+  _topToolbar.alpha = 1;
 }
 
 - (void)animateGridPresentation {
-  if (IsContainedTabGroupEnabled()) {
-    _containerBackground.alpha = 1;
-  }
+  _containerBackground.alpha = 1;
   _gridViewController.view.alpha = 1;
   [_gridViewController resetVisibleCellsCenterAndScale];
 }
 
 - (void)fadeBlurIn {
   if (UIAccessibilityIsReduceTransparencyEnabled()) {
-    if (IsContainedTabGroupEnabled()) {
-      self.view.backgroundColor = [UIColor colorNamed:kStaticGrey600Color];
-    } else {
-      self.view.backgroundColor = UIColor.blackColor;
-    }
+    self.view.backgroundColor = [UIColor colorNamed:kStaticGrey600Color];
   } else {
-    if (IsContainedTabGroupEnabled()) {
-      UIBlurEffect* blurEffect = [UIBlurEffect
-          effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterial];
-      _blurView.effect = blurEffect;
-    } else {
-      self.view.backgroundColor = [[UIColor colorNamed:kStaticGrey900Color]
-          colorWithAlphaComponent:kBackgroundAlpha];
-      UIBlurEffect* blurEffect =
-          [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-      _blurView.effect = blurEffect;
-    }
+    UIBlurEffect* blurEffect =
+        [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterial];
+    _blurView.effect = blurEffect;
   }
 }
 
@@ -293,12 +262,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 }
 
 - (void)gridViewControllerDidScroll {
-  if (IsContainedTabGroupEnabled()) {
-    _bottomGradient.hidden = self.gridViewController.scrolledToBottom;
-  } else {
-    [_bottomToolbar
-        setScrollViewScrolledToEdge:self.gridViewController.scrolledToBottom];
-  }
+  _bottomGradient.hidden = self.gridViewController.scrolledToBottom;
   _topToolbarBackground.hidden = self.gridViewController.scrolledToTop;
 }
 
@@ -310,14 +274,12 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   self.view.accessibilityViewIsModal = YES;
   self.view.backgroundColor = UIColor.clearColor;
 
-  if (IsContainedTabGroupEnabled()) {
-    _swipeDownGestureRecognizer =
-        [[UIPanGestureRecognizer alloc] initWithTarget:self
-                                                action:@selector(handlePan:)];
-    _swipeDownGestureRecognizer.delegate = self;
-    _swipeDownGestureRecognizer.cancelsTouchesInView = NO;
-    [self.view addGestureRecognizer:_swipeDownGestureRecognizer];
-  }
+  _swipeDownGestureRecognizer =
+      [[UIPanGestureRecognizer alloc] initWithTarget:self
+                                              action:@selector(handlePan:)];
+  _swipeDownGestureRecognizer.delegate = self;
+  _swipeDownGestureRecognizer.cancelsTouchesInView = NO;
+  [self.view addGestureRecognizer:_swipeDownGestureRecognizer];
 
   if (!UIAccessibilityIsReduceTransparencyEnabled()) {
     _blurView = [[UIVisualEffectView alloc] initWithEffect:nil];
@@ -326,19 +288,17 @@ UIButton* TopToolbarButton(NSString* symbol_name,
     AddSameConstraints(self.view, _blurView);
   }
 
-  if (IsContainedTabGroupEnabled()) {
-    // Add it after the blur to be sure the tap goes through.
-    UIButton* backgroundButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [backgroundButton addTarget:self
-                         action:@selector(didTapCloseButton)
-               forControlEvents:UIControlEventTouchUpInside];
-    // The background is not selectable by voice over as there is an explicit
-    // close button.
-    backgroundButton.accessibilityElementsHidden = YES;
-    backgroundButton.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:backgroundButton];
-    AddSameConstraints(backgroundButton, self.view);
-  }
+  // Add it after the blur to be sure the tap goes through.
+  UIButton* backgroundButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  [backgroundButton addTarget:self
+                       action:@selector(didTapCloseButton)
+             forControlEvents:UIControlEventTouchUpInside];
+  // The background is not selectable by voice over as there is an explicit
+  // close button.
+  backgroundButton.accessibilityElementsHidden = YES;
+  backgroundButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:backgroundButton];
+  AddSameConstraints(backgroundButton, self.view);
 
   [self fadeBlurIn];
 
@@ -346,74 +306,59 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   _container.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_container];
 
-  if (IsContainedTabGroupEnabled()) {
-    _containerBackground = [[UIView alloc] init];
-    _containerBackground.translatesAutoresizingMaskIntoConstraints = NO;
-    _containerBackground.backgroundColor =
-        [UIColor.blackColor colorWithAlphaComponent:kContainerBackgroundAlpha];
-    [_container addSubview:_containerBackground];
-    AddSameConstraints(_container, _containerBackground);
+  _containerBackground = [[UIView alloc] init];
+  _containerBackground.translatesAutoresizingMaskIntoConstraints = NO;
+  _containerBackground.backgroundColor =
+      [UIColor.blackColor colorWithAlphaComponent:kContainerBackgroundAlpha];
+  [_container addSubview:_containerBackground];
+  AddSameConstraints(_container, _containerBackground);
 
-    _container.layer.cornerRadius = kContainerCornerRadius;
-    _container.layer.masksToBounds = YES;
+  _container.layer.cornerRadius = kContainerCornerRadius;
+  _container.layer.masksToBounds = YES;
 
-    _narrowWidthConstraints = @[
-      [self.view.trailingAnchor
-          constraintEqualToAnchor:_container.trailingAnchor
-                         constant:kContainerMargin],
-      [self.view.leadingAnchor constraintEqualToAnchor:_container.leadingAnchor
-                                              constant:-kContainerMargin],
-    ];
-    _largeWidthConstraints = @[
-      [_container.widthAnchor constraintEqualToAnchor:self.view.widthAnchor
-                                           multiplier:kContainerMultiplier],
-    ];
+  _narrowWidthConstraints = @[
+    [self.view.trailingAnchor constraintEqualToAnchor:_container.trailingAnchor
+                                             constant:kContainerMargin],
+    [self.view.leadingAnchor constraintEqualToAnchor:_container.leadingAnchor
+                                            constant:-kContainerMargin],
+  ];
+  _largeWidthConstraints = @[
+    [_container.widthAnchor constraintEqualToAnchor:self.view.widthAnchor
+                                         multiplier:kContainerMultiplier],
+  ];
 
-    [self updateContainerConstraints];
+  [self updateContainerConstraints];
 
-    [NSLayoutConstraint activateConstraints:@[
-      [self.view.centerXAnchor
-          constraintEqualToAnchor:_container.centerXAnchor],
-      [self.view.centerYAnchor
-          constraintEqualToAnchor:_container.centerYAnchor],
-      [_container.heightAnchor constraintEqualToAnchor:self.view.heightAnchor
-                                            multiplier:kContainerMultiplier],
-    ]];
-  } else {
-    AddSameConstraints(self.view, _container);
+  [NSLayoutConstraint activateConstraints:@[
+    [self.view.centerXAnchor constraintEqualToAnchor:_container.centerXAnchor],
+    [self.view.centerYAnchor constraintEqualToAnchor:_container.centerYAnchor],
+    [_container.heightAnchor constraintEqualToAnchor:self.view.heightAnchor
+                                          multiplier:kContainerMultiplier],
+  ]];
+
+  _topToolbar = [self configuredTopToolbar];
+  [_container addSubview:_topToolbar];
+
+  _facePileContainer = [self configuredFacePileContainer];
+  if (_facePileView) {
+    CHECK(_topToolbarButtonsStackView);
+    [_topToolbarButtonsStackView insertArrangedSubview:_facePileContainer
+                                               atIndex:0];
   }
+  [self updateFacePileAccessibilityLabel];
 
-  if (IsContainedTabGroupEnabled()) {
-    _topToolbar = [self configuredTopToolbar];
-    [_container addSubview:_topToolbar];
-
-    _facePileContainer = [self configuredFacePileContainer];
-    if (_facePileView) {
-      CHECK(_topToolbarButtonsStackView);
-      [_topToolbarButtonsStackView insertArrangedSubview:_facePileContainer
-                                                 atIndex:0];
-    }
-    [self updateFacePileAccessibilityLabel];
-
-    [NSLayoutConstraint activateConstraints:@[
-      [_topToolbar.topAnchor constraintEqualToAnchor:_container.topAnchor],
-      [_topToolbar.leadingAnchor
-          constraintEqualToAnchor:_container.leadingAnchor],
-      [_topToolbar.trailingAnchor
-          constraintEqualToAnchor:_container.trailingAnchor],
-    ]];
-  } else {
-    [self configureNavigationBar];
-  }
+  [NSLayoutConstraint activateConstraints:@[
+    [_topToolbar.topAnchor constraintEqualToAnchor:_container.topAnchor],
+    [_topToolbar.leadingAnchor
+        constraintEqualToAnchor:_container.leadingAnchor],
+    [_topToolbar.trailingAnchor
+        constraintEqualToAnchor:_container.trailingAnchor],
+  ]];
 
   UIView* gridView = _gridViewController.view;
   gridView.translatesAutoresizingMaskIntoConstraints = NO;
   [self addChildViewController:_gridViewController];
-  if (IsContainedTabGroupEnabled()) {
-    [_container insertSubview:gridView belowSubview:_topToolbar];
-  } else {
-    [_container insertSubview:gridView belowSubview:_navigationBar];
-  }
+  [_container insertSubview:gridView belowSubview:_topToolbar];
 
   [self updateGridInsets];
 
@@ -425,31 +370,24 @@ UIButton* TopToolbarButton(NSString* symbol_name,
     [gridView.bottomAnchor constraintEqualToAnchor:_container.bottomAnchor],
   ]];
 
-  if (IsContainedTabGroupEnabled()) {
-    [gridView.topAnchor constraintEqualToAnchor:_container.topAnchor].active =
-        YES;
-  } else {
-    [gridView.topAnchor constraintEqualToAnchor:_navigationBar.bottomAnchor]
-        .active = YES;
-  }
+  [gridView.topAnchor constraintEqualToAnchor:_container.topAnchor].active =
+      YES;
 
   // Add the toolbar after the grid to make sure it is above it.
-  if (IsContainedTabGroupEnabled()) {
-    _bottomGradient =
-        [[GradientView alloc] initWithTopColor:UIColor.clearColor
-                                   bottomColor:UIColor.blackColor];
-    _bottomGradient.translatesAutoresizingMaskIntoConstraints = NO;
-    _bottomGradient.userInteractionEnabled = NO;
-    [_container addSubview:_bottomGradient];
-    AddSameConstraintsToSides(
-        _container, _bottomGradient,
-        LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
-    [_bottomGradient.heightAnchor constraintEqualToConstant:kGradientHeight]
-        .active = YES;
+  _bottomGradient = [[GradientView alloc] initWithTopColor:UIColor.clearColor
+                                               bottomColor:UIColor.blackColor];
+  _bottomGradient.translatesAutoresizingMaskIntoConstraints = NO;
+  _bottomGradient.userInteractionEnabled = NO;
+  [_container addSubview:_bottomGradient];
+  AddSameConstraintsToSides(
+      _container, _bottomGradient,
+      LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
+  [_bottomGradient.heightAnchor constraintEqualToConstant:kGradientHeight]
+      .active = YES;
 
-    // Hide the default background of the bottom toolbar.
-    [_bottomToolbar setScrollViewScrolledToEdge:YES];
-  }
+  // Hide the default background of the bottom toolbar.
+  [_bottomToolbar setScrollViewScrolledToEdge:YES];
+
   [self configureBottomToolbar];
 
   [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
@@ -506,11 +444,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 
 - (void)setShareAvailable:(BOOL)shareAvailable {
   _shareAvailable = shareAvailable;
-  if (IsContainedTabGroupEnabled()) {
-    _menuButton.menu = [self configuredTabGroupMenu];
-  } else {
-    [self configureNavigationBarItems];
-  }
+  _menuButton.menu = [self configuredTabGroupMenu];
 }
 
 - (void)setSharingState:(SharingState)state {
@@ -519,12 +453,8 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   }
   _sharingState = state;
   _gridViewController.shared = _sharingState != SharingState::kNotShared;
-  if (IsContainedTabGroupEnabled()) {
-    _menuButton.menu = [self configuredTabGroupMenu];
-    [self updateFacePileAccessibilityLabel];
-  } else {
-    [self configureNavigationBarItems];
-  }
+  _menuButton.menu = [self configuredTabGroupMenu];
+  [self updateFacePileAccessibilityLabel];
 }
 
 - (void)setFacePileProvider:(id<FacePileProviding>)facePileProvider {
@@ -533,32 +463,23 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   }
   _facePileProvider = facePileProvider;
 
-  if (IsContainedTabGroupEnabled()) {
-    if ([_facePileView isDescendantOfView:self.view]) {
-      [_facePileView removeFromSuperview];
-    }
-    [_facePileContainer removeFromSuperview];
-  } else {
+  if ([_facePileView isDescendantOfView:self.view]) {
     [_facePileView removeFromSuperview];
   }
 
+  [_facePileContainer removeFromSuperview];
   _facePileView = _facePileProvider.facePileView;
 
   if (!_facePileView) {
     return;
   }
 
-  if (IsContainedTabGroupEnabled()) {
-    if (!_facePileContainer) {
-      return;
-    }
-    [self updateFacePileContainer:_facePileContainer
-                     withFacePile:_facePileView];
-    [_topToolbarButtonsStackView insertArrangedSubview:_facePileContainer
-                                               atIndex:0];
-  } else {
-    [self configureNavigationBarItems];
+  if (!_facePileContainer) {
+    return;
   }
+  [self updateFacePileContainer:_facePileContainer withFacePile:_facePileView];
+  [_topToolbarButtonsStackView insertArrangedSubview:_facePileContainer
+                                             atIndex:0];
 }
 
 - (void)setActivitySummaryCellText:(NSString*)text {
@@ -585,25 +506,14 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   [self.presentationHandler showShareKitFlow];
 }
 
-// Returns the navigation item which contain the back button.
-- (UINavigationItem*)configuredBackButton {
-  CHECK(!IsContainedTabGroupEnabled());
-  UINavigationItem* back = [[UINavigationItem alloc] init];
-  back.title = @"";
-  return back;
-}
-
 // Returns the menu button, configured.
 - (UIButton*)configuredMenuButton {
-  CHECK(IsContainedTabGroupEnabled());
-
   UIButton* button = TopToolbarButton(kMenuSymbol, nil, kMenuImageSize);
   button.showsMenuAsPrimaryAction = YES;
   button.menu = [self configuredTabGroupMenu];
   button.accessibilityIdentifier = kTabGroupOverflowMenuButtonIdentifier;
   button.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_TAB_GROUP_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL);
-
   return button;
 }
 
@@ -626,7 +536,6 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 
 // Returns the stack view containing the top toolbar buttons.
 - (UIStackView*)configuredTopToolbarStackView {
-  CHECK(IsContainedTabGroupEnabled());
   UIStackView* stackView = [[UIStackView alloc] init];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.alignment = UIStackViewAlignmentCenter;
@@ -656,7 +565,6 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 
 // Returns the top toolbar with all its content.
 - (UIView*)configuredTopToolbar {
-  CHECK(IsContainedTabGroupEnabled());
   _topToolbarBackground = [[UIVisualEffectView alloc]
       initWithEffect:
           [UIBlurEffect
@@ -706,64 +614,6 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   return topToolbar;
 }
 
-// Returns the navigation item which contain the plus button and the overflow
-// menu.
-- (UINavigationItem*)configuredRightNavigationItems {
-  CHECK(!IsContainedTabGroupEnabled());
-  UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
-
-  UIImage* threeDotImage =
-      DefaultSymbolWithPointSize(kMenuSymbol, kLegacyMenuImageSize);
-  UIBarButtonItem* menuItem =
-      [[UIBarButtonItem alloc] initWithImage:threeDotImage
-                                        menu:[self configuredTabGroupMenu]];
-  menuItem.accessibilityIdentifier = kTabGroupOverflowMenuButtonIdentifier;
-  menuItem.accessibilityLabel = l10n_util::GetNSString(
-      IDS_IOS_TAB_GROUP_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL);
-
-  UIBarButtonItem* facePileBarButton;
-  if (_facePileView) {
-    _facePileView.userInteractionEnabled = NO;
-    _facePileView.translatesAutoresizingMaskIntoConstraints = NO;
-
-    UIButton* facePileButton =
-        [[UIButton alloc] initWithFrame:_facePileView.bounds];
-    [facePileButton addTarget:self
-                       action:@selector(didTapFacePileButton)
-             forControlEvents:UIControlEventTouchUpInside];
-    [facePileButton addSubview:_facePileView];
-    facePileButton.accessibilityIdentifier = kTabGroupFacePileButtonIdentifier;
-    if (_sharingState == SharingState::kNotShared) {
-      facePileButton.accessibilityLabel =
-          l10n_util::GetNSString(IDS_IOS_SHARED_GROUP_SHARE_GROUP);
-    } else {
-      facePileButton.accessibilityLabel =
-          l10n_util::GetNSString(IDS_IOS_SHARED_GROUP_MANAGE_GROUP);
-    }
-    [NSLayoutConstraint activateConstraints:@[
-      [facePileButton.widthAnchor constraintEqualToConstant:kFacePileWidth],
-      [facePileButton.heightAnchor constraintEqualToConstant:kFacePileHeight],
-      [facePileButton.leadingAnchor
-          constraintLessThanOrEqualToAnchor:_facePileView.leadingAnchor],
-      [facePileButton.centerYAnchor
-          constraintEqualToAnchor:_facePileView.centerYAnchor],
-      [facePileButton.trailingAnchor
-          constraintEqualToAnchor:_facePileView.trailingAnchor],
-    ]];
-
-    facePileBarButton =
-        [[UIBarButtonItem alloc] initWithCustomView:facePileButton];
-  }
-
-  NSMutableArray* buttons = [NSMutableArray array];
-  [buttons addObject:menuItem];
-  if (facePileBarButton) {
-    [buttons addObject:facePileBarButton];
-  }
-  navigationItem.rightBarButtonItems = buttons;
-  return navigationItem;
-}
-
 // Returns the colorful dot for the title, configured.
 - (UIView*)configuredTitleDot {
   UIView* dotView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -790,20 +640,11 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 
   NSMutableAttributedString* boldTitle =
       [[NSMutableAttributedString alloc] initWithString:_groupTitle];
-  if (IsContainedTabGroupEnabled()) {
-    [boldTitle addAttribute:NSFontAttributeName
-                      value:PreferredFontForTextStyle(UIFontTextStyleTitle3,
-                                                      UIFontWeightBold)
-                      range:NSMakeRange(0, _groupTitle.length)];
-  } else {
-    UIFontDescriptor* boldDescriptor = [[UIFontDescriptor
-        preferredFontDescriptorWithTextStyle:UIFontTextStyleHeadline]
-        fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+  [boldTitle addAttribute:NSFontAttributeName
+                    value:PreferredFontForTextStyle(UIFontTextStyleTitle3,
+                                                    UIFontWeightBold)
+                    range:NSMakeRange(0, _groupTitle.length)];
 
-    [boldTitle addAttribute:NSFontAttributeName
-                      value:[UIFont fontWithDescriptor:boldDescriptor size:0.0]
-                      range:NSMakeRange(0, _groupTitle.length)];
-  }
   titleLabel.attributedText = boldTitle;
 
   return titleLabel;
@@ -832,71 +673,11 @@ UIButton* TopToolbarButton(NSString* symbol_name,
     [_titleLabel.bottomAnchor constraintEqualToAnchor:titleView.bottomAnchor],
   ]];
 
-  if (IsContainedTabGroupEnabled()) {
-    [_coloredDotView.leadingAnchor
-        constraintEqualToAnchor:titleView.leadingAnchor
-                       constant:kSpace]
-        .active = YES;
-  } else {
-    [_coloredDotView.leadingAnchor
-        constraintEqualToAnchor:titleView.leadingAnchor
-                       constant:-kDotSize - kSpace]
-        .active = YES;
-  }
+  [_coloredDotView.leadingAnchor constraintEqualToAnchor:titleView.leadingAnchor
+                                                constant:kSpace]
+      .active = YES;
 
   return titleView;
-}
-
-// Returns the navigation item which contain the group title, color and the
-// right navigation items.
-- (UINavigationItem*)configuredGroupItem {
-  CHECK(!IsContainedTabGroupEnabled());
-  UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
-
-  _titleView = [self configuredTitleView];
-
-  navigationItem.titleView = _titleView;
-  navigationItem.titleView.hidden = YES;
-  navigationItem.rightBarButtonItems =
-      [self configuredRightNavigationItems].rightBarButtonItems;
-  return navigationItem;
-}
-
-// Configures the navigation bar.
-- (void)configureNavigationBar {
-  CHECK(!IsContainedTabGroupEnabled());
-  _navigationBar = [[UINavigationBar alloc] init];
-  _navigationBar.translatesAutoresizingMaskIntoConstraints = NO;
-  [self configureNavigationBarItems];
-
-  // Make the navigation bar transparent so it completly match the view.
-  [_navigationBar setBackgroundImage:[[UIImage alloc] init]
-                       forBarMetrics:UIBarMetricsDefault];
-  _navigationBar.shadowImage = [[UIImage alloc] init];
-  _navigationBar.translucent = YES;
-
-  _navigationBar.tintColor = UIColor.whiteColor;
-  _navigationBar.delegate = self;
-  [_container addSubview:_navigationBar];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [_navigationBar.topAnchor
-        constraintEqualToAnchor:_container.safeAreaLayoutGuide.topAnchor],
-    [_navigationBar.leadingAnchor
-        constraintEqualToAnchor:_container.safeAreaLayoutGuide.leadingAnchor],
-    [_navigationBar.trailingAnchor
-        constraintEqualToAnchor:_container.safeAreaLayoutGuide.trailingAnchor],
-  ]];
-}
-
-// Configures the navigation bar items.
-- (void)configureNavigationBarItems {
-  CHECK(!IsContainedTabGroupEnabled());
-  if (!_navigationBar) {
-    return;
-  }
-  _navigationBar.items =
-      @[ [self configuredBackButton], [self configuredGroupItem] ];
 }
 
 // Adds the bottom toolbar containing the "plus" button.
@@ -910,20 +691,13 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   bottomToolbar.page =
       _incognito ? TabGridPageIncognitoTabs : TabGridPageRegularTabs;
   bottomToolbar.mode = TabGridMode::kNormal;
-  if (!IsContainedTabGroupEnabled()) {
-    [bottomToolbar
-        setScrollViewScrolledToEdge:self.gridViewController.scrolledToBottom];
-  }
   bottomToolbar.isInTabGroupView = YES;
 
   [_container addSubview:bottomToolbar];
 
-  CGFloat bottomMargin =
-      IsContainedTabGroupEnabled() ? -kBottomToolbarMargin : 0;
-
   [NSLayoutConstraint activateConstraints:@[
     [bottomToolbar.bottomAnchor constraintEqualToAnchor:_container.bottomAnchor
-                                               constant:bottomMargin],
+                                               constant:-kBottomToolbarMargin],
     [bottomToolbar.leadingAnchor
         constraintEqualToAnchor:_container.leadingAnchor],
     [bottomToolbar.trailingAnchor
@@ -1045,18 +819,10 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 - (void)ungroup {
   // Shows the confirmation to ungroup the current group (keep the tab) and
   // close the view. Do nothing when a user cancels the action.
-  if (IsContainedTabGroupEnabled()) {
-    [_handler
-        showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
-                                    group:_tabGroup->GetWeakPtr()
-                               sourceView:_menuButton];
-  } else {
-    [_handler
-        showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
-                                    group:_tabGroup->GetWeakPtr()
-                         sourceButtonItem:_navigationBar.topItem
-                                              .rightBarButtonItems[0]];
-  }
+  [_handler
+      showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
+                                  group:_tabGroup->GetWeakPtr()
+                             sourceView:_menuButton];
 }
 
 // Closes the tabs and deletes the current group and closes the view.
@@ -1069,18 +835,10 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 - (void)deleteGroup {
   // Shows the confirmation to delete the tabs, delete the current group and
   // close the view. Do nothing when a user cancels the action.
-  if (IsContainedTabGroupEnabled()) {
-    [_handler
-        showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
-                                    group:_tabGroup->GetWeakPtr()
-                               sourceView:_menuButton];
-  } else {
-    [_handler
-        showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
-                                    group:_tabGroup->GetWeakPtr()
-                         sourceButtonItem:_navigationBar.topItem
-                                              .rightBarButtonItems[0]];
-  }
+  [_handler
+      showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
+                                  group:_tabGroup->GetWeakPtr()
+                             sourceView:_menuButton];
 }
 
 // Deletes the shared group and closes the view.
@@ -1088,18 +846,10 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   CHECK(_gridViewController.shared);
   CHECK_EQ(_sharingState, SharingState::kSharedAndOwned);
 
-  if (IsContainedTabGroupEnabled()) {
-    [_handler
-        startLeaveOrDeleteSharedGroup:_tabGroup->GetWeakPtr()
-                            forAction:TabGroupActionType::kDeleteSharedTabGroup
-                           sourceView:_menuButton];
-  } else {
-    [_handler
-        startLeaveOrDeleteSharedGroup:_tabGroup->GetWeakPtr()
-                            forAction:TabGroupActionType::kDeleteSharedTabGroup
-                     sourceButtonItem:_navigationBar.topItem
-                                          .rightBarButtonItems[0]];
-  }
+  [_handler
+      startLeaveOrDeleteSharedGroup:_tabGroup->GetWeakPtr()
+                          forAction:TabGroupActionType::kDeleteSharedTabGroup
+                         sourceView:_menuButton];
 }
 
 // Leaves the shared group and closes the view.
@@ -1107,18 +857,10 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   CHECK(_gridViewController.shared);
   CHECK_EQ(_sharingState, SharingState::kShared);
 
-  if (IsContainedTabGroupEnabled()) {
-    [_handler
-        startLeaveOrDeleteSharedGroup:_tabGroup->GetWeakPtr()
-                            forAction:TabGroupActionType::kLeaveSharedTabGroup
-                           sourceView:_menuButton];
-  } else {
-    [_handler
-        startLeaveOrDeleteSharedGroup:_tabGroup->GetWeakPtr()
-                            forAction:TabGroupActionType::kLeaveSharedTabGroup
-                     sourceButtonItem:_navigationBar.topItem
-                                          .rightBarButtonItems[0]];
-  }
+  [_handler
+      startLeaveOrDeleteSharedGroup:_tabGroup->GetWeakPtr()
+                          forAction:TabGroupActionType::kLeaveSharedTabGroup
+                         sourceView:_menuButton];
 }
 
 // Called when the size class changed.
@@ -1130,30 +872,13 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 // Updates the safe area inset of the grid based on this VC safe areas and the
 // bottom toolbar, except the top one as the grid is below a toolbar.
 - (void)updateGridInsets {
-  if (IsContainedTabGroupEnabled()) {
-    _gridViewController.contentInsets = UIEdgeInsetsMake(
-        kTopToolbarHeight, 0,
-        _bottomToolbar.intrinsicContentSize.height + kBottomToolbarMargin, 0);
-    return;
-  }
-  BOOL shouldUseCompactLayout = self.traitCollection.verticalSizeClass ==
-                                    UIUserInterfaceSizeClassRegular &&
-                                self.traitCollection.horizontalSizeClass ==
-                                    UIUserInterfaceSizeClassCompact;
-  CGFloat bottomToolbarInset =
-      shouldUseCompactLayout ? _bottomToolbar.intrinsicContentSize.height : 0;
-
-  UIEdgeInsets safeAreaInsets = self.view.safeAreaInsets;
-  safeAreaInsets.top = 0;
-  safeAreaInsets.bottom += bottomToolbarInset;
-  _gridViewController.contentInsets = safeAreaInsets;
+  _gridViewController.contentInsets = UIEdgeInsetsMake(
+      kTopToolbarHeight, 0,
+      _bottomToolbar.intrinsicContentSize.height + kBottomToolbarMargin, 0);
 }
 
 // Updates the constraints of the container based on the size class.
 - (void)updateContainerConstraints {
-  if (!IsContainedTabGroupEnabled()) {
-    return;
-  }
   BOOL isNarrowWidth =
       self.traitCollection.horizontalSizeClass ==
           UIUserInterfaceSizeClassCompact &&

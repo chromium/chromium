@@ -1204,14 +1204,6 @@ bool IsRunDefaultStatusCheckEnabled() {
   return base::FeatureList::IsEnabled(kRunDefaultStatusCheck);
 }
 
-BASE_FEATURE(kContainedTabGroup,
-             "ContainedTabGroup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsContainedTabGroupEnabled() {
-  return base::FeatureList::IsEnabled(kContainedTabGroup);
-}
-
 BASE_FEATURE(kBestOfAppFRE, "BestOfAppFRE", base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsBestOfAppFREEnabled() {

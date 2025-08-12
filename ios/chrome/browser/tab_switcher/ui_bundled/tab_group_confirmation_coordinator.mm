@@ -27,8 +27,6 @@
   TabGroupActionType _secondaryActionType;
   // The source view where the confirmation dialog anchors to.
   UIView* _sourceView;
-  // The source button item where the confirmation dialog anchors to.
-  UIBarButtonItem* _sourceButtonItem;
   // The action sheet coordinator, if one is currently being shown.
   ActionSheetCoordinator* _actionSheetCoordinator;
   // The alert coordinator, if one is currently being shown.
@@ -43,19 +41,6 @@
   if (self) {
     _actionType = actionType;
     _sourceView = sourceView;
-    _canCancel = YES;
-  }
-  return self;
-}
-
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                actionType:(TabGroupActionType)actionType
-                          sourceButtonItem:(UIBarButtonItem*)sourceButtonItem {
-  self = [super initWithBaseViewController:viewController browser:browser];
-  if (self) {
-    _actionType = actionType;
-    _sourceButtonItem = sourceButtonItem;
     _canCancel = YES;
   }
   return self;
@@ -84,24 +69,13 @@
     return;
   }
 
-  if (_sourceView) {
-    _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
-        initWithBaseViewController:self.baseViewController
-                           browser:self.browser
-                             title:[self sheetTitle]
-                           message:[self sheetMessage]
-                              rect:_sourceView.bounds
-                              view:_sourceView];
-  } else {
-    CHECK(_sourceButtonItem);
-    _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
-        initWithBaseViewController:self.baseViewController
-                           browser:self.browser
-                             title:[self sheetTitle]
-                           message:[self sheetMessage]
-                     barButtonItem:_sourceButtonItem];
-  }
-
+  _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                           title:[self sheetTitle]
+                         message:[self sheetMessage]
+                            rect:_sourceView.bounds
+                            view:_sourceView];
   _actionSheetCoordinator.alertStyle = _showAsAlert
                                            ? UIAlertControllerStyleAlert
                                            : UIAlertControllerStyleActionSheet;

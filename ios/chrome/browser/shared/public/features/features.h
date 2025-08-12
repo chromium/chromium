@@ -1016,12 +1016,6 @@ BASE_DECLARE_FEATURE(kRunDefaultStatusCheck);
 // Returns whether `kRunDefaultStatusCheck` is enabled.
 bool IsRunDefaultStatusCheckEnabled();
 
-// Feature flag to have the tab group visually contained.
-BASE_DECLARE_FEATURE(kContainedTabGroup);
-
-// Whether the feature associated with contained tab group is enabled.
-bool IsContainedTabGroupEnabled();
-
 // Feature flag to highlight the app's features during the FRE.
 BASE_DECLARE_FEATURE(kBestOfAppFRE);
 
