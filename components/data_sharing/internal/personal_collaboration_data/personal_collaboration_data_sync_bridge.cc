@@ -107,6 +107,14 @@ PersonalCollaborationDataSyncBridge::~PersonalCollaborationDataSyncBridge() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+void PersonalCollaborationDataSyncBridge::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void PersonalCollaborationDataSyncBridge::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 std::unique_ptr<syncer::MetadataChangeList>
 PersonalCollaborationDataSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -8,6 +8,8 @@
 #include <optional>
 #include <unordered_map>
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "base/uuid.h"
 #include "components/sync/model/data_type_store.h"
@@ -23,6 +25,21 @@ namespace data_sharing::personal_collaboration_data {
 // Sync bridge implementation for SHARED_TAB_GROUP_ACCOUNT_DATA data type.
 class PersonalCollaborationDataSyncBridge : public syncer::DataTypeSyncBridge {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    Observer() = default;
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+    ~Observer() override = default;
+
+    // Called when specifics have changed.
+    virtual void OnEntityAddedOrUpdatedFromSync(
+        const sync_pb::SharedTabGroupAccountDataSpecifics& data) {}
+  };
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   explicit PersonalCollaborationDataSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       syncer::OnceDataTypeStoreFactory data_type_store_factory);
@@ -101,6 +118,9 @@ class PersonalCollaborationDataSyncBridge : public syncer::DataTypeSyncBridge {
   // In-memory data cache of specifics, keyed by its storage key.
   std::unordered_map<std::string, sync_pb::SharedTabGroupAccountDataSpecifics>
       specifics_;
+
+  // List of observers.
+  base::ObserverList<PersonalCollaborationDataSyncBridge::Observer> observers_;
 
   // Allows safe temporary use of the PersonalCollaborationDataSyncBridge
   // object if it exists at the time of use.

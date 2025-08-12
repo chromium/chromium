@@ -6,17 +6,30 @@
 
 #include <memory>
 
+#include "base/test/task_environment.h"
+#include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace data_sharing::personal_collaboration_data {
 
 class PersonalCollaborationDataServiceImplTest : public testing::Test {
  public:
+  PersonalCollaborationDataServiceImplTest()
+      : data_type_store_(
+            syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
+
   void SetUp() override {
-    service_ = std::make_unique<PersonalCollaborationDataServiceImpl>();
+    service_ = std::make_unique<PersonalCollaborationDataServiceImpl>(
+        mock_processor_.CreateForwardingProcessor(),
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
+            data_type_store_.get()));
   }
 
  protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  std::unique_ptr<syncer::DataTypeStore> data_type_store_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<PersonalCollaborationDataServiceImpl> service_;
 };
 

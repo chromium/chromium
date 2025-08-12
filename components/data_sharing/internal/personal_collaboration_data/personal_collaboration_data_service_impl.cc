@@ -8,8 +8,14 @@
 
 namespace data_sharing::personal_collaboration_data {
 
-PersonalCollaborationDataServiceImpl::PersonalCollaborationDataServiceImpl() =
-    default;
+PersonalCollaborationDataServiceImpl::PersonalCollaborationDataServiceImpl(
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+    syncer::OnceDataTypeStoreFactory data_type_store_factory)
+    : bridge_(std::make_unique<PersonalCollaborationDataSyncBridge>(
+          std::move(change_processor),
+          std::move(data_type_store_factory))) {
+  bridge_observer_.Observe(bridge_.get());
+}
 
 PersonalCollaborationDataServiceImpl::~PersonalCollaborationDataServiceImpl() =
     default;
@@ -46,9 +52,13 @@ void PersonalCollaborationDataServiceImpl::DeleteSpecifics(
 }
 
 bool PersonalCollaborationDataServiceImpl::IsInitialized() const {
-  // TODO(haileywang): Implement actual logic to check if the service has
-  // finished loading initial data or is ready for use.
-  return is_initialized_;
+  return bridge_->IsInitialized();
+}
+
+void PersonalCollaborationDataServiceImpl::OnEntityAddedOrUpdatedFromSync(
+    const sync_pb::SharedTabGroupAccountDataSpecifics& data) {
+  // TODO(haileywang): Implement actual logic to update tab group details.
+  NOTREACHED();
 }
 
 }  // namespace data_sharing::personal_collaboration_data
