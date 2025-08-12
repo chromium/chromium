@@ -38,10 +38,6 @@ enum PaintPreviewStatus {
   kFailed,
 };
 
-// Used in PaintPreviewCaptureParams::clip_rect to center the capture around the
-// scroll offset.
-const int32 kCenterOnScrollOffset = -1;
-
 // The collection of parameters needed for a recording of a render frame.
 struct PaintPreviewCaptureParams {
   // The strategy for where to store the serialized SkPictures resulting from
@@ -55,11 +51,14 @@ struct PaintPreviewCaptureParams {
   // unclipped and will default to the frame (document) size. Values for
   // width/height larger than the document size will be clamped to the
   // size of the document.
-  //
-  // A value of `kCenterOnScrollOffset` for x/y will center the x/y position of
-  // the capture about the current scroll offset if a width/height are
-  // specified.
   gfx.mojom.Rect clip_rect;
+
+  // If not `kNone`, overrides `clip_rect`'s x coordinate with a
+  // renderer-computed value.
+  ClipCoordOverride clip_x_coord_override = kNone;
+  // If not `kNone`, overrides `clip_rect`'s y coordinate with a
+  // renderer-computed value.
+  ClipCoordOverride clip_y_coord_override = kNone;
 
   // Set to true if the clip rect is only a hint as to size.
   bool clip_rect_is_hint;

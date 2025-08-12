@@ -19,6 +19,7 @@
 #include "components/paint_preview/browser/file_manager.h"
 #include "components/paint_preview/browser/warm_compositor.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
+#include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "content/public/browser/render_process_host.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/gfx/geometry/rect.h"
@@ -316,10 +317,14 @@ void PaintPreviewTabService::CaptureTabInternal(
   capture_params.render_frame_host = rfh;
   capture_params.root_dir = &file_path.value();
   capture_params.persistence = RecordingPersistence::kFileSystem;
+  // Note that the clip_rect's origin is ignored, due to
+  // `clip_x_coord_override` and `clip_y_coord_override`.
   capture_params.clip_rect =
-      gfx::Rect(paint_preview::mojom::kCenterOnScrollOffset,
-                paint_preview::mojom::kCenterOnScrollOffset,
-                kMaxCaptureSizePixels, kMaxCaptureSizePixels);
+      gfx::Rect(0, 0, kMaxCaptureSizePixels, kMaxCaptureSizePixels);
+  capture_params.clip_x_coord_override =
+      paint_preview::mojom::ClipCoordOverride::kCenterOnScrollOffset;
+  capture_params.clip_y_coord_override =
+      paint_preview::mojom::ClipCoordOverride::kCenterOnScrollOffset;
   capture_params.capture_links = true;
   capture_params.max_per_capture_size = kMaxPerCaptureSizeBytes;
   capture_params.max_decoded_image_size_bytes = kMaxDecodedImageSizeBytes;

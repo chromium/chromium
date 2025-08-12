@@ -28,6 +28,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.paint_preview.mojom.ClipCoordOverride;
 
 /** Unit tests for the Long Screenshot Tab Service Test. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -108,7 +109,8 @@ public class LongScreenshotsTabServiceJUnitTest {
      */
     @Test
     public void testCaptureTabError() {
-        mLongScreenshotsTabService.captureTab(mTab, new Rect(), false);
+        mLongScreenshotsTabService.captureTab(
+                mTab, new Rect(), false, ClipCoordOverride.NONE, ClipCoordOverride.NONE);
         assertTrue(mProcessor.getProcessCapturedTabCalled());
         assertEquals(Status.WEB_CONTENTS_GONE, mProcessor.getStatus());
         assertEquals(0, mProcessor.getNativeCaptureResultPtr());
@@ -116,7 +118,8 @@ public class LongScreenshotsTabServiceJUnitTest {
         mLongScreenshotsTabService.onNativeDestroyed();
         mProcessor = new TestCaptureProcessor();
         mLongScreenshotsTabService.setCaptureProcessor(mProcessor);
-        mLongScreenshotsTabService.captureTab(mTab, new Rect(), false);
+        mLongScreenshotsTabService.captureTab(
+                mTab, new Rect(), false, ClipCoordOverride.NONE, ClipCoordOverride.NONE);
 
         assertEquals(0, mLongScreenshotsTabService.getNativeBaseService());
         assertTrue(mProcessor.getProcessCapturedTabCalled());

@@ -27,6 +27,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.paint_preview.mojom.ClipCoordOverride;
 
 /** Tests for the Paint Preview Tab Manager. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -94,7 +95,11 @@ public class LongScreenshotsTabServiceTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mLongScreenshotsTabService.captureTab(
-                            mTab, new Rect(0, 0, 100, 100), /* inMemory= */ false);
+                            mTab,
+                            new Rect(0, 0, 100, 100),
+                            /* inMemory= */ false,
+                            ClipCoordOverride.NONE,
+                            ClipCoordOverride.NONE);
                 });
 
         CriteriaHelper.pollUiThread(
@@ -120,7 +125,11 @@ public class LongScreenshotsTabServiceTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mLongScreenshotsTabService.captureTab(
-                            mTab, new Rect(0, 0, 100, 100), /* inMemory= */ true);
+                            mTab,
+                            new Rect(0, 0, 100, 100),
+                            /* inMemory= */ true,
+                            ClipCoordOverride.NONE,
+                            ClipCoordOverride.NONE);
                 });
 
         CriteriaHelper.pollUiThread(

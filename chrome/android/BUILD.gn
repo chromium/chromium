@@ -661,6 +661,7 @@ if (_is_default_toolchain) {
       "//components/page_info/android:page_info_action_enum_java",
       "//components/page_info/core:proto_java",
       "//components/paint_preview/browser/android:java",
+      "//components/paint_preview/common/mojom:mojom_java",
       "//components/paint_preview/player/android:java",
       "//components/password_manager/core/browser:password_manager_java_enums",
       "//components/payments/content/android:java",

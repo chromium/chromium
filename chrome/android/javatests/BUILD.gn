@@ -1149,7 +1149,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser.share") {
     "src/org/chromium/chrome/browser/share/ShareDelegateImplTest.java",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//components/paint_preview/common/mojom:mojom_java",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.signin") {

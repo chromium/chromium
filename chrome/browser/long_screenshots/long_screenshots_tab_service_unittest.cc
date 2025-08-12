@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
+#include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -150,7 +151,9 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTab) {
 
   auto* service = GetService();
   service->CaptureTab(kTabId, GURL::EmptyGURL(), web_contents(), 0, 0, 1000,
-                      1000, false);
+                      1000, false,
+                      paint_preview::mojom::ClipCoordOverride::kNone,
+                      paint_preview::mojom::ClipCoordOverride::kNone);
   task_environment()->RunUntilIdle();
 
   auto file_manager = service->GetFileMixin()->GetFileManager();
@@ -185,7 +188,9 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabInMemory) {
 
   auto* service = GetService();
   service->CaptureTab(kTabId, GURL::EmptyGURL(), web_contents(), 0, 0, 1000,
-                      1000, true);
+                      1000, true,
+                      paint_preview::mojom::ClipCoordOverride::kNone,
+                      paint_preview::mojom::ClipCoordOverride::kNone);
   task_environment()->RunUntilIdle();
 
   // No file should have been created.
@@ -211,7 +216,9 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabTwice) {
 
   auto* service = GetService();
   service->CaptureTab(kTabId, GURL::EmptyGURL(), web_contents(), 0, 0, 1000,
-                      1000, false);
+                      1000, false,
+                      paint_preview::mojom::ClipCoordOverride::kNone,
+                      paint_preview::mojom::ClipCoordOverride::kNone);
 
   task_environment()->RunUntilIdle();
   auto file_manager = service->GetFileMixin()->GetFileManager();
@@ -240,7 +247,9 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabTwice) {
       paint_preview::mojom::PaintPreviewStatus::kOk,
       paint_preview::mojom::PaintPreviewCaptureResponse::New());
   service->CaptureTab(kTabId, GURL::EmptyGURL(), web_contents(), 1000, 1000,
-                      2000, 2000, false);
+                      2000, 2000, false,
+                      paint_preview::mojom::ClipCoordOverride::kNone,
+                      paint_preview::mojom::ClipCoordOverride::kNone);
   task_environment()->RunUntilIdle();
 
   service->GetFileMixin()->GetTaskRunner()->PostTaskAndReplyWithResult(
@@ -288,7 +297,9 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabFailed) {
 
   auto* service = GetService();
   service->CaptureTab(kTabId, GURL::EmptyGURL(), web_contents(), 0, 0, 1000,
-                      1000, false);
+                      1000, false,
+                      paint_preview::mojom::ClipCoordOverride::kNone,
+                      paint_preview::mojom::ClipCoordOverride::kNone);
   task_environment()->RunUntilIdle();
 
   auto file_manager = service->GetFileMixin()->GetFileManager();

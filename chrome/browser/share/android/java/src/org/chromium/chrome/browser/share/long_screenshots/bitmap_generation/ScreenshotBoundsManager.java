@@ -15,6 +15,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.RenderCoordinates;
+import org.chromium.paint_preview.mojom.ClipCoordOverride;
 import org.chromium.ui.display.DisplayAndroid;
 
 /**
@@ -79,13 +80,9 @@ public class ScreenshotBoundsManager {
 
     /** Defines the bounds of the capture. */
     private void calculateCaptureBounds() {
-        // Rect top == -1 will default the capture to be centered about the scroll offset.
-        // This will capture 1/2 NUM_VIEWPORTS_CAPTURE above and below the scroll offset if
-        // possible. If the amount above or below would exceed the document bounds, this will
-        // clamp the capture to the start/end and extend in the direction with remaining room.
         // We subtract -1 from the bottom so mCaptureRect.height() will be a multiple of
         // mClipHeightScaled.
-        mCaptureRect = new Rect(0, -1, 0, mClipHeightScaled * NUM_VIEWPORTS_CAPTURE - 1);
+        mCaptureRect = new Rect(0, 0, 0, mClipHeightScaled * NUM_VIEWPORTS_CAPTURE - 1);
     }
 
     /**
@@ -93,6 +90,23 @@ public class ScreenshotBoundsManager {
      */
     public Rect getCaptureBounds() {
         return mCaptureRect;
+    }
+
+    /**
+     * @return The clip X coordinate override of the capture.
+     */
+    public @ClipCoordOverride.EnumType int getClipXCoordinateOverride() {
+        return ClipCoordOverride.NONE;
+    }
+
+    /**
+     * @return The clip Y coordinate override of the capture.
+     */
+    public @ClipCoordOverride.EnumType int getClipYCoordinateOverride() {
+        // This will capture 1/2 NUM_VIEWPORTS_CAPTURE above and below the scroll offset if
+        // possible. If the amount above or below would exceed the document bounds, this will
+        // clamp the capture to the start/end and extend in the direction with remaining room.
+        return ClipCoordOverride.CENTER_ON_SCROLL_OFFSET;
     }
 
     /** Sets the composited rect. */

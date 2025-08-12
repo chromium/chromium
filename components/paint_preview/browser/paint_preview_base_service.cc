@@ -22,6 +22,15 @@
 
 namespace paint_preview {
 
+using CaptureParams = PaintPreviewBaseService::CaptureParams;
+
+CaptureParams::CaptureParams() = default;
+
+CaptureParams::CaptureParams(const CaptureParams&) = default;
+CaptureParams& CaptureParams::operator=(const CaptureParams&) = default;
+CaptureParams::CaptureParams(CaptureParams&&) = default;
+CaptureParams& CaptureParams::operator=(CaptureParams&&) = default;
+
 PaintPreviewBaseService::PaintPreviewBaseService(
     std::unique_ptr<PaintPreviewFileMixin> file_mixin,
     std::unique_ptr<PaintPreviewPolicy> policy,

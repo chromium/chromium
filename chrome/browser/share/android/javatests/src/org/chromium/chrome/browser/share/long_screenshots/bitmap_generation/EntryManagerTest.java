@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
@@ -82,7 +83,8 @@ public class EntryManagerTest {
                 ArgumentCaptor.forClass(LongScreenshotsTabService.CaptureProcessor.class);
         mInOrder.verify(mTabServiceMock).setCaptureProcessor(captor.capture());
         mProcessor = captor.getValue();
-        mInOrder.verify(mTabServiceMock).captureTab(eq(mTabMock), any(), eq(false));
+        mInOrder.verify(mTabServiceMock)
+                .captureTab(eq(mTabMock), any(), eq(false), anyInt(), anyInt());
         mInOrder.verify(mObserverMock).onStatusChange(eq(EntryStatus.CAPTURE_IN_PROGRESS));
         mGenerator = mEntryManager.getBitmapGeneratorForTesting();
         mGenerator.setCompositorFactoryForTesting(

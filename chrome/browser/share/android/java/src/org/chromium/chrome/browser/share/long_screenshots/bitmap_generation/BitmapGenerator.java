@@ -92,7 +92,12 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
             mTabService = LongScreenshotsTabServiceFactory.getServiceInstance();
         }
         mTabService.setCaptureProcessor(this);
-        mTabService.captureTab(mTab, mBoundsManager.getCaptureBounds(), inMemory);
+        mTabService.captureTab(
+                mTab,
+                mBoundsManager.getCaptureBounds(),
+                inMemory,
+                mBoundsManager.getClipXCoordinateOverride(),
+                mBoundsManager.getClipYCoordinateOverride());
         mScaleFactor = 0f;
     }
 

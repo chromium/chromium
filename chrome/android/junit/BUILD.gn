@@ -985,7 +985,10 @@ if (is_android) {
       "src/org/chromium/chrome/browser/share/ShareHelperUnitTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//components/paint_preview/common/mojom:mojom_java",
+    ]
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.signin") {
