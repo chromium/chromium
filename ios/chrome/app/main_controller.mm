@@ -86,6 +86,7 @@
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
+#import "ios/chrome/browser/default_browser/model/install_attribution/install_attribution_helper.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_app_agent.h"
@@ -226,6 +227,10 @@ NSString* const kAutoDeletionFileRemoval = @"AutoDeletionFileRemoval";
 
 // Constant for deferred default browser status API check.
 NSString* const kDefaultBrowserStatusCheck = @"DefaultBrowserStatusCheck";
+
+// Constant for deferred logging of install attribution data from shared user
+// defaults.
+NSString* const kLogInstallAttribution = @"LogInstallAttribution";
 
 // Constant for enabling share extension for multi-profile.
 NSString* const kShareExtensionForMultiprofileKey =
@@ -1541,6 +1546,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   [self scheduleMemoryExperimentation];
   [self scheduleAutoDeletionFileRemoval];
   [self scheduleDefaultBrowserStatusCheck];
+  [self scheduleLogInstallAttribution];
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
   [self scheduleDumpDocumentsStatistics];
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
@@ -1605,6 +1611,14 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
                     default_status::TriggerDefaultStatusCheck();
                   }];
 #endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
+}
+
+- (void)scheduleLogInstallAttribution {
+  [_appState.deferredRunner
+      enqueueBlockNamed:kLogInstallAttribution
+                  block:^{
+                    install_attribution::LogInstallAttribution();
+                  }];
 }
 
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)

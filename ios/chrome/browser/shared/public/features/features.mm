@@ -1276,3 +1276,11 @@ bool IsDefaultBrowserOffCyclePromoEnabled() {
 #endif
   return false;
 }
+
+BASE_FEATURE(kIOSLogInstallAttribution,
+             "IOSLogInstallAttribution",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsInstallAttributionLoggingEnabled() {
+  return base::FeatureList::IsEnabled(kIOSLogInstallAttribution);
+}

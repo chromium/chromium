@@ -2205,6 +2205,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.GMOSKOInstallAttribution" enum="IOSInstallAttributionType"
+    expires_after="2026-08-04">
+  <owner>gujen@google.com</owner>
+  <owner>sebsg@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    For installs that can be attributed to the acceptance of a recent external
+    promo, records whether the acceptance was within the lat 24 hours or the
+    last 15 days. Recorded once at app startup, once per promo acceptance.
+  </summary>
+</histogram>
+
 <histogram name="IOS.GoogleOne.Outcome.{EntryPoint}" enum="GoogleOneOutcome"
     expires_after="2026-03-12">
   <owner>olivierrobin@chromium.org</owner>
