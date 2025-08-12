@@ -234,6 +234,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="WithoutCreateAnswer"/>
   <int value="3" label="WithoutCreateOffer"/>
   <int value="4" label="NumberOfContents"/>
+  <int value="5" label="CurrentDescriptionFailedToParse"/>
   <int value="20" label="IceOptions"/>
   <int value="21" label="IcePwd"/>
   <int value="22" label="IceUfrag"/>
@@ -244,6 +245,8 @@ chromium-metrics-reviews@google.com.
   <int value="27" label="Ssrcs"/>
   <int value="28" label="IceOptionsRenomination"/>
   <int value="29" label="Direction"/>
+  <int value="30" label="RtcpMux"/>
+  <int value="31" label="IceOptionsTrickle"/>
   <int value="40" label="RtpHeaderExtensionsRemoved"/>
   <int value="41" label="RtpHeaderExtensionsAdded"/>
   <int value="42" label="RtpHeaderExtensionsModified"/>
@@ -260,6 +263,7 @@ chromium-metrics-reviews@google.com.
   <int value="70" label="AudioCodecsFmtp"/>
   <int value="71" label="AudioCodecsRtcpFb"/>
   <int value="72" label="AudioCodecsRtcpFbRrtr"/>
+  <int value="73" label="AudioCodecsRtcpReducedSize"/>
   <int value="80" label="VideoCodecsRemoved"/>
   <int value="81" label="VideoCodecsAdded"/>
   <int value="82" label="VideoCodecsReordered"/>
@@ -269,6 +273,7 @@ chromium-metrics-reviews@google.com.
   <int value="86" label="VideoCodecsRtcpFb"/>
   <int value="87" label="VideoCodecsAddedWithRawPacketization"/>
   <int value="88" label="VideoCodecsModifiedWithRawPacketization"/>
+  <int value="89" label="VideoCodecsRtcpReducedSize"/>
 </enum>
 
 <enum name="SrtpErrorCode">
