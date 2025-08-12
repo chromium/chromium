@@ -14,7 +14,16 @@
 
 namespace blink {
 
-// Manages process-wide proactive memory purging.
+// MemoryPurgeManager is responsible for purging memory in the renderer process.
+// It does so by simulating a critical memory pressure event, which triggers
+// memory release in various components (e.g., V8, Blink caches). On Android, it
+// also triggers compaction of the process' memory when all pages are frozen.
+//
+// The primary triggers for a memory purge are:
+// 1. The renderer process being backgrounded.
+// 2. A page being frozen (e.g., added to the back-forward cache).
+//
+// This helps to reduce the memory footprint of backgrounded renderers.
 class PLATFORM_EXPORT MemoryPurgeManager {
  public:
   explicit MemoryPurgeManager(
@@ -24,33 +33,30 @@ class PLATFORM_EXPORT MemoryPurgeManager {
   ~MemoryPurgeManager();
 
   // Called when a page is created or destroyed, to maintain the total count of
-  // pages owned by a renderer. MemoryPurgeManager assumes that a page is *not*
-  // frozen on creation.
+  // pages owned by a renderer. A page is assumed to be not frozen upon
+  // creation.
   void OnPageCreated();
   void OnPageDestroyed(bool frozen);
 
-  // Called when a page is frozen. If all pages are frozen or
-  // |kFreezePurgeMemoryAllPagesFrozen| is disabled, and the renderer is
-  // backgrounded, ensures that a delayed memory purge is scheduled. If the
-  // timer is already running, uses the smallest requested delay.
+  // Called when a page is frozen. This may schedule a purge if the renderer is
+  // backgrounded and, if the `kMemoryPurgeOnFreezeLimit` feature is enabled, no
+  // purge occurred while a page was frozen in the current background session.
   void OnPageFrozen(base::MemoryReductionTaskContext called_from =
                         base::MemoryReductionTaskContext::kDelayExpired);
 
-  // Called when a page is resumed (unfrozen). Has the effect of unsuppressing
-  // memory pressure notifications.
+  // Called when a page is resumed (unfrozen). This cancels a delayed purge
+  // scheduled by OnPageFrozen(), unsuppresses memory pressure notifications and
+  // cancels pending Android self-compaction. Note that this does not cancel a
+  // delayed purge scheduled by OnRendererBackgrounded().
   void OnPageResumed();
 
-  // Called when the renderer's process priority changes.
+  // Tracks the renderer's background/foreground state.
   void SetRendererBackgrounded(bool backgrounded);
 
-  // Called when the renderer is backgrounded. Starts a timer responsible for
-  // performing a memory purge upon expiry, if the
-  // kPurgeRendererMemoryWhenBackgrounded feature is enabled. If the timer is
-  // already running, uses the smallest requested delay.
+  // Called when the renderer is backgrounded. May schedule a delayed purge.
   void OnRendererBackgrounded();
 
-  // Called when the renderer is foregrounded. Has the effect of cancelling a
-  // queued memory purge.
+  // Called when the renderer is foregrounded. Cancels any delayed purge.
   void OnRendererForegrounded();
 
   void SetPurgeDisabledForTesting(bool disabled) {
@@ -58,21 +64,22 @@ class PLATFORM_EXPORT MemoryPurgeManager {
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  // Sets a callback called with |false| when transitioning from "all pages
-  // frozen" to "not all pages frozen" or |true| when transitioning from "not
-  // all pages frozen" to "all pages frozen".
-  //
-  // Currently only used on Android.
+  // Sets a callback that is run when the state of all pages being frozen
+  // changes. It's called with `true` when transitioning to "all pages frozen"
+  // and `false` otherwise.
   void SetOnAllPagesFrozenCallback(
       base::RepeatingCallback<void(bool)> callback);
 #endif
 
-  // Disabled on Android, as it is not useful there. This is because we freeze
-  // tabs, and trigger a critical memory pressure notification at that point.
-  // This has been confirmed to not be necessary on Android in a field trial.
-  // See https://bugs.chromium.org/p/chromium/issues/detail?id=1335069#c3 for
-  // details.
-  static constexpr bool kPurgeEnabled =
+  // Purge on renderer backgrounding is disabled on Android. On mobile Android,
+  // it's redundant with the purge that occurs on page freezing (unlike on
+  // desktop, freezing is applied to most background pages on mobile Android). A
+  // field trial confirmed that an additional purge is not necessary. See
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1335069#c3.
+  //
+  // TODO(thiabaud): Since freezing is disabled on desktop Android, maybe the
+  // purge on backgrounding should be enabled?
+  static constexpr bool kPurgeOnBackgroundingEnabled =
 #if BUILDFLAG(IS_ANDROID)
       false
 #else
@@ -85,60 +92,54 @@ class PLATFORM_EXPORT MemoryPurgeManager {
   static constexpr base::TimeDelta kDefaultMaxTimeToPurgeAfterBackgrounded =
       base::Minutes(4);
 
-  // Only one second, not to delay, but to make sure that it runs after the
-  // non-delayed tasks.
+  // A small delay used when purging after a page freeze to ensure it runs after
+  // other non-delayed tasks.
   static constexpr base::TimeDelta kFreezePurgeDelay =
       base::TimeDelta(base::Seconds(1));
 
-  // Recorded a metric with whether or not all pages are currently frozen.
+  // Records a metric indicating whether all pages are currently frozen.
   void RecordAreAllPagesFrozenMetric(std::string_view name);
 
  private:
-  // Starts |purge_timer_| to trigger a delayed memory purge. If the timer is
-  // already running, starts the timer with the smaller of the requested delay
-  // and the remaining delay.
+  // Starts `purge_timer_` to trigger a delayed memory purge if the timer is not
+  // already running.
   void RequestMemoryPurgeWithDelay(base::TimeDelta delay);
 
-  // Called when the timer expires. Simulates a critical memory pressure signal
-  // to purge memory. Suppresses memory pressure notifications if all pages
-  // are frozen.
+  // Simulates a critical memory pressure signal to purge memory. May also
+  // suppress future memory pressure notifications and trigger self-compaction.
   void PerformMemoryPurge();
 
-  // Returns true if:
-  // - The kPurgeRendererMemoryWhenBackgrounded feature is enabled, and the
-  //   renderer is awaiting a purge after being backgrounded.
-  //
-  // or if all of the following are true:
-  //
-  // - The renderer is backgrounded.
-  // - All pages are frozen or kFreezePurgeMemoryAllPagesFrozen is disabled.
+  // Returns true if a memory purge is allowed. A purge is allowed if there's at
+  // least one page and either a background purge is pending or the renderer is
+  // backgrounded.
   bool CanPurge() const;
 
-  // If we transitioned between "all pages frozen" and "not all pages frozen",
-  // run the callback. |were_all_frozen| indicates whether all pages were
-  // previously frozen, before the potential state transition.
+  // If the "all pages frozen" state has changed since the last call, runs
+  // `all_pages_frozen_callback_`. `were_all_frozen` is the state before the
+  // potential change.
   void MaybeRunAllPagesFrozenCallback(bool were_all_frozen);
 
-  // Returns true if |total_page_count_| == |frozen_page_count_|
+  // Returns true if all pages are frozen, or if there are no pages.
   bool AreAllPagesFrozen() const;
 
+  // Returns a randomized time delta for scheduling a purge after being
+  // backgrounded.
   base::TimeDelta GetTimeToPurgeAfterBackgrounded() const;
 
   bool purge_disabled_for_testing_ = false;
   bool renderer_backgrounded_ = kLaunchingProcessIsBackgrounded;
 
-  // Keeps track of whether a memory purge was requested as a consequence of the
-  // renderer transitioning to a backgrounded state. Prevents purges from being
-  // cancelled if a purge was requested upon backgrounding the renderer and the
-  // renderer is still backgrounded. Supports the metrics collection associated
-  // with the PurgeAndSuspend experiment.
+  // True if a memory purge was scheduled due to the renderer being
+  // backgrounded and is currently pending.
   bool backgrounded_purge_pending_ = false;
 
   int total_page_count_ = 0;
   int frozen_page_count_ = 0;
 
-  // Whether a memory purge was performed with at least one page frozen since
-  // the renderer was backgrounded. Reset when the renderer is foregrounded.
+  // True if a memory purge has been performed while at least one page was
+  // frozen since the last time the renderer was backgrounded. This is used to
+  // limit purges triggered by OnPageFrozen to once per background session when
+  // the `kMemoryPurgeOnFreezeLimit` feature is enabled.
   bool did_purge_with_page_frozen_since_backgrounded_ = false;
 
   base::OneShotTimer purge_timer_;

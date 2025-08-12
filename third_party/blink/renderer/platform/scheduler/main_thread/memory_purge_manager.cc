@@ -28,7 +28,7 @@ BASE_FEATURE(kMemoryPurgeInBackground,
              "MemoryPurgeInBackground",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// The time of first purging after a renderer is backgrounded. The value was
+// The delay for the first purge after a renderer is backgrounded. The value was
 // initially set to 30 minutes, but it was reduced to 1 minute because this
 // reduced the memory usage of a renderer 15 minutes after it was backgrounded.
 //
@@ -110,8 +110,8 @@ void MemoryPurgeManager::OnPageResumed() {
 
   base::MemoryPressureListener::SetNotificationsSuppressed(false);
 #if BUILDFLAG(IS_ANDROID)
-  // Cancel a pending compaction, since we are resuming now, and will
-  // presumably touch most of that memory soon.
+  // Cancel a pending compaction, since the page is now active and its memory
+  // will likely be accessed soon.
   base::android::SelfCompactionManager::MaybeCancelCompaction(
       base::android::SelfCompactionManager::CompactCancellationReason::
           kPageResumed);
@@ -128,12 +128,11 @@ void MemoryPurgeManager::SetRendererBackgrounded(bool backgrounded) {
 }
 
 void MemoryPurgeManager::OnRendererBackgrounded() {
-  if (!kPurgeEnabled || purge_disabled_for_testing_) {
+  if (!kPurgeOnBackgroundingEnabled || purge_disabled_for_testing_) {
     return;
   }
 
-  // A spare renderer has no pages. We would like to avoid purging memory
-  // on a spare renderer.
+  // Do not purge memory on an empty renderer (e.g. spare renderer).
   if (total_page_count_ == 0) {
     return;
   }
@@ -209,8 +208,7 @@ bool MemoryPurgeManager::CanPurge() const {
 void MemoryPurgeManager::MaybeRunAllPagesFrozenCallback(bool were_all_frozen) {
 #if BUILDFLAG(IS_ANDROID)
   const bool are_all_frozen = AreAllPagesFrozen();
-  // We check for a change in the "all pages frozen" vs "not all pages frozen"
-  // state here, then run the callback with the current state if we changed.
+  // Run the callback if the "all pages frozen" state changed.
   if (were_all_frozen != are_all_frozen && all_pages_frozen_callback_) {
     all_pages_frozen_callback_.Run(are_all_frozen);
   }
