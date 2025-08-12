@@ -19,9 +19,7 @@
 #include "ui/ozone/platform/drm/host/drm_window_host.h"
 #include "ui/ozone/platform/drm/host/drm_window_host_manager.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/events/ozone/chromeos/cursor_controller.h"
-#endif
 
 namespace ui {
 namespace {
@@ -230,14 +228,10 @@ void DrmCursor::MoveCursor(const gfx::Vector2dF& delta) {
   if (window_ == gfx::kNullAcceleratedWidget)
     return;
 
-#if BUILDFLAG(IS_CHROMEOS)
   gfx::Vector2dF transformed_delta = delta;
   ui::CursorController::GetInstance()->ApplyCursorConfigForWindow(
       window_, &transformed_delta);
   SetCursorLocationLocked(location_ + transformed_delta);
-#else
-  SetCursorLocationLocked(location_ + delta);
-#endif
   SendCursorMoveLocked();
 }
 

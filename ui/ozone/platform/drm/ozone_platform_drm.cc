@@ -60,11 +60,7 @@
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/base/ime/ash/input_method_ash.h"
-#else
-#include "ui/base/ime/input_method_minimal.h"
-#endif
 
 namespace ui {
 
@@ -174,11 +170,7 @@ class OzonePlatformDrm : public OzonePlatform {
   std::unique_ptr<InputMethod> CreateInputMethod(
       ImeKeyEventDispatcher* ime_key_event_dispatcher,
       gfx::AcceleratedWidget) override {
-#if BUILDFLAG(IS_CHROMEOS)
     return std::make_unique<ash::InputMethodAsh>(ime_key_event_dispatcher);
-#else
-    return std::make_unique<InputMethodMinimal>(ime_key_event_dispatcher);
-#endif
   }
 
   bool IsNativePixmapConfigSupported(gfx::BufferFormat format,

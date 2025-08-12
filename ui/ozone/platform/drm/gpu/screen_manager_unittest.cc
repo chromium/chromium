@@ -2139,14 +2139,7 @@ TEST_F(ScreenManagerTest, ReplaceDisplayControllersCrtcs) {
 }
 
 // TODO(b/322831691): Deterministic failure.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ReplaceDisplayControllersCrtcsNonexistent \
-  DISABLED_ReplaceDisplayControllersCrtcsNonexistent
-#else
-#define MAYBE_ReplaceDisplayControllersCrtcsNonexistent \
-  ReplaceDisplayControllersCrtcsNonexistent
-#endif
-TEST_F(ScreenManagerTest, MAYBE_ReplaceDisplayControllersCrtcsNonexistent) {
+TEST_F(ScreenManagerTest, DISABLED_ReplaceDisplayControllersCrtcsNonexistent) {
   // Initializes 2 CRTC-Connector pairs.
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
   uint32_t crtc_id = drm_->crtc_property(0).id;

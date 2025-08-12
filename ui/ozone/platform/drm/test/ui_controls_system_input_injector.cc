@@ -59,7 +59,6 @@ class UIControlsSystemInputInjector : public ui_controls::UIControlsAura {
 
   bool SendMouseClick(ui_controls::MouseButton type) override;
 
-#if BUILDFLAG(IS_CHROMEOS)
   bool SendTouchEvents(int action, int id, int x, int y) override {
     NOTIMPLEMENTED();
     return false;
@@ -72,7 +71,6 @@ class UIControlsSystemInputInjector : public ui_controls::UIControlsAura {
     NOTIMPLEMENTED();
     return false;
   }
-#endif
 
   bool ScreenToHostCoord(gfx::PointF* location);
 

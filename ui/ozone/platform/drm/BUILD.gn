@@ -11,6 +11,10 @@ import("//gpu/vulkan/features.gni")
 import("//testing/test.gni")
 import("//ui/gl/features.gni")
 
+# This is ChromeOS-only.
+assert(is_chromeos, "Ozone DRM platform is ChromeOS-only")
+assert(!is_castos, "Ozone DRM platform no longer supports CastOS")
+
 visibility = [ "//ui/ozone/*" ]
 
 source_set("gbm") {
@@ -156,17 +160,15 @@ source_set("gbm") {
     "//ui/platform_window",
   ]
 
-  if (!is_castos && !use_static_angle) {
+  deps += [
+    "//ash/constants",
+    "//ui/base/ime/ash",
+  ]
+
+  if (!use_static_angle) {
     data_deps = [
       "//third_party/angle:libEGL",
       "//third_party/angle:libGLESv2",
-    ]
-  }
-
-  if (is_chromeos) {
-    deps += [
-      "//ash/constants",
-      "//ui/base/ime/ash",
     ]
   }
 

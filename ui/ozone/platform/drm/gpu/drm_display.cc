@@ -196,7 +196,6 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
 
   SkColorSpacePrimaries output_primaries =
       display_snapshot.color_info().edid_primaries;
-#if BUILDFLAG(IS_CHROMEOS)
   // Do not allow display_snapshot and connector property state to go out of
   // sync. HDR capability is determined in
   // gfx::DisplayUtil::GetColorSpaceFromEdid
@@ -208,7 +207,6 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
     SetColorspaceProperty(gfx::ColorSpace::CreateSRGB());
     ClearHdrOutputMetadata();
   }
-#endif
   for (const auto& crtc_connector_pair : crtc_connector_pairs_) {
     drm_->plane_manager()->SetOutputColorSpace(crtc_connector_pair.crtc_id,
                                                output_primaries);
