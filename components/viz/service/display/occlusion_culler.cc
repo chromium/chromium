@@ -291,8 +291,6 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
   for (const auto& pass : frame->render_pass_list) {
     const SharedQuadState* last_sqs = nullptr;
     cc::Region occlusion_in_target_space;
-    // TODO(b:424284352): Remove after
-    // `kEnableBackdropFiltersCullingOptimization` is enabled by default.
     cc::Region backdrop_filters_in_target_space;
     bool current_sqs_intersects_occlusion = false;
 
@@ -308,11 +306,9 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
     }
 
     auto quad_list_end = pass->quad_list.end();
-
     cc::Region occlusion_in_quad_content_space;
-    // TODO(b:424284352): Remove after
-    // `kEnableBackdropFiltersCullingOptimization` is enabled by default.
     gfx::Rect render_pass_quads_in_content_space;
+    cc::Region backdrop_filters_in_content_space;
 
     for (auto quad = pass->quad_list.begin(); quad != quad_list_end;) {
       // Sanity check: we should not have a Compositor
@@ -329,11 +325,7 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
         auto it = backdrop_filter_rects.find(rpdq->render_pass_id);
         if (it != backdrop_filter_rects.end()) {
           auto& [_, rect_in_target] = *it;
-          if (features::IsBackdropFiltersCullingOptimizationEnabled()) {
-            occlusion_in_target_space.Subtract(rect_in_target);
-          } else {
-            backdrop_filters_in_target_space.Union(rect_in_target);
-          }
+          backdrop_filters_in_target_space.Union(rect_in_target);
         }
 
         ++quad;
@@ -389,6 +381,7 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
         last_sqs = quad->shared_quad_state;
         occlusion_in_quad_content_space.Clear();
         render_pass_quads_in_content_space = gfx::Rect();
+        backdrop_filters_in_content_space.Clear();
 
         const auto current_sqs_in_target_space =
             cc::MathUtil::MapEnclosingClippedRect(
@@ -436,14 +429,18 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
           // A render pass quad may apply some filter or transform to an
           // underlying quad. Do not split quads when they intersect with a
           // render pass quad.
-          if (!features::IsBackdropFiltersCullingOptimizationEnabled() &&
-              current_sqs_in_target_space.Intersects(
+          if (current_sqs_in_target_space.Intersects(
                   backdrop_filters_in_target_space.bounds())) {
             for (auto rect_in_target_space : backdrop_filters_in_target_space) {
               const auto rect_in_content =
                   cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
                       reverse_transform, rect_in_target_space);
+              if (features::IsBackdropFiltersCullingOptimizationEnabled()) {
+                backdrop_filters_in_content_space.Union(
+                    SafeConvertRectForRegion(rect_in_content));
+              } else {
                 render_pass_quads_in_content_space.Union(rect_in_content);
+              }
             }
           }
         }
@@ -452,6 +449,13 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
       if (!current_sqs_intersects_occlusion) {
         ++quad;
         continue;
+      }
+
+      if (features::IsBackdropFiltersCullingOptimizationEnabled()) {
+        // Backdrop filters can effect the pixels underneath it, so do not
+        // remove/split quads where they intersect with any backdrop filters.
+        occlusion_in_quad_content_space.Subtract(
+            backdrop_filters_in_content_space);
       }
 
       if (occlusion_in_quad_content_space.Contains(quad->visible_rect)) {
