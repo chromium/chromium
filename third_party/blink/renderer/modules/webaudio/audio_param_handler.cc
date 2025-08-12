@@ -225,17 +225,13 @@ AudioDestinationHandler& AudioParamHandler::DestinationHandler() const {
   return *destination_handler_;
 }
 
-void AudioParamHandler::SetParamType(AudioParamType param_type) {
-  param_type_ = param_type;
-}
-
 void AudioParamHandler::SetCustomParamName(const String name) {
   DCHECK(param_type_ == AudioParamType::kParamTypeAudioWorklet);
   custom_param_name_ = name;
 }
 
 String AudioParamHandler::GetParamName() const {
-  switch (GetParamType()) {
+  switch (param_type_) {
     case AudioParamType::kParamTypeAudioBufferSourcePlaybackRate:
       return "AudioBufferSource.playbackRate";
     case AudioParamType::kParamTypeAudioBufferSourceDetune:

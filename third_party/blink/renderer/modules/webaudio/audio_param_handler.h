@@ -108,12 +108,22 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
                                                 min_value, max_value));
   }
 
-  // This should be used only in audio rendering thread.
-  AudioDestinationHandler& DestinationHandler() const;
-
   // AudioSummingJunction
   void DidUpdate() override {}
 
+  float Value();
+  void SetValue(float value);
+  AutomationRate GetAutomationRate() const {
+    base::AutoLock rate_locker(RateLock());
+    return automation_rate_;
+  }
+  void SetAutomationRate(AutomationRate automation_rate) {
+    base::AutoLock rate_locker(RateLock());
+    automation_rate_ = automation_rate;
+  }
+  float DefaultValue() const { return default_value_; }
+  float MinValue() const { return min_value_; }
+  float MaxValue() const { return max_value_; }
   void SetValueAtTime(float value,
                       double start_time,
                       ExceptionState& exception_state);
@@ -139,29 +149,13 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
                              ExceptionState& exception_state);
   void CancelAndHoldAtTime(double cancel_time, ExceptionState& exception_state);
 
-  // Intrinsic value.
-  float Value();
-  void SetValue(float value);
-
-  AutomationRate GetAutomationRate() const {
-    base::AutoLock rate_locker(RateLock());
-    return automation_rate_;
-  }
-  void SetAutomationRate(AutomationRate automation_rate) {
-    base::AutoLock rate_locker(RateLock());
-    automation_rate_ = automation_rate;
-  }
-
-  float DefaultValue() const { return default_value_; }
-  float MinValue() const { return min_value_; }
-  float MaxValue() const { return max_value_; }
-
-  AudioParamType GetParamType() const { return param_type_; }
-  void SetParamType(AudioParamType);
-  // Set the parameter name for an AudioWorklet.
-  void SetCustomParamName(const String name);
   // Return a nice name for the AudioParam.
   String GetParamName() const;
+  // Set the parameter name for an AudioWorklet.
+  void SetCustomParamName(const String name);
+
+  // This should be used only in audio rendering thread.
+  AudioDestinationHandler& DestinationHandler() const;
 
   bool IsAutomationRateFixed() const {
     return rate_mode_ == AutomationRateMode::kFixed;
@@ -180,9 +174,8 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
     return automation_rate_ == AutomationRate::kAudio;
   }
 
-  // Calculates numberOfValues parameter values starting at the context's
-  // current time.
-  // Must be called in the context's render thread.
+  // Calculates parameter values starting at the context's current time.  Must
+  // be called in the context's render thread.
   void CalculateSampleAccurateValues(base::span<float> values);
 
   float IntrinsicValue() const {
@@ -572,7 +565,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // The type of AudioParam, indicating what this AudioParam represents and
   // what node it belongs to.  Mostly for informational purposes and doesn't
   // affect implementation.
-  AudioParamType param_type_;
+  const AudioParamType param_type_;
   // Name of the AudioParam. This is only used for printing out more
   // informative warnings, and only used for AudioWorklets.  All others have a
   // name derived from the `param_type_`.  Worklets need custom names because

@@ -31,8 +31,6 @@
 
 #include <sys/types.h>
 
-#include <atomic>
-
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -75,30 +73,21 @@ class AudioParam final : public ScriptWrappable, public InspectorHelperMixin {
   ~AudioParam() override;
 
   void Trace(Visitor*) const override;
-  // `Handler()` always returns a valid object.
-  AudioParamHandler& Handler() const { return *handler_; }
-  // `Context()` always returns a valid object.
-  BaseAudioContext* Context() const { return context_.Get(); }
 
-  AudioParamHandler::AudioParamType GetParamType() const {
-    return Handler().GetParamType();
-  }
-  String GetParamName() const { return Handler().GetParamName(); }
-  void SetParamType(AudioParamHandler::AudioParamType);
-  void SetCustomParamName(const String name);
+  // InspectorHelperMixin: an AudioParam is always owned by an AudioNode so
+  // its notification is done by the parent AudioNode.
+  void ReportDidCreate() override {}
+  void ReportWillBeDestroyed() override {}
 
+  // https://webaudio.github.io/web-audio-api/#AudioParam
   float value() const;
   void setValue(float, ExceptionState&);
   void setValue(float);
-
   V8AutomationRate automationRate() const;
   void setAutomationRate(const V8AutomationRate&, ExceptionState&);
-
   float defaultValue() const;
-
   float minValue() const;
   float maxValue() const;
-
   AudioParam* setValueAtTime(float value, double time, ExceptionState&);
   AudioParam* linearRampToValueAtTime(float value,
                                       double time,
@@ -117,10 +106,13 @@ class AudioParam final : public ScriptWrappable, public InspectorHelperMixin {
   AudioParam* cancelScheduledValues(double start_time, ExceptionState&);
   AudioParam* cancelAndHoldAtTime(double start_time, ExceptionState&);
 
-  // InspectorHelperMixin: an AudioParam is always owned by an AudioNode so
-  // its notification is done by the parent AudioNode.
-  void ReportDidCreate() final {}
-  void ReportWillBeDestroyed() final {}
+  String GetParamName() const { return Handler().GetParamName(); }
+  void SetCustomParamName(const String name);
+
+  // `Handler()` always returns a valid object.
+  AudioParamHandler& Handler() const { return *handler_; }
+  // `Context()` always returns a valid object.
+  BaseAudioContext* Context() const { return context_.Get(); }
 
  private:
   void WarnIfOutsideRange(const String& param_methd, float value);
