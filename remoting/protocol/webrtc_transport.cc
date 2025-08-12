@@ -812,6 +812,7 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
   }
   description_sdp = sdp_message.ToString();
   webrtc::SdpParseError parse_error;
+
   description = webrtc::CreateSessionDescription(description->GetType(),
                                                  description_sdp, &parse_error);
   if (!description) {
@@ -841,10 +842,15 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
 
   send_transport_info_callback_.Run(std::move(transport_info));
 
-  peer_connection()->SetLocalDescription(
-      SetSessionDescriptionObserver::Create(base::BindOnce(
-          &WebrtcTransport::OnLocalDescriptionSet, weak_factory_.GetWeakPtr())),
-      description.release());
+  {
+    // Addresses an issue reported on ChromeOS M140 with DCHECKs enabled.
+    ScopedAllowSyncPrimitivesForWebRtcTransport allow_sync_primitives;
+    peer_connection()->SetLocalDescription(
+        SetSessionDescriptionObserver::Create(
+            base::BindOnce(&WebrtcTransport::OnLocalDescriptionSet,
+                           weak_factory_.GetWeakPtr())),
+        description.release());
+  }
 }
 
 void WebrtcTransport::OnLocalDescriptionSet(bool success,
