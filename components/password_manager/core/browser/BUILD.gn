@@ -230,14 +230,11 @@ static_library("browser") {
       "password_credential_filler.h",
       "password_credential_filler_impl.cc",
       "password_credential_filler_impl.h",
-      "split_stores_and_local_upm.cc",
-      "split_stores_and_local_upm.h",
     ]
+    public_deps += [ ":split_stores_and_local_upm" ]
     deps += [
       ":password_manager_buildflags",
       "//components/webauthn/android",
-    ]
-    deps += [
       "//components/webauthn/android",
       "//services/metrics/public/cpp:ukm_builders",
     ]
@@ -262,6 +259,22 @@ static_library("browser") {
     sources += [
       "password_reuse_manager_signin_notifier_impl.cc",
       "password_reuse_manager_signin_notifier_impl.h",
+    ]
+  }
+}
+
+if (is_android) {
+  source_set("split_stores_and_local_upm") {
+    sources = [
+      "split_stores_and_local_upm.cc",
+      "split_stores_and_local_upm.h",
+    ]
+    deps = [
+      ":password_manager_buildflags",
+      "//base",
+      "//components/password_manager/core/browser/features:password_features",
+      "//components/password_manager/core/common",
+      "//components/prefs",
     ]
   }
 }
