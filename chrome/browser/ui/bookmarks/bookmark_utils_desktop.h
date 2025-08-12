@@ -18,6 +18,7 @@
 
 class Browser;
 struct NavigateParams;
+class TabGroup;
 
 namespace content {
 class BrowserContext;
@@ -102,6 +103,13 @@ bool ConfirmDeleteBookmarkNode(gfx::NativeWindow window,
 // Shows the bookmark all tabs dialog.
 void ShowBookmarkAllTabsDialog(Browser* browser);
 
+// Shows the bookmark tab group dialog.
+void ShowBookmarkTabGroupDialog(
+    Browser* browser,
+    const TabGroup& tab_group,
+    base::OnceCallback<void(Browser*, const tab_groups::TabGroupId&)>
+        on_save_callback = base::DoNothing());
+
 // Returns true if OpenAll() can open at least one bookmark of type url
 // in |selection|.
 bool HasBookmarkURLs(const std::vector<raw_ptr<const bookmarks::BookmarkNode,
@@ -119,6 +127,12 @@ void GetURLsAndFoldersForTabEntries(
     std::vector<BookmarkEditor::EditDetails::BookmarkData>* folder_data,
     std::vector<std::pair<GURL, std::u16string>> tab_entries,
     base::flat_map<int, TabGroupData> groups_by_index);
+
+// Populates |folder_data| with all tabs from the tab group.
+void GetURLsAndFoldersForTabGroup(
+    const Browser* browser,
+    const TabGroup& tab_group,
+    std::vector<BookmarkEditor::EditDetails::BookmarkData>* folder_data);
 
 }  // namespace bookmarks
 

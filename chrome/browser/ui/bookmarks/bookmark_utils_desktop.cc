@@ -38,6 +38,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_visual_data.h"
@@ -572,6 +573,39 @@ void ShowBookmarkAllTabsDialog(Browser* browser) {
                            base::Unretained(profile)));
 }
 
+void ShowBookmarkTabGroupDialog(
+    Browser* browser,
+    const TabGroup& tab_group,
+    base::OnceCallback<void(Browser*, const tab_groups::TabGroupId&)>
+        on_save_callback) {
+  Profile* profile = browser->profile();
+  BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
+  DCHECK(model && model->loaded());
+
+  const BookmarkNode* parent = GetParentForNewNodes(model);
+  BookmarkEditor::EditDetails details =
+      BookmarkEditor::EditDetails::AddFolder(parent, parent->children().size());
+
+  GetURLsAndFoldersForTabGroup(browser, tab_group,
+                               &(details.bookmark_data.children));
+  DCHECK(!details.bookmark_data.children.empty());
+  BookmarkEditor::Show(
+      browser->window()->GetNativeWindow(), profile, details,
+      BookmarkEditor::SHOW_TREE,
+      base::BindOnce(
+          [](Browser* browser, const tab_groups::TabGroupId& tab_group_id,
+             base::OnceCallback<void(Browser*, const tab_groups::TabGroupId&)>
+                 callback) {
+            // We record the profile that invoked this option.
+            RecordBookmarksAdded(browser->profile());
+            if (callback) {
+              std::move(callback).Run(browser, tab_group_id);
+            }
+          },
+          base::Unretained(browser), tab_group.id(),
+          std::move(on_save_callback)));
+}
+
 bool HasBookmarkURLs(
     const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
         selection) {
@@ -610,4 +644,25 @@ void GetURLsAndFoldersForTabEntries(
     }
   }
 }
+
+void GetURLsAndFoldersForTabGroup(
+    const Browser* browser,
+    const TabGroup& tab_group,
+    std::vector<BookmarkEditor::EditDetails::BookmarkData>* folder_data) {
+  TabStripModel* const tab_strip_model = browser->tab_strip_model();
+  const gfx::Range tab_range = tab_group.ListTabs();
+
+  for (size_t i = tab_range.start(); i < tab_range.end(); ++i) {
+    content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
+    GURL url;
+    std::u16string title;
+    chrome::GetURLAndTitleToBookmark(web_contents, &url, &title);
+
+    BookmarkEditor::EditDetails::BookmarkData bookmark_data;
+    bookmark_data.url = url;
+    bookmark_data.title = title;
+    folder_data->push_back(bookmark_data);
+  }
+}
+
 }  // namespace bookmarks

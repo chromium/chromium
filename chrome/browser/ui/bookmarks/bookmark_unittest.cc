@@ -4,16 +4,21 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/tabs/public/tab_group.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 
@@ -225,5 +230,33 @@ TEST_F(BookmarkTest, SomeTabsInMultipleGroups) {
     } else {
       EXPECT_EQ(child.url.has_value(), true);
     }
+  }
+}
+
+TEST_F(BookmarkTest, GetURLsAndFoldersForTabGroup) {
+  // Deflake the test by setting TabGroupSyncService initialized.
+  tab_groups::TabGroupSyncService* service =
+      static_cast<tab_groups::TabGroupSyncService*>(
+          tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+              browser()->profile()));
+  service->SetIsInitializedForTesting(true);
+  const std::vector<GURL> urls = {GURL("http://localhost:8000/"),
+                                  GURL("http://localhost:8001/"),
+                                  GURL("http://localhost:8002/")};
+  for (const auto& url : urls) {
+    AddTab(browser(), url);
+  }
+  std::vector<int> tab_indices = {0, 1, 2};
+  tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup(tab_indices);
+  const TabGroup* tab_group =
+      browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
+
+  std::vector<BookmarkEditor::EditDetails::BookmarkData> folder_data;
+  bookmarks::GetURLsAndFoldersForTabGroup(browser(), *tab_group, &folder_data);
+
+  EXPECT_EQ(folder_data.size(), urls.size());
+  for (size_t i = 0; i < urls.size(); ++i) {
+    EXPECT_EQ(folder_data[urls.size() - 1 - i].url.value(), urls[i]);
   }
 }
