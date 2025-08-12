@@ -40,6 +40,11 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#include "ui/base/device_form_factor.h"
+#endif
+
 namespace {
 
 namespace {
@@ -433,6 +438,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DisableNetworkPrediction) {
 
 // Tests that DevTools open overrides PreloadingConfig's holdback.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PreloadingHoldbackOverridden) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+          base::android::SDK_VERSION_U &&
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
+    GTEST_SKIP() << "Disabled on Android U+ tablets due to crbug.com/393195683";
+  }
+#endif
   prerender_helper().SetHoldback("Prerender", "SpeculationRules", true);
   base::HistogramTester histogram_tester;
 
