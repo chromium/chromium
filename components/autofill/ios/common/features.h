@@ -10,13 +10,6 @@
 
 // Features that are exclusive to iOS go here in alphabetical order.
 
-// Feature flag to control whether the Add Address Manually bottom sheet is
-// enabled.
-BASE_DECLARE_FEATURE(kAddAddressManually);
-
-// Returns true if the AddAddressManually feature is enabled
-bool IsAddAddressManuallyEnabled();
-
 // Allows detecting form submissions that are `defaultPrevented` by the page
 // content.
 BASE_DECLARE_FEATURE(kAutofillAllowDefaultPreventedSubmission);

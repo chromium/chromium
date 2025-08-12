@@ -6,16 +6,6 @@
 
 // Keep the alphabetical order.
 
-BASE_FEATURE(kAddAddressManually,
-             "AddAddressManually",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsAddAddressManuallyEnabled() {
-  return base::FeatureList::IsEnabled(kAddAddressManually) &&
-         base::FeatureList::IsEnabled(
-             kAutofillDynamicallyLoadsFieldsForAddressInput);
-}
-
 // LINT.IfChange(autofill_allow_default_prevented_submission)
 BASE_FEATURE(kAutofillAllowDefaultPreventedSubmission,
              "AutofillAllowDefaultPreventedSubmission",

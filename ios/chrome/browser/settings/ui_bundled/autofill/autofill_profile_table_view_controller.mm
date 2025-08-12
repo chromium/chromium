@@ -391,8 +391,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
   // TODO(crbug.com/407298266): Temporarily keep the toolbar visible when this
   // view controller is at the top of the navigation stack.
-  else if (IsAddAddressManuallyEnabled() &&
-           self.navigationController.topViewController == self) {
+  else if (self.navigationController.topViewController == self) {
     return NO;
   }
   return YES;
@@ -417,7 +416,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (UIBarButtonItem*)customLeftToolbarButton {
   // When in edit mode, a "Delete" button is shown as the left toolbar button.
   // This button shouldn't be overridden with a custom one.
-  if (self.tableView.isEditing || !IsAddAddressManuallyEnabled()) {
+  if (self.tableView.isEditing) {
     return nil;
   }
 

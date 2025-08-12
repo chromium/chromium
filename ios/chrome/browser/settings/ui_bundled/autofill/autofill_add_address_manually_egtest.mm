@@ -95,16 +95,6 @@ UIViewController* TopPresentedViewController() {
 
 @implementation AutofillAddAddressManuallyTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-
-  config.features_enabled.push_back(kAddAddressManually);
-  config.features_enabled.push_back(
-      kAutofillDynamicallyLoadsFieldsForAddressInput);
-
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   [AutofillAppInterface clearProfilesStore];

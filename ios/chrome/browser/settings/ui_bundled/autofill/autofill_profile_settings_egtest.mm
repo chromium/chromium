@@ -151,13 +151,6 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  if ([self isRunningTest:@selector(testBottomToolbarAddButtonVisibility)] ||
-      [self isRunningTest:@selector(testToggleToolbarAddButtonBySwitch)] ||
-      [self isRunningTest:@selector(testToggleToolbarAddButtonByPolicy)]) {
-    config.features_enabled.push_back(kAddAddressManually);
-    config.features_enabled.push_back(
-        kAutofillDynamicallyLoadsFieldsForAddressInput);
-  }
   if ([self isRunningTest:@selector(testHomeAndWorkProfileEditPage)] ||
       [self isRunningTest:@selector(testHomeAndWorkProfileDeleteOnEdit)] ||
       [self isRunningTest:@selector(testHomeAndWorkProfileRemove)]) {

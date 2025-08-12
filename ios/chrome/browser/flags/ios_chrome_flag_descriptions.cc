@@ -11,11 +11,6 @@
 
 namespace flag_descriptions {
 
-const char kAddAddressManuallyName[] =
-    "Enable adding an address manually from Address Settings";
-const char kAddAddressManuallyDescription[] =
-    "When enabled, allows users to manually enter and save an address.";
-
 const char kAIMPrototypeDevToolsName[] = "Enable AIM Prototype Dev Tools";
 const char kAIMPrototypeDevToolsDescription[] =
     "Enables development tools for the AIM prototype, allowing simulation of "
