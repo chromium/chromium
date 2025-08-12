@@ -6,19 +6,23 @@
 
 #include <string>
 
-#include "base/command_line.h"
+#include "base/version_info/version_info.h"
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/fre/glic_fre_page_handler.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_net_log.h"
+#include "chrome/browser/glic/shared/webui_shared.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_switches.h"
+#include "chrome/grit/glic_resources_map.h"
+#include "chrome/grit/glic_resources.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/glic_fre_resources.h"
 #include "chrome/grit/glic_fre_resources_map.h"
+#include "chrome/browser/glic/resources/glic_resources.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -56,6 +60,11 @@ GlicFreUI::GlicFreUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   // Set up the chrome://glic-fre source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       browser_context, chrome::kChromeUIGlicFreHost);
+  ConfigureSharedWebUISource(*source);
+
+  // Explicitly add source shared with chrome://glic.
+  source->AddResourcePath("glic/glic_request_headers.js",
+      IDR_GLIC_GLIC_REQUEST_HEADERS_JS);
 
   // Add required resources.
   webui::SetupWebUIDataSource(source, kGlicFreResources, IDR_GLIC_FRE_FRE_HTML);
@@ -72,19 +81,7 @@ GlicFreUI::GlicFreUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddInteger("freInitialWidth", features::kGlicFreInitialWidth.Get());
   source->AddInteger("freInitialHeight", features::kGlicFreInitialHeight.Get());
 
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  const bool is_glic_dev = command_line->HasSwitch(::switches::kGlicDev);
-
-  // Set up loading notice timeout values.
-  source->AddInteger("preLoadingTimeMs", features::kGlicPreLoadingTimeMs.Get());
-  source->AddInteger("minLoadingTimeMs", features::kGlicMinLoadingTimeMs.Get());
-  int max_loading_time_ms = features::kGlicMaxLoadingTimeMs.Get();
   int reload_max_loading_time_ms = features::kGlicReloadMaxLoadingTimeMs.Get();
-  if (is_glic_dev) {
-    // Bump up timeout value, as dev server may be slow.
-    max_loading_time_ms *= 100;
-  }
-  source->AddInteger("maxLoadingTimeMs", max_loading_time_ms);
   source->AddInteger("reloadMaxLoadingTimeMs", reload_max_loading_time_ms);
 }
 

@@ -10,6 +10,7 @@ import type {BrowserProxyImpl} from './browser_proxy.js';
 import type {Subscriber} from './glic_api/glic_api.js';
 import {DetailedWebClientState, GlicApiHost, WebClientState} from './glic_api_impl/glic_api_host.js';
 import type {ApiHostEmbedder} from './glic_api_impl/glic_api_host.js';
+import {GlicRequestHeaderInjector} from './glic_request_headers.js';
 import {ObservableValue} from './observable.js';
 import type {ObservableValueReadOnly} from './observable.js';
 import {OneShotTimer} from './timer.js';
@@ -111,6 +112,7 @@ export class WebviewController {
   private webClientState =
       ObservableValue.withValue(WebClientState.UNINITIALIZED);
   private oneMinuteTimer = new OneShotTimer(1000 * 60);
+  private glicRequestHeaderInjector: GlicRequestHeaderInjector;
 
   constructor(
       private readonly container: HTMLElement,
@@ -121,6 +123,10 @@ export class WebviewController {
   ) {
     this.webview =
         document.createElement('webview') as chrome.webviewTag.WebView;
+
+    this.glicRequestHeaderInjector = new GlicRequestHeaderInjector(
+        this.webview, loadTimeData.getString('chromeVersion'),
+        loadTimeData.getString('chromeChannel'));
 
     // Intercept all main frame requests, and block them if they are not allowed
     // origins.
@@ -133,17 +139,6 @@ export class WebviewController {
         ['blocking']);
     this.onDestroy.push(() => {
       this.webview.request.onBeforeRequest.removeListener(onBeforeRequest);
-    });
-    const onBeforeSendHeaders = this.onBeforeSendHeaders.bind(this);
-    this.webview.request.onBeforeSendHeaders.addListener(
-        onBeforeSendHeaders, {
-          types: [ResourceType.MAIN_FRAME],
-          urls: ['<all_urls>'],
-        },
-        ['blocking', 'requestHeaders']);
-    this.onDestroy.push(() => {
-      this.webview.request.onBeforeSendHeaders.removeListener(
-          onBeforeSendHeaders);
     });
 
     this.webview.id = 'guestFrame';
@@ -180,6 +175,7 @@ export class WebviewController {
   }
 
   destroy() {
+    this.glicRequestHeaderInjector.destroy();
     this.oneMinuteTimer.reset();
     if (this.host) {
       chrome.metricsPrivate.recordEnumerationValue(
@@ -349,33 +345,6 @@ export class WebviewController {
               return {};
             }
             return {cancel: !urlMatchesAllowedOrigin(details.url)};
-          };
-
-  // Attaches the X-Glic headers to all main-frame requests.
-  // X-Glic: 1
-  // X-Glic-Chrome-Channel: stable
-  // X-Glic-Chrome-Version: 137.0.1234.0
-  private onBeforeSendHeaders:
-      ChromeEventFunctionType<typeof chrome.webRequest.onBeforeSendHeaders> =
-          (details) => {
-            // Ignore subframe requests.
-            if (details.frameId !== 0) {
-              return {};
-            }
-            const requestHeaders = details.requestHeaders || [];
-            requestHeaders.push({
-              name: 'X-Glic',
-              value: '1',
-            });
-            requestHeaders.push({
-              name: 'X-Glic-Chrome-Version',
-              value: loadTimeData.getString('chromeVersion'),
-            });
-            requestHeaders.push({
-              name: 'X-Glic-Chrome-Channel',
-              value: loadTimeData.getString('chromeChannel'),
-            });
-            return {requestHeaders};
           };
 }
 

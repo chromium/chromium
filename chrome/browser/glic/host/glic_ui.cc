@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/resources/glic_resources.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "chrome/browser/glic/shared/webui_shared.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
@@ -79,6 +80,7 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
 
   // Add required resources.
   webui::SetupWebUIDataSource(source, kGlicResources, IDR_GLIC_GLIC_HTML);
+  ConfigureSharedWebUISource(*source);
 
   // Add localized strings.
   source->AddLocalizedStrings(kStrings);
@@ -89,11 +91,7 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
                                            ContentSettingsType::GEOLOCATION);
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  const bool is_glic_dev = command_line->HasSwitch(::switches::kGlicDev);
 
-  source->AddString("chromeVersion", version_info::GetVersionNumber());
-  source->AddString("chromeChannel",
-                    version_info::GetChannelString(chrome::GetChannel()));
   source->AddBoolean("loggingEnabled",
                      command_line->HasSwitch(::switches::kGlicHostLogging));
 
@@ -102,16 +100,6 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddString("glicGuestURL", guest_url.spec());
   net_log::LogDummyNetworkRequestForTrafficAnnotation(guest_url,
                                                       net_log::GlicPage::kGlic);
-
-  // Set up loading notice timeout values.
-  source->AddInteger("preLoadingTimeMs", features::kGlicPreLoadingTimeMs.Get());
-  source->AddInteger("minLoadingTimeMs", features::kGlicMinLoadingTimeMs.Get());
-  int max_loading_time_ms = features::kGlicMaxLoadingTimeMs.Get();
-  if (is_glic_dev) {
-    // Bump up timeout value, as dev server may be slow.
-    max_loading_time_ms *= 100;
-  }
-  source->AddInteger("maxLoadingTimeMs", max_loading_time_ms);
   source->AddBoolean("simulateNoConnection", simulate_no_connection_);
 
   source->AddResourcePath("glic_logo.svg", GetResourceID(IDR_GLIC_LOGO));
@@ -134,8 +122,6 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
     allowed_origins = "https://*.google.com/";
   }
   source->AddString("glicAllowedOrigins", allowed_origins);
-
-  source->AddBoolean("devMode", is_glic_dev);
 
   source->AddBoolean("enableDebug",
                      base::FeatureList::IsEnabled(features::kGlicDebugWebview));

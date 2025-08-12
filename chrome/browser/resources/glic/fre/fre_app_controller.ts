@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {GlicRequestHeaderInjector} from '/glic/glic_request_headers.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
@@ -58,6 +59,7 @@ export class FreAppController {
   // with an empty <webview>.
   private webview: chrome.webviewTag.WebView;
   private webviewEventTracker = new EventTracker();
+  private glicRequestHeaderInjector: GlicRequestHeaderInjector|undefined;
 
   // When entering loading state, this represents the earliest timestamp at
   // which the UI can transition to the ready state. This ensures that the
@@ -346,6 +348,10 @@ export class FreAppController {
     webview.setAttribute('minheight', MIN_HEIGHT.toString());
     webview.setAttribute('maxheight', window.screen.availHeight.toString());
 
+    this.glicRequestHeaderInjector = new GlicRequestHeaderInjector(
+        webview, loadTimeData.getString('chromeVersion'),
+        loadTimeData.getString('chromeChannel'));
+
     $.webviewContainer.appendChild(webview);
 
     this.webviewEventTracker.add(
@@ -419,6 +425,11 @@ export class FreAppController {
   // webview does not support unloading content by setting src=""
   destroyWebview(): void {
     this.webviewEventTracker.removeAll();
+
+    if (this.glicRequestHeaderInjector) {
+      this.glicRequestHeaderInjector.destroy();
+      this.glicRequestHeaderInjector = undefined;
+    }
 
     $.webviewContainer.removeChild(this.webview);
 

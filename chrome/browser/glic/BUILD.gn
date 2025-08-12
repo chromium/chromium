@@ -180,6 +180,7 @@ source_set("impl") {
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/resources/glic:resources",
     "//chrome/browser/resources/glic/fre:resources",
+    "//chrome/browser/glic/shared",
     "//chrome/browser/signin",
     "//chrome/browser/themes",
     "//chrome/browser/ui:browser_element_identifiers",
