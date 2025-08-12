@@ -52,7 +52,16 @@ class LensComposeboxController {
   // Handles AIM messages from the side panel remote UI.
   void OnAimMessage(const std::vector<uint8_t>& message);
 
+  LensComposeboxHandler* composebox_handler_for_testing() {
+    return composebox_handler_.get();
+  }
+
  private:
+  // Builds a SubmitQuery ClientToAimMessage message to send to the side panel
+  // remote UI.
+  lens::ClientToAimMessage BuildSubmitQueryMessage(
+      const std::string& query_text);
+
   // Owns this.
   const raw_ptr<LensSearchController> lens_search_controller_;
 

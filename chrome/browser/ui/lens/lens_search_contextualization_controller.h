@@ -168,6 +168,9 @@ class LensSearchContextualizationController {
   // return false.
   virtual bool GetCurrentPageContextEligibility();
 
+  // Returns the primary content type of the current page.
+  lens::MimeType primary_content_type() { return primary_content_type_; }
+
   bool IsActive() const { return state_ == State::kActive; }
 
  protected:

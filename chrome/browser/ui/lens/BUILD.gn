@@ -225,6 +225,7 @@ source_set("test_support") {
     "//base/test:test_support",
     "//google_apis/common",
     "//testing/gtest",
+    "//third_party/lens_server_proto:lens_overlay_proto",
   ]
 }
 
@@ -232,6 +233,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "lens_composebox_controller_browsertest.cc",
     "lens_overlay_controller_browsertest.cc",
     "lens_overlay_live_test.cc",
   ]
