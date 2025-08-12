@@ -231,8 +231,16 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
     [self.mutator
         fetchBackgroundCustomizationThumbnailURLImage:backgroundConfiguration
                                                           .thumbnailURL
-                                           completion:^(UIImage* image) {
-                                             [cell updateBackgroundImage:image];
+                                           completion:^(UIImage* image,
+                                                        NSError* error) {
+                                             if (error) {
+                                               // Hide the cell if the thumbnail
+                                               // image failed to load.
+                                               cell.hidden = YES;
+                                             } else {
+                                               [cell
+                                                   updateBackgroundImage:image];
+                                             }
                                            }];
   }
 }

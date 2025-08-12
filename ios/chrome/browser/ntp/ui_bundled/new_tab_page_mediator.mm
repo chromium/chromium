@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mediator.h"
 
+#import <Foundation/Foundation.h>
+
 #import <memory>
 
 #import "base/apple/foundation_util.h"
@@ -446,7 +448,9 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
       imageURL,
       base::BindOnce(^(const gfx::Image& image,
                        const image_fetcher::RequestMetadata& metadata) {
-        [weakSelf handleBackgroundImageFetch:image];
+        if (!image.IsEmpty()) {
+          [weakSelf handleBackgroundImageFetch:image];
+        }
       }),
       // TODO (crbug.com/417234848): Add annotation.
       image_fetcher::ImageFetcherParams(NO_TRAFFIC_ANNOTATION_YET, "Test"));

@@ -64,8 +64,9 @@
 #pragma mark - HomeCustomizationBackgroundPresetGalleryPickerMutator
 
 - (void)fetchBackgroundCustomizationThumbnailURLImage:(GURL)thumbnailURL
-                                           completion:
-                                               (void (^)(UIImage*))completion {
+                                           completion:(void (^)(UIImage* image,
+                                                                NSError* error))
+                                                          completion {
   CHECK(!thumbnailURL.is_empty());
   CHECK(thumbnailURL.is_valid());
 
@@ -73,11 +74,21 @@
       thumbnailURL,
       base::BindOnce(^(const gfx::Image& image,
                        const image_fetcher::RequestMetadata& metadata) {
-        if (!image.IsEmpty()) {
-          UIImage* uiImage = image.ToUIImage();
-          if (completion) {
-            completion(uiImage);
-          }
+        if (image.IsEmpty()) {
+          // Image fetch failed or returned empty.
+          NSDictionary<NSErrorUserInfoKey, id>* userInfo = @{
+            NSURLErrorFailingURLStringErrorKey :
+                base::SysUTF8ToNSString(thumbnailURL.spec())
+          };
+          NSError* fetchError = [NSError errorWithDomain:NSURLErrorDomain
+                                                    code:NSURLErrorUnknown
+                                                userInfo:userInfo];
+          completion(nil, fetchError);
+          return;
+        }
+        UIImage* uiImage = image.ToUIImage();
+        if (completion) {
+          completion(uiImage, nil);
         }
       }),
       // TODO (crbug.com/417234848): Add annotation.
