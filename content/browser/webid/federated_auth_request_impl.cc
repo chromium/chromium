@@ -654,7 +654,7 @@ void FederatedAuthRequestImpl::RegisterIdP(const GURL& idp,
   }
 
   fedcm_idp_registration_handler_ =
-      std::make_unique<FedCmIdpRegistrationHandler>(
+      std::make_unique<webid::IdpRegistrationHandler>(
           render_frame_host(), network_manager_.get(), idp);
   fedcm_idp_registration_handler_->FetchConfig(
       base::BindOnce(&FederatedAuthRequestImpl::OnIdpRegistrationConfigFetched,

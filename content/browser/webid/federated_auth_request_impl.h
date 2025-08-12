@@ -18,13 +18,13 @@
 #include "base/trace_event/trace_event.h"
 #include "content/browser/webid/accounts_fetcher.h"
 #include "content/browser/webid/delegation/federated_sd_jwt_handler.h"
-#include "content/browser/webid/fedcm_idp_registration_handler.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/fedcm_url_computations.h"
 #include "content/browser/webid/identity_provider_info.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/identity_registry_delegate.h"
 #include "content/browser/webid/idp_network_request_manager.h"
+#include "content/browser/webid/idp_registration_handler.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/web_contents.h"
@@ -527,7 +527,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   std::unique_ptr<FederatedSdJwtHandler> federated_sdjwt_handler_;
 
-  std::unique_ptr<FedCmIdpRegistrationHandler> fedcm_idp_registration_handler_;
+  std::unique_ptr<webid::IdpRegistrationHandler>
+      fedcm_idp_registration_handler_;
 
   // Set of pending user info requests.
   base::flat_set<std::unique_ptr<FederatedAuthUserInfoRequest>>
