@@ -22,7 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_regex_provider.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -331,11 +331,10 @@ std::u16string NormalizeAndRewrite(const AddressCountryCode& country_code,
                                    bool keep_white_space) {
   return AddressRewriter::RewriteForCountryCode(
       country_code->empty() ? AddressCountryCode("US") : country_code,
-      AutofillProfileComparator::NormalizeForComparison(
+      normalization::NormalizeForComparison(
           text,
-          keep_white_space
-              ? AutofillProfileComparator::WhitespaceSpec::kRetain
-              : AutofillProfileComparator::WhitespaceSpec::kDiscard,
+          keep_white_space ? normalization::WhitespaceSpec::kRetain
+                           : normalization::WhitespaceSpec::kDiscard,
           country_code));
 }
 
@@ -422,19 +421,17 @@ std::vector<AddressToken> TokenizeValue(std::u16string_view value) {
     if (!parts.has_value()) {
       return {AddressToken{
           .value = std::u16string(value),
-          .normalized_value =
-              AutofillProfileComparator::NormalizeForComparison(value),
+          .normalized_value = normalization::NormalizeForComparison(value),
           .position = 0}};
     }
     tokens.reserve(value.size());
     for (const std::u16string& part : parts.value()) {
       for (size_t j = 0; j < part.size(); j++) {
-        tokens.emplace_back(
-            AddressToken{.value = part.substr(j, 1),
-                         .normalized_value =
-                             AutofillProfileComparator::NormalizeForComparison(
-                                 part.substr(j, 1)),
-                         .position = index++});
+        tokens.emplace_back(AddressToken{
+            .value = part.substr(j, 1),
+            .normalized_value =
+                normalization::NormalizeForComparison(part.substr(j, 1)),
+            .position = index++});
       }
     }
   } else {
@@ -444,8 +441,7 @@ std::vector<AddressToken> TokenizeValue(std::u16string_view value) {
                            base::SPLIT_WANT_NONEMPTY)) {
       tokens.emplace_back(AddressToken{
           .value = token,
-          .normalized_value =
-              AutofillProfileComparator::NormalizeForComparison(token),
+          .normalized_value = normalization::NormalizeForComparison(token),
           .position = index++});
     }
   }

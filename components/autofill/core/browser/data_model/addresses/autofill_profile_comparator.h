@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/address.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/addresses/contact_info.h"
@@ -42,8 +43,6 @@ class AutofillProfileComparator {
 
   ~AutofillProfileComparator();
 
-  enum class WhitespaceSpec { kRetain, kDiscard };
-
   // Returns true if `text1` matches `text2`. The following normalization
   // techniques are applied to the given texts before comparing.
   //
@@ -61,13 +60,14 @@ class AutofillProfileComparator {
   // If `whitespace_spec` is kRetain, then the postal codes "B15 3TR"
   // and "B153TR" are not considered equal, but "16 Bridge St." and "16 Bridge
   // St" are because trailing whitespace and punctuation are ignored.
-  bool Compare(
+  static bool Compare(
       std::u16string_view text1,
       std::u16string_view text2,
-      WhitespaceSpec whitespace_spec = WhitespaceSpec::kDiscard,
+      normalization::WhitespaceSpec whitespace_spec =
+          normalization::WhitespaceSpec::kDiscard,
       std::optional<FieldType> type = std::nullopt,
       AddressCountryCode country_code_1 = AddressCountryCode(""),
-      AddressCountryCode country_code_2 = AddressCountryCode("")) const;
+      AddressCountryCode country_code_2 = AddressCountryCode(""));
 
   // Returns true if two AutofillProfiles `p1` and `p2` have at least one
   // settings-visible value that is different.
@@ -75,10 +75,6 @@ class AutofillProfileComparator {
       const AutofillProfile& p1,
       const AutofillProfile& p2,
       const std::string& app_locale);
-
-  // Returns true if `text` is empty or contains only skippable characters. A
-  // character is skippable if it is punctuation or white space.
-  bool HasOnlySkippableCharacters(std::u16string_view text) const;
 
   // Get the difference in 'types' of two profiles. The difference is determined
   // with respect to the provided `app_locale`.
@@ -94,20 +90,6 @@ class AutofillProfileComparator {
   GetSettingsVisibleProfileDifference(const AutofillProfile& first_profile,
                                       const AutofillProfile& second_profile,
                                       const std::string& app_locale);
-
-  // Returns a copy of `text` with uppercase converted to lowercase and
-  // diacritics are rewritten using rules for given `country_code`.
-  //
-  // If `whitespace_spec` is kRetain, punctuation is converted to
-  // spaces, and extraneous whitespace is trimmed and collapsed. For example,
-  // "Jean- François" becomes "jean francois".
-  //
-  // If `whitespace_spec` is kDiscard, punctuation and whitespace are discarded.
-  // For example, +1 (234) 567-8900 becomes 12345678900.
-  static std::u16string NormalizeForComparison(
-      std::u16string_view text,
-      WhitespaceSpec whitespace_spec = WhitespaceSpec::kRetain,
-      const AddressCountryCode& country_code = AddressCountryCode(""));
 
   // Returns true if `p1` and `p2` are viable merge candidates. This means that
   // their names, addresses, email addresses, company names, and phone numbers

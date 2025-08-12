@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/address.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/contact_info.h"
@@ -654,9 +655,9 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
       }
     } else if (type == NAME_FULL) {
       if (!comparator.IsNameVariantOf(
-              AutofillProfileComparator::NormalizeForComparison(
+              normalization::NormalizeForComparison(
                   profile.GetInfo(NAME_FULL, app_locale)),
-              AutofillProfileComparator::NormalizeForComparison(value))) {
+              normalization::NormalizeForComparison(value))) {
         // Check whether the full name of |this| can be derived from the full
         // name of |profile| if the form contains a full name field.
         //
@@ -677,7 +678,8 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
               app_locale)) {
         return false;
       }
-    } else if (!comparator.Compare(value, profile.GetInfo(type, app_locale))) {
+    } else if (!AutofillProfileComparator::Compare(
+                   value, profile.GetInfo(type, app_locale))) {
       return false;
     }
   }

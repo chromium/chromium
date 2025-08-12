@@ -22,6 +22,8 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/crowdsourcing/disambiguate_possible_field_types.h"
 #include "components/autofill/core/browser/data_model/addresses/address.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
@@ -259,13 +261,12 @@ FieldTypeSet GetAvailableAutofillAiFieldTypes(
     base::span<const EntityInstance> entities,
     const std::string& app_locale) {
   CHECK(base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema));
-  AutofillProfileComparator comparator(app_locale);
   FieldTypeSet types;
   for (const EntityInstance& entity : entities) {
     for (const AttributeInstance& attribute : entity.attributes()) {
       for (FieldType field_type : attribute.type().field_subtypes()) {
-        bool is_empty = comparator.HasOnlySkippableCharacters(attribute.GetInfo(
-            field_type, comparator.app_locale(), std::nullopt));
+        bool is_empty = normalization::HasOnlySkippableCharacters(
+            attribute.GetInfo(field_type, app_locale, std::nullopt));
         if (!is_empty) {
           if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
             types.insert(attribute.type().field_type());
@@ -294,23 +295,21 @@ void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
                                 PossibleTypes& pt) {
   CHECK(base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema));
 
-  AutofillProfileComparator comparator(app_locale);
-  if (comparator.HasOnlySkippableCharacters(value_u16)) {
+  if (normalization::HasOnlySkippableCharacters(value_u16)) {
     return;
   }
 
   const std::u16string& value_in_field =
-      AutofillProfileComparator::NormalizeForComparison(value_u16);
+      normalization::NormalizeForComparison(value_u16);
   for (const EntityInstance& entity : entities) {
     for (const AttributeInstance& attribute : entity.attributes()) {
       for (const FieldType field_type : attribute.type().field_subtypes()) {
-        const std::u16string& value_on_file = attribute.GetInfo(
-            field_type, comparator.app_locale(), std::nullopt);
+        const std::u16string& value_on_file =
+            attribute.GetInfo(field_type, app_locale, std::nullopt);
 
         // Test if `value_in_field` and `value_on_file` match.
-        bool full_match = comparator.Compare(
-            value_in_field, value_on_file,
-            AutofillProfileComparator::WhitespaceSpec::kDiscard);
+        bool full_match =
+            AutofillProfileComparator::Compare(value_in_field, value_on_file);
         if (full_match) {
           if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
             pt.types.insert(attribute.type().field_type());

@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/transliterator.h"
@@ -242,7 +243,7 @@ std::u16string NormalizeForComparisonForType(const std::u16string& text,
     // upon entering `test@` into the email field.
     return RemoveDiacriticsAndConvertToLowerCase(text);
   }
-  return AutofillProfileComparator::NormalizeForComparison(text);
+  return normalization::NormalizeForComparison(text);
 }
 
 std::optional<Suggestion> GetSuggestionForTestAddresses(
@@ -298,8 +299,8 @@ std::vector<ProfileWithText> DeduplicatedProfilesForSuggestions(
     for (size_t b = 0; b < matched_profiles.size(); ++b) {
       const AutofillProfile* profile_b = matched_profiles[b].profile;
       if (profile_a == profile_b ||
-          !comparator.Compare(matched_profiles[a].text,
-                              matched_profiles[b].text)) {
+          !AutofillProfileComparator::Compare(matched_profiles[a].text,
+                                              matched_profiles[b].text)) {
         continue;
       }
       if (!profile_a->IsSubsetOfForFieldSet(comparator, *profile_b,

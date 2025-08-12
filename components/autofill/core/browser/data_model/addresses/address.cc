@@ -19,8 +19,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
@@ -167,17 +167,15 @@ void Address::GetMatchingTypes(const std::u16string& text,
   l10n::CaseInsensitiveCompare compare;
   // Check to see if the |text| could be the full name or abbreviation of a
   // state.
-  std::u16string canon_text =
-      AutofillProfileComparator::NormalizeForComparison(text);
+  std::u16string canon_text = normalization::NormalizeForComparison(text);
   std::u16string state_name;
   std::u16string state_abbreviation;
   state_names::GetNameAndAbbreviation(canon_text, &state_name,
                                       &state_abbreviation);
 
   if (!state_name.empty() || !state_abbreviation.empty()) {
-    std::u16string canon_profile_state =
-        AutofillProfileComparator::NormalizeForComparison(
-            GetInfo(ADDRESS_HOME_STATE, app_locale));
+    std::u16string canon_profile_state = normalization::NormalizeForComparison(
+        GetInfo(ADDRESS_HOME_STATE, app_locale));
     if ((!state_name.empty() &&
          compare.StringsEqual(state_name, canon_profile_state)) ||
         (!state_abbreviation.empty() &&

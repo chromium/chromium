@@ -11,7 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/pass_key.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/contact_info.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -364,7 +364,7 @@ EntityInstance::EntityMergeability EntityInstance::GetEntityMergeability(
   CHECK_EQ(type_, newer.type());
 
   auto normalized_value = [](const AttributeInstance& attribute) {
-    return AutofillProfileComparator::NormalizeForComparison(
+    return normalization::NormalizeForComparison(
         attribute.GetRawInfo(/*pass_key=*/{}, attribute.type().field_type()));
   };
 

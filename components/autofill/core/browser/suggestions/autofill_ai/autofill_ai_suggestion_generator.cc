@@ -24,7 +24,7 @@
 #include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -284,10 +284,9 @@ bool EntityShouldProduceSuggestion(
   // use the existence of suggestions to guess a user's data.
   if (!trigger_field.type.is_obfuscated()) {
     const std::u16string normalized_attribute =
-        AutofillProfileComparator::NormalizeForComparison(trigger_value);
+        normalization::NormalizeForComparison(trigger_value);
     const std::u16string normalized_field_content =
-        AutofillProfileComparator::NormalizeForComparison(
-            trigger_field.field->value());
+        normalization::NormalizeForComparison(trigger_field.field->value());
     if (!normalized_attribute.starts_with(normalized_field_content)) {
       return false;
     }
