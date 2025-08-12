@@ -16,7 +16,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-clang-archive",
               "builder_group": "chromium.clang",
               "clusterfuzz_archive": {
                 "archive_name_prefix": "cfi",

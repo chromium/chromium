@@ -75,7 +75,6 @@ ci.builder(
             target_bits = 32,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-win-archive",
     ),
     targets = targets.bundle(
         targets = [
@@ -108,7 +107,6 @@ ci.builder(
             target_bits = 32,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-win-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -153,7 +151,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-win-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -195,7 +192,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-win-archive",
     ),
     targets = targets.bundle(
         targets = [
@@ -291,7 +287,6 @@ ci.builder(
             target_bits = 32,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-win-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -341,7 +336,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-win-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -397,7 +391,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-win-archive",
     ),
     targets = targets.bundle(
         targets = [
@@ -498,7 +491,6 @@ ci.thin_tester(
             target_bits = 32,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-win-archive",
     ),
     targets = targets.bundle(
         targets = [
@@ -539,7 +531,6 @@ ci.thin_tester(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-win-archive",
     ),
     targets = targets.bundle(
         targets = [
@@ -635,7 +626,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-win-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -691,7 +681,6 @@ ci.thin_tester(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-win-archive",
     ),
     builder_config_settings = builder_config.ci_settings(
         retry_failed_shards = True,
@@ -782,7 +771,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-win-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -829,7 +817,6 @@ ci.thin_tester(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-win-archive",
     ),
     targets = targets.bundle(
         targets = [
@@ -930,7 +917,6 @@ ci.builder(
             target_platform = builder_config.target_platform.WIN,
             host_platform = builder_config.host_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-win-archive",
     ),
     gn_args = gn_args.config(
         configs = [

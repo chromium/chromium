@@ -369,7 +369,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.CHROMEOS,
         ),
-        build_gs_bucket = "chromium-chromiumos-archive",
     ),
     gn_args = gn_args.config(
         configs = [

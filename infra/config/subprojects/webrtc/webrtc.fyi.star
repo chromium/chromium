@@ -132,7 +132,6 @@ builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(config = "base_config"),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -168,7 +167,6 @@ builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(config = "base_config"),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -212,7 +210,6 @@ builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(config = "base_config"),
-        build_gs_bucket = "chromium-webrtc",
     ),
     targets = targets.bundle(
         targets = [
@@ -252,7 +249,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -280,7 +276,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -318,7 +313,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     targets = targets.bundle(
         targets = [
@@ -349,7 +343,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -378,7 +371,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -417,7 +409,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     targets = targets.bundle(
         targets = [
@@ -448,7 +439,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -479,7 +469,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -520,7 +509,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     targets = targets.bundle(
         targets = [
@@ -553,7 +541,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.IOS,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -587,7 +574,6 @@ builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.IOS,
         ),
-        build_gs_bucket = "chromium-webrtc",
     ),
     gn_args = gn_args.config(
         configs = [

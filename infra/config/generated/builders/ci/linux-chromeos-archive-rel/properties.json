@@ -21,7 +21,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-chromiumos-archive",
               "builder_group": "chromium",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {

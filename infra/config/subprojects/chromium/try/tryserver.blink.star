@@ -154,7 +154,6 @@ _rebaseline_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-fyi-archive",
     ),
     builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
@@ -731,7 +730,6 @@ _rebaseline_builder(
         android_config = builder_config.android_config(
             config = "base_config",
         ),
-        build_gs_bucket = "chromium-android-archive",
     ),
     builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,

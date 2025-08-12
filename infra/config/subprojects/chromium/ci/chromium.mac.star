@@ -95,7 +95,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-mac-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -150,7 +149,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-mac-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -844,7 +842,6 @@ ci.thin_tester(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-mac-archive",
     ),
     targets = targets.bundle(
         targets = [
@@ -1121,7 +1118,6 @@ ios_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.IOS,
         ),
-        build_gs_bucket = "chromium-mac-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1171,7 +1167,6 @@ ios_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.IOS,
         ),
-        build_gs_bucket = "chromium-mac-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1242,7 +1237,6 @@ ios_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.IOS,
         ),
-        build_gs_bucket = "chromium-mac-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1316,7 +1310,6 @@ ios_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.IOS,
         ),
-        build_gs_bucket = "chromium-mac-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1382,7 +1375,6 @@ ios_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.IOS,
         ),
-        build_gs_bucket = "chromium-mac-archive",
     ),
     gn_args = gn_args.config(
         configs = [

@@ -141,7 +141,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-clang-archive",
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "cfi",
             gs_acl = "public-read",
@@ -189,7 +188,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -235,7 +233,6 @@ ci.builder(
             target_bits = 32,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -286,7 +283,6 @@ ci.builder(
             target_bits = 32,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -342,7 +338,6 @@ ci.builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(config = "base_config"),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -404,7 +399,6 @@ ci.builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(config = "base_config"),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -448,7 +442,6 @@ ci.builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(config = "base_config"),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -504,7 +497,6 @@ ci.builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(config = "base_config"),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -549,7 +541,6 @@ ci.builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(config = "base_config"),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -595,7 +586,6 @@ ci.builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(config = "base_config"),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -642,7 +632,6 @@ ci.builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(config = "base_config"),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -687,7 +676,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.CHROMEOS,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -727,7 +715,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.CHROMEOS,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -768,7 +755,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.FUCHSIA,
         ),
-        build_gs_bucket = "chromium-clang-archive",
         run_tests_serially = True,
     ),
     gn_args = gn_args.config(
@@ -861,7 +847,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.FUCHSIA,
         ),
-        build_gs_bucket = "chromium-clang-archive",
         run_tests_serially = True,
     ),
     gn_args = gn_args.config(
@@ -915,7 +900,6 @@ clang_tot_linux_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         # Enable debug info, as on official builders, to catch issues with
@@ -958,7 +942,6 @@ clang_tot_linux_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -997,7 +980,6 @@ clang_tot_linux_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1043,7 +1025,6 @@ clang_tot_linux_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1107,7 +1088,6 @@ clang_tot_linux_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1147,7 +1127,6 @@ clang_tot_linux_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1188,7 +1167,6 @@ clang_tot_linux_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1228,7 +1206,6 @@ clang_tot_linux_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1267,7 +1244,6 @@ ci.builder(
             target_bits = 32,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1315,7 +1291,6 @@ ci.builder(
             target_bits = 32,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1364,7 +1339,6 @@ ci.builder(
             target_bits = 32,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1414,7 +1388,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1463,7 +1436,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1512,7 +1484,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1562,7 +1533,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1615,7 +1585,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1686,7 +1655,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1743,7 +1711,6 @@ ci.builder(
             target_platform = builder_config.target_platform.WIN,
             host_platform = builder_config.host_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1792,7 +1759,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.IOS,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1852,7 +1818,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.IOS,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1931,7 +1896,6 @@ clang_mac_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1977,7 +1941,6 @@ clang_mac_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -2019,7 +1982,6 @@ clang_mac_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
         configs = [

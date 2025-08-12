@@ -65,7 +65,6 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-fyi-archive",
     ),
     gn_args = "ci/Mac Builder",
     targets = targets.bundle(
@@ -116,7 +115,6 @@ But, the tests are built by {}.\
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-fyi-archive",
     ),
     targets = targets.bundle(
         targets = [

@@ -73,7 +73,6 @@ ci.builder(
         android_config = builder_config.android_config(
             config = "base_config",
         ),
-        build_gs_bucket = "chromium-android-desktop-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -118,7 +117,6 @@ ci.builder(
         android_config = builder_config.android_config(
             config = "base_config",
         ),
-        build_gs_bucket = "chromium-android-desktop-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -163,7 +161,6 @@ ci.builder(
         android_config = builder_config.android_config(
             config = "base_config",
         ),
-        build_gs_bucket = "chromium-android-desktop-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -209,7 +206,6 @@ ci.builder(
         android_config = builder_config.android_config(
             config = "base_config",
         ),
-        build_gs_bucket = "chromium-android-desktop-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -261,7 +257,6 @@ ci.thin_tester(
         android_config = builder_config.android_config(
             config = "base_config",
         ),
-        build_gs_bucket = "chromium-android-desktop-archive",
     ),
     targets = targets.bundle(
         targets = [

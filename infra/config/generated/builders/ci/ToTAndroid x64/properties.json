@@ -16,7 +16,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-clang-archive",
               "builder_group": "chromium.clang",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {

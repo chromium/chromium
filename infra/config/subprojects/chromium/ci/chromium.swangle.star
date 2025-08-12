@@ -70,7 +70,6 @@ gpu.ci.linux_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
     ),
     gn_args = gn_args.config(
@@ -126,7 +125,6 @@ gpu.ci.linux_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
     ),
     gn_args = gn_args.config(
@@ -179,7 +177,6 @@ gpu.ci.linux_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
     ),
     gn_args = gn_args.config(
@@ -233,7 +230,6 @@ gpu.ci.linux_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
     ),
     gn_args = gn_args.config(
@@ -287,7 +283,6 @@ gpu.ci.linux_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
     ),
     gn_args = gn_args.config(
@@ -344,7 +339,6 @@ gpu.ci.mac_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
     ),
     gn_args = gn_args.config(
@@ -395,7 +389,6 @@ gpu.ci.windows_builder(
             target_bits = 32,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
     ),
     gn_args = gn_args.config(
@@ -446,7 +439,6 @@ gpu.ci.windows_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
     ),
     gn_args = gn_args.config(
@@ -498,7 +490,6 @@ gpu.ci.windows_builder(
             target_bits = 32,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
     ),
     gn_args = gn_args.config(
@@ -548,7 +539,6 @@ gpu.ci.windows_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
     ),
     gn_args = gn_args.config(
@@ -598,7 +588,6 @@ gpu.ci.windows_builder(
             target_bits = 32,
             target_platform = builder_config.target_platform.WIN,
         ),
-        build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
     ),
     gn_args = gn_args.config(
