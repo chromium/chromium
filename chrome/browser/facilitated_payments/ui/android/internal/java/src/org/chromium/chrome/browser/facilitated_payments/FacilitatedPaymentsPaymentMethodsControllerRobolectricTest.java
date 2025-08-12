@@ -936,7 +936,8 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                 .run();
 
         histogramWatcher.assertExpected();
-        verify(mDelegateMock).showManagePaymentMethodsSettings(mContext);
+        verify(mSettingsNavigation)
+                .startSettings(mContext, SettingsNavigation.SettingsFragment.PAYMENT_METHODS);
     }
 
     @Test
@@ -967,7 +968,8 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                 .run();
 
         histogramWatcher.assertExpected();
-        verify(mDelegateMock).showManagePaymentMethodsSettings(mContext);
+        verify(mSettingsNavigation)
+                .startSettings(mContext, SettingsNavigation.SettingsFragment.PAYMENT_METHODS);
     }
 
     @Test
@@ -998,7 +1000,8 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                 .run();
 
         histogramWatcher.assertExpected();
-        verify(mDelegateMock).showManagePaymentMethodsSettings(mContext);
+        verify(mSettingsNavigation)
+                .startSettings(mContext, SettingsNavigation.SettingsFragment.PAYMENT_METHODS);
     }
 
     @Test
@@ -1029,7 +1032,8 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                 .run();
 
         histogramWatcher.assertExpected();
-        verify(mDelegateMock).showManagePaymentMethodsSettings(mContext);
+        verify(mSettingsNavigation)
+                .startSettings(mContext, SettingsNavigation.SettingsFragment.PAYMENT_METHODS);
     }
 
     @Test

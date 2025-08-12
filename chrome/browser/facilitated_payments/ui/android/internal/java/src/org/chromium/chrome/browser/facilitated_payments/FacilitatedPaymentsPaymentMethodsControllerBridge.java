@@ -4,15 +4,11 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
-import android.content.Context;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
-import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.facilitated_payments.core.ui_utils.UiEvent;
 
 /** JNI wrapper for C++ FacilitatedPaymentsController. */
@@ -71,16 +67,6 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
                     .onPaymentAppSelected(
                             mNativeFacilitatedPaymentsController, packageName, activityName);
         }
-    }
-
-    @Override
-    public boolean showManagePaymentMethodsSettings(Context context) {
-        if (context == null) {
-            return false;
-        }
-        SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(context, SettingsNavigation.SettingsFragment.PAYMENT_METHODS);
-        return true;
     }
 
     @Override

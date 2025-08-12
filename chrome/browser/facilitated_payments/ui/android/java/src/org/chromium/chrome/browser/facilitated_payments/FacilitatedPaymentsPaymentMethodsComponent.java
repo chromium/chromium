@@ -56,9 +56,6 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
          */
         void onPaymentAppSelected(String packageName, String activityName);
 
-        /** Called whenever the manage payment methods footer is tapped on the bottom sheet. */
-        boolean showManagePaymentMethodsSettings(Context context);
-
         /** Called whenever the Pix account linking prompt is accepted. */
         void onPixAccountLinkingPromptAccepted();
 

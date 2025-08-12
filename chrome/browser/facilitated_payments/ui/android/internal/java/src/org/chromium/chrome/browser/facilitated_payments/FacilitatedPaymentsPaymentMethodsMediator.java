@@ -48,6 +48,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SWAPPING_SCREEN;
 import static org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment.FINANCIAL_ACCOUNTS;
 import static org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment.NON_CARD_PAYMENT_METHODS;
+import static org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment.PAYMENT_METHODS;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -503,7 +504,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     }
 
     private void onManagePaymentMethodsOptionSelected(String histogramName) {
-        mDelegate.showManagePaymentMethodsSettings(mContext);
+        startSettings(PAYMENT_METHODS);
 
         RecordHistogram.recordEnumeratedHistogram(
                 histogramName,
