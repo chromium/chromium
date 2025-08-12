@@ -14,22 +14,32 @@ import {ObservableValue} from './observable.js';
 import type {ObservableValueReadOnly} from './observable.js';
 import {OneShotTimer} from './timer.js';
 
-// LINT.IfChange(GlicWebviewExitReason)
+// LINT.IfChange(WebviewExitReason)
 enum WebviewExitReason {
   NORMAL = 0,
   ABNORMAL = 1,
-  CRASH = 2,
-  KILL = 3,
+  CRASHED = 2,
+  KILLED = 3,
+  OOM_KILLED = 4,
+  OOM = 5,
+  FAILED_TO_LAUNCH = 6,
+  INTEGRITY_FAILURE = 7,
+  UNKNOWN = 8,
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWebviewExitReason)
 
+type WebviewExitReasonString = 'normal'|'abnormal'|'oom killed'|'oom'|'killed'|
+    'crashed'|'failed to launch'|'integrity failure';
 const WEBVIEW_EXIT_REASON_MAP = {
   'normal': WebviewExitReason.NORMAL,
   'abnormal': WebviewExitReason.ABNORMAL,
-  'crash': WebviewExitReason.CRASH,
-  'kill': WebviewExitReason.KILL,
+  'crashed': WebviewExitReason.CRASHED,
+  'killed': WebviewExitReason.KILLED,
+  'oom killed': WebviewExitReason.OOM_KILLED,
+  'oom': WebviewExitReason.OOM,
+  'failed to launch': WebviewExitReason.FAILED_TO_LAUNCH,
+  'integrity failure': WebviewExitReason.INTEGRITY_FAILURE,
 };
-
 
 export type PageType =
     // A login page.
@@ -257,16 +267,18 @@ export class WebviewController {
   }
 
   private onExit: ChromeEventFunctionType<typeof chrome.webviewTag.exit> =
-      (processID, reason) => {
-        const exitReason = WEBVIEW_EXIT_REASON_MAP[reason];
+      (exitEvent: any) => {
+        const reason: WebviewExitReasonString = exitEvent.reason;
+        const exitReason =
+            WEBVIEW_EXIT_REASON_MAP[reason] ?? WebviewExitReason.UNKNOWN;
         chrome.metricsPrivate.recordEnumerationValue(
             'Glic.Session.WebClientCrash.ExitReason', exitReason,
             Object.keys(WEBVIEW_EXIT_REASON_MAP).length);
         if (reason !== 'normal') {
           this.destroyHost(WebClientState.ERROR);
           chrome.metricsPrivate.recordUserAction('GlicSessionWebClientCrash');
-          console.warn(
-              `webview exit. processID: ${processID}, reason: ${reason}`);
+          console.warn(`webview exit. processID: ${
+              exitEvent.processID}, reason: ${reason}`);
         }
       };
 
