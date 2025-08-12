@@ -893,6 +893,12 @@ const char kAutofillEnableSeparatePixPreferenceItemDescription[] =
     "item.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+const char kAutofillEnableSupportForHomeAndWorkName[] =
+    "Support for Home and Work addresses in Autofill";
+const char kAutofillEnableSupportForHomeAndWorkDescription[] =
+    "When enabled, Home and Work addresses from MyAccount are available for "
+    "autofilling";
+
 #if BUILDFLAG(IS_ANDROID)
 const char kAutofillEnableSyncingOfPixBankAccountsName[] =
     "Sync Pix bank accounts from Google Payments";

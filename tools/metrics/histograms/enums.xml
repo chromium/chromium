@@ -10615,6 +10615,7 @@ from previous Chrome versions.
       label="OmniboxRemoveSuggestionHeaderChevron:enabled"/>
   <int value="-1295288468" label="MemoriesDebug:enabled"/>
   <int value="-1294944922" label="Canvas2dStaysGPUOnReadback:disabled"/>
+  <int value="-1294833121" label="AutofillEnableSupportForHomeAndWork:enabled"/>
   <int value="-1294050129" label="ContentFullscreen:disabled"/>
   <int value="-1293987566" label="OmniboxZeroSuggestionsOnNTPRealbox:disabled"/>
   <int value="-1292766410" label="IntentChipSkipsPicker:disabled"/>
@@ -15557,6 +15558,7 @@ from previous Chrome versions.
   <int value="515981953" label="ElasticOverscroll:enabled"/>
   <int value="516143995" label="EnableAriaElementReflection:enabled"/>
   <int value="516603570" label="QuickAnswersRichUi:disabled"/>
+  <int value="517350329" label="AutofillEnableSupportForHomeAndWork:disabled"/>
   <int value="517429103" label="AutofillImportDynamicForms:enabled"/>
   <int value="517568645" label="AnimatedAppMenuIcon:disabled"/>
   <int value="518419320" label="RemoteCopyProgressNotification:disabled"/>

@@ -545,6 +545,9 @@ extern const char kAutofillEnableSeparatePixPreferenceItemName[];
 extern const char kAutofillEnableSeparatePixPreferenceItemDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
+extern const char kAutofillEnableSupportForHomeAndWorkName[];
+extern const char kAutofillEnableSupportForHomeAndWorkDescription[];
+
 #if BUILDFLAG(IS_ANDROID)
 extern const char kAutofillEnableSyncingOfPixBankAccountsName[];
 extern const char kAutofillEnableSyncingOfPixBankAccountsDescription[];
