@@ -101,6 +101,7 @@
 <translation id="2238130810669087193">如要在所有裝置上使用你的地址和其他資料，請登入 Chromium。登入後，此地址就會儲存至 Google 帳戶。</translation>
 <translation id="2241627712206172106">如果您與親朋好友共用電腦，每個人均可享有獨立的瀏覽空間，依照自己的偏好設定 Chromium。</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium 建議暫停拖慢瀏覽器速度的分頁}other{Chromium 建議暫停拖慢瀏覽器速度的分頁}}</translation>
+<translation id="2307973900865360088">保留在 Dock</translation>
 <translation id="2313870531055795960">使用儲存在 Chromium 中的不安全網站清單來檢查網址。如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chromium 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能。</translation>
 <translation id="2343156876103232566">如要將號碼從此處傳送至 Android 手機，請在這兩部裝置上登入 Chromium。</translation>
 <translation id="2359808026110333948">繼續</translation>
@@ -484,6 +485,7 @@
 <translation id="718435575166326686">Chromium 需要相機權限，才能執行此網站要求的功能</translation>
 <translation id="7196312274710523067">無法啟動 Chromium，請再試一次。</translation>
 <translation id="7197677400338048821">Chromium 無法檢查密碼，請於 24 小時後再試一次。</translation>
+<translation id="7213008767289637091">將 Chromium 保留在 Dock，方便隨時快速取用</translation>
 <translation id="7213407614656404070">隨時使用 Chromium 開啟訊息、文件和其他應用程式中的連結</translation>
 <translation id="7223968959479464213">工作管理員 - Chromium</translation>
 <translation id="7246575524853130370">Chromium 推測您有以下興趣</translation>
@@ -585,6 +587,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8458614432758743027">Chromium 只支援 Windows 10 或以上版本的作業系統。</translation>
 <translation id="8463672209299734063">可選用：將診斷和使用情況資料自動傳送給 Google，協助改善 Chromium 作業系統的功能和效能。</translation>
 <translation id="8471947159125090285">如要將 Chromium 的資料儲存至 Google 帳戶及使用這類資料，請驗證身分</translation>
+<translation id="8482493977473846331">顯示 Chromium 登入提示</translation>
 <translation id="8493179195440786826">Chromium 版本過舊</translation>
 <translation id="8522801943730206384">儲存密碼時，Chromium 可檢查你的密碼</translation>
 <translation id="8555465886620020932">服務錯誤：<ph name="SERVICE_ERROR" />。</translation>

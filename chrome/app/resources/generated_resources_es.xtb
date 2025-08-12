@@ -1475,7 +1475,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="200321182559008924">Mantén tus pestañas en orden</translation>
 <translation id="2003596238737586336">El horario actual establecido es de <ph name="SUNRISE" /> a <ph name="SUNSET" />. Este ajuste lo gestiona tu administrador.</translation>
 <translation id="2004413981947727241">Usa tus contraseñas en cualquier dispositivo</translation>
-<translation id="2004697686368036666">Es posible que las funciones de algunos sitios no funcionen</translation>
 <translation id="2006638907958895361">Abrir enlace en <ph name="APP" /></translation>
 <translation id="2007404777272201486">Notificar un problema...</translation>
 <translation id="200781997903833896">Para usar Leer en voz alta, libera espacio en tu dispositivo</translation>
@@ -1631,6 +1630,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2110941575868943054">Con permiso para buscar dispositivos Bluetooth</translation>
 <translation id="211144231511833662">Borrar tipos</translation>
 <translation id="2111670510994270194">Nueva pestaña a la derecha</translation>
+<translation id="2111778868023567359">No volverás a ver grupos de pestañas en esta página</translation>
 <translation id="2112554630428445878">Te damos la bienvenida, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Fijar pestaña</translation>
 <translation id="2113479184312716848">Abrir &amp;archivo...</translation>
@@ -1957,7 +1957,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2328137272841210255">Restablece tu PIN</translation>
 <translation id="2328474416100889417">Todos los usuarios perderán inmediatamente el acceso al grupo de pestañas <ph name="GROUP_NAME" /> y se desactivarán todos los enlaces de invitación</translation>
 <translation id="2328561734797404498">Reinicia el dispositivo para usar <ph name="APP_NAME" />.</translation>
-<translation id="2328636661627946415">Cuando navegas en modo Incógnito, los sitios solo pueden usar las cookies para ver tu actividad de navegación en su propio sitio. Las cookies se eliminan al final de la sesión de Incógnito.</translation>
 <translation id="2329597144923131178">Accede para ver marcadores, historial, contraseñas y otros en dispos.</translation>
 <translation id="2330182457402792918">Selecciona archivos que este sitio pueda leer</translation>
 <translation id="2332115969598251205">No se pueden cargar los dispositivos guardados en <ph name="PRIMARY_EMAIL" />. Comprueba tu conexión a Internet e inténtalo de nuevo.</translation>
@@ -3747,7 +3746,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3593953853060020305">¿Permitir que este sitio edite <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Restricciones de nombres de certificado</translation>
 <translation id="3596012367874587041">Configuración de la aplicación</translation>
-<translation id="3596414637720633074">Bloquear cookies de terceros en Incógnito</translation>
 <translation id="3599221874935822507">Elevada</translation>
 <translation id="3600051066689725006">Solicitud de información web</translation>
 <translation id="3600956933576601730">Debes revisar y aceptar los términos para usar estas funciones</translation>
@@ -4083,7 +4081,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3807747707162121253">&amp;Cancelar</translation>
 <translation id="3808202562160426447">Atenuar contenido de fondo</translation>
 <translation id="3808443763115411087">Desarrollo de aplicaciones Android en Crostini</translation>
-<translation id="3808617121485025547">Más información sobre bloquear las cookies de terceros</translation>
 <translation id="38089336910894858">Mostrar una advertencia antes de salir pulsando ⌘ + Q</translation>
 <translation id="3809272675881623365">Conejo</translation>
 <translation id="3809280248639369696">Alienígena</translation>
@@ -4342,7 +4339,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3975565978598857337">Se ha producido un error al contactar con el servidor del dominio</translation>
 <translation id="3976108569178263973">No hay impresoras disponibles.</translation>
 <translation id="397703832102027365">Finalizando...</translation>
-<translation id="3977145907578671392">Es posible que las funciones de algunos sitios web no funcionen en incógnito.</translation>
 <translation id="3977886311744775419">Este tipo de red no admite que se descarguen actualizaciones de forma automática, pero puedes buscar actualizaciones manualmente.</translation>
 <translation id="3978325380690188371">Las teclas persistentes no están disponibles cuando ChromeVox está activado</translation>
 <translation id="3978732922947854545">Chrome mejora los PDFs</translation>
@@ -5730,6 +5726,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="496742804571665842">Inhabilitar perfiles de eSIM</translation>
 <translation id="4967571733817147990">Personalizar botones del ratón</translation>
 <translation id="4967852842111017386">Nombre del dispositivo de <ph name="FEATURE_NAME" /></translation>
+<translation id="4968994772848295474">No se pueden instalar apps web en el modo Invitado</translation>
 <translation id="4971412780836297815">Abrir al finalizar</translation>
 <translation id="4972129977812092092">Editar impresora</translation>
 <translation id="4972164225939028131">Contraseña incorrecta</translation>
@@ -6467,6 +6464,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5496730470963166430">No puede enviar ventanas emergentes ni usar redirecciones</translation>
 <translation id="5497250476399536588">Puedes encontrarla en Direcciones y más</translation>
 <translation id="5497251278400702716">Este archivo</translation>
+<translation id="549762298434242239">Navegación segura mejorada no confía en esta extensión. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">Chrome no ha podido verificar este paquete de instalación</translation>
 <translation id="5498967291577176373">Escribe más rápido con las sugerencias integradas para tu nombre, dirección o número de teléfono</translation>
 <translation id="5499211612787418966">Este cuadro de diálogo no está seleccionado actualmente. Pulsa Alt + Mayús + A para seleccionarlo.</translation>
@@ -6608,6 +6606,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="560834977503641186">Más información sobre Sincronización Wi‑Fi</translation>
 <translation id="5608580678041221894">Toca las siguientes teclas para ajustar o mover la zona para recortar</translation>
 <translation id="5609231933459083978">Parece que la aplicación no es válida.</translation>
+<translation id="5610759359710387751">Chrome para ti</translation>
 <translation id="5610867721023328944">Vuelve a intentarlo o selecciona uno de los temas disponibles que aparecen abajo.</translation>
 <translation id="5611398002774823980">Guardar en la cuenta</translation>
 <translation id="5611399285717843500">Ayuda a mejorar las funciones y el rendimiento de Chrome y ChromeOS. La información personal se elimina al recoger estos datos.</translation>
@@ -6830,6 +6829,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5780973441651030252">Prioridad del proceso</translation>
 <translation id="5781092003150880845">Sincronizar como <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Transfiere los datos de tu cuenta de centro educativo a tu cuenta personal</translation>
+<translation id="5781244749114921664">Grupos de pestañas ocultos</translation>
 <translation id="5782227691023083829">Traduciendo...</translation>
 <translation id="5783346913439924978">Seguimiento de cabeza</translation>
 <translation id="57838592816432529">Silenciar</translation>
@@ -7509,6 +7509,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6257602895346497974">Activar sincronización...</translation>
 <translation id="625827534921607067">Esta red tendrá preferencia si hay disponible más de una red ya configurada o a la que te hayas conectado anteriormente</translation>
 <translation id="6259776178973198997">Actualizar información de propietarios de Wi-Fi Direct</translation>
+<translation id="6261688934280090835">Registros de apps de kiosco de ChromeOS</translation>
 <translation id="6262371516389954471">Tus copias de seguridad se suben a Google y se cifran con la contraseña de tu cuenta de Google.</translation>
 <translation id="6263082573641595914">Versión de entidad emisora de certificados de Microsoft</translation>
 <translation id="6263284346895336537">No crítica</translation>
@@ -10505,6 +10506,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8340547030807793004">Más acciones de <ph name="DEVICE" /></translation>
 <translation id="8341804784147620576">Mostrar atajos de búsqueda</translation>
 <translation id="8342221978608739536">No lo he intentado</translation>
+<translation id="8342387517402567689">Las instalaciones de aplicaciones web no se admiten en el modo Incógnito</translation>
 <translation id="8342861492835240085">Seleccionar una colección</translation>
 <translation id="8345848587667658367">Ahora puedes consultar las fotos, el contenido multimedia, las notificaciones y las aplicaciones recientes de tu teléfono</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
@@ -10828,7 +10830,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8573111744706778015">Escribe "uo7" para obtener "ươ"</translation>
 <translation id="8574990355410201600">Permitir siempre el sonido en <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Mantén pulsado <ph name="KEY_EQUIVALENT" /> para salir</translation>
-<translation id="8576359558126669548">Más información sobre cómo bloquear cookies de terceros en el modo Incógnito</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Añadir pestaña a lista de lectura}other{Añadir pestañas a lista de lectura}}</translation>
 <translation id="8577052309681449949">Clics automáticos, tamaño del cursor, color del cursor y más</translation>
 <translation id="8578639784464423491">No puede tener más de 99 caracteres</translation>
@@ -11143,7 +11144,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8777628254805677039">contraseña raíz</translation>
 <translation id="8779720597365936419">Sí, mantener mis datos separados de los del trabajo (recomendado)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Los sitios solo pueden usar las cookies para ver tu actividad de navegación en el propio sitio</translation>
 <translation id="8780123805589053431">Obtener descripciones de imágenes de Google</translation>
 <translation id="8780443667474968681">Se ha desactivado la búsqueda por voz.</translation>
 <translation id="8781834595282316166">Nueva pestaña en el grupo</translation>

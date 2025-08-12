@@ -120,7 +120,9 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="2379925928934107488">Pas donkertema op werwe toe wanneer Chrome donkertema gebruik, indien moontlik</translation>
 <translation id="2390272837142897736">Vergroot zoem</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Presies</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> word toegelaat}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> word toegelaat}}</translation>
+<translation id="2404857459073803936">Liggingtoegang vir hierdie werf</translation>
 <translation id="2410940059315936967">’n Werf wat jy besoek, kan inhoud van ander werwe af inbed, byvoorbeeld prente, advertensies en teks. Webkoekies wat deur hierdie ander werwe gestel word, word derdepartywebkoekies genoem.</translation>
 <translation id="2411116727035790889">Skakel kortpaaie aan</translation>
 <translation id="2433507940547922241">Voorkoms</translation>
@@ -276,6 +278,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="3992684624889376114">Meer oor hierdie bladsy</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4031179711345676612">Mikrofoon word toegelaat</translation>
+<translation id="4042597221652780603">Benaderd</translation>
 <translation id="4046123991198612571">Volgende snit</translation>
 <translation id="4077310749977440510">Werwe lees gewoonlik jou knipbord vir kenmerke soos behoud van die formatering van teks wat jy gekopieer het</translation>
 <translation id="4082080074595021446">Uitsonderings vir spesifieke webwerwe word nie toegelaat nie, want Android-toestel het nie genoeg RAM nie.</translation>

@@ -66,6 +66,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome brauzerni sekinlashtiruvchi varaqni pauza qilishni tavsiya qiladi}other{Chrome brauzerni sekinlashtiruvchi varaqlarni pauza qilishni tavsiya qiladi}}</translation>
 <translation id="1832046143430087831">Chrome V8 tizimi bilan saytlar ishlashini tezlashtiradi, ammo Chrome brauzerining hujumlardan himoyasini biroz pasaytiradi. Bu sozlama oʻchiq.</translation>
 <translation id="1838374766361614909">Qidiruv shartlarini tozalash</translation>
+<translation id="1849248141818021764">Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini oʻchirishingiz<ph name="END_LINK" /> kerak.</translation>
 <translation id="1860536484129686729">Bu sayt kamerangizdan foydalanishi uchun Chrome brauzeriga ruxsat berishingiz lozim</translation>
 <translation id="1873233029667955273">Google Chrome hozir birlamchi brauzeringiz emas</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
@@ -178,6 +179,7 @@
 <translation id="306179102415443347">Google Parollar menejerini ochish uchun yorliqdan foydalaning Yorliqni kompyuter bosh ekraniga yoki ilovalar launcheriga joylashingiz mumkin</translation>
 <translation id="3065168410429928842">Chrome sahifasi</translation>
 <translation id="3080151273017101988">Google Chrome yopilishida orqa fon rejimida ishlayotgan ilovalar to‘xtatilmasin</translation>
+<translation id="308397506772922478">Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
 <translation id="3100998948628680988">Chrome profilingizga nom bering</translation>
 <translation id="310459126943037700">Vazifalar yakunlanmadi.</translation>
 <translation id="3112458742631356345">Chrome bu yuklamani blokladi, chunki bunday fayl odatda yuklab olinmaydi va xavfli boʻlishi mumkin</translation>
@@ -619,6 +621,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8533056045953418157">Google Chrome birlamchi PDF fayllarni koʻrish vositasi etib tayinlansin</translation>
 <translation id="8555465886620020932">Xizmat xatosi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Tillar roʻyxatidan qidirish</translation>
+<translation id="8575047640889685742">Google hisobingizdagi barcha Chrome maʼlumotlarini <ph name="BEGIN_LINK" />shaxsiy kodli ibora<ph name="END_LINK" /> yordamida shifrlang. Google Pay xizmatidagi toʻlov usullari va manzillar shifrlanmaydi. Chrome brauzer tarixi sinxronlanmaydi.</translation>
 <translation id="8601359445272098721">Yangi! “Ekrandan tarjima qilish” tugmasini bosib, ekrandagi matn va rasmlarni tarjima qilish mumkin</translation>
 <translation id="8614913330719544658">Google Chrome javob bermayapti. Qaytadan ishga tushirilsinmi?</translation>
 <translation id="861702415419836452">Chrome atrofingiz 3D xaritasini yaratishi uchun unga kamera ruxsati zarur</translation>

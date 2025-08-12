@@ -120,7 +120,9 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="2379925928934107488">Mümkünse Chrome koyu tema kullandığında sitelere de koyu tema uygulayın</translation>
 <translation id="2390272837142897736">Yakınlaştırmayı artır</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Tam</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tanesi için daha izin verildi}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tanesi için daha izin verildi}}</translation>
+<translation id="2404857459073803936">Bu site için konum erişimi</translation>
 <translation id="2410940059315936967">Ziyaret ettiğiniz bir site, diğer sitelerdeki resim, reklam ve metin gibi içerikleri yerleştirebilir. Diğer siteler tarafından ayarlanan çerezlere üçüncü taraf çerezleri denir.</translation>
 <translation id="2411116727035790889">Kısayolları etkinleştirme</translation>
 <translation id="2433507940547922241">Görünüm</translation>
@@ -276,6 +278,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="3992684624889376114">Bu sayfa hakkında</translation>
 <translation id="4002066346123236978">Başlık</translation>
 <translation id="4031179711345676612">Mikrofona izin verildi</translation>
+<translation id="4042597221652780603">Yaklaşık</translation>
 <translation id="4046123991198612571">Sonraki parça</translation>
 <translation id="4077310749977440510">Kopyaladığınız metnin biçimini koruma gibi özelliklerin kullanılması için siteler genellikle panonuzu okur</translation>
 <translation id="4082080074595021446">Android cihazda yeterli RAM olmadığından belirli web siteleri için istisnalara izin verilmiyor.</translation>
@@ -305,7 +308,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="4412992751769744546">Üçüncü taraf çerezlerine izin ver</translation>
 <translation id="4419929467120297501">Chrome, sitelerin internette gezinirken sizi izlemek için üçüncü taraf çerezlerini kullanmasını engeller. <ph name="BEGIN_LINK" />Üçüncü taraf çerezlerine erişimi yönetmek<ph name="END_LINK" /> için ayarlara gidin.</translation>
 <translation id="443121186588148776">Seri bağlantı noktası</translation>
-<translation id="4434045419905280838">Pop-up'lar ve yönlendirmeler</translation>
+<translation id="4434045419905280838">Pop-up ve yönlendirmeler</translation>
 <translation id="443552056913301231">Bu işlem, çerezler de dahil olmak üzere yerel verilerin tamamını temizler ve tüm <ph name="ORIGIN" /> izinlerini siler</translation>
 <translation id="4468959413250150279">Belirli bir site için sesi kapatın.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# çerez}other{# çerez}}</translation>

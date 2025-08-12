@@ -1092,6 +1092,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="6125202119952209826">Unirte ao grupo de pestanas con <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Máis detalles<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Eliminouse o elemento</translation>
+<translation id="6127860394906721547">Abre o grupo de pestanas "<ph name="TITLE_OF_GROUP" />", de cor <ph name="COLOR_NAME" />, cos sitios <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimizar a pestana</translation>
 <translation id="6134168885321518274">Abrir a barra de busca</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestana}other{<ph name="TAB_COUNT_MANY" /> pestanas}}</translation>

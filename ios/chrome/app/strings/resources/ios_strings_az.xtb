@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Bütün tabları bağladıqda sancılmış tablar da bağlanacaq.</translation>
 <translation id="1036348656032585052">Deaktiv edin</translation>
 <translation id="1041322626941363065">Verilənlərin pozulması zamanı parolların ələ keçirilib-keçirilmədiyi bildirilir</translation>
-<translation id="1044891598689252897">Saytlar normal qaydada işləyəcək</translation>
 <translation id="104491362976654916">Oflayn səhifə</translation>
 <translation id="1049743911850919806">Gizli Rejim</translation>
 <translation id="1053651653201045802">Çıxılıb. Hesabda əlfəcin, parol və s. istifadə etmək üçün yenidən daxil olun.</translation>
@@ -135,7 +134,6 @@
 <translation id="1506063256525392513">Bu, foto çəkməyə və yükləməyə, həmçinin QR kodları skan etməyə imkan verir</translation>
 <translation id="1508263560970797965">Anonim rejimdə davam edin</translation>
 <translation id="1509486075633541495">Veb sayta daxil olun</translation>
-<translation id="1509960214886564027">Bir çox saytdakı xüsusiyyətlər işləməyə bilər</translation>
 <translation id="1513858653616922153">Parolu silin</translation>
 <translation id="1517166097004694782">"Bu tab ilə davam edin" seçimini gizlədin</translation>
 <translation id="1520027731907768768">İzlədiyiniz məhsullar ilə bağlı qiymət endirimi xəbərdarlıqları alın.</translation>
@@ -368,9 +366,6 @@
 <translation id="2359808026110333948">Davam edin</translation>
 <translation id="2360196772093551345">Mobil Sayt formatına keçid</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> olaraq daxil olunub. <ph name="USER_EMAIL" />. Ayarları açır.</translation>
-<translation id="236977714248711277">Saytlar baxış təcrübənizi yaxşılaşdırmaq üçün, məsələn, sizi daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətindəki elementləri yadda saxlamaq üçün kukilərdən istifadə edə bilmir.
-
-Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərinizdən istifadə edə bilmir (məsələn, reklamları fərdiləşdirmək üçün).</translation>
 <translation id="2377230674627603057">Tab qrupları şəbəkəsi</translation>
 <translation id="2377336083033403521">Tabları axtarın…</translation>
 <translation id="2381405137052800939">Əsaslar</translation>
@@ -446,7 +441,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2669454659051515572">Bu cihazdan istifadə edən hər kəs endirilmiş faylları görə bilər</translation>
 <translation id="2671423594960767771">Qrupu paylaşın</translation>
 <translation id="2673508731173059946">Kopiyalanmış linkə daxil olun</translation>
-<translation id="2687403674020088961">Bütün kukiləri bloklayın (tövsiyə edilmir)</translation>
 <translation id="2688535388040882469">Bannerlər</translation>
 <translation id="2690858294534178585">Kamera istifadə olunur</translation>
 <translation id="2691653761409724435">Oflayn şəkildə əlçatan deyil</translation>
@@ -661,7 +655,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3587885837929752825">Təşkilat Google Hesabında yadda saxlanan datanı məhdudlaşdırır.</translation>
 <translation id="3588820906588687999">Şəkli Yeni Paneldə Açın</translation>
 <translation id="3595252146048399851">Sinxronizasiya seçimlərini <ph name="BEGIN_LINK" />ayarlarda<ph name="END_LINK" /> edə bilərsiniz. Google tarixçənizə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
-<translation id="3596414637720633074">Anonim rejimdə üçüncü tərəf kukilərini bloklayın</translation>
 <translation id="3602260545951981695">"Təkmil qoruma" seçin</translation>
 <translation id="3610041351087301930">Oxu rejimini gizlədin</translation>
 <translation id="3622175633937495219">Axtarış tarixçəsi (<ph name="COUNT" /> nəticə tapılıb)</translation>
@@ -1063,7 +1056,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5177141896043341906">Təhlükəsizliyi riskə atan <ph name="NUMBER_OF_PASSWORDS" /> zəif parol var.</translation>
 <translation id="5181140330217080051">Endirilir</translation>
 <translation id="5186185447130319458">Şəxsi</translation>
-<translation id="5188482106078495165">Kuki ayarınız bütün tablara tətbiq edilir. Açıq taba yeni ayar tətbiq etmək üçün tabı yenidən yükləyin.</translation>
 <translation id="518997337573684769">Xəta haqqında hesabatın göndərilməsi…</translation>
 <translation id="519530786644929958">Endirmə uğursuz oldu və yenidən cəhd etmək mümkün deyil.</translation>
 <translation id="5197255632782567636">internet</translation>
@@ -1088,7 +1080,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5271265092610673171">{count,plural, =1{Lazımi sahə boşdur. Yadda saxlamazdan əvvəl doldurun.}other{Bəzi lazımi sahələr boşdur. Yadda saxlamazdan əvvəl doldurun.}}</translation>
 <translation id="5271549068863921519">Şifrəni yadda saxlayın</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) tab qrupuna qoşulmağınızı istəyir. Keçidi olan hər kəs bütün tabları redaktə edə bilər, ona görə də qoşularkən diqqətli olun. Keçidin müddəti 48 saat sonra bitir.</translation>
-<translation id="5279600392753459966">Hamısını bloklayın</translation>
 <translation id="5282340693022193851">Qiymət izləmə bildirişləri əldə etmək üçün iOS Ayarlarında bildirişləri aktiv edin.</translation>
 <translation id="528857768909044842">Tab qrupları burada yadda saxlanılır</translation>
 <translation id="5294624619177114121">Mobil bildirişlər</translation>
@@ -1187,7 +1178,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5648166631817621825">Son 7 gün</translation>
 <translation id="5652623411397330904">İzlədiyiniz məhsullar burada görünəcək.</translation>
 <translation id="5656431592348714536">Təkmilləşdirilmiş Təqvim</translation>
-<translation id="5657156137487675418">Bütün kukilərə icazə verin</translation>
 <translation id="5659593005791499971">E-poçt</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> və <ph name="GEMINI_APPS_PRIVACY" /> tətbiq olunur. Gemini səhvlərə yol verə bilər, ona görə də yenidən yoxlayın.</translation>
 <translation id="5666313630530585305">Veb-sayta daxil olun.</translation>
@@ -1204,7 +1194,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5704908597376970822">Daxil olmaq mümkün deyil.</translation>
 <translation id="5709005673595820640">{count,plural, =1{Təhlükəsizliyi riskə atan {count} təkrar işlənən parolunuz var. Təhlükəsizlik üçün bunu indi həll edin.}other{Təhlükəsizliyi riskə atan {count} təkrar işlənən parolunuz var. Təhlükəsizlik üçün bunları indi həll edin.}}</translation>
 <translation id="57094364128775171">Güclü parol təklif edin…</translation>
-<translation id="5716230673298034837">Hamısına icazə verin</translation>
 <translation id="5718049162805123412">Bunları indi dəyişməlisiniz</translation>
 <translation id="572328651809341494">Son panellər</translation>
 <translation id="5724941645893276623">Vebdə məxfi axtarış etmək üçün yeni tab açın</translation>
@@ -1263,7 +1252,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5936065461722368675">Tam səhifəni tərcümə edin</translation>
 <translation id="5937560539988385583">Səhifə tərcümə edildi</translation>
 <translation id="5938160824633642847">Cihaz doludur. Yer boşaldın və yenidən cəhd edin.</translation>
-<translation id="594324569139756587">Üçüncü tərəfi bloklayın</translation>
 <translation id="5944869793365969636">QR kodunu skan edin</translation>
 <translation id="5948291296578561264">Bu fotoları foto kitabxanada saxlamağa icazə verir.</translation>
 <translation id="5948605885471592910">Açdığınız hər tabı görün və idarə edin</translation>
@@ -1336,7 +1324,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6192388920090306326">Tokioya səfər</translation>
 <translation id="6193448654517602979">Tablar seçin</translation>
 <translation id="6196207969502475924">Səsli Axtarış</translation>
-<translation id="6196640612572343990">Üçüncü tərəf kukiləri blok edin</translation>
 <translation id="6198252989419008588">PİN kodu dəyişdirin</translation>
 <translation id="6210079381482819663"><ph name="THRESHOLD" /> gün və ya daha uzun müddət istifadə edilməyən tablar bura köçürülür. <ph name="BEGIN_LINK" />Ayarlarda<ph name="END_LINK" /> dəyişə bilərsiniz.</translation>
 <translation id="6213281885682386884">Ünvan tapılmadı</translation>
@@ -1412,14 +1399,10 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6444435711855078002">Əlavə seçimlər</translation>
 <translation id="6445051938772793705">Ölkə</translation>
 <translation id="6445981559479772097">Mesaj göndərildi.</translation>
-<translation id="6447842834002726250">Kukilər</translation>
 <translation id="6449554712554071184">Bununla qrup cihazdan həmişəlik silinəcək.</translation>
 <translation id="6452534462676960500">Yeni fəaliyyət</translation>
 <translation id="6459411599807878608">Detallar gizlədildi</translation>
 <translation id="646394917185284261">Files</translation>
-<translation id="6464397691496239022">Saytlar baxış təcrübənizi yaxşılaşdırmaq üçün, məsələn, sizi daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətinizdəki elementləri yadda saxlamaq üçün kukilərdən istifadə edə bilər.
-
-Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərinizdən istifadə edə bilmir (məsələn, reklamları fərdiləşdirmək üçün).</translation>
 <translation id="6476253015009698798">Bu səhifədə qiymətləri izləmək mümkün deyil.</translation>
 <translation id="6476284679642588870">Ödəniş metodlarını idarə edin</translation>
 <translation id="6476800141292307438">Səhifə <ph name="LANGUAGE" /> dilinə tərcümə edilir. Seçimlər ekranın aşağı hissəsində əlçatandır.</translation>
@@ -1462,7 +1445,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="6612912757320004438">Tab bildirişlərinə icazə verin…</translation>
 <translation id="6617761071025228250">Mətni silin</translation>
 <translation id="6620279676667515405">Ləğv edin</translation>
-<translation id="6624219055418309072">Anonim rejimdə bloklayın</translation>
 <translation id="6625830436658400045">Sinxronizasiya ayarlarınız son yedəkləmənizə əsasən bərpa olunacaq. Sinxronizasiya seçimlərini <ph name="BEGIN_LINK" />ayarlarda<ph name="END_LINK" /> edə bilərsiniz.</translation>
 <translation id="6627583120233659107">Qovluğa düzəliş edin</translation>
 <translation id="6629759408545977279">Haradan: <ph name="ORIGINATING_HOST" /></translation>
@@ -1479,9 +1461,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="6663529247339810546">Şəkli yadda saxlamaq mümkün deyil</translation>
 <translation id="6668619169535738264">Əlfəcinə düzəliş edin</translation>
 <translation id="6671294218820966278">Oxunmuş olaraq qeyd edin</translation>
-<translation id="6672241253012342409">Saytlar baxış təcrübənizi yaxşılaşdırmaq üçün, məsələn, sizi daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətinizdəki elementləri yadda saxlamaq üçün kukilərdən istifadə edə bilər.
-
-Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görmək üçün kukilərinizdən istifadə edə bilmir (məsələn, reklamları fərdiləşdirmək üçün).</translation>
 <translation id="6672697278890207089">Parol ifadəsi daxil edin</translation>
 <translation id="6674917187596384849">Hesablar arasında asanlıqla keçid edə bilərsiniz</translation>
 <translation id="6676349090816247042">Giriş seçimləri.</translation>
@@ -1517,6 +1496,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6794476726485507147">Bu səhifəyə yenidən daxil olmaq məqsədilə xatırladıcı bildirişi almaq üçün tarix və vaxt seçin</translation>
 <translation id="6795481620482106033">Yanlış data</translation>
 <translation id="6797543908718012274">Oxu rejimini aktivləşdirin</translation>
+<translation id="6806550742467879742">Səhifə alətləri</translation>
 <translation id="6807287147325542056">Digər tətbiqlərdəki parollar</translation>
 <translation id="681368974849482173">Element yaradılmışdır</translation>
 <translation id="6825078212112407882">{count,plural, =1{Əlfəcin Google Hesabında ({email}) yadda saxlandı}other{{count} əlfəcin Google Hesabında ({email}) yadda saxlandı.}}</translation>
@@ -1670,6 +1650,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7454057999980797137">Ştat/Ölkə</translation>
 <translation id="7458706065921255639">Fərdiləşdirmə və əlaqələndirmə</translation>
 <translation id="745899714366929493">Bütün gün</translation>
+<translation id="7460314822154045102">Kameradan istifadə edin</translation>
 <translation id="7460698861522306757">Mobil Sayt sorğusu</translation>
 <translation id="7464143666517313304">Bu, bu cihazda yadda saxlanılmış ünvanları silir.</translation>
 <translation id="7468373585447318060">İzlədiyiniz bütün məhsullarda qiymət endirimlərindən xəbərdar olun.</translation>
@@ -1802,9 +1783,6 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7952670906562503188">{passkey_count} giriş açarını və girişi yadda saxlamamağı seçdiyiniz sayt və tətbiqlərin siyahısını silmək üzrəsiniz. Sayt və tətbiqlər üçün yaratdığınız hər hansı hesab silinməyəcək.</translation>
 <translation id="7958575506592576831">Səhifə güvənliyi məlumatı</translation>
 <translation id="7961015016161918242">Heç vaxt</translation>
-<translation id="7966516440812255683">Saytlar baxış təcrübənizi yaxşılaşdırmaq üçün, məsələn, sizi daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətinizdəki elementləri yadda saxlamaq üçün kukilərdən istifadə edə bilər.
-
-Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərdən istifadə edə bilər (məsələn, reklamları fərdiləşdirmək üçün).</translation>
 <translation id="7971136598759319605">1 gün əvvəl aktiv olub</translation>
 <translation id="7975036700432177008">Cəhd edin</translation>
 <translation id="797588153137233716">Menyu → Tarixçə → Baxış datasını silin</translation>
@@ -1815,7 +1793,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="7987685713885608670">Təhlükəsizliyi artırmaq üçün Google Parol Menecerində saxlanmazdan əvvəl cihazınızda parolları şifrələyin.</translation>
 <translation id="798991908416757345">Tab qrupları əlçatan deyil</translation>
 <translation id="7993170188789685695">İki dəfə toxunaraq bu bildirişi bağlayın.</translation>
-<translation id="7993619969781047893">Bəzi saytlardakı xüsusiyyətlər işləməyə bilər</translation>
 <translation id="7996239959906074962">Ayarlayın…</translation>
 <translation id="8001561107130904792">Səhifə kontentinin paylaşılması</translation>
 <translation id="800361585186029508">Google Chrome'da daxil edilən keçidləri açır.</translation>

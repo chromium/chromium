@@ -120,7 +120,9 @@
 <translation id="2379925928934107488">በሚቻልበት ጊዜ Chrome ጠቆር ያለ ገጽታ ሲጠቀም ጠቆር ያለ ገጽታን ጣቢያዎች ላይ ተግብር</translation>
 <translation id="2390272837142897736">ማጉላትን ጨምር</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> ሜባ</translation>
+<translation id="2403474027143565107">ትክክለኛ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ ተፈቅደዋል}one{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" /> እና <ph name="NUM_MORE" /> ተጨማሪ ተፈቅደዋል}other{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" /> እና <ph name="NUM_MORE" /> ተጨማሪ ተፈቅደዋል}}</translation>
+<translation id="2404857459073803936">የዚህ ጣቢያ የአካባቢ መዳረሻ</translation>
 <translation id="2410940059315936967">እርስዎ የሚጎበኙት ጣቢያ ከሌሎች ጣቢያዎች ይዘት መክተት ይችላል ለምሳሌ፣ ምስሎች፣ ማስታወቂያዎች እና ጽሁፍ። በእነዚህ ሌሎች ጣቢያዎች የተቀናበሩ ኩኪዎች የሦስተኛ ወገን ኩኪዎች ይባላሉ።</translation>
 <translation id="2411116727035790889">አቋራጮችን ያብሩ</translation>
 <translation id="2433507940547922241">ገጽታ</translation>
@@ -276,6 +278,7 @@
 <translation id="3992684624889376114">ስለዚህ ገፅ</translation>
 <translation id="4002066346123236978">ርዕስ</translation>
 <translation id="4031179711345676612">ማይክሮፎን ተፈቅዷል</translation>
+<translation id="4042597221652780603">ግምታዊ</translation>
 <translation id="4046123991198612571">ቀጣይ ትራክ</translation>
 <translation id="4077310749977440510">ጣቢያዎች እንደ እርስዎ የቀዱትን የጽሑፍ ቅርጸት ማቆየት ያሉ ባህሪያትን ለማግኘት አብዛኛውን ጊዜ ቅንጥብ ሰሌዳዎን ያነብባሉ</translation>
 <translation id="4082080074595021446">Android መሣሪያ በቂ RAM ስለሌለው ለተለዩ ድር ጣቢያዎች ልዩ ሁኔታዎች ተከልክለዋል።</translation>

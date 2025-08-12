@@ -1092,6 +1092,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> के साथ टैब ग्रुप में शामिल हों</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />ज़्यादा जानकारी<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">आइटम निकाला गया</translation>
+<translation id="6127860394906721547"><ph name="URL_LIST" /> साइटों वाला <ph name="COLOR_NAME" /> रंग का <ph name="TITLE_OF_GROUP" /> टैब ग्रुप खोलें.</translation>
 <translation id="6130303040046284160">टैब को छोटा करें</translation>
 <translation id="6134168885321518274">खोज बार को खोलें</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टैब}one{<ph name="TAB_COUNT_MANY" /> टैब}other{<ph name="TAB_COUNT_MANY" /> टैब}}</translation>

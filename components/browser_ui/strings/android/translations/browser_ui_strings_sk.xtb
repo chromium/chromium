@@ -120,7 +120,9 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="2379925928934107488">Ak je to možné, používajte tmavý režim na weboch, keď ho používa Chrome</translation>
 <translation id="2390272837142897736">Zvýšiť úroveň lupy</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Presná</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Sú udelené povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalšie}few{Sú udelené povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalšie}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more allowed}other{Sú udelené povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalších}}</translation>
+<translation id="2404857459073803936">Prístup k polohe pre tento web</translation>
 <translation id="2410940059315936967">Na webe, ktorý navštívite, môže byť vložený obsah z iných webov, napríklad obrázky, reklamy a text. Súbory cookie nastavené týmito ďalšími webmi sa nazývajú súbory cookie tretích strán.</translation>
 <translation id="2411116727035790889">Zapnúť skratky</translation>
 <translation id="2433507940547922241">Vzhľad</translation>
@@ -276,6 +278,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="3992684624889376114">Táto stránka</translation>
 <translation id="4002066346123236978">Názov</translation>
 <translation id="4031179711345676612">Mikrofón je povolený</translation>
+<translation id="4042597221652780603">Približná</translation>
 <translation id="4046123991198612571">Ďalšia skladba</translation>
 <translation id="4077310749977440510">Weby zvyčajne čítajú vašu schránku na poskytovanie funkcií, napríklad aby mohli zachovať formátovanie textu, ktorý ste skopírovali</translation>
 <translation id="4082080074595021446">Výnimky pre konkrétne weby nie sú povolené, pretože zariadenie s Androidom nemá dostatok operačnej pamäte.</translation>

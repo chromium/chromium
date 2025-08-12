@@ -1477,7 +1477,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="200321182559008924">Utrzymuj porządek na kartach</translation>
 <translation id="2003596238737586336">Bieżący harmonogram jest ustawiony na <ph name="SUNRISE" />–<ph name="SUNSET" />. Tym ustawieniem zarządza Twój administrator.</translation>
 <translation id="2004413981947727241">Używaj haseł na dowolnym urządzeniu</translation>
-<translation id="2004697686368036666">W niektórych witrynach mogą nie działać funkcje</translation>
 <translation id="2006638907958895361">Otwórz link w aplikacji <ph name="APP" /></translation>
 <translation id="2007404777272201486">Zgłaszanie problemu...</translation>
 <translation id="200781997903833896">Aby użyć funkcji Czytaj na głos, zwolnij miejsce na urządzeniu</translation>
@@ -1632,6 +1631,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2110941575868943054">Zezwolono na wyszukiwanie urządzeń Bluetooth</translation>
 <translation id="211144231511833662">Wyczyść typy</translation>
 <translation id="2111670510994270194">Nowa karta po prawej</translation>
+<translation id="2111778868023567359">Grupy kart nie będą już wyświetlać się na tej stronie</translation>
 <translation id="2112554630428445878">Cześć <ph name="USERNAME" />,</translation>
 <translation id="21133533946938348">Przypnij kartę</translation>
 <translation id="2113479184312716848">&amp;Otwórz plik</translation>
@@ -1946,7 +1946,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2328137272841210255">Zresetuj swój kod PIN</translation>
 <translation id="2328474416100889417">Wszyscy natychmiast utracą dostęp do grupy kart „<ph name="GROUP_NAME" />”, a wszystkie linki z zaproszeniami zostaną wyłączone</translation>
 <translation id="2328561734797404498">Aby użyć <ph name="APP_NAME" />, uruchom ponownie urządzenie.</translation>
-<translation id="2328636661627946415">Kiedy jesteś w trybie incognito, witryny mogą używać plików cookie tylko do sprawdzania Twojej aktywności związanej z przeglądaniem w danej witrynie. Po zakończeniu sesji incognito pliki cookie są usuwane.</translation>
 <translation id="2329597144923131178">Zaloguj się, by korzystać z zakładek, historii, haseł i innych ustawień na wszystkich swoich urządzeniach.</translation>
 <translation id="2330182457402792918">Wybierz pliki, które może odczytywać ta witryna</translation>
 <translation id="2332115969598251205">Nie udało się wczytać urządzeń zapisanych na koncie <ph name="PRIMARY_EMAIL" />. Sprawdź połączenie z internetem i spróbuj ponownie.</translation>
@@ -3209,7 +3208,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3226487301970807183">Przełącz lewy panel boczny</translation>
 <translation id="322708765617468434">Po konfiguracji zawsze możesz dodać do urządzenia kolejną osobę. Każda osoba może spersonalizować jego działanie i zachować prywatność swoich danych.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
-<translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Usuń je lub zastąp podobnymi rozszerzeniami z <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}few{Usuń je lub zastąp podobnymi rozszerzeniami z <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}many{Usuń je lub zastąp podobnymi rozszerzeniami z <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}other{Usuń je lub zastąp podobnymi rozszerzeniami z <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}}</translation>
+<translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Usuń je lub zastąp podobnymi rozszerzeniami z <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}few{Usuń je lub zastąp podobnymi rozszerzeniami z <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}many{Usuń je lub zastąp podobnymi rozszerzeniami z <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}other{Usuń je lub zastąp podobnymi rozszerzeniami z <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Sprawdź datę</translation>
 <translation id="3230539834943294477">Wyświetl artykuły pomocy lub uzyskaj wsparcie dotyczące urządzenia</translation>
 <translation id="3232168089952388105">Udostępnić informacje o urządzeniu?</translation>
@@ -3728,7 +3727,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3593953853060020305">Zezwolić tej witrynie na edytowanie pliku <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Ograniczenia nazwy certyfikatu</translation>
 <translation id="3596012367874587041">Ustawienia aplikacji</translation>
-<translation id="3596414637720633074">Blokuj pliki cookie innych firm w trybie incognito</translation>
 <translation id="3599221874935822507">Uniesiony</translation>
 <translation id="3600051066689725006">Informacje o żądaniu internetowym</translation>
 <translation id="3600956933576601730">Aby korzystać z tych funkcji, musisz przeczytać i zaakceptować warunki</translation>
@@ -4064,7 +4062,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3807747707162121253">&amp;Anuluj</translation>
 <translation id="3808202562160426447">Przyciemnij zawartość w tle</translation>
 <translation id="3808443763115411087">Programowanie aplikacji Crostini na Androida</translation>
-<translation id="3808617121485025547">Więcej informacji o blokowaniu plików cookie innych firm</translation>
 <translation id="38089336910894858">Wyświetl ostrzeżenie przed zamknięciem za pomocą ⌘Q</translation>
 <translation id="3809272675881623365">Królik</translation>
 <translation id="3809280248639369696">Księżycowy promień</translation>
@@ -4324,7 +4321,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3975565978598857337">Nie udało się połączyć z serwerem obszaru</translation>
 <translation id="3976108569178263973">Brak dostępnych drukarek.</translation>
 <translation id="397703832102027365">Kończę...</translation>
-<translation id="3977145907578671392">W niektórych witrynach funkcje mogą nie działać w trybie incognito</translation>
 <translation id="3977886311744775419">W sieci tego typu aktualizacje nie są pobierane automatycznie, możesz jednak sprawdzić ręcznie, czy są dostępne.</translation>
 <translation id="3978325380690188371">Gdy włączony jest ChromeVox, klawisze trwałe są niedostępne.</translation>
 <translation id="3978732922947854545">Chrome ułatwia korzystanie z plików PDF</translation>
@@ -6449,6 +6445,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5496730470963166430">Nie zezwolono na wysyłanie wyskakujących okienek ani używanie przekierowań</translation>
 <translation id="5497250476399536588">Znajdziesz go w sekcji Adresy i ustawienia</translation>
 <translation id="5497251278400702716">Ten plik</translation>
+<translation id="549762298434242239">Ulepszone Bezpieczne przeglądanie uznaje to rozszerzenie za niezaufane. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">Przeglądarka Chrome nie mogła zweryfikować tego pakietu instalacyjnego</translation>
 <translation id="5498967291577176373">Dzięki podpowiedziom w tekście szybciej wpisuj imię i nazwisko, adres oraz numer telefonu</translation>
 <translation id="5499211612787418966">To okno nie jest teraz zaznaczone. Aby je zaznaczyć, naciśnij Alt-Shift A.</translation>
@@ -6590,6 +6587,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="560834977503641186">Synchronizacja Wi-Fi, więcej informacji</translation>
 <translation id="5608580678041221894">Kliknij te przyciski, by zmienić lub przesunąć obszar przycinania</translation>
 <translation id="5609231933459083978">Wygląda na to, że aplikacja jest nieprawidłowa.</translation>
+<translation id="5610759359710387751">Dostosuj Chrome</translation>
 <translation id="5610867721023328944">Spróbuj ponownie lub wybierz jeden z dostępnych motywów poniżej.</translation>
 <translation id="5611398002774823980">Zapisz na koncie</translation>
 <translation id="5611399285717843500">Pomóż w ulepszaniu funkcji i działania Chrome oraz ChromeOS. Podczas zbierania tych danych usuwane są dane osobowe.</translation>
@@ -6812,6 +6810,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5780973441651030252">Priorytet procesu</translation>
 <translation id="5781092003150880845">Synchronizuj z kontem: <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Przenieś dane z konta szkolnego na konto osobiste</translation>
+<translation id="5781244749114921664">Grupy kart zostały ukryte</translation>
 <translation id="5782227691023083829">Trwa tłumaczenie...</translation>
 <translation id="5783346913439924978">Śledzenie ruchów głowy</translation>
 <translation id="57838592816432529">Wycisz</translation>
@@ -10813,7 +10812,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8573111744706778015">Wpisz „uo7”, aby uzyskać „ươ”</translation>
 <translation id="8574990355410201600">Zawsze zezwalaj na odtwarzanie dźwięku na stronie <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Aby zakończyć, przytrzymaj klawisz <ph name="KEY_EQUIVALENT" /></translation>
-<translation id="8576359558126669548">Więcej informacji o blokowaniu plików cookie innych firm w trybie incognito</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Dodaj kartę do listy Do przeczytania}few{Dodaj karty do listy Do przeczytania}many{Dodaj karty do listy Do przeczytania}other{Dodaj karty do listy Do przeczytania}}</translation>
 <translation id="8577052309681449949">Automatyczne kliknięcia, rozmiar i kolor kursora oraz inne opcje</translation>
 <translation id="8578639784464423491">Nie może mieć więcej niż 99 liter</translation>
@@ -11126,7 +11124,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8777628254805677039">hasło główne</translation>
 <translation id="8779720597365936419">Tak, przechowuj moje dane oddzielnie od służbowych (zalecane)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Witryny mogą używać plików cookie tylko do śledzenia Twojej aktywności związanej z przeglądaniem tych witryn</translation>
 <translation id="8780123805589053431">Pobieraj opisy obrazów z Google</translation>
 <translation id="8780443667474968681">Wyszukiwanie głosowe zostało wyłączone.</translation>
 <translation id="8781834595282316166">Nowa karta w grupie</translation>

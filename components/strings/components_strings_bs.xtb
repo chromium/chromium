@@ -1672,6 +1672,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3744899669254331632">Trenutno ne možete posjetiti <ph name="SITE" /> jer je ova web lokacija poslala kodirane akreditive koje Chromium ne može obraditi. Greške i napadi na mreži su obično privremeni, pa će ova web lokacija vjerovatno raditi kasnije.</translation>
 <translation id="3745599309295009257">Vaš tekst te sadržaj i URL stranice na kojoj pišete će se poslati Googleu, osobe će ih pregledati i koristit će se za poboljšanje ove funkcije. Nemojte unositi lične informacije (kao što su zdravstveni ili finansijski podaci) niti koristiti ovaj alat na web lokacijama koje sadržavaju privatne ili osjetljive informacije.</translation>
 <translation id="3748009735914587286">Metal (visoki sjaj)</translation>
+<translation id="3749600200023337912">Spremljeni način automatskog plaćanja može se upotrebljavati za ovo plaćanje. Da biste isključili e-novčanike ili aplikaciju za plaćanje u Chromeu, otvorite <ph name="BEGIN_LINK1" />postavke plaćanja<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">Sačuvati adresu na račun?</translation>
 <translation id="3752543821772132562">Zanemareno jer pravilo <ph name="POLICY_NAME" /> nije postavljeno.</translation>
 <translation id="3754210790023674521">Izađi iz načina rada slike u slici</translation>
@@ -2013,6 +2014,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4297937944457164390">Ažuriran je atribut <ph name="ATTRIBUTE_NAME" /></translation>
 <translation id="4298000214066716287">Investicije</translation>
 <translation id="42981349822642051">Proširi</translation>
+<translation id="4298148761711700950">Platite odmah bez otpremanja QR koda</translation>
 <translation id="4298925811540301889">Kolačići za ovu web lokaciju se sinhroniziraju na ChromeOS uređajima. Da upravljate sadržajem koji se sinhronizira, idite u odjeljak <ph name="SYNC_SETTINGS" />.</translation>
 <translation id="4300272766492248925">Otvori aplikaciju</translation>
 <translation id="4300675098767811073">Višestruko bušenje na desnoj strani</translation>
@@ -2750,6 +2752,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5540969246441091044">Konjički sportovi</translation>
 <translation id="5541086400771735334">Poštansko sanduče 7</translation>
 <translation id="5541546772353173584">Dodajte adresu e-pošte</translation>
+<translation id="5543452229212526547">Vaš tekst te sadržaj i URL stranice na kojoj pišete će se poslati Googleu. Osobe koje vrše pregled neće koristiti vaš sadržaj da poboljšaju AI. Vaša organizacija može promijeniti ove postavke bilo kada.</translation>
 <translation id="5543564889050342791">Zoološki vrtovi, akvariji i rezervati</translation>
 <translation id="5543722831081909240">180 stepeni</translation>
 <translation id="5544836308113951378">Krstarenja i čarteri</translation>
@@ -3126,6 +3129,8 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184099524311454384">Pretražite kartice</translation>
 <translation id="6184868291074982484">Chrome automatski ograničava kolačiće trećih strana</translation>
+<translation id="6189351761800074311">Vaš tekst i sadržaj stranice se šalju Googleu, ali se neće koristiti za poboljšanje AI-ja.
+    <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">nadjačati određene tipke na tastaturi, kao što je Esc</translation>
 <translation id="6194209731893739467">Ovdje pregledajte sve proizvode koje pratite</translation>
 <translation id="6195371403461054755">Geologija</translation>
@@ -3555,6 +3560,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6890956352250146925">Opcije za kolačiće i podatke web lokacija</translation>
 <translation id="6891596781022320156">Nije podržan nivo pravila.</translation>
 <translation id="6893057134494550310">Plastifikacijska folija</translation>
+<translation id="6893204630281237373">Da biste isključili aplikaciju za plaćanje u Chromeu, otvorite <ph name="BEGIN_LINK1" />postavke plaćanja<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Vaša kartica je potvrđena</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6897140037006041989">Korisnički agent</translation>

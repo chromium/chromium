@@ -1475,7 +1475,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="200321182559008924">Houd je tabbladen opgeruimd</translation>
 <translation id="2003596238737586336">Huidige planning is ingesteld op <ph name="SUNRISE" /> - <ph name="SUNSET" />. Deze instelling wordt beheerd door je beheerder.</translation>
 <translation id="2004413981947727241">Je wachtwoorden gebruiken op elk apparaat</translation>
-<translation id="2004697686368036666">Functies op bepaalde sites werken misschien niet</translation>
 <translation id="2006638907958895361">Link openen in <ph name="APP" /></translation>
 <translation id="2007404777272201486">Een probleem melden...</translation>
 <translation id="200781997903833896">Maak ruimte vrij op je apparaat om Voorlezen te gebruiken</translation>
@@ -1956,7 +1955,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2328137272841210255">Je pincode resetten</translation>
 <translation id="2328474416100889417">Iedereen raakt meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt en alle uitnodigingslinks worden uitgezet</translation>
 <translation id="2328561734797404498">Start je apparaat opnieuw op om <ph name="APP_NAME" /> te gebruiken.</translation>
-<translation id="2328636661627946415">Als je in de incognitomodus zit, kunnen sites alleen cookies gebruiken om je browse-activiteit op hun eigen site te bekijken. De cookies worden aan het einde van de incognitosessie verwijderd.</translation>
 <translation id="2329597144923131178">Als je inlogt, heb je al je instellingen op al je apparaten: bookmarks, geschiedenis, wachtwoorden en meer.</translation>
 <translation id="2330182457402792918">Selecteer bestanden die deze site mag lezen</translation>
 <translation id="2332115969598251205">Kan apparaten niet laden die zijn opgeslagen in <ph name="PRIMARY_EMAIL" />. Check de internetverbinding en probeer het opnieuw.</translation>
@@ -3744,7 +3742,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3593953853060020305">Toestaan dat deze site <ph name="FILE_NAME" /> bewerkt?</translation>
 <translation id="3593965109698325041">Naambeperkingen voor certificaten</translation>
 <translation id="3596012367874587041">App-instellingen</translation>
-<translation id="3596414637720633074">Cookies van derden blokkeren in incognitomodus</translation>
 <translation id="3599221874935822507">Verhoogd</translation>
 <translation id="3600051066689725006">Informatie over webverzoek</translation>
 <translation id="3600956933576601730">Je moet de voorwaarden doornemen en accepteren om deze functies te gebruiken</translation>
@@ -4080,7 +4077,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3807747707162121253">A&amp;nnuleren</translation>
 <translation id="3808202562160426447">Achtergrondcontent dimmen</translation>
 <translation id="3808443763115411087">Android-app-ontwikkeling voor Crostini</translation>
-<translation id="3808617121485025547">Meer informatie over hoe je cookies van derden blokkeert</translation>
 <translation id="38089336910894858">Waarschuwing tonen voordat je afsluit met ⌘Q</translation>
 <translation id="3809272675881623365">Konijn</translation>
 <translation id="3809280248639369696">Marsmannetje</translation>
@@ -4340,7 +4336,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3975565978598857337">Verbinding maken met server voor domein mislukt</translation>
 <translation id="3976108569178263973">Er zijn geen printers beschikbaar.</translation>
 <translation id="397703832102027365">Wordt voltooid...</translation>
-<translation id="3977145907578671392">Functies op bepaalde sites werken misschien niet in de incognitomodus</translation>
 <translation id="3977886311744775419">Automatische updates worden niet gedownload op dit type netwerk, maar je kunt handmatig op updates controleren.</translation>
 <translation id="3978325380690188371">Plaktoetsen zijn niet beschikbaar als ChromeVox aanstaat</translation>
 <translation id="3978732922947854545">Chrome maakt pdf's beter</translation>
@@ -6606,6 +6601,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="560834977503641186">Wifi-synchronisatie, meer informatie</translation>
 <translation id="5608580678041221894">Tik op de volgende toetsen om het bijsnijdgebied aan te passen of te verplaatsen</translation>
 <translation id="5609231933459083978">De app blijkt ongeldig te zijn.</translation>
+<translation id="5610759359710387751">Ga Chrome gebruiken</translation>
 <translation id="5610867721023328944">Probeer het opnieuw of selecteer een van de beschikbare thema's hieronder.</translation>
 <translation id="5611398002774823980">Opslaan in account</translation>
 <translation id="5611399285717843500">Help de functies en prestaties van Chrome en ChromeOS te verbeteren. Persoonlijke informatie wordt verwijderd bij het verzamelen van deze gegevens.</translation>
@@ -10823,7 +10819,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8573111744706778015">Typ 'uo7' om 'ươ' te krijgen</translation>
 <translation id="8574990355410201600">Geluid altijd toegestaan op <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Houd <ph name="KEY_EQUIVALENT" /> ingedrukt om te stoppen</translation>
-<translation id="8576359558126669548">Meer informatie over hoe je cookies van derden blokkeert in de incognitomodus</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Tabblad toevoegen aan leeslijst}other{Tabbladen toevoegen aan leeslijst}}</translation>
 <translation id="8577052309681449949">Automatisch klikken, cursorgrootte, cursorkleur en meer</translation>
 <translation id="8578639784464423491">Mag niet langer zijn dan 99 letters</translation>
@@ -11139,7 +11134,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="8777628254805677039">root-wachtwoord</translation>
 <translation id="8779720597365936419">Ja, mijn gegevens gescheiden houden van werk (aanbevolen)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Sites kunnen cookies alleen gebruiken om je browse-activiteit op hun eigen site te bekijken</translation>
 <translation id="8780123805589053431">Afbeeldingsbeschrijvingen ophalen van Google</translation>
 <translation id="8780443667474968681">Gesproken zoekopdracht is uitgezet.</translation>
 <translation id="8781834595282316166">Nieuw tabblad in groep</translation>

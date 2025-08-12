@@ -657,7 +657,7 @@
 <translation id="6096979789310008754">Söktexten har tagits bort och alla filer och mappar visas.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> flyttas till <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">CSV-text</translation>
-<translation id="6129953537138746214">Rymden</translation>
+<translation id="6129953537138746214">Mellanslag</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> flyttas ...</translation>
 <translation id="6133877453787250710">Administratören övervakar följande:</translation>
 <translation id="613750717151263950">japanska med amerikanskt tangentbord</translation>
@@ -925,7 +925,7 @@
 <translation id="8116072619078571545">Isvatten</translation>
 <translation id="8120392982188717723">Tillåt synkronisering i nätverk med datapriser</translation>
 <translation id="8124093710070495550">Problem med synkronisering</translation>
-<translation id="8128733386027980860">engelska (Förenade kungariket) med Dvorak-tangentbord</translation>
+<translation id="8128733386027980860">engelska (Storbritannien) med Dvorak-tangentbord</translation>
 <translation id="8137331602592933310"><ph name="FILENAME" /> har delats med dig. Du kan inte ta bort det eftersom du inte äger det.</translation>
 <translation id="8138705869659070104">Aktivera efter enhetskonfig.</translation>
 <translation id="813913629614996137">Initierar …</translation>

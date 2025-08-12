@@ -1092,6 +1092,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="6125202119952209826">Sartu fitxa taldean <ph name="OWNER_FIRST_NAME" /> erabiltzailearekin</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Xehetasun gehiago<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Kendu egin da elementua</translation>
+<translation id="6127860394906721547">Ireki <ph name="TITLE_OF_GROUP" /> fitxa taldea, <ph name="COLOR_NAME" /> kolorekoa, <ph name="URL_LIST" /> webguneak dituena.</translation>
 <translation id="6130303040046284160">Minimizatu fitxa</translation>
 <translation id="6134168885321518274">Ireki bilaketa-barra</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fitxa}other{<ph name="TAB_COUNT_MANY" /> fitxa}}</translation>

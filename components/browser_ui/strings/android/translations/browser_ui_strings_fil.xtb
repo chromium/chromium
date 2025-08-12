@@ -120,7 +120,9 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="2379925928934107488">Ilapat ang madilim na tema sa mga site kapag ginagamit ng Chrome ang madilim na tema, kapag posible</translation>
 <translation id="2390272837142897736">Dagdagan ang pag-zoom</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Eksakto</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Pinapayagan ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}one{Pinapayagan ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}other{Pinapayagan ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}}</translation>
+<translation id="2404857459073803936">Access sa lokasyon para sa site na ito</translation>
 <translation id="2410940059315936967">Puwedeng mag-embed ng content mula sa iba pang site ang site na binibisita mo, halimbawa, mga larawan, ad, at text. Ang cookies na itinatakda ng iba pang site na ito ay tinatawag na mga third-party na cookie.</translation>
 <translation id="2411116727035790889">I-on ang mga shortcut</translation>
 <translation id="2433507940547922241">Hitsura</translation>
@@ -276,6 +278,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="3992684624889376114">Tungkol sa page na ito</translation>
 <translation id="4002066346123236978">Pamagat</translation>
 <translation id="4031179711345676612">Pinapayagan ang mikropono</translation>
+<translation id="4042597221652780603">Tinatantya</translation>
 <translation id="4046123991198612571">Susunod na track</translation>
 <translation id="4077310749977440510">Karaniwang binabasa ng mga site ang iyong clipboard para sa mga feature gaya ng pagpapanatili ng pag-format ng text na nakopya mo</translation>
 <translation id="4082080074595021446">Hindi pinapayagan ang mga exception para sa mga partikular na website dahil walang sapat na RAM ang Android device.</translation>

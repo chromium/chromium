@@ -1476,7 +1476,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="200321182559008924">Păstrează filele organizate</translation>
 <translation id="2003596238737586336">Programul actual este setat la <ph name="SUNRISE" /> – <ph name="SUNSET" />. Această setare este gestionată de administrator.</translation>
 <translation id="2004413981947727241">Folosește parolele pe orice dispozitiv</translation>
-<translation id="2004697686368036666">Este posibil ca funcțiile din anumite site-uri să nu funcționeze</translation>
 <translation id="2006638907958895361">Deschide linkul în <ph name="APP" /></translation>
 <translation id="2007404777272201486">Raportează o problemă...</translation>
 <translation id="200781997903833896">Pentru a folosi funcția Citește cu voce tare, eliberează spațiu pe dispozitiv</translation>
@@ -1957,7 +1956,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2328137272841210255">Resetează codul PIN</translation>
 <translation id="2328474416100889417">Toți utilizatorii vor pierde imediat accesul la grupul de file <ph name="GROUP_NAME" /> și toate linkurile de invitație vor fi dezactivate</translation>
 <translation id="2328561734797404498">Repornește dispozitivul pentru a folosi <ph name="APP_NAME" />.</translation>
-<translation id="2328636661627946415">În modul incognito, site-urile pot folosi cookie-uri numai pentru a-ți vedea activitatea de navigare pe site-ul respectiv. Cookie-urile sunt șterse la sfârșitul sesiunii incognito.</translation>
 <translation id="2329597144923131178">Conectează-te și accesează marcajele, istoricul, parolele și alte setări pe toate dispozitivele.</translation>
 <translation id="2330182457402792918">Selectează fișierele pe care le poate citi acest site</translation>
 <translation id="2332115969598251205">Nu se pot încărca dispozitivele salvate în <ph name="PRIMARY_EMAIL" />. Verifică-ți conexiunea la internet și încearcă din nou.</translation>
@@ -3746,7 +3744,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3593953853060020305">Permiți ca acest site să editeze <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Limitări privind numele certificatului</translation>
 <translation id="3596012367874587041">Setările aplicației</translation>
-<translation id="3596414637720633074">Blochează cookie-urile terță parte în modul incognito</translation>
 <translation id="3599221874935822507">În relief</translation>
 <translation id="3600051066689725006">Informații despre solicitarea web</translation>
 <translation id="3600956933576601730">Trebuie să consulți și să accepți condițiile pentru a folosi aceste funcții</translation>
@@ -4082,7 +4079,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3807747707162121253">&amp;Anulează</translation>
 <translation id="3808202562160426447">Redu luminozitatea fundalului</translation>
 <translation id="3808443763115411087">Dezvoltarea aplicațiilor pentru Android în Crostini</translation>
-<translation id="3808617121485025547">Mai multe despre blocarea cookie-urilor terță parte</translation>
 <translation id="38089336910894858">Arată un avertisment înainte de a închide cu ⌘Q</translation>
 <translation id="3809272675881623365">Iepure</translation>
 <translation id="3809280248639369696">Rază de lună</translation>
@@ -4342,7 +4338,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3975565978598857337">Contactarea serverului pentru domeniu nu a reușit</translation>
 <translation id="3976108569178263973">Nu există imprimante disponibile.</translation>
 <translation id="397703832102027365">Se finalizează...</translation>
-<translation id="3977145907578671392">Este posibil ca funcțiile de pe anumite site-uri să nu ruleze în modul incognito</translation>
 <translation id="3977886311744775419">Actualizările automate nu se descarcă în acest tip de rețea, dar poți căuta actualizări manual.</translation>
 <translation id="3978325380690188371">Tastele adezive nu sunt disponibile când ChromeVox este activat</translation>
 <translation id="3978732922947854545">Chrome îmbunătățește fișierele PDF</translation>
@@ -5730,6 +5725,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="496742804571665842">Dezactivează profilurile eSIM</translation>
 <translation id="4967571733817147990">Personalizează butoanele mouse-ului</translation>
 <translation id="4967852842111017386">Numele dispozitivului pentru <ph name="FEATURE_NAME" /></translation>
+<translation id="4968994772848295474">Instalările de aplicații web nu sunt acceptate în modul pentru invitați</translation>
 <translation id="4971412780836297815">Deschide când s-a finalizat</translation>
 <translation id="4972129977812092092">Editează imprimanta</translation>
 <translation id="4972164225939028131">Parolă greșită</translation>
@@ -6608,6 +6604,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="560834977503641186">Sincronizare Wi-Fi, află mai multe</translation>
 <translation id="5608580678041221894">Atinge următoarele taste ca să ajustezi sau să muți zona de decupare</translation>
 <translation id="5609231933459083978">Aplicația pare să nu fie validă.</translation>
+<translation id="5610759359710387751">Personalizează Chrome</translation>
 <translation id="5610867721023328944">Încearcă din nou sau selectează una dintre temele disponibile de mai jos.</translation>
 <translation id="5611398002774823980">Salvează în cont</translation>
 <translation id="5611399285717843500">Contribuie la îmbunătățirea funcțiilor și a performanței Chrome și ChromeOS. Informațiile cu caracter personal sunt eliminate la colectarea acestor date.</translation>
@@ -7509,6 +7506,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6257602895346497974">Activează sincronizarea...</translation>
 <translation id="625827534921607067">Această rețea va fi marcată ca preferată dacă sunt disponibile mai multe rețele conectate sau configurate anterior</translation>
 <translation id="6259776178973198997">Actualizează informațiile despre proprietarii Wi-Fi Direct</translation>
+<translation id="6261688934280090835">Jurnalele aplicației chioșc pentru ChromeOS</translation>
 <translation id="6262371516389954471">Backupurile sunt încărcate pe serverele Google și sunt criptate folosind parola pentru Contul Google.</translation>
 <translation id="6263082573641595914">Versiune CA Microsoft</translation>
 <translation id="6263284346895336537">Non-critic</translation>
@@ -10507,6 +10505,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8340547030807793004">Mai multe acțiuni pentru <ph name="DEVICE" /></translation>
 <translation id="8341804784147620576">Afișează comenzile directe de căutare</translation>
 <translation id="8342221978608739536">Nu am încercat</translation>
+<translation id="8342387517402567689">Instalările de aplicații web nu sunt acceptate în modul incognito</translation>
 <translation id="8342861492835240085">Selectează o colecție</translation>
 <translation id="8345848587667658367">Acum poți vedea fotografiile, conținutul media, notificările și aplicațiile recente ale telefonului</translation>
 <translation id="8347227221149377169">Sarcini de printare</translation>
@@ -10830,7 +10829,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8573111744706778015">Introdu „uo7” pentru a obține „ươ”</translation>
 <translation id="8574990355410201600">Permite întotdeauna sunetul pe <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Pentru a ieși, ține apăsată tasta <ph name="KEY_EQUIVALENT" />.</translation>
-<translation id="8576359558126669548">Mai multe despre blocarea cookie-urilor terță parte în modul incognito</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Adaugă fila în lista de lectură}few{Adaugă filele în lista de lectură}other{Adaugă filele în lista de lectură}}</translation>
 <translation id="8577052309681449949">Clicurile automate, dimensiunea cursorului, culoarea cursorului și altele</translation>
 <translation id="8578639784464423491">Nu poate depăși 99 de litere</translation>
@@ -11146,7 +11144,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="8777628254805677039">parola directorului rădăcină</translation>
 <translation id="8779720597365936419">Da, păstrează datele separat de cele de la serviciu (recomandat)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Site-urile pot folosi cookie-uri numai pentru a-ți vedea activitatea de navigare pe site-ul respectiv</translation>
 <translation id="8780123805589053431">Descarcă descrierile imaginii de la Google</translation>
 <translation id="8780443667474968681">Căutarea vocală a fost dezactivată.</translation>
 <translation id="8781834595282316166">Filă nouă în grup</translation>

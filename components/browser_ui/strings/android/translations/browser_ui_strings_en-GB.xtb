@@ -120,7 +120,9 @@ Advanced Protection controls these Chrome settings:
 <translation id="2379925928934107488">Apply Dark theme to sites when Chrome uses Dark theme, when possible</translation>
 <translation id="2390272837142897736">Increase zoom</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Precise</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more allowed}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more allowed}}</translation>
+<translation id="2404857459073803936">Location access for this site</translation>
 <translation id="2410940059315936967">A site that you visit can embed content from other sites, for example, images, ads and text. Cookies set by these other sites are called third-party cookies.</translation>
 <translation id="2411116727035790889">Turn on shortcuts</translation>
 <translation id="2433507940547922241">Appearance</translation>
@@ -276,6 +278,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="3992684624889376114">About this page</translation>
 <translation id="4002066346123236978">Title</translation>
 <translation id="4031179711345676612">Microphone allowed</translation>
+<translation id="4042597221652780603">Approximate</translation>
 <translation id="4046123991198612571">Next track</translation>
 <translation id="4077310749977440510">Sites usually read your clipboard for features like keeping the formatting of text that you copied</translation>
 <translation id="4082080074595021446">Exceptions for specific websites disallowed because Android device does not have enough RAM.</translation>

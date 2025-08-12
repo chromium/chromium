@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Hvis du lukker alle faner, blir også festede faner lukket.</translation>
 <translation id="1036348656032585052">Slå av</translation>
 <translation id="1041322626941363065">Få en advarsel hvis passord blir avdekket i databrudd</translation>
-<translation id="1044891598689252897">Nettsteder kommer til å fungere som normalt</translation>
 <translation id="104491362976654916">Side uten nett</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Logget av. Logg på igjen for å bruke blant annet bokmerkene og passordene i kontoen din.</translation>
@@ -135,7 +134,6 @@
 <translation id="1506063256525392513">Dette gjør at du kan ta og laste opp bilder samt skanne QR-koder</translation>
 <translation id="1508263560970797965">Fortsett i Inkognito</translation>
 <translation id="1509486075633541495">Logg på nettstedet</translation>
-<translation id="1509960214886564027">Det kan hende at funksjoner på mange nettsteder slutter å fungere</translation>
 <translation id="1513858653616922153">Slett passordet</translation>
 <translation id="1517166097004694782">Skjul «Fortsett med denne fanen»</translation>
 <translation id="1520027731907768768">Få varsler om avslag for produkter du sporer.</translation>
@@ -368,9 +366,6 @@
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2360196772093551345">Be om mobilversjonen av nettstedet</translation>
 <translation id="2362083820973145409">Logget på som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Åpner innstillinger.</translation>
-<translation id="236977714248711277">Nettsteder kan ikke bruke informasjonskapsler for å gi deg en bedre surfeopplevelse, for eksempel for å holde deg pålogget eller huske varene i handlekurven din.
-
-Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser.</translation>
 <translation id="2377230674627603057">Rutenett for fanegrupper</translation>
 <translation id="2377336083033403521">Søk i faner…</translation>
 <translation id="2381405137052800939">Grunninnstillinger</translation>
@@ -446,7 +441,6 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2669454659051515572">Alle som bruker denne enheten, kan se nedlastede filer</translation>
 <translation id="2671423594960767771">Del gruppe</translation>
 <translation id="2673508731173059946">Besøk den kopierte linken</translation>
-<translation id="2687403674020088961">Blokkér alle informasjonskapsler (anbefales ikke)</translation>
 <translation id="2688535388040882469">Bannere</translation>
 <translation id="2690858294534178585">Kameraet er i bruk</translation>
 <translation id="2691653761409724435">Ikke tilgjengelig uten nett</translation>
@@ -513,6 +507,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2931440415625410757">Vis veiledning</translation>
 <translation id="2952278131021475699">Lens-kamerasøk</translation>
 <translation id="2962516096219646456">Se alle autofylldata</translation>
+<translation id="2965594942405840553">Du kan ikke angre denne handlingen</translation>
 <translation id="2969979262385602596">Kunne ikke logge på. Prøv på nytt senere.</translation>
 <translation id="2975761176769946178">En nettadresse kreves</translation>
 <translation id="297667759942911166">Samarbeid i fanegrupper</translation>
@@ -661,9 +656,9 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3587885837929752825">Organisasjonen din begrenser hva du kan lagre i Google-kontoen din.</translation>
 <translation id="3588820906588687999">Åpne bildet i en ny fane</translation>
 <translation id="3595252146048399851">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
-<translation id="3596414637720633074">Blokkér informasjonskapsler fra tredjepart i inkognitomodus</translation>
 <translation id="3602260545951981695">Velg «Økt beskyttelse»</translation>
 <translation id="3610041351087301930">Skjul leser</translation>
+<translation id="3610866916973186448">Ja, slett</translation>
 <translation id="3622175633937495219">Søkelogg (fant <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Du kan sveipe på kanten for å gå tilbake.</translation>
 <translation id="362709345066740529">Tilpass kortene, feeden med mer her</translation>
@@ -1063,7 +1058,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5177141896043341906">Du har <ph name="NUMBER_OF_PASSWORDS" /> svake passord som kan utgjøre en sikkerhetsrisiko.</translation>
 <translation id="5181140330217080051">Laster ned</translation>
 <translation id="5186185447130319458">Privat</translation>
-<translation id="5188482106078495165">Innstillingen for informasjonskapsler gjelder for alle faner. For å ta i bruk en ny innstilling på en åpen fane, last inn fanen på nytt.</translation>
 <translation id="518997337573684769">Sender krasjrapport …</translation>
 <translation id="519530786644929958">Nedlastingen mislyktes. Det er ikke mulig å prøve på nytt.</translation>
 <translation id="5197255632782567636">Internett</translation>
@@ -1088,7 +1082,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5271265092610673171">{count,plural, =1{Et obligatorisk felt er tomt. Fyll det ut før du lagrer.}other{Noen obligatoriske felt er tomme. Fyll dem ut før du lagrer.}}</translation>
 <translation id="5271549068863921519">Lagre passord</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vil ha deg med i en fanegruppe. Alle som har linken, kan endre alle fanene, så vær forsiktig hvis du velger å bli med. Linken utløper om 48 timer.</translation>
-<translation id="5279600392753459966">Blokkér alle</translation>
 <translation id="5282340693022193851">For å få varsler om prissporing, slå på varsler i iOS-innstillingene.</translation>
 <translation id="528857768909044842">Her lagres fanegrupper</translation>
 <translation id="5294624619177114121">Mobilvarsler</translation>
@@ -1187,7 +1180,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5648166631817621825">Siste 7 dager</translation>
 <translation id="5652623411397330904">Produktene du sporer, vises her.</translation>
 <translation id="5656431592348714536">Forbedret kalender</translation>
-<translation id="5657156137487675418">Tillat alle informasjonskapsler</translation>
 <translation id="5659593005791499971">E-post</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> og <ph name="GEMINI_APPS_PRIVACY" /> gjelder. Gemini kan gjøre feil, så dobbeltsjekk svaret.</translation>
 <translation id="5666313630530585305">Logg på et nettsted.</translation>
@@ -1204,7 +1196,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5704908597376970822">Kan ikke logge på.</translation>
 <translation id="5709005673595820640">{count,plural, =1{Du har {count} gjenbrukt passord som kan utgjøre en sikkerhetsrisiko. Fiks det nå for å ivareta sikkerheten.}other{Du har {count} gjenbrukte passord som kan utgjøre en sikkerhetsrisiko. Fiks dem nå for å ivareta sikkerheten.}}</translation>
 <translation id="57094364128775171">Foreslå et sterkt passord…</translation>
-<translation id="5716230673298034837">Tillat alle</translation>
 <translation id="5718049162805123412">Du bør endre disse nå</translation>
 <translation id="572328651809341494">Nylige faner</translation>
 <translation id="5724941645893276623">For å surfe privat på nettet, legg til en ny fane</translation>
@@ -1263,7 +1254,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5936065461722368675">Oversett hele siden</translation>
 <translation id="5937560539988385583">Siden er oversatt</translation>
 <translation id="5938160824633642847">Enheten er nesten full. Frigjør plass og prøv på nytt.</translation>
-<translation id="594324569139756587">Blokkér fra tredjeparter</translation>
 <translation id="5944869793365969636">Skann QR-koden</translation>
 <translation id="5948291296578561264">Da kan du lagre bilder i bildebiblioteket ditt.</translation>
 <translation id="5948605885471592910">Se og administrer alt du har åpent</translation>
@@ -1336,7 +1326,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6192388920090306326">Tur til Tokyo</translation>
 <translation id="6193448654517602979">Velg faner</translation>
 <translation id="6196207969502475924">Google Talesøk</translation>
-<translation id="6196640612572343990">Blokkér informasjonskapsler fra tredjeparter</translation>
 <translation id="6198252989419008588">Endre personlig kode</translation>
 <translation id="6210079381482819663">Faner som ikke brukes i <ph name="THRESHOLD" /> dager eller mer, flyttes hit. Du kan når som helst endre dette i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Fant ingen adresser</translation>
@@ -1412,14 +1401,10 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6444435711855078002">Flere alternativer</translation>
 <translation id="6445051938772793705">Land</translation>
 <translation id="6445981559479772097">Melding sendt.</translation>
-<translation id="6447842834002726250">Informasjonskapsler</translation>
 <translation id="6449554712554071184">Dette sletter gruppen fra enheten permanent.</translation>
 <translation id="6452534462676960500">Ny aktivitet</translation>
 <translation id="6459411599807878608">Detaljene er skjult</translation>
 <translation id="646394917185284261">Filer</translation>
-<translation id="6464397691496239022">Nettsteder kan bruke informasjonskapsler for å gi deg en bedre surfeopplevelse, for eksempel for å holde deg pålogget eller huske varene i handlekurven din.
-
-Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser.</translation>
 <translation id="6476253015009698798">Prissporing er ikke tilgjengelig for denne siden.</translation>
 <translation id="6476284679642588870">Administrer betalingsmåter</translation>
 <translation id="6476800141292307438">Oversetter siden til <ph name="LANGUAGE" />. Du finner alternativer på nedre del av skjermen.</translation>
@@ -1462,7 +1447,6 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="6612912757320004438">Tillat varsler om faner …</translation>
 <translation id="6617761071025228250">Slett teksten</translation>
 <translation id="6620279676667515405">Avbryt</translation>
-<translation id="6624219055418309072">Blokkér i inkognitomodus</translation>
 <translation id="6625830436658400045">Synkroniseringsinnstillingene dine gjenopprettes basert på den forrige sikkerhetskopien. Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Rediger mappen</translation>
 <translation id="6629759408545977279">Fra: <ph name="ORIGINATING_HOST" /></translation>
@@ -1479,9 +1463,6 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="6663529247339810546">Kan ikke lagre bildet</translation>
 <translation id="6668619169535738264">Rediger bokmerke</translation>
 <translation id="6671294218820966278">Merk som lest</translation>
-<translation id="6672241253012342409">Nettsteder kan bruke informasjonskapsler for å gi deg en bedre surfeopplevelse, for eksempel for å holde deg pålogget eller huske varene i handlekurven din.
-
-Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser.</translation>
 <translation id="6672697278890207089">Angi passordfrasen din</translation>
 <translation id="6674917187596384849">Du kan enkelt bytte mellom kontoer</translation>
 <translation id="6676349090816247042">Påloggingsalternativer.</translation>
@@ -1671,6 +1652,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7454057999980797137">Fylke/kommune</translation>
 <translation id="7458706065921255639">Personlig tilpasning og tilknytning</translation>
 <translation id="745899714366929493">Hele dagen</translation>
+<translation id="7460314822154045102">Bruk kameraet</translation>
 <translation id="7460698861522306757">Be om mobilversjonen av nettstedet</translation>
 <translation id="7464143666517313304">Dette sletter adresser som er lagret på denne enheten.</translation>
 <translation id="7468373585447318060">Følg med på avslag på alle produktene du sporer.</translation>
@@ -1803,9 +1785,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7952670906562503188">Du er i ferd med å slette {passkey_count} passnøkler samt listen over nettsteder og apper du har valgt å aldri lagre påloggingsinformasjon for. Eventuelle kontoer du har opprettet for nettsteder og apper, blir ikke slettet.</translation>
 <translation id="7958575506592576831">Sikkerhetsinformasjon for siden</translation>
 <translation id="7961015016161918242">Aldri</translation>
-<translation id="7966516440812255683">Nettsteder kan bruke informasjonskapsler for å gi deg en bedre surfeopplevelse, for eksempel for å holde deg pålogget eller huske varene i handlekurven din.
-
-Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser.</translation>
 <translation id="7971136598759319605">Aktiv for én dag siden</translation>
 <translation id="7975036700432177008">Prøv</translation>
 <translation id="797588153137233716">Meny → Logg → Slett nettlesingsdata</translation>
@@ -1816,7 +1795,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="7987685713885608670">For ekstra trygghet kan du kryptere passord på enheten før de lagres i Google Passordlagring.</translation>
 <translation id="798991908416757345">Fanegrupper er ikke tilgjengelige</translation>
 <translation id="7993170188789685695">Dobbelttrykk for å lukke dette varselet.</translation>
-<translation id="7993619969781047893">Det kan hende at funksjoner på enkelte nettsteder slutter å fungere</translation>
 <translation id="7996239959906074962">Konfigurer…</translation>
 <translation id="8001561107130904792">Deling av sideinnhold</translation>
 <translation id="800361585186029508">Åpner de oppgitte nettadressene i Google Chrome.</translation>
@@ -1974,6 +1952,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8561999115126307258">{count,plural, =1{{count} alternativ for passord er tilgjengelig over tastaturet.}other{{count} alternativer for passord er tilgjengelige over tastaturet.}}</translation>
 <translation id="8564894539416715395">Ny fane-siden</translation>
 <translation id="8569721750632860947">Hvilken nettadresse vil du legge til på leselisten?</translation>
+<translation id="8571019948162152515">Vil du slette «<ph name="FILENAME" />»?</translation>
 <translation id="8571213806525832805">Siste 4 uker</translation>
 <translation id="8577056989960190117">Autofyll utløpsåret <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Av</translation>

@@ -120,7 +120,9 @@
 <translation id="2379925928934107488">‏העיצוב הכהה יוחל על אתרים כש-Chrome ישתמש בעיצוב הכהה, כשהפעולה תתאפשר</translation>
 <translation id="2390272837142897736">הגדלת הזום</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">מדויק</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד אחת (<ph name="NUM_MORE" />)}one{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}two{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
+<translation id="2404857459073803936">הגישה של האתר הזה למיקום שלך</translation>
 <translation id="2410940059315936967">‏לאתרים שמבקרים בהם יש אפשרות להטמיע תוכן מאתרים אחרים, למשל תמונות, מודעות וטקסט. קובצי cookie שהוגדרו על ידי האתרים האלה נקראים 'קובצי cookie של צד שלישי'.</translation>
 <translation id="2411116727035790889">הפעלת קיצורי הדרך</translation>
 <translation id="2433507940547922241">מראה</translation>
@@ -276,6 +278,7 @@
 <translation id="3992684624889376114">מידע על הדף הזה</translation>
 <translation id="4002066346123236978">כותרת</translation>
 <translation id="4031179711345676612">ניתן להשתמש במיקרופון בדף זה</translation>
+<translation id="4042597221652780603">משוער</translation>
 <translation id="4046123991198612571">הרצועה הבאה</translation>
 <translation id="4077310749977440510">בדרך כלל אתרים קוראים מידע מהלוח כדי לתמוך בתכונות כמו שמירת העיצוב של הטקסט שהעתקת</translation>
 <translation id="4082080074595021446">‏אי אפשר להגדיר חריגים לאתרים ספציפיים כי אין מספיק זיכרון RAM במכשיר ה-Android.</translation>

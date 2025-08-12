@@ -1475,7 +1475,6 @@
 <translation id="200321182559008924">اپنے ٹیبز کو غیر ضروری چیزوں سے پاک رکھیں</translation>
 <translation id="2003596238737586336">موجودہ شیڈول <ph name="SUNRISE" /> - <ph name="SUNSET" /> پر سیٹ ہے۔ یہ ترتیب آپ کے منتظم کے زیر انتظام ہے۔</translation>
 <translation id="2004413981947727241">کسی بھی آلے پر اپنے پاس ورڈز استعمال کریں</translation>
-<translation id="2004697686368036666">ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات کام نہ کریں</translation>
 <translation id="2006638907958895361">لنک کو <ph name="APP" /> میں کھولیں</translation>
 <translation id="2007404777272201486">مسئلہ کی اطلاع دیں…</translation>
 <translation id="200781997903833896">'بلند آواز سے پڑھیں' کا استعمال کرنے کیلئے، اپنے آلے پر جگہ خالی کریں</translation>
@@ -1632,6 +1631,7 @@
 <translation id="2110941575868943054">بلوٹوتھ آلات تلاش کرنے کی اجازت ہے</translation>
 <translation id="211144231511833662">اقسام صاف کریں</translation>
 <translation id="2111670510994270194">دائیں طرف نیا ٹیب</translation>
+<translation id="2111778868023567359">آپ کو اس صفحہ پر ٹیب گروپس دوبارہ نظر نہیں آئیں گے</translation>
 <translation id="2112554630428445878">خوش آمدید، <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">ٹیب کو پن کریں</translation>
 <translation id="2113479184312716848">&amp;فائل کھولیں…</translation>
@@ -1958,7 +1958,6 @@
 <translation id="2328137272841210255">‏اپنا PIN ری سیٹ کریں</translation>
 <translation id="2328474416100889417">ہر کوئی فوری طور پر "<ph name="GROUP_NAME" />" ٹیب گروپ تک رسائی سے محروم ہو جائے گا اور شامل ہونے کے تمام لنکس آف کر دئے جائیں گے</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> کو استعمال کرنے کے لیے براہ کرم اپنا آلہ ری سٹارٹ کریں۔</translation>
-<translation id="2328636661627946415">آپ کے پوشیدگی وضع میں ہونے پر سائٹس کوکیز کو صرف اپنی خود کی سائٹ پر آپ کی براؤزنگ سرگرمی دیکھنے کے لیے استعمال کر سکتی ہیں۔ پوشیدگی سیشن ختم ہونے پر کوکیز کو حذف کر دیا جاتا ہے۔</translation>
 <translation id="2329597144923131178">اپنے سبھی آلات پر اپنے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات حاصل کرنے کیلئے سائن ان کریں۔</translation>
 <translation id="2330182457402792918">وہ فائلز منتخب کریں جنہیں یہ سائٹ پڑھ سکتی ہے</translation>
 <translation id="2332115969598251205"><ph name="PRIMARY_EMAIL" /> میں محفوظ کردہ آلات کو لوڈ نہیں کیا جا سکا۔ اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
@@ -3746,7 +3745,6 @@
 <translation id="3593953853060020305">اس سائٹ کو <ph name="FILE_NAME" /> میں ترمیم کرنے کی اجازت دیں؟</translation>
 <translation id="3593965109698325041">سرٹیفکیٹ نام کی پابندیاں</translation>
 <translation id="3596012367874587041">ایپ کی ترتیبات</translation>
-<translation id="3596414637720633074">پوشیدگی میں فریق ثالث کوکیز کو بلاک کریں</translation>
 <translation id="3599221874935822507">ابھرا ہوا</translation>
 <translation id="3600051066689725006">ویب کی درخواست کی معلومات</translation>
 <translation id="3600956933576601730">ان خصوصیات کا استعمال کرنے کیلئے، آپ کو شرائط کا جائزہ لینا اور انہیں قبول کرنا ہوگا</translation>
@@ -4082,7 +4080,6 @@
 <translation id="3807747707162121253">&amp;منسوخ کریں</translation>
 <translation id="3808202562160426447">پس منظر کا مواد مدھم کریں</translation>
 <translation id="3808443763115411087">‏Crostini Android ایپ ڈیولپمنٹ</translation>
-<translation id="3808617121485025547">فریق ثالث کوکیز کو مسدود کرنے کے بارے میں مزید</translation>
 <translation id="38089336910894858">‏‎⌘Q کے ذریعے چھوڑنے سے پہلے انتباہ دکھائیں</translation>
 <translation id="3809272675881623365">خرگوش</translation>
 <translation id="3809280248639369696">مون بیم</translation>
@@ -4342,7 +4339,6 @@
 <translation id="3975565978598857337">دائرہ کار کے لیے سرور سے منسلک ہونا ناکام ہو گیا</translation>
 <translation id="3976108569178263973">پرنٹرز دستیاب نہیں ہیں۔</translation>
 <translation id="397703832102027365">مکمل کیا جا رہا ہے…</translation>
-<translation id="3977145907578671392">ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات پوشیدگی وضع میں کام نہ کریں</translation>
 <translation id="3977886311744775419">خودکار اپ ڈیٹس نیٹ ورک کی اس قسم پر ڈاؤن لوڈ نہیں ہوتے ہیں، لیکن آپ دستی طور پر اپ ڈیٹس چیک کر سکتے ہیں۔</translation>
 <translation id="3978325380690188371">‏ChromeVox آن ہونے پر دبی رہنے والی کلیدیں دستیاب نہیں ہوتی ہیں</translation>
 <translation id="3978732922947854545">‏‫Chrome ‏PDFs کو بہتر بناتا ہے</translation>
@@ -6467,6 +6463,7 @@
 <translation id="5496730470963166430">ری ڈائریکٹس استعمال کرنے یا پاپ اپس بھیجنے کی اجازت نہیں ہے</translation>
 <translation id="5497250476399536588">آپ اسے اپنے پتے اور مزید میں تلاش کر سکتے ہیں</translation>
 <translation id="5497251278400702716">یہ فائل</translation>
+<translation id="549762298434242239">بہتر کردہ محفوظ براؤزنگ کے مطابق یہ ایکسٹینشن بھروسہ مند نہیں ہے۔ <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">‏Chrome اس انسٹالیشن بنڈل کی توثیق نہیں کر سکا</translation>
 <translation id="5498967291577176373">اپنے نام، پتہ یا فون نمبر کیلئے ان لائن تجاویز کے ساتھ زيادہ تیزی سے لکھیں</translation>
 <translation id="5499211612787418966">‏فی الحال اس ڈائیلاگ پر فوکس نہیں کیا گیا۔ اس ڈائیلاگ پر فوکس کرنے کے لیے Alt-Shift A دبائیں۔</translation>
@@ -6608,6 +6605,7 @@
 <translation id="560834977503641186">‏Wi-Fi سِنک، مزید جانیں</translation>
 <translation id="5608580678041221894">تراشنے کے علاقہ کو ایڈجسٹ یا منتقل کرنے کیلئے درج ذیل کلیدوں کو تھپتھپائیں</translation>
 <translation id="5609231933459083978">ایپلیکیشن غلط معلوم پڑتی ہے۔</translation>
+<translation id="5610759359710387751">‏Chrome کو اپنا بنائیں</translation>
 <translation id="5610867721023328944">دوبارہ کوشش کریں یا ذیل میں دستیاب تھیمز میں سے کسی ایک کو منتخب کریں۔</translation>
 <translation id="5611398002774823980">اکاؤنٹ میں محفوظ کریں</translation>
 <translation id="5611399285717843500">‏‫Chrome اور ChromeOS کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں۔ یہ ڈیٹا جمع کرتے وقت ذاتی معلومات کو ہٹا دیا جاتا ہے۔</translation>
@@ -6830,6 +6828,7 @@
 <translation id="5780973441651030252">کارروائی کی ترجیح</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> کے بطور مطابقت پذیر بنائیں</translation>
 <translation id="5781120434102258025">اپنے اسکول کے اکاؤنٹ ڈیٹا کو اپنے ذاتی اکاؤنٹ میں منتقل کریں</translation>
+<translation id="5781244749114921664">ٹیب گروپس پوشیدہ ہیں</translation>
 <translation id="5782227691023083829">ترجمہ کیا جا رہا ہے...</translation>
 <translation id="5783346913439924978">ہیڈ ٹریکنگ</translation>
 <translation id="57838592816432529">آواز بند کریں</translation>
@@ -10828,7 +10827,6 @@
 <translation id="8573111744706778015">‏"ươ" حاصل کرنے کے لیے "uo7" ٹائپ کریں</translation>
 <translation id="8574990355410201600"><ph name="HOST" /> پر ہمیشہ آواز کی اجازت دیں</translation>
 <translation id="8575286410928791436">چھوڑنے کیلئے <ph name="KEY_EQUIVALENT" /> کو دبائے رکھیں</translation>
-<translation id="8576359558126669548">پوشیدگی وضع میں فریق ثالث کوکیز کو مسدود کرنے کے بارے میں مزید</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{پڑھنے کی فہرست میں ٹیب شامل کریں}other{پڑھنے کی فہرست میں ٹیبز شامل کریں}}</translation>
 <translation id="8577052309681449949">خودکار کلکس، کرسر کا سائز، کرسر کا رنگ، اور بہت کچھ</translation>
 <translation id="8578639784464423491">99 حروف سے زیادہ نہیں ہو سکتا</translation>
@@ -11143,7 +11141,6 @@
 <translation id="8777628254805677039">‏root پاس ورڈ</translation>
 <translation id="8779720597365936419">ہاں، میرا ڈیٹا دفتری پروفائل سے الگ رکھیں (تجویز کردہ)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">سائٹس صرف کوکیز کو از خود سائٹ پر آپ کی براؤزنگ سرگرمی دیکھنے کے لیے استعمال کر سکتی ہیں</translation>
 <translation id="8780123805589053431">‏Google سے تصویر کی تفصیلات حاصل کریں</translation>
 <translation id="8780443667474968681">صوتی تلاش بند کر دی گئی ہے۔</translation>
 <translation id="8781834595282316166">گروپ میں نیا ٹیب</translation>

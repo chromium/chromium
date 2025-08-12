@@ -1092,6 +1092,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="6125202119952209826">Pridružite se grupi kartica s korisnikom <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Više pojedinosti<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Stavka je uklonjena</translation>
+<translation id="6127860394906721547">Otvorite grupu kartica <ph name="TITLE_OF_GROUP" />, boja <ph name="COLOR_NAME" />, s web-lokacijama <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimiziraj karticu</translation>
 <translation id="6134168885321518274">Otvaranje trake za traženje</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> kartica}one{<ph name="TAB_COUNT_MANY" /> kartica}few{<ph name="TAB_COUNT_MANY" /> kartice}other{<ph name="TAB_COUNT_MANY" /> kartica}}</translation>

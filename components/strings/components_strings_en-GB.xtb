@@ -238,6 +238,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1384725838384960382">Secure payment credential authentication sheet</translation>
 <translation id="1386623374109090026">Annotations</translation>
 <translation id="138810468159004008">Allow while visiting the site</translation>
+<translation id="1391145880481608015">Learn more about this warning</translation>
 <translation id="139161720020179799">Dark grey 1</translation>
 <translation id="1391625539203220400">Save IBAN to this device?</translation>
 <translation id="1392813880755413602">OpenDocument presentation</translation>
@@ -1443,6 +1444,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="340924996148642843">Compare isn't available at the moment</translation>
 <translation id="3409896703495473338">Manage security settings</translation>
 <translation id="3411091017011773343">Upload in <ph name="HOURS" /> hr</translation>
+<translation id="3413466783792948876">It's safest to visit this site later if you're using a public network. There is less risk from a trusted network, like your home or work Wi-Fi.</translation>
 <translation id="3414275587143250384">Distributed and cloud computing</translation>
 <translation id="3414952576877147120">Size:</translation>
 <translation id="341513675006332771">Play Chrome Dino game button, activate to play the dino run game in Chrome</translation>
@@ -1686,6 +1688,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3781428340399460090">Hot pink</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth devices</translation>
+<translation id="3785246317262748285">You usually connect to sites securely, but Chrome couldn't use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Best matches for '<ph name="SEARCH_QUERY" />'</translation>
 <translation id="3789155188480882154">Size 16</translation>
 <translation id="3789841737615482174">Install</translation>
@@ -2010,6 +2013,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> updated</translation>
 <translation id="4298000214066716287">Investing</translation>
 <translation id="42981349822642051">Expand</translation>
+<translation id="4298148761711700950">Pay instantly without QR upload</translation>
 <translation id="4298925811540301889">Cookies for this site are synced across your ChromeOS devices. To manage what you sync, go to <ph name="SYNC_SETTINGS" />.</translation>
 <translation id="4300272766492248925">Open app</translation>
 <translation id="4300675098767811073">Multiple punch right</translation>
@@ -2747,6 +2751,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5540969246441091044">Equestrian</translation>
 <translation id="5541086400771735334">Mailbox 7</translation>
 <translation id="5541546772353173584">Add Email</translation>
+<translation id="5543452229212526547">Your text and the content and URL of the page that you're writing on will be sent to Google. Your content will not be used by human reviewers to improve AI. Your organisation may change these settings at any time.</translation>
 <translation id="5543564889050342791">Zoos, aquariums and preserves</translation>
 <translation id="5543722831081909240">180 degrees</translation>
 <translation id="5544836308113951378">Cruises and charters</translation>
@@ -3060,6 +3065,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6085149458302186532">Labels (coloured)</translation>
 <translation id="6087312102907839798">Related searches</translation>
 <translation id="6089505343295765444">Tabs that you delete from your Chrome history will still show up in your comparison tables</translation>
+<translation id="6091691259076781835">For faster checkout, save this CVC on your device</translation>
 <translation id="6093599771645355227">Yellow 1</translation>
 <translation id="6093795393556121384">Your card is verified</translation>
 <translation id="6094253940069566294">Edit vehicle</translation>
@@ -3122,6 +3128,8 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6182972682129119950">A4 x 5</translation>
 <translation id="6184099524311454384">Search tabs</translation>
 <translation id="6184868291074982484">Chrome automatically limits third-party cookies</translation>
+<translation id="6189351761800074311">Your text and page content are sent to Google, but will not be used to improve AI.
+    <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Override some keys on your keyboard, like Esc</translation>
 <translation id="6194209731893739467">See all your tracked products here</translation>
 <translation id="6195371403461054755">Geology</translation>
@@ -3218,6 +3226,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6340739886198108203">Administrator policy doesn’t recommend taking screenshots or recordings when confidential content is visible:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Administrator policy doesn’t recommend uploading this file to <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend uploading these files to <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Just now</translation>
+<translation id="6342171901363060580">You are seeing this warning because this site does not support HTTPS and you are in Incognito mode. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Directions</translation>
 <translation id="6348220984832452017">Active variations</translation>
 <translation id="6349101878882523185">Install <ph name="APP_NAME" /></translation>
@@ -3332,6 +3341,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6502510275417601303">Alert about new payment setting is closed</translation>
 <translation id="6502991525169604759">Without your changes</translation>
 <translation id="6505072878288254563">Translating</translation>
+<translation id="6506936645890046535">Can ask to access cookies</translation>
 <translation id="6506959208958864820">Envelope</translation>
 <translation id="6507117483253822672">Write with more confidence anywhere on the web</translation>
 <translation id="6508722015517270189">Restart Chrome</translation>
@@ -3483,6 +3493,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Use YouTube with your parent's choices</translation>
 <translation id="6779348349813025131">Google Password Manager needs access to MacOS Keychain</translation>
+<translation id="6780449997190414928">You usually connect to this site securely, but Chrome couldn't use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">You can change your search engine at any time in Chrome’s settings.</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 in</translation>
 <translation id="67862343314499040">Violet</translation>
@@ -3514,12 +3525,14 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6831043979455480757">Translate</translation>
 <translation id="683108308100148227">Hide item</translation>
 <translation id="6832753933931306326">The form was filled in</translation>
+<translation id="6834757537110528125">This site doesn't support a secure connection</translation>
 <translation id="6841864657731852591">Gravure cylinder</translation>
 <translation id="6842196666980060516">184 mm x 260 mm</translation>
 <translation id="6844998850832008753">Hand tracking allowed this time</translation>
 <translation id="6849023911358004088">Manage security settings button, activate to manage your Safe Browsing and more in Chrome settings</translation>
 <translation id="6850286078059909152">Text colour</translation>
 <translation id="6852204201400771460">Reload app?</translation>
+<translation id="6854691830678097752">For faster checkout, save this CVC in your account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6857776781123259569">Manage Passwords…</translation>
 <translation id="6858034839887287663">A2 x 4</translation>
 <translation id="6860888819347870819">Can ask to enter picture-in-picture</translation>
@@ -3778,6 +3791,7 @@ Additional details:
 <translation id="7257453341537973799">Career resources and planning</translation>
 <translation id="725866823122871198">A private connection to <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> can't be established because your computer's date and time (<ph name="DATE_AND_TIME" />) are incorrect.</translation>
 <translation id="7260075294900977274">A new smart folder that helps you save all your shopping pages in one place, and automatically track prices, get price insights, and more</translation>
+<translation id="7264942008235065057">This site will remain blocked because you are under Google's Advanced Protection Programme. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Address is only available on this device</translation>
 <translation id="7269151392155523061">Shortcut can't be the same as the search aggregator keyword defined by <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Files you download are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware and might be stored based on company policies and visible to your administrator.</translation>
@@ -3906,6 +3920,7 @@ Additional details:
 <translation id="7469935732330206581">Form is not secure</translation>
 <translation id="7470854469646445678">Provide reason for copying (required)</translation>
 <translation id="7471007961486718967">Provide reason for transferring (required)</translation>
+<translation id="7473033553872550521">You might also contact the site owner and suggest that they upgrade to HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">No, thanks</translation>
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7481603210197454575">Envelope Italian</translation>
@@ -4432,6 +4447,7 @@ Additional details:
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Virtual card enrollment opened at full height</translation>
+<translation id="834805203690963649">Attackers can see and change information that you send or receive from the site.</translation>
 <translation id="8349305172487531364">Bookmarks bar</translation>
 <translation id="8350416046273606058">Shortcut can't contain spaces: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Create note</translation>

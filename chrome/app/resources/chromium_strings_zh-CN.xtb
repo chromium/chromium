@@ -583,6 +583,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8458614432758743027">Chromium 仅支持 Windows 10 或更高版本的操作系统。</translation>
 <translation id="8463672209299734063">可选：自动向 Google 发送诊断数据和使用情况数据，协助改进 Chromium 操作系统的功能和性能。</translation>
 <translation id="8471947159125090285">如要使用 Chromium 数据并将其保存在您的 Google 账号中，请验证是您本人在操作</translation>
+<translation id="8482493977473846331">显示登录 Chromium 的提示</translation>
 <translation id="8493179195440786826">Chromium版本太旧</translation>
 <translation id="8522801943730206384">您需要先保存密码，然后才能使用 Chromium 的密码检查功能</translation>
 <translation id="8555465886620020932">发生了服务错误：<ph name="SERVICE_ERROR" />。</translation>

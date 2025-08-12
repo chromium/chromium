@@ -700,6 +700,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2154484045852737596">Endre kortet</translation>
 <translation id="2154739667870063220">Start på nytt</translation>
 <translation id="2155260325161282517">5 x 7 tommer</translation>
+<translation id="2156467141257470387">Du kan bruke lagrede adresser i flere Google-produkter. Dette endrer ikke den eksisterende jobbadressen din. Det lagres i Google-kontoen din, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Varsler om prissporing</translation>
 <translation id="21613918653299710">Bildegallerier på internett</translation>
 <translation id="2161656808144014275">Tekst</translation>
@@ -2997,6 +2998,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5984570616552610254">Kammerfuktighet</translation>
 <translation id="598637245381783098">Kan ikke åpne betalingsappen</translation>
 <translation id="5989320800837274978">Verken statiske proxytjenere eller en nettadresse med .pac-skript er angitt.</translation>
+<translation id="5989917734461988169">Du kan bruke lagrede adresser i flere Google-produkter. Dette endrer ikke den eksisterende hjemmeadressen din. Det lagres i Google-kontoen din, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Ingeniør-Z-fals</translation>
 <translation id="5992805036496113940">Se informasjon som brukes for å vise deg annonser</translation>
 <translation id="5995727681868049093">Administrer informasjon, personvern og sikkerhet i Google-kontoen din</translation>
@@ -4897,6 +4899,7 @@ Mer informasjon:
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9140198744651252040">Chrome-nettleseren vil bruke fingeravtrykk til å autofylle passord</translation>
 <translation id="9141013498910525015">Administrer adresser</translation>
+<translation id="9141435142213469335">Lagre adressen med mer informasjon</translation>
 <translation id="9141672681283222114">AR er tillatt denne gangen</translation>
 <translation id="9143898823728499852">Du kan autofylle dette kortet fordi <ph name="CARD_ISSUER_NAME" />-kontoen din er knyttet til Google Pay</translation>
 <translation id="9144951720726881238">Utløpsdato:</translation>

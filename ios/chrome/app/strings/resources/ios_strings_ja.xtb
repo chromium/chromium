@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">すべてのタブを閉じると、固定されたタブも閉じます。</translation>
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1041322626941363065">データ侵害によりパスワードが漏洩した場合に警告する</translation>
-<translation id="1044891598689252897">サイトは通常どおり動作します</translation>
 <translation id="104491362976654916">オフライン ページ</translation>
 <translation id="1049743911850919806">シークレット モード</translation>
 <translation id="1053651653201045802">ログアウトしました。再度ログインすると、アカウントのブックマークやパスワードなどを使用できます。</translation>
@@ -135,7 +134,6 @@
 <translation id="1506063256525392513">写真を撮影してアップロードしたり、QR コードをスキャンしたりできます</translation>
 <translation id="1508263560970797965">シークレット モードを続行</translation>
 <translation id="1509486075633541495">ウェブサイトにログイン</translation>
-<translation id="1509960214886564027">多くサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="1513858653616922153">パスワードを削除</translation>
 <translation id="1517166097004694782">[このタブを続行] を非表示にする</translation>
 <translation id="1520027731907768768">追跡している商品の値下げアラートを受け取ります。</translation>
@@ -368,9 +366,6 @@
 <translation id="2359808026110333948">続行</translation>
 <translation id="2360196772093551345">モバイルサイトをリクエスト</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" />（<ph name="USER_EMAIL" />）としてログインしています。設定を開きます。</translation>
-<translation id="236977714248711277">サイトは、Cookie を使用してブラウジングの利便性を改善することができません。たとえばログイン状態の維持や、ショッピング カートの中身の保存ができなくなります。
-
-サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどが行えなくなります。</translation>
 <translation id="2377230674627603057">タブグループのグリッド</translation>
 <translation id="2377336083033403521">タブを検索…</translation>
 <translation id="2381405137052800939">基本設定</translation>
@@ -446,7 +441,6 @@
 <translation id="2669454659051515572">ダウンロードしたファイルは、このデバイスを使用するすべてのユーザーが確認できます</translation>
 <translation id="2671423594960767771">グループを共有</translation>
 <translation id="2673508731173059946">コピーしたリンクにアクセス</translation>
-<translation id="2687403674020088961">すべての Cookie をブロックする（推奨されません）</translation>
 <translation id="2688535388040882469">バナー</translation>
 <translation id="2690858294534178585">カメラが使用中です</translation>
 <translation id="2691653761409724435">オフラインで使用不可</translation>
@@ -661,7 +655,6 @@
 <translation id="3587885837929752825">Google アカウントに保存できる内容は組織によって制限されています。</translation>
 <translation id="3588820906588687999">新しいタブで画像を開く</translation>
 <translation id="3595252146048399851">同期する項目はいつでも [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で選択できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
-<translation id="3596414637720633074">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="3602260545951981695">[保護強化機能] を選択</translation>
 <translation id="3610041351087301930">リーダーを非表示</translation>
 <translation id="3622175633937495219">履歴を検索（<ph name="COUNT" /> 件見つかりました）</translation>
@@ -1063,7 +1056,6 @@
 <translation id="5177141896043341906">脆弱なパスワード <ph name="NUMBER_OF_PASSWORDS" /> 件: セキュリティが危険にさらされる可能性があります。</translation>
 <translation id="5181140330217080051">ダウンロードしています</translation>
 <translation id="5186185447130319458">プライベート接続</translation>
-<translation id="5188482106078495165">Cookie の設定はすべてのタブに適用されます。開いているタブに新しい設定を適用するには、タブを再読み込みしてください。</translation>
 <translation id="518997337573684769">クラッシュ レポートを送信しています…</translation>
 <translation id="519530786644929958">ダウンロードに失敗し、再試行できません。</translation>
 <translation id="5197255632782567636">インターネット</translation>
@@ -1088,7 +1080,6 @@
 <translation id="5271265092610673171">{count,plural, =1{必須項目が空白です。保存する前に入力してください。}other{一部の必須項目が空白です。保存する前に入力してください。}}</translation>
 <translation id="5271549068863921519">パスワードを保存</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" />（<ph name="USER_EMAIL" />）さんからタブグループに招待されています。リンクを知っているユーザーは誰でも、すべてのタブを編集できます。参加は慎重に行ってください。リンクは 48 時間で期限切れになります。</translation>
-<translation id="5279600392753459966">すべてブロックする</translation>
 <translation id="5282340693022193851">価格トラッキングの通知を受け取るには、iOS の設定で通知をオンにしてください。</translation>
 <translation id="528857768909044842">タブグループはここに保存されます</translation>
 <translation id="5294624619177114121">モバイル通知</translation>
@@ -1187,7 +1178,6 @@
 <translation id="5648166631817621825">過去 7 日間</translation>
 <translation id="5652623411397330904">トラッキングしている商品がここに表示されます。</translation>
 <translation id="5656431592348714536">拡張カレンダー</translation>
-<translation id="5657156137487675418">Cookie をすべて受け入れる</translation>
 <translation id="5659593005791499971">メール</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> と <ph name="GEMINI_APPS_PRIVACY" /> が適用されます。Gemini は不正確な情報を表示することがあるため、生成された回答を再確認するようにしてください。</translation>
 <translation id="5666313630530585305">ウェブサイトにログインします。</translation>
@@ -1204,7 +1194,6 @@
 <translation id="5704908597376970822">ログインできません。</translation>
 <translation id="5709005673595820640">{count,plural, =1{使い回しのパスワード {count} 件: セキュリティが危険にさらされる可能性があります。安全を確保するため、今すぐ修正してください。}other{使い回しのパスワード {count} 件: セキュリティが危険にさらされる可能性があります。安全を確保するため、今すぐ修正してください。}}</translation>
 <translation id="57094364128775171">安全なパスワードを自動生成…</translation>
-<translation id="5716230673298034837">すべて許可</translation>
 <translation id="5718049162805123412">今すぐ変更してください</translation>
 <translation id="572328651809341494">最近使ったタブ</translation>
 <translation id="5724941645893276623">ウェブをプライベートに閲覧するには、新しいタブを追加してください</translation>
@@ -1263,7 +1252,6 @@
 <translation id="5936065461722368675">ページ全体を翻訳</translation>
 <translation id="5937560539988385583">ページが翻訳されました</translation>
 <translation id="5938160824633642847">デバイスの空き容量が少なくなっています。空き容量を増やしてからもう一度お試しください。</translation>
-<translation id="594324569139756587">サードパーティの Cookie をブロック</translation>
 <translation id="5944869793365969636">QR コードのスキャン</translation>
 <translation id="5948291296578561264">フォト ライブラリに写真を保存します。</translation>
 <translation id="5948605885471592910">開いているすべてのタブを確認して管理する</translation>
@@ -1336,7 +1324,6 @@
 <translation id="6192388920090306326">東京旅行</translation>
 <translation id="6193448654517602979">タブを選択</translation>
 <translation id="6196207969502475924">音声検索</translation>
-<translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>
 <translation id="6198252989419008588">PIN を変更</translation>
 <translation id="6210079381482819663"><ph name="THRESHOLD" /> 日間使用していないタブはここに移動されます。これは<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />でいつでも変更できます。</translation>
 <translation id="6213281885682386884">住所が見つかりませんでした</translation>
@@ -1412,14 +1399,10 @@
 <translation id="6444435711855078002">その他のオプション</translation>
 <translation id="6445051938772793705">国</translation>
 <translation id="6445981559479772097">メッセージ送信完了。</translation>
-<translation id="6447842834002726250">Cookie</translation>
 <translation id="6449554712554071184">この操作を行うとデバイスからグループが完全に削除されます。</translation>
 <translation id="6452534462676960500">新しいアクティビティ</translation>
 <translation id="6459411599807878608">詳細を非表示にしました</translation>
 <translation id="646394917185284261">ファイル</translation>
-<translation id="6464397691496239022">サイトは、Cookie を使用してブラウジングの利便性を改善することができます。たとえばログイン状態の維持や、ショッピング カートの中身の保存が可能になります。
-
-サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどが行えなくなります。</translation>
 <translation id="6476253015009698798">このページでは価格のトラッキングを利用できません。</translation>
 <translation id="6476284679642588870">お支払い方法を管理</translation>
 <translation id="6476800141292307438">ページを<ph name="LANGUAGE" />に翻訳しています。画面の下の方にオプションがあります。</translation>
@@ -1462,7 +1445,6 @@
 <translation id="6612912757320004438">タブの通知を許可…</translation>
 <translation id="6617761071025228250">テキストを消去</translation>
 <translation id="6620279676667515405">キャンセル</translation>
-<translation id="6624219055418309072">シークレット モードでブロック</translation>
 <translation id="6625830436658400045">同期の設定は前回のバックアップに基づいて復元されます。同期する項目はいつでも [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で選択できます。</translation>
 <translation id="6627583120233659107">フォルダを編集</translation>
 <translation id="6629759408545977279"><ph name="ORIGINATING_HOST" /> から</translation>
@@ -1479,9 +1461,6 @@
 <translation id="6663529247339810546">画像を保存できません</translation>
 <translation id="6668619169535738264">ブックマークを編集</translation>
 <translation id="6671294218820966278">既読にする</translation>
-<translation id="6672241253012342409">サイトは、Cookie を使用してブラウジングの利便性を改善することができます。たとえばログイン状態の維持や、ショッピング カートの中身の保存が可能になります。
-
-シークレット モードのとき、サイトは Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどを行えなくなります。</translation>
 <translation id="6672697278890207089">パスフレーズの入力</translation>
 <translation id="6674917187596384849">アカウントを簡単に切り替えられます</translation>
 <translation id="6676349090816247042">ログイン オプションです。</translation>
@@ -1671,6 +1650,7 @@
 <translation id="7454057999980797137">州/都道府県</translation>
 <translation id="7458706065921255639">パーソナライズとリンク</translation>
 <translation id="745899714366929493">終日</translation>
+<translation id="7460314822154045102">カメラを使う</translation>
 <translation id="7460698861522306757">モバイルサイトを見る</translation>
 <translation id="7464143666517313304">このデバイスに保存されている住所が削除されます。</translation>
 <translation id="7468373585447318060">追跡しているすべての商品の値下げ状況を把握できます。</translation>
@@ -1803,9 +1783,6 @@
 <translation id="7952670906562503188">{passkey_count} 件のパスキーと、ログイン情報を保存しない設定にしたサイトとアプリの一覧を削除しようとしています。サイトやアプリで作成したアカウントは削除されません。</translation>
 <translation id="7958575506592576831">ページのセキュリティ情報</translation>
 <translation id="7961015016161918242">使用しない</translation>
-<translation id="7966516440812255683">サイトは、Cookie を使用してブラウジングの利便性を改善することができます。たとえばログイン状態の維持や、ショッピング カートの中身の保存が可能になります。
-
-サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認することができます。広告のカスタマイズなどが可能になります。</translation>
 <translation id="7971136598759319605">最終同期: 1 日前</translation>
 <translation id="7975036700432177008">試す</translation>
 <translation id="797588153137233716">[メニュー] → [履歴] → [閲覧履歴データを削除]</translation>
@@ -1816,7 +1793,6 @@
 <translation id="7987685713885608670">セキュリティ強化のため、Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します。</translation>
 <translation id="798991908416757345">タブグループは使用できません</translation>
 <translation id="7993170188789685695">この通知を閉じるにはダブルタップします。</translation>
-<translation id="7993619969781047893">一部のサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="7996239959906074962">設定…</translation>
 <translation id="8001561107130904792">ページ コンテンツの共有</translation>
 <translation id="800361585186029508">入力された URL を Google Chrome で開きます。</translation>

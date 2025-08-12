@@ -1092,6 +1092,7 @@
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> सोबत टॅब गटामध्ये सामील व्हा</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />आणखी तपशील<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">आयटम काढला</translation>
+<translation id="6127860394906721547"><ph name="URL_LIST" /> या साइट असलेला <ph name="COLOR_NAME" /> या रंगाचा <ph name="TITLE_OF_GROUP" /> हा टॅब गट उघडा.</translation>
 <translation id="6130303040046284160">टॅब मिनिमाइझ करा</translation>
 <translation id="6134168885321518274">शोध बार उघडा</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टॅब}other{<ph name="TAB_COUNT_MANY" /> टॅब}}</translation>

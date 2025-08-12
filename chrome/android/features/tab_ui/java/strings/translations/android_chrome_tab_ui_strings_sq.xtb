@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Krijuar <ph name="NUM_YEARS_ONE" /> vit më parë}other{Krijuar <ph name="NUM_YEARS_MANY" /> vite më parë}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Skedat dhe grupet joaktive do të mbyllen pas 1 muaji}other{Skedat dhe grupet joaktive do të mbyllen pas <ph name="MONTH_COUNT_MANY" /> muajsh}}</translation>
 <translation id="1173894706177603556">Riemërto</translation>
-<translation id="1197088940767939838">Portokalli</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Hap "<ph name="TITLE_OF_GROUP" />" me <ph name="TAB_COUNT2" /> skedë}other{Hap "<ph name="TITLE_OF_GROUP" />" me <ph name="TAB_COUNT2" /> skeda}}</translation>
 <translation id="1273910660700874265">Opsionet e grupit të skedave "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="1300188005269437765">Zgjidh se kur skedat dhe grupet e skedave zhvendosen automatikisht në seksionin joaktiv.</translation>
@@ -20,8 +19,6 @@
 <translation id="1499635324672558517">Të mbyllen të gjitha skedat "e fshehta"?</translation>
 <translation id="1501480321619201731">Fshi grupin</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> artikull joaktiv}other{<ph name="TABS_COUNT_MANY" /> artikuj joaktivë}}</translation>
-<translation id="1555130319947370107">E kaltër</translation>
-<translation id="161042844686301425">E bruztë</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> skeda të grupuara</translation>
 <translation id="1657719826150349398">Lëviz skedën poshtë</translation>
 <translation id="1697284962337958118">Shto në</translation>
@@ -63,6 +60,7 @@
 <translation id="2894757982205307093">Skedë e re në grup</translation>
 <translation id="2918484639460781603">Shko te cilësimet</translation>
 <translation id="2928243913527329289">Google | Rreth këtij dyqani</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{Është zgjedhur <ph name="ITEMS_COUNT_ONE" />}other{Është zgjedhur <ph name="ITEMS_COUNT_MANY" />}}</translation>
 <translation id="3008554597174452548">Ndalo monitorimin e produktit</translation>
 <translation id="3026391124054406831">Krijo grupe për të organizuar skedat e tua.</translation>
 <translation id="3051031624272448591">Mund t'i rimarrësh ato gjithmonë te historiku</translation>
@@ -87,7 +85,6 @@
 <translation id="4076226664360336092">Lista e grupeve të skedave, hapur në lartësi të plotë</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> skeda duken të lidhura. Dëshiron t'i gruposh?</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Mbyll grupin "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Mbyll grupin "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>
-<translation id="4159784952369912983">Vjollcë</translation>
 <translation id="4203448675570432781">Njoftim për mbylljen e ndryshimeve për fshirjen automatike të skedave.</translation>
 <translation id="427987768447457592">Grupi i ri i skedave</translation>
 <translation id="4371591986692297148">Joaktiv</translation>
@@ -116,7 +113,6 @@
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome mbyll automatikisht skedat dhe grupet e skedave joaktive pas <ph name="AUTO_DELETE_DELAY_ONE" /> muaji. Mund ta ndryshosh këtë te cilësimet.}other{Chrome mbyll automatikisht skedat dhe grupet e skedave joaktive pas <ph name="AUTO_DELETE_DELAY_MANY" /> muajsh. Mund ta ndryshosh këtë te cilësimet.}}</translation>
 <translation id="5339733443032484186">Skeda jote e fundit</translation>
 <translation id="5380159289133845234">Arkivo skedat dublikata</translation>
-<translation id="5400836586163650660">Gri</translation>
 <translation id="5446043142172831860">Hiq skeda dhe largohu nga grupi</translation>
 <translation id="5490235265819901748">Grupi i skedave u zgjerua</translation>
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
@@ -127,9 +123,7 @@
 <translation id="5746204836956568669">Dëshiron të gruposh <ph name="NUMBER_OF_TABS" /> skeda për të punuar më shpejt?</translation>
 <translation id="5773295109010386583">Mbyll automatikisht artikujt joaktivë</translation>
 <translation id="58326064309361797">Zvarriti skedat për t'i grupuar</translation>
-<translation id="5901630391730855834">E verdhë</translation>
 <translation id="5972844218283131174">Anulo zgjedhjen për të gjitha</translation>
-<translation id="6017514345406065928">E gjelbër</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6051432659151380973">Grupet e tua të skedave do të ruhen automatikisht</translation>
 <translation id="6054741997831917303">Çmimi i artikullit ra së fundi nga <ph name="PREVIOUS_PRICE" /> në <ph name="NEW_PRICE" /></translation>
@@ -187,7 +181,6 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Vlerësimi <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> koment}other{Vlerësimi <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> komente}}</translation>
 <translation id="7885132941432959125">Lëviz skedën djathtas</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> - nuk është zgjedhur</translation>
-<translation id="7942349550061667556">E kuqe</translation>
 <translation id="7961015016161918242">Asnjëherë</translation>
 <translation id="7966321538264951561">Largo sugjerimet.</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Zhvendose skedën në një dritare të re}other{Zhvendose skedën në një dritare të re}}</translation>
@@ -223,6 +216,5 @@
 <translation id="9187834032751045001">Njoftimi për fshirjen automatike të skedave me gjysmë lartësi</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Zgjero grupin e skedave me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Zgjero grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
-<translation id="992256792861109788">Rozë</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{Të mbyllet 1 artikull joaktiv?}other{Të mbyllen <ph name="TAB_COUNT_MANY" /> artikuj joaktivë?}}</translation>
 </translationbundle>

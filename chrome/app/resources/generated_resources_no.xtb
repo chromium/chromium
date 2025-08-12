@@ -1479,7 +1479,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="200321182559008924">Hold fanene dine ryddige</translation>
 <translation id="2003596238737586336">Den nåværende tidsplanen er satt til <ph name="SUNRISE" />–<ph name="SUNSET" />. Denne innstillingen administreres av administratoren.</translation>
 <translation id="2004413981947727241">Bruk passordene dine på alle enheter</translation>
-<translation id="2004697686368036666">Det kan hende at funksjoner på noen nettsteder ikke fungerer</translation>
 <translation id="2006638907958895361">Åpne linken i <ph name="APP" /></translation>
 <translation id="2007404777272201486">Rapporter et problem</translation>
 <translation id="200781997903833896">Frigjør plass på enheten for å bruke Les høyt-funksjonen.</translation>
@@ -1635,6 +1634,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2110941575868943054">Nettsteder som har lov til å se etter Bluetooth-enheter</translation>
 <translation id="211144231511833662">Nullstill typer</translation>
 <translation id="2111670510994270194">Ny fane til høyre</translation>
+<translation id="2111778868023567359">Du kommer ikke til å se fanegrupper på denne siden igjen</translation>
 <translation id="2112554630428445878">Velkommen, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Fest fanen</translation>
 <translation id="2113479184312716848">Åpne &amp;fil ...</translation>
@@ -1963,7 +1963,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2328137272841210255">Tilbakestill PIN-koden</translation>
 <translation id="2328474416100889417">Alle mister tilgangen til fanegruppen «<ph name="GROUP_NAME" />» umiddelbart, og alle invitasjonslinker deaktiveres</translation>
 <translation id="2328561734797404498">Start enheten på nytt for å bruke <ph name="APP_NAME" />.</translation>
-<translation id="2328636661627946415">Når du er i inkognitomodus, kan nettsteder bare bruke informasjonskapsler for å se nettleseraktiviteten din på sitt eget nettsted. Informasjonskapslene slettes når inkognitoøkten avsluttes.</translation>
 <translation id="2329597144923131178">Logg på for å få bokmerkene, loggen, passordene og de andre innstillingene dine på alle enhetene du bruker.</translation>
 <translation id="2330182457402792918">Velg filer som dette nettstedet kan lese</translation>
 <translation id="2332115969598251205">Kan ikke laste inn enheter som er lagret i <ph name="PRIMARY_EMAIL" />. Sjekk internettilkoblingen din, og prøv på nytt.</translation>
@@ -3753,7 +3752,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3593953853060020305">Vil du tillate at dette nettstedet endrer <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Begrensninger for sertifikatnavn</translation>
 <translation id="3596012367874587041">Appinnstillinger</translation>
-<translation id="3596414637720633074">Blokkér informasjonskapsler fra tredjepart i inkognitomodus</translation>
 <translation id="3599221874935822507">Hevet</translation>
 <translation id="3600051066689725006">Informasjon om nettforespørsel</translation>
 <translation id="3600956933576601730">Du må gjennomgå og godta vilkårene for å bruke disse funksjonene</translation>
@@ -4089,7 +4087,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3807747707162121253">&amp;Avbryt</translation>
 <translation id="3808202562160426447">Ton ned innhold i bakgrunnen</translation>
 <translation id="3808443763115411087">Android-apputvikling i Crostini</translation>
-<translation id="3808617121485025547">Mer om blokkering av informasjonskapsler fra tredjeparter</translation>
 <translation id="38089336910894858">Vis en advarsel før du avslutter med ⌘Q</translation>
 <translation id="3809272675881623365">Kanin</translation>
 <translation id="3809280248639369696">Marsboer</translation>
@@ -4347,7 +4344,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3975565978598857337">Kunne ikke kontakte tjeneren for området</translation>
 <translation id="3976108569178263973">Det er ingen tilgjengelige skrivere.</translation>
 <translation id="397703832102027365">Fullfører …</translation>
-<translation id="3977145907578671392">Det kan hende at funksjoner på enkelte nettsteder ikke fungerer i Inkognito</translation>
 <translation id="3977886311744775419">Automatiske oppdateringer lastes ikke ned på denne nettverkstypen, men du kan se etter oppdateringer manuelt.</translation>
 <translation id="3978325380690188371">Trege taster er ikke tilgjengelig når ChromeVox er på</translation>
 <translation id="3978732922947854545">Chrome gjør PDF-filer bedre</translation>
@@ -6472,6 +6468,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5496730470963166430">Nettsteder som ikke har lov til å sende forgrunnsvinduer eller bruke viderekoblinger</translation>
 <translation id="5497250476399536588">Du finner den i adressene dine med mer</translation>
 <translation id="5497251278400702716">Denne filen</translation>
+<translation id="549762298434242239">Denne utvidelsen er ikke klarert av Safe Browsing med økt beskyttelse. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">Chrome kunne ikke bekrefte denne installasjonspakken</translation>
 <translation id="5498967291577176373">Skriv raskere med innebygde forslag som for eksempel navnet ditt, adressen din eller telefonnummeret ditt</translation>
 <translation id="5499211612787418966">Denne dialogboksen er ikke fokusert for øyeblikket. Trykk på Alt + Shift + A for å fokusere på denne dialogboksen.</translation>
@@ -6613,6 +6610,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="560834977503641186">Wifi-synkronisering – finn ut mer</translation>
 <translation id="5608580678041221894">Trykk på de følgende tastene for å justere eller flytte beskjæringsområdet</translation>
 <translation id="5609231933459083978">Appen ser ut til å være ugyldig.</translation>
+<translation id="5610759359710387751">Tilpass Chrome</translation>
 <translation id="5610867721023328944">Prøv på nytt, eller velg et av de tilgjengelige temaene nedenfor.</translation>
 <translation id="5611398002774823980">Lagre i kontoen</translation>
 <translation id="5611399285717843500">Bidra til å gjøre funksjonene og ytelsen til Chrome og ChromeOS bedre. Personopplysninger fjernes når disse dataene samles inn.</translation>
@@ -6835,6 +6833,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5780973441651030252">Prosessprioritet</translation>
 <translation id="5781092003150880845">Synkroniser som <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Flytt dataene fra skolekontoen til den personlige kontoen</translation>
+<translation id="5781244749114921664">Fanegrupper er skjult</translation>
 <translation id="5782227691023083829">Oversetter</translation>
 <translation id="5783346913439924978">Hodesporing</translation>
 <translation id="57838592816432529">Kutt lyden</translation>
@@ -10835,7 +10834,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8573111744706778015">Skriv «uo7» for å få «ươ»</translation>
 <translation id="8574990355410201600">Tillat alltid lyd på <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Hold inne <ph name="KEY_EQUIVALENT" /> for å avslutte.</translation>
-<translation id="8576359558126669548">Mer om blokkering av informasjonskapsler fra tredjeparter i inkognitomodus</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Legg fanen til på leselisten}other{Legg fanene til på leselisten}}</translation>
 <translation id="8577052309681449949">Automatiske klikk, markørstørrelse, markørfarge med mer</translation>
 <translation id="8578639784464423491">Kan ikke overstige 99 bokstaver</translation>
@@ -11150,7 +11148,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8777628254805677039">rotpassord</translation>
 <translation id="8779720597365936419">Ja, hold dataene mine adskilt fra jobbdata (anbefales)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Nettsteder kan bare bruke informasjonskapsler til å se nettleseraktiviteten din på sitt eget nettsted</translation>
 <translation id="8780123805589053431">Få bildebeskrivelser fra Google</translation>
 <translation id="8780443667474968681">Talesøk er slått av.</translation>
 <translation id="8781834595282316166">Ny fane i gruppen</translation>

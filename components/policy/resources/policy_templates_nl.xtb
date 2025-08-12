@@ -11795,14 +11795,5 @@ Als <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> aanstaat, wordt <ph
 <translation id="989197274317162189">Dit beleid is beëindigd en wordt niet ondersteund. Gebruik in plaats daarvan het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="990830704772547092">Het installatieprogramma voor Bruschetta-VM's instellen op <ph name="PRODUCT_OS_NAME" />-apparaten</translation>
 <translation id="991560005425213776">Gebruikersnaam en bestandsnaam naar systeemeigen printers verzenden</translation>
-<translation id="99232017131102456">Met dit beleid configureer je één globale cache per profiel met HTTP-serververificatiegegevens.
-
-      Als dit beleid niet is ingesteld of niet is toegepast, gebruikt de browser het standaardgedrag van verificatie voor meerdere sites (cross-site auth), die HTTP-serververificatiegegevens vanaf versie 80 per hoofddomeinsite in kaart brengt. Dit betekent dat als twee sites bronnen van hetzelfde verificatiedomein gebruiken, de verificatiegegevens onafhankelijk van elkaar moeten worden doorgegeven binnen de context van beide sites. Gecachete proxy-gegevens worden hergebruikt op de andere sites.
-
-      Als dit beleid is toegepast, worden HTTP-verificatiegegevens die binnen de context van één site worden opgegeven, automatisch gebruikt binnen de context van een andere site.
-
-      Als dit beleid wordt toegepast, blijven sites blootstaan aan bepaalde typen cross-site aanvallen en kunnen gebruikers ook zonder gebruik van cookies van site naar site worden gevolgd door het toevoegen van items aan de HTTP-verificatiecache via gegevens die zijn ingesloten in URL's.
-
-      Dit beleid is bedoeld om bedrijven die afhankelijk zijn van het oude gedrag in de gelegenheid te stellen hun inlogprocedures te updaten. Het beleid wordt in de toekomst verwijderd.</translation>
 <translation id="999340611001666174">Kleurcorrectie uitzetten</translation>
 </translationbundle>

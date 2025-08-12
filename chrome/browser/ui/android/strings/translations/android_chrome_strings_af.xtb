@@ -1092,6 +1092,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="6125202119952209826">Sluit aan by oortjiegroep met <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Meer besonderhede<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Item is verwyder</translation>
+<translation id="6127860394906721547">Maak <ph name="TITLE_OF_GROUP" />-oortjiegroep, kleur <ph name="COLOR_NAME" />, met werwe <ph name="URL_LIST" /> oop.</translation>
 <translation id="6130303040046284160">Maak oortjie klein</translation>
 <translation id="6134168885321518274">Maak Vindbalk oop</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> oortjie}other{<ph name="TAB_COUNT_MANY" /> oortjies}}</translation>

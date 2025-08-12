@@ -114,7 +114,7 @@
 <translation id="2451727308784734061">Accede rápidamente al Administrador de contraseñas con el acceso directo. Puedes mover el acceso directo a la pantalla principal de la computadora o al selector de aplicaciones.</translation>
 <translation id="2478295928299953161">Chromium se cerrará pronto</translation>
 <translation id="2483889755041906834">En Chromium</translation>
-<translation id="2485422356828889247">Desinstalación</translation>
+<translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2513154137948333830">Debes reiniciar el sistema: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2542968102051442371">Selecciona texto con la Búsqueda con imágenes</translation>
 <translation id="2554739539410784893">Chromium está intentando reemplazar las contraseñas existentes. Para permitirlo, escribe tu contraseña de Windows.</translation>
@@ -578,6 +578,7 @@
 <translation id="8458614432758743027">Para usar Chromium, se requiere Windows 10 o versiones posteriores.</translation>
 <translation id="8463672209299734063">Opcional: Para ayudarnos a mejorar las funciones y el rendimiento de Chromium OS, envía automáticamente datos de uso y diagnóstico a Google.</translation>
 <translation id="8471947159125090285">Para usar y guardar datos de Chromium en tu Cuenta de Google, verifica tu identidad</translation>
+<translation id="8482493977473846331">Muestra mensajes para acceder a Chromium</translation>
 <translation id="8493179195440786826">Chromium no actualizado</translation>
 <translation id="8522801943730206384">Chromium puede revisar las contraseñas cuando las guardas</translation>
 <translation id="8555465886620020932">Error del servicio: <ph name="SERVICE_ERROR" />.</translation>

@@ -100,6 +100,7 @@
 <translation id="2238130810669087193">Para aceder aos seus endereços e muito mais em todos os seus dispositivos, inicie sessão no Chromium. Este endereço é guardado na sua Conta Google depois de iniciar sessão.</translation>
 <translation id="2241627712206172106">Se partilhar um computador, os amigos e os familiares podem navegar separadamente e configurar o Chromium da forma que quiserem.</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{O Chromium recomenda pausar o separador que está a abrandar o navegador}other{O Chromium recomenda pausar os separadores que estão a abrandar o navegador}}</translation>
+<translation id="2307973900865360088">Manter na Dock</translation>
 <translation id="2313870531055795960">Verifica os URLs com base numa lista de sites inseguros armazenada no Chromium. Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chromium também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura.</translation>
 <translation id="2343156876103232566">Para enviar um número daqui para o seu telemóvel Android, inicie sessão no Chromium em ambos os dispositivos.</translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -483,6 +484,7 @@ Algumas funcionalidades podem não estar disponíveis. Especifique um diretório
 <translation id="718435575166326686">O Chromium necessita da autorização da câmara para este site</translation>
 <translation id="7196312274710523067">Não foi possível iniciar o Chromium. Tente novamente.</translation>
 <translation id="7197677400338048821">O Chromium não consegue verificar as suas palavras-passe. Tente novamente após 24 horas.</translation>
+<translation id="7213008767289637091">Mantenha o Chromium na Dock para aceder rapidamente ao mesmo em qualquer altura</translation>
 <translation id="7213407614656404070">Use o Chromium sempre que clicar em links de mensagens, documentos e outras apps</translation>
 <translation id="7223968959479464213">Gestor de Tarefas - Chromium</translation>
 <translation id="7246575524853130370">Os seus interesses conforme estimado pelo Chromium</translation>

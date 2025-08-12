@@ -12048,14 +12048,5 @@ Se <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> viene attivata, <ph 
 <translation id="989197274317162189">Questa policy è stata deprecata e non è supportata. Utilizza la policy <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="990830704772547092">Configura il programma di installazione per le VM Bruschetta sui dispositivi <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="991560005425213776">Invia nome utente e nome file alle stampanti native</translation>
-<translation id="99232017131102456">Questa policy consente di configurare una singola cache globale per profilo con credenziali di autenticazione server HTTP.
-
-      Se questa policy non viene impostata o viene disattivata, il browser userà il comportamento predefinito dell'autenticazione tra siti che, a partire dalla versione 80, prevede credenziali di autenticazione server HTTP con ambito per sito principale. Ciò significa che, se due siti usano risorse dello stesso dominio di autenticazione, le credenziali devono essere fornite separatamente nel contesto di entrambi i siti. Le credenziali proxy memorizzate nella cache verranno riutilizzate tra i siti.
-
-      Se la policy viene attivata, le credenziali di autenticazione HTTP inserite nel contesto di un sito verranno usate automaticamente nel contesto di un altro sito.
-
-      Se questa policy viene attivata, i siti sono esposti ad alcuni tipi di attacchi cross-site e gli utenti possono essere monitorati tra i siti anche senza i cookie tramite l'aggiunta di voci alla cache di autenticazione HTTP usando credenziali incorporate negli URL.
-
-      Questa policy è stato ideata per dare la possibilità alle aziende che dipendono dal comportamento precedente di aggiornare le proprie procedure di accesso e verrà rimossa in futuro.</translation>
 <translation id="999340611001666174">Disattiva la correzione del colore</translation>
 </translationbundle>

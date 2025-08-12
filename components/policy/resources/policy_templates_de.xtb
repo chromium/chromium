@@ -11823,14 +11823,5 @@ Wenn <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> aktiviert ist, wir
 <translation id="989197274317162189">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen die Richtlinie „<ph name="URL_BLOCKLIST_POLICY_NAME" />“.</translation>
 <translation id="990830704772547092">Installationsprogramm für Bruschetta-VMs auf <ph name="PRODUCT_OS_NAME" />-Geräten konfigurieren</translation>
 <translation id="991560005425213776">Nutzer- und Dateiname an native Drucker senden</translation>
-<translation id="99232017131102456">Diese Richtlinie konfiguriert einen einzelnen globalen Profil-Cache mit HTTP-Server-Auth-Anmeldedaten.
-
-      Wenn diese Richtlinie nicht konfiguriert oder deaktiviert ist, wendet der Browser das Standardverhalten Cross-Site-Auth an. Dieses umfasst ab Version 80 die HTTP-Server-Anmeldedaten durch die Top-Level-Website. Wenn also zwei Websites Ressourcen derselben Authentifizierungs-Domain verwenden, müssen die Anmeldedaten unabhängig voneinander im Kontext beider Websites bereitgestellt werden. Im Cache gespeicherte Proxy-Anmeldedaten werden für alle Websites erneut verwendet.
-
-      Wenn die Richtlinie aktiviert ist, werden im Kontext einer Website eingegebene HTTP-Auth-Anmeldedaten automatisch auch im Kontext einer anderen verwendet.
-
-      Das Aktivieren dieser Richtlinie lässt einige Arten von Cross-Site-Angriffen offen. Nutzer können außerdem durch die Eingaben in das HTTP-Auth-Cache mit in URLs eingebetteten Anmeldedaten über mehrere Websites erfasst werden, selbst wenn sie keine Cookies zulassen.
-
-      Diese Richtlinie soll Unternehmen anhand des vergangenen Verhaltens die Möglichkeit geben, ihre Login-Abläufe zu aktualisieren. Sie wird demnächst entfernt.</translation>
 <translation id="999340611001666174">Farbkorrektur deaktivieren</translation>
 </translationbundle>

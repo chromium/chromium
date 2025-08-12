@@ -1487,7 +1487,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="200321182559008924">Hold styr på dine faner</translation>
 <translation id="2003596238737586336">Den aktuelle tidsplan er indstillet til <ph name="SUNRISE" />-<ph name="SUNSET" />. Denne indstilling administreres af din administrator.</translation>
 <translation id="2004413981947727241">Brug dine adgangskoder på alle enheder</translation>
-<translation id="2004697686368036666">Funktionerne på visse websites virker muligvis ikke</translation>
 <translation id="2006638907958895361">Åbn linket i <ph name="APP" /></translation>
 <translation id="2007404777272201486">Rapportér et problem...</translation>
 <translation id="200781997903833896">Hvis du vil bruge Oplæsning, skal du frigøre plads på din enhed</translation>
@@ -1971,7 +1970,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2328137272841210255">Nulstil din pinkode</translation>
 <translation id="2328474416100889417">Alle mister øjeblikkeligt adgang til fanegruppen "<ph name="GROUP_NAME" />", og alle invitationslinks deaktiveres</translation>
 <translation id="2328561734797404498">Genstart enheden for at bruge <ph name="APP_NAME" />.</translation>
-<translation id="2328636661627946415">Når du er i inkognitotilstand, kan websites kun bruge cookies til at se din browseraktivitet på deres eget website. Cookies slettes, når inkognitosessionen afsluttes.</translation>
 <translation id="2329597144923131178">Log ind for at hente bogmærker, historik, adgangskoder og andre indstillinger på alle dine enheder.</translation>
 <translation id="2330182457402792918">Vælg filer, som dette website kan læse</translation>
 <translation id="2332115969598251205">Enheder, som er gemt på <ph name="PRIMARY_EMAIL" />, kan ikke indlæses. Tjek din internetforbindelse, og prøv igen.</translation>
@@ -3761,7 +3759,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3593953853060020305">Vil du give dette website tilladelse til at redigere <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Begrænsninger for certifikatnavn</translation>
 <translation id="3596012367874587041">Appindstillinger</translation>
-<translation id="3596414637720633074">Bloker tredjepartscookies i inkognito</translation>
 <translation id="3599221874935822507">Hævet</translation>
 <translation id="3600051066689725006">Oplysninger om webanmodning</translation>
 <translation id="3600956933576601730">Du skal gennemgå og acceptere vilkårene for at bruge disse funktioner</translation>
@@ -4097,7 +4094,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3807747707162121253">&amp;Annuller</translation>
 <translation id="3808202562160426447">Nedton baggrundsindhold</translation>
 <translation id="3808443763115411087">Udvikling af Android-apps i Crostini</translation>
-<translation id="3808617121485025547">Mere om blokering af tredjepartscookies</translation>
 <translation id="38089336910894858">Vis advarsel, inden der afsluttes med ⌘Q</translation>
 <translation id="3809272675881623365">Kanin</translation>
 <translation id="3809280248639369696">Rumvæsen</translation>
@@ -4357,7 +4353,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3975565978598857337">Det var ikke muligt at kontakte serveren for domænet</translation>
 <translation id="3976108569178263973">Der er ingen tilgængelige printere.</translation>
 <translation id="397703832102027365">Afslutter...</translation>
-<translation id="3977145907578671392">Funktioner på visse websites fungerer muligvis ikke i inkognito</translation>
 <translation id="3977886311744775419">Automatiske opdateringer downloades ikke på denne netværkstype, men du kan kigge efter opdateringer manuelt.</translation>
 <translation id="3978325380690188371">Træge taster er ikke tilgængelige, når ChromeVox er aktiveret</translation>
 <translation id="3978732922947854545">Chrome gør PDF-filer bedre</translation>
@@ -5746,6 +5741,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="496742804571665842">Deaktiver eSIM-profiler</translation>
 <translation id="4967571733817147990">Tilpas museknapper</translation>
 <translation id="4967852842111017386">Enhedsnavn for <ph name="FEATURE_NAME" /></translation>
+<translation id="4968994772848295474">Installation af webapps understøttes ikke i gæstetilstand</translation>
 <translation id="4971412780836297815">Åbn, når den er fuldført</translation>
 <translation id="4972129977812092092">Rediger printer</translation>
 <translation id="4972164225939028131">Forkert adgangskode</translation>
@@ -6625,6 +6621,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="560834977503641186">Wi-Fi-synkronisering, Få flere oplysninger</translation>
 <translation id="5608580678041221894">Tryk på følgende taster for at tilpasse eller flytte beskæringsområdet</translation>
 <translation id="5609231933459083978">Applikationen ser ud til at være ugyldig.</translation>
+<translation id="5610759359710387751">Gør Chrome til dit eget</translation>
 <translation id="5610867721023328944">Prøv igen, eller vælg ét af de tilgængelige temaer nedenfor.</translation>
 <translation id="5611398002774823980">Gem på konto</translation>
 <translation id="5611399285717843500">Hjælp med at forbedre Chromes og ChromeOS' funktioner og ydeevne. Personlige oplysninger fjernes, når disse data indsamles.</translation>
@@ -10524,6 +10521,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8340547030807793004">Flere handlinger for <ph name="DEVICE" /></translation>
 <translation id="8341804784147620576">Vis genveje til søgning</translation>
 <translation id="8342221978608739536">Jeg prøvede ikke</translation>
+<translation id="8342387517402567689">Installation af webapps understøttes ikke i inkognitotilstand</translation>
 <translation id="8342861492835240085">Vælg en samling</translation>
 <translation id="8345848587667658367">Du kan nu se din telefons seneste billeder, medier, notifikationer og apps</translation>
 <translation id="8347227221149377169">Udskriftsjobs</translation>
@@ -10847,7 +10845,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8573111744706778015">Skriv "uo7" for "ươ"</translation>
 <translation id="8574990355410201600">Tillad altid lyd på <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Hold <ph name="KEY_EQUIVALENT" /> nede for at afslutte</translation>
-<translation id="8576359558126669548">Mere om blokering af tredjepartscookies i inkognitotilstand</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Føj fane til Læseliste}one{Føj fane til Læseliste}other{Føj faner til Læseliste}}</translation>
 <translation id="8577052309681449949">Automatiske klik, markørstørrelse, markørfarve m.m.</translation>
 <translation id="8578639784464423491">Må højst indeholde 99 bogstaver</translation>
@@ -11164,7 +11161,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="8777628254805677039">adgangskoderod</translation>
 <translation id="8779720597365936419">Ja. Adskil mine private data fra min arbejdsprofil (anbefales)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Websites kan kun bruge cookies til at se din browseraktivitet på deres eget website</translation>
 <translation id="8780123805589053431">Hent billedbeskrivelser fra Google</translation>
 <translation id="8780443667474968681">Talesøgning er deaktiveret.</translation>
 <translation id="8781834595282316166">Ny fane i gruppe</translation>

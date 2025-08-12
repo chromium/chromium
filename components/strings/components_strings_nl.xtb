@@ -1667,6 +1667,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3744899669254331632">Je kunt <ph name="SITE" /> op dit moment niet bezoeken, omdat de website gecodeerde inloggegevens heeft verstuurd die niet door Chromium kunnen worden verwerkt. Aangezien netwerkfouten en aanvallen doorgaans van tijdelijke aard zijn, zal deze pagina later waarschijnlijk wel werken.</translation>
 <translation id="3745599309295009257">Je tekst en de content en URL van de pagina waarop je schrijft, worden naar Google gestuurd, beoordeeld door mensen en gebruikt om deze functie te verbeteren. Voer geen persoonlijke informatie in (zoals medische of financiële gegevens) en gebruik deze tool niet op sites die persoonlijke of gevoelige informatie bevatten.</translation>
 <translation id="3748009735914587286">Metaal (hoogglans)</translation>
+<translation id="3749600200023337912">Je opgeslagen methode voor automatische betalingen kan worden gebruikt voor deze betaling. Als je e-wallets of de betalingsapp in Chrome wilt uitzetten, ga je naar je <ph name="BEGIN_LINK1" />betaalinstellingen<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">Adres opslaan in account?</translation>
 <translation id="3752543821772132562">Genegeerd omdat <ph name="POLICY_NAME" /> niet is ingesteld.</translation>
 <translation id="3754210790023674521">Scherm-in-scherm afsluiten</translation>
@@ -3552,6 +3553,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6890956352250146925">Opties voor cookies en sitegegevens</translation>
 <translation id="6891596781022320156">Beleidsniveau wordt niet ondersteund.</translation>
 <translation id="6893057134494550310">Lamineerfolie</translation>
+<translation id="6893204630281237373">Als je de betalingsapp in Chrome wilt uitzetten, ga je naar je <ph name="BEGIN_LINK1" />betaalinstellingen<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Je creditcard is bevestigd</translation>
 <translation id="6896758677409633944">Kopiëren</translation>
 <translation id="6897140037006041989">User-agent</translation>

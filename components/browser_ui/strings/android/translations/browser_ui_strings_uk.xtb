@@ -120,7 +120,9 @@
 <translation id="2379925928934107488">Якщо у веб-перекладачі Chrome активовано темну тему, вона використовуватиметься для сайтів, коли це можливо.</translation>
 <translation id="2390272837142897736">Збільшити масштаб</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
+<translation id="2403474027143565107">Точне</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}one{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}few{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}many{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}other{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}}</translation>
+<translation id="2404857459073803936">Доступ до геоданих для цього сайту</translation>
 <translation id="2410940059315936967">Сайт, який ви відвідали, може включати контент з інших сайтів, наприклад зображення, оголошення й текст. Файли cookie, створені іншими сайтами, називаються сторонніми.</translation>
 <translation id="2411116727035790889">Увімкнути ярлики</translation>
 <translation id="2433507940547922241">Стиль і тема</translation>
@@ -276,6 +278,7 @@
 <translation id="3992684624889376114">Про цю сторінку</translation>
 <translation id="4002066346123236978">Назва</translation>
 <translation id="4031179711345676612">Дозволено використовувати мікрофон</translation>
+<translation id="4042597221652780603">Приблизне</translation>
 <translation id="4046123991198612571">Наступна композиція</translation>
 <translation id="4077310749977440510">Сайти зазвичай переглядають буфер обміну для роботи таких функцій, як зберігання форматування скопійованого тексту</translation>
 <translation id="4082080074595021446">Винятки для певних вебсайтів вимкнено, оскільки на пристрої Android недостатньо оперативної пам’яті.</translation>

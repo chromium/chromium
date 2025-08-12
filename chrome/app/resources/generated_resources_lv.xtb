@@ -1477,7 +1477,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="200321182559008924">Parūpējieties par kārtību cilnēs</translation>
 <translation id="2003596238737586336">Pašreizējais grafiks ir iestatīts no plkst. <ph name="SUNRISE" /> līdz plkst. <ph name="SUNSET" />. Šo iestatījumu pārvalda jūsu administrators.</translation>
 <translation id="2004413981947727241">Varat izmantot savas paroles jebkurā ierīcē</translation>
-<translation id="2004697686368036666">Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="2006638907958895361">Atvērt saiti lietotnē <ph name="APP" /></translation>
 <translation id="2007404777272201486">Ziņot par problēmu...</translation>
 <translation id="200781997903833896">Lai izmantotu funkciju “Lasīt skaļi”, atbrīvojiet vietu ierīcē.</translation>
@@ -1958,7 +1957,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2328137272841210255">Atiestatiet PIN</translation>
 <translation id="2328474416100889417">Visi uzreiz zaudēs piekļuvi ciļņu grupai “<ph name="GROUP_NAME" />”, un visas uzaicinājuma saites tiks izslēgtas.</translation>
 <translation id="2328561734797404498">Lai varētu izmantot lietotni <ph name="APP_NAME" />, restartējiet ierīci.</translation>
-<translation id="2328636661627946415">Ja izmantojat inkognito režīmu, vietne drīkst lietot sīkfailus, lai skatītu jūsu pārlūkošanas darbības šajā vietnē, bet ne ārpus tās. Pabeidzot inkognito sesiju, sīkfaili tiek dzēsti.</translation>
 <translation id="2329597144923131178">Pierakstieties, lai grāmatzīmes, vēsture, paroles u.c. būtu pieejamas visās jūsu ierīcēs.</translation>
 <translation id="2330182457402792918">Atlasiet failus, ko šī vietne var lasīt</translation>
 <translation id="2332115969598251205">Nevar ielādēt kontā <ph name="PRIMARY_EMAIL" /> saglabātās ierīces. Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.</translation>
@@ -3746,7 +3744,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3593953853060020305">Vai atļaut šai vietnei rediģēt failu <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Sertifikāta nosaukuma ierobežojumi</translation>
 <translation id="3596012367874587041">Lietotnes iestatījumi</translation>
-<translation id="3596414637720633074">Inkognito režīmā bloķēt trešo pušu sīkfailus</translation>
 <translation id="3599221874935822507">Paaugstināta</translation>
 <translation id="3600051066689725006">Tīmekļa pieprasījuma informācija</translation>
 <translation id="3600956933576601730">Lai varētu izmantot šīs funkcijas, jums ir jāizskata noteikumi un jāpiekrīt tiem.</translation>
@@ -4082,7 +4079,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3807747707162121253">Atcelt</translation>
 <translation id="3808202562160426447">Aptumšot fona saturu</translation>
 <translation id="3808443763115411087">Crostini Android lietotņu izstrāde</translation>
-<translation id="3808617121485025547">Plašāka informācija par trešo pušu sīkfailu bloķēšanu</translation>
 <translation id="38089336910894858">Rādīt brīdinājumu par iziešanu, nospiežot taustiņus ⌘Q</translation>
 <translation id="3809272675881623365">Trusis</translation>
 <translation id="3809280248639369696">Citplanētietis</translation>
@@ -4342,7 +4338,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="3975565978598857337">Sazināšanās ar serveri nozarojumam neizdevās</translation>
 <translation id="3976108569178263973">Neviens printeris nav pieejams.</translation>
 <translation id="397703832102027365">Notiek pabeigšana...</translation>
-<translation id="3977145907578671392">Noteiktās vietnēs funkcijas var nedarboties, ja tiek izmantots inkognito režīms.</translation>
 <translation id="3977886311744775419">Kad izveidots savienojums ar šāda veida tīklu, atjauninājumi netiek lejupielādēti automātiski, taču varat manuāli pārbaudīt, vai tie ir pieejami.</translation>
 <translation id="3978325380690188371">Taustiņu ķēde nav pieejama, kad ir ieslēgts pakalpojums ChromeVox.</translation>
 <translation id="3978732922947854545">Chrome uzlabo PDF failus</translation>
@@ -5731,6 +5726,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="496742804571665842">eSIM profilu atspējošana</translation>
 <translation id="4967571733817147990">Peles pogu pielāgošana</translation>
 <translation id="4967852842111017386">Ierīces nosaukums funkcijā <ph name="FEATURE_NAME" /></translation>
+<translation id="4968994772848295474">Viesa režīmā netiek atbalstīta tīmekļa lietotņu instalēšana</translation>
 <translation id="4971412780836297815">Atvērt, kad pabeigta</translation>
 <translation id="4972129977812092092">Printera rediģēšana</translation>
 <translation id="4972164225939028131">Nepareiza parole</translation>
@@ -6609,6 +6605,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="560834977503641186">Wi-Fi sinhronizācija, uzzināt vairāk</translation>
 <translation id="5608580678041221894">Pieskarieties tālāk norādītajiem taustiņiem, lai pielāgotu vai pārvietotu apgriešanas apgabalu.</translation>
 <translation id="5609231933459083978">Šķiet, ka lietojumprogramma nav derīga.</translation>
+<translation id="5610759359710387751">Chrome jums</translation>
 <translation id="5610867721023328944">Mēģiniet vēlreiz vai atlasiet kādu no tālāk pieejamajiem motīviem.</translation>
 <translation id="5611398002774823980">Saglabāt kontā</translation>
 <translation id="5611399285717843500">Palīdziet uzlabot Chrome un ChromeOS funkcijas un veiktspēju. Vācot šos datus, personas informācija tiek noņemta.</translation>
@@ -7507,6 +7504,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6257602895346497974">Ieslēgt sinhronizāciju...</translation>
 <translation id="625827534921607067">Ja būs pieejami vairāki konfigurēti tīkli vai tīkli, ar kuriem iepriekš tika izveidots savienojums, tiks izmantots šis tīkls.</translation>
 <translation id="6259776178973198997">Atsvaidzināt informāciju par Wi-Fi Direct īpašniekiem</translation>
+<translation id="6261688934280090835">ChromeOS kioska lietotņu žurnāli</translation>
 <translation id="6262371516389954471">Jūsu dublējumi tiek augšupielādēti Google serveros un šifrēti, izmantojot jūsu Google konta paroli.</translation>
 <translation id="6263082573641595914">Microsoft CA versija</translation>
 <translation id="6263284346895336537">Nav kritisks</translation>
@@ -10506,6 +10504,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8340547030807793004"><ph name="DEVICE" />: citas darbības</translation>
 <translation id="8341804784147620576">Meklēšanas saīšņu rādīšana</translation>
 <translation id="8342221978608739536">Nemēģināju skatīt</translation>
+<translation id="8342387517402567689">Inkognito režīmā netiek atbalstīta tīmekļa lietotņu instalēšana</translation>
 <translation id="8342861492835240085">Kolekcijas atlase</translation>
 <translation id="8345848587667658367">Tagad varat skatīt tālruņa jaunākos fotoattēlus, multivides saturu, paziņojumus un lietotnes.</translation>
 <translation id="8347227221149377169">Drukas uzdevumi</translation>
@@ -10829,7 +10828,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8573111744706778015">Ierakstiet “uo7”, lai iegūtu “ươ”</translation>
 <translation id="8574990355410201600">Vienmēr atļaut ieslēgt skaņu vietnē <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Turiet nospiestu <ph name="KEY_EQUIVALENT" />, lai beigtu darbu.</translation>
-<translation id="8576359558126669548">Plašāka informācija par trešo pušu sīkfailu bloķēšanu inkognito režīmā</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Pievienot cilni lasīšanas sarakstam}zero{Pievienot cilnes lasīšanas sarakstam}one{Pievienot cilnes lasīšanas sarakstam}other{Pievienot cilnes lasīšanas sarakstam}}</translation>
 <translation id="8577052309681449949">Automātiskie klikšķi, kursora lielums, kursora krāsa u.c.</translation>
 <translation id="8578639784464423491">Nedrīkst būt vairāk par 99 burtiem.</translation>
@@ -11146,7 +11144,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="8777628254805677039">saknes parole</translation>
 <translation id="8779720597365936419">Jā, glabāt manus datus atsevišķi no darba profila datiem (ieteicams)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Vietnēs drīkst izmantot jūsu sīkfailus, tikai lai skatītu attiecīgajā vietnē veiktās pārlūkošanas darbības</translation>
 <translation id="8780123805589053431">Iegūt attēlu aprakstus no Google</translation>
 <translation id="8780443667474968681">Meklēšana ar balsi ir izslēgta.</translation>
 <translation id="8781834595282316166">Jauna cilne grupā</translation>

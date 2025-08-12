@@ -1092,6 +1092,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="6125202119952209826">Bashkohu në grupin e skedave me <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Më shumë detaje<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Artikulli u hoq</translation>
+<translation id="6127860394906721547">Hap grupin e skedave "<ph name="TITLE_OF_GROUP" />", ngjyra <ph name="COLOR_NAME" />, me sajtet <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimizo skedën</translation>
 <translation id="6134168885321518274">Hap shiritin e gjetjes</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> skedë}other{<ph name="TAB_COUNT_MANY" /> skeda}}</translation>

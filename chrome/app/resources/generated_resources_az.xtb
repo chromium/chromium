@@ -1471,7 +1471,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="200321182559008924">Tablarınızı səliqəli saxlayın</translation>
 <translation id="2003596238737586336">Cari cədvəl: <ph name="SUNRISE" /> - <ph name="SUNSET" />. Bu ayar inzibatçınız tərəfindən idarə edilir.</translation>
 <translation id="2004413981947727241">Parollardan istənilən cihazda istifadə edin</translation>
-<translation id="2004697686368036666">Bəzi saytlardakı funksiyalar işləməyə bilər</translation>
 <translation id="2006638907958895361">Linki <ph name="APP" /> tətbiqində açın</translation>
 <translation id="2007404777272201486">Problemi xəbər verin...</translation>
 <translation id="200781997903833896">Səsli oxunuşdan istifadə etmək üçün cihazınızda yer təmizləyin</translation>
@@ -1955,7 +1954,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2328137272841210255">PIN-i sıfırlayın</translation>
 <translation id="2328474416100889417">Hər kəs "<ph name="GROUP_NAME" />" tab qrupuna girişini dərhal itirəcək və bütün dəvət keçidləri deaktiv ediləcək</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> tətbiqindən istifadə etmək üçün cihazı yenidən başladın.</translation>
-<translation id="2328636661627946415">Anonim rejimdə olduğunuz zaman saytlar öz saytlarında baxış fəaliyyətinizi görmək üçün yalnız kukilərdən istifadə edə bilər. Kukilər Anonim sessiyanın sonunda silinir.</translation>
 <translation id="2329597144923131178">Bütün cihazlarınızda əlfəcin, tarixçə, parol və digər ayarları əldə etmək üçün daxil olun.</translation>
 <translation id="2330182457402792918">Bu saytın oxuya biləcəyi faylları seçin</translation>
 <translation id="2332115969598251205"><ph name="PRIMARY_EMAIL" /> hesabında saxlanmış cihazları yükləmək olmur. İnternet bağlantınızı yoxlayın və yenidən cəhd edin.</translation>
@@ -3745,7 +3743,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3593953853060020305">Bu sayta <ph name="FILE_NAME" /> faylını redaktə etməyə icazə verilsin?</translation>
 <translation id="3593965109698325041">Sertifikat adları limitləri</translation>
 <translation id="3596012367874587041">Tətbiq ayarları</translation>
-<translation id="3596414637720633074">Anonim rejimdə üçüncü tərəf kukilərini bloklayın</translation>
 <translation id="3599221874935822507">Qabarıq</translation>
 <translation id="3600051066689725006">Veb sorğu məlumatı</translation>
 <translation id="3600956933576601730">Bu funksiyalardan istifadə etmək üçün şərtləri nəzərdən keçirməli və qəbul etməlisiniz</translation>
@@ -4081,7 +4078,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3807747707162121253">Ləğv edin</translation>
 <translation id="3808202562160426447">Arxa fon kontentini tutqunlaşdırın</translation>
 <translation id="3808443763115411087">Crostini Android tətbiqinin inkişafı ayarları</translation>
-<translation id="3808617121485025547">Üçüncü tərəf kukilərinin bloklanması haqqında ətraflı</translation>
 <translation id="38089336910894858">⌘Q ilə çıxmazdan əvvəl xəbərdarlıq göstərin</translation>
 <translation id="3809272675881623365">Dovşan</translation>
 <translation id="3809280248639369696">Ay işığı</translation>
@@ -4341,7 +4337,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3975565978598857337">Sahə üçün serverin qoşulması alınmadı</translation>
 <translation id="3976108569178263973">Əlçatan printer yoxdur.</translation>
 <translation id="397703832102027365">Yekunlaşır...</translation>
-<translation id="3977145907578671392">Bəzi saytlardakı funksiyalar Anonim rejimdə işləməyə bilər</translation>
 <translation id="3977886311744775419">Avtomatik güncəlləmələr bu şəbəkə növündə endirilmir, lakin manual olaraq güncəlləmələri yoxlaya bilərsiniz.</translation>
 <translation id="3978325380690188371">ChromeVox aktiv olduqda əvəzedici açarlar əlçatan olmur</translation>
 <translation id="3978732922947854545">Chrome PDF-ləri daha yaxşı hala gətirir</translation>
@@ -5728,6 +5723,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="496742804571665842">eSIM profillərini deaktiv edin</translation>
 <translation id="4967571733817147990">Maus düymələrini fərdiləşdirin</translation>
 <translation id="4967852842111017386"><ph name="FEATURE_NAME" /> - cihaz adı</translation>
+<translation id="4968994772848295474">Qonaq rejimində veb-tətbiq quraşdırmaları dəstəklənmir</translation>
 <translation id="4971412780836297815">Tamamlandıqda açın</translation>
 <translation id="4972129977812092092">Printeri redaktə edin</translation>
 <translation id="4972164225939028131">Yanlış parol</translation>
@@ -6607,6 +6603,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="560834977503641186">Wi-Fi Sinxronlaşdırması, Ətraflı Məlumat</translation>
 <translation id="5608580678041221894">Kəsilmiş hissəni tənzimləmək və ya köçürmək üçün aşağıdakı düymələrə toxunun</translation>
 <translation id="5609231933459083978">Görünür tətbiq yanlışdır.</translation>
+<translation id="5610759359710387751">Chrome'u özünüzküləşdirin</translation>
 <translation id="5610867721023328944">Yenidən cəhd edin, yaxud aşağıdakı temalardan birini seçin.</translation>
 <translation id="5611398002774823980">Hesabda yadda saxlayın</translation>
 <translation id="5611399285717843500">Chrome və ChromeOS funksiyalarını və performansını təkmilləşdirməyə kömək edin. Bu data toplanarkən şəxsi məlumatlar silinir.</translation>
@@ -7506,6 +7503,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6257602895346497974">Sinxronizasiyanı aktiv edin...</translation>
 <translation id="625827534921607067">Əvvəlcədən qoşulmuş və ya konfiqurasiya edilmiş bir neçə şəbəkə əlçatan olarsa, bu şəbəkə tərcih ediləcək</translation>
 <translation id="6259776178973198997">WiFi Direct sahib məlumatını təzələyin</translation>
+<translation id="6261688934280090835">ChromeOS Köşk tətbiqi loqları</translation>
 <translation id="6262371516389954471">Yedəkləmələriniz Google'a yüklənir və Google Hesabı parolunuzdan istifadə etməklə şifrlənir.</translation>
 <translation id="6263082573641595914">Microsoft CA Versiyası</translation>
 <translation id="6263284346895336537">Əhəmiyyətli deyil</translation>
@@ -10500,6 +10498,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> üçün digər əməliyyatlar</translation>
 <translation id="8341804784147620576">Axtarış Qısayollarını göstərin</translation>
 <translation id="8342221978608739536">Sınaqdan keçirilmədi</translation>
+<translation id="8342387517402567689">Anonim rejimdə veb-tətbiq quraşdırmaları dəstəklənmir</translation>
 <translation id="8342861492835240085">Kolleksiya seçin</translation>
 <translation id="8345848587667658367">İndi telefonunuzun son fotolarına, mediasına, bildirişlərinə və tətbiqlərinə baxa bilərsiniz</translation>
 <translation id="8347227221149377169">Çap işləri</translation>
@@ -10823,7 +10822,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8573111744706778015">"ươ" üçün "uo7" yazın</translation>
 <translation id="8574990355410201600">Həmişə <ph name="HOST" /> hostunda səsə icazə verin</translation>
 <translation id="8575286410928791436">Çıxış etmək üçün <ph name="KEY_EQUIVALENT" /> düyməsinə basın</translation>
-<translation id="8576359558126669548">Anonim rejimdə üçüncü tərəf kukilərinin bloklanması haqqında ətraflı</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Oxuma siyahısına tab əlavə edin}other{Oxuma siyahısına tablar əlavə edin}}</translation>
 <translation id="8577052309681449949">Avtomatik klikləmə, kursor ölçüsü, kursor rəngi və s.</translation>
 <translation id="8578639784464423491">99 hərfi keçməməlidir</translation>
@@ -11136,7 +11134,6 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="8777628254805677039">əsas parol</translation>
 <translation id="8779720597365936419">Bəli, datamı işdən ayrı saxlayın (tövsiyə edilir)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Saytlar yalnız öz saytlarında axtarış fəaliyyətinizi görmək üçün kukilərdən istifadə edə bilər</translation>
 <translation id="8780123805589053431">Google'dan şəkil təsvirlərini əldə edin</translation>
 <translation id="8780443667474968681">Səsli axtarış deaktiv edilib.</translation>
 <translation id="8781834595282316166">Qrupa Yeni Tab</translation>

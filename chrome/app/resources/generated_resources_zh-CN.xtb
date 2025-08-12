@@ -1468,7 +1468,6 @@
 <translation id="200321182559008924">让标签页井然有序</translation>
 <translation id="2003596238737586336">当前的时间安排设置为<ph name="SUNRISE" /> - <ph name="SUNSET" />。此设置由您的管理员管理。</translation>
 <translation id="2004413981947727241">在任何设备上都能使用您的密码</translation>
-<translation id="2004697686368036666">某些网站上的功能可能无法正常运行</translation>
 <translation id="2006638907958895361">在<ph name="APP" />中打开链接</translation>
 <translation id="2007404777272201486">报告问题...</translation>
 <translation id="200781997903833896">如需使用“大声朗读”功能，请清理设备空间</translation>
@@ -1949,7 +1948,6 @@
 <translation id="2328137272841210255">重置 PIN 码</translation>
 <translation id="2328474416100889417">所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且所有邀请链接都将失效</translation>
 <translation id="2328561734797404498">请重启您的设备，即可使用 <ph name="APP_NAME" />。</translation>
-<translation id="2328636661627946415">当您处于无痕模式时，网站只能使用 Cookie 查看您在相应网站上的浏览活动。无痕式会话结束时，系统会删除 Cookie。</translation>
 <translation id="2329597144923131178">登录后可获取您所有设备上保存的书签、历史记录、密码和其他设置。</translation>
 <translation id="2330182457402792918">选择允许此网站读取的文件</translation>
 <translation id="2332115969598251205">无法加载已保存到 <ph name="PRIMARY_EMAIL" /> 的设备。请检查互联网连接情况，然后再试一次。</translation>
@@ -3736,7 +3734,6 @@
 <translation id="3593953853060020305">允许此网站修改“<ph name="FILE_NAME" />”？</translation>
 <translation id="3593965109698325041">证书名称约束</translation>
 <translation id="3596012367874587041">应用设置</translation>
-<translation id="3596414637720633074">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="3599221874935822507">凸起</translation>
 <translation id="3600051066689725006">网络请求信息</translation>
 <translation id="3600956933576601730">您需要查看并接受条款，才能使用这些功能</translation>
@@ -4072,7 +4069,6 @@
 <translation id="3807747707162121253">取消(&amp;C)</translation>
 <translation id="3808202562160426447">调暗背景内容</translation>
 <translation id="3808443763115411087">Crostini Android 应用开发</translation>
-<translation id="3808617121485025547">详细了解如何屏蔽第三方 Cookie</translation>
 <translation id="38089336910894858">在使用 ⌘Q 退出前，先显示警告</translation>
 <translation id="3809272675881623365">兔子</translation>
 <translation id="3809280248639369696">外星人</translation>
@@ -4331,7 +4327,6 @@
 <translation id="3975565978598857337">无法连接到指定领域的服务器</translation>
 <translation id="3976108569178263973">没有找到可用的打印机。</translation>
 <translation id="397703832102027365">正在完成...</translation>
-<translation id="3977145907578671392">在无痕模式下，某些网站上的功能可能会无法正常运作</translation>
 <translation id="3977886311744775419">使用此网络类型时无法下载自动更新，但您可以手动检查是否有更新。</translation>
 <translation id="3978325380690188371">开启 ChromeVox 后，无法使用粘滞键</translation>
 <translation id="3978732922947854545">Chrome 让 PDF 文件的使用体验更佳</translation>
@@ -6598,6 +6593,7 @@
 <translation id="560834977503641186">Wi-Fi 同步，了解详情</translation>
 <translation id="5608580678041221894">按以下键可调整或移动剪裁区域</translation>
 <translation id="5609231933459083978">该应用似乎无效。</translation>
+<translation id="5610759359710387751">定制自己专属的 Chrome</translation>
 <translation id="5610867721023328944">请重试，或从下面可用的主题中选择一个。</translation>
 <translation id="5611398002774823980">保存到账号</translation>
 <translation id="5611399285717843500">帮助改进 Chrome 和 ChromeOS 的功能和性能。系统收集此类数据时会移除个人信息。</translation>
@@ -7496,6 +7492,7 @@
 <translation id="6257602895346497974">开启同步功能…</translation>
 <translation id="625827534921607067">如果有多个之前已连接或配置好的网络可用，系统会优先选择此网络</translation>
 <translation id="6259776178973198997">刷新 Wi-Fi 直连所有者信息</translation>
+<translation id="6261688934280090835">ChromeOS 自助服务终端应用日志</translation>
 <translation id="6262371516389954471">您的备份内容将上传到 Google 并使用您的 Google 账号密码进行加密。</translation>
 <translation id="6263082573641595914">Microsoft CA 版本</translation>
 <translation id="6263284346895336537">非关键</translation>
@@ -10816,7 +10813,6 @@
 <translation id="8573111744706778015">输入“uo7”即可显示“ươ”</translation>
 <translation id="8574990355410201600">始终允许 <ph name="HOST" /> 播放声音</translation>
 <translation id="8575286410928791436">按住 <ph name="KEY_EQUIVALENT" /> 键即可退出</translation>
-<translation id="8576359558126669548">详细了解如何在无痕模式下屏蔽第三方 Cookie</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{向阅读清单中添加 1 个标签页}other{向阅读清单中添加多个标签页}}</translation>
 <translation id="8577052309681449949">自动点击、光标大小、光标颜色等设置</translation>
 <translation id="8578639784464423491">不能超过 99 个字母</translation>
@@ -11131,7 +11127,6 @@
 <translation id="8777628254805677039">根密码</translation>
 <translation id="8779720597365936419">是，将我的数据与工作数据分开（推荐）</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">网站只能使用 Cookie 查看您在相应网站上的浏览活动</translation>
 <translation id="8780123805589053431">从 Google 获取图片说明</translation>
 <translation id="8780443667474968681">已关闭语音搜索功能。</translation>
 <translation id="8781834595282316166">在分组内添加新标签页</translation>

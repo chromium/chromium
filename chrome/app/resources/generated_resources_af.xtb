@@ -1485,7 +1485,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="200321182559008924">Hou jou oortjies rommelvry</translation>
 <translation id="2003596238737586336">Huidige skedule is ingestel op <ph name="SUNRISE" /> – <ph name="SUNSET" />. Jou administrateur bestuur hierdie instelling.</translation>
 <translation id="2004413981947727241">Gebruik jou wagwoorde op enige toestel</translation>
-<translation id="2004697686368036666">Kenmerke op sommige webwerwe sal dalk nie werk nie</translation>
 <translation id="2006638907958895361">Maak skakel in <ph name="APP" /> oop</translation>
 <translation id="2007404777272201486">Gee 'n probleem aan …</translation>
 <translation id="200781997903833896">Maak plek op jou toestel om Hardoplees te gebruik</translation>
@@ -1969,7 +1968,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2328137272841210255">Stel jou PIN terug</translation>
 <translation id="2328474416100889417">Almal sal onmiddellik toegang tot die “<ph name="GROUP_NAME" />”-oortjiegroep verloor, en alle uitnodigingskakels sal afgeskakel word</translation>
 <translation id="2328561734797404498">Herbegin asseblief jou toestel om <ph name="APP_NAME" /> te gebruik.</translation>
-<translation id="2328636661627946415">Wanneer jy Incognitomodus gebruik, kan werwe webkoekies net gebruik om jou blaai-aktiwiteit op hul eie werf te sien. Webkoekies word aan die einde van die Incognito-sessie uitgevee.</translation>
 <translation id="2329597144923131178">Meld aan om jou boekmerke, geskiedenis, wagwoorde en ander instellings op al jou toestelle te kry.</translation>
 <translation id="2330182457402792918">Kies lêers wat hierdie werf kan lees</translation>
 <translation id="2332115969598251205">Kan nie toestelle laai wat in <ph name="PRIMARY_EMAIL" /> gestoor is nie. Gaan jou internetverbinding na en probeer weer.</translation>
@@ -3759,7 +3757,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3593953853060020305">Laat hierdie werf toe om <ph name="FILE_NAME" /> te redigeer?</translation>
 <translation id="3593965109698325041">Sertifikaatnaam-beperkings</translation>
 <translation id="3596012367874587041">Appinstellings</translation>
-<translation id="3596414637720633074">Blokkeer derdepartywebkoekies in Incognito</translation>
 <translation id="3599221874935822507">Opgehewe</translation>
 <translation id="3600051066689725006">Webversoekinligting</translation>
 <translation id="3600956933576601730">Jy moet die bepalings nagaan en aanvaar om hierdie kenmerke te gebruik</translation>
@@ -4095,7 +4092,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3807747707162121253">Kanselleer</translation>
 <translation id="3808202562160426447">Verdonker agtergrondinhoud</translation>
 <translation id="3808443763115411087">Android-programontwikkeling in Crostini</translation>
-<translation id="3808617121485025547">Meer oor die opsie om derdepartywebkoekies te blokkeer</translation>
 <translation id="38089336910894858">Wys waarskuwing voordat jy uitgaan by ⌘Q</translation>
 <translation id="3809272675881623365">Haas</translation>
 <translation id="3809280248639369696">Maanligstraal</translation>
@@ -4355,7 +4351,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3975565978598857337">Kon nie bediener vir domein kontak nie</translation>
 <translation id="3976108569178263973">Daar is geen drukkers beskikbaar nie.</translation>
 <translation id="397703832102027365">Finaliseer tans …</translation>
-<translation id="3977145907578671392">Kenmerke op sommige werwe sal dalk nie in Incognitomodus werk nie</translation>
 <translation id="3977886311744775419">Outomatiese opdaterings laai nie op hierdie netwerktipe af nie, maar jy kan self vir opdaterings kyk.</translation>
 <translation id="3978325380690188371">Taaisleutels is nie beskikbaar wanneer ChromeVox aan is nie</translation>
 <translation id="3978732922947854545">Chrome maak PDF’s beter</translation>
@@ -5744,6 +5739,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="496742804571665842">Deaktiveer e-SIM-profiele</translation>
 <translation id="4967571733817147990">Pasmaak muisknoppies</translation>
 <translation id="4967852842111017386"><ph name="FEATURE_NAME" />-toestelnaam</translation>
+<translation id="4968994772848295474">Webappinstallerings word nie in Gasmodus gesteun nie</translation>
 <translation id="4971412780836297815">Maak oop wanneer dit klaar is</translation>
 <translation id="4972129977812092092">Wysig drukker</translation>
 <translation id="4972164225939028131">Verkeerde wagwoord</translation>
@@ -6623,6 +6619,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="560834977503641186">Wi-fi-sinkronisering, kom meer te wete</translation>
 <translation id="5608580678041221894">Tik op die volgende sleutels om die snoei-area te verstel of te skuif</translation>
 <translation id="5609231933459083978">Dit lyk of die app ongeldig is.</translation>
+<translation id="5610759359710387751">Maak Chrome joune</translation>
 <translation id="5610867721023328944">Probeer weer of kies uit een van die beskikbare temas hieronder.</translation>
 <translation id="5611398002774823980">Stoor in rekening</translation>
 <translation id="5611399285717843500">Help om Chrome- en ChromeOS-kenmerke en -werkverrigting beter te maak. Persoonlike inligting word verwyder wanneer hierdie data ingesamel word.</translation>
@@ -7525,6 +7522,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6257602895346497974">Skakel sinkronisering aan …</translation>
 <translation id="625827534921607067">Hierdie netwerk sal verkies word as daar meer as een gekonfigureerde netwerk beskikbaar is waaraan jy voorheen gekoppel het</translation>
 <translation id="6259776178973198997">Herlaai inligting oor wi-fi-direk se eienaars</translation>
+<translation id="6261688934280090835">ChromeOS-kioskapploglêers</translation>
 <translation id="6262371516389954471">Jou rugsteune word na Google toe opgelaai en met jou Google-rekeningwagwoord geënkripteer.</translation>
 <translation id="6263082573641595914">Microsoft CA-weergawe</translation>
 <translation id="6263284346895336537">Nie kritiek nie</translation>
@@ -10519,6 +10517,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8340547030807793004">Meer handelinge vir <ph name="DEVICE" /></translation>
 <translation id="8341804784147620576">Wys soekkortpaaie</translation>
 <translation id="8342221978608739536">Het nie probeer nie</translation>
+<translation id="8342387517402567689">Webappinstallerings word nie in Ingocnitomodus gesteun nie</translation>
 <translation id="8342861492835240085">Kies 'n versameling</translation>
 <translation id="8345848587667658367">Jy kan nou jou foon se onlangse foto's, media, kennisgewings en programme bekyk</translation>
 <translation id="8347227221149377169">Druktake</translation>
@@ -10842,7 +10841,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8573111744706778015">Tik “uo7” om “ươ” te kry</translation>
 <translation id="8574990355410201600">Laat altyd klank toe op <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Hou <ph name="KEY_EQUIVALENT" /> om uit te gaan.</translation>
-<translation id="8576359558126669548">Meer oor die opsie om derdepartywebkoekies in Incognitomodus te blokkeer</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Voeg oortjie by leeslys}other{Voeg oortjies by leeslys}}</translation>
 <translation id="8577052309681449949">Outomatiese klikke, skermpyltjiegrootte, skermpyltjiekleur, en meer</translation>
 <translation id="8578639784464423491">Kan nie meer as 99 letters wees nie</translation>
@@ -11157,7 +11155,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="8777628254805677039">kernwagwoord</translation>
 <translation id="8779720597365936419">Ja, hou my data afsonderlik van werk (aanbeveel)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Werwe kan webkoekies net gebruik om jou blaai-aktiwiteit op hul eie werf te sien</translation>
 <translation id="8780123805589053431">Kry prentbeskrywings van Google af</translation>
 <translation id="8780443667474968681">Stemsoektog is afgeskakel.</translation>
 <translation id="8781834595282316166">Nuwe oortjie in groep</translation>

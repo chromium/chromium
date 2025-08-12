@@ -1474,7 +1474,6 @@
 <translation id="200321182559008924">ඔබේ පටිති ගොඩ ගැසීමෙන් තොරව තබා ගන්න</translation>
 <translation id="2003596238737586336">වත්මන් කාල සටහන <ph name="SUNRISE" /> - <ph name="SUNSET" /> ලෙස සකසා ඇත. මෙම සැකසුම ඔබේ පරිපාලකයා විසින් කළමනා කෙරේ.</translation>
 <translation id="2004413981947727241">ඕනෑම උපාංගයක් මත ඔබේ මුරපද භාවිත කරන්න</translation>
-<translation id="2004697686368036666">සමහර අඩවිවල විශේෂාංග ක්‍රියා නොකළ හැකිය</translation>
 <translation id="2006638907958895361">සබැඳිය <ph name="APP" /> තුළ විවෘත කරන්න</translation>
 <translation id="2007404777272201486">ගැටළුවක් වාර්තා කරන්න...</translation>
 <translation id="200781997903833896">ශබ්ද නඟා කියවීම භාවිත කිරීමට, ඔබේ උපාංගයේ ඉඩ හිස් කරන්න</translation>
@@ -1958,7 +1957,6 @@
 <translation id="2328137272841210255">ඔබේ PIN යළි සකසන්න</translation>
 <translation id="2328474416100889417">සියලු දෙනාටම “<ph name="GROUP_NAME" />” පටිති සමූහය වෙත ප්‍රවේශය වහාම අහිමි වනු ඇති අතර, ආරාධනා සබැඳි සියල්ල ක්‍රියාවිරහිත වනු ඇත</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> භාවිත කිරීමට ඔබේ උපාංගය යළි අරඹන්න.</translation>
-<translation id="2328636661627946415">ඔබ අප්‍රසිද්ධ ප්‍රකාරයේ සිටින විට, අඩවිවලට කුකි භාවිත කළ හැක්කේ ඔවුන්ගේම අඩවියේ ඔබගේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම් බැලීමට පමණි. අප්‍රසිද්ධ සැසිය අවසානයේ කුකි මකනු ලැබේ.</translation>
 <translation id="2329597144923131178">ඔබගේ සියලුම උපාංග මත ඇති පොත් සලකුණු, ඉතිහාසය, මුරපද හා වෙනත් සැකසීම් ලබා ගැනීමට පුරනය වන්න.</translation>
 <translation id="2330182457402792918">මෙම අඩවියට කියවිය හැකි ගොනු තෝරන්න</translation>
 <translation id="2332115969598251205"><ph name="PRIMARY_EMAIL" /> වෙත සුරැකි උපාංග පූරණය කළ නොහැක. ඔබේ අන්තර්ජාල සබැඳුම පරීක්ෂා කර නැවත උත්සාහ කරන්න.</translation>
@@ -3746,7 +3744,6 @@
 <translation id="3593953853060020305">මෙම අඩවියට <ph name="FILE_NAME" /> සංස්කරණය කිරීමට ඉඩ දෙන්න ද?</translation>
 <translation id="3593965109698325041">සහතික නාම නිරොධය</translation>
 <translation id="3596012367874587041">යෙදුම් සැකසීම්</translation>
-<translation id="3596414637720633074">අප්‍රසිද්ධය තුළ තෙවන පාර්ශ්ව කුකී අවහිර කරන්න</translation>
 <translation id="3599221874935822507">නංවන ලද</translation>
 <translation id="3600051066689725006">වෙබ් ඉල්ලීම් තොරතුරු</translation>
 <translation id="3600956933576601730">ඔබ මෙම විශේෂාංග භාවිතා කිරීමට කොන්දේසි සමාලෝචනය කර පිළිගැනීමට අවශ්‍ය වේ</translation>
@@ -4082,7 +4079,6 @@
 <translation id="3807747707162121253">&amp;අවලංගු කරන්න</translation>
 <translation id="3808202562160426447">පසුබිම් අන්තර්ගතය අඳුරු කරන්න</translation>
 <translation id="3808443763115411087">Crostini Android යෙදුම් සංවර්ධනය</translation>
-<translation id="3808617121485025547">තෙවන පාර්ශ්ව කුකීස් අවහිර කිරීම පිළිබඳ වැඩිදුර</translation>
 <translation id="38089336910894858">⌘Q සමඟ නික්මීමමට පෙර අවවාදය පෙන්වන්න</translation>
 <translation id="3809272675881623365">හාවා</translation>
 <translation id="3809280248639369696">මූන්බීම්</translation>
@@ -4343,7 +4339,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3975565978598857337">ක්‍ෂේත්‍රය සඳහා සේවාදායකය සම්බන්ධ කිරීම අසාර්ථක විය</translation>
 <translation id="3976108569178263973">ලද හැකි මුද්‍රක නැත.</translation>
 <translation id="397703832102027365">අවසන්කරමින්...</translation>
-<translation id="3977145907578671392">සමහර අඩවිවල විශේෂාංග අප්‍රසිද්ධියේ ක්‍රියා නොකළ හැකිය</translation>
 <translation id="3977886311744775419">ස්වයංක්‍රීය යාවත්කාලීන මෙම ජාල වර්ගයේ බාගන්නා නැති නමුත්, ඔබට යාවත්කාලීන සඳහා හස්තීයව පරීක්‍ෂා කළ හැක.</translation>
 <translation id="3978325380690188371">ChromeVox සක්‍රීයව ඇති විට ඇලෙන යතුරු ලද නොහැක</translation>
 <translation id="3978732922947854545">Chrome PDF වඩා හොඳ කරයි</translation>
@@ -5732,6 +5727,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="496742804571665842">eSIM පැතිකඩ අබල කරන්න</translation>
 <translation id="4967571733817147990">මූසික බොත්තම් අභිරුචිකරණය කරන්න</translation>
 <translation id="4967852842111017386"><ph name="FEATURE_NAME" /> උපාංග නාමය</translation>
+<translation id="4968994772848295474">ආගන්තුක ප්‍රකාරයේ දී වෙබ් යෙදුම් ස්ථාපනයන් සහාය නොදක්වයි</translation>
 <translation id="4971412780836297815">අවසන් විට විවෘත කරන්න</translation>
 <translation id="4972129977812092092">මුද්‍රකය සංස්කරණය</translation>
 <translation id="4972164225939028131">වැරදි මුරපදයකි</translation>
@@ -6610,6 +6606,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="560834977503641186">Wi-Fi සමමුහුර්තකරණය, තව දැන ගන්න</translation>
 <translation id="5608580678041221894">කප්පාදු ප්‍රදේශය සීරුමාරු කිරීමට හෝ ගෙන යාමට පහත යතුරු තට්ටු කරන්න</translation>
 <translation id="5609231933459083978">මෙම යෙදුම වලංගු නොවන ලෙසක් පෙනේ.</translation>
+<translation id="5610759359710387751">Chrome ඔබේ කර ගන්න</translation>
 <translation id="5610867721023328944">නැවත උත්සාහ කරන්න නැතහොත් පහත පවතින තේමා වලින් එකකින් තෝරන්න.</translation>
 <translation id="5611398002774823980">ගිණුමේ සුරකින්න</translation>
 <translation id="5611399285717843500">Chrome සහ ChromeOS විශේෂාංග සහ කාර්ය සාධනය වැඩි දියුණු කිරීමට උදවු කරන්න. මෙම දත්ත රැස් කිරීමේ දී පුද්ගලික තොරතුරු ඉවත් කරනු ලැබේ.</translation>
@@ -7512,6 +7509,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6257602895346497974">සමමුහුව ක්‍රියාත්මක කරන්න...</translation>
 <translation id="625827534921607067">කලින් සම්බන්ධ වූ හෝ වින්‍යාස කළ ජාල එකකට වඩා තිබේ නම් මෙම ජාලය වඩාත් කැමති වනු ඇත</translation>
 <translation id="6259776178973198997">WiFi Direct හිමිකරුවන්ගේ තතු නැවුම් කරන්න</translation>
+<translation id="6261688934280090835">ChromeOS Kiosk යෙදුම් ලොග</translation>
 <translation id="6262371516389954471">ඔබේ උපස්ථ Google වෙත උඩුගත කෙරෙන අතර ඔබේ Google ගිණුමේ මුරපදය භාවිත කර සංකේතන කෙරේ.</translation>
 <translation id="6263082573641595914">Microsoft CA සංස්කරණය</translation>
 <translation id="6263284346895336537">බරපතල නැත</translation>
@@ -10505,6 +10503,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8340547030807793004"><ph name="DEVICE" /> සඳහා තවත් ක්‍රියා</translation>
 <translation id="8341804784147620576">සෙවීම් කෙටිමං පෙන්වන්න</translation>
 <translation id="8342221978608739536">උත්සාහ නොකරන ලදී</translation>
+<translation id="8342387517402567689">අප්‍රසිද්ධ ප්‍රකාරයේ දී වෙබ් යෙදුම් ස්ථාපනයන් සහය නොදක්වයි</translation>
 <translation id="8342861492835240085">එකතුවක් තෝරන්න</translation>
 <translation id="8345848587667658367">ඔබට දැන් ඔබගේ දුරකථනයේ මෑත ඡායාරූප, මාධ්‍ය, දැනුම්දීම් සහ යෙදුම් බැලිය හැකිය</translation>
 <translation id="8347227221149377169">මුද්‍රණ වැඩ</translation>
@@ -10828,7 +10827,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8573111744706778015">"ươ" ලබා ගැනීමට "uo7" ටයිප් කරන්න</translation>
 <translation id="8574990355410201600">සැමවිටම <ph name="HOST" /> මත ශබ්දයට ඉඩ දෙන්න</translation>
 <translation id="8575286410928791436">ඉවත් වීමට <ph name="KEY_EQUIVALENT" /> අල්ලාගෙන සිටින්න</translation>
-<translation id="8576359558126669548">අප්‍රසිද්ධ ප්‍රකාරයේ දී තුන්වන පාර්ශ්ව කුකී අවහිර කිරීම පිළිබඳ වැඩිදුර</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{කියවීම් ලැයිස්තුවට ටැබය එක් කරන්න}one{කියවීම් ලැයිස්තුවට ටැබ එක් කරන්න}other{කියවීම් ලැයිස්තුවට ටැබ එක් කරන්න}}</translation>
 <translation id="8577052309681449949">ස්වයංක්‍රීය ක්ලික් කිරීම්, කර්සරයේ ප්‍රමාණය, කර්සරයේ වර්ණය, සහ තවත් දේ</translation>
 <translation id="8578639784464423491">අකුරු 99 ඉක්මවිය නොහැක</translation>
@@ -11144,7 +11142,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8777628254805677039">මූල මුරපදය</translation>
 <translation id="8779720597365936419">ඔව්, මගේ දත්ත කාර්යාලයෙන් වෙන්ව තබා ගන්න (නිර්දේශිතයි)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">ඔවුන්ගේම අඩවියේ ඔබගේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම බැලීමට අඩවිවලට කුකි භාවිත කිරීමට පමණක් හැකිය.</translation>
 <translation id="8780123805589053431">Google වෙතින් රූප විස්තර ලබා ගන්න</translation>
 <translation id="8780443667474968681">හඬ සෙවීම ක්‍රියා විරහිත කර ඇත.</translation>
 <translation id="8781834595282316166">කණ්ඩායම තුළ නව පටිත්ත</translation>

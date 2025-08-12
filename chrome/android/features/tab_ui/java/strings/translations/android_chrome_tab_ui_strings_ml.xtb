@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> വർഷം മുമ്പ് സൃഷ്ടിച്ചത്}other{<ph name="NUM_YEARS_MANY" /> വർഷം മുമ്പ് സൃഷ്ടിച്ചത്}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{നിഷ്‌ക്രിയമായ ടാബുകളും ഗ്രൂപ്പുകളും ഒരു മാസത്തിന് ശേഷം അടയ്ക്കും}other{നിഷ്‌ക്രിയമായ ടാബുകളും ഗ്രൂപ്പുകളും <ph name="MONTH_COUNT_MANY" /> മാസത്തിന് ശേഷം അടയ്ക്കും}}</translation>
 <translation id="1173894706177603556">പേരുമാറ്റുക</translation>
-<translation id="1197088940767939838">ഓറഞ്ച്</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" /> ടാബുള്ള <ph name="TITLE_OF_GROUP" /> എന്ന ഗ്രൂപ്പ് തുറക്കുക}other{<ph name="TAB_COUNT2" /> ടാബുകളുള്ള <ph name="TITLE_OF_GROUP" /> എന്ന ഗ്രൂപ്പ് തുറക്കുക}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ടാബ് ഗ്രൂപ്പ് ഓപ്ഷനുകൾ</translation>
 <translation id="1300188005269437765">ടാബുകളും ടാബ് ഗ്രൂപ്പുകളും എപ്പോൾ സ്വയമേവ നിഷ്‌ക്രിയ വിഭാഗത്തിലേക്ക് നീക്കണമെന്ന് തിരഞ്ഞെടുക്കുക.</translation>
@@ -20,8 +19,6 @@
 <translation id="1499635324672558517">എല്ലാ അദൃശ്യ ടാബുകളും അടയ്‌ക്കണോ?</translation>
 <translation id="1501480321619201731">ഗ്രൂപ്പ് ഇല്ലാതാക്കൂ</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{നിഷ്ക്രിയമായ <ph name="TABS_COUNT_ONE" /> ഇനം}other{നിഷ്ക്രിയമായ <ph name="TABS_COUNT_MANY" /> ഇനങ്ങൾ}}</translation>
-<translation id="1555130319947370107">നീല</translation>
-<translation id="161042844686301425">സിയാൻ</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ടാബുകൾ ഗ്രൂപ്പ് ചെയ്‌തു</translation>
 <translation id="1657719826150349398">ടാബ് താഴേക്ക് നീക്കുക</translation>
 <translation id="1697284962337958118">ഇതിലേക്ക് ചേര്‍‌ക്കുക</translation>
@@ -88,7 +85,6 @@
 <translation id="4076226664360336092">ടാബ് ഗ്രൂപ്പ് ലിസ്‌റ്റ് മുഴുവൻ ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ടാബുകൾ സമാനമാണെന്ന് തോന്നുന്നു. അവ ഗ്രൂപ്പ് ചെയ്യണോ?</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TABS_COUNT_ONE" /> ടാബ് ഉൾപ്പെടുത്തി <ph name="TITLE_OF_GROUP" /> എന്ന ടാബ് ഗ്രൂപ്പ് അടയ്ക്കുക.}other{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TABS_COUNT_MANY" /> ടാബുകൾ ഉൾപ്പെടുത്തി <ph name="TITLE_OF_GROUP" /> എന്ന ടാബ് ഗ്രൂപ്പ് അടയ്ക്കുക.}}</translation>
-<translation id="4159784952369912983">പര്‍പ്പിള്‍</translation>
 <translation id="4203448675570432781">ടാബുകൾ സ്വയമേവ ഇല്ലാതാക്കലിൽ വരുത്തുന്ന മാറ്റങ്ങൾ അടച്ചത് സംബന്ധിച്ച അറിയിപ്പ്.</translation>
 <translation id="427987768447457592">പുതിയ ടാബ് ഗ്രൂപ്പ്</translation>
 <translation id="4371591986692297148">നിഷ്‌ക്രിയം</translation>
@@ -117,7 +113,6 @@
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{<ph name="AUTO_DELETE_DELAY_ONE" /> മാസത്തിന് ശേഷം, നിഷ്‌ക്രിയ ടാബുകളും ടാബ് ഗ്രൂപ്പുകളും Chrome സ്വയമേവ അടയ്‌ക്കുന്നു. ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഇത് മാറ്റാനാകും.}other{<ph name="AUTO_DELETE_DELAY_MANY" /> മാസത്തിന് ശേഷം, നിഷ്‌ക്രിയ ടാബുകളും ടാബ് ഗ്രൂപ്പുകളും Chrome സ്വയമേവ അടയ്‌ക്കുന്നു. ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഇത് മാറ്റാനാകും.}}</translation>
 <translation id="5339733443032484186">നിങ്ങളുടെ അവസാന ടാബ്</translation>
 <translation id="5380159289133845234">ഡ്യൂപ്ലിക്കേറ്റ് ടാബുകൾ ആർക്കൈവ് ചെയ്യുക</translation>
-<translation id="5400836586163650660">ചാരനിറം</translation>
 <translation id="5446043142172831860">ടാബ് നീക്കം ചെയ്ത് ഗ്രൂപ്പ് വിടുക</translation>
 <translation id="5490235265819901748">ടാബ് ഗ്രൂപ്പ് വികസിപ്പിച്ചു</translation>
 <translation id="5494920125229734069">എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
@@ -128,9 +123,7 @@
 <translation id="5746204836956568669">അതിവേഗം വർക്ക് ചെയ്യാൻ <ph name="NUMBER_OF_TABS" /> ടാബുകൾ ഗ്രൂപ്പ് ചെയ്യണോ?</translation>
 <translation id="5773295109010386583">നിഷ്‌ക്രിയമായ ഇനങ്ങൾ സ്വയമേവ അടയ്ക്കുക</translation>
 <translation id="58326064309361797">ടാബുകൾ ഗ്രൂപ്പ് ചെയ്യാൻ അവ വലിച്ചിടുക</translation>
-<translation id="5901630391730855834">മഞ്ഞ</translation>
 <translation id="5972844218283131174">തിരഞ്ഞെടുത്തത് എല്ലാം മാറ്റുക</translation>
-<translation id="6017514345406065928">പച്ച</translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
 <translation id="6051432659151380973">നിങ്ങളുടെ ടാബ് ഗ്രൂപ്പുകൾ സ്വയമേവ സംരക്ഷിക്കും</translation>
 <translation id="6054741997831917303">ഈ ഇനത്തിന്റെ വില അടുത്തിടെ <ph name="PREVIOUS_PRICE" /> എന്നതിൽ നിന്ന് <ph name="NEW_PRICE" /> ആയി കുറഞ്ഞു</translation>
@@ -188,7 +181,6 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> റേറ്റിംഗ്, <ph name="REVIEWS_COUNT_ONE" /> റിവ്യൂ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> റേറ്റിംഗ്, <ph name="REVIEWS_COUNT_MANY" /> റിവ്യൂകൾ}}</translation>
 <translation id="7885132941432959125">ടാബ് വലത്തേക്ക് നീക്കുക</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> തിരഞ്ഞെടുത്തില്ല</translation>
-<translation id="7942349550061667556">ചുവപ്പ്</translation>
 <translation id="7961015016161918242">ഒരിക്കലും</translation>
 <translation id="7966321538264951561">നിർദ്ദേശങ്ങൾ ഡിസ്‌മിസ് ചെയ്യുക.</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{ടാബ് പുതിയ വിൻഡോയിലേക്ക് നീക്കുക}other{ടാബ് മറ്റൊരു വിൻഡോയിലേക്ക് നീക്കുക}}</translation>
@@ -224,6 +216,5 @@
 <translation id="9187834032751045001">ടാബുകൾ സ്വയമേവ ഇല്ലാതാക്കൽ പകുതി ഉയരത്തിൽ തുറന്നത് സംബന്ധിച്ച അറിയിപ്പ്.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TABS_COUNT_ONE" /> ടാബ് ഉൾപ്പെടുത്തി ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.}other{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TABS_COUNT_MANY" /> ടാബുകൾ ഉൾപ്പെടുത്തി ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.}}</translation>
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
-<translation id="992256792861109788">പിങ്ക്</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{നിഷ്ക്രിയമായ ഒരു ഇനം അടയ്‌ക്കണോ?}other{നിഷ്ക്രിയമായ <ph name="TAB_COUNT_MANY" /> ഇനങ്ങൾ അടയ്‌ക്കണോ?}}</translation>
 </translationbundle>

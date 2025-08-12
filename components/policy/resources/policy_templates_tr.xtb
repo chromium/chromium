@@ -12070,14 +12070,5 @@ Politika, Devre Dışı değerine ayarlanırsa kayıtlı cihazlar kullanıcı li
 <translation id="989197274317162189">Bu politikanın desteği sonlandırıldığı için lütfen bunun yerine "<ph name="URL_BLOCKLIST_POLICY_NAME" />" politikasını kullanın.</translation>
 <translation id="990830704772547092"><ph name="PRODUCT_OS_NAME" /> cihazlardaki Bruschetta sanal makineleri için yükleyiciyi yapılandır</translation>
 <translation id="991560005425213776">Kullanıcı adını ve dosya adını yerel yazıcılara gönderme</translation>
-<translation id="99232017131102456">Bu politika, HTTP sunucusu kimlik doğrulama bilgileri ile tek bir genel profil başına önbellek yapılandırır.
-
-      Bu politika ayarlanmazsa veya devre dışı bırakılırsa tarayıcı, siteler arası varsayılan kimlik doğrulama ayarını kullanır. Bu ayar, sürüm 80 itibarıyla HTTP sunucu kimlik doğrulama bilgilerini üst düzey siteye göre değerlendirir. Onun için iki site aynı kimlik doğrulama alanından kaynak kullanırsa kimlik bilgilerinin iki sitenin de kendi bağlamında ayrı ayrı sağlanması gerekir. Önbelleğe alınan proxy kimlik bilgileri siteler arasında yeniden kullanılır.
-
-      Politika etkinleştirilirse bir site bağlamında girilen HTTP kimlik doğrulama bilgileri otomatik olarak diğer site bağlamında da kullanılır.
-
-      Bu politikanın etkinleştirilmesi, siteleri bazı siteler arası saldırılara açık bırakır ve kullanıcıların, URL'lere gömülü kimlik bilgilerini kullanıp HTTP kimlik doğrulama önbelleğine girişler ekleyerek, çerezler bile olmadan siteler arasında takip edilmesine olanak tanır.
-
-      Bu politikanın amacı eski ayarlarına bağlı olarak işletmelere giriş prosedürlerini güncelleme fırsatı vermektir ve ileride kaldırılacaktır.</translation>
 <translation id="999340611001666174">Renk düzeltmeyi devre dışı bırak</translation>
 </translationbundle>

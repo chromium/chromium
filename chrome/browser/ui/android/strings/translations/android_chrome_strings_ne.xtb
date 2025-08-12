@@ -1091,6 +1091,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> सामेल हुनुभएको ट्याब समूहमा सामेल हुनुहोस्</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />थप विवरणहरू<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">वस्तुलाई हटाइयो</translation>
+<translation id="6127860394906721547">निम्न साइटहरू भएको <ph name="COLOR_NAME" /> रङको <ph name="TITLE_OF_GROUP" /> नामक ट्याब समूह खोल्नुहोस्: <ph name="URL_LIST" /></translation>
 <translation id="6130303040046284160">ट्याब मिनिमाइज गर्नुहोस्</translation>
 <translation id="6134168885321518274">फाइन्ड बार खोल्नुहोस्</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> वटा ट्याब}other{<ph name="TAB_COUNT_MANY" /> वटा ट्याब}}</translation>

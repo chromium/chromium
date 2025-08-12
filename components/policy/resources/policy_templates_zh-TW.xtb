@@ -11602,14 +11602,5 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
 <translation id="989197274317162189">這項政策已淘汰，因此系統不再支援，請改用「<ph name="URL_BLOCKLIST_POLICY_NAME" />」政策。</translation>
 <translation id="990830704772547092">在 <ph name="PRODUCT_OS_NAME" /> 裝置上設定 Bruschetta VM 的安裝程式</translation>
 <translation id="991560005425213776">將使用者名稱和檔案名稱傳送到原生印表機</translation>
-<translation id="99232017131102456">這項政策會針對 HTTP 伺服器驗證憑證設定適用於個別設定檔的單一全域快取。
-
-      如果不設定這項政策或已停用它，瀏覽器就會使用預設的跨網站驗證行為；自第 80 版起，系統會依頂層網站限定 HTTP 伺服器驗證憑證適用範圍，也就是說，如果有兩個網站使用了來自相同驗證網域的資源，則兩個網站都需要在內容中提供憑證。系統將跨網站重複使用快取的 Proxy 憑證。
-
-      如果啟用這項政策，則使用者在一個網站的內容中所輸入的 HTTP 驗證憑證，將會自動用於另一個網站的內容。
-
-      啟用這項政策可能會讓網站遭受某些類型的跨網站攻擊；不肖人士只要透過網址的內嵌憑證，就能在 HTTP 驗證快取中新增項目來追蹤使用者，而不必透過 Cookie 進行追蹤。
-
-      這項政策旨在讓採用舊版行為的企業有機會更新登入程序；我們將於日後移除這項政策。</translation>
 <translation id="999340611001666174">停用色彩校正</translation>
 </translationbundle>

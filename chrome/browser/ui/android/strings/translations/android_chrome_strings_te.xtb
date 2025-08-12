@@ -1092,6 +1092,7 @@
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" />‌తో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />మరిన్ని వివరాలు<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">అంశాన్ని తీసివేశారు</translation>
+<translation id="6127860394906721547"><ph name="URL_LIST" /> సైట్లు ఉండే, <ph name="COLOR_NAME" /> రంగులో ఉండే <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను తెరవండి.</translation>
 <translation id="6130303040046284160">ట్యాబ్‌ను కుదించండి</translation>
 <translation id="6134168885321518274">కనుగొనే బార్‌ను తెరవండి</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ట్యాబ్}other{<ph name="TAB_COUNT_MANY" /> ట్యాబ్‌లు}}</translation>

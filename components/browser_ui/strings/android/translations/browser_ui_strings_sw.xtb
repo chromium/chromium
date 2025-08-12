@@ -120,7 +120,9 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="2379925928934107488">Tumia mandhari meusi kwenye tovuti wakati Chrome inatumia mandhari meusi, panapowezekana</translation>
 <translation id="2390272837142897736">Ongeza ukuzaji</translation>
 <translation id="2402980924095424747">MB <ph name="MEGABYTES" /></translation>
+<translation id="2403474027143565107">Mahususi</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Umeruhusu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na nyingine<ph name="NUM_MORE" />}other{Umeruhusu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na nyingine<ph name="NUM_MORE" />}}</translation>
+<translation id="2404857459073803936">Ufikiaji wa maelezo ya mahali kwenye tovuti hii</translation>
 <translation id="2410940059315936967">Tovuti unayoitembelea inaweza kupachika maudhui kutoka kwenye tovuti zingine, kwa mfano, picha, matangazo na maandishi. Vidakuzi vinavyowekwa na tovuti hizi zingine vinaitwa vidakuzi vya washirika wengine.</translation>
 <translation id="2411116727035790889">Washa njia za mkato</translation>
 <translation id="2433507940547922241">Sura</translation>
@@ -276,6 +278,7 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="3992684624889376114">Kuhusu ukurasa huu</translation>
 <translation id="4002066346123236978">Kichwa</translation>
 <translation id="4031179711345676612">Maikrofoni imeruhusiwa</translation>
+<translation id="4042597221652780603">Palipokadiriwa</translation>
 <translation id="4046123991198612571">Wimbo unaofuata</translation>
 <translation id="4077310749977440510">Kwa kawaida tovuti husoma ubao wako wa kunakili ili kupata vipengele kama vile kudumisha muundo wa maandishi uliyonakili</translation>
 <translation id="4082080074595021446">Hali za kutofuata kanuni za tovuti mahususi haziruhusiwi kwa sababu kifaa cha Android hakina RAM ya kutosha.</translation>

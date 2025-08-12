@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">En fermant tous les onglets, vous fermez aussi les onglets épinglés.</translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1041322626941363065">Recevoir une alerte si des mots de passe sont compromis lors d'une violation des données</translation>
-<translation id="1044891598689252897">Les sites fonctionneront normalement</translation>
 <translation id="104491362976654916">Page hors connexion</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="1053651653201045802">Déconnecté. Reconnectez-vous pour utiliser les favoris, mots de passe et plus dans votre compte.</translation>
@@ -135,7 +134,6 @@
 <translation id="1506063256525392513">Cela vous permet de prendre et d'importer des photos, et de scanner des codes QR</translation>
 <translation id="1508263560970797965">Continuer en navigation privée</translation>
 <translation id="1509486075633541495">Connectez-vous au site Web</translation>
-<translation id="1509960214886564027">Des fonctionnalités sur de nombreux sites risquent de ne pas fonctionner</translation>
 <translation id="1513858653616922153">Supprimer le mot de passe</translation>
 <translation id="1517166097004694782">Masquer "Continuer avec cet onglet"</translation>
 <translation id="1520027731907768768">Recevez des alertes en cas de baisse de prix des produits que vous suivez.</translation>
@@ -368,9 +366,6 @@
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2360196772093551345">Voir le site mobile</translation>
 <translation id="2362083820973145409">Connecté en tant que <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ouvre les paramètres.</translation>
-<translation id="236977714248711277">Les sites ne peuvent pas utiliser de cookies pour améliorer votre expérience de navigation (par exemple, pour maintenir votre connexion ou mémoriser les articles de votre panier).
-
-Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces).</translation>
 <translation id="2377230674627603057">Grille des groupes d'onglets</translation>
 <translation id="2377336083033403521">Rechercher dans les onglets…</translation>
 <translation id="2381405137052800939">Paramètres de base</translation>
@@ -446,7 +441,6 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
 <translation id="2671423594960767771">Partager le groupe</translation>
 <translation id="2673508731173059946">Consulter le lien copié</translation>
-<translation id="2687403674020088961">Bloquer tous les cookies (non recommandé)</translation>
 <translation id="2688535388040882469">Bannières</translation>
 <translation id="2690858294534178585">Caméra en cours d'utilisation</translation>
 <translation id="2691653761409724435">Indisponible hors connexion</translation>
@@ -661,7 +655,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3587885837929752825">Votre organisation limite les éléments pouvant être enregistrés dans votre compte Google.</translation>
 <translation id="3588820906588687999">Ouvrir l'image dans un nouvel onglet</translation>
 <translation id="3595252146048399851">Vous pouvez toujours choisir quels éléments synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
-<translation id="3596414637720633074">Bloquer les cookies tiers en mode navigation privée</translation>
 <translation id="3602260545951981695">Sélectionnez "Protection renforcée"</translation>
 <translation id="3610041351087301930">Masquer le lecteur</translation>
 <translation id="3622175633937495219">Rechercher dans l'historique (nombre de résultats : <ph name="COUNT" />)</translation>
@@ -1063,7 +1056,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5177141896043341906">Vous avez <ph name="NUMBER_OF_PASSWORDS" /> mots de passe peu sécurisés pouvant menacer votre sécurité.</translation>
 <translation id="5181140330217080051">Téléchargement</translation>
 <translation id="5186185447130319458">Privé</translation>
-<translation id="5188482106078495165">Votre paramètre de cookies s'applique à tous les onglets. Pour en appliquer un nouveau à un onglet ouvert, rechargez l'onglet.</translation>
 <translation id="518997337573684769">Envoi le rapport d'erreur…</translation>
 <translation id="519530786644929958">Échec du téléchargement. Nouvelle tentative impossible.</translation>
 <translation id="5197255632782567636">Internet</translation>
@@ -1088,7 +1080,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5271265092610673171">{count,plural, =1{Renseignez le champ obligatoire avant d'enregistrer.}one{Renseignez le champ obligatoire avant d'enregistrer.}other{Renseignez les champs obligatoires avant d'enregistrer.}}</translation>
 <translation id="5271549068863921519">Enregistrer le mot de passe</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vous invite à rejoindre un groupe d'onglets. Toutes les personnes disposant du lien peuvent modifier tous les onglets. Faites donc preuve de prudence en rejoignant le groupe. Le lien expire dans 48 heures.</translation>
-<translation id="5279600392753459966">Tout bloquer</translation>
 <translation id="5282340693022193851">Pour recevoir des notifications de suivi des prix, activez les notifications dans les réglages iOS.</translation>
 <translation id="528857768909044842">Les groupes d'onglets sont enregistrés ici</translation>
 <translation id="5294624619177114121">Notifications mobiles</translation>
@@ -1187,7 +1178,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5648166631817621825">7 derniers jours</translation>
 <translation id="5652623411397330904">Les produits que vous suivez s'afficheront ici.</translation>
 <translation id="5656431592348714536">Agenda amélioré</translation>
-<translation id="5657156137487675418">Autoriser tous les cookies</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5665739277590037307">Les <ph name="GOOGLE_TERMS" /> et l‘<ph name="GEMINI_APPS_PRIVACY" /> s'appliquent. Vérifiez les réponses de Gemini, car il peut se tromper.</translation>
 <translation id="5666313630530585305">Connectez-vous à un site Web.</translation>
@@ -1204,7 +1194,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5704908597376970822">Impossible de se connecter.</translation>
 <translation id="5709005673595820640">{count,plural, =1{Vous avez {count} mot de passe réutilisé pouvant compromettre votre sécurité. Modifiez-le maintenant pour vous protéger.}one{Vous avez {count} mot de passe réutilisé pouvant compromettre votre sécurité. Modifiez-le maintenant pour vous protéger.}other{Vous avez {count} mots de passe réutilisés pouvant compromettre votre sécurité. Modifiez-les maintenant pour vous protéger.}}</translation>
 <translation id="57094364128775171">Suggérer un mot de passe sécurisé…</translation>
-<translation id="5716230673298034837">Tout autoriser</translation>
 <translation id="5718049162805123412">Vous devriez les modifier immédiatement</translation>
 <translation id="572328651809341494">Onglets récents</translation>
 <translation id="5724941645893276623">Pour naviguer sur le Web en mode privé, ajoutez un onglet</translation>
@@ -1263,7 +1252,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5936065461722368675">Traduire toute la page</translation>
 <translation id="5937560539988385583">Page traduite</translation>
 <translation id="5938160824633642847">Votre appareil est presque saturé. Libérez de l'espace et réessayez.</translation>
-<translation id="594324569139756587">Bloquer les cookies tiers</translation>
 <translation id="5944869793365969636">Scanner le QR code</translation>
 <translation id="5948291296578561264">Cela vous permet d'enregistrer des photos dans votre bibliothèque.</translation>
 <translation id="5948605885471592910">Voir et gérer tout ce qui est ouvert</translation>
@@ -1336,7 +1324,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6192388920090306326">Voyage à Tokyo</translation>
 <translation id="6193448654517602979">Sélectionner des onglets</translation>
 <translation id="6196207969502475924">Recherche vocale</translation>
-<translation id="6196640612572343990">Bloquer les cookies tiers</translation>
 <translation id="6198252989419008588">Modifier le code</translation>
 <translation id="6210079381482819663">Les onglets inutilisés pendant au moins <ph name="THRESHOLD" /> jours sont déplacés ici. Vous pouvez modifier cette option à tout moment dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Aucune adresse trouvée</translation>
@@ -1412,14 +1399,10 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6444435711855078002">Plus d'options</translation>
 <translation id="6445051938772793705">Pays</translation>
 <translation id="6445981559479772097">Message envoyé.</translation>
-<translation id="6447842834002726250">Cookies</translation>
 <translation id="6449554712554071184">Le groupe sera définitivement supprimé de votre appareil.</translation>
 <translation id="6452534462676960500">Nouvelle activité</translation>
 <translation id="6459411599807878608">Informations masquées</translation>
 <translation id="646394917185284261">Fichiers</translation>
-<translation id="6464397691496239022">Les sites peuvent utiliser des cookies pour améliorer votre expérience de navigation (par exemple, pour maintenir votre connexion ou mémoriser les articles de votre panier).
-
-En revanche, ils ne peuvent pas en utiliser pour voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces).</translation>
 <translation id="6476253015009698798">Le suivi des prix n'est pas disponible pour cette page.</translation>
 <translation id="6476284679642588870">Gérer les modes de paiement</translation>
 <translation id="6476800141292307438">Traduction de la page en <ph name="LANGUAGE" />. Options disponibles au bas de l'écran.</translation>
@@ -1462,7 +1445,6 @@ En revanche, ils ne peuvent pas en utiliser pour voir votre activité de navigat
 <translation id="6612912757320004438">Autoriser les notifications des onglets…</translation>
 <translation id="6617761071025228250">Effacer le texte</translation>
 <translation id="6620279676667515405">Annuler</translation>
-<translation id="6624219055418309072">Bloquer en mode navigation privée</translation>
 <translation id="6625830436658400045">Vos paramètres de synchronisation seront restaurés en fonction de votre dernière sauvegarde. Vous pouvez toujours choisir quels éléments synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Modifier le dossier</translation>
 <translation id="6629759408545977279">Source : <ph name="ORIGINATING_HOST" /></translation>
@@ -1479,9 +1461,6 @@ En revanche, ils ne peuvent pas en utiliser pour voir votre activité de navigat
 <translation id="6663529247339810546">Imposs. enreg. image</translation>
 <translation id="6668619169535738264">Modifier le favori</translation>
 <translation id="6671294218820966278">Marquer comme lu</translation>
-<translation id="6672241253012342409">Les sites peuvent utiliser des cookies pour améliorer votre expérience de navigation (par exemple, pour maintenir votre connexion ou mémoriser les articles de votre panier).
-
-Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies pour voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces).</translation>
 <translation id="6672697278890207089">Saisir votre phrase secrète</translation>
 <translation id="6674917187596384849">Vous pouvez facilement passer d'un compte à l'autre</translation>
 <translation id="6676349090816247042">Options de connexion.</translation>
@@ -1517,6 +1496,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="6794476726485507147">Sélectionnez quand vous envoyer un rappel vous invitant à revenir sur cette page</translation>
 <translation id="6795481620482106033">Données incorrectes</translation>
 <translation id="6797543908718012274">Activer le mode Lecture</translation>
+<translation id="6806550742467879742">Outils de page</translation>
 <translation id="6807287147325542056">Mots de passe dans d'autres applis</translation>
 <translation id="681368974849482173">Élément créé</translation>
 <translation id="6825078212112407882">{count,plural, =1{Favori enregistré dans votre compte Google {email}}one{{count} favori enregistré dans votre compte Google {email}}other{{count} favoris enregistrés dans votre compte Google {email}}}</translation>
@@ -1670,6 +1650,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7454057999980797137">État/Comté</translation>
 <translation id="7458706065921255639">Personnalisation et association</translation>
 <translation id="745899714366929493">Toute la journée</translation>
+<translation id="7460314822154045102">Utiliser la caméra</translation>
 <translation id="7460698861522306757">Demander le site mobile</translation>
 <translation id="7464143666517313304">Cela supprime les adresses enregistrées sur cet appareil.</translation>
 <translation id="7468373585447318060">Tenez-vous informé des baisses de prix de tous les produits que vous suivez.</translation>
@@ -1802,9 +1783,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7952670906562503188">Vous êtes sur le point de supprimer {passkey_count} clés d'accès et la liste des sites et applis pour lesquels vous avez choisi de ne jamais enregistrer d'informations de connexion. Les comptes que vous avez créés pour des sites et des applis ne seront pas supprimés.</translation>
 <translation id="7958575506592576831">Informations sur la sécurité de cette page</translation>
 <translation id="7961015016161918242">Jamais</translation>
-<translation id="7966516440812255683">Les sites peuvent utiliser des cookies pour améliorer votre expérience de navigation (par exemple, pour maintenir votre connexion ou mémoriser les articles de votre panier).
-
-Ils peuvent également s'en servir pour voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces).</translation>
 <translation id="7971136598759319605">Actif il y a 1 jour</translation>
 <translation id="7975036700432177008">OK</translation>
 <translation id="797588153137233716">Menu → Historique → Supprimer les données de navigation</translation>
@@ -1815,7 +1793,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="7987685713885608670">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le Gestionnaire de mots de passe de Google.</translation>
 <translation id="798991908416757345">Les groupes d'onglets ne sont pas disponibles</translation>
 <translation id="7993170188789685695">Appuyer deux fois pour fermer cette notification.</translation>
-<translation id="7993619969781047893">Des fonctionnalités sur certains sites risquent de ne pas fonctionner</translation>
 <translation id="7996239959906074962">Configurer…</translation>
 <translation id="8001561107130904792">Partage du contenu de la page</translation>
 <translation id="800361585186029508">Ouvre les URL saisies dans Google Chrome.</translation>

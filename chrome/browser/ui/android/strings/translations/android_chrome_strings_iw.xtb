@@ -1092,6 +1092,7 @@
 <translation id="6125202119952209826">הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />פרטים נוספים<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">הפריט הוסר</translation>
+<translation id="6127860394906721547">פתיחה של קבוצת הכרטיסיות "<ph name="TITLE_OF_GROUP" />" בצבע <ph name="COLOR_NAME" /> עם האתרים <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">מזעור הכרטיסייה</translation>
 <translation id="6134168885321518274">פתיחת סרגל החיפוש</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{כרטיסייה אחת (<ph name="TAB_COUNT_ONE" />)}one{‫<ph name="TAB_COUNT_MANY" /> כרטיסיות}two{‫<ph name="TAB_COUNT_MANY" /> כרטיסיות}other{‫<ph name="TAB_COUNT_MANY" /> כרטיסיות}}</translation>

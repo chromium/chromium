@@ -1472,7 +1472,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="200321182559008924">Tabs übersichtlich halten</translation>
 <translation id="2003596238737586336">Aktueller Zeitplan: <ph name="SUNRISE" />–<ph name="SUNSET" />. Diese Einstellung wird von deinem Administrator verwaltet.</translation>
 <translation id="2004413981947727241">Passwörter auf allen Geräten verwenden</translation>
-<translation id="2004697686368036666">Einige Websites funktionieren dann möglicherweise nicht mehr richtig</translation>
 <translation id="2006638907958895361">Link in <ph name="APP" /> öffnen</translation>
 <translation id="2007404777272201486">Problem melden...</translation>
 <translation id="200781997903833896">Wenn du die Funktion „Vorlesen“ verwenden möchtest, musst du Speicherplatz auf deinem Gerät freigeben</translation>
@@ -1953,7 +1952,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2328137272841210255">PIN zurücksetzen</translation>
 <translation id="2328474416100889417">Alle Mitglieder verlieren dann sofort den Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“ und alle Einladungslinks werden deaktiviert</translation>
 <translation id="2328561734797404498">Bitte starte dein Gerät neu, um <ph name="APP_NAME" /> verwenden zu können.</translation>
-<translation id="2328636661627946415">Wenn du im Inkognitomodus bist, können Websites nur Cookies verwenden, um deine Browseraktivitäten auf der eigenen Website einzusehen. Am Ende der Inkognitositzung werden die Cookies gelöscht.</translation>
 <translation id="2329597144923131178">Melde dich an, um deine Lesezeichen, den Verlauf, deine Passwörter und andere Einstellungen auf allen deinen Geräten aufzurufen.</translation>
 <translation id="2330182457402792918">Dateien auswählen, die von dieser Website gelesen werden können</translation>
 <translation id="2332115969598251205">Geräte, die in <ph name="PRIMARY_EMAIL" /> gespeichert sind, können nicht geladen werden. Prüfe die Internetverbindung und versuche es noch einmal.</translation>
@@ -3741,7 +3739,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3593953853060020305">Möchtest du dieser Website erlauben, die Datei „<ph name="FILE_NAME" />“ zu bearbeiten?</translation>
 <translation id="3593965109698325041">Beschränkungen für Zertifikatsnamen</translation>
 <translation id="3596012367874587041">App-Einstellungen</translation>
-<translation id="3596414637720633074">Drittanbieter-Cookies im Inkognitomodus blockieren</translation>
 <translation id="3599221874935822507">Erhöht</translation>
 <translation id="3600051066689725006">Webanfrageinformationen</translation>
 <translation id="3600956933576601730">Wenn du diese Funktionen verwenden möchtest, musst du die Nutzungsbedingungen lesen und akzeptieren</translation>
@@ -4077,7 +4074,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3807747707162121253">Abbre&amp;chen</translation>
 <translation id="3808202562160426447">Inhalte im Hintergrund dimmen</translation>
 <translation id="3808443763115411087">Android-App-Entwicklung in Crostini</translation>
-<translation id="3808617121485025547">Weitere Informationen zum Blockieren von Drittanbieter-Cookies</translation>
 <translation id="38089336910894858">Vor dem Beenden mit ⌘ + Q eine Warnung einblenden</translation>
 <translation id="3809272675881623365">Kaninchen</translation>
 <translation id="3809280248639369696">Alien</translation>
@@ -4337,7 +4333,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3975565978598857337">Fehler bei Verbindungsaufbau mit Server für diesen Bereich</translation>
 <translation id="3976108569178263973">Es sind keine Drucker verfügbar.</translation>
 <translation id="397703832102027365">Aktualisierung wird abgeschlossen...</translation>
-<translation id="3977145907578671392">Einige Websites funktionieren im Inkognitomodus möglicherweise nicht richtig</translation>
 <translation id="3977886311744775419">Bei diesem Netzwerktyp werden keine automatischen Updates heruntergeladen. Du kannst aber manuell nach Updates suchen.</translation>
 <translation id="3978325380690188371">Einfingerbedienung nicht verfügbar, wenn ChromeVox aktiviert ist</translation>
 <translation id="3978732922947854545">Chrome macht PDFs besser</translation>
@@ -5725,6 +5720,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="496742804571665842">eSIM-Profile deaktivieren</translation>
 <translation id="4967571733817147990">Tastaturmaus anpassen</translation>
 <translation id="4967852842111017386">Name des <ph name="FEATURE_NAME" />-Geräts</translation>
+<translation id="4968994772848295474">Die Installation von Web-Apps wird im Gastmodus nicht unterstützt</translation>
 <translation id="4971412780836297815">Nach abgeschlossenem Download öffnen</translation>
 <translation id="4972129977812092092">Druckerinformationen bearbeiten</translation>
 <translation id="4972164225939028131">Falsches Passwort</translation>
@@ -6603,6 +6599,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="560834977503641186">Weitere Informationen zur WLAN-Synchronisation</translation>
 <translation id="5608580678041221894">Tippe auf die folgenden Tasten, um den Overscan-Bereich anzupassen oder zu verschieben</translation>
 <translation id="5609231933459083978">Die Anwendung ist anscheinend ungültig.</translation>
+<translation id="5610759359710387751">Nutzen Sie Chrome</translation>
 <translation id="5610867721023328944">Versuch es noch einmal oder wähle unten eines der verfügbaren Designs aus.</translation>
 <translation id="5611398002774823980">In Konto speichern</translation>
 <translation id="5611399285717843500">Du kannst helfen, die Funktionen und die Leistung von Chrome und ChromeOS zu verbessern. Personenbezogene Daten werden bei der Erhebung dieser Daten entfernt.</translation>
@@ -7501,6 +7498,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6257602895346497974">Synchronisierung aktivieren…</translation>
 <translation id="625827534921607067">Dieses Netzwerk wird bevorzugt, wenn mehr als ein zuvor verbundenes oder konfiguriertes Netzwerk verfügbar ist</translation>
 <translation id="6259776178973198997">Informationen für Wi-Fi Direct-Inhaber aktualisieren</translation>
+<translation id="6261688934280090835">Kiosk-App-Protokolle unter ChromeOS</translation>
 <translation id="6262371516389954471">Deine Sicherungen werden an Google gesendet und mit dem Passwort deines Google-Kontos verschlüsselt.</translation>
 <translation id="6263082573641595914">Microsoft - Version der Zertifizierungsstelle</translation>
 <translation id="6263284346895336537">Nicht kritisch</translation>
@@ -10497,6 +10495,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8340547030807793004">Weitere Aktionen für „<ph name="DEVICE" />“</translation>
 <translation id="8341804784147620576">Suchkürzel anzeigen</translation>
 <translation id="8342221978608739536">Nicht ausprobiert</translation>
+<translation id="8342387517402567689">Die Installation von Web-Apps wird im Inkognitomodus nicht unterstützt</translation>
 <translation id="8342861492835240085">Sammlung auswählen</translation>
 <translation id="8345848587667658367">Du kannst jetzt die neuesten Fotos, Medien, Benachrichtigungen und Apps von deinem Smartphone ansehen</translation>
 <translation id="8347227221149377169">Druckaufträge</translation>
@@ -10820,7 +10819,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8573111744706778015">„uo7“ eingeben, um „ươ“ zu erhalten</translation>
 <translation id="8574990355410201600">Ton auf <ph name="HOST" /> immer zulassen</translation>
 <translation id="8575286410928791436">Zum Beenden <ph name="KEY_EQUIVALENT" /> gedrückt halten</translation>
-<translation id="8576359558126669548">Weitere Informationen zum Blockieren von Drittanbieter-Cookies im Inkognitomodus</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Tab zur Leseliste hinzufügen}other{Tabs zur Leseliste hinzufügen}}</translation>
 <translation id="8577052309681449949">Automatische Klicks, Cursorgröße, Cursorfarbe und weitere Einstellungen</translation>
 <translation id="8578639784464423491">Maximale Länge: 99 Buchstaben</translation>
@@ -11135,7 +11133,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8777628254805677039">Root-Passwort</translation>
 <translation id="8779720597365936419">Ja, meine Daten vom Arbeitsprofil getrennt halten (empfohlen)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Websitebetreiber können Cookies nur verwenden, um deine Browseraktivitäten auf der eigenen Website zu sehen</translation>
 <translation id="8780123805589053431">Bildbeschreibungen von Google verwenden</translation>
 <translation id="8780443667474968681">Die Sprachsuche wurde deaktiviert.</translation>
 <translation id="8781834595282316166">Neuer Tab in Gruppe</translation>

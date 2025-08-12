@@ -238,6 +238,7 @@
 <translation id="1384725838384960382">ደህንነቱ የተጠበቀ የክፍያ የመግቢያ ማስረጃ ማረጋገጫ ሉህ</translation>
 <translation id="1386623374109090026">ማብራሪያዎች</translation>
 <translation id="138810468159004008">ጣቢያውን እየተጎበኘ ሳለ ፍቀድ</translation>
+<translation id="1391145880481608015">ስለዚህ ማስጠንቀቂያ የበለጠ ይወቁ</translation>
 <translation id="139161720020179799">ጠቆር ያለ ግራጫ 1</translation>
 <translation id="1391625539203220400">አይቢአይኤን በዚህ መሣሪያ ላይ ይቀመጥ?</translation>
 <translation id="1392813880755413602">የOpenDocument የዝግጅት አቀራረብ</translation>
@@ -1442,6 +1443,7 @@
 <translation id="340924996148642843">ማነጻጸር አሁን ላይ አይገኝም</translation>
 <translation id="3409896703495473338">የደህንነት ቅንብሮችን ያቀናብሩ</translation>
 <translation id="3411091017011773343">ሰቀላ በ<ph name="HOURS" /> ሰዓት ውስጥ</translation>
+<translation id="3413466783792948876">ይፋዊ አውታረ መረብ እየተጠቀሙ ከሆነ ይህን ጣቢያ በኋላ ላይ ቢጎበኙት የበለጠ ደህንነቱ የተጠበቀ ይሆናል። እንደ የእርስዎ ቤት ወይም የሥራ Wi-Fi ካለ የታመነ አውታረ መረብ ያነሰ ስጋት አለ።</translation>
 <translation id="3414275587143250384">የተሰራጨ እና በደመና የኮምፒዩተር ሥራ</translation>
 <translation id="3414952576877147120">መጠን፦</translation>
 <translation id="341513675006332771">የChrome Dino ጨዋታ አዝራርን ያጫወቱ፣ በChrome ውስጥ የDino አሂድ ጨዋታ ለመጫወት ያግብሩ</translation>
@@ -1685,6 +1687,7 @@
 <translation id="3781428340399460090">ደመቅ ያለ ሮዝ</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">የብሉቱዝ መሣሪያዎች</translation>
+<translation id="3785246317262748285">እርስዎ በተለምዶ ከጣቢያዎች ጋር ደህንነቱ በተጠበቀ መንገድ ይገናኛሉ፣ ነገር ግን Chrome በዚህ ጊዜ ላይ የተመሰጠረ ግንኙነትን መጠቀም አልቻለም። አንድ አጥቂ የአውታረ መረብ ግንኙነትዎን በድብቅ ለመከታተል ወይም ለማስተካከል እየሞከረ ሊሆን ይችላል። <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">ለ«<ph name="SEARCH_QUERY" />» የተሻለ ተዛማጆች</translation>
 <translation id="3789155188480882154">መጠን 16</translation>
 <translation id="3789841737615482174">ጫን  </translation>
@@ -2009,6 +2012,7 @@
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> ተዘምኗል</translation>
 <translation id="4298000214066716287">ኢንቨስት ማድረግ</translation>
 <translation id="42981349822642051">ዘርጋ</translation>
+<translation id="4298148761711700950">ያለ QR ኮድ በቅጽበት ይክፈሉ</translation>
 <translation id="4298925811540301889">ለዚህ ጣቢያ ያሉ ኩኪዎች በመላ የእርስዎ የChromeOS መሣሪያ ላይ ሠምረዋል። የሚያሠምሩትን ነገር ለማስተዳደር ወደ <ph name="SYNC_SETTINGS" /> ይሂዱ።</translation>
 <translation id="4300272766492248925">መተግበሪያ ክፈት</translation>
 <translation id="4300675098767811073">በርካታ ብስ ቀኝ</translation>
@@ -2746,6 +2750,7 @@
 <translation id="5540969246441091044">የፈረስ ስፖርት</translation>
 <translation id="5541086400771735334">የመልዕክት ሳጥን 7</translation>
 <translation id="5541546772353173584">ኢሜይል ያክሉ</translation>
+<translation id="5543452229212526547">የእርስዎ ጽሑፍ እና እርስዎ የሚጽፉበት ገጽ ይዘት እና ዩአርኤል ወደ Google ይላካሉ። የእርስዎ ይዘት ሰው ሠራሽ አስተውሎትን ለማሻሻል በሰው ገምጋሚዎች ጥቅም ላይ አይውልም። ድርጅትዎ በማንኛውም ጊዜ እነዚህን ቅንብሮች ሊለውጥ ይችላል።</translation>
 <translation id="5543564889050342791">መካነ አራዊት፣ የትርዒት የአሳ ገንዳዎች እና ጥበቃዎች</translation>
 <translation id="5543722831081909240">180 ዲግሪ</translation>
 <translation id="5544836308113951378">የሽርሽር ጉዞዎች እና የጀልባ ኪራዮች</translation>
@@ -3059,6 +3064,7 @@
 <translation id="6085149458302186532">መሰየሚያዎች (የተቀለመ)</translation>
 <translation id="6087312102907839798">ተዛማጅ ፍለጋዎች</translation>
 <translation id="6089505343295765444">ከChrome ታሪክዎ የሚሰርዟቸው ትሮች አሁንም በንጽጽር ሠንጠረዦችዎ ላይ ይታያሉ</translation>
+<translation id="6091691259076781835">ለፈጣን ክፍያ ማጠናቀቅ ይህን ካርድ ማረጋገጫ ኮድ በመሣሪያዎ ላይ ያስቀምጡ</translation>
 <translation id="6093599771645355227">ቢጫ 1</translation>
 <translation id="6093795393556121384">የእርስዎ ካርድ ተረጋግጧል</translation>
 <translation id="6094253940069566294">ተሽከርካሪ ያርትዑ</translation>
@@ -3121,6 +3127,8 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184099524311454384">ትሮችን ይፈልጉ</translation>
 <translation id="6184868291074982484">Chrome የሦስተኛ ወገን ኩኪዎችን በራስ-ሰር ይገድባል</translation>
+<translation id="6189351761800074311">የእርስዎ ጽሑፍ እና የገፅ ይዘት ወደ Google ተልኳል፣ ነገር ግን ሰው ሠራሽ አስተውሎትን ለማሻሻል ጥቅም ላይ አይውልም።
+    <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">እንደ Esc ያሉ አንዳንድ ቁልፎችን በቁልፍ ሰሌዳዎ ላይ ይሻሩ</translation>
 <translation id="6194209731893739467">ሁሉንም ክትትል የተደረገባቸው ምርቶችዎን እዚህ ይመልከቱ</translation>
 <translation id="6195371403461054755">ጂዮሎጂ</translation>
@@ -3217,6 +3225,7 @@
 <translation id="6340739886198108203">ሚስጥራዊ ይዘት በሚታይበት ጊዜ የአስተዳዳሪ መመሪያ ቅጽበታዊ ገፅ እይታዎችን ወይም ቅጂዎች መውሰድን አይመክርም፡-</translation>
 <translation id="6341434961864773665">{0,plural, =1{የአስተዳዳሪ መመሪያ ይህን ፋይል ወደ <ph name="DESTINATION_NAME" /> መስቀልን አይመክርም}one{የአስተዳዳሪ መመሪያ ይህን ፋይል ወደ <ph name="DESTINATION_NAME" /> መስቀልን አይመክርም}other{የአስተዳዳሪ መመሪያ እነዚህን ፋይሎች ወደ <ph name="DESTINATION_NAME" /> መስቀልን አይመክርም}}</translation>
 <translation id="6342069812937806050">ልክ አሁን</translation>
+<translation id="6342171901363060580">ይህን ማስጠንቀቂያ እያዩ ያሉት ይህ ጣቢያ ኤችቲቲፒኤስን ስለማይደግፍ እና እርስዎ ማንነት በማያሳውቅ ሁነታ ላይ ስላሉ ነው። <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">አቅጣጫዎች</translation>
 <translation id="6348220984832452017">ንቁ ተለዋዋጮች</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" />ን ይጫኑ</translation>
@@ -3331,6 +3340,7 @@
 <translation id="6502510275417601303">ስለ አዲስ የክፍያ ቅንብር ማንቂያ ተዘግቷል</translation>
 <translation id="6502991525169604759">ያለ የእርስዎ ለውጦች</translation>
 <translation id="6505072878288254563">በመተርጎም ላይ</translation>
+<translation id="6506936645890046535">ኩኪዎችን ለመድረስ መጠየቅ ይችላሉ</translation>
 <translation id="6506959208958864820">ፖስታ</translation>
 <translation id="6507117483253822672">በድር ላይ በማንኛውም ቦታ በበለጠ በራስ መተማመን ይጻፉ</translation>
 <translation id="6508722015517270189">Chromeን ዳግም ያስጀምሩት</translation>
@@ -3482,6 +3492,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">YouTube ከወላጆችዎ ምርጫዎች ጋር ይጠቀሙ</translation>
 <translation id="6779348349813025131">Google የይለፍ ቃል አስተዳዳሪ ለ MacOS Keychain መዳረሻ ይፈልጋል</translation>
+<translation id="6780449997190414928">እርስዎ በተለምዶ ከዚህ ጣቢያ ጋር ደህንነቱ በተጠበቀ መንገድ ይገናኛሉ፣ ነገር ግን Chrome በዚህ ጊዜ የተመሰጠረ ግንኙነትን መጠቀም አልቻለም። አንድ አጥቂ የአውታረ መረብ ግንኙነትዎን በድብቅ ለመከታተል ወይም ለማስተካከል እየሞከረ ሊሆን ይችላል። <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">የእርስዎን የፍለጋ ፕሮግራም በማንኛውም ጊዜ በChrome ቅንብሮች ውስጥ መለወጥ ይችላሉ።</translation>
 <translation id="6786145470008421571">6 x 9 ኢንች ፖስታ</translation>
 <translation id="67862343314499040">ወይን ጠጅ</translation>
@@ -3513,12 +3524,14 @@
 <translation id="6831043979455480757">መተርጎም</translation>
 <translation id="683108308100148227">ንጥል ይደብቁ</translation>
 <translation id="6832753933931306326">ቅጹ ተሞልቷል</translation>
+<translation id="6834757537110528125">ይህ ጣቢያ የተመሰጠረ ግንኙነትን አይደግፍም</translation>
 <translation id="6841864657731852591">ግራቩር ሲሊንደር</translation>
 <translation id="6842196666980060516">184 x 260 ሚሜ</translation>
 <translation id="6844998850832008753">የእጅ ክትትል በዚህ ጊዜ ተፈቅዷል</translation>
 <translation id="6849023911358004088">የደህንነት ቅንብሮች አዝራርን ያስተዳድሩ፣ በChrome ቅንብሮች ውስጥ ደህንነቱ የተጠበቀ አሰሳዎን እና ተጨማሪ ነገሮችን ለማስተዳደር ያግብሩ</translation>
 <translation id="6850286078059909152">የጽሑፍ ቀለም</translation>
 <translation id="6852204201400771460">መተግበሪያ ዳግም ይጫን?</translation>
+<translation id="6854691830678097752">ለፈጣን ክፍያ ማጠናቀቅ ይህን ካርድ ማረጋገጫ ኮድ በመለያዎ፣ <ph name="ACCOUNT_EMAIL" /> ውስጥ ያስቀምጡ</translation>
 <translation id="6857776781123259569">የይለፍ ቃላትን ያቀናብሩ...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">ስዕል-ላይ-ስዕል ውስጥ እንዲገቡ መጠየቅ ይችላሉ</translation>
@@ -3777,6 +3790,7 @@
 <translation id="7257453341537973799">የስራ ፍለጋ መርጃዎች እና ዕቅድ ማውጣት</translation>
 <translation id="725866823122871198">የእርስዎ የኮምፒዩተር ቀን እና ሰዓት (<ph name="DATE_AND_TIME" />) ልክ ስላልሆኑ የግል ግንኙነት ወደ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ሊመሰረት አይችልም።</translation>
 <translation id="7260075294900977274">ሁሉንም የግዢ ገፆችዎን በአንድ ቦታ እንዲያስቀምጡ እና ዋጋዎችን በራስ ሰር እንዲከታተሉ፣ የዋጋ ግንዛቤዎችን እና ሌሎችንም እንዲያገኙ የሚያግዝ አዲስ ዘመናዊ አቃፊ</translation>
+<translation id="7264942008235065057">በGoogle የላቀ ጥበቃ ፕሮግራም ስር ስለሆኑ ይህ ጣቢያ እንደታገደ ይቆያል። <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">አድራሻ የሚገኘው በዚህ መሣሪያ ላይ ብቻ ነው</translation>
 <translation id="7269151392155523061">አቋራጭ በ<ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> ከተገለፀው የፍለጋ ሰብሳቢ ቁልፍ ቃል ጋር ተመሳሳይ መሆን አይችልም፦ <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">እርስዎ የሚያወርዷቸው ፋይሎች ወደ Google ደመና ወይም ሦስተኛ ወገኖች ለትንታኔ ይላካሉ። ለምሳሌ፣ አደጋ ሊያስከትል ለሚችል ውሂብ ወይም ለተንኮል አዘል ዌር ሊቃኙ ይችላሉ እና በኩባንያ መመሪያ መሠረት ሊከማቹ እና ለአስተዳዳሪዎ የሚታዩ ሊሆኑ ይችላሉ።</translation>
@@ -3905,6 +3919,7 @@
 <translation id="7469935732330206581">የቅጽ ደህንነቱ የተጠበቀ አይደለም</translation>
 <translation id="7470854469646445678">የመቅዳት ምክንያት ያቅርቡ (አስፈላጊ)</translation>
 <translation id="7471007961486718967">የማስተላለፍ ምክንያት ያቅርቡ (አስፈላጊ)</translation>
+<translation id="7473033553872550521">እንዲሁም የጣቢያ ባለቤቱን ሊያገኙ እና ወደ ኤችቲቲፒኤስ እንዲያልቁ ሊጠቁሙ ይችላሉ። <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">አይ፣ አመሰግናለሁ</translation>
 <translation id="7481312909269577407">ወደ ፊት</translation>
 <translation id="7481603210197454575">የጣሊያን ፖስታ</translation>
@@ -4431,6 +4446,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">የምናባዊ ካርድ ምዝገባ በሙሉ ቁመት ተከፍቷል</translation>
+<translation id="834805203690963649">እርስዎ ለጣቢያው የሚልኩት ወይም ከጣቢያው የሚቀበሉትን መረጃ ጥቃት አድራሾች ማየት እና መለወጥ ይችላሉ።</translation>
 <translation id="8349305172487531364">የዕልባቶች አሞሌ</translation>
 <translation id="8350416046273606058">አቋራጭ ክፍተቶችን መያዝ አይችልም፦ «<ph name="SHORTCUT_NAME" />»</translation>
 <translation id="8351131234907093545">ማስታወሻን ይፍጠሩ</translation>

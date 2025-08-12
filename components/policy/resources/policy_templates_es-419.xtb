@@ -12379,14 +12379,5 @@ Si habilitas <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" />, se ignora
 <translation id="989197274317162189">Esta política dejó de estar disponible y ya no se admite. En su lugar, usa la política "<ph name="URL_BLOCKLIST_POLICY_NAME" />".</translation>
 <translation id="990830704772547092">Configurar el instalador para las VMs de Bruschetta en dispositivos <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="991560005425213776">Enviar el nombre de usuario y del archivo a las impresoras nativas</translation>
-<translation id="99232017131102456">Esta política configura una única caché global por perfil con credenciales de autenticación del servidor HTTP.
-
-      Si se inhabilita o no se establece esta política, el navegador usará el comportamiento predeterminado de autenticación entre sitios. A partir de la versión 80, este consiste en asignar el alcance de las credenciales de autenticación del servidor HTTP de acuerdo al sitio de nivel más alto. Por lo tanto, si dos sitios usan recursos del mismo dominio de autenticación, se deberán proporcionar credenciales de forma independiente en el contexto de ambos sitios. Se reutilizarán las credenciales de proxy almacenadas en la caché entre los sitios.
-
-      Si se habilita la política, las credenciales de autenticación de HTTP ingresadas en un sitio se usarán automáticamente en otro.
-
-      Si se habilita esta política, los sitios quedan expuestos a ciertos tipos de ataques entre sitios. Además, se pueden rastrear los usuarios entre los sitios sin usar cookies; solo es necesario agregar entradas a la caché de autorización de HTTP con credenciales incorporadas en las URL.
-
-      El objetivo de esta política es brindarles a las empresas que dependen del comportamiento heredado una oportunidad para actualizar sus procedimientos de acceso. En el futuro, se quitará esta política.</translation>
 <translation id="999340611001666174">Inhabilitar la corrección de colores</translation>
 </translationbundle>

@@ -1092,6 +1092,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="6125202119952209826">Jiunge na kikundi cha vichupo kilicho na <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Kipengee kimeondolewa</translation>
+<translation id="6127860394906721547">Fungua kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" />, rangi ya<ph name="COLOR_NAME" /> kilicho na tovuti za <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Punguza kichupo</translation>
 <translation id="6134168885321518274">Fungua Upau wa Kutafutia</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{Kichupo <ph name="TAB_COUNT_ONE" />}other{Vichupo <ph name="TAB_COUNT_MANY" />}}</translation>

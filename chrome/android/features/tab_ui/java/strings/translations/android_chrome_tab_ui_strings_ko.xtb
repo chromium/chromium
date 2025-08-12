@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" />년 전 생성됨}other{<ph name="NUM_YEARS_MANY" />년 전 생성됨}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{비활성 탭 및 그룹은 1개월 후에 닫힙니다.}other{비활성 탭 및 그룹은 <ph name="MONTH_COUNT_MANY" />개월 후에 닫힙니다.}}</translation>
 <translation id="1173894706177603556">이름 바꾸기</translation>
-<translation id="1197088940767939838">주황색</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" />개의 탭이 있는 <ph name="TITLE_OF_GROUP" /> 그룹 열기}other{<ph name="TAB_COUNT2" />개의 탭이 있는 <ph name="TITLE_OF_GROUP" /> 그룹 열기}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> 탭 그룹 옵션</translation>
 <translation id="1300188005269437765">탭 및 탭 그룹이 비활성 섹션으로 자동 이동되는 시점을 선택합니다.</translation>
@@ -20,8 +19,6 @@
 <translation id="1499635324672558517">시크릿 탭을 모두 닫으시겠습니까?</translation>
 <translation id="1501480321619201731">그룹 삭제</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{비활성 항목 <ph name="TABS_COUNT_ONE" />개}other{비활성 항목 <ph name="TABS_COUNT_MANY" />개}}</translation>
-<translation id="1555130319947370107">파란색</translation>
-<translation id="161042844686301425">청록색</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" />개의 탭 그룹화됨</translation>
 <translation id="1657719826150349398">탭을 아래로 이동</translation>
 <translation id="1697284962337958118">추가할 위치</translation>
@@ -88,7 +85,6 @@
 <translation id="4076226664360336092">탭 그룹 목록이 전체 높이로 열림</translation>
 <translation id="4133493477912226187">탭 <ph name="NUMBER_OF_TABS" />개가 서로 관련된 것으로 보입니다. 그룹화할까요?</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />개의 <ph name="COLOR_NAME" /> 탭이 포함된 <ph name="TITLE_OF_GROUP" /> 그룹을 닫습니다.}other{<ph name="TABS_COUNT_MANY" />개의 <ph name="COLOR_NAME" /> 탭이 포함된 <ph name="TITLE_OF_GROUP" /> 그룹을 닫습니다.}}</translation>
-<translation id="4159784952369912983">보라색</translation>
 <translation id="4203448675570432781">탭 자동 삭제 변경사항이 닫힐 때 표시되는 알림</translation>
 <translation id="427987768447457592">새 탭 그룹</translation>
 <translation id="4371591986692297148">비활성</translation>
@@ -117,7 +113,6 @@
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome에서는 <ph name="AUTO_DELETE_DELAY_ONE" />개월이 지난 비활성 탭과 탭 그룹을 자동으로 닫습니다. 설정에서 변경할 수 있습니다.}other{Chrome에서는 <ph name="AUTO_DELETE_DELAY_MANY" />개월이 지난 비활성 탭과 탭 그룹을 자동으로 닫습니다. 설정에서 변경할 수 있습니다.}}</translation>
 <translation id="5339733443032484186">마지막 탭</translation>
 <translation id="5380159289133845234">중복 탭 보관처리</translation>
-<translation id="5400836586163650660">그레이</translation>
 <translation id="5446043142172831860">탭 삭제 및 그룹 나가기</translation>
 <translation id="5490235265819901748">탭 그룹 펼침</translation>
 <translation id="5494920125229734069">모두 선택</translation>
@@ -128,9 +123,7 @@
 <translation id="5746204836956568669">더 빠르게 작업할 수 있도록 탭 <ph name="NUMBER_OF_TABS" />개를 그룹화하시겠습니까?</translation>
 <translation id="5773295109010386583">비활성 항목 자동 닫기</translation>
 <translation id="58326064309361797">탭을 드래그하여 그룹화하세요.</translation>
-<translation id="5901630391730855834">노란색</translation>
 <translation id="5972844218283131174">전체 선택 해제</translation>
-<translation id="6017514345406065928">녹색</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6051432659151380973">탭 그룹이 자동으로 저장됩니다.</translation>
 <translation id="6054741997831917303">상품 가격이 최근 인하됨, 기존 가격: <ph name="PREVIOUS_PRICE" />, 인하된 가격: <ph name="NEW_PRICE" /></translation>
@@ -188,7 +181,6 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ 평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점, 리뷰 <ph name="REVIEWS_COUNT_ONE" />개}other{평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점, 리뷰 <ph name="REVIEWS_COUNT_MANY" />개}}</translation>
 <translation id="7885132941432959125">탭을 오른쪽으로 이동</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> 선택되지 않음</translation>
-<translation id="7942349550061667556">빨간색</translation>
 <translation id="7961015016161918242">사용하지 않음</translation>
 <translation id="7966321538264951561">추천을 닫습니다.</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{탭을 새 창으로 이동}other{탭을 다른 창으로 이동}}</translation>
@@ -224,6 +216,5 @@
 <translation id="9187834032751045001">탭 자동 삭제가 절반 높이로 열릴 때 표시되는 알림</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />개의 <ph name="COLOR_NAME" /> 탭이 포함된 탭 그룹을 펼칩니다.}other{<ph name="TABS_COUNT_MANY" />개의 <ph name="COLOR_NAME" /> 탭이 포함된 탭 그룹을 펼칩니다.}}</translation>
 <translation id="945522503751344254">의견 보내기</translation>
-<translation id="992256792861109788">분홍색</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{비활성 항목 1개를 닫으시겠습니까?}other{비활성 항목 <ph name="TAB_COUNT_MANY" />개를 닫으시겠습니까?}}</translation>
 </translationbundle>

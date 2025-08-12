@@ -1092,6 +1092,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="6125202119952209826">Uneix-te al grup de pestanyes amb <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Més detalls<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">S'ha suprimit l'element</translation>
+<translation id="6127860394906721547">Obre el grup de pestanyes <ph name="TITLE_OF_GROUP" />, de color <ph name="COLOR_NAME" />, amb els llocs web <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimitza la pestanya</translation>
 <translation id="6134168885321518274">Obre la barra de cerca</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestanya}other{<ph name="TAB_COUNT_MANY" /> pestanyes}}</translation>

@@ -1472,7 +1472,6 @@
 <translation id="200321182559008924">タブを整理します</translation>
 <translation id="2003596238737586336">現在のスケジュールは <ph name="SUNRISE" />～<ph name="SUNSET" /> に設定されています。この設定は管理者によって管理されています。</translation>
 <translation id="2004413981947727241">任意のデバイスでパスワードを使用する</translation>
-<translation id="2004697686368036666">一部のサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="2006638907958895361"><ph name="APP" /> でリンクを開く</translation>
 <translation id="2007404777272201486">問題の報告...</translation>
 <translation id="200781997903833896">読み上げ機能を使用するには、デバイスの空き容量を増やしてください</translation>
@@ -1951,7 +1950,6 @@
 <translation id="2328137272841210255">PIN をリセット</translation>
 <translation id="2328474416100889417">全員が「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、招待リンクはすべて無効になります</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> を使用するには、デバイスを再起動してください。</translation>
-<translation id="2328636661627946415">シークレット モードの間、各サイトはそのサイトでの閲覧アクティビティの参照のみに Cookie を使用できます。シークレット モード セッションが終了すると、Cookie は削除されます。</translation>
 <translation id="2329597144923131178">ログインすると、お使いのどのデバイスでも同じブックマーク、履歴、パスワード、その他の設定を利用できるようになります。</translation>
 <translation id="2330182457402792918">このサイトに読み取りを許可するファイルを選択してください</translation>
 <translation id="2332115969598251205"><ph name="PRIMARY_EMAIL" /> に保存されているデバイスを読み込めません。インターネット接続を確認してから、もう一度お試しください。</translation>
@@ -3737,7 +3735,6 @@
 <translation id="3593953853060020305">このサイトに <ph name="FILE_NAME" /> の編集を許可しますか？</translation>
 <translation id="3593965109698325041">証明書名の制約</translation>
 <translation id="3596012367874587041">アプリの設定</translation>
-<translation id="3596414637720633074">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="3599221874935822507">浮き彫り</translation>
 <translation id="3600051066689725006">ウェブ リクエスト情報</translation>
 <translation id="3600956933576601730">これらの機能を使用するには、利用規約を確認して同意する必要があります</translation>
@@ -4073,7 +4070,6 @@
 <translation id="3807747707162121253">キャンセル(&amp;C)</translation>
 <translation id="3808202562160426447">背景のコンテンツを暗くする</translation>
 <translation id="3808443763115411087">Crostini Android アプリの開発</translation>
-<translation id="3808617121485025547">サードパーティ Cookie のブロックの詳細</translation>
 <translation id="38089336910894858">⌘+Q キーで終了する際、警告メッセージを表示します</translation>
 <translation id="3809272675881623365">ウサギ</translation>
 <translation id="3809280248639369696">ムーンビーム</translation>
@@ -4333,7 +4329,6 @@
 <translation id="3975565978598857337">レルムのサーバーに接続できませんでした</translation>
 <translation id="3976108569178263973">利用できるプリンタがありません。</translation>
 <translation id="397703832102027365">最終処理中...</translation>
-<translation id="3977145907578671392">シークレット モードでは、一部サイトの機能が使用できなくなる可能性があります</translation>
 <translation id="3977886311744775419">このネットワーク タイプでは自動更新はダウンロードされませんが、手動で更新を確認できます。</translation>
 <translation id="3978325380690188371">ChromeVox が有効になっている場合、固定キーは利用できません</translation>
 <translation id="3978732922947854545">Chrome で PDF が使いやすく</translation>
@@ -6595,6 +6590,7 @@
 <translation id="560834977503641186">Wi-Fi 同期の詳細</translation>
 <translation id="5608580678041221894">トリミング範囲を調整または移動するには次のキーをタップします</translation>
 <translation id="5609231933459083978">アプリケーションが無効になっているようです。</translation>
+<translation id="5610759359710387751">自分だけのChromeを</translation>
 <translation id="5610867721023328944">もう一度お試しいただくか、以下の使用可能なテーマから選択してください。</translation>
 <translation id="5611398002774823980">アカウントに保存</translation>
 <translation id="5611399285717843500">Chrome および ChromeOS の機能とパフォーマンスの改善にご協力ください。このデータの収集時に個人情報は削除されます。</translation>
@@ -10814,7 +10810,6 @@
 <translation id="8573111744706778015">「ươ」を入力するには「uo7」と入力します</translation>
 <translation id="8574990355410201600"><ph name="HOST" /> の音声を常に許可する</translation>
 <translation id="8575286410928791436">終了するには <ph name="KEY_EQUIVALENT" /> キーを押します</translation>
-<translation id="8576359558126669548">シークレット モードでのサードパーティ Cookie のブロックに関する詳細</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{タブをリーディング リストに追加}other{タブをリーディング リストに追加}}</translation>
 <translation id="8577052309681449949">自動クリック、カーソルのサイズ、カーソルの色など</translation>
 <translation id="8578639784464423491">99 文字までで指定してください</translation>
@@ -11129,7 +11124,6 @@
 <translation id="8777628254805677039">ルート パスワード</translation>
 <translation id="8779720597365936419">はい、自分のデータを仕事用とは別に保持します（推奨）</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">各サイトはそのサイトでの閲覧アクティビティの参照のみに Cookie を使用できます。</translation>
 <translation id="8780123805589053431">Google から画像の説明を取得</translation>
 <translation id="8780443667474968681">音声検索がオフになっています。</translation>
 <translation id="8781834595282316166">グループにタブを追加</translation>

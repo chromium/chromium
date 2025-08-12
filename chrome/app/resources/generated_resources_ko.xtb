@@ -1486,7 +1486,6 @@
 <translation id="200321182559008924">탭을 깔끔하게 유지합니다</translation>
 <translation id="2003596238737586336">현재 일정은 <ph name="SUNRISE" />~<ph name="SUNSET" />(으)로 설정되어 있습니다. 관리자가 관리하는 설정입니다.</translation>
 <translation id="2004413981947727241">어느 기기에서나 비밀번호 사용하기</translation>
-<translation id="2004697686368036666">일부 사이트에서 기능이 작동하지 않을 수 있음</translation>
 <translation id="2006638907958895361"><ph name="APP" />에서 링크 열기</translation>
 <translation id="2007404777272201486">문제 신고...</translation>
 <translation id="200781997903833896">소리 내어 읽어주기를 사용하려면 기기의 저장공간을 확보하세요</translation>
@@ -1971,7 +1970,6 @@
 <translation id="2328137272841210255">PIN 재설정</translation>
 <translation id="2328474416100889417">모든 사용자가 '<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며, 모든 초대 링크가 사용 중지됩니다.</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> 앱을 사용하려면 기기를 다시 시작해 주세요.</translation>
-<translation id="2328636661627946415">시크릿 모드에서 사이트는 사용자의 사이트 내 탐색 활동을 보기 위해서만 쿠키를 사용할 수 있습니다. 시크릿 세션이 종료되면 쿠키가 삭제됩니다.</translation>
 <translation id="2329597144923131178">로그인하면 모든 기기에서 북마크, 방문 기록, 비밀번호, 기타 설정을 사용할 수 있습니다.</translation>
 <translation id="2330182457402792918">이 사이트에서 읽을 수 있는 파일을 선택하세요</translation>
 <translation id="2332115969598251205"><ph name="PRIMARY_EMAIL" />에 저장된 기기를 로드할 수 없습니다. 인터넷 연결을 확인하고 다시 시도해 보세요.</translation>
@@ -3761,7 +3759,6 @@
 <translation id="3593953853060020305">이 사이트에서 <ph name="FILE_NAME" /> 파일을 수정하도록 허용하시겠습니까?</translation>
 <translation id="3593965109698325041">인증서 이름 제약조건</translation>
 <translation id="3596012367874587041">앱 설정</translation>
-<translation id="3596414637720633074">시크릿 모드에서 서드 파티 쿠키 차단</translation>
 <translation id="3599221874935822507">양각</translation>
 <translation id="3600051066689725006">웹 요청 정보</translation>
 <translation id="3600956933576601730">이 기능을 사용하려면 약관을 검토하고 수락해야 합니다.</translation>
@@ -4097,7 +4094,6 @@
 <translation id="3807747707162121253">취소(&amp;C)</translation>
 <translation id="3808202562160426447">배경 콘텐츠 어둡게 하기</translation>
 <translation id="3808443763115411087">Crostini Android 앱 개발</translation>
-<translation id="3808617121485025547">서드 파티 쿠키 차단에 관해 자세히 알아보기</translation>
 <translation id="38089336910894858">⌘Q로 종료하기 전 경고 표시</translation>
 <translation id="3809272675881623365">토끼</translation>
 <translation id="3809280248639369696">달빛</translation>
@@ -4357,7 +4353,6 @@
 <translation id="3975565978598857337">영역 서버에 연락을 취하지 못했습니다.</translation>
 <translation id="3976108569178263973">사용 가능한 프린터가 없습니다.</translation>
 <translation id="397703832102027365">완료 중...</translation>
-<translation id="3977145907578671392">시크릿 모드에서는 일부 사이트의 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="3977886311744775419">이러한 네트워크 유형에서는 자동 업데이트가 다운로드되지 않지만 수동으로 업데이트를 확인할 수 있습니다.</translation>
 <translation id="3978325380690188371">ChromeVox가 사용 설정된 경우 고정키를 사용할 수 없음</translation>
 <translation id="3978732922947854545">Chrome에서 PDF 활용도 높이기</translation>
@@ -5745,6 +5740,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="496742804571665842">eSIM 프로필 사용 중지</translation>
 <translation id="4967571733817147990">마우스 버튼 맞춤설정</translation>
 <translation id="4967852842111017386"><ph name="FEATURE_NAME" /> 기기 이름</translation>
+<translation id="4968994772848295474">게스트 모드에서는 웹 앱 설치가 지원되지 않습니다</translation>
 <translation id="4971412780836297815">완료되면 열기</translation>
 <translation id="4972129977812092092">프린터 수정</translation>
 <translation id="4972164225939028131">잘못된 비밀번호</translation>
@@ -6624,6 +6620,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="560834977503641186">Wi-Fi 동기화, 자세히 알아보기</translation>
 <translation id="5608580678041221894">다음 키를 탭하여 자르기 영역을 조정하거나 이동하세요.</translation>
 <translation id="5609231933459083978">애플리케이션이 잘못된 것 같습니다.</translation>
+<translation id="5610759359710387751">어디서나 내 Chrome 설정 사용하기</translation>
 <translation id="5610867721023328944">다시 시도하거나 아래에서 사용 가능한 테마 중 하나를 선택하세요.</translation>
 <translation id="5611398002774823980">계정에 저장</translation>
 <translation id="5611399285717843500">Chrome 및 ChromeOS의 기능과 성능을 개선하는 데 도움을 주세요. 이 데이터를 수집할 때 개인 정보는 삭제됩니다.</translation>
@@ -10522,6 +10519,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" />의 작업 메뉴 더보기</translation>
 <translation id="8341804784147620576">검색 바로가기 표시</translation>
 <translation id="8342221978608739536">사용해 보지 않음</translation>
+<translation id="8342387517402567689">시크릿 모드에서는 웹 앱 설치가 지원되지 않습니다</translation>
 <translation id="8342861492835240085">컬렉션 선택</translation>
 <translation id="8345848587667658367">이제 휴대전화의 최근 사진, 미디어, 알림, 앱을 확인할 수 있습니다.</translation>
 <translation id="8347227221149377169">인쇄 작업</translation>
@@ -10845,7 +10843,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8573111744706778015">'uo7'을 입력하면 'ươ'가 표시됩니다</translation>
 <translation id="8574990355410201600"><ph name="HOST" />에서 소리 항상 허용</translation>
 <translation id="8575286410928791436">종료하려면 <ph name="KEY_EQUIVALENT" /> 키를 길게 누르세요.</translation>
-<translation id="8576359558126669548">시크릿 모드에서 서드 파티 쿠키를 차단하는 방법 자세히 알아보기</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{읽기 목록에 탭 추가}other{읽기 목록에 탭 추가}}</translation>
 <translation id="8577052309681449949">자동 클릭, 커서 크기, 커서 색상 등</translation>
 <translation id="8578639784464423491">99자를 초과할 수 없습니다.</translation>
@@ -11160,7 +11157,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8777628254805677039">루트 비밀번호</translation>
 <translation id="8779720597365936419">예, 개인 데이터를 직장과 분리하여 유지(권장)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">사이트는 사용자의 사이트 내 탐색 활동을 보기 위해서만 쿠키를 사용할 수 있습니다.</translation>
 <translation id="8780123805589053431">Google에서 이미지 설명 가져오기</translation>
 <translation id="8780443667474968681">음성 검색이 사용 중지되었습니다.</translation>
 <translation id="8781834595282316166">그룹에 새 탭 추가</translation>

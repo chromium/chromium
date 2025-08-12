@@ -1486,7 +1486,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="200321182559008924">Panatilihing maayos ang iyong mga tab</translation>
 <translation id="2003596238737586336">Nakatakda ang kasalukuyang iskedyul sa <ph name="SUNRISE" /> - <ph name="SUNSET" />. Pinapamahalaan ng iyong administrator ang setting na ito.</translation>
 <translation id="2004413981947727241">Gamitin ang iyong mga password sa anumang device</translation>
-<translation id="2004697686368036666">Posibleng hindi gumana ang mga feature sa ilang site</translation>
 <translation id="2006638907958895361">Buksan ang Link sa <ph name="APP" /></translation>
 <translation id="2007404777272201486">Mag-ulat ng Isyu...</translation>
 <translation id="200781997903833896">Para magamit ang Basahin nang Malakas, mag-clear ng space sa iyong device</translation>
@@ -1970,7 +1969,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2328137272841210255">I-reset ang iyong PIN</translation>
 <translation id="2328474416100889417">Mawawalan kaagad ng access ang lahat sa grupo ng tab na “<ph name="GROUP_NAME" />,” at mao-off ang lahat ng link ng imbitasyon</translation>
 <translation id="2328561734797404498">Paki-restart ang iyong device para magamit ang <ph name="APP_NAME" />.</translation>
-<translation id="2328636661627946415">Kapag nasa Incognito mode ka, puwede lang gumamit ng mga cookie ang mga site para tingnan ang iyong aktibidad sa pag-browse sa sarili nilang site. Ide-delete ang mga cookie sa pagtatapos ng Incognito session.</translation>
 <translation id="2329597144923131178">Mag-sign in upang makuha ang iyong mga bookmark, history, password at ibang mga setting sa lahat ng iyong device.</translation>
 <translation id="2330182457402792918">Pumili ng mga file na mababasa ng site na ito</translation>
 <translation id="2332115969598251205">Hindi ma-load ang mga device na naka-save sa <ph name="PRIMARY_EMAIL" />. Tingnan ang iyong koneksyon sa internet at subukan ulit.</translation>
@@ -3760,7 +3758,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3593953853060020305">Payagan ang site na ito na i-edit ang <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Mga Limitasyon sa Pangalan ng Certificate</translation>
 <translation id="3596012367874587041">Mga setting ng app</translation>
-<translation id="3596414637720633074">I-block ang third-party na cookies sa Incognito</translation>
 <translation id="3599221874935822507">Raised</translation>
 <translation id="3600051066689725006">Impormasyon ng kahilingan sa web</translation>
 <translation id="3600956933576601730">Kailangan mong suriin at tanggapin ang mga tuntunin para magamit ang mga feature na ito</translation>
@@ -4096,7 +4093,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3807747707162121253">&amp;Kanselahin</translation>
 <translation id="3808202562160426447">I-dim ang content sa background</translation>
 <translation id="3808443763115411087">Pag-develop ng Android app sa Crostini</translation>
-<translation id="3808617121485025547">Higit pa tungkol sa pag-block ng third-party na cookies</translation>
 <translation id="38089336910894858">Magpakita ng babala bago lumabas sa ⌘Q</translation>
 <translation id="3809272675881623365">Kuneho</translation>
 <translation id="3809280248639369696">Alien</translation>
@@ -4356,7 +4352,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3975565978598857337">Hindi nagawang makipag-ugnayan sa server para sa realm</translation>
 <translation id="3976108569178263973">Walang available na printer.</translation>
 <translation id="397703832102027365">Tinatapos...</translation>
-<translation id="3977145907578671392">Posibleng hindi gumana sa Incognito ang mga feature sa ilang site</translation>
 <translation id="3977886311744775419">Hindi nada-download ang mga awtomatikong update sa ganitong uri ng network, pero puwede kang tumingin ng mga update nang manual.</translation>
 <translation id="3978325380690188371">Hindi available ang mga sticky key kapag naka-on ang ChromeVox</translation>
 <translation id="3978732922947854545">Pinapahusay ng Chrome ang mga PDF</translation>
@@ -5745,6 +5740,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="496742804571665842">I-disable ang mga profile ng eSIM</translation>
 <translation id="4967571733817147990">I-customize ang mga button sa mouse</translation>
 <translation id="4967852842111017386">Pangalan ng device para sa <ph name="FEATURE_NAME" /></translation>
+<translation id="4968994772848295474">Hindi sinusuportahan ang mga pag-install ng web app sa Guest mode</translation>
 <translation id="4971412780836297815">Buksan kapag tapos na</translation>
 <translation id="4972129977812092092">I-edit ang printer</translation>
 <translation id="4972164225939028131">Mali ang password</translation>
@@ -6624,6 +6620,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="560834977503641186">Wi-Fi Sync, Matuto Pa</translation>
 <translation id="5608580678041221894">I-tap ang mga sumusunod na key upang isaayos o ilipat ang lugar ng pag-crop</translation>
 <translation id="5609231933459083978">Mukhang di-wasto ang application.</translation>
+<translation id="5610759359710387751">Gawing Iyo Ang Chrome</translation>
 <translation id="5610867721023328944">Subukan ulit o pumili mula sa isa sa mga available na tema sa ibaba.</translation>
 <translation id="5611398002774823980">I-save sa account</translation>
 <translation id="5611399285717843500">Tumulong na pahusayin ang mga feature at performance ng Chrome at ChromeOS. Inaalis ang personal na impormasyon kapag kinokolekta ang data na ito.</translation>
@@ -7525,6 +7522,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6257602895346497974">I-on ang pag-sync...</translation>
 <translation id="625827534921607067">Pipiliin ang network na ito kung mahigit sa isang dati nang nakonektahan o na-configure na network ang available</translation>
 <translation id="6259776178973198997">I-refresh ang Impormasyon ng Mga Direktang May-ari ng WiFi</translation>
+<translation id="6261688934280090835">Mga log sa Kiosk App sa ChromeOS</translation>
 <translation id="6262371516389954471">Ina-upload ang mga backup mo sa Google at ine-encrypt ang mga ito gamit ang password ng iyong Google Account.</translation>
 <translation id="6263082573641595914">Microsoft CA Version</translation>
 <translation id="6263284346895336537">Hindi Kritikal</translation>
@@ -10523,6 +10521,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8340547030807793004">Higit pang pagkilos para sa <ph name="DEVICE" /></translation>
 <translation id="8341804784147620576">Magpakita ng mga Shortcut ng Paghahanap</translation>
 <translation id="8342221978608739536">Hindi sinubukan</translation>
+<translation id="8342387517402567689">Hindi sinusuportahan ang mga pag-install ng web app sa Incognito mode</translation>
 <translation id="8342861492835240085">Pumili ng koleksyon</translation>
 <translation id="8345848587667658367">Puwede mo nang tingnan ang mga pinakabagong larawan, media, notification, at app ng iyong telepono</translation>
 <translation id="8347227221149377169">Mga pag-print</translation>
@@ -10847,7 +10846,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8573111744706778015">I-type ang "uo7" para makuha ang "ươ"</translation>
 <translation id="8574990355410201600">Palaging payagan ang tunog sa <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Pindutin nang matagal ang <ph name="KEY_EQUIVALENT" /> para Umalis.</translation>
-<translation id="8576359558126669548">Higit pa tungkol sa pag-block ng third-party na cookies sa Incognito mode</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Idagdag ang tab sa listahan ng babasahin}one{Idagdag ang mga tab sa listahan ng babasahin}other{Idagdag ang mga tab sa listahan ng babasahin}}</translation>
 <translation id="8577052309681449949">Mga awtomatikong pag-click, laki ng cursor, kulay ng cursor, at higit pa</translation>
 <translation id="8578639784464423491">Hindi maaaring lumagpas sa 99 na titik</translation>
@@ -11163,7 +11161,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8777628254805677039">root password</translation>
 <translation id="8779720597365936419">Oo, panatilihing nakahiwalay sa trabaho ang aking data (inirerekomenda)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Magagamit lang ng mga site ang cookies para makita ang iyong aktibidad sa pag-browse sa sarili nilang site</translation>
 <translation id="8780123805589053431">Kumuha ng mga paglalarawan ng larawan mula sa Google</translation>
 <translation id="8780443667474968681">Na-off na ang paghahanap gamit ang boses.</translation>
 <translation id="8781834595282316166">Bagong Tab sa Grupo</translation>

@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Mbyllja e të gjitha skedave do të mbyllë edhe skedat e gozhduara.</translation>
 <translation id="1036348656032585052">Çaktivizo</translation>
 <translation id="1041322626941363065">Të të paralajmërojë nëse fjalëkalimet janë ekspozuar në një nxjerrje të paautorizuar të të dhënave</translation>
-<translation id="1044891598689252897">Sajtet do të punojnë normalisht</translation>
 <translation id="104491362976654916">Faqe offline</translation>
 <translation id="1049743911850919806">I fshehtë</translation>
 <translation id="1053651653201045802">Ke dalë. Identifikohu përsëri për të përdorur faqeshënuesit, fjalëkalimet etj. në llogarinë tënde.</translation>
@@ -135,7 +134,6 @@
 <translation id="1506063256525392513">Kjo të lejon të bësh dhe të ngarkosh fotografi, si dhe të skanosh kode QR</translation>
 <translation id="1508263560970797965">Vazhdo në "I fshehtë"</translation>
 <translation id="1509486075633541495">Identifikohu në sajtin e uebit</translation>
-<translation id="1509960214886564027">Veçoritë në shumë sajte mund të ndalojnë së funksionuari</translation>
 <translation id="1513858653616922153">Fshi fjalëkalimin</translation>
 <translation id="1517166097004694782">Fshih "Vazhdo me këtë skedë"</translation>
 <translation id="1520027731907768768">Merr sinjalizime për uljet e çmimeve për produktet që monitoron.</translation>
@@ -368,9 +366,6 @@
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2360196772093551345">Kërko sajtin për celular</translation>
 <translation id="2362083820973145409">Identifikuar si <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Hap cilësimet.</translation>
-<translation id="236977714248711277">Sajtet nuk mund t'i përdorin kukit për të përmirësuar përvojën e shfletimit, për shembull për të të mbajtur të identifikuar ose për të kujtuar artikujt në karrocën e blerjeve.
-
-Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit nëpër sajte të ndryshme, për shembull për t'i personalizuar reklamat.</translation>
 <translation id="2377230674627603057">Rrjeta e grupeve të skedave</translation>
 <translation id="2377336083033403521">Kërko skedat…</translation>
 <translation id="2381405137052800939">Bazat</translation>
@@ -446,7 +441,6 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2669454659051515572">Çdo person që e përdor këtë pajisje mund t'i shikojë skedarët e shkarkuar</translation>
 <translation id="2671423594960767771">Ndaj grupin</translation>
 <translation id="2673508731173059946">Vizito lidhjen e kopjuar</translation>
-<translation id="2687403674020088961">Blloko të gjitha kukit (nuk rekomandohet)</translation>
 <translation id="2688535388040882469">Banderolat</translation>
 <translation id="2690858294534178585">Kamera është në përdorim</translation>
 <translation id="2691653761409724435">Nuk mundësohet offline</translation>
@@ -661,7 +655,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3587885837929752825">Organizata jote kufizon se çfarë mund të ruash në "Llogarinë tënde të Google".</translation>
 <translation id="3588820906588687999">Hape imazhin në skedë të re</translation>
 <translation id="3595252146048399851">Mund të zgjedhësh gjithmonë se çfarë do të sinkronizosh te <ph name="BEGIN_LINK" />cilësimet<ph name="END_LINK" />. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
-<translation id="3596414637720633074">Blloko kukit e palëve të treta në modalitetin "I fshehtë"</translation>
 <translation id="3602260545951981695">Zgjidh "Mbrojtjen e përmirësuar"</translation>
 <translation id="3610041351087301930">Fshih lexuesin</translation>
 <translation id="3622175633937495219">Historiku i kërkimeve (u gjetën <ph name="COUNT" />)</translation>
@@ -1063,7 +1056,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5177141896043341906">Ke <ph name="NUMBER_OF_PASSWORDS" /> fjalëkalime të dobëta që mund ta rrezikojnë sigurinë tënde.</translation>
 <translation id="5181140330217080051">Po shkarkon</translation>
 <translation id="5186185447130319458">Privat</translation>
-<translation id="5188482106078495165">Cilësimet e tua të kukive zbatohen te të gjitha skedat. Për të zbatuar një cilësim të ri te një skedë e hapur, ringarkoje skedën.</translation>
 <translation id="518997337573684769">Po dërgohet raporti i ndërprerjeve aksidentale…</translation>
 <translation id="519530786644929958">Shkarkimi dështoi dhe nuk mund të riprovohet.</translation>
 <translation id="5197255632782567636">Interneti</translation>
@@ -1088,7 +1080,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5271265092610673171">{count,plural, =1{Një fushë e detyrueshme është bosh. Plotësoje para se ta ruash.}other{Disa fusha të detyrueshme janë bosh. Plotësoji para se t'i ruash.}}</translation>
 <translation id="5271549068863921519">Ruaj fjalëkalimin</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) dëshiron që të bashkohesh në një grup skedash. Çdo person që ka lidhjen mund të modifikojë të gjithë skedat, prandaj bashkohu me kujdes. Lidhja skadon pas 48 orësh.</translation>
-<translation id="5279600392753459966">Bllokoji të gjitha</translation>
 <translation id="5282340693022193851">Për të marrë njoftime për monitorimin e çmimeve, aktivizo njoftimet te Settings të iOS.</translation>
 <translation id="528857768909044842">Grupet e skedave ruhen këtu</translation>
 <translation id="5294624619177114121">Njoftimet në celular</translation>
@@ -1187,7 +1178,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5648166631817621825">7 ditët e fundit</translation>
 <translation id="5652623411397330904">Produktet që monitoron do të shfaqen këtu.</translation>
 <translation id="5656431592348714536">Kalendari i përmirësuar</translation>
-<translation id="5657156137487675418">Lejo të gjitha kukit</translation>
 <translation id="5659593005791499971">Mail-i</translation>
 <translation id="5665739277590037307">Zbatohen <ph name="GOOGLE_TERMS" /> dhe <ph name="GEMINI_APPS_PRIVACY" />. Gemini mund të bëjë gabime, kështu që kontrolloje përsëri.</translation>
 <translation id="5666313630530585305">Identifikohu te një uebsajt.</translation>
@@ -1204,7 +1194,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5704908597376970822">Nuk mund të identifkohesh.</translation>
 <translation id="5709005673595820640">{count,plural, =1{Ke {count} fjalëkalim të ripërdorur që mund ta rrezikojë sigurinë tënde. Rregulloje tani për të qëndruar i sigurt.}other{Ke {count} fjalëkalime të ripërdorura që mund ta rrezikojnë sigurinë tënde. Rregulloji tani për të qëndruar i sigurt.}}</translation>
 <translation id="57094364128775171">Sugjero fjalëkalim të fortë…</translation>
-<translation id="5716230673298034837">Lejoji të gjitha</translation>
 <translation id="5718049162805123412">Duhet t'i ndryshosh këto tani</translation>
 <translation id="572328651809341494">Skedat e fundit</translation>
 <translation id="5724941645893276623">Për të shfletuar uebin në mënyrë private, shto një skedë të re</translation>
@@ -1263,7 +1252,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5936065461722368675">Përkthe të gjithë faqen</translation>
 <translation id="5937560539988385583">Faqja u përkthye</translation>
 <translation id="5938160824633642847">Pajisja jote është thuajse plot. Liro hapësirë dhe provo përsëri.</translation>
-<translation id="594324569139756587">Blloko kukit e palëve të treta</translation>
 <translation id="5944869793365969636">Skano kodin QR</translation>
 <translation id="5948291296578561264">Kjo të lejon të ruash fotografi në bibliotekën tënde të fotografive.</translation>
 <translation id="5948605885471592910">Shiko dhe menaxho gjithçka që ke hapur</translation>
@@ -1336,7 +1324,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6192388920090306326">Udhëtim në Tokio</translation>
 <translation id="6193448654517602979">Zgjidh skedat</translation>
 <translation id="6196207969502475924">Kërkimi me zë</translation>
-<translation id="6196640612572343990">Blloko kukit e palëve të treta</translation>
 <translation id="6198252989419008588">Ndrysho kodin PIN</translation>
 <translation id="6210079381482819663">Skedat që nuk përdoren për <ph name="THRESHOLD" /> ditë ose më shumë zhvendosen këtu. Këtë mund ta ndryshosh në çdo kohë te <ph name="BEGIN_LINK" />cilësimet<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Nuk u gjet asnjë adresë</translation>
@@ -1412,14 +1399,10 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6444435711855078002">Më shumë opsione</translation>
 <translation id="6445051938772793705">Shteti</translation>
 <translation id="6445981559479772097">Mesazhi u dërgua.</translation>
-<translation id="6447842834002726250">Kukit</translation>
 <translation id="6449554712554071184">Kjo do të fshijë përgjithmonë grupin nga pajisja jote.</translation>
 <translation id="6452534462676960500">Aktivitet i ri</translation>
 <translation id="6459411599807878608">Detajet u fshehën</translation>
 <translation id="646394917185284261">Skedarët</translation>
-<translation id="6464397691496239022">Sajtet mund t'i përdorin kukit për të përmirësuar përvojën e shfletimit, për shembull për të të mbajtur të identifikuar ose për të kujtuar artikujt në karrocën e blerjeve.
-
-Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit nëpër sajte të ndryshme, për shembull për t'i personalizuar reklamat.</translation>
 <translation id="6476253015009698798">Monitorimi i çmimeve nuk ofrohet për këtë faqe.</translation>
 <translation id="6476284679642588870">Menaxho mënyrat e pagesës</translation>
 <translation id="6476800141292307438">Po përkthen faqen në <ph name="LANGUAGE" />. Opsionet që ofrohen janë pranë fundit të ekranit.</translation>
@@ -1462,7 +1445,6 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="6612912757320004438">Lejo njoftimet e skedave…</translation>
 <translation id="6617761071025228250">Pastro tekstin</translation>
 <translation id="6620279676667515405">Anulo</translation>
-<translation id="6624219055418309072">Blloko në modalitetin "i fshehtë"</translation>
 <translation id="6625830436658400045">Cilësimet e tua të sinkronizimit do të restaurohen bazuar në rezervimin tënd të fundit. Mund të zgjedhësh gjithmonë se çfarë do të sinkronizosh te <ph name="BEGIN_LINK" />cilësimet<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Modifiko dosjen</translation>
 <translation id="6629759408545977279">Nga: <ph name="ORIGINATING_HOST" /></translation>
@@ -1479,9 +1461,6 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="6663529247339810546">Imazhi nuk mund të ruhet</translation>
 <translation id="6668619169535738264">Redakto faqeshënuesin</translation>
 <translation id="6671294218820966278">Shëno si të lexuar</translation>
-<translation id="6672241253012342409">Sajtet mund t'i përdorin kukit për të përmirësuar përvojën e shfletimit, për shembull për të të mbajtur të identifikuar ose për të kujtuar artikujt në karrocën e blerjeve.
-
-Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë aktivitetin e shfletimit nëpër sajte të ndryshme, p.sh. për të personalizuar reklamat.</translation>
 <translation id="6672697278890207089">Fut frazën tënde të kalimit</translation>
 <translation id="6674917187596384849">Mund t'i ndërrosh lehtësisht llogaritë</translation>
 <translation id="6676349090816247042">Opsionet e identifikimit.</translation>
@@ -1517,6 +1496,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6794476726485507147">Zgjidh një datë dhe orë për të marrë një njoftim rikujtues për të rivizituar këtë faqe</translation>
 <translation id="6795481620482106033">Të dhëna të pavlefshme</translation>
 <translation id="6797543908718012274">Aktivizo "Modalitetin e leximit"</translation>
+<translation id="6806550742467879742">Veglat e faqes</translation>
 <translation id="6807287147325542056">Fjalëkalimet në aplikacionet e tjera</translation>
 <translation id="681368974849482173">Elementi u krijua</translation>
 <translation id="6825078212112407882">{count,plural, =1{Faqeshënuesi u ruajt në "Llogarinë tënde të Google", {email}}other{{count} faqeshënues u ruajtën në "Llogarinë tënde të Google", {email}}}</translation>
@@ -1670,6 +1650,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7454057999980797137">Shteti / Qarku</translation>
 <translation id="7458706065921255639">Personalizimi dhe lidhja</translation>
 <translation id="745899714366929493">Gjithë ditën</translation>
+<translation id="7460314822154045102">Përdor kamerën</translation>
 <translation id="7460698861522306757">Kërko sajtin për celular</translation>
 <translation id="7464143666517313304">Kjo fshin adresat e ruajtura në këtë pajisje.</translation>
 <translation id="7468373585447318060">Qëndro i informuar për uljet e çmimeve për të gjitha produktet që monitoron.</translation>
@@ -1802,9 +1783,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7952670906562503188">Je gati të fshish {passkey_count} çelësa kalimi dhe listën e sajteve dhe aplikacioneve për të cilat ke zgjedhur që të mos i ruash asnjëherë informacionet e identifikimit. Nuk do të fshihet asnjë llogari që ke krijuar për sajtet dhe aplikacionet.</translation>
 <translation id="7958575506592576831">Informacionet e sigurisë së faqes</translation>
 <translation id="7961015016161918242">Asnjëherë</translation>
-<translation id="7966516440812255683">Sajtet mund t'i përdorin kukit për të përmirësuar përvojën e shfletimit, për shembull për të të mbajtur të identifikuar ose për të kujtuar artikujt në karrocën e blerjeve.
-
-Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit nëpër sajte të ndryshme, për shembull për t'i personalizuar reklamat.</translation>
 <translation id="7971136598759319605">Aktiv 1 ditë më parë</translation>
 <translation id="7975036700432177008">Provo</translation>
 <translation id="797588153137233716">Menyja → Historiku → Fshi të dhënat e shfletimit</translation>
@@ -1815,7 +1793,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="7987685713885608670">Për më shumë siguri, enkripto fjalëkalimet në pajisjen tënde para se të ruhen në "Menaxherin e fjalëkalimeve të Google".</translation>
 <translation id="798991908416757345">Grupet e skedave nuk ofrohen</translation>
 <translation id="7993170188789685695">Trokit dy herë për ta mbyllur këtë njoftim.</translation>
-<translation id="7993619969781047893">Veçoritë në disa sajte mund të ndalojnë së funksionuari</translation>
 <translation id="7996239959906074962">Konfiguro…</translation>
 <translation id="8001561107130904792">Ndarja e përmbajtjes së faqes</translation>
 <translation id="800361585186029508">Hap URL-të e futura në Google Chrome.</translation>

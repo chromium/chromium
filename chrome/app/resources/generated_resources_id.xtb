@@ -1485,7 +1485,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="200321182559008924">Buat tab Anda tetap rapi</translation>
 <translation id="2003596238737586336">Jadwal saat ini disetel ke <ph name="SUNRISE" /> - <ph name="SUNSET" />. Setelan ini dikelola oleh administrator Anda.</translation>
 <translation id="2004413981947727241">Gunakan sandi Anda di perangkat mana pun</translation>
-<translation id="2004697686368036666">Fitur tertentu di beberapa situs mungkin tidak berfungsi</translation>
 <translation id="2006638907958895361">Buka Link di <ph name="APP" /></translation>
 <translation id="2007404777272201486">Laporkan Masalah...</translation>
 <translation id="200781997903833896">Untuk menggunakan fitur Baca Lisan, kosongkan ruang penyimpanan di perangkat Anda</translation>
@@ -1969,7 +1968,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2328137272841210255">Reset PIN</translation>
 <translation id="2328474416100889417">Semua orang akan segera kehilangan akses ke grup tab “<ph name="GROUP_NAME" />”, dan semua link undangan akan dinonaktifkan</translation>
 <translation id="2328561734797404498">Mulai ulang perangkat Anda untuk menggunakan <ph name="APP_NAME" />.</translation>
-<translation id="2328636661627946415">Jika Anda menggunakan mode Samaran, situs hanya dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di situsnya. Cookie akan dihapus pada akhir sesi Samaran.</translation>
 <translation id="2329597144923131178">Login untuk mendapatkan bookmark, histori, sandi, dan setelan Anda lainnya di semua perangkat.</translation>
 <translation id="2330182457402792918">Pilih file yang dapat dibaca oleh situs ini</translation>
 <translation id="2332115969598251205">Tidak dapat memuat perangkat yang disimpan ke <ph name="PRIMARY_EMAIL" />. Periksa koneksi internet Anda, lalu coba lagi.</translation>
@@ -3759,7 +3757,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3593953853060020305">Izinkan situs ini mengedit <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Kendala Nama Sertifikat</translation>
 <translation id="3596012367874587041">Setelan aplikasi</translation>
-<translation id="3596414637720633074">Blokir cookie pihak ketiga dalam mode Samaran</translation>
 <translation id="3599221874935822507">Dinaikkan</translation>
 <translation id="3600051066689725006">Info permintaan web</translation>
 <translation id="3600956933576601730">Anda harus meninjau dan menyetujui persyaratan untuk menggunakan fitur ini</translation>
@@ -4095,7 +4092,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3807747707162121253">&amp;Batal</translation>
 <translation id="3808202562160426447">Redupkan konten latar belakang</translation>
 <translation id="3808443763115411087">Pengembangan aplikasi Android di Crostini</translation>
-<translation id="3808617121485025547">Selengkapnya tentang memblokir cookie pihak ketiga</translation>
 <translation id="38089336910894858">Tampilkan peringatan sebelum keluar menggunakan ⌘Q</translation>
 <translation id="3809272675881623365">Kelinci</translation>
 <translation id="3809280248639369696">Alien</translation>
@@ -4355,7 +4351,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3975565978598857337">Menghubungi server untuk area yang gagal</translation>
 <translation id="3976108569178263973">Tidak ada printer yang tersedia.</translation>
 <translation id="397703832102027365">Mengakhiri...</translation>
-<translation id="3977145907578671392">Fitur di beberapa situs mungkin tidak berfungsi dalam mode Samaran</translation>
 <translation id="3977886311744775419">Update otomatis tidak didownload pada jenis jaringan ini, namun Anda dapat memeriksa update secara manual.</translation>
 <translation id="3978325380690188371">Tombol lekat tidak tersedia saat ChromeVox diaktifkan</translation>
 <translation id="3978732922947854545">Chrome menjadikan PDF lebih baik</translation>
@@ -5744,6 +5739,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="496742804571665842">Nonaktifkan profil eSIM</translation>
 <translation id="4967571733817147990">Sesuaikan tombol mouse</translation>
 <translation id="4967852842111017386">Nama perangkat <ph name="FEATURE_NAME" /></translation>
+<translation id="4968994772848295474">Penginstalan aplikasi web tidak didukung dalam mode Tamu</translation>
 <translation id="4971412780836297815">Buka setelah selesai</translation>
 <translation id="4972129977812092092">Edit printer</translation>
 <translation id="4972164225939028131">Sandi salah</translation>
@@ -6623,6 +6619,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="560834977503641186">Wi-Fi Sync, Pelajari Lebih Lanjut</translation>
 <translation id="5608580678041221894">Ketuk tombol berikut untuk menyesuaikan atau memindahkan area pemangkasan</translation>
 <translation id="5609231933459083978">Tampaknya aplikasi ini tidak valid.</translation>
+<translation id="5610759359710387751">Sesuaikan</translation>
 <translation id="5610867721023328944">Coba lagi atau pilih salah satu tema yang tersedia di bawah.</translation>
 <translation id="5611398002774823980">Simpan di akun</translation>
 <translation id="5611399285717843500">Bantu tingkatkan kualitas fitur dan performa Chrome dan ChromeOS. Informasi pribadi dihapus saat mengumpulkan data ini.</translation>
@@ -7524,6 +7521,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6257602895346497974">Aktifkan sinkronisasi...</translation>
 <translation id="625827534921607067">Jaringan ini akan dipilih jika tersedia lebih dari satu jaringan yang sebelumnya terhubung atau dikonfigurasi</translation>
 <translation id="6259776178973198997">Muat Ulang Info Pemilik Wi-Fi Langsung</translation>
+<translation id="6261688934280090835">Log Aplikasi Kios ChromeOS</translation>
 <translation id="6262371516389954471">Cadangan Anda diupload ke Google dan dienkripsi menggunakan sandi Akun Google Anda.</translation>
 <translation id="6263082573641595914">Microsoft CA Version</translation>
 <translation id="6263284346895336537">Tidak Kritis</translation>
@@ -10519,6 +10517,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8340547030807793004">Tindakan lainnya untuk <ph name="DEVICE" /></translation>
 <translation id="8341804784147620576">Tampilkan Pintasan Penelusuran</translation>
 <translation id="8342221978608739536">Tidak mencoba</translation>
+<translation id="8342387517402567689">Penginstalan aplikasi web tidak didukung dalam mode Samaran</translation>
 <translation id="8342861492835240085">Pilih koleksi</translation>
 <translation id="8345848587667658367">Anda kini dapat melihat foto, media, notifikasi, dan aplikasi terbaru ponsel Anda</translation>
 <translation id="8347227221149377169">Pencetakan</translation>
@@ -10842,7 +10841,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8573111744706778015">Ketik "uo7" untuk mendapatkan "ươ"</translation>
 <translation id="8574990355410201600">Selalu izinkan suara di <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Tekan <ph name="KEY_EQUIVALENT" /> untuk Berhenti</translation>
-<translation id="8576359558126669548">Selengkapnya tentang memblokir cookie pihak ketiga dalam mode Samaran</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Tambahkan tab ke daftar bacaan}other{Tambahkan tab ke daftar bacaan}}</translation>
 <translation id="8577052309681449949">Klik otomatis, ukuran kursor, warna kursor, dan lainnya</translation>
 <translation id="8578639784464423491">Tidak boleh melebihi 99 huruf</translation>
@@ -11157,7 +11155,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="8777628254805677039">sandi akar</translation>
 <translation id="8779720597365936419">Ya, pisahkan data saya dari profil kerja (direkomendasikan)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Situs hanya dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di situs itu sendiri</translation>
 <translation id="8780123805589053431">Dapatkan deskripsi gambar dari Google</translation>
 <translation id="8780443667474968681">Penelusuran suara telah dinonaktifkan.</translation>
 <translation id="8781834595282316166">Tab Baru di Grup</translation>

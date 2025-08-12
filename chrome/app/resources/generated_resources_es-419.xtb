@@ -1472,7 +1472,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="200321182559008924">Mantén tus pestañas ordenadas</translation>
 <translation id="2003596238737586336">El horario actual está establecido de <ph name="SUNRISE" /> a <ph name="SUNSET" />. El administrador controla este parámetro de configuración.</translation>
 <translation id="2004413981947727241">Usa tus contraseñas en cualquier dispositivo</translation>
-<translation id="2004697686368036666">Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
 <translation id="2006638907958895361">Abrir vínculo en <ph name="APP" /></translation>
 <translation id="2007404777272201486">Informar de un problema...</translation>
 <translation id="200781997903833896">Para usar Leer en voz alta, libera espacio en tu dispositivo</translation>
@@ -1953,7 +1952,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2328137272841210255">Restablece el PIN</translation>
 <translation id="2328474416100889417">Todos los usuarios perderán de inmediato el acceso al grupo de pestañas “<ph name="GROUP_NAME" />”, y se desactivarán todos los vínculos de invitación</translation>
 <translation id="2328561734797404498">Para usar <ph name="APP_NAME" />, reinicia el dispositivo.</translation>
-<translation id="2328636661627946415">Cuando estés en el modo Incógnito, los sitios pueden usar cookies únicamente para ver tu actividad de navegación en ese mismo sitio. Las cookies se borran al final de la sesión en modo Incógnito.</translation>
 <translation id="2329597144923131178">Accede a tu cuenta para ver los favoritos, el historial, las contraseñas y otras opciones de configuración en todos los dispositivos.</translation>
 <translation id="2330182457402792918">Selecciona los archivos que pueda leer este sitio</translation>
 <translation id="2332115969598251205">No se pueden cargar los dispositivos guardados en <ph name="PRIMARY_EMAIL" />. Revisa tu conexión a Internet y vuelve a intentarlo.</translation>
@@ -2187,7 +2185,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2484743711056182585">Quitar permiso</translation>
 <translation id="2484909293434545162">Si un sitio usa cookies, aparecerá aquí</translation>
 <translation id="2485394160472549611">Recomendaciones para ti</translation>
-<translation id="2485422356828889247">Desinstalación</translation>
+<translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2485681265915754872">Condiciones del Servicio de Google Play</translation>
 <translation id="248676429071089168">Desliza el dedo hacia arriba para bajar la página</translation>
 <translation id="2487067538648443797">Agregar un favorito nuevo</translation>
@@ -3743,7 +3741,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3593953853060020305">¿Quieres permitir que este sitio edite <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Restricciones para el nombre del certificado</translation>
 <translation id="3596012367874587041">Configuración de la app</translation>
-<translation id="3596414637720633074">Bloquear cookies de terceros en modo Incógnito</translation>
 <translation id="3599221874935822507">En relieve</translation>
 <translation id="3600051066689725006">Información de solicitud web</translation>
 <translation id="3600956933576601730">Debes revisar y aceptar las condiciones para usar estas funciones</translation>
@@ -4079,7 +4076,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3807747707162121253">&amp;Cancelar</translation>
 <translation id="3808202562160426447">Atenuar el contenido en segundo plano</translation>
 <translation id="3808443763115411087">Desarrollo de apps para Android en Crostini</translation>
-<translation id="3808617121485025547">Más información para bloquear las cookies de terceros</translation>
 <translation id="38089336910894858">Mostrar una advertencia antes de salir con ⌘Q</translation>
 <translation id="3809272675881623365">Conejo</translation>
 <translation id="3809280248639369696">Alien</translation>
@@ -4339,7 +4335,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3975565978598857337">Comunicándose con el servidor debido a un error en el dominio</translation>
 <translation id="3976108569178263973">No hay impresoras disponibles.</translation>
 <translation id="397703832102027365">Finalizando...</translation>
-<translation id="3977145907578671392">Es posible que las funciones de algunos sitios no funcionen en el modo Incógnito.</translation>
 <translation id="3977886311744775419">Las actualizaciones automáticas no se descargan en este tipo de red, pero puedes buscar actualizaciones de forma manual.</translation>
 <translation id="3978325380690188371">Las teclas especiales no están disponibles cuando ChromeVox está activado</translation>
 <translation id="3978732922947854545">Chrome mejora los PDF</translation>
@@ -5728,6 +5723,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="496742804571665842">Inhabilitar perfiles de eSIM</translation>
 <translation id="4967571733817147990">Personalizar los botones del mouse</translation>
 <translation id="4967852842111017386">Nombre del dispositivo de <ph name="FEATURE_NAME" /></translation>
+<translation id="4968994772848295474">No se admiten las instalaciones de apps web en el Modo de invitado</translation>
 <translation id="4971412780836297815">Abrir al finalizar</translation>
 <translation id="4972129977812092092">Editar impresora</translation>
 <translation id="4972164225939028131">Contraseña incorrecta</translation>
@@ -6607,6 +6603,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="560834977503641186">Sincronización Wi-Fi, Más información</translation>
 <translation id="5608580678041221894">Presionar las siguientes teclas para ajustar o mover el área recortada</translation>
 <translation id="5609231933459083978">Parece que la aplicación no es válida.</translation>
+<translation id="5610759359710387751">Chrome para ti</translation>
 <translation id="5610867721023328944">Vuelve a intentarlo o selecciona uno de los temas disponibles a continuación.</translation>
 <translation id="5611398002774823980">Guardar en la cuenta</translation>
 <translation id="5611399285717843500">Ayuda a mejorar las funciones y el rendimiento de Chrome y ChromeOS. Se quita la información personal cuando se recopilan estos datos.</translation>
@@ -10505,6 +10502,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8340547030807793004">Más acciones para <ph name="DEVICE" /></translation>
 <translation id="8341804784147620576">Mostrar atajos de búsqueda</translation>
 <translation id="8342221978608739536">No lo intenté</translation>
+<translation id="8342387517402567689">No se admiten las instalaciones de apps web en el modo Incógnito</translation>
 <translation id="8342861492835240085">Seleccionar una colección</translation>
 <translation id="8345848587667658367">Ahora puedes ver las apps, las notificaciones, el contenido multimedia y las fotos recientes de tu teléfono</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
@@ -10828,7 +10826,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8573111744706778015">Escribe "uo7" para obtener "ươ"</translation>
 <translation id="8574990355410201600">Permitir siempre el sonido en <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Mantén presionada la tecla <ph name="KEY_EQUIVALENT" /> para salir</translation>
-<translation id="8576359558126669548">Más información para bloquear cookies de terceros en el modo Incógnito</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Agregar la pestaña a la lista de lectura}other{Agregar las pestañas a la lista de lectura}}</translation>
 <translation id="8577052309681449949">Clics automáticos, tamaño del cursor, color del cursor y más</translation>
 <translation id="8578639784464423491">No se pueden superar las 99 letras</translation>
@@ -11143,7 +11140,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8777628254805677039">contraseña de raíz</translation>
 <translation id="8779720597365936419">Sí, mantener mis datos separados de los del trabajo (recomendado)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Los sitios solo pueden utilizar las cookies para ver la actividad de navegación que realices en ellos</translation>
 <translation id="8780123805589053431">Obtener descripciones de imágenes de Google</translation>
 <translation id="8780443667474968681">Se desactivó la búsqueda por voz.</translation>
 <translation id="8781834595282316166">Nueva pestaña en el grupo</translation>

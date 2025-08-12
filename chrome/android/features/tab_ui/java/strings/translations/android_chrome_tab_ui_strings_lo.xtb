@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{ສ້າງເມື່ອ <ph name="NUM_YEARS_ONE" /> ປີກ່ອນ}other{ສ້າງເມື່ອ <ph name="NUM_YEARS_MANY" /> ປີກ່ອນ}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{ແຖບ ແລະ ກຸ່ມທີ່ບໍ່ເຄື່ອນໄຫວຈະຖືກປິດຫຼັງຈາກ 1 ເດືອນ}other{ແຖບ ແລະ ກຸ່ມທີ່ບໍ່ເຄື່ອນໄຫວຈະຖືກປິດຫຼັງຈາກ <ph name="MONTH_COUNT_MANY" /> ເດືອນ}}</translation>
 <translation id="1173894706177603556">ໃສ່ຊື່ໃໝ່</translation>
-<translation id="1197088940767939838">ສີໝາກກ້ຽງ</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{ເປີດ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TAB_COUNT2" /> ແຖບ}other{ເປີດ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TAB_COUNT2" /> ແຖບ}}</translation>
 <translation id="1273910660700874265">ຕົວເລືອກກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1300188005269437765">ເລືອກເວລາທີ່ແຖບ ແລະ ກຸ່ມແຖບຖືກຍ້າຍໄປໃສ່ພາກສ່ວນທີ່ບໍ່ເຄື່ອນໄຫວໂດຍອັດຕະໂນມັດ.</translation>
@@ -20,8 +19,6 @@
 <translation id="1499635324672558517">ປິດແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນທັງໝົດບໍ?</translation>
 <translation id="1501480321619201731">ລຶບກຸ່ມ</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ລາຍການທີ່ບໍ່ໄດ້ນຳໃຊ້}other{<ph name="TABS_COUNT_MANY" /> ລາຍການທີ່ບໍ່ໄດ້ນຳໃຊ້}}</translation>
-<translation id="1555130319947370107">ສີ​ຟ້າ</translation>
-<translation id="161042844686301425">ສີຟ້າຂຽວ</translation>
 <translation id="1645759014353344461">ຈັດກຸ່ມ <ph name="TABS_COUNT_MANY" /> ແຖບແລ້ວ</translation>
 <translation id="1657719826150349398">ຍ້າຍແຖບລົງ</translation>
 <translation id="1697284962337958118">ເພີ່ມໃສ່</translation>
@@ -88,7 +85,6 @@
 <translation id="4076226664360336092">ລາຍຊື່ກຸ່ມແຖບທີ່ເປີດຢູ່ລະດັບຄວາມສູງເຕັມໜ້າຈໍ</translation>
 <translation id="4133493477912226187">ເບິ່ງຄືວ່າມີ <ph name="NUMBER_OF_TABS" /> ແຖບກ່ຽວຂ້ອງກັນ. ຈັດກຸ່ມພວກມັນບໍ?</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{ປິດກຸ່ມ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TABS_COUNT_ONE" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}other{ປິດກຸ່ມ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TABS_COUNT_MANY" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}}</translation>
-<translation id="4159784952369912983">ສີມ່ວງ</translation>
 <translation id="4203448675570432781">ປິດປະກາດກ່ຽວກັບການປ່ຽນແປງການລຶບແຖບອັດຕະໂນມັດແລ້ວ.</translation>
 <translation id="427987768447457592">ກຸ່ມແຖບໃໝ່</translation>
 <translation id="4371591986692297148">ບໍ່ໄດ້ນຳໃຊ້</translation>
@@ -117,7 +113,6 @@
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome ຈະປິດແຖບ ແລະ ກຸ່ມແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ໂດຍອັດຕະໂນມັດຫຼັງຈາກຜ່ານໄປ <ph name="AUTO_DELETE_DELAY_ONE" /> ເດືອນ. ທ່ານສາມາດປ່ຽນຄ່ານີ້ໄດ້ໃນການຕັ້ງຄ່າ.}other{Chrome ຈະປິດແຖບ ແລະ ກຸ່ມແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ໂດຍອັດຕະໂນມັດຫຼັງຈາກຜ່ານໄປ <ph name="AUTO_DELETE_DELAY_MANY" /> ເດືອນ. ທ່ານສາມາດປ່ຽນຄ່ານີ້ໄດ້ໃນການຕັ້ງຄ່າ.}}</translation>
 <translation id="5339733443032484186">ແຖບສຸດທ້າຍຂອງທ່ານ</translation>
 <translation id="5380159289133845234">ເກັບແຖບທີ່ຊ້ຳກັນໄວ້ໃນແຟ້ມ</translation>
-<translation id="5400836586163650660">ສີເທົາ</translation>
 <translation id="5446043142172831860">ລຶບແຖບອອກ ແລະ ອອກຈາກກຸ່ມ</translation>
 <translation id="5490235265819901748">ຂະຫຍາຍກຸ່ມແຖບແລ້ວ</translation>
 <translation id="5494920125229734069">ເລືອກ​ທັງ​ຫມົດ</translation>
@@ -128,9 +123,7 @@
 <translation id="5746204836956568669">ຈັດກຸ່ມແຖບ <ph name="NUMBER_OF_TABS" /> ແຖບເພື່ອໃຫ້ເຮັດວຽກໄດ້ໄວຂຶ້ນບໍ?</translation>
 <translation id="5773295109010386583">ປິດລາຍການທີ່ບໍ່ເຄື່ອນໄຫວໂດຍອັດຕະໂນມັດ</translation>
 <translation id="58326064309361797">ລາກແຖບເພື່ອຈັດກຸ່ມພວກມັນ</translation>
-<translation id="5901630391730855834">ສີ​ເຫຼືອງ</translation>
 <translation id="5972844218283131174">ເຊົາເລືອກທັງໝົດ</translation>
-<translation id="6017514345406065928">ສີ​ຂຽວ</translation>
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="6051432659151380973">ກຸ່ມແຖບຂອງທ່ານຈະບັນທຶກໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6054741997831917303">ລາຄາຂອງສິນຄ້ານນີ້ຫຼຸດລົງຈາກ <ph name="PREVIOUS_PRICE" /> ເປັນ <ph name="NEW_PRICE" /> ເມື່ອບໍ່ດົນມານີ້</translation>
@@ -188,7 +181,6 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ ການຈັດອັນດັບ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> ຄຳຕິຊົມ}other{ການຈັດອັນດັບ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ຄຳຕິຊົມ}}</translation>
 <translation id="7885132941432959125">ຍ້າຍແຖບໄປເບື້ອງຂວາ</translation>
 <translation id="7939917283308035850">ບໍ່ໄດ້ເລືອກ <ph name="COLOR_NAME" /></translation>
-<translation id="7942349550061667556">ສີ​ແດງ</translation>
 <translation id="7961015016161918242">ບໍ່​ເລີຍ</translation>
 <translation id="7966321538264951561">ປິດການແນະນຳໄວ້.</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{ຍ້າຍແຖບໄປຫາໜ້າຈໍໃໝ່}other{ຍ້າຍແຖບໄປຫາໜ້າຈໍອື່ນ}}</translation>
@@ -224,6 +216,5 @@
 <translation id="9187834032751045001">ປະກາດກ່ຽວກັບການລຶບແຖບອັດຕະໂນມັດຢູ່ລະດັບຄວາມສູງເຄິ່ງໜ້າຈໍ.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{ຂະຫຍາຍກຸ່ມແຖບດ້ວຍ <ph name="TABS_COUNT_ONE" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}other{ຂະຫຍາຍກຸ່ມແຖບດ້ວຍ <ph name="TABS_COUNT_MANY" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
-<translation id="992256792861109788">ສີບົວ</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{ປິດ 1 ລາຍການທີ່ບໍ່ໄດ້ນຳໃຊ້ບໍ?}other{ປິດ <ph name="TAB_COUNT_MANY" /> ລາຍການທີ່ບໍ່ໄດ້ນຳໃຊ້ບໍ?}}</translation>
 </translationbundle>

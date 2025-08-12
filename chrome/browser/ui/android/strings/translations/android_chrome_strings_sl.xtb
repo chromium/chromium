@@ -1092,6 +1092,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="6125202119952209826">Pridružite se skupini zavihkov z osebo <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Več podrobnosti<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Element odstranjen</translation>
+<translation id="6127860394906721547">Odpiranje skupine zavihkov <ph name="TITLE_OF_GROUP" />, barva <ph name="COLOR_NAME" />, s spletnimi mesti <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimiziranje zavihka</translation>
 <translation id="6134168885321518274">Odpri vrstico za iskanje</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> zavihek}one{<ph name="TAB_COUNT_MANY" /> zavihek}two{<ph name="TAB_COUNT_MANY" /> zavihka}few{<ph name="TAB_COUNT_MANY" /> zavihki}other{<ph name="TAB_COUNT_MANY" /> zavihkov}}</translation>

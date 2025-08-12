@@ -1486,7 +1486,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="200321182559008924">Deixe suas guias organizadas</translation>
 <translation id="2003596238737586336">A programação atual está definida de <ph name="SUNRISE" /> a <ph name="SUNSET" />. Essas configurações são gerenciadas pelo administrador.</translation>
 <translation id="2004413981947727241">Use suas senhas em qualquer dispositivo.</translation>
-<translation id="2004697686368036666">Os recursos de alguns sites podem não funcionar</translation>
 <translation id="2006638907958895361">Abrir link no <ph name="APP" /></translation>
 <translation id="2007404777272201486">Informar um problema...</translation>
 <translation id="200781997903833896">Para usar a Leitura em voz alta, libere espaço no dispositivo</translation>
@@ -1970,7 +1969,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2328137272841210255">Redefina seu PIN</translation>
 <translation id="2328474416100889417">Todos vão perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />" e todos os links de convite serão desativados</translation>
 <translation id="2328561734797404498">Reinicie o dispositivo para usar o app <ph name="APP_NAME" />.</translation>
-<translation id="2328636661627946415">Quando você está no modo de navegação anônima, os sites só podem usar cookies para ver sua atividade de navegação na própria página. Os cookies são excluídos no fim da sessão de navegação anônima.</translation>
 <translation id="2329597144923131178">Faça login para que favoritos, histórico, senhas e outras configurações fiquem disponíveis em todos os seus dispositivos.</translation>
 <translation id="2330182457402792918">Selecione os arquivos que este site pode ler</translation>
 <translation id="2332115969598251205">Não é possível carregar os dispositivos salvos em <ph name="PRIMARY_EMAIL" />. Verifique sua conexão de Internet e tente novamente.</translation>
@@ -3238,7 +3236,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3226487301970807183">Ativar/desativar o painel lateral alinhado à esquerda</translation>
 <translation id="322708765617468434">É possível adicionar mais alguém ao dispositivo após a configuração. Cada pessoa pode personalizar a própria experiência e manter os dados privados.</translation>
 <translation id="3227137524299004712">Microfone</translation>
-<translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Remova ou substitua por extensões semelhantes da <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}one{Remova ou substitua por extensões semelhantes da <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}other{Remova ou substitua por extensões semelhantes da <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}}</translation>
+<translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Remova ou substitua por extensões semelhantes da <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}one{Remova ou substitua por extensões semelhantes da <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}other{Remova ou substitua por extensões semelhantes da <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Confira a data</translation>
 <translation id="3230539834943294477">Encontar artigos de ajuda ou suporte para dispositivos</translation>
 <translation id="3232168089952388105">Compartilhar informações sobre o dispositivo?</translation>
@@ -3760,7 +3758,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3593953853060020305">Permitir que este site edite <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Restrições de nome do certificado</translation>
 <translation id="3596012367874587041">Configurações do app</translation>
-<translation id="3596414637720633074">Bloquear cookies de terceiros na navegação anônima</translation>
 <translation id="3599221874935822507">Em relevo</translation>
 <translation id="3600051066689725006">Informações sobre a solicitação da Web</translation>
 <translation id="3600956933576601730">Você precisa ler e aceitar os termos para usar estes recursos</translation>
@@ -4096,7 +4093,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3807747707162121253">&amp;Cancelar</translation>
 <translation id="3808202562160426447">Escurecer conteúdo em segundo plano</translation>
 <translation id="3808443763115411087">Desenvolvimento de apps Android no Crostini</translation>
-<translation id="3808617121485025547">Mais informações sobre como bloquear cookies de terceiros</translation>
 <translation id="38089336910894858">Mostrar aviso antes de sair com ⌘Q</translation>
 <translation id="3809272675881623365">Coelho</translation>
 <translation id="3809280248639369696">Lunar</translation>
@@ -4356,7 +4352,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3975565978598857337">Falha ao entrar em contato com o servidor desse domínio</translation>
 <translation id="3976108569178263973">Não há impressoras disponíveis.</translation>
 <translation id="397703832102027365">Finalizando...</translation>
-<translation id="3977145907578671392">Os recursos de alguns sites podem não funcionar na navegação anônima</translation>
 <translation id="3977886311744775419">Não é possível fazer o download das atualizações automáticas neste tipo de rede, mas você pode verificar as atualizações manualmente.</translation>
 <translation id="3978325380690188371">As teclas de aderência não ficam disponíveis quando o ChromeVox está ativado</translation>
 <translation id="3978732922947854545">O Chrome melhora os PDFs</translation>
@@ -5745,6 +5740,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="496742804571665842">Desativar perfis de eSIM</translation>
 <translation id="4967571733817147990">Personalizar botões do mouse</translation>
 <translation id="4967852842111017386">Nome do dispositivo do <ph name="FEATURE_NAME" /></translation>
+<translation id="4968994772848295474">Não é possível instalar apps da Web no modo convidado</translation>
 <translation id="4971412780836297815">Abrir quando estiver concluído</translation>
 <translation id="4972129977812092092">Editar impressora</translation>
 <translation id="4972164225939028131">Senha incorreta</translation>
@@ -6624,6 +6620,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="560834977503641186">Saiba mais sobre o Sincronizar Wi-Fi</translation>
 <translation id="5608580678041221894">Toque nas teclas a seguir para ajustar ou mover a área de corte</translation>
 <translation id="5609231933459083978">Este aplicativo parece ser inválido.</translation>
+<translation id="5610759359710387751">O Chrome é seu</translation>
 <translation id="5610867721023328944">Tente de novo ou selecione um dos temas disponíveis abaixo.</translation>
 <translation id="5611398002774823980">Salvar na conta</translation>
 <translation id="5611399285717843500">Ajude a melhorar os recursos e o desempenho do Chrome e do ChromeOS. As informações pessoais são removidas durante a coleta desses dados.</translation>
@@ -7526,6 +7523,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6257602895346497974">Ativar a sincronização…</translation>
 <translation id="625827534921607067">Esta rede terá preferência se mais de uma rede conectada ou configurada anteriormente estiver disponível</translation>
 <translation id="6259776178973198997">Atualizar informações dos proprietários do Wi-Fi Direct</translation>
+<translation id="6261688934280090835">Registros de aplicativos de quiosque do ChromeOS</translation>
 <translation id="6262371516389954471">Seus backups são enviados para o Google e criptografados usando a senha da sua Conta do Google.</translation>
 <translation id="6263082573641595914">Versão da autoridade de certificação da Microsoft</translation>
 <translation id="6263284346895336537">Não crítico</translation>
@@ -10524,6 +10522,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8340547030807793004">Mais ações para o dispositivo <ph name="DEVICE" /></translation>
 <translation id="8341804784147620576">Mostrar atalhos de pesquisa</translation>
 <translation id="8342221978608739536">Não tentei</translation>
+<translation id="8342387517402567689">Não é possível instalar apps da Web no modo de navegação anônima</translation>
 <translation id="8342861492835240085">Selecione uma coleção</translation>
 <translation id="8345848587667658367">Agora, você pode ver apps, mídias, notificações e fotos recentes do seu smartphone</translation>
 <translation id="8347227221149377169">Trabalhos de impressão</translation>
@@ -10847,7 +10846,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8573111744706778015">Digite "uo7" para inserir "ươ"</translation>
 <translation id="8574990355410201600">Sempre permitir som em <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Pressione e segure <ph name="KEY_EQUIVALENT" /> para sair.</translation>
-<translation id="8576359558126669548">Saiba mais sobre como bloquear cookies de terceiros no modo de navegação anônima</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Adicionar guia à lista de leitura}one{Adicionar guia à lista de leitura}other{Adicionar guias à lista de leitura}}</translation>
 <translation id="8577052309681449949">Cliques automáticos, tamanho do cursor, cor do cursor e muito mais</translation>
 <translation id="8578639784464423491">Não pode exceder 99 letras</translation>
@@ -11163,7 +11161,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8777628254805677039">senha raiz</translation>
 <translation id="8779720597365936419">Sim, manter meus dados separados dos profissionais (recomendado)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Os sites só podem usar os cookies para ver sua atividade de navegação na própria página</translation>
 <translation id="8780123805589053431">Ver descrições de imagens do Google</translation>
 <translation id="8780443667474968681">A pesquisa por voz foi desativada.</translation>
 <translation id="8781834595282316166">Nova guia no grupo</translation>

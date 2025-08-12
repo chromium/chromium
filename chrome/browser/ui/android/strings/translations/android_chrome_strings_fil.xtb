@@ -1092,6 +1092,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="6125202119952209826">Sumali sa grupo ng tab kasama ni <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Higit pang detalye<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Inalis ang item</translation>
+<translation id="6127860394906721547">Buksan ang grupo ng tab na <ph name="TITLE_OF_GROUP" />, na kulay <ph name="COLOR_NAME" />, na may mga site na <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">I-minimize ang tab</translation>
 <translation id="6134168885321518274">Buksan ang Bar sa Paghahanap</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}one{<ph name="TAB_COUNT_MANY" /> tab}other{<ph name="TAB_COUNT_MANY" /> na tab}}</translation>

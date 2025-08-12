@@ -120,7 +120,9 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="2379925928934107488">Aplică tema întunecată pe site-uri când Chrome folosește tema întunecată, dacă este posibil</translation>
 <translation id="2390272837142897736">Mărește nivelul de zoom</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Exactă</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt permise}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt permise}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt permise}}</translation>
+<translation id="2404857459073803936">Accesul la locație pentru acest site</translation>
 <translation id="2410940059315936967">Un site pe care îl accesezi poate încorpora conținut de pe alte site-uri, de exemplu, imagini, anunțuri și text. Cookie-urile setate de aceste alte site-uri se numesc cookie-uri terță parte.</translation>
 <translation id="2411116727035790889">Activează comenzile rapide</translation>
 <translation id="2433507940547922241">Aspect</translation>
@@ -276,6 +278,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="3992684624889376114">Despre această pagină</translation>
 <translation id="4002066346123236978">Titlu</translation>
 <translation id="4031179711345676612">Microfonul este permis</translation>
+<translation id="4042597221652780603">Aproximativă</translation>
 <translation id="4046123991198612571">Melodia următoare</translation>
 <translation id="4077310749977440510">Site-urile citesc de obicei clipboardul pentru a face acțiuni precum păstrarea formatării textului pe care l-ai copiat</translation>
 <translation id="4082080074595021446">Excepțiile pentru anumite site-uri nu sunt permise deoarece dispozitivul Android nu are suficientă memorie RAM.</translation>

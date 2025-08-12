@@ -1092,6 +1092,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="6125202119952209826">Bergabung ke grup tab dengan <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Detail selengkapnya<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Item dihapus</translation>
+<translation id="6127860394906721547">Buka grup tab <ph name="TITLE_OF_GROUP" />, warna <ph name="COLOR_NAME" />, dengan situs <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Perkecil tab</translation>
 <translation id="6134168885321518274">Buka Kolom Cari</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tab}}</translation>

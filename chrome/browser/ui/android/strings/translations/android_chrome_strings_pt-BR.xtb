@@ -1093,6 +1093,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="6125202119952209826">Participe do grupo de guias com <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Mais detalhes<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Item removido</translation>
+<translation id="6127860394906721547">Abrir o grupo de guias <ph name="TITLE_OF_GROUP" />, na cor <ph name="COLOR_NAME" />, com os sites <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimizar guia</translation>
 <translation id="6134168885321518274">Abrir barra "Localizar"</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> guia}one{<ph name="TAB_COUNT_MANY" /> guia}other{<ph name="TAB_COUNT_MANY" /> guias}}</translation>

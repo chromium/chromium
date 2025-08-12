@@ -1476,7 +1476,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="200321182559008924">Gardez vos onglets bien rangés</translation>
 <translation id="2003596238737586336">La programmation actuelle est définie de <ph name="SUNRISE" /> à <ph name="SUNSET" />. Ce paramètre est géré par votre administrateur.</translation>
 <translation id="2004413981947727241">Utiliser vos mots de passe sur n'importe quel appareil</translation>
-<translation id="2004697686368036666">Des fonctionnalités de certains sites pourraient ne pas fonctionner</translation>
 <translation id="2006638907958895361">Ouvrir le lien dans <ph name="APP" /></translation>
 <translation id="2007404777272201486">Signaler un problème...</translation>
 <translation id="200781997903833896">Pour utiliser la Lecture à voix haute, libérez de l'espace sur votre appareil</translation>
@@ -1957,7 +1956,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2328137272841210255">Réinitialiser votre NIP</translation>
 <translation id="2328474416100889417">Tout le monde perdra immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et tous les liens d'invitation seront désactivés.</translation>
 <translation id="2328561734797404498">Veuillez redémarrer votre appareil pour utiliser <ph name="APP_NAME" />.</translation>
-<translation id="2328636661627946415">Quand vous êtes en mode de navigation privée, les sites peuvent uniquement utiliser des témoins pour connaître votre activité de navigation sur leur propre site. Les témoins sont supprimés à la fin de la session de navigation privée.</translation>
 <translation id="2329597144923131178">Connectez-vous pour synchroniser favoris, historique, mots de passe et autres sur vos appareils.</translation>
 <translation id="2330182457402792918">Sélectionner les fichiers que ce site peut lire</translation>
 <translation id="2332115969598251205">Impossible de charger les appareils enregistrés avec <ph name="PRIMARY_EMAIL" />. Vérifiez votre connexion Internet et réessayez.</translation>
@@ -3749,7 +3747,6 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3593953853060020305">Autoriser ce site à modifier <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Contraintes de nom de certificat</translation>
 <translation id="3596012367874587041">Paramètres de l'application</translation>
-<translation id="3596414637720633074">Bloquer les témoins tiers en navigation privée</translation>
 <translation id="3599221874935822507">Surélevé</translation>
 <translation id="3600051066689725006">Renseignements sur la demande Web</translation>
 <translation id="3600956933576601730">Vous devez lire et accepter les conditions d'utilisation pour utiliser ces fonctionnalités</translation>
@@ -4085,7 +4082,6 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3807747707162121253">&amp;Annuler</translation>
 <translation id="3808202562160426447">Assombrir le contenu en arrière-plan</translation>
 <translation id="3808443763115411087">Conception d'applications Android pour Crostini</translation>
-<translation id="3808617121485025547">En savoir plus sur le blocage des témoins tiers</translation>
 <translation id="38089336910894858">Afficher un avertissement avant de quitter à l'aide de ⌘Q</translation>
 <translation id="3809272675881623365">Lapin</translation>
 <translation id="3809280248639369696">Extraterrestre</translation>
@@ -4345,7 +4341,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3975565978598857337">Échec de la tentative de contact du serveur associé à ce domaine</translation>
 <translation id="3976108569178263973">Il n'y a aucune imprimante à proximité.</translation>
 <translation id="397703832102027365">Finalisation en cours...</translation>
-<translation id="3977145907578671392">Les fonctionnalités de certains sites peuvent ne pas fonctionner en mode de navigation privée</translation>
 <translation id="3977886311744775419">Les mises à jour automatiques ne seront pas téléchargées sur ce type de réseau, mais vous pouvez vérifier manuellement la présence de mises à jour.</translation>
 <translation id="3978325380690188371">Les touches rémanentes ne sont pas disponibles lorsque ChromeVox est activé</translation>
 <translation id="3978732922947854545">Chrome améliore les fichiers PDF</translation>
@@ -6612,6 +6607,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="560834977503641186">Synchronisation Wi-Fi, en savoir plus</translation>
 <translation id="5608580678041221894">Touchez les touches suivantes pour ajuster ou déplacer la zone de recadrage</translation>
 <translation id="5609231933459083978">L'application ne semble pas valide.</translation>
+<translation id="5610759359710387751">Adoptez Chrome</translation>
 <translation id="5610867721023328944">Réessayez ou sélectionnez l'un des thèmes proposés ci-dessous.</translation>
 <translation id="5611398002774823980">Enregistrer dans le compte</translation>
 <translation id="5611399285717843500">Contribuez à améliorer les fonctionnalités et les performances de Chrome et de Chrome OS. Les renseignements personnels sont retirés lors de la collecte de ces données.</translation>
@@ -10539,7 +10535,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8363277452449582220">Océan</translation>
 <translation id="8366396658833131068">Votre connexion réseau est rétablie. Veuillez sélectionner un autre réseau ou appuyer sur « Continuer » ci-dessous pour lancer votre application de kiosque.</translation>
 <translation id="8366694425498033255">Touches de sélection</translation>
-<translation id="8367705492654390392">Poser une question</translation>
+<translation id="8367705492654390392">Posez une question</translation>
 <translation id="8368859634510605990">&amp;Ouvrir tous les favoris</translation>
 <translation id="8370294614544004647">Mettre en veille à la fermeture du couvercle</translation>
 <translation id="8370419414641876532">Cliquez sur « Mots de passe et remplissage automatique »</translation>
@@ -10834,7 +10830,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8573111744706778015">Tapez « uo7 » pour obtenir « ươ »</translation>
 <translation id="8574990355410201600">Toujours autoriser le son sur <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Maintenez la touche <ph name="KEY_EQUIVALENT" /> enfoncée pour quitter.</translation>
-<translation id="8576359558126669548">En savoir plus sur le blocage des témoins tiers en mode de navigation privée</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Ajouter l'onglet à la liste de lecture}one{Ajouter l'onglet à la liste de lecture}other{Ajouter les onglets à la liste de lecture}}</translation>
 <translation id="8577052309681449949">Clics automatiques, taille du curseur, couleur du curseur, et plus</translation>
 <translation id="8578639784464423491">Impossible de dépasser 99 lettres</translation>
@@ -11149,7 +11144,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8777628254805677039">mot de passe racine</translation>
 <translation id="8779720597365936419">Oui, séparer mes données de mon profil professionnel (recommandé)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Les sites ont uniquement recours aux témoins pour connaître votre activité de navigation sur leurs propres pages</translation>
 <translation id="8780123805589053431">Obtenir les descriptions d'image de Google</translation>
 <translation id="8780443667474968681">La recherche vocale a été désactivée.</translation>
 <translation id="8781834595282316166">Nouvel onglet dans le groupe</translation>

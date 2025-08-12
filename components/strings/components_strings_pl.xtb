@@ -700,6 +700,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2154484045852737596">Edytowanie karty</translation>
 <translation id="2154739667870063220">Zrestartuj</translation>
 <translation id="2155260325161282517">5 x 7 cali</translation>
+<translation id="2156467141257470387">Zapisanych adresów możesz używać w różnych usługach Google. Nie spowoduje to zmiany obecnego adresu służbowego. Adres zostanie zapisany na Twoim koncie Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2157640075051554492">Powiadomienia ze śledzenia cen</translation>
 <translation id="21613918653299710">Galerie obrazów online</translation>
 <translation id="2161656808144014275">Tekstowe</translation>
@@ -2997,6 +2998,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5984570616552610254">Wilgotność w komorze</translation>
 <translation id="598637245381783098">Nie można otworzyć aplikacji do płatności</translation>
 <translation id="5989320800837274978">Nie określono ani stałych serwerów proxy, ani adresu URL skryptu PAC.</translation>
+<translation id="5989917734461988169">Zapisanych adresów możesz używać w różnych usługach Google. Nie spowoduje to zmiany obecnego adresu domowego. Adres zostanie zapisany na Twoim koncie Google (<ph name="ACCOUNT" />).</translation>
 <translation id="5992691462791905444">Składanie typu Z</translation>
 <translation id="5992805036496113940">Zobacz informacje używane do wyświetlania Ci reklam</translation>
 <translation id="5995727681868049093">Zarządzaj swoimi danymi, prywatnością i bezpieczeństwem na koncie Google</translation>
@@ -4898,6 +4900,7 @@ Dodatkowe informacje:
 <translation id="9139318394846604261">Zakupy</translation>
 <translation id="9140198744651252040">Przeglądarka Chrome chce używać odcisku palca do autouzupełniania haseł</translation>
 <translation id="9141013498910525015">Zarządzaj adresami</translation>
+<translation id="9141435142213469335">Zapisz adres z dodatkowymi informacjami</translation>
 <translation id="9141672681283222114">Przyznano jednorazowy dostęp do rzeczywistości rozszerzonej</translation>
 <translation id="9143898823728499852">Dane tej karty mogą być uzupełniane automatycznie, ponieważ Twoje konto <ph name="CARD_ISSUER_NAME" /> jest połączone z Google Pay</translation>
 <translation id="9144951720726881238">Data wygaśnięcia:</translation>

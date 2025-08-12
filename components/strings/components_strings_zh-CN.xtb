@@ -1668,6 +1668,7 @@
 <translation id="3744899669254331632">您目前无法访问 <ph name="SITE" />，因为此网站发送了 Chromium 无法处理的杂乱凭据。网络错误和攻击通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
 <translation id="3745599309295009257">系统会将您撰写的文字以及您书写时所在网页的内容和网址发送给 Google，然后由人工审核者进行审核，用来改进此功能。避免输入个人信息（如医疗或财务详细信息）或在包含私密信息或敏感信息的网站上使用此工具。</translation>
 <translation id="3748009735914587286">金属（高光）</translation>
+<translation id="3749600200023337912">系统可能会使用您已保存的自动支付方式支付此款项。如需在 Chrome 中关闭电子钱包或这款支付应用，请前往<ph name="BEGIN_LINK1" />支付设置<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">是否将地址保存到账号？</translation>
 <translation id="3752543821772132562">已忽略，因为未设置 <ph name="POLICY_NAME" />。</translation>
 <translation id="3754210790023674521">退出“画中画”模式</translation>
@@ -1684,7 +1685,7 @@
 <translation id="3781428340399460090">艳粉色</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">蓝牙设备</translation>
-<translation id="3785246317262748285">您通常可以安全地连接到网站，但目前 Chrome 无法使用安全连接。攻击者可能会试图窃听或修改您的网络连接。<ph name="LEARN_MORE" /></translation>
+<translation id="3785246317262748285">您通常可以安全地连接到网站，但目前 Chrome 无法使用安全连接。攻击者可能会试图窃听或篡改您的网络连接。<ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">与“<ph name="SEARCH_QUERY" />”最相符的搜索结果</translation>
 <translation id="3789155188480882154">大小：16</translation>
 <translation id="3789841737615482174">安装</translation>
@@ -2009,6 +2010,7 @@
 <translation id="4297937944457164390">已更新<ph name="ATTRIBUTE_NAME" /></translation>
 <translation id="4298000214066716287">投资</translation>
 <translation id="42981349822642051">展开</translation>
+<translation id="4298148761711700950">无需上传二维码就能即时付款</translation>
 <translation id="4298925811540301889">此网站的 Cookie 会在您的 ChromeOS 设备之间同步。如需管理同步内容，请前往<ph name="SYNC_SETTINGS" />。</translation>
 <translation id="4300272766492248925">打开应用</translation>
 <translation id="4300675098767811073">多孔（右侧）</translation>
@@ -2746,6 +2748,7 @@
 <translation id="5540969246441091044">马术</translation>
 <translation id="5541086400771735334">信箱 7</translation>
 <translation id="5541546772353173584">添加电子邮件地址</translation>
+<translation id="5543452229212526547">您的文本以及您撰写时所在网页的内容和网址会发送给 Google。人工审核员不会使用您的内容来改进 AI 技术。您的组织可能会随时更改这些设置。</translation>
 <translation id="5543564889050342791">动物园、水族馆与保护区</translation>
 <translation id="5543722831081909240">180 度</translation>
 <translation id="5544836308113951378">乘船游览与租船</translation>
@@ -3121,6 +3124,8 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184099524311454384">搜索标签页</translation>
 <translation id="6184868291074982484">Chrome 会自动限制第三方 Cookie</translation>
+<translation id="6189351761800074311">您的文本和网页内容会发送给 Google，但不会用于改进 AI。
+    <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">替换键盘上的某些键（例如 Esc 键）</translation>
 <translation id="6194209731893739467">您跟踪的所有商品都会显示在此处</translation>
 <translation id="6195371403461054755">地质学</translation>
@@ -3484,7 +3489,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">按照家长选择的设置使用 YouTube</translation>
 <translation id="6779348349813025131">Google 密码管理工具需要获权访问 MacOS 钥匙串</translation>
-<translation id="6780449997190414928">您通常可以安全地连接到此网站，但目前 Chrome 无法使用安全连接。攻击者可能会试图窃听或修改您的网络连接。<ph name="LEARN_MORE" /></translation>
+<translation id="6780449997190414928">您通常可以安全地连接到此网站，但目前 Chrome 无法使用安全连接。攻击者可能会试图窃听或篡改您的网络连接。<ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">您可以随时在 Chrome 的设置中更改搜索引擎。</translation>
 <translation id="6786145470008421571">6 x 9 英寸信封</translation>
 <translation id="67862343314499040">紫罗兰色</translation>
@@ -3550,6 +3555,7 @@
 <translation id="6890956352250146925">Cookie 和网站数据的相关选项</translation>
 <translation id="6891596781022320156">政策级别不受支持。</translation>
 <translation id="6893057134494550310">层压膜</translation>
+<translation id="6893204630281237373">如需在 Chrome 中关闭这款支付应用，请前往<ph name="BEGIN_LINK1" />支付设置<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">已确认您的信用卡</translation>
 <translation id="6896758677409633944">复制</translation>
 <translation id="6897140037006041989">用户代理</translation>
@@ -3782,7 +3788,7 @@
 <translation id="7257453341537973799">职业资源与规划</translation>
 <translation id="725866823122871198">您计算机的日期和时间（<ph name="DATE_AND_TIME" />）不正确，因此无法与 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私密连接。</translation>
 <translation id="7260075294900977274">一个新的智能文件夹，可帮助您在一个地方集中保存所有购物页面，并自动跟踪价格、获取价格分析洞见，等等</translation>
-<translation id="7264942008235065057">由于您已加入 Google 的高级保护计划，此网站将继续被屏蔽。<ph name="LEARN_MORE" /></translation>
+<translation id="7264942008235065057">由于您已加入 Google 的高级保护计划，此网站将被屏蔽。<ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">地址只能保存在该设备上</translation>
 <translation id="7269151392155523061">下述快捷字词不能与 <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> 所定义的搜索聚合器关键字相同：<ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">系统会将您下载的文件发送给 Google Cloud 或第三方以供分析。例如，这些文件可能会被扫描以确定其是否包含敏感数据或恶意软件，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
@@ -4438,7 +4444,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">虚拟卡注册对话框已全屏打开</translation>
-<translation id="834805203690963649">攻击者可以查看和更改您通过该网站发送或接收的信息。</translation>
+<translation id="834805203690963649">攻击者能够查看和篡改您通过该网站发送或接收的信息。</translation>
 <translation id="8349305172487531364">书签栏</translation>
 <translation id="8350416046273606058">快捷字词不得包含空格：“<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="8351131234907093545">创建记事</translation>

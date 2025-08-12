@@ -1092,6 +1092,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="6125202119952209826">Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Altri dettagli<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Elemento rimosso</translation>
+<translation id="6127860394906721547">Apri il gruppo di schede <ph name="TITLE_OF_GROUP" />, colore <ph name="COLOR_NAME" />, con i siti <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Riduci a icona la scheda</translation>
 <translation id="6134168885321518274">Apri la barra di ricerca</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> scheda}other{<ph name="TAB_COUNT_MANY" /> schede}}</translation>

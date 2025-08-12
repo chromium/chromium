@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Създадено преди <ph name="NUM_YEARS_ONE" /> година}other{Създадено преди <ph name="NUM_YEARS_MANY" /> години}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Неактивните раздели и групи ще бъдат затворени след 1 месец}other{Неактивните раздели и групи ще бъдат затворени след <ph name="MONTH_COUNT_MANY" /> месеца}}</translation>
 <translation id="1173894706177603556">Преименуване</translation>
-<translation id="1197088940767939838">оранжево</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Отваряне на „<ph name="TITLE_OF_GROUP" />“ с <ph name="TAB_COUNT2" /> раздел}other{Отваряне на „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="TAB_COUNT2" /> раздела}}</translation>
 <translation id="1273910660700874265">Опции за групата раздели „<ph name="TITLE_OF_GROUP" />“</translation>
 <translation id="1300188005269437765">Изберете кога разделите и групите раздели да се преместват автоматично в секцията за неактивни.</translation>
@@ -20,8 +19,6 @@
 <translation id="1499635324672558517">Да се затворят ли всички раздели в режим „инкогнито“?</translation>
 <translation id="1501480321619201731">Изтриване на групата</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактивен елемент}other{<ph name="TABS_COUNT_MANY" /> неактивни елемента}}</translation>
-<translation id="1555130319947370107">Синьо</translation>
-<translation id="161042844686301425">синьозелено</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> раздела са групирани</translation>
 <translation id="1657719826150349398">Преместване на раздела надолу</translation>
 <translation id="1697284962337958118">Добавяне към</translation>
@@ -63,6 +60,7 @@
 <translation id="2894757982205307093">Нов раздел в групата</translation>
 <translation id="2918484639460781603">Към настройките</translation>
 <translation id="2928243913527329289">Google | Всичко за този магазин</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{Избрахте <ph name="ITEMS_COUNT_ONE" />}other{Избрахте <ph name="ITEMS_COUNT_MANY" />}}</translation>
 <translation id="3008554597174452548">Спиране на следенето на продукта</translation>
 <translation id="3026391124054406831">Създайте групи, за да организирате разделите си.</translation>
 <translation id="3051031624272448591">Винаги можете да отворите съответните раздели от историята</translation>
@@ -87,7 +85,6 @@
 <translation id="4076226664360336092">Списъкът с групите раздели е отворен на пълната височина</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> раздела изглеждат сродни. Искате ли да ги групирате?</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Затваряне на групата „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_ONE" /> раздел.}other{Затваряне на групата „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
-<translation id="4159784952369912983">лилаво</translation>
 <translation id="4203448675570432781">Съобщението за промените в автоматичното изтриване на раздели е затворено.</translation>
 <translation id="427987768447457592">Нова група раздели</translation>
 <translation id="4371591986692297148">Неактивно</translation>
@@ -116,7 +113,6 @@
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome автоматично затваря неактивните раздели и групи раздели след <ph name="AUTO_DELETE_DELAY_ONE" /> месец. Можете да промените това от настройките.}other{Chrome автоматично затваря неактивните раздели и групи раздели след <ph name="AUTO_DELETE_DELAY_MANY" /> месеца. Можете да промените това от настройките.}}</translation>
 <translation id="5339733443032484186">Последният ви раздел</translation>
 <translation id="5380159289133845234">Архивиране на дублиращите се раздели</translation>
-<translation id="5400836586163650660">сиво</translation>
 <translation id="5446043142172831860">Премахване на раздела и напускане на групата</translation>
 <translation id="5490235265819901748">Групата с раздели е разгъната</translation>
 <translation id="5494920125229734069">Избиране на всички</translation>
@@ -127,9 +123,7 @@
 <translation id="5746204836956568669">Искате ли да групирате <ph name="NUMBER_OF_TABS" /> раздела, за да работите по-бързо?</translation>
 <translation id="5773295109010386583">Автоматично затваряне на неактивните елементи</translation>
 <translation id="58326064309361797">Преместете с плъзгане разделите, за да ги групирате</translation>
-<translation id="5901630391730855834">Жълто</translation>
 <translation id="5972844218283131174">Премахване на избора от всички</translation>
-<translation id="6017514345406065928">Зелено</translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6051432659151380973">Групите раздели се запазват автоматично</translation>
 <translation id="6054741997831917303">Цената на този артикул наскоро бе намалена от <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
@@ -187,7 +181,6 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> отзив}other{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзива}}</translation>
 <translation id="7885132941432959125">Преместване на раздела надясно</translation>
 <translation id="7939917283308035850">Не сте избрали: <ph name="COLOR_NAME" /></translation>
-<translation id="7942349550061667556">Червено</translation>
 <translation id="7961015016161918242">Никога</translation>
 <translation id="7966321538264951561">Отхвърляне на предложенията.</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Преместване на раздела в нов прозорец}other{Преместване на раздела в друг прозорец}}</translation>
@@ -223,6 +216,5 @@
 <translation id="9187834032751045001">Съобщението за автоматичното изтриване на разделите е отворено на половината височина.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Разгъване на групата раздели с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_ONE" /> раздел.}other{Разгъване на групата раздели с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
-<translation id="992256792861109788">розово</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{Искате ли да затворите 1 неактивен елемент?}other{Искате ли да затворите <ph name="TAB_COUNT_MANY" /> неактивни елемента?}}</translation>
 </translationbundle>

@@ -1444,7 +1444,7 @@
 <translation id="340924996148642843">אין גישה להשוואה כרגע.</translation>
 <translation id="3409896703495473338">ניהול הגדרות האבטחה</translation>
 <translation id="3411091017011773343">העלאה בעוד <ph name="HOURS" /> שע'</translation>
-<translation id="3413466783792948876">‏הדרך הבטוחה ביותר היא להיכנס לאתר הזה אחר כך אם משתמשים ברשת ציבורית. הסיכון נמוך יותר ברשת מהימנה, כמו ה-Wi-Fi בבית או במקום העבודה.</translation>
+<translation id="3413466783792948876">‏אם משתמשים ברשת ציבורית, מומלץ להיכנס לאתר אחר כך כדי לשמור על הבטיחות. הסיכון נמוך יותר ברשת מהימנה, כמו ה-Wi-Fi בבית או במקום העבודה.</translation>
 <translation id="3414275587143250384">מחשוב מבוזר ומחשוב ענן</translation>
 <translation id="3414952576877147120">גודל:</translation>
 <translation id="341513675006332771">‏הכפתור להפעלת המשחק Chrome Dino, מפעילים אותו כדי לשחק במשחק Dino Run ב-Chrome</translation>
@@ -1672,6 +1672,7 @@
 <translation id="3744899669254331632">‏אי אפשר להיכנס כרגע אל <ph name="SITE" /> מפני שהאתר שלח פרטי כניסה מעורבלים ש-Chromium אינו יכול לעבד. שגיאות רשת והתקפות הן בדרך כלל זמניות, לכן סביר להניח שדף זה יפעל כהלכה בהמשך.</translation>
 <translation id="3745599309295009257">‏הטקסט שלך והתוכן והכתובת של הדף שבו מתבצעת הכתיבה יישלחו אל Google, ייבדקו על ידי בודקים אנושיים, וישמשו לשיפור התכונה הזו. אין להזין מידע אישי (כמו פרטים רפואיים או פיננסיים) או להשתמש בכלי הזה באתרים שמכילים מידע פרטי או רגיש.</translation>
 <translation id="3748009735914587286">Metal (High-Gloss)</translation>
+<translation id="3749600200023337912">‏כדי לבצע את התשלום הזה, יכול להיות שייעשה שימוש באמצעי התשלום האוטומטי ששמרת. כדי להשבית את הארנקים האלקטרוניים או את אפליקציית התשלומים ב-Chrome, צריך לעבור אל <ph name="BEGIN_LINK1" />הגדרות התשלומים<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">לשמור את הכתובת בחשבון?</translation>
 <translation id="3752543821772132562">המערכת התעלמה מהמדיניות הזו כי המדיניות <ph name="POLICY_NAME" /> לא מוגדרת.</translation>
 <translation id="3754210790023674521">יציאה ממצב תמונה בתוך תמונה</translation>
@@ -2013,6 +2014,7 @@
 <translation id="4297937944457164390">בוצע עדכון של <ph name="ATTRIBUTE_NAME" /></translation>
 <translation id="4298000214066716287">השקעות</translation>
 <translation id="42981349822642051">הרחבה</translation>
+<translation id="4298148761711700950">‏תשלום מיידי בלי להעלות קוד QR</translation>
 <translation id="4298925811540301889">‏קובצי ה-Cookie של האתר הזה מסונכרנים בכל מכשירי ChromeOS. כדי לנהל את הסנכרון, צריך לעבור אל <ph name="SYNC_SETTINGS" />.</translation>
 <translation id="4300272766492248925">פתיחת האפליקציה</translation>
 <translation id="4300675098767811073">ניקובים מרובים בצד ימין</translation>
@@ -2755,6 +2757,7 @@ Del</translation>
 <translation id="5540969246441091044">רכיבת סוסים</translation>
 <translation id="5541086400771735334">תיבת דואר 7</translation>
 <translation id="5541546772353173584">הוספת כתובת אימייל</translation>
+<translation id="5543452229212526547">‏הטקסט, התוכן וכתובת ה-URL של הדף שבו מתבצעת הכתיבה יישלחו אל Google. בודקים אנושיים לא ישתמשו בתוכן שלך כדי לשפר את ה-AI. הארגון שלך יכול לשנות את ההגדרות האלה בכל שלב.</translation>
 <translation id="5543564889050342791">גני חיות, אקווריומים ושמורות טבע</translation>
 <translation id="5543722831081909240">180 מעלות</translation>
 <translation id="5544836308113951378">הפלגות ושיט תענוגות</translation>
@@ -3068,7 +3071,7 @@ Del</translation>
 <translation id="6085149458302186532">Labels (Colored)</translation>
 <translation id="6087312102907839798">חיפושים קשורים</translation>
 <translation id="6089505343295765444">‏כרטיסיות שמחקת מההיסטוריה ב-Chrome עדיין יופיעו בטבלאות ההשוואה.</translation>
-<translation id="6091691259076781835">‏כדי לשלם מהר יותר, כדאי לשמור את קוד האימות (CVC) הזה במכשיר</translation>
+<translation id="6091691259076781835">‏כדי לשלם מהר יותר, כדאי לשמור את קוד האימות (CVC) במכשיר</translation>
 <translation id="6093599771645355227">צהוב 1</translation>
 <translation id="6093795393556121384">הכרטיס אומת</translation>
 <translation id="6094253940069566294">עריכת הרכב</translation>
@@ -3131,6 +3134,8 @@ Del</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184099524311454384">חיפוש כרטיסיות</translation>
 <translation id="6184868291074982484">‏Chrome מגביל באופן אוטומטי קובצי cookie של צד שלישי</translation>
+<translation id="6189351761800074311">‏הטקסט ותוכן הדפים שלך יישלחו אל Google, אבל לא ישמשו לשיפור ה-AI.
+    <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">‏שינוי מברירת המחדל של חלק מהמקשים במקלדת, כמו מקש Esc</translation>
 <translation id="6194209731893739467">כאן יופיעו כל המוצרים שבמעקב</translation>
 <translation id="6195371403461054755">גיאולוגיה</translation>
@@ -3227,7 +3232,7 @@ Del</translation>
 <translation id="6340739886198108203">בהתאם למדיניות של מנהל המערכת, לא מומלץ לצלם צילומי מסך או הקלטות כשתוכן סודי גלוי:</translation>
 <translation id="6341434961864773665">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ להעלות את הקובץ הזה אל <ph name="DESTINATION_NAME" />}one{בהתאם למדיניות האדמין, לא מומלץ להעלות את הקבצים האלה אל <ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ להעלות את הקבצים האלה אל <ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ להעלות את הקבצים האלה אל <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">זה עתה</translation>
-<translation id="6342171901363060580">‏האזהרה הזו מופיעה כי האתר הזה לא תומך ב-HTTPS ונכנסת לאתר דרך מצב פרטי. <ph name="LEARN_MORE" /></translation>
+<translation id="6342171901363060580">‏האזהרה הזו מופיעה כי האתר לא תומך ב-HTTPS ונכנסת אליו דרך מצב פרטי. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">מסלול</translation>
 <translation id="6348220984832452017">הגרסאות הפעילות</translation>
 <translation id="6349101878882523185">התקנת <ph name="APP_NAME" /></translation>
@@ -3533,7 +3538,7 @@ Del</translation>
 <translation id="6849023911358004088">‏הכפתור לניהול הגדרות האבטחה, מפעילים אותו כדי לנהל את הגלישה הבטוחה ועוד בהגדרות Chrome</translation>
 <translation id="6850286078059909152">צבע טקסט</translation>
 <translation id="6852204201400771460">לטעון מחדש את האפליקציה?</translation>
-<translation id="6854691830678097752">‏כדי לשלם מהר יותר, כדאי לשמור את קוד האימות (CVC) הזה בחשבון, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="6854691830678097752">‏כדי לשלם מהר יותר, כדאי לשמור את קוד האימות (CVC) בחשבון <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6857776781123259569">לניהול הסיסמאות…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">קבלת בקשות להפעלת תמונה בתוך תמונה</translation>
@@ -3560,6 +3565,7 @@ Del</translation>
 <translation id="6890956352250146925">‏אפשרויות לגבי קובצי cookie ונתונים מאתרים</translation>
 <translation id="6891596781022320156">רמת המדיניות אינה נתמכת.</translation>
 <translation id="6893057134494550310">Laminating Foil</translation>
+<translation id="6893204630281237373">‏כדי להשבית את אפליקציית התשלומים ב-Chrome, צריך לעבור אל <ph name="BEGIN_LINK1" />הגדרות התשלומים<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">הכרטיס שלך מאושר</translation>
 <translation id="6896758677409633944">העתקה</translation>
 <translation id="6897140037006041989">User agent</translation>
@@ -4448,7 +4454,7 @@ Del</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">רישום הכרטיס הווירטואלי נפתח בגובה מלא</translation>
-<translation id="834805203690963649">תוקפים יכולים לראות ולשנות מידע ששלחת לאתר או קיבלת ממנו.</translation>
+<translation id="834805203690963649">תוקפים יכולים לראות ולשנות מידע שנשלח או שמתקבל מהאתר.</translation>
 <translation id="8349305172487531364">סרגל סימניות</translation>
 <translation id="8350416046273606058">קיצור הדרך לא יכול להכיל רווחים: '<ph name="SHORTCUT_NAME" />'</translation>
 <translation id="8351131234907093545">יצירת הערה</translation>

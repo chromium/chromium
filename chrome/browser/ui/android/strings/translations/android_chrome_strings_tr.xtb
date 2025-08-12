@@ -1092,6 +1092,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> kullanıcısının bulunduğu sekme grubuna katılın</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Diğer ayrıntılar<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Öğe kaldırıldı</translation>
+<translation id="6127860394906721547"><ph name="URL_LIST" /> sitelerini içeren <ph name="COLOR_NAME" /> renkli <ph name="TITLE_OF_GROUP" /> sekme grubunu açın.</translation>
 <translation id="6130303040046284160">Sekmeyi küçült</translation>
 <translation id="6134168885321518274">Bulma Çubuğu’nu Aç</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> sekme}other{<ph name="TAB_COUNT_MANY" /> sekme}}</translation>

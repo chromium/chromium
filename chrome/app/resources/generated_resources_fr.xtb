@@ -1476,7 +1476,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="200321182559008924">Désencombrez vos onglets</translation>
 <translation id="2003596238737586336">Programmation actuelle : <ph name="SUNRISE" /> - <ph name="SUNSET" />. Ce paramètre est géré par votre administrateur.</translation>
 <translation id="2004413981947727241">Utilisez vos mots de passe sur n'importe quel appareil</translation>
-<translation id="2004697686368036666">Il est possible que les fonctionnalités de certains sites ne fonctionnent pas</translation>
 <translation id="2006638907958895361">Ouvrir le lien dans <ph name="APP" /></translation>
 <translation id="2007404777272201486">Signaler un problème...</translation>
 <translation id="200781997903833896">Pour utiliser Lecture à voix haute, libérez de l'espace sur votre appareil</translation>
@@ -1957,7 +1956,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2328137272841210255">Réinitialisez votre code</translation>
 <translation id="2328474416100889417">Tout le monde perdra immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />", et tous les liens d'invitation seront désactivés</translation>
 <translation id="2328561734797404498">Veuillez redémarrer l'appareil pour utiliser <ph name="APP_NAME" />.</translation>
-<translation id="2328636661627946415">En mode navigation privée, les sites peuvent uniquement utiliser les cookies pour voir votre activité de navigation sur le site en question. Les cookies sont supprimés à la fin de la session de navigation privée.</translation>
 <translation id="2329597144923131178">Connectez-vous pour synchroniser favoris, historique, mots de passe et autres sur vos appareils. </translation>
 <translation id="2330182457402792918">Sélectionnez des fichiers que ce site peut lire</translation>
 <translation id="2332115969598251205">Impossible de charger les appareils enregistrés dans <ph name="PRIMARY_EMAIL" />. Vérifiez votre connexion Internet, puis réessayez.</translation>
@@ -3745,7 +3743,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3593953853060020305">Autoriser ce site à modifier <ph name="FILE_NAME" /> ?</translation>
 <translation id="3593965109698325041">Contraintes de nom du certificat</translation>
 <translation id="3596012367874587041">Paramètres de l'appli</translation>
-<translation id="3596414637720633074">Bloquer les cookies tiers en mode navigation privée</translation>
 <translation id="3599221874935822507">Bord en relief</translation>
 <translation id="3600051066689725006">Informations sur la requête Web</translation>
 <translation id="3600956933576601730">Vous devez lire et accepter les conditions d'utilisation pour utiliser ces fonctionnalités</translation>
@@ -4081,7 +4078,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3807747707162121253">&amp;Annuler</translation>
 <translation id="3808202562160426447">Réduire la luminosité du contenu en arrière-plan</translation>
 <translation id="3808443763115411087">Développement d'applications Android sur Crostini</translation>
-<translation id="3808617121485025547">En savoir plus sur le blocage des cookies tiers</translation>
 <translation id="38089336910894858">Afficher un avertissement avant de quitter avec ⌘Q</translation>
 <translation id="3809272675881623365">Lapin</translation>
 <translation id="3809280248639369696">Alien</translation>
@@ -4341,7 +4337,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3975565978598857337">Échec de la tentative de contact du serveur correspondant à ce domaine</translation>
 <translation id="3976108569178263973">Aucune imprimante n'est disponible.</translation>
 <translation id="397703832102027365">Finalisation en cours…</translation>
-<translation id="3977145907578671392">Il est possible que les fonctionnalités de certains sites ne fonctionnent pas en navigation privée</translation>
 <translation id="3977886311744775419">Les mises à jour automatiques ne sont pas téléchargées sur ce type de réseau. Cependant, vous pouvez rechercher les mises à jour manuellement.</translation>
 <translation id="3978325380690188371">Touches rémanentes non disponibles quand ChromeVox est activé</translation>
 <translation id="3978732922947854545">Chrome améliore les PDF</translation>
@@ -5729,6 +5724,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="496742804571665842">Désactiver les profils eSIM</translation>
 <translation id="4967571733817147990">Personnaliser les boutons de la souris</translation>
 <translation id="4967852842111017386">Nom de l'appareil pour le <ph name="FEATURE_NAME" /></translation>
+<translation id="4968994772848295474">L'installation d'applications Web n'est pas disponible en mode Invité</translation>
 <translation id="4971412780836297815">Ouvrir une fois le téléchargement terminé</translation>
 <translation id="4972129977812092092">Modifier l'imprimante</translation>
 <translation id="4972164225939028131">Mot de passe incorrect</translation>
@@ -6607,6 +6603,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="560834977503641186">Sync Wi-Fi (en savoir plus)</translation>
 <translation id="5608580678041221894">Appuyez sur les touches suivantes pour ajuster ou déplacer la zone de recadrage</translation>
 <translation id="5609231933459083978">L'application ne semble pas valide.</translation>
+<translation id="5610759359710387751">Personnalisez Chrome</translation>
 <translation id="5610867721023328944">Réessayez ou sélectionnez l'un des thèmes disponibles ci-dessous.</translation>
 <translation id="5611398002774823980">Enregistrer dans le compte</translation>
 <translation id="5611399285717843500">Contribuer à l'amélioration des fonctionnalités et des performances de Chrome et de ChromeOS. Les informations personnelles sont supprimées lors de la collecte de ces données.</translation>
@@ -7509,6 +7506,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6257602895346497974">Activer la synchronisation…</translation>
 <translation id="625827534921607067">Ce réseau sera préféré si plusieurs réseaux connectés ou configurés auparavant sont disponibles</translation>
 <translation id="6259776178973198997">Actualiser les infos sur les propriétaires Wi-Fi Direct</translation>
+<translation id="6261688934280090835">Journaux de l'application kiosque ChromeOS</translation>
 <translation id="6262371516389954471">Vos sauvegardes sont importées dans Google et chiffrées à l'aide du mot de passe de votre compte Google.</translation>
 <translation id="6263082573641595914">Version de l'autorité de certification Microsoft</translation>
 <translation id="6263284346895336537">Non essentielle</translation>
@@ -10507,6 +10505,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8340547030807793004">Plus d'actions pour <ph name="DEVICE" /></translation>
 <translation id="8341804784147620576">Afficher les raccourcis de recherche</translation>
 <translation id="8342221978608739536">Je n'ai pas essayé.</translation>
+<translation id="8342387517402567689">L'installation d'applications Web n'est pas disponible en mode navigation privée</translation>
 <translation id="8342861492835240085">Sélectionner une collection</translation>
 <translation id="8345848587667658367">Vous pouvez désormais afficher les photos, notifications, applis et contenus multimédias récents de votre téléphone</translation>
 <translation id="8347227221149377169">Tâches d'impression</translation>
@@ -10830,7 +10829,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8573111744706778015">Saisissez "uo7" pour obtenir "ươ"</translation>
 <translation id="8574990355410201600">Toujours activer le son sur <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Maintenez la touche <ph name="KEY_EQUIVALENT" /> enfoncée pour quitter</translation>
-<translation id="8576359558126669548">En savoir plus sur le blocage des cookies tiers en mode navigation privée</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Ajouter l'onglet à la liste de lecture}one{Ajouter l'onglet à la liste de lecture}other{Ajouter les onglets à la liste de lecture}}</translation>
 <translation id="8577052309681449949">Clics automatiques, taille et couleur du curseur, etc.</translation>
 <translation id="8578639784464423491">Le mot ne peut pas comporter plus de 99 lettres</translation>
@@ -11146,7 +11144,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="8777628254805677039">mot de passe racine</translation>
 <translation id="8779720597365936419">Oui, conserver mes données séparément du profil professionnel (recommandé)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Les sites ne peuvent utiliser les cookies que pour voir votre activité de navigation sur ces sites</translation>
 <translation id="8780123805589053431">Obtenir des descriptions d'images de Google</translation>
 <translation id="8780443667474968681">La recherche vocale a été désactivée.</translation>
 <translation id="8781834595282316166">Nouvel onglet dans le groupe</translation>
@@ -11282,7 +11279,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="887292602123626481">En savoir plus sur les moteurs de recherche par défaut</translation>
 <translation id="8873075098103007382">Rester organisé avec les groupes d'onglets</translation>
 <translation id="8874341931345877644">Castez sur un appareil :</translation>
-<translation id="8874448314264883207"><ph name="EXTENSION_NAME" /> a été désactivée</translation>
+<translation id="8874448314264883207"><ph name="EXTENSION_NAME" /> a été désactivé</translation>
 <translation id="8874647982044395866">Bio</translation>
 <translation id="8874790741333031443">Essayez d'autoriser temporairement les cookies tiers. Vous réduirez ainsi la protection de la navigation, mais les fonctionnalités du site auront plus de chances de fonctionner comme prévu.</translation>
 <translation id="8875221558267407626">Résumez des contenus, simplifiez du langage complexe ou posez des questions</translation>

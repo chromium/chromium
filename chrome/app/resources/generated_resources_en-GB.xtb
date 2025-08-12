@@ -1485,7 +1485,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="200321182559008924">Keep your tabs clutter-free</translation>
 <translation id="2003596238737586336">Current schedule is set to <ph name="SUNRISE" /> – <ph name="SUNSET" />. This setting is managed by your administrator.</translation>
 <translation id="2004413981947727241">Use your passwords on any device</translation>
-<translation id="2004697686368036666">Features on some sites may not work</translation>
 <translation id="2006638907958895361">Open Link in <ph name="APP" /></translation>
 <translation id="2007404777272201486">Report an Issue...</translation>
 <translation id="200781997903833896">To use Read Aloud, clear space on your device</translation>
@@ -1969,7 +1968,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2328137272841210255">Reset your PIN</translation>
 <translation id="2328474416100889417">Everyone will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and all invitation links will be turned off</translation>
 <translation id="2328561734797404498">Please restart your device to use <ph name="APP_NAME" />.</translation>
-<translation id="2328636661627946415">When you’re in Incognito mode, sites can only use cookies to see your browsing activity on their own site. Cookies are deleted at the end of the Incognito session.</translation>
 <translation id="2329597144923131178">Sign in to get your bookmarks, history, passwords and other settings on all your devices</translation>
 <translation id="2330182457402792918">Select files that this site can read</translation>
 <translation id="2332115969598251205">Can’t load devices saved to <ph name="PRIMARY_EMAIL" />. Check your Internet connection and try again.</translation>
@@ -3759,7 +3757,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3593953853060020305">Allow this site to edit <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Certificate Name Constraints</translation>
 <translation id="3596012367874587041">App settings</translation>
-<translation id="3596414637720633074">Block third-party cookies in Incognito</translation>
 <translation id="3599221874935822507">Raised</translation>
 <translation id="3600051066689725006">Web request info</translation>
 <translation id="3600956933576601730">You need to review and accept terms to use these features</translation>
@@ -4095,7 +4092,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3807747707162121253">&amp;Cancel</translation>
 <translation id="3808202562160426447">Dim background content</translation>
 <translation id="3808443763115411087">Crostini Android app development</translation>
-<translation id="3808617121485025547">More about blocking third-party cookies</translation>
 <translation id="38089336910894858">Show warning before quitting with ⌘Q</translation>
 <translation id="3809272675881623365">Rabbit</translation>
 <translation id="3809280248639369696">Moonbeam</translation>
@@ -4355,7 +4351,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3975565978598857337">Contacting server for realm failed</translation>
 <translation id="3976108569178263973">There are no available printers.</translation>
 <translation id="397703832102027365">Finalising...</translation>
-<translation id="3977145907578671392">Features on some sites may not work in Incognito</translation>
 <translation id="3977886311744775419">Automatic updates don't download on this network type, but you can check for updates manually.</translation>
 <translation id="3978325380690188371">Sticky keys is not available when ChromeVox is on</translation>
 <translation id="3978732922947854545">Chrome makes PDFs better</translation>
@@ -5744,6 +5739,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="496742804571665842">Disable eSIM profiles</translation>
 <translation id="4967571733817147990">Customise mouse buttons</translation>
 <translation id="4967852842111017386"><ph name="FEATURE_NAME" /> device name</translation>
+<translation id="4968994772848295474">Web app installs aren't supported in guest mode</translation>
 <translation id="4971412780836297815">Open when done</translation>
 <translation id="4972129977812092092">Edit printer</translation>
 <translation id="4972164225939028131">Wrong password</translation>
@@ -6623,6 +6619,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="560834977503641186">Wi-Fi Sync, learn more</translation>
 <translation id="5608580678041221894">Tap the following keys to adjust or move the cropping area</translation>
 <translation id="5609231933459083978">The application appears to be invalid.</translation>
+<translation id="5610759359710387751">Make Chrome Yours</translation>
 <translation id="5610867721023328944">Try again or select from one of the available themes below.</translation>
 <translation id="5611398002774823980">Save in account</translation>
 <translation id="5611399285717843500">Help improve Chrome and ChromeOS features and performance. Personal information is removed when collecting this data.</translation>
@@ -7524,6 +7521,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6257602895346497974">Turn on sync…</translation>
 <translation id="625827534921607067">This network will be preferred if more than one previously connected or configured network is available</translation>
 <translation id="6259776178973198997">Refresh Wi-Fi direct owners info</translation>
+<translation id="6261688934280090835">ChromeOS kiosk app logs</translation>
 <translation id="6262371516389954471">Your backups are uploaded to Google and encrypted using your Google Account password.</translation>
 <translation id="6263082573641595914">Microsoft CA Version</translation>
 <translation id="6263284346895336537">Not Critical</translation>
@@ -10520,6 +10518,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8340547030807793004">More actions for <ph name="DEVICE" /></translation>
 <translation id="8341804784147620576">Show search shortcuts</translation>
 <translation id="8342221978608739536">Did not try</translation>
+<translation id="8342387517402567689">Web app installs aren't supported in Incognito mode</translation>
 <translation id="8342861492835240085">Select a collection</translation>
 <translation id="8345848587667658367">You can now view your phone's recent photos, media, notifications and apps</translation>
 <translation id="8347227221149377169">Print jobs</translation>
@@ -10843,7 +10842,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8573111744706778015">Type 'uo7' to get 'ươ'</translation>
 <translation id="8574990355410201600">Always allow sound on <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Hold <ph name="KEY_EQUIVALENT" /> to Quit</translation>
-<translation id="8576359558126669548">More about blocking third-party cookies in Incognito mode</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Add tab to reading list}other{Add tabs to reading list}}</translation>
 <translation id="8577052309681449949">Automatic clicks, cursor size, cursor colour and more</translation>
 <translation id="8578639784464423491">Cannot exceed 99 letters</translation>
@@ -11158,7 +11156,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="8777628254805677039">root password</translation>
 <translation id="8779720597365936419">Yes, keep my data separate from work (recommended)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Sites can only use cookies to see your browsing activity on their own site</translation>
 <translation id="8780123805589053431">Get image descriptions from Google</translation>
 <translation id="8780443667474968681">Voice search has been turned off.</translation>
 <translation id="8781834595282316166">New tab in group</translation>

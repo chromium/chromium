@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{වසර <ph name="NUM_YEARS_ONE" />ට පෙර තනන ලදි}one{වසර <ph name="NUM_YEARS_MANY" />ට පෙර තනන ලදි}other{වසර <ph name="NUM_YEARS_MANY" />ට පෙර තනන ලදි}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{අක්‍රිය පටිති සහ සමූහ 1 මාසයකට පසු වසා දමනු ලැබේ}one{අක්‍රිය පටිති සහ සමූහ මාස <ph name="MONTH_COUNT_MANY" />කට පසු වසා දමනු ලැබේ}other{අක්‍රිය පටිති සහ සමූහ මාස <ph name="MONTH_COUNT_MANY" />කට පසු වසා දමනු ලැබේ}}</translation>
 <translation id="1173894706177603556">ප්‍රතිනම්</translation>
-<translation id="1197088940767939838">තැඹිලි</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" /> පටිත්තක් සමග <ph name="TITLE_OF_GROUP" /> විවෘත කරන්න}one{පටිති <ph name="TAB_COUNT2" />ක් සමග <ph name="TITLE_OF_GROUP" /> විවෘත කරන්න}other{පටිති <ph name="TAB_COUNT2" />ක් සමග <ph name="TITLE_OF_GROUP" /> විවෘත කරන්න}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> පටිති සමූහ විකල්ප</translation>
 <translation id="1300188005269437765">පටිති සහ පටිති සමූහ ස්වයංක්‍රීයව අක්‍රිය කොටසට ගෙන යන විට තෝරන්න.</translation>
@@ -20,8 +19,6 @@
 <translation id="1499635324672558517">සියලු අප්‍රකට ටැබ වසන්නද?</translation>
 <translation id="1501480321619201731">සමූහය මකන්න</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> අක්‍රිය අයිතමයක්}one{අක්‍රිය අයිතම <ph name="TABS_COUNT_MANY" />ක්}other{අක්‍රිය අයිතම <ph name="TABS_COUNT_MANY" />ක්}}</translation>
-<translation id="1555130319947370107">නිල්</translation>
-<translation id="161042844686301425">සියන්</translation>
 <translation id="1645759014353344461">පටිති <ph name="TABS_COUNT_MANY" /> සමූහගත කළා</translation>
 <translation id="1657719826150349398">පටිත්ත පහළට ගෙන යන්න</translation>
 <translation id="1697284962337958118">වෙත එක් කරන්න</translation>
@@ -63,6 +60,7 @@
 <translation id="2894757982205307093">කණ්ඩායම තුළ නව පටිත්ත</translation>
 <translation id="2918484639460781603">සැකසීම් වෙත යන්න</translation>
 <translation id="2928243913527329289">Google | මෙම අලෙවිසල පිළිබඳව</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" />ක් තේරිණි}one{<ph name="ITEMS_COUNT_MANY" />ක් තේරිණි}other{<ph name="ITEMS_COUNT_MANY" />ක් තේරිණි}}</translation>
 <translation id="3008554597174452548">නිෂ්පාදනය හඹා යාම නවත්වන්න</translation>
 <translation id="3026391124054406831">ඔබේ පටිති සංවිධාන කිරීමට සමූහ සාදන්න.</translation>
 <translation id="3051031624272448591">ඔබට ඒවා සැම විටම ඉතිහාසයේ ආපසු ලබා ගත හැක</translation>
@@ -87,7 +85,6 @@
 <translation id="4076226664360336092">පටිති සමූහ ලැයිස්තුව, සම්පූර්ණ උසින් විවෘත කර ඇත</translation>
 <translation id="4133493477912226187">පටිති <ph name="NUMBER_OF_TABS" /> ක් අදාළ බව පෙනේ. ඒවා සමූහ කරන්නද?</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක්, වර්ණය <ph name="COLOR_NAME" /> සමග <ph name="TITLE_OF_GROUP" /> සමූහය වසන්න.}one{පටිති <ph name="TABS_COUNT_MANY" />ක්, වර්ණය <ph name="COLOR_NAME" /> සමග <ph name="TITLE_OF_GROUP" /> සමූහය වසන්න.}other{පටිති <ph name="TABS_COUNT_MANY" />ක්, වර්ණය <ph name="COLOR_NAME" /> සමග <ph name="TITLE_OF_GROUP" /> සමූහය වසන්න.}}</translation>
-<translation id="4159784952369912983">දම්</translation>
 <translation id="4203448675570432781">පටිති ස්වයං මැකීමේ වෙනස්කම් වසා දැමීම පිළිබඳ දැනුම්දීම.</translation>
 <translation id="427987768447457592">නව පටිති සමූහය</translation>
 <translation id="4371591986692297148">අක්‍රිය</translation>
@@ -116,7 +113,6 @@
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome ස්වයංක්‍රීය වී <ph name="AUTO_DELETE_DELAY_ONE" /> මාසයකට පසු අක්‍රිය පටිති සහ පටිති සමූහ වසා දමයි. ඔබට මෙය සැකසීම් තුළ වෙනස් කළ හැක.}one{Chrome ස්වයංක්‍රීය වී මාස <ph name="AUTO_DELETE_DELAY_MANY" />කට පසු අක්‍රිය පටිති සහ පටිති සමූහ වසා දමයි. ඔබට මෙය සැකසීම් තුළ වෙනස් කළ හැක.}other{Chrome ස්වයංක්‍රීය වී මාස <ph name="AUTO_DELETE_DELAY_MANY" />කට පසු අක්‍රිය පටිති සහ පටිති සමූහ වසා දමයි. ඔබට මෙය සැකසීම් තුළ වෙනස් කළ හැක.}}</translation>
 <translation id="5339733443032484186">ඔබේ අවසන් පටිත්ත</translation>
 <translation id="5380159289133845234">අනුපත් පටිති ලේඛනාරක්ෂණය කරන්න</translation>
-<translation id="5400836586163650660">අළු</translation>
 <translation id="5446043142172831860">පටිත්ත ඉවත් කර සමූහය හැර යන්න</translation>
 <translation id="5490235265819901748">ටැබ සමූහය දිග හරින ලදි</translation>
 <translation id="5494920125229734069">සියල්ල තෝරන්න</translation>
@@ -127,9 +123,7 @@
 <translation id="5746204836956568669">වේගයෙන් ක්‍රියා කිරීමට පටිති <ph name="NUMBER_OF_TABS" />ක් සමූහ කරන්න ද?</translation>
 <translation id="5773295109010386583">අක්‍රිය අයිතම ස්වයංක්‍රීයව වසා දමන්න</translation>
 <translation id="58326064309361797">පටිති කණ්ඩායම් කිරීමට ඒවා අදින්න</translation>
-<translation id="5901630391730855834">කහ</translation>
 <translation id="5972844218283131174">සියල්ල තේරීමෙන් ඉවත් කරන්න</translation>
-<translation id="6017514345406065928">කොළ</translation>
 <translation id="6040143037577758943">වසන්න</translation>
 <translation id="6051432659151380973">ඔබේ පටිති සමූහ ස්වයංක්‍රීයව සුරකියි</translation>
 <translation id="6054741997831917303">මෙම අයිතමයෙහි මිල මෑතකදී <ph name="PREVIOUS_PRICE" /> සිට <ph name="NEW_PRICE" /> දක්වා පහත වැටී ඇත</translation>
@@ -187,7 +181,6 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ ඇගයීම <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, සමාලෝචන <ph name="REVIEWS_COUNT_ONE" />}one{ඇගයීම <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, සමාලෝචන <ph name="REVIEWS_COUNT_MANY" />}other{ඇගයීම <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, සමාලෝචන <ph name="REVIEWS_COUNT_MANY" />}}</translation>
 <translation id="7885132941432959125">පටිත්ත දකුණට ගෙන යන්න</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> තෝරා නැත</translation>
-<translation id="7942349550061667556">රතු</translation>
 <translation id="7961015016161918242">කිසිවිට එපා</translation>
 <translation id="7966321538264951561">යෝජනා ඉවත ලන්න.</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{පටිත්ත නව කවුළුවට ගෙන යන්න}one{පටිත්ත වෙනත් කවුළුවකට ගෙන යන්න}other{පටිත්ත වෙනත් කවුළුවකට ගෙන යන්න}}</translation>
@@ -223,6 +216,5 @@
 <translation id="9187834032751045001">අඩ උසකින් පටිති ස්වයං මැකීම පිළිබඳ දැනුම්දීම.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක්, වර්ණය <ph name="COLOR_NAME" /> සමග පටිති සමූහය පුළුල් කරන්න.}one{පටිති <ph name="TABS_COUNT_MANY" />ක්, වර්ණය <ph name="COLOR_NAME" /> සමග පටිති සමූහය පුළුල් කරන්න.}other{පටිති <ph name="TABS_COUNT_MANY" />ක්, වර්ණය <ph name="COLOR_NAME" /> සමග පටිති සමූහය පුළුල් කරන්න.}}</translation>
 <translation id="945522503751344254">අදහස් හා යෝජනා යවන්න</translation>
-<translation id="992256792861109788">රෝස</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{1 අක්‍රිය අයිතමයක් වසන්න ද?}one{අක්‍රිය අයිතම <ph name="TAB_COUNT_MANY" />ක් වසන්න ද?}other{අක්‍රිය අයිතම <ph name="TAB_COUNT_MANY" />ක් වසන්න ද?}}</translation>
 </translationbundle>

@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> বছৰ পূৰ্বে সৃষ্টি কৰা হৈছে}one{<ph name="NUM_YEARS_MANY" /> বছৰ পূৰ্বে সৃষ্টি কৰা হৈছে}other{<ph name="NUM_YEARS_MANY" /> বছৰ পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{নিষ্ক্ৰিয় টেব আৰু গোটসমূহ ১ মাহৰ পাছত বন্ধ কৰা হ’ব}one{নিষ্ক্ৰিয় টেব আৰু গোটসমূহ <ph name="MONTH_COUNT_MANY" /> মাহৰ পাছত বন্ধ কৰা হ’ব}other{নিষ্ক্ৰিয় টেব আৰু গোটসমূহ <ph name="MONTH_COUNT_MANY" /> মাহৰ পাছত বন্ধ কৰা হ’ব}}</translation>
 <translation id="1173894706177603556">নতুন নাম দিয়ক</translation>
-<translation id="1197088940767939838">কমলা</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" /> টা টেবৰ জৰিয়তে <ph name="TITLE_OF_GROUP" /> খোলক}one{<ph name="TAB_COUNT2" /> টা টেবৰ জৰিয়তে <ph name="TITLE_OF_GROUP" /> খোলক}other{<ph name="TAB_COUNT2" /> টা টেবৰ জৰিয়তে <ph name="TITLE_OF_GROUP" /> খোলক}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> টেবৰ গোটৰ বিকল্প</translation>
 <translation id="1300188005269437765">টেব আৰু টেবৰ গোটসমূহ স্বয়ংক্ৰিয়ভাৱে নিষ্ক্ৰিয় শাখালৈ কেতিয়া স্থানান্তৰ কৰা হয় বাছনি কৰক।</translation>
@@ -20,8 +19,6 @@
 <translation id="1499635324672558517">আটাইবোৰ ইনক’গনিট’ টেব বন্ধ কৰিবনে?</translation>
 <translation id="1501480321619201731">গোট মচক</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা নিষ্ক্ৰিয় বস্তু}one{<ph name="TABS_COUNT_MANY" /> টা নিষ্ক্ৰিয় বস্তু}other{<ph name="TABS_COUNT_MANY" /> টা নিষ্ক্ৰিয় বস্তু}}</translation>
-<translation id="1555130319947370107">নীলা</translation>
-<translation id="161042844686301425">চাইয়ান</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" />টা টেব এক গোট কৰা হৈছে</translation>
 <translation id="1657719826150349398">টেবটো তললৈ নিয়ক</translation>
 <translation id="1697284962337958118">ইয়াত যোগ দিয়ক</translation>
@@ -88,7 +85,6 @@
 <translation id="4076226664360336092">টেবৰ গোটৰ সূচী, পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> টা টেব জড়িত যেন লাগিছে। সেইকেইটা একগোট কৰিবনে?</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> গোটটো <ph name="TABS_COUNT_ONE" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বন্ধ কৰক।}one{<ph name="TITLE_OF_GROUP" /> গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বন্ধ কৰক।}other{<ph name="TITLE_OF_GROUP" /> গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বন্ধ কৰক।}}</translation>
-<translation id="4159784952369912983">বেঙুনীয়া</translation>
 <translation id="4203448675570432781">টেবসমূহ স্বয়ংক্ৰিয়ভাৱে মচাৰ সালসলনিৰ বিষয়ে জাননী বন্ধ কৰা হৈছে।</translation>
 <translation id="427987768447457592">নতুন টেবৰ গোট</translation>
 <translation id="4371591986692297148">নিষ্ক্ৰিয় হৈ আছে</translation>
@@ -117,7 +113,6 @@
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chromeএ <ph name="AUTO_DELETE_DELAY_ONE" /> মাহৰ পাছত স্বয়ংক্ৰিয়ভাৱে নিষ্ক্ৰিয় টেবসমূহ আৰু টেবৰ গোটসমূহ বন্ধ কৰে। আপুনি এইটো ছেটিঙত সলনি কৰিব পাৰে।}one{Chromeএ <ph name="AUTO_DELETE_DELAY_MANY" /> মাহৰ পাছত স্বয়ংক্ৰিয়ভাৱে নিষ্ক্ৰিয় টেবসমূহ আৰু টেবৰ গোটসমূহ বন্ধ কৰে। আপুনি এইটো ছেটিঙত সলনি কৰিব পাৰে।}other{Chromeএ <ph name="AUTO_DELETE_DELAY_MANY" /> মাহৰ পাছত স্বয়ংক্ৰিয়ভাৱে নিষ্ক্ৰিয় টেবসমূহ আৰু টেবৰ গোটসমূহ বন্ধ কৰে। আপুনি এইটো ছেটিঙত সলনি কৰিব পাৰে।}}</translation>
 <translation id="5339733443032484186">আপোনাৰ অন্তিম টেব</translation>
 <translation id="5380159289133845234">ডুপ্লিকেট টেব আৰ্কাইভ কৰক</translation>
-<translation id="5400836586163650660">ধোঁৱাবৰণীয়া</translation>
 <translation id="5446043142172831860">টেব আঁতৰাওক আৰু গোটৰ পৰা বাহিৰ হওক</translation>
 <translation id="5490235265819901748">টেবৰ গোটটো বিস্তাৰ কৰা হৈছে</translation>
 <translation id="5494920125229734069">সকলো বাছনি কৰক</translation>
@@ -128,9 +123,7 @@
 <translation id="5746204836956568669">দ্ৰুতভাৱে কাম কৰিবলৈ <ph name="NUMBER_OF_TABS" /> টা টেব গোটবদ্ধ কৰিবনে?</translation>
 <translation id="5773295109010386583">নিষ্ক্ৰিয় বস্তুসমূহ স্বয়ংক্ৰিয়ভাৱে বন্ধ কৰক</translation>
 <translation id="58326064309361797">এক গোট কৰিবলৈ টেববোৰ টানি আনি এৰক</translation>
-<translation id="5901630391730855834">হালধীয়া</translation>
 <translation id="5972844218283131174">আটাইবোৰ বাছনিৰ পৰা আঁতৰাওক</translation>
-<translation id="6017514345406065928">সেউজীয়া ৰং</translation>
 <translation id="6040143037577758943">বন্ধ কৰক</translation>
 <translation id="6051432659151380973">আপোনাৰ টেবৰ গোটসমূহ স্বয়ংক্ৰিয়ভাৱে ছেভ কৰা হয়</translation>
 <translation id="6054741997831917303">শেহতীয়াকৈ এইটো বস্তুৰ মূল্য <ph name="PREVIOUS_PRICE" />ৰ পৰা <ph name="NEW_PRICE" />লৈ হ্ৰাস পাইছে</translation>
@@ -188,7 +181,6 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> মূল্যাংকন, <ph name="REVIEWS_COUNT_ONE" /> টা পৰ্যালোচনা}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> মূল্যাংকন, <ph name="REVIEWS_COUNT_MANY" /> টা পৰ্যালোচনা}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> মূল্যাংকন, <ph name="REVIEWS_COUNT_MANY" /> টা পৰ্যালোচনা}}</translation>
 <translation id="7885132941432959125">টেবটো সোঁফাললৈ নিয়ক</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> বাছনি কৰা হোৱা নাই</translation>
-<translation id="7942349550061667556">ৰঙা</translation>
 <translation id="7961015016161918242">কেতিয়াও নহয়</translation>
 <translation id="7966321538264951561">পৰামৰ্শসমূহ বাতিল কৰক।</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{টেবটো নতুন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}one{টেবটো অন্য এখন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}other{টেবটো অন্য এখন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}}</translation>
@@ -224,6 +216,5 @@
 <translation id="9187834032751045001">অৰ্ধ উচ্চতাত টেবসমূহ স্বয়ংক্ৰিয়ভাৱে মচাৰ বিষয়ে জাননী।</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{টেবৰ গোটটো <ph name="TABS_COUNT_ONE" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}one{টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}other{টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}}</translation>
 <translation id="945522503751344254">মতামত পঠিয়াওক</translation>
-<translation id="992256792861109788">গুলপীয়া</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{১ টা নিষ্ক্ৰিয় বস্তু বন্ধ কৰিবনে?}one{<ph name="TAB_COUNT_MANY" /> টা নিষ্ক্ৰিয় বস্তু বন্ধ কৰিবনে?}other{<ph name="TAB_COUNT_MANY" /> টা নিষ্ক্ৰিয় বস্তু বন্ধ কৰিবনে?}}</translation>
 </translationbundle>

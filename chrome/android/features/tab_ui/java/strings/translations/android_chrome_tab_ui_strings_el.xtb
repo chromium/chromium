@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Δημιουργήθηκε πριν από <ph name="NUM_YEARS_ONE" /> έτος}other{Δημιουργήθηκε πριν από <ph name="NUM_YEARS_MANY" /> έτη}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Οι ανενεργές καρτέλες και ομάδες θα κλείσουν μετά από 1 μήνα}other{Οι ανενεργές καρτέλες και ομάδες θα κλείσουν μετά από <ph name="MONTH_COUNT_MANY" /> μήνες}}</translation>
 <translation id="1173894706177603556">Μετονομασία</translation>
-<translation id="1197088940767939838">Πορτοκαλί</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Άνοιγμα της ομάδας <ph name="TITLE_OF_GROUP" /> με <ph name="TAB_COUNT2" /> καρτέλα}other{Άνοιγμα της ομάδας <ph name="TITLE_OF_GROUP" /> με <ph name="TAB_COUNT2" /> καρτέλες}}</translation>
 <translation id="1273910660700874265">Επιλογές ομάδας καρτελών <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1300188005269437765">Επιλέξτε πότε οι καρτέλες και οι ομάδες καρτελών μετακινούνται αυτόματα στην ενότητα ανενεργών.</translation>
@@ -20,8 +19,6 @@
 <translation id="1499635324672558517">Θέλετε να κλείσετε όλες τις καρτέλες ανώνυμης περιήγησης;</translation>
 <translation id="1501480321619201731">Διαγραφή ομάδας</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ανενεργό στοιχείο}other{<ph name="TABS_COUNT_MANY" /> ανενεργά στοιχεία}}</translation>
-<translation id="1555130319947370107">Μπλε</translation>
-<translation id="161042844686301425">Κυανό</translation>
 <translation id="1645759014353344461">Ομαδοποιήθηκαν <ph name="TABS_COUNT_MANY" /> καρτέλες</translation>
 <translation id="1657719826150349398">Μετακίνηση καρτέλας κάτω</translation>
 <translation id="1697284962337958118">Προσθήκη σε</translation>
@@ -88,7 +85,6 @@
 <translation id="4076226664360336092">Η λίστα ομάδων καρτελών άνοιξε σε πλήρες ύψος</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> καρτέλες φαίνονται σχετικές. Να γίνει ομαδοποίηση;</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Κλείσιμο της ομάδας <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_ONE" /> καρτέλα, χρώμα <ph name="COLOR_NAME" />.}other{Κλείσιμο της ομάδας <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_MANY" /> καρτέλες, χρώμα <ph name="COLOR_NAME" />.}}</translation>
-<translation id="4159784952369912983">Μοβ</translation>
 <translation id="4203448675570432781">Η ειδοποίηση σχετικά με τις αλλαγές στην Αυτόματη διαγραφή καρτελών έκλεισε.</translation>
 <translation id="427987768447457592">Νέα ομάδα καρτελών</translation>
 <translation id="4371591986692297148">Ανενεργή</translation>
@@ -117,7 +113,6 @@
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Το Chrome κλείνει αυτόματα τις ανενεργές καρτέλες και τις ομάδες καρτελών μετά από <ph name="AUTO_DELETE_DELAY_ONE" /> μήνα. Μπορείτε να αλλάξετε αυτή την επιλογή στις ρυθμίσεις.}other{Το Chrome κλείνει αυτόματα τις ανενεργές καρτέλες και τις ομάδες καρτελών μετά από <ph name="AUTO_DELETE_DELAY_MANY" /> μήνες. Μπορείτε να αλλάξετε αυτή την επιλογή στις ρυθμίσεις.}}</translation>
 <translation id="5339733443032484186">Η τελευταία καρτέλα σας</translation>
 <translation id="5380159289133845234">Αρχειοθέτηση διπλότυπων καρτελών</translation>
-<translation id="5400836586163650660">Γκρι</translation>
 <translation id="5446043142172831860">Κατάργηση καρτέλας και αποχώρηση από την ομάδα</translation>
 <translation id="5490235265819901748">Η ομάδα καρτελών αναπτύχθηκε</translation>
 <translation id="5494920125229734069">Επιλογή όλων</translation>
@@ -128,9 +123,7 @@
 <translation id="5746204836956568669">Να ομαδοποιηθούν <ph name="NUMBER_OF_TABS" /> καρτέλες για ταχύτερη εργασία;</translation>
 <translation id="5773295109010386583">Αυτόματο κλείσιμο ανενεργών στοιχείων</translation>
 <translation id="58326064309361797">Σύρετε καρτέλες για να τις ομαδοποιήσετε.</translation>
-<translation id="5901630391730855834">Κίτρινο</translation>
 <translation id="5972844218283131174">Αποεπιλογή όλων</translation>
-<translation id="6017514345406065928">Πράσινο</translation>
 <translation id="6040143037577758943">Κλείσιμο</translation>
 <translation id="6051432659151380973">Οι ομάδες καρτελών σας αποθηκεύονται αυτόματα</translation>
 <translation id="6054741997831917303">Η τιμή αυτού του στοιχείου μειώθηκε πρόσφατα από <ph name="PREVIOUS_PRICE" /> σε <ph name="NEW_PRICE" /></translation>
@@ -188,7 +181,6 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Αξιολόγηση <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> κριτική}other{Αξιολόγηση <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> κριτικές}}</translation>
 <translation id="7885132941432959125">Μετακίνηση καρτέλας δεξιά</translation>
 <translation id="7939917283308035850">Επιλέχθηκε το <ph name="COLOR_NAME" /></translation>
-<translation id="7942349550061667556">Κόκκινο</translation>
 <translation id="7961015016161918242">Ποτέ</translation>
 <translation id="7966321538264951561">Παράβλεψη των προτάσεων.</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Μετακίνηση καρτέλας σε νέο παράθυρο}other{Μετακίνηση καρτέλας σε άλλο παράθυρο}}</translation>
@@ -224,6 +216,5 @@
 <translation id="9187834032751045001">Ειδοποίηση σχετικά με την Αυτόματη διαγραφή καρτελών στο μισό ύψος.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Ανάπτυξη ομάδας καρτελών με <ph name="TABS_COUNT_ONE" /> καρτέλα, χρώμα <ph name="COLOR_NAME" />.}other{Ανάπτυξη ομάδας καρτελών με <ph name="TABS_COUNT_MANY" /> καρτέλες, χρώμα <ph name="COLOR_NAME" />.}}</translation>
 <translation id="945522503751344254">Αποστολή σχολίων</translation>
-<translation id="992256792861109788">Ροζ</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{Κλείσιμο 1 ανενεργού στοιχείου;}other{Κλείσιμο <ph name="TAB_COUNT_MANY" /> ανενεργών στοιχείων;}}</translation>
 </translationbundle>

@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Ao fechar todas as guias, as fixadas também vão ser fechadas.</translation>
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1041322626941363065">Avisar se as suas senhas forem expostas em uma violação de dados</translation>
-<translation id="1044891598689252897">Os sites funcionarão normalmente</translation>
 <translation id="104491362976654916">Página offline</translation>
 <translation id="1049743911850919806">Modo anônimo</translation>
 <translation id="1053651653201045802">Conta desconectada. Faça login novamente para acessar os favoritos, as senhas e outros recursos da sua conta.</translation>
@@ -135,7 +134,6 @@
 <translation id="1506063256525392513">Esse app permite que você tire fotos, faça upload delas e leia QR codes</translation>
 <translation id="1508263560970797965">Continuar na navegação anônima</translation>
 <translation id="1509486075633541495">Fazer login no site</translation>
-<translation id="1509960214886564027">Os recursos de muitos sites podem apresentar falhas</translation>
 <translation id="1513858653616922153">Excluir senha</translation>
 <translation id="1517166097004694782">Ocultar "Continuar com esta guia"</translation>
 <translation id="1520027731907768768">Receba alertas de redução no preço dos produtos que você monitora.</translation>
@@ -368,9 +366,6 @@
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360196772093551345">Solicitar um site móvel</translation>
 <translation id="2362083820973145409">Login feito como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abre as configurações.</translation>
-<translation id="236977714248711277">Os sites não podem usar cookies para melhorar sua experiência de navegação, como manter sua conta conectada ou se lembrar dos itens em um carrinho de compras.
-
-Eles também não podem usar cookies para ver sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="2377230674627603057">Grade de grupos de guias</translation>
 <translation id="2377336083033403521">Pesquisar guias…</translation>
 <translation id="2381405137052800939">Conceitos básicos</translation>
@@ -446,7 +441,6 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os arquivos baixados</translation>
 <translation id="2671423594960767771">Compartilhar grupo</translation>
 <translation id="2673508731173059946">Visitar link copiado</translation>
-<translation id="2687403674020088961">Bloquear todos os cookies (não recomendado)</translation>
 <translation id="2688535388040882469">Banners</translation>
 <translation id="2690858294534178585">A câmera está sendo usada</translation>
 <translation id="2691653761409724435">Não está disponível off-line</translation>
@@ -661,7 +655,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3587885837929752825">Sua organização limita o que você pode salvar na sua Conta do Google.</translation>
 <translation id="3588820906588687999">Abrir em uma nova guia</translation>
 <translation id="3595252146048399851">Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
-<translation id="3596414637720633074">Bloquear cookies de terceiros na navegação anônima</translation>
 <translation id="3602260545951981695">Escolha "Proteção reforçada"</translation>
 <translation id="3610041351087301930">Ocultar leitor</translation>
 <translation id="3622175633937495219">Pesquisar no histórico (<ph name="COUNT" /> encontrados)</translation>
@@ -1063,7 +1056,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5177141896043341906">Você tem <ph name="NUMBER_OF_PASSWORDS" /> senhas fracas que podem colocar sua segurança em risco.</translation>
 <translation id="5181140330217080051">Fazendo download</translation>
 <translation id="5186185447130319458">Particular</translation>
-<translation id="5188482106078495165">Sua configuração de cookies é aplicada a todas as guias. Para aplicar uma nova configuração a uma guia aberta, atualize a guia.</translation>
 <translation id="518997337573684769">Enviando relatório de falha…</translation>
 <translation id="519530786644929958">O download falhou e não pode ser repetido.</translation>
 <translation id="5197255632782567636">Internet</translation>
@@ -1088,7 +1080,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5271265092610673171">{count,plural, =1{Um campo obrigatório está em branco. Preencha antes de salvar.}one{Um campo obrigatório está em branco. Preencha antes de salvar.}other{Alguns campos obrigatórios estão em branco. Preencha antes de salvar.}}</translation>
 <translation id="5271549068863921519">Salvar senha</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) quer que você participe de um grupo de guias. Compartilhe com cautela. Qualquer pessoa com o link pode editar todas as guias. O link expira em 48 horas.</translation>
-<translation id="5279600392753459966">Bloquear todas</translation>
 <translation id="5282340693022193851">Para receber notificações de monitoramento de preços, ative esse recurso nos Ajustes do iOS.</translation>
 <translation id="528857768909044842">Os grupos de guias são salvos aqui</translation>
 <translation id="5294624619177114121">Notificações no dispositivo móvel</translation>
@@ -1187,7 +1178,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5648166631817621825">Últimos sete dias</translation>
 <translation id="5652623411397330904">Os produtos que você acompanha vão aparecer aqui.</translation>
 <translation id="5656431592348714536">Agenda aprimorada</translation>
-<translation id="5657156137487675418">Permitir todos os cookies</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5665739277590037307">Os <ph name="GOOGLE_TERMS" /> e a <ph name="GEMINI_APPS_PRIVACY" /> se aplicam. O Gemini pode cometer erros. Por isso, é bom checar as respostas.</translation>
 <translation id="5666313630530585305">Faça login em um site.</translation>
@@ -1204,7 +1194,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5704908597376970822">Não é possível fazer login.</translation>
 <translation id="5709005673595820640">{count,plural, =1{Você tem {count} senha reutilizada que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}one{Você tem {count} senha reutilizada que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}other{Você tem {count} senhas reutilizadas que podem colocar sua segurança em risco. Corrija o problema agora para se proteger.}}</translation>
 <translation id="57094364128775171">Sugerir senha forte…</translation>
-<translation id="5716230673298034837">Permitir tudo</translation>
 <translation id="5718049162805123412">Mude imediatamente</translation>
 <translation id="572328651809341494">Guias recentes</translation>
 <translation id="5724941645893276623">Para navegar na Web com privacidade, adicione uma nova guia</translation>
@@ -1263,7 +1252,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5936065461722368675">Traduzir a página toda</translation>
 <translation id="5937560539988385583">Página traduzida</translation>
 <translation id="5938160824633642847">Seu dispositivo está quase cheio. Libere espaço e tente novamente.</translation>
-<translation id="594324569139756587">Bloquear de terceiros</translation>
 <translation id="5944869793365969636">Ler QR code</translation>
 <translation id="5948291296578561264">Isso permite que você salve fotos na sua biblioteca de fotos.</translation>
 <translation id="5948605885471592910">Ver e gerenciar tudo o que você tem aberto</translation>
@@ -1336,7 +1324,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6192388920090306326">Viagem para Tóquio</translation>
 <translation id="6193448654517602979">Selecionar guias</translation>
 <translation id="6196207969502475924">Pesquisa por voz</translation>
-<translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6198252989419008588">Alterar PIN</translation>
 <translation id="6210079381482819663">As guias não usadas há <ph name="THRESHOLD" /> dias ou mais são movidas para cá. É possível mudar isso a qualquer momento nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Nenhum endereço encontrado</translation>
@@ -1412,14 +1399,10 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6444435711855078002">Mais opções</translation>
 <translation id="6445051938772793705">País</translation>
 <translation id="6445981559479772097">Mensagem enviada.</translation>
-<translation id="6447842834002726250">Cookies</translation>
 <translation id="6449554712554071184">Essa ação vai excluir permanentemente o grupo do seu dispositivo.</translation>
 <translation id="6452534462676960500">Nova atividade</translation>
 <translation id="6459411599807878608">Detalhes ocultos</translation>
 <translation id="646394917185284261">Arquivos</translation>
-<translation id="6464397691496239022">Os sites podem usar cookies para melhorar sua experiência de navegação, como manter sua conta conectada ou se lembrar dos itens em um carrinho de compras.
-
-No entanto, eles não podem usar cookies para ver sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="6476253015009698798">O monitoramento de preços não está disponível para esta página.</translation>
 <translation id="6476284679642588870">Gerenciar formas de pagamento</translation>
 <translation id="6476800141292307438">Tradução da página para <ph name="LANGUAGE" />. Opções disponíveis na parte inferior da tela.</translation>
@@ -1462,7 +1445,6 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 <translation id="6612912757320004438">Permitir notificações de guias…</translation>
 <translation id="6617761071025228250">Limpar texto</translation>
 <translation id="6620279676667515405">Cancelar</translation>
-<translation id="6624219055418309072">Bloquear na navegação anônima</translation>
 <translation id="6625830436658400045">Suas configurações de sincronização vão ser restauradas com base no seu último backup. Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado.</translation>
 <translation id="6627583120233659107">Editar pasta</translation>
 <translation id="6629759408545977279">De: <ph name="ORIGINATING_HOST" /></translation>
@@ -1479,9 +1461,6 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 <translation id="6663529247339810546">Impossível salvar imagem</translation>
 <translation id="6668619169535738264">Editar favorito</translation>
 <translation id="6671294218820966278">Marcar como lido</translation>
-<translation id="6672241253012342409">Os sites podem usar cookies para melhorar sua experiência de navegação, como manter sua conta conectada ou se lembrar dos itens em um carrinho de compras.
-
-Na navegação anônima, eles não podem usar cookies para ver suas atividades de navegação em outros sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="6672697278890207089">Digite sua senha</translation>
 <translation id="6674917187596384849">Você pode ir de uma conta para outra com facilidade</translation>
 <translation id="6676349090816247042">Opções de login.</translation>
@@ -1517,6 +1496,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6794476726485507147">Escolha uma data e um horário para receber uma notificação de lembrete para voltar a esta página</translation>
 <translation id="6795481620482106033">Dados inválidos</translation>
 <translation id="6797543908718012274">Ativar modo de leitura</translation>
+<translation id="6806550742467879742">Ferramentas para páginas</translation>
 <translation id="6807287147325542056">Senhas em outros apps</translation>
 <translation id="681368974849482173">Item criado</translation>
 <translation id="6825078212112407882">{count,plural, =1{Favorito salvo na sua Conta do Google {email}}one{{count} favorito salvo na sua Conta do Google {email}}other{{count} favoritos salvos na sua Conta do Google {email}}}</translation>
@@ -1670,6 +1650,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7454057999980797137">Estado/Província</translation>
 <translation id="7458706065921255639">Personalização e vinculação</translation>
 <translation id="745899714366929493">O dia todo</translation>
+<translation id="7460314822154045102">Usar a câmera</translation>
 <translation id="7460698861522306757">Solicitar o site móvel</translation>
 <translation id="7464143666517313304">Essa ação exclui os endereços salvos neste dispositivo.</translation>
 <translation id="7468373585447318060">Acompanhe reduções nos preços de todos os produtos que você monitora.</translation>
@@ -1802,9 +1783,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7952670906562503188">Você está prestes a excluir {passkey_count} chaves de acesso e a lista de sites e apps em que escolheu nunca salvar informações de login. As contas que você criou em sites e apps não serão excluídas.</translation>
 <translation id="7958575506592576831">Informações de segurança da página</translation>
 <translation id="7961015016161918242">Nunca</translation>
-<translation id="7966516440812255683">Os sites podem usar cookies para melhorar sua experiência de navegação, como manter sua conta conectada ou se lembrar dos itens em um carrinho de compras.
-
-Eles também podem usar cookies para ver sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="7971136598759319605">Ativado há um dia</translation>
 <translation id="7975036700432177008">Testar</translation>
 <translation id="797588153137233716">Menu → Histórico → Excluir dados de navegação</translation>
@@ -1815,7 +1793,6 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="7987685713885608670">Para ter mais segurança, criptografe as senhas no dispositivo antes que elas sejam salvas no Gerenciador de senhas do Google.</translation>
 <translation id="798991908416757345">Os grupos de guias estão indisponíveis</translation>
 <translation id="7993170188789685695">Toque duas vezes para fechar a notificação.</translation>
-<translation id="7993619969781047893">Os recursos de alguns sites podem apresentar falhas</translation>
 <translation id="7996239959906074962">Configurar…</translation>
 <translation id="8001561107130904792">Compartilhamento de conteúdo da página</translation>
 <translation id="800361585186029508">Abre os URLs fornecidos no Google Chrome.</translation>

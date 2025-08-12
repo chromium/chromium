@@ -2012,6 +2012,7 @@
 <translation id="4297937944457164390">Данные обновлены: <ph name="ATTRIBUTE_NAME" /></translation>
 <translation id="4298000214066716287">Инвестиции</translation>
 <translation id="42981349822642051">Развернуть</translation>
+<translation id="4298148761711700950">Платите моментально без загрузки QR-кода</translation>
 <translation id="4298925811540301889">Файлы cookie для этого сайта синхронизированы на ваших устройствах с ChromeOS. Чтобы задать параметры синхронизации, перейдите в <ph name="SYNC_SETTINGS" />.</translation>
 <translation id="4300272766492248925">Открыть приложение</translation>
 <translation id="4300675098767811073">Несколько отверстий справа</translation>
@@ -2749,6 +2750,7 @@
 <translation id="5540969246441091044">Конный спорт</translation>
 <translation id="5541086400771735334">Почтовый ящик 7</translation>
 <translation id="5541546772353173584">Добавьте адрес электронной почты</translation>
+<translation id="5543452229212526547">Ваш текст, содержимое и URL страницы, на которой вы пишете, передаются в Google. Наши специалисты не будут использовать ваш контент, чтобы улучшать ИИ. Ваша организация может изменить эти настройки в любой момент.</translation>
 <translation id="5543564889050342791">Зоопарки, аквариумы и заповедники</translation>
 <translation id="5543722831081909240">180 градусов</translation>
 <translation id="5544836308113951378">Круизы и чартерные рейсы</translation>
@@ -3125,6 +3127,8 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184099524311454384">Поиск по вкладкам</translation>
 <translation id="6184868291074982484">Chrome автоматически ограничивает использование сторонних файлов cookie</translation>
+<translation id="6189351761800074311">Ваш текст и содержимое страницы передаются в Google, но не используются для улучшения ИИ.
+    <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Переопределение некоторых клавиш, например Esc.</translation>
 <translation id="6194209731893739467">Здесь вы найдете все отслеживаемые товары</translation>
 <translation id="6195371403461054755">Геология</translation>

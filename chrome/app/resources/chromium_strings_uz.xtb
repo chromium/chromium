@@ -205,6 +205,7 @@
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium uchun yangilanish mavjud va brauzer qayta ishga tushirilganda oʻrnatiladi.}=1{Chromium uchun yangilanish mavjud va brauzer qayta ishga tushirilganda oʻrnatiladi. Inkognito oynalar qayta ochilmaydi.}other{Chromium uchun yangilanish mavjud va brauzer qayta ishga tushirilganda oʻrnatiladi. # ta inkognito oyna qayta ochilmaydi.}}</translation>
 <translation id="3651803019964686660"><ph name="ORIGIN" /> orqali Android telefoningizga raqam yuborish uchun ikkala qurilmada Chromium hisobingizga kiring.</translation>
 <translation id="3667616615096815454">Oʻrnatilmadi, ilova serverga nomaʼlum.</translation>
+<translation id="3675854891107786059">Google hisobingizdagi barcha Chromium maʼlumotlarini <ph name="BEGIN_LINK" />shaxsiy kodli ibora<ph name="END_LINK" /> yordamida shifrlang. Google Pay xizmatidagi toʻlov usullari va manzillar shifrlanmaydi. Chromium brauzer tarixi sinxronlanmaydi.</translation>
 <translation id="3685209450716071127">Chromium parollaringizni tekshira olmadi. Internet aloqasini tekshiring.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni soʻramoqda}=1{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni soʻramoqda Inkognito oynalar qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni soʻramoqda # ta inkognito oyna qayta ochilmaydi.}}</translation>
 <translation id="3713809861844741608">Havolani yangi Chromium oynasida ochish</translation>
@@ -495,6 +496,7 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tay
 Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7339898014177206373">Yangi oyna</translation>
 <translation id="734373864078049451">Chromium’dagi barcha veb-sahifalar, xatcho‘plar va boshqa ma’lumotlarni bu yerdan topish mumkin.</translation>
+<translation id="7347827960336370838">Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chromium maʼlumotlarini oʻchirishingiz<ph name="END_LINK" /> kerak.</translation>
 <translation id="7349591376906416160">Tizim administratori tomonidan Chromium brauzeri <ph name="TARGET_URL_HOSTNAME" /> sahifasini <ph name="ALTERNATIVE_BROWSER_NAME" /> orqali ochiladigan qilib sozlangan.</translation>
 <translation id="7352651011704765696">Xatolik yuz berdi.</translation>
 <translation id="7376384068949534168">Yaqinda ochmagansiz. Chromium olib tashladi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -533,6 +535,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7859018312476869945">Manzillar qatori yoki qidiruv oynasiga matn kiritilganda Chromium yaxshiroq takliflar olish uchun yozilgan matnni birlamchi qidiruv tizimiga yuboradi. Inkognito rejimda bu funksiya yoqilmasin</translation>
 <translation id="7867198900892795913">Chromium brauzerining so‘nggi versiyasini o‘rnatib bo‘lmadi. Xavfsizlik sozlamalariga kiritilgan tuzatishlar va yangi funksiyalardan bahramand bo‘la olmaysiz.</translation>
 <translation id="7872446069773932638">Yuklab olinmoqda... <ph name="SECONDS" /> soniya qoldi.</translation>
+<translation id="7873537467422636035">Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chromium maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
 <translation id="7877212753140190672">Bu rasm haqida savol berish</translation>
 <translation id="7888981273428720788">Chromiumni asosiy brauzer etib belgilang</translation>
 <translation id="7934340546140346950">Chromium himoyasiz ulanishlarni imkon qadar HTTPS protokolga avtomatik yangilaydi</translation>

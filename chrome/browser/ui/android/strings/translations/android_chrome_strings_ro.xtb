@@ -1092,6 +1092,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="6125202119952209826">Alătură-te grupului de file cu <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Mai multe detalii<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Elementul a fost eliminat</translation>
+<translation id="6127860394906721547">Deschide grupul de file <ph name="TITLE_OF_GROUP" /> de culoare <ph name="COLOR_NAME" />, cu site-urile <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimizează fila</translation>
 <translation id="6134168885321518274">Deschide bara de căutare</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> filă}few{<ph name="TAB_COUNT_MANY" /> file}other{<ph name="TAB_COUNT_MANY" /> de file}}</translation>

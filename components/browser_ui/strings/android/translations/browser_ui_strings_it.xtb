@@ -120,7 +120,9 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="2379925928934107488">Applica il tema scuro ai siti quando viene usato in Chrome, se possibile</translation>
 <translation id="2390272837142897736">Aumenta lo zoom</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Esatta</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Consentite: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{Consentite: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>
+<translation id="2404857459073803936">Accesso alla posizione per questo sito</translation>
 <translation id="2410940059315936967">Un sito visitato può incorporare contenuti di altri siti, ad esempio immagini, annunci e testo. I cookie impostati da questi altri siti vengono chiamati cookie di terze parti.</translation>
 <translation id="2411116727035790889">Attiva scorciatoie</translation>
 <translation id="2433507940547922241">Aspetto</translation>
@@ -276,6 +278,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="3992684624889376114">Informazioni su questa pagina</translation>
 <translation id="4002066346123236978">Titolo</translation>
 <translation id="4031179711345676612">Microfono consentito</translation>
+<translation id="4042597221652780603">Approssimativa</translation>
 <translation id="4046123991198612571">Traccia successiva</translation>
 <translation id="4077310749977440510">In genere, i siti leggono gli appunti per funzionalità come il mantenimento della formattazione del testo copiato</translation>
 <translation id="4082080074595021446">Eccezioni per siti web specifici non consentite perché la RAM del dispositivo Android non è sufficiente.</translation>

@@ -238,6 +238,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1384725838384960382">Página de autenticação de credenciais para pagamento seguro</translation>
 <translation id="1386623374109090026">Anotações</translation>
 <translation id="138810468159004008">Permitir ao acessar o site</translation>
+<translation id="1391145880481608015">Saiba mais sobre este alerta</translation>
 <translation id="139161720020179799">Cinza-escuro 1</translation>
 <translation id="1391625539203220400">Salvar o IBAN neste dispositivo?</translation>
 <translation id="1392813880755413602">Apresentação OpenDocument</translation>
@@ -1443,6 +1444,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="340924996148642843">A comparação não está disponível no momento</translation>
 <translation id="3409896703495473338">Gerenciar configurações de segurança</translation>
 <translation id="3411091017011773343">Fazer upload em <ph name="HOURS" />h</translation>
+<translation id="3413466783792948876">Caso você esteja usando uma rede pública, será mais seguro visitar este site mais tarde. Uma rede confiável, como o Wi-Fi de casa ou do trabalho, oferece menos riscos.</translation>
 <translation id="3414275587143250384">Computação em nuvem e distribuída</translation>
 <translation id="3414952576877147120">Tamanho:</translation>
 <translation id="341513675006332771">Botão "Iniciar o jogo do Dinossauro do Chrome". Ative para jogar no Chrome.</translation>
@@ -1686,6 +1688,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3781428340399460090">Rosa-escuro</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositivos Bluetooth</translation>
+<translation id="3785246317262748285">A conexão com estes sites costuma ser segura, mas o Chrome não conseguiu garantir isso desta vez. Um invasor pode estar tentando espionar ou modificar sua conexão de rede. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Melhores correspondências para "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Tamanho 16</translation>
 <translation id="3789841737615482174">Instalar</translation>
@@ -2010,6 +2013,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4297937944457164390">Informação atualizada: <ph name="ATTRIBUTE_NAME" /></translation>
 <translation id="4298000214066716287">Investimentos</translation>
 <translation id="42981349822642051">Expandir</translation>
+<translation id="4298148761711700950">Pague em instantes sem fazer upload de um QR code</translation>
 <translation id="4298925811540301889">Os cookies deste site são sincronizados em todos os seus dispositivos ChromeOS. Para gerenciar o que é sincronizado, acesse <ph name="SYNC_SETTINGS" />.</translation>
 <translation id="4300272766492248925">Abrir app</translation>
 <translation id="4300675098767811073">Perfuração múltipla do lado direito</translation>
@@ -2747,6 +2751,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5540969246441091044">Hipismo</translation>
 <translation id="5541086400771735334">Caixa de e-mails 7</translation>
 <translation id="5541546772353173584">Adicione um E-mail</translation>
+<translation id="5543452229212526547">O texto, o conteúdo e o URL da página em que você está escrevendo serão enviados ao Google. Seu conteúdo não será usado por revisores humanos para melhorar a IA. Sua organização pode mudar essas configurações a qualquer momento.</translation>
 <translation id="5543564889050342791">Zoológicos, aquários e reservas</translation>
 <translation id="5543722831081909240">180 graus</translation>
 <translation id="5544836308113951378">Cruzeiros e fretes</translation>
@@ -3060,6 +3065,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6085149458302186532">Rótulos (coloridos)</translation>
 <translation id="6087312102907839798">Pesquisas relacionadas</translation>
 <translation id="6089505343295765444">As guias excluídas do histórico do Chrome ainda vão aparecer nas tabelas de comparação</translation>
+<translation id="6091691259076781835">Para agilizar a finalização de compras, salve este CVC no seu dispositivo</translation>
 <translation id="6093599771645355227">Amarelo 1</translation>
 <translation id="6093795393556121384">Seu cartão foi verificado</translation>
 <translation id="6094253940069566294">Editar veículo</translation>
@@ -3122,6 +3128,8 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184099524311454384">Pesquisar guias</translation>
 <translation id="6184868291074982484">O Chrome limita automaticamente os cookies de terceiros</translation>
+<translation id="6189351761800074311">O texto e o conteúdo da página são enviados ao Google, mas não serão usados para melhorar a IA.
+    <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Substituir algumas teclas do teclado, como Esc</translation>
 <translation id="6194209731893739467">Veja todos os seus produtos monitorados aqui</translation>
 <translation id="6195371403461054755">Geologia</translation>
@@ -3218,6 +3226,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6340739886198108203">A política do administrador não recomenda fazer capturas de tela ou gravações quando há conteúdo confidencial visível:</translation>
 <translation id="6341434961864773665">{0,plural, =1{A política do administrador não recomenda fazer upload do arquivo para este local: <ph name="DESTINATION_NAME" />}one{A política do administrador não recomenda fazer upload do arquivo para este local: <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda fazer upload dos arquivos para este local: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Neste instante</translation>
+<translation id="6342171901363060580">Enviamos este alerta porque o site não é compatível com HTTPS e você está no modo de navegação anônima. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Rotas</translation>
 <translation id="6348220984832452017">Variações ativas</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
@@ -3332,6 +3341,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6502510275417601303">O alerta sobre a nova configuração de pagamento está fechado</translation>
 <translation id="6502991525169604759">Sem suas modificações</translation>
 <translation id="6505072878288254563">Traduzindo</translation>
+<translation id="6506936645890046535">Pode pedir para acessar cookies</translation>
 <translation id="6506959208958864820">Envelope</translation>
 <translation id="6507117483253822672">Escreva com mais confiança em qualquer lugar da Web</translation>
 <translation id="6508722015517270189">Reiniciar o Chrome</translation>
@@ -3483,6 +3493,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Use o YouTube com as configurações do familiar responsável</translation>
 <translation id="6779348349813025131">O Gerenciador de senhas do Google precisa de permissão para abrir o Acesso às Chaves do MacOS</translation>
+<translation id="6780449997190414928">A conexão com este site costuma ser segura, mas o Chrome não conseguiu garantir isso desta vez. Um invasor pode estar tentando espionar ou modificar sua conexão de rede. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Você pode mudar o mecanismo de pesquisa a qualquer momento nas configurações do Chrome.</translation>
 <translation id="6786145470008421571">Envelope de 15 cm x 23 cm</translation>
 <translation id="67862343314499040">Violeta</translation>
@@ -3514,12 +3525,14 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="683108308100148227">Ocultar item</translation>
 <translation id="6832753933931306326">O formulário foi preenchido</translation>
+<translation id="6834757537110528125">O site não pode fazer uma conexão segura</translation>
 <translation id="6841864657731852591">Cilindro de gravação</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Rastreamento de mãos permitido apenas desta vez</translation>
 <translation id="6849023911358004088">Botão "Gerenciar configurações de segurança". Ative para gerenciar o Navegação segura e muito mais nas configurações do Chrome</translation>
 <translation id="6850286078059909152">Cor do texto</translation>
 <translation id="6852204201400771460">Recarregar app?</translation>
+<translation id="6854691830678097752">Para agilizar a finalização de compras, salve este CVC na sua conta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6857776781123259569">Gerenciar senhas…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Pode pedir para entrar no picture-in-picture</translation>
@@ -3778,6 +3791,7 @@ Mais detalhes:
 <translation id="7257453341537973799">Recursos e planejamento de carreira</translation>
 <translation id="725866823122871198">Não é possível estabelecer uma conexão privada com <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, porque a data e a hora do seu computador (<ph name="DATE_AND_TIME" />) estão incorretas.</translation>
 <translation id="7260075294900977274">Uma nova pasta inteligente que ajuda você a salvar todas as suas páginas de compras em um só lugar e a monitorar preços automaticamente, além de receber informações de preços e muito mais</translation>
+<translation id="7264942008235065057">Este site vai permanecer bloqueado porque você está no Programa Proteção Avançada do Google. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">O endereço está disponível somente neste dispositivo</translation>
 <translation id="7269151392155523061">O atalho não pode ser igual à palavra-chave do agregador de pesquisa definida por <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Os arquivos baixados são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis ou malware e podem ser armazenados com base nas políticas da empresa e ficar visíveis para seu administrador.</translation>
@@ -3906,6 +3920,7 @@ Mais detalhes:
 <translation id="7469935732330206581">O formulário não é seguro</translation>
 <translation id="7470854469646445678">Informe o motivo da cópia (obrigatório)</translation>
 <translation id="7471007961486718967">Informe o motivo da transferência (obrigatório)</translation>
+<translation id="7473033553872550521">Você também pode entrar em contato com o proprietário do site e sugerir que ele faça upgrade para HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Agora não</translation>
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7481603210197454575">Envelope italiano</translation>
@@ -4432,6 +4447,7 @@ Mais detalhes:
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Registro de cartão virtual aberto no tamanho máximo</translation>
+<translation id="834805203690963649">Invasores podem ver e mudar as informações que você envia ou recebe neste site.</translation>
 <translation id="8349305172487531364">Barra de favoritos</translation>
 <translation id="8350416046273606058">O atalho não pode conter espaços: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Criar nota</translation>

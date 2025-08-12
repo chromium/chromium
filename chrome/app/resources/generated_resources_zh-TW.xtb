@@ -1475,7 +1475,6 @@
 <translation id="200321182559008924">妥善整理分頁</translation>
 <translation id="2003596238737586336">目前設定的時間表為<ph name="SUNRISE" /> 到<ph name="SUNSET" />。這項設定是由系統管理員管理。</translation>
 <translation id="2004413981947727241">在任何裝置都能使用你的密碼</translation>
-<translation id="2004697686368036666">某些網站的功能可能無法運作</translation>
 <translation id="2006638907958895361">在「<ph name="APP" />」中開啟連結</translation>
 <translation id="2007404777272201486">回報問題...</translation>
 <translation id="200781997903833896">如要使用「朗讀內容」功能，請釋出裝置空間</translation>
@@ -1956,7 +1955,6 @@
 <translation id="2328137272841210255">重設 PIN 碼</translation>
 <translation id="2328474416100889417">所有共用對象都將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，邀請連結也會全部失效</translation>
 <translation id="2328561734797404498">請重新啟動裝置以使用「<ph name="APP_NAME" />」。</translation>
-<translation id="2328636661627946415">使用無痕模式時，網站只能使用 Cookie 查看你在該網站上的瀏覽活動。無痕模式工作階段結束時，系統就會刪除 Cookie。</translation>
 <translation id="2329597144923131178">登入後，即可從您使用的任何裝置取得自己的書籤、歷史記錄、密碼和其他設定。</translation>
 <translation id="2330182457402792918">選取這個網站可讀取的檔案</translation>
 <translation id="2332115969598251205">無法載入已儲存到 <ph name="PRIMARY_EMAIL" /> 的裝置，請檢查網際網路連線，然後再試一次。</translation>
@@ -3743,7 +3741,6 @@
 <translation id="3593953853060020305">要允許這個網站編輯「<ph name="FILE_NAME" />」嗎？</translation>
 <translation id="3593965109698325041">憑證名稱限制</translation>
 <translation id="3596012367874587041">應用程式設定</translation>
-<translation id="3596414637720633074">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="3599221874935822507">外凸</translation>
 <translation id="3600051066689725006">網路要求資訊</translation>
 <translation id="3600956933576601730">請閱讀並接受條款，再使用這些功能</translation>
@@ -4079,7 +4076,6 @@
 <translation id="3807747707162121253">取消(&amp;C)</translation>
 <translation id="3808202562160426447">調暗背景內容</translation>
 <translation id="3808443763115411087">Crostini Android 應用程式開發</translation>
-<translation id="3808617121485025547">進一步瞭解封鎖第三方 Cookie</translation>
 <translation id="38089336910894858">使用 ⌘Q 關閉前顯示警告訊息</translation>
 <translation id="3809272675881623365">兔子</translation>
 <translation id="3809280248639369696">外星人</translation>
@@ -4338,7 +4334,6 @@
 <translation id="3975565978598857337">無法連線至指定領域的伺服器</translation>
 <translation id="3976108569178263973">沒有可用的印表機。</translation>
 <translation id="397703832102027365">即將完成...</translation>
-<translation id="3977145907578671392">在無痕模式下，某些網站的功能可能無法正常運作</translation>
 <translation id="3977886311744775419">這個網路類型無法下載自動更新，但你可以手動檢查更新。</translation>
 <translation id="3978325380690188371">ChromeVox 開啟時無法使用相黏鍵</translation>
 <translation id="3978732922947854545">Chrome 讓 PDF 檔案更容易閱讀</translation>
@@ -5723,6 +5718,7 @@
 <translation id="496742804571665842">停用 eSIM 設定檔</translation>
 <translation id="4967571733817147990">自訂滑鼠按鈕</translation>
 <translation id="4967852842111017386"><ph name="FEATURE_NAME" />裝置名稱</translation>
+<translation id="4968994772848295474">訪客模式不支援安裝網頁應用程式</translation>
 <translation id="4971412780836297815">完成後開啟</translation>
 <translation id="4972129977812092092">編輯印表機資訊</translation>
 <translation id="4972164225939028131">密碼錯誤</translation>
@@ -6601,6 +6597,7 @@
 <translation id="560834977503641186">Wi-Fi 同步功能，瞭解詳情</translation>
 <translation id="5608580678041221894">輕觸下列按鍵可調整或移動裁剪區域</translation>
 <translation id="5609231933459083978">這似乎是無效的應用程式。</translation>
+<translation id="5610759359710387751">自訂您專屬的 Chrome</translation>
 <translation id="5610867721023328944">請再試一次，或選取下方其中一個可用的主題。</translation>
 <translation id="5611398002774823980">儲存到帳戶</translation>
 <translation id="5611399285717843500">協助改善 Chrome 和 ChromeOS 的功能與效能。收集這類資料時，系統會移除個人資訊。</translation>
@@ -7498,6 +7495,7 @@
 <translation id="6257602895346497974">開啟同步功能...</translation>
 <translation id="625827534921607067">如有多個先前曾連線或設定過的網路，系統會優先使用這個網路</translation>
 <translation id="6259776178973198997">重新整理 Wi-Fi Direct 擁有者資訊</translation>
+<translation id="6261688934280090835">ChromeOS 資訊站應用程式記錄</translation>
 <translation id="6262371516389954471">備份內容會上傳到 Google，並使用你的 Google 帳戶密碼加密。</translation>
 <translation id="6263082573641595914">Microsoft CA 版本</translation>
 <translation id="6263284346895336537">非重要</translation>
@@ -10492,6 +10490,7 @@
 <translation id="8340547030807793004">可對 <ph name="DEVICE" /> 執行的其他動作</translation>
 <translation id="8341804784147620576">顯示搜尋捷徑</translation>
 <translation id="8342221978608739536">沒有試過</translation>
+<translation id="8342387517402567689">無痕模式不支援安裝網頁應用程式</translation>
 <translation id="8342861492835240085">選取集合</translation>
 <translation id="8345848587667658367">你現在可以查看手機最近的相片、媒體、通知和應用程式</translation>
 <translation id="8347227221149377169">列印工作</translation>
@@ -10815,7 +10814,6 @@
 <translation id="8573111744706778015">輸入「uo7」會得到「ươ」</translation>
 <translation id="8574990355410201600">一律允許 <ph name="HOST" /> 播放聲音</translation>
 <translation id="8575286410928791436">按住 <ph name="KEY_EQUIVALENT" /> 鍵即可結束</translation>
-<translation id="8576359558126669548">進一步瞭解在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{將分頁新增至閱讀清單}other{將分頁新增至閱讀清單}}</translation>
 <translation id="8577052309681449949">自動點擊、游標大小、游標顏色等等</translation>
 <translation id="8578639784464423491">不可超過 99 個英文字母</translation>
@@ -11130,7 +11128,6 @@
 <translation id="8777628254805677039">Root 密碼</translation>
 <translation id="8779720597365936419">是，請將我的個人資料與工作資料分開 (建議)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">網站只能使用 Cookie 查看你在該網站上的瀏覽活動</translation>
 <translation id="8780123805589053431">從 Google 取得圖片說明</translation>
 <translation id="8780443667474968681">語音搜尋功能已停用。</translation>
 <translation id="8781834595282316166">在群組中新增分頁</translation>

@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{تم إنشاء المجموعة قبل سنة واحدة (<ph name="NUM_YEARS_ONE" />)}zero{تم إنشاء المجموعة قبل <ph name="NUM_YEARS_MANY" /> سنة}two{تم إنشاء المجموعة قبل سنتَين (<ph name="NUM_YEARS_MANY" />)}few{تم إنشاء المجموعة قبل <ph name="NUM_YEARS_MANY" /> سنوات}many{تم إنشاء المجموعة قبل <ph name="NUM_YEARS_MANY" /> سنة}other{تم إنشاء المجموعة قبل <ph name="NUM_YEARS_MANY" /> سنة}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{سيتم إغلاق علامات التبويب والمجموعات غير النشطة بعد شهر واحد}zero{سيتم إغلاق علامات التبويب والمجموعات غير النشطة بعد <ph name="MONTH_COUNT_MANY" /> شهر}two{سيتم إغلاق علامات التبويب والمجموعات غير النشطة بعد شهرَين (<ph name="MONTH_COUNT_MANY" />)}few{سيتم إغلاق علامات التبويب والمجموعات غير النشطة بعد <ph name="MONTH_COUNT_MANY" /> شهور}many{سيتم إغلاق علامات التبويب والمجموعات غير النشطة بعد <ph name="MONTH_COUNT_MANY" /> شهرًا}other{سيتم إغلاق علامات التبويب والمجموعات غير النشطة بعد <ph name="MONTH_COUNT_MANY" /> شهر}}</translation>
 <translation id="1173894706177603556">إعادة تسمية</translation>
-<translation id="1197088940767939838">برتقالي</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{فتح "<ph name="TITLE_OF_GROUP" />" التي تتضمّن علامة تبويب واحدة (<ph name="TAB_COUNT2" />)}zero{فتح "<ph name="TITLE_OF_GROUP" />" التي تتضمّن <ph name="TAB_COUNT2" /> علامة تبويب}two{فتح "<ph name="TITLE_OF_GROUP" />" التي تتضمّن علامتَي تبويب (<ph name="TAB_COUNT2" />)}few{فتح "<ph name="TITLE_OF_GROUP" />" التي تتضمّن <ph name="TAB_COUNT2" /> علامات تبويب}many{فتح "<ph name="TITLE_OF_GROUP" />" التي تتضمّن <ph name="TAB_COUNT2" /> علامة تبويب}other{فتح "<ph name="TITLE_OF_GROUP" />" التي تتضمّن <ph name="TAB_COUNT2" /> علامة تبويب}}</translation>
 <translation id="1273910660700874265">خيارات مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="1300188005269437765">يمكنك اختيار وقت نقل علامات التبويب ومجموعات علامات التبويب تلقائيًا إلى القسم غير النشط.</translation>
@@ -20,8 +19,6 @@
 <translation id="1499635324672558517">هل تريد إغلاق جميع علامات التبويب في وضع التصفُّح المتخفي؟</translation>
 <translation id="1501480321619201731">حذف مجموعة</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) غير نشطة}zero{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب غير نشطة}two{علامتا تبويب (<ph name="TABS_COUNT_MANY" />) غير نشطتَين}few{‫<ph name="TABS_COUNT_MANY" /> علامات تبويب غير نشطة}many{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب غير نشطة}other{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب غير نشطة}}</translation>
-<translation id="1555130319947370107">أزرق</translation>
-<translation id="161042844686301425">سماوي</translation>
 <translation id="1645759014353344461">عدد علامات التبويب المجمَّعة: <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1657719826150349398">نقل علامة التبويب إلى الأسفل</translation>
 <translation id="1697284962337958118">إضافة إلى</translation>
@@ -88,7 +85,6 @@
 <translation id="4076226664360336092">قائمة مجموعات علامات التبويب، مفتوحة بطول الشاشة</translation>
 <translation id="4133493477912226187">يبدو أن هناك <ph name="NUMBER_OF_TABS" /> من علامات التبويب متشابهة. هل تريد تجميعها؟</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{إغلاق مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{إغلاق مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}two{إغلاق مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على علامتَي تبويب (<ph name="TABS_COUNT_MANY" />)}few{إغلاق مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامات تبويب}many{إغلاق مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}other{إغلاق مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
-<translation id="4159784952369912983">أرجواني</translation>
 <translation id="4203448675570432781">تم إغلاق الإشعار بشأن التغييرات التي تم إجراؤها على ميزة "الحذف التلقائي لعلامات التبويب".</translation>
 <translation id="427987768447457592">مجموعة علامات تبويب جديدة</translation>
 <translation id="4371591986692297148">غير مفعّلة</translation>
@@ -117,7 +113,6 @@
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{‏يغلق متصفّح Chrome تلقائيًا أي علامات تبويب ومجموعاتها بعد شهر واحد (<ph name="AUTO_DELETE_DELAY_ONE" />) من كونها غير نشطة. ويمكنك تغيير ذلك في الإعدادات.}zero{‏يغلق Chrome تلقائيًا أي علامات تبويب ومجموعاتها بعد <ph name="AUTO_DELETE_DELAY_MANY" /> شهر من كونها غير نشطة. ويمكنك تغيير ذلك في الإعدادات.}two{‏يغلق Chrome تلقائيًا أي علامات تبويب ومجموعاتها بعد شهرين (<ph name="AUTO_DELETE_DELAY_MANY" />) من كونها غير نشطة. ويمكنك تغيير ذلك في الإعدادات.}few{‏يغلق Chrome تلقائيًا أي علامات تبويب ومجموعاتها بعد <ph name="AUTO_DELETE_DELAY_MANY" /> أشهر من كونها غير نشطة. ويمكنك تغيير ذلك في الإعدادات.}many{‏يغلق Chrome تلقائيًا أي علامات تبويب ومجموعاتها بعد <ph name="AUTO_DELETE_DELAY_MANY" /> شهرًا من كونها غير نشطة. ويمكنك تغيير ذلك في الإعدادات.}other{‏يغلق Chrome تلقائيًا أي علامات تبويب ومجموعاتها بعد <ph name="AUTO_DELETE_DELAY_MANY" /> شهر من كونها غير نشطة. ويمكنك تغيير ذلك في الإعدادات.}}</translation>
 <translation id="5339733443032484186">علامة التبويب الأخيرة</translation>
 <translation id="5380159289133845234">أرشفة علامات التبويب المكرّرة</translation>
-<translation id="5400836586163650660">رمادي</translation>
 <translation id="5446043142172831860">إزالة علامة التبويب ومغادرة المجموعة</translation>
 <translation id="5490235265819901748">تم توسيع مجموعة علامات التبويب.</translation>
 <translation id="5494920125229734069">اختيار الكل</translation>
@@ -128,9 +123,7 @@
 <translation id="5746204836956568669">هل المطلوب تجميع <ph name="NUMBER_OF_TABS" /> علامة تبويب للعمل بشكل أسرع؟</translation>
 <translation id="5773295109010386583">إغلاق علامات التبويب غير النشطة تلقائيًا</translation>
 <translation id="58326064309361797">اسحب علامات التبويب لجمعها.</translation>
-<translation id="5901630391730855834">أصفر</translation>
 <translation id="5972844218283131174">إلغاء اختيار الكل</translation>
-<translation id="6017514345406065928">أخضر</translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6051432659151380973">يتم حفظ مجموعات علامات التبويب تلقائيًا</translation>
 <translation id="6054741997831917303">انخفض مؤخرًا سعر هذا المنتج من <ph name="PREVIOUS_PRICE" /> إلى <ph name="NEW_PRICE" />.</translation>
@@ -188,7 +181,6 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ مراجعة واحدة (<ph name="REVIEWS_COUNT_ONE" />)، والتقييم: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />}zero{<ph name="REVIEWS_COUNT_MANY" /> مراجعة، والتقييم: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />}two{مراجعتان (<ph name="REVIEWS_COUNT_MANY" />)، والتقييم: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />}few{<ph name="REVIEWS_COUNT_MANY" /> مراجعات، والتقييم: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />}many{<ph name="REVIEWS_COUNT_MANY" /> مراجعة، والتقييم: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />}other{<ph name="REVIEWS_COUNT_MANY" /> مراجعة، والتقييم: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />}}</translation>
 <translation id="7885132941432959125">نقل علامة التبويب إلى اليسار</translation>
 <translation id="7939917283308035850">لم يتم اختيار اللون <ph name="COLOR_NAME" />.</translation>
-<translation id="7942349550061667556">أحمر</translation>
 <translation id="7961015016161918242">مطلقًا</translation>
 <translation id="7966321538264951561">رفض الاقتراحات</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{نقل علامة التبويب إلى نافذة جديدة}zero{نقل علامة التبويب إلى نوافذ أخرى}two{نقل علامة التبويب إلى نافذتَين أخريَين}few{نقل علامة التبويب إلى نوافذ أخرى}many{نقل علامة التبويب إلى نوافذ أخرى}other{نقل علامة التبويب إلى نوافذ أخرى}}</translation>
@@ -224,6 +216,5 @@
 <translation id="9187834032751045001">تم فتح الإشعار بشأن ميزة "الحذف التلقائي لعلامات التبويب" في نصف الشاشة.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{توسيع مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{توسيع مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}two{توسيع مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على علامتَي تبويب (<ph name="TABS_COUNT_MANY" />)}few{توسيع مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامات تبويب}many{توسيع مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}other{توسيع مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="945522503751344254">إرسال ملاحظات</translation>
-<translation id="992256792861109788">وردي</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{هل المطلوب إغلاق علامة تبويب واحدة غير نشطة؟}zero{هل المطلوب إغلاق <ph name="TAB_COUNT_MANY" /> علامة تبويب غير نشطة؟}two{هل المطلوب إغلاق علامتَي تبويب (<ph name="TAB_COUNT_MANY" />) غير نشطتَين؟}few{هل المطلوب إغلاق <ph name="TAB_COUNT_MANY" /> علامات تبويب غير نشطة؟}many{هل المطلوب إغلاق <ph name="TAB_COUNT_MANY" /> علامة تبويب غير نشطة؟}other{هل المطلوب إغلاق <ph name="TAB_COUNT_MANY" /> علامة تبويب غير نشطة؟}}</translation>
 </translationbundle>

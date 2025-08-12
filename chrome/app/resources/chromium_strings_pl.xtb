@@ -99,6 +99,7 @@
 <translation id="2238130810669087193">Aby mieć dostęp do adresów oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chromium. Ten adres zostanie zapisany na Twoim koncie Google, gdy się zalogujesz.</translation>
 <translation id="2241627712206172106">Jeśli dzielisz się komputerem ze znajomymi lub rodziną, wszyscy możecie niezależnie przeglądać internet i po swojemu skonfigurować Chromium.</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium zaleca wstrzymanie karty, która spowalnia przeglądarkę}few{Chromium zaleca wstrzymanie kart, które spowalniają przeglądarkę}many{Chromium zaleca wstrzymanie kart, które spowalniają przeglądarkę}other{Chromium zaleca wstrzymanie kart, które spowalniają przeglądarkę}}</translation>
+<translation id="2307973900865360088">Zachowaj w Docku</translation>
 <translation id="2313870531055795960">Sprawdza, czy URL jest na liście niebezpiecznych stron zapisanej w Chromium. Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chromium może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
 <translation id="2343156876103232566">Aby wysłać stąd numer na swój telefon z Androidem, zaloguj się w Chromium na obu urządzeniach.</translation>
 <translation id="2359808026110333948">Dalej</translation>
@@ -480,6 +481,7 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
 <translation id="718435575166326686">Ta strona musi mieć w Chromium dostęp do aparatu</translation>
 <translation id="7196312274710523067">Nie udało się uruchomić Chromium. Spróbuj ponownie.</translation>
 <translation id="7197677400338048821">Chromium nie może sprawdzić Twoich haseł. Spróbuj ponownie za 24 godziny.</translation>
+<translation id="7213008767289637091">Zachowaj przeglądarkę Chromium w Docku, żeby mieć do niej szybki dostęp</translation>
 <translation id="7213407614656404070">Używaj Chromium za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i w innych aplikacjach.</translation>
 <translation id="7223968959479464213">Menedżer zadań – Chromium</translation>
 <translation id="7246575524853130370">Twoje zainteresowania oszacowane przez Chromium</translation>

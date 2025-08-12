@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Zamknięcie wszystkich kart spowoduje też zamknięcie przypiętych kart.</translation>
 <translation id="1036348656032585052">Wyłącz</translation>
 <translation id="1041322626941363065">Ostrzegaj, jeśli wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia haseł</translation>
-<translation id="1044891598689252897">Strony będą działać normalnie</translation>
 <translation id="104491362976654916">Strona offline</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1053651653201045802">Wylogowano. Zaloguj się ponownie, aby korzystać z zakładek, haseł i innych ustawień na swoim koncie.</translation>
@@ -135,7 +134,6 @@
 <translation id="1506063256525392513">Umożliwia robienie i przesyłanie zdjęć oraz skanowanie kodów QR</translation>
 <translation id="1508263560970797965">Kontynuuj w trybie incognito</translation>
 <translation id="1509486075633541495">Zaloguj się w witrynie</translation>
-<translation id="1509960214886564027">Funkcje wielu stron mogą nie działać prawidłowo</translation>
 <translation id="1513858653616922153">Usuń hasło</translation>
 <translation id="1517166097004694782">Ukryj opcję „Kontynuuj na tej karcie”</translation>
 <translation id="1520027731907768768">Otrzymuj alerty o obniżkach cen produktów, które śledzisz.</translation>
@@ -368,9 +366,6 @@
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2360196772093551345">Żądaj strony mobilnej</translation>
 <translation id="2362083820973145409">Zalogowano jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otwiera ustawienia.</translation>
-<translation id="236977714248711277">Witryny nie mogą używać plików cookie dla Twojej wygody, by na przykład zapamiętać Twoje logowanie lub zawartość koszyka.
-
-Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych witryn, na przykład w celu personalizowania reklam.</translation>
 <translation id="2377230674627603057">Siatka grup kart</translation>
 <translation id="2377336083033403521">Wyszukaj karty…</translation>
 <translation id="2381405137052800939">Podstawowe</translation>
@@ -446,7 +441,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2669454659051515572">Pobrane pliki może zobaczyć każdy użytkownik tego urządzenia</translation>
 <translation id="2671423594960767771">Udostępnij grupę</translation>
 <translation id="2673508731173059946">Otwórz skopiowany link</translation>
-<translation id="2687403674020088961">Blokuj wszystkie pliki cookie (niezalecane)</translation>
 <translation id="2688535388040882469">Banery</translation>
 <translation id="2690858294534178585">Aparat jest w użyciu</translation>
 <translation id="2691653761409724435">Niedostępne offline</translation>
@@ -513,6 +507,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2931440415625410757">Pokaż instrukcje</translation>
 <translation id="2952278131021475699">Wyszukiwanie za pomocą aparatu i Obiektywu</translation>
 <translation id="2962516096219646456">Zobacz wszystkie dane autouzupełniania</translation>
+<translation id="2965594942405840553">Nie można tego cofnąć</translation>
 <translation id="2969979262385602596">Nie udało się zalogować. Spróbuj ponownie później.</translation>
 <translation id="2975761176769946178">Podanie URL-a jest wymagane</translation>
 <translation id="297667759942911166">Współpraca w grupach kart</translation>
@@ -661,9 +656,9 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3587885837929752825">Twoja organizacja nie zezwala na zapisywanie niektórych typów danych na koncie Google.</translation>
 <translation id="3588820906588687999">Otwórz grafikę w nowej karcie</translation>
 <translation id="3595252146048399851">W <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" /> możesz wybrać, co chcesz synchronizować. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
-<translation id="3596414637720633074">Blokuj pliki cookie innych firm w trybie incognito</translation>
 <translation id="3602260545951981695">Wybierz opcję „Silniejsza ochrona”</translation>
 <translation id="3610041351087301930">Ukryj czytnik</translation>
+<translation id="3610866916973186448">Tak, usuń</translation>
 <translation id="3622175633937495219">Historia wyszukiwania (liczba wyników: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Aby wrócić, możesz przesunąć palcem po krawędzi.</translation>
 <translation id="362709345066740529">Tutaj możesz dostosować karty, kanał i inne elementy</translation>
@@ -1063,7 +1058,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5177141896043341906">Masz słabe hasła (<ph name="NUMBER_OF_PASSWORDS" />), a to może narazić Cię na niebezpieczeństwo.</translation>
 <translation id="5181140330217080051">Pobieranie</translation>
 <translation id="5186185447130319458">Prywatna</translation>
-<translation id="5188482106078495165">Ustawienie plików cookie obowiązuje w odniesieniu do wszystkich kart. Aby zastosować nowe ustawienie do otwartej karty, załaduj ją ponownie.</translation>
 <translation id="518997337573684769">Wysyłam raport o awarii…</translation>
 <translation id="519530786644929958">Pobieranie się nie udało i nie można go powtórzyć.</translation>
 <translation id="5197255632782567636">Internet</translation>
@@ -1088,7 +1082,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5271265092610673171">{count,plural, =1{Wymagane pole jest puste. Wypełnij je przed zapisaniem.}few{Niektóre wymagane pola są puste. Wypełnij je przed zapisaniem.}many{Niektóre wymagane pola są puste. Wypełnij je przed zapisaniem.}other{Niektóre wymagane pola są puste. Wypełnij je przed zapisaniem.}}</translation>
 <translation id="5271549068863921519">Zapisz hasło</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) zaprasza Cię do grupy kart. Każda osoba mająca link może edytować wszystkie karty, więc zachowaj ostrożność. Link wygaśnie za 48 godzin.</translation>
-<translation id="5279600392753459966">Blokuj wszystkie</translation>
 <translation id="5282340693022193851">Aby otrzymywać powiadomienia ze śledzenia cen, włącz je w ustawieniach iOS.</translation>
 <translation id="528857768909044842">Tutaj są zapisywane grupy kart</translation>
 <translation id="5294624619177114121">Powiadomienia na urządzeniach mobilnych</translation>
@@ -1187,7 +1180,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5648166631817621825">Ostatnie 7 dni</translation>
 <translation id="5652623411397330904">Produkty, których ceny monitorujesz, pojawią się tutaj.</translation>
 <translation id="5656431592348714536">Ulepszony kalendarz</translation>
-<translation id="5657156137487675418">Zezwalaj na wszystkie pliki cookie</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5665739277590037307">Obowiązują <ph name="GOOGLE_TERMS" /> i <ph name="GEMINI_APPS_PRIVACY" />. Gemini może popełniać błędy, dlatego sprawdzaj odpowiedzi.</translation>
 <translation id="5666313630530585305">Zaloguj się na stronie.</translation>
@@ -1204,7 +1196,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5704908597376970822">Nie można się zalogować.</translation>
 <translation id="5709005673595820640">{count,plural, =1{Masz {count} hasło, które zostało użyte ponownie, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}few{Masz {count} hasła, które zostały użyte ponownie, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}many{Masz {count} haseł, które zostały użyte ponownie, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}other{Masz {count} hasła, które zostały użyte ponownie, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}}</translation>
 <translation id="57094364128775171">Zaproponuj silne hasło…</translation>
-<translation id="5716230673298034837">Zezwalaj na wszystkie</translation>
 <translation id="5718049162805123412">Należy je teraz zmienić</translation>
 <translation id="572328651809341494">Ostatnie karty</translation>
 <translation id="5724941645893276623">Aby przeglądać strony internetowe prywatnie, dodaj nową kartę</translation>
@@ -1263,7 +1254,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5936065461722368675">Przetłumacz całą stronę</translation>
 <translation id="5937560539988385583">Strona została przetłumaczona</translation>
 <translation id="5938160824633642847">Na urządzeniu brakuje wolnego miejsca. Zwolnij miejsce i spróbuj ponownie.</translation>
-<translation id="594324569139756587">Blokuj pliki cookie innych firm</translation>
 <translation id="5944869793365969636">Zeskanuj kod QR</translation>
 <translation id="5948291296578561264">Umożliwia zapisywanie zdjęć w ich bibliotece.</translation>
 <translation id="5948605885471592910">Wyświetlaj wszystkie otwarte karty i nimi zarządzaj</translation>
@@ -1336,7 +1326,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6192388920090306326">Podróż do Tokio</translation>
 <translation id="6193448654517602979">Wybierz karty</translation>
 <translation id="6196207969502475924">Wyszukiwanie głosowe</translation>
-<translation id="6196640612572343990">Blokuj pliki cookie innych firm</translation>
 <translation id="6198252989419008588">Zmień kod PIN</translation>
 <translation id="6210079381482819663">Tutaj są przenoszone karty nieużywane przez co najmniej <ph name="THRESHOLD" /> dni. Możesz to zmienić w dowolnym momencie w <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Nie znaleziono adresów</translation>
@@ -1412,14 +1401,10 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6444435711855078002">Więcej opcji</translation>
 <translation id="6445051938772793705">Kraj</translation>
 <translation id="6445981559479772097">Wiadomość została wysłana.</translation>
-<translation id="6447842834002726250">Pliki cookie</translation>
 <translation id="6449554712554071184">Spowoduje to trwałe usunięcie grupy z urządzenia.</translation>
 <translation id="6452534462676960500">Nowa aktywność</translation>
 <translation id="6459411599807878608">Szczegóły zostały ukryte</translation>
 <translation id="646394917185284261">Pliki</translation>
-<translation id="6464397691496239022">Witryny mogą używać plików cookie dla Twojej wygody – na przykład, by zapamiętać Twoje logowanie lub zawartość koszyka.
-
-Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych witryn, na przykład w celu personalizowania reklam.</translation>
 <translation id="6476253015009698798">W przypadku tej strony monitorowanie cen jest niedostępne.</translation>
 <translation id="6476284679642588870">Zarządzaj formami płatności</translation>
 <translation id="6476800141292307438">Tłumaczę stronę na <ph name="LANGUAGE" />. Opcje znajdują się na dole ekranu.</translation>
@@ -1462,7 +1447,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="6612912757320004438">Zezwalaj na powiadomienia o kartach…</translation>
 <translation id="6617761071025228250">Wyczyść tekst</translation>
 <translation id="6620279676667515405">Anuluj</translation>
-<translation id="6624219055418309072">Blokuj w trybie incognito</translation>
 <translation id="6625830436658400045">Ustawienia synchronizacji zostaną przywrócone na podstawie ostatniej kopii zapasowej. W <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" /> możesz wybrać, co chcesz synchronizować.</translation>
 <translation id="6627583120233659107">Edytuj folder</translation>
 <translation id="6629759408545977279">Od: <ph name="ORIGINATING_HOST" /></translation>
@@ -1479,9 +1463,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="6663529247339810546">Nie można zapisać obrazu</translation>
 <translation id="6668619169535738264">Edytuj zakładkę</translation>
 <translation id="6671294218820966278">Oznacz jako przeczytane</translation>
-<translation id="6672241253012342409">Witryny mogą używać plików cookie dla Twojej wygody – na przykład aby nie wylogowywać Cię z konta lub zapamiętywać zawartość koszyka.
-
-W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych stron, na przykład w celu personalizowania reklam.</translation>
 <translation id="6672697278890207089">Wprowadź swoje hasło</translation>
 <translation id="6674917187596384849">Możesz łatwo przełączać się między kontami</translation>
 <translation id="6676349090816247042">Opcje logowania.</translation>
@@ -1671,6 +1652,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7454057999980797137">Stan/region</translation>
 <translation id="7458706065921255639">Personalizacja i łączenie usług</translation>
 <translation id="745899714366929493">Cały dzień</translation>
+<translation id="7460314822154045102">Użyj aparatu</translation>
 <translation id="7460698861522306757">Wersja na telefon</translation>
 <translation id="7464143666517313304">Spowoduje to usunięcie adresów zapisanych na tym urządzeniu.</translation>
 <translation id="7468373585447318060">Bądź na bieżąco z obniżkami cen wszystkich produktów, które śledzisz.</translation>
@@ -1803,9 +1785,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7952670906562503188">Nastąpi usunięcie {passkey_count} kluczy dostępu oraz listy witryn i aplikacji, w przypadku których nie chcesz zapisywać danych logowania. Konta utworzone przez Ciebie w witrynach i aplikacjach nie zostaną usunięte.</translation>
 <translation id="7958575506592576831">Informacje o bezpieczeństwie strony</translation>
 <translation id="7961015016161918242">Nigdy</translation>
-<translation id="7966516440812255683">Witryny mogą używać plików cookie dla Twojej wygody – na przykład, by zapamiętać Twoje logowanie lub zawartość koszyka.
-
-Witryny mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych witryn, na przykład w celu personalizowania reklam.</translation>
 <translation id="7971136598759319605">Aktywność 1 dzień temu</translation>
 <translation id="7975036700432177008">Wypróbuj</translation>
 <translation id="797588153137233716">Menu → Historia → Usuń dane przeglądania</translation>
@@ -1816,7 +1795,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="7987685713885608670">Zanim zapiszesz hasła w menedżerze haseł Google, zaszyfruj je na urządzeniu, aby zwiększyć ich bezpieczeństwo.</translation>
 <translation id="798991908416757345">Grupy kart są niedostępne</translation>
 <translation id="7993170188789685695">Aby zamknąć to powiadomienie, kliknij dwukrotnie.</translation>
-<translation id="7993619969781047893">Funkcje niektórych stron mogą nie działać prawidłowo</translation>
 <translation id="7996239959906074962">Skonfiguruj…</translation>
 <translation id="8001561107130904792">Udostępnianie zawartości strony</translation>
 <translation id="800361585186029508">Otwiera wpisane adresy URL w Google Chrome.</translation>
@@ -1974,6 +1952,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8561999115126307258">{count,plural, =1{Nad klawiaturą dostępna jest {count} opcja hasła.}few{Nad klawiaturą dostępne są {count} opcje hasła.}many{Nad klawiaturą dostępnych jest {count} opcji hasła.}other{Nad klawiaturą dostępne jest {count} opcji hasła.}}</translation>
 <translation id="8564894539416715395">Nowa karta</translation>
 <translation id="8569721750632860947">Jaki URL chcesz dodać do listy Do przeczytania?</translation>
+<translation id="8571019948162152515">Usunąć „<ph name="FILENAME" />”?</translation>
 <translation id="8571213806525832805">Ostatnie 4 tygodnie</translation>
 <translation id="8577056989960190117">Automatycznie uzupełnij rok ważności (<ph name="YEAR" />)</translation>
 <translation id="8588404856427128947">Wyłączono</translation>

@@ -120,7 +120,9 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="2379925928934107488">Aplícaselles o tema escuro aos sitios sempre que é posible cando Chrome está configurado con ese tema</translation>
 <translation id="2390272837142897736">Aumentar zoom</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Precisa</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> máis (permitidos)}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> máis (permitidos)}}</translation>
+<translation id="2404857459073803936">Acceso á localización deste sitio</translation>
 <translation id="2410940059315936967">Os sitios que visitas poden inserir contido doutros sitios web (por exemplo, imaxes, anuncios ou texto). As cookies definidas por estes outros sitios denomínanse cookies de terceiros.</translation>
 <translation id="2411116727035790889">Activar os atallos</translation>
 <translation id="2433507940547922241">Aparencia</translation>
@@ -276,6 +278,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="3992684624889376114">Acerca desta páxina</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4031179711345676612">Permítese o micrófono</translation>
+<translation id="4042597221652780603">Aproximada</translation>
 <translation id="4046123991198612571">Pista seguinte</translation>
 <translation id="4077310749977440510">Os sitios adoitan acceder ao portapapeis para ofrecerche determinadas funcións (por exemplo, conservar o formato do texto copiado)</translation>
 <translation id="4082080074595021446">Non se permiten excepcións para sitios web específicos porque o dispositivo Android non ten suficiente RAM.</translation>

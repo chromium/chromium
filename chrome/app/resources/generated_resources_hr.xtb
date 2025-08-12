@@ -1477,7 +1477,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="200321182559008924">Neka vaše kartice budu uredne</translation>
 <translation id="2003596238737586336">Trenutačni je raspored postavljen na <ph name="SUNRISE" /> – <ph name="SUNSET" />. Tom postavkom upravlja vaš administrator.</translation>
 <translation id="2004413981947727241">Upotrijebite svoje zaporke na bilo kojem uređaju</translation>
-<translation id="2004697686368036666">Značajke na nekim web-lokacijama možda neće funkcionirati</translation>
 <translation id="2006638907958895361">Otvori vezu u aplikaciji <ph name="APP" /></translation>
 <translation id="2007404777272201486">Prijavljivanje problema...</translation>
 <translation id="200781997903833896">Da biste koristili čitanje naglas, oslobodite prostor na uređaju</translation>
@@ -1959,7 +1958,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2328137272841210255">Poništite PIN</translation>
 <translation id="2328474416100889417">Svi će odmah izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i sve će se veze pozivnice isključiti</translation>
 <translation id="2328561734797404498">Ponovo pokrenite uređaj da biste koristili <ph name="APP_NAME" />.</translation>
-<translation id="2328636661627946415">Kad ste u anonimnom načinu rada, web-lokacija može upotrebljavati kolačiće samo kako bi vidjela vašu aktivnost pregledavanja na toj web-lokaciji. Kolačići se brišu na kraju anonimne sesije.</translation>
 <translation id="2329597144923131178">Prijavite se da biste imali svoje oznake, povijest, zaporke i druge postavke na svim svojim uređajima.</translation>
 <translation id="2330182457402792918">Odaberite datoteke koje ova web-lokacija može čitati</translation>
 <translation id="2332115969598251205">Nije moguće učitati uređaje spremljene na e-adresi <ph name="PRIMARY_EMAIL" />. Provjerite internetsku vezu i pokušajte ponovo.</translation>
@@ -3748,7 +3746,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3593953853060020305">Želite li dopustiti toj web-lokaciji da uređuje datoteku <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Ograničenja naziva certifikata</translation>
 <translation id="3596012367874587041">Postavke aplikacije</translation>
-<translation id="3596414637720633074">Blokiranje kolačića trećih strana u anonimnom načinu</translation>
 <translation id="3599221874935822507">Izdignuto</translation>
 <translation id="3600051066689725006">Podaci o web-zahtjevu</translation>
 <translation id="3600956933576601730">Da biste upotrebljavali te značajke, morate pregledati i prihvatiti uvjete</translation>
@@ -4084,7 +4081,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3807747707162121253">&amp;Odustani</translation>
 <translation id="3808202562160426447">Zatamni pozadinski sadržaj</translation>
 <translation id="3808443763115411087">Crostinijev razvoj Android aplikacija</translation>
-<translation id="3808617121485025547">Više o blokiranju kolačića trećih strana</translation>
 <translation id="38089336910894858">Prikaži upozorenje prije zatvaranja prečacem ⌘Q</translation>
 <translation id="3809272675881623365">Zec</translation>
 <translation id="3809280248639369696">Mjesečeva zraka</translation>
@@ -4344,7 +4340,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3975565978598857337">Kontaktiranje poslužitelja za domenu nije uspjelo</translation>
 <translation id="3976108569178263973">Nema dostupnih pisača.</translation>
 <translation id="397703832102027365">Dovršavanje...</translation>
-<translation id="3977145907578671392">Značajke na nekim web-lokacijama možda neće funkcionirati u anonimnom načinu rada</translation>
 <translation id="3977886311744775419">Na ovoj vrsti mreže ne preuzimaju se automatska ažuriranja, no možete ih potražiti ručno.</translation>
 <translation id="3978325380690188371">Ljepljive tipke nisu dostupne kada je uključen ChromeVox</translation>
 <translation id="3978732922947854545">Chrome poboljšava PDF-ove</translation>
@@ -5732,6 +5727,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="496742804571665842">Onemogućivanje eSIM profila</translation>
 <translation id="4967571733817147990">Prilagodba tipki miša</translation>
 <translation id="4967852842111017386">Naziv uređaja sa značajkom <ph name="FEATURE_NAME" /></translation>
+<translation id="4968994772848295474">Instalacije web-aplikacija nisu podržane u načinu gosta</translation>
 <translation id="4971412780836297815">Otvori nakon dovršetka</translation>
 <translation id="4972129977812092092">Uredite pisač</translation>
 <translation id="4972164225939028131">Pogrešna zaporka</translation>
@@ -6610,6 +6606,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="560834977503641186">Wi-Fi sinkronizacija, saznajte više</translation>
 <translation id="5608580678041221894">Dodirnite sljedeće tipke da biste prilagodili ili pomaknuli područje za izrezivanje</translation>
 <translation id="5609231933459083978">Čini se da je ova aplikacija nevažeća.</translation>
+<translation id="5610759359710387751">Prilagodite svoj Chrome</translation>
 <translation id="5610867721023328944">Pokušajte ponovo ili odaberite jednu od dostupnih tema u nastavku.</translation>
 <translation id="5611398002774823980">Spremi na račun</translation>
 <translation id="5611399285717843500">Pomozite poboljšati značajke i izvedbu Chromea i ChromeOS-a. Osobni podaci uklanjaju se pri prikupljanju tih podataka.</translation>
@@ -7508,6 +7505,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6257602895346497974">Uključite sinkronizaciju...</translation>
 <translation id="625827534921607067">Ta će mreža biti preferirana ako je dostupno više od jedne prethodno povezane ili konfigurirane mreže</translation>
 <translation id="6259776178973198997">Osvježi informacije o vlasnicima izravnog Wi-Fija</translation>
+<translation id="6261688934280090835">Zapisnici aplikacija za ChromeOS Kiosk</translation>
 <translation id="6262371516389954471">Sigurnosna kopija prenosi se na Google i kriptira pomoću zaporke vašeg Google računa.</translation>
 <translation id="6263082573641595914">Microsoft CA verzija</translation>
 <translation id="6263284346895336537">Nije kritično</translation>
@@ -10508,6 +10506,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8340547030807793004">Više radnji za uređaj <ph name="DEVICE" /></translation>
 <translation id="8341804784147620576">Prikaži prečace za pretraživanje</translation>
 <translation id="8342221978608739536">Nisam pokušao/pokušala</translation>
+<translation id="8342387517402567689">Instalacije web-aplikacija nisu podržane u anonimnom načinu</translation>
 <translation id="8342861492835240085">Odaberite zbirku</translation>
 <translation id="8345848587667658367">Sada možete pregledati nedavne fotografije, medije, obavijesti i aplikacije telefona</translation>
 <translation id="8347227221149377169">Zadaci ispisa</translation>
@@ -10831,7 +10830,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8573111744706778015">Unesite "uo7" da biste dobili "ươ"</translation>
 <translation id="8574990355410201600">Uvijek dopusti zvuk na web-lokaciji <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Pritisnite <ph name="KEY_EQUIVALENT" /> za zatvaranje</translation>
-<translation id="8576359558126669548">Više o blokiranju kolačića trećih strana u anonimnom načinu</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Dodaj karticu na popis za čitanje}one{Dodaj kartice na popis za čitanje}few{Dodaj kartice na popis za čitanje}other{Dodaj kartice na popis za čitanje}}</translation>
 <translation id="8577052309681449949">Automatski klikovi, veličina pokazivača, boja pokazivača i više</translation>
 <translation id="8578639784464423491">Dopušteno je najviše 99 slova</translation>
@@ -11148,7 +11146,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="8777628254805677039">korijenska zaporka</translation>
 <translation id="8779720597365936419">Da, odvoji moje podatke od poslovnih (preporučeno)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Pojedina web-lokacija može upotrebljavati kolačiće samo za uvid u vašu aktivnost pregledavanja na toj web-lokaciji</translation>
 <translation id="8780123805589053431">Dohvati opise slika s Googlea</translation>
 <translation id="8780443667474968681">Glasovno je pretraživanje isključeno.</translation>
 <translation id="8781834595282316166">Nova kartica u grupi</translation>

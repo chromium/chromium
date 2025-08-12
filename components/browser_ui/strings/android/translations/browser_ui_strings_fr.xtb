@@ -120,7 +120,9 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="2379925928934107488">Si le thème sombre est activé dans Chrome, il sera appliqué aux sites, si possible</translation>
 <translation id="2390272837142897736">Augmenter le zoom</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> Mo</translation>
+<translation id="2403474027143565107">Exacte</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Autorisations accordées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}one{Autorisations accordées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}other{Autorisations accordées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}}</translation>
+<translation id="2404857459073803936">Accès à la position pour ce site</translation>
 <translation id="2410940059315936967">Un site que vous consultez peut intégrer des contenus provenant d'autres sites, par exemple des images, des annonces et du texte. Les cookies définis par ces autres sites sont appelés cookies tiers.</translation>
 <translation id="2411116727035790889">Activer les raccourcis</translation>
 <translation id="2433507940547922241">Apparence</translation>
@@ -276,6 +278,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="3992684624889376114">À propos de cette page</translation>
 <translation id="4002066346123236978">Titre</translation>
 <translation id="4031179711345676612">Micro autorisé</translation>
+<translation id="4042597221652780603">Approximative</translation>
 <translation id="4046123991198612571">Piste suivante</translation>
 <translation id="4077310749977440510">Les sites lisent généralement le contenu du presse-papiers pour proposer certaines fonctionnalités, comme la conservation du formatage du texte copié</translation>
 <translation id="4082080074595021446">Les exceptions pour des sites Web spécifiques ne sont pas autorisées, car l'appareil Android n'a pas assez de RAM.</translation>

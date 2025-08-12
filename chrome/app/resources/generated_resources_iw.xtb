@@ -1484,7 +1484,6 @@
 <translation id="200321182559008924">רוצה לעשות סדר בכרטיסיות?</translation>
 <translation id="2003596238737586336">התזמון הנוכחי מוגדר לשעות <ph name="SUNRISE" /> עד <ph name="SUNSET" />. ההגדרה הזו מנוהלת על-ידי האדמין.</translation>
 <translation id="2004413981947727241">שימוש בסיסמאות שלך בכל מכשיר</translation>
-<translation id="2004697686368036666">ייתכן שתכונות באתרים מסוימים לא יפעלו</translation>
 <translation id="2006638907958895361">פתיחת הקישור ב-<ph name="APP" /></translation>
 <translation id="2007404777272201486">דיווח על בעיה...</translation>
 <translation id="200781997903833896">כדי להשתמש בתכונה 'הקראה', צריך לפנות מקום במכשיר</translation>
@@ -1968,7 +1967,6 @@
 <translation id="2328137272841210255">איפוס קוד האימות שלך</translation>
 <translation id="2328474416100889417">כולם יאבדו באופן מיידי את הגישה לקבוצת הכרטיסיות '<ph name="GROUP_NAME" />' וכל הקישורים להזמנה יושבתו</translation>
 <translation id="2328561734797404498">יש להפעיל מחדש את המכשיר כדי להשתמש ב-<ph name="APP_NAME" />.</translation>
-<translation id="2328636661627946415">‏במצב פרטי, אתרים יכולים להשתמש בקובצי cookie רק כדי לראות את פעילות הגלישה שלך באתר שלהם בלבד. קובצי cookie נמחקים בסיום הסשן הפרטי.</translation>
 <translation id="2329597144923131178">יש להיכנס כדי לקבל גישה אל הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות בכל המכשירים שברשותך.</translation>
 <translation id="2330182457402792918">בחירת קבצים שהאתר הזה יכול לקרוא</translation>
 <translation id="2332115969598251205">לא ניתן לטעון מכשירים שנשמרו בחשבון <ph name="PRIMARY_EMAIL" />. יש לבדוק את החיבור לאינטרנט ולנסות שוב.</translation>
@@ -3273,7 +3271,7 @@
 <translation id="3253225298092156258">רשת לא זמינה</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{צריך לפנות מקום ב-<ph name="CLOUD_PROVIDER" /> כדי להעתיק את הקובץ הזה}one{צריך לפנות מקום ב-<ph name="CLOUD_PROVIDER" /> כדי להעתיק את הקבצים האלה}two{צריך לפנות מקום ב-<ph name="CLOUD_PROVIDER" /> כדי להעתיק את הקבצים האלה}other{צריך לפנות מקום ב-<ph name="CLOUD_PROVIDER" /> כדי להעתיק את הקבצים האלה}}</translation>
 <translation id="3253448572569133955">חשבון לא ידוע</translation>
-<translation id="3253746622312821295">אוזניות חוטיות</translation>
+<translation id="3253746622312821295">אוזניות</translation>
 <translation id="3254451942070605467">מתבצעת הורדה לקובץ <ph name="FILE_NAME" />, נשארו <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="3254516606912442756">זיהוי אוטומטי של אזור הזמן מושבת</translation>
 <translation id="3255747772218936245">התקנת העדכון</translation>
@@ -3758,7 +3756,6 @@
 <translation id="3593953853060020305">לאפשר לאתר הזה לערוך את <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">מגבלות שם אישור </translation>
 <translation id="3596012367874587041">הגדרות האפליקציה</translation>
-<translation id="3596414637720633074">‏חסימת קובצי cookie של צד שלישי במצב אנונימי</translation>
 <translation id="3599221874935822507">בולט</translation>
 <translation id="3600051066689725006">פרטי בקשת אינטרנט</translation>
 <translation id="3600956933576601730">כדי להשתמש בתכונות האלה, עליך לקרוא את התנאים ולאשר אותם</translation>
@@ -4094,7 +4091,6 @@
 <translation id="3807747707162121253">&amp;ביטול</translation>
 <translation id="3808202562160426447">עמעום תוכן ברקע</translation>
 <translation id="3808443763115411087">‏פיתוח אפליקציות ל-Android ב-Crostini</translation>
-<translation id="3808617121485025547">‏מידע נוסף על חסימת קובצי cookie של צדדים שלישיים</translation>
 <translation id="38089336910894858">‏הצגת אזהרה לפני יציאה באמצעות ‎⌘Q</translation>
 <translation id="3809272675881623365">ארנב</translation>
 <translation id="3809280248639369696">מר ירח</translation>
@@ -4354,7 +4350,6 @@
 <translation id="3975565978598857337">יצירת הקשר עם השרת של התחום נכשלה</translation>
 <translation id="3976108569178263973">אין מדפסות זמינות.</translation>
 <translation id="397703832102027365">בשלבי סיום...</translation>
-<translation id="3977145907578671392">יכול להיות שהתכונות באתרים מסוימים לא יפעלו במצב פרטי</translation>
 <translation id="3977886311744775419">ברשת מסוג זה לא יכולים להתבצע עדכונים אוטומטיים, אבל אפשר לבדוק ידנית אם יש עדכונים.</translation>
 <translation id="3978325380690188371">‏מקשים "דביקים" לא זמינים כש-ChromeVox פועל</translation>
 <translation id="3978732922947854545">‏‫Chrome מקל על העבודה עם קובצי PDF</translation>
@@ -6624,6 +6619,7 @@
 <translation id="560834977503641186">‏מידע נוסף על סנכרון Wi-Fi</translation>
 <translation id="5608580678041221894">יש ללחוץ על המקשים הבאים כדי לשנות או להזיז את אזור החיתוך</translation>
 <translation id="5609231933459083978">נראה שהיישום אינו חוקי.</translation>
+<translation id="5610759359710387751">‏Chrome שלך</translation>
 <translation id="5610867721023328944">אפשר לנסות שוב או לבחור מתוך העיצובים שמוצגים למטה.</translation>
 <translation id="5611398002774823980">שמירה בחשבון</translation>
 <translation id="5611399285717843500">‏רוצה לעזור בשיפור התכונות והביצועים של Chrome ו-ChromeOS? כשאנחנו אוספים את הנתונים האלה אנחנו מסירים מהם מידע אישי.</translation>
@@ -7525,6 +7521,7 @@
 <translation id="6257602895346497974">הפעלת סנכרון...</translation>
 <translation id="625827534921607067">אם יש יותר מרשת אחת שכבר חוברה או הוגדרה, הרשת הזו תקבל עדיפות</translation>
 <translation id="6259776178973198997">‏רענון פרטי הבעלים של Wi-Fi ישיר</translation>
+<translation id="6261688934280090835">‏רישומים של אפליקציות קיוסק של ChromeOS</translation>
 <translation id="6262371516389954471">‏הגיבויים נשמרים ב-Google ומוצפנים באמצעות הסיסמה של חשבון Google שלך.</translation>
 <translation id="6263082573641595914">‏גרסת רשות אישורים של Microsoft</translation>
 <translation id="6263284346895336537">לא קריטי</translation>
@@ -10850,7 +10847,6 @@
 <translation id="8573111744706778015">‏אפשר להקליד uo7 כדי לקבל ươ</translation>
 <translation id="8574990355410201600">יש להתיר תמיד השמעת צלילים ב-<ph name="HOST" /></translation>
 <translation id="8575286410928791436">כדי לצאת, צריך ללחוץ לחיצה ארוכה על <ph name="KEY_EQUIVALENT" />.</translation>
-<translation id="8576359558126669548">‏מידע נוסף על חסימת קובצי cookie של צדדים שלישיים במצב פרטי</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{הוספת הכרטיסייה לרשימת הקריאה}one{הוספת הכרטיסיות לרשימת הקריאה}two{הוספת הכרטיסיות לרשימת הקריאה}other{הוספת הכרטיסיות לרשימת הקריאה}}</translation>
 <translation id="8577052309681449949">לחיצות אוטומטיות, גודל הסמן, צבע הסמן ועוד</translation>
 <translation id="8578639784464423491">המגבלה היא 99 אותיות</translation>
@@ -11167,7 +11163,6 @@
 <translation id="8777628254805677039">‏סיסמת root</translation>
 <translation id="8779720597365936419">כן, אני רוצה לשמור את הנתונים שלי בנפרד מפרופיל העבודה (מומלץ)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">‏אתרים יכולים להשתמש בקובצי cookie רק כדי לראות את פעילות הגלישה בהם, ולא באתרים אחרים</translation>
 <translation id="8780123805589053431">‏קבלת תיאורי תמונות מ-Google</translation>
 <translation id="8780443667474968681">החיפוש הקולי הושבת.</translation>
 <translation id="8781834595282316166">כרטיסייה חדשה בקבוצה</translation>

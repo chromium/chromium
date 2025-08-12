@@ -1092,6 +1092,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> бар өтмөктөр тобуна кошулуңуз</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Толук маалымат<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Нерсе өчүрүлдү</translation>
+<translation id="6127860394906721547"><ph name="TITLE_OF_GROUP" /> өтмөктөр тобун ачуу, түсү <ph name="COLOR_NAME" />, <ph name="URL_LIST" /> сайттары менен.</translation>
 <translation id="6130303040046284160">Өтмөктү кичирейтүү</translation>
 <translation id="6134168885321518274">Издөө тилкесин ачуу</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> өтмөк}other{<ph name="TAB_COUNT_MANY" /> өтмөк}}</translation>

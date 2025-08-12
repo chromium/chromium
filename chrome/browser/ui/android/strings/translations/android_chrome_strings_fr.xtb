@@ -1092,6 +1092,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="6125202119952209826">Rejoindre le groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Plus d'informations<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Élément supprimé</translation>
+<translation id="6127860394906721547">Ouvrir le groupe d'onglets <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> comprenant les sites <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Réduire l'onglet</translation>
 <translation id="6134168885321518274">Ouvrir la barre de recherche</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_COUNT_MANY" /> onglet}other{<ph name="TAB_COUNT_MANY" /> onglets}}</translation>

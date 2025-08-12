@@ -1092,6 +1092,7 @@
 <translation id="6125202119952209826">Присъединяване към групата раздели с(ъс) <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Още подробности<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Елементът бе премахнат</translation>
+<translation id="6127860394906721547">Отваряне на групата раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят, която съдържа следните сайтове: <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Намаляване на раздела</translation>
 <translation id="6134168885321518274">Отваряне на лентата за търсене</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> раздел}other{<ph name="TAB_COUNT_MANY" /> раздела}}</translation>

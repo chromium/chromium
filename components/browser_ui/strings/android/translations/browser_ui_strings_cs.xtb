@@ -120,7 +120,9 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="2379925928934107488">Když Chrome používá tmavý motiv, použít ho i pro Chrome (pokud je to možné)</translation>
 <translation id="2390272837142897736">Zvýšit přiblížení</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Přesná</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}few{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}many{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}other{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}}</translation>
+<translation id="2404857459073803936">Přístup tohoto webu k poloze</translation>
 <translation id="2410940059315936967">Navštívený web může zahrnovat vložený obsah z jiných webů, například obrázky, reklamy a text. Soubory cookie, které nastaví tyto jiné weby, se nazývají soubory cookie třetích stran.</translation>
 <translation id="2411116727035790889">Zapnout klávesové zkratky</translation>
 <translation id="2433507940547922241">Vzhled</translation>
@@ -276,6 +278,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="3992684624889376114">O této stránce</translation>
 <translation id="4002066346123236978">Název</translation>
 <translation id="4031179711345676612">Mikrofon je povolen</translation>
+<translation id="4042597221652780603">Přibližná</translation>
 <translation id="4046123991198612571">Další skladba</translation>
 <translation id="4077310749977440510">Weby obvykle čtou obsah schránky kvůli funkcím, jako je zachování formátu zkopírovaného textu</translation>
 <translation id="4082080074595021446">Výjimky pro konkrétní webové stránky jsou zakázány, protože zařízení s Androidem nemá dostatek paměti RAM.</translation>

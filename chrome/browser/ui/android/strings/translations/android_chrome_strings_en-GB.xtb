@@ -1092,6 +1092,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6125202119952209826">Join tab group with <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />More details<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Item removed</translation>
+<translation id="6127860394906721547">Open <ph name="TITLE_OF_GROUP" /> tab group, colour <ph name="COLOR_NAME" />, with sites <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimise tab</translation>
 <translation id="6134168885321518274">Open Find Bar</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tabs}}</translation>

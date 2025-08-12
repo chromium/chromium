@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> 年前建立}other{<ph name="NUM_YEARS_MANY" /> 年前建立}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{閒置的分頁和群組將於 1 個月後關閉}other{閒置的分頁和群組將於 <ph name="MONTH_COUNT_MANY" /> 個月後關閉}}</translation>
 <translation id="1173894706177603556">重新命名</translation>
-<translation id="1197088940767939838">橙色</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{打開有 <ph name="TAB_COUNT2" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」}other{打開有 <ph name="TAB_COUNT2" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" />分頁群組選項</translation>
 <translation id="1300188005269437765">選擇何時將分頁和分頁群組自動移到閒置部分。</translation>
@@ -20,8 +19,6 @@
 <translation id="1499635324672558517">要關閉所有無痕式分頁嗎？</translation>
 <translation id="1501480321619201731">刪除群組</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個閒置項目}other{<ph name="TABS_COUNT_MANY" /> 個閒置項目}}</translation>
-<translation id="1555130319947370107">藍色</translation>
-<translation id="161042844686301425">青色</translation>
 <translation id="1645759014353344461">已將 <ph name="TABS_COUNT_MANY" /> 個分頁加入群組</translation>
 <translation id="1657719826150349398">下移分頁</translation>
 <translation id="1697284962337958118">新增至</translation>
@@ -88,7 +85,6 @@
 <translation id="4076226664360336092">分頁群組清單，目前顯示於整個畫面</translation>
 <translation id="4133493477912226187">似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要唔要將佢哋分組？</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{閂有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色係<ph name="COLOR_NAME" />。}other{閂有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色係<ph name="COLOR_NAME" />。}}</translation>
-<translation id="4159784952369912983">紫色</translation>
 <translation id="4203448675570432781">閂咗「分頁自動刪除」變動通知。</translation>
 <translation id="427987768447457592">新分頁群組</translation>
 <translation id="4371591986692297148">未啟用</translation>
@@ -117,7 +113,6 @@
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome 會在 <ph name="AUTO_DELETE_DELAY_ONE" /> 個月後自動關閉閒置的分頁和分頁群組。你可在設定中變更這項設定。}other{Chrome 會在 <ph name="AUTO_DELETE_DELAY_MANY" /> 個月後自動關閉閒置的分頁和分頁群組。你可在設定中變更這項設定。}}</translation>
 <translation id="5339733443032484186">最後一個分頁</translation>
 <translation id="5380159289133845234">封存重複的分頁</translation>
-<translation id="5400836586163650660">灰色</translation>
 <translation id="5446043142172831860">移除分頁並離開群組</translation>
 <translation id="5490235265819901748">展開咗分頁群組</translation>
 <translation id="5494920125229734069">全部選取</translation>
@@ -128,9 +123,7 @@
 <translation id="5746204836956568669">要將 <ph name="NUMBER_OF_TABS" /> 個分頁分組，提高工作效率嗎？</translation>
 <translation id="5773295109010386583">自動關閉閒置項目</translation>
 <translation id="58326064309361797">拖曳分頁來分組</translation>
-<translation id="5901630391730855834">黃色</translation>
 <translation id="5972844218283131174">全部取消選取</translation>
-<translation id="6017514345406065928">綠色</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6051432659151380973">分頁群組將會自動儲存</translation>
 <translation id="6054741997831917303">呢件商品嘅價格最近由 <ph name="PREVIOUS_PRICE" /> 減到 <ph name="NEW_PRICE" /></translation>
@@ -188,7 +181,6 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" /> 分，滿分係 <ph name="RATING_BASELINE" /> 分，有 <ph name="REVIEWS_COUNT_ONE" /> 則評論}other{<ph name="CURRENT_RATING" /> 分，滿分係 <ph name="RATING_BASELINE" /> 分，有 <ph name="REVIEWS_COUNT_MANY" /> 則評論}}</translation>
 <translation id="7885132941432959125">移去右邊</translation>
 <translation id="7939917283308035850">冇揀到<ph name="COLOR_NAME" /></translation>
-<translation id="7942349550061667556">紅色</translation>
 <translation id="7961015016161918242">從來沒有</translation>
 <translation id="7966321538264951561">閂建議。</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{將分頁移至新視窗}other{將分頁移至其他視窗}}</translation>
@@ -224,6 +216,5 @@
 <translation id="9187834032751045001">「分頁自動刪除」通知顯示喺畫面下半部</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{展開有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}other{展開有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}}</translation>
 <translation id="945522503751344254">提供意見反映</translation>
-<translation id="992256792861109788">粉紅色</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{要關閉 1 個閒置項目嗎？}other{要關閉 <ph name="TAB_COUNT_MANY" /> 個閒置項目嗎？}}</translation>
 </translationbundle>

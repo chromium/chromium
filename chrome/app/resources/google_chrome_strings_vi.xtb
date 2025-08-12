@@ -106,6 +106,7 @@
 <translation id="2290014774651636340">Khóa API của Google bị thiếu. Một số chức năng của Google Chrome sẽ bị tắt.</translation>
 <translation id="2290095356545025170">Bạn có chắc chắn muốn gỡ cài đặt Google Chrome không?</translation>
 <translation id="2301513536169703857">Để sử dụng mật khẩu, dấu trang và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome</translation>
+<translation id="2307973900865360088">Ghim vào thanh Dock</translation>
 <translation id="2309047409763057870">Đây là cài đặt thứ cấp của Google Chrome và không thể trở thành trình duyệt mặc định của bạn.</translation>
 <translation id="2345992953227471816">Chrome nhận thấy rằng các tiện ích này chứa phần mềm độc hại:</translation>
 <translation id="2348335408836342058">Chrome cần có quyền truy cập vào máy ảnh và micrô của bạn cho trang web này</translation>
@@ -138,7 +139,7 @@
 <translation id="2681444469812712297">Mở <ph name="URL" /> trong thẻ mới trên Google Chrome.</translation>
 <translation id="2712141162840347885">Chọn nội dung bạn muốn tìm bằng Google Ống kính hoặc nhấn phím Escape để thoát khỏi Google Ống kính</translation>
 <translation id="2738871930057338499">Không thể kết nối với Internet. HTTP 403 bị cấm. Vui lòng kiểm tra cấu hình proxy.</translation>
-<translation id="2742320827292110288">Cảnh báo: Google Chrome không thể ngăn các tiện ích ghi lại nhật ký duyệt web của bạn. Để tắt tiện ích này trong chế độ Ẩn danh, hãy bỏ chọn tuỳ chọn này.</translation>
+<translation id="2742320827292110288">Cảnh báo: Google Chrome không thể ngăn các tiện ích ghi lại nhật ký duyệt web của bạn. Để tắt tiện ích này trong chế độ ẩn danh, hãy bỏ chọn tuỳ chọn này.</translation>
 <translation id="2753623023919742414">Nhấp để tìm</translation>
 <translation id="2765403129283291972">Chrome cần có quyền truy cập vào micrô của bạn cho trang web này</translation>
 <translation id="2770231113462710648">Thay đổi trình duyệt mặc định thành:</translation>
@@ -339,6 +340,7 @@
 <translation id="5114340746415930644">Nhập cụm mật khẩu để sử dụng và lưu dữ liệu trên Chrome vào tài khoản <ph name="USER_EMAIL" /> của bạn</translation>
 <translation id="5120334927898581447">Đăng nhập vào Chrome khi bạn đăng nhập vào các dịch vụ khác của Google</translation>
 <translation id="5126049312684316860">Chrome tải trước thêm nhiều trang mà bạn có thể sẽ truy cập để những trang đó tải nhanh hơn khi bạn truy cập</translation>
+<translation id="5127558335897923940">Ghim Chrome vào thanh Dock để truy cập nhanh chóng bất kỳ lúc nào</translation>
 <translation id="5132929315877954718">Khám phá các ứng dụng, trò chơi, tiện ích và chủ đề tuyệt vời cho Google Chrome.</translation>
 <translation id="5139423532931106058">Tùy chỉnh hồ sơ của bạn trên Chrome</translation>
 <translation id="5163087008893166964">Chào mừng bạn đến với Chrome. Cửa sổ trình duyệt mới đã mở ra</translation>

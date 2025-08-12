@@ -120,7 +120,9 @@
 <translation id="2379925928934107488">Если тёмная тема активирована в Chrome, она будет использоваться для сайтов, когда это возможно.</translation>
 <translation id="2390272837142897736">Увеличить масштаб</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
+<translation id="2403474027143565107">Точное</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}one{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}few{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}many{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}other{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}}</translation>
+<translation id="2404857459073803936">Доступ к данным о местоположении для этого сайта.</translation>
 <translation id="2410940059315936967">На сайте, который вы просматриваете, может быть встроенный контент с других сайтов, например изображения, реклама и текст. Файлы cookie с таких сайтов называются сторонними файлами cookie.</translation>
 <translation id="2411116727035790889">Включить ярлыки</translation>
 <translation id="2433507940547922241">Внешний вид</translation>
@@ -276,6 +278,7 @@
 <translation id="3992684624889376114">Об этой странице</translation>
 <translation id="4002066346123236978">Название</translation>
 <translation id="4031179711345676612">Доступ к микрофону разрешен</translation>
+<translation id="4042597221652780603">Приблизительное</translation>
 <translation id="4046123991198612571">Следующий трек</translation>
 <translation id="4077310749977440510">Обычно сайты обращаются к буферу обмена, чтобы сохранять форматирование скопированного текста и обеспечивать работу других функций.</translation>
 <translation id="4082080074595021446">Исключения для определенных сайтов отозваны, поскольку на устройстве Android недостаточно оперативной памяти.</translation>

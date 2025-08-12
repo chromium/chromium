@@ -1481,7 +1481,6 @@
 <translation id="200321182559008924">Организиране на разделите ви</translation>
 <translation id="2003596238737586336">Текущият график е зададен на <ph name="SUNRISE" /> – <ph name="SUNSET" />. Тази настройка се управлява от администратора ви.</translation>
 <translation id="2004413981947727241">Използвайте паролите си на всяко устройство</translation>
-<translation id="2004697686368036666">Функциите в някои сайтове може да не работят</translation>
 <translation id="2006638907958895361">Отваряне на връзката чрез <ph name="APP" /></translation>
 <translation id="2007404777272201486">Подаване на сигнал за проблем...</translation>
 <translation id="200781997903833896">За да използвате функцията „Четене на глас“, освободете място на устройството си</translation>
@@ -1965,7 +1964,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2328137272841210255">Задаване на нов ПИН код</translation>
 <translation id="2328474416100889417">Всички хора незабавно ще загубят достъп до групата раздели „<ph name="GROUP_NAME" />“ и всички връзки към поканата ще бъдат изключени</translation>
 <translation id="2328561734797404498">Рестартирайте устройството си, за да използвате <ph name="APP_NAME" />.</translation>
-<translation id="2328636661627946415">Когато сте в режим „инкогнито“, сайтовете могат да ползват „бисквитки“, за да следят активността ви при сърфиране само в собствените си уеб страници. „Бисквитките“ ще се изтриват в края на сесията в режим „инкогнито“.</translation>
 <translation id="2329597144923131178">Влезте в профила си и получете своите отметки, история, пароли и др. настройки на всички у-ва.</translation>
 <translation id="2330182457402792918">Изберете файлове, които този сайт може да чете</translation>
 <translation id="2332115969598251205">Устройствата, запазени в(ъв) <ph name="PRIMARY_EMAIL" />, не могат да се заредят. Проверете връзката си с интернет и опитайте отново.</translation>
@@ -3755,7 +3753,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3593953853060020305">Да се разреши ли на този сайт да редактира „<ph name="FILE_NAME" />“?</translation>
 <translation id="3593965109698325041">Ограничения за името на сертификата</translation>
 <translation id="3596012367874587041">Настройки за приложението</translation>
-<translation id="3596414637720633074">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
 <translation id="3599221874935822507">Повдигната</translation>
 <translation id="3600051066689725006">Информация за заявка в мрежата</translation>
 <translation id="3600956933576601730">За да използвате тези функции, трябва да прегледате и приемете условията</translation>
@@ -4091,7 +4088,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3807747707162121253">&amp;Отказ</translation>
 <translation id="3808202562160426447">Заглушаване на съдържанието на заден план</translation>
 <translation id="3808443763115411087">Разработване на приложения за Android в Crostini</translation>
-<translation id="3808617121485025547">Още за блокирането на „бисквитките“ на трети страни</translation>
 <translation id="38089336910894858">Показване на предупреждение преди излизане с ⌘Q</translation>
 <translation id="3809272675881623365">Заек</translation>
 <translation id="3809280248639369696">Пришълец</translation>
@@ -4352,7 +4348,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3975565978598857337">Свързването със сървъра за областта не бе успешно</translation>
 <translation id="3976108569178263973">Няма принтери.</translation>
 <translation id="397703832102027365">Довършва се...</translation>
-<translation id="3977145907578671392">Функциите в някои сайтове може да не работят в режим „инкогнито“</translation>
 <translation id="3977886311744775419">Автоматичните актуализации не се изтеглят при този тип мрежа, но можете ръчно да проверявате за актуализации.</translation>
 <translation id="3978325380690188371">Функцията за фиксирани клавиши не е налице, когато екранният четец ChromeVox е включен</translation>
 <translation id="3978732922947854545">Chrome подобрява PDF файловете</translation>
@@ -5741,6 +5736,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="496742804571665842">Деактивиране на потребителските профили за електронна SIM карта</translation>
 <translation id="4967571733817147990">Персонализиране на бутоните на мишката</translation>
 <translation id="4967852842111017386">Име на устройството за „<ph name="FEATURE_NAME" />“</translation>
+<translation id="4968994772848295474">Инсталирането на уеб приложения не се поддържа в режим на гост</translation>
 <translation id="4971412780836297815">Отваряне след приключване</translation>
 <translation id="4972129977812092092">Редактиране на принтера</translation>
 <translation id="4972164225939028131">Грешна парола</translation>
@@ -6620,6 +6616,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="560834977503641186">Синхронизиране на Wi-Fi, научете повече</translation>
 <translation id="5608580678041221894">Докоснете следните клавиши, за да коригирате или преместите областта за подрязване</translation>
 <translation id="5609231933459083978">Изглежда, че приложението е невалидно.</translation>
+<translation id="5610759359710387751">Направете Chrome по собствен вкус</translation>
 <translation id="5610867721023328944">Опитайте отново или изберете една от наличните теми по-долу.</translation>
 <translation id="5611398002774823980">Запазване в профила</translation>
 <translation id="5611399285717843500">Помогнете за подобряването на функциите и ефективността на Chrome и ChromeOS. Личната информация се премахва при събирането на тези данни.</translation>
@@ -7522,6 +7519,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6257602895346497974">Включване на синхронизирането...</translation>
 <translation id="625827534921607067">Тази мрежа ще бъде с приоритет, ако е налице повече от една мрежа, която е използвана или конфигурирана по-рано</translation>
 <translation id="6259776178973198997">Опресняване на информацията за собствениците в Wi-Fi Direct</translation>
+<translation id="6261688934280090835">Регистрационни файлове за павилионни приложения под ChromeOS</translation>
 <translation id="6262371516389954471">Резервните ви копия се качват в Google и се шифроват посредством паролата за профила ви в Google.</translation>
 <translation id="6263082573641595914">Версия на сертифициращ орган от Microsoft</translation>
 <translation id="6263284346895336537">Не е критично</translation>
@@ -10518,6 +10516,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8340547030807793004">Още действия за „<ph name="DEVICE" />“</translation>
 <translation id="8341804784147620576">Показване на преките пътища за търсене</translation>
 <translation id="8342221978608739536">Не опитах</translation>
+<translation id="8342387517402567689">Инсталирането на уеб приложения не се поддържа в режим „инкогнито“</translation>
 <translation id="8342861492835240085">Избиране на колекция</translation>
 <translation id="8345848587667658367">Вече можете да преглеждате скорошните снимки, мултимедийни файлове, известия и приложения, които имате на телефона си</translation>
 <translation id="8347227221149377169">Задания за отпечатване</translation>
@@ -10841,7 +10840,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8573111744706778015">Въведете uo7, за да изпишете ươ</translation>
 <translation id="8574990355410201600">Разрешаване винаги на звука от <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Натиснете и задръжте <ph name="KEY_EQUIVALENT" /> за изход</translation>
-<translation id="8576359558126669548">Още за блокирането на „бисквитките“ на трети страни в режим „инкогнито“</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Добавяне на раздела към списъка за четене}other{Добавяне на разделите към списъка за четене}}</translation>
 <translation id="8577052309681449949">Автоматични кликвания, размер и цвят на курсора и др.</translation>
 <translation id="8578639784464423491">Не може да надхвърля 99 букви</translation>
@@ -11156,7 +11154,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8777628254805677039">парола на root</translation>
 <translation id="8779720597365936419">Да, отделяне на данните ми от служебните (препоръчва се)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Сайтовете могат да използват „бисквитки“ само за да следят активността ви при сърфиране в собствените си уеб страници</translation>
 <translation id="8780123805589053431">Изтегляне от Google на описания за изображенията</translation>
 <translation id="8780443667474968681">Функцията за гласово търсене е изключена.</translation>
 <translation id="8781834595282316166">Нов раздел в групата</translation>

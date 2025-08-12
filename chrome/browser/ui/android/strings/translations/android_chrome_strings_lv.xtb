@@ -1092,6 +1092,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="6125202119952209826">Pievienošanās ciļņu grupai, ko izmanto <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Plašāka informācija<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Vienums ir noņemts</translation>
+<translation id="6127860394906721547">Atveriet ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kuras krāsa ir <ph name="COLOR_NAME" /> un kurā ir šādas vietnes: <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimizēt cilni</translation>
 <translation id="6134168885321518274">Atvērt atrašanas joslu</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> cilne}zero{<ph name="TAB_COUNT_MANY" /> ciļņu}one{<ph name="TAB_COUNT_MANY" /> cilne}other{<ph name="TAB_COUNT_MANY" /> cilnes}}</translation>

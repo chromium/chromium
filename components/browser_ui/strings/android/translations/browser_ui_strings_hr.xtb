@@ -120,7 +120,9 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="2379925928934107488">Primijeni tamnu temu na web-lokacije kad Chrome koristi tamnu temu, kad je moguće</translation>
 <translation id="2390272837142897736">Povećajte zumiranje</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Precizno</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>
+<translation id="2404857459073803936">Pristup lokaciji za ovu web-lokaciju</translation>
 <translation id="2410940059315936967">Web-lokacija koju posjetite može ugraditi sadržaj s drugih web-lokacija, primjerice slike, oglase i tekst. Kolačići koje postavljaju te druge web-lokacije nazivaju se kolačićima treće strane.</translation>
 <translation id="2411116727035790889">Uključi prečace</translation>
 <translation id="2433507940547922241">Prikaz</translation>
@@ -276,6 +278,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="3992684624889376114">Informacije o ovoj stranici</translation>
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4031179711345676612">Mikrofon je dopušten</translation>
+<translation id="4042597221652780603">Približno</translation>
 <translation id="4046123991198612571">Sljedeća pjesma</translation>
 <translation id="4077310749977440510">Web-lokacije obično čitaju vaš međuspremnik radi značajki poput zadržavanja formatiranja kopiranog teksta</translation>
 <translation id="4082080074595021446">Iznimke za određene web-lokacije nisu dopuštene jer Android uređaj nema dovoljno RAM-a.</translation>

@@ -108,6 +108,7 @@
 <translation id="2290014774651636340">缺少 Google API 金鑰，系統將停用 Google Chrome 的部分功能。</translation>
 <translation id="2290095356545025170">確定要解除安裝 Google Chrome 嗎？</translation>
 <translation id="2301513536169703857">如要在你的所有裝置上取用密碼、書籤和其他資料，請登入 Chrome</translation>
+<translation id="2307973900865360088">保留在 Dock</translation>
 <translation id="2309047409763057870">這是以並行形式安裝的第二個 Google Chrome，因此無法設定為您的預設瀏覽器。</translation>
 <translation id="2345992953227471816">Chrome 發現以下擴充程式含有惡意軟件：</translation>
 <translation id="2348335408836342058">Chrome 需要取得權限，才能讓這個網站存取您的相機和麥克風</translation>
@@ -340,6 +341,7 @@
 <translation id="5114340746415930644">輸入用於在帳戶 <ph name="USER_EMAIL" /> 中使用及儲存 Chrome 資料的密碼短語</translation>
 <translation id="5120334927898581447">在登入其他 Google 服務時登入 Chrome</translation>
 <translation id="5126049312684316860">Chrome 會預先載入更多你可能瀏覽的網頁，以便在你瀏覽時更快載入</translation>
+<translation id="5127558335897923940">將 Chrome 保留在 Dock，方便隨時快速取用</translation>
 <translation id="5132929315877954718">為您的 Google Chrome 探索各種實用有趣的應用程式、遊戲、擴充功能和主題。</translation>
 <translation id="5139423532931106058">自訂您的 Chrome 設定檔</translation>
 <translation id="5163087008893166964">歡迎使用 Chrome；開咗新瀏覽器視窗</translation>

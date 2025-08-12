@@ -120,7 +120,9 @@
 <translation id="2379925928934107488">Kur është e mundur, zbato temën e errët për sajtet kur Chrome përdor temën e errët</translation>
 <translation id="2390272837142897736">Rrit zmadhimin</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">E saktë</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> tjetër e lejuar}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> të tjera të lejuara}}</translation>
+<translation id="2404857459073803936">Qasja te vendndodhja për këtë sajt</translation>
 <translation id="2410940059315936967">Një sajt që viziton mund të integrojë përmbajtje nga sajte të tjera, p.sh. imazhe, reklama dhe tekste. Kukit e vendosura nga këto sajte të tjera quhen kuki të palëve të treta.</translation>
 <translation id="2411116727035790889">Aktivizo shkurtoret</translation>
 <translation id="2433507940547922241">Pamja</translation>
@@ -276,6 +278,7 @@
 <translation id="3992684624889376114">Rreth kësaj faqeje</translation>
 <translation id="4002066346123236978">Titulli</translation>
 <translation id="4031179711345676612">Mikrofoni lejohet</translation>
+<translation id="4042597221652780603">E përafërt</translation>
 <translation id="4046123991198612571">Kënga tjetër</translation>
 <translation id="4077310749977440510">Sajtet lexojnë zakonisht kujtesën tënde të fragmenteve për veçoritë si ruajtja e formatimit të tekstit që ke kopjuar</translation>
 <translation id="4082080074595021446">Përjashtimet për uebsajte specifike nuk lejohen sepse pajisja Android nuk ka RAM të mjaftueshëm.</translation>

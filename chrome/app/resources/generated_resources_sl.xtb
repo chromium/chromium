@@ -1488,7 +1488,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="200321182559008924">Poskrbite, da med zavihki ne bo navlake</translation>
 <translation id="2003596238737586336">Trenutni razpored je nastavljen na <ph name="SUNRISE" />–<ph name="SUNSET" />. To nastavitev upravlja skrbnik.</translation>
 <translation id="2004413981947727241">Uporaba gesel v kateri koli napravi</translation>
-<translation id="2004697686368036666">Funkcije na nekaterih spletnih mestih morda ne bodo delovale.</translation>
 <translation id="2006638907958895361">Odpiranje povezave v aplikaciji <ph name="APP" /></translation>
 <translation id="2007404777272201486">Prijavi težavo ...</translation>
 <translation id="200781997903833896">Če želite uporabljati funkcijo Preberi na glas, sprostite prostor v napravi</translation>
@@ -1972,7 +1971,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2328137272841210255">Ponastavitev kode PIN</translation>
 <translation id="2328474416100889417">Vsi bodo takoj izgubili dostop do skupine zavihkov »<ph name="GROUP_NAME" />« in vse povezave do povabila bodo izklopljene</translation>
 <translation id="2328561734797404498">Znova zaženite napravo, če želite uporabljati aplikacijo <ph name="APP_NAME" />.</translation>
-<translation id="2328636661627946415">V anonimnem načinu lahko spletna mesta uporabljajo piškotke samo za ogled vaše dejavnosti brskanja na tem spletnem mestu. Po koncu anonimne seje se piškotki izbrišejo.</translation>
 <translation id="2329597144923131178">Prijavite se, da boste lahko dostopali do zaznamkov, zgodovine, gesel in drugih nastavitev v vseh napravah.</translation>
 <translation id="2330182457402792918">Izberite datoteke, ki jih to spletno mesto lahko bere</translation>
 <translation id="2332115969598251205">Naprav, shranjenih v računu <ph name="PRIMARY_EMAIL" />, ni mogoče naložiti. Preverite internetno povezavo in poskusite znova.</translation>
@@ -3762,7 +3760,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3593953853060020305">Želite temu spletnemu mestu dovoliti urejanje datoteke <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Omejitve imena potrdila</translation>
 <translation id="3596012367874587041">Nastavitve aplikacije</translation>
-<translation id="3596414637720633074">Blokiranje piškotkov tretjih oseb v anonimnem načinu</translation>
 <translation id="3599221874935822507">Dvignjeno</translation>
 <translation id="3600051066689725006">Podatki o spletni zahtevi</translation>
 <translation id="3600956933576601730">Če želite uporabljati te funkcije, morate prebrati in sprejeti pogoje</translation>
@@ -4098,7 +4095,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3807747707162121253">&amp;Prekliči</translation>
 <translation id="3808202562160426447">Zatemnitev vsebine v ozadju</translation>
 <translation id="3808443763115411087">Razvoj aplikacij za Android v Crostiniju</translation>
-<translation id="3808617121485025547">Več o blokiranju piškotkov tretjih oseb</translation>
 <translation id="38089336910894858">Pokaži opozorilo pred zapiranjem s kombinacijo ⌘ in Q</translation>
 <translation id="3809272675881623365">Zajec</translation>
 <translation id="3809280248639369696">Vesoljec</translation>
@@ -4358,7 +4354,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3975565978598857337">Vzpostavljanje stika s strežnikom območja ni uspelo</translation>
 <translation id="3976108569178263973">Noben tiskalnik ni na voljo.</translation>
 <translation id="397703832102027365">Dokončanje ...</translation>
-<translation id="3977145907578671392">Funkcije na nekaterih spletnih mestih morda ne bodo delovale v anonimnem načinu.</translation>
 <translation id="3977886311744775419">Samodejne posodobitve se ne prenesejo v tej vrsti omrežja, vendar lahko ročno preverite, ali so na voljo posodobitve.</translation>
 <translation id="3978325380690188371">Zaklepanje tipk ni na voljo, če je vklopljen ChromeVox</translation>
 <translation id="3978732922947854545">Chrome izboljša PDF-je</translation>
@@ -5747,6 +5742,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="496742804571665842">Onemogoči profile eSIM</translation>
 <translation id="4967571733817147990">Prilagajanje gumbov miške</translation>
 <translation id="4967852842111017386">Ime naprave s funkcijo <ph name="FEATURE_NAME" /></translation>
+<translation id="4968994772848295474">Nameščanje spletnih aplikacij ni podprto v načinu za goste</translation>
 <translation id="4971412780836297815">Odpri, ko je končano</translation>
 <translation id="4972129977812092092">Urejanje tiskalnika</translation>
 <translation id="4972164225939028131">Napačno geslo</translation>
@@ -6627,6 +6623,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="560834977503641186">Sinhronizacija poverilnic za Wi-Fi, več o tem</translation>
 <translation id="5608580678041221894">Dotaknite se teh tipk, če želite prilagoditi ali premakniti območje za obrezovanje</translation>
 <translation id="5609231933459083978">Videti je, da je aplikacija neveljavna.</translation>
+<translation id="5610759359710387751">Prilagodite si Chrome</translation>
 <translation id="5610867721023328944">Poskusite znova ali izberite eno od spodnjih tem.</translation>
 <translation id="5611398002774823980">Shrani v račun</translation>
 <translation id="5611399285717843500">Pomagajte izboljšati funkcije in učinkovitost delovanja Chroma in sistema ChromeOS. Osebni podatki se odstranijo med zbiranjem teh podatkov.</translation>
@@ -7529,6 +7526,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6257602895346497974">Vklopi sinhronizacijo …</translation>
 <translation id="625827534921607067">To omrežje bo prednostno, če je na voljo več kot eno predhodno povezano ali konfigurirano omrežje.</translation>
 <translation id="6259776178973198997">Osveži podatke o lastnikih Wi-Fi Direct</translation>
+<translation id="6261688934280090835">Dnevniki aplikacij za kioske ChromeOS</translation>
 <translation id="6262371516389954471">Varnostne kopije so naložene v Google in šifrirane z geslom za račun Google.</translation>
 <translation id="6263082573641595914">Microsoftova različica overitelja potrdil</translation>
 <translation id="6263284346895336537">Ni kritično</translation>
@@ -10531,6 +10529,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8340547030807793004">Več dejanj za <ph name="DEVICE" /></translation>
 <translation id="8341804784147620576">Pokaži bližnjice za iskanje</translation>
 <translation id="8342221978608739536">Nisem poskusil(-a)</translation>
+<translation id="8342387517402567689">Nameščanje spletnih aplikacij ni podprto v anonimnem načinu</translation>
 <translation id="8342861492835240085">Izberi zbirko</translation>
 <translation id="8345848587667658367">Zdaj si lahko ogledate nedavne fotografije, predstavnost, obvestila in aplikacije telefona</translation>
 <translation id="8347227221149377169">Tiskalna opravila</translation>
@@ -10854,7 +10853,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8573111744706778015">Vnesite »uo7«, če želite napisati »ươ«</translation>
 <translation id="8574990355410201600">Vedno dovoli zvok na spletnem mestu <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Držite kombinacijo tipk <ph name="KEY_EQUIVALENT" /> za izhod</translation>
-<translation id="8576359558126669548">Več o blokiranju piškotkov tretjih oseb v anonimnem načinu</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Dodaj zavihek na bralni seznam}one{Dodaj zavihke na bralni seznam}two{Dodaj zavihke na bralni seznam}few{Dodaj zavihke na bralni seznam}other{Dodaj zavihke na bralni seznam}}</translation>
 <translation id="8577052309681449949">Samodejni kliki, velikost kazalca, barva kazalca in drugo.</translation>
 <translation id="8578639784464423491">Ne sme presegati 99 črk</translation>
@@ -11172,7 +11170,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8777628254805677039">korensko geslo</translation>
 <translation id="8779720597365936419">Da, naj bodo moji podatki ločeni od službenih (priporočeno)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Spletna mesta smejo uporabljati piškotke samo za ogled dejavnosti brskanja na danem spletnem mestu.</translation>
 <translation id="8780123805589053431">Pridobivanje opisov slik iz Googla</translation>
 <translation id="8780443667474968681">Glasovno iskanje je izklopljeno.</translation>
 <translation id="8781834595282316166">Novi zavihek v skupini</translation>

@@ -120,7 +120,9 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="2379925928934107488">Կայքերում հնարավորինս կիրառել մուգ թեման, երբ Chrome-ն օգտագործում է այն</translation>
 <translation id="2390272837142897736">Մեծացնել մասշտաբը</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> ՄԲ</translation>
+<translation id="2403474027143565107">Ճշգրիտ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Թույլատրված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}one{Թույլատրված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}other{Թույլատրված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}}</translation>
+<translation id="2404857459073803936">Տեղադրության տվյալների հասանելիություն այս կայքի համար</translation>
 <translation id="2410940059315936967">Կայքը, որն այցելել եք, կարող է այլ կայքերից զետեղել բովանդակություն, օրինակ՝ պատկերներ, գովազդ և տեքստ։ Այդպիսի կայքերի քուքիները կոչվում են երրորդ կողմի քուքիներ։</translation>
 <translation id="2411116727035790889">Միացնել դյուրանցումները</translation>
 <translation id="2433507940547922241">Արտաքին տեսք</translation>
@@ -276,6 +278,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="3992684624889376114">Այս էջի մասին</translation>
 <translation id="4002066346123236978">Վերնագիր</translation>
 <translation id="4031179711345676612">Խոսափողի օգտագործումը թույլատրված է</translation>
+<translation id="4042597221652780603">Մոտավոր</translation>
 <translation id="4046123991198612571">Հաջորդը</translation>
 <translation id="4077310749977440510">Կայքերը սովորաբար կարդում են ձեր սեղմատախտակը այնպիսի գործառույթների համար, ինչպիսին է ձեր պատճենած տեքստի ձևաչափի պահպանումը</translation>
 <translation id="4082080074595021446">Որոշակի կայքերի համար բացառություններն արգելված են, քանի որ Android սարքը բավականաչափ հիշողություն (RAM) չունի։</translation>

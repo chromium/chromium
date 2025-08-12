@@ -1092,6 +1092,7 @@
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" />ଙ୍କ ସହ ଟାବ ଗ୍ରୁପରେ ଯୋଗ ଦିଅନ୍ତୁ</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />ଅଧିକ ବିବରଣୀ<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">ଆଇଟମକୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
+<translation id="6127860394906721547"><ph name="URL_LIST" /> ସାଇଟ ସହ <ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପ, <ph name="COLOR_NAME" /> ରଙ୍ଗ ଖୋଲନ୍ତୁ।</translation>
 <translation id="6130303040046284160">ଟାବକୁ ଛୋଟ କରନ୍ତୁ</translation>
 <translation id="6134168885321518274">ଖୋଜିବା ବାର ଖୋଲନ୍ତୁ</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ଟାବ}other{<ph name="TAB_COUNT_MANY" /> ଟାବ}}</translation>

@@ -120,7 +120,9 @@
 <translation id="2379925928934107488">ଯେତେବେଳେ ସମ୍ଭବ, Chrome ଗାଢ଼ା ଥିମ ବ୍ୟବହାର କରିବା ସମୟରେ ସାଇଟଗୁଡ଼ିକରେ ଗାଢ଼ା ଥିମ ଲାଗୁ କରନ୍ତୁ</translation>
 <translation id="2390272837142897736">ଜୁମ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">ସଠିକ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ଏବଂ ଅଧିକ <ph name="NUM_MORE" />ଟିକୁ ଅନୁମତି ଦିଆଯାଇଛି}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ଏବଂ ଅଧିକ <ph name="NUM_MORE" />ଟିକୁ ଅନୁମତି ଦିଆଯାଇଛି}}</translation>
+<translation id="2404857459073803936">ଏହି ସାଇଟ ପାଇଁ ଲୋକେସନ ଆକ୍ସେସ</translation>
 <translation id="2410940059315936967">ଆପଣ ଭିଜିଟ କରୁଥିବା ଏକ ସାଇଟ ଅନ୍ୟ ସାଇଟଗୁଡ଼ିକରୁ ବିଷୟବସ୍ତୁକୁ ଏମ୍ବେଡ କରିପାରିବ, ଉଦାହରଣ ସ୍ୱରୂପ, ଇମେଜ, ବିଜ୍ଞାପନ ଏବଂ ଟେକ୍ସଟ। ଏହି ଅନ୍ୟ ସାଇଟଗୁଡ଼ିକ ଦ୍ୱାରା ସେଟ କରାଯାଇଥିବା କୁକୀଗୁଡ଼ିକୁ ତୃତୀୟ-ପକ୍ଷ କୁକୀ କୁହାଯାଏ।</translation>
 <translation id="2411116727035790889">ସର୍ଟକଟ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2433507940547922241">ଦୃଶ୍ୟମାନତା</translation>
@@ -276,6 +278,7 @@
 <translation id="3992684624889376114">ଏହି ପୃଷ୍ଠା ବିଷୟରେ</translation>
 <translation id="4002066346123236978">ଆଖ୍ୟା</translation>
 <translation id="4031179711345676612">ମାଇକ୍ରୋଫୋନ୍‌କୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
+<translation id="4042597221652780603">ଆନୁମାନିକ</translation>
 <translation id="4046123991198612571">ପରବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
 <translation id="4077310749977440510">ଆପଣ କପି କରିଥିବା ଟେକ୍ସଟର ଫର୍ମାଟିଂକୁ ରଖିବା ପରି ଫିଚରଗୁଡ଼ିକ ପାଇଁ ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ ଆପଣଙ୍କ କ୍ଲିପବୋର୍ଡକୁ ପଢ଼ିଥାଏ</translation>
 <translation id="4082080074595021446">Android ଡିଭାଇସରେ ପର୍ଯ୍ୟାପ୍ତ RAM ନଥିବାରୁ ନିର୍ଦ୍ଦିଷ୍ଟ ୱେବସାଇଟଗୁଡ଼ିକ ପାଇଁ ବ୍ୟତିକ୍ରମଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ।</translation>

@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Wenn du alle Tabs schließt, werden auch angepinnte Tabs geschlossen.</translation>
 <translation id="1036348656032585052">Deaktivieren</translation>
 <translation id="1041322626941363065">Warnen, wenn Passwörter durch eine Datenpanne preisgegeben wurden</translation>
-<translation id="1044891598689252897">Websites funktionieren normal</translation>
 <translation id="104491362976654916">Offlineseite</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Abgemeldet. Melde dich wieder an, um die Lesezeichen, Passwörter und sonstigen Informationen in deinem Konto zu verwenden.</translation>
@@ -135,7 +134,6 @@
 <translation id="1506063256525392513">Dadurch kannst du Fotos aufnehmen und hochladen und QR-Codes scannen</translation>
 <translation id="1508263560970797965">Im Inkognitomodus fortfahren</translation>
 <translation id="1509486075633541495">Auf der Website anmelden</translation>
-<translation id="1509960214886564027">Funktionen auf vielen Websites funktionieren möglicherweise nicht mehr</translation>
 <translation id="1513858653616922153">Passwort löschen</translation>
 <translation id="1517166097004694782">„Mit diesem Tab fortfahren“ ausblenden</translation>
 <translation id="1520027731907768768">Benachrichtigungen zu Preissenkungen für Produkte, die du beobachtest.</translation>
@@ -368,9 +366,6 @@
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2360196772093551345">Mobile Version anfordern</translation>
 <translation id="2362083820973145409">Angemeldet als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Die Einstellungen werden geöffnet.</translation>
-<translation id="236977714248711277">Websites können keine Cookies verwenden, um dir das Surfen zu erleichtern; zum Beispiel, damit du angemeldet bleibst oder Artikel in deinem Einkaufswagen gespeichert bleiben.
-
-Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen.</translation>
 <translation id="2377230674627603057">Tabgruppenraster</translation>
 <translation id="2377336083033403521">Tabs suchen…</translation>
 <translation id="2381405137052800939">Grundeinstellungen</translation>
@@ -446,7 +441,6 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2669454659051515572">Alle Personen, die dieses Gerät nutzen, können heruntergeladene Dateien sehen</translation>
 <translation id="2671423594960767771">Gruppe teilen</translation>
 <translation id="2673508731173059946">Kopierten Link aufrufen</translation>
-<translation id="2687403674020088961">Alle Cookies blockieren (nicht empfohlen)</translation>
 <translation id="2688535388040882469">Banner</translation>
 <translation id="2690858294534178585">Kamera wird verwendet</translation>
 <translation id="2691653761409724435">Nicht offline verfügbar</translation>
@@ -661,7 +655,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3587885837929752825">Deine Organisation legt fest, was du in deinem Google-Konto speichern kannst.</translation>
 <translation id="3588820906588687999">Bild in neuem Tab öffnen</translation>
 <translation id="3595252146048399851">In den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> kannst du auswählen, was synchronisiert werden soll. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
-<translation id="3596414637720633074">Drittanbieter-Cookies im Inkognitomodus blockieren</translation>
 <translation id="3602260545951981695">Wähle „Erweiterter Schutz“ aus</translation>
 <translation id="3610041351087301930">Reader ausblenden</translation>
 <translation id="3622175633937495219">Suchverlauf (<ph name="COUNT" /> gefunden)</translation>
@@ -1063,7 +1056,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5177141896043341906">Du nutzt <ph name="NUMBER_OF_PASSWORDS" /> schwache Passwörter, die deine Sicherheit gefährden könnten.</translation>
 <translation id="5181140330217080051">Download wird ausgeführt...</translation>
 <translation id="5186185447130319458">Privat</translation>
-<translation id="5188482106078495165">Deine Cookie-Einstellung gilt für alle Tabs. Wenn du eine neue Einstellung auf einen geöffneten Tab anwenden möchtest, aktualisiere den Tab.</translation>
 <translation id="518997337573684769">Absturzbericht wird gesendet…</translation>
 <translation id="519530786644929958">Der Download ist fehlgeschlagen und kann nicht wiederholt werden.</translation>
 <translation id="5197255632782567636">Internet</translation>
@@ -1088,7 +1080,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5271265092610673171">{count,plural, =1{Ein Pflichtfeld ist leer. Bitte fülle es vor dem Speichern aus.}other{Einige Pflichtfelder sind leer. Bitte fülle sie vor dem Speichern aus.}}</translation>
 <translation id="5271549068863921519">Passwort speichern</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) möchte, dass du einer Tabgruppe beitrittst. Alle Nutzer mit dem Link können alle Tabs bearbeiten. Überlege dir also gut, ob du beitrittst. Der Link läuft in 48 Stunden ab.</translation>
-<translation id="5279600392753459966">Alle blockieren</translation>
 <translation id="5282340693022193851">Wenn du Benachrichtigungen zum Preis-Tracking erhalten möchtest, aktiviere Benachrichtigungen in den iOS‑Einstellungen.</translation>
 <translation id="528857768909044842">Tabgruppen werden hier gespeichert</translation>
 <translation id="5294624619177114121">Mobile Benachrichtigungen</translation>
@@ -1187,7 +1178,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5648166631817621825">Letzte 7 Tage</translation>
 <translation id="5652623411397330904">Hier werden die von dir beobachteten Produkte angezeigt.</translation>
 <translation id="5656431592348714536">Verbesserter Kalender</translation>
-<translation id="5657156137487675418">Alle Cookies zulassen</translation>
 <translation id="5659593005791499971">E-Mail</translation>
 <translation id="5665739277590037307">Es gelten die <ph name="GOOGLE_TERMS" /> und die <ph name="GEMINI_APPS_PRIVACY" />. Da Gemini Fehler machen kann, solltest du die Antworten überprüfen.</translation>
 <translation id="5666313630530585305">Melde dich auf einer Website an.</translation>
@@ -1204,7 +1194,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5704908597376970822">Anmeldung nicht möglich.</translation>
 <translation id="5709005673595820640">{count,plural, =1{Du nutzt {count} mehrfach verwendetes Passwort, das deine Sicherheit gefährden könnte. Ändere es jetzt, um dich bestmöglich zu schützen.}other{Du nutzt {count} mehrfach verwendete Passwörter, die deine Sicherheit gefährden könnten. Ändere sie jetzt, um dich bestmöglich zu schützen.}}</translation>
 <translation id="57094364128775171">Starkes Passwort vorschlagen…</translation>
-<translation id="5716230673298034837">Alle zulassen</translation>
 <translation id="5718049162805123412">Du solltest dieses Passwort bzw. diese Passwörter jetzt ändern</translation>
 <translation id="572328651809341494">Zuletzt geöffnete Tabs</translation>
 <translation id="5724941645893276623">Füge einen neuen Tab hinzu, um privat im Web zu surfen</translation>
@@ -1263,7 +1252,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5936065461722368675">Ganze Seite übersetzen</translation>
 <translation id="5937560539988385583">Seite übersetzt</translation>
 <translation id="5938160824633642847">Der Speicher deines Geräts ist fast voll. Gib Speicherplatz frei und versuche es dann noch einmal.</translation>
-<translation id="594324569139756587">Drittanbieter-Cookies blockieren</translation>
 <translation id="5944869793365969636">QR-Code scannen</translation>
 <translation id="5948291296578561264">Dadurch kannst du Fotos in der Fotogalerie speichern.</translation>
 <translation id="5948605885471592910">Alle geöffneten Inhalte ansehen und verwalten</translation>
@@ -1336,7 +1324,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6192388920090306326">Ausflug nach Tokio</translation>
 <translation id="6193448654517602979">Tabs auswählen</translation>
 <translation id="6196207969502475924">Sprachsuche</translation>
-<translation id="6196640612572343990">Drittanbieter-Cookies blockieren</translation>
 <translation id="6198252989419008588">PIN ändern</translation>
 <translation id="6210079381482819663">Tabs, die <ph name="THRESHOLD" /> Tage oder länger nicht verwendet wurden, werden hierhin verschoben. Du kannst dies jederzeit <ph name="BEGIN_LINK" />in den Einstellungen<ph name="END_LINK" /> ändern.</translation>
 <translation id="6213281885682386884">Keine Adressen gefunden</translation>
@@ -1412,14 +1399,10 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6444435711855078002">Weitere Optionen</translation>
 <translation id="6445051938772793705">Land</translation>
 <translation id="6445981559479772097">Nachricht gesendet</translation>
-<translation id="6447842834002726250">Cookies</translation>
 <translation id="6449554712554071184">Dadurch wird die Gruppe endgültig von deinem Gerät gelöscht.</translation>
 <translation id="6452534462676960500">Neue Aktivitäten</translation>
 <translation id="6459411599807878608">Details ausgeblendet</translation>
 <translation id="646394917185284261">Dateien</translation>
-<translation id="6464397691496239022">Websites können Cookies verwenden, um dir das Surfen zu erleichtern; zum Beispiel, damit du angemeldet bleibst oder Artikel in deinem Einkaufswagen gespeichert bleiben.
-
-Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen.</translation>
 <translation id="6476253015009698798">Preis-Tracking ist für diese Seite nicht verfügbar.</translation>
 <translation id="6476284679642588870">Zahlungsmethoden verwalten</translation>
 <translation id="6476800141292307438">Die Seite wird in die Sprache <ph name="LANGUAGE" /> übersetzt. Optionen sind unten auf dem Bildschirm verfügbar.</translation>
@@ -1462,7 +1445,6 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="6612912757320004438">Tab-Benachrichtigungen zulassen…</translation>
 <translation id="6617761071025228250">Text löschen</translation>
 <translation id="6620279676667515405">Abbrechen</translation>
-<translation id="6624219055418309072">Im Inkognitomodus blockieren</translation>
 <translation id="6625830436658400045">Deine Synchronisierungseinstellungen werden auf Grundlage deiner letzten Sicherung wiederhergestellt. In den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> kannst du auswählen, was synchronisiert werden soll.</translation>
 <translation id="6627583120233659107">Ordner bearbeiten</translation>
 <translation id="6629759408545977279">Von: <ph name="ORIGINATING_HOST" /></translation>
@@ -1479,9 +1461,6 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="6663529247339810546">Speichern nicht möglich</translation>
 <translation id="6668619169535738264">Lesezeichen bearbeiten</translation>
 <translation id="6671294218820966278">Als gelesen markieren</translation>
-<translation id="6672241253012342409">Websites können Cookies verwenden, um dir das Surfen zu erleichtern; zum Beispiel, damit du angemeldet bleibst oder Artikel in deinem Einkaufswagen gespeichert bleiben.
-
-Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen.</translation>
 <translation id="6672697278890207089">Passphrase eingeben</translation>
 <translation id="6674917187596384849">Du kannst ganz einfach zwischen Konten wechseln</translation>
 <translation id="6676349090816247042">Anmeldeoptionen.</translation>
@@ -1517,6 +1496,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6794476726485507147">Wähle ein Datum und eine Uhrzeit aus, zu der du eine Erinnerung erhalten möchtest, um diese Seite noch einmal aufzurufen</translation>
 <translation id="6795481620482106033">Ungültige Daten</translation>
 <translation id="6797543908718012274">Lesemodus aktivieren</translation>
+<translation id="6806550742467879742">Seitentools</translation>
 <translation id="6807287147325542056">Passwörter in anderen Apps</translation>
 <translation id="681368974849482173">Element erstellt</translation>
 <translation id="6825078212112407882">{count,plural, =1{Lesezeichen in deinem Google-Konto ({email}) gespeichert}other{{count} Lesezeichen in deinem Google-Konto {email} gespeichert}}</translation>
@@ -1670,6 +1650,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7454057999980797137">Bundesland/Kreis</translation>
 <translation id="7458706065921255639">Personalisierung &amp; Verknüpfung</translation>
 <translation id="745899714366929493">Ganztägig</translation>
+<translation id="7460314822154045102">Kamera verwenden</translation>
 <translation id="7460698861522306757">Mobile Website anfordern</translation>
 <translation id="7464143666517313304">Dadurch werden auf diesem Gerät gespeicherte Adressen gelöscht.</translation>
 <translation id="7468373585447318060">Du wirst über Preissenkungen für alle Produkte informiert, die du beobachtest.</translation>
@@ -1802,9 +1783,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7952670906562503188">Du bist im Begriff, {passkey_count} Passkeys und die Liste der Websites und Apps zu löschen, für die du festgelegt hast, dass Anmeldedaten nie gespeichert werden sollen. Konten, die du für Websites und Apps erstellt hast, werden nicht gelöscht.</translation>
 <translation id="7958575506592576831">Sicherheitsinformationen zur Seite</translation>
 <translation id="7961015016161918242">Nie</translation>
-<translation id="7966516440812255683">Websites können Cookies verwenden, um dir das Surfen zu erleichtern; zum Beispiel, damit du angemeldet bleibst oder Artikel in deinem Einkaufswagen gespeichert bleiben.
-
-Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen.</translation>
 <translation id="7971136598759319605">Vor 1 Tag aktiv</translation>
 <translation id="7975036700432177008">Testen</translation>
 <translation id="797588153137233716">„Menü“ → „Verlauf“ → „Browserdaten löschen“</translation>
@@ -1815,7 +1793,6 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="7987685713885608670">Für zusätzliche Sicherheit kannst du Passwörter auf deinem Gerät verschlüsseln lassen, bevor sie im Google Passwortmanager gespeichert werden.</translation>
 <translation id="798991908416757345">Tabgruppen sind nicht verfügbar</translation>
 <translation id="7993170188789685695">Zum Schließen der Benachrichtigung doppeltippen.</translation>
-<translation id="7993619969781047893">Funktionen auf manchen Websites funktionieren möglicherweise nicht mehr</translation>
 <translation id="7996239959906074962">Einrichten…</translation>
 <translation id="8001561107130904792">Freigabe von Seiteninhalten</translation>
 <translation id="800361585186029508">Öffnet die eingegebenen URLs in Google Chrome.</translation>

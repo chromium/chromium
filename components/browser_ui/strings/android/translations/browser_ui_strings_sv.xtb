@@ -120,7 +120,9 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="2379925928934107488">Använd mörkt tema på webbplatser om Chrome använder mörkt tema, när det är möjligt</translation>
 <translation id="2390272837142897736">Öka zoom</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Exakt</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till tillåts}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till tillåts}}</translation>
+<translation id="2404857459073803936">Platsåtkomst för den här webbplatsen</translation>
 <translation id="2410940059315936967">En webbplats som du besöker kan bädda in innehåll från andra webbplatser, till exempel bilder, annonser och text. Cookies som sparas av dessa andra webbplatser kallas tredjepartscookies.</translation>
 <translation id="2411116727035790889">Aktivera kortkommandon</translation>
 <translation id="2433507940547922241">Utseende</translation>
@@ -276,6 +278,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="3992684624889376114">Om den här sidan</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4031179711345676612">Mikrofon är tillåten</translation>
+<translation id="4042597221652780603">Ungefärlig</translation>
 <translation id="4046123991198612571">Nästa spår</translation>
 <translation id="4077310749977440510">Att läsa från Urklipp brukar kunna behövas till exempel för att bevara formateringen när du kopierar text på webbplatsen</translation>
 <translation id="4082080074595021446">Undantag för specifika webbplatser tillåts inte eftersom Android-enheten inte har tillräckligt med RAM-minne.</translation>

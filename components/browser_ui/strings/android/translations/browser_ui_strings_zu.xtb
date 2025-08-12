@@ -120,7 +120,9 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="2379925928934107488">Sebenzisa itimu emnyama kumasayithi lapho i-Chrome isebenzisa itimu emnyama, uma kunokwenzeka</translation>
 <translation id="2390272837142897736">Khulisa ukusondeza</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Kunembile</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{I-<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nezinye ezingu-<ph name="NUM_MORE" /> zivunyelwe}one{I-<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nezinye ezingu-<ph name="NUM_MORE" /> zivunyelwe}other{I-<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nezinye ezingu-<ph name="NUM_MORE" /> zivunyelwe}}</translation>
+<translation id="2404857459073803936">Ukufinyelela kwendawo yaleli sayithi</translation>
 <translation id="2410940059315936967">Isayithi olivakashelayo lingashumeka okuqukethwe okuvela kwamanye amasayithi, ngokwesibonelo, imifanekiso, izikhangiso, nombhalo. Amakhukhi asethwe yilawa amanye amasayithi abizwa ngokuthi amakhukhi wongahlangene ngqo.</translation>
 <translation id="2411116727035790889">Vula izinqamuleli</translation>
 <translation id="2433507940547922241">Ukubonakala</translation>
@@ -276,6 +278,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="3992684624889376114">Mayelana naleli khasi</translation>
 <translation id="4002066346123236978">Isihloko</translation>
 <translation id="4031179711345676612">Imakrofoni ivunyelwe</translation>
+<translation id="4042597221652780603">Cishe</translation>
 <translation id="4046123991198612571">Ithrekhi elandelayo</translation>
 <translation id="4077310749977440510">Ngokuvamile amasayithi afunda ibhodi lakho lokunamathisela ukuze athole izakhi ezifana nokugcina ukufomethwa kombhalo owukopishile</translation>
 <translation id="4082080074595021446">Okuhlukile emawebhusayithini athile akuvunyelwe ngoba idivayisi ye-Android ayinayo i-RAM eyanele.</translation>

@@ -1484,7 +1484,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="200321182559008924">Pidä välilehdet järjestyksessä</translation>
 <translation id="2003596238737586336">Aikatauluksi on asetettu <ph name="SUNRISE" />–<ph name="SUNSET" />. Järjestelmänvalvojasi ylläpitää tätä asetusta.</translation>
 <translation id="2004413981947727241">Käytä salasanojasi kaikilla laitteilla</translation>
-<translation id="2004697686368036666">Joidenkin sivustojen ominaisuudet eivät välttämättä toimi</translation>
 <translation id="2006638907958895361">Avaa linkki: <ph name="APP" /></translation>
 <translation id="2007404777272201486">Ilmoita ongelmasta...</translation>
 <translation id="200781997903833896">Jos haluat käyttää Lue ääneen ‑ominaisuutta, vapauta tilaa laitteelta</translation>
@@ -1968,7 +1967,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2328137272841210255">Nollaa PIN-koodi</translation>
 <translation id="2328474416100889417">Kaikki menettävät välittömästi pääsyn välilehtiryhmään "<ph name="GROUP_NAME" />", ja kaikki kutsulinkit poistetaan käytöstä</translation>
 <translation id="2328561734797404498">Käynnistä laite uudelleen käyttääksesi <ph name="APP_NAME" />:ää.</translation>
-<translation id="2328636661627946415">Kun olet incognito-tilassa, sivustot voivat käyttää evästeitä vain selaustoimintasi näkemiseen omalla sivustollaan. Evästeet poistetaan incognito-käyttökerran jälkeen.</translation>
 <translation id="2329597144923131178">Kirjaudu ja käytä kirjanm., historiaa, salasan. ja muita asetuksia kaikissa laitteissasi.</translation>
 <translation id="2330182457402792918">Valitse tiedostot, jotka sivusto voi lukea</translation>
 <translation id="2332115969598251205">Osoitteeseen <ph name="PRIMARY_EMAIL" /> tallennettuja laitteita ei voi ladata. Tarkista internetyhteytesi ja yritä uudelleen.</translation>
@@ -3758,7 +3756,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3593953853060020305">Saako sivusto muokata tätä: <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Varmenteen nimirajoitukset</translation>
 <translation id="3596012367874587041">Sovellusasetukset</translation>
-<translation id="3596414637720633074">Estä kolmannen osapuolen evästeet incognito-tilassa</translation>
 <translation id="3599221874935822507">Korotettu</translation>
 <translation id="3600051066689725006">Verkkopyynnön tiedot</translation>
 <translation id="3600956933576601730">Sinun on tarkistettava ja hyväksyttävä ehdot, jotta voit käyttää näitä ominaisuuksia</translation>
@@ -4094,7 +4091,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3807747707162121253">&amp;Peruuta</translation>
 <translation id="3808202562160426447">Himmennä taustasisältöä</translation>
 <translation id="3808443763115411087">Crostinin Android-sovellusten kehittäminen</translation>
-<translation id="3808617121485025547">Lue lisää kolmansien osapuolten evästeiden estämisestä</translation>
 <translation id="38089336910894858">Näytä varoitus ennen sulkemista (⌘Q)</translation>
 <translation id="3809272675881623365">Jänis</translation>
 <translation id="3809280248639369696">Kuunsäde</translation>
@@ -4351,7 +4347,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3975565978598857337">Alueen hakeminen palvelimelta epäonnistui</translation>
 <translation id="3976108569178263973">Tulostimia ei ole saatavilla.</translation>
 <translation id="397703832102027365">Viimeistellään...</translation>
-<translation id="3977145907578671392">Joidenkin sivustojen ominaisuudet eivät välttämättä toimi incognito-tilassa</translation>
 <translation id="3977886311744775419">Automaattisia päivityksiä ei ladata tässä verkkotyypissä, mutta voit tarkistaa päivitykset manuaalisesti.</translation>
 <translation id="3978325380690188371">Päälle jäävät näppäimet eivät ole käytettävissä, kun ChromeVox on päällä</translation>
 <translation id="3978732922947854545">Chrome parantaa PDF-tiedostoja</translation>
@@ -6620,6 +6615,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="560834977503641186">Wi-Fin synkronointi, lue lisää</translation>
 <translation id="5608580678041221894">Muokkaa tai siirrä rajattua aluetta seuraavilla näppäimillä.</translation>
 <translation id="5609231933459083978">Sovellus vaikuttaa virheelliseltä.</translation>
+<translation id="5610759359710387751">Muokkaa Chromea</translation>
 <translation id="5610867721023328944">Yritä uudelleen tai valitse alta jokin käytettävissä olevista teemoista.</translation>
 <translation id="5611398002774823980">Tallenna tilille</translation>
 <translation id="5611399285717843500">Auta parantamaan Chromen ja ChromeOS:n ominaisuuksia ja suorituskykyä. Henkilökohtaiset tiedot poistetaan dataa kerättäessä.</translation>
@@ -10841,7 +10837,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8573111744706778015">Saat kirjainyhdistelmän "ươ" kirjoittamalla "uo7".</translation>
 <translation id="8574990355410201600"><ph name="HOST" /> saa aina toistaa ääntä</translation>
 <translation id="8575286410928791436">Lopeta painamalla pitkään <ph name="KEY_EQUIVALENT" />.</translation>
-<translation id="8576359558126669548">Lisätietoja kolmannen osapuolen evästeiden estämisestä incognito-tilassa</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Lisää välilehti lukulistalle}other{Lisää välilehdet lukulistalle}}</translation>
 <translation id="8577052309681449949">Automaattiset klikkaukset, kohdistimen koko, kohdistimen väri ym.</translation>
 <translation id="8578639784464423491">Enimmäispituus 99 kirjainta</translation>
@@ -11156,7 +11151,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="8777628254805677039">pääkäyttäjän salasana</translation>
 <translation id="8779720597365936419">Kyllä, pidä datani erillään työdatasta (suositus)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Sivustot voivat nähdä selaustoimintaasi evästeiden kautta vain omalla sivustollaan</translation>
 <translation id="8780123805589053431">Käytä Googlen kuvaselityksiä</translation>
 <translation id="8780443667474968681">Puhehaku on poistettu käytöstä.</translation>
 <translation id="8781834595282316166">Uusi välilehti ryhmässä</translation>

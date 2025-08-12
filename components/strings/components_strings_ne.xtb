@@ -2011,6 +2011,7 @@
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> अपडेट गरिएको छ</translation>
 <translation id="4298000214066716287">लगानी</translation>
 <translation id="42981349822642051">विस्तृत गर्नुहोस्</translation>
+<translation id="4298148761711700950">QR अपलोड नगरिकनै तत्काल भुक्तानी गर्नुहोस्</translation>
 <translation id="4298925811540301889">यो साइटका कुकीहरू तपाईंका सबै ChromeOS डिभाइसहरूमा सिंक गरिन्छन्। के के सिंक गर्ने भन्ने कुरा व्यवस्थापन गर्न <ph name="SYNC_SETTINGS" /> मा जानुहोस्।</translation>
 <translation id="4300272766492248925">एप खोल्नुहोस्</translation>
 <translation id="4300675098767811073">दायाँपट्टि एकभन्दा बढी प्वाल</translation>
@@ -2748,6 +2749,7 @@
 <translation id="5540969246441091044">घोडचढी</translation>
 <translation id="5541086400771735334">मेलबक्स ७</translation>
 <translation id="5541546772353173584">इमेल थप्नुहोस्</translation>
+<translation id="5543452229212526547">तपाईंले लेख्नुभएको टेक्स्ट र तपाईंको पेजमा भएका कन्टेन्ट र सो पेजको URL Google मा पठाइने छन्। समीक्षकहरू AI को गुणस्तर सुधार गर्ने प्रयोजनका लागि तपाईंको कन्टेन्ट प्रयोग गर्ने छैनन्। तपाईंको सङ्गठनले जुनसुकै बेला यी सेटिङ परिवर्तन गर्न सक्छ।</translation>
 <translation id="5543564889050342791">चिडियाखाना, एक्वारियम तथा आरक्षहरू</translation>
 <translation id="5543722831081909240">१८० डिग्री</translation>
 <translation id="5544836308113951378">क्रुज तथा चार्टर गरिएका जलयातायातका साधन</translation>
@@ -3124,6 +3126,8 @@
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184099524311454384">ट्याब खोज्नुहोस्</translation>
 <translation id="6184868291074982484">Chrome ले तेस्रो पक्षीय कुकीहरू स्वतः सीमित पार्छ</translation>
+<translation id="6189351761800074311">तपाईंले लेख्नुभएको टेक्स्ट र तपाईंको पेजमा भएका कन्टेन्ट Google मा पठाइने छन् तर AI को गुणस्तर सुधार्न तिनको प्रयोग गरिने छैन।
+    <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">किबोर्डका Esc जस्ता केही कीहरू ओभरराइड गर्नुहोस्</translation>
 <translation id="6194209731893739467">तपाईंले ट्र्याक गरेका सबै उत्पादन यहाँ देखिन्छन्</translation>
 <translation id="6195371403461054755">भूगर्भशास्त्र</translation>

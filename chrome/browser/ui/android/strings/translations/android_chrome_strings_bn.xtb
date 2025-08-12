@@ -1092,6 +1092,7 @@
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" />-এর সাথে ট্যাব গ্রুপে যোগ দিন</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />আরও বিবরণ<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">আইটেম সরানো হয়েছে</translation>
+<translation id="6127860394906721547"><ph name="URL_LIST" /> সাইটের <ph name="COLOR_NAME" /> রঙের <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ খুলুন।</translation>
 <translation id="6130303040046284160">ট্যাব মিনিমাইজ করুন</translation>
 <translation id="6134168885321518274">স্ক্রিনের মধ্যে খোঁজার বার খুলুন</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />টি ট্যাব}one{<ph name="TAB_COUNT_MANY" />টি ট্যাব}other{<ph name="TAB_COUNT_MANY" />টি ট্যাব}}</translation>

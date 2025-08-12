@@ -1092,6 +1092,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="6125202119952209826">Liituge vahelehegrupiga, kus on <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Rohkem üksikasju<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Üksus eemaldati</translation>
+<translation id="6127860394906721547">Avage vahelehegrupp <ph name="TITLE_OF_GROUP" /> värviga <ph name="COLOR_NAME" />, saitidega <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimeeri vaheleht</translation>
 <translation id="6134168885321518274">Leiuriba avamine</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> vaheleht}other{<ph name="TAB_COUNT_MANY" /> vahelehte}}</translation>

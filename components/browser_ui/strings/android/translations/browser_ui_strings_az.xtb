@@ -120,7 +120,9 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="2379925928934107488">Mümkün olduqda, Chrome tünd temadan istifadə edərkən saytlara tünd tema tətbiq edin</translation>
 <translation id="2390272837142897736">Zoom'u artırın</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Dəqiq</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> üçün icazə verilib}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> üçün icazə verilib}}</translation>
+<translation id="2404857459073803936">Bu sayt üçün məkan girişi</translation>
 <translation id="2410940059315936967">Baxdığınız sayt şəkillər, reklamlar və mətn kimi digər saytlardan məzmunu daxil edə bilər. Digər saytlar tərəfindən təyin olunan kukilərə üçüncü tərəf kukiləri deyilir.</translation>
 <translation id="2411116727035790889">Qısayolları aktivləşdirin</translation>
 <translation id="2433507940547922241">Görünüş</translation>
@@ -276,6 +278,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="3992684624889376114">Bu səhifə haqqında</translation>
 <translation id="4002066346123236978">Başlıq</translation>
 <translation id="4031179711345676612">Mikrofona icazə verildi</translation>
+<translation id="4042597221652780603">Təxmini</translation>
 <translation id="4046123991198612571">Növbəti trek</translation>
 <translation id="4077310749977440510">Saytlar adətən kopiyaladığınız mətnin formatını saxlamaq kimi funksiyalar üçün mübadilə buferinizi oxuyur</translation>
 <translation id="4082080074595021446">Android cihazında kifayət qədər RAM olmadığı üçün xüsusi veb-saytlar üçün istisnalara icazə verilmir.</translation>

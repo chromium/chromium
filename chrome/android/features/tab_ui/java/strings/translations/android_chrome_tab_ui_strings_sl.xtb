@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Ustvarjeno pred <ph name="NUM_YEARS_ONE" /> letom}one{Ustvarjeno pred <ph name="NUM_YEARS_MANY" /> letom}two{Ustvarjeno pred <ph name="NUM_YEARS_MANY" /> letoma}few{Ustvarjeno pred <ph name="NUM_YEARS_MANY" /> leti}other{Ustvarjeno pred <ph name="NUM_YEARS_MANY" /> leti}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Neaktivni zavihki in skupine bodo zaprti po 1 mesecu}one{Neaktivni zavihki in skupine bodo zaprti po <ph name="MONTH_COUNT_MANY" /> mesecu}two{Neaktivni zavihki in skupine bodo zaprti po <ph name="MONTH_COUNT_MANY" /> mesecih}few{Neaktivni zavihki in skupine bodo zaprti po <ph name="MONTH_COUNT_MANY" /> mesecih}other{Neaktivni zavihki in skupine bodo zaprti po <ph name="MONTH_COUNT_MANY" /> mesecih}}</translation>
 <translation id="1173894706177603556">Preimenuj</translation>
-<translation id="1197088940767939838">Oranžna</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Odpiranje skupine <ph name="TITLE_OF_GROUP" /> z <ph name="TAB_COUNT2" /> zavihkom}one{Odpiranje skupine <ph name="TITLE_OF_GROUP" /> z/s <ph name="TAB_COUNT2" /> zavihkom}two{Odpiranje skupine <ph name="TITLE_OF_GROUP" /> z/s <ph name="TAB_COUNT2" /> zavihkoma}few{Odpiranje skupine <ph name="TITLE_OF_GROUP" /> s/z <ph name="TAB_COUNT2" /> zavihki}other{Odpiranje skupine <ph name="TITLE_OF_GROUP" /> s/z <ph name="TAB_COUNT2" /> zavihki}}</translation>
 <translation id="1273910660700874265">Možnosti skupine zavihkov <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1300188005269437765">Izberite, kdaj se zavihki in skupine zavihkov samodejno premaknejo v razdelek z neaktivnimi.</translation>
@@ -20,8 +19,6 @@
 <translation id="1499635324672558517">Želite zapreti vse anonimne zavihke?</translation>
 <translation id="1501480321619201731">Izbriši skupino</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> neaktiven element}one{<ph name="TABS_COUNT_MANY" /> neaktiven element}two{<ph name="TABS_COUNT_MANY" /> neaktivna elementa}few{<ph name="TABS_COUNT_MANY" /> neaktivni elementi}other{<ph name="TABS_COUNT_MANY" /> neaktivnih elementov}}</translation>
-<translation id="1555130319947370107">Modra</translation>
-<translation id="161042844686301425">Cianova</translation>
 <translation id="1645759014353344461">Št. združenih zavihkov: <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1657719826150349398">Premakni zavihek navzdol</translation>
 <translation id="1697284962337958118">Dodajanje v</translation>
@@ -63,6 +60,7 @@
 <translation id="2894757982205307093">Novi zavihek v skupini</translation>
 <translation id="2918484639460781603">Pojdi v nastavitve</translation>
 <translation id="2928243913527329289">Google | O tej trgovini</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{Izbran je <ph name="ITEMS_COUNT_ONE" /> element}one{Izbran je <ph name="ITEMS_COUNT_MANY" /> element}two{Izbrana sta <ph name="ITEMS_COUNT_MANY" /> elementa}few{Izbrani so <ph name="ITEMS_COUNT_MANY" /> elementi}other{Izbranih je <ph name="ITEMS_COUNT_MANY" /> elementov}}</translation>
 <translation id="3008554597174452548">Ustavi spremljanje izdelka</translation>
 <translation id="3026391124054406831">Ustvarite skupine in organizirajte zavihke.</translation>
 <translation id="3051031624272448591">Vedno jih lahko obnovite v zgodovini</translation>
@@ -87,7 +85,6 @@
 <translation id="4076226664360336092">Seznam skupin zavihkov, odprt pri polni višini</translation>
 <translation id="4133493477912226187">Videti je, da je toliko zavihkov sorodnih: <ph name="NUMBER_OF_TABS" />. Jih želite uvrstiti v skupino?</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Zapiranje skupine <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_ONE" /> zavihkom, barva: <ph name="COLOR_NAME" />.}one{Zapiranje skupine <ph name="TITLE_OF_GROUP" /> z/s <ph name="TABS_COUNT_MANY" /> zavihkom, barva: <ph name="COLOR_NAME" />.}two{Zapiranje skupine <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> zavihkoma, barva: <ph name="COLOR_NAME" />.}few{Zapiranje skupine <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihki, barva: <ph name="COLOR_NAME" />.}other{Zapiranje skupine <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihki, barva: <ph name="COLOR_NAME" />.}}</translation>
-<translation id="4159784952369912983">Vijolična</translation>
 <translation id="4203448675570432781">Obvestilo o spremembah samodejnega brisanja zavihkov je zaprto.</translation>
 <translation id="427987768447457592">Nova skupina zavihkov</translation>
 <translation id="4371591986692297148">Neaktivno</translation>
@@ -116,7 +113,6 @@
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome samodejno zapre neaktivne zavihke in skupine zavihkov po <ph name="AUTO_DELETE_DELAY_ONE" /> mesecu. To lahko spremenite v nastavitvah.}one{Chrome samodejno zapre neaktivne zavihke in skupine zavihkov po <ph name="AUTO_DELETE_DELAY_MANY" /> mesecu. To lahko spremenite v nastavitvah.}two{Chrome samodejno zapre neaktivne zavihke in skupine zavihkov po <ph name="AUTO_DELETE_DELAY_MANY" /> mesecih. To lahko spremenite v nastavitvah.}few{Chrome samodejno zapre neaktivne zavihke in skupine zavihkov po <ph name="AUTO_DELETE_DELAY_MANY" /> mesecih. To lahko spremenite v nastavitvah.}other{Chrome samodejno zapre neaktivne zavihke in skupine zavihkov po <ph name="AUTO_DELETE_DELAY_MANY" /> mesecih. To lahko spremenite v nastavitvah.}}</translation>
 <translation id="5339733443032484186">Zadnji zavihek</translation>
 <translation id="5380159289133845234">Arhiviranje podvojenih zavihkov</translation>
-<translation id="5400836586163650660">Siva</translation>
 <translation id="5446043142172831860">Odstrani zavihek in zapusti skupino</translation>
 <translation id="5490235265819901748">Skupina zavihkov je razširjena</translation>
 <translation id="5494920125229734069">Izberi vse</translation>
@@ -127,9 +123,7 @@
 <translation id="5746204836956568669">Želite za hitrejše delo združiti zavihke (<ph name="NUMBER_OF_TABS" />)?</translation>
 <translation id="5773295109010386583">Samodejno zapiranje neaktivnih elementov</translation>
 <translation id="58326064309361797">Povlecite zavihke, če jih želite združiti v skupino</translation>
-<translation id="5901630391730855834">Rumena</translation>
 <translation id="5972844218283131174">Počisti vse</translation>
-<translation id="6017514345406065928">Zelena</translation>
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6051432659151380973">Skupine zavihkov se samodejno shranjujejo</translation>
 <translation id="6054741997831917303">Cena tega izdelka je bila nedavno <ph name="PREVIOUS_PRICE" />, zdaj je <ph name="NEW_PRICE" /></translation>
@@ -187,7 +181,6 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> mnenje}one{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> mnenje}two{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> mnenji}few{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> mnenja}other{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> mnenj}}</translation>
 <translation id="7885132941432959125">Premakni zavihek v desno</translation>
 <translation id="7939917283308035850">Ni izbrano: <ph name="COLOR_NAME" /></translation>
-<translation id="7942349550061667556">Rdeča</translation>
 <translation id="7961015016161918242">Nikoli</translation>
 <translation id="7966321538264951561">Opustitev predlogov.</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Premakni zavihek v novo okno}one{Premakni zavihek v drugo okno}two{Premakni zavihek v drugo okno}few{Premakni zavihek v drugo okno}other{Premakni zavihek v drugo okno}}</translation>
@@ -223,6 +216,5 @@
 <translation id="9187834032751045001">Obvestilo o samodejnem brisanju zavihkov pri polovični višini</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Razširitev skupine zavihkov z <ph name="TABS_COUNT_ONE" /> zavihkom, barva: <ph name="COLOR_NAME" />.}one{Razširitev skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihkom, barva: <ph name="COLOR_NAME" />.}two{Razširitev skupine zavihkov z <ph name="TABS_COUNT_MANY" /> zavihkoma, barva: <ph name="COLOR_NAME" />.}few{Razširitev skupine zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihki, barva: <ph name="COLOR_NAME" />.}other{Razširitev skupine zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihki, barva: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="945522503751344254">Pošiljanje povratnih informacij</translation>
-<translation id="992256792861109788">Rožnata</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{Želite zapreti 1 neaktiven element?}one{Želite zapreti <ph name="TAB_COUNT_MANY" /> neaktiven element?}two{Želite zapreti <ph name="TAB_COUNT_MANY" /> neaktivna elementa?}few{Želite zapreti <ph name="TAB_COUNT_MANY" /> neaktivne elemente?}other{Želite zapreti <ph name="TAB_COUNT_MANY" /> neaktivnih elementov?}}</translation>
 </translationbundle>

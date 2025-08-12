@@ -120,7 +120,9 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="2379925928934107488">Uporaba temne teme (ko je to mogoče) na spletnih mestih, če Chrome uporablja temno temo.</translation>
 <translation id="2390272837142897736">Povečanje povečave/pomanjšave</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Natančna</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}one{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}two{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}few{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}other{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}}</translation>
+<translation id="2404857459073803936">Dostop do lokacije za to spletno mesto</translation>
 <translation id="2410940059315936967">Spletno mesto, ki ga obiščete, lahko vdela vsebino z drugih spletnih mest, na primer slike, oglase in besedilo. Piškotki, ki jih nastavijo ta druga spletna mesta, se imenujejo piškotki tretjih oseb.</translation>
 <translation id="2411116727035790889">Vklop bližnjic</translation>
 <translation id="2433507940547922241">Videz</translation>
@@ -276,6 +278,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="3992684624889376114">O tej strani</translation>
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4031179711345676612">Mikrofon je dovoljen</translation>
+<translation id="4042597221652780603">Približna</translation>
 <translation id="4046123991198612571">Naslednja skladba</translation>
 <translation id="4077310749977440510">Spletna mesta običajno preberejo odložišče zaradi funkcij, kot je ohranjanje oblike kopiranega besedila</translation>
 <translation id="4082080074595021446">Izjeme za določena spletna mesta niso dovoljene, ker naprava Android nima dovolj RAM-a.</translation>

@@ -1093,6 +1093,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6125202119952209826">Gå med i flikgruppen med <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Mer information<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Objektet har tagits bort</translation>
+<translation id="6127860394906721547">Öppna flikgruppen <ph name="TITLE_OF_GROUP" /> i färgen <ph name="COLOR_NAME" /> med webbplatserna <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimera flik</translation>
 <translation id="6134168885321518274">Öppna fältet Hitta</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> flik}other{<ph name="TAB_COUNT_MANY" /> flikar}}</translation>

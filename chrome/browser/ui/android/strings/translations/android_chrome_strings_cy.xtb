@@ -1093,6 +1093,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="6125202119952209826">Ymuno â grŵp tabiau gyda <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Rhagor o fanylion<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Tynnwyd eitem</translation>
+<translation id="6127860394906721547">Agor grŵp tabiau <ph name="TITLE_OF_GROUP" />, lliw <ph name="COLOR_NAME" />, gyda gwefannau <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimeiddio tab</translation>
 <translation id="6134168885321518274">Agor y Bar Canfod</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}zero{<ph name="TAB_COUNT_MANY" /> tabiau}two{<ph name="TAB_COUNT_MANY" /> dab}few{<ph name="TAB_COUNT_MANY" /> thab}many{<ph name="TAB_COUNT_MANY" /> thab}other{<ph name="TAB_COUNT_MANY" /> tab}}</translation>

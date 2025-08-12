@@ -1477,7 +1477,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="200321182559008924">Udržujte své karty bez nepořádku</translation>
 <translation id="2003596238737586336">Aktuální plán je nastaven na <ph name="SUNRISE" /> – <ph name="SUNSET" />. Toto nastavení spravuje administrátor.</translation>
 <translation id="2004413981947727241">Používejte svá hesla na libovolném zařízení</translation>
-<translation id="2004697686368036666">Některé weby mohou přestat fungovat</translation>
 <translation id="2006638907958895361">Otevřít odkaz v aplikaci <ph name="APP" /></translation>
 <translation id="2007404777272201486">Nahlásit problém...</translation>
 <translation id="200781997903833896">Pokud chcete použít Předčítání, uvolněte v zařízení místo</translation>
@@ -1958,7 +1957,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2328137272841210255">Resetování kódu PIN</translation>
 <translation id="2328474416100889417">Ke skupině karet <ph name="GROUP_NAME" /> všichni okamžitě ztratí přístup a všechny odkazy s pozvánkou se vypnou</translation>
 <translation id="2328561734797404498">Chcete-li používat aplikaci <ph name="APP_NAME" />, restartujte zařízení.</translation>
-<translation id="2328636661627946415">Když jste v anonymním režimu, mohou weby používat soubory cookie pouze ke sledování vaší aktivity prohlížení na svém vlastním webu. Na konci anonymní relace se soubory cookie smažou.</translation>
 <translation id="2329597144923131178">Přihlaste se a synchronizujte záložky, historii, hesla a další nastavení do všech svých zařízení.</translation>
 <translation id="2330182457402792918">Vyberte soubory, které tento web dokáže přečíst</translation>
 <translation id="2332115969598251205">Zařízení uložená do účtu <ph name="PRIMARY_EMAIL" /> nelze načíst. Zkontrolujte připojení k internetu a zkuste to znovu.</translation>
@@ -3746,7 +3744,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3593953853060020305">Povolit tomuto webu upravovat soubor <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Omezení názvu certifikátu</translation>
 <translation id="3596012367874587041">Nastavení aplikace</translation>
-<translation id="3596414637720633074">V anonymním režimu blokovat soubory cookie třetích stran</translation>
 <translation id="3599221874935822507">Reliéf</translation>
 <translation id="3600051066689725006">Informace o webovém požadavku</translation>
 <translation id="3600956933576601730">Pokud chcete používat tyto funkce, musíte si přečíst podmínky a přijmout je</translation>
@@ -4082,7 +4079,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3807747707162121253">Zrušit</translation>
 <translation id="3808202562160426447">Ztlumit obsah na pozadí</translation>
 <translation id="3808443763115411087">Vývoj aplikací Android pro Crostini</translation>
-<translation id="3808617121485025547">Další informace o blokování souborů cookie třetích stran</translation>
 <translation id="38089336910894858">Před ukončením pomocí kombinace kláves ⌘Q zobrazit upozornění</translation>
 <translation id="3809272675881623365">Králík</translation>
 <translation id="3809280248639369696">Marťan</translation>
@@ -4341,7 +4337,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3975565978598857337">Kontaktování serveru pro sféru se nezdařilo</translation>
 <translation id="3976108569178263973">Nejsou k dispozici žádné tiskárny.</translation>
 <translation id="397703832102027365">Dokončování...</translation>
-<translation id="3977145907578671392">Některé weby nemusejí v anonymním režimu fungovat správně.</translation>
 <translation id="3977886311744775419">Automatické aktualizace se v tomto typu sítě nestahují, ale můžete aktualizace vyhledat ručně.</translation>
 <translation id="3978325380690188371">Při zapnuté funkci ChromeVox není funkce Jedním prstem k dispozici</translation>
 <translation id="3978732922947854545">Chrome vylepšuje soubory PDF</translation>
@@ -5729,6 +5724,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="496742804571665842">Deaktivování profilů eSIM karty</translation>
 <translation id="4967571733817147990">Přizpůsobení tlačítek myši</translation>
 <translation id="4967852842111017386">Název zařízení s funkcí <ph name="FEATURE_NAME" /></translation>
+<translation id="4968994772848295474">Instalace webových aplikací nejsou v režimu hosta podporovány</translation>
 <translation id="4971412780836297815">Po dokončení otevřít</translation>
 <translation id="4972129977812092092">Úprava tiskárny</translation>
 <translation id="4972164225939028131">Špatné heslo</translation>
@@ -6607,6 +6603,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="560834977503641186">Synchronizace Wi-Fi, další informace</translation>
 <translation id="5608580678041221894">Oblast oříznutí můžete upravit nebo přesunout klepnutím na následující klávesy</translation>
 <translation id="5609231933459083978">Aplikace je pravděpodobně neplatná.</translation>
+<translation id="5610759359710387751">Chrome podle vašich představ</translation>
 <translation id="5610867721023328944">Zkuste to znovu nebo vyberte některý z níže uvedených dostupných motivů.</translation>
 <translation id="5611398002774823980">Uložit do účtu</translation>
 <translation id="5611399285717843500">Pomáhat s vylepšováním funkcí a výkonu Chromu a systému ChromeOS. Při shromažďování se z těchto dat odstraňují osobní údaje.</translation>
@@ -7505,6 +7502,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6257602895346497974">Zapnout synchronizaci...</translation>
 <translation id="625827534921607067">Tato síť bude preferována, pokud bude k dispozici více než jedna dříve připojená nebo nakonfigurovaná síť</translation>
 <translation id="6259776178973198997">Obnovit informace o vlastnících WiFi Direct</translation>
+<translation id="6261688934280090835">Protokoly terminálových aplikací pro ChromeOS</translation>
 <translation id="6262371516389954471">Zálohy se nahrávají do Googlu a šifrují pomocí hesla účtu Google.</translation>
 <translation id="6263082573641595914">Verze CA Microsoft</translation>
 <translation id="6263284346895336537">Nekritický</translation>
@@ -10504,6 +10502,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8340547030807793004">Další akce: <ph name="DEVICE" /></translation>
 <translation id="8341804784147620576">Zobrazit zkratky vyhledávání</translation>
 <translation id="8342221978608739536">Nezkoušel(a) jsem to</translation>
+<translation id="8342387517402567689">Instalace webových aplikací nejsou v anonymním režimu podporovány</translation>
 <translation id="8342861492835240085">Vyberte sbírku</translation>
 <translation id="8345848587667658367">Nyní můžete zobrazit nedávné fotky, média, oznámení a aplikace v telefonu</translation>
 <translation id="8347227221149377169">Tiskové úlohy</translation>
@@ -10827,7 +10826,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8573111744706778015">Zadáním „uo7“ napsat „ươ“</translation>
 <translation id="8574990355410201600">Na webu <ph name="HOST" /> vždy povolit zvuk</translation>
 <translation id="8575286410928791436">Ukončíte podržením kláves <ph name="KEY_EQUIVALENT" /></translation>
-<translation id="8576359558126669548">Další informace o blokování souborů cookie třetích stran v anonymním režimu</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Přidat kartu do seznamu četby}few{Přidat karty do seznamu četby}many{Přidat karty do seznamu četby}other{Přidat karty do seznamu četby}}</translation>
 <translation id="8577052309681449949">Automatická kliknutí, velikost kurzoru, barva kurzoru a další</translation>
 <translation id="8578639784464423491">Nesmí přesahovat 99 písmen</translation>
@@ -11143,7 +11141,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="8777628254805677039">heslo uživatele root</translation>
 <translation id="8779720597365936419">Ano, uchovávat má data odděleně od pracovních (doporučeno)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Weby mohou pomocí souborů cookie sledovat pouze aktivitu prohlížení na svém vlastním webu</translation>
 <translation id="8780123805589053431">Získat popisy obrázků z Googlu</translation>
 <translation id="8780443667474968681">Hlasové vyhledávání bylo vypnuto.</translation>
 <translation id="8781834595282316166">Nová karta ve skupině</translation>

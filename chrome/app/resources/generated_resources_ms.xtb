@@ -1485,7 +1485,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="200321182559008924">Pastikan tab anda tidak berselerak</translation>
 <translation id="2003596238737586336">Jadual semasa ditetapkan kepada <ph name="SUNRISE" /> - <ph name="SUNSET" />. Tetapan ini diurus oleh pentadbir anda.</translation>
 <translation id="2004413981947727241">Gunakan kata laluan anda pada mana-mana peranti</translation>
-<translation id="2004697686368036666">Ciri pada sesetengah laman mungkin tidak berfungsi</translation>
 <translation id="2006638907958895361">Buka Pautan dalam <ph name="APP" /></translation>
 <translation id="2007404777272201486">Laporkan Isu...</translation>
 <translation id="200781997903833896">Untuk menggunakan Baca dengan Kuat, kosongkan ruang pada peranti anda</translation>
@@ -1970,7 +1969,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2328137272841210255">Tetapkan semula PIN anda</translation>
 <translation id="2328474416100889417">Semua orang akan kehilangan akses kepada kumpulan tab “<ph name="GROUP_NAME" />” dengan serta-merta dan semua pautan undangan akan dimatikan</translation>
 <translation id="2328561734797404498">Sila mulakan semula peranti anda untuk menggunakan <ph name="APP_NAME" />.</translation>
-<translation id="2328636661627946415">Apabila anda berada dalam Mod inkognito, laman boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda di laman mereka sendiri sahaja. Kuki dipadamkan pada penghujung Sesi inkognito.</translation>
 <translation id="2329597144923131178">Log masuk untuk mendapatkan penanda halaman, sejarah, kata laluan dan tetapan lain pada semua peranti anda.</translation>
 <translation id="2330182457402792918">Pilih fail yang boleh dibaca oleh laman ini</translation>
 <translation id="2332115969598251205">Tidak dapat memuatkan peranti yang disimpan pada <ph name="PRIMARY_EMAIL" />. Periksa sambungan Internet anda dan cuba lagi.</translation>
@@ -3760,7 +3758,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3593953853060020305">Benarkan laman ini mengedit <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Kekangan Nama Sijil</translation>
 <translation id="3596012367874587041">Tetapan apl</translation>
-<translation id="3596414637720633074">Sekat kuki pihak ketiga dalam Inkognito</translation>
 <translation id="3599221874935822507">Ditinggikan</translation>
 <translation id="3600051066689725006">Maklumat permintaan web</translation>
 <translation id="3600956933576601730">Anda perlu menyemak dan menerima syarat untuk menggunakan ciri ini</translation>
@@ -4096,7 +4093,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3807747707162121253">&amp;Batal</translation>
 <translation id="3808202562160426447">Malapkan kandungan latar belakang</translation>
 <translation id="3808443763115411087">Pembangunan apl Android Crostini</translation>
-<translation id="3808617121485025547">Lebih lanjut tentang menyekat kuki pihak ketiga</translation>
 <translation id="38089336910894858">Tunjukkan amaran sebelum berhenti dengan menekan ⌘Q</translation>
 <translation id="3809272675881623365">Arnab</translation>
 <translation id="3809280248639369696">Cahaya bulan</translation>
@@ -4356,7 +4352,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3975565978598857337">Gagal menghubungi pelayan untuk realma</translation>
 <translation id="3976108569178263973">Pencetak tidak tersedia.</translation>
 <translation id="397703832102027365">Menyelesaikan...</translation>
-<translation id="3977145907578671392">Ciri pada sesetengah laman mungkin tidak berfungsi dalam Inkognito</translation>
 <translation id="3977886311744775419">Kemas kini automatik tidak memuat turun pada jenis rangkaian ini, tetapi anda boleh menyemak kemas kini secara manual.</translation>
 <translation id="3978325380690188371">Kekunci lekit tidak tersedia apabila ChromeVox dihidupkan</translation>
 <translation id="3978732922947854545">Chrome menjadikan PDF lebih baik</translation>
@@ -6626,6 +6621,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="560834977503641186">Penyegerakan Wi-Fi, Ketahui Lebih Lanjut</translation>
 <translation id="5608580678041221894">Ketik kekunci berikut untuk melaras atau mengalihkan kawasan pemangkasan</translation>
 <translation id="5609231933459083978">Apl kelihatan tidak sah.</translation>
+<translation id="5610759359710387751">Jadikan Chrome Milik Anda</translation>
 <translation id="5610867721023328944">Cuba lagi atau pilih salah satu daripada tema yang tersedia di bawah.</translation>
 <translation id="5611398002774823980">Simpan dalam akaun</translation>
 <translation id="5611399285717843500">Bantu kami meningkatkan ciri dan prestasi Chrome dan ChromeOS. Maklumat peribadi dialih keluar apabila mengumpulkan data ini.</translation>
@@ -10850,7 +10846,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8573111744706778015">Taip "uo7" untuk mendapatkan "ươ"</translation>
 <translation id="8574990355410201600">Sentiasa benarkan bunyi pada <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Tekan dan tahan <ph name="KEY_EQUIVALENT" /> untuk Berhenti</translation>
-<translation id="8576359558126669548">Lagi tentang penyekatan kuki pihak ketiga dalam Mod inkognito</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Tambahkan tab pada senarai bacaan}other{Tambahkan tab pada senarai bacaan}}</translation>
 <translation id="8577052309681449949">Klik automatik, saiz kursor, warna kursor dan pelbagai lagi</translation>
 <translation id="8578639784464423491">Tidak boleh melebihi 99 huruf</translation>
@@ -11165,7 +11160,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="8777628254805677039">kata laluan akar</translation>
 <translation id="8779720597365936419">Ya, asingkan data saya daripada profil kerja (disyorkan)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Laman hanya boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda pada laman mereka sendiri</translation>
 <translation id="8780123805589053431">Dapatkan perihalan imej daripada Google</translation>
 <translation id="8780443667474968681">Carian suara telah dimatikan.</translation>
 <translation id="8781834595282316166">Tab Baharu dalam Kumpulan</translation>

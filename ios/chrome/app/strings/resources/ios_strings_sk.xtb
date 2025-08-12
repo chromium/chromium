@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Zavretím všetkých kariet zavriete aj pripnuté karty.</translation>
 <translation id="1036348656032585052">Vypnúť</translation>
 <translation id="1041322626941363065">Upozorňovať pri prezradení hesiel v rámci porušenia ochrany údajov</translation>
-<translation id="1044891598689252897">Weby budú fungovať normálne</translation>
 <translation id="104491362976654916">Offline stránka</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Účet je odhlásený. Ak chcete používať záložky, heslá a ďalšie položky v ňom, znova sa prihláste.</translation>
@@ -135,7 +134,6 @@
 <translation id="1506063256525392513">Umožňuje vytvárať a nahrávať fotky, ako aj skenovať QR kódy</translation>
 <translation id="1508263560970797965">Pokračovať v režime inkognito</translation>
 <translation id="1509486075633541495">Prihláste sa na webe</translation>
-<translation id="1509960214886564027">Funkcie na mnohých weboch môžu zlyhávať</translation>
 <translation id="1513858653616922153">Odstrániť heslo</translation>
 <translation id="1517166097004694782">Skrytie položky Pokračovať s touto kartou</translation>
 <translation id="1520027731907768768">Dostávajte upozornenia na pokles cien produktov, ktoré sledujete.</translation>
@@ -368,9 +366,6 @@
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2360196772093551345">Vyžiadať stránky pre mobil</translation>
 <translation id="2362083820973145409">Prihlásili ste sa ako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otvorí nastavenia.</translation>
-<translation id="236977714248711277">Weby nemôžu pomocou súborov cookie zlepšovať vaše prostredie prehliadania, napríklad zabrániť odhláseniu alebo zapamätať si položky vo vašom nákupnom košíku.
-
-Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám).</translation>
 <translation id="2377230674627603057">Mriežka skupín kariet</translation>
 <translation id="2377336083033403521">Hľadajte karty…</translation>
 <translation id="2381405137052800939">Základy</translation>
@@ -446,7 +441,6 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2669454659051515572">Stiahnuté súbory uvidia všetci používatelia tohto zariadenia</translation>
 <translation id="2671423594960767771">Zdieľať skupinu</translation>
 <translation id="2673508731173059946">Navštíviť skopírovaný odkaz</translation>
-<translation id="2687403674020088961">Blokovať všetky súbory cookie (neodporúča sa)</translation>
 <translation id="2688535388040882469">Bannery</translation>
 <translation id="2690858294534178585">Kamera sa používa</translation>
 <translation id="2691653761409724435">Nie je k dispozícii offline</translation>
@@ -661,7 +655,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3587885837929752825">Vaša organizácia obmedzuje, čo môžete uložiť vo svojom účte Google.</translation>
 <translation id="3588820906588687999">Otvoriť obrázok na novej karte</translation>
 <translation id="3595252146048399851">Položky, ktoré chcete synchronizovať, môžete kedykoľvek vybrať v <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" />. Google môže prispôsobiť Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
-<translation id="3596414637720633074">Blokovať súbory cookie tretích strán v režime inkognito</translation>
 <translation id="3602260545951981695">Vyberte položku Rozšírená ochrana</translation>
 <translation id="3610041351087301930">Skryť čitateľa</translation>
 <translation id="3622175633937495219">Hľadať v histórii (nájdené: <ph name="COUNT" />)</translation>
@@ -1063,7 +1056,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5177141896043341906">Máte niekoľko (<ph name="NUMBER_OF_PASSWORDS" />) slabých hesiel, ktoré môžu ohroziť vaše zabezpečenie.</translation>
 <translation id="5181140330217080051">Sťahovanie</translation>
 <translation id="5186185447130319458">Súkromné</translation>
-<translation id="5188482106078495165">Nastavenie súborov cookie platí pre všetky karty. Ak chcete pre otvorenú kartu použiť nové nastavenie, znova ju načítajte.</translation>
 <translation id="518997337573684769">Odosiela sa report pádu…</translation>
 <translation id="519530786644929958">Súbor sa nestiahol. Pokus sa nedá zopakovať.</translation>
 <translation id="5197255632782567636">Internet</translation>
@@ -1088,7 +1080,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5271265092610673171">{count,plural, =1{Povinné pole je prázdne. Pred uložením ho vyplňte.}few{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}many{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}other{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}}</translation>
 <translation id="5271549068863921519">Uložiť heslo</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) chce, aby ste sa pripojili ku skupine kariet. Ktokoľvek s odkazom môže upravovať všetky karty, preto pri pripájaní postupujte opatrne. Odkaz vyprší o 48 h.</translation>
-<translation id="5279600392753459966">Blokovať všetky</translation>
 <translation id="5282340693022193851">Ak chcete dostávať upozornenia na sledovanie cien, zapnite upozornenia v nastaveniach systému iOS.</translation>
 <translation id="528857768909044842">Tu sa ukladajú skupiny kariet</translation>
 <translation id="5294624619177114121">Mobilné upozornenia</translation>
@@ -1187,7 +1178,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5648166631817621825">Posledných 7 dní</translation>
 <translation id="5652623411397330904">Tu sa zobrazia výrobky, ktoré sledujete.</translation>
 <translation id="5656431592348714536">Zlepšený kalendár</translation>
-<translation id="5657156137487675418">Povoliť všetky súbory cookie</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5665739277590037307">Platia <ph name="GOOGLE_TERMS" /> a <ph name="GEMINI_APPS_PRIVACY" />. Gemini môže robiť chyby, preto si jeho odpovede overujte.</translation>
 <translation id="5666313630530585305">Prihláste sa na webe.</translation>
@@ -1204,7 +1194,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5704908597376970822">Nepodarilo sa prihlásiť.</translation>
 <translation id="5709005673595820640">{count,plural, =1{Máte {count} recyklované heslo, ktoré môže ohroziť vaše zabezpečenie. Zmeňte ho, aby ste boli v bezpečí.}few{Máte {count} recyklované heslá, ktoré môžu ohroziť vaše zabezpečenie. Zmeňte ich, aby ste boli v bezpečí.}many{You have {count} reused passwords that could put your security at risk. Fix them now to stay safe.}other{Máte {count} recyklovaných hesiel, ktoré môžu ohroziť vaše zabezpečenie. Zmeňte ich, aby ste boli v bezpečí.}}</translation>
 <translation id="57094364128775171">Navrhnúť silné heslo…</translation>
-<translation id="5716230673298034837">Povolené všetko</translation>
 <translation id="5718049162805123412">Mali by ste ich okamžite zmeniť</translation>
 <translation id="572328651809341494">Nedávne karty</translation>
 <translation id="5724941645893276623">Ak chcete internet prehliadať v súkromí, pridajte novú kartu</translation>
@@ -1263,7 +1252,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5936065461722368675">Preložiť celú stránku</translation>
 <translation id="5937560539988385583">Stránka je preložená</translation>
 <translation id="5938160824633642847">Vaše zariadenie je takmer plné. Uvoľnite miesto a skúste to znova.</translation>
-<translation id="594324569139756587">Blokovanie tretích strán</translation>
 <translation id="5944869793365969636">Skenovanie QR kódu</translation>
 <translation id="5948291296578561264">Umožňuje ukladať fotky do knižnice fotiek.</translation>
 <translation id="5948605885471592910">Zobrazte a spravujte všetko, čo máte otvorené</translation>
@@ -1336,7 +1324,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6192388920090306326">Cesta do Tokia</translation>
 <translation id="6193448654517602979">Vyberte karty</translation>
 <translation id="6196207969502475924">Hlasové vyhľadávanie</translation>
-<translation id="6196640612572343990">Blokovať súbory cookie tretích strán</translation>
 <translation id="6198252989419008588">Zmeniť PIN</translation>
 <translation id="6210079381482819663">Presunú sa sem karty, ktoré sa nepoužívajú <ph name="THRESHOLD" /> alebo viac dní. Túto možnosť môžete kedykoľvek zmeniť v <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Nenašli sa žiadne adresy</translation>
@@ -1412,14 +1399,10 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6444435711855078002">Ďalšie možnosti</translation>
 <translation id="6445051938772793705">Krajina</translation>
 <translation id="6445981559479772097">Správa sa odoslala.</translation>
-<translation id="6447842834002726250">Súbory cookie</translation>
 <translation id="6449554712554071184">Týmto natrvalo odstránite skupinu zo svojho zariadenia.</translation>
 <translation id="6452534462676960500">Nová aktivita</translation>
 <translation id="6459411599807878608">Podrobnosti sú skryté</translation>
 <translation id="646394917185284261">Súbory</translation>
-<translation id="6464397691496239022">Weby môžu pomocou súborov cookie zlepšovať vaše prostredie prehliadania, napríklad zabrániť odhláseniu alebo zapamätať si položky vo vašom nákupnom košíku.
-
-Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám).</translation>
 <translation id="6476253015009698798">Sledovanie ceny nie je k dispozícii pre túto stránku.</translation>
 <translation id="6476284679642588870">Spravovať spôsoby platby</translation>
 <translation id="6476800141292307438">Stránka sa prekladá do jazyka <ph name="LANGUAGE" />. Možnosti nájdete v dolnej časti obrazovky.</translation>
@@ -1462,7 +1445,6 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="6612912757320004438">Povoliť upozornenia na kartách…</translation>
 <translation id="6617761071025228250">Vymazať text</translation>
 <translation id="6620279676667515405">Zrušiť</translation>
-<translation id="6624219055418309072">Blokovať v režime inkognito</translation>
 <translation id="6625830436658400045">Nastavenia synchronizácie budú obnovené na základe poslednej zálohy. Položky, ktoré chcete synchronizovať, môžete kedykoľvek vybrať v <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Upraviť priečinok</translation>
 <translation id="6629759408545977279">Od: <ph name="ORIGINATING_HOST" /></translation>
@@ -1479,9 +1461,6 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="6663529247339810546">Obrázok sa nedá uložiť</translation>
 <translation id="6668619169535738264">Upraviť záložku</translation>
 <translation id="6671294218820966278">Označiť ako prečítané</translation>
-<translation id="6672241253012342409">Weby môžu pomocou súborov cookie zlepšovať vaše prostredie prehliadania, napríklad zabrániť odhláseniu alebo zapamätať si položky vo vašom nákupnom košíku.
-
-Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktivitu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám).</translation>
 <translation id="6672697278890207089">Zadajte svoju prístupovú frázu</translation>
 <translation id="6674917187596384849">Medzi účtami môžete jednoducho prepínať</translation>
 <translation id="6676349090816247042">Možnosti prihlásenia.</translation>
@@ -1517,6 +1496,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="6794476726485507147">Vyberte dátum a čas, kedy chcete dostať upozornenie s pripomenutím, aby ste sa na túto stránku vrátili</translation>
 <translation id="6795481620482106033">Neplatné údaje</translation>
 <translation id="6797543908718012274">Zapnite režim čítania</translation>
+<translation id="6806550742467879742">Nástroje pre stránku</translation>
 <translation id="6807287147325542056">Heslá v ďalších aplikáciách</translation>
 <translation id="681368974849482173">Položka bola vytvorená</translation>
 <translation id="6825078212112407882">{count,plural, =1{Záložka bola uložená do vášho účtu Google {email}}few{{count} záložky boli uložené vo vašom účte Google {email}}many{{count} bookmarks saved in your Google Account, {email}}other{{count} záložiek bolo uložených vo vašom účte Google {email}}}</translation>
@@ -1670,6 +1650,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7454057999980797137">Štát/okres</translation>
 <translation id="7458706065921255639">Prispôsobenie a prepojenie</translation>
 <translation id="745899714366929493">Celý deň</translation>
+<translation id="7460314822154045102">Použiť fotoaparát</translation>
 <translation id="7460698861522306757">Vyžiadať mobilný web</translation>
 <translation id="7464143666517313304">Týmto odstránite adresy uložené v tomto zariadení.</translation>
 <translation id="7468373585447318060">Majte prehľad o poklesoch cien všetkých výrobkov, ktoré sledujete.</translation>
@@ -1802,9 +1783,6 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7952670906562503188">Chystáte sa odstrániť niekoľko prístupových kódov ({passkey_count}) a zoznam webov a aplikácií, pre ktoré ste nastavili, aby nikdy neukladali prihlasovacie údaje. Účty, ktoré ste vytvorili pre weby a aplikácie, odstránené nebudú.</translation>
 <translation id="7958575506592576831">Informácie o zabezpečení stránky</translation>
 <translation id="7961015016161918242">Nikdy</translation>
-<translation id="7966516440812255683">Weby môžu pomocou súborov cookie zlepšovať vaše prostredie prehliadania, napríklad zabrániť odhláseniu alebo zapamätať si položky vo vašom nákupnom košíku.
-
-Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám).</translation>
 <translation id="7971136598759319605">Aktívne včera</translation>
 <translation id="7975036700432177008">Vyskúšať</translation>
 <translation id="797588153137233716">Ponuka → História → Odstrániť dáta prehliadania</translation>
@@ -1815,7 +1793,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="7987685713885608670">V záujme zvýšenia zabezpečenia šifrujte heslá v zariadení ešte pred ich uložením do správcu hesiel Google.</translation>
 <translation id="798991908416757345">Skupiny kariet nie sú k dispozícii</translation>
 <translation id="7993170188789685695">Toto upozornenie zavriete dvojitým klepnutím.</translation>
-<translation id="7993619969781047893">Funkcie na niektorých weboch môžu zlyhávať</translation>
 <translation id="7996239959906074962">Nastavenie…</translation>
 <translation id="8001561107130904792">Zdieľanie obsahu stránky</translation>
 <translation id="800361585186029508">Otvorí zadané webové adresy v prehliadači Google Chrome.</translation>

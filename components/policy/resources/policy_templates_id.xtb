@@ -12361,14 +12361,5 @@ Jika <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> diaktifkan, <ph na
 <translation id="989197274317162189">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan kebijakan '<ph name="URL_BLOCKLIST_POLICY_NAME" />'.</translation>
 <translation id="990830704772547092">Mengonfigurasi penginstal untuk VM Bruschetta di perangkat <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="991560005425213776">Kirim nama pengguna dan nama file ke printer native</translation>
-<translation id="99232017131102456">Kebijakan ini akan mengonfigurasi satu cache global per profil dengan kredensial autentikasi server HTTP.
-
-      Jika kebijakan ini tidak ditetapkan atau dinonaktifkan, browser akan menggunakan perilaku autentikasi lintas situs default, yaitu, pada versi 80, membatasi kredensial autentikasi server HTTP kepada situs teratas, sehingga ketika dua situs menggunakan resource dari domain autentikasi yang sama, kredensial harus disediakan secara terpisah dalam konteks kedua situs. Kredensial proxy yang disimpan dalam cache akan digunakan kembali di seluruh situs.
-
-      Jika kebijakan tersebut diaktifkan, kredensial autentikasi HTTP yang dimasukkan dalam konteks satu situs akan otomatis digunakan dalam konteks lainnya.
-
-      Dengan mengaktifkan kebijakan ini, situs akan rentan terhadap beberapa jenis serangan lintas situs, dan memungkinkan pengguna dilacak di seluruh situs meskipun tanpa cookie, dengan menambahkan entri ke cache autentikasi HTTP menggunakan kredensial yang disematkan dalam URL.
-
-      Kebijakan ini dimaksudkan untuk memberi kesempatan kepada perusahaan guna memperbarui prosedur login mereka, bergantung pada perilaku yang lalu, dan akan dihapus pada waktu mendatang.</translation>
 <translation id="999340611001666174">Nonaktifkan koreksi warna</translation>
 </translationbundle>

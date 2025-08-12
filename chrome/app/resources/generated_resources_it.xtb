@@ -1475,7 +1475,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="200321182559008924">Mantieni in ordine le schede</translation>
 <translation id="2003596238737586336">La programmazione corrente è impostata su <ph name="SUNRISE" /> - <ph name="SUNSET" />. Questa impostazione è gestita dall'amministratore.</translation>
 <translation id="2004413981947727241">Usa le tue password su qualsiasi dispositivo</translation>
-<translation id="2004697686368036666">Le funzionalità su alcuni siti potrebbero non essere disponibili</translation>
 <translation id="2006638907958895361">Apri link in <ph name="APP" /></translation>
 <translation id="2007404777272201486">Segnala un problema...</translation>
 <translation id="200781997903833896">Per usare la funzionalità Leggi schermo, libera spazio sul tuo dispositivo</translation>
@@ -1956,7 +1955,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2328137272841210255">Reimposta il PIN</translation>
 <translation id="2328474416100889417">Tutte le persone perderanno immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />" e tutti i link di invito verranno disattivati</translation>
 <translation id="2328561734797404498">Riavvia il dispositivo per utilizzare <ph name="APP_NAME" />.</translation>
-<translation id="2328636661627946415">Quando sei in modalità di navigazione in incognito, i siti possono usare i cookie solo per vedere la tua attività di navigazione su di essi. I cookie vengono eliminati al termine della sessione in incognito.</translation>
 <translation id="2329597144923131178">Accedi per visualizzare i tuoi Preferiti, la cronologia, le password e altre impostazioni su tutti i tuoi dispositivi.</translation>
 <translation id="2330182457402792918">Seleziona i file che questo sito può leggere</translation>
 <translation id="2332115969598251205">Impossibile caricare i dispositivi salvati in <ph name="PRIMARY_EMAIL" />. Controlla la connessione a Internet e riprova.</translation>
@@ -3746,7 +3744,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3593953853060020305">Consentire a questo sito di modificare <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Vincoli nomi certificati</translation>
 <translation id="3596012367874587041">Impostazioni app</translation>
-<translation id="3596414637720633074">Blocca cookie di terze parti nella modalità di navigazione in incognito</translation>
 <translation id="3599221874935822507">In rilievo</translation>
 <translation id="3600051066689725006">Informazioni sulla richiesta web</translation>
 <translation id="3600956933576601730">Devi esaminare e accettare i termini per utilizzare queste funzionalità</translation>
@@ -4082,7 +4079,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3807747707162121253">&amp;Annulla</translation>
 <translation id="3808202562160426447">Attenua contenuti in background</translation>
 <translation id="3808443763115411087">Sviluppo di app Android in Crostini</translation>
-<translation id="3808617121485025547">Scopri di più sul blocco dei cookie di terze parti</translation>
 <translation id="38089336910894858">Mostra un avviso prima di uscire con ⌘Q</translation>
 <translation id="3809272675881623365">Coniglio</translation>
 <translation id="3809280248639369696">Raggio di luna</translation>
@@ -4342,7 +4338,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3975565978598857337">Tentativo di contatto del server per area di autenticazione non riuscito</translation>
 <translation id="3976108569178263973">Non ci sono stampanti disponibili.</translation>
 <translation id="397703832102027365">Finalizzazione in corso...</translation>
-<translation id="3977145907578671392">Le funzionalità su alcuni siti potrebbero non essere disponibili in incognito</translation>
 <translation id="3977886311744775419">Gli aggiornamenti automatici non vengono scaricati su questo tipo di rete, ma puoi verificare la presenza di aggiornamenti manualmente.</translation>
 <translation id="3978325380690188371">I tasti permanenti non sono disponibili quando è attivo ChromeVox</translation>
 <translation id="3978732922947854545">Chrome migliora i PDF</translation>
@@ -5730,6 +5725,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="496742804571665842">Disattiva profili eSIM</translation>
 <translation id="4967571733817147990">Personalizza i tasti del mouse</translation>
 <translation id="4967852842111017386">Nome del dispositivo <ph name="FEATURE_NAME" /></translation>
+<translation id="4968994772848295474">Le installazioni di app web non sono supportate in modalità Ospite</translation>
 <translation id="4971412780836297815">Apri al termine</translation>
 <translation id="4972129977812092092">Modifica stampante</translation>
 <translation id="4972164225939028131">Password errata</translation>
@@ -6609,6 +6605,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="560834977503641186">Sync Wi-Fi, Ulteriori informazioni</translation>
 <translation id="5608580678041221894">Tocca i seguenti tasti per regolare o spostare l'area di ritaglio</translation>
 <translation id="5609231933459083978">L'applicazione non sembra essere valida.</translation>
+<translation id="5610759359710387751">Personalizza Chrome</translation>
 <translation id="5610867721023328944">Riprova o seleziona uno dei temi disponibili di seguito.</translation>
 <translation id="5611398002774823980">Salva nell'account</translation>
 <translation id="5611399285717843500">Contribuisci a migliorare le funzionalità e le prestazioni di Chrome e ChromeOS. Le informazioni personali vengono rimosse durante la raccolta di questi dati.</translation>
@@ -7507,6 +7504,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6257602895346497974">Attiva la sincronizzazione...</translation>
 <translation id="625827534921607067">Questa rete avrà la precedenza se sarà disponibile più di una rete configurata o collegata in passato</translation>
 <translation id="6259776178973198997">Aggiorna informazioni proprietari WiFi Direct</translation>
+<translation id="6261688934280090835">Log dell'app kiosk di ChromeOS</translation>
 <translation id="6262371516389954471">Le copie di backup vengono caricate su Google e criptate usando la password del tuo Account Google.</translation>
 <translation id="6263082573641595914">Versione CA Microsoft</translation>
 <translation id="6263284346895336537">Non critica</translation>
@@ -10426,7 +10424,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8286227656784970313">Utilizza dizionario di sistema</translation>
 <translation id="828642162569365647">La password o il PIN protegge i tuoi dati memorizzati su questo <ph name="DEVICE_TYPE" /> e qualsiasi informazione a cui accedi dal telefono. Dovrai sbloccare il tuo <ph name="DEVICE_TYPE" /> ogni volta che si riattiva dalla sospensione.</translation>
 <translation id="8287902281644548111">Cerca per chiamata API/URL</translation>
-<translation id="8288032458496410887">Disinstallare <ph name="APP" />…</translation>
+<translation id="8288032458496410887">Disinstalla <ph name="APP" />…</translation>
 <translation id="8288553158681886528">Estrai testo dal PDF</translation>
 <translation id="8289128870594824098">Dimensione disco</translation>
 <translation id="8289509909262565712">Ti diamo il benvenuto in <ph name="DEVICE_OS" /></translation>
@@ -10503,6 +10501,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8340547030807793004">Altre azioni per <ph name="DEVICE" /></translation>
 <translation id="8341804784147620576">Mostra scorciatoie per la ricerca</translation>
 <translation id="8342221978608739536">Non ho provato</translation>
+<translation id="8342387517402567689">Le installazioni di app web non sono supportate in modalità di navigazione in incognito</translation>
 <translation id="8342861492835240085">Seleziona una raccolta</translation>
 <translation id="8345848587667658367">Ora puoi visualizzare le foto recenti, i contenuti multimediali, le notifiche e le app del tuo telefono</translation>
 <translation id="8347227221149377169">Processi di stampa</translation>
@@ -10826,7 +10825,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8573111744706778015">Digita "uo7" per ottenere "ươ"</translation>
 <translation id="8574990355410201600">Consenti sempre l'audio su <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Tieni premuto <ph name="KEY_EQUIVALENT" /> per uscire</translation>
-<translation id="8576359558126669548">Scopri di più sul blocco dei cookie di terze parti in modalità di navigazione in incognito</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Aggiungi scheda all'elenco di lettura}other{Aggiungi schede all'elenco di lettura}}</translation>
 <translation id="8577052309681449949">Clic automatici, dimensioni del cursore, colore del cursore e altro ancora</translation>
 <translation id="8578639784464423491">Non può superare le 99 lettere</translation>
@@ -11141,7 +11139,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8777628254805677039">password root</translation>
 <translation id="8779720597365936419">Sì, mantieni i miei dati separati da quelli di lavoro (opzione consigliata)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">I siti possono utilizzare i cookie solo per visualizzare la tua attività di navigazione su se stessi</translation>
 <translation id="8780123805589053431">Scarica le descrizioni delle immagini da Google</translation>
 <translation id="8780443667474968681">La ricerca vocale è stata disattivata.</translation>
 <translation id="8781834595282316166">Nuova scheda nel gruppo</translation>
@@ -11402,7 +11399,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8963117664422609631">Vai alle Impostazioni sito</translation>
 <translation id="8964927371396953727">Verifica la tua identità per usare e salvare le password nel tuo account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Inserisci vecchia password</translation>
-<translation id="8967403839792635452">Sviluppi estensioni? Ricevi aggiornamenti sulle <ph name="BEGIN_LINK" />novità<ph name="END_LINK" /> della documentazione per lo sviluppo dell'estensione Chrome.</translation>
+<translation id="8967403839792635452">Sviluppi estensioni? Ricevi aggiornamenti sulle <ph name="BEGIN_LINK" />novità<ph name="END_LINK" /> nella documentazione per gli sviluppatori delle estensioni di Chrome.</translation>
 <translation id="8967427617812342790">Aggiungi all'elenco di lettura</translation>
 <translation id="8967548289042494261">Rimuovi <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">ChromeOS System Image Writer</translation>

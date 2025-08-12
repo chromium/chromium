@@ -1092,6 +1092,7 @@
 <translation id="6125202119952209826">加入<ph name="OWNER_FIRST_NAME" />所在的标签页分组</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />更多详情<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">该项已移除</translation>
+<translation id="6127860394906721547">打开<ph name="COLOR_NAME" />的“<ph name="TITLE_OF_GROUP" />”标签页分组，其中包含网站 <ph name="URL_LIST" />。</translation>
 <translation id="6130303040046284160">最小化标签页</translation>
 <translation id="6134168885321518274">打开查找栏</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 个标签页}other{<ph name="TAB_COUNT_MANY" /> 个标签页}}</translation>

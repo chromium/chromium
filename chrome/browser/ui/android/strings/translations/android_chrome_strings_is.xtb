@@ -1092,6 +1092,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="6125202119952209826">Taktu þátt í flipahópnum sem <ph name="OWNER_FIRST_NAME" /> er í</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Nánari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Atriði fjarlægt</translation>
+<translation id="6127860394906721547">Opnaðu flipahópinn <ph name="TITLE_OF_GROUP" />, <ph name="COLOR_NAME" /> á litinn, með vefsvæðunum <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minnka flipa</translation>
 <translation id="6134168885321518274">Opna leitarstiku</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> flipi}one{<ph name="TAB_COUNT_MANY" /> flipi}other{<ph name="TAB_COUNT_MANY" /> flipar}}</translation>

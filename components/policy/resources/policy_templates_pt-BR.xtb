@@ -12333,14 +12333,5 @@ Quando a política <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> esti
 <translation id="989197274317162189">Essa política foi descontinuada e parou de ter suporte. Use a <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="990830704772547092">Configurar o instalador das VMs da Bruschetta em dispositivos <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="991560005425213776">Enviar nome de usuário e de arquivo para impressoras nativas</translation>
-<translation id="99232017131102456">Esta política configura um único cache global por perfil com credenciais de autenticação do servidor HTTP.
-
-      Se esta política não for definida ou for desativada, o navegador usará o comportamento padrão da autenticação entre sites, que, a partir da versão 80, será criar o escopo das credenciais de autenticação do servidor HTTP por site de nível superior. Portanto, se dois sites usarem recursos do mesmo domínio de autenticação, as credenciais precisarão ser fornecidas de forma independente no contexto desses sites. As credenciais de proxy armazenadas em cache serão reutilizadas nos sites.
-
-      Se a política estiver ativada, as credenciais de autenticação de HTTP inseridas no contexto de um site serão automaticamente usadas no contexto de outro.
-
-      A ativação desta política cria vulnerabilidades para alguns tipos de ataque entre sites e permite que os usuários sejam rastreados nos sites mesmo sem cookies, pela adição de entradas ao cache de autenticação de HTTP usando credenciais incorporadas em URLs.
-
-      O objetivo desta política é dar às empresas, dependendo do comportamento legado, a chance de atualizar os próprios procedimentos de login. Ela será removida no futuro.</translation>
 <translation id="999340611001666174">Desativar a correção de cor</translation>
 </translationbundle>

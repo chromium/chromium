@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">关闭所有标签页也会关闭固定标签页。</translation>
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1041322626941363065">密码遭遇数据泄露时向您发出警告</translation>
-<translation id="1044891598689252897">网站将能够正常运行</translation>
 <translation id="104491362976654916">离线网页</translation>
 <translation id="1049743911850919806">无痕</translation>
 <translation id="1053651653201045802">已退出账号。重新登录即可使用账号中的书签、密码等信息。</translation>
@@ -135,7 +134,6 @@
 <translation id="1506063256525392513">这样您就能拍摄并上传照片，还能扫描二维码</translation>
 <translation id="1508263560970797965">继续使用无痕模式</translation>
 <translation id="1509486075633541495">登录网站</translation>
-<translation id="1509960214886564027">很多网站上的功能可能会无法正常运作</translation>
 <translation id="1513858653616922153">删除密码</translation>
 <translation id="1517166097004694782">隐藏“继续使用此标签页”</translation>
 <translation id="1520027731907768768">接收所跟踪商品的降价提醒。</translation>
@@ -368,9 +366,6 @@
 <translation id="2359808026110333948">继续</translation>
 <translation id="2360196772093551345">请求切换到移动版网站</translation>
 <translation id="2362083820973145409">您已使用<ph name="USER_NAME" />的身份登录。<ph name="USER_EMAIL" />。打开设置。</translation>
-<translation id="236977714248711277">网站无法使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品。
-
-网站也无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。</translation>
 <translation id="2377230674627603057">标签页分组网格</translation>
 <translation id="2377336083033403521">搜索标签页…</translation>
 <translation id="2381405137052800939">基本</translation>
@@ -446,7 +441,6 @@
 <translation id="2669454659051515572">任何使用此设备的用户都能看到已下载的文件</translation>
 <translation id="2671423594960767771">分享组</translation>
 <translation id="2673508731173059946">访问复制的链接</translation>
-<translation id="2687403674020088961">阻止所有 Cookie（不建议）</translation>
 <translation id="2688535388040882469">横幅</translation>
 <translation id="2690858294534178585">相机正在使用中</translation>
 <translation id="2691653761409724435">无法离线查看</translation>
@@ -661,7 +655,6 @@
 <translation id="3587885837929752825">贵组织限制了您可在 Google 账号中保存的内容。</translation>
 <translation id="3588820906588687999">在新标签页中打开图片</translation>
 <translation id="3595252146048399851">您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
-<translation id="3596414637720633074">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="3602260545951981695">选择“增强型保护”</translation>
 <translation id="3610041351087301930">隐藏阅读器</translation>
 <translation id="3622175633937495219">在历史记录中搜索（找到 <ph name="COUNT" /> 项结果）</translation>
@@ -1063,7 +1056,6 @@
 <translation id="5177141896043341906">您有 <ph name="NUMBER_OF_PASSWORDS" /> 个安全系数低的密码，这可能会给您带来安全风险。</translation>
 <translation id="5181140330217080051">正在下载</translation>
 <translation id="5186185447130319458">不公开</translation>
-<translation id="5188482106078495165">您的 Cookie 设置适用于所有标签页。若要对某个已打开的标签页应用新设置，请重新加载该标签页。</translation>
 <translation id="518997337573684769">正在发送崩溃报告…</translation>
 <translation id="519530786644929958">下载失败，无法重试。</translation>
 <translation id="5197255632782567636">互联网</translation>
@@ -1088,7 +1080,6 @@
 <translation id="5271265092610673171">{count,plural, =1{有一个必填字段是空的。请先填写这个字段，然后再保存。}other{有一些必填字段是空的。请先填写这些字段，然后再保存。}}</translation>
 <translation id="5271549068863921519">保存密码</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 邀请您加入一个标签页分组。知道链接的任何人都能修改所有标签页，因此请谨慎加入。链接将在 48 小时后失效。</translation>
-<translation id="5279600392753459966">全部屏蔽</translation>
 <translation id="5282340693022193851">若要接收价格跟踪通知，请在 iOS 设置中开启通知功能。</translation>
 <translation id="528857768909044842">标签页分组会保存在此处</translation>
 <translation id="5294624619177114121">移动设备通知</translation>
@@ -1187,7 +1178,6 @@
 <translation id="5648166631817621825">过去 7 天</translation>
 <translation id="5652623411397330904">您跟踪的商品会在此处显示。</translation>
 <translation id="5656431592348714536">增强型日历</translation>
-<translation id="5657156137487675418">允许所有 Cookie</translation>
 <translation id="5659593005791499971">邮箱</translation>
 <translation id="5665739277590037307">需遵守《<ph name="GOOGLE_TERMS" />》和《<ph name="GEMINI_APPS_PRIVACY" />》。Gemini 的回答未必正确无误，请注意核查。</translation>
 <translation id="5666313630530585305">登录相应网站。</translation>
@@ -1204,7 +1194,6 @@
 <translation id="5704908597376970822">无法登录。</translation>
 <translation id="5709005673595820640">{count,plural, =1{您有 {count} 个重复使用的密码，这可能会给您带来安全风险。请立即修改以确保安全。}other{您有 {count} 个重复使用的密码，这可能会给您带来安全风险。请立即修改以确保安全。}}</translation>
 <translation id="57094364128775171">建议安全系数高的密码…</translation>
-<translation id="5716230673298034837">全部允许</translation>
 <translation id="5718049162805123412">您应立即更改密码</translation>
 <translation id="572328651809341494">最近打开的标签页</translation>
 <translation id="5724941645893276623">若要私密地浏览网页，请添加新标签页</translation>
@@ -1263,7 +1252,6 @@
 <translation id="5936065461722368675">翻译整页内容</translation>
 <translation id="5937560539988385583">网页翻译完毕</translation>
 <translation id="5938160824633642847">您设备上的存储空间即将用尽，请释放空间并重试。</translation>
-<translation id="594324569139756587">阻止第三方 Cookie</translation>
 <translation id="5944869793365969636">扫描二维码</translation>
 <translation id="5948291296578561264">这样，您便可将照片保存到您的照片库中。</translation>
 <translation id="5948605885471592910">查看和管理您打开的所有内容</translation>
@@ -1336,7 +1324,6 @@
 <translation id="6192388920090306326">东京之旅</translation>
 <translation id="6193448654517602979">选择标签页</translation>
 <translation id="6196207969502475924">语音搜索</translation>
-<translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6198252989419008588">更改 PIN</translation>
 <translation id="6210079381482819663">连续 <ph name="THRESHOLD" /> 天或更长时间未使用的标签页会被移至此处。您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中更改此设置。</translation>
 <translation id="6213281885682386884">未找到任何地址</translation>
@@ -1412,14 +1399,10 @@
 <translation id="6444435711855078002">更多选项</translation>
 <translation id="6445051938772793705">国家/地区</translation>
 <translation id="6445981559479772097">短信已发送。</translation>
-<translation id="6447842834002726250">Cookie</translation>
 <translation id="6449554712554071184">此操作会将该分组从您的设备中永久删除。</translation>
 <translation id="6452534462676960500">新活动</translation>
 <translation id="6459411599807878608">已隐藏详细信息</translation>
 <translation id="646394917185284261">Google 文件极客</translation>
-<translation id="6464397691496239022">网站可以使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品。
-
-不过，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。</translation>
 <translation id="6476253015009698798">无法在此网页上跟踪价格。</translation>
 <translation id="6476284679642588870">管理付款方式</translation>
 <translation id="6476800141292307438">将页面翻译成<ph name="LANGUAGE" />。选项位于屏幕底部附近。</translation>
@@ -1462,7 +1445,6 @@
 <translation id="6612912757320004438">允许标签页通知…</translation>
 <translation id="6617761071025228250">清除文字</translation>
 <translation id="6620279676667515405">取消</translation>
-<translation id="6624219055418309072">在无痕模式下阻止</translation>
 <translation id="6625830436658400045">系统将根据上次备份来恢复您的同步设置。您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
 <translation id="6627583120233659107">修改文件夹</translation>
 <translation id="6629759408545977279">下载触发者：<ph name="ORIGINATING_HOST" /></translation>
@@ -1479,9 +1461,6 @@
 <translation id="6663529247339810546">无法保存图片</translation>
 <translation id="6668619169535738264">修改书签</translation>
 <translation id="6671294218820966278">标为已读</translation>
-<translation id="6672241253012342409">网站可以使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品。
-
-不过，在无痕模式下，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。</translation>
 <translation id="6672697278890207089">请输入密码</translation>
 <translation id="6674917187596384849">您可以轻松地在账号之间切换</translation>
 <translation id="6676349090816247042">登录方式。</translation>
@@ -1671,6 +1650,7 @@
 <translation id="7454057999980797137">州/省/区/县</translation>
 <translation id="7458706065921255639">个性化和关联</translation>
 <translation id="745899714366929493">全天</translation>
+<translation id="7460314822154045102">使用相机</translation>
 <translation id="7460698861522306757">请求切换到移动版网站</translation>
 <translation id="7464143666517313304">此操作会删除保存在此设备上的地址。</translation>
 <translation id="7468373585447318060">及时了解您跟踪的所有商品的降价情况。</translation>
@@ -1803,9 +1783,6 @@
 <translation id="7952670906562503188">您即将删除 {passkey_count} 个通行密钥以及您选择一律不保存登录信息的网站和应用列表。您为网站和应用创建的任何账号都不会被删除。</translation>
 <translation id="7958575506592576831">网页安全信息</translation>
 <translation id="7961015016161918242">一律不</translation>
-<translation id="7966516440812255683">网站可以使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品。
-
-网站还可以使用 Cookie 查看您在各个不同网站上的浏览活动，以便实现某些功能或目的（例如为您展示个性化广告）。</translation>
 <translation id="7971136598759319605">1 天前曾有活动</translation>
 <translation id="7975036700432177008">试用</translation>
 <translation id="797588153137233716">菜单 → 历史记录 → 删除浏览数据</translation>
@@ -1816,7 +1793,6 @@
 <translation id="7987685713885608670">为了提高安全性，请先在设备上对密码进行加密，然后再将其保存到 Google 密码管理工具中。</translation>
 <translation id="798991908416757345">标签页分组不可用</translation>
 <translation id="7993170188789685695">点按两次即可关闭此通知。</translation>
-<translation id="7993619969781047893">某些网站上的功能可能会无法正常运作</translation>
 <translation id="7996239959906074962">设置…</translation>
 <translation id="8001561107130904792">分享网页内容</translation>
 <translation id="800361585186029508">在 Google Chrome 中打开输入的网址。</translation>

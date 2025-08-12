@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">如果關閉所有分頁，系統也會一併關閉固定分頁。</translation>
 <translation id="1036348656032585052">關閉</translation>
 <translation id="1041322626941363065">密碼因資料侵害事件外洩時發出警告</translation>
-<translation id="1044891598689252897">網站將正常運作</translation>
 <translation id="104491362976654916">離線版網頁</translation>
 <translation id="1049743911850919806">無痕模式</translation>
 <translation id="1053651653201045802">已登出。重新登入即可使用帳戶的書籤、密碼等資訊。</translation>
@@ -135,7 +134,6 @@
 <translation id="1506063256525392513">這項操作可以讓你拍照、上傳相片及掃描 QR 圖碼</translation>
 <translation id="1508263560970797965">繼續使用無痕模式</translation>
 <translation id="1509486075633541495">登入網站</translation>
-<translation id="1509960214886564027">許多網站的功能可能無法正常運作</translation>
 <translation id="1513858653616922153">刪除密碼</translation>
 <translation id="1517166097004694782">隱藏「繼續使用這個分頁」</translation>
 <translation id="1520027731907768768">接收追蹤產品的降價快訊。</translation>
@@ -368,9 +366,6 @@
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2360196772093551345">切換為行動版網站</translation>
 <translation id="2362083820973145409">目前登入的帳戶是<ph name="USER_NAME" />。<ph name="USER_EMAIL" />。開啟設定。</translation>
-<translation id="236977714248711277">網站無法使用 Cookie 改善瀏覽體驗，例如讓你保持登入狀態，或記住購物車中的商品。
-
-網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。</translation>
 <translation id="2377230674627603057">分頁群組方格</translation>
 <translation id="2377336083033403521">搜尋分頁…</translation>
 <translation id="2381405137052800939">基本</translation>
@@ -446,7 +441,6 @@
 <translation id="2669454659051515572">這部裝置的任何使用者都可以看到已下載的檔案</translation>
 <translation id="2671423594960767771">分享群組項目</translation>
 <translation id="2673508731173059946">前往複製的連結</translation>
-<translation id="2687403674020088961">封鎖所有 Cookie (不建議)</translation>
 <translation id="2688535388040882469">橫幅</translation>
 <translation id="2690858294534178585">相機正在使用中</translation>
 <translation id="2691653761409724435">無法離線使用</translation>
@@ -661,7 +655,6 @@
 <translation id="3587885837929752825">貴機構對你能在 Google 帳戶中儲存的內容設有限制。</translation>
 <translation id="3588820906588687999">在新分頁中開啟圖片</translation>
 <translation id="3595252146048399851">你隨時可以在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步處理的資料。Google 可能會根據你的歷史記錄在 Google 搜尋等其他服務中提供個人化體驗。</translation>
-<translation id="3596414637720633074">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="3602260545951981695">選擇「強化防護」</translation>
 <translation id="3610041351087301930">隱藏閱讀器模式</translation>
 <translation id="3622175633937495219">搜尋歷史記錄 (找到 <ph name="COUNT" /> 項結果)</translation>
@@ -1063,7 +1056,6 @@
 <translation id="5177141896043341906">你有 <ph name="NUMBER_OF_PASSWORDS" /> 組低強度密碼，可能導致安全性風險。</translation>
 <translation id="5181140330217080051">下載中</translation>
 <translation id="5186185447130319458">私人</translation>
-<translation id="5188482106078495165">你的 Cookie 設定會套用到所有分頁。如要將新的設定套用到已開啟的分頁，請重新載入分頁。</translation>
 <translation id="518997337573684769">正在傳送當機報告…</translation>
 <translation id="519530786644929958">下載失敗且無法重試。</translation>
 <translation id="5197255632782567636">網際網路</translation>
@@ -1088,7 +1080,6 @@
 <translation id="5271265092610673171">{count,plural, =1{必填欄位沒有內容，請先填寫再儲存。}other{部分必填欄位沒有內容，請先填寫再儲存。}}</translation>
 <translation id="5271549068863921519">儲存密碼</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 邀請你加入分頁群組。知道連結的使用者都可以編輯所有分頁，請謹慎考慮是否加入。連結將在 48 小時後失效。</translation>
-<translation id="5279600392753459966">全部封鎖</translation>
 <translation id="5282340693022193851">如要接收價格追蹤通知，請在 iOS 設定中開啟通知。</translation>
 <translation id="528857768909044842">分頁群組會儲存在這裡</translation>
 <translation id="5294624619177114121">行動裝置通知</translation>
@@ -1187,7 +1178,6 @@
 <translation id="5648166631817621825">過去 7 天</translation>
 <translation id="5652623411397330904">你追蹤的產品會顯示在這裡。</translation>
 <translation id="5656431592348714536">加強型日曆</translation>
-<translation id="5657156137487675418">允許所有 Cookie</translation>
 <translation id="5659593005791499971">電子郵件</translation>
 <translation id="5665739277590037307">適用《<ph name="GOOGLE_TERMS" />》和《<ph name="GEMINI_APPS_PRIVACY" />》。Gemini 可能會出錯，因此請查證回覆內容。</translation>
 <translation id="5666313630530585305">登入網站。</translation>
@@ -1204,7 +1194,6 @@
 <translation id="5704908597376970822">無法登入。</translation>
 <translation id="5709005673595820640">{count,plural, =1{你有 {count} 組重複使用的密碼，可能導致安全性風險。請立即修正以確保安全。}other{你有 {count} 組重複使用的密碼，可能導致安全性風險。請立即修正以確保安全。}}</translation>
 <translation id="57094364128775171">建議高強度密碼…</translation>
-<translation id="5716230673298034837">全部允許</translation>
 <translation id="5718049162805123412">建議你立即變更密碼</translation>
 <translation id="572328651809341494">最近開啟的分頁</translation>
 <translation id="5724941645893276623">如要以私密模式瀏覽網頁，請開啟新分頁</translation>
@@ -1263,7 +1252,6 @@
 <translation id="5936065461722368675">翻譯整頁內容</translation>
 <translation id="5937560539988385583">已翻譯網頁</translation>
 <translation id="5938160824633642847">你的裝置空間即將用盡，請在釋出空間後再試一次。</translation>
-<translation id="594324569139756587">封鎖第三方 Cookie</translation>
 <translation id="5944869793365969636">掃描 QR 圖碼</translation>
 <translation id="5948291296578561264">可讓你將相片儲存至相片庫。</translation>
 <translation id="5948605885471592910">查看及管理所有開啟的項目</translation>
@@ -1336,7 +1324,6 @@
 <translation id="6192388920090306326">東京之旅</translation>
 <translation id="6193448654517602979">選取分頁</translation>
 <translation id="6196207969502475924">語音搜尋</translation>
-<translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6198252989419008588">變更 PIN 碼</translation>
 <translation id="6210079381482819663"><ph name="THRESHOLD" /> 天以上未使用的分頁會移到這裡。你隨時可以前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />進行變更。</translation>
 <translation id="6213281885682386884">找不到地址</translation>
@@ -1412,14 +1399,10 @@
 <translation id="6444435711855078002">更多選項</translation>
 <translation id="6445051938772793705">國家/地區</translation>
 <translation id="6445981559479772097">訊息已送出。</translation>
-<translation id="6447842834002726250">Cookie</translation>
 <translation id="6449554712554071184">這項操作會將群組從裝置中永久刪除。</translation>
 <translation id="6452534462676960500">新活動</translation>
 <translation id="6459411599807878608">已隱藏詳細資料</translation>
 <translation id="646394917185284261">檔案</translation>
-<translation id="6464397691496239022">網站可使用 Cookie 改善瀏覽體驗，例如讓你保持登入狀態，或記住購物車中的商品。
-
-網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。</translation>
 <translation id="6476253015009698798">價格追蹤功能不支援這個網頁。</translation>
 <translation id="6476284679642588870">管理付款方式</translation>
 <translation id="6476800141292307438">將網頁翻譯成<ph name="LANGUAGE" />。翻譯選項位於靠近畫面底部的位置。</translation>
@@ -1462,7 +1445,6 @@
 <translation id="6612912757320004438">允許分頁通知…</translation>
 <translation id="6617761071025228250">清除文字</translation>
 <translation id="6620279676667515405">取消</translation>
-<translation id="6624219055418309072">在無痕模式中封鎖</translation>
 <translation id="6625830436658400045">系統會根據上次的備份記錄還原同步處理設定。你隨時可以前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />選擇要同步的資料。</translation>
 <translation id="6627583120233659107">編輯資料夾</translation>
 <translation id="6629759408545977279">來源：<ph name="ORIGINATING_HOST" /></translation>
@@ -1479,9 +1461,6 @@
 <translation id="6663529247339810546">無法儲存圖片</translation>
 <translation id="6668619169535738264">編輯書籤</translation>
 <translation id="6671294218820966278">標示為已閱讀</translation>
-<translation id="6672241253012342409">網站可使用 Cookie 改善瀏覽體驗，例如讓你保持登入狀態，或記住購物車中的商品。
-
-在無痕模式中，網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。</translation>
 <translation id="6672697278890207089">請輸入你的複雜密碼</translation>
 <translation id="6674917187596384849">你可以輕鬆切換帳戶</translation>
 <translation id="6676349090816247042">登入選項。</translation>
@@ -1517,6 +1496,7 @@
 <translation id="6794476726485507147">選擇要接收提醒通知的日期和時間，以便再次瀏覽這個頁面</translation>
 <translation id="6795481620482106033">資料無效</translation>
 <translation id="6797543908718012274">開啟閱讀模式</translation>
+<translation id="6806550742467879742">網頁工具</translation>
 <translation id="6807287147325542056">其他應用程式中的密碼</translation>
 <translation id="681368974849482173">項目已建立</translation>
 <translation id="6825078212112407882">{count,plural, =1{書籤已儲存至 Google 帳戶 ({email})}other{{count} 個書籤已儲存至 Google 帳戶 ({email})}}</translation>
@@ -1670,6 +1650,7 @@
 <translation id="7454057999980797137">州/縣</translation>
 <translation id="7458706065921255639">個人化與連結</translation>
 <translation id="745899714366929493">全天</translation>
+<translation id="7460314822154045102">使用相機</translation>
 <translation id="7460698861522306757">切換為行動版網站</translation>
 <translation id="7464143666517313304">這樣會刪除這部裝置上儲存的地址。</translation>
 <translation id="7468373585447318060">隨時掌握所有追蹤產品的降價資訊。</translation>
@@ -1802,9 +1783,6 @@
 <translation id="7952670906562503188">你即將刪除 {passkey_count} 組密碼金鑰，以及你選擇一律不儲存登入資訊的網站和應用程式清單。你為網站和應用程式建立的帳戶不會遭到刪除。</translation>
 <translation id="7958575506592576831">網頁安全性資訊</translation>
 <translation id="7961015016161918242">一律不要</translation>
-<translation id="7966516440812255683">網站可使用 Cookie 改善瀏覽體驗，例如讓你保持登入狀態，或記住購物車中的商品。
-
-網站可使用 Cookie 查看你在各網站的瀏覽活動，並提供個人化廣告等服務。</translation>
 <translation id="7971136598759319605">上次使用時間：1 天前</translation>
 <translation id="7975036700432177008">試用</translation>
 <translation id="797588153137233716">「選單」→「歷史記錄」→「刪除瀏覽資料」</translation>
@@ -1815,7 +1793,6 @@
 <translation id="7987685713885608670">為進一步加強安全性，系統會先在裝置上將密碼加密，再儲存至 Google 密碼管理員。</translation>
 <translation id="798991908416757345">無法使用分頁群組</translation>
 <translation id="7993170188789685695">輕觸兩下即可關閉這則通知。</translation>
-<translation id="7993619969781047893">某些網站的功能可能無法正常運作</translation>
 <translation id="7996239959906074962">設定…</translation>
 <translation id="8001561107130904792">網頁內容分享</translation>
 <translation id="800361585186029508">在 Google Chrome 中開啟輸入的網址。</translation>

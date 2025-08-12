@@ -120,7 +120,9 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="2379925928934107488">Lietojiet tumšo motīvu vietnēs, kad tumšais motīvs tiek izmantots pārlūkā Chrome (ja iespējams)</translation>
 <translation id="2390272837142897736">Tālināt</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Precīza</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Atļautas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}zero{Atļautas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}one{Atļautas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}other{Atļautas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}}</translation>
+<translation id="2404857459073803936">Piekļuve atrašanās vietai šai vietnei</translation>
 <translation id="2410940059315936967">Jūsu apmeklētajā vietnē var būt iegults citu vietņu saturs, piemēram, attēli, reklāmas un teksts. Šo citu vietņu iestatītie sīkfaili tiek dēvēti par trešo pušu sīkfailiem.</translation>
 <translation id="2411116727035790889">Ieslēgt saīsnes</translation>
 <translation id="2433507940547922241">Izskats</translation>
@@ -276,6 +278,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="3992684624889376114">Par šo lapu</translation>
 <translation id="4002066346123236978">Nosaukums</translation>
 <translation id="4031179711345676612">Mikrofona lietošana ir atļauta</translation>
+<translation id="4042597221652780603">Aptuvena</translation>
 <translation id="4046123991198612571">Nākamais ieraksts</translation>
 <translation id="4077310749977440510">Parasti vietnes lasa starpliktuvi, lai nodrošinātu noteiktas funkcijas, piemēram, nokopētā teksta formatējuma saglabāšanu.</translation>
 <translation id="4082080074595021446">Izņēmumi konkrētām vietnēm nav atļauti, jo Android ierīcē nav pietiekama apjoma RAM.</translation>

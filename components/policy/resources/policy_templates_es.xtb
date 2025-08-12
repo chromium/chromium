@@ -4444,6 +4444,13 @@ Si no se define esta política, su comportamiento lo determinará la política <
           Si se asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
           Si no se le asigna ningún valor, el resaltado del símbolo de intercalación se inhabilitará inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarlo en cualquier momento.</translation>
+<translation id="4182333458177354245">Configura cómo descarga <ph name="PRODUCT_NAME" /> el modelo fundacional de IA generativa y lo usa para la inferencia de forma local.
+
+Si se permite esta política (valor 0) o no se define, el modelo se descargará automáticamente y se usará para la inferencia.
+
+Si se inhabilita esta política (valor 1), el modelo no se descargará.
+
+<ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> también puede inhabilitar la descarga del modelo.</translation>
 <translation id="4182348537826882258">Si se define la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, se impedirá que se carguen las páginas web con URLs prohibidas. Los administradores pueden especificar una lista con patrones de URL que quieran bloquear. Si no se asigna ningún valor, no se bloqueará ninguna URL en el navegador. Se pueden definir un máximo de 1000 excepciones en <ph name="URL_ALLOWLIST_POLICY_NAME" />. Consulta cómo aplicar formato a un patrón de URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
 
 Nota: Esta política no se aplica a las URLs de JavaScript dentro de la página con datos cargados dinámicamente. Si has bloqueado example.com/abc, la página example.com podría cargarlo igualmente con XMLHTTPRequest. Además, esta política no evita que las páginas web actualicen la URL mostrada en el omnibox con una URL bloqueada usando la API History de JavaScript.
@@ -11912,14 +11919,5 @@ Si <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> está habilitada, <p
 <translation id="989197274317162189">Esta política está obsoleta y no se admite. Usa la política <ph name="URL_BLOCKLIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="990830704772547092">Configurar el instalador de VMs de Bruschetta en dispositivos <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="991560005425213776">Enviar los nombres de usuario y de archivo a impresoras nativas</translation>
-<translation id="99232017131102456">Esta política configura una caché única global por perfil con credenciales de autenticación del servidor HTTP.
-
-      Si esta política se inhabilita o no se define, el navegador utilizará el comportamiento predeterminado de autenticación entre sitios, el cual, a partir de la versión 80, consistirá en definir el alcance de las credenciales de autenticación del servidor HTTP según el sitio de nivel superior, por lo que, si dos sitios web utilizan recursos del mismo dominio de autenticación, tendrán que facilitarse las credenciales de forma independiente en el contexto de ambos sitios web. Las credenciales proxy almacenadas en caché se reutilizarán entre los sitios web.
-
-      Si se habilita esta política, las credenciales de autenticación de HTTP que se introduzcan en el contexto de un sitio web se utilizarán automáticamente en el contexto de otro.
-
-      Al habilitar esta política, los sitios web quedan expuestos a algunos tipos de ataques entre sitios y se permite que los usuarios sean rastreados entre varios sitios, incluso sin cookies, añadiendo entradas a la caché de autenticación de HTTP utilizando credenciales insertadas en URLs.
-
-      El objetivo de esta política es ofrecer a las empresas que dependen de un comportamiento antiguo la oportunidad de actualizar sus procedimientos de inicio de sesión. Esta política se eliminará en el futuro.</translation>
 <translation id="999340611001666174">Inhabilitar la corrección de color</translation>
 </translationbundle>

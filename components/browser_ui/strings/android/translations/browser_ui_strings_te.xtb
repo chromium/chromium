@@ -120,7 +120,9 @@
 <translation id="2379925928934107488">Chrome ముదురు రంగు రూపాన్ని ఉపయోగించినప్పుడు, వీలైతే, సైట్‌లకు ముదురు రంగు రూపాన్ని వర్తింపజేయండి</translation>
 <translation id="2390272837142897736">జూమ్ స్థాయిని పెంచండి</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">ఖచ్చితమైన లొకేషన్</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> అనుమతించబడ్డాయి}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> అనుమతించబడ్డాయి}}</translation>
+<translation id="2404857459073803936">ఈ సైట్‌కు లొకేషన్ యాక్సెస్</translation>
 <translation id="2410940059315936967">మీరు చూసే సైట్ ఇతర సైట్‌ల నుండి కంటెంట్‌ను పొందుపరచవచ్చు, ఉదాహరణకు, ఇమేజ్‌లు, యాడ్‌లు, ఇంకా టెక్స్ట్. ఈ ఇతర సైట్‌లు సెట్ చేసిన కుక్కీలను థర్డ్-పార్టీ కుక్కీలు అంటారు.</translation>
 <translation id="2411116727035790889">షార్ట్‌కట్‌లను ఆన్ చేయండి</translation>
 <translation id="2433507940547922241">కనిపించే తీరు</translation>
@@ -276,6 +278,7 @@
 <translation id="3992684624889376114">ఈ పేజీ గురించి</translation>
 <translation id="4002066346123236978">శీర్షిక</translation>
 <translation id="4031179711345676612">మైక్రోఫోన్ అనుమతించబడింది</translation>
+<translation id="4042597221652780603">రమారమి లొకేషన్</translation>
 <translation id="4046123991198612571">తర్వాత ట్రాక్</translation>
 <translation id="4077310749977440510">మీరు కాపీ చేసిన టెక్స్ట్ ఫార్మాటింగ్‌ను అలాగే ఉంచడం వంటి ఫీచర్‌ల కోసం సైట్‌లు సాధారణంగా మీ క్లిప్‌బోర్డ్‌ను చదువుతాయి</translation>
 <translation id="4082080074595021446">Android డివైజ్‌‌లో తగినంత RAM లేనందున నిర్దిష్ట వెబ్‌సైట్‌లకు మినహాయింపులు అనుమతించబడవు.</translation>

@@ -700,6 +700,7 @@
 <translation id="2154484045852737596">編輯付款信用卡</translation>
 <translation id="2154739667870063220">重新啟動</translation>
 <translation id="2155260325161282517">5 x 7 吋</translation>
+<translation id="2156467141257470387">你可在不同的 Google 產品中使用已儲存的地址。這不會改變現有公司地址。地址會儲存在 Google 帳戶 <ph name="ACCOUNT" /> 中。</translation>
 <translation id="2157640075051554492">價格追蹤通知</translation>
 <translation id="21613918653299710">網上圖片庫</translation>
 <translation id="2161656808144014275">文字</translation>
@@ -1671,6 +1672,7 @@
 <translation id="3744899669254331632">您目前無法瀏覽 <ph name="SITE" />，因為該網站傳送了 Chromium 無法處理的干擾憑證。網絡錯誤及攻擊行為通常是短暫性問題，因此這個網頁稍後應可正常運作。</translation>
 <translation id="3745599309295009257">你在頁面上的文字和該頁內容與網址都會傳送給 Google、由真人審核，並用來改善此功能。因此，請勿輸入醫療或財務資料等個人資料，亦不要在含有私人或敏感資料的網站上使用此工具。</translation>
 <translation id="3748009735914587286">金屬 (高光面)</translation>
+<translation id="3749600200023337912">這次付款可能會使用你已儲存的自動付款方法。如要在 Chrome 中關閉電子錢包或付款應用程式，請前往<ph name="BEGIN_LINK1" />付款設定<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">要將地址儲存至帳戶嗎？</translation>
 <translation id="3752543821772132562">由於未設定 <ph name="POLICY_NAME" />，因此已忽略。</translation>
 <translation id="3754210790023674521">退出畫中畫</translation>
@@ -2995,6 +2997,7 @@
 <translation id="5984570616552610254">室內濕度</translation>
 <translation id="598637245381783098">無法開啟付款應用程式</translation>
 <translation id="5989320800837274978">沒有指定固定的 Proxy 伺服器和 .pac 指令碼網址。</translation>
+<translation id="5989917734461988169">你可在不同的 Google 產品中使用已儲存的地址。這不會改變現有住宅地址。地址會儲存在 Google 帳戶 <ph name="ACCOUNT" /> 中。</translation>
 <translation id="5992691462791905444">大小風琴摺</translation>
 <translation id="5992805036496113940">查看系統用於放送廣告的資料</translation>
 <translation id="5995727681868049093">在 Google 帳戶管理您的資料、私隱權和安全設定</translation>
@@ -3558,6 +3561,7 @@
 <translation id="6890956352250146925">Cookie 和網站資料選項</translation>
 <translation id="6891596781022320156">系統不支援這項政策的層級。</translation>
 <translation id="6893057134494550310">過膠片</translation>
+<translation id="6893204630281237373">如要在 Chrome 中關閉付款應用程式，請前往<ph name="BEGIN_LINK1" />付款設定<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">您的信用卡已完成驗證</translation>
 <translation id="6896758677409633944">複製</translation>
 <translation id="6897140037006041989">使用者代理程式</translation>
@@ -4895,6 +4899,7 @@
 <translation id="9139318394846604261">購物</translation>
 <translation id="9140198744651252040">Chrome 瀏覽器想使用指紋自動填入密碼</translation>
 <translation id="9141013498910525015">管理地址</translation>
+<translation id="9141435142213469335">儲存地址和更多資料</translation>
 <translation id="9141672681283222114">今次允許使用 AR</translation>
 <translation id="9143898823728499852">你的 <ph name="CARD_ISSUER_NAME" /> 帳戶已連結 Google Pay，因此可以自動填入此卡的資料。</translation>
 <translation id="9144951720726881238">到期日：</translation>

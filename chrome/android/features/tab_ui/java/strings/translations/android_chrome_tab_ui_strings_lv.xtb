@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Izveidota pirms <ph name="NUM_YEARS_ONE" /> gada}zero{Izveidota pirms <ph name="NUM_YEARS_MANY" /> gadiem}one{Izveidota pirms <ph name="NUM_YEARS_MANY" /> gada}other{Izveidota pirms <ph name="NUM_YEARS_MANY" /> gadiem}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Neaktīvās cilnes un grupas tiks aizvērtas pēc viena mēneša}zero{Neaktīvās cilnes un grupas tiks aizvērtas pēc <ph name="MONTH_COUNT_MANY" /> mēnešiem}one{Neaktīvās cilnes un grupas tiks aizvērtas pēc <ph name="MONTH_COUNT_MANY" /> mēneša}other{Neaktīvās cilnes un grupas tiks aizvērtas pēc <ph name="MONTH_COUNT_MANY" /> mēnešiem}}</translation>
 <translation id="1173894706177603556">Pārdēvēt</translation>
-<translation id="1197088940767939838">Oranža</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Atvērt grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TAB_COUNT2" /> cilne}zero{Atvērt grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TAB_COUNT2" /> cilnes}one{Atvērt grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TAB_COUNT2" /> cilne}other{Atvērt grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TAB_COUNT2" /> cilnes}}</translation>
 <translation id="1273910660700874265">Ciļņu grupas “<ph name="TITLE_OF_GROUP" />” iespējas</translation>
 <translation id="1300188005269437765">Izvēlieties, kad cilnes un ciļņu grupas tiek automātiski pārvietotas uz neaktīvo ciļņu sadaļu.</translation>
@@ -20,8 +19,6 @@
 <translation id="1499635324672558517">Vai aizvērt visas inkognito cilnes?</translation>
 <translation id="1501480321619201731">Dzēst grupu</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> neaktīvs vienums}zero{<ph name="TABS_COUNT_MANY" /> neaktīvi vienumi}one{<ph name="TABS_COUNT_MANY" /> neaktīvs vienums}other{<ph name="TABS_COUNT_MANY" /> neaktīvi vienumi}}</translation>
-<translation id="1555130319947370107">Zila</translation>
-<translation id="161042844686301425">Ciānzila</translation>
 <translation id="1645759014353344461">Grupētas <ph name="TABS_COUNT_MANY" /> cilnes</translation>
 <translation id="1657719826150349398">Pārvietot cilni uz leju</translation>
 <translation id="1697284962337958118">Pievienot:</translation>
@@ -63,6 +60,7 @@
 <translation id="2894757982205307093">Jauna cilne grupā</translation>
 <translation id="2918484639460781603">Pāriet uz iestatījumiem</translation>
 <translation id="2928243913527329289">Google | Par šo veikalu</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{Atlasīts <ph name="ITEMS_COUNT_ONE" /> vienums}zero{Atlasīti <ph name="ITEMS_COUNT_MANY" /> vienumi}one{Atlasīts <ph name="ITEMS_COUNT_MANY" /> vienums}other{Atlasīti <ph name="ITEMS_COUNT_MANY" /> vienumi}}</translation>
 <translation id="3008554597174452548">Vairs neizsekot produktam</translation>
 <translation id="3026391124054406831">Izveidojiet grupas, lai sakārtotu savas cilnes.</translation>
 <translation id="3051031624272448591">Jebkurā laikā vēstures sadaļā varat tās atjaunot.</translation>
@@ -87,7 +85,6 @@
 <translation id="4076226664360336092">Ciļņu grupu saraksts, atvērts pilnā augstumā</translation>
 <translation id="4133493477912226187">Šķiet, ka <ph name="NUMBER_OF_TABS" /> cilnes ir saistītas. Vai grupēt tās?</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Aizvērt ciļņu grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TABS_COUNT_ONE" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}zero{Aizvērt ciļņu grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}one{Aizvērt ciļņu grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TABS_COUNT_MANY" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}other{Aizvērt ciļņu grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}}</translation>
-<translation id="4159784952369912983">Violets</translation>
 <translation id="4203448675570432781">Paziņojums par ciļņu automātiskās dzēšanas izmaiņām ir aizvērts.</translation>
 <translation id="427987768447457592">Jauna ciļņu grupa</translation>
 <translation id="4371591986692297148">neaktīva</translation>
@@ -116,7 +113,6 @@
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Pārlūkā Chrome tiek automātiski aizvērtas neaktīvās cilnes un ciļņu grupas pēc <ph name="AUTO_DELETE_DELAY_ONE" /> mēneša. Varat to mainīt iestatījumos.}zero{Pārlūkā Chrome tiek automātiski aizvērtas neaktīvās cilnes un ciļņu grupas pēc <ph name="AUTO_DELETE_DELAY_MANY" /> mēnešiem. Varat to mainīt iestatījumos.}one{Pārlūkā Chrome tiek automātiski aizvērtas neaktīvās cilnes un ciļņu grupas pēc <ph name="AUTO_DELETE_DELAY_MANY" /> mēneša. Varat to mainīt iestatījumos.}other{Pārlūkā Chrome tiek automātiski aizvērtas neaktīvās cilnes un ciļņu grupas pēc <ph name="AUTO_DELETE_DELAY_MANY" /> mēnešiem. Varat to mainīt iestatījumos.}}</translation>
 <translation id="5339733443032484186">Jūsu pēdējā izmantotā cilne</translation>
 <translation id="5380159289133845234">Ciļņu dublikātu arhivēšana</translation>
-<translation id="5400836586163650660">Pelēka</translation>
 <translation id="5446043142172831860">Noņemt cilni un pamest grupu</translation>
 <translation id="5490235265819901748">Ciļņu grupa ir izvērsta</translation>
 <translation id="5494920125229734069">Atlasīt visu</translation>
@@ -127,9 +123,7 @@
 <translation id="5746204836956568669">Vai grupēt <ph name="NUMBER_OF_TABS" /> cilnes ātrākam darbam?</translation>
 <translation id="5773295109010386583">Automātiski aizvērt neaktīvus vienumus</translation>
 <translation id="58326064309361797">Velciet cilnes, lai tās sagrupētu</translation>
-<translation id="5901630391730855834">Dzeltena</translation>
 <translation id="5972844218283131174">Noņemt visu atlasi</translation>
-<translation id="6017514345406065928">Zaļa</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="6051432659151380973">Ciļņu grupas tiek automātiski saglabātas.</translation>
 <translation id="6054741997831917303">Šai precei nesen tika pazemināta cena no <ph name="PREVIOUS_PRICE" /> uz <ph name="NEW_PRICE" /></translation>
@@ -187,7 +181,6 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_ONE" /> atsauksme}zero{Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_MANY" /> atsauksmju}one{Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_MANY" /> atsauksme}other{Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_MANY" /> atsauksmes}}</translation>
 <translation id="7885132941432959125">Pārvietot cilni pa labi</translation>
 <translation id="7939917283308035850">Nav atlasīta: <ph name="COLOR_NAME" /></translation>
-<translation id="7942349550061667556">Sarkana</translation>
 <translation id="7961015016161918242">Nekad</translation>
 <translation id="7966321538264951561">Nerādīt ieteikumus.</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Pārvietot cilni uz jaunu logu}zero{Pārvietot cilni uz citu logu}one{Pārvietot cilni uz citu logu}other{Pārvietot cilni uz citu logu}}</translation>
@@ -223,6 +216,5 @@
 <translation id="9187834032751045001">Paziņojums par automātisko ciļņu dzēšanu ir atvērts pusekrāna augstumā.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_ONE" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}zero{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}one{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}other{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
-<translation id="992256792861109788">Rozā</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{Vai aizvērt vienu neaktīvu vienumu?}zero{Vai aizvērt <ph name="TAB_COUNT_MANY" /> neaktīvus vienumus?}one{Vai aizvērt <ph name="TAB_COUNT_MANY" /> neaktīvu vienumu?}other{Vai aizvērt <ph name="TAB_COUNT_MANY" /> neaktīvus vienumus?}}</translation>
 </translationbundle>

@@ -1485,7 +1485,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="200321182559008924">Håll ordning på dina flikar</translation>
 <translation id="2003596238737586336">Nuvarande schema är inställt på <ph name="SUNRISE" />–<ph name="SUNSET" />. Den här inställningen hanteras av administratören.</translation>
 <translation id="2004413981947727241">Använd dina lösenord på alla enheter</translation>
-<translation id="2004697686368036666">Vissa webbplatsers funktioner kanske inte fungerar</translation>
 <translation id="2006638907958895361">Öppna länken i <ph name="APP" /></translation>
 <translation id="2007404777272201486">Rapportera ett problem...</translation>
 <translation id="200781997903833896">Frigör utrymme på enheten om du vill använda Läs upp</translation>
@@ -1969,7 +1968,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2328137272841210255">Återställ pinkoden</translation>
 <translation id="2328474416100889417">Alla förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och alla inbjudningslänkar inaktiveras</translation>
 <translation id="2328561734797404498">Starta om enheten om du vill använda <ph name="APP_NAME" />.</translation>
-<translation id="2328636661627946415">När du surfar i inkognitoläge kan webbplatser bara använda cookies för att se webbaktivitet på den egna webbplatsen. Cookies raderas när inkognitosessionen avslutas.</translation>
 <translation id="2329597144923131178">Logga in så blir bokmärken, historik, lösenord med mera tillgängligt på alla dina enheter.</translation>
 <translation id="2330182457402792918">Välj filer som webbplatsen kan läsa</translation>
 <translation id="2332115969598251205">Det gick inte att läsa in enheterna som har sparats i <ph name="PRIMARY_EMAIL" />. Kontrollera internetanslutningen och försök igen.</translation>
@@ -3759,7 +3757,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3593953853060020305">Vill du tillåta att den här webbplatsen redigerar <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Certifikatnamnsbegränsningar</translation>
 <translation id="3596012367874587041">Appinställningar</translation>
-<translation id="3596414637720633074">Blockera cookies från tredje part med inkognitoläget</translation>
 <translation id="3599221874935822507">Upphöjd</translation>
 <translation id="3600051066689725006">Information om webbegäran</translation>
 <translation id="3600956933576601730">Du måste läsa igenom och godkänna villkoren för att använda dessa funktioner</translation>
@@ -4095,7 +4092,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3807747707162121253">&amp;Avbryt</translation>
 <translation id="3808202562160426447">Dämpa bakgrundsinnehåll</translation>
 <translation id="3808443763115411087">Android-apputveckling i Crostini</translation>
-<translation id="3808617121485025547">Mer om att blockera tredjepartscookies</translation>
 <translation id="38089336910894858">Visa en varning innan programmet avslutas med ⌘Q</translation>
 <translation id="3809272675881623365">Kanin</translation>
 <translation id="3809280248639369696">Utomjording</translation>
@@ -4355,7 +4351,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3975565978598857337">Det gick inte att kontakta servern för sfären</translation>
 <translation id="3976108569178263973">Inga skrivare är tillgängliga.</translation>
 <translation id="397703832102027365">Slutför ...</translation>
-<translation id="3977145907578671392">Vissa webbplatsers funktioner kanske inte fungerar i inkognitoläge</translation>
 <translation id="3977886311744775419">Automatiska uppdateringar laddas inte ned med den här nätverkstypen, men du kan söka efter uppdateringar manuellt.</translation>
 <translation id="3978325380690188371">Låstangentsläget är inte tillgängligt när ChromeVox är aktiverat</translation>
 <translation id="3978732922947854545">Chrome gör PDF-filer bättre</translation>
@@ -5744,6 +5739,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="496742804571665842">Inaktivera eSIM-profiler</translation>
 <translation id="4967571733817147990">Anpassa musknappar</translation>
 <translation id="4967852842111017386">Enhetsnamn för <ph name="FEATURE_NAME" /></translation>
+<translation id="4968994772848295474">Installation av webbappar stöds inte i gästläget</translation>
 <translation id="4971412780836297815">Öppna när nedladdningen är klar</translation>
 <translation id="4972129977812092092">Redigera skrivare</translation>
 <translation id="4972164225939028131">Fel lösenord</translation>
@@ -6623,6 +6619,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="560834977503641186">wifi-synkronisering, läs mer</translation>
 <translation id="5608580678041221894">Tryck på följande knappar för att justera eller flytta beskärningsområdet</translation>
 <translation id="5609231933459083978">Appen ser ut att vara ogiltig.</translation>
+<translation id="5610759359710387751">Anpassa Chrome</translation>
 <translation id="5610867721023328944">Försök igen eller välj något av de tillgängliga temana nedan.</translation>
 <translation id="5611398002774823980">Spara i kontot</translation>
 <translation id="5611399285717843500">Bidra till att förbättra funktioner och prestanda i Chrome och ChromeOS. Personliga uppgifter tas bort när denna data samlas in.</translation>
@@ -7336,7 +7333,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6127598727646973981">Säkra anslutningar</translation>
 <translation id="6129691635767514872">Den data som markerades har tagits bort från Chrome och från synkroniserade enheter. Det kan finnas webbhistorik av annat slag i Google-kontot på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />, t.ex. sökningar och aktivitet på andra tjänster från Google.</translation>
 <translation id="6129938384427316298">Kommentar för Netscape-certifikat</translation>
-<translation id="6129953537138746214">Rymden</translation>
+<translation id="6129953537138746214">Mellanslag</translation>
 <translation id="6130692320435119637">Lägg till wifi-nätverk</translation>
 <translation id="6130807998512240230">Phone Hub, Närdelning</translation>
 <translation id="6130887916931372608">Tangent på tangentbordet</translation>
@@ -7524,6 +7521,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6257602895346497974">Aktivera synkronisering …</translation>
 <translation id="625827534921607067">Det här nätverket visas om det finns fler än ett tidigare anslutet eller konfigurerat nätverk.</translation>
 <translation id="6259776178973198997">Uppdatera information om WiFi Direct-ägare</translation>
+<translation id="6261688934280090835">Loggar för ChromeOS-kioskappen</translation>
 <translation id="6262371516389954471">Säkerhetskopiorna krypteras med hjälp av Google-kontots lösenord och laddas upp på Google.</translation>
 <translation id="6263082573641595914">Microsofts version av certifikatutfärdare</translation>
 <translation id="6263284346895336537">Inte kritiskt</translation>
@@ -10520,6 +10518,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8340547030807793004">Fler åtgärder för <ph name="DEVICE" /></translation>
 <translation id="8341804784147620576">Visa genvägar för sökning</translation>
 <translation id="8342221978608739536">Jag försökte inte</translation>
+<translation id="8342387517402567689">Installation av webbappar stöds inte i inkognitoläget</translation>
 <translation id="8342861492835240085">Välj en samling</translation>
 <translation id="8345848587667658367">Nu kan du se de senaste bilderna, mediefilerna, aviseringarna och apparna från telefonen</translation>
 <translation id="8347227221149377169">Utskriftsjobb</translation>
@@ -10843,7 +10842,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8573111744706778015">Skriv ”uo7” för att få ”ươ”</translation>
 <translation id="8574990355410201600">Tillåt alltid ljud på <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Håll nere <ph name="KEY_EQUIVALENT" /> för att avsluta</translation>
-<translation id="8576359558126669548">Mer om att blockera tredjepartscookies i inkognitoläge</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Lägg till fliken i läslistan}other{Lägg till flikarna i läslistan}}</translation>
 <translation id="8577052309681449949">Automatiska klick, markörstorlek, markörfärg med mera</translation>
 <translation id="8578639784464423491">Får inte vara längre än 99 tecken</translation>
@@ -11158,7 +11156,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="8777628254805677039">rotlösenord</translation>
 <translation id="8779720597365936419">Ja, håll min data åtskild från jobbet (rekommenderas)</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8779944680596936487">Webbplatser får endast se din webbaktivitet på den aktuella webbplatsen med hjälp av cookies</translation>
 <translation id="8780123805589053431">Hämta bildbeskrivningar från Google</translation>
 <translation id="8780443667474968681">Röstsökning har inaktiverats.</translation>
 <translation id="8781834595282316166">Ny flik i grupp</translation>

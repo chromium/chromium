@@ -120,7 +120,9 @@
 <translation id="2379925928934107488">හැකි විට, Chrome අඳුරු තේමාව භාවිත කරන විට අඩවිවලට අඳුරු තේමාව යොදන්න</translation>
 <translation id="2390272837142897736">විශාලනය වැඩි කරන්න</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">ඉතා නිවැරදි</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තව <ph name="NUM_MORE" />ක් ඉඩ දෙන ලදි}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තව <ph name="NUM_MORE" />ක් ඉඩ දෙන ලදි}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තව <ph name="NUM_MORE" />ක් ඉඩ දෙන ලදි}}</translation>
+<translation id="2404857459073803936">මෙම අඩවිය සඳහා ස්ථාන ප්‍රවේශය</translation>
 <translation id="2410940059315936967">ඔබ පිවිසෙන අඩවියකට වෙනත් අඩවිවලින් අන්තර්ගතය කාවැද්දීමට හැක, උදාහරණයක් ලෙස, රූප, දැන්වීම්, සහ පෙළ. මෙම අනෙකුත් අඩවි මගින් සකසා ඇති කුකීස් තුන්වන පාර්ශ්ව කුකීස් ලෙස හැඳින්වේ.</translation>
 <translation id="2411116727035790889">කෙටිමං ක්‍රියාත්මක කරන්න</translation>
 <translation id="2433507940547922241">පෙනුම</translation>
@@ -276,6 +278,7 @@
 <translation id="3992684624889376114">මෙම පිටුව පිළිබඳ</translation>
 <translation id="4002066346123236978">සිරස්තලය</translation>
 <translation id="4031179711345676612">මයික්‍රෆෝනයට ඉඩ දෙන ලදී</translation>
+<translation id="4042597221652780603">ආසන්න</translation>
 <translation id="4046123991198612571">ඊළඟ ඛණ්ඩය</translation>
 <translation id="4077310749977440510">ඔබ පිටපත් කළ පෙළෙහි ආකෘතිය තබා ගැනීම වැනි විශේෂාංග සඳහා සාමාන්‍යයෙන් වෙබ් අඩවි ඔබේ පසුරු පුවරුව කියවයි</translation>
 <translation id="4082080074595021446">Android උපාංගයේ ප්‍රමාණවත් RAM ප්‍රමාණයක් නොමැති නිසා නිශ්චිත වෙබ් අඩවි සඳහා ව්‍යතිරේක තහනම් කර ඇත.</translation>
