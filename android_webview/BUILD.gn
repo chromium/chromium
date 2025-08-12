@@ -1107,6 +1107,7 @@ if (_is_default_toolchain) {
       "optimize_webui=$optimize_webui",
       "use_blink=$use_blink",
       "use_internal_isolated_origins=$use_internal_isolated_origins",
+      "safe_browsing_use_internal_notifications_global_cache_origins=$safe_browsing_use_internal_notifications_global_cache_origins",
     ]
 
     # See :generate_webui_resources for an explanation of the allowlist

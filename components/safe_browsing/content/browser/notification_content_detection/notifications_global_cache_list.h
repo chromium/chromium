@@ -14,7 +14,7 @@ namespace safe_browsing {
 // A list of domains which are known to send safe notification contents. For
 // these domains, some notification protection will be omitted (e.g. suspicious
 // notification warnings and behavior-based telemetry/enforcement).
-const std::vector<std::string>& GetNotificationsGlobalCacheListDomains();
+std::vector<std::string>& GetNotificationsGlobalCacheListDomains();
 
 // Test method to set domains for testing.
 void SetNotificationsGlobalCacheListDomainsForTesting(

@@ -17,6 +17,7 @@ dev_ui_components_resources.grd.
       <part file="commerce_resources.grdp" />
       <part file="dom_distiller_resources.grdp" />
       <part file="neterror_resources.grdp" />
+      <part file="notifications_global_cache_list.grdp" />
       <part file="ntp_tiles_resources.grdp" />
       <part file="pdf_resources.grdp" />
       <part file="printing_resources.grdp" />

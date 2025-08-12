@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//components/safe_browsing/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 source_set("notifications_global_cache_list") {
@@ -13,6 +14,8 @@ source_set("notifications_global_cache_list") {
 
   deps = [
     "//base",
+    "//components/resources:components_resources_grit",
+    "//ui/base",
     "//url",
   ]
 }
@@ -65,6 +68,7 @@ source_set("unittests") {
   sources = [
     "notification_content_detection_model_unittest.cc",
     "notification_content_detection_service_unittest.cc",
+    "notifications_global_cache_list_unittest.cc",
   ]
 
   deps = [
@@ -73,6 +77,7 @@ source_set("unittests") {
     ":test_utils",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",

@@ -3747,7 +3747,7 @@ deps = {
 
   'src/components/safe_browsing/internal': {
       'url': Var('chrome_git') + '/chrome/components/safe_browsing/internal.git' + '@' +
-        'af846eec122d8ca3714a9dcbf368a56999ea2756',
+        'a4e5252de8a9fb866cd79a3616ed638887b943bd',
       'condition': 'checkout_src_internal',
   },
 

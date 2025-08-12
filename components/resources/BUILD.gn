@@ -71,6 +71,7 @@ grit("components_resources") {
     "enable_print_preview=$enable_print_preview",
     "enable_supervised_users=$enable_supervised_users",
     "safe_browsing_mode=$safe_browsing_mode",
+    "safe_browsing_use_internal_notifications_global_cache_origins=$safe_browsing_use_internal_notifications_global_cache_origins",
     "is_fuchsia=$is_fuchsia",
     "optimize_webui=$optimize_webui",
     "use_blink=$use_blink",
