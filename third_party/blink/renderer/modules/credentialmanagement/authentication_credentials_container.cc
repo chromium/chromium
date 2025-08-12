@@ -2137,19 +2137,10 @@ void AuthenticationCredentialsContainer::GetForIdentity(
       resolver->GetExecutionContext()
           ->GetContentSecurityPolicyForCurrentWorld();
   if (identity_options.providers().size() > 1) {
-    if (RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
-            context)) {
-      UseCounter::Count(resolver->GetExecutionContext(),
-                        WebFeature::kFedCmMultipleIdentityProviders);
-      if (identity_options.providers().size() > 10u) {
-        resolver->RejectWithTypeError(
-            "More than 10 providers are not allowed.");
-        return;
-      }
-    } else {
-      resolver->RejectWithTypeError(
-          "Multiple providers specified but FedCmMultipleIdentityProviders "
-          "flag is disabled.");
+    UseCounter::Count(resolver->GetExecutionContext(),
+                      WebFeature::kFedCmMultipleIdentityProviders);
+    if (identity_options.providers().size() > 10u) {
+      resolver->RejectWithTypeError("More than 10 providers are not allowed.");
       return;
     }
   }

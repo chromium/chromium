@@ -327,18 +327,6 @@ void FederatedAuthRequestImpl::RequestToken(
     return;
   }
 
-  // It should not be possible to receive multiple IDPs when the
-  // `kFedCmMultipleIdentityProviders` flag is disabled. But such a message
-  // could be received from a compromised renderer.
-  const bool is_multi_idp_input = idp_get_params_ptrs.size() > 1u ||
-                                  idp_get_params_ptrs[0]->providers.size() > 1u;
-  if (is_multi_idp_input && !IsFedCmMultipleIdentityProvidersEnabled()) {
-    std::move(callback).Run(RequestTokenStatus::kError, std::nullopt, "",
-                            /*error=*/nullptr,
-                            /*is_auto_selected=*/false);
-    return;
-  }
-
   had_transient_user_activation_ =
       render_frame_host().HasTransientUserActivation();
 
@@ -457,20 +445,11 @@ void FederatedAuthRequestImpl::RequestToken(
 
       if (has_failing_idp_signin_status) {
         if (idp_get_params_ptr->mode == blink::mojom::RpMode::kPassive) {
-          if (IsFedCmMultipleIdentityProvidersEnabled()) {
-            // In the multi IDP case, we do not want to complete the request
-            // right away as there are other IDPs which may be logged in. But we
-            // also do not want to fetch this IDP.
-            unique_idps.erase(idp_ptr->config->config_url);
-            continue;
-          }
-          // If the user is known to be signed-out and the RP is request
-          // a passive, we fail the request early before fetching anything.
-          CompleteRequestWithError(
-              FederatedAuthRequestResult::kNotSignedInWithIdp,
-              TokenStatus::kNotSignedInWithIdp,
-              /*should_delay_callback=*/true);
-          return;
+          // In the multi IDP case, we do not want to complete the request
+          // right away as there are other IDPs which may be logged in. But we
+          // also do not want to fetch this IDP.
+          unique_idps.erase(idp_ptr->config->config_url);
+          continue;
         } else if (idp_get_params_ptr->mode == blink::mojom::RpMode::kActive) {
           // We fail sooner before, but just to double check, we assert that
           // we are inside a user gesture here again.
@@ -478,18 +457,11 @@ void FederatedAuthRequestImpl::RequestToken(
         }
       }
       if (ShouldFailBeforeFetchingAccounts(idp_ptr->config->config_url)) {
-        if (IsFedCmMultipleIdentityProvidersEnabled()) {
-          // In the multi IDP case, we do not want to complete the request right
-          // away as there are other IDPs which may be logged in. But we also do
-          // not want to fetch this IDP.
-          unique_idps.erase(idp_ptr->config->config_url);
-          continue;
-        }
-        CompleteRequestWithError(
-            FederatedAuthRequestResult::kSilentMediationFailure,
-            TokenStatus::kSilentMediationFailure,
-            /*should_delay_callback=*/true);
-        return;
+        // In the multi IDP case, we do not want to complete the request right
+        // away as there are other IDPs which may be logged in. But we also do
+        // not want to fetch this IDP.
+        unique_idps.erase(idp_ptr->config->config_url);
+        continue;
       }
 
       any_idp_has_custom_scopes = any_idp_has_custom_scopes ||
@@ -520,7 +492,7 @@ void FederatedAuthRequestImpl::RequestToken(
     fedcm_metrics_->RecordRpParameters(parameters);
   }
 
-  if (IsFedCmMultipleIdentityProvidersEnabled() && unique_idps.empty()) {
+  if (unique_idps.empty()) {
     // At this point either all IDPs are signed out or mediation:silent was used
     // and there are no returning accounts.
     auto result = mediation_requirement_ == MediationRequirement::kSilent
@@ -553,9 +525,7 @@ void FederatedAuthRequestImpl::RequestToken(
     }
   }
 
-  if (IsFedCmMultipleIdentityProvidersEnabled()) {
-    fedcm_metrics_->RecordIdentityProvidersCount(idp_order_.size());
-  }
+  fedcm_metrics_->RecordIdentityProvidersCount(idp_order_.size());
 
   CHECK(!unique_idps.empty());
   FetchEndpointsForIdps(std::move(unique_idps));
@@ -2504,7 +2474,7 @@ void FederatedAuthRequestImpl::LoginToIdP(bool can_append_hints,
 void FederatedAuthRequestImpl::MaybeShowActiveModeModalDialog(
     const GURL& idp_config_url,
     const GURL& idp_login_url) {
-  if (IsFedCmMultipleIdentityProvidersEnabled() && idp_infos_.size() > 1) {
+  if (idp_infos_.size() > 1) {
     // TODO(crbug.com/40283218): handle the active flow and the
     // Multi IdP API (what should happen if you are logged in to some
     // IdPs but not to others).

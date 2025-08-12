@@ -11,9 +11,6 @@
 
 namespace content {
 
-// Whether multiple identity providers are enabled.
-bool IsFedCmMultipleIdentityProvidersEnabled();
-
 // Whether metrics endpoint is enabled.
 bool IsFedCmMetricsEndpointEnabled();
 

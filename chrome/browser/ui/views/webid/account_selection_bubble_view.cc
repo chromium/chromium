@@ -187,11 +187,6 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
       rp_context_(rp_context) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_fixed_width(kBubbleWidth);
-  // If `idp_title` is std::nullopt, we are going to show multi-IDP UI. DCHECK
-  // that we do not get to this when the flag is disabled.
-  DCHECK(
-      idp_title.has_value() ||
-      base::FeatureList::IsEnabled(features::kFedCmMultipleIdentityProviders));
   set_margins(gfx::Insets::VH(kTopBottomPadding + kVerticalSpacing, 0));
 
   SetShowTitle(false);

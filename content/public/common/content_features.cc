@@ -468,12 +468,6 @@ BASE_FEATURE(kFedCmMetricsEndpoint,
              "FedCmMetricsEndpoint",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables usage of the FedCM API with multiple identity providers at the same
-// time.
-BASE_FEATURE(kFedCmMultipleIdentityProviders,
-             "FedCmMultipleIdentityProviders",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables showing filtered out accounts in FedCM UI after the user attempts to
 // login to an account. These accounts are shown greyed out.
 BASE_FEATURE(kFedCmShowFilteredAccounts,

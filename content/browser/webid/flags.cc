@@ -14,11 +14,6 @@
 
 namespace content {
 
-bool IsFedCmMultipleIdentityProvidersEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kFedCmMultipleIdentityProviders);
-}
-
 bool IsFedCmMetricsEndpointEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmMetricsEndpoint);
 }
