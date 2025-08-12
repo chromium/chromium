@@ -1147,7 +1147,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Document.CompleteURLTime" units="microseconds"
-    expires_after="2025-08-19">
+    expires_after="2026-02-01">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
