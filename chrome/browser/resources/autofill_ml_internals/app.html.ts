@@ -4,19 +4,21 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {AutofillMlInternalsAppElement} from './app.js';
-import type {MLPredictionLog} from './autofill_ml_internals.mojom-webui.js';
+import type {AppElement} from './app.js';
 
-export function getHtml(this: AutofillMlInternalsAppElement) {
+export function getHtml(this: AppElement) {
+  // clang-format off
   return html`
-    <h1>Autofill ML Internals</h1>
-    <h2>Prediction Logs</h2>
-    <div id="logs-container">
-      ${this.logs_.map((log: MLPredictionLog) => html`
-        <div class="log-entry">
-          <div>Form Signature: ${log.formSignature}</div>
-        </div>
-      `)}
-    </div>
-  `;
+    ${this.logEntries_.length > 0 ? html`
+      <log-list .logEntries="${this.logEntries_}"
+          .selectedLogEntry="${this.selectedLog_}"
+          @log-selected="${this.onLogSelected_}">
+      </log-list>
+      <log-details .log="${this.selectedLog_}"></log-details>
+    ` : html`
+      <div class="empty-message">
+        Trigger some ML predictions while this page is open to record logs.
+      </div>
+    `}`;
+  // clang-format on
 }
