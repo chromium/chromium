@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_CRONET_CRONET_PROXY_DELEGATE_H_
 #define COMPONENTS_CRONET_CRONET_PROXY_DELEGATE_H_
 
+#include "base/types/expected.h"
 #include "components/cronet/cronet_context.h"
 #include "components/cronet/proto/request_context_config.pb.h"
+#include "net/base/net_errors.h"
 #include "net/base/proxy_delegate.h"
 
 namespace cronet {
@@ -35,10 +37,9 @@ class CronetProxyDelegate final : public net::ProxyDelegate {
   void OnFallback(const net::ProxyChain& bad_chain, int net_error) override;
   void OnSuccessfulRequestAfterFailures(
       const net::ProxyRetryInfoMap& proxy_retry_info) override;
-  net::Error OnBeforeTunnelRequest(
+  base::expected<net::HttpRequestHeaders, net::Error> OnBeforeTunnelRequest(
       const net::ProxyChain& proxy_chain,
-      size_t chain_index,
-      net::HttpRequestHeaders* extra_headers) override;
+      size_t chain_index) override;
   net::Error OnTunnelHeadersReceived(
       const net::ProxyChain& proxy_chain,
       size_t chain_index,

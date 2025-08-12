@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/types/expected.h"
+#include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
 #include "net/base/proxy_server.h"
@@ -81,9 +83,9 @@ class TestProxyDelegate : public ProxyDelegate {
   void OnSuccessfulRequestAfterFailures(
       const ProxyRetryInfoMap& proxy_retry_info) override;
   void OnFallback(const ProxyChain& bad_chain, int net_error) override;
-  Error OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
-                              size_t chain_index,
-                              HttpRequestHeaders* extra_headers) override;
+  base::expected<HttpRequestHeaders, Error> OnBeforeTunnelRequest(
+      const ProxyChain& proxy_chain,
+      size_t chain_index) override;
   Error OnTunnelHeadersReceived(
       const ProxyChain& proxy_chain,
       size_t chain_index,

@@ -22,6 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
@@ -33,6 +34,7 @@
 #include "net/base/proxy_string_util.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
+#include "net/http/http_request_headers.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
@@ -248,10 +250,10 @@ class TestResolveProxyDelegate : public ProxyDelegate {
 
   void OnFallback(const ProxyChain& bad_chain, int net_error) override {}
 
-  Error OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
-                              size_t chain_index,
-                              HttpRequestHeaders* extra_headers) override {
-    return OK;
+  base::expected<HttpRequestHeaders, Error> OnBeforeTunnelRequest(
+      const ProxyChain& proxy_chain,
+      size_t chain_index) override {
+    return HttpRequestHeaders();
   }
 
   Error OnTunnelHeadersReceived(
@@ -301,10 +303,10 @@ class TestProxyFallbackProxyDelegate : public ProxyDelegate {
     num_proxy_fallback_called_++;
   }
 
-  Error OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
-                              size_t chain_index,
-                              HttpRequestHeaders* extra_headers) override {
-    return OK;
+  base::expected<HttpRequestHeaders, Error> OnBeforeTunnelRequest(
+      const ProxyChain& proxy_chain,
+      size_t chain_index) override {
+    return HttpRequestHeaders();
   }
 
   Error OnTunnelHeadersReceived(

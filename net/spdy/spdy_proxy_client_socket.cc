@@ -15,9 +15,12 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "net/base/auth.h"
 #include "net/base/io_buffer.h"
+#include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
 #include "net/http/http_auth_cache.h"
@@ -370,12 +373,19 @@ int SpdyProxyClientSocket::DoSendRequest() {
   }
 
   if (proxy_delegate_) {
-    HttpRequestHeaders proxy_delegate_headers;
-    int result = proxy_delegate_->OnBeforeTunnelRequest(
-        proxy_chain_, proxy_chain_index_, &proxy_delegate_headers);
-    if (result < 0) {
-      return result;
-    }
+    ASSIGN_OR_RETURN(HttpRequestHeaders proxy_delegate_headers,
+                     proxy_delegate_->OnBeforeTunnelRequest(proxy_chain_,
+                                                            proxy_chain_index_),
+                     [](const auto& e) {
+                       // ProxyDelegate::OnBeforeTunnelRequest cannot block on
+                       // IO.
+                       CHECK_NE(ERR_IO_PENDING, e);
+                       // Success should always be reported via a base::expected
+                       // containing an HttpRequestHeaders, see
+                       // ProxyDelegate::OnBeforeTunnelRequest.
+                       CHECK_NE(OK, e);
+                       return e;
+                     });
     request_.extra_headers.MergeFrom(proxy_delegate_headers);
   }
 

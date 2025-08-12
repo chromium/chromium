@@ -9,6 +9,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
@@ -380,12 +382,20 @@ int QuicProxyDatagramClientSocket::DoSendRequest() {
   request_.extra_headers.MergeFrom(authorization_headers);
 
   if (proxy_delegate_) {
-    HttpRequestHeaders proxy_delegate_headers;
-    int result = proxy_delegate_->OnBeforeTunnelRequest(
-        proxy_chain(), proxy_chain_index(), &proxy_delegate_headers);
-    if (result < 0) {
-      return result;
-    }
+    ASSIGN_OR_RETURN(HttpRequestHeaders proxy_delegate_headers,
+                     proxy_delegate_->OnBeforeTunnelRequest(
+                         proxy_chain_, proxy_chain_index()),
+                     [](const auto& e) {
+                       // ProxyDelegate::OnBeforeTunnelRequest cannot block on
+                       // IO.
+                       CHECK_NE(ERR_IO_PENDING, e);
+                       // Success should always be reported via a base::expected
+                       // containing an HttpRequestHeaders, see
+                       // ProxyDelegate::OnBeforeTunnelRequest.
+                       CHECK_NE(OK, e);
+                       return e;
+                     });
+
     request_.extra_headers.MergeFrom(proxy_delegate_headers);
   }
 

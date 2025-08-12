@@ -382,17 +382,15 @@ TEST_F(IpProtectionProxyDelegateTest, AddsTokenToTunnelRequest) {
   ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
   auto delegate = CreateDelegate(ipp_core.get());
 
-  net::HttpRequestHeaders headers;
   auto ip_protection_proxy_chain = net::ProxyChain::ForIpProtection(
       {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                                "proxya", std::nullopt),
        net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                                "proxyb", std::nullopt)});
-  EXPECT_THAT(delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain,
-                                              /*chain_index=*/0, &headers),
-              IsOk());
-
-  EXPECT_THAT(headers, Contain("Authorization", "Bearer: a-token"));
+  auto result = delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain,
+                                                /*chain_index=*/0);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_THAT(result.value(), Contain("Authorization", "Bearer: a-token"));
 }
 
 TEST_F(IpProtectionProxyDelegateTest, ErrorIfConnectionWithNoTokens) {
@@ -403,18 +401,19 @@ TEST_F(IpProtectionProxyDelegateTest, ErrorIfConnectionWithNoTokens) {
   ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
   auto delegate = CreateDelegate(ipp_core.get());
 
-  net::HttpRequestHeaders headers;
   auto ip_protection_proxy_chain = net::ProxyChain::ForIpProtection(
       {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                                "proxya", std::nullopt),
        net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                                "proxyb", std::nullopt)});
-  EXPECT_THAT(delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain,
-                                              /*chain_index=*/0, &headers),
-              IsError(net::ERR_TUNNEL_CONNECTION_FAILED));
-  EXPECT_THAT(delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain,
-                                              /*chain_index=*/1, &headers),
-              IsError(net::ERR_TUNNEL_CONNECTION_FAILED));
+  auto result = delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain,
+                                                /*chain_index=*/0);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_THAT(result.error(), IsError(net::ERR_TUNNEL_CONNECTION_FAILED));
+  result = delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain,
+                                           /*chain_index=*/1);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_THAT(result.error(), IsError(net::ERR_TUNNEL_CONNECTION_FAILED));
 }
 
 TEST_F(IpProtectionProxyDelegateTest, AddsDebugExperimentArm) {
@@ -432,16 +431,16 @@ TEST_F(IpProtectionProxyDelegateTest, AddsDebugExperimentArm) {
     ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
     auto delegate = CreateDelegate(ipp_core.get());
 
-    net::HttpRequestHeaders headers;
     auto ip_protection_proxy_chain = net::ProxyChain::ForIpProtection(
         {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                                  "proxya", std::nullopt),
          net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                                  "proxyb", std::nullopt)});
-    EXPECT_THAT(delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain,
-                                                chain_index, &headers),
-                IsOk());
-    EXPECT_THAT(headers, Contain("Ip-Protection-Debug-Experiment-Arm", "13"));
+    auto result =
+        delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain, chain_index);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_THAT(result.value(),
+                Contain("Ip-Protection-Debug-Experiment-Arm", "13"));
   }
 }
 
@@ -463,13 +462,12 @@ TEST_F(IpProtectionProxyDelegateTest,
   ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
   auto delegate = CreateDelegate(ipp_core.get());
 
-  net::HttpRequestHeaders headers;
   auto non_ipp_chain = net::ProxyChain(net::ProxyServer::FromSchemeHostAndPort(
       net::ProxyServer::SCHEME_HTTPS, "proxy.com", std::nullopt));
-  EXPECT_THAT(delegate->OnBeforeTunnelRequest(non_ipp_chain,
-                                              /*chain_index=*/0, &headers),
-              IsOk());
-  EXPECT_TRUE(headers.IsEmpty());
+  auto headers = delegate->OnBeforeTunnelRequest(non_ipp_chain,
+                                                 /*chain_index=*/0);
+  ASSERT_TRUE(headers.has_value());
+  EXPECT_TRUE(headers->IsEmpty());
 }
 
 TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyDeprioritizesBadProxies) {

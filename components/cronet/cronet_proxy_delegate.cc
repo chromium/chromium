@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "net/base/net_errors.h"
 #include "net/proxy_resolution/proxy_info.h"
 
@@ -81,20 +82,21 @@ void CronetProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
                       bad_chain.ToDebugString(), "net_error", net_error);
 }
 
-net::Error CronetProxyDelegate::OnBeforeTunnelRequest(
+base::expected<net::HttpRequestHeaders, net::Error>
+CronetProxyDelegate::OnBeforeTunnelRequest(
     // Don't be confused, this is the index of the proxy within the chain, not
     // the index of the chain itself.
     const net::ProxyChain& proxy_chain,
-    size_t chain_index,
-    net::HttpRequestHeaders* extra_headers) {
+    size_t chain_index) {
   TRACE_EVENT_BEGIN("cronet", "CronetProxyDelegate::OnBeforeTunnelRequest",
                     "proxy_chain", proxy_chain.ToDebugString(), "chain_index",
                     chain_index);
   CHECK(proxy_chain.opaque_data().has_value());
-  auto result = [&] {
-    if (network_tasks_->OnBeforeTunnelRequest(*proxy_chain.opaque_data(),
-                                              extra_headers)) {
-      return net::OK;
+  auto result = [&]() -> base::expected<net::HttpRequestHeaders, net::Error> {
+    if (net::HttpRequestHeaders extra_headers;
+        network_tasks_->OnBeforeTunnelRequest(*proxy_chain.opaque_data(),
+                                              &extra_headers)) {
+      return extra_headers;
     }
     // TODO(https://crbug.com/422428959): Decide whether we want to propagate
     // org.chromium.net.Proxy.Callback canceling a tunnel establishment request
@@ -103,9 +105,9 @@ net::Error CronetProxyDelegate::OnBeforeTunnelRequest(
     // the list for net::ERR_TUNNEL_CONNECTION_FAILED, unless the chain is for
     // IP Protection. For the time being, we return another error for which the
     // next proxy is in the list is always attempted.
-    return net::ERR_CONNECTION_CLOSED;
+    return base::unexpected(net::ERR_CONNECTION_CLOSED);
   }();
-  TRACE_EVENT_END("cronet", "result", result);
+  TRACE_EVENT_END("cronet", "result", result.error_or(net::OK));
   return result;
 }
 

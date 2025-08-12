@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/types/expected.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -97,19 +98,19 @@ std::string TestProxyDelegate::GetExtraHeaderValue(
   return ProxyServerToProxyUri(proxy_server);
 }
 
-Error TestProxyDelegate::OnBeforeTunnelRequest(
-    const ProxyChain& proxy_chain,
-    size_t chain_index,
-    HttpRequestHeaders* extra_headers) {
+base::expected<HttpRequestHeaders, Error>
+TestProxyDelegate::OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
+                                         size_t chain_index) {
   on_before_tunnel_request_call_count_++;
 
+  HttpRequestHeaders extra_headers;
   if (extra_header_name_) {
-    extra_headers->SetHeader(
+    extra_headers.SetHeader(
         *extra_header_name_,
         GetExtraHeaderValue(proxy_chain.GetProxyServer(chain_index)));
   }
 
-  return OK;
+  return extra_headers;
 }
 
 Error TestProxyDelegate::OnTunnelHeadersReceived(
