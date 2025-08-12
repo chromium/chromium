@@ -13,7 +13,7 @@ load("//lib/chrome_settings.star", "chrome_settings")
 load("//project.star", "settings")
 
 lucicfg.check_version(
-    min = "1.43.13",
+    min = "1.44.1",
     message = "Update depot_tools",
 )
 
@@ -52,15 +52,6 @@ lucicfg.config(
         "testing/*.pyl",
     ],
     fail_on_warnings = True,
-    lint_checks = [
-        "default",
-        "-confusing-name",
-        "-function-docstring",
-        "-function-docstring-args",
-        "-function-docstring-return",
-        "-function-docstring-header",
-        "-module-docstring",
-    ],
 )
 
 # Just copy Testhaus config to generated outputs.
