@@ -519,5 +519,6 @@ public class HubToolbarView extends LinearLayout {
     public void setXrSpaceModeObservableSupplier(
             @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
+        HubColors.setXrSpaceModeObservableSupplier(xrSpaceModeObservableSupplier);
     }
 }
