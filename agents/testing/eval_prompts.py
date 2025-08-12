@@ -4,8 +4,8 @@
 # found in the LICENSE file.
 """A script to evaluate prompts using promptfoo."""
 
+import abc
 import argparse
-import atexit
 import contextlib
 import os
 import pathlib
@@ -34,17 +34,30 @@ EXTENSIONS_TO_INSTALL = [
 ]
 
 
-class PromptfooInstallation:
-    """Interface for a temporary promptfoo installation."""
+class PromptfooInstallation(abc.ABC):
+    """Partial implementation of a promptfoo installation."""
 
+    def __init__(self, directory: pathlib.Path):
+        self._directory = directory
+
+    @abc.abstractmethod
     def setup(self) -> None:
         """Called once to set up the promptfoo installation."""
-        raise NotImplementedError()
+
+    @property
+    @abc.abstractmethod
+    def installed(self) -> bool:
+        """Test whether promptfoo is installed with this method."""
 
     def cleanup(self) -> None:
         """Called once to clean up the promptfoo installation."""
-        raise NotImplementedError()
+        try:
+            shutil.rmtree(self._directory)
+            print(f'Removed promptfoo installation at {self._directory}')
+        except FileNotFoundError:
+            pass
 
+    @abc.abstractmethod
     def run(self, cmd: list[str], cwd: os.PathLike | None = None) -> int:
         """Runs a promptfoo command.
 
@@ -55,94 +68,83 @@ class PromptfooInstallation:
         Returns:
             The returncode of the command.
         """
-        raise NotImplementedError()
 
 
 class FromNpmPromptfooInstallation(PromptfooInstallation):
     """A promptfoo installation retrieved via npm."""
 
-    def __init__(self, version: str | None):
-        self._directory: pathlib.Path | None = None
+    def __init__(self, directory: pathlib.Path, version: str | None):
+        super().__init__(directory)
         self._version = version or 'latest'
 
     def setup(self) -> None:
-        assert self._directory is None
-        self._directory = pathlib.Path(tempfile.mkdtemp())
-        atexit.register(self.cleanup)
         print(f'Creating promptfoo copy at {self._directory}')
+        self._directory.mkdir(exist_ok=True)
         subprocess.run(['npm', 'init', '-y'], cwd=self._directory, check=True)
         subprocess.run(['npm', 'install', f'promptfoo@{self._version}'],
                        cwd=self._directory,
                        check=True)
 
-    def cleanup(self) -> None:
-        if not self._directory:
-            return
-        print(f'Removing promptfoo copy at {self._directory}')
-        shutil.rmtree(self._directory)
-        self._directory = None
+    @property
+    def installed(self) -> bool:
+        return self._executable.exists()
 
     def run(self, cmd: list[str], cwd: os.PathLike | None = None) -> int:
-        promptfoo_executable = str(self._directory / 'node_modules' / '.bin' /
-                                   'promptfoo')
-        proc = subprocess.run([promptfoo_executable] + cmd,
+        proc = subprocess.run([str(self._executable), *cmd],
                               cwd=cwd,
                               check=False)
         return proc.returncode
+
+    @property
+    def _executable(self) -> pathlib.Path:
+        return self._directory / 'node_modules' / '.bin' / 'promptfoo'
 
 
 class FromSourcePromptfooInstallation(PromptfooInstallation):
     """A promptfoo installation built from source."""
 
-    def __init__(self, revision: str | None):
-        self._parent_dir: pathlib.Path | None = None
-        self._promptfoo_dir: pathlib.Path | None = None
+    def __init__(self, directory: pathlib.Path, revision: str | None):
+        super().__init__(directory)
         self._revision = revision
 
     def setup(self) -> None:
-        assert self._parent_dir is None
-        self._parent_dir = pathlib.Path(tempfile.mkdtemp())
-        atexit.register(self.cleanup)
-        print(f'Creating promptfoo copy at {self._parent_dir}')
+        print(f'Creating promptfoo copy at {self._directory}')
 
         cmd = [
             'git',
             'clone',
             'https://github.com/promptfoo/promptfoo',
+            self._directory,
         ]
-        subprocess.run(cmd, check=True, cwd=self._parent_dir)
-        self._promptfoo_dir = self._parent_dir / 'promptfoo'
+        subprocess.run(cmd, check=True)
 
         if self._revision:
             cmd = ['git', 'checkout', self._revision]
-            subprocess.run(cmd, check=True, cwd=self._promptfoo_dir)
+            subprocess.run(cmd, check=True, cwd=self._directory)
 
         cmd = [
             'npm',
             'install',
         ]
-        subprocess.run(cmd, check=True, cwd=self._promptfoo_dir)
+        subprocess.run(cmd, check=True, cwd=self._directory)
 
         cmd = [
             'npm',
             'run',
             'build',
         ]
-        subprocess.run(cmd, check=True, cwd=self._promptfoo_dir)
+        subprocess.run(cmd, check=True, cwd=self._directory)
 
-    def cleanup(self) -> None:
-        if not self._parent_dir:
-            return
-        print(f'Removing promptfoo copy at {self._parent_dir}')
-        shutil.rmtree(self._parent_dir)
-        self._parent_dir = None
+    @property
+    def installed(self) -> bool:
+        return (self._directory / '.git').is_dir()
 
     def run(self, cmd: list[str], cwd: os.PathLike | None = None) -> int:
         node_cmd = [
             'npm',
             'run',
             '--prefix',
-            str(self._promptfoo_dir),
+            str(self._directory),
             'local',
             '--',
         ]
@@ -150,24 +152,35 @@ class FromSourcePromptfooInstallation(PromptfooInstallation):
         return proc.returncode
 
 
-def _setup_promptfoo(promptfoo_revision: str | None,
+def _setup_promptfoo(promptfoo_dir: pathlib.Path,
+                     promptfoo_revision: str | None,
                      promptfoo_version: str | None) -> PromptfooInstallation:
-    """Sets up a temporary promptfoo installation.
-
-    This installation will be automatically cleaned up when the script
-    exits.
+    """Sets up a promptfoo installation.
 
     Args:
+        promptfoo_dir: Path to directory to install promptfoo.
         promptfoo_revision: When building from source, an optional git
             revision to build at instead of ToT.
         promptfoo_version: When installing from npm, an optional
             version to use instead of latest.
     """
-    if promptfoo_version:
-        promptfoo = FromNpmPromptfooInstallation(promptfoo_version)
-    else:
-        promptfoo = FromSourcePromptfooInstallation(promptfoo_revision)
+    promptfoo_from_src = FromSourcePromptfooInstallation(
+        promptfoo_dir, promptfoo_revision)
+    promptfoo_from_npm = FromNpmPromptfooInstallation(promptfoo_dir,
+                                                      promptfoo_version)
+    if not promptfoo_revision and not promptfoo_version:
+        for promptfoo in [promptfoo_from_src, promptfoo_from_npm]:
+            if promptfoo.installed:
+                print(f'Using promptfoo already installed at {promptfoo_dir}')
+                return promptfoo
+
+    promptfoo = promptfoo_from_npm if promptfoo_version else promptfoo_from_src
+    # This may not be necessary if the version/revision didn't change between
+    # runs. However, reinstallation is easier than determining the existing
+    # version.
+    promptfoo.cleanup()
     promptfoo.setup()
+    assert promptfoo.installed
     return promptfoo
 
 
@@ -237,8 +250,8 @@ class WorkTree(contextlib.AbstractContextManager):
 def main() -> int:
     """Evaluates prompts using promptfoo.
 
-    This will get a temporary copy of promptfoo and create clean checkouts
-    before running tests.
+    This will get a copy of promptfoo and create clean checkouts before running
+    tests.
     """
     parser = argparse.ArgumentParser()
     promptfoo_install_group = parser.add_mutually_exclusive_group()
@@ -260,7 +273,8 @@ def main() -> int:
               'is specified, ToT will be used.'))
     args = parser.parse_args()
 
-    promptfoo = _setup_promptfoo(args.promptfoo_revision,
+    promptfoo_dir = pathlib.Path(tempfile.gettempdir()) / 'promptfoo'
+    promptfoo = _setup_promptfoo(promptfoo_dir, args.promptfoo_revision,
                                  args.promptfoo_version)
 
     returncode = 0
