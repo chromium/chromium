@@ -1971,21 +1971,21 @@ public class StripLayoutHelper
             return;
         }
 
-        if (mStripTabs.length == 0) {
+        if (mStripViews.length == 0) {
             mTouchableRect.setEmpty();
             return;
         }
 
-        // Get the bounding box of all tabs.
-        StripLayoutTab firstTab = mStripTabs[0];
-        StripLayoutTab lastTab = mStripTabs[mStripTabs.length - 1];
+        // Get the bounding box of all strip views (excludes new tab and model selector buttons).
+        StripLayoutView firstStripView = mStripViews[0];
+        StripLayoutView lastStripView = mStripViews[mStripViews.length - 1];
 
-        float leftBound = firstTab.getDrawX();
-        float rightBound = lastTab.getDrawX() + lastTab.getWidth();
+        float leftBound = firstStripView.getDrawX();
+        float rightBound = lastStripView.getDrawX() + lastStripView.getWidth();
 
         if (LocalizationUtils.isLayoutRtl()) {
-            leftBound = lastTab.getDrawX();
-            rightBound = firstTab.getDrawX() + firstTab.getWidth();
+            leftBound = lastStripView.getDrawX();
+            rightBound = firstStripView.getDrawX() + firstStripView.getWidth();
         }
 
         // Clamp the bounding box to the visible area.
