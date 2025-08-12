@@ -819,6 +819,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/ntp/IncognitoNewTabPageUnitTest.java",
       "src/org/chromium/chrome/browser/ntp/NewTabPageUtilUnitTest.java",
       "src/org/chromium/chrome/browser/ntp/RecentTabsPageUnitTest.java",
+      "src/org/chromium/chrome/browser/ntp/search/SearchBoxMediatorUnitTest.java",
       "src/org/chromium/chrome/browser/ntp/search/SearchBoxViewBinderUnitTest.java",
     ]
 

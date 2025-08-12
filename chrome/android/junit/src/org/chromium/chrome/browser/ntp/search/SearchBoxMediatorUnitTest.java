@@ -1,0 +1,93 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.ntp.search;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.verify;
+
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.test.core.app.ApplicationProvider;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
+
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.ui.modelutil.PropertyModel;
+
+/** Unit tests for {@link SearchBoxMediator}. */
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
+public class SearchBoxMediatorUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock private View.OnClickListener mLensClickListener;
+    @Mock private View.OnClickListener mVoiceSearchClickListener;
+    @Mock private View.OnClickListener mComposePlateClickListener;
+
+    private Context mContext;
+    private ViewGroup mParentView;
+    private PropertyModel mPropertyModel;
+    private Drawable mVoiceSearchDrawable;
+    private SearchBoxMediator mMediator;
+
+    @Before
+    public void setup() {
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+        mParentView =
+                (ViewGroup)
+                        LayoutInflater.from(mContext)
+                                .inflate(R.layout.fake_search_box_layout, null);
+
+        mPropertyModel = new PropertyModel.Builder(SearchBoxProperties.ALL_KEYS).build();
+        mMediator = new SearchBoxMediator(mContext, mPropertyModel, mParentView);
+    }
+
+    @Test
+    public void testOnDestroy() {
+        mVoiceSearchDrawable =
+                AppCompatResources.getDrawable(mContext, R.drawable.ic_mic_white_24dp);
+
+        mPropertyModel.set(SearchBoxProperties.LENS_CLICK_CALLBACK, mLensClickListener);
+        mPropertyModel.set(
+                SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK, mVoiceSearchClickListener);
+        mPropertyModel.set(
+                SearchBoxProperties.COMPOSEPLATE_BUTTON_CLICK_CALLBACK, mComposePlateClickListener);
+        mPropertyModel.set(SearchBoxProperties.VOICE_SEARCH_DRAWABLE, mVoiceSearchDrawable);
+
+        assertNotNull(mPropertyModel.get(SearchBoxProperties.LENS_CLICK_CALLBACK));
+        assertNotNull(mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK));
+        assertNotNull(mPropertyModel.get(SearchBoxProperties.COMPOSEPLATE_BUTTON_CLICK_CALLBACK));
+        assertNotNull(mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_DRAWABLE));
+
+        mMediator.initialize(mActivityLifecycleDispatcher);
+        mMediator.onDestroy();
+
+        verify(mActivityLifecycleDispatcher).unregister(mMediator);
+        assertNull(mPropertyModel.get(SearchBoxProperties.LENS_CLICK_CALLBACK));
+        assertNull(mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK));
+        assertNull(mPropertyModel.get(SearchBoxProperties.COMPOSEPLATE_BUTTON_CLICK_CALLBACK));
+        assertNull(mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_DRAWABLE));
+    }
+}
