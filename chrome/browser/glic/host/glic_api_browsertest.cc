@@ -1903,7 +1903,7 @@ IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
   }
 }
 
-// TODO(crbug.com/422442409): Add API tests for the OnViewChanged updates and
+// TODO(crbug.com/438164226): Add API tests for the OnViewChanged updates and
 // client interactions.
 
 INSTANTIATE_TEST_SUITE_P(

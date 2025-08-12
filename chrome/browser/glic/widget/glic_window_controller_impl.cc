@@ -465,7 +465,7 @@ void GlicWindowControllerImpl::Toggle(BrowserWindowInterface* bwi,
 
   // Send a change view request if the current view is different than the
   // source.
-  // TODO(crbug.com/422442409): The client may not be connected yet. If not,
+  // TODO(crbug.com/437140901): The client may not be connected yet. If not,
   // this request is dropped.
   MaybeSendViewChangeRequest(source);
 
@@ -483,7 +483,7 @@ void GlicWindowControllerImpl::Toggle(BrowserWindowInterface* bwi,
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  // TODO(crbug.com/422442409): Add handling to always close on the second
+  // TODO(crbug.com/438164568): Add handling to always close on the second
   // click of the same source.
   // If floaty is focused and click is not from the Task Icon or Glic
   // Button, close it. If floaty is open and the current view matches the
