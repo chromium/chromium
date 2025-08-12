@@ -77,6 +77,11 @@ class TestPaymentsAutofillClientMock : public TestPaymentsAutofillClient {
               LoadRiskData,
               (base::OnceCallback<void(const std::string&)>),
               (override));
+
+  MOCK_METHOD(void,
+              CreditCardUploadCompleted,
+              (PaymentsRpcResult, std::optional<OnConfirmationClosedCallback>),
+              (override));
 };
 
 }  // namespace
@@ -136,6 +141,30 @@ class SaveAndFillManagerImplTest : public testing::Test {
               {});
           return RequestId("11223344");
         });
+  }
+
+  void SetUpCreateCardResponse(PaymentsAutofillClient::PaymentsRpcResult result,
+                               const std::string& instrument_id) {
+    ON_CALL(*mock_network_interface_, CreateCard)
+        .WillByDefault([result, &instrument_id](
+                           const UploadCardRequestDetails&,
+                           base::OnceCallback<void(
+                               PaymentsAutofillClient::PaymentsRpcResult,
+                               const std::string&)> callback) {
+          std::move(callback).Run(result, instrument_id);
+          return RequestId("11223344");
+        });
+  }
+
+  void SetUpUploadSaveAndFillDialogDecision(
+      CardSaveAndFillDialogUserDecision decision,
+      const UserProvidedCardSaveAndFillDetails& details) {
+    ON_CALL(*payments_autofill_client_, ShowCreditCardUploadSaveAndFillDialog)
+        .WillByDefault(
+            [decision, &details](
+                const LegalMessageLines&,
+                TestPaymentsAutofillClient::CardSaveAndFillDialogCallback
+                    callback) { std::move(callback).Run(decision, details); });
   }
 
  protected:
@@ -489,13 +518,14 @@ TEST_F(SaveAndFillManagerImplTest, LoadRiskData) {
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       /*create_valid_legal_message=*/true);
 
-  EXPECT_CALL(*payments_autofill_client_, ShowCreditCardUploadSaveAndFillDialog)
-      .WillOnce([](const LegalMessageLines&,
-                   TestPaymentsAutofillClient::CardSaveAndFillDialogCallback
-                       callback) {
-        std::move(callback).Run(CardSaveAndFillDialogUserDecision::kAccepted,
-                                UserProvidedCardSaveAndFillDetails());
-      });
+  auto user_provided_details = CreateUserProvidedCardDetails(
+      /*card_number=*/u"1111222233334444",
+      /*cardholder_name=*/u"Jane Smith",
+      /*expiration_date_month=*/ASCIIToUTF16(test::NextMonth()),
+      /*expiration_date_year=*/ASCIIToUTF16(test::NextYear()),
+      /*security_code=*/u"456");
+  SetUpUploadSaveAndFillDialogDecision(
+      CardSaveAndFillDialogUserDecision::kAccepted, user_provided_details);
 
   base::OnceCallback<void(const std::string&)> risk_data_loaded_callback;
   EXPECT_CALL(*payments_autofill_client_, LoadRiskData)
@@ -591,6 +621,74 @@ TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnUploadSave_Accepted) {
   EXPECT_EQ(ASCIIToUTF16(test::NextYear()),
             card_to_fill.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
   EXPECT_EQ(u"456", card_to_fill.cvc());
+}
+
+TEST_F(SaveAndFillManagerImplTest, CardUploadFeedback_UploadSucceeded) {
+  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
+      true);
+
+  SetUpGetDetailsForCreateCardResponse(
+      PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      /*create_valid_legal_message=*/true);
+
+  auto user_provided_details = CreateUserProvidedCardDetails(
+      /*card_number=*/u"1111222233334444",
+      /*cardholder_name=*/u"Jane Smith",
+      /*expiration_date_month=*/ASCIIToUTF16(test::NextMonth()),
+      /*expiration_date_year=*/ASCIIToUTF16(test::NextYear()),
+      /*security_code=*/u"456");
+  SetUpUploadSaveAndFillDialogDecision(
+      CardSaveAndFillDialogUserDecision::kAccepted, user_provided_details);
+
+  EXPECT_CALL(*payments_autofill_client_, LoadRiskData)
+      .WillOnce([](base::OnceCallback<void(const std::string&)> callback) {
+        std::move(callback).Run("some risk data");
+      });
+
+  SetUpCreateCardResponse(PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+                          "112233445566L");
+
+  EXPECT_CALL(
+      *payments_autofill_client_,
+      CreditCardUploadCompleted(
+          PaymentsAutofillClient::PaymentsRpcResult::kSuccess, testing::_));
+
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
+}
+
+TEST_F(SaveAndFillManagerImplTest, CardUploadFeedback_UploadFailed) {
+  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
+      true);
+
+  SetUpGetDetailsForCreateCardResponse(
+      PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      /*create_valid_legal_message=*/true);
+
+  auto user_provided_details = CreateUserProvidedCardDetails(
+      /*card_number=*/u"1111222233334444",
+      /*cardholder_name=*/u"Jane Smith",
+      /*expiration_date_month=*/ASCIIToUTF16(test::NextMonth()),
+      /*expiration_date_year=*/ASCIIToUTF16(test::NextYear()),
+      /*security_code=*/u"456");
+  SetUpUploadSaveAndFillDialogDecision(
+      CardSaveAndFillDialogUserDecision::kAccepted, user_provided_details);
+
+  EXPECT_CALL(*payments_autofill_client_, LoadRiskData)
+      .WillOnce([](base::OnceCallback<void(const std::string&)> callback) {
+        std::move(callback).Run("some risk data");
+      });
+
+  SetUpCreateCardResponse(
+      PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure, "");
+
+  EXPECT_CALL(*payments_autofill_client_,
+              CreditCardUploadCompleted(
+                  PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
+                  testing::_));
+
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
 }
 
 }  // namespace autofill::payments

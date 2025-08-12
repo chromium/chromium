@@ -85,6 +85,8 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave(
       payments_autofill_client()
           ->GetPaymentsDataManager()
           .OnAcceptedLocalCreditCardSave(card_save_candidate);
+      // TODO(crbug.com/435506033): Add local save confirmation as a separate
+      // effort.
       break;
     }
     case CardSaveAndFillDialogUserDecision::kDeclined:
@@ -267,8 +269,13 @@ void SaveAndFillManagerImpl::SendCreateCardRequest() {
 void SaveAndFillManagerImpl::OnDidCreateCard(
     PaymentsAutofillClient::PaymentsRpcResult result,
     const std::string& instrument_id) {
-  // TODO(crbug.com/378164165): Implement logic to handle CreateCard response
-  // and the instrument id.
+  // TODO(crbug.com/378164165): Implement logic to locally save the card if
+  // result is not success.
+
+  // Invoke feedback bubble. No callback needed (virtual card enrollment is not
+  // eligible for card saved via the Save and Fill flow).
+  payments_autofill_client()->CreditCardUploadCompleted(
+      result, /*on_confirmation_closed_callback=*/std::nullopt);
 }
 
 SaveAndFillStrikeDatabase*
