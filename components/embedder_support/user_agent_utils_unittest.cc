@@ -26,7 +26,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/version_info.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -52,9 +51,9 @@
 #include "base/win/scoped_winrt_initializer.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
-#include "device/vr/public/cpp/features.h"
-#endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace embedder_support {
 
@@ -753,17 +752,37 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
   EXPECT_TRUE(metadata.full_version.empty());
 }
 
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
-TEST_F(UserAgentUtilsTest, UserAgentMetadataXR) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      device::features::kForceIsXrDeviceForTesting);
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(UserAgentUtilsTest, UserAgentMetadataForXrDevice) {
+  if (base::android::device_info::is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+
+  base::android::device_info::set_is_xr_for_testing();
+  EXPECT_EQ(base::android::device_info::is_xr(), true);
+
+  // Get unified platform of the user-agent on xr device.
+  EXPECT_EQ(GetUnifiedPlatformForTesting(), "X11; Linux x86_64");
+
   auto metadata = GetUserAgentMetadata();
-  std::vector<std::string> expected_form_factors = {
-      (metadata.mobile ? "Mobile" : "Desktop"), "XR"};
+
+  // Verify the XR specific info set.
+  // TODO(crbug.com/433345971) The user agent string should contain the actual
+  // cpu type information obtained from the Android device.
+  EXPECT_EQ(metadata.architecture, "x86");
+  EXPECT_EQ(metadata.bitness, "64");
+  EXPECT_EQ(metadata.platform, "Linux");
+  EXPECT_EQ(metadata.mobile, false);
+  EXPECT_EQ(metadata.platform_version, "");
+
+  // Verify user-agent client-hints form-factors
+  std::vector<std::string> expected_form_factors = {"Desktop", "XR"};
   EXPECT_EQ(metadata.form_factors, expected_form_factors);
+
+  // Restore the device info.
+  base::android::device_info::reset_is_xr_for_testing();
 }
-#endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(UserAgentUtilsTest, GenerateBrandVersionListUnbranded) {
   blink::UserAgentMetadata metadata;
