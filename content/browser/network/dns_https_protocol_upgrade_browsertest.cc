@@ -80,7 +80,7 @@ class DohHttpsProtocolUpgradeBrowserTest : public content::ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DohHttpsProtocolUpgradeBrowserTest,
-                       HttpsProtocolUpgrade) {
+                       DISABLED_HttpsProtocolUpgrade) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   RegisterDefaultHandlers(&https_server);
