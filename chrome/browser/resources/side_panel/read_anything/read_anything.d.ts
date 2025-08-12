@@ -238,6 +238,9 @@ declare namespace chrome {
     // Called when the number of words seen by a reading mode user changes.
     function updateWordsSeen(wordsSeen: number): void;
 
+    // Called when the number of words heard by a read aloud user changes.
+    function updateWordsHeard(wordsHeard: number): void;
+
     // Set the content. Used by tests only.
     // SnapshotLite is a data structure which resembles an AXTreeUpdate. E.g.:
     //   const axTree = {

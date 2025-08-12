@@ -84,6 +84,12 @@ class ReadAnythingAppController
   static constexpr char kWordsSeenHistogramName[] =
       "Accessibility.ReadAnything.WordsSeen";
 
+  static constexpr char kWordsHeardHistogramName[] =
+      "Accessibility.ReadAnything.WordsHeard";
+
+  static const int kMaxWordsConsumed = 25000;
+  static const int kWordsConsumedBuckets = 100;
+
   ReadAnythingAppController(const ReadAnythingAppController&) = delete;
   ReadAnythingAppController& operator=(const ReadAnythingAppController&) =
       delete;
@@ -268,6 +274,7 @@ class ReadAnythingAppController
   bool IsDocsLoadMoreButtonVisible() const;
   void OnNoTextContent(bool previouslyHadContent);
   void UpdateWordsSeen(int words_seen);
+  void UpdateWordsHeard(int words_heard);
 
   // The language code that should be used to determine which voices are
   // supported for speech.
@@ -387,6 +394,11 @@ class ReadAnythingAppController
   // This number is an estimate based on scrolling position and does not work
   // for languages that don't use whitespace to separate words.
   void RecordEstimatedWordsSeen();
+
+  // Records the number of words consumed on the active page via read aloud.
+  // This number is an estimate based on word boundaries and may be less
+  // accurate for voices that don't support word boundaries.
+  void RecordEstimatedWordsHeard();
 
   void RecordDistillationSuccess();
 

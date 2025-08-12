@@ -106,6 +106,14 @@ export function isWhitespace(s: string): boolean {
   return /\s+/g.test(s);
 }
 
+// Estimate the word count of the given text by splitting it by whitespace
+// characters.
+// TODO(crbug.com/c/372890165): Handle scriptio continua languages
+// that don't use whitespace to separate words.
+export function getWordCount(text: string): number {
+  return text.split(/\s+/).filter(word => word.length > 0).length;
+}
+
 // Returns true if the given rect is mostly within the visible window.
 export function isRectMostlyVisible(rect: DOMRect): boolean {
   if (rect.height <= 0) {

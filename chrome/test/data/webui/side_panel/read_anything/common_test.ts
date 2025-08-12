@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getCurrentSpeechRate, isRectMostlyVisible, isRectVisible, MOSTLY_VISIBLE_PERCENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {getCurrentSpeechRate, getWordCount, isRectMostlyVisible, isRectVisible, MOSTLY_VISIBLE_PERCENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -144,5 +144,13 @@ suite('Common', () => {
       const rect = new DOMRect();
       assertFalse(isRectMostlyVisible(rect));
     });
+  });
+
+  test('getWordCount', () => {
+    assertEquals(5, getWordCount('Nothing but the truth now'));
+    assertEquals(8, getWordCount('Nothing but the\nproof of\n what I am'));
+    assertEquals(1, getWordCount('TheworstofwhatIcamefrom'));
+    assertEquals(
+        4, getWordCount('patterns           I\'m ashamed\n\n\n\n\n\n   of'));
   });
 });

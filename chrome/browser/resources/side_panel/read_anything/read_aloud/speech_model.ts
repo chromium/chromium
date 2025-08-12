@@ -69,6 +69,9 @@ export class SpeechModel {
 
   // Used for logging play time.
   private playSessionStartTime_: number|null = null;
+  // Used to log the number of words heard by a user via read aloud on a given
+  // page.
+  private wordsHeard_: number = 0;
 
   // If the node id of the first text node that should be used by Read Aloud
   // has been set. This is null if the id has not been set.
@@ -195,5 +198,17 @@ export class SpeechModel {
 
   setIsSpeechBeingRepositioned(value: boolean): void {
     this.speechPlayingState_.isSpeechBeingRepositioned = value;
+  }
+
+  getWordsHeard(): number {
+    return this.wordsHeard_;
+  }
+
+  setWordsHeard(words: number): void {
+    this.wordsHeard_ = words;
+  }
+
+  incrementWordsHeard(): void {
+    this.wordsHeard_++;
   }
 }

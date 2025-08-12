@@ -4,7 +4,7 @@
 
 import {assert} from '//resources/js/assert.js';
 
-import {isRectMostlyVisible} from './common.js';
+import {getWordCount, isRectMostlyVisible} from './common.js';
 
 // A two-way map where each key is unique and each value is unique. The keys are
 // DOM nodes and the values are numbers, representing AXNodeIDs.
@@ -125,12 +125,7 @@ export class NodeStore {
           if (!text || !text.length) {
             return totalCount;
           }
-          // Estimate the word count of each node by splitting the text by
-          // whitespace characters.
-          // TODO(crbug.com/c/372890165): Handle scriptio continua languages
-          // that don't use whitespace to separate words.
-          const words = text.split(/\s+/).filter(word => word.length > 0);
-          return totalCount + words.length;
+          return totalCount + getWordCount(text);
         }, 0);
     chrome.readingMode.updateWordsSeen(wordsSeen);
   }

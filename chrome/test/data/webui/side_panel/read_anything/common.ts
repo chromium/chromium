@@ -62,6 +62,13 @@ export function createSpeechErrorEvent(
       'type', {utterance: utterance, error: errorCode});
 }
 
+export function createWordBoundaryEvent(
+    utterance: SpeechSynthesisUtterance, charIndex: number,
+    charLength?: number) {
+  return new SpeechSynthesisEvent(
+      'type', {name: 'word', utterance, charIndex, charLength});
+}
+
 export function setupBasicSpeech(speech: TestSpeechBrowserProxy) {
   VoiceLanguageController.getInstance().enableLang('en');
   createAndSetVoices(

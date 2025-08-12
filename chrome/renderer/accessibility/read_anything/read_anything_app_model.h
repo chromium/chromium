@@ -150,6 +150,8 @@ class ReadAnythingAppModel {
   }
   int words_seen() const { return words_seen_; }
   void set_words_seen(const int words_seen) { words_seen_ = words_seen; }
+  int words_heard() const { return words_heard_; }
+  void set_words_heard(const int words_heard) { words_heard_ = words_heard; }
 
   const std::string& base_language_code() const { return base_language_code_; }
   void SetBaseLanguageCode(std::string base_language_code);
@@ -482,6 +484,7 @@ class ReadAnythingAppModel {
   bool requires_post_process_selection_ = false;
   int selections_from_reading_mode_ = 0;
   int words_seen_ = 0;
+  int words_heard_ = 0;
 
   // For screen2x data collection, Chrome is launched from the CLI to open one
   // webpage. We record the result of the distill() call for this entire

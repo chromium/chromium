@@ -4,7 +4,7 @@
 import {BrowserProxy, currentReadHighlightClass, MAX_SPEECH_LENGTH, NodeStore, ReadAloudHighlighter, SpeechBrowserProxyImpl, SpeechController, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createSpeechErrorEvent, createSpeechSynthesisVoice, mockMetrics, setSimpleAxTreeWithText, setSimpleNodeStoreWithText, setSimpleTreeWithText} from './common.js';
+import {createSpeechErrorEvent, createSpeechSynthesisVoice, createWordBoundaryEvent, mockMetrics, setSimpleAxTreeWithText, setSimpleNodeStoreWithText, setSimpleTreeWithText} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -22,12 +22,13 @@ suite('SpeechController', () => {
   let nodeStore: NodeStore;
   let highlighter: ReadAloudHighlighter;
   let voiceLanguageController: VoiceLanguageController;
+  let readingMode: FakeReadingMode;
 
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
-    const readingMode = new FakeReadingMode();
+    readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
@@ -327,6 +328,69 @@ suite('SpeechController', () => {
         assertEquals(1, speech.getCallCount('speak'));
         assertEquals(1, speech.getCallCount('cancel'));
       });
+
+  test('word boundary received updates words heard', () => {
+    const textContent = 'You\'re all I can think of';
+    setSimpleTreeWithText(textContent);
+    speechController.onPlayPauseToggle(null, textContent);
+    const spoken = speech.getArgs('speak')[0];
+
+    spoken.onboundary(createWordBoundaryEvent(spoken, 0, 6));
+    spoken.onboundary(createWordBoundaryEvent(spoken, 7, 3));
+
+    assertEquals(2, readingMode.wordsHeard);
+  });
+
+  test('words heard not updated for whitespace', () => {
+    const textContent = 'Every drop I drink up';
+    setSimpleTreeWithText(textContent);
+    speechController.onPlayPauseToggle(null, textContent);
+    const spoken = speech.getArgs('speak')[0];
+
+    spoken.onboundary(createWordBoundaryEvent(spoken, 0, 5));
+    spoken.onboundary(createWordBoundaryEvent(spoken, 5, 1));
+
+    assertEquals(1, readingMode.wordsHeard);
+  });
+
+  test('words heard reset on clear', () => {
+    const textContent = 'You\'re my soda pop';
+    setSimpleTreeWithText(textContent);
+    speechController.onPlayPauseToggle(null, textContent);
+    const spoken = speech.getArgs('speak')[0];
+
+    spoken.onboundary(createWordBoundaryEvent(spoken, 0, 5));
+    spoken.onboundary(createWordBoundaryEvent(spoken, 6, 2));
+    assertEquals(2, readingMode.wordsHeard);
+
+    speechController.clearReadAloudState();
+    spoken.onboundary(createWordBoundaryEvent(spoken, 9, 4));
+    assertEquals(1, readingMode.wordsHeard);
+  });
+
+  test('sentence end with word boundaries, does not count sentence', () => {
+    const textContent = 'My little soda pop';
+    setSimpleTreeWithText(textContent);
+    speechController.onPlayPauseToggle(null, textContent);
+    const spoken = speech.getArgs('speak')[0];
+
+    spoken.onboundary(createWordBoundaryEvent(spoken, 0, 2));
+    assertEquals(1, readingMode.wordsHeard);
+
+    spoken.onend();
+    assertEquals(1, readingMode.wordsHeard);
+  });
+
+  test('sentence end with no word boundaries, counts sentence', () => {
+    const textContent = 'Cool me down, you\'re so hot';
+    setSimpleTreeWithText(textContent);
+    speechController.onPlayPauseToggle(null, textContent);
+    const spoken = speech.getArgs('speak')[0];
+
+    spoken.onend();
+
+    assertEquals(6, readingMode.wordsHeard);
+  });
 
   suite('very long text', () => {
     function getSpokenText(): string {

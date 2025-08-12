@@ -3246,7 +3246,21 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
-<histogram name="Accessibility.ReadAnything.WordsSeen" units="count"
+<histogram name="Accessibility.ReadAnything.WordsHeard" units="words"
+    expires_after="2026-08-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records an estimate of how many words were heard via Read aloud before
+    switching pages or closing Reading mode. This is very accurate if the voice
+    being used to speak supports word boundaries (e.g. Google's Natural voices),
+    but may not be very accurate when the voice does not support word
+    boundaries, especially for languages that don't separate words with
+    whitespace.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.WordsSeen" units="words"
     expires_after="2026-08-01">
   <owner>ammedina@google.com</owner>
   <owner>kristislee@google.com</owner>

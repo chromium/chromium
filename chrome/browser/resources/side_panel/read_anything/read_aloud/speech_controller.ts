@@ -4,7 +4,7 @@
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
-import {getCurrentSpeechRate, playFromSelectionTimeout} from '../common.js';
+import {getCurrentSpeechRate, getWordCount, playFromSelectionTimeout} from '../common.js';
 import {NodeStore} from '../node_store.js';
 import {ReadAnythingLogger} from '../read_anything_logger.js';
 import type {SpeechBrowserProxy} from '../speech_browser_proxy.js';
@@ -503,6 +503,7 @@ export class SpeechController {
     this.setOnBoundary_(message);
     this.setOnSpeechSynthesisUtteranceStart_(message);
 
+    const text = message.text;
     message.onend = () => {
       if (isTextTooLong) {
         // Since our previous utterance was too long, continue speaking pieces
@@ -513,9 +514,10 @@ export class SpeechController {
         return;
       }
 
+      this.countWordsHeardIfNeeded(text);
       // Now that we've finiished reading this utterance, update the
-      // Granularity state to point to the next one Reset the word boundary
-      // index whenever we move the granularity position.
+      // Granularity state to point to the next one Reset the word
+      // boundary index whenever we move the granularity position.
       this.wordBoundaries_.resetToDefaultState();
       chrome.readingMode.movePositionToNextGranularity();
       // Continue speaking with the next block of text.
@@ -525,6 +527,16 @@ export class SpeechController {
     };
 
     this.speakMessage_(message);
+  }
+
+  // If word boundaries are not supported, use string parsing to determine how
+  // many words were heard.
+  private countWordsHeardIfNeeded(text: string) {
+    if (this.wordBoundaries_.notSupported()) {
+      const wordCount = getWordCount(text);
+      this.model_.setWordsHeard(this.model_.getWordsHeard() + wordCount);
+      chrome.readingMode.updateWordsHeard(this.model_.getWordsHeard());
+    }
   }
 
   private handleSpeechSynthesisError_(
@@ -654,6 +666,20 @@ export class SpeechController {
       // the sentence granularity level, so we'll retrieve these boundaries in
       // message.onEnd instead.
       if (event.name === 'word') {
+        const text = message.text;
+        const end = event.charIndex + (event.charLength || text.length);
+        const possibleWord = text.substring(event.charIndex, end).trim();
+        if (!this.highlighter_.isInvalidHighlightForWordHighlighting(
+                possibleWord)) {
+          // TODO(crbug.com/c/372890165): Consider adding a heuristic to ensure
+          // we aren't counting the same word multiple times, if the TTS engine
+          // word boundaries are inaccurate.
+          this.model_.incrementWordsHeard();
+          // TODO(crbug.com/c/372890165): Consider using words heard to better
+          // estimate words seen.
+          chrome.readingMode.updateWordsHeard(this.model_.getWordsHeard());
+        }
+
         this.wordBoundaries_.updateBoundary(event.charIndex, event.charLength);
 
         // No need to update the highlight on word boundary events if
@@ -794,6 +820,7 @@ export class SpeechController {
     this.setPreviewVoicePlaying_(null);
     this.model_.setFirstTextNode(null);
     this.model_.setResumeSpeechOnVoiceMenuClose(false);
+    this.model_.setWordsHeard(0);
   }
 
   saveReadAloudState() {

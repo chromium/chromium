@@ -670,6 +670,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   // seen), log the words that were seen on the previous tree.
   if (model_.active_tree_id() != ui::AXTreeIDUnknown()) {
     RecordEstimatedWordsSeen();
+    RecordEstimatedWordsHeard();
   }
 
   // Cancel any running draw timers.
@@ -742,8 +743,16 @@ void ReadAnythingAppController::RecordNumSelections() {
 
 void ReadAnythingAppController::RecordEstimatedWordsSeen() {
   VLOG(1) << "Words seen: " << model_.words_seen();
-  base::UmaHistogramCounts100000(kWordsSeenHistogramName, model_.words_seen());
+  base::UmaHistogramCustomCounts(kWordsSeenHistogramName, model_.words_seen(),
+                                 1, kMaxWordsConsumed, kWordsConsumedBuckets);
   model_.set_words_seen(0);
+}
+
+void ReadAnythingAppController::RecordEstimatedWordsHeard() {
+  VLOG(1) << "Words heard: " << model_.words_heard();
+  base::UmaHistogramCustomCounts(kWordsHeardHistogramName, model_.words_heard(),
+                                 1, kMaxWordsConsumed, kWordsConsumedBuckets);
+  model_.set_words_heard(0);
 }
 
 void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
@@ -1145,6 +1154,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("onCopy", &ReadAnythingAppController::OnCopy)
       .SetMethod("onNoTextContent", &ReadAnythingAppController::OnNoTextContent)
       .SetMethod("updateWordsSeen", &ReadAnythingAppController::UpdateWordsSeen)
+      .SetMethod("updateWordsHeard",
+                 &ReadAnythingAppController::UpdateWordsHeard)
       .SetMethod("onFontSizeChanged",
                  &ReadAnythingAppController::OnFontSizeChanged)
       .SetMethod("onFontSizeReset", &ReadAnythingAppController::OnFontSizeReset)
@@ -1768,6 +1779,10 @@ void ReadAnythingAppController::UpdateWordsSeen(int words_seen) {
   model_.set_words_seen(words_seen);
 }
 
+void ReadAnythingAppController::UpdateWordsHeard(int words_heard) {
+  model_.set_words_heard(words_heard);
+}
+
 void ReadAnythingAppController::OnFontSizeChanged(bool increase) {
   model_.AdjustTextSize(increase ? 1 : -1);
   page_handler_->OnFontSizeChange(model_.font_size());
@@ -2023,6 +2038,7 @@ void ReadAnythingAppController::OnDeviceLocked() {
   read_aloud_model_.LogSpeechStop(
       ReadAloudAppModel::ReadAloudStopSource::kLockChromeosDevice);
   RecordEstimatedWordsSeen();
+  RecordEstimatedWordsHeard();
   // Signal to the WebUI that the device has been locked. We'll only receive
   // this callback on ChromeOS.
   ExecuteJavaScript("chrome.readingMode.onLockScreen();");
@@ -2038,6 +2054,7 @@ void ReadAnythingAppController::OnReadingModeHidden() {
   read_aloud_model_.LogSpeechStop(
       ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode);
   RecordEstimatedWordsSeen();
+  RecordEstimatedWordsHeard();
 }
 
 void ReadAnythingAppController::OnTabWillDetach() {
@@ -2045,6 +2062,7 @@ void ReadAnythingAppController::OnTabWillDetach() {
   read_aloud_model_.LogSpeechStop(
       ReadAloudAppModel::ReadAloudStopSource::kCloseTabOrWindow);
   RecordEstimatedWordsSeen();
+  RecordEstimatedWordsHeard();
 }
 
 void ReadAnythingAppController::OnTabMuteStateChange(bool muted) {
