@@ -838,6 +838,21 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
           update_selected_types_dict->EnsureDict(
               signin::GaiaIdHash::FromGaiaId(gaia_id).ToBase64());
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+      // Preserve the user's existing enabled state for Bookmarks, Reading List,
+      // and Preferences. Otherwise, use the default value, which will be true
+      // after `kReplaceSyncPromosWithSignInPromos`.
+      for (UserSelectableType type :
+           {UserSelectableType::kBookmarks, UserSelectableType::kReadingList,
+            UserSelectableType::kPreferences}) {
+        const char* pref_name = GetPrefNameForType(type);
+        DCHECK(pref_name);
+        const base::Value* value = account_settings->Find(pref_name);
+        if (value && value->is_bool()) {
+          account_settings->Set(pref_name, value->GetBool());
+        }
+      }
+#else
       // Settings aka preferences always starts out "off" for existing
       // signed-in non-syncing users.
       account_settings->Set(
@@ -861,7 +876,7 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
         // `kReplaceSyncPromosWithSignInPromos`.
         account_settings->Set(pref_name, is_type_on);
       }
-
+#endif
       return true;
     }
   }

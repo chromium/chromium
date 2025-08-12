@@ -1186,7 +1186,7 @@ TEST_F(SyncPrefsMigrationTest, GlobalPrefsAreUnchanged) {
   }
 }
 
-TEST_F(SyncPrefsMigrationTest, TurnsPreferencesOff) {
+TEST_F(SyncPrefsMigrationTest, MigratesPreferencesNotOptedIn) {
   base::test::ScopedFeatureList enable_sync_to_signin(
       kReplaceSyncPromosWithSignInPromos);
 
@@ -1200,9 +1200,15 @@ TEST_F(SyncPrefsMigrationTest, TurnsPreferencesOff) {
   prefs.MaybeMigratePrefsForSyncToSigninPart1(
       SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent, gaia_id_);
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // After migration, Preferences should still be enabled (by default).
+  EXPECT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_).Has(
+      UserSelectableType::kPreferences));
+#else
   // Preferences should've been turned off in the account-scoped settings.
   EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_).Has(
       UserSelectableType::kPreferences));
+#endif
 }
 
 TEST_F(SyncPrefsMigrationTest, MigratesBookmarksOptedIn) {
@@ -1290,11 +1296,19 @@ TEST_F(SyncPrefsMigrationTest, MigratesBookmarksNotOptedIn) {
     prefs.MaybeMigratePrefsForSyncToSigninPart1(
         SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent, gaia_id_);
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    // After the migration, the types should be enabled.
+    EXPECT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_).Has(
+        UserSelectableType::kBookmarks));
+    EXPECT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_).Has(
+        UserSelectableType::kReadingList));
+#else
     // After the migration, the types should be disabled.
     EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_).Has(
         UserSelectableType::kBookmarks));
     EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_).Has(
         UserSelectableType::kReadingList));
+#endif
   }
 }
 
