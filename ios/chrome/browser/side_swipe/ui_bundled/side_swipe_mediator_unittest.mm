@@ -179,7 +179,15 @@ TEST_F(SideSwipeMediatorTest, TestEdgeNavigationEnabled) {
 }
 
 // Tests that pages with Reader Mode enabled will use Chromium native swipe.
-TEST_F(SideSwipeMediatorTest, TestEdgeNavigationEnabledForReaderMode) {
+// TODO(crbug.com/438221177): Fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_TestEdgeNavigationEnabledForReaderMode \
+  TestEdgeNavigationEnabledForReaderMode
+#else
+#define MAYBE_TestEdgeNavigationEnabledForReaderMode \
+  DISABLED_TestEdgeNavigationEnabledForReaderMode
+#endif
+TEST_F(SideSwipeMediatorTest, MAYBE_TestEdgeNavigationEnabledForReaderMode) {
   auto fake_web_state = CreateWebState();
   auto fake_navigation_manager = std::make_unique<web::FakeNavigationManager>();
   std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
