@@ -236,9 +236,6 @@ class ManagePasswordsUIController
   bool IsShowingBubble() const override;
   base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 
-  // Hides the bubble if opened. Mocked in the tests.
-  virtual void HidePasswordBubble();
-
   // Opens change password bubble and passes `username` and `new_password` that
   // should be displayed on it.
   void ShowChangePasswordBubble(const std::u16string& username,

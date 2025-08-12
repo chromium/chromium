@@ -1857,10 +1857,7 @@ void ManagePasswordsForPage(BrowserWindowInterface* bwi) {
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   WebContents* const web_contents =
       bwi->GetTabStripModel()->GetActiveWebContents();
-  ManagePasswordsUIController* controller =
-      ManagePasswordsUIController::FromWebContents(web_contents);
-  TabDialogs::FromWebContents(web_contents)
-      ->ShowManagePasswordsBubble(!controller->IsAutomaticallyOpeningBubble());
+  ManagePasswordsUIController::FromWebContents(web_contents)->ShowBubble();
 }
 
 bool CanSendTabToSelf(BrowserWindowInterface* bwi) {

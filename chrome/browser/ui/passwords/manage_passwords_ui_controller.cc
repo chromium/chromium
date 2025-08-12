@@ -506,7 +506,7 @@ void ManagePasswordsUIController::OnCredentialLeak(
 
   // Hide the manage passwords bubble if currently shown.
   if (IsShowingBubble()) {
-    HidePasswordBubble();
+    HideBubble();
   } else {
     ClearPopUpFlagForBubble();
   }
@@ -1242,12 +1242,6 @@ ManagePasswordsUIController::BypassUserAuthtForTesting() {
                                                  true);
 }
 
-void ManagePasswordsUIController::HidePasswordBubble() {
-  if (TabDialogs* tab_dialogs = TabDialogs::FromWebContents(web_contents())) {
-    tab_dialogs->HideManagePasswordsBubble();
-  }
-}
-
 void ManagePasswordsUIController::ShowChangePasswordBubble(
     const std::u16string& username,
     const std::u16string& new_password) {
@@ -1394,7 +1388,7 @@ void ManagePasswordsUIController::PrimaryPageChanged(content::Page& page) {
 void ManagePasswordsUIController::OnVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::HIDDEN) {
-    HidePasswordBubble();
+    HideBubble();
   }
 }
 
@@ -1440,7 +1434,7 @@ void ManagePasswordsUIController::ClearPopUpFlagForBubble() {
 }
 
 void ManagePasswordsUIController::DestroyPopups() {
-  HidePasswordBubble();
+  HideBubble();
   if (dialog_controller_ && dialog_controller_->IsShowingAccountChooser()) {
     dialog_controller_.reset();
     passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);
@@ -1458,7 +1452,7 @@ void ManagePasswordsUIController::WebContentsDestroyed() {
   if (account_password_store) {
     account_password_store->RemoveObserver(this);
   }
-  HidePasswordBubble();
+  HideBubble();
   web_contents()->RemoveUserData(UserDataKey());
   // `this` is now destroyed - do not add code here.
 }
@@ -1520,11 +1514,15 @@ bool ManagePasswordsUIController::IsPasswordChangeOngoing() const {
 }
 
 void ManagePasswordsUIController::ShowBubble() {
-  // TODO(crbug.com/432429605): Implement.
+  if (TabDialogs* tab_dialogs = TabDialogs::FromWebContents(web_contents())) {
+    tab_dialogs->ShowManagePasswordsBubble(!IsAutomaticallyOpeningBubble());
+  }
 }
 
 void ManagePasswordsUIController::HideBubble() {
-  HidePasswordBubble();
+  if (TabDialogs* tab_dialogs = TabDialogs::FromWebContents(web_contents())) {
+    tab_dialogs->HideManagePasswordsBubble();
+  }
 }
 
 autofill::BubbleType ManagePasswordsUIController::GetBubbleType() const {
