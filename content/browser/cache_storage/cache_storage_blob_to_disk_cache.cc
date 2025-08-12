@@ -83,8 +83,7 @@ void CacheStorageBlobToDiskCache::OnComplete(int32_t status,
   received_on_complete_ = true;
   expected_total_size_ = data_length;
   if (data_pipe_closed_) {
-    RunCallback(static_cast<uint64_t>(cache_entry_offset_) ==
-                expected_total_size_);
+    RunCallback(cache_entry_offset_ == expected_total_size_);
   }
 }
 
@@ -129,8 +128,7 @@ void CacheStorageBlobToDiskCache::OnDataPipeReadable(MojoResult unused) {
     // Done reading, but only signal success if OnComplete has also been called.
     data_pipe_closed_ = true;
     if (received_on_complete_) {
-      RunCallback(static_cast<uint64_t>(cache_entry_offset_) ==
-                  expected_total_size_);
+      RunCallback(cache_entry_offset_ == expected_total_size_);
     }
     return;
   }
@@ -149,8 +147,9 @@ void CacheStorageBlobToDiskCache::OnDataPipeReadable(MojoResult unused) {
                      weak_ptr_factory_.GetWeakPtr(), bytes_to_read);
 
   int rv = entry_->WriteData(
-      disk_cache_body_index_, cache_entry_offset_, buffer.get(), bytes_to_read,
-      std::move(cache_write_callback), true /* truncate */);
+      disk_cache_body_index_, base::checked_cast<int64_t>(cache_entry_offset_),
+      buffer.get(), bytes_to_read, std::move(cache_write_callback),
+      true /* truncate */);
 
   if (rv != net::ERR_IO_PENDING) {
     CacheStorageBlobToDiskCache::DidWriteDataToEntry(bytes_to_read, rv);
