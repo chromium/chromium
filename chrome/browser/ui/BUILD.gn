@@ -1152,8 +1152,6 @@ static_library("ui") {
       "webui/new_tab_page_third_party/new_tab_page_third_party_handler.h",
       "webui/new_tab_page_third_party/new_tab_page_third_party_ui.cc",
       "webui/new_tab_page_third_party/new_tab_page_third_party_ui.h",
-      "webui/ntp/cookie_controls_handler.cc",
-      "webui/ntp/cookie_controls_handler.h",
       "webui/ntp/core_app_launcher_handler.cc",
       "webui/ntp/core_app_launcher_handler.h",
       "webui/ntp/new_tab_ui.cc",

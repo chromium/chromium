@@ -14,7 +14,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
@@ -23,12 +22,7 @@ class Profile;
 
 namespace base {
 class RefCountedMemory;
-class Value;
 }  // namespace base
-
-namespace policy {
-class PolicyChangeRegistrar;
-}
 
 namespace ui {
 class ColorProvider;
@@ -86,28 +80,15 @@ class NTPResourceCache : public ThemeServiceObserver,
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* updated_theme) override;
 
-  void OnPreferenceChanged();
-
-  void OnPolicyChanged(const base::Value* previous, const base::Value* current);
-
   // Invalidates the NTPResourceCache.
   void Invalidate();
 
-  // Helper to determine if the resource cache for the main (not incognito or
-  // guest) HTML should be invalidated.
-  // This is called on every page load, and can be used to check values that
-  // don't generate a notification when changed (e.g., system preferences).
-  bool NewTabHTMLNeedsRefresh();
-
-  void CreateNewTabHTML();
   void CreateNewTabCSS(const content::WebContents::Getter& wc_getter);
 
   void CreateNewTabIncognitoHTML(const content::WebContents::Getter& wc_getter);
   void CreateNewTabIncognitoCSS(const content::WebContents::Getter& wc_getter);
 
   void CreateNewTabGuestHTML();
-
-  void SetDarkKey(base::Value* dict);
 
   raw_ptr<Profile> profile_;
 
@@ -116,16 +97,9 @@ class NTPResourceCache : public ThemeServiceObserver,
   scoped_refptr<base::RefCountedMemory> new_tab_incognito_html_;
   scoped_refptr<base::RefCountedMemory> new_tab_incognito_css_;
   scoped_refptr<base::RefCountedMemory> new_tab_non_primary_otr_html_;
-  PrefChangeRegistrar profile_pref_change_registrar_;
-  PrefChangeRegistrar local_state_pref_change_registrar_;
-
-  // Set based on platform_util::IsSwipeTrackingFromScrollEventsEnabled.
-  bool is_swipe_tracking_from_scroll_events_enabled_;
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       theme_observation_{this};
-
-  std::unique_ptr<policy::PolicyChangeRegistrar> policy_change_registrar_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NTP_NTP_RESOURCE_CACHE_H_
