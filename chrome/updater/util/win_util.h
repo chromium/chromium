@@ -473,6 +473,9 @@ bool StoreRunTimeEnrollmentToken(const std::string& enrollment_token);
 // Returns `true` if the service exists and is not deleted or disabled.
 [[nodiscard]] bool IsServiceEnabled(const std::wstring& service_name);
 
+// Get the command line of a process, given the process id.
+HResultOr<std::wstring> GetCommandLineForPid(DWORD process_id);
+
 // Logs the COM client PID when called from a COM server.
 void LogComCaller(base::cstring_view caller_func);
 

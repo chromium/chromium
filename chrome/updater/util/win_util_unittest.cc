@@ -670,4 +670,11 @@ TEST(WinUtil, IsServicePresent_IsServiceEnabled_NonAdmin) {
   EXPECT_FALSE(IsServiceEnabled(L"ScheduleFooBar"));
 }
 
+TEST(WinUtil, GetCommandLineForPid) {
+  const HResultOr<std::wstring> cmd_line_for_pid =
+      GetCommandLineForPid(::GetCurrentProcessId());
+  ASSERT_TRUE(cmd_line_for_pid.has_value());
+  EXPECT_STREQ(cmd_line_for_pid->c_str(), ::GetCommandLine());
+}
+
 }  // namespace updater::test
