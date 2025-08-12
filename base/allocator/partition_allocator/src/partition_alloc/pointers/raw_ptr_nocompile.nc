@@ -121,10 +121,11 @@ void CrossKindConversionFromMayDangle() {
   // Conversions may add the `kMayDangle` trait, but not remove it.
   DanglingPtrA ptr_a1 = new TypeA();
   DanglingPtrB ptr_b1 = new TypeB();
+  // TODO(https://crbug.com/437910658): remove regex check for both diagnostics once we roll clang
   raw_ptr<TypeA> ptr_a2 = ptr_a1;             // expected-error {{no viable conversion from 'raw_ptr<[...], base::RawPtrTraits::kMayDangle aka 1>' to 'raw_ptr<[...], (default) RawPtrTraits::kEmpty aka 0>'}}
-  raw_ptr<TypeA> ptr_a3(ptr_a1);              // expected-error@*:* {{static assertion failed due to requirement 'Traits == (raw_ptr<(anonymous namespace)::TypeA, partition_alloc::internal::RawPtrTraits::kMayDangle>::Traits | RawPtrTraits::kMayDangle)'}}
+  raw_ptr<TypeA> ptr_a3(ptr_a1);              // expected-error-re@*:* {{static assertion failed due to requirement 'Traits == ({{(base::)?}}raw_ptr<(anonymous namespace)::TypeA, partition_alloc::internal::RawPtrTraits::kMayDangle>::Traits | {{(partition_alloc::internal::)?}}RawPtrTraits::kMayDangle)'}}
   raw_ptr<TypeA> ptr_a4 = std::move(ptr_a1);  // expected-error-re {{no viable conversion from '__libcpp_remove_reference_t<{{(base::)?}}raw_ptr<{{(\(anonymous namespace\)::)?}}TypeA, partition_alloc::internal::RawPtrTraits::kMayDangle> &>' (aka 'base::raw_ptr<(anonymous namespace)::TypeA, partition_alloc::internal::RawPtrTraits::kMayDangle>') to 'raw_ptr<TypeA>'}}
-  raw_ptr<TypeB> ptr_b2(std::move(ptr_b1));   // expected-error@*:* {{static assertion failed due to requirement 'Traits == (raw_ptr<(anonymous namespace)::TypeB, partition_alloc::internal::RawPtrTraits::kMayDangle>::Traits | RawPtrTraits::kMayDangle)'}}
+  raw_ptr<TypeB> ptr_b2(std::move(ptr_b1));   // expected-error-re@*:* {{static assertion failed due to requirement 'Traits == ({{(base::)?}}raw_ptr<(anonymous namespace)::TypeB, partition_alloc::internal::RawPtrTraits::kMayDangle>::Traits | {{(partition_alloc::internal::)?}}RawPtrTraits::kMayDangle)'}}
 }
 
 void CrossKindConversionFromDummy() {
@@ -132,9 +133,9 @@ void CrossKindConversionFromDummy() {
   raw_ptr<TypeA, base::RawPtrTraits::kDummyForTest> ptr_a1 = new TypeA();
   raw_ptr<TypeB, base::RawPtrTraits::kDummyForTest> ptr_b1 = new TypeB();
   DanglingPtrA ptr_a2 = ptr_a1;             // expected-error {{no viable conversion from 'raw_ptr<[...], base::RawPtrTraits::kDummyForTest aka 2048>' to 'raw_ptr<[...], base::RawPtrTraits::kMayDangle aka 1>'}}
-  DanglingPtrA ptr_a3(ptr_a1);              // expected-error@*:* {{static assertion failed due to requirement 'Traits == (raw_ptr<(anonymous namespace)::TypeA, partition_alloc::internal::RawPtrTraits::kDummyForTest>::Traits | RawPtrTraits::kMayDangle)'}}
+  DanglingPtrA ptr_a3(ptr_a1);              // expected-error-re@*:* {{static assertion failed due to requirement 'Traits == ({{(base::)?}}raw_ptr<(anonymous namespace)::TypeA, partition_alloc::internal::RawPtrTraits::kDummyForTest>::Traits | {{(partition_alloc::internal::)?}}RawPtrTraits::kMayDangle)'}}
   DanglingPtrA ptr_a4 = std::move(ptr_a1);  // expected-error-re {{no viable conversion from '__libcpp_remove_reference_t<{{(base::)?}}raw_ptr<{{(\(anonymous namespace\)::)?}}TypeA, partition_alloc::internal::RawPtrTraits::kDummyForTest> &>' (aka 'base::raw_ptr<(anonymous namespace)::TypeA, partition_alloc::internal::RawPtrTraits::kDummyForTest>') to 'DanglingPtrA' (aka 'raw_ptr<TypeA, base::RawPtrTraits::kMayDangle>')}}
-  DanglingPtrB ptr_b2(std::move(ptr_b1));   // expected-error@*:* {{static assertion failed due to requirement 'Traits == (raw_ptr<(anonymous namespace)::TypeB, partition_alloc::internal::RawPtrTraits::kDummyForTest>::Traits | RawPtrTraits::kMayDangle)'}}
+  DanglingPtrB ptr_b2(std::move(ptr_b1));   // expected-error-re@*:* {{static assertion failed due to requirement 'Traits == ({{(base::)?}}raw_ptr<(anonymous namespace)::TypeB, partition_alloc::internal::RawPtrTraits::kDummyForTest>::Traits | {{(partition_alloc::internal::)?}}RawPtrTraits::kMayDangle)'}}
 }
 
 void CantStorePointerObtainedFromEphemeralRawAddr() {
