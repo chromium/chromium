@@ -50,6 +50,10 @@ BASE_FEATURE(kCheckIfSubmittedFormIdenticalToObserved,
              "CheckIfSubmittedFormIdenticalToObserved",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCheckLoginStateBeforePasswordChange,
+             "CheckLoginStateBeforePasswordChange",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClearUndecryptablePasswords,
              "ClearUndecryptablePasswords",
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)

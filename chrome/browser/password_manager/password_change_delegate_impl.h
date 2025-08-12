@@ -32,6 +32,7 @@ class PasswordFormManager;
 class ChangePasswordFormFillingSubmissionHelper;
 class ChangePasswordFormFinder;
 class CrossOriginNavigationObserver;
+class LoginStateChecker;
 class ModelQualityLogsUploader;
 class PasswordChangeUIController;
 class PasswordChangeHats;
@@ -64,6 +65,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
 #if defined(UNIT_TEST)
   ModelQualityLogsUploader* logs_uploader() { return logs_uploader_.get(); }
   OtpDetectionHelper* otp_helper() { return otp_detection_.get(); }
+  LoginStateChecker* login_checker() { return login_state_checker_.get(); }
   ChangePasswordFormFinder* form_finder() { return form_finder_.get(); }
   content::WebContents* executor() { return executor_.get(); }
   PasswordChangeUIController* ui_controller() { return ui_controller_.get(); }
@@ -98,6 +100,9 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   void OnTabWillDetach(tabs::TabInterface* tab_interface,
                        tabs::TabInterface::DetachReason reason);
 
+  void StartBackgroundTab();
+
+  void OnLoginStateCheckResult(bool is_logged_in);
   // Updates `current_state_` and notifies `observers_`.
   void UpdateState(State new_state);
 
@@ -136,6 +141,9 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   // Helper class which submits a form and verifies submission.
   std::unique_ptr<ChangePasswordFormFillingSubmissionHelper>
       submission_verifier_;
+
+  // Helper class for checking the login state in the main tab.
+  std::unique_ptr<LoginStateChecker> login_state_checker_;
 
   base::ObserverList<PasswordChangeDelegate::Observer, /*check_empty=*/true>
       observers_;

@@ -57,6 +57,10 @@ BASE_DECLARE_FEATURE(kBiometricTouchToFill);
 // login success/failure.
 BASE_DECLARE_FEATURE(kCheckIfSubmittedFormIdenticalToObserved);
 
+// Identifies if the user is fully signed in in the main tab
+// before starting the Automated Password Change flow.
+BASE_DECLARE_FEATURE(kCheckLoginStateBeforePasswordChange);
+
 // Delete undecryptable passwords from the login database.
 BASE_DECLARE_FEATURE(kClearUndecryptablePasswords);
 

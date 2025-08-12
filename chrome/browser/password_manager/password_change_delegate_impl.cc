@@ -19,6 +19,7 @@
 #include "chrome/browser/password_manager/password_change/change_password_form_finder.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/cross_origin_navigation_observer.h"
+#include "chrome/browser/password_manager/password_change/login_state_checker.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change/otp_detection_helper.h"
 #include "chrome/browser/password_manager/password_change/password_change_hats.h"
@@ -296,9 +297,30 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
   LogPasswordSavedOnStart(originator_);
   UpdateState(State::kWaitingForChangePasswordForm);
 
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kCheckLoginStateBeforePasswordChange)) {
+    login_state_checker_ = std::make_unique<LoginStateChecker>(
+        originator_.get(),
+        base::BindOnce(&PasswordChangeDelegateImpl::OnLoginStateCheckResult,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    StartBackgroundTab();
+  }
+}
+
+void PasswordChangeDelegateImpl::OnLoginStateCheckResult(bool is_logged_in) {
+  login_state_checker_.reset();
+  if (!is_logged_in) {
+    // TODO(crbug.com/436537301): Show an error instead of canceling the flow.
+    CancelPasswordChangeFlow();
+    return;
+  }
+  StartBackgroundTab();
+}
+
+void PasswordChangeDelegateImpl::StartBackgroundTab() {
   executor_ = CreateWebContents(profile_, change_password_url_);
   CHECK(executor_);
-
   auto* client = ChromePasswordManagerClient::FromWebContents(executor_.get());
 
   navigation_observer_ = std::make_unique<CrossOriginNavigationObserver>(
@@ -383,6 +405,7 @@ void PasswordChangeDelegateImpl::OnTabWillDetach(
     // Reset pointers immediately to avoid keeping dangling pointer to the tab.
     originator_ = nullptr;
     navigation_observer_.reset();
+    login_state_checker_.reset();
     submission_verifier_.reset();
     ui_controller_.reset();
     form_finder_.reset();
