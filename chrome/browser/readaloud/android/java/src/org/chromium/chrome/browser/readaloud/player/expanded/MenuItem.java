@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.view.View.AccessibilityDelegate;
 import android.view.accessibility.AccessibilityEvent;
@@ -30,6 +32,7 @@ import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.readaloud.player.R;
+import org.chromium.chrome.browser.readaloud.player.TouchDelegateUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -65,6 +68,7 @@ public class MenuItem extends FrameLayout {
     private final ProgressBar mPlayButtonSpinner;
     private final String mLabel;
     private @Nullable Callback<Boolean> mToggleHandler;
+    private @Nullable TouchDelegate mTouchDelegate;
 
     /**
      * @param context Context.
@@ -190,6 +194,19 @@ public class MenuItem extends FrameLayout {
                         }
                     }
                 });
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (mTouchDelegate == null) {
+            mTouchDelegate = TouchDelegateUtil.createTouchDelegate(this, mPlayButton);
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return mTouchDelegate != null && mTouchDelegate.onTouchEvent(event);
     }
 
     void setToggleHandler(Callback<Boolean> handler) {
