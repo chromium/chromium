@@ -202,6 +202,7 @@ build_webui("build") {
     "site_settings/media_picker.ts",
     "site_settings/notifications_page.ts",
     "site_settings/pdf_documents.ts",
+    "site_settings/pdf_documents_page.ts",
     "site_settings/protected_content_page.ts",
     "site_settings/protocol_handlers.ts",
     "site_settings/settings_category_default_radio_group.ts",
