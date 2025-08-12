@@ -1237,29 +1237,8 @@ suite('NewTabPageAppTest', () => {
                   'NewTabPage.ComposeEntrypoint.Click.UserTextPresent', true));
         });
 
-    test(
-        'Clicking the scrim notifies handler of abandoned session',
-        async () => {
-          // Arrange.
-          composeboxHandler.reset();
-          assertEquals(
-              composeboxHandler.getCallCount('notifySessionAbandoned'), 0);
-          $$(app, '#searchbox')!.dispatchEvent(new Event('open-composebox'));
-          await microtasksFinished();
-          const composeboxScrim =
-              app.shadowRoot.querySelector<HTMLElement>('#composeboxScrim');
-          assertTrue(!!composeboxScrim);
-          composeboxScrim.click();
-          await microtasksFinished();
-
-          // Assert.
-          assertEquals(
-              composeboxHandler.getCallCount('notifySessionAbandoned'), 1);
-        });
-
     test('Propogate composebox text when closed', async () => {
       composeboxHandler.reset();
-      assertEquals(composeboxHandler.getCallCount('notifySessionAbandoned'), 0);
       $$(app, '#searchbox')!.dispatchEvent(new Event('open-composebox'));
       await microtasksFinished();
       const ntpComposebox = app.shadowRoot.querySelector('ntp-composebox');
@@ -1277,9 +1256,6 @@ suite('NewTabPageAppTest', () => {
           'hello',
           searchboxContainer!.shadowRoot!
               .querySelector<HTMLInputElement>('#input')!.value);
-
-      // Assert.
-      assertEquals(composeboxHandler.getCallCount('notifySessionAbandoned'), 1);
     });
     suite('Close options disabled', () => {
       suiteSetup(() => {

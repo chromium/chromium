@@ -146,7 +146,6 @@ export class ComposeboxElement extends I18nMixinLit
     this.searchboxCallbackRouter_ =
         ComposeboxProxyImpl.getInstance().searchboxCallbackRouter;
     this.searchboxHandler_ = ComposeboxProxyImpl.getInstance().searchboxHandler;
-    this.pageHandler_.notifySessionStarted();
   }
 
   override connectedCallback() {
@@ -210,10 +209,15 @@ export class ComposeboxElement extends I18nMixinLit
       this.searchboxHandler_.queryAutocomplete(
           stringToMojoString16(this.$.input.value), false);
     }
+
+    this.pageHandler_.notifySessionStarted();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+
+    this.pageHandler_.notifySessionAbandoned();
+
     this.listenerIds.forEach(
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.searchboxListenerIds.forEach(
