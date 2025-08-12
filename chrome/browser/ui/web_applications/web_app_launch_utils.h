@@ -25,6 +25,7 @@
 
 class Profile;
 class Browser;
+class BrowserWindowInterface;
 class GURL;
 enum class WindowOpenDisposition;
 struct NavigateParams;
@@ -95,7 +96,7 @@ Browser* ReparentWebContentsIntoAppBrowser(
 void SetWebContentsIsPinnedHomeTab(content::WebContents* contents);
 
 std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
-    Browser* browser);
+    BrowserWindowInterface* bwi);
 
 void MaybeAddPinnedHomeTab(Browser* browser, const std::string& app_id);
 

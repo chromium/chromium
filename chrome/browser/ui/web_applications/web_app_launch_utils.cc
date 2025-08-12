@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -593,7 +594,8 @@ Browser* ReparentWebContentsIntoAppBrowser(
 }
 
 std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
-    Browser* browser) {
+    BrowserWindowInterface* bwi) {
+  Browser* const browser = bwi->GetBrowserForMigrationOnly();
   std::unique_ptr<AppBrowserController> controller;
   const webapps::AppId app_id =
       GetAppIdFromApplicationName(browser->app_name());

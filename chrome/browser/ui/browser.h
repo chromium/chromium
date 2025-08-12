@@ -478,10 +478,10 @@ class Browser : public TabStripModelObserver,
     return should_trigger_session_restore_;
   }
   const web_app::AppBrowserController* app_controller() const {
-    return app_controller_.get();
+    return GetAppBrowserController();
   }
   web_app::AppBrowserController* app_controller() {
-    return app_controller_.get();
+    return GetAppBrowserController();
   }
   BrowserWindowFeatures* browser_window_features() const {
     return features_.get();
@@ -1364,11 +1364,6 @@ class Browser : public TabStripModelObserver,
 
   // Dialog box used for opening and saving files.
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-
-  // Helper which handles bookmark app specific browser configuration.
-  // This must be initialized before |command_controller_| to ensure the correct
-  // set of commands are enabled.
-  const std::unique_ptr<web_app::AppBrowserController> app_controller_;
 
   // True if the browser window has been shown at least once.
   bool window_has_shown_;

@@ -93,6 +93,7 @@
 #include "chrome/browser/ui/views/upgrade_notification_controller.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_interface_impl.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/collaboration/public/collaboration_service.h"
@@ -146,6 +147,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // This is used only for the controllers which will be created on demand
   // later.
   browser_ = browser;
+
+  app_browser_controller_ = web_app::MaybeCreateAppBrowserController(browser);
 
   browser_actions_ = std::make_unique<BrowserActions>(browser);
 
@@ -250,7 +253,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   tab_menu_model_delegate_ =
       std::make_unique<chrome::BrowserTabMenuModelDelegate>(
           browser->GetSessionID(), browser->GetProfile(),
-          browser->GetAppBrowserController());
+          app_browser_controller_.get());
 
   tab_group_deletion_dialog_controller_ =
       std::make_unique<tab_groups::DeletionDialogController>(

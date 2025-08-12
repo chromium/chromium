@@ -154,6 +154,10 @@ namespace split_tabs {
 class SplitTabScrimController;
 }  // namespace split_tabs
 
+namespace web_app {
+class AppBrowserController;
+}  // namespace web_app
+
 // This class owns the core controllers for features that are scoped to a given
 // browser window on desktop.
 //
@@ -186,6 +190,14 @@ class BrowserWindowFeatures {
   void TearDownPreBrowserWindowDestruction();
 
   // Public accessors for features:
+  web_app::AppBrowserController* app_browser_controller() {
+    return app_browser_controller_.get();
+  }
+
+  const web_app::AppBrowserController* app_browser_controller() const {
+    return app_browser_controller_.get();
+  }
+
   BrowserActions* browser_actions() { return browser_actions_.get(); }
 
   chrome::BrowserCommandController* browser_command_controller() {
@@ -441,6 +453,11 @@ class BrowserWindowFeatures {
 
   // Features that are per-browser window will each have a controller. e.g.
   // std::unique_ptr<FooFeature> foo_feature_;
+
+  // Helper which handles bookmark app specific browser configuration.
+  // This must be initialized before |command_controller_| to ensure the correct
+  // set of commands are enabled.
+  std::unique_ptr<web_app::AppBrowserController> app_browser_controller_;
 
   std::unique_ptr<BrowserActions> browser_actions_;
 
