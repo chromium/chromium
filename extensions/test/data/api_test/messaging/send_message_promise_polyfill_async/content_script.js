@@ -12,7 +12,7 @@ was received`
 
 chrome.test.runTests([
   // Tests that when the listener holds a reference to sendResponse, and
-  // indicates it will reply asynchronously, but then never responds we
+  // indicates it will reply asynchronously but then never responds, we
   // eventually get an error that it never responded.
   async function onMessageHoldSendResponseReferenceAndNeverRespond() {
     let assertPromiseRejects = chrome.test.assertPromiseRejects(
@@ -24,22 +24,21 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  // TODO(crbug.com/40753031): If the
+  // extensions_features::kOneTimeMessageUnserializableResponseClosesChannel
+  // feature is the default then the tests for
+  // PolyfillSupportUnserializableResponseMessagingApiTest can overwrite the two
+  // below.
+
   // Tests that when the listener responds synchronously with a value that
   // cannot be serialized into JSON the sender is eventually notified of the
   // error.
-  // TODO(crbug.com/40753031): Move this test to the synchronous test version
-  // once it's fixed and responds synchronously.
   async function onMessageSyncRespondsWithUnserializableValue() {
     let responsePromise = chrome.runtime.sendMessage(
         'respond synchronously with an unserializable value');
     await chrome.test.sendMessage('shutdown_worker');
     let response = await responsePromise;
     chrome.test.assertEq(undefined, response);
-    // TODO(crbug.com/40753031): This is the future desired behavior.
-    // await chrome.test.assertPromiseRejects(
-    //     chrome.runtime.sendMessage(
-    //         'respond synchronously with an unserializable value'),
-    //     asyncResponseFailureError);
     chrome.test.succeed();
   },
 

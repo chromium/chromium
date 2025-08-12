@@ -267,6 +267,14 @@ BASE_DECLARE_FEATURE(kOptimizeServiceWorkerStartRequests);
 // TODO(crbug.com/424432184): Clean up when experiment is complete.
 BASE_DECLARE_FEATURE(kAvoidCloneArgsOnExtensionFunctionDispatch);
 
+// When enabled, one time message senders that are responded to with
+// `sendResponse(<non-JSON-serializable-value>)` from the message listener will
+// report an error to the message sender and close the message channel. If
+// `sendResponse(<non-JSON-serializable-value>)` is sent after
+// `sendResponse(<JSON-serializable-value>)` then this has no effect because the
+// channel would've already been closed by the first valid response.
+BASE_DECLARE_FEATURE(kOneTimeMessageUnserializableResponseClosesChannel);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

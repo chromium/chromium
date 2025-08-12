@@ -740,6 +740,45 @@ IN_PROC_BROWSER_TEST_F(PolyfillSupportMessagingApiTest,
   }
 }
 
+class UnserializableOneTimeMessageResponseMessagingApiTest
+    : public MessagingApiTest {
+ public:
+  UnserializableOneTimeMessageResponseMessagingApiTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::
+            kOneTimeMessageUnserializableResponseClosesChannel);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests similar behavior to PolyfillSupportMessagingApiTest, but specifically
+// when the message listener attempts to send unserializable data back to the
+// sender. In this case we close the channel and return an error. It is closer
+// to the behavior of mozilla/webextension-polyfill
+// (https://github.com/mozilla/webextension-polyfill), but in that an error is
+// returned.
+IN_PROC_BROWSER_TEST_F(UnserializableOneTimeMessageResponseMessagingApiTest,
+                       UnserializableResponseClosesChannel) {
+  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
+      "messaging/send_message_promise_polyfill_unserializable")));
+
+  // Open example.com where content script is injected and runtime.sendMessage()
+  // is called.
+  ResultCatcher result_catcher;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
+
+  // Confirm content script sender gets response with the expected value.
+  {
+    SCOPED_TRACE(
+        "waiting for content script message sender to receive response from "
+        "background message listener");
+    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  }
+}
+
 // Helps in testing that
 // extensions_features::kRuntimeOnMessagePromiseReturnSupport doesn't regress
 // asynchronous listener behavior when multiple listeners can return for a

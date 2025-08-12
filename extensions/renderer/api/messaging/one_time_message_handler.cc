@@ -648,16 +648,27 @@ void OneTimeMessageHandler::OnOneTimeMessageResponse(
   else
     value = v8::Undefined(isolate);
 
+  ScriptContext* script_context = GetScriptContextFromV8Context(context);
+
   std::string error;
   std::unique_ptr<Message> message = messaging_util::MessageFromV8(
       context, value, port_id.serialization_format, &error);
   if (!message) {
+    // Throw an error in the listener context.
     arguments->ThrowTypeError(error);
+    if (base::FeatureList::IsEnabled(
+            extensions_features::
+                kOneTimeMessageUnserializableResponseClosesChannel)) {
+      NativeRendererMessagingService* messaging_service =
+          bindings_system_->messaging_service();
+      messaging_service->CloseMessagePort(script_context, port_id,
+                                          /*close_channel=*/true, error);
+    }
     return;
   }
+
   // If the MessagePortHost is still alive return the response. But the listener
   // might be replying after the channel has been closed.
-  ScriptContext* script_context = GetScriptContextFromV8Context(context);
   if (auto* message_port_host =
           bindings_system_->messaging_service()->GetMessagePortHostIfExists(
               script_context, port_id)) {
