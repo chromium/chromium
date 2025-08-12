@@ -12,7 +12,6 @@
     "run_shell_command(grep -R)",
     "run_shell_command(git grep)",
     "run_shell_command(gn ls)",
-    "run_shell_command(gn clean)",
-    "read_many_files"
+    "run_shell_command(gn clean)"
   ]
 }
