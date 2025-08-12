@@ -338,8 +338,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_GetTargetTabUrl) {
                                 ->GetWebContentsAt(0)
                                 ->GetLastCommittedURL());
 
-    ASSERT_EQ(expected_url,
-              chrome::GetTargetTabUrl(browser()->session_id(), 0));
+    ASSERT_EQ(expected_url, chrome::GetTargetTabUrl(browser(), 0));
 
     // Open a DevTools window.
     DevToolsWindow* devtools_window =
@@ -347,11 +346,9 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_GetTargetTabUrl) {
 
     // Verify the expected url returned from GetTargetTabUrl against a
     // DevTools window.
-    ASSERT_EQ(expected_url, chrome::GetTargetTabUrl(
-                                DevToolsWindowTesting::Get(devtools_window)
-                                    ->browser()
-                                    ->session_id(),
-                                0));
+    ASSERT_EQ(expected_url,
+              chrome::GetTargetTabUrl(
+                  DevToolsWindowTesting::Get(devtools_window)->browser(), 0));
 
     DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
   }

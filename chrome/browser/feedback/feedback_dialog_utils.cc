@@ -9,8 +9,6 @@
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
@@ -20,23 +18,23 @@
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "components/account_id/account_id.h"
+#include "ui/base/base_window.h"
 #endif
 
 namespace chrome {
 
-GURL GetTargetTabUrl(SessionID session_id, int index) {
-  Browser* browser = chrome::FindBrowserWithID(session_id);
+GURL GetTargetTabUrl(BrowserWindowInterface* browser, int index) {
   // Sanity checks.
-  if (!browser || index >= browser->tab_strip_model()->count())
+  if (!browser || index >= browser->GetTabStripModel()->count()) {
     return GURL();
+  }
 
   if (index >= 0) {
     content::WebContents* target_tab =
-        browser->tab_strip_model()->GetWebContentsAt(index);
+        browser->GetTabStripModel()->GetWebContentsAt(index);
     if (target_tab) {
-      if (browser->is_type_devtools()) {
+      if (browser->GetType() == BrowserWindowInterface::TYPE_DEVTOOLS) {
         if (auto* dev_tools_window =
                 DevToolsWindow::AsDevToolsWindow(target_tab)) {
           target_tab = dev_tools_window->GetInspectedWebContents();
