@@ -230,6 +230,7 @@ AwBrowserContext::AwBrowserContext(std::string name,
 
   EnsureResourceContextInitialized();
   prefetch_manager_ = std::make_unique<AwPrefetchManager>(this);
+  preconnector_ = std::make_unique<AwPreconnector>(this);
 
   // This should be initialized as soon as possible when creating the profile,
   // in order to load the database from disk.
@@ -659,7 +660,8 @@ AwBrowserContext::GetJavaBrowserContext() {
     obj_ = Java_AwBrowserContext_create(
         env, reinterpret_cast<intptr_t>(this), name_, relative_path_.value(),
         GetCookieManager()->GetJavaCookieManager(),
-        prefetch_manager_->GetJavaPrefetchManager(), IsDefaultBrowserContext());
+        prefetch_manager_->GetJavaPrefetchManager(),
+        preconnector_->GetJavaAwPreconnector(), IsDefaultBrowserContext());
   }
   return base::android::ScopedJavaLocalRef<jobject>(obj_);
 }

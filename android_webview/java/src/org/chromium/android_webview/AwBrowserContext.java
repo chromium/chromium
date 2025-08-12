@@ -107,6 +107,7 @@ public class AwBrowserContext implements BrowserContextHandle {
     @NonNull private final SharedPreferences mSharedPreferences;
 
     private final AwPrefetchManager mPrefetchManager;
+    private final AwPreconnector mPreconnector;
 
     /**
      * Cache key for MediaIntegrityProviders. Ensures that values are keyed by
@@ -160,6 +161,7 @@ public class AwBrowserContext implements BrowserContextHandle {
                 AwBrowserContextJni.get().getDefaultContextRelativePath(),
                 AwCookieManager.getDefaultCookieManager(),
                 new AwPrefetchManager(0),
+                new AwPreconnector(0),
                 true);
     }
 
@@ -169,12 +171,14 @@ public class AwBrowserContext implements BrowserContextHandle {
             @NonNull String relativePath,
             @NonNull AwCookieManager cookieManager,
             @NonNull AwPrefetchManager prefetchManager,
+            @NonNull AwPreconnector preconnector,
             boolean isDefault) {
         mNativeAwBrowserContext = nativeAwBrowserContext;
         mName = name;
         mRelativePath = relativePath;
         mCookieManager = cookieManager;
         mPrefetchManager = prefetchManager;
+        mPreconnector = preconnector;
         mIsDefault = isDefault;
 
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
@@ -333,6 +337,11 @@ public class AwBrowserContext implements BrowserContextHandle {
         return mPrefetchManager;
     }
 
+    @NonNull
+    public AwPreconnector getPreconnector() {
+        return mPreconnector;
+    }
+
     private void migrateGeolocationPreferences() {
         // Prefs dir will be created if it doesn't exist, so must allow writes
         // for this and so that the actual prefs can be written to the new
@@ -454,6 +463,7 @@ public class AwBrowserContext implements BrowserContextHandle {
             @JniType("std::string") String relativePath,
             AwCookieManager cookieManager,
             AwPrefetchManager prefetchManager,
+            AwPreconnector preconnector,
             boolean isDefault) {
         return new AwBrowserContext(
                 nativeAwBrowserContext,
@@ -461,6 +471,7 @@ public class AwBrowserContext implements BrowserContextHandle {
                 relativePath,
                 cookieManager,
                 prefetchManager,
+                preconnector,
                 isDefault);
     }
 

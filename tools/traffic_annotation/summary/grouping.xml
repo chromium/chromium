@@ -28,6 +28,7 @@ after discussions on the right group.
       <annotation id="rlz"/>
       <annotation id="webapk_create"/>
       <annotation id="webapk_update"/>
+      <annotation id="webview_preconnect"/>
       <annotation id="webview_proxy_config"/>
     </sender>
     <sender name="Feed Library">
