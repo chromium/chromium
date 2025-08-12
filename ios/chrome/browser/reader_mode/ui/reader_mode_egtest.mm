@@ -1067,4 +1067,29 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   ExpectFontSize(1.0 * kReaderModeBaseFontSize);
 }
 
+// Tests that the contextual chip is visible in Incognito.
+- (void)testContextualChipVisibleInIncognito {
+  // Open a web page in Incognito.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Tap on the contextual panel entrypoint.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   @"ContextualPanelEntrypointImageViewAXID")]
+      performAction:grey_tap()];
+
+  // Reader mode and the incognito badge should be visible.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kBadgeButtonIncognitoAccessibilityIdentifier)];
+}
+
 @end

@@ -342,7 +342,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     PriceNotificationsTabHelper::CreateForWebState(web_state);
   }
 
-  if (!for_lens_overlay && !is_off_the_record && IsContextualPanelEnabled()) {
+  if (!for_lens_overlay && IsContextualPanelEnabled()) {
     ContextualPanelModelService* model_service =
         ContextualPanelModelServiceFactory::GetForProfile(profile);
     ContextualPanelTabHelper::CreateForWebState(web_state,

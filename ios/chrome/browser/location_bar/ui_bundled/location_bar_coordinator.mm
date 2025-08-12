@@ -252,7 +252,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       didMoveToParentViewController:self.viewController];
   self.viewController.offsetProvider = [self.omniboxCoordinator offsetProvider];
 
-  if (!isIncognito && IsContextualPanelEnabled()) {
+  if (IsContextualPanelEnabled()) {
     self.contextualPanelEntrypointCoordinator =
         [[ContextualPanelEntrypointCoordinator alloc]
             initWithBaseViewController:self.viewController

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_controls_view.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
@@ -52,6 +53,9 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
+  if (self.browser->GetProfile()->IsOffTheRecord()) {
+    _navigationController.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+  }
   _navigationController.presentationController.delegate = self;
   // Initialize custom content detent.
   UISheetPresentationControllerDetent* contentDetent =
