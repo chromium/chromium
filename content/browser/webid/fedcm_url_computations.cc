@@ -9,9 +9,9 @@
 #include "base/containers/contains.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
+#include "content/browser/webid/delegation/sd_jwt.h"
 #include "content/browser/webid/fedcm_mappers.h"
 #include "content/browser/webid/flags.h"
-#include "content/browser/webid/sd_jwt.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 

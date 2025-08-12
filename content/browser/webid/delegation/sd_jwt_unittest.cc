@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/sd_jwt.h"
+#include "content/browser/webid/delegation/sd_jwt.h"
 
 #include "base/base64.h"
 #include "base/base64url.h"

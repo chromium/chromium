@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/federated_sd_jwt_handler.h"
+#include "content/browser/webid/delegation/federated_sd_jwt_handler.h"
 
 #include <string>
 #include <vector>
@@ -14,11 +14,11 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "content/browser/webid/delegation/jwt_signer.h"
+#include "content/browser/webid/delegation/sd_jwt.h"
 #include "content/browser/webid/fedcm_mappers.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/flags.h"
-#include "content/browser/webid/jwt_signer.h"
-#include "content/browser/webid/sd_jwt.h"
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
 #include "crypto/sha2.h"

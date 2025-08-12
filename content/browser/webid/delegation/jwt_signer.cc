@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/jwt_signer.h"
+#include "content/browser/webid/delegation/jwt_signer.h"
 
 #include <map>
 
@@ -15,7 +15,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "content/browser/webid/sd_jwt.h"
+#include "content/browser/webid/delegation/sd_jwt.h"
 #include "crypto/openssl_util.h"
 #include "crypto/random.h"
 #include "crypto/sign.h"

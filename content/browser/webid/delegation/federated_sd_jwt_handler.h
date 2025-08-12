@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBID_FEDERATED_SDJWT_HANDLER_H_
-#define CONTENT_BROWSER_WEBID_FEDERATED_SDJWT_HANDLER_H_
+#ifndef CONTENT_BROWSER_WEBID_DELEGATION_FEDERATED_SD_JWT_HANDLER_H_
+#define CONTENT_BROWSER_WEBID_DELEGATION_FEDERATED_SD_JWT_HANDLER_H_
 
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/webid/sd_jwt.h"
+#include "content/browser/webid/delegation/sd_jwt.h"
 #include "crypto/keypair.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
@@ -58,4 +58,4 @@ class FederatedSdJwtHandler {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_WEBID_FEDERATED_SDJWT_HANDLER_H_
+#endif  // CONTENT_BROWSER_WEBID_DELEGATION_FEDERATED_SD_JWT_HANDLER_H_
