@@ -120,7 +120,7 @@ public class QuickDeleteDialogDelegateTest {
     }
 
     private int getNumberOfTabsInCurrentTabModel() {
-        return mActivity.getCurrentTabModel().getCount();
+        return ThreadUtils.runOnUiThreadBlocking(() -> mActivity.getCurrentTabModel().getCount());
     }
 
     @Test

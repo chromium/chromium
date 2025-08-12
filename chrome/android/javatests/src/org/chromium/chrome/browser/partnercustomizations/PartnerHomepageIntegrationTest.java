@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -177,45 +176,48 @@ public class PartnerHomepageIntegrationTest {
     public void testCloseAllTabs() {
         final CallbackHelper tabClosed = new CallbackHelper();
         final TabModel tabModel = mActivityTestRule.getActivity().getCurrentTabModel();
-        InstrumentationRegistry.getInstrumentation()
-                .runOnMainSync(
-                        () -> {
-                            tabModel.addObserver(
-                                    new TabModelObserver() {
-                                        @Override
-                                        public void onFinishingTabClosure(
-                                                Tab tab, @TabClosingSource int closingSource) {
-                                            if (tabModel.getCount() == 0) tabClosed.notifyCalled();
-                                        }
-                                    });
-                            TabClosureParams params =
-                                    TabClosureParams.closeAllTabs().uponExit(false).build();
-                            TabModelSelector selector =
-                                    mActivityTestRule.getActivity().getTabModelSelector();
-                            selector.getModel(false)
-                                    .getTabRemover()
-                                    .closeTabs(params, /* allowDialog= */ false);
-                            selector.getModel(true)
-                                    .getTabRemover()
-                                    .closeTabs(params, /* allowDialog= */ false);
-                        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    tabModel.addObserver(
+                            new TabModelObserver() {
+                                @Override
+                                public void onFinishingTabClosure(
+                                        Tab tab, @TabClosingSource int closingSource) {
+                                    if (tabModel.getCount() == 0) tabClosed.notifyCalled();
+                                }
+                            });
+                    TabClosureParams params =
+                            TabClosureParams.closeAllTabs().uponExit(false).build();
+                    TabModelSelector selector =
+                            mActivityTestRule.getActivity().getTabModelSelector();
+                    selector.getModel(false)
+                            .getTabRemover()
+                            .closeTabs(params, /* allowDialog= */ false);
+                    selector.getModel(true)
+                            .getTabRemover()
+                            .closeTabs(params, /* allowDialog= */ false);
+                });
 
         try {
             tabClosed.waitForCallback(0);
         } catch (TimeoutException e) {
             throw new AssertionError("Never closed all of the tabs", e);
         }
-        Assert.assertEquals(
-                "Expected no tabs to be present",
-                0,
-                mActivityTestRule.getActivity().getCurrentTabModel().getCount());
-        TabList fullModel =
-                mActivityTestRule.getActivity().getCurrentTabModel().getComprehensiveModel();
+        int tabCount =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mActivityTestRule.getActivity().getCurrentTabModel().getCount());
+        Assert.assertEquals("Expected no tabs to be present", 0, tabCount);
+        int fullModelCount =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getCurrentTabModel()
+                                        .getComprehensiveModel()
+                                        .getCount());
         // By the time TAB_CLOSED event is received, all tab closures should be finalized
         Assert.assertEquals(
-                "Expected no tabs to be present in the comprehensive model",
-                0,
-                fullModel.getCount());
+                "Expected no tabs to be present in the comprehensive model", 0, fullModelCount);
 
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertTrue(

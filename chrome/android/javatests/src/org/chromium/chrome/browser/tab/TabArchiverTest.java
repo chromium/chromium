@@ -399,14 +399,15 @@ public class TabArchiverTest {
 
         // Set the clock to 1 hour after 0.
         doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
-        // Set the timestamp for both tabs at 0, they should be archived.
-        TabImpl tab1 = (TabImpl) mRegularTabModel.getTabAt(0);
-        tab1.setTimestampMillisForTesting(0);
-        ((TabImpl) mRegularTabModel.getTabAt(1)).setTimestampMillisForTesting(0);
 
         // Simulate the first tab being added to a group.
         runOnUiThreadBlocking(
                 () -> {
+                    // Set the timestamp for both tabs at 0, they should be archived.
+                    TabImpl tab1 = (TabImpl) mRegularTabModel.getTabAt(0);
+                    tab1.setTimestampMillisForTesting(0);
+                    ((TabImpl) mRegularTabModel.getTabAt(1)).setTimestampMillisForTesting(0);
+
                     TabGroupModelFilter filter =
                             mRegularTabModelSelector
                                     .getTabGroupModelFilterProvider()
@@ -459,15 +460,16 @@ public class TabArchiverTest {
 
         // Set the clock to 2 hour after 0.
         doReturn(TimeUnit.HOURS.toMillis(2)).when(mClock).currentTimeMillis();
-        // Set the timestamp for the tabs to 0, it should be archived.
-        // Set the navigation timestamp for the tab to 1 to pass user active check.
-        TabImpl tab1 = ((TabImpl) mRegularTabModel.getTabAt(0));
-        tab1.setTimestampMillisForTesting(0);
-        tab1.setLastNavigationCommittedTimestampMillis(TimeUnit.HOURS.toMillis(1));
 
         // Simulate the first tab being added to a group.
         runOnUiThreadBlocking(
                 () -> {
+                    // Set the timestamp for the tabs to 0, it should be archived.
+                    // Set the navigation timestamp for the tab to 1 to pass user active check.
+                    TabImpl tab1 = ((TabImpl) mRegularTabModel.getTabAt(0));
+                    tab1.setTimestampMillisForTesting(0);
+                    tab1.setLastNavigationCommittedTimestampMillis(TimeUnit.HOURS.toMillis(1));
+
                     TabGroupModelFilter filter =
                             mRegularTabModelSelector
                                     .getTabGroupModelFilterProvider()
@@ -522,15 +524,16 @@ public class TabArchiverTest {
 
         // Set the clock to 2 hour after 0.
         doReturn(TimeUnit.HOURS.toMillis(2)).when(mClock).currentTimeMillis();
-        // Set the timestamp for the tabs to 0, it should be archived.
-        // Set the navigation timestamp for the tab to 1 to pass user active check.
-        TabImpl tab1 = ((TabImpl) mRegularTabModel.getTabAt(0));
-        tab1.setTimestampMillisForTesting(0);
-        tab1.setLastNavigationCommittedTimestampMillis(TimeUnit.HOURS.toMillis(1));
 
         // Simulate the first tab being added to a group.
         runOnUiThreadBlocking(
                 () -> {
+                    // Set the timestamp for the tabs to 0, it should be archived.
+                    // Set the navigation timestamp for the tab to 1 to pass user active check.
+                    TabImpl tab1 = ((TabImpl) mRegularTabModel.getTabAt(0));
+                    tab1.setTimestampMillisForTesting(0);
+                    tab1.setLastNavigationCommittedTimestampMillis(TimeUnit.HOURS.toMillis(1));
+
                     TabGroupModelFilter filter =
                             mRegularTabModelSelector
                                     .getTabGroupModelFilterProvider()
@@ -577,17 +580,19 @@ public class TabArchiverTest {
 
         // Set the clock to 1 hour after 0.
         doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
-        // Set the timestamp for both tabs at 0, they should be archived.
-        // Set the navigation timestamp for both tabs at 0 to fail user active check.
-        TabImpl tab1 = ((TabImpl) mRegularTabModel.getTabAt(0));
-        tab1.setTimestampMillisForTesting(0);
-        tab1.setLastNavigationCommittedTimestampMillis(0);
-        ((TabImpl) mRegularTabModel.getTabAt(1)).setTimestampMillisForTesting(0);
-        ((TabImpl) mRegularTabModel.getTabAt(1)).setLastNavigationCommittedTimestampMillis(0);
 
         // Simulate the first tab being added to a group.
         runOnUiThreadBlocking(
                 () -> {
+                    // Set the timestamp for both tabs at 0, they should be archived.
+                    // Set the navigation timestamp for both tabs at 0 to fail user active check.
+                    TabImpl tab1 = ((TabImpl) mRegularTabModel.getTabAt(0));
+                    tab1.setTimestampMillisForTesting(0);
+                    tab1.setLastNavigationCommittedTimestampMillis(0);
+                    ((TabImpl) mRegularTabModel.getTabAt(1)).setTimestampMillisForTesting(0);
+                    ((TabImpl) mRegularTabModel.getTabAt(1))
+                            .setLastNavigationCommittedTimestampMillis(0);
+
                     TabGroupModelFilter filter =
                             mRegularTabModelSelector
                                     .getTabGroupModelFilterProvider()
@@ -633,16 +638,17 @@ public class TabArchiverTest {
 
         // Set the clock to 1 hour after 0.
         doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
-        // Set the timestamp for both tabs at 0, they should be archived.
-        TabImpl tab1 = ((TabImpl) mRegularTabModel.getTabAt(0));
-        tab1.setTimestampMillisForTesting(0);
-        TabImpl tab2 = ((TabImpl) mRegularTabModel.getTabAt(1));
-        tab2.setTimestampMillisForTesting(0);
-        ((TabImpl) mRegularTabModel.getTabAt(2)).setTimestampMillisForTesting(0);
 
         // Simulate the first and second tab being added to a group.
         runOnUiThreadBlocking(
                 () -> {
+                    // Set the timestamp for both tabs at 0, they should be archived.
+                    TabImpl tab1 = ((TabImpl) mRegularTabModel.getTabAt(0));
+                    tab1.setTimestampMillisForTesting(0);
+                    TabImpl tab2 = ((TabImpl) mRegularTabModel.getTabAt(1));
+                    tab2.setTimestampMillisForTesting(0);
+                    ((TabImpl) mRegularTabModel.getTabAt(2)).setTimestampMillisForTesting(0);
+
                     TabGroupModelFilter filter =
                             mRegularTabModelSelector
                                     .getTabGroupModelFilterProvider()
@@ -694,8 +700,11 @@ public class TabArchiverTest {
         doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
         // Set the timestamp for the second and third tabs sharing the same URL (not fourth since it
         // will be the new active tab), tab 2 at 0 and tab 3 at 1.
-        ((TabImpl) mRegularTabModel.getTabAt(1)).setTimestampMillisForTesting(0);
-        ((TabImpl) mRegularTabModel.getTabAt(2)).setTimestampMillisForTesting(1);
+        runOnUiThreadBlocking(
+                () -> {
+                    ((TabImpl) mRegularTabModel.getTabAt(1)).setTimestampMillisForTesting(0);
+                    ((TabImpl) mRegularTabModel.getTabAt(2)).setTimestampMillisForTesting(1);
+                });
 
         assertEquals(4, getTabCountOnUiThread(mRegularTabModel));
         assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
@@ -746,8 +755,11 @@ public class TabArchiverTest {
         doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
         // Set the timestamp for the second and third tabs sharing the same URL (not fourth since it
         // will be the new active tab), tab 2 at 0 and tab 3 at 1.
-        ((TabImpl) mRegularTabModel.getTabAt(1)).setTimestampMillisForTesting(0);
-        ((TabImpl) mRegularTabModel.getTabAt(2)).setTimestampMillisForTesting(1);
+        runOnUiThreadBlocking(
+                () -> {
+                    ((TabImpl) mRegularTabModel.getTabAt(1)).setTimestampMillisForTesting(0);
+                    ((TabImpl) mRegularTabModel.getTabAt(2)).setTimestampMillisForTesting(1);
+                });
 
         assertEquals(4, getTabCountOnUiThread(mRegularTabModel));
         assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
@@ -791,8 +803,11 @@ public class TabArchiverTest {
         doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
         // Set the timestamp for the second and third tabs sharing the same URL (not fourth since it
         // will be the new active tab), tab 2 at 0 and tab 3 at 1.
-        ((TabImpl) mRegularTabModel.getTabAt(1)).setTimestampMillisForTesting(0);
-        ((TabImpl) mRegularTabModel.getTabAt(2)).setTimestampMillisForTesting(1);
+        runOnUiThreadBlocking(
+                () -> {
+                    ((TabImpl) mRegularTabModel.getTabAt(1)).setTimestampMillisForTesting(0);
+                    ((TabImpl) mRegularTabModel.getTabAt(2)).setTimestampMillisForTesting(1);
+                });
 
         assertEquals(4, getTabCountOnUiThread(mRegularTabModel));
         assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
@@ -832,16 +847,17 @@ public class TabArchiverTest {
 
         // Set the clock to 1 hour after 0. No tabs should be archived by timestamp eligibility.
         doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
-        // Set the timestamp for the second and third tabs sharing the same URL (not fourth since it
-        // will be the new active tab), tab 2 at 0 and tab 3 at 1.
-        TabImpl tab1 = ((TabImpl) mRegularTabModel.getTabAt(0));
-        tab1.setTimestampMillisForTesting(0);
-        TabImpl tab2 = ((TabImpl) mRegularTabModel.getTabAt(1));
-        tab2.setTimestampMillisForTesting(0);
 
         // Simulate the first and second tab being added to a group.
         runOnUiThreadBlocking(
                 () -> {
+                    // Set the timestamp for the second and third tabs sharing the same URL (not
+                    // fourth since it
+                    // will be the new active tab), tab 2 at 0 and tab 3 at 1.
+                    TabImpl tab1 = ((TabImpl) mRegularTabModel.getTabAt(0));
+                    tab1.setTimestampMillisForTesting(0);
+                    TabImpl tab2 = ((TabImpl) mRegularTabModel.getTabAt(1));
+                    tab2.setTimestampMillisForTesting(0);
                     TabGroupModelFilter filter =
                             mRegularTabModelSelector
                                     .getTabGroupModelFilterProvider()
@@ -881,18 +897,21 @@ public class TabArchiverTest {
         // Set the clock to 1 hour after 0.
         doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
         // Leave the first two tabs at 0, it will be archived.
-        ((TabImpl) mRegularTabModel.getTabAt(0)).setTimestampMillisForTesting(0);
+        runOnUiThreadBlocking(
+                () -> ((TabImpl) mRegularTabModel.getTabAt(0)).setTimestampMillisForTesting(0));
         Tab tab1 =
                 mActivityTestRule.loadUrlInNewTab(
                         mActivityTestRule.getTestServer().getURL(TEST_PATH),
                         /* incognito= */ false);
-        ((TabImpl) tab1).setTimestampMillisForTesting(0);
+        runOnUiThreadBlocking(() -> ((TabImpl) tab1).setTimestampMillisForTesting(0));
+
+        // Setup the 3rd tab be kept in the regular TabModel
         Tab tab2 =
                 mActivityTestRule.loadUrlInNewTab(
                         mActivityTestRule.getTestServer().getURL(TEST_PATH),
                         /* incognito= */ false);
-        // Setup the 3rd tab be kept in the regular TabModel
-        ((TabImpl) tab2).setTimestampMillisForTesting(TimeUnit.HOURS.toMillis(1));
+        runOnUiThreadBlocking(
+                () -> ((TabImpl) tab2).setTimestampMillisForTesting(TimeUnit.HOURS.toMillis(1)));
 
         assertEquals(3, getTabCountOnUiThread(mRegularTabModel));
         assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));

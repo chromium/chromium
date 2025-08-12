@@ -15,6 +15,7 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.base.GarbageCollectionTestUtils.canBeGarbageCollected;
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT;
+import static org.chromium.chrome.test.util.ChromeTabUtils.getIndexOnUiThread;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -188,7 +189,7 @@ public class TabSwitcherLayoutPTTest {
         WebPageStation pageStation =
                 Journeys.prepareTabsWithThumbnails(
                         mStartPage, 10, 0, "about:blank", WebPageStation::newBuilder);
-        assertEquals(9, cta.getTabModelSelector().getCurrentModel().index());
+        assertEquals(9, getIndexOnUiThread(cta.getTabModelSelector().getCurrentModel()));
         RegularTabSwitcherStation tabSwitcherStation =
                 enterRegularHtsWithThumbnailChecking(pageStation);
         // Make sure the grid tab switcher is scrolled down to show the selected tab.
@@ -826,7 +827,8 @@ public class TabSwitcherLayoutPTTest {
         TabModel tabModel = tabSwitcher.getTabModel();
         // Create the group.
         for (int i = 0; i < numTabsToGroup; i++) {
-            tabsInGroup.add(tabModel.getTabAt(i));
+            int j = i;
+            tabsInGroup.add(ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(j)));
         }
         TabSwitcherGroupCardFacility tabGroupCard =
                 Journeys.mergeTabsToNewGroup(tabSwitcher, tabsInGroup);

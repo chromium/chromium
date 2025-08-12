@@ -76,7 +76,7 @@ public final class ShareButtonControllerTest {
     public void testShareButtonInToolbarIsDisabledOnStartNTP() {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         ChromeTabUtils.waitForTabPageLoaded(
-                mActivityTestRule.getActivity().getActivityTab(), UrlConstants.NTP_URL);
+                mActivityTestRule.getActivityTab(), UrlConstants.NTP_URL);
 
         View experimentalButton =
                 mActivityTestRule

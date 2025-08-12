@@ -194,13 +194,17 @@ public class TabSwitcherListEditorPTTest {
         WebPageStation pageStation =
                 Journeys.prepareTabs(firstPage, 10, 0, "about:blank", WebPageStation::newBuilder);
         RegularTabSwitcherStation tabSwitcher = pageStation.openRegularTabSwitcher();
-        TabList tabList = tabSwitcher.tabModelElement.get().getComprehensiveModel();
+        TabModel tabModel = tabSwitcher.tabModelElement.get();
         List<Tab> tabs =
-                List.of(
-                        tabList.getTabAt(0),
-                        tabList.getTabAt(3),
-                        tabList.getTabAt(5),
-                        tabList.getTabAt(9));
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            TabList tabList = tabModel.getComprehensiveModel();
+                            return List.of(
+                                    tabList.getTabAt(0),
+                                    tabList.getTabAt(3),
+                                    tabList.getTabAt(5),
+                                    tabList.getTabAt(9));
+                        });
         Journeys.mergeTabsToNewGroup(tabSwitcher, tabs);
 
         // Go back to PageStation for InitialStateRule to reset

@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
@@ -164,7 +165,9 @@ public class TabGroupListBottomSheetTest {
     }
 
     private static void assertTabGroupsExist(CtaPageStation pageStation) {
-        int tabGroupCount = pageStation.getTabGroupModelFilter().getTabGroupCount();
+        int tabGroupCount =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> pageStation.getTabGroupModelFilter().getTabGroupCount());
         assertTrue(tabGroupCount > 0);
     }
 

@@ -189,9 +189,9 @@ public class ShowNtpAtStartupTest {
 
         // Verifies that closing the tracking Tab will remove the "continue browsing" card from
         // the NTP.
-        Tab lastActiveTab = cta.getCurrentTabModel().getTabAt(0);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    Tab lastActiveTab = cta.getCurrentTabModel().getTabAt(0);
                     cta.getCurrentTabModel()
                             .getTabRemover()
                             .closeTabs(

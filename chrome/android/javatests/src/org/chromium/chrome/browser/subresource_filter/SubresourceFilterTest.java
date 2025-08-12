@@ -269,7 +269,7 @@ public final class SubresourceFilterTest {
     }
 
     private boolean verifyPageReloadedWithOriginalContent(String url) throws TimeoutException {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         ChromeTabUtils.waitForTabPageLoaded(tab, url);
 
         verifyNoMessageShown();

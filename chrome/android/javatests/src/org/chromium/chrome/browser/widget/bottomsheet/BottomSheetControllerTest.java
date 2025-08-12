@@ -532,7 +532,7 @@ public class BottomSheetControllerTest {
                 mActivity
                         .getTabModelSelector()
                         .getCurrentModel()
-                        .indexOf(mActivity.getActivityTab());
+                        .indexOf(mActivityTestRule.getActivityTab());
         requestContentInSheet(mLowPriorityContent, true);
 
         assertEquals(
@@ -587,7 +587,7 @@ public class BottomSheetControllerTest {
 
         // Change URL and wait for PageLoadStarted event.
         CallbackHelper pageLoadStartedHelper = new CallbackHelper();
-        Tab tab = mActivity.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.addObserver(

@@ -275,7 +275,9 @@ public class ReengagementNotificationControllerIntegrationTest {
     @MediumTest
     public void testReengagementActivity() throws Exception {
         WebPageStation blankPage = mTabbedActivityTestRule.startOnBlankPage();
-        int initialTabCount = blankPage.getTabModelSelector().getTotalTabCount();
+        int initialTabCount =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> blankPage.getTabModelSelector().getTotalTabCount());
 
         final CallbackHelper tabAddedCallback = new CallbackHelper();
         TabModelSelectorObserver selectorObserver =

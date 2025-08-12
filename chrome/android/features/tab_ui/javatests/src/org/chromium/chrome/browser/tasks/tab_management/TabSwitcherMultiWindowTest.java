@@ -32,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -166,18 +167,22 @@ public class TabSwitcherMultiWindowTest {
         mCta2 = waitForSecondChromeTabbedActivity();
         CriteriaHelper.pollUiThread(mCta2.getTabModelSelector()::isTabStateInitialized);
 
-        assertThat(
-                mCta1.getTabModelSelector()
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(true)
-                        .getIndividualTabAndGroupCount(),
-                is(0));
-        assertThat(
-                mCta2.getTabModelSelector()
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(true)
-                        .getIndividualTabAndGroupCount(),
-                is(1));
+        int tabAndGroupCount1 =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                mCta1.getTabModelSelector()
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(true)
+                                        .getIndividualTabAndGroupCount());
+        assertThat(tabAndGroupCount1, is(0));
+        int tabAndGroupCount2 =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                mCta2.getTabModelSelector()
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(true)
+                                        .getIndividualTabAndGroupCount());
+        assertThat(tabAndGroupCount2, is(1));
     }
 
     private void moveTabsToOtherWindow(ChromeTabbedActivity cta, int number) {
