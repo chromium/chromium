@@ -61,6 +61,7 @@ public class CardWithButtonPreferenceTest {
     @SmallTest
     public void testCardWithButtonPreference() {
         CardWithButtonPreference preference = new CardWithButtonPreference(mActivity, null);
+        preference.setIconResource(R.drawable.ic_globe_24dp);
         preference.setTitle(TITLE);
         preference.setSummary(SUMMARY);
         preference.setButtonText(BUTTON_TEXT);
@@ -74,6 +75,7 @@ public class CardWithButtonPreferenceTest {
 
         Assert.assertTrue(preference.isEnabled());
 
+        getIconView().check(matches(isDisplayed()));
         getTitleView().check(matches(allOf(withText(TITLE), isDisplayed())));
         getSummaryView().check(matches(allOf(withText(SUMMARY), isDisplayed())));
         getButtonView().check(matches(allOf(withText(BUTTON_TEXT), isDisplayed())));
@@ -84,6 +86,23 @@ public class CardWithButtonPreferenceTest {
 
         getButtonView().perform(click());
         Assert.assertEquals(1, callback.getCallCount());
+    }
+
+    @Test
+    @SmallTest
+    public void testCardWithButtonPreference_noIcon() {
+        CardWithButtonPreference preference = new CardWithButtonPreference(mActivity, null);
+        preference.setTitle(TITLE);
+        preference.setSummary(SUMMARY);
+        preference.setButtonText(BUTTON_TEXT);
+        mPreferenceScreen.addPreference(preference);
+
+        // The icon view exists, but it is not displayed as no icon resource is set.
+        getIconView().check(matches(not(isDisplayed())));
+    }
+
+    private ViewInteraction getIconView() {
+        return onView(withId(R.id.icon));
     }
 
     private ViewInteraction getTitleView() {

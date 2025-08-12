@@ -12,6 +12,8 @@ import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -966,13 +968,16 @@ public class AutofillProfilesFragmentTest {
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
 
-        CardWithButtonPreference promoPreference =
+        CardWithButtonPreference disabled_settings_info_pref =
                 autofillProfileFragment.findPreference(
                         AutofillProfilesFragment.DISABLED_SETTINGS_INFO);
-        String title = promoPreference.getTitle().toString();
+        assertNotNull(disabled_settings_info_pref);
+        onView(allOf(withId(R.id.icon), isDescendantOfA(withId(R.id.card_layout))))
+                .check(matches(isDisplayed()));
+        String title = disabled_settings_info_pref.getTitle().toString();
         assertThat(title)
                 .isEqualTo(context.getString(R.string.autofill_disable_settings_explanation_title));
-        String summary = promoPreference.getSummary().toString();
+        String summary = disabled_settings_info_pref.getSummary().toString();
         assertThat(summary)
                 .isEqualTo(context.getString(R.string.autofill_disable_settings_explanation));
 
