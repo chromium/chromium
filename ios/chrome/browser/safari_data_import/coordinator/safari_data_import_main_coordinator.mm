@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "base/feature_list.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
@@ -57,9 +58,12 @@
   _viewController.actionHandler = self;
   PromosManager* promosManager =
       PromosManagerFactory::GetForProfile(self.profile);
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   _mediator = [[SafariDataImportEntryPointMediator alloc]
-      initWithUIBlockerTarget:self.browser->GetSceneState()
-                promosManager:promosManager];
+       initWithUIBlockerTarget:self.browser->GetSceneState()
+                 promosManager:promosManager
+      featureEngagementTracker:tracker];
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
@@ -85,6 +89,7 @@
   RecordSafariImportActionOnEntryPoint(
       SafariDataImportEntryPointAction::kImport, _entryPoint);
   CHECK(!_exportCoordinator);
+  [_mediator notifyUsedOrDismissed];
   _exportCoordinator = [[SafariDataImportExportCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser];
@@ -102,6 +107,7 @@
 - (void)confirmationAlertDismissAction {
   RecordSafariImportActionOnEntryPoint(
       SafariDataImportEntryPointAction::kDismiss, _entryPoint);
+  [_mediator notifyUsedOrDismissed];
   [self.delegate safariImportWorkflowDidEndForCoordinator:self];
 }
 
