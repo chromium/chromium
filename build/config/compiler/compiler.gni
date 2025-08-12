@@ -173,6 +173,14 @@ if (use_thin_lto && is_debug) {
         " (is_debug=true) build.")
 }
 
+compiler_logs = []
+
+if (use_thin_lto) {
+  compiler_logs += [ "use_thin_lto=true" ]
+} else {
+  compiler_logs += [ "use_thin_lto=false" ]
+}
+
 # Determine whether to enable or disable frame pointers, based on the platform
 # and build arguments.
 if (is_chromeos) {
@@ -267,9 +275,9 @@ if (strip_absolute_paths_from_debug_symbols_default) {
 clang_need_input_root_absolute_path = !strip_absolute_paths_from_debug_symbols
 
 if (clang_need_input_root_absolute_path) {
-  compiler_logs = [ "clang_need_input_root_absolute_path=true" ]
+  compiler_logs += [ "clang_need_input_root_absolute_path=true" ]
 } else {
-  compiler_logs = [ "clang_need_input_root_absolute_path=false" ]
+  compiler_logs += [ "clang_need_input_root_absolute_path=false" ]
 }
 
 # TODO: https://issues.chromium.org/40120210 - remove this
