@@ -1344,6 +1344,7 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
   // diffing every time.
   if (needs_full_sync_) {
     last_committed_property_trees_.clear();
+    pushed_animation_timelines_.clear();
   }
   PropertyTrees& old_trees = last_committed_property_trees_;
   ComputePropertyTreeUpdate(
