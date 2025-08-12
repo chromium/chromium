@@ -169,6 +169,11 @@ BASE_DECLARE_FEATURE(kSyncTrustedVaultInfobarImprovements);
 BASE_DECLARE_FEATURE(kSyncTrustedVaultInfobarMessageImprovements);
 #endif  // BUILDFLAG(IS_IOS)
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Enables syncing of Vehicle Registrations and Flight reservations coming from
+// Google Wallet.
+BASE_DECLARE_FEATURE(kSyncWalletPublicPasses);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_
