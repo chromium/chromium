@@ -35,14 +35,19 @@ void ChromeVoxTestUtils::EnableChromeVox(bool check_for_intro) {
   Profile* profile = GetProfile();
   console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
       profile, extension_misc::kChromeVoxExtensionId);
-
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
+
   if (::features::IsAccessibilityManifestV3EnabledForChromeVox()) {
-    // Watch events from an MV3 extension which runs in a service worker.
-    extensions::ExtensionRegistryTestHelper observer(
-        extension_misc::kChromeVoxExtensionId, profile);
-    ASSERT_EQ(3, observer.WaitForManifestVersion());
-    observer.WaitForServiceWorkerStart();
+    if (!profile->IsOffTheRecord()) {
+      // Watch events from an MV3 extension which runs in a service worker.
+      // Note: this class doesn't work with off the record profiles. For off
+      // the record profiles, we use the SpeechMonitor to signal that ChromeVox
+      // has loaded by waiting for text to speech to play.
+      extensions::ExtensionRegistryTestHelper observer(
+          extension_misc::kChromeVoxExtensionId, profile);
+      ASSERT_EQ(3, observer.WaitForManifestVersion());
+      observer.WaitForServiceWorkerStart();
+    }
   } else {
     // Watch events from an MV2 extension which runs in a background page.
     extensions::ExtensionHostTestHelper host_helper(
