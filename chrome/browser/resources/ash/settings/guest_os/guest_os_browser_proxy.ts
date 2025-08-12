@@ -15,7 +15,6 @@ import {sendWithPromise} from 'chrome://resources/js/cr.js';
 export interface GuestId {
   vm_name: string;
   container_name: string;
-  vm_type: number;
 }
 
 export interface GuestOsSharedUsbDevice {
@@ -29,14 +28,13 @@ export interface GuestOsSharedUsbDevice {
 }
 
 export const ARC_VM_TYPE = 'arcvm';
-export const BAGUETTE_VM_TYPE = 'baguette';
 export const BRUSCHETTA_TYPE = 'bruschetta';
 export const CROSTINI_TYPE = 'crostini';
 export const PLUGIN_VM_TYPE = 'pluginVm';
 export const TERMINA_VM_TYPE = 'termina';
 
 export type GuestOsType = typeof CROSTINI_TYPE|typeof PLUGIN_VM_TYPE|
-    typeof ARC_VM_TYPE|typeof BRUSCHETTA_TYPE|typeof BAGUETTE_VM_TYPE;
+    typeof ARC_VM_TYPE|typeof BRUSCHETTA_TYPE;
 
 export function getVMNameForGuestOsType(guestOs: GuestOsType): string {
   return {
@@ -44,7 +42,6 @@ export function getVMNameForGuestOsType(guestOs: GuestOsType): string {
     [PLUGIN_VM_TYPE]: 'PvmDefault',
     [ARC_VM_TYPE]: ARC_VM_TYPE,
     [BRUSCHETTA_TYPE]: 'bru',
-    [BAGUETTE_VM_TYPE]: TERMINA_VM_TYPE,
   }[guestOs];
 }
 

@@ -20,7 +20,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {ContainerInfo} from '../guest_os/guest_os_browser_proxy.js';
 
-import {type CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, VmType} from './crostini_browser_proxy.js';
+import {type CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
 import {getTemplate} from './crostini_extra_containers_create_dialog.html.js';
 
 export interface ExtraContainersCreateDialog {
@@ -174,11 +174,7 @@ export class ExtraContainersCreateDialog extends PolymerElement {
     }
 
     this.browserProxy_.createContainer(
-        {
-          vm_name: this.inputVmName_,
-          container_name: this.inputContainerName_,
-          vm_type: VmType.TERMINA,
-        },
+        {vm_name: this.inputVmName_, container_name: this.inputContainerName_},
         this.inputImageServer_, this.inputImageAlias_, this.containerFile_);
 
     this.$.dialog.close();

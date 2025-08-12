@@ -2016,8 +2016,8 @@ TEST_F(CrostiniManagerTest, ExportDiskImageFailure) {
                                       export_path.path(), false,
                                       result_future.GetCallback());
 
-  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::DISK_IMAGE_FAILED);
   EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 1);
+  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::DISK_IMAGE_FAILED);
 }
 
 TEST_F(CrostiniManagerTest, ExportDiskImageNoSpaceFailure) {
@@ -2038,10 +2038,10 @@ TEST_F(CrostiniManagerTest, ExportDiskImageNoSpaceFailure) {
 
   crostini_manager()->ExportDiskImage(container_id(), "my_cool_user_id_hash",
                                       export_path.path(), false,
-                                      result_future.GetSequenceBoundCallback());
+                                      result_future.GetCallback());
 
-  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::DISK_IMAGE_FAILED_NO_SPACE);
   EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 1);
+  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::DISK_IMAGE_FAILED_NO_SPACE);
 }
 
 TEST_F(CrostiniManagerTest, ExportDiskImageSuccess) {
@@ -2064,8 +2064,8 @@ TEST_F(CrostiniManagerTest, ExportDiskImageSuccess) {
                                       export_path.path(), false,
                                       result_future.GetCallback());
 
-  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::SUCCESS);
   EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 1);
+  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::SUCCESS);
 }
 
 TEST_F(CrostiniManagerTest, ImportDiskImageFailure) {
@@ -2082,8 +2082,8 @@ TEST_F(CrostiniManagerTest, ImportDiskImageFailure) {
                                       import_path.path(),
                                       result_future.GetCallback());
 
-  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::DISK_IMAGE_FAILED);
   EXPECT_EQ(fake_concierge_client_->import_disk_image_call_count(), 1);
+  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::DISK_IMAGE_FAILED);
 }
 
 TEST_F(CrostiniManagerTest, ImportDiskImageNoSpaceFailure) {
@@ -2110,8 +2110,8 @@ TEST_F(CrostiniManagerTest, ImportDiskImageNoSpaceFailure) {
                                       import_path.path(),
                                       result_future.GetCallback());
 
-  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::DISK_IMAGE_FAILED_NO_SPACE);
   EXPECT_EQ(fake_concierge_client_->import_disk_image_call_count(), 1);
+  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::DISK_IMAGE_FAILED_NO_SPACE);
 }
 
 TEST_F(CrostiniManagerTest, ImportDiskImageSuccess) {
@@ -2138,8 +2138,8 @@ TEST_F(CrostiniManagerTest, ImportDiskImageSuccess) {
                                       import_path.path(),
                                       result_future.GetCallback());
 
-  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::SUCCESS);
   EXPECT_EQ(fake_concierge_client_->import_disk_image_call_count(), 1);
+  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::SUCCESS);
 }
 
 TEST_F(CrostiniManagerTest, ExportContainerSuccess) {

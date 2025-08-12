@@ -29,8 +29,6 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy implements
       'requestRemoveCrostini',
       'exportCrostiniContainer',
       'importCrostiniContainer',
-      'exportDiskImage',
-      'importDiskImage',
       'requestCrostiniContainerUpgradeView',
       'requestCrostiniUpgraderDialogStatus',
       'requestCrostiniContainerUpgradeAvailable',
@@ -136,14 +134,6 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy implements
 
   importCrostiniContainer(containerId: GuestId): void {
     this.methodCalled('importCrostiniContainer', containerId);
-  }
-
-  exportDiskImage(containerId: GuestId): void {
-    this.methodCalled('exportDiskImage', containerId);
-  }
-
-  importDiskImage(containerId: GuestId): void {
-    this.methodCalled('importDiskImage', containerId);
   }
 
   requestCrostiniContainerUpgradeView(): void {

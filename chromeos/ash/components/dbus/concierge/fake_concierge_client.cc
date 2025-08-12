@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/time/time.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 
 namespace ash {
@@ -132,14 +131,10 @@ void FakeConciergeClient::ImportDiskImage(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), import_disk_image_response_));
-  // Give time for callbacks to have posted before notifying progress signals.
-  // If flakiness ensues, could try to use callback.Then() for posting
-  // subsequent notification.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeConciergeClient::NotifyAllDiskImageProgress,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::Seconds(1));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FakeConciergeClient::ExportDiskImage(
@@ -151,14 +146,10 @@ void FakeConciergeClient::ExportDiskImage(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), export_disk_image_response_));
-  // Give time for callbacks to have posted before notifying progress signals.
-  // If flakiness ensues, could try to use callback.Then() for posting
-  // subsequent notification.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeConciergeClient::NotifyAllDiskImageProgress,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::Seconds(1));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FakeConciergeClient::CancelDiskImageOperation(

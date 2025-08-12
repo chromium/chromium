@@ -20,11 +20,12 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {PrefsState} from '../common/types.js';
 import type {ContainerInfo, GuestId} from '../guest_os/guest_os_browser_proxy.js';
+import {equalContainerId} from '../guest_os/guest_os_container_select.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {type Route, routes} from '../router.js';
 
-import {type CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_BAGUETTE_GUEST_ID, DEFAULT_CROSTINI_GUEST_ID, DEFAULT_CROSTINI_VM, VmType} from './crostini_browser_proxy.js';
+import {type CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_GUEST_ID, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
 import {getTemplate} from './crostini_export_import.html.js';
 
 const SettingsCrostiniExportImportElementBase =
@@ -176,18 +177,13 @@ export class SettingsCrostiniExportImportElement extends
   private onContainerInfo_(containerInfos: ContainerInfo[]): void {
     this.allContainers_ = containerInfos;
     if (!this.isMultiContainer_(containerInfos)) {
-      if (containerInfos[0].id.vm_type === VmType.BAGUETTE) {
-        this.exportContainerId_ = DEFAULT_BAGUETTE_GUEST_ID;
-        this.importContainerId_ = DEFAULT_BAGUETTE_GUEST_ID;
-      } else {
-        this.exportContainerId_ = DEFAULT_CROSTINI_GUEST_ID;
-        this.importContainerId_ = DEFAULT_CROSTINI_GUEST_ID;
-      }
+      this.exportContainerId_ = DEFAULT_CROSTINI_GUEST_ID;
+      this.importContainerId_ = DEFAULT_CROSTINI_GUEST_ID;
     }
   }
 
   private onExportClick_(): void {
-    this.browserProxy_.exportDiskImage(this.exportContainerId_);
+    this.browserProxy_.exportCrostiniContainer(this.exportContainerId_);
     recordSettingChange(Setting.kBackupLinuxAppsAndFiles);
   }
 
@@ -205,7 +201,9 @@ export class SettingsCrostiniExportImportElement extends
   }
 
   private isMultiContainer_(allContainers: ContainerInfo[]): boolean {
-    return allContainers.length !== 1;
+    return !(
+        allContainers.length === 1 &&
+        equalContainerId(allContainers[0].id, DEFAULT_CROSTINI_GUEST_ID));
   }
 
   private getSettingsBoxClass_(allContainers: ContainerInfo[]): string {

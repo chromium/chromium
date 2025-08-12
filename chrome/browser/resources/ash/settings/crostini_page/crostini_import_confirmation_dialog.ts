@@ -18,7 +18,7 @@ import type {GuestId} from '../guest_os/guest_os_browser_proxy.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
-import {type CrostiniBrowserProxy, CrostiniBrowserProxyImpl, VmType} from './crostini_browser_proxy.js';
+import {type CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
 import {getTemplate} from './crostini_import_confirmation_dialog.html.js';
 
 interface SettingsCrostiniImportConfirmationDialogElement {
@@ -64,11 +64,7 @@ class SettingsCrostiniImportConfirmationDialogElement extends PolymerElement {
   }
 
   private onContinueClick_(): void {
-    if (this.importContainerId.vm_type === VmType.BAGUETTE) {
-      this.browserProxy_.importDiskImage(this.importContainerId);
-    } else {
-      this.browserProxy_.importCrostiniContainer(this.importContainerId);
-    }
+    this.browserProxy_.importCrostiniContainer(this.importContainerId);
     recordSettingChange(Setting.kRestoreLinuxAppsAndFiles);
     this.$.dialog.close();
   }
