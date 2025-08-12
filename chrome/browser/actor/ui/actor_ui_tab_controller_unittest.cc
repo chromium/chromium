@@ -25,6 +25,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/test/test_web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -33,9 +34,26 @@ namespace actor::ui {
 namespace {
 using ::tabs::MockTabInterface;
 using ::testing::_;
+using ::testing::ByMove;
 using ::testing::MockFunction;
 using ::testing::Return;
 using ::testing::ReturnRef;
+
+class MockWebContents : public content::TestWebContents {
+ public:
+  explicit MockWebContents(content::BrowserContext* browser_context);
+  ~MockWebContents() override;
+
+  MOCK_METHOD(base::ScopedClosureRunner,
+              IncrementCapturerCount,
+              (const gfx::Size&, bool, bool, bool),
+              (override));
+};
+
+MockWebContents::MockWebContents(content::BrowserContext* browser_context)
+    : TestWebContents(browser_context) {}
+
+MockWebContents::~MockWebContents() = default;
 
 class MockActorUiTabControllerFactory
     : public ActorUiTabControllerFactoryInterface {
@@ -103,6 +121,13 @@ class ActorUiTabControllerTest : public testing::Test {
     border_view_controller_ = std::make_unique<ActorBorderViewController>(
         &mock_browser_window_interface_);
 
+    mock_web_contents_ = std::make_unique<MockWebContents>(profile_.get());
+    ON_CALL(mock_tab_, GetContents)
+        .WillByDefault(Return(mock_web_contents_.get()));
+    ON_CALL(*mock_web_contents_, IncrementCapturerCount(_, _, _, _))
+        .WillByDefault(
+            Return(ByMove(base::ScopedClosureRunner(base::DoNothing()))));
+
     actor_ui_tab_controller_ = std::make_unique<ActorUiTabController>(
         mock_tab_, actor_keyed_service(), std::move(controller_factory));
 
@@ -159,6 +184,7 @@ class ActorUiTabControllerTest : public testing::Test {
   TestTabStripModelDelegate delegate_;
   TabStripModel tab_strip_model_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<MockWebContents> mock_web_contents_;
   TaskId task_id_;
   std::unique_ptr<ActorUiTabController> actor_ui_tab_controller_;
   raw_ptr<MockActorUiTabControllerFactory> actor_ui_tab_controller_factory_ =

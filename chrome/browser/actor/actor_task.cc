@@ -145,10 +145,25 @@ void ActorTask::Pause(bool from_actor) {
   } else {
     SetState(State::kPausedByUser);
   }
+  actuation_mode_runners_.clear();
 }
 
 void ActorTask::Resume() {
   if (GetState() != State::kFinished || GetState() != State::kCancelled) {
+    if (actuation_mode_runners_.empty()) {
+      for (const auto& tab_handle : tab_handles_) {
+        if (tab_handle.Get()) {
+          content::WebContents* web_contents = tab_handle.Get()->GetContents();
+          CHECK(web_contents);
+          actuation_mode_runners_.emplace(
+              tab_handle,
+              web_contents->IncrementCapturerCount(gfx::Size(),
+                                                   /*stay_hidden=*/false,
+                                                   /*stay_awake=*/true,
+                                                   /*is_activity=*/true));
+        }
+      }
+    }
     SetState(State::kReflecting);
   }
 }
