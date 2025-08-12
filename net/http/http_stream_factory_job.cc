@@ -716,13 +716,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
   next_state_ = STATE_INIT_CONNECTION_COMPLETE;
 
   if (using_quic_) {
-    // TODO(mmenke): Clean this up. `disable_cert_verification_network_fetches`
-    // is enabled in ConnectJobFactory for H1/H2 connections. Also need to add
-    // it to the SpdySessionKey for H2 connections.
-    SSLConfig server_ssl_config;
-    server_ssl_config.disable_cert_verification_network_fetches =
-        disable_cert_verification_network_fetches();
-    return DoInitConnectionImplQuic(server_ssl_config.GetCertVerifyFlags());
+    return DoInitConnectionImplQuic();
   }
 
   // Check first if there is a pushed stream matching the request, or an HTTP/2
@@ -831,8 +825,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
       proxy_auth_callback, /*fail_if_alias_requires_proxy_override_=*/false);
 }
 
-int HttpStreamFactory::Job::DoInitConnectionImplQuic(
-    int server_cert_verifier_flags) {
+int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
   url::SchemeHostPort destination;
 
   bool require_dns_https_alpn =
@@ -861,6 +854,11 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
       (job_type_ == PRECONNECT || job_type_ == PRECONNECT_DNS_ALPN_H3)
           ? MultiplexedSessionCreationInitiator::kPreconnect
           : MultiplexedSessionCreationInitiator::kUnknown;
+
+  SSLConfig server_ssl_config;
+  server_ssl_config.disable_cert_verification_network_fetches =
+      disable_cert_verification_network_fetches();
+  int server_cert_verifier_flags = server_ssl_config.GetCertVerifyFlags();
 
   // The QuicSessionRequest will take care of connecting to any proxies in the
   // proxy chain.

@@ -286,10 +286,7 @@ class HttpStreamFactory::Job
   int DoLoop(int result);
   int StartInternal();
   int DoInitConnectionImpl();
-  // `server_cert_verifier_flags` are the cert verifier flags if connecting to a
-  // QUIC server. If making non-tunnelled requests to a QUIC proxy, they will be
-  // ignored.
-  int DoInitConnectionImplQuic(int server_cert_verifier_flags);
+  int DoInitConnectionImplQuic();
 
   // If this is a QUIC alt job, then this function is called when host
   // resolution completes. It's called with the next result after host
