@@ -21,19 +21,11 @@ namespace autofill::features {
 namespace {
 
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &kAutofillVirtualViewStructureAndroidInCct,
     &kAndroidAutofillLazyFrameworkWrapper,
     &kAutofillVirtualViewStructureAndroidPasskeyLongPress,
     &kAndroidAutofillForwardIframeOrigin};
 
 }  // namespace
-
-// Safe-guard for a crucial fix that prevented consistent use of 3P in CCTs.
-// It's ineffective when AutofillVirtualViewStructureAndroid is disabled.
-// TODO: crbug.com/409579377 - Delete after M140.
-BASE_FEATURE(kAutofillVirtualViewStructureAndroidInCct,
-             "AutofillVirtualViewStructureAndroidInCct",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, at least one passkey must be present to forward passkey requests
 // to the Android Credential Manager. Users can then always (re-)trigger the

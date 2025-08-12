@@ -147,13 +147,7 @@ public class AutofillManagerWrapper {
         if (context == ContextUtils.getApplicationContext()) {
             if (isLoggable()) log("Created with application context.");
         }
-        AutofillManager autofillManager = context.getSystemService(AutofillManager.class);
-        if (!AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT
-                        .isEnabled()
-                && !isEnabled(autofillManager)) {
-            autofillManager = null;
-        }
-        return autofillManager;
+        return context.getSystemService(AutofillManager.class);
     }
 
     public String getPackageName() {
@@ -304,9 +298,7 @@ public class AutofillManagerWrapper {
         if (mAutofillManager == null || mDestroyed) {
             return true;
         }
-        return AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT
-                        .isEnabled()
-                && !isEnabled(mAutofillManager);
+        return !isEnabled(mAutofillManager);
     }
 
     /**

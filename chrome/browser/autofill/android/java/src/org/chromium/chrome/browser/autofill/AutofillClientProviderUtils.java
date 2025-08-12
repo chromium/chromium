@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.autofill.AndroidAutofillFeatures;
 import org.chromium.components.autofill.AutofillManagerWrapper;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -65,10 +64,6 @@ public class AutofillClientProviderUtils {
      * @return true iff CCTs should be constructed with support for Android Autofill.
      */
     public static boolean isAutofillEnabledForCct(Profile profile) {
-        if (!AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT
-                .isEnabled()) {
-            return false;
-        }
         return AutofillClientProviderUtils.getAndroidAutofillFrameworkAvailability(
                         UserPrefs.get(profile))
                 == AndroidAutofillAvailabilityStatus.AVAILABLE;
