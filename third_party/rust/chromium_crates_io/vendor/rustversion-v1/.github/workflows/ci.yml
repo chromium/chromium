@@ -35,6 +35,9 @@ jobs:
         run: echo RUSTFLAGS=${RUSTFLAGS}\ -Zrandomize-layout >> $GITHUB_ENV
         if: matrix.rust == 'nightly'
       - run: cargo test
+      - name: RUSTFLAGS=-Zfmt-debug=none cargo test
+        run: RUSTFLAGS=${RUSTFLAGS}\ -Zfmt-debug=none cargo test
+        if: matrix.rust == 'nightly'
       - uses: actions/upload-artifact@v4
         if: matrix.rust == 'nightly' && always()
         with:
@@ -96,10 +99,7 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: nightly-2025-05-16  # https://github.com/rust-lang/miri/issues/4323
-          components: miri, rust-src
+      - uses: dtolnay/rust-toolchain@miri
       - run: cargo miri setup
       - run: cargo miri test
         env:

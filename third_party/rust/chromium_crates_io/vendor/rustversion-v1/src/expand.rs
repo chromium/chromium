@@ -24,7 +24,7 @@ fn try_cfg(introducer: &str, args: TokenStream, input: TokenStream) -> Result<To
     token::parse_end(full_args)?;
 
     if expr.eval(crate::RUSTVERSION) {
-        Ok(input)
+        Ok(allow_incompatible_msrv(input))
     } else {
         Ok(TokenStream::new())
     }
@@ -35,11 +35,11 @@ pub fn try_attr(args: attr::Args, input: TokenStream) -> Result<TokenStream> {
         return Ok(input);
     }
 
-    match args.then {
-        Then::Const(const_token) => constfn::insert_const(input, const_token),
+    let output = match args.then {
+        Then::Const(const_token) => constfn::insert_const(input, const_token)?,
         Then::Attribute(then) => {
-            // #[cfg_attr(all(), #then)]
-            Ok(TokenStream::from_iter(
+            TokenStream::from_iter(
+                // #[cfg_attr(all(), #then)]
                 vec![
                     TokenTree::Punct(Punct::new('#', Spacing::Alone)),
                     TokenTree::Group(Group::new(
@@ -66,7 +66,35 @@ pub fn try_attr(args: attr::Args, input: TokenStream) -> Result<TokenStream> {
                 ]
                 .into_iter()
                 .chain(input),
-            ))
+            )
         }
-    }
+    };
+
+    Ok(allow_incompatible_msrv(output))
+}
+
+fn allow_incompatible_msrv(input: TokenStream) -> TokenStream {
+    TokenStream::from_iter(
+        // #[allow(clippy::incompatible_msrv)]
+        vec![
+            TokenTree::Punct(Punct::new('#', Spacing::Alone)),
+            TokenTree::Group(Group::new(
+                Delimiter::Bracket,
+                TokenStream::from_iter(vec![
+                    TokenTree::Ident(Ident::new("allow", Span::call_site())),
+                    TokenTree::Group(Group::new(
+                        Delimiter::Parenthesis,
+                        TokenStream::from_iter(vec![
+                            TokenTree::Ident(Ident::new("clippy", Span::call_site())),
+                            TokenTree::Punct(Punct::new(':', Spacing::Joint)),
+                            TokenTree::Punct(Punct::new(':', Spacing::Alone)),
+                            TokenTree::Ident(Ident::new("incompatible_msrv", Span::call_site())),
+                        ]),
+                    )),
+                ]),
+            )),
+        ]
+        .into_iter()
+        .chain(input),
+    )
 }
