@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/render_frame_host.h"
 
@@ -24,7 +25,36 @@ class TabInterface;
 
 namespace actor {
 
-class ExecutionEngine;
+actor_login::Credential MakeTestCredential(const std::u16string& username,
+                                           const GURL& url,
+                                           bool immediately_available_to_login);
+
+class MockActorLoginService : public actor_login::ActorLoginService {
+ public:
+  MockActorLoginService();
+  ~MockActorLoginService() override;
+
+  // `actor_login::ActorLoginService`:
+  void GetCredentials(tabs::TabInterface* tab,
+                      actor_login::CredentialsOrErrorReply callback) override;
+  void AttemptLogin(
+      tabs::TabInterface* tab,
+      const actor_login::Credential& credential,
+      actor_login::LoginStatusResultOrErrorReply callback) override;
+
+  void SetCredentials(const actor_login::CredentialsOrError& credentials);
+
+  void SetCredential(const actor_login::Credential& credential);
+
+  void SetLoginStatus(actor_login::LoginStatusResultOrError login_status);
+
+  const actor_login::Credential& last_credential_used() const;
+
+ private:
+  actor_login::CredentialsOrError credentials_;
+  actor_login::LoginStatusResultOrError login_status_;
+  actor_login::Credential last_credential_used_;
+};
 
 inline constexpr int32_t kNonExistentContentNodeId =
     std::numeric_limits<int32_t>::max();

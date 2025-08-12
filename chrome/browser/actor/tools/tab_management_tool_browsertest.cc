@@ -20,7 +20,20 @@ namespace actor {
 
 namespace {
 
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TabManagementTool_CreateForegroundTab) {
+class ActorTabManagementToolBrowserTest : public ActorToolsTest {
+ public:
+  ActorTabManagementToolBrowserTest() = default;
+  ~ActorTabManagementToolBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ActorToolsTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
+                       TabManagementTool_CreateForegroundTab) {
   // Navigate the starting tab so it can be differentiated from the new tab.
   const GURL start_tab_url =
       embedded_test_server()->GetURL("/actor/blank.html");
@@ -39,7 +52,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TabManagementTool_CreateForegroundTab) {
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TabManagementTool_CreateBackgroundTab) {
+IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
+                       TabManagementTool_CreateBackgroundTab) {
   // Navigate the starting tab so it can be differentiated from the new tab.
   const GURL start_tab_url =
       embedded_test_server()->GetURL("/actor/blank.html");
@@ -60,7 +74,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TabManagementTool_CreateBackgroundTab) {
 
 // Test that the history tool correctly adds the acted on tab to the task's set
 // of tabs.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TabManagementTool_RecordActingOnTask) {
+IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
+                       TabManagementTool_RecordActingOnTask) {
   ASSERT_TRUE(actor_task().GetTabs().empty());
 
   // Create a new tab, ensure it's added to the set of acted on tabs.

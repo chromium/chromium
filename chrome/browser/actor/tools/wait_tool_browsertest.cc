@@ -18,7 +18,18 @@ namespace actor {
 
 namespace {
 
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, WaitTool) {
+class ActorWaitToolBrowserTest : public ActorToolsTest {
+ public:
+  ActorWaitToolBrowserTest() = default;
+  ~ActorWaitToolBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ActorToolsTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ActorWaitToolBrowserTest, WaitTool) {
   WaitTool::SetNoDelayForTesting();
 
   const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
@@ -32,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, WaitTool) {
 
 // Ensure the wait tool doesn't cause the current tab to be recorded as being
 // acted on.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, WaitTool_DontRecordActOnTask) {
+IN_PROC_BROWSER_TEST_F(ActorWaitToolBrowserTest, WaitTool_DontRecordActOnTask) {
   WaitTool::SetNoDelayForTesting();
 
   ASSERT_TRUE(actor_task().GetTabs().empty());

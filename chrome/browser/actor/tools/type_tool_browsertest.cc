@@ -23,9 +23,20 @@ namespace actor {
 
 namespace {
 
+class ActorTypeToolBrowserTest : public ActorToolsTest {
+ public:
+  ActorTypeToolBrowserTest() = default;
+  ~ActorTypeToolBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ActorToolsTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+};
+
 // Basic test of the TypeTool - ensure typed string is entered into an input
 // box.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_TextInput) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_TextInput) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -47,7 +58,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_TextInput) {
 // Ensure that if the page creates and focus on to a new input upon focusing on
 // the original target (even if the original target is readonly), type tool will
 // continue on to the new input.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_TextInputAtNewlyCreatedNode) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
+                       TypeTool_TextInputAtNewlyCreatedNode) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/type_dynamic_input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -77,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_TextInputAtNewlyCreatedNode) {
 }
 
 // TypeTool fails when target is non-existent.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_NonExistentNode) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_NonExistentNode) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -94,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_NonExistentNode) {
 }
 
 // TypeTool fails when target is disabled.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DisabledInput) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_DisabledInput) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -137,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DisabledInput) {
 }
 
 // Ensure type tool sends the expected events to an input box.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_Events) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_Events) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -168,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_Events) {
 
 // Ensure the type tool can be used without text to send an enter key in an
 // input.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_EmptyText) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_EmptyText) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -194,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_EmptyText) {
 }
 
 // Ensure the type tool correctly sends the enter key after input if specified.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_FollowByEnter) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_FollowByEnter) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -245,7 +257,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_FollowByEnter) {
 
 // Ensure the type tool doesn't fail if the keydown event is handled (page
 // called preventDefault).
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_PageHandlesKeyEvents) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
+                       TypeTool_PageHandlesKeyEvents) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -265,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_PageHandlesKeyEvents) {
 
 // Ensure that the default mode is for the type tool to replace any existing
 // text in the targeted element.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_ReplacesText) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_ReplacesText) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -288,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_ReplacesText) {
 
 // Ensure that if the page moves focus immediately to a different input box, the
 // type tool correctly operates on the new input box.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_FocusMovesFocus) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_FocusMovesFocus) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -325,7 +338,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_FocusMovesFocus) {
 
 // Basic test of the TypeTool coordinate target - ensure typed string is entered
 // into a node at the coordinate.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_TextInputAtCoordinate) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
+                       TypeTool_TextInputAtCoordinate) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/type_input_coordinate.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -366,7 +380,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_TextInputAtCoordinate) {
 
 // Ensure the type tool correctly sends the events to element at the
 // coordinates.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_EventsSentToCoordinates) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
+                       TypeTool_EventsSentToCoordinates) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/type_input_coordinate.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -431,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_EventsSentToCoordinates) {
 
 // Ensure the type tool correctly sends the events to an unfocusable element at
 // the coordinates.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest,
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
                        TypeTool_EventsSentToUnfocusableCoordinate) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/type_input_coordinate.html");
@@ -471,7 +486,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest,
 }
 
 // Ensure the type tool will fail if target coordinate is offscreen.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_SentToOffScreenCoordinates) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
+                       TypeTool_SentToOffScreenCoordinates) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/type_input_coordinate.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -494,7 +510,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_SentToOffScreenCoordinates) {
 
 // Ensure the type tool can send a type action to a DOMNodeId that isn't
 // an editable.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DomNodeIdTargetsNonEditable) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
+                       TypeTool_DomNodeIdTargetsNonEditable) {
   const GURL url = embedded_test_server()->GetURL("/actor/type_non_input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -527,7 +544,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DomNodeIdTargetsNonEditable) {
 // incrementally.
 //
 // TODO(crbug.com/438242699): Re-enable it.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, DISABLED_TypeTool_IncrementalTyping) {
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
+                       DISABLED_TypeTool_IncrementalTyping) {
   if (!base::FeatureList::IsEnabled(features::kGlicActorIncrementalTyping)) {
     GTEST_SKIP() << "GlicActorIncrementalTyping feature is disabled";
   }

@@ -31,10 +31,23 @@ namespace actor {
 
 namespace {
 
+class ActorToolAgnosticBrowserTest : public ActorToolsTest {
+ public:
+  ActorToolAgnosticBrowserTest() = default;
+  ~ActorToolAgnosticBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ActorToolsTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+};
+
 // Test that requesting tool use on a page that's not active fails. In this case
 // we use BFCache but a prerendered page would be another example of an inactive
 // page with a live RenderFrameHost.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, InvokeToolInInactiveFrame) {
+IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
+                       InvokeToolInInactiveFrame) {
   // This test relies on BFCache so don't run it if it's not available.
   if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     GTEST_SKIP();
@@ -71,7 +84,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, InvokeToolInInactiveFrame) {
 // Ensure actuation for a page tool simulates the page having focus. This is
 // important to ensure, e.g. 'focus' events are fired on the page in a way that
 // matches if a real user was interacting with the page.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, EnsureFocusSimulatedWhenActing) {
+IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
+                       EnsureFocusSimulatedWhenActing) {
   const GURL url_background =
       embedded_test_server()->GetURL("/actor/focus.html");
   const GURL url_foreground =
@@ -110,7 +124,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, EnsureFocusSimulatedWhenActing) {
 
 // Basic test to ensure sending a click to an element in a same-site subframe
 // works.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, InvokeToolSameSiteSubframe) {
+IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
+                       InvokeToolSameSiteSubframe) {
   const GURL url =
       embedded_https_test_server().GetURL("/actor/positioned_iframe.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -141,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, InvokeToolSameSiteSubframe) {
 
 // Sending an action to an offscreen element on a page should succeed by
 // scrolling it into view first.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, OffscreenElement) {
+IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, OffscreenElement) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -161,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, OffscreenElement) {
 }
 
 // Sending an action to an offscreen coordinate should fail.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, OffscreenCoordinate) {
+IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, OffscreenCoordinate) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -184,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, OffscreenCoordinate) {
 
 // Sending an action to a coordinate that's outside the document bounds (i.e.
 // cannot be scrolled to) should fail.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, InvalidCoordinate) {
+IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, InvalidCoordinate) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -216,7 +231,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, InvalidCoordinate) {
 
 // Sending an action to an offscreen element on a page that cannot be scrolled
 // should fail.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, OffscreenElementNonScrollablePage) {
+IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
+                       OffscreenElementNonScrollablePage) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -240,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, OffscreenElementNonScrollablePage) {
 }
 
 // Sending an action to an offscreen fixed position element should fail.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, OffscreenFixedElement) {
+IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, OffscreenFixedElement) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));

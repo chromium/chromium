@@ -24,61 +24,6 @@ namespace actor {
 
 namespace {
 
-actor_login::Credential MakeTestCredential(
-    const std::u16string& username,
-    const GURL& url,
-    bool immediately_available_to_login) {
-  actor_login::Credential credential;
-  credential.username = username;
-  // TODO(crbug.com/427171031): Clarify the format.
-  credential.source_site_or_app =
-      base::UTF8ToUTF16(url.GetWithEmptyPath().spec());
-  credential.type = actor_login::CredentialType::kPassword;
-  credential.immediatelyAvailableToLogin = immediately_available_to_login;
-  return credential;
-}
-
-class MockActorLoginService : public actor_login::ActorLoginService {
- public:
-  MockActorLoginService() = default;
-  ~MockActorLoginService() override = default;
-
-  void GetCredentials(tabs::TabInterface* tab,
-                      actor_login::CredentialsOrErrorReply callback) override {
-    std::move(callback).Run(credentials_);
-  }
-
-  void AttemptLogin(
-      tabs::TabInterface* tab,
-      const actor_login::Credential& credential,
-      actor_login::LoginStatusResultOrErrorReply callback) override {
-    last_credential_used_ = credential;
-    std::move(callback).Run(login_status_);
-  }
-
-  void SetCredentials(const actor_login::CredentialsOrError& credentials) {
-    credentials_ = credentials;
-  }
-
-  void SetCredential(const actor_login::Credential& credential) {
-    SetCredentials(std::vector{credential});
-  }
-
-  void SetLoginStatus(actor_login::LoginStatusResultOrError login_status) {
-    login_status_ = login_status;
-  }
-
-  const actor_login::Credential& last_credential_used() const {
-    return last_credential_used_;
-  }
-
- private:
-  actor_login::CredentialsOrError credentials_;
-  actor_login::LoginStatusResultOrError login_status_;
-
-  actor_login::Credential last_credential_used_;
-};
-
 class MockExecutionEngine : public ExecutionEngine {
  public:
   explicit MockExecutionEngine(Profile* profile) : ExecutionEngine(profile) {}
@@ -102,6 +47,8 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
 
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_https_test_server().Start());
+    ASSERT_TRUE(embedded_test_server()->Start());
 
     ON_CALL(mock_execution_engine(), GetActorLoginService())
         .WillByDefault(ReturnRef(mock_login_service_));

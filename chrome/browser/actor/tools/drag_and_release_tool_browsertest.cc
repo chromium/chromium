@@ -60,8 +60,21 @@ int GetRangeValue(content::RenderFrameHost& rfh, std::string_view query) {
       .ExtractInt();
 }
 
+class ActorDragAndReleaseToolBrowserTest : public ActorToolsTest {
+ public:
+  ActorDragAndReleaseToolBrowserTest() = default;
+  ~ActorDragAndReleaseToolBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ActorToolsTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+};
+
 // Test the drag and release tool by moving the thumb on a range slider control.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, DragAndReleaseTool_Range) {
+IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
+                       DragAndReleaseTool_Range) {
   const GURL url = embedded_test_server()->GetURL("/actor/drag.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -87,7 +100,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, DragAndReleaseTool_Range) {
 }
 
 // Ensure the drag tool sends the expected mouse down, move and up events.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, DragAndReleaseTool_Events) {
+IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
+                       DragAndReleaseTool_Events) {
   const GURL url = embedded_test_server()->GetURL("/actor/drag.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -122,7 +136,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, DragAndReleaseTool_Events) {
 }
 
 // Ensure coordinates outside of the viewport are rejected.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, DragAndReleaseTool_Offscreen) {
+IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
+                       DragAndReleaseTool_Offscreen) {
   const GURL url = embedded_test_server()->GetURL("/actor/drag.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 

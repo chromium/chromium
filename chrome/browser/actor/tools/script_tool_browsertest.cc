@@ -26,6 +26,12 @@ class ActorToolsTestScriptTool : public ActorToolsTest {
     features_.InitAndEnableFeature(blink::features::kScriptTools);
   }
 
+  void SetUpOnMainThread() override {
+    ActorToolsTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
  private:
   base::test::ScopedFeatureList features_;
 };

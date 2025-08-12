@@ -50,6 +50,18 @@ class ClosePopupWaiter {
   std::unique_ptr<RequestCloseWidgetWaiter> popup_closed_;
 };
 
+class ActorSelectToolBrowserTest : public ActorToolsTest {
+ public:
+  ActorSelectToolBrowserTest() = default;
+  ~ActorSelectToolBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ActorToolsTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+};
+
 }  // namespace
 
 // Test that if the select tool closes the dropdown menu after it makes the
@@ -64,7 +76,8 @@ class ClosePopupWaiter {
 #else
 #define MAYBE_SelectToolCloseDropDownMenu SelectToolCloseDropDownMenu
 #endif
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, MAYBE_SelectToolCloseDropDownMenu) {
+IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
+                       MAYBE_SelectToolCloseDropDownMenu) {
   const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
