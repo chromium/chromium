@@ -79,6 +79,28 @@ mojom::OnTabDataChangedEventPtr ToEvent(
   return event;
 }
 
+mojom::OnTabActiveChangedEventPtr ToEvent(
+    const TabStripSelectionChange& selection,
+    const tabs_api::TabStripModelAdapter* adapter) {
+  auto event = mojom::OnTabActiveChangedEvent::New();
+
+  const std::optional<size_t> index_optional = selection.new_model.active();
+  if (!index_optional.has_value()) {
+    return event;
+  }
+
+  const size_t index = index_optional.value();
+  auto tabs = adapter->GetTabs();
+  if (index < tabs.size()) {
+    auto& handle = tabs.at(index);
+    auto renderer_data = adapter->GetTabRendererData(index);
+    const ui::ColorProvider& color_provider = adapter->GetColorProvider();
+    event->tab = tabs_api::converters::BuildMojoTab(handle, renderer_data,
+                                                    color_provider);
+  }
+  return event;
+}
+
 mojom::OnTabGroupCreatedEventPtr ToTabGroupCreatedEvent(
     const TabGroupChange& tab_group_change) {
   CHECK_EQ(tab_group_change.type, TabGroupChange::Type::kCreated);

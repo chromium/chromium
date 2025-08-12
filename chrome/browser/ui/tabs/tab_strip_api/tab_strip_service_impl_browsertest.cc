@@ -83,8 +83,15 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
     // TODO(crbug.com/412955607): implement this.
   }
 
+  void OnTabActiveChanged(
+      tabs_api::mojom::OnTabActiveChangedEventPtr event) override {
+    active_tab_changed_events.push_back(std::move(event));
+  }
+
   std::vector<tabs_api::mojom::OnTabMovedEventPtr> move_events;
   std::vector<tabs_api::mojom::OnTabGroupCreatedEventPtr> group_events;
+  std::vector<tabs_api::mojom::OnTabActiveChangedEventPtr>
+      active_tab_changed_events;
   // Tabs is a vector containing a tab id and a url in the form of a string.
   std::vector<std::pair<tabs_api::NodeId, std::string>> tabs;
 };
@@ -176,7 +183,8 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, Observation) {
   mojo::AssociatedReceiver<tabs_api::mojom::TabsObserver> receiver(&client);
   const GURL url("http://example.com/");
   uint32_t target_index = 0;
-
+  auto original_tab_id = tabs_api::NodeId::FromTabHandle(
+      GetTabStripModel()->GetTabAtIndex(0)->GetHandle());
   base::RunLoop run_loop;
 
   base::RunLoop get_tabs_loop;
@@ -209,11 +217,16 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, Observation) {
   ASSERT_EQ(1ul, client.tabs.size());
   ASSERT_EQ(created_tab->id, client.tabs.at(0).first);
 
+  ASSERT_EQ(1ul, client.active_tab_changed_events.size());
+  ASSERT_EQ(created_tab->id, client.active_tab_changed_events.at(0)->tab->id);
+
   // Navigate to a new url which will modify the tab state.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com/")));
   receiver.FlushForTesting();
   ASSERT_EQ(client.tabs[0].second, "https://www.google.com/");
+
+  client.active_tab_changed_events.clear();
 
   TabStripService::CloseTabsResult close_result;
   base::RunLoop close_tab_loop;
@@ -231,6 +244,9 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, Observation) {
   ASSERT_TRUE(close_result.has_value());
   // Observation should have caused the tab to be removed.
   ASSERT_EQ(0ul, client.tabs.size());
+
+  ASSERT_EQ(1ul, client.active_tab_changed_events.size());
+  ASSERT_EQ(original_tab_id, client.active_tab_changed_events.at(0)->tab->id);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CloseTabs) {

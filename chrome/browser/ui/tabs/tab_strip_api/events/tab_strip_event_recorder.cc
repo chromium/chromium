@@ -66,6 +66,13 @@ void TabStripEventRecorder::OnTabStripModelChanged(
       NOTIMPLEMENTED();
       break;
   }
+
+  if (selection.active_tab_changed()) {
+    content::WebContents* new_contents = selection.new_contents;
+    if (new_contents && selection.new_model.active().has_value()) {
+      Handle(ToEvent(selection, tab_strip_model_adapter_));
+    }
+  }
 }
 
 void TabStripEventRecorder::TabChangedAt(content::WebContents* contents,

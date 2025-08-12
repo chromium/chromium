@@ -33,6 +33,10 @@ struct OnTabGroupVisualsChangedEvent {
   TabCollection tab_collection;
 };
 
+struct OnTabActiveChangedEvent {
+  Tab tab;
+};
+
 struct OnTabMovedEvent {
   // The id of the tab that moved.
   NodeId id;

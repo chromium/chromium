@@ -27,6 +27,9 @@ mojom::OnTabDataChangedEventPtr ToEvent(
     const tabs_api::TabStripModelAdapter* adapter,
     size_t index,
     TabChangeType change_type);
+mojom::OnTabActiveChangedEventPtr ToEvent(
+    const TabStripSelectionChange& selection,
+    const tabs_api::TabStripModelAdapter* adapter);
 
 // When a tab group is opened, there're multiple events fired from
 // TabStripModelObserver. The following functions convert them to TabStripAPI
