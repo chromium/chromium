@@ -7,6 +7,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shelf/test/shelf_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -25,24 +26,34 @@ class ScrollableShelfViewPixelRTLTestBase : public ShelfTestBase {
 
 class ScrollableShelfViewPixelRTLTest
     : public ScrollableShelfViewPixelRTLTestBase,
-      public testing::WithParamInterface<bool /*is_rtl=*/> {
+      public testing::WithParamInterface<
+          std::tuple</*is_rtl=*/bool, /*enable_system_blur=*/bool>> {
  public:
   // ScrollableShelfViewPixelRTLTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
-    init_params.under_rtl = GetParam();
+    init_params.under_rtl = IsRTL();
+    init_params.system_blur_enabled = IsSystemBlurEnabled();
     return init_params;
   }
+
+  bool IsRTL() const { return std::get<0>(GetParam()); }
+  bool IsSystemBlurEnabled() const { return std::get<1>(GetParam()); }
 };
 
-INSTANTIATE_TEST_SUITE_P(RTL, ScrollableShelfViewPixelRTLTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    RTL,
+    ScrollableShelfViewPixelRTLTest,
+    testing::Combine(/*is_rtl=*/testing::Bool(),
+                     /*enable_system_blur=*/testing::Bool()));
 
 // Verifies the scrollable shelf under overflow.
 TEST_P(ScrollableShelfViewPixelRTLTest, Basics) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "overflow",
-      /*revision_number=*/11, GetPrimaryShelf()->GetWindow()));
+      GenerateScreenshotName("overflow"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 11 : 0,
+      GetPrimaryShelf()->GetWindow()));
 
   ASSERT_TRUE(scrollable_shelf_view_->right_arrow());
   const gfx::Point right_arrow_center =
@@ -52,37 +63,46 @@ TEST_P(ScrollableShelfViewPixelRTLTest, Basics) {
   GetEventGenerator()->ClickLeftButton();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "overflow_end",
-      /*revision_number=*/11, GetPrimaryShelf()->GetWindow()));
+      GenerateScreenshotName("overflow_end"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 11 : 0,
+      GetPrimaryShelf()->GetWindow()));
 }
 
 TEST_P(ScrollableShelfViewPixelRTLTest, LeftRightShelfAlignment) {
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "left_shelf_alignment",
-      /*revision_number=*/8, GetPrimaryShelf()->GetWindow()));
+      GenerateScreenshotName("left_shelf_alignment"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 0,
+      GetPrimaryShelf()->GetWindow()));
 
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kRight);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "right_shelf_alignment",
-      /*revision_number=*/8, GetPrimaryShelf()->GetWindow()));
+      GenerateScreenshotName("right_shelf_alignment"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 0,
+      GetPrimaryShelf()->GetWindow()));
 }
 
 class ScrollableShelfViewWithGuestModePixelTest
     : public ShelfTestBase,
-      public testing::WithParamInterface<bool /*use_guest_mode=*/> {
+      public testing::WithParamInterface<
+          std::tuple</*use_guest_mode=*/bool, /*enable_system_blur=*/bool>> {
  public:
   // ScrollableShelfTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = IsSystemBlurEnabled();
+    return init_params;
   }
+
+  bool UseGuestMode() const { return std::get<0>(GetParam()); }
+  bool IsSystemBlurEnabled() const { return std::get<1>(GetParam()); }
 
   void SetUp() override {
     set_start_session(false);
 
     ShelfTestBase::SetUp();
-    if (GetParam()) {
+    if (UseGuestMode()) {
       SimulateGuestLogin();
     } else {
       SimulateUserLogin({"user@gmail.com"});
@@ -90,9 +110,11 @@ class ScrollableShelfViewWithGuestModePixelTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(EnableGuestMode,
-                         ScrollableShelfViewWithGuestModePixelTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    EnableGuestMode,
+    ScrollableShelfViewWithGuestModePixelTest,
+    testing::Combine(/*use_guest_mode=*/testing::Bool(),
+                     /*enable_system_blur=*/testing::Bool()));
 
 // Verifies the shelf context menu.
 TEST_P(ScrollableShelfViewWithGuestModePixelTest, VerifyShelfContextMenu) {
@@ -104,8 +126,8 @@ TEST_P(ScrollableShelfViewWithGuestModePixelTest, VerifyShelfContextMenu) {
 
   // Verify the shelf context menu and the shelf.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "shelf_context_menu",
-      /*revision_number=*/25,
+      GenerateScreenshotName("shelf_context_menu"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 25 : 0,
       GetPrimaryShelf()
           ->shelf_widget()
           ->shelf_view_for_testing()
