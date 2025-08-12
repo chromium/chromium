@@ -989,18 +989,28 @@ bool AudioParamHandler::InsertEvent(std::unique_ptr<ParamEvent> event,
   return true;
 }
 
-bool AudioParamHandler::HasValues(size_t current_frame,
-                                  double sample_rate,
-                                  unsigned render_quantum_frames) const {
+bool AudioParamHandler::HasSampleAccurateValues() const {
+  if (NumberOfRenderingConnections()) {
+    return true;
+  }
+
   base::AutoTryLock try_locker(events_lock_);
 
   if (try_locker.is_acquired()) {
-    unsigned n_events = events_.size();
+    // Return true if the AudioParam timeline needs to run in this rendering
+    // quantum.  This means some automation is already running or is scheduled
+    // to run in the current rendering quantum.
+    const unsigned n_events = events_.size();
 
     // Clearly, if there are no scheduled events, we have no timeline values.
     if (n_events == 0) {
       return false;
     }
+
+    const size_t current_frame = destination_handler_->CurrentSampleFrame();
+    const double sample_rate = destination_handler_->SampleRate();
+    const unsigned render_quantum_frames =
+        GetDeferredTaskHandler().RenderQuantumFrames();
 
     // Handle the case where the first event (of certain types) is in the
     // future.  Then, no sample-accurate processing is needed because the event

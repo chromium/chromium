@@ -174,13 +174,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
 
   // An AudioParam needs sample accurate processing if there are
   // automations scheduled or if there are connections.
-  bool HasSampleAccurateValues() const {
-    bool has_values = HasValues(destination_handler_->CurrentSampleFrame(),
-                                destination_handler_->SampleRate(),
-                                GetDeferredTaskHandler().RenderQuantumFrames());
-
-    return has_values || NumberOfRenderingConnections();
-  }
+  bool HasSampleAccurateValues() const;
 
   bool IsAudioRate() const {
     return automation_rate_ == AutomationRate::kAudio;
@@ -427,13 +421,6 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
                             float min_value,
                             float max_value,
                             unsigned render_quantum_frames);
-
-  // Returns true if the AudioParam timeline needs to run in this
-  // rendering quantum.  This means some automation is already running
-  // or is scheduled to run in the current rendering quantuym.
-  bool HasValues(size_t current_frame,
-                 double sample_rate,
-                 unsigned render_quantum_frames) const;
 
   // Returns true if the event was inserted, false if an exception occurred and
   // the event was not inserted.
