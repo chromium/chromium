@@ -1424,7 +1424,7 @@
       Delete saved security codes
     </message>
   </if>
-  <if expr="not is_android">
+ <if expr="not is_ios and not is_android">
     <message name="IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT" desc="The main text shown in the credit card suggestion list when the CVC field is focused. It will be the main text which is on the first line of suggestion. If the user hovers over the suggestion, the credit card will be previewed. If the user clicks on the suggestion, credit card will be filled.">
       CVC
     </message>
@@ -1432,6 +1432,11 @@
   <if expr="is_android">
     <message name="IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT" desc="The main text shown in the credit card suggestion list when the CVC field is focused. It will be the main text which is on the first line of suggestion. If the user clicks on the suggestion, credit card will be filled.">
       CVC for <ph name="CARD_NAME">$1<ex>Visa</ex></ph>
+    </message>
+  </if>
+  <if expr="is_ios">
+    <message name="IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT" desc="The main text shown in the credit card suggestion list when the CVC field is focused. It will be the main text which is on the first line of suggestion. If the user clicks on the suggestion, credit card will be filled.">
+      Security code
     </message>
   </if>
   <message name="IDS_AUTOFILL_SETTINGS_PAGE_CVC_SAVED_LABEL" desc="Label for a credit card on the payment settings page when the user has stored the cvc." formatter_data="android_java">

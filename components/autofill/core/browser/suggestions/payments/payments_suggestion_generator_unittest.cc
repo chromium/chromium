@@ -2722,14 +2722,19 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   // Both local card and server card suggestion should be shown when CVC field
   // is focused.
   ASSERT_EQ(suggestions.size(), 4U);
-#if !BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(suggestions[0].main_text.value, u"CVC");
-  EXPECT_EQ(suggestions[1].main_text.value, u"CVC");
-  EXPECT_TRUE(suggestions[0].minor_texts.empty());
-  EXPECT_TRUE(suggestions[1].minor_texts.empty());
-#else
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(suggestions[0].main_text.value, u"CVC for Visa");
   EXPECT_EQ(suggestions[1].main_text.value, u"CVC for Mastercard");
+  EXPECT_TRUE(suggestions[0].minor_texts.empty());
+  EXPECT_TRUE(suggestions[1].minor_texts.empty());
+#elif BUILDFLAG(IS_IOS)
+  EXPECT_EQ(suggestions[0].main_text.value, u"Security code");
+  EXPECT_EQ(suggestions[1].main_text.value, u"Security code");
+  EXPECT_TRUE(suggestions[0].minor_texts.empty());
+  EXPECT_TRUE(suggestions[1].minor_texts.empty());
+#else  // For all other platforms
+  EXPECT_EQ(suggestions[0].main_text.value, u"CVC");
+  EXPECT_EQ(suggestions[1].main_text.value, u"CVC");
   EXPECT_TRUE(suggestions[0].minor_texts.empty());
   EXPECT_TRUE(suggestions[1].minor_texts.empty());
 #endif
