@@ -7,16 +7,11 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.IntDef;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.ui.modelutil.PropertyModel;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * Ideally, each message type, <T>, requires a MessageService class. This is the base class. All the
@@ -27,27 +22,6 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 public class MessageService<T> {
-    /**
-     * The reason why we disable the message in grid tab switcher and no longer show it.
-     *
-     * <p>Needs to stay in sync with GridTabSwitcherMessageDisableReason in enums.xml. These values
-     * are persisted to logs. Entries should not be renumbered and numeric values should never be
-     * reused.
-     */
-    @IntDef({
-        MessageDisableReason.UNKNOWN,
-        MessageDisableReason.MESSAGE_ACCEPTED,
-        MessageDisableReason.MESSAGE_DISMISSED,
-        MessageDisableReason.MESSAGE_IGNORED
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface MessageDisableReason {
-        int UNKNOWN = 0;
-        int MESSAGE_ACCEPTED = 1;
-        int MESSAGE_DISMISSED = 2;
-        int MESSAGE_IGNORED = 3;
-        int MAX_VALUE = 3;
-    }
 
     public static final int DEFAULT_MESSAGE_IDENTIFIER = -1;
 
@@ -129,12 +103,5 @@ public class MessageService<T> {
         for (MessageObserver<T> observer : mObservers) {
             observer.messageInvalidate(mMessageType);
         }
-    }
-
-    void logMessageDisableMetrics(String messageType, @MessageDisableReason int reason) {
-        RecordHistogram.recordEnumeratedHistogram(
-                String.format("GridTabSwitcher.%s.DisableReason", messageType),
-                reason,
-                MessageDisableReason.MAX_VALUE);
     }
 }
