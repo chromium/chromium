@@ -712,9 +712,14 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
                                       false, 1);
   EXPECT_EQ(OptimizationGuideDecision::kFalse,
             last_can_apply_optimization_decision());
-  histogram_tester.ExpectUniqueSample(
+  // There may be multiple kNoHintAvailable samples but there should not be any
+  // samples in other buckets.
+  auto no_hint_available_count = histogram_tester.GetBucketCount(
       "OptimizationGuide.ApplyDecision.NoScript",
-      static_cast<int>(OptimizationTypeDecision::kNoHintAvailable), 1);
+      OptimizationTypeDecision::kNoHintAvailable);
+  EXPECT_GT(no_hint_available_count, 0);
+  histogram_tester.ExpectTotalCount("OptimizationGuide.ApplyDecision.NoScript",
+                                    no_hint_available_count);
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
