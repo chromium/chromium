@@ -293,8 +293,9 @@ void SadTabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   title_->SizeToFit(max_width);
 }
 
-SadTab* SadTab::Create(content::WebContents* web_contents, SadTabKind kind) {
-  return new SadTabView(web_contents, kind);
+std::unique_ptr<SadTab> SadTab::Create(content::WebContents* web_contents,
+                                       SadTabKind kind) {
+  return std::make_unique<SadTabView>(web_contents, kind);
 }
 
 BEGIN_METADATA(SadTabView)

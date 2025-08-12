@@ -88,8 +88,8 @@ void SadTabHelper::PrimaryMainFrameRenderProcessGone(
 }
 
 void SadTabHelper::InstallSadTab(base::TerminationStatus status) {
-  sad_tab_.reset(
-      SadTab::Create(web_contents(), SadTabKindFromTerminationStatus(status)));
+  sad_tab_ =
+      SadTab::Create(web_contents(), SadTabKindFromTerminationStatus(status));
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SadTabHelper);
