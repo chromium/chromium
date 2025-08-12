@@ -110,8 +110,8 @@ def render_build_gn(out_dir: pathlib.Path, targets: list[Target],
     _render_string_list(f, 2, 'public_configs', sorted(configs))
     f.write('}\n\n')
 
-  f.write('alias("all_modules") {\n')
-  f.write('  actual = [\n')
+  f.write('group("all_modules") {\n')
+  f.write('  public_deps = [\n')
   for target in sorted(targets):
     f.write(f'    ":{target.name}",\n')
   f.write('  ]\n')

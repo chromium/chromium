@@ -200,8 +200,8 @@ sysroot_module("sys_stage2") {
   ]
 }
 
-alias("all_modules") {
-  actual = [
+group("all_modules") {
+  public_deps = [
     ":_Builtin_float",
     ":_Builtin_intrinsics",
     ":_Builtin_inttypes",
