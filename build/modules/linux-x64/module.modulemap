@@ -92,6 +92,11 @@ module sys_stage1 [system] [extern_c] {
     header "../../linux/debian_bullseye_amd64-sysroot/usr/include/strings.h"
     export *
   }
+  module sysroot_sys_cdefs_h {
+    header "../../linux/debian_bullseye_amd64-sysroot/usr/include/features.h"
+    header "../../linux/debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/sys/cdefs.h"
+    export *
+  }
   module sysroot_sys_select_h {
     header "../../linux/debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/sys/select.h"
     export *

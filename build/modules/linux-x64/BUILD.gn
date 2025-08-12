@@ -67,10 +67,6 @@ builtin_module("_Builtin_stdint") {
 builtin_module("_Builtin_stdnoreturn") {
 }
 
-builtin_module("_Builtin_tgmath") {
-  public_deps = [ ":std_math_h" ]
-}
-
 builtin_module("_Builtin_unwind") {
   public_deps = [ ":_Builtin_stdint" ]
 }
@@ -216,7 +212,6 @@ alias("all_modules") {
     ":_Builtin_stddef_wint_t",
     ":_Builtin_stdint",
     ":_Builtin_stdnoreturn",
-    ":_Builtin_tgmath",
     ":_Builtin_unwind",
     ":ptrauth",
     ":std",

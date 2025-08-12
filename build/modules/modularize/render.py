@@ -99,7 +99,7 @@ def render_build_gn(out_dir: pathlib.Path, targets: list[Target],
   for target in sorted(targets):
     direct_deps = set()
     for hdr in target.headers:
-      direct_deps.update(hdr.direct_deps_closure())
+      direct_deps.update(hdr.required_deps)
     public_deps = sorted({
         f':{hdr.root_module}'
         for hdr in direct_deps

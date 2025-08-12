@@ -17,8 +17,8 @@ import time
 import config
 from graph import CompileStatus
 from graph import Header
-from graph import HeaderRef
 from graph import IncludeDir
+from graph import calculate_rdeps
 import modulemap
 
 _FRAMEWORK = ' (framework directory)'
@@ -283,7 +283,7 @@ class Compiler:
     return self._modules_and_headers()[1]
 
   @_maybe_cache
-  def compile_all(self) -> dict[HeaderRef, Header]:
+  def compile_all(self) -> dict[str, Header]:
     """Generates a graph of headers by compiling all files in the sysroot."""
     if self._error_dir is not None:
       shutil.rmtree(self._error_dir, ignore_errors=True)
@@ -353,7 +353,7 @@ class Compiler:
           # Skip compiling textual headers - we'll calculate their dependencies after the fact.
           if not dep.textual:
             visit(to_rel)
-        state.deps.append((dep.include_dir, dep.rel))
+        state.deps.append(dep)
 
       state.compile_status = CompileStatus.Success if ps.returncode == 0 else CompileStatus.Failure
       if ps.returncode == 0:
@@ -383,7 +383,12 @@ class Compiler:
       if state.root_module is None and ps.returncode != 0:
         state.textual = True
 
+    rdeps = calculate_rdeps(graph.values())
+    includes = collections.defaultdict(list)
+
+    logging.info('Inferring dependencies')
     for header in sorted(graph.values()):
+      includes[header.rel].append(header)
       if header.abs is None:
         for d, kind in self.include_dirs:
           if header.include_dir == kind and (d / header.rel).is_file():
@@ -391,5 +396,30 @@ class Compiler:
             break
       assert header.abs is not None
 
+      # If we were unable to compile something, calculate what the dependencies
+      # likely are.
+      if header.compile_status == CompileStatus.NotCompiled and rdeps[header]:
+        intersection = set.intersection(
+            *[set(rdep.deps) for rdep in rdeps[header]])
+        # For libcxx/foo.h -> builtin/foo.h -> sysroot/foo.h
+        # Despite the fact that builtin/foo.h should appear all the time, we need
+        # to filter it out for sysroot/foo.h.
+        header.deps = [
+            dep for dep in intersection
+            if dep.rel != header.rel or dep.include_dir > header.include_dir
+        ]
+
+    # Translate it to a mapping from include path to a linked list of headers.
+    out = {}
+    for k, headers in includes.items():
+      headers.sort()
+      for prev, nxt in zip(headers, headers[1:]):
+        # If it didn't #include_next we don't need to worry about it.
+        if nxt not in prev.deps:
+          break
+        prev.next = nxt
+        nxt.prev = prev
+      out[k] = headers[0]
+
     logging.info('Compilation complete')
-    return graph
+    return out

@@ -5,9 +5,12 @@
 import collections
 import pathlib
 
-from graph import IncludeDir
+from compiler import Compiler
+from graph import all_headers
+from graph import CompileStatus
 from graph import Header
-from graph import HeaderRef
+from graph import IncludeDir
+from graph import calculate_rdeps
 
 IGNORED_MODULES = [
     # This is a builtin module with feature requirements.
@@ -33,47 +36,30 @@ SYSROOT_PRECOMPILED_HEADERS = [
 ]
 
 
-def fix_graph(graph: dict[HeaderRef, Header], os: str, cpu: str):
+def fix_graph(graph: dict[str, Header], compiler: Compiler):
   """Applies manual augmentation of the header graph."""
-  is_apple = os in ['mac', 'ios']
 
-  # Deal with include_next for modules with modulemaps.
-  # We were only able to compile the one in the first include dir.
-  # To solve this, we copy all dependencies except the shadow to the shadowed
-  # header file.
-  # eg. If libcxx/stddef.h has deps [builtin/stddef.h, sysroot/stdint.h], we
-  # set the deps of builtin/stddef.h to [sysroot/stdint.h]
-  includes = {}
-  for rel in {header.rel for header in graph.values()}:
-    order = []
-    for d in IncludeDir:
-      header = graph.get((d, rel), None)
-      if header is not None:
-        order.append(header)
-    for prev, header in zip(order, order[1:]):
-      header.deps = [(to_kind, to_rel) for (to_kind, to_rel) in order[0].deps
-                     if to_rel != header.rel or to_kind > header.include_dir]
-      header.prev = prev
-      prev.next = header
-    includes[rel] = order
+  def add_dep(frm, to):
+    assert to not in frm.deps
+    frm.deps.append(to)
 
-  for header in graph.values():
-    header.direct_deps = header.calculate_direct_deps(includes)
+  # We made the assumption that the deps of something we couldn't compile is
+  # the intersection of the deps of all users of it.
+  # This does not hold true for stddef.h because of __need_size_t
+  add_dep(graph['stddef.h'].next, graph['__stddef_size_t.h'])
 
-  if is_apple:
+  rdeps = calculate_rdeps(all_headers(graph))
+
+  sysroot = graph['assert.h'].abs.parent
+  for header in all_headers(graph):
+    header.direct_deps = header.calculate_direct_deps(graph, sysroot=sysroot)
+
+  if compiler.is_apple:
     # From here on out we're modifying which headers are textual.
     # This isn't relevant to apple since it has a modulemap.
     return
 
-  # Calculate a reverse dependency graph
-  rdeps = collections.defaultdict(list)
-  for header in graph.values():
-    for dep in header.deps:
-      rdeps[graph[dep]].append(header)
-
-  sysroot = lambda rel, kind=IncludeDir.Sysroot: graph[(kind, rel)]
-
-  for header in graph.values():
+  for header in all_headers(graph):
     if header.include_dir != IncludeDir.Sysroot:
       continue
 
@@ -94,16 +80,16 @@ def fix_graph(graph: dict[HeaderRef, Header], os: str, cpu: str):
       header.textual = True
 
   # Assert is inherently textual.
-  sysroot('assert.h').textual = True
+  graph['assert.h'].textual = True
 
   # This is included from the std_wchar_h module, but that module is marked as
   # textual. Normally that would mean we would mark this as non-textual, but
   # wchar.h doesn't play nice being non-textual.
-  sysroot('wchar.h').textual = True
+  graph['wchar.h'].next.textual = True
 
-  if os == 'android':
-    graph[(IncludeDir.LibCxx, 'wchar.h')].public_configs.append(
+  if compiler.os == 'android':
+    graph['wchar.h'].public_configs.append(
         '//buildtools/third_party/libc++:wchar_android_fix')
 
-    sysroot('android/legacy_threads_inlines.h').textual = True
-    sysroot('bits/threads_inlines.h').textual = True
+    graph['android/legacy_threads_inlines.h'].textual = True
+    graph['bits/threads_inlines.h'].textual = True

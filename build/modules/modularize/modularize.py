@@ -48,7 +48,7 @@ def main(args):
       return
 
   graph = compiler.compile_all()
-  fix_graph(graph, compiler.os, compiler.cpu)
+  fix_graph(graph, compiler)
   targets = run_build(graph)
   out_dir.mkdir(exist_ok=True, parents=False)
   # Since apple provides a modulemap, we only need to create a BUILD.gn file.
