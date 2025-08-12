@@ -444,6 +444,34 @@ INSTANTIATE_TEST_SUITE_P(
                                                kTestAsGuestUser,
                                                /*tablet_mode=*/false)));
 
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3NormalUserTabletMode,
+    SpokenFeedbackAppListSearchTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
+                                               kTestAsNormalUser,
+                                               /*tablet_mode=*/true)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3GuestUserTabletMode,
+    SpokenFeedbackAppListSearchTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
+                                               kTestAsGuestUser,
+                                               /*tablet_mode=*/true)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3NormalUserDesktopMode,
+    SpokenFeedbackAppListSearchTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
+                                               kTestAsNormalUser,
+                                               /*tablet_mode=*/false)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3GuestUserDesktopMode,
+    SpokenFeedbackAppListSearchTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
+                                               kTestAsGuestUser,
+                                               /*tablet_mode=*/false)));
+
 // Checks that when an app list item with a notification badge is focused, an
 // announcement is made that the item requests your attention.
 IN_PROC_BROWSER_TEST_P(NotificationSpokenFeedbackAppListTest,
