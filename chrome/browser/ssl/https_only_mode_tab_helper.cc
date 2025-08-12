@@ -98,8 +98,10 @@ void HttpsOnlyModeTabHelper::DidFinishNavigation(
       // and there is nothing to show a modal on. Just return.
       return;
     }
+    ukm::SourceId ukm_source_id = ukm::ConvertToSourceId(
+        navigation_handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
     dialog_controller->ShowDialog(navigation_handle->GetWebContents(),
-                                  navigation_handle->GetURL());
+                                  navigation_handle->GetURL(), ukm_source_id);
     // Make sure that the security indicator shows the correct icon.
     // TODO(crbug.com/351990829): Add the new icon and integration.
     navigation_handle->GetWebContents()->DidChangeVisibleSecurityState();

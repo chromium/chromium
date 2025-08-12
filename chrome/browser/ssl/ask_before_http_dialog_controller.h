@@ -11,7 +11,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/security_interstitials/core/metrics_helper.h"
 #include "components/tabs/public/tab_interface.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/widget/widget.h"
 
@@ -44,7 +46,9 @@ class AskBeforeHttpDialogController {
   // Show the Ask-before-HTTP dialog. The user can choose to proceed through the
   // warning, or go back to the previous page. If called while a dialog is
   // already showing, this will create a new dialog and replace the old one.
-  void ShowDialog(content::WebContents* web_contents, const GURL& request_url);
+  void ShowDialog(content::WebContents* web_contents,
+                  const GURL& request_url,
+                  ukm::SourceId navigation_source_id);
 
   // Returns whether there is an associated open dialog widget.
   bool HasOpenDialogWidget() const;
@@ -59,6 +63,9 @@ class AskBeforeHttpDialogController {
   void OnContinueButtonClicked(const GURL& request_url, const ui::Event& event);
   void TabWillDetach(tabs::TabInterface* tab,
                      tabs::TabInterface::DetachReason reason);
+
+  ukm::SourceId navigation_source_id_ = ukm::kInvalidSourceId;
+  std::unique_ptr<security_interstitials::MetricsHelper> metrics_helper_;
 
   // The associated tab. Guaranteed to remain valid for the lifetime of this
   // class. This can be used to dynamically access relevant window state.

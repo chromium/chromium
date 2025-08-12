@@ -135,10 +135,6 @@ HttpsUpgradesNavigationThrottle::WillStartRequest() {
       // Mark this as a fallback HTTP navigation and trigger the interstitial.
       tab_helper->set_is_navigation_fallback(true);
 
-      ukm::SourceId source_id =
-          ukm::ConvertToSourceId(navigation_handle()->GetNavigationId(),
-                                 ukm::SourceIdType::NAVIGATION_ID);
-
       if (base::FeatureList::IsEnabled(features::kHttpsFirstDialogUi)) {
         // New dialog UI.
         // Rewrite the response to a blank page. DidFinishNavigation will
@@ -147,6 +143,9 @@ HttpsUpgradesNavigationThrottle::WillStartRequest() {
                 kBlankPageHtml};
       } else {
         // Old full-page interstitial UI.
+        ukm::SourceId source_id =
+            ukm::ConvertToSourceId(navigation_handle()->GetNavigationId(),
+                                   ukm::SourceIdType::NAVIGATION_ID);
         std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
             blocking_page =
                 blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(
