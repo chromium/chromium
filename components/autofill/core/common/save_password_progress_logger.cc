@@ -527,6 +527,26 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Automated password change: form not found";
     case STRING_AUTOMATED_PASSWORD_CHANGE_SUBMISSION_DETECTED_OR_TIMEOUT:
       return "Automated password change: submission detected or timeout";
+    case STRING_PASSWORD_CHANGE_OVERRIDDEN_BY_SWITCH:
+      return "Automated password change: Overridden by switch";
+    case STRING_PASSWORD_CHANGE_GENERATION_UNAVAILABLE:
+      return "Automated password change: Generation unavailable";
+    case STRING_PASSWORD_CHANGE_MODEL_EXECUTION_NOT_ALLOWED:
+      return "Automated password change: Model execution not allowed";
+    case STRING_PASSWORD_CHANGE_SAVING_DISABLED:
+      return "Automated password change: Saving disabled";
+    case STRING_PASSWORD_CHANGE_DISABLED_BY_POLICY:
+      return "Automated password change: Disabled by policy";
+    case STRING_PASSWORD_CHANGE_FEATURE_ENABLED:
+      return "Automated password change: Feature enabled";
+    case STRING_PASSWORD_CHANGE_UNSUPPORTED_LANGUAGE:
+      return "Automated password change: Unsupported language";
+    case STRING_PASSWORD_CHANGE_UNSUPPORTED_COUNTRY:
+      return "Automated password change: Unsupported country";
+    case STRING_PASSWORD_CHANGE_URL_AVAILABLE:
+      return "Automated password change: URL available";
+    case STRING_PASSWORD_CHANGE_USER_IS_NOT_ACTIVE:
+      return "Automated password change: User is not active";
     case SavePasswordProgressLogger::STRING_INVALID:
       return "INVALID";
       // Intentionally no default: clause here -- all IDs need to get covered.
