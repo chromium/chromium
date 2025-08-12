@@ -918,16 +918,6 @@
       name: "CheckVisibilityExtraProperties",
       status: "stable",
     },
-    // This flag shifts the timing of clearing the popover invoker so that it
-    // happens after the `beforetoggle` event is fired. This is something of a
-    // bug fix: see the spec discussion at
-    // https://github.com/whatwg/html/issues/11246#issuecomment-2860876897.
-    // This is enabled by default, and is a kill switch. It shipped in M138,
-    // and can be removed in M140.
-    {
-      name: "ClearPopoverInvokerAfterBeforeToggle",
-      status: "stable",
-    },
     {
       // Allows top-level sites to restrict collection of high-entropy UA client
       // hints (from 3Ps, or itself) via the getHighEntropyValues API.
