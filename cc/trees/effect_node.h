@@ -97,12 +97,42 @@ struct CC_EXPORT EffectNode {
   // effect node.
   gfx::MaskFilterInfo mask_filter_info;
 
-  SkBlendMode blend_mode = SkBlendMode::kSrcOver;
-
   gfx::Vector2dF surface_contents_scale;
 
   viz::SubtreeCaptureId subtree_capture_id;
   gfx::Size subtree_size;
+
+  // The transform node index of the transform to apply to this effect
+  // node's content when rendering to a surface.
+  int transform_id = kRootPropertyNodeId;
+  // The clip node index of the clip to apply to this effect node's
+  // content when rendering to a surface.
+  int clip_id = kRootPropertyNodeId;
+
+  // This is the id of the ancestor effect node that induces a
+  // RenderSurfaceImpl.
+  // This is set and used for the impl-side effect tree only.
+  int target_id = 1;
+  // If this node is tagged with a ViewTransitionElementResourceId, it means it
+  // produces a snapshot for an element participating in a transition. This
+  // target id corresponds to the effect node where the
+  // ViewTransitionContentLayer using this resource draws. Can be unset if no
+  // layer using this resource is being drawn.
+  int view_transition_target_id = kInvalidPropertyNodeId;
+  int closest_ancestor_with_cached_render_surface_id = kInvalidPropertyNodeId;
+  int closest_ancestor_with_copy_request_id = kInvalidPropertyNodeId;
+  int closest_ancestor_being_captured_id = kInvalidPropertyNodeId;
+  int closest_ancestor_with_shared_element_id = kInvalidPropertyNodeId;
+
+  // Represents a resource id for a resource cached or generated in the Viz
+  // process.
+  viz::ViewTransitionElementResourceId view_transition_element_resource_id;
+
+  SkBlendMode blend_mode = SkBlendMode::kSrcOver;
+
+  // RenderSurfaceReason::kNone if this effect node should not create a render
+  // surface, or the reason that this effect node should create one.
+  RenderSurfaceReason render_surface_reason = RenderSurfaceReason::kNone;
 
   bool cache_render_surface : 1 = false;
 
@@ -193,34 +223,6 @@ struct CC_EXPORT EffectNode {
   // Whether this effect is triggered by a non-identity 2D scale transform
   // (and no other transform).
   bool needs_effect_for_2d_scale_transform : 1 = false;
-  // RenderSurfaceReason::kNone if this effect node should not create a render
-  // surface, or the reason that this effect node should create one.
-  RenderSurfaceReason render_surface_reason = RenderSurfaceReason::kNone;
-  // The transform node index of the transform to apply to this effect
-  // node's content when rendering to a surface.
-  int transform_id = kRootPropertyNodeId;
-  // The clip node index of the clip to apply to this effect node's
-  // content when rendering to a surface.
-  int clip_id = kRootPropertyNodeId;
-
-  // This is the id of the ancestor effect node that induces a
-  // RenderSurfaceImpl.
-  // This is set and used for the impl-side effect tree only.
-  int target_id = 1;
-  // If this node is tagged with a ViewTransitionElementResourceId, it means it
-  // produces a snapshot for an element participating in a transition. This
-  // target id corresponds to the effect node where the
-  // ViewTransitionContentLayer using this resource draws. Can be unset if no
-  // layer using this resource is being drawn.
-  int view_transition_target_id = kInvalidPropertyNodeId;
-  int closest_ancestor_with_cached_render_surface_id = kInvalidPropertyNodeId;
-  int closest_ancestor_with_copy_request_id = kInvalidPropertyNodeId;
-  int closest_ancestor_being_captured_id = kInvalidPropertyNodeId;
-  int closest_ancestor_with_shared_element_id = kInvalidPropertyNodeId;
-
-  // Represents a resource id for a resource cached or generated in the Viz
-  // process.
-  viz::ViewTransitionElementResourceId view_transition_element_resource_id;
 
   bool HasRenderSurface() const {
     return render_surface_reason != RenderSurfaceReason::kNone;
