@@ -220,7 +220,8 @@ public class AutocompleteMediatorUnitTest {
                         mActivityLifecycleDispatcher,
                         mEmbedder,
                         mWindowAndroid,
-                        mDeferredImeCallback);
+                        mDeferredImeCallback,
+                        false);
         mMediator
                 .getDropdownItemViewInfoListBuilderForTest()
                 .registerSuggestionProcessor(mMockProcessor);

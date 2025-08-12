@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.omnibox.OmniboxFeatures;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.util.MotionEventUtils;
 
@@ -270,16 +269,12 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     /**
-     * Override the visuals of the Omnibox. This method is particularly relevant for SearchActivity,
-     * which presents Phone-style omnibox even when running on Tablets.
+     * Set whether the dropdown should be clipped to its outline.
      *
-     * @param shouldForce whether Omnibox should be forced to use Phone-style visuals
+     * @param clip whether to clip the outline
      */
-    public void forcePhoneStyleOmnibox(boolean shouldForce) {
-        if (!shouldForce
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
-                && getContext().getResources().getConfiguration().screenWidthDp
-                        >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP) {
+    public void setShouldClipToOutline(boolean clip) {
+        if (clip) {
             setOutlineProvider(
                     new RoundedCornerOutlineProvider(
                             getContext()

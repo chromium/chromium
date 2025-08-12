@@ -78,6 +78,9 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     static final WritableBooleanPropertyKey ACTIVITY_WINDOW_FOCUSED =
             new WritableBooleanPropertyKey();
 
+    /** Whether the suggestions are being rendered on a large screen. */
+    static final WritableBooleanPropertyKey IS_LARGE_SCREEN = new WritableBooleanPropertyKey();
+
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 ALPHA,
@@ -93,6 +96,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
                 LIST_IS_FINAL,
                 DRAW_OVER_ANCHOR,
                 CONTAINER_ALWAYS_VISIBLE,
-                ACTIVITY_WINDOW_FOCUSED
+                ACTIVITY_WINDOW_FOCUSED,
+                IS_LARGE_SCREEN
             };
 }

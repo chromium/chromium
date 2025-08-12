@@ -118,6 +118,9 @@ class SuggestionListViewBinder {
                     view.dropdown
                             .getResources()
                             .getDimensionPixelSize(R.dimen.omnibox_suggestion_list_elevation));
+        } else if (SuggestionListProperties.IS_LARGE_SCREEN == propertyKey) {
+            view.dropdown.setShouldClipToOutline(
+                    model.get(SuggestionListProperties.IS_LARGE_SCREEN));
         }
     }
 

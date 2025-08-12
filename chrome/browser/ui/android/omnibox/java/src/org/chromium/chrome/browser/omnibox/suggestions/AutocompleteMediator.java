@@ -63,6 +63,7 @@ import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -112,6 +113,7 @@ class AutocompleteMediator
             mDeferredIMEWindowInsetApplicationCallback;
     private final OmniboxSuggestionsDropdownEmbedder mEmbedder;
     private final AutocompleteInput mAutocompleteInput = new AutocompleteInput();
+    private final boolean mForcePhoneStyleOmnibox;
 
     private Optional<AutocompleteController> mAutocomplete = Optional.empty();
     private Optional<AutocompleteResult> mAutocompleteResult = Optional.empty();
@@ -189,7 +191,8 @@ class AutocompleteMediator
             ActivityLifecycleDispatcher lifecycleDispatcher,
             OmniboxSuggestionsDropdownEmbedder embedder,
             WindowAndroid windowAndroid,
-            DeferredIMEWindowInsetApplicationCallback deferredIMEWindowInsetApplicationCallback) {
+            DeferredIMEWindowInsetApplicationCallback deferredIMEWindowInsetApplicationCallback,
+            boolean forcePhoneStyleOmnibox) {
         mContext = context;
         mDelegate = delegate;
         mUrlBarEditingTextProvider = textProvider;
@@ -216,6 +219,7 @@ class AutocompleteMediator
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
         mDeferredIMEWindowInsetApplicationCallback = deferredIMEWindowInsetApplicationCallback;
+        mForcePhoneStyleOmnibox = forcePhoneStyleOmnibox;
 
         var pm = context.getPackageManager();
         var dialIntent = new Intent(Intent.ACTION_DIAL);
@@ -1168,6 +1172,12 @@ class AutocompleteMediator
         mListPropertyModel.set(
                 SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE,
                 mAutocompleteInput.getPageClassification() == PageClassification.ANDROID_HUB_VALUE);
+        mListPropertyModel.set(
+                SuggestionListProperties.IS_LARGE_SCREEN,
+                !mForcePhoneStyleOmnibox
+                        && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                        && mContext.getResources().getConfiguration().screenWidthDp
+                                >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP);
     }
 
     /** Trigger autocomplete for the given query. */

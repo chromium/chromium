@@ -138,7 +138,8 @@ public class AutocompleteCoordinator
                         lifecycleDispatcher,
                         dropdownEmbedder,
                         windowAndroid,
-                        deferredIMEWindowInsetApplicationCallback);
+                        deferredIMEWindowInsetApplicationCallback,
+                        forcePhoneStyleOmnibox);
         mMediator.initDefaultProcessors();
 
         if (scrollListener != null) {
@@ -154,8 +155,7 @@ public class AutocompleteCoordinator
                 SuggestionListProperties.DROPDOWN_SCROLL_TO_TOP_LISTENER,
                 this::dropdownOverscrolledToTop);
 
-        ViewProvider<SuggestionListViewHolder> viewProvider =
-                createViewProvider(forcePhoneStyleOmnibox);
+        ViewProvider<SuggestionListViewHolder> viewProvider = createViewProvider();
         viewProvider.whenLoaded(
                 (holder) -> {
                     mContainer = holder.container;
@@ -206,8 +206,7 @@ public class AutocompleteCoordinator
         mMediator.setOmniboxSuggestionsVisualStateObserver(omniboxSuggestionsVisualStateObserver);
     }
 
-    private ViewProvider<SuggestionListViewHolder> createViewProvider(
-            boolean forcePhoneStyleOmnibox) {
+    private ViewProvider<SuggestionListViewHolder> createViewProvider() {
         return new ViewProvider<>() {
             private AsyncViewProvider<ViewGroup> mAsyncProvider;
             private final List<Callback<SuggestionListViewHolder>> mCallbacks = new ArrayList<>();
@@ -231,7 +230,6 @@ public class AutocompleteCoordinator
                 OmniboxSuggestionsDropdown dropdown =
                         container.findViewById(R.id.omnibox_suggestions_dropdown);
 
-                dropdown.forcePhoneStyleOmnibox(forcePhoneStyleOmnibox);
                 dropdown.setAdapter(mAdapter);
                 mRecycledViewPool.ifPresent(p -> dropdown.setRecycledViewPool(p));
                 mHolder = new SuggestionListViewHolder(suggestionsContainer, dropdown);

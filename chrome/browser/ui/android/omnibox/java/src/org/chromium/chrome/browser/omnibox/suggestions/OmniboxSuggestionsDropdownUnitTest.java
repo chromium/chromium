@@ -14,7 +14,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 
@@ -33,7 +32,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.test.R;
-import org.chromium.ui.base.DeviceFormFactor;
 
 /** Unit tests for {@link OmniboxSuggestionsDropdown}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -63,18 +61,6 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @After
     public void tearDown() {
         mListener.resetKeyboardShownState();
-    }
-
-    /**
-     * Simulate split screen window width.
-     *
-     * <p>Works in tandem with @Config(qualifiers = "sw###dp").
-     */
-    private Context getContextForWindowWidth(int windowWidthDp) {
-        Configuration config = new Configuration();
-        config.screenWidthDp = windowWidthDp;
-
-        return mContext.createConfigurationContext(config);
     }
 
     @Test
@@ -245,39 +231,17 @@ public class OmniboxSuggestionsDropdownUnitTest {
     }
 
     @Test
-    @Config(qualifiers = "sw600dp")
-    public void forcePhoneStyleOmnibox_forcing_noClippingWhenForced() {
+    public void setShouldClipToOutline_clipsOutlineWhenSet() {
         var dropdown = new OmniboxSuggestionsDropdown(mContext, null);
-        dropdown.forcePhoneStyleOmnibox(true);
-        assertFalse(dropdown.getClipToOutline());
-        assertNull(dropdown.getOutlineProvider());
-    }
-
-    @Test
-    @Config(qualifiers = "sw600dp")
-    public void forcePhoneStyleOmnibox_nonForcing_clipsOnTablets_narrowWindow() {
-        var context = getContextForWindowWidth(DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP - 1);
-        var dropdown = new OmniboxSuggestionsDropdown(context, null);
-        dropdown.forcePhoneStyleOmnibox(false);
-        assertFalse(dropdown.getClipToOutline());
-        assertNull(dropdown.getOutlineProvider());
-    }
-
-    @Test
-    @Config(qualifiers = "sw600dp")
-    public void forcePhoneStyleOmnibox_nonForcing_clipsOnTablets_wideWindow() {
-        var context = getContextForWindowWidth(DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP);
-        var dropdown = new OmniboxSuggestionsDropdown(context, null);
-        dropdown.forcePhoneStyleOmnibox(false);
+        dropdown.setShouldClipToOutline(true);
         assertTrue(dropdown.getClipToOutline());
         assertNotNull(dropdown.getOutlineProvider());
     }
 
     @Test
-    @Config(qualifiers = "sw320dp")
-    public void forcePhoneStyleOmnibox_nonForcing_noClippingOnPhones() {
+    public void setShouldClipToOutline_doesNotClipOutlineWhenUnset() {
         var dropdown = new OmniboxSuggestionsDropdown(mContext, null);
-        dropdown.forcePhoneStyleOmnibox(false);
+        dropdown.setShouldClipToOutline(false);
         assertFalse(dropdown.getClipToOutline());
         assertNull(dropdown.getOutlineProvider());
     }
