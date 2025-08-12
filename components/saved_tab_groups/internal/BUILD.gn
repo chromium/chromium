@@ -236,6 +236,8 @@ source_set("tab_group_sync_bridge") {
   ]
 
   sources = [
+    "personal_collaboration_data_conversion_utils.cc",
+    "personal_collaboration_data_conversion_utils.h",
     "saved_tab_group_proto_conversions.cc",
     "saved_tab_group_proto_conversions.h",
     "saved_tab_group_sync_bridge.cc",

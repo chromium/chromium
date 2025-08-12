@@ -133,13 +133,11 @@ class SharedTabGroupAccountDataSyncBridge : public syncer::DataTypeSyncBridge,
   // SavedTabGroupTab. Tab group must exist and be shared, and tab must have a
   // "last seen" time set.
   std::unique_ptr<syncer::EntityData> CreateEntityDataFromSavedTabGroupTab(
-      const SavedTabGroupModel& model,
       const SavedTabGroupTab& tab);
 
   // Conversion method to create a EntityData object for a given
   // SavedTabGroup.
   std::unique_ptr<syncer::EntityData> CreateEntityDataFromSharedTabGroup(
-      const SavedTabGroupModel& model,
       const SavedTabGroup& tab_group);
 
   // Remove tab details on tab group update locally or from sync if available.

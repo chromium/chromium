@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/uuid.h"
+#include "components/saved_tab_groups/internal/personal_collaboration_data_conversion_utils.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/entity_change.h"
@@ -26,11 +27,6 @@ namespace {
 // Convert proto int64 microseconds since Windows-epoch to base::Time.
 base::Time DeserializeTime(int64_t proto_time) {
   return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(proto_time));
-}
-
-// Convert base::Time to proto int64 microseconds since Windows-epoch.
-int64_t SerializeTime(const base::Time& t) {
-  return t.ToDeltaSinceWindowsEpoch().InMicroseconds();
 }
 
 // Client tag consists of the tab guid concatenated with collaboration id.
@@ -410,7 +406,7 @@ void SharedTabGroupAccountDataSyncBridge::SavedTabGroupTabLastSeenTimeUpdated(
   const std::string storage_key = CreateClientTagForSharedTab(*group, *tab);
   if (!specifics_.contains(storage_key)) {
     // This tab has been seen but does not exist in sync yet.
-    WriteEntityToSync(CreateEntityDataFromSavedTabGroupTab(*model_, *tab));
+    WriteEntityToSync(CreateEntityDataFromSavedTabGroupTab(*tab));
     return;
   }
 
@@ -427,7 +423,7 @@ void SharedTabGroupAccountDataSyncBridge::SavedTabGroupTabLastSeenTimeUpdated(
   }
 
   // This tab was seen again. Update sync with the new timestamp.
-  WriteEntityToSync(CreateEntityDataFromSavedTabGroupTab(*model_, *tab));
+  WriteEntityToSync(CreateEntityDataFromSavedTabGroupTab(*tab));
 }
 
 void SharedTabGroupAccountDataSyncBridge::SavedTabGroupUpdatedLocally(
@@ -765,7 +761,6 @@ void SharedTabGroupAccountDataSyncBridge::RemoveEntitySpecifics(
 
 std::unique_ptr<syncer::EntityData>
 SharedTabGroupAccountDataSyncBridge::CreateEntityDataFromSharedTabGroup(
-    const SavedTabGroupModel& model,
     const SavedTabGroup& tab_group) {
   CHECK(tab_group.is_shared_tab_group());
 
@@ -773,56 +768,38 @@ SharedTabGroupAccountDataSyncBridge::CreateEntityDataFromSharedTabGroup(
   // WARNING: if you are adding support for new
   // `SharedTabGroupAccountDataSpecifics` fields, you need to update the
   // following functions accordingly: `TrimSpecifics`.
-  sync_pb::SharedTabGroupAccountDataSpecifics specifics =
+  sync_pb::SharedTabGroupAccountDataSpecifics old_specifics =
       change_processor()
           ->GetPossiblyTrimmedRemoteSpecifics(
               CreateClientTagForSharedGroup(tab_group))
           .shared_tab_group_account_data();
 
-  specifics.set_guid(tab_group.saved_guid().AsLowercaseString());
-  specifics.set_collaboration_id(tab_group.collaboration_id()->value());
-  specifics.set_version(kCurrentSharedTabGroupAccountDataSpecificsProtoVersion);
-
-  sync_pb::SharedTabGroupDetails* tab_group_details =
-      specifics.mutable_shared_tab_group_details();
-  if (tab_group.position().has_value()) {
-    tab_group_details->set_pinned_position(tab_group.position().value());
-  }
+  sync_pb::SharedTabGroupAccountDataSpecifics specifics =
+      CreatePersonalCollaborationSpecificsFromSharedTabGroup(tab_group,
+                                                             old_specifics);
 
   return CreateEntityDataFromSpecifics(specifics);
 }
 
 std::unique_ptr<syncer::EntityData>
 SharedTabGroupAccountDataSyncBridge::CreateEntityDataFromSavedTabGroupTab(
-    const SavedTabGroupModel& model,
     const SavedTabGroupTab& tab) {
-  const SavedTabGroup* group = model.Get(tab.saved_group_guid());
+  const SavedTabGroup* group = model_->Get(tab.saved_group_guid());
   CHECK(group);
-
-  const std::optional<CollaborationId>& collaboration_id =
-      group->collaboration_id();
-  CHECK(collaboration_id.has_value());
 
   // WARNING: all fields need to be set or cleared explicitly.
   // WARNING: if you are adding support for new
   // `SharedTabGroupAccountDataSpecifics` fields, you need to update the
   // following functions accordingly: `TrimSpecifics`.
-  sync_pb::SharedTabGroupAccountDataSpecifics specifics =
+  sync_pb::SharedTabGroupAccountDataSpecifics old_specifics =
       change_processor()
           ->GetPossiblyTrimmedRemoteSpecifics(
               CreateClientTagForSharedTab(*group, tab))
           .shared_tab_group_account_data();
 
-  specifics.set_guid(tab.saved_tab_guid().AsLowercaseString());
-  specifics.set_collaboration_id(collaboration_id->value());
-  specifics.set_version(kCurrentSharedTabGroupAccountDataSpecificsProtoVersion);
-
-  sync_pb::SharedTabDetails* tab_group_details =
-      specifics.mutable_shared_tab_details();
-  tab_group_details->set_shared_tab_group_guid(
-      group->saved_guid().AsLowercaseString());
-  tab_group_details->set_last_seen_timestamp_windows_epoch(
-      SerializeTime(tab.last_seen_time().value()));
+  sync_pb::SharedTabGroupAccountDataSpecifics specifics =
+      CreatePersonalCollaborationSpecificsFromSavedTabGroupTab(*group, tab,
+                                                               old_specifics);
 
   return CreateEntityDataFromSpecifics(specifics);
 }
@@ -868,7 +845,7 @@ void SharedTabGroupAccountDataSyncBridge::
   }
 
   if (has_changed) {
-    WriteEntityToSync(CreateEntityDataFromSharedTabGroup(*model_, group));
+    WriteEntityToSync(CreateEntityDataFromSharedTabGroup(group));
   }
 }
 

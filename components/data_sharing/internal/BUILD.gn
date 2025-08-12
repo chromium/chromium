@@ -89,6 +89,8 @@ static_library("personal_collaboration_data_internal") {
   sources = [
     "personal_collaboration_data/personal_collaboration_data_service_impl.cc",
     "personal_collaboration_data/personal_collaboration_data_service_impl.h",
+    "personal_collaboration_data/personal_collaboration_data_sync_bridge.cc",
+    "personal_collaboration_data/personal_collaboration_data_sync_bridge.h",
   ]
 
   deps = [
