@@ -449,12 +449,14 @@ public abstract class TabModelJniBridge implements TabModelInternal {
      *
      * @param parentTab The tab to duplicate.
      * @param webContents The {@link WebContents} for the new tab.
+     * @return The new tab, if the duplication succeeded.
      */
     @CalledByNative
-    public void duplicateTab(@JniType("TabAndroid*") Tab parentTab, WebContents webContents) {
+    public @JniType("TabAndroid*") @Nullable Tab duplicateTab(
+            @JniType("TabAndroid*") Tab parentTab, WebContents webContents) {
         // TODO(crbug.com/431997520): Insert tab next to parent instead of next to the other
         // children tabs.
-        getTabCreator()
+        return getTabCreator()
                 .createTabWithWebContents(
                         parentTab,
                         parentTab.getIsPinned(),

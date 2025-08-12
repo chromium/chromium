@@ -107,7 +107,8 @@ class TabStripModelDelegate {
   virtual bool IsTabStripEditable() = 0;
 
   // Duplicates the contents at the provided index and places it into a new tab.
-  virtual void DuplicateContentsAt(int index) = 0;
+  // Returns the duplicated tab, if duplication succeeds.
+  virtual content::WebContents* DuplicateContentsAt(int index) = 0;
 
   // Duplicates a split tab.
   virtual void DuplicateSplit(split_tabs::SplitTabId split) = 0;

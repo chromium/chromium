@@ -80,7 +80,7 @@ class TestTabModel : public TabModel {
   // TabListInterface implementation.
   void OpenTab(const GURL& url, int index) override;
   void DiscardTab(tabs::TabHandle tab) override;
-  void DuplicateTab(tabs::TabHandle tab) override;
+  tabs::TabInterface* DuplicateTab(tabs::TabHandle tab) override;
   tabs::TabInterface* GetTab(int index) override;
   int GetIndexOfTab(tabs::TabHandle tab) override;
   void HighlightTabs(tabs::TabHandle tab_to_activate,
@@ -177,7 +177,7 @@ class OwningTestTabModel : public TabModel {
   // TabListInterface implementation.
   void OpenTab(const GURL& url, int index) override;
   void DiscardTab(tabs::TabHandle tab) override;
-  void DuplicateTab(tabs::TabHandle tab) override;
+  tabs::TabInterface* DuplicateTab(tabs::TabHandle tab) override;
   tabs::TabInterface* GetTab(int index) override;
   int GetIndexOfTab(tabs::TabHandle tab) override;
   void HighlightTabs(tabs::TabHandle tab_to_activate,

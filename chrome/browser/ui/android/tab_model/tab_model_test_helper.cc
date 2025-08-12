@@ -142,8 +142,9 @@ void TestTabModel::DiscardTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
 
-void TestTabModel::DuplicateTab(tabs::TabHandle tab) {
+tabs::TabInterface* TestTabModel::DuplicateTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
+  return nullptr;
 }
 
 tabs::TabInterface* TestTabModel::GetTab(int index) {
@@ -362,8 +363,9 @@ void OwningTestTabModel::DiscardTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
 
-void OwningTestTabModel::DuplicateTab(tabs::TabHandle tab) {
+tabs::TabInterface* OwningTestTabModel::DuplicateTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
+  return nullptr;
 }
 
 tabs::TabInterface* OwningTestTabModel::GetTab(int index) {

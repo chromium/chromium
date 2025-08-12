@@ -49,7 +49,10 @@ bool TestTabStripModelDelegate::IsTabStripEditable() {
   return true;
 }
 
-void TestTabStripModelDelegate::DuplicateContentsAt(int index) {}
+content::WebContents* TestTabStripModelDelegate::DuplicateContentsAt(
+    int index) {
+  return nullptr;
+}
 
 void TestTabStripModelDelegate::DuplicateSplit(split_tabs::SplitTabId split) {}
 

@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "components/tabs/public/tab_interface.h"
 
 DEFINE_USER_DATA(TabListBridge);
 
@@ -47,7 +48,7 @@ void TabListBridge::OpenTab(const GURL& url, int index) {}
 
 void TabListBridge::DiscardTab(tabs::TabHandle tab) {}
 
-void TabListBridge::DuplicateTab(tabs::TabHandle tab) {
+tabs::TabInterface* TabListBridge::DuplicateTab(tabs::TabHandle tab) {
   // TODO(dpenning): It's a bit of a code smell to reach in and grab the
   // delegate from TabStripModel, but it avoids introducing new dependencies
   // here.
@@ -57,10 +58,15 @@ void TabListBridge::DuplicateTab(tabs::TabHandle tab) {
   CHECK_NE(index, TabStripModel::kNoTab);
 
   if (!delegate->CanDuplicateContentsAt(index)) {
-    return;
+    return nullptr;
   }
 
-  delegate->DuplicateContentsAt(index);
+  content::WebContents* new_contents = delegate->DuplicateContentsAt(index);
+  if (!new_contents) {
+    return nullptr;
+  }
+
+  return tabs::TabInterface::MaybeGetFromContents(new_contents);
 }
 
 tabs::TabInterface* TabListBridge::GetTab(int index) {

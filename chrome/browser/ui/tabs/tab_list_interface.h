@@ -56,8 +56,9 @@ class TabListInterface {
   // docs/website/site/chromium-os/chromiumos-design-docs/tab-discarding-and-reloading/index.md
   virtual void DiscardTab(tabs::TabHandle tab) = 0;
 
-  // Duplicates the `tab` to the next adjacent index.
-  virtual void DuplicateTab(tabs::TabHandle tab) = 0;
+  // Duplicates the `tab` to the next adjacent index. Returns the newly-
+  // created tab.
+  virtual tabs::TabInterface* DuplicateTab(tabs::TabHandle tab) = 0;
 
   // Returns the `TabInterface` for the tab at a given `index`. May be `nullptr`
   // if the index is out-of-bounds.
