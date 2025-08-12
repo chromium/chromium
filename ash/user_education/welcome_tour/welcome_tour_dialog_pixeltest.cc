@@ -6,18 +6,23 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/user_education/user_education_ash_test_base.h"
 #include "ash/user_education/welcome_tour/welcome_tour_dialog.h"
 #include "base/test/scoped_feature_list.h"
 
 namespace ash {
 
-class WelcomeTourDialogPixelTest : public UserEducationAshTestBase {
+class WelcomeTourDialogPixelTest
+    : public UserEducationAshTestBase,
+      public testing::WithParamInterface</*enable_system_blur=*/bool> {
  private:
   // UserEducationAshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = GetParam();
+    return init_params;
   }
 
   void SetUp() override {
@@ -32,13 +37,19 @@ class WelcomeTourDialogPixelTest : public UserEducationAshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(WelcomeTourDialogPixelTest, Appearance) {
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    WelcomeTourDialogPixelTest,
+    testing::Bool());
+
+TEST_P(WelcomeTourDialogPixelTest, Appearance) {
   ASSERT_TRUE(WelcomeTourDialog::Get());
 
   // Take a screenshot of the Welcome Tour dialog.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "welcome_tour_dialog",
-      /*revision_number=*/5, WelcomeTourDialog::Get()));
+      GenerateScreenshotName("welcome_tour_dialog"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 5 : 0,
+      WelcomeTourDialog::Get()));
 }
 
 }  // namespace ash

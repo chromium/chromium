@@ -136,7 +136,7 @@ TEST_P(MahiPanelViewPixelTest, MainPanel) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      pixel_test_helper()->GenerateScreenshotName("panel_view"),
+      GenerateScreenshotName("panel_view"),
       /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 15 : 0,
       panel_view()));
 }
