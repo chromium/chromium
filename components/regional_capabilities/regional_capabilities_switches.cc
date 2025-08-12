@@ -16,6 +16,9 @@ namespace switches {
 BASE_FEATURE(kMitigateLegacySearchEnginePromoOverlap,
              "MitigateLegacySearchEnginePromoOverlap",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kResolveRegionalCapabilitiesFromDevice,
+             "ResolveRegionalCapabilitiesFromDevice",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)

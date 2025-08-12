@@ -351,8 +351,18 @@ void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
                       is_current_country_from_fallback);
 
   country_id_cache_ = selected_country_and_source.first;
-  program_settings_cache_ =
-      GetSettingsForProgram(CountryIdToProgram(country_id_cache_.value()));
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          switches::kResolveRegionalCapabilitiesFromDevice)) {
+    program_settings_cache_ =
+        GetSettingsForProgram(client_->GetDeviceProgram());
+  } else
+#endif  // BUILDFLAG(IS_ANDROID)
+  {
+    program_settings_cache_ =
+        GetSettingsForProgram(CountryIdToProgram(country_id_cache_.value()));
+  }
 
   RecordLoadedCountrySource(selected_country_and_source.second);
 }

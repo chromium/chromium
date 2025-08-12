@@ -42,6 +42,9 @@ inline constexpr char kEeaListCountryOverride[] = "EEA_ALL";
 // Mitigate overlap cases between the legacy search engine promo and the
 // device-based program eligibility determinations.
 BASE_DECLARE_FEATURE(kMitigateLegacySearchEnginePromoOverlap);
+// Obtains the active regional program directly from the device instead of
+// deriving it from the profile country. Kill switch, enabled by default.
+BASE_DECLARE_FEATURE(kResolveRegionalCapabilitiesFromDevice);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)

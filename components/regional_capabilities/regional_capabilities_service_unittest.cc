@@ -64,7 +64,10 @@ class AsyncRegionalCapabilitiesServiceClient
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  Program GetDeviceProgram() override { return Program::kDefault; }
+  Program GetDeviceProgram() override { return device_program_; }
+  void SetDeviceProgram(Program device_program) {
+    device_program_ = device_program;
+  }
 #endif
 
   void SetFetchedCountry(std::optional<CountryId> fetched_country_id) {
@@ -82,6 +85,10 @@ class AsyncRegionalCapabilitiesServiceClient
   const CountryId fallback_country_id_;
   std::optional<CountryId> fetched_country_id_;
   CountryIdCallback cached_country_id_callback_;
+
+#if BUILDFLAG(IS_ANDROID)
+  Program device_program_ = Program::kDefault;
+#endif
 
   base::WeakPtrFactory<AsyncRegionalCapabilitiesServiceClient>
       weak_ptr_factory_{this};
@@ -142,10 +149,18 @@ class RegionalCapabilitiesServiceTest : public ::testing::Test {
   }
 
   std::unique_ptr<RegionalCapabilitiesService> InitService(
-      CountryId fallback_country_id = CountryId()) {
+      CountryId fallback_country_id = CountryId()
+#if BUILDFLAG(IS_ANDROID)
+          ,
+      Program device_program = Program::kDefault
+#endif  // BUILDFLAG(IS_ANDROID)
+  ) {
     auto client = std::make_unique<AsyncRegionalCapabilitiesServiceClient>(
         fallback_country_id);
     weak_client_ = client->AsWeakPtr();
+#if BUILDFLAG(IS_ANDROID)
+    client->SetDeviceProgram(device_program);
+#endif  // BUILDFLAG(IS_ANDROID)
 
     return std::make_unique<RegionalCapabilitiesService>(pref_service_,
                                                          std::move(client));
@@ -789,7 +804,12 @@ TEST_F(RegionalCapabilitiesServiceTest,
 
 TEST_F(RegionalCapabilitiesServiceTest, IsInEeaCountry) {
   std::unique_ptr<RegionalCapabilitiesService> service =
-      InitService(kBelgiumCountryId);
+      InitService(kBelgiumCountryId
+#if BUILDFLAG(IS_ANDROID)
+                  ,
+                  Program::kWaffle
+#endif  // BUILDFLAG(IS_ANDROID)
+      );
   EXPECT_TRUE(service->IsInEeaCountry());
 
   SetCommandLineCountry("US");
