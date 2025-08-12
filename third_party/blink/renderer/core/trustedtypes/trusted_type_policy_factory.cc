@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/exception_metadata.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
+#include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/event_handler_names.h"
@@ -170,11 +171,23 @@ SpecificTrustedType FindEntryInAttributeTypeVector(
     const AtomicString& attribute,
     const AtomicString& element_namespace,
     const AtomicString& attribute_namespace) {
+  // https://w3c.github.io/trusted-types/dist/spec/#abstract-opdef-get-trusted-type-data-for-attribute,
+  // step 2, matches event handlers only against the HTML-known namespaces,
+  // not against any namespace.
+  //
+  // For legacy behaviour and for property type vectors, "*" should match any
+  // namespace. For attributes, it should only match HTML, SVG, and MathML.
+  bool matches_star_atom =
+      !RuntimeEnabledFeatures::TrustedTypesHTMLEnabled() ||
+      (&attribute_type_vector == &GetPropertyTypeVector()) ||
+      (element_namespace == html_names::xhtmlNamespaceURI ||
+       element_namespace == svg_names::kNamespaceURI ||
+       element_namespace == mathml_names::kNamespaceURI);
   for (const auto& entry : attribute_type_vector) {
     bool element_matches =
         (entry.element.LocalName() == element &&
          entry.element.NamespaceURI() == element_namespace) ||
-        entry.element == g_star_atom;
+        (entry.element == g_star_atom && matches_star_atom);
     bool attribute_matches =
         entry.attribute.LocalName() == attribute &&
         entry.attribute.NamespaceURI() == attribute_namespace;
