@@ -82,7 +82,6 @@ void OnGotCookiesForValidation(
     std::unique_ptr<OnGotPrefetchToServeState> state,
     const std::vector<net::CookieWithAccessResult>& cookies,
     const std::vector<net::CookieWithAccessResult>& excluded_cookies);
-void StartProbe(std::unique_ptr<OnGotPrefetchToServeState>& state);
 void OnProbeComplete(std::unique_ptr<OnGotPrefetchToServeState> state,
                      base::TimeTicks probe_start_time,
                      PrefetchProbeResult probe_result);
@@ -122,18 +121,33 @@ void ContinueOnGotPrefetchToServe(
 
   // If probing hasn't happened yet, do it if necessary.
   if (!state->probe_result.has_value()) {
-    StartProbe(state);
-    if (!state) {
-      // The probe is happening asynchronously (it took ownership of |state|),
-      // and this algorithm will continue later.
-      return;
-    }
-    if (!state->probe_result.has_value()) {
+    // TODO(crbug.com/40274818): Should we check for existence of an
+    // `origin_prober` earlier instead of waiting until we have a matching
+    // prefetch?
+    PrefetchService* prefetch_service =
+        PrefetchService::GetFromFrameTreeNodeId(state->frame_tree_node_id);
+    if (!prefetch_service || !prefetch_service->GetPrefetchOriginProber()) {
       // Could not start a probe. We're done here.
       std::move(state->callback).Run({});
       return;
     }
+
+    PrefetchOriginProber* prober = prefetch_service->GetPrefetchOriginProber();
+    if (state->serving_handle.IsIsolatedNetworkContextRequiredToServe() &&
+        prober->ShouldProbeOrigins()) {
+      GURL probe_url = url::SchemeHostPort(state->tentative_url).GetURL();
+      prober->Probe(
+          probe_url,
+          base::BindOnce(&OnProbeComplete, std::move(state),
+                         /*probe_start_time=*/base::TimeTicks::Now()));
+      // The probe is happening asynchronously (it took ownership of |state|),
+      // and this algorithm will continue later.
+      return;
+    }
+
+    state->probe_result = PrefetchProbeResult::kNoProbing;
   }
+
   if (!PrefetchProbeResultIsSuccess(state->probe_result.value())) {
     // Probe failed. We're done here.
     std::move(state->callback).Run({});
@@ -227,27 +241,6 @@ void OnGotCookiesForValidation(
 }
 
 // ORIGIN PROBING
-
-void StartProbe(std::unique_ptr<OnGotPrefetchToServeState>& state) {
-  // TODO(crbug.com/40274818): Should we check for existence of an
-  // `origin_prober` earlier instead of waiting until we have a matching
-  // prefetch?
-  PrefetchService* prefetch_service =
-      PrefetchService::GetFromFrameTreeNodeId(state->frame_tree_node_id);
-  if (!prefetch_service || !prefetch_service->GetPrefetchOriginProber()) {
-    return;
-  }
-  PrefetchOriginProber* prober = prefetch_service->GetPrefetchOriginProber();
-  if (!state->serving_handle.IsIsolatedNetworkContextRequiredToServe() ||
-      !prober->ShouldProbeOrigins()) {
-    state->probe_result = PrefetchProbeResult::kNoProbing;
-    return;
-  }
-  GURL probe_url = url::SchemeHostPort(state->tentative_url).GetURL();
-  prober->Probe(probe_url,
-                base::BindOnce(&OnProbeComplete, std::move(state),
-                               /*probe_start_time=*/base::TimeTicks::Now()));
-}
 
 // Called when the `PrefetchOriginProber` check is done (if performed).
 // `probe_start_time` is used to calculate probe latency which is
