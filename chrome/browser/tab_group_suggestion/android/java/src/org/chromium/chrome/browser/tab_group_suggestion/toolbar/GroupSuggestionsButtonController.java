@@ -48,4 +48,7 @@ public interface GroupSuggestionsButtonController {
      * @param tabGroupModelFilter Tab group model, used to retrieve tabs and perform the grouping.
      */
     void onButtonClicked(Tab tab, TabGroupModelFilter tabGroupModelFilter);
+
+    /** Destroys any cached suggestion callbacks that need to be deleted. */
+    void destroy();
 }

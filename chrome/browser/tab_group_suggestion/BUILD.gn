@@ -93,6 +93,7 @@ if (is_android) {
     deps = [
       ":java",
       ":toolbar_java",
+      "//base:base_java",
       "//base:base_junit_test_support",
       "//base:callback_java",
       "//base:supplier_java",
