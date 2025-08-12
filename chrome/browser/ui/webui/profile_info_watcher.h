@@ -5,22 +5,20 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_PROFILE_INFO_WATCHER_H_
 #define CHROME_BROWSER_UI_WEBUI_PROFILE_INFO_WATCHER_H_
 
-#include <string>
-
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "components/prefs/pref_member.h"
+#include "base/scoped_observation.h"
+#include "components/sync/service/sync_service_observer.h"
 
 class Profile;
 
-namespace signin {
-class IdentityManager;
-}
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
-// Watches profiles for changes in their cached info (e.g. the authenticated
-// username changes).
-class ProfileInfoWatcher : public ProfileAttributesStorage::Observer {
+// Watches a profile for changes in the sign-in state - see
+// HistoryUtil::GetSignInState().
+class ProfileInfoWatcher : public syncer::SyncServiceObserver {
  public:
   ProfileInfoWatcher(Profile* profile, base::RepeatingClosure callback);
 
@@ -29,27 +27,24 @@ class ProfileInfoWatcher : public ProfileAttributesStorage::Observer {
 
   ~ProfileInfoWatcher() override;
 
-  // Gets the authenticated username (e.g. username@gmail.com) for |profile_|.
-  std::string GetAuthenticatedUsername() const;
+  bool GetSignInState() const;
+
+  // syncer::SyncServiceObserver:
+  void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
  private:
-  // ProfileAttributesStorage::Observer:
-  void OnProfileAuthInfoChanged(const base::FilePath& profile_path) override;
-
-  // Gets the IdentityManager for |profile_|.
-  signin::IdentityManager* GetIdentityManager() const;
-
-  // Runs |callback_| when a profile changes. No-ops if |GetIdentityManager()|
-  // returns nullptr.
+  // Runs |callback_| when the sign-in state changes.
   void RunCallback();
 
   // Weak reference to the profile this class observes.
   const raw_ptr<Profile> profile_;
 
-  // Called when the authenticated username changes.
+  // Called when the history sync state changes.
   base::RepeatingClosure callback_;
 
-  BooleanPrefMember signin_allowed_pref_;
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_PROFILE_INFO_WATCHER_H_

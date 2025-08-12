@@ -21,8 +21,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 
-HistoryLoginHandler::HistoryLoginHandler(base::RepeatingClosure signin_callback)
-    : signin_callback_(std::move(signin_callback)) {}
+HistoryLoginHandler::HistoryLoginHandler(
+    base::RepeatingClosure signin_state_changed_callback)
+    : signin_state_changed_callback_(std::move(signin_state_changed_callback)) {
+}
 
 HistoryLoginHandler::~HistoryLoginHandler() = default;
 
@@ -41,9 +43,9 @@ void HistoryLoginHandler::RegisterMessages() {
 void HistoryLoginHandler::OnJavascriptAllowed() {
   profile_info_watcher_ = std::make_unique<ProfileInfoWatcher>(
       Profile::FromWebUI(web_ui()),
-      base::BindRepeating(&HistoryLoginHandler::ProfileInfoChanged,
+      base::BindRepeating(&HistoryLoginHandler::SigninStateChanged,
                           base::Unretained(this)));
-  ProfileInfoChanged();
+  SigninStateChanged();
 }
 
 void HistoryLoginHandler::OnJavascriptDisallowed() {
@@ -55,13 +57,13 @@ void HistoryLoginHandler::HandleOtherDevicesInitialized(
   AllowJavascript();
 }
 
-void HistoryLoginHandler::ProfileInfoChanged() {
-  bool signed_in = !profile_info_watcher_->GetAuthenticatedUsername().empty();
-  if (!signin_callback_.is_null()) {
-    signin_callback_.Run();
+void HistoryLoginHandler::SigninStateChanged() {
+  if (!signin_state_changed_callback_.is_null()) {
+    signin_state_changed_callback_.Run();
   }
 
-  FireWebUIListener("sign-in-state-changed", base::Value(signed_in));
+  bool sign_in_state = profile_info_watcher_->GetSignInState();
+  FireWebUIListener("sign-in-state-changed", base::Value(sign_in_state));
 }
 
 void HistoryLoginHandler::HandleTurnOnSyncFlow(

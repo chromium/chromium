@@ -6,14 +6,10 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/webui/cr_components/history/history_util.h"
+#include "components/sync/service/sync_service.h"
 
 ProfileInfoWatcher::ProfileInfoWatcher(Profile* profile,
                                        base::RepeatingClosure callback)
@@ -21,48 +17,27 @@ ProfileInfoWatcher::ProfileInfoWatcher(Profile* profile,
   DCHECK(profile_);
   DCHECK(!callback_.is_null());
 
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  // The profile_manager might be NULL in testing environments.
-  if (profile_manager) {
-    profile_manager->GetProfileAttributesStorage().AddObserver(this);
-  }
-
-  signin_allowed_pref_.Init(
-      prefs::kSigninAllowed, profile_->GetPrefs(),
-      base::BindRepeating(&ProfileInfoWatcher::RunCallback,
-                          base::Unretained(this)));
-}
-
-ProfileInfoWatcher::~ProfileInfoWatcher() {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  // The profile_manager might be NULL in testing environments.
-  if (profile_manager) {
-    profile_manager->GetProfileAttributesStorage().RemoveObserver(this);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile_);
+  if (sync_service) {
+    sync_observation_.Observe(sync_service);
   }
 }
 
-void ProfileInfoWatcher::OnProfileAuthInfoChanged(
-    const base::FilePath& profile_path) {
+ProfileInfoWatcher::~ProfileInfoWatcher() = default;
+
+void ProfileInfoWatcher::OnStateChanged(syncer::SyncService* sync) {
   RunCallback();
 }
 
-std::string ProfileInfoWatcher::GetAuthenticatedUsername() const {
-  std::string username;
-  auto* identity_manager = GetIdentityManager();
-  if (identity_manager) {
-    username =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-            .email;
-  }
-  return username;
+void ProfileInfoWatcher::OnSyncShutdown(syncer::SyncService* sync) {
+  sync_observation_.Reset();
 }
 
-signin::IdentityManager* ProfileInfoWatcher::GetIdentityManager() const {
-  return IdentityManagerFactory::GetForProfile(profile_);
+bool ProfileInfoWatcher::GetSignInState() const {
+  return HistoryUtil::GetSignInState(profile_);
 }
 
 void ProfileInfoWatcher::RunCallback() {
-  if (GetIdentityManager()) {
-    callback_.Run();
-  }
+  callback_.Run();
 }

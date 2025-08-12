@@ -184,9 +184,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
       // Updated on synced-device-manager attach by chrome.sending
       // 'otherDevicesInitialized'.
-      isUserSignedIn_: {
+      signInState_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('isUserSignedIn'),
+        value: () => loadTimeData.getBoolean('signInState'),
       },
 
       pendingDelete_: Boolean,
@@ -302,7 +302,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   declare private hasDrawer_: boolean;
   declare private historyClustersEnabled_: boolean;
   declare private historyClustersVisible_: boolean;
-  declare private isUserSignedIn_: boolean;
+  declare private signInState_: boolean;
   declare private lastSelectedTab_: number;
   declare private contentPage_: string;
   declare private tabsContentPage_: string;
@@ -355,7 +355,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
         this.onRecordHistoryLinkClick_.bind(this));
     this.addWebUiListener(
         'sign-in-state-changed',
-        (signedIn: boolean) => this.onSignInStateChanged_(signedIn));
+        (signInState: boolean) => this.onSignInStateChanged_(signInState));
     this.addWebUiListener(
         'foreign-sessions-changed',
         (sessionList: ForeignSession[]) =>
@@ -629,15 +629,12 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   /**
-   * Update sign in state of synced device manager after user logs in or out.
+   * Updates the sign-in state.
    */
-  private onSignInStateChanged_(isUserSignedIn: boolean) {
-    this.isUserSignedIn_ = isUserSignedIn;
+  private onSignInStateChanged_(signInState: boolean) {
+    this.signInState_ = signInState;
   }
 
-  /**
-   * Update sign in state of synced device manager after user logs in or out.
-   */
   private onHasOtherFormsChanged_(hasOtherForms: boolean) {
     this.footerInfo = Object.assign(
         {}, this.footerInfo, {otherFormsOfHistory: hasOtherForms});
@@ -761,7 +758,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
         histogramValue = HistoryPageViewHistogram.JOURNEYS;
         break;
       case Page.SYNCED_TABS:
-        histogramValue = this.isUserSignedIn_ ?
+        histogramValue = this.signInState_ ?
             HistoryPageViewHistogram.SYNCED_TABS :
             HistoryPageViewHistogram.SIGNIN_PROMO;
         break;

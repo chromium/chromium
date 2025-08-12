@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/ui/webui/cr_components/history/history_util.h"
 
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
@@ -29,7 +28,7 @@
 #include "ui/webui/webui_util.h"
 
 // Static
-bool HistoryUtil::IsUserSignedIn(Profile* profile) {
+bool HistoryUtil::GetSignInState(Profile* profile) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   return identity_manager &&
@@ -91,7 +90,7 @@ content::WebUIDataSource* HistoryUtil::PopulateSourceForSidePanelHistory(
   source->AddBoolean("isSignInAllowed",
                      prefs->GetBoolean(prefs::kSigninAllowed));
 
-  source->AddBoolean(kIsUserSignedInKey, IsUserSignedIn(profile));
+  source->AddBoolean(kSignInStateKey, GetSignInState(profile));
 
   source->AddInteger(
       "lastSelectedTab",

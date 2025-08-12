@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_HISTORY_HISTORY_UTIL_H_
 #define CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_HISTORY_HISTORY_UTIL_H_
 
-inline constexpr char kIsUserSignedInKey[] = "isUserSignedIn";
+inline constexpr char kSignInStateKey[] = "signInState";
 
 class Profile;
 
@@ -15,7 +15,9 @@ class WebUIDataSource;
 
 class HistoryUtil {
  public:
-  static bool IsUserSignedIn(Profile* profile);
+  // TODO(crbug.com/418144047): Return an enum to differentiate all the
+  // relevant sign-in/history-sync states.
+  static bool GetSignInState(Profile* profile);
   static content::WebUIDataSource* PopulateSourceForSidePanelHistory(
       content::WebUIDataSource* source,
       Profile* profile);

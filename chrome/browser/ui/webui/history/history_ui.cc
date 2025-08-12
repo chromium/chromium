@@ -266,7 +266,7 @@ void HistoryUI::UpdateDataSource() {
   Profile* profile = Profile::FromWebUI(web_ui());
 
   base::Value::Dict update;
-  update.Set(kIsUserSignedInKey, HistoryUtil::IsUserSignedIn(profile));
+  update.Set(kSignInStateKey, HistoryUtil::GetSignInState(profile));
 
   const bool is_managed = profile->GetPrefs()->IsManagedPreference(
       history_clusters::prefs::kVisible);
