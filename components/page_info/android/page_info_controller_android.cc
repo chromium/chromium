@@ -31,6 +31,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "device/vr/buildflags/buildflags.h"
+#include "media/base/media_switches.h"
 #include "net/base/features.h"
 #include "services/network/public/cpp/features.h"
 #include "ui/android/ui_android_features.h"
@@ -186,6 +187,10 @@ void PageInfoControllerAndroid::SetPermissionInfo(
     permissions_to_display.push_back(
         ContentSettingsType::FEDERATED_IDENTITY_API);
   }
+  if (base::FeatureList::IsEnabled(media::kAutoPictureInPictureAndroid)) {
+    permissions_to_display.push_back(
+        ContentSettingsType::AUTO_PICTURE_IN_PICTURE);
+  }
   permissions_to_display.push_back(ContentSettingsType::STORAGE_ACCESS);
   if (base::FeatureList::IsEnabled(
           network::features::kLocalNetworkAccessChecks)) {
@@ -267,6 +272,12 @@ std::optional<PermissionSetting> PageInfoControllerAndroid::GetSettingToDisplay(
       return permission.default_setting;
   } else if (permission.type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD) {
     // The file editing permission should show up if there are any open files.
+    return permission.default_setting;
+  } else if (permission.type == ContentSettingsType::AUTO_PICTURE_IN_PICTURE) {
+    // The auto-pip permission should always display the default setting if it
+    // is showing up in Page Info before it's set by the user. Logic for whether
+    // the setting should show up in Page Info is in ShouldShowPermission in
+    // page_info.cc.
     return permission.default_setting;
   }
 

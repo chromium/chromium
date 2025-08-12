@@ -153,6 +153,7 @@ import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
+import org.chromium.media.MediaFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -1445,7 +1446,7 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesShown() {
         // If you add a category in the SiteSettings UI, please update this total AND add a test for
         // it below, named "testOnlyExpectedPreferences<Category>".
-        Assert.assertEquals(37, SiteSettingsCategory.Type.NUM_ENTRIES);
+        Assert.assertEquals(38, SiteSettingsCategory.Type.NUM_ENTRIES);
     }
 
     @Test
@@ -1531,6 +1532,30 @@ public class SiteSettingsTest {
                 SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT,
                 BINARY_RADIO_BUTTON,
                 BINARY_RADIO_BUTTON_WITH_EXCEPTION);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID)
+    @DisableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    public void testOnlyExpectedPreferencesAutoPictureInPictureWithToggle() {
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.WINDOW_MANAGEMENT, BINARY_TOGGLE, BINARY_TOGGLE);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({
+        MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID,
+        ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON
+    })
+    public void testOnlyExpectedPreferencesAutoPictureInPicture() {
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.AUTO_PICTURE_IN_PICTURE,
+                BINARY_RADIO_BUTTON_AND_INFO_TEXT,
+                BINARY_RADIO_BUTTON_AND_INFO_TEXT);
     }
 
     @Test
@@ -3149,6 +3174,51 @@ public class SiteSettingsTest {
                         false)
                 .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({
+        MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID,
+        ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON
+    })
+    public void testAllowAutoPictureInPicture() {
+        new TwoStatePermissionTestCaseWithRadioButton(
+                        "AutoPictureInPicture",
+                        SiteSettingsCategory.Type.AUTO_PICTURE_IN_PICTURE,
+                        ContentSettingsType.AUTO_PICTURE_IN_PICTURE,
+                        true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({
+        MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID,
+        ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON
+    })
+    public void testBlockAutoPictureInPicture() {
+        new TwoStatePermissionTestCaseWithRadioButton(
+                        "AutoPictureInPicture",
+                        SiteSettingsCategory.Type.AUTO_PICTURE_IN_PICTURE,
+                        ContentSettingsType.AUTO_PICTURE_IN_PICTURE,
+                        false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @DisableFeatures(MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID)
+    public void testAutoPiPPermissionNotVisibleWhenDisabled() {
+        final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
+        SiteSettings websitePreferences = (SiteSettings) settingsActivity.getMainFragment();
+        assertNull(websitePreferences.findPreference("auto_picture_in_picture"));
+        settingsActivity.finish();
     }
 
     @Test

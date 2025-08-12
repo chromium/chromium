@@ -16,6 +16,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ProviderType;
+import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
@@ -278,6 +279,23 @@ public final class Website implements WebsiteEntry {
             @ContentSettingsType.EnumType int type,
             @ContentSettingValues int value) {
         PermissionInfo permissionInfo = getPermissionInfo(type);
+        if (type == ContentSettingsType.AUTO_PICTURE_IN_PICTURE) {
+            // The Auto Picture-in-Picture permission is defaulted to allowed/denied based on the
+            // incognito status. When the user explicitly sets the permission for the first time, no
+            // PermissionInfo object has been created for Auto Picture-in-Picture yet. This logic
+            // should be removed when a prompt is implemented for parity with desktop.
+            if (permissionInfo == null) {
+                // TODO(crbug.com/421606013): query the real isEmbargoed status for auto-pip.
+                permissionInfo =
+                        new PermissionInfo(
+                                type,
+                                mOrigin.getOrigin(),
+                                /* embedder= */ null,
+                                /* isEmbargoed= */ false,
+                                SessionModel.DURABLE);
+                setPermissionInfo(permissionInfo);
+            }
+        }
         if (permissionInfo != null) {
             permissionInfo.setContentSetting(browserContextHandle, value);
             return;

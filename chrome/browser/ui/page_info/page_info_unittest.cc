@@ -70,6 +70,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/android_theme_resources.h"
+#include "media/base/media_switches.h"
 #else
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/pref_names.h"
@@ -1977,6 +1978,36 @@ TEST_F(PageInfoTest, PermissionUsed30MinutesAgoStrings) {
             PageInfoUI::PermissionMainPageStateToUIString(&delegate,
                                                           camera_permission));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PageInfoTest, AutoPictureInPicturePermissionInfoIncognito) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kAutoPictureInPictureAndroid);
+  incognito_page_info()->PresentSitePermissionsForTesting();
+  const auto& permissions = last_permission_info_list();
+  auto it =
+      std::find_if(permissions.begin(), permissions.end(), [](const auto& p) {
+        return p.type == ContentSettingsType::AUTO_PICTURE_IN_PICTURE;
+      });
+  ASSERT_NE(it, permissions.end());
+  EXPECT_EQ(std::get<ContentSetting>(it->default_setting),
+            CONTENT_SETTING_BLOCK);
+}
+
+TEST_F(PageInfoTest, AutoPictureInPicturePermissionInfoRegular) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kAutoPictureInPictureAndroid);
+  page_info()->PresentSitePermissionsForTesting();
+  const auto& permissions = last_permission_info_list();
+  auto it =
+      std::find_if(permissions.begin(), permissions.end(), [](const auto& p) {
+        return p.type == ContentSettingsType::AUTO_PICTURE_IN_PICTURE;
+      });
+  ASSERT_NE(it, permissions.end());
+  EXPECT_EQ(std::get<ContentSetting>(it->default_setting),
+            CONTENT_SETTING_ALLOW);
+}
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 

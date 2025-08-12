@@ -95,6 +95,7 @@ public class WebsitePermissionsFetcher {
             case ContentSettingsType.SOUND:
                 return WebsitePermissionsType.CONTENT_SETTING_EXCEPTION;
             case ContentSettingsType.AR:
+            case ContentSettingsType.AUTO_PICTURE_IN_PICTURE:
             case ContentSettingsType.CLIPBOARD_READ_WRITE:
             case ContentSettingsType.FILE_SYSTEM_WRITE_GUARD:
             case ContentSettingsType.GEOLOCATION:
