@@ -196,6 +196,7 @@ class SyncService : public KeyedService {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
   // LINT.IfChange(UserActionableError)
   enum class UserActionableError {
     // No errors. This value does not exist in the histograms enum.

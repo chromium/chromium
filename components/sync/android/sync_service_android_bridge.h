@@ -79,6 +79,7 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   jboolean IsUsingExplicitPassphrase(JNIEnv* env);
   jint GetPassphraseType(JNIEnv* env);
   jint GetTransportState(JNIEnv* env);
+  jint GetUserActionableError(JNIEnv* env);
   void SetEncryptionPassphrase(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& passphrase);

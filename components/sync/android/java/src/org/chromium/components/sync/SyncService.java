@@ -191,6 +191,12 @@ public interface SyncService {
     public @TransportState int getTransportState();
 
     /**
+     * Returns errors that prevent SyncService from working at all or partially. Usually these
+     * errors are displayed to the user in the UI.
+     */
+    public @UserActionableError int getUserActionableError();
+
+    /**
      * Checks if sync is currently set to use a custom passphrase (or the similar -and legacy-
      * frozen implicit passphrase). The sync engine must be running (isEngineInitialized() returns
      * true) before calling this function.

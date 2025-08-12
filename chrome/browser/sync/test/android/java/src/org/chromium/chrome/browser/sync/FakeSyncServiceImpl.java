@@ -317,6 +317,11 @@ public class FakeSyncServiceImpl implements SyncService {
     }
 
     @Override
+    public int getUserActionableError() {
+        return mDelegate.getUserActionableError();
+    }
+
+    @Override
     public boolean isCustomPassphraseAllowed() {
         return mDelegate.isCustomPassphraseAllowed();
     }

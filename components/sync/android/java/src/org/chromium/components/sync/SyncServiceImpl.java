@@ -316,6 +316,13 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
+    public @UserActionableError int getUserActionableError() {
+        mThreadChecker.assertOnValidThread();
+        assert mSyncServiceAndroidBridge != 0;
+        return SyncServiceImplJni.get().getUserActionableError(mSyncServiceAndroidBridge);
+    }
+
+    @Override
     public boolean isUsingExplicitPassphrase() {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
@@ -587,6 +594,8 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         int getPassphraseType(long nativeSyncServiceAndroidBridge);
 
         int getTransportState(long nativeSyncServiceAndroidBridge);
+
+        int getUserActionableError(long nativeSyncServiceAndroidBridge);
 
         void setEncryptionPassphrase(long nativeSyncServiceAndroidBridge, String passphrase);
 
