@@ -598,6 +598,10 @@ void BaseSearchProvider::AddMatchToMap(
       accepted_suggestion, ShouldAppendExtraParams(result));
   if (!match.destination_url.is_valid())
     return;
+  if (match.IsSearchAimSuggestion() &&
+      !omnibox_feature_configs::AiMode::Get().allow_ai_mode_matches) {
+    return;
+  }
   match.RecordAdditionalInfo(kRelevanceFromServerKey,
                              result.relevance_from_server() ? kTrue : kFalse);
   match.RecordAdditionalInfo(kShouldPrefetchKey,

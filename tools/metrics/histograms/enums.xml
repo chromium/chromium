@@ -10001,6 +10001,7 @@ from previous Chrome versions.
   <int value="-1512656386" label="disable-new-audio-rendering-mixing-strategy"/>
   <int value="-1512555526" label="PaintPreviewShowOnStartup:enabled"/>
   <int value="-1511776843" label="FedCmCooldownOnIgnore:enabled"/>
+  <int value="-1511369269" label="AllowAiModeMatches:disabled"/>
   <int value="-1510844027" label="ScanAppStickySettings:enabled"/>
   <int value="-1510839574" label="disable-sync-synced-notifications"/>
   <int value="-1510524610"
@@ -11046,6 +11047,7 @@ from previous Chrome versions.
       label="ServiceWorkerSkipIgnorableFetchHandler:disabled"/>
   <int value="-1144170722" label="DisableProcessReuse:enabled"/>
   <int value="-1144127577" label="NtpSearchboxComposebox:disabled"/>
+  <int value="-1143974359" label="AllowAiModeMatches:enabled"/>
   <int value="-1143496217" label="enable-oop-rasterization"/>
   <int value="-1143452448" label="NtpComprehensiveThemeRealbox:enabled"/>
   <int value="-1143007275" label="EnableNewStyleLauncher:disabled"/>
