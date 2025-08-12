@@ -26,7 +26,6 @@
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_network_context.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
-#include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
@@ -66,24 +65,6 @@
 
 namespace content {
 namespace {
-
-void RecordCookieCopyTimes(
-    const base::TimeTicks& cookie_copy_start_time,
-    const base::TimeTicks& cookie_read_end_and_write_start_time,
-    const base::TimeTicks& cookie_copy_end_time) {
-  UMA_HISTOGRAM_CUSTOM_TIMES(
-      "PrefetchProxy.AfterClick.Mainframe.CookieReadTime",
-      cookie_read_end_and_write_start_time - cookie_copy_start_time,
-      base::TimeDelta(), base::Seconds(5), 50);
-  UMA_HISTOGRAM_CUSTOM_TIMES(
-      "PrefetchProxy.AfterClick.Mainframe.CookieWriteTime",
-      cookie_copy_end_time - cookie_read_end_and_write_start_time,
-      base::TimeDelta(), base::Seconds(5), 50);
-  UMA_HISTOGRAM_CUSTOM_TIMES(
-      "PrefetchProxy.AfterClick.Mainframe.CookieCopyTime",
-      cookie_copy_end_time - cookie_copy_start_time, base::TimeDelta(),
-      base::Seconds(5), 50);
-}
 
 PrefetchStatus PrefetchStatusFromIneligibleReason(
     PreloadingEligibility eligibility) {
@@ -543,25 +524,25 @@ PrefetchContainer::Key::Key(const PrefetchContainer::Key& other) = default;
 PrefetchContainer::Key& PrefetchContainer::Key::operator=(
     const PrefetchContainer::Key& other) = default;
 
-PrefetchContainer::Reader::Reader() : Reader(nullptr, 0) {}
-
-PrefetchContainer::Reader::Reader(
-    base::WeakPtr<PrefetchContainer> prefetch_container,
-    size_t index_redirect_chain_to_serve)
-    : prefetch_container_(std::move(prefetch_container)),
-      index_redirect_chain_to_serve_(index_redirect_chain_to_serve) {}
-
-PrefetchContainer::Reader::Reader(Reader&&) = default;
-PrefetchContainer::Reader& PrefetchContainer::Reader::operator=(Reader&&) =
-    default;
-PrefetchContainer::Reader::~Reader() = default;
-
-PrefetchContainer::Reader PrefetchContainer::Reader::Clone() const {
-  return Reader(prefetch_container_, index_redirect_chain_to_serve_);
-}
-
 PrefetchServingHandle PrefetchContainer::CreateServingHandle() {
   return PrefetchServingHandle(GetWeakPtr(), 0);
+}
+
+const std::vector<std::unique_ptr<PrefetchSingleRedirectHop>>&
+PrefetchContainer::redirect_chain(base::PassKey<PrefetchServingHandle>) const {
+  return redirect_chain_;
+}
+
+void PrefetchContainer::SetProbeResult(base::PassKey<PrefetchServingHandle>,
+                                       PrefetchProbeResult probe_result) {
+  probe_result_ = probe_result;
+}
+
+std::optional<PreloadingTriggeringOutcome>
+PrefetchContainer::TriggeringOutcomeFromStatusForServingHandle(
+    base::PassKey<PrefetchServingHandle>,
+    PrefetchStatus prefetch_status) {
+  return TriggeringOutcomeFromStatus(prefetch_status);
 }
 
 // Please follow go/preloading-dashboard-updates if a new outcome enum or a
@@ -786,14 +767,6 @@ PrefetchNetworkContext* PrefetchContainer::GetNetworkContext(
     return nullptr;
   }
   return network_context_itr->second.get();
-}
-
-PrefetchNetworkContext*
-PrefetchContainer::Reader::GetCurrentNetworkContextToServe() const {
-  const PrefetchSingleRedirectHop& this_prefetch =
-      GetCurrentSingleRedirectHopToServe();
-  return prefetch_container_->GetNetworkContext(
-      this_prefetch.is_isolated_network_context_required_);
 }
 
 void PrefetchContainer::CloseIdleConnections() {
@@ -1027,110 +1000,6 @@ void PrefetchContainer::ResumeAllCookieListeners() {
   }
 }
 
-bool PrefetchContainer::Reader::HaveDefaultContextCookiesChanged() const {
-  const PrefetchSingleRedirectHop& this_prefetch =
-      GetCurrentSingleRedirectHopToServe();
-  if (this_prefetch.cookie_listener_) {
-    return this_prefetch.cookie_listener_->HaveCookiesChanged();
-  }
-  return false;
-}
-
-bool PrefetchContainer::Reader::HasIsolatedCookieCopyStarted() const {
-  switch (GetCurrentSingleRedirectHopToServe().cookie_copy_status_) {
-    case PrefetchSingleRedirectHop::CookieCopyStatus::kNotStarted:
-      return false;
-    case PrefetchSingleRedirectHop::CookieCopyStatus::kInProgress:
-    case PrefetchSingleRedirectHop::CookieCopyStatus::kCompleted:
-      return true;
-  }
-}
-
-bool PrefetchContainer::Reader::IsIsolatedCookieCopyInProgress() const {
-  switch (GetCurrentSingleRedirectHopToServe().cookie_copy_status_) {
-    case PrefetchSingleRedirectHop::CookieCopyStatus::kNotStarted:
-    case PrefetchSingleRedirectHop::CookieCopyStatus::kCompleted:
-      return false;
-    case PrefetchSingleRedirectHop::CookieCopyStatus::kInProgress:
-      return true;
-  }
-}
-
-void PrefetchContainer::Reader::OnIsolatedCookieCopyStart() const {
-  DCHECK(!IsIsolatedCookieCopyInProgress());
-
-  // We should temporarily ignore the cookie monitoring by
-  // `PrefetchCookieListener` during the isolated cookie is written to the
-  // default network context.
-  // `PrefetchCookieListener` should monitor whether the cookie is changed from
-  // what we stored in isolated network context when prefetching so that we can
-  // avoid serving the stale prefetched content. Currently
-  // `PrefetchCookieListener` will also catch isolated cookie copy as a cookie
-  // change. To handle this event as a false positive (as the cookie isn't
-  // changed from what we stored on prefetching), we can pause the lisner during
-  // copying, keeping the prefetch servable.
-  prefetch_container_->PauseAllCookieListeners();
-
-  GetCurrentSingleRedirectHopToServe().cookie_copy_status_ =
-      PrefetchSingleRedirectHop::CookieCopyStatus::kInProgress;
-
-  GetCurrentSingleRedirectHopToServe().cookie_copy_start_time_ =
-      base::TimeTicks::Now();
-}
-
-void PrefetchContainer::Reader::OnIsolatedCookiesReadCompleteAndWriteStart()
-    const {
-  DCHECK(IsIsolatedCookieCopyInProgress());
-
-  GetCurrentSingleRedirectHopToServe().cookie_read_end_and_write_start_time_ =
-      base::TimeTicks::Now();
-}
-
-void PrefetchContainer::Reader::OnIsolatedCookieCopyComplete() const {
-  DCHECK(IsIsolatedCookieCopyInProgress());
-
-  // Resumes `PrefetchCookieListener` so that we can keep monitoring the
-  // cookie change for the prefetch, which may be served again.
-  prefetch_container_->ResumeAllCookieListeners();
-
-  const auto& this_prefetch = GetCurrentSingleRedirectHopToServe();
-
-  this_prefetch.cookie_copy_status_ =
-      PrefetchSingleRedirectHop::CookieCopyStatus::kCompleted;
-
-  if (this_prefetch.cookie_copy_start_time_.has_value() &&
-      this_prefetch.cookie_read_end_and_write_start_time_.has_value()) {
-    RecordCookieCopyTimes(
-        this_prefetch.cookie_copy_start_time_.value(),
-        this_prefetch.cookie_read_end_and_write_start_time_.value(),
-        base::TimeTicks::Now());
-  }
-
-  if (this_prefetch.on_cookie_copy_complete_callback_) {
-    std::move(this_prefetch.on_cookie_copy_complete_callback_).Run();
-  }
-}
-
-void PrefetchContainer::Reader::OnInterceptorCheckCookieCopy() const {
-  if (!GetCurrentSingleRedirectHopToServe().cookie_copy_start_time_) {
-    return;
-  }
-
-  UMA_HISTOGRAM_CUSTOM_TIMES(
-      "PrefetchProxy.AfterClick.Mainframe.CookieCopyStartToInterceptorCheck",
-      base::TimeTicks::Now() -
-          GetCurrentSingleRedirectHopToServe().cookie_copy_start_time_.value(),
-      base::TimeDelta(), base::Seconds(5), 50);
-}
-
-void PrefetchContainer::Reader::SetOnCookieCopyCompleteCallback(
-    base::OnceClosure callback) const {
-  DCHECK(IsIsolatedCookieCopyInProgress());
-
-  GetCurrentSingleRedirectHopToServe().on_cookie_copy_complete_callback_ =
-      std::move(callback);
-}
-
 void PrefetchContainer::SetStreamingURLLoader(
     base::WeakPtr<PrefetchStreamingURLLoader> streaming_loader) {
   // The previous streaming loader (if any) should be already deleted or to be
@@ -1173,70 +1042,12 @@ const network::mojom::URLResponseHead* PrefetchContainer::GetNonRedirectHead()
              : nullptr;
 }
 
-std::pair<PrefetchRequestHandler, base::WeakPtr<ServiceWorkerClient>>
-PrefetchContainer::Reader::CreateRequestHandler() {
-  // Create a `PrefetchRequestHandler` from the current
-  // `PrefetchSingleRedirectHop` (== `reader`) and its corresponding
-  // `PrefetchStreamingURLLoader`.
-  auto handler = GetCurrentSingleRedirectHopToServe()
-                     .response_reader_->CreateRequestHandler();
-
-  // Advance the current `PrefetchSingleRedirectHop` position.
-  AdvanceCurrentURLToServe();
-
-  return handler;
-}
-
-bool PrefetchContainer::Reader::VariesOnCookieIndices() const {
-  return GetCurrentSingleRedirectHopToServe()
-      .response_reader_->VariesOnCookieIndices();
-}
-
-bool PrefetchContainer::Reader::MatchesCookieIndices(
-    base::span<const std::pair<std::string, std::string>> cookies) const {
-  return GetCurrentSingleRedirectHopToServe()
-      .response_reader_->MatchesCookieIndices(cookies);
-}
-
 void PrefetchContainer::CancelStreamingURLLoaderIfNotServing() {
   if (!streaming_loader_) {
     return;
   }
   streaming_loader_->CancelIfNotServing();
   streaming_loader_.reset();
-}
-
-void PrefetchContainer::Reader::OnPrefetchProbeResult(
-    PrefetchProbeResult probe_result) const {
-  prefetch_container_->probe_result_ = probe_result;
-
-  // It's possible for the prefetch to fail (e.g., due to a network error) while
-  // the origin probe is running. We avoid overwriting the status in that case.
-  if (TriggeringOutcomeFromStatus(GetPrefetchStatus()) ==
-      PreloadingTriggeringOutcome::kFailure) {
-    return;
-  }
-
-  switch (probe_result) {
-    case PrefetchProbeResult::kNoProbing:
-    case PrefetchProbeResult::kDNSProbeSuccess:
-    case PrefetchProbeResult::kTLSProbeSuccess:
-      // Wait to update the prefetch status until the probe for the final
-      // redirect hop is a success.
-      if (index_redirect_chain_to_serve_ ==
-          prefetch_container_->redirect_chain_.size() - 1) {
-        prefetch_container_->SetPrefetchStatus(
-            PrefetchStatus::kPrefetchResponseUsed);
-      }
-      break;
-    case PrefetchProbeResult::kDNSProbeFailure:
-    case PrefetchProbeResult::kTLSProbeFailure:
-      prefetch_container_->SetPrefetchStatus(
-          PrefetchStatus::kPrefetchNotUsedProbeFailed);
-      break;
-    default:
-      NOTIMPLEMENTED();
-  }
 }
 
 void PrefetchContainer::OnDeterminedHead() {
@@ -1432,12 +1243,6 @@ PrefetchServableState PrefetchContainer::GetServableState(
   return PrefetchServableState::kNotServable;
 }
 
-bool PrefetchContainer::Reader::DoesCurrentURLToServeMatch(
-    const GURL& url) const {
-  CHECK(index_redirect_chain_to_serve_ >= 1);
-  return GetCurrentSingleRedirectHopToServe().url_ == url;
-}
-
 PrefetchSingleRedirectHop&
 PrefetchContainer::GetCurrentSingleRedirectHopToPrefetch() const {
   CHECK(redirect_chain_.size() > 0);
@@ -1448,25 +1253,6 @@ const PrefetchSingleRedirectHop&
 PrefetchContainer::GetPreviousSingleRedirectHopToPrefetch() const {
   CHECK(redirect_chain_.size() > 1);
   return *redirect_chain_[redirect_chain_.size() - 2];
-}
-
-bool PrefetchContainer::Reader::IsEnd() const {
-  CHECK(index_redirect_chain_to_serve_ <=
-        prefetch_container_->redirect_chain_.size());
-  return index_redirect_chain_to_serve_ >=
-         prefetch_container_->redirect_chain_.size();
-}
-
-const PrefetchSingleRedirectHop&
-PrefetchContainer::Reader::GetCurrentSingleRedirectHopToServe() const {
-  CHECK(index_redirect_chain_to_serve_ >= 0 &&
-        index_redirect_chain_to_serve_ <
-            prefetch_container_->redirect_chain_.size());
-  return *prefetch_container_->redirect_chain_[index_redirect_chain_to_serve_];
-}
-
-const GURL& PrefetchContainer::Reader::GetCurrentURLToServe() const {
-  return GetCurrentSingleRedirectHopToServe().url_;
 }
 
 void PrefetchContainer::SetServingPageMetrics(
@@ -1601,29 +1387,6 @@ PrefetchContainer::GetResponseReaderForCurrentPrefetch() {
       GetCurrentSingleRedirectHopToPrefetch();
   CHECK(this_prefetch.response_reader_);
   return this_prefetch.response_reader_->GetWeakPtr();
-}
-
-bool PrefetchContainer::Reader::IsIsolatedNetworkContextRequiredToServe()
-    const {
-  const PrefetchSingleRedirectHop& this_prefetch =
-      GetCurrentSingleRedirectHopToServe();
-  return this_prefetch.is_isolated_network_context_required_;
-}
-
-base::WeakPtr<PrefetchResponseReader>
-PrefetchContainer::Reader::GetCurrentResponseReaderToServeForTesting() {
-  return GetCurrentSingleRedirectHopToServe().response_reader_->GetWeakPtr();
-}
-
-PrefetchServableState PrefetchContainer::Reader::GetServableState(
-    base::TimeDelta cacheable_duration) const {
-  return GetPrefetchContainer()->GetServableState(cacheable_duration);
-}
-bool PrefetchContainer::Reader::HasPrefetchStatus() const {
-  return GetPrefetchContainer()->HasPrefetchStatus();
-}
-PrefetchStatus PrefetchContainer::Reader::GetPrefetchStatus() const {
-  return GetPrefetchContainer()->GetPrefetchStatus();
 }
 
 bool PrefetchContainer::IsProxyRequiredForURL(const GURL& url) const {

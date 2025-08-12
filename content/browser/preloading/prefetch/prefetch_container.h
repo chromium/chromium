@@ -49,6 +49,7 @@ class PrefetchDocumentManager;
 class PrefetchNetworkContext;
 class PrefetchResponseReader;
 class PrefetchService;
+class PrefetchServingHandle;
 class PrefetchServingPageMetricsContainer;
 class PrefetchSingleRedirectHop;
 class PrefetchStreamingURLLoader;
@@ -56,7 +57,6 @@ class PreloadingAttempt;
 class ProxyLookupClientImpl;
 class RenderFrameHost;
 class RenderFrameHostImpl;
-class ServiceWorkerClient;
 enum class PrefetchPotentialCandidateServingResult;
 enum class PrefetchServableState;
 
@@ -614,114 +614,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // & started).
   void OnPrefetchStarted();
 
-  // A `Reader` represents the current state of serving.
-  // The `Reader` methods all operate on the currently *serving*
-  // `PrefetchSingleRedirectHop`, which is the element in |redirect_chain_| at
-  // index |index_redirect_chain_to_serve_|.
-  //
-  // This works like `base::WeakPtr<PrefetchContainer>` plus additional states,
-  // so check that the reader is valid (e.g. `if (reader)`) before calling other
-  // methods (except for `Clone()`).
-  //
-  // TODO(crbug.com/40064891): Allow multiple Readers for a PrefetchContainer.
-  // This might need ownership/lifetime changes of `Reader` and further cleaning
-  // up the dependencies between `PrefetchContainer` and `Reader`.
-  class CONTENT_EXPORT Reader final {
-   public:
-    Reader();
-
-    Reader(base::WeakPtr<PrefetchContainer> prefetch_container,
-           size_t index_redirect_chain_to_serve);
-
-    Reader(const Reader&) = delete;
-    Reader& operator=(const Reader&) = delete;
-
-    Reader(Reader&&);
-    Reader& operator=(Reader&&);
-
-    ~Reader();
-
-    PrefetchContainer* GetPrefetchContainer() const {
-      return prefetch_container_.get();
-    }
-    Reader Clone() const;
-
-    // Returns true if `this` is valid.
-    // Do not call methods below if false.
-    explicit operator bool() const { return GetPrefetchContainer(); }
-
-    // Methods redirecting to `prefetch_container_`.
-    PrefetchServableState GetServableState(
-        base::TimeDelta cacheable_duration) const;
-    bool HasPrefetchStatus() const;
-    PrefetchStatus GetPrefetchStatus() const;
-
-    // Returns whether the Reader reached the end. If true, the methods below
-    // shouldn't be called, because the current `PrefetchSingleRedirectHop`
-    // doesn't exist.
-    bool IsEnd() const;
-
-    // Whether or not an isolated network context is required to serve.
-    bool IsIsolatedNetworkContextRequiredToServe() const;
-
-    PrefetchNetworkContext* GetCurrentNetworkContextToServe() const;
-
-    bool HaveDefaultContextCookiesChanged() const;
-
-    // Before a prefetch can be served, any cookies added to the isolated
-    // network context must be copied over to the default network context. These
-    // functions are used to check and update the status of this process, as
-    // well as record metrics about how long this process takes.
-    bool HasIsolatedCookieCopyStarted() const;
-    bool IsIsolatedCookieCopyInProgress() const;
-    void OnIsolatedCookieCopyStart() const;
-    void OnIsolatedCookiesReadCompleteAndWriteStart() const;
-    void OnIsolatedCookieCopyComplete() const;
-    void OnInterceptorCheckCookieCopy() const;
-    void SetOnCookieCopyCompleteCallback(base::OnceClosure callback) const;
-
-    // Called with the result of the probe. If the probing feature is enabled,
-    // then a probe must complete successfully before the prefetch can be
-    // served.
-    void OnPrefetchProbeResult(PrefetchProbeResult probe_result) const;
-
-    // Checks if the given URL matches the the URL that can be served next.
-    bool DoesCurrentURLToServeMatch(const GURL& url) const;
-
-    // Returns the URL that can be served next.
-    const GURL& GetCurrentURLToServe() const;
-
-    // Gets the current PrefetchResponseReader.
-    base::WeakPtr<PrefetchResponseReader>
-    GetCurrentResponseReaderToServeForTesting();
-
-    // Called when one element of |redirect_chain_| is served and the next
-    // element can now be served.
-    void AdvanceCurrentURLToServe() { index_redirect_chain_to_serve_++; }
-
-    // Returns the `PrefetchSingleRedirectHop` to be served next.
-    const PrefetchSingleRedirectHop& GetCurrentSingleRedirectHopToServe() const;
-
-    // See the comment for `PrefetchResponseReader::CreateRequestHandler()`.
-    std::pair<PrefetchRequestHandler, base::WeakPtr<ServiceWorkerClient>>
-    CreateRequestHandler();
-
-    // See the corresponding functions on `PrefetchResponseReader`.
-    // These apply to the current `PrefetchSingleRedirectHop` (and so, may
-    // change as the prefetch advances through a redirect change).
-    bool VariesOnCookieIndices() const;
-    bool MatchesCookieIndices(
-        base::span<const std::pair<std::string, std::string>> cookies) const;
-
-   private:
-    base::WeakPtr<PrefetchContainer> prefetch_container_;
-
-    // The index of the element in |prefetch_container_.redirect_chain_| that
-    // can be served.
-    size_t index_redirect_chain_to_serve_ = 0;
-  };
-
-  Reader CreateServingHandle();
+  PrefetchServingHandle CreateServingHandle();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -810,6 +703,16 @@ class CONTENT_EXPORT PrefetchContainer {
   std::optional<PrefetchPriority> GetPrefetchPriority() const {
     return priority_;
   }
+
+  // Methods only exposed for `PrefetchServingHandle`.
+  const std::vector<std::unique_ptr<PrefetchSingleRedirectHop>>& redirect_chain(
+      base::PassKey<PrefetchServingHandle>) const;
+  void SetProbeResult(base::PassKey<PrefetchServingHandle>,
+                      PrefetchProbeResult probe_result);
+  static std::optional<PreloadingTriggeringOutcome>
+  TriggeringOutcomeFromStatusForServingHandle(
+      base::PassKey<PrefetchServingHandle>,
+      PrefetchStatus prefetch_status);
 
  protected:
   // Updates metrics based on the result of the prefetch request.
