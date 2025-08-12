@@ -16,7 +16,7 @@ bool IsDisallowingSpaceCharacterInURLHostParsing() {
   // state. This may happen during early startup, see crbug.com/1441956.
   if (!base::FeatureList::GetInstance()) {
     return kDisallowSpaceCharacterInURLHostParsing.default_state ==
-           base::FEATURE_DISABLED_BY_DEFAULT;
+           base::FEATURE_ENABLED_BY_DEFAULT;
   }
   return base::FeatureList::IsEnabled(kDisallowSpaceCharacterInURLHostParsing);
 }
