@@ -548,9 +548,6 @@ interface WebClientHandler {
   // serialized proto of type optimization_guide::proto::ActionsResult.
   //
   // It is an error to act with a paused task.
-  //
-  // TODO(crbug.com/411462297) Does not yet return observations in the result
-  // proto.
   PerformActions(array<uint8> actions_proto)
       => result<mojo_base.mojom.ProtoWrapper, PerformActionsErrorReason>;
 
