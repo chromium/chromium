@@ -297,6 +297,10 @@ const char kBottomOmniboxDefaultSettingDescription[] =
     "hasn't already changed the setting, changes the omnibox position to top "
     "or bottom of the screen on iPhone. The default is top omnibox.";
 
+const char kBottomOmniboxEvolutionName[] = "Bottom Omnibox Evolution";
+const char kBottomOmniboxEvolutionDescription[] =
+    "Enables improvements in the bottom omnibox UX and animations.";
+
 const char kBWGPreciseLocationName[] = "BWG Precise Location";
 const char kBWGPreciseLocationDescription[] =
     "When enabled, the precise location row is shown in BWG settings.";

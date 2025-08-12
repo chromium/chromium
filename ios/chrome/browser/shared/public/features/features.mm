@@ -349,6 +349,10 @@ BASE_FEATURE(kBottomOmniboxDefaultSetting,
              "BottomOmniboxDefaultSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kBottomOmniboxEvolution,
+             "BottomOmniboxEvolution",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kOnlyAccessClipboardAsync,
              "OnlyAccessClipboardAsync",
              base::FEATURE_ENABLED_BY_DEFAULT);
