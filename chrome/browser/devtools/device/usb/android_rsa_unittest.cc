@@ -12,7 +12,6 @@
 #include "base/strings/string_view_util.h"
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
-#include "crypto/rsa_private_key.h"
 #include "crypto/sign.h"
 #include "crypto/test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
