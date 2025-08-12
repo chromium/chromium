@@ -52,10 +52,6 @@ module sys_stage1 [system] [extern_c] {
     header "../../linux/debian_bullseye_amd64-sysroot/usr/include/linux/falloc.h"
     export *
   }
-  module sysroot_linux_limits_h {
-    header "../../linux/debian_bullseye_amd64-sysroot/usr/include/linux/limits.h"
-    export *
-  }
   module sysroot_locale_h {
     header "../../linux/debian_bullseye_amd64-sysroot/usr/include/locale.h"
     export *

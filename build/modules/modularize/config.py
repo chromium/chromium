@@ -93,3 +93,11 @@ def fix_graph(graph: dict[str, Header], compiler: Compiler):
 
     graph['android/legacy_threads_inlines.h'].textual = True
     graph['bits/threads_inlines.h'].textual = True
+
+  elif compiler.os == 'linux':
+    # See https://codebrowser.dev/glibc/glibc/sysdeps/unix/sysv/linux/bits/local_lim.h.html#56
+    # if linux/limits.h is non-textual, then limits.h undefs the limits.h defined in the linux/limits.h module.
+    # Thus, limits.h exports an undef.
+    # if it's textual, limits.h undefs something it defined itself.
+    graph['linux/limits.h'].textual = True
+
