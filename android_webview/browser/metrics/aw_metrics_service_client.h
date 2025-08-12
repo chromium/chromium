@@ -231,16 +231,16 @@ class AwMetricsServiceClient
   // WebViewAppStateObserver
   void OnAppStateChanged(WebViewAppStateObserver::State state) override;
 
-  // - return `true` if client used to be sampled out.
-  // - return `false` if client used to be in-sampled.
+  // Determines if the client should have metrics filtering applied, or if they
+  // are in the sample of clients which upload unfiltered metrics.
   virtual bool ShouldApplyMetricsFiltering() const;
 
  protected:
-  // Returns the metrics sampling rate, to be used by IsInSample(). This is a
-  // per mille value, so this integer must always be in the inclusive range [0,
-  // 1000]. A value of 0 will always be out-of-sample, and a value of 1000 is
-  // always in-sample.
-  virtual int GetSampleRatePerMille() const;
+  // Returns the unfiltered metrics sampling rate, to be used by
+  // ShouldApplyMetricsFiltering(). This is a per mille value, so this integer
+  // must always be in the inclusive range [0, 1000]. A value of 0 will always
+  // be out-of-sample, and a value of 1000 is  always in-sample.
+  virtual int GetUnfilteredSampleRatePerMille() const;
 
   // Returns a value in the inclusive range [0, 999], to be compared against a
   // per mille sample rate. This value will be based on a persisted value, so it
@@ -248,12 +248,6 @@ class AwMetricsServiceClient
   // consistent across upgrades, to avoid significantly impacting IsInSample().
   // Virtual for testing.
   virtual int GetSampleBucketValue() const;
-
-  // Determines if the client is within the random sample of clients for which
-  // we log metrics. If this returns false, MetricsServiceClient should
-  // indicate reporting is disabled. Sampling is due to storage/bandwidth
-  // considerations.
-  virtual bool IsInSample() const;
 
   // Determines if the embedder app is the type of app for which we may log the
   // package name. If this returns false, GetAppPackageNameIfLoggable() must
