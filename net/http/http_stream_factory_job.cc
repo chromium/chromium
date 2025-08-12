@@ -338,7 +338,8 @@ bool HttpStreamFactory::Job::HasAvailableQuicSession() const {
       HostPortPair::FromURL(origin_url_), request_info_.privacy_mode,
       proxy_info_.proxy_chain(), SessionUsage::kDestination,
       request_info_.socket_tag, request_info_.network_anonymization_key,
-      request_info_.secure_dns_policy, require_dns_https_alpn);
+      request_info_.secure_dns_policy, require_dns_https_alpn,
+      disable_cert_verification_network_fetches());
   return session_->quic_session_pool()->CanUseExistingSession(quic_session_key,
                                                               destination_);
 }

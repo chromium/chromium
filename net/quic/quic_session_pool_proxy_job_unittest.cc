@@ -148,9 +148,10 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateProxiedQuicSession) {
 
   // Check that the session to the proxy is keyed by an empty NAK and always
   // uses RFCv1.
-  QuicChromiumClientSession* proxy_session =
-      GetActiveSession(proxy_origin, PRIVACY_MODE_DISABLED, nak,
-                       ProxyChain::ForIpProtection({}), SessionUsage::kProxy);
+  QuicChromiumClientSession* proxy_session = GetActiveSession(
+      proxy_origin, PRIVACY_MODE_DISABLED, nak, ProxyChain::ForIpProtection({}),
+      SessionUsage::kProxy, /*require_dns_https_alpn=*/false,
+      /*disable_cert_verification_network_fetches=*/true);
   ASSERT_TRUE(proxy_session);
   EXPECT_EQ(proxy_session->GetQuicVersion(), quic::ParsedQuicVersion::RFCv1());
 
@@ -360,7 +361,9 @@ TEST_P(QuicSessionPoolProxyJobTest, DoubleProxiedQuicSession) {
   auto proxy_nak = NetworkAnonymizationKey();
   QuicChromiumClientSession* proxy1_session =
       GetActiveSession(proxy1_origin, PRIVACY_MODE_DISABLED, proxy_nak,
-                       ProxyChain::ForIpProtection({}), SessionUsage::kProxy);
+                       ProxyChain::ForIpProtection({}), SessionUsage::kProxy,
+                       /*require_dns_https_alpn=*/false,
+                       /*disable_cert_verification_network_fetches=*/true);
   ASSERT_TRUE(proxy1_session);
   EXPECT_EQ(proxy1_session->quic_session_key().network_anonymization_key(),
             proxy_nak);
@@ -371,7 +374,8 @@ TEST_P(QuicSessionPoolProxyJobTest, DoubleProxiedQuicSession) {
       proxy2_origin, PRIVACY_MODE_DISABLED, endpoint_nak,
       ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
           ProxyServer::SCHEME_QUIC, proxy1_origin.host(), 443)}),
-      SessionUsage::kProxy);
+      SessionUsage::kProxy, /*require_dns_https_alpn=*/false,
+      /*disable_cert_verification_network_fetches=*/true);
   ASSERT_TRUE(proxy2_session);
   EXPECT_EQ(proxy2_session->quic_session_key().network_anonymization_key(),
             endpoint_nak);

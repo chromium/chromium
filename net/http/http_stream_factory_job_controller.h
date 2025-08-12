@@ -301,6 +301,8 @@ class HttpStreamFactory::JobController
   // the preconnect completed. Used to notify the factory of completion.
   void OnPoolPreconnectsComplete(int rv);
 
+  bool disable_cert_verification_network_fetches() const;
+
   const raw_ptr<HttpStreamFactory> factory_;
   const raw_ptr<HttpNetworkSession> session_;
   const raw_ptr<JobFactory> job_factory_;

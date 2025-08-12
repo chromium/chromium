@@ -648,6 +648,11 @@ void HttpStreamFactory::JobController::ResetErrorStatusForJobs() {
   dns_alpn_h3_job_failed_on_default_network_ = false;
 }
 
+bool HttpStreamFactory::JobController::
+    disable_cert_verification_network_fetches() const {
+  return !!(request_info_.load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
+}
+
 void HttpStreamFactory::JobController::MaybeResumeMainJob(
     Job* job,
     const base::TimeDelta& delay) {
@@ -1370,7 +1375,8 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
         HostPortPair::FromURL(mapped_origin), request_info.privacy_mode,
         proxy_info_.proxy_chain(), SessionUsage::kDestination,
         request_info.socket_tag, request_info.network_anonymization_key,
-        request_info.secure_dns_policy, /*require_dns_https_alpn=*/false);
+        request_info.secure_dns_policy, /*require_dns_https_alpn=*/false,
+        disable_cert_verification_network_fetches());
 
     GURL destination = CreateAltSvcUrl(
         original_url, alternative_service_info.GetHostPortPair());
@@ -1514,7 +1520,7 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
   switched_to_http_stream_pool_ = true;
 
   bool disable_cert_network_fetches =
-      !!(request_info_.load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
+      disable_cert_verification_network_fetches();
   NextProtoSet allowed_alpns =
       request_info_.is_http1_allowed
           ? NextProtoSet::All()

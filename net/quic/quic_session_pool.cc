@@ -411,10 +411,17 @@ int QuicSessionRequest::Request(
   failed_on_default_network_callback_ =
       std::move(failed_on_default_network_callback);
 
-  session_key_ =
-      QuicSessionKey(HostPortPair::FromURL(url), privacy_mode, proxy_chain,
-                     session_usage, socket_tag, network_anonymization_key,
-                     secure_dns_policy, require_dns_https_alpn);
+  // Note that `disable_cert_verification_network_fetches` must be true for
+  // proxies to avoid deadlock. See comment on
+  // `SSLConfig::disable_cert_verification_network_fetches`.
+  bool disable_cert_verification_network_fetches =
+      !!(cert_verify_flags & CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES);
+  CHECK(session_usage != SessionUsage::kProxy ||
+        disable_cert_verification_network_fetches);
+  session_key_ = QuicSessionKey(
+      HostPortPair::FromURL(url), privacy_mode, proxy_chain, session_usage,
+      socket_tag, network_anonymization_key, secure_dns_policy,
+      require_dns_https_alpn, disable_cert_verification_network_fetches);
   bool use_dns_aliases = session_usage == SessionUsage::kProxy ? false : true;
 
   int rv = pool_->RequestSession(

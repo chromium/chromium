@@ -232,12 +232,14 @@ bool QuicSessionPoolTestBase::HasActiveSession(
     const NetworkAnonymizationKey& network_anonymization_key,
     const ProxyChain& proxy_chain,
     SessionUsage session_usage,
-    bool require_dns_https_alpn) {
+    bool require_dns_https_alpn,
+    bool disable_cert_verification_network_fetches) {
   quic::QuicServerId server_id(scheme_host_port.host(),
                                scheme_host_port.port());
   return QuicSessionPoolPeer::HasActiveSession(
       pool_.get(), server_id, privacy_mode, network_anonymization_key,
-      proxy_chain, session_usage, require_dns_https_alpn);
+      proxy_chain, session_usage, require_dns_https_alpn,
+      disable_cert_verification_network_fetches);
 }
 
 bool QuicSessionPoolTestBase::HasActiveJob(
@@ -265,12 +267,14 @@ QuicChromiumClientSession* QuicSessionPoolTestBase::GetActiveSession(
     const NetworkAnonymizationKey& network_anonymization_key,
     const ProxyChain& proxy_chain,
     SessionUsage session_usage,
-    bool require_dns_https_alpn) {
+    bool require_dns_https_alpn,
+    bool disable_cert_verification_network_fetches) {
   quic::QuicServerId server_id(scheme_host_port.host(),
                                scheme_host_port.port());
   return QuicSessionPoolPeer::GetActiveSession(
       pool_.get(), server_id, privacy_mode, network_anonymization_key,
-      proxy_chain, session_usage, require_dns_https_alpn);
+      proxy_chain, session_usage, require_dns_https_alpn,
+      disable_cert_verification_network_fetches);
 }
 
 int QuicSessionPoolTestBase::GetSourcePortForNewSessionAndGoAway(

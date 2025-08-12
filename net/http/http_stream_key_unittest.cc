@@ -181,7 +181,8 @@ TEST(HttpStreamKeyTest, CalculateQuicSessionAliasKey) {
                            PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                            SessionUsage::kDestination, SocketTag(),
                            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                           /*require_dns_https_alpn=*/false));
+                           /*require_dns_https_alpn=*/false,
+                           /*disable_cert_verification_network_fetches=*/true));
   ASSERT_EQ(https_key.destination(), kHttpsHost);
 
   QuicSessionAliasKey different_origin_key =
@@ -194,7 +195,8 @@ TEST(HttpStreamKeyTest, CalculateQuicSessionAliasKey) {
                            PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                            SessionUsage::kDestination, SocketTag(),
                            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                           /*require_dns_https_alpn=*/false));
+                           /*require_dns_https_alpn=*/false,
+                           /*disable_cert_verification_network_fetches=*/true));
   ASSERT_EQ(different_origin_key.destination(), kHttpsAliasHost);
 }
 

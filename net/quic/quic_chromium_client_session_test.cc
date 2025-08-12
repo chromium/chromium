@@ -153,7 +153,8 @@ class QuicChromiumClientSessionTest
                      SocketTag(),
                      NetworkAnonymizationKey(),
                      SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false),
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false),
         destination_(url::kHttpsScheme, kServerHostname, kServerPort),
         default_network_(handles::kInvalidNetworkHandle),
         client_maker_(version_,
@@ -1357,19 +1358,22 @@ TEST_P(QuicChromiumClientSessionTest, CanPool) {
       QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
   EXPECT_FALSE(session_->CanPool(
       "www.example.org",
       QuicSessionKey("foo", 1234, PRIVACY_MODE_ENABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
   EXPECT_FALSE(session_->CanPool(
       "www.example.org",
       QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
 #if BUILDFLAG(IS_ANDROID)
   SocketTag tag1(SocketTag::UNSET_UID, 0x12345678);
   SocketTag tag2(getuid(), 0x87654321);
@@ -1378,13 +1382,15 @@ TEST_P(QuicChromiumClientSessionTest, CanPool) {
       QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, tag1,
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
   EXPECT_FALSE(session_->CanPool(
       "www.example.org",
       QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, tag2,
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
 #endif
   EXPECT_FALSE(session_->CanPool(
       "www.example.org",
@@ -1393,32 +1399,41 @@ TEST_P(QuicChromiumClientSessionTest, CanPool) {
                                                        "bar", 443),
                      SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
+  // Note that this isn't a session key we would actually use because if the
+  // session usage is `kProxy` then `disable_cert_verification_network_fetches`
+  // should be true to prevent possible deadlocks, but we use it here for
+  // testing.
   EXPECT_FALSE(session_->CanPool(
       "www.example.org",
       QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                      SessionUsage::kProxy, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
 
   EXPECT_TRUE(session_->CanPool(
       "mail.example.org",
       QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
   EXPECT_TRUE(session_->CanPool(
       "mail.example.com",
       QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
   EXPECT_FALSE(session_->CanPool(
       "mail.google.com",
       QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
 
   const SchemefulSite kSiteFoo(GURL("http://foo.test/"));
 
@@ -1433,7 +1448,8 @@ TEST_P(QuicChromiumClientSessionTest, CanPool) {
                        SessionUsage::kDestination, SocketTag(),
                        NetworkAnonymizationKey::CreateSameSite(kSiteFoo),
                        SecureDnsPolicy::kAllow,
-                       /*require_dns_https_alpn=*/false)));
+                       /*require_dns_https_alpn=*/false,
+                       /*disable_cert_verification_network_fetches=*/false)));
   }
   {
     base::test::ScopedFeatureList feature_list;
@@ -1445,8 +1461,31 @@ TEST_P(QuicChromiumClientSessionTest, CanPool) {
                        SessionUsage::kDestination, SocketTag(),
                        NetworkAnonymizationKey::CreateSameSite(kSiteFoo),
                        SecureDnsPolicy::kAllow,
-                       /*require_dns_https_alpn=*/false)));
+                       /*require_dns_https_alpn=*/false,
+                       /*disable_cert_verification_network_fetches=*/false)));
   }
+
+  EXPECT_FALSE(session_->CanPool(
+      "www.example.org",
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
+                     NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
+  EXPECT_FALSE(session_->CanPool(
+      "www.example.org",
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
+                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                     /*require_dns_https_alpn=*/true,
+                     /*disable_cert_verification_network_fetches=*/false)));
+  EXPECT_FALSE(session_->CanPool(
+      "www.example.org",
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
+                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/true)));
 }
 
 // Much as above, but uses a non-empty NetworkAnonymizationKey.
@@ -1466,7 +1505,8 @@ TEST_P(QuicChromiumClientSessionTest, CanPoolWithNetworkAnonymizationKey) {
       kServerHostname, kServerPort, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
       SessionUsage::kDestination, SocketTag(), kNetworkAnonymizationKey1,
       SecureDnsPolicy::kAllow,
-      /*require_dns_https_alpn=*/false);
+      /*require_dns_https_alpn=*/false,
+      /*disable_cert_verification_network_fetches=*/false);
 
   MockQuicData quic_data(version_);
   quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
@@ -1492,13 +1532,35 @@ TEST_P(QuicChromiumClientSessionTest, CanPoolWithNetworkAnonymizationKey) {
       QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, SocketTag(),
                      kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
   EXPECT_FALSE(session_->CanPool(
       "www.example.org",
       QuicSessionKey("foo", 1234, PRIVACY_MODE_ENABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, SocketTag(),
                      kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
+  EXPECT_FALSE(session_->CanPool(
+      "www.example.org",
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED,
+                     ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                                       "bar", 443),
+                     SessionUsage::kDestination, SocketTag(),
+                     kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow,
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
+  // Note that this isn't a session key we would actually use because if the
+  // session usage is `kProxy` then `disable_cert_verification_network_fetches`
+  // should be true to prevent possible deadlocks, but we use it here for
+  // testing.
+  EXPECT_FALSE(session_->CanPool(
+      "www.example.org",
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kProxy, SocketTag(),
+                     kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow,
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
 #if BUILDFLAG(IS_ANDROID)
   SocketTag tag1(SocketTag::UNSET_UID, 0x12345678);
   SocketTag tag2(getuid(), 0x87654321);
@@ -1507,45 +1569,74 @@ TEST_P(QuicChromiumClientSessionTest, CanPoolWithNetworkAnonymizationKey) {
       QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, tag1,
                      kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
   EXPECT_FALSE(session_->CanPool(
       "www.example.org",
       QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, tag2,
                      kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
 #endif
   EXPECT_TRUE(session_->CanPool(
       "mail.example.org",
       QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, SocketTag(),
                      kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
   EXPECT_TRUE(session_->CanPool(
       "mail.example.com",
       QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, SocketTag(),
                      kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
   EXPECT_FALSE(session_->CanPool(
       "mail.google.com",
       QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, SocketTag(),
                      kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
 
   EXPECT_FALSE(session_->CanPool(
       "mail.example.com",
       QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, SocketTag(),
                      kNetworkAnonymizationKey2, SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
   EXPECT_FALSE(session_->CanPool(
       "mail.example.com",
       QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
+
+  EXPECT_FALSE(session_->CanPool(
+      "www.example.org",
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
+                     kNetworkAnonymizationKey1, SecureDnsPolicy::kDisable,
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
+  EXPECT_FALSE(session_->CanPool(
+      "www.example.org",
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
+                     kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow,
+                     /*require_dns_https_alpn=*/true,
+                     /*disable_cert_verification_network_fetches=*/false)));
+  EXPECT_FALSE(session_->CanPool(
+      "www.example.org",
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
+                     kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow,
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/true)));
 }
 
 TEST_P(QuicChromiumClientSessionTest, ConnectionNotPooledWithDifferentPin) {
@@ -1593,7 +1684,8 @@ TEST_P(QuicChromiumClientSessionTest, ConnectionNotPooledWithDifferentPin) {
       QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
 }
 
 TEST_P(QuicChromiumClientSessionTest, ConnectionPooledWithMatchingPin) {
@@ -1629,7 +1721,8 @@ TEST_P(QuicChromiumClientSessionTest, ConnectionPooledWithMatchingPin) {
       QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false)));
+                     /*require_dns_https_alpn=*/false,
+                     /*disable_cert_verification_network_fetches=*/false)));
 }
 
 TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {

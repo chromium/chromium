@@ -496,11 +496,13 @@ class WebSocketHandshakeStreamCreateHelperTest
             /*server_info=*/nullptr,
             QuicSessionAliasKey(
                 url::SchemeHostPort(),
-                QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
-                               ProxyChain::Direct(), SessionUsage::kDestination,
-                               SocketTag(), NetworkAnonymizationKey(),
-                               SecureDnsPolicy::kAllow,
-                               /*require_dns_https_alpn=*/false)),
+                QuicSessionKey(
+                    "mail.example.org", 80, PRIVACY_MODE_DISABLED,
+                    ProxyChain::Direct(), SessionUsage::kDestination,
+                    SocketTag(), NetworkAnonymizationKey(),
+                    SecureDnsPolicy::kAllow,
+                    /*require_dns_https_alpn=*/false,
+                    /*disable_cert_verification_network_fetches=*/false)),
             /*require_confirmation=*/false,
             /*migrate_session_early_v2=*/false,
             /*migrate_session_on_network_change_v2=*/false,

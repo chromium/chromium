@@ -743,7 +743,8 @@ class JobControllerReconsiderProxyAfterErrorTest
         server.host(), server.port(), PRIVACY_MODE_DISABLED,
         ProxyChain::ForIpProtection({}, 0), SessionUsage::kProxy, SocketTag(),
         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-        /*require_dns_https_alpn=*/false);
+        /*require_dns_https_alpn=*/false,
+        /*disable_cert_verification_network_fetches=*/true);
     auto new_session = std::make_unique<MockQuicChromiumClientSession>(
         connection, std::move(socket), session_->quic_session_pool(),
         &crypto_client_stream_factory_, &clock, &transport_security_state,
