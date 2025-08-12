@@ -101,18 +101,19 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
   // etc. are not called.
   if (tentative_resource_request.method !=
       net::HttpRequestHeaders::kGetMethod) {
-    redirect_reader_ = PrefetchContainer::Reader();
+    redirect_serving_handle_ = PrefetchServingHandle();
     std::move(loader_callback_).Run(std::nullopt);
     return;
   }
 
-  if (redirect_reader_ && redirect_reader_.DoesCurrentURLToServeMatch(
-                              tentative_resource_request.url)) {
-    if (redirect_reader_.HaveDefaultContextCookiesChanged()) {
+  if (redirect_serving_handle_ &&
+      redirect_serving_handle_.DoesCurrentURLToServeMatch(
+          tentative_resource_request.url)) {
+    if (redirect_serving_handle_.HaveDefaultContextCookiesChanged()) {
       // Cookies have changed for the next redirect hop's URL since the fetch,
       // so we cannot use this prefetch anymore.
       PrefetchContainer* prefetch_container =
-          redirect_reader_.GetPrefetchContainer();
+          redirect_serving_handle_.GetPrefetchContainer();
       CHECK(prefetch_container);
       // Use `std::nullopt` as we need to record the crash key to identify
       // which case in `PrefetchMatchResolver` is the cause.
@@ -125,14 +126,14 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
           base::BindOnce(&PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
                          weak_factory_.GetWeakPtr(),
                          tentative_resource_request),
-          std::move(redirect_reader_));
+          std::move(redirect_serving_handle_));
       return;
     }
   }
 
-  if (redirect_reader_) {
+  if (redirect_serving_handle_) {
     RecordWasFullRedirectChainServedHistogram(false);
-    redirect_reader_ = PrefetchContainer::Reader();
+    redirect_serving_handle_ = PrefetchServingHandle();
   }
 
   FrameTreeNode* frame_tree_node =
@@ -158,7 +159,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
 
 void PrefetchURLLoaderInterceptor::GetPrefetch(
     const network::ResourceRequest& tentative_resource_request,
-    base::OnceCallback<void(PrefetchContainer::Reader)> get_prefetch_callback)
+    base::OnceCallback<void(PrefetchServingHandle)> get_prefetch_callback)
     const {
   TRACE_EVENT0("loading", "PrefetchURLLoaderInterceptor::GetPrefetch");
   PrefetchService* prefetch_service =
@@ -205,21 +206,21 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
 
 void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
     const network::ResourceRequest& tentative_resource_request,
-    PrefetchContainer::Reader reader) {
+    PrefetchServingHandle serving_handle) {
   TRACE_EVENT0("loading",
                "PrefetchURLLoaderInterceptor::OnGetPrefetchComplete");
   PrefetchRequestHandler request_handler;
   base::WeakPtr<ServiceWorkerClient> client_for_prefetch;
-  if (reader) {
+  if (serving_handle) {
     std::tie(request_handler, client_for_prefetch) =
-        reader.CreateRequestHandler();
+        serving_handle.CreateRequestHandler();
   }
 
   if (expected_service_worker_state_ ==
           PrefetchServiceWorkerState::kControlled &&
       request_handler) {
     // ServiceWorker-controlled prefetch should be always non-redirecting.
-    CHECK(reader.IsEnd());
+    CHECK(serving_handle.IsEnd());
 
     if (!service_worker_handle_for_navigation_ || !client_for_prefetch) {
       // Do not intercept the request.
@@ -243,7 +244,7 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
 
   if (!request_handler) {
     // Do not intercept the request.
-    redirect_reader_ = PrefetchContainer::Reader();
+    redirect_serving_handle_ = PrefetchServingHandle();
     if (GetPrefetchCompleteCallbackForTesting()) {
       GetPrefetchCompleteCallbackForTesting().Run(nullptr);  // IN-TEST
     }
@@ -256,19 +257,20 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
           base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
               std::move(request_handler));
 
-  PrefetchContainer* prefetch_container = reader.GetPrefetchContainer();
+  PrefetchContainer* prefetch_container = serving_handle.GetPrefetchContainer();
 
   // If |prefetch_container| is done serving the prefetch, clear out
-  // |redirect_reader_|, but otherwise cache it in |redirect_reader_|.
-  if (reader.IsEnd()) {
-    if (redirect_reader_) {
+  // |redirect_serving_handle_|, but otherwise cache it in
+  // |redirect_serving_handle_|.
+  if (serving_handle.IsEnd()) {
+    if (redirect_serving_handle_) {
       RecordWasFullRedirectChainServedHistogram(true);
     }
-    redirect_reader_ = PrefetchContainer::Reader();
+    redirect_serving_handle_ = PrefetchServingHandle();
   } else {
     CHECK_EQ(expected_service_worker_state_,
              PrefetchServiceWorkerState::kDisallowed);
-    redirect_reader_ = std::move(reader);
+    redirect_serving_handle_ = std::move(serving_handle);
   }
 
   FrameTreeNode* frame_tree_node =

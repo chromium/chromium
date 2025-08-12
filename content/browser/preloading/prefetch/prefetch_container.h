@@ -714,7 +714,7 @@ class CONTENT_EXPORT PrefetchContainer {
     size_t index_redirect_chain_to_serve_ = 0;
   };
 
-  Reader CreateReader();
+  Reader CreateServingHandle();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

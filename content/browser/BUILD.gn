@@ -1626,6 +1626,7 @@ source_set("browser") {
     "preloading/prefetch/prefetch_servable_state.h",
     "preloading/prefetch/prefetch_service.cc",
     "preloading/prefetch/prefetch_service.h",
+    "preloading/prefetch/prefetch_serving_handle.h",
     "preloading/prefetch/prefetch_serving_page_metrics_container.cc",
     "preloading/prefetch/prefetch_serving_page_metrics_container.h",
     "preloading/prefetch/prefetch_status.h",

@@ -12,6 +12,7 @@
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
+#include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle_user_data.h"
@@ -87,7 +88,8 @@ enum class PrefetchPotentialCandidateServingResult {
 class CONTENT_EXPORT PrefetchMatchResolver final
     : public PrefetchContainer::Observer {
  public:
-  using Callback = base::OnceCallback<void(PrefetchContainer::Reader reader)>;
+  using Callback =
+      base::OnceCallback<void(PrefetchServingHandle serving_handle)>;
 
   ~PrefetchMatchResolver() override;
 
@@ -182,7 +184,7 @@ class CONTENT_EXPORT PrefetchMatchResolver final
       const PrefetchContainer::Key& prefetch_key,
       PrefetchPotentialCandidateServingResult matching_result);
   void UnblockForCookiesChanged(const PrefetchContainer::Key& key);
-  void UnblockInternal(PrefetchContainer::Reader reader);
+  void UnblockInternal(PrefetchServingHandle serving_handle);
 
   // Lifetime of this class is from the call of `FindPrefetch()` to calling
   // `callback_`. Note that

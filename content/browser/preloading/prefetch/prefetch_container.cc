@@ -30,6 +30,7 @@
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
@@ -613,8 +614,8 @@ PrefetchContainer::Reader PrefetchContainer::Reader::Clone() const {
   return Reader(prefetch_container_, index_redirect_chain_to_serve_);
 }
 
-PrefetchContainer::Reader PrefetchContainer::CreateReader() {
-  return Reader(GetWeakPtr(), 0);
+PrefetchServingHandle PrefetchContainer::CreateServingHandle() {
+  return PrefetchServingHandle(GetWeakPtr(), 0);
 }
 
 // Please follow go/preloading-dashboard-updates if a new outcome enum or a

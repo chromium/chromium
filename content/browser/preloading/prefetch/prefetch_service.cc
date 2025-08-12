@@ -36,6 +36,7 @@
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 #include "content/browser/preloading/prefetch/prefetch_scheduler.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
+#include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
@@ -297,9 +298,9 @@ void RecordRedirectNetworkContextTransition(
       "PrefetchProxy.Redirect.NetworkContextStateTransition", transition);
 }
 
-void OnIsolatedCookieCopyComplete(PrefetchContainer::Reader reader) {
-  if (reader) {
-    reader.OnIsolatedCookieCopyComplete();
+void OnIsolatedCookieCopyComplete(PrefetchServingHandle serving_handle) {
+  if (serving_handle) {
+    serving_handle.OnIsolatedCookieCopyComplete();
   }
 }
 
@@ -1882,46 +1883,49 @@ void PrefetchService::OnPrefetchCompletedOrFailed(
 }
 
 void PrefetchService::CopyIsolatedCookies(
-    const PrefetchContainer::Reader& reader) {
-  DCHECK(reader);
+    const PrefetchServingHandle& serving_handle) {
+  DCHECK(serving_handle);
 
-  if (!reader.GetCurrentNetworkContextToServe()) {
+  if (!serving_handle.GetCurrentNetworkContextToServe()) {
     // Not set in unit tests.
     return;
   }
 
   // We only need to copy cookies if the prefetch used an isolated network
   // context.
-  if (!reader.IsIsolatedNetworkContextRequiredToServe()) {
+  if (!serving_handle.IsIsolatedNetworkContextRequiredToServe()) {
     return;
   }
 
-  reader.OnIsolatedCookieCopyStart();
+  serving_handle.OnIsolatedCookieCopyStart();
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
-  reader.GetCurrentNetworkContextToServe()->GetCookieManager()->GetCookieList(
-      reader.GetCurrentURLToServe(), options,
-      net::CookiePartitionKeyCollection::Todo(),
-      base::BindOnce(&PrefetchService::OnGotIsolatedCookiesForCopy,
-                     weak_method_factory_.GetWeakPtr(), reader.Clone()));
+  serving_handle.GetCurrentNetworkContextToServe()
+      ->GetCookieManager()
+      ->GetCookieList(
+          serving_handle.GetCurrentURLToServe(), options,
+          net::CookiePartitionKeyCollection::Todo(),
+          base::BindOnce(&PrefetchService::OnGotIsolatedCookiesForCopy,
+                         weak_method_factory_.GetWeakPtr(),
+                         serving_handle.Clone()));
 }
 
 void PrefetchService::OnGotIsolatedCookiesForCopy(
-    PrefetchContainer::Reader reader,
+    PrefetchServingHandle serving_handle,
     const net::CookieAccessResultList& cookie_list,
     const net::CookieAccessResultList& excluded_cookies) {
-  reader.OnIsolatedCookiesReadCompleteAndWriteStart();
+  serving_handle.OnIsolatedCookiesReadCompleteAndWriteStart();
   RecordPrefetchProxyPrefetchMainframeCookiesToCopy(cookie_list.size());
 
   if (cookie_list.empty()) {
-    reader.OnIsolatedCookieCopyComplete();
+    serving_handle.OnIsolatedCookieCopyComplete();
     return;
   }
 
-  const auto current_url = reader.GetCurrentURLToServe();
+  const auto current_url = serving_handle.GetCurrentURLToServe();
 
   base::RepeatingClosure barrier = base::BarrierClosure(
       cookie_list.size(),
-      base::BindOnce(&OnIsolatedCookieCopyComplete, std::move(reader)));
+      base::BindOnce(&OnIsolatedCookieCopyComplete, std::move(serving_handle)));
 
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   for (const net::CookieWithAccessResult& cookie : cookie_list) {
