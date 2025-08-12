@@ -268,6 +268,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTBlockTouchesDuringEnterAnimation,
     &kCCTClientDataHeader,
     &kCCTContextualMenuItems,
+    &kCCTDestroyTabWhenModelIsEmpty,
     &kCCTEarlyNav,
     &kCCTExtendTrustedCdnPublisher,
     &kCCTFixWarmup,
@@ -805,6 +806,10 @@ BASE_FEATURE(kCCTClientDataHeader,
 BASE_FEATURE(kCCTContextualMenuItems,
              "CCTContextualMenuItems",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTDestroyTabWhenModelIsEmpty,
+             "CCTDestroyTabWhenModelIsEmpty",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTEarlyNav, "CCTEarlyNav", base::FEATURE_DISABLED_BY_DEFAULT);
 

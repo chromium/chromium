@@ -1541,6 +1541,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "cct-destroy-tab-when-model-is-empty",
+    "owners": [
+      "adelm@google.com",
+      "chrome-connective-tissue@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "cct-google-bottom-bar",
     "owners": [ "jinsukkim@chromium.org", "kgrosu@google.com", "twellington@chromium.org", "edmundw@google.com", "tivi@google.com" ],
     "expiry_milestone": 140

@@ -8513,6 +8513,7 @@ from previous Chrome versions.
   <int value="-2047435906" label="MiniOriginBar:enabled"/>
   <int value="-2047363526"
       label="DiacriticsOnPhysicalKeyboardLongpress:enabled"/>
+  <int value="-2047192946" label="CCTDestroyTabWhenModelIsEmpty:enabled"/>
   <int value="-2047190657" label="SyncUserConsentSeparateType:enabled"/>
   <int value="-2047071651" label="NearbySharing:enabled"/>
   <int value="-2046434739" label="enable-unsafe-webgpu-service"/>
@@ -17312,6 +17313,7 @@ from previous Chrome versions.
   <int value="1164377197" label="SwipingFromLeftEdgeToGoBack:enabled"/>
   <int value="1164460660" label="AutofillEnableVirtualCard:enabled"/>
   <int value="1165682330" label="AutofillSaveAndFillVPA:disabled"/>
+  <int value="1165691812" label="CCTDestroyTabWhenModelIsEmpty:disabled"/>
   <int value="1165828757" label="kAutofillEnableOffersInDownstream:disabled"/>
   <int value="1166169237" label="disable-delay-agnostic-aec"/>
   <int value="1166789664" label="SyncPseudoUSSAppList:disabled"/>
