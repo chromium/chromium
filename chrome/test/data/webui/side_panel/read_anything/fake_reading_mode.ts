@@ -139,6 +139,11 @@ export class FakeReadingMode {
     return 'foo';
   }
 
+  // Returns the alt text of the AXNode for the provided AXNodeID.
+  getAltText(_nodeId: number): string {
+    return 'foo';
+  }
+
   // Returns true if the text node / element should be bolded.
   shouldBold(_nodeId: number): boolean {
     return false;

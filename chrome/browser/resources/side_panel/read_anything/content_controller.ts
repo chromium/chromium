@@ -5,10 +5,156 @@
 import {assert} from '//resources/js/assert.js';
 
 import {NodeStore} from './node_store.js';
+import {SpeechController} from './read_aloud/speech_controller.js';
+
+const LINK_DATA_ATTR = 'link';
+const LINKS_OFF_TAG = 'span';
+const LINKS_ON_TAG = 'a';
+const LINKS_OFF_SELECTOR = LINKS_OFF_TAG + '[data-' + LINK_DATA_ATTR + ']';
+
+// Reading mode sometimes needs to use a different html tag to display a
+// particular node than the one used in the main panel. This maps the tags
+// received from the renderer to the tag to use in Reading mode.
+const TAG_TO_RM_TAG: Map<string, string> = new Map([
+  // getHtmlTag might return '#document' which is not a valid to pass to
+  // createElement.
+  ['#document', 'div'],
+  // Only one body tag is allowed per document.
+  ['body', 'div'],
+  // details tags hide content beneath them if closed. If opened, there is
+  // content underneath we should show, but surrounding it with a generic
+  // details tag causes it to be hidden in reading mode. So use a div instead.
+  // In the cases that the details are closed, then nothing will be returned
+  // beneath the details tag so nothing is rendered on reading mode.
+  ['details', 'div'],
+  ['img', 'canvas'],
+]);
 
 // Handles the business logic for the visual content of the Reading mode panel.
 export class ContentController {
   private nodeStore_: NodeStore = NodeStore.getInstance();
+  private speechController_: SpeechController = SpeechController.getInstance();
+
+  buildSubtree(nodeId: number): Node {
+    let htmlTag = chrome.readingMode.getHtmlTag(nodeId);
+    const dataAttributes = new Map<string, string>();
+
+    // Text nodes do not have an html tag.
+    if (!htmlTag.length) {
+      return this.createTextNode_(nodeId);
+    }
+
+    // For Google Docs, we extract text from Annotated Canvas. The Annotated
+    // Canvas elements with text are leaf nodes with <rect> html tag.
+    if (chrome.readingMode.isGoogleDocs &&
+        chrome.readingMode.isLeafNode(nodeId)) {
+      return this.createTextNode_(nodeId);
+    }
+
+    if (TAG_TO_RM_TAG.has(htmlTag)) {
+      htmlTag = TAG_TO_RM_TAG.get(htmlTag)!;
+    }
+
+    const url = chrome.readingMode.getUrl(nodeId);
+    if (!this.shouldShowLinks_() && htmlTag === LINKS_ON_TAG) {
+      htmlTag = LINKS_OFF_TAG;
+      dataAttributes.set(LINK_DATA_ATTR, url ?? '');
+    }
+
+    const element = document.createElement(htmlTag);
+    // Add required data attributes.
+    for (const [attr, val] of dataAttributes) {
+      element.dataset[attr] = val;
+    }
+    this.nodeStore_.setDomNode(element, nodeId);
+    const direction = chrome.readingMode.getTextDirection(nodeId);
+    if (direction) {
+      element.setAttribute('dir', direction);
+    }
+
+    if (element.nodeName === 'CANVAS') {
+      this.nodeStore_.addImageToFetch(nodeId);
+      const altText = chrome.readingMode.getAltText(nodeId);
+      element.setAttribute('alt', altText);
+      element.style.display = chrome.readingMode.imagesEnabled ? '' : 'none';
+      element.classList.add('downloaded-image');
+    }
+
+    if (url && element.nodeName === 'A') {
+      element.setAttribute('href', url);
+      element.onclick = (event: MouseEvent) => {
+        event.preventDefault();
+        chrome.readingMode.onLinkClicked(nodeId);
+      };
+    }
+    const language = chrome.readingMode.getLanguage(nodeId);
+    if (language) {
+      element.setAttribute('lang', language);
+    }
+
+    this.appendChildSubtrees_(element, nodeId);
+    return element;
+  }
+
+  private appendChildSubtrees_(node: Node, nodeId: number) {
+    for (const childNodeId of chrome.readingMode.getChildren(nodeId)) {
+      const childNode = this.buildSubtree(childNodeId);
+      node.appendChild(childNode);
+    }
+  }
+
+  private createTextNode_(nodeId: number): Node {
+    // When creating text nodes, save the first text node id. We need this
+    // node id to call InitAXPosition in playSpeech. If it's not saved here,
+    // we have to retrieve it through a DOM search such as createTreeWalker,
+    // which can be computationally expensive.
+    if (chrome.readingMode.isReadAloudEnabled) {
+      this.speechController_.initializeSpeechTree(nodeId);
+    }
+
+    const textContent = chrome.readingMode.getTextContent(nodeId);
+    const textNode = document.createTextNode(textContent);
+    this.nodeStore_.setDomNode(textNode, nodeId);
+    const isOverline = chrome.readingMode.isOverline(nodeId);
+    const shouldBold = chrome.readingMode.shouldBold(nodeId);
+
+    if (!shouldBold && !isOverline) {
+      return textNode;
+    }
+
+    const htmlTag = shouldBold ? 'b' : 'span';
+    const parentElement = document.createElement(htmlTag);
+    if (isOverline) {
+      parentElement.style.textDecoration = 'overline';
+    }
+    parentElement.appendChild(textNode);
+    return parentElement;
+  }
+
+  updateLinks(hasContent: boolean, shadowRoot?: ShadowRoot) {
+    if (!shadowRoot || !hasContent) {
+      return;
+    }
+
+    const selector =
+        this.shouldShowLinks_() ? LINKS_OFF_SELECTOR : LINKS_ON_TAG;
+    const elements = shadowRoot.querySelectorAll(selector);
+
+    for (const elem of elements) {
+      assert(elem instanceof HTMLElement, 'link is not an HTMLElement');
+      const nodeId = this.nodeStore_.getAxId(elem);
+      assert(nodeId !== undefined, 'link node id is undefined');
+      const replacement = this.buildSubtree(nodeId);
+      this.nodeStore_.replaceDomNode(elem, replacement);
+    }
+  }
+
+  // TODO(crbug.com/40910704): Potentially hide links during distillation.
+  private shouldShowLinks_(): boolean {
+    // Links should only show when Read Aloud is paused.
+    return chrome.readingMode.linksEnabled &&
+        !this.speechController_.isSpeechActive();
+  }
 
   loadImages() {
     if (!chrome.readingMode.imagesFeatureEnabled) {
@@ -69,7 +215,6 @@ export class ContentController {
       setTimeout(() => {
         const id = this.nodeStore_.getAxId(node);
         if (node.nodeType === Node.TEXT_NODE) {
-          console.error('is text node');
           if (id) {
             this.nodeStore_.hideImageNode(id);
           }
@@ -89,7 +234,6 @@ export class ContentController {
       });
     });
   }
-
 
   static getInstance(): ContentController {
     return instance || (instance = new ContentController());

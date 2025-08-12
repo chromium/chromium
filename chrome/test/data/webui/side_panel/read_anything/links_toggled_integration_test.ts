@@ -5,7 +5,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {LINK_TOGGLE_BUTTON_ID, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentController, LINK_TOGGLE_BUTTON_ID, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -75,6 +75,7 @@ suite('LinksToggledIntegration', () => {
     SpeechBrowserProxyImpl.setInstance(speech);
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
+    ContentController.setInstance(new ContentController());
 
     app = await createApp();
     linksToggleButton =
@@ -165,6 +166,7 @@ suite('LinksToggledIntegration', () => {
     suite('after speech starts', () => {
       setup(() => {
         emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+        return microtasksFinished();
       });
 
       test('container does not have links', () => {
