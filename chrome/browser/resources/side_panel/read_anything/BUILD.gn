@@ -19,6 +19,7 @@ build_webui("build") {
     "app.ts",
     "app_style_updater.ts",
     "common.ts",
+    "content_controller.ts",
     "keyboard_util.ts",
     "language_menu.html.ts",
     "language_menu.ts",

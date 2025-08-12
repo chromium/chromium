@@ -16,6 +16,7 @@ build_webui_tests("build") {
     "connected_callback_test.ts",
     "common.ts",
     "common_test.ts",
+    "content_controller_test.ts",
     "download_notification_test.ts",
     "fake_reading_mode.ts",
     "fake_tree_builder.ts",

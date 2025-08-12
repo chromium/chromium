@@ -239,6 +239,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, NodeStore) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ContentController) {
+  RunSidePanelTest("side_panel/read_anything/content_controller_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, WordBoundaries) {
   RunSidePanelTest("side_panel/read_anything/word_boundaries_test.js",
                    "mocha.run()");

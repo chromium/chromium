@@ -20,6 +20,7 @@ import {getHtml} from './app.html.js';
 import {AppStyleUpdater} from './app_style_updater.js';
 import type {SettingsPrefs} from './common.js';
 import {minOverflowLengthToScroll} from './common.js';
+import {ContentController} from './content_controller.js';
 import type {LanguageToastElement} from './language_toast.js';
 import {NodeStore} from './node_store.js';
 import {SpeechController} from './read_aloud/speech_controller.js';
@@ -62,7 +63,6 @@ export class AppElement extends AppElementBase implements
     return {
       isSpeechActive_: {type: Boolean},
       isAudioCurrentlyPlaying_: {type: Boolean},
-      imagesEnabled: {type: Boolean, reflect: true},
       enabledLangs_: {type: Array},
       settingsPrefs_: {type: Object},
       selectedVoice_: {type: Object},
@@ -127,6 +127,8 @@ export class AppElement extends AppElementBase implements
   private voiceLanguageController_: VoiceLanguageController =
       VoiceLanguageController.getInstance();
   private speechController_: SpeechController = SpeechController.getInstance();
+  private contentController_: ContentController =
+      ContentController.getInstance();
   protected accessor settingsPrefs_: SettingsPrefs = {
     letterSpacing: 0,
     lineSpacing: 0,
@@ -138,8 +140,6 @@ export class AppElement extends AppElementBase implements
 
   protected accessor isSpeechActive_: boolean = false;
   protected accessor isAudioCurrentlyPlaying_: boolean = false;
-
-  private accessor imagesEnabled: boolean = false;
 
   constructor() {
     super();
@@ -262,7 +262,7 @@ export class AppElement extends AppElementBase implements
     };
 
     chrome.readingMode.onImageDownloaded = (nodeId) => {
-      this.onImageDownloaded(nodeId);
+      this.contentController_.onImageDownloaded(nodeId);
     };
 
     chrome.readingMode.updateSelection = () => {
@@ -550,7 +550,7 @@ export class AppElement extends AppElementBase implements
 
     // Always load images even if they are disabled to ensure a fast response
     // when toggling.
-    this.loadImages_();
+    this.contentController_.loadImages();
 
     this.isDocsLoadMoreButtonVisible_ =
         chrome.readingMode.isDocsLoadMoreButtonVisible;
@@ -575,33 +575,6 @@ export class AppElement extends AppElementBase implements
       }
       this.nodeStore_.estimateWordsSeenWithDelay();
     });
-  }
-
-  async onImageDownloaded(nodeId: number) {
-    const data = chrome.readingMode.getImageBitmap(nodeId);
-    const element = this.nodeStore_.getDomNode(nodeId);
-    if (data && element && element instanceof HTMLCanvasElement) {
-      element.width = data.width;
-      element.height = data.height;
-      element.style.zoom = data.scale.toString();
-      const context = element.getContext('2d');
-      // Context should not be null unless another was already requested.
-      assert(context);
-      const imgData = new ImageData(data.data, data.width);
-      const bitmap = await createImageBitmap(imgData, {
-        colorSpaceConversion: 'none',
-        premultiplyAlpha: 'premultiply',
-      });
-      context.drawImage(bitmap, 0, 0);
-    }
-  }
-
-  private loadImages_() {
-    if (!chrome.readingMode.imagesFeatureEnabled) {
-      return;
-    }
-
-    this.nodeStore_.fetchImages();
   }
 
   getSelection(): any {
@@ -707,59 +680,11 @@ export class AppElement extends AppElementBase implements
     if (this.isReadAloudEnabled_) {
       this.speechController_.onLinksToggled();
     }
-    this.loadImages_();
+    this.contentController_.loadImages();
   }
 
   protected updateImages_() {
-    if (!this.shadowRoot || !chrome.readingMode.imagesFeatureEnabled ||
-        !this.hasContent_) {
-      return;
-    }
-
-    this.imagesEnabled = chrome.readingMode.imagesEnabled;
-    if (this.imagesEnabled) {
-      this.nodeStore_.clearHiddenImageNodes();
-    }
-    // There is some strange issue where the HTML css application does not work
-    // on canvases.
-    for (const canvas of this.shadowRoot.querySelectorAll('canvas')) {
-      canvas.style.display = this.imagesEnabled ? '' : 'none';
-      this.markTextNodesHiddenIfImagesHidden_(canvas);
-    }
-    for (const canvas of this.shadowRoot.querySelectorAll('figure')) {
-      canvas.style.display = this.imagesEnabled ? '' : 'none';
-      this.markTextNodesHiddenIfImagesHidden_(canvas);
-    }
-  }
-
-  private async markTextNodesHiddenIfImagesHidden_(node: Node) {
-    if (this.imagesEnabled) {
-      return;
-    }
-
-    // Do this asynchronously so we don't block the UI on large pages.
-    await new Promise(() => {
-      setTimeout(() => {
-        const id = this.nodeStore_.getAxId(node);
-        if (node.nodeType === Node.TEXT_NODE) {
-          if (id) {
-            this.nodeStore_.hideImageNode(id);
-          }
-          return;
-        }
-
-        // Since read aloud looks at the text nodes, we want to store those ids
-        // so we don't read out text that is not visible.
-        const startTreeWalker =
-            document.createTreeWalker(node, NodeFilter.SHOW_ALL);
-        while (startTreeWalker.nextNode()) {
-          const id = this.nodeStore_.getAxId(startTreeWalker.currentNode);
-          if (id) {
-            this.nodeStore_.hideImageNode(id);
-          }
-        }
-      });
-    });
+    this.contentController_.updateImages(this.hasContent_, this.shadowRoot);
   }
 
   protected onDocsLoadMoreButtonClick_() {
