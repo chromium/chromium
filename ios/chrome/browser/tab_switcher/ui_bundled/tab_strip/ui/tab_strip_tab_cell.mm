@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_tab_cell.h"
 
-#import <MaterialComponents/MaterialActivityIndicator.h>
-
 #import <algorithm>
 
 #import "base/metrics/user_metrics.h"
@@ -28,6 +26,9 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+// Scale of activity indicator replacing fav icon when active.
+const CGFloat kIndicatorScale = 0.75;
 
 // The size of the close button.
 constexpr CGFloat kCloseButtonSize = 16;
@@ -93,7 +94,7 @@ constexpr CGFloat kBlueDotInset = 1;
   UIView* _trailingSelectedBorderBackgroundView;
 
   // Circular spinner that shows the loading state of the tab.
-  MDCActivityIndicator* _activityIndicator;
+  UIActivityIndicatorView* _activityIndicator;
 
   // The cell's title is always displayed between the favicon and the close
   // button (or the trailing end of the cell if there is no close button). The
@@ -1016,10 +1017,13 @@ constexpr CGFloat kBlueDotInset = 1;
 }
 
 // Returns a new Activity Indicator.
-- (MDCActivityIndicator*)createActivityIndicatior {
-  MDCActivityIndicator* activityIndicator = [[MDCActivityIndicator alloc] init];
+- (UIActivityIndicatorView*)createActivityIndicatior {
+  UIActivityIndicatorView* activityIndicator =
+      [[UIActivityIndicatorView alloc] init];
+  activityIndicator.color = [UIColor colorNamed:kBlueColor];
+  activityIndicator.transform = CGAffineTransformScale(
+      activityIndicator.transform, kIndicatorScale, kIndicatorScale);
   activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
-  activityIndicator.hidden = YES;
   return activityIndicator;
 }
 
