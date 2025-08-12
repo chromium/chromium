@@ -140,6 +140,7 @@ enum {
   kFacilitatedPaymentsA2ATriggeredOnce = 91,
   kFingerprintingProtectionEnabled = 92,
   kAutofillNameAndEmailProfileSignature = 93,
+  kAutofillNameAndEmailProfileNotSelectedCounter = 94,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -167,6 +168,9 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           PrefSensitivity::kNone, MergeBehavior::kNone}},
         {autofill::prefs::kAutofillNameAndEmailProfileSignature,
          {syncable_prefs_ids::kAutofillNameAndEmailProfileSignature,
+          syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {autofill::prefs::kAutofillNameAndEmailProfileNotSelectedCounter,
+         {syncable_prefs_ids::kAutofillNameAndEmailProfileNotSelectedCounter,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
         {bookmarks::prefs::kShowAppsShortcutInBookmarkBar,
          {syncable_prefs_ids::kShowAppsShortcutInBookmarkBar,

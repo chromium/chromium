@@ -9,6 +9,7 @@
 #include "base/hash/hash.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -27,6 +28,7 @@ AccountNameEmailStore::AccountNameEmailStore(
     : address_data_manager_(address_data_manager),
       identity_manager_(identity_manager),
       pref_service_(pref_service) {
+  address_data_manager_observer_.Observe(&address_data_manager);
   identity_manager_observer_.Observe(&identity_manager);
 }
 
@@ -43,25 +45,44 @@ void AccountNameEmailStore::OnExtendedAccountInfoUpdated(
   UpdateOrCreateAccountNameEmail(info);
 }
 
+void AccountNameEmailStore::OnAddressDataChanged() {
+  if (pref_service_->GetInteger(
+          prefs::kAutofillNameAndEmailProfileNotSelectedCounter) >
+      features::kAutofillNameAndEmailProfileNotSelectedThreshold.Get()) {
+    // Return the kAccountNameEmail profile is already considered removed.
+    return;
+  }
+
+  const std::vector<const AutofillProfile*> account_name_email_profiles =
+      address_data_manager_->GetProfilesByRecordType(
+          AutofillProfile::RecordType::kAccountNameEmail);
+
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+      account_name_email_profiles.empty()) {
+    // The `kAccountNameEmail` is available to all signed in users. If it isn't,
+    // that means that the user just removed it. Track this removal in prefs to
+    // ensure that the profile isn't recreated. Independently of how the profile
+    // was removed, the removal is tracked as if the user rejected a
+    // `kAccountNameEmail` suggestion too many times.
+    pref_service_->SetInteger(
+        prefs::kAutofillNameAndEmailProfileNotSelectedCounter,
+        features::kAutofillNameAndEmailProfileNotSelectedThreshold.Get() + 1);
+  }
+}
+
 void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(
     const AccountInfo& info) {
   if (info.IsEmpty()) {
     return;
   }
 
-  // TODO(crbug.com/356845298): Add prefs
-  // name_and_email_profile_not_selected_counter and
-  // was_name_and_email_profile_used, and check their value to possibly return
-  // early.
-
-  // Calculate hash and see if it's different than one cached in pref
+  // Calculate hash and see if it's different than one cached in pref.
   const std::string new_hash = HashAccountInfo(info);
   if (pref_service_->GetString(prefs::kAutofillNameAndEmailProfileSignature) ==
       new_hash) {
     // Name exists and has not changed - nothing to do.
     // This also (additionally) prevents recreation of Account Name Email
-    // profile after its explicit deletion. This recreation should be prevented
-    // by the counter pref.
+    // profile after its explicit or silent deletion.
     return;
   }
 
@@ -83,10 +104,10 @@ void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(
 
   pref_service_->SetString(prefs::kAutofillNameAndEmailProfileSignature,
                            new_hash);
-
-  // TODO(crbug.com/356845298): Add resetting
-  // name_and_email_profile_not_selected_counter if
-  // account name email wasn't explicitly deleted.
+  // Reset `kAutofillNameAndEmailProfileNotSelectedCounter` after the user
+  // changed their full name.
+  pref_service_->SetInteger(
+      prefs::kAutofillNameAndEmailProfileNotSelectedCounter, 0);
 }
 
 std::string AccountNameEmailStore::HashAccountInfo(

@@ -110,6 +110,10 @@ inline constexpr char kAutofillUploadEventsLastResetTimestamp[] =
 // coming from the Account Name Email profile.
 inline constexpr char kAutofillNameAndEmailProfileSignature[] =
     "autofill.name_and_email_profile_signature";
+// A counter responsible for keeping track of number of times the user did not
+// accept `kAccountNameEmail` profile suggestion.
+inline constexpr char kAutofillNameAndEmailProfileNotSelectedCounter[] =
+    "autofill.name_and_email_profile_not_selected_counter";
 // Integer that is set to the last major version where the Autocomplete
 // retention policy was run.
 inline constexpr char kAutocompleteLastVersionRetentionPolicy[] =

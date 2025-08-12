@@ -24,7 +24,8 @@ namespace autofill {
 // (create, update, remove) `kAccountNameEmail` profile. In code
 // `AccountNameEmailStore` is owned by and has the same lifetime as
 // `AddressDataManager`.
-class AccountNameEmailStore : public signin::IdentityManager::Observer {
+class AccountNameEmailStore : public signin::IdentityManager::Observer,
+                              public AddressDataManager::Observer {
  public:
   AccountNameEmailStore(AddressDataManager& address_data_manager,
                         signin::IdentityManager& identity_manager,
@@ -35,6 +36,13 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer {
   // Called when the account's extended information (e.g., full name) is
   // updated. Used to keep the `kAccountNameEmail` profile up to date.
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
+
+  // AddressDataManager::Observer:
+  // Called when the address data of the `AddressDataManager` changes. If
+  // `kAccountNameEmail` profile is missing but the user is still signed in,
+  // `kAutofillNameAndEmailProfileNotSelectedCounter` is set to
+  // `kAutofillNameAndEmailProfileNotSelectedThreshold` + 1.
+  void OnAddressDataChanged() override;
 
   // Updates the `kAccountNameEmail` autofill profile with the newest signed-in
   // account `info`. If the `kAccountNameEmail` profile doesn't exist, it is
@@ -50,6 +58,11 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer {
   const raw_ref<AddressDataManager> address_data_manager_;
   const raw_ref<signin::IdentityManager> identity_manager_;
   const raw_ref<PrefService> pref_service_;
+
+  // Used to update `kAutofillNameAndEmailProfileNotSelectedCounter` pref in
+  // `OnAddressDataChanged` method.
+  base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>
+      address_data_manager_observer_{this};
 
   // Used to update the `kAccountNameEmail` profile when the account name
   // changes.

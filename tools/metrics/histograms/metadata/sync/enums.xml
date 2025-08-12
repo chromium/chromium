@@ -356,6 +356,7 @@ chromium-metrics-reviews@google.com.
   <int value="91" label="FacilitatedPaymentsA2ATriggeredOnce"/>
   <int value="92" label="FingerprintingProtectionEnabled"/>
   <int value="93" label="AutofillNameAndEmailProfileSignature"/>
+  <int value="94" label="AutofillNameAndEmailProfileNotSelectedCounter"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->

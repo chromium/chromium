@@ -456,6 +456,11 @@ BASE_FEATURE(kAutofillEnableSupportForNameAndEmail,
              "AutofillEnableSupportForNameAndEmail",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// The number of times after which, a never accepted `kAccountNameEmail`
+// suggestion will result in the `kAccountNameEmail` profile being deleted.
+const base::FeatureParam<int> kAutofillNameAndEmailProfileNotSelectedThreshold{
+    &kAutofillEnableSupportForNameAndEmail, "rejection_threshold", 10};
+
 // When enabled, the autofill suggestion labels are more descriptive and
 // relevant.
 // TODO(crbug.com/380273791): Cleanup when launched.

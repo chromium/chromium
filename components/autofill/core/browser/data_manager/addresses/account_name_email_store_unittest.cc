@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -211,6 +212,92 @@ TEST_F(AccountNameEmailStoreTest, OnExtendedAccountInfoUpdated_WrongGaiaId) {
   OnAccountUpdated(info2);
   EXPECT_THAT(profiles_before_update,
               ContainerEq(address_data_manager().GetProfiles()));
+}
+
+// Tests that the `OnAddressDataChanged` method will set
+// `kAutofillNameAndEmailProfileNotSelectedCounter` pref to a value greater than
+// `kAutofillNameAndEmailProfileNotSelectedThreshold` if the user is logged in
+// but `kAccountNameEmail` profile was deleted.
+TEST_F(AccountNameEmailStoreTest, OnAddressDataChanged_ProfileDeleted) {
+  AccountInfo info1 = identity_test_env().MakePrimaryAccountAvailable(
+      kTestEmailAddress1.data(), signin::ConsentLevel::kSignin);
+  info1.full_name = kTestName1;
+  info1.email = kTestEmailAddress1;
+  OnAccountUpdated(info1);
+
+  ASSERT_EQ(pref_service().GetInteger(
+                prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
+            0);
+
+  address_data_manager().RemoveProfile(
+      address_data_manager().GetProfiles()[0]->guid());
+
+  EXPECT_GT(pref_service().GetInteger(
+                prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
+            features::kAutofillNameAndEmailProfileNotSelectedThreshold.Get());
+}
+
+// Tests that the `OnAddressDataChanged` method will not change the value of the
+// `kAutofillNameAndEmailProfileNotSelectedCounter` pref if a profile other than
+// the `kAccountNameEmail` was deleted.
+TEST_F(AccountNameEmailStoreTest, OnAddressDataChanged_PrefNotChanged) {
+  AccountInfo info1 = identity_test_env().MakePrimaryAccountAvailable(
+      kTestEmailAddress1.data(), signin::ConsentLevel::kSignin);
+  info1.full_name = kTestName1;
+  info1.email = kTestEmailAddress1;
+  OnAccountUpdated(info1);
+
+  AutofillProfile profile{
+      AutofillProfile::RecordType::kAccount,
+      address_data_manager().GetDefaultCountryCodeForNewAddress()};
+  address_data_manager().AddProfile(profile);
+
+  ASSERT_EQ(pref_service().GetInteger(
+                prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
+            0);
+
+  address_data_manager().RemoveProfile(
+      address_data_manager()
+          .GetProfilesByRecordType(AutofillProfile::RecordType::kAccount)[0]
+          ->guid());
+
+  EXPECT_EQ(pref_service().GetInteger(
+                prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
+            0);
+}
+
+// Tests that if `kAccountNameEmail` profile was removed and pref set to a
+// number greater than the threshold, after the name change there will be new
+// `kAccountNameEmail` profile and pref will be set to 0.
+TEST_F(AccountNameEmailStoreTest, ProfileReappearsAfterNameChange) {
+  AccountInfo info1 = identity_test_env().MakePrimaryAccountAvailable(
+      kTestEmailAddress1.data(), signin::ConsentLevel::kSignin);
+  info1.full_name = kTestName1;
+  info1.email = kTestEmailAddress1;
+  OnAccountUpdated(info1);
+
+  address_data_manager().RemoveProfile(
+      address_data_manager()
+          .GetProfilesByRecordType(
+              AutofillProfile::RecordType::kAccountNameEmail)[0]
+          ->guid());
+
+  ASSERT_THAT(address_data_manager().GetProfiles(), IsEmpty());
+  ASSERT_GT(pref_service().GetInteger(
+                prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
+            features::kAutofillNameAndEmailProfileNotSelectedThreshold.Get());
+
+  info1.full_name = kTestName2;
+  OnAccountUpdated(info1);
+
+  EXPECT_THAT(
+      address_data_manager().GetProfiles(),
+      ElementsAre(Property(&AutofillProfile::record_type,
+                           AutofillProfile::RecordType::kAccountNameEmail)));
+
+  EXPECT_EQ(pref_service().GetInteger(
+                prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
+            0);
 }
 
 }  // namespace
