@@ -86,10 +86,10 @@ MultiContentsView::MultiContentsView(
 
   if (is_drag_and_drop_enabled()) {
     drop_target_view_ =
-        AddChildView(std::make_unique<MultiContentsDropTargetView>(*delegate_));
+        AddChildView(std::make_unique<MultiContentsDropTargetView>());
     drop_target_controller_ =
         std::make_unique<MultiContentsViewDropTargetController>(
-            *drop_target_view_);
+            *drop_target_view_, *delegate_);
   }
 }
 

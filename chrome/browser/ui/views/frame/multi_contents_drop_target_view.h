@@ -32,26 +32,31 @@ class MultiContentsDropTargetView : public views::View,
     END = 1,
   };
 
-  class DropDelegate {
+  // Delegate for handling drag events that are routed to this view.
+  class DragDelegate {
    public:
-    virtual ~DropDelegate() = default;
+    virtual ~DragDelegate() = default;
 
-    // Handles links that are dropped on the view.
-    virtual void HandleLinkDrop(DropSide side,
-                                const std::vector<GURL>& urls) = 0;
-
-    // Handles tabs that are dropped on the view.
-    virtual void HandleTabDrop(DropSide side,
-                               TabDragDelegate::DragController& controller) = 0;
+    virtual bool GetDropFormats(
+        int* formats,
+        std::set<ui::ClipboardFormatType>* format_types) = 0;
+    virtual bool CanDrop(const ui::OSExchangeData& data) = 0;
+    virtual void OnDragExited() = 0;
+    virtual void OnDragDone() = 0;
+    virtual int OnDragUpdated(const ui::DropTargetEvent& event) = 0;
+    virtual views::View::DropCallback GetDropCallback(
+        const ui::DropTargetEvent& event) = 0;
   };
 
-  explicit MultiContentsDropTargetView(DropDelegate& drop_delegate);
+  MultiContentsDropTargetView();
   MultiContentsDropTargetView(const MultiContentsDropTargetView&) = delete;
   MultiContentsDropTargetView& operator=(const MultiContentsDropTargetView&) =
       delete;
   ~MultiContentsDropTargetView() override;
 
   double GetAnimationValue() const;
+
+  void SetDragDelegate(DragDelegate* drag_delegate);
 
   void Show(DropSide side);
   void Hide();
@@ -100,7 +105,7 @@ class MultiContentsDropTargetView : public views::View,
   // The side that this view is showing on.
   std::optional<DropSide> side_ = std::nullopt;
 
-  const raw_ref<DropDelegate> drop_delegate_;
+  raw_ptr<DragDelegate> drag_delegate_ = nullptr;
 
   // Animation controlling showing and hiding of the drop target view.
   gfx::SlideAnimation animation_{this};

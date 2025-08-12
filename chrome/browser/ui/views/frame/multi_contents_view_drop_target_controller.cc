@@ -14,16 +14,24 @@
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "content/public/common/drop_data.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/view_class_properties.h"
 
 MultiContentsViewDropTargetController::MultiContentsViewDropTargetController(
-    MultiContentsDropTargetView& drop_target_view)
+    MultiContentsDropTargetView& drop_target_view,
+    DropDelegate& drop_delegate)
     : drop_target_view_(drop_target_view),
-      drop_target_parent_view_(CHECK_DEREF(drop_target_view.parent())) {}
+      drop_target_parent_view_(CHECK_DEREF(drop_target_view.parent())),
+      drop_delegate_(drop_delegate) {
+  drop_target_view_->SetDragDelegate(this);
+}
 
 MultiContentsViewDropTargetController::
     ~MultiContentsViewDropTargetController() {
   on_will_destroy_callback_list_.Notify();
+  drop_target_view_->SetDragDelegate(nullptr);
 }
 
 MultiContentsViewDropTargetController::DropTargetShowTimer::DropTargetShowTimer(
@@ -64,9 +72,65 @@ bool MultiContentsViewDropTargetController::CanDropTab() {
   return drop_target_view_->GetVisible() && !drop_target_view_->IsClosing();
 }
 
+bool MultiContentsViewDropTargetController::GetDropFormats(
+    int* formats,
+    std::set<ui::ClipboardFormatType>* format_types) {
+  *formats = ui::OSExchangeData::URL;
+  format_types->insert(ui::ClipboardFormatType::UrlType());
+  return true;
+}
+
+bool MultiContentsViewDropTargetController::CanDrop(
+    const ui::OSExchangeData& data) {
+  if (!data.HasURL(ui::FilenameToURLPolicy::CONVERT_FILENAMES)) {
+    return false;
+  }
+  auto urls = data.GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+  return urls.has_value() && !urls.value().empty();
+}
+
+void MultiContentsViewDropTargetController::OnDragExited() {
+  drop_target_view_->Hide();
+}
+
+void MultiContentsViewDropTargetController::OnDragDone() {
+  drop_target_view_->Hide();
+}
+
+int MultiContentsViewDropTargetController::OnDragUpdated(
+    const ui::DropTargetEvent& event) {
+  return ui::DragDropTypes::DRAG_LINK;
+}
+
+views::View::DropCallback
+MultiContentsViewDropTargetController::GetDropCallback(
+    const ui::DropTargetEvent& event) {
+  return base::BindOnce(&MultiContentsViewDropTargetController::DoDrop,
+                        base::Unretained(this));
+}
+
+void MultiContentsViewDropTargetController::DoDrop(
+    const ui::DropTargetEvent& event,
+    ui::mojom::DragOperation& output_drag_op,
+    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
+  CHECK(drop_target_view_->side().has_value());
+  MultiContentsDropTargetView::DropSide side =
+      drop_target_view_->side().value();
+  drop_target_view_->Hide();
+  auto urls = event.data().GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+  CHECK(urls.has_value());
+  drop_delegate_->HandleLinkDrop(side, urls.value());
+  output_drag_op = ui::mojom::DragOperation::kLink;
+}
+
 void MultiContentsViewDropTargetController::HandleTabDrop(
     TabDragDelegate::DragController& controller) {
-  drop_target_view_->HandleTabDrop(controller);
+  CHECK(drop_target_view_->GetVisible());
+  CHECK(drop_target_view_->side().has_value());
+  MultiContentsDropTargetView::DropSide side =
+      drop_target_view_->side().value();
+  drop_target_view_->Hide();
+  drop_delegate_->HandleTabDrop(side, controller);
 }
 
 base::CallbackListSubscription

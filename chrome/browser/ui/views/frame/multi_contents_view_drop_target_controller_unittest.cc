@@ -19,7 +19,10 @@
 #include "content/public/common/drop_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/view_class_properties.h"
 
@@ -45,7 +48,8 @@ void SetRTL(bool rtl) {
   ASSERT_EQ(rtl, base::i18n::IsRTL());
 }
 
-class MockDropDelegate : public MultiContentsDropTargetView::DropDelegate {
+class MockDropDelegate
+    : public MultiContentsViewDropTargetController::DropDelegate {
  public:
   MOCK_METHOD(void,
               HandleLinkDrop,
@@ -88,11 +92,11 @@ class MultiContentsViewDropTargetControllerTest : public testing::Test {
     SetRTL(false);
     multi_contents_view_ = std::make_unique<views::View>();
     drop_target_view_ = multi_contents_view_->AddChildView(
-        std::make_unique<MultiContentsDropTargetView>(drop_delegate_));
+        std::make_unique<MultiContentsDropTargetView>());
 
     drop_target_view_->SetVisible(false);
     controller_ = std::make_unique<MultiContentsViewDropTargetController>(
-        *drop_target_view_);
+        *drop_target_view_, drop_delegate_);
 
     multi_contents_view_->SetSize(kMultiContentsViewSize);
   }
@@ -375,7 +379,7 @@ TEST_F(MultiContentsViewDropTargetControllerTest, OnTabDragExited) {
 
 // Tests that the drop target is hidden when the drag ends.
 TEST_F(MultiContentsViewDropTargetControllerTest, OnTabDragEnded) {
-  // First, show the drop target.
+  // First, show the.
   DragURLTo(kDragPointForStartDropTargetShow);
   FastForward();
   EXPECT_TRUE(drop_target_view().GetVisible());
@@ -479,6 +483,63 @@ TEST_F(MultiContentsViewDropTargetControllerTest, HandleTabDrop) {
       HandleTabDrop(MultiContentsDropTargetView::DropSide::END, testing::_));
 
   controller().HandleTabDrop(mock_tab_drag_controller);
+}
+
+TEST_F(MultiContentsViewDropTargetControllerTest, DragDelegateMethods) {
+  // GetDropFormats
+  int formats = 0;
+  std::set<ui::ClipboardFormatType> format_types;
+  EXPECT_TRUE(controller().GetDropFormats(&formats, &format_types));
+  EXPECT_EQ(ui::OSExchangeData::URL, formats);
+
+  // CanDrop
+  ui::OSExchangeData data;
+  data.SetURL(GURL("https://www.google.com"), u"Google");
+  EXPECT_TRUE(controller().CanDrop(data));
+
+  ui::OSExchangeData non_url_data;
+  non_url_data.SetString(u"Some random string");
+  EXPECT_FALSE(controller().CanDrop(non_url_data));
+
+  ui::OSExchangeData empty_url_data;
+  EXPECT_FALSE(controller().CanDrop(empty_url_data));
+
+  // OnDragUpdated
+  const ui::DropTargetEvent event(ui::OSExchangeData(), gfx::PointF(),
+                                  gfx::PointF(), ui::DragDropTypes::DRAG_LINK);
+  EXPECT_EQ(ui::DragDropTypes::DRAG_LINK, controller().OnDragUpdated(event));
+
+  // OnDragExited
+  drop_target_view().animation_for_testing().SetSlideDuration(base::Seconds(0));
+  drop_target_view().Show(MultiContentsDropTargetView::DropSide::START);
+  ASSERT_TRUE(drop_target_view().GetVisible());
+  controller().OnDragExited();
+  EXPECT_FALSE(drop_target_view().GetVisible());
+  EXPECT_EQ(drop_target_view().animation_for_testing().GetCurrentValue(), 0);
+
+  // OnDragDone
+  drop_target_view().Show(MultiContentsDropTargetView::DropSide::START);
+  ASSERT_TRUE(drop_target_view().GetVisible());
+  controller().OnDragDone();
+  EXPECT_FALSE(drop_target_view().GetVisible());
+  EXPECT_EQ(drop_target_view().animation_for_testing().GetCurrentValue(), 0);
+
+  // GetDropCallback and DoDrop
+  drop_target_view().Show(MultiContentsDropTargetView::DropSide::START);
+  ASSERT_TRUE(drop_target_view().GetVisible());
+  const GURL url("https://www.google.com");
+  ui::OSExchangeData drop_data;
+  drop_data.SetURL(url, u"Google");
+  const ui::DropTargetEvent drop_event(drop_data, gfx::PointF(), gfx::PointF(),
+                                       ui::DragDropTypes::DRAG_LINK);
+  EXPECT_CALL(drop_delegate(),
+              HandleLinkDrop(MultiContentsDropTargetView::DropSide::START,
+                             testing::ElementsAre(url)));
+  views::View::DropCallback callback = controller().GetDropCallback(drop_event);
+  ui::mojom::DragOperation output_op = ui::mojom::DragOperation::kNone;
+  std::unique_ptr<ui::LayerTreeOwner> drag_image;
+  std::move(callback).Run(drop_event, output_op, std::move(drag_image));
+  EXPECT_FALSE(drop_target_view().GetVisible());
 }
 
 }  // namespace

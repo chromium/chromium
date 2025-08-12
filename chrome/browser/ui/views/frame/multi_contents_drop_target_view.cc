@@ -45,9 +45,8 @@ constexpr int kAnimationDurationMs = 450;
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsDropTargetView,
                                       kMultiContentsDropTargetElementId);
 
-MultiContentsDropTargetView::MultiContentsDropTargetView(
-    DropDelegate& drop_delegate)
-    : views::AnimationDelegateViews(this), drop_delegate_(drop_delegate) {
+MultiContentsDropTargetView::MultiContentsDropTargetView()
+    : views::AnimationDelegateViews(this) {
   SetVisible(false);
   SetProperty(views::kElementIdentifierKey, kMultiContentsDropTargetElementId);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -91,6 +90,10 @@ double MultiContentsDropTargetView::GetAnimationValue() const {
     return animation_.GetCurrentValue();
   }
   return 1;
+}
+
+void MultiContentsDropTargetView::SetDragDelegate(DragDelegate* drag_delegate) {
+  drag_delegate_ = drag_delegate;
 }
 
 bool MultiContentsDropTargetView::IsClosing() const {
@@ -178,59 +181,36 @@ void MultiContentsDropTargetView::OnThemeChanged() {
 bool MultiContentsDropTargetView::GetDropFormats(
     int* formats,
     std::set<ui::ClipboardFormatType>* format_types) {
-  *formats = ui::OSExchangeData::URL;
-  format_types->insert(ui::ClipboardFormatType::UrlType());
-  return true;
+  CHECK(drag_delegate_);
+  return drag_delegate_->GetDropFormats(formats, format_types);
 }
 
 // Allows dropping links only.
 bool MultiContentsDropTargetView::CanDrop(const OSExchangeData& data) {
-  if (!data.HasURL(ui::FilenameToURLPolicy::CONVERT_FILENAMES)) {
-    return false;
-  }
-  auto urls = data.GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
-  return urls.has_value() && !urls.value().empty();
+  CHECK(drag_delegate_);
+  return drag_delegate_->CanDrop(data);
 }
 
 int MultiContentsDropTargetView::OnDragUpdated(
     const ui::DropTargetEvent& event) {
-  return ui::DragDropTypes::DRAG_LINK;
+  CHECK(drag_delegate_);
+  return drag_delegate_->OnDragUpdated(event);
 }
 
 void MultiContentsDropTargetView::OnDragExited() {
-  Hide();
+  CHECK(drag_delegate_);
+  drag_delegate_->OnDragExited();
 }
 
 void MultiContentsDropTargetView::OnDragDone() {
-  Hide();
+  CHECK(drag_delegate_);
+  drag_delegate_->OnDragDone();
 }
 
 views::View::DropCallback MultiContentsDropTargetView::GetDropCallback(
     const ui::DropTargetEvent& event) {
-  return base::BindOnce(&MultiContentsDropTargetView::DoDrop,
-                        base::Unretained(this));
-}
-
-void MultiContentsDropTargetView::DoDrop(
-    const ui::DropTargetEvent& event,
-    ui::mojom::DragOperation& output_drag_op,
-    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
-  CHECK(side_.has_value());
-  DropSide side = side_.value();
-  Hide();
-  auto urls = event.data().GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
-  CHECK(urls.has_value());
-  drop_delegate_->HandleLinkDrop(side, urls.value());
-  output_drag_op = ui::mojom::DragOperation::kLink;
-}
-
-void MultiContentsDropTargetView::HandleTabDrop(
-    TabDragDelegate::DragController& controller) {
-  CHECK(GetVisible());
-  CHECK(side_.has_value());
-  DropSide side = side_.value();
-  Hide();
-  drop_delegate_->HandleTabDrop(side, controller);
+  CHECK(drag_delegate_);
+  return drag_delegate_->GetDropCallback(event);
 }
 
 BEGIN_METADATA(MultiContentsDropTargetView)

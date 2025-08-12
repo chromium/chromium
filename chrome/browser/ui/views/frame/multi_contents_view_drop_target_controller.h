@@ -22,10 +22,27 @@ struct DropData;
 // links,  bookmarks, or tab headers to create a split view.
 // There exists one `MultiContentsViewDropTargetController` per
 // `MultiContentesView`.
-class MultiContentsViewDropTargetController final : public TabDragDelegate {
+class MultiContentsViewDropTargetController final
+    : public TabDragDelegate,
+      public MultiContentsDropTargetView::DragDelegate {
  public:
-  explicit MultiContentsViewDropTargetController(
-      MultiContentsDropTargetView& drop_target_view);
+  // Delegate for handling the drop callback.
+  class DropDelegate {
+   public:
+    virtual ~DropDelegate() = default;
+
+    // Handles links that are dropped on the view.
+    virtual void HandleLinkDrop(MultiContentsDropTargetView::DropSide side,
+                                const std::vector<GURL>& urls) = 0;
+
+    // Handles tabs that are dropped on the view.
+    virtual void HandleTabDrop(MultiContentsDropTargetView::DropSide side,
+                               TabDragDelegate::DragController& controller) = 0;
+  };
+
+  MultiContentsViewDropTargetController(
+      MultiContentsDropTargetView& drop_target_view,
+      DropDelegate& drop_delegate);
   ~MultiContentsViewDropTargetController() override;
   MultiContentsViewDropTargetController(
       const MultiContentsViewDropTargetController&) = delete;
@@ -51,9 +68,23 @@ class MultiContentsViewDropTargetController final : public TabDragDelegate {
   void OnWebContentsDragExit();
   void OnWebContentsDragEnded();
 
+  // MultiContentsDropTargetView::DragDelegate:
+  bool GetDropFormats(int* formats,
+                      std::set<ui::ClipboardFormatType>* format_types) override;
+  bool CanDrop(const ui::OSExchangeData& data) override;
+  void OnDragExited() override;
+  void OnDragDone() override;
+  int OnDragUpdated(const ui::DropTargetEvent& event) override;
+  views::View::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override;
+
   bool IsDropTimerRunningForTesting();
 
  private:
+  void DoDrop(const ui::DropTargetEvent& event,
+              ui::mojom::DragOperation& output_drag_op,
+              std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
+
   // Represents a timer for delaying when a specific drop target view is shown.
   struct DropTargetShowTimer {
     explicit DropTargetShowTimer(
@@ -82,6 +113,7 @@ class MultiContentsViewDropTargetController final : public TabDragDelegate {
   // the content area.
   const raw_ref<MultiContentsDropTargetView> drop_target_view_;
   const raw_ref<views::View> drop_target_parent_view_;
+  const raw_ref<DropDelegate> drop_delegate_;
 
   base::OnceClosureList on_will_destroy_callback_list_;
 };

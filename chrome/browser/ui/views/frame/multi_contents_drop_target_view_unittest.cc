@@ -22,32 +22,39 @@ namespace {
 
 constexpr int kDelayedAnimationDuration = 60;
 
-class MockDropDelegate : public MultiContentsDropTargetView::DropDelegate {
+class MockDragDelegate : public MultiContentsDropTargetView::DragDelegate {
  public:
-  MOCK_METHOD(void,
-              HandleLinkDrop,
-              (MultiContentsDropTargetView::DropSide, const std::vector<GURL>&),
+  MOCK_METHOD(bool,
+              GetDropFormats,
+              (int* formats, std::set<ui::ClipboardFormatType>* format_types),
               (override));
-  MOCK_METHOD(void,
-              HandleTabDrop,
-              (MultiContentsDropTargetView::DropSide,
-               TabDragDelegate::DragController&),
+  MOCK_METHOD(bool, CanDrop, (const ui::OSExchangeData& data), (override));
+  MOCK_METHOD(void, OnDragExited, (), (override));
+  MOCK_METHOD(void, OnDragDone, (), (override));
+  MOCK_METHOD(int,
+              OnDragUpdated,
+              (const ui::DropTargetEvent& event),
+              (override));
+  MOCK_METHOD(views::View::DropCallback,
+              GetDropCallback,
+              (const ui::DropTargetEvent& event),
               (override));
 };
 
 class DropTargetViewTest : public ChromeViewsTestBase {
  protected:
-  DropTargetViewTest() : drop_target_view_(drop_delegate_) {
+  DropTargetViewTest() {
+    drop_target_view_.SetDragDelegate(&drag_delegate_);
     drop_target_view_.animation_for_testing().SetSlideDuration(
         base::Seconds(0));
   }
 
   MultiContentsDropTargetView* drop_target_view() { return &drop_target_view_; }
 
-  MockDropDelegate& drop_delegate() { return drop_delegate_; }
+  MockDragDelegate& drag_delegate() { return drag_delegate_; }
 
  private:
-  MockDropDelegate drop_delegate_;
+  MockDragDelegate drag_delegate_;
   MultiContentsDropTargetView drop_target_view_;
 };
 
@@ -132,24 +139,37 @@ TEST_F(DropTargetViewTest, ViewIsOpenedAfterDelay) {
 }
 
 TEST_F(DropTargetViewTest, CanDropURL) {
+  ON_CALL(drag_delegate(), CanDrop(testing::_))
+      .WillByDefault(testing::Return(true));
   ui::OSExchangeData data;
   data.SetURL(GURL("https://www.google.com"), u"Google");
   EXPECT_TRUE(drop_target_view()->CanDrop(data));
 }
 
 TEST_F(DropTargetViewTest, CannotDropNonURL) {
+  ON_CALL(drag_delegate(), CanDrop(testing::_))
+      .WillByDefault(testing::Return(false));
   ui::OSExchangeData data;
   data.SetString(u"Some random string");
   EXPECT_FALSE(drop_target_view()->CanDrop(data));
 }
 
 TEST_F(DropTargetViewTest, CannotDropEmptyURL) {
+  ON_CALL(drag_delegate(), CanDrop(testing::_))
+      .WillByDefault(testing::Return(false));
   ui::OSExchangeData data;
   // An OSExchangeData with no URL data will result in an empty URL list.
   EXPECT_FALSE(drop_target_view()->CanDrop(data));
 }
 
 TEST_F(DropTargetViewTest, GetDropFormats) {
+  ON_CALL(drag_delegate(), GetDropFormats(testing::_, testing::_))
+      .WillByDefault(testing::Invoke(
+          [](int* formats, std::set<ui::ClipboardFormatType>* format_types) {
+            *formats = ui::OSExchangeData::URL;
+            format_types->insert(ui::ClipboardFormatType::UrlType());
+            return true;
+          }));
   int formats = 0;
   std::set<ui::ClipboardFormatType> format_types;
   EXPECT_TRUE(drop_target_view()->GetDropFormats(&formats, &format_types));
@@ -157,37 +177,27 @@ TEST_F(DropTargetViewTest, GetDropFormats) {
 }
 
 TEST_F(DropTargetViewTest, OnDragUpdated) {
+  ON_CALL(drag_delegate(), OnDragUpdated(testing::_))
+      .WillByDefault(testing::Return(ui::DragDropTypes::DRAG_LINK));
   const ui::DropTargetEvent event(ui::OSExchangeData(), gfx::PointF(),
                                   gfx::PointF(), ui::DragDropTypes::DRAG_LINK);
   EXPECT_EQ(ui::DragDropTypes::DRAG_LINK,
             drop_target_view()->OnDragUpdated(event));
 }
 
-TEST_F(DropTargetViewTest, OnDragExitedClosesView) {
+TEST_F(DropTargetViewTest, OnDragExited) {
+  EXPECT_CALL(drag_delegate(), OnDragExited()).Times(1);
   MultiContentsDropTargetView* view = drop_target_view();
-  view->Show(MultiContentsDropTargetView::DropSide::START);
-  ASSERT_TRUE(view->GetVisible());
-
   view->OnDragExited();
-
-  // With zero-duration animation, the view should close and hide immediately.
-  EXPECT_FALSE(view->GetVisible());
-  EXPECT_EQ(view->animation_for_testing().GetCurrentValue(), 0);
 }
 
-TEST_F(DropTargetViewTest, OnDragDoneClosesView) {
+TEST_F(DropTargetViewTest, OnDragDone) {
+  EXPECT_CALL(drag_delegate(), OnDragDone()).Times(1);
   MultiContentsDropTargetView* view = drop_target_view();
-  view->Show(MultiContentsDropTargetView::DropSide::START);
-  ASSERT_TRUE(view->GetVisible());
-
   view->OnDragDone();
-
-  // The view should close and hide immediately.
-  EXPECT_FALSE(view->GetVisible());
-  EXPECT_EQ(view->animation_for_testing().GetCurrentValue(), 0);
 }
 
-TEST_F(DropTargetViewTest, DropCallbackPerformsDropAndCloses) {
+TEST_F(DropTargetViewTest, DropCallback) {
   MultiContentsDropTargetView* view = drop_target_view();
   view->Show(MultiContentsDropTargetView::DropSide::START);
   ASSERT_TRUE(view->GetVisible());
@@ -199,19 +209,9 @@ TEST_F(DropTargetViewTest, DropCallbackPerformsDropAndCloses) {
   const ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
                                   ui::DragDropTypes::DRAG_LINK);
 
-  // Expect the delegate to be called with the correct URL.
-  EXPECT_CALL(drop_delegate(),
-              HandleLinkDrop(MultiContentsDropTargetView::DropSide::START,
-                             testing::ElementsAre(url)));
-
-  // Retrieve and run the drop callback.
+  // The drop target view should request the callback from the delegate.
+  EXPECT_CALL(drag_delegate(), GetDropCallback(testing::_)).Times(1);
   views::View::DropCallback callback = view->GetDropCallback(event);
-  ui::mojom::DragOperation output_op = ui::mojom::DragOperation::kNone;
-  std::unique_ptr<ui::LayerTreeOwner> drag_image;
-  std::move(callback).Run(event, output_op, std::move(drag_image));
-
-  // The view should close after the drop operation.
-  EXPECT_FALSE(view->GetVisible());
 }
 
 TEST_F(DropTargetViewTest, GetPreferredWidth) {
