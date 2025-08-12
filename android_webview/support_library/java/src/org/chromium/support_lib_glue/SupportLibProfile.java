@@ -267,4 +267,12 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
             mProfileImpl.clearAllOriginMatchedHeaders();
         }
     }
+
+    @Override
+    public void preconnect(String url) {
+        recordApiCall(ApiCall.PRECONNECT);
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.PRECONNECT")) {
+            mProfileImpl.preconnect(url);
+        }
+    }
 }
