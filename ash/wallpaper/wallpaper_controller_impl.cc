@@ -120,11 +120,6 @@ constexpr SkColor kDefaultWallpaperColor = SK_ColorGRAY;
 constexpr SkColor kOobeWallpaperColor = SK_ColorWHITE;
 
 // The paths of wallpaper directories.
-base::FilePath& GlobalUserDataDir() {
-  static base::NoDestructor<base::FilePath> dir_user_data;
-  return *dir_user_data;
-}
-
 base::FilePath& GlobalChromeOSWallpapersDir() {
   static base::NoDestructor<base::FilePath> dir_chrome_os_wallpapers;
   return *dir_chrome_os_wallpapers;
@@ -144,11 +139,6 @@ base::FilePath& GlobalChromeOSGooglePhotosWallpapersDir() {
 base::FilePath& GlobalChromeOSSeaPenWallpaperDir() {
   static base::NoDestructor<base::FilePath> dir_chrome_os_sea_pen_wallpaper;
   return *dir_chrome_os_sea_pen_wallpaper;
-}
-
-void SetGlobalUserDataDir(const base::FilePath& path) {
-  base::FilePath& global_path = GlobalUserDataDir();
-  global_path = path;
 }
 
 void SetGlobalChromeOSWallpapersDir(const base::FilePath& path) {
@@ -643,11 +633,9 @@ void WallpaperControllerImpl::SetDriveFsDelegate(
 }
 
 void WallpaperControllerImpl::Init(
-    const base::FilePath& user_data_path,
     const base::FilePath& chromeos_wallpapers_path,
     const base::FilePath& chromeos_custom_wallpapers_path,
     const base::FilePath& device_policy_wallpaper_path) {
-  SetGlobalUserDataDir(user_data_path);
   SetGlobalChromeOSWallpapersDir(chromeos_wallpapers_path);
   SetGlobalChromeOSGooglePhotosWallpapersDir(
       chromeos_wallpapers_path.Append("google_photos/"));

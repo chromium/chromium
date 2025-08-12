@@ -80,7 +80,7 @@ class DemoModeIdleHandlerTestBase : public ChromeAshTestBase {
 
     wallpaper_controller_ = Shell::Get()->wallpaper_controller();
     wallpaper_controller_->Init(
-        base::FilePath(), /*online_wallpaper_dir=*/base::FilePath(),
+        /*online_wallpaper_dir=*/base::FilePath(),
         /* custom_wallpaper_dir=*/user_data_dir_.GetPath(),
         /* policy_wallpaper=*/base::FilePath());
 

@@ -1208,9 +1208,9 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
       Shell::Get()->wallpaper_controller();
   base::ScopedTempDir user_wallpaper_dir;
   ASSERT_TRUE(user_wallpaper_dir.CreateUniqueTempDir());
-  wallpaper_controller->Init(
-      user_wallpaper_dir.GetPath(), user_wallpaper_dir.GetPath(),
-      user_wallpaper_dir.GetPath(), user_wallpaper_dir.GetPath());
+  wallpaper_controller->Init(user_wallpaper_dir.GetPath(),
+                             user_wallpaper_dir.GetPath(),
+                             user_wallpaper_dir.GetPath());
   TestWallpaperControllerClient client;
   wallpaper_controller->SetClient(&client);
   client.set_fake_files_id_for_account_id(kFakeTestAccountId,

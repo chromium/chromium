@@ -365,8 +365,7 @@ void MultiProfileSupportTest::SetUp() {
 
   ChromeAshTestBase::SetUp();
   auto* wallpaper_controller = Shell::Get()->wallpaper_controller();
-  wallpaper_controller->Init(base::FilePath(),
-                             /*online_wallpaper_dir=*/base::FilePath(),
+  wallpaper_controller->Init(/*online_wallpaper_dir=*/base::FilePath(),
                              /* custom_wallpaper_dir=*/user_data_dir_.GetPath(),
                              /* policy_wallpaper=*/base::FilePath());
 

@@ -465,15 +465,13 @@ void WallpaperControllerClientImpl::InitController() {
   wallpaper_controller_->SetDriveFsDelegate(
       std::make_unique<ash::WallpaperDriveFsDelegateImpl>());
 
-  base::FilePath user_data;
-  CHECK(base::PathService::Get(chrome::DIR_USER_DATA, &user_data));
   base::FilePath wallpapers;
   CHECK(base::PathService::Get(chrome::DIR_CHROMEOS_WALLPAPERS, &wallpapers));
   base::FilePath custom_wallpapers;
   CHECK(base::PathService::Get(chrome::DIR_CHROMEOS_CUSTOM_WALLPAPERS,
                                &custom_wallpapers));
   base::FilePath device_policy_wallpaper = GetDeviceWallpaperImageFilePath();
-  wallpaper_controller_->Init(user_data, wallpapers, custom_wallpapers,
+  wallpaper_controller_->Init(wallpapers, custom_wallpapers,
                               device_policy_wallpaper);
 }
 

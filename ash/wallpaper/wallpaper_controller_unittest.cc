@@ -593,7 +593,7 @@ class WallpaperControllerTestBase : public NoSessionAshTestBase {
     ASSERT_TRUE(online_wallpaper_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(custom_wallpaper_dir_.CreateUniqueTempDir());
     base::FilePath policy_wallpaper;
-    controller_->Init(user_data_dir_.GetPath(), online_wallpaper_dir_.GetPath(),
+    controller_->Init(online_wallpaper_dir_.GetPath(),
                       custom_wallpaper_dir_.GetPath(), policy_wallpaper);
     client_.ResetCounts();
     controller_->SetClient(&client_);
@@ -1104,7 +1104,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(WallpaperControllerTest, Client) {
   SimulateUserLogin(kAccountId1);
   base::FilePath empty_path;
-  controller_->Init(empty_path, empty_path, empty_path, empty_path);
+  controller_->Init(empty_path, empty_path, empty_path);
 
   EXPECT_EQ(0u, client_.open_count());
   controller_->OpenWallpaperPickerIfAllowed();

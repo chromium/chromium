@@ -67,7 +67,6 @@ void TestWallpaperController::SetDriveFsDelegate(
 }
 
 void TestWallpaperController::Init(
-    const base::FilePath& user_data,
     const base::FilePath& wallpapers,
     const base::FilePath& custom_wallpapers,
     const base::FilePath& device_policy_wallpaper) {
