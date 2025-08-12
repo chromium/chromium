@@ -25,6 +25,17 @@
     #plusAddressSettingsButton {
       margin-top: 16px;
     }
+
+    .dropdown-item.external-link-style {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .dropdown-item.external-link-style cr-icon {
+      --cr-icon-color: var(--cr-secondary-text-color);
+    }
   </style>
   <settings-subpage page-title="$i18n{addressesTitle}"
       learn-more-url="$i18n{addressesAndPaymentMethodsLearnMoreURL}">
@@ -100,14 +111,14 @@
     </div>
     <cr-action-menu id="addressSharedMenu" role-description="$i18n{menu}">
       <template is="dom-if" if="[[isHomeOrWorkAddress]]" restamp>
-        <cr-link-row
+        <button
             id="menuEditAddress"
-            class="dropdown-item"
-            label="$i18n{edit}"
+            class="dropdown-item external-link-style"
             on-click="onMenuEditAddressClick_"
-            role-description="$i18n{homeWorkAddressAccessiblityLabel}"
-            external>
-        </cr-link-row>
+            role-description="$i18n{homeWorkAddressAccessiblityLabel}">
+          <span class="label">$i18n{edit}</span>
+          <cr-icon icon="cr:open-in-new" aria-hidden="true"></cr-icon>
+        </button>
 
         <button id="menuRemoveAddress"
             class="dropdown-item"
