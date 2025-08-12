@@ -173,10 +173,12 @@ void RemoveAllExistingProfiles(AddressDataManager& adm) {
 void SetData(
     base::WeakPtr<PersonalDataManager> pdm,
     std::optional<AutofillProfilesAndCreditCards> profiles_or_credit_cards) {
-  LOG_IF(ERROR, !profiles_or_credit_cards.has_value() ||
-                    !profiles_or_credit_cards->profiles.has_value() ||
-                    !profiles_or_credit_cards->credit_cards.has_value())
-      << "The provided JSON import data is incorrect.";
+  if (!profiles_or_credit_cards.has_value() ||
+      !profiles_or_credit_cards->profiles.has_value() ||
+      !profiles_or_credit_cards->credit_cards.has_value()) {
+    LOG(ERROR) << "The provided JSON import data is incorrect.";
+    return;
+  }
   if (pdm == nullptr) {
     return;
   }
