@@ -97,23 +97,29 @@ void GlicZeroStateSuggestionsManager::
     pause_pinned_subscription_updates_ = false;
   }
 
+  // Also include the focused tab if there is one.
+  FocusedTabData focused_tab_data = sharing_manager_->GetFocusedTabData();
+  content::WebContents* active_web_contents =
+      focused_tab_data.focus() ? focused_tab_data.focus()->GetContents()
+                               : nullptr;
+  std::vector<content::WebContents*> contents_for_request = pinned_tab_data;
+  if (active_web_contents &&
+      !Contains(contents_for_request, active_web_contents)) {
+    contents_for_request.push_back(active_web_contents);
+  }
+
   if (contextual_cueing_service_) {
     // Debounce if we already have an outstanding request for the same set.
     std::optional<std::vector<content::WebContents*>>
         outstanding_pinned_tabs_contents =
             contextual_cueing_service_->GetOutstandingPinnedTabsContents();
     if (outstanding_pinned_tabs_contents &&
-        outstanding_pinned_tabs_contents->size() == pinned_tab_data.size()) {
-      // Check if they are the same.
-      bool all_matches = true;
-      for (size_t i = 0; i < pinned_tab_data.size(); i++) {
-        if (outstanding_pinned_tabs_contents->at(i) != pinned_tab_data[i]) {
-          all_matches = false;
-        }
-      }
-      if (all_matches) {
-        return;
-      }
+        outstanding_pinned_tabs_contents->size() ==
+            contents_for_request.size() &&
+        std::equal(outstanding_pinned_tabs_contents->begin(),
+                   outstanding_pinned_tabs_contents->end(),
+                   contents_for_request.begin())) {
+      return;
     }
 
     // Notify host that suggestions are pending in case there were suggestions
@@ -122,14 +128,10 @@ void GlicZeroStateSuggestionsManager::
         MakePendingSuggestionsPtr(),
         mojom::ZeroStateSuggestionsOptions(is_first_run, supported_tools));
 
-    FocusedTabData focused_tab_data = sharing_manager_->GetFocusedTabData();
-    content::WebContents* active_web_contents =
-        focused_tab_data.focus() ? focused_tab_data.focus()->GetContents()
-                                 : nullptr;
     bool suggestions_pending =
         contextual_cueing_service_
             ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
-                pinned_tab_data, is_first_run, supported_tools,
+                contents_for_request, is_first_run, supported_tools,
                 active_web_contents,
                 mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                     base::BindOnce(&GlicZeroStateSuggestionsManager::
