@@ -647,9 +647,9 @@ TEST_F(ExtensionContextMenuModelTest,
   }
 }
 
-TEST_F(ExtensionContextMenuModelTest,
-       ExtensionContextMenuOptionsEntryVisibility) {
+TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuOptionsEntry) {
   InitializeEmptyExtensionService();
+  AddTab(GURL("about:blank"));
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
@@ -684,6 +684,16 @@ TEST_F(ExtensionContextMenuModelTest,
                                    ContextMenuSource::kToolbarAction);
     EXPECT_EQ(GetCommandState(menu, ExtensionContextMenuModel::OPTIONS),
               CommandState::kEnabled);
+
+    // Verify the option page is opened when the command is executed.
+    menu.ExecuteCommand(ExtensionContextMenuModel::OPTIONS, 0);
+    // Test web contents need a poke to commit.
+    content::WebContents* web_contents =
+        GetBrowser()->tab_strip_model()->GetActiveWebContents();
+    content::NavigationController& controller = web_contents->GetController();
+    content::RenderFrameHostTester::CommitPendingLoad(&controller);
+    EXPECT_EQ(OptionsPageInfo::GetOptionsPage(extension_with_options.get()),
+              web_contents->GetLastCommittedURL());
   }
 }
 
