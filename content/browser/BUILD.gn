@@ -1629,6 +1629,8 @@ source_set("browser") {
     "preloading/prefetch/prefetch_serving_handle.h",
     "preloading/prefetch/prefetch_serving_page_metrics_container.cc",
     "preloading/prefetch/prefetch_serving_page_metrics_container.h",
+    "preloading/prefetch/prefetch_single_redirect_hop.cc",
+    "preloading/prefetch/prefetch_single_redirect_hop.h",
     "preloading/prefetch/prefetch_status.h",
     "preloading/prefetch/prefetch_streaming_url_loader.cc",
     "preloading/prefetch/prefetch_streaming_url_loader.h",

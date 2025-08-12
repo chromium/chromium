@@ -50,6 +50,7 @@ class PrefetchNetworkContext;
 class PrefetchResponseReader;
 class PrefetchService;
 class PrefetchServingPageMetricsContainer;
+class PrefetchSingleRedirectHop;
 class PrefetchStreamingURLLoader;
 class PreloadingAttempt;
 class ProxyLookupClientImpl;
@@ -72,24 +73,26 @@ struct PrefetchResponseSizes {
 
 // This class contains the state for a request to prefetch a specific URL.
 //
-// A `PrefetchContainer` can have multiple `PrefetchContainer::SinglePrefetch`es
-// and `PrefetchStreamingURLLoader`s to support redirects. Each
-// `PrefetchContainer::SinglePrefetch` in `redirect_chain_` corresponds to a
-// single redirect hop, while a single `PrefetchStreamingURLLoader` can receive
-// multiple redirect hops unless network context switching is needed.
+// A `PrefetchContainer` can have multiple
+// `PrefetchSingleRedirectHop`s and `PrefetchStreamingURLLoader`s to
+// support redirects. Each `PrefetchSingleRedirectHop` in
+// `redirect_chain_` corresponds to a single redirect hop, while a single
+// `PrefetchStreamingURLLoader` can receive multiple redirect hops unless
+// network context switching is needed.
 //
 // For example:
 //
 // |PrefetchStreamingURLLoader A-----| |PrefetchStreamingURLLoader B ---------|
 // HandleRedirect  - HandleRedirect  - HandleRedirect  - ReceiveResponse-Finish
-// |SinglePrefetch0| |SinglePrefetch1| |SinglePrefetch2| |SinglePrefetch3-----|
+// |S.RedirectHop0-| |S.RedirectHop1-| |S.RedirectHop2-| |S.RedirectHop3------|
 //
 // While prefetching (see methods named like "ForCurrentPrefetch" or
-// "ToPrefetch"), `SinglePrefetch`es and `PrefetchStreamingURLLoader`s (among
-// other members) are added and filled. The steps for creating these objects and
-// associating with each other span multiple classes/methods:
+// "ToPrefetch"), `PrefetchSingleRedirectHop`es and
+// `PrefetchStreamingURLLoader`s (among other members) are added and filled. The
+// steps for creating these objects and associating with each other span
+// multiple classes/methods:
 //
-// 1. A new `PrefetchContainer::SinglePrefetch` and thus a new
+// 1. A new `PrefetchSingleRedirectHop` and thus a new
 // `PrefetchResponseReader` is created and added to `redirect_chain_`.
 // This is done either in:
 // - `PrefetchContainer` constructor [for an initial request], or
@@ -451,7 +454,7 @@ class CONTENT_EXPORT PrefetchContainer {
   void MarkCrossSiteContaminated();
 
   // Allows for |PrefetchCookieListener|s to be reigsitered for
-  // `GetCurrentSinglePrefetchToPrefetch()`.
+  // `GetCurrentSingleRedirectHopToPrefetch()`.
   void RegisterCookieListener(network::mojom::CookieManager* cookie_manager);
   void PauseAllCookieListeners();
   void ResumeAllCookieListeners();
@@ -606,12 +609,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // & started).
   void OnPrefetchStarted();
 
-  class SinglePrefetch;
-
   // A `Reader` represents the current state of serving.
   // The `Reader` methods all operate on the currently *serving*
-  // `SinglePrefetch`, which is the element in |redirect_chain_| at index
-  // |index_redirect_chain_to_serve_|.
+  // `PrefetchSingleRedirectHop`, which is the element in |redirect_chain_| at
+  // index |index_redirect_chain_to_serve_|.
   //
   // This works like `base::WeakPtr<PrefetchContainer>` plus additional states,
   // so check that the reader is valid (e.g. `if (reader)`) before calling other
@@ -651,7 +652,8 @@ class CONTENT_EXPORT PrefetchContainer {
     PrefetchStatus GetPrefetchStatus() const;
 
     // Returns whether the Reader reached the end. If true, the methods below
-    // shouldn't be called, because the current `SinglePrefetch` doesn't exist.
+    // shouldn't be called, because the current `PrefetchSingleRedirectHop`
+    // doesn't exist.
     bool IsEnd() const;
 
     // Whether or not an isolated network context is required to serve.
@@ -692,16 +694,16 @@ class CONTENT_EXPORT PrefetchContainer {
     // element can now be served.
     void AdvanceCurrentURLToServe() { index_redirect_chain_to_serve_++; }
 
-    // Returns the `SinglePrefetch` to be served next.
-    const SinglePrefetch& GetCurrentSinglePrefetchToServe() const;
+    // Returns the `PrefetchSingleRedirectHop` to be served next.
+    const PrefetchSingleRedirectHop& GetCurrentSingleRedirectHopToServe() const;
 
     // See the comment for `PrefetchResponseReader::CreateRequestHandler()`.
     std::pair<PrefetchRequestHandler, base::WeakPtr<ServiceWorkerClient>>
     CreateRequestHandler();
 
     // See the corresponding functions on `PrefetchResponseReader`.
-    // These apply to the current `SinglePrefetch` (and so, may change as the
-    // prefetch advances through a redirect change).
+    // These apply to the current `PrefetchSingleRedirectHop` (and so, may
+    // change as the prefetch advances through a redirect change).
     bool VariesOnCookieIndices() const;
     bool MatchesCookieIndices(
         base::span<const std::pair<std::string, std::string>> cookies) const;
@@ -853,16 +855,17 @@ class CONTENT_EXPORT PrefetchContainer {
   // Add X-Client-Data request header to a request.
   void AddXClientDataHeader(network::ResourceRequest& request);
 
-  // Returns the `SinglePrefetch` to be prefetched next. This is the last
-  // element in `redirect_chain_`, because, during prefetching from the network,
-  // we push back `SinglePrefetch`s to `redirect_chain_` and access the latest
-  // redirect hop.
-  SinglePrefetch& GetCurrentSinglePrefetchToPrefetch() const;
+  // Returns the `PrefetchSingleRedirectHop` to be prefetched next.
+  // This is the last element in `redirect_chain_`, because, during prefetching
+  // from the network, we push back `PrefetchSingleRedirectHop`s to
+  // `redirect_chain_` and access the latest redirect hop.
+  PrefetchSingleRedirectHop& GetCurrentSingleRedirectHopToPrefetch() const;
 
-  // Returns the `SinglePrefetch` for the redirect leg before
-  // `GetCurrentSinglePrefetchToPrefetch()`. This must be called only if `this`
-  // has redirect(s).
-  const SinglePrefetch& GetPreviousSinglePrefetchToPrefetch() const;
+  // Returns the `PrefetchSingleRedirectHop` for the redirect leg
+  // before `GetCurrentSingleRedirectHopToPrefetch()`. This must be called only
+  // if `this` has redirect(s).
+  const PrefetchSingleRedirectHop& GetPreviousSingleRedirectHopToPrefetch()
+      const;
 
   // Returns "Sec-Purpose" header value for a prefetch request to `request_url`.
   const char* GetSecPurposeHeaderValue(const GURL& request_url) const;
@@ -990,7 +993,7 @@ class CONTENT_EXPORT PrefetchContainer {
   bool is_decoy_ = false;
 
   // The redirect chain resulting from prefetching |GetURL()|.
-  std::vector<std::unique_ptr<SinglePrefetch>> redirect_chain_;
+  std::vector<std::unique_ptr<PrefetchSingleRedirectHop>> redirect_chain_;
 
   // The network contexts used for this prefetch. They key corresponds to the
   // |is_isolated_network_context_required| param of the
