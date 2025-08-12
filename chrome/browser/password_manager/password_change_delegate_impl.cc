@@ -227,10 +227,18 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
       originator_, client,
       base::BindOnce(&PasswordChangeDelegateImpl::OnOtpNotFound,
                      weak_ptr_factory_.GetWeakPtr()));
+  // Don't show the dialog and don't start the flow if user navigates to a
+  // different site instead of entering otp.
+  navigation_observer_ = std::make_unique<CrossOriginNavigationObserver>(
+      originator_.get(), AffiliationServiceFactory::GetForProfile(profile_),
+      base::BindOnce(
+          &PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PasswordChangeDelegateImpl::OnOtpNotFound() {
   otp_detection_.reset();
+  navigation_observer_.reset();
 
   if (auto logger = GetLoggerIfAvailable(originator_)) {
     logger->LogMessage(BrowserSavePasswordProgressLogger::
