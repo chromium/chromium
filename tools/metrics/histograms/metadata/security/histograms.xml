@@ -528,7 +528,7 @@ chromium-metrics-reviews@google.com.
   <owner>lyf@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>jdeblasio@chromium.org</owner>
-  <owner>src/chrome/browser/private_network_access/OWNERS</owner>
+  <owner>src/chrome/browser/local_network_access/OWNERS</owner>
   <summary>
     Result of the Private Network Access Check on a new connection. Recorded
     once per call to network::URLLoader::OnConnected(), which may be more than
@@ -543,7 +543,7 @@ chromium-metrics-reviews@google.com.
   <owner>clamy@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>jdeblasio@chromium.org</owner>
-  <owner>src/chrome/browser/private_network_access/OWNERS</owner>
+  <owner>src/chrome/browser/local_network_access/OWNERS</owner>
   <summary>
     The device validity when calling Private Network Permission Prompt. Recorded
     once per call for Private Network Access device chooser, which may be more
@@ -558,7 +558,7 @@ chromium-metrics-reviews@google.com.
   <owner>clamy@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>jdeblasio@chromium.org</owner>
-  <owner>src/chrome/browser/private_network_access/OWNERS</owner>
+  <owner>src/chrome/browser/local_network_access/OWNERS</owner>
   <summary>
     The device type of a user accepted request to Private Network device. The
     device is stored permenantly when it has valid name and ID. Otherwise, the
@@ -573,7 +573,7 @@ chromium-metrics-reviews@google.com.
   <owner>clamy@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>jdeblasio@chromium.org</owner>
-  <owner>src/chrome/browser/private_network_access/OWNERS</owner>
+  <owner>src/chrome/browser/local_network_access/OWNERS</owner>
   <summary>
     Records whether a failed PNA check could have been avoided by inferring the
     request's target IP address space by recognizing that the request URL's host
@@ -588,7 +588,7 @@ chromium-metrics-reviews@google.com.
   <owner>clamy@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>jdeblasio@chromium.org</owner>
-  <owner>src/chrome/browser/private_network_access/OWNERS</owner>
+  <owner>src/chrome/browser/local_network_access/OWNERS</owner>
   <summary>
     Records whether a request to a literal private IP address resolved to that
     private IP address. Recorded at most once per call to

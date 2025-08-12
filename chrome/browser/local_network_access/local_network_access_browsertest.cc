@@ -35,13 +35,13 @@ constexpr char kLnaPath[] =
     "?Access-Control-Allow-Origin: *";
 
 constexpr char kWorkerHtmlPath[] =
-    "/private_network_access/fetch-from-worker-as-public-address.html";
+    "/local_network_access/fetch-from-worker-as-public-address.html";
 
 constexpr char kSharedWorkerHtmlPath[] =
-    "/private_network_access/fetch-from-shared-worker-as-public-address.html";
+    "/local_network_access/fetch-from-shared-worker-as-public-address.html";
 
 constexpr char kServiceWorkerHtmlPath[] =
-    "/private_network_access/fetch-from-service-worker-as-public-address.html";
+    "/local_network_access/fetch-from-service-worker-as-public-address.html";
 
 class LocalNetworkAccessBrowserTest : public policy::PolicyTest {
  public:
@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, FetchDenyPermission) {
       web_contents(),
       https_server().GetURL(
           "a.com",
-          "/private_network_access/no-favicon-treat-as-public-address.html")));
+          "/local_network_access/no-favicon-treat-as-public-address.html")));
 
   // Enable auto-denial of LNA permission request.
   bubble_factory()->set_response_type(
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, FetchAcceptPermission) {
       web_contents(),
       https_server().GetURL(
           "a.com",
-          "/private_network_access/no-favicon-treat-as-public-address.html")));
+          "/local_network_access/no-favicon-treat-as-public-address.html")));
 
   // Enable auto-accept of LNA permission request.
   bubble_factory()->set_response_type(
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, IframeDenyPermission) {
       web_contents(),
       https_server().GetURL(
           "a.com",
-          "/private_network_access/no-favicon-treat-as-public-address.html")));
+          "/local_network_access/no-favicon-treat-as-public-address.html")));
 
   // Enable auto-denial of LNA permission request.
   bubble_factory()->set_response_type(
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, IframeAcceptPermission) {
       web_contents(),
       https_server().GetURL(
           "a.com",
-          "/private_network_access/no-favicon-treat-as-public-address.html")));
+          "/local_network_access/no-favicon-treat-as-public-address.html")));
 
   // Enable auto-accept of LNA permission request.
   bubble_factory()->set_response_type(
@@ -403,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
       web_contents(),
       https_server().GetURL(
           "a.com",
-          "/private_network_access/no-favicon-treat-as-public-address.html")));
+          "/local_network_access/no-favicon-treat-as-public-address.html")));
 
   // Enable auto-denial of LNA permission request.
   bubble_factory()->set_response_type(
@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
       web_contents(),
       https_server().GetURL(
           "a.com",
-          "/private_network_access/no-favicon-treat-as-public-address.html")));
+          "/local_network_access/no-favicon-treat-as-public-address.html")));
 
   // LNA fetch fails due to mismatched targetAddressSpace. Result doesn't matter
   // here though, as we're just checking a use counter that doesn't depend on
@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
       web_contents(),
       https_server().GetURL(
           "a.com",
-          "/private_network_access/no-favicon-treat-as-public-address.html")));
+          "/local_network_access/no-favicon-treat-as-public-address.html")));
 
   // LNA fetch fails due to mismatched targetAddressSpace. Result doesn't matter
   // here though, as we're just checking a use counter that doesn't depend on
@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
       web_contents(),
       https_server().GetURL(
           "a.com",
-          "/private_network_access/no-favicon-treat-as-public-address.html")));
+          "/local_network_access/no-favicon-treat-as-public-address.html")));
 
   // LNA fetch should pass.
   ASSERT_EQ(true,
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
       web_contents(),
       https_server().GetURL(
           "a.com",
-          "/private_network_access/no-favicon-treat-as-public-address.html")));
+          "/local_network_access/no-favicon-treat-as-public-address.html")));
 
   // Enable auto-accept of LNA permission request, although it should not be
   // checked.
@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserHttpCommandLineOverrideTest,
       web_contents(),
       embedded_test_server()->GetURL(
           "a.com",
-          "/private_network_access/no-favicon-treat-as-public-address.html")));
+          "/local_network_access/no-favicon-treat-as-public-address.html")));
 
   // LNA fetch should pass.
   ASSERT_EQ(true,
@@ -583,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserHttpPolicyOverrideTest,
       web_contents(),
       embedded_test_server()->GetURL(
           "a.com",
-          "/private_network_access/no-favicon-treat-as-public-address.html")));
+          "/local_network_access/no-favicon-treat-as-public-address.html")));
 
   // LNA fetch should pass.
   ASSERT_EQ(true,

@@ -35,7 +35,7 @@ bool DeprecationTrialURLLoaderInterceptor::HandleRequest(
     // from using this interceptor for browser tests and use a library function
     // like in https://crbug.com/40860522#comment8.
     URLLoaderInterceptor::WriteResponse(
-        "chrome/test/data/private_network_access/"
+        "chrome/test/data/local_network_access/"
         "fetch-from-worker-as-public-address.js",
         request_params->client.get());
     return true;
@@ -62,7 +62,7 @@ void DeprecationTrialURLLoaderInterceptor::HandleEnabledHttpUrlRequest(
       "Content-Type: text/html\n"  //
       // Use CSP to make the page `public`, even though it is served with no
       // IP address information. Without this it is treated as `unknown`, and
-      // that interferes with its private network request policy.
+      // that interferes with its local network request policy.
       "Content-Security-Policy: treat-as-public-address\n"  //
       // This token was generated using:
       //
@@ -81,7 +81,7 @@ void DeprecationTrialURLLoaderInterceptor::HandleEnabledHttpUrlRequest(
       "\n\n";
   if (use_worker_html) {
     URLLoaderInterceptor::WriteResponse(
-        "chrome/test/data/private_network_access/"
+        "chrome/test/data/local_network_access/"
         "fetch-from-worker-as-public-address.html",
         request_params.client.get(), &headers);
   } else {
@@ -97,7 +97,7 @@ void DeprecationTrialURLLoaderInterceptor::HandleEnabledHttpsUrlRequest(
       "Content-Type: text/html\n"  //
       // Use CSP to make the page `public`, even though it is served with no
       // IP address information. Without this it is treated as `unknown`, and
-      // that interferes with its private network request policy.
+      // that interferes with its local network request policy.
       "Content-Security-Policy: treat-as-public-address\n"  //
       // This token was generated using:
       //
