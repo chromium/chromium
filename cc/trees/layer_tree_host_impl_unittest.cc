@@ -19516,9 +19516,8 @@ TEST_P(LayerTreeHostImplTest, FlingSnapStrategyCurrentOffset) {
       &target_offset);
   EXPECT_EQ(handler.snap_strategy_for_testing()->current_position(),
             initial_offset);
-  // Expect to snap to snap_area_2.
   EXPECT_EQ(handler.snap_strategy_for_testing()->intended_position(),
-            target_offset);
+            initial_offset);
 
   // Do an inertial phase scroll update.
   auto scroll_update_state =
@@ -19526,12 +19525,11 @@ TEST_P(LayerTreeHostImplTest, FlingSnapStrategyCurrentOffset) {
   scroll_update_state.set_is_in_inertial_phase(true);
   handler.ScrollUpdate(scroll_update_state);
 
-  // Still be aware that the snap strategy should be based on the final snap
-  // position, despite the scroll update's delta being only 100px.
+  // Be aware that the snap strategy should be based on the current position.
   EXPECT_EQ(handler.snap_strategy_for_testing()->current_position(),
-            initial_offset);
+            initial_offset + gfx::Vector2dF(0, 100));
   EXPECT_EQ(handler.snap_strategy_for_testing()->intended_position(),
-            target_offset);
+            initial_offset + gfx::Vector2dF(0, 100));
 
   // Test that a new snap strategy is created at the end of an inertial scroll.
   const auto* old_snap_strategy = handler.snap_strategy_for_testing().get();

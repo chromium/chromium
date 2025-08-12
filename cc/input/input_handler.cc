@@ -1064,7 +1064,6 @@ bool InputHandler::GetSnapFlingInfoAndSetAnimatingSnapTarget(
       return false;
     }
   }
-  snap_strategy_ = std::move(strategy);
 
   *out_initial_position = current_offset;
   *out_target_position = snap.position;
@@ -2030,7 +2029,7 @@ void InputHandler::ScrollLatchedScroller(ScrollState& scroll_state,
   did_scroll_x_for_scroll_gesture_ |= scroll_state.caused_scroll_x();
   did_scroll_y_for_scroll_gesture_ |= scroll_state.caused_scroll_y();
 
-  if (snap_strategy_offset && !scroll_state.is_in_inertial_phase()) {
+  if (snap_strategy_offset) {
     // We use |last_scroll_update_state_| instead of |scroll_state| as that more
     // closely matches what InputHandler::SnapAtScrollend would use.
     //
