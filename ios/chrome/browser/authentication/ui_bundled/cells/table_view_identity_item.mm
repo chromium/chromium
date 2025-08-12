@@ -32,6 +32,20 @@
 - (void)configureCell:(TableViewIdentityCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
+  [self configureCell:cell completion:nil];
+}
+
+- (void)configureCell:(TableViewIdentityCell*)cell
+           withStyler:(ChromeTableViewStyler*)styler
+           completion:(ProceduralBlock)completion {
+  [super configureCell:cell withStyler:styler];
+  [self configureCell:cell completion:completion];
+}
+
+#pragma mark - Private
+
+- (void)configureCell:(TableViewIdentityCell*)cell
+           completion:(ProceduralBlock)completion {
   NSString* title = self.name;
   NSString* subtitle = self.email;
   if (!title.length) {
@@ -60,7 +74,8 @@
                        checked:self.selected
                        managed:self.managed
              identityViewStyle:self.identityViewStyle
-                    titleColor:[UIColor colorNamed:kTextPrimaryColor]];
+                    titleColor:[UIColor colorNamed:kTextPrimaryColor]
+                    completion:completion];
 }
 
 @end

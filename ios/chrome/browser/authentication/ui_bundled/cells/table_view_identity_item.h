@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/views_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
@@ -27,6 +28,11 @@
 @property(nonatomic, assign) BOOL managed;
 // Style for the IdentityView.
 @property(nonatomic, assign) IdentityViewStyle identityViewStyle;
+
+// Same as `configureCell:withStyler:` with a completion block.
+- (void)configureCell:(UITableViewCell*)cell
+           withStyler:(ChromeTableViewStyler*)styler
+           completion:(ProceduralBlock)completion;
 
 @end
 

@@ -6,8 +6,10 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/ios/block_types.h"
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_cell.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_table_view_controller_action_delegate.h"
@@ -80,9 +82,58 @@ CGFloat kSectionFooterHeight = 8.;
       DCHECK(identityItem);
       base::RecordAction(base::UserMetricsAction(
           "Signin_BottomSheet_IdentityChooser_Selected"));
-      [self.actionDelegate
-          consistencyAccountChooserTableViewController:self
-                           didSelectIdentityWithGaiaID:identityItem.gaiaID];
+
+      // Find index of the previously selected identity.
+      NSIndexPath* previousIndexPath = nil;
+      NSInteger section = [self.tableViewModel
+          sectionForSectionIdentifier:IdentitySectionIdentifier];
+      for (int i = 0; i < [self.tableViewModel numberOfItemsInSection:section];
+           i++) {
+        NSIndexPath* path = [NSIndexPath indexPathForRow:i inSection:section];
+        TableViewIdentityItem* currentItem =
+            base::apple::ObjCCastStrict<TableViewIdentityItem>(
+                [self.tableViewModel itemAtIndexPath:path]);
+        if (currentItem.selected) {
+          previousIndexPath = path;
+          break;
+        }
+      }
+
+      // Deselect the previous identity and update the cell.
+      if (previousIndexPath) {
+        TableViewIdentityItem* previousIdentityItem =
+            base::apple::ObjCCastStrict<TableViewIdentityItem>(
+                [self.tableViewModel itemAtIndexPath:previousIndexPath]);
+        previousIdentityItem.selected = NO;
+        TableViewCell* oldCell =
+            [self.tableView cellForRowAtIndexPath:previousIndexPath];
+        if (oldCell) {
+          [previousIdentityItem configureCell:oldCell withStyler:self.styler];
+        }
+      }
+
+      // Select the new identity and update the cell.
+      identityItem.selected = YES;
+      TableViewCell* newCell = [self.tableView cellForRowAtIndexPath:indexPath];
+      __weak ConsistencyAccountChooserTableViewController* weakSelf = self;
+      ProceduralBlock completionBlock = ^{
+        ConsistencyAccountChooserTableViewController* strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        [strongSelf.actionDelegate
+            consistencyAccountChooserTableViewController:strongSelf
+                             didSelectIdentityWithGaiaID:identityItem.gaiaID];
+      };
+      if (newCell) {
+        [identityItem configureCell:newCell
+                         withStyler:self.styler
+                         completion:completionBlock];
+      } else {
+        // The cell is not visible, so the animation will not be seen.
+        // The completion can be called immediately.
+        completionBlock();
+      }
       break;
     }
     case AddAccountItemType:

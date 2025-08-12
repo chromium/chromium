@@ -79,6 +79,8 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
   if ([SigninEarlGrey isSignedOut]) {
     // First tap the "Continue as ..." button in the signin bottom sheet.
     [ChromeEarlGreyUI waitForAppToIdle];
+    [ChromeEarlGrey
+        waitForMatcher:chrome_test_util::WebSigninPrimaryButtonMatcher()];
     [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                             WebSigninPrimaryButtonMatcher()]
         performAction:grey_tap()];

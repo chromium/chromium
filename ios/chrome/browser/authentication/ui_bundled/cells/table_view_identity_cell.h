@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/views_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
 
@@ -32,6 +33,18 @@
                        managed:(BOOL)managed
              identityViewStyle:(IdentityViewStyle)identityViewStyle
                     titleColor:(UIColor*)titleColor;
+
+// Same as
+// `configureCellWithTitle:subtitle:image:checked:managed:identityViewStyle:titleColor:`
+// with a completion block executed when the animation is finished.
+- (void)configureCellWithTitle:(NSString*)title
+                      subtitle:(NSString*)subtitle
+                         image:(UIImage*)image
+                       checked:(BOOL)checked
+                       managed:(BOOL)managed
+             identityViewStyle:(IdentityViewStyle)identityViewStyle
+                    titleColor:(UIColor*)titleColor
+                    completion:(ProceduralBlock)completion;
 
 @end
 
