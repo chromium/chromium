@@ -783,6 +783,8 @@ class CONTENT_EXPORT PrefetchContainer {
   // redirects.
   void OnInitialPrefetchFailedIneligible(PreloadingEligibility eligibility);
 
+  std::string GetMetricsSuffix() const;
+
   // Record `prefetch_status` to UMA if it hasn't already been recorded for this
   // container.
   // Note: We use a parameter instead of just `prefetch_status_` as it may not

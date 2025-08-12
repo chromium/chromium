@@ -1870,6 +1870,11 @@ PrefetchContainer::MakeSelfOwnedNetworkServiceDevToolsObserver() {
   return NetworkServiceDevToolsObserver::MakeSelfOwned(ftn);
 }
 
+std::string PrefetchContainer::GetMetricsSuffix() const {
+  return GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type_,
+                                                 embedder_histogram_suffix_);
+}
+
 void PrefetchContainer::MaybeRecordPrefetchStatusToUMA(
     PrefetchStatus prefetch_status) {
   if (prefetch_status_recorded_to_uma_) {
@@ -1908,8 +1913,7 @@ void PrefetchContainer::RecordPrefetchDurationHistogram() {
   base::UmaHistogramTimes(
       base::StrCat({
           "Prefetch.PrefetchContainer.AddedToInitialEligibility.",
-          GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type_,
-                                                  embedder_histogram_suffix_),
+          GetMetricsSuffix(),
       }),
       time_initial_eligibility_got_.value() -
           time_added_to_prefetch_service_.value());
@@ -1921,16 +1925,14 @@ void PrefetchContainer::RecordPrefetchDurationHistogram() {
   base::UmaHistogramTimes(
       base::StrCat({
           "Prefetch.PrefetchContainer.AddedToPrefetchStarted.",
-          GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type_,
-                                                  embedder_histogram_suffix_),
+          GetMetricsSuffix(),
       }),
       time_prefetch_started_.value() - time_added_to_prefetch_service_.value());
 
   base::UmaHistogramTimes(
       base::StrCat({
           "Prefetch.PrefetchContainer.InitialEligibilityToPrefetchStarted.",
-          GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type_,
-                                                  embedder_histogram_suffix_),
+          GetMetricsSuffix(),
       }),
       time_prefetch_started_.value() - time_initial_eligibility_got_.value());
 
@@ -1941,8 +1943,7 @@ void PrefetchContainer::RecordPrefetchDurationHistogram() {
   base::UmaHistogramTimes(base::StrCat({
                               "Prefetch.PrefetchContainer."
                               "AddedToURLRequestStarted.",
-                              GetMetricsSuffixTriggerTypeAndEagerness(
-                                  prefetch_type_, embedder_histogram_suffix_),
+                              GetMetricsSuffix(),
                           }),
                           time_url_request_started_.value() -
                               time_added_to_prefetch_service_.value());
@@ -1950,8 +1951,7 @@ void PrefetchContainer::RecordPrefetchDurationHistogram() {
   base::UmaHistogramTimes(
       base::StrCat({
           "Prefetch.PrefetchContainer.PrefetchStartedToURLRequestStarted.",
-          GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type_,
-                                                  embedder_histogram_suffix_),
+          GetMetricsSuffix(),
       }),
       time_url_request_started_.value() - time_prefetch_started_.value());
 
@@ -1962,8 +1962,7 @@ void PrefetchContainer::RecordPrefetchDurationHistogram() {
   base::UmaHistogramTimes(base::StrCat({
                               "Prefetch.PrefetchContainer."
                               "AddedToHeaderDeterminedSuccessfully.",
-                              GetMetricsSuffixTriggerTypeAndEagerness(
-                                  prefetch_type_, embedder_histogram_suffix_),
+                              GetMetricsSuffix(),
                           }),
                           time_header_determined_successfully_.value() -
                               time_added_to_prefetch_service_.value());
@@ -1971,8 +1970,7 @@ void PrefetchContainer::RecordPrefetchDurationHistogram() {
   base::UmaHistogramTimes(base::StrCat({
                               "Prefetch.PrefetchContainer."
                               "PrefetchStartedToHeaderDeterminedSuccessfully.",
-                              GetMetricsSuffixTriggerTypeAndEagerness(
-                                  prefetch_type_, embedder_histogram_suffix_),
+                              GetMetricsSuffix(),
                           }),
                           time_header_determined_successfully_.value() -
                               time_prefetch_started_.value());
@@ -1984,8 +1982,7 @@ void PrefetchContainer::RecordPrefetchDurationHistogram() {
   base::UmaHistogramTimes(base::StrCat({
                               "Prefetch.PrefetchContainer."
                               "AddedToPrefetchCompletedSuccessfully.",
-                              GetMetricsSuffixTriggerTypeAndEagerness(
-                                  prefetch_type_, embedder_histogram_suffix_),
+                              GetMetricsSuffix(),
                           }),
                           time_prefetch_completed_successfully_.value() -
                               time_added_to_prefetch_service_.value());
@@ -1993,8 +1990,7 @@ void PrefetchContainer::RecordPrefetchDurationHistogram() {
   base::UmaHistogramTimes(base::StrCat({
                               "Prefetch.PrefetchContainer."
                               "PrefetchStartedToPrefetchCompletedSuccessfully.",
-                              GetMetricsSuffixTriggerTypeAndEagerness(
-                                  prefetch_type_, embedder_histogram_suffix_),
+                              GetMetricsSuffix(),
                           }),
                           time_prefetch_completed_successfully_.value() -
                               time_prefetch_started_.value());
@@ -2006,15 +2002,13 @@ void PrefetchContainer::RecordPrefetchMatchingBlockedNavigationHistogram(
   base::UmaHistogramBoolean(
       base::StrCat(
           {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
-           GetMetricsSuffixTriggerTypeAndEagerness(
-               prefetch_type_, embedder_histogram_suffix_)}),
+           GetMetricsSuffix()}),
       blocked_until_head);
   base::UmaHistogramBoolean(
       base::StrCat(
           {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
            is_nav_prerender ? "Prerender." : "NonPrerender.",
-           GetMetricsSuffixTriggerTypeAndEagerness(
-               prefetch_type_, embedder_histogram_suffix_)}),
+           GetMetricsSuffix()}),
       blocked_until_head);
 }
 
@@ -2024,16 +2018,12 @@ void PrefetchContainer::RecordBlockUntilHeadDurationHistogram(
     bool is_nav_prerender) {
   base::UmaHistogramTimes(
       base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.",
-                    served ? "Served." : "NotServed.",
-                    GetMetricsSuffixTriggerTypeAndEagerness(
-                        prefetch_type_, embedder_histogram_suffix_)}),
+                    served ? "Served." : "NotServed.", GetMetricsSuffix()}),
       blocked_duration.value_or(base::Seconds(0)));
   base::UmaHistogramTimes(
       base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.",
                     is_nav_prerender ? "Prerender." : "NonPrerender.",
-                    served ? "Served." : "NotServed.",
-                    GetMetricsSuffixTriggerTypeAndEagerness(
-                        prefetch_type_, embedder_histogram_suffix_)}),
+                    served ? "Served." : "NotServed.", GetMetricsSuffix()}),
       blocked_duration.value_or(base::Seconds(0)));
 }
 
@@ -2042,16 +2032,14 @@ void PrefetchContainer::RecordPrefetchPotentialCandidateServingResultHistogram(
   base::UmaHistogramEnumeration(
       base::StrCat({"Prefetch.PrefetchPotentialCandidateServingResult."
                     "PerMatchingCandidate.",
-                    GetMetricsSuffixTriggerTypeAndEagerness(
-                        prefetch_type_, embedder_histogram_suffix_)}),
+                    GetMetricsSuffix()}),
       matching_result);
 }
 
 void PrefetchContainer::RecordPrefetchContainerServedCountHistogram() {
   base::UmaHistogramCounts100(
-      base::StrCat({"Prefetch.PrefetchContainer.ServedCount.",
-                    GetMetricsSuffixTriggerTypeAndEagerness(
-                        prefetch_type_, embedder_histogram_suffix_)}),
+      base::StrCat(
+          {"Prefetch.PrefetchContainer.ServedCount.", GetMetricsSuffix()}),
       served_count_);
 }
 
