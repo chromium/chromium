@@ -102,16 +102,16 @@ SurfaceFactoryCast::~SurfaceFactoryCast() {}
 std::vector<gl::GLImplementationParts>
 SurfaceFactoryCast::GetAllowedGLImplementations() {
   std::vector<gl::GLImplementationParts> impls;
-  if (egl_implementation_)
-    impls.emplace_back(
-        gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
+  if (egl_implementation_) {
+    impls.push_back(gl::GLImplementationParts(gl::kGLImplementationEGLANGLE));
+  }
   return impls;
 }
 
 GLOzone* SurfaceFactoryCast::GetGLOzone(
     const gl::GLImplementationParts& implementation) {
   switch (implementation.gl) {
-    case gl::kGLImplementationEGLGLES2:
+    case gl::kGLImplementationEGLANGLE:
       return egl_implementation_.get();
     default:
       return nullptr;
