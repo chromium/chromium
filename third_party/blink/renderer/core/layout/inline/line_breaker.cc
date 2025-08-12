@@ -3776,7 +3776,7 @@ void LineBreaker::HandleFloat(const InlineItem& item,
         leading_floats_.floats[leading_floats_index_++];
 
     // Save a backup copy of `exclusion_space_` even if leading floats don't
-    // modify it. See `RewindFloat`.
+    // modify it. See `RewindFloats`.
     DCHECK(exclusion_space_);
     item_result->exclusion_space_before_position_float.CopyFrom(
         *exclusion_space_);
@@ -4432,55 +4432,7 @@ void LineBreaker::Rewind(unsigned new_end, LineInfo* line_info) {
   }
 
   // Check if floats are being rewound.
-  if (RuntimeEnabledFeatures::RewindFloatsEnabled()) {
-    RewindFloats(new_end, *line_info, item_results);
-  } else {
-    // The code and comments in this `else` block is obsolete when
-    // `RewindFloatsEnabled` is enabled, and will be removed when the flag
-    // didn't hit any web-compat issues. See crbug.com/1499290 and its CLs for
-    // more details.
-
-    // Avoid rewinding floats if possible. They will be added back anyway while
-    // processing trailing items even when zero available width. Also this saves
-    // most cases where our support for rewinding positioned floats is not great
-    // yet (see below.)
-    while (item_results[new_end].item->Type() == InlineItem::kFloating) {
-      // We assume floats can break after, or this may cause an infinite loop.
-      DCHECK(item_results[new_end].can_break_after);
-      ++new_end;
-      if (new_end == item_results.size()) {
-        if (!hyphen_index_ && has_any_hyphens_) [[unlikely]] {
-          RestoreLastHyphen(&item_results);
-        }
-        position_ = line_info->ComputeWidth();
-        return;
-      }
-    }
-
-    // Because floats are added to |positioned_floats_| or
-    // |unpositioned_floats_|, rewinding them needs to remove from these lists
-    // too.
-    for (unsigned i = item_results.size(); i > new_end;) {
-      InlineItemResult& rewind = item_results[--i];
-      if (rewind.positioned_float) {
-        // We assume floats can break after, or this may cause an infinite loop.
-        DCHECK(rewind.can_break_after);
-        // TODO(kojii): We do not have mechanism to remove once positioned
-        // floats yet, and that rewinding them may lay it out twice. For now,
-        // prohibit rewinding positioned floats. This may results in incorrect
-        // layout, but still better than rewinding them.
-        new_end = i + 1;
-        if (new_end == item_results.size()) {
-          if (!hyphen_index_ && has_any_hyphens_) [[unlikely]] {
-            RestoreLastHyphen(&item_results);
-          }
-          position_ = line_info->ComputeWidth();
-          return;
-        }
-        break;
-      }
-    }
-  }
+  RewindFloats(new_end, *line_info, item_results);
 
   if (new_end) {
     // Use |results[new_end - 1].end_offset| because it may have been truncated

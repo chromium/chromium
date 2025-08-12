@@ -4042,13 +4042,6 @@
       name: "RestrictTabFocusForHiddenSVGElements",
       status: "stable",
     },
-    
-    
-    {
-      // New behavior when line breaker rewinds floats. crbug.com/1499290
-      name: "RewindFloats",
-      status: "stable",
-    },
     {
       // If enabled, makes the root scrollbars' foreground elements follow the
       // browser
