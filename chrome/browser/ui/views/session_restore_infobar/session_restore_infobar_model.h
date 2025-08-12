@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SESSION_RESTORE_INFOBAR_SESSION_RESTORE_INFOBAR_MODEL_H_
 #define CHROME_BROWSER_UI_VIEWS_SESSION_RESTORE_INFOBAR_SESSION_RESTORE_INFOBAR_MODEL_H_
 
+#include "base/memory/raw_ref.h"
+class PrefService;
+
 namespace session_restore_infobar {
 
 // `SessionRestoreInfobarModel` class is responsible for encapsulating the logic
@@ -17,11 +20,10 @@ class SessionRestoreInfobarModel {
   enum SessionRestoreMessageValue {
     OpenNewTabPage,
     ContinueWhereLeftOff,
-    OpenSpecificPages,
-    NoProfile
+    OpenSpecificPages
   };
 
-  SessionRestoreInfobarModel() = default;
+  explicit SessionRestoreInfobarModel(PrefService& prefs);
   ~SessionRestoreInfobarModel();
 
   // Retrieves a value indicating the user's preference for session restore
@@ -31,6 +33,9 @@ class SessionRestoreInfobarModel {
 
   // Sets the infobar delegate to display the correct message in the infobar.
   void SetInfobarDelegate();
+
+ private:
+  raw_ref<PrefService> prefs_;
 };
 
 }  // namespace session_restore_infobar

@@ -17,17 +17,13 @@ namespace session_restore_infobar {
 
 SessionRestoreInfobarModel::~SessionRestoreInfobarModel() = default;
 
+SessionRestoreInfobarModel::SessionRestoreInfobarModel(PrefService& prefs)
+    : prefs_(prefs) {}
+
 SessionRestoreInfobarModel::SessionRestoreMessageValue
 SessionRestoreInfobarModel::GetSessionRestoreMessageValue() {
-  // Ensure the profile and its preference service are available.
-  Profile* profile =
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile()->GetProfile();
-  if (!profile || !profile->GetPrefs()) {
-    return NoProfile;
-  }
   // Get the integer value from the user's profile preferences.
-  int restore_on_startup_value =
-      profile->GetPrefs()->GetInteger(prefs::kRestoreOnStartup);
+  int restore_on_startup_value = prefs_->GetInteger(prefs::kRestoreOnStartup);
   // Get the value for chrome session restore.
   switch (restore_on_startup_value) {
     case 1:
