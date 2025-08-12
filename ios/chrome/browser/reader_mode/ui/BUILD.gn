@@ -90,6 +90,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/reader_mode/test:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/text_zoom/ui_bundled:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
