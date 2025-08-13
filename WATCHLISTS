@@ -737,6 +737,9 @@
                   '|chrome/browser/media/cast_mirroring' \
                   '|components/mirroring/' \
     },
+    'cbb_ref_info': {
+      'filepath': 'testing/perf/cbb_ref_info/'
+    },
     'cc': {
       'filepath': 'cc/'\
                   '|components/viz/'
@@ -2787,6 +2790,7 @@
     'cast_streaming': ['jasonroberts+watch@google.com',
                        'jophba+watch@chromium.org',
                        'mfoltz+watch@chromium.org'],
+    'cbb_ref_info': ['johnchen+watch@chromium.org'],
     'cc': ['cc-bugs@chromium.org'],
     'cc-animation': ['gerchiko@microsoft.com'],
     'cc-display': ['penghuang+viz@chromium.org'],
