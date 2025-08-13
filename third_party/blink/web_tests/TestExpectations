@@ -2708,6 +2708,9 @@ crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/bidi/browsing_conte
 crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_mouse_modifier.py [ Skip Timeout ]
 crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_touch.py [ Skip Timeout ]
 
+# Fails on Android-mobile, but passes on Android-desktop.
+[ Android ] external/wpt/visual-viewport/scroll-event-order.html [ Failure Pass ]
+
 # ====== Test expectations added to unblock wpt-importer ======
 crbug.com/437388520 external/wpt/webdriver/tests/bidi/network/get_data/disown.py [ Failure ]
 crbug.com/437034328 external/wpt/html/semantics/embedded-content/the-img-element/animated-webp-update.tentative.html [ Failure ]
