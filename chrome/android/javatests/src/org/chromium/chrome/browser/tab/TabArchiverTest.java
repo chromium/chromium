@@ -68,7 +68,6 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -114,11 +113,9 @@ public class TabArchiverTest {
     private TabArchiveSettings mTabArchiveSettings;
     private SharedPreferencesManager mSharedPrefs;
     private UserActionTester mUserActionTester;
-    private WebPageStation mPage;
 
     @Before
     public void setUp() throws Exception {
-        mPage = mActivityTestRule.startOnBlankPage();
         mArchivedTabModelOrchestrator =
                 runOnUiThreadBlocking(
                         () ->
