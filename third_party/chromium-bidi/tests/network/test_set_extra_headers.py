@@ -470,9 +470,4 @@ async def test_network_set_extra_headers_referer_with_navigation(
     request_data = JSONDecoder().decode(response['result']['value'])
     headers = request_data['headers']
     assert headers[SOME_HEADER_NAME] == SOME_HEADER_VALUE
-
-    pytest.xfail(
-        "`Referer` headers is not set during navigation: https://github.com/GoogleChromeLabs/chromium-bidi/issues/3637"
-    )
-    assert REFERER_HEADER_NAME in headers, f"'{REFERER_HEADER_NAME}' header should be present in the request headers"
     assert headers[REFERER_HEADER_NAME] == REFERER_HEADER_VALUE
