@@ -261,6 +261,7 @@ AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
       identity_manager_,
       EndpointFetcher::RequestParams::Builder(
           endpoint_fetcher::HttpMethod::kGet, kTrafficAnnotation)
+          .SetAuthType(endpoint_fetcher::OAUTH)
           .SetConsentLevel(consent_level)
           .SetContentType(kContentType)
           .SetTimeout(kTimeout)
