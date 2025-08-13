@@ -6,7 +6,7 @@ import 'chrome://history/history.js';
 import 'chrome://history/lazy_load.js';
 
 import type {HistoryAppElement, HistoryEntry} from 'chrome://history/history.js';
-import {BrowserServiceImpl, ensureLazyLoaded, HistoryPageViewHistogram, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from 'chrome://history/history.js';
+import {BrowserServiceImpl, ensureLazyLoaded, HistoryPageViewHistogram, HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from 'chrome://history/history.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -57,7 +57,8 @@ suite('Metrics', function() {
           ensureLazyLoaded(),
         ])
         .then(function() {
-          webUIListenerCallback('sign-in-state-changed', false);
+          webUIListenerCallback(
+              'sign-in-state-changed', HistorySignInState.SIGNED_OUT);
           return flushTasks();
         });
   }
@@ -75,7 +76,8 @@ suite('Metrics', function() {
     await testService.whenCalled('otherDevicesInitialized');
 
     testService.resetResolver('recordHistogram');
-    webUIListenerCallback('sign-in-state-changed', true);
+    webUIListenerCallback(
+        'sign-in-state-changed', HistorySignInState.SIGNED_IN);
     await testService.whenCalled('recordHistogram');
 
     assertEquals(1, histogram[HistoryPageViewHistogram.SYNCED_TABS]);

@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/webui/cr_components/history/history_util.h"
 #include "components/sync/service/sync_service_observer.h"
 
 class Profile;
@@ -27,7 +28,7 @@ class ProfileInfoWatcher : public syncer::SyncServiceObserver {
 
   ~ProfileInfoWatcher() override;
 
-  bool GetSignInState() const;
+  HistorySignInState GetSignInState() const;
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;

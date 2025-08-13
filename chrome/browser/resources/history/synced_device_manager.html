@@ -31,7 +31,7 @@
 
 ${this.useHistorySyncOptinScreen_ ? html `
   <div class="history-sync-optin">
-    ${!this.signInState ? html`
+    ${this.isSignedOut_ ? html`
       <!-- not signed in case -->
       <div id="imageContainer">
         <img class="sync-history-illustration" alt="" />

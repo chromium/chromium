@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {ForeignSession, HistorySyncedDeviceCardElement, HistorySyncedDeviceManagerElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl, ensureLazyLoaded} from 'chrome://history/history.js';
+import {BrowserServiceImpl, ensureLazyLoaded, HistorySignInState} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -51,8 +51,11 @@ suite('<history-synced-device-manager>', function() {
       // the same order in tests, in order to catch regressions like
       // https://crbug.com/915641.
       element.searchTerm = '';
-      element.configureSignInForTest(
-          {signInState: true, signInAllowed: true, guestSession: false});
+      element.configureSignInForTest({
+        signInState: HistorySignInState.SIGNED_IN,
+        signInAllowed: true,
+        guestSession: false,
+      });
       document.body.appendChild(element);
     });
   });
@@ -250,20 +253,29 @@ suite('<history-synced-device-manager>', function() {
   });
 
   test('show sign in promo', async () => {
-    element.configureSignInForTest(
-        {signInState: false, signInAllowed: true, guestSession: false});
+    element.configureSignInForTest({
+      signInState: HistorySignInState.SIGNED_OUT,
+      signInAllowed: true,
+      guestSession: false,
+    });
     await microtasksFinished();
     assertFalse(element.$['sign-in-guide'].hidden);
-    element.configureSignInForTest(
-        {signInState: true, signInAllowed: true, guestSession: false});
+    element.configureSignInForTest({
+      signInState: HistorySignInState.SIGNED_IN,
+      signInAllowed: true,
+      guestSession: false,
+    });
     await microtasksFinished();
     assertTrue(element.$['sign-in-guide'].hidden);
   });
 
   test('no synced tabs message', async () => {
     // When user is not logged in, there is no synced tabs.
-    element.configureSignInForTest(
-        {signInState: false, signInAllowed: true, guestSession: false});
+    element.configureSignInForTest({
+      signInState: HistorySignInState.SIGNED_OUT,
+      signInAllowed: true,
+      guestSession: false,
+    });
     element.clearSyncedDevicesForTest();
     await microtasksFinished();
     assertTrue(element.$['no-synced-tabs'].hidden);
@@ -271,8 +283,11 @@ suite('<history-synced-device-manager>', function() {
     let cards = getCards(element);
     assertEquals(0, cards.length);
 
-    element.configureSignInForTest(
-        {signInState: true, signInAllowed: true, guestSession: false});
+    element.configureSignInForTest({
+      signInState: HistorySignInState.SIGNED_IN,
+      signInAllowed: true,
+      guestSession: false,
+    });
 
     await microtasksFinished();
     // When user signs in, first show loading message.
@@ -295,23 +310,32 @@ suite('<history-synced-device-manager>', function() {
     // If there are any synced tabs, hide the 'no synced tabs' message.
     assertTrue(element.$['no-synced-tabs'].hidden);
 
-    element.configureSignInForTest(
-        {signInState: false, signInAllowed: true, guestSession: false});
+    element.configureSignInForTest({
+      signInState: HistorySignInState.SIGNED_OUT,
+      signInAllowed: true,
+      guestSession: false,
+    });
     await microtasksFinished();
     // When user signs out, don't show the message.
     assertTrue(element.$['no-synced-tabs'].hidden);
   });
 
   test('hide sign in promo in guest mode', async () => {
-    element.configureSignInForTest(
-        {signInState: false, signInAllowed: true, guestSession: true});
+    element.configureSignInForTest({
+      signInState: HistorySignInState.SIGNED_OUT,
+      signInAllowed: true,
+      guestSession: true,
+    });
     await microtasksFinished();
     assertTrue(element.$['sign-in-guide'].hidden);
   });
 
   test('hide sign-in promo if sign-in is disabled', async function() {
-    element.configureSignInForTest(
-        {signInState: false, signInAllowed: false, guestSession: false});
+    element.configureSignInForTest({
+      signInState: HistorySignInState.SIGNED_OUT,
+      signInAllowed: false,
+      guestSession: false,
+    });
     await microtasksFinished();
     assertTrue(element.$['sign-in-guide'].hidden);
   });

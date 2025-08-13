@@ -41,7 +41,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './app.html.js';
 import type {BrowserService} from './browser_service.js';
 import {BrowserServiceImpl} from './browser_service.js';
-import {HistoryPageViewHistogram} from './constants.js';
+import {HistoryPageViewHistogram, HistorySignInState} from './constants.js';
 import type {ForeignSession} from './externs.js';
 import type {HistoryListElement} from './history_list.js';
 import type {HistoryToolbarElement} from './history_toolbar.js';
@@ -185,8 +185,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
       // Updated on synced-device-manager attach by chrome.sending
       // 'otherDevicesInitialized'.
       signInState_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('signInState'),
+        type: Number,
+        value: () => loadTimeData.getInteger('signInState'),
       },
 
       pendingDelete_: Boolean,
@@ -302,7 +302,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   declare private hasDrawer_: boolean;
   declare private historyClustersEnabled_: boolean;
   declare private historyClustersVisible_: boolean;
-  declare private signInState_: boolean;
+  declare private signInState_: HistorySignInState;
   declare private lastSelectedTab_: number;
   declare private contentPage_: string;
   declare private tabsContentPage_: string;
@@ -355,7 +355,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
         this.onRecordHistoryLinkClick_.bind(this));
     this.addWebUiListener(
         'sign-in-state-changed',
-        (signInState: boolean) => this.onSignInStateChanged_(signInState));
+        (signInState: HistorySignInState) =>
+            this.onSignInStateChanged_(signInState));
     this.addWebUiListener(
         'foreign-sessions-changed',
         (sessionList: ForeignSession[]) =>
@@ -631,7 +632,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   /**
    * Updates the sign-in state.
    */
-  private onSignInStateChanged_(signInState: boolean) {
+  private onSignInStateChanged_(signInState: HistorySignInState) {
     this.signInState_ = signInState;
   }
 
@@ -758,7 +759,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
         histogramValue = HistoryPageViewHistogram.JOURNEYS;
         break;
       case Page.SYNCED_TABS:
-        histogramValue = this.signInState_ ?
+        histogramValue = this.signInState_ === HistorySignInState.SIGNED_IN ?
             HistoryPageViewHistogram.SYNCED_TABS :
             HistoryPageViewHistogram.SIGNIN_PROMO;
         break;

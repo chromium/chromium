@@ -18,7 +18,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserServiceImpl} from './browser_service.js';
-import {SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
+import {HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
 import type {ForeignSession, ForeignSessionTab} from './externs.js';
 import type {HistorySyncedDeviceCardElement} from './synced_device_card.js';
 import {getCss} from './synced_device_manager.css.js';
@@ -70,7 +70,7 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
        * An array of synced devices with synced tab data.
        */
       syncedDevices_: {type: Array},
-      signInState: {type: Boolean},
+      signInState: {type: Number},
       guestSession_: {type: Boolean},
       signInAllowed_: {type: Boolean},
       fetchingSyncedTabs_: {type: Boolean},
@@ -101,7 +101,7 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
   protected accessor accountImageSrc_: string =
       loadTimeData.getString('accountPictureUrl');
 
-  accessor signInState: boolean = false;
+  accessor signInState: HistorySignInState = HistorySignInState.SIGNED_OUT;
   accessor searchTerm: string = '';
   accessor sessionList: ForeignSession[] = [];
 
@@ -119,7 +119,8 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
       this.searchTermChanged_();
     }
     if (changedProperties.has('signInState')) {
-      this.signInStateChanged_(changedProperties.get('signInState'));
+      this.signInStateChanged_(
+          changedProperties.get('signInState') as HistorySignInState);
     }
   }
 
@@ -140,7 +141,7 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
   }
 
   configureSignInForTest(data: {
-    signInState: boolean,
+    signInState: HistorySignInState,
     signInAllowed: boolean,
     guestSession: boolean,
   }) {
@@ -266,6 +267,10 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
     this.syncedDevices_ = [];
   }
 
+  protected get isSignedOut_(): boolean {
+    return this.signInState === HistorySignInState.SIGNED_OUT;
+  }
+
   /**
    * Decide whether or not should display no synced tabs message.
    */
@@ -274,7 +279,8 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
       return true;
     }
 
-    return this.signInState && this.syncedDevices_.length === 0;
+    return this.signInState === HistorySignInState.SIGNED_IN &&
+        this.syncedDevices_.length === 0;
   }
 
   /**
@@ -282,8 +288,8 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
    * and not in a guest session.
    */
   protected showSignInGuide_(): boolean {
-    const show =
-        !this.signInState && !this.guestSession_ && this.signInAllowed_;
+    const show = this.signInState !== HistorySignInState.SIGNED_IN &&
+        !this.guestSession_ && this.signInAllowed_;
     if (show) {
       BrowserServiceImpl.getInstance().recordAction(
           'Signin_Impression_FromRecentTabs');
@@ -341,7 +347,7 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
    * tabs page. Sign in promo gets displayed when user is signed out, and
    * different messages are shown when there are no synced tabs.
    */
-  private signInStateChanged_(previous?: boolean) {
+  private signInStateChanged_(previous?: HistorySignInState) {
     if (previous === undefined) {
       return;
     }
@@ -350,7 +356,7 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
         'history-view-changed', {bubbles: true, composed: true}));
 
     // User signed out, clear synced device list and show the sign in promo.
-    if (!this.signInState) {
+    if (this.signInState === HistorySignInState.SIGNED_OUT) {
       this.clearDisplayedSyncedDevices_();
       return;
     }

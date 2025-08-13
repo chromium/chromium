@@ -28,11 +28,13 @@
 #include "ui/webui/webui_util.h"
 
 // Static
-bool HistoryUtil::GetSignInState(Profile* profile) {
+HistorySignInState HistoryUtil::GetSignInState(Profile* profile) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  return identity_manager &&
-         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+  return identity_manager && identity_manager->HasPrimaryAccount(
+                                 signin::ConsentLevel::kSync)
+             ? HistorySignInState::kSignedIn
+             : HistorySignInState::kSignedOut;
 }
 
 // Static
@@ -90,7 +92,8 @@ content::WebUIDataSource* HistoryUtil::PopulateSourceForSidePanelHistory(
   source->AddBoolean("isSignInAllowed",
                      prefs->GetBoolean(prefs::kSigninAllowed));
 
-  source->AddBoolean(kSignInStateKey, GetSignInState(profile));
+  source->AddInteger(kSignInStateKey,
+                     static_cast<int>(GetSignInState(profile)));
 
   source->AddInteger(
       "lastSelectedTab",

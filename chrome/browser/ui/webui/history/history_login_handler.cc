@@ -62,8 +62,8 @@ void HistoryLoginHandler::SigninStateChanged() {
     signin_state_changed_callback_.Run();
   }
 
-  bool sign_in_state = profile_info_watcher_->GetSignInState();
-  FireWebUIListener("sign-in-state-changed", base::Value(sign_in_state));
+  HistorySignInState sign_in_state = profile_info_watcher_->GetSignInState();
+  FireWebUIListener("sign-in-state-changed", static_cast<int>(sign_in_state));
 }
 
 void HistoryLoginHandler::HandleTurnOnSyncFlow(

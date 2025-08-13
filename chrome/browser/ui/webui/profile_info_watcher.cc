@@ -8,7 +8,6 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/webui/cr_components/history/history_util.h"
 #include "components/sync/service/sync_service.h"
 
 ProfileInfoWatcher::ProfileInfoWatcher(Profile* profile,
@@ -34,7 +33,7 @@ void ProfileInfoWatcher::OnSyncShutdown(syncer::SyncService* sync) {
   sync_observation_.Reset();
 }
 
-bool ProfileInfoWatcher::GetSignInState() const {
+HistorySignInState ProfileInfoWatcher::GetSignInState() const {
   return HistoryUtil::GetSignInState(profile_);
 }
 

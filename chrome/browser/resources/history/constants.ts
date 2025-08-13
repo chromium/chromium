@@ -11,6 +11,18 @@ export const RESULTS_PER_PAGE = 150;
 export const BROWSING_GAP_TIME = 15 * 60 * 1000;
 
 /**
+ * This enum is used to differentiate all the relevant sign-in/history-sync
+ * states.
+ * Keep this in sync with the HistorySignInState enum in history_util.h.
+ */
+// LINT.IfChange(HistorySignInState)
+export enum HistorySignInState {
+  SIGNED_OUT = 0,
+  SIGNED_IN = 1,
+}
+// LINT.ThenChange(/chrome/browser/ui/webui/cr_components/history/history_util.h:HistorySignInState)
+
+/**
  * Histogram buckets for UMA tracking of which view is being shown to the user.
  * Keep this in sync with the HistoryPageView enum in histograms.xml.
  * This enum is append-only.

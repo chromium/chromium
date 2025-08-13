@@ -5,7 +5,7 @@
 import 'chrome://history/history.js';
 
 import type {HistorySyncedDeviceManagerElement} from 'chrome://history/history.js';
-import {ensureLazyLoaded} from 'chrome://history/history.js';
+import {ensureLazyLoaded, HistorySignInState} from 'chrome://history/history.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
@@ -21,7 +21,7 @@ suite('<history-synced-device-manager>', function() {
 
     return ensureLazyLoaded().then(() => {
       element = document.createElement('history-synced-device-manager');
-      element.signInState = true;
+      element.signInState = HistorySignInState.SIGNED_IN;
       element.searchTerm = '';
       document.body.appendChild(element);
     });
