@@ -189,6 +189,10 @@
   display: flex;
 }
 
+:host([hide-file-inputs]) #uploadContainer {
+  display: none;
+}
+
 .upload-icon {
   --cr-icon-button-focus-outline-color:
       var(--color-searchbox-results-icon-focused-outline);
