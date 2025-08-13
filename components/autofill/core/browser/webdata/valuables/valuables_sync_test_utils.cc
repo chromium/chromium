@@ -26,8 +26,7 @@ sync_pb::AutofillValuableSpecifics TestLoyaltyCardSpecifics(
       sync_pb::AutofillValuableSpecifics();
   specifics.set_id(std::string(id));
 
-  sync_pb::AutofillValuableSpecifics::LoyaltyCard* loyalty_card =
-      specifics.mutable_loyalty_card();
+  sync_pb::LoyaltyCard* loyalty_card = specifics.mutable_loyalty_card();
   loyalty_card->set_merchant_name("merchant_name");
   loyalty_card->set_program_name("program_name");
   loyalty_card->set_program_logo(std::string(program_logo));

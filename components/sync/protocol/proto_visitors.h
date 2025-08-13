@@ -2019,12 +2019,12 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillValuableSpecifics& proto) {
   VISIT(loyalty_card);
 }
 
-VISIT_PROTO_FIELDS(
-    const sync_pb::AutofillValuableSpecifics::LoyaltyCard& proto) {
+VISIT_PROTO_FIELDS(const sync_pb::LoyaltyCard& proto) {
   VISIT(merchant_name);
   VISIT(program_name);
   VISIT(program_logo);
   VISIT(loyalty_card_number);
+  VISIT_REP(merchant_domains);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SharedTabDetails& proto) {

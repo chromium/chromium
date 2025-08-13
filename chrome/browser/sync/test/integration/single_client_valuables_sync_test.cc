@@ -39,7 +39,7 @@ sync_pb::SyncEntity LoyaltyCardToSyncEntity(const LoyaltyCard& loyalty_card) {
       entity.mutable_specifics()->mutable_autofill_valuable();
   valuable_specifics->set_id(std::string(loyalty_card.id()));
 
-  sync_pb::AutofillValuableSpecifics::LoyaltyCard* loyalty_card_specifics =
+  sync_pb::LoyaltyCard* loyalty_card_specifics =
       valuable_specifics->mutable_loyalty_card();
   loyalty_card_specifics->set_merchant_name(loyalty_card.merchant_name());
   loyalty_card_specifics->set_program_name(loyalty_card.program_name());

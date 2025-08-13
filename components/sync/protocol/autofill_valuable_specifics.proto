@@ -14,27 +14,28 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+// Represents a loyalty card from Google Wallet.
+message LoyaltyCard {
+  // The merchant name e.g. "Deutsche Bahn".
+  optional string merchant_name = 1;
+
+  // The program name e.g. "BahnBonus".
+  optional string program_name = 2;
+
+  // The logo URL.
+  optional string program_logo = 3;
+
+  // The loyalty card text code.
+  optional string loyalty_card_number = 4;
+
+  // Merchant domains associated to the loyalty card.
+  repeated string merchant_domains = 5;
+}
+
 // Valuables coming from Google Wallet.
 message AutofillValuableSpecifics {
   // The valuable id.
   optional string id = 1;
-
-  message LoyaltyCard {
-    // The merchant name e.g. "Deutsche Bahn".
-    optional string merchant_name = 1;
-
-    // The program name e.g. "BahnBonus".
-    optional string program_name = 2;
-
-    // The logo URL.
-    optional string program_logo = 3;
-
-    // The loyalty card text code.
-    optional string loyalty_card_number = 4;
-
-    // Merchant domains associated to the loyalty card.
-    repeated string merchant_domains = 5;
-  }
 
   oneof valuable_data {
     LoyaltyCard loyalty_card = 2;

@@ -328,7 +328,7 @@ TEST_F(ValuableSyncBridgeTest,
   sync_pb::EntitySpecifics specifics;
   sync_pb::AutofillValuableSpecifics* autofill_valuables_specifics =
       specifics.mutable_autofill_valuable();
-  sync_pb::AutofillValuableSpecifics::LoyaltyCard* loyalty_card =
+  sync_pb::LoyaltyCard* loyalty_card =
       autofill_valuables_specifics->mutable_loyalty_card();
   loyalty_card->mutable_program_name()->assign("program_name");
   loyalty_card->mutable_program_logo()->assign("program_logo");
@@ -354,7 +354,7 @@ TEST_F(ValuableSyncBridgeTest,
       specifics_with_only_unknown_fields;
   sync_pb::AutofillValuableSpecifics* autofill_valuables_specifics =
       specifics_with_known_and_unknown_fields.mutable_autofill_valuable();
-  sync_pb::AutofillValuableSpecifics::LoyaltyCard* loyalty_card =
+  sync_pb::LoyaltyCard* loyalty_card =
       autofill_valuables_specifics->mutable_loyalty_card();
 
   loyalty_card->mutable_program_name()->assign("program_name");
