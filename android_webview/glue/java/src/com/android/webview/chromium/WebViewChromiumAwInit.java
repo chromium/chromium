@@ -1308,12 +1308,16 @@ public class WebViewChromiumAwInit {
 
             mRunState = SYNC;
 
-            while (!mPreBrowserProcessStartQueue.isEmpty()) {
-                mPreBrowserProcessStartQueue.poll().run();
+            Runnable task = mPreBrowserProcessStartQueue.poll();
+            while (task != null) {
+                task.run();
+                task = mPreBrowserProcessStartQueue.poll();
             }
 
-            while (!mPostBrowserProcessStartQueue.isEmpty()) {
-                mPostBrowserProcessStartQueue.poll().run();
+            task = mPostBrowserProcessStartQueue.poll();
+            while (task != null) {
+                task.run();
+                task = mPostBrowserProcessStartQueue.poll();
             }
         }
 
@@ -1336,7 +1340,8 @@ public class WebViewChromiumAwInit {
         private void runAsyncStartupTaskAndPostNext(int taskNum, ArrayDeque<Runnable> queue) {
             assert ThreadUtils.runningOnUiThread();
 
-            if (queue.isEmpty()) {
+            Runnable task = queue.poll();
+            if (task == null) {
                 return;
             }
 
@@ -1349,7 +1354,7 @@ public class WebViewChromiumAwInit {
                                     "WebViewChromiumAwInit.startChromiumLockedAsync_task%d/%d",
                                     taskNum,
                                     mNumTasks))) {
-                timedRunWithExceptionHandling(queue.poll());
+                timedRunWithExceptionHandling(task);
             }
 
             if (!queue.isEmpty()) { // Avoids unnecessarily posting to the UI thread
