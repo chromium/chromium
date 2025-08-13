@@ -37,6 +37,11 @@ class MediaToolbarButtonContextualMenuTest : public MenuModelTest,
         .WillByDefault(testing::ReturnRef(debugger_));
   }
 
+  void TearDown() override {
+    menu_.reset();
+    BrowserWithTestWindowTest::TearDown();
+  }
+
   void ExecuteToggleOtherSessionCommand() {
     menu_->ExecuteCommand(IDC_MEDIA_TOOLBAR_CONTEXT_SHOW_OTHER_SESSIONS, 0);
   }
