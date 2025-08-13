@@ -40,6 +40,7 @@
 #include <utility>
 
 #include "absl/base/config.h"
+#include "absl/base/nullability.h"
 #include "absl/functional/internal/any_invocable.h"
 #include "absl/meta/type_traits.h"
 #include "absl/utility/utility.h"
@@ -158,7 +159,8 @@ ABSL_NAMESPACE_BEGIN
 //   AnyInvocable<void()> empty;
 //   empty();  // WARNING: Undefined behavior!
 template <class Sig>
-class AnyInvocable : private internal_any_invocable::Impl<Sig> {
+class ABSL_NULLABILITY_COMPATIBLE AnyInvocable
+    : private internal_any_invocable::Impl<Sig> {
  private:
   static_assert(
       std::is_function<Sig>::value,

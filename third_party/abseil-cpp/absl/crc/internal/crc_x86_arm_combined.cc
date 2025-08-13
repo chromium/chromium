@@ -350,7 +350,8 @@ template <size_t num_crc_streams, size_t num_pclmul_streams,
 class CRC32AcceleratedX86ARMCombinedMultipleStreams
     : public CRC32AcceleratedX86ARMCombinedMultipleStreamsBase {
   ABSL_ATTRIBUTE_HOT
-  void Extend(uint32_t* crc, const void* bytes, size_t length) const override {
+  void Extend(uint32_t* crc, const void* bytes,
+              const size_t length) const override {
     static_assert(num_crc_streams >= 1 && num_crc_streams <= kMaxStreams,
                   "Invalid number of crc streams");
     static_assert(num_pclmul_streams >= 0 && num_pclmul_streams <= kMaxStreams,
@@ -360,47 +361,15 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
     uint32_t l = *crc;
     uint64_t l64;
 
-    // We have dedicated instruction for 1,2,4 and 8 bytes.
-    if (length & 8) {
-      ABSL_INTERNAL_STEP8(l, p);
-      length &= ~size_t{8};
-    }
-    if (length & 4) {
-      ABSL_INTERNAL_STEP4(l, p);
-      length &= ~size_t{4};
-    }
-    if (length & 2) {
-      ABSL_INTERNAL_STEP2(l, p);
-      length &= ~size_t{2};
-    }
-    if (length & 1) {
-      ABSL_INTERNAL_STEP1(l, p);
-      length &= ~size_t{1};
-    }
-    if (length == 0) {
-      *crc = l;
-      return;
-    }
-    // length is now multiple of 16.
-
     // For small blocks just run simple loop, because cost of combining multiple
     // streams is significant.
-    if (strategy != CutoffStrategy::Unroll64CRC) {
-      if (length < kSmallCutoff) {
-        while (length >= 16) {
-          ABSL_INTERNAL_STEP8(l, p);
-          ABSL_INTERNAL_STEP8(l, p);
-          length -= 16;
-        }
-        *crc = l;
-        return;
-      }
-    }
-
-    // For medium blocks we run 3 crc streams and combine them as described in
-    // Intel paper above. Running 4th stream doesn't help, because crc
-    // instruction has latency 3 and throughput 1.
-    if (length < kMediumCutoff) {
+    if (strategy != CutoffStrategy::Unroll64CRC && (length < kSmallCutoff)) {
+      // fallthrough; Use the same strategy as we do for processing the
+      // remaining bytes after any other strategy.
+    }  else if (length < kMediumCutoff) {
+      // For medium blocks we run 3 crc streams and combine them as described in
+      // Intel paper above. Running 4th stream doesn't help, because crc
+      // instruction has latency 3 and throughput 1.
       l64 = l;
       if (strategy == CutoffStrategy::Fold3) {
         uint64_t l641 = 0;
@@ -449,6 +418,7 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
           p += 64;
         }
       }
+      l = static_cast<uint32_t>(l64);
     } else {
       // There is a lot of data, we can ignore combine costs and run all
       // requested streams (num_crc_streams + num_pclmul_streams),
@@ -571,15 +541,26 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
       } else {
         p = crc_streams[num_crc_streams - 1];
       }
+      l = static_cast<uint32_t>(l64);
     }
-    l = static_cast<uint32_t>(l64);
 
+    uint64_t remaining_bytes = static_cast<uint64_t>(e - p);
+    // Process the remaining bytes.
     while ((e - p) >= 16) {
       ABSL_INTERNAL_STEP8(l, p);
       ABSL_INTERNAL_STEP8(l, p);
     }
-    // Process the last few bytes
-    while (p != e) {
+
+    if (remaining_bytes & 8) {
+      ABSL_INTERNAL_STEP8(l, p);
+    }
+    if (remaining_bytes & 4) {
+      ABSL_INTERNAL_STEP4(l, p);
+    }
+    if (remaining_bytes & 2) {
+      ABSL_INTERNAL_STEP2(l, p);
+    }
+    if (remaining_bytes & 1) {
       ABSL_INTERNAL_STEP1(l, p);
     }
 
@@ -605,6 +586,8 @@ CRCImpl* TryNewCRC32AcceleratedX86ARMCombined() {
     case CpuType::kAmdRome:
     case CpuType::kAmdNaples:
     case CpuType::kAmdMilan:
+    case CpuType::kAmdGenoa:
+    case CpuType::kAmdTurin:
       return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
           3, 1, CutoffStrategy::Fold3>();
     // PCLMULQDQ is fast, use combined PCLMULQDQ + CRC implementation.
@@ -612,6 +595,10 @@ CRCImpl* TryNewCRC32AcceleratedX86ARMCombined() {
     case CpuType::kIntelSkylakeXeon:
     case CpuType::kIntelBroadwell:
     case CpuType::kIntelSkylake:
+    case CpuType::kIntelIcelake:
+    case CpuType::kIntelSapphirerapids:
+    case CpuType::kIntelEmeraldrapids:
+    case CpuType::kIntelGraniterapidsap:
       return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
           3, 2, CutoffStrategy::Fold3>();
     // PCLMULQDQ is slow, don't use it.
@@ -623,6 +610,7 @@ CRCImpl* TryNewCRC32AcceleratedX86ARMCombined() {
     case CpuType::kArmNeoverseN1:
     case CpuType::kArmNeoverseN2:
     case CpuType::kArmNeoverseV1:
+    case CpuType::kArmNeoverseN3:
       return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
           1, 1, CutoffStrategy::Unroll64CRC>();
     case CpuType::kAmpereSiryn:

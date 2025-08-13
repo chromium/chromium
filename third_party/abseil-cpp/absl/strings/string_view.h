@@ -749,8 +749,8 @@ ABSL_NAMESPACE_BEGIN
 //
 // Like `s.substr(pos, n)`, but clips `pos` to an upper bound of `s.size()`.
 // Provided because std::string_view::substr throws if `pos > size()`
-inline string_view ClippedSubstr(string_view s, size_t pos,
-                                 size_t n = string_view::npos) {
+inline string_view ClippedSubstr(string_view s ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                                 size_t pos, size_t n = string_view::npos) {
   pos = (std::min)(pos, static_cast<size_t>(s.size()));
   return s.substr(pos, n);
 }

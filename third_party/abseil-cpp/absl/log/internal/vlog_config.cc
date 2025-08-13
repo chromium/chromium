@@ -94,12 +94,12 @@ ABSL_CONST_INIT absl::base_internal::SpinLock mutex(
 
 // `GetUpdateSitesMutex()` serializes updates to all of the sites (i.e. those in
 // `site_list_head`) themselves.
-absl::Mutex* GetUpdateSitesMutex() {
+absl::Mutex& GetUpdateSitesMutex() {
   // Chromium requires no global destructors, so we can't use the
   // absl::kConstInit idiom since absl::Mutex as a non-trivial destructor.
   static absl::NoDestructor<absl::Mutex> update_sites_mutex ABSL_ACQUIRED_AFTER(
       mutex);
-  return update_sites_mutex.get();
+  return *update_sites_mutex;
 }
 
 ABSL_CONST_INIT int global_v ABSL_GUARDED_BY(mutex) = 0;
@@ -222,7 +222,7 @@ int PrependVModuleLocked(absl::string_view module_pattern, int log_level)
 }  // namespace
 
 int VLogLevel(absl::string_view file) ABSL_LOCKS_EXCLUDED(mutex) {
-  absl::base_internal::SpinLockHolder l(&mutex);
+  absl::base_internal::SpinLockHolder l(mutex);
   return VLogLevel(file, vmodule_info, global_v);
 }
 

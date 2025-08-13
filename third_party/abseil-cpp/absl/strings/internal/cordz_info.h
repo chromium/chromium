@@ -290,7 +290,7 @@ inline void CordzInfo::SetCordRep(CordRep* rep) {
 inline void CordzInfo::UnsafeSetCordRep(CordRep* rep) { rep_ = rep; }
 
 inline CordRep* CordzInfo::RefCordRep() const ABSL_LOCKS_EXCLUDED(mutex_) {
-  MutexLock lock(&mutex_);
+  MutexLock lock(mutex_);
   return rep_ ? CordRep::Ref(rep_) : nullptr;
 }
 

@@ -88,7 +88,8 @@
 #include "absl/types/variant.h"
 #include "absl/utility/utility.h"
 
-#if defined(__cpp_lib_filesystem) && __cpp_lib_filesystem >= 201703L
+#if defined(__cpp_lib_filesystem) && __cpp_lib_filesystem >= 201703L && \
+    !defined(__XTENSA__)
 #include <filesystem>  // NOLINT
 #endif
 
@@ -633,7 +634,8 @@ H AbslHashValue(H hash_state, std::basic_string_view<Char> str) {
     (!defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) ||        \
      __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 130000) &&       \
     (!defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) ||         \
-     __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 101500)
+     __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 101500) &&        \
+    (!defined(__XTENSA__))
 
 #define ABSL_INTERNAL_STD_FILESYSTEM_PATH_HASH_AVAILABLE 1
 

@@ -148,12 +148,12 @@ ABSL_CONST_INIT absl::Mutex early_const_init_mutex(absl::kConstInit);
 // before the constructors of either grab_lock or check_still_locked are run.)
 extern absl::Mutex const_init_sanity_mutex;
 OnConstruction grab_lock([]() ABSL_NO_THREAD_SAFETY_ANALYSIS {
-  const_init_sanity_mutex.Lock();
+  const_init_sanity_mutex.lock();
 });
 ABSL_CONST_INIT absl::Mutex const_init_sanity_mutex(absl::kConstInit);
 OnConstruction check_still_locked([]() ABSL_NO_THREAD_SAFETY_ANALYSIS {
   const_init_sanity_mutex.AssertHeld();
-  const_init_sanity_mutex.Unlock();
+  const_init_sanity_mutex.unlock();
 });
 #endif  // defined(__clang__) || !(defined(_MSC_VER) && _MSC_VER > 1900)
 

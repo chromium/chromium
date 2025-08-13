@@ -44,6 +44,7 @@ cc_library(
     deps = [
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/base:nullability",
         "//absl/meta:type_traits",
         "//absl/utility",
     ],
@@ -61,6 +62,7 @@ cc_test(
         ":any_invocable",
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/base:nullability",
         "//absl/meta:type_traits",
         "//absl/utility",
         "@googletest//:gtest",

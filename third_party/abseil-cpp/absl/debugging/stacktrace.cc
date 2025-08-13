@@ -38,39 +38,18 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include <algorithm>
 #include <atomic>
+#include <iterator>
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
+#include "absl/base/internal/low_level_alloc.h"
 #include "absl/base/optimization.h"
 #include "absl/base/port.h"
 #include "absl/debugging/internal/stacktrace_config.h"
-
-#ifdef ABSL_INTERNAL_HAVE_ALLOCA
-#error ABSL_INTERNAL_HAVE_ALLOCA cannot be directly set
-#endif
-
-#ifdef _WIN32
-#include <malloc.h>
-#define ABSL_INTERNAL_HAVE_ALLOCA 1
-#else
-#ifdef __has_include
-#if __has_include(<alloca.h>)
-#include <alloca.h>
-#define ABSL_INTERNAL_HAVE_ALLOCA 1
-#elif !defined(alloca)
-static void* alloca(size_t) noexcept { return nullptr; }
-#endif
-#endif
-#endif
-
-#ifdef ABSL_INTERNAL_HAVE_ALLOCA
-static constexpr bool kHaveAlloca = true;
-#else
-static constexpr bool kHaveAlloca = false;
-#endif
 
 #if defined(ABSL_STACKTRACE_INL_HEADER)
 #include ABSL_STACKTRACE_INL_HEADER
@@ -100,18 +79,60 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE inline int Unwind(void** result, uintptr_t* frames,
                                                int* sizes, size_t max_depth,
                                                int skip_count, const void* uc,
                                                int* min_dropped_frames) {
+  static constexpr size_t kMinPageSize = 4096;
+
+  // Allow up to ~half a page, leaving some slack space for local variables etc.
+  static constexpr size_t kMaxStackElements =
+      (kMinPageSize / 2) / (sizeof(*frames) + sizeof(*sizes));
+
+  // Allocate a buffer dynamically, using the signal-safe allocator.
+  static constexpr auto allocate = [](size_t num_bytes) -> void* {
+    base_internal::InitSigSafeArena();
+    return base_internal::LowLevelAlloc::AllocWithArena(
+        num_bytes, base_internal::SigSafeArena());
+  };
+
+  uintptr_t frames_stackbuf[kMaxStackElements];
+  int sizes_stackbuf[kMaxStackElements];
+
+  // We only need to free the buffers if we allocated them with the signal-safe
+  // allocator.
+  bool must_free_frames = false;
+  bool must_free_sizes = false;
+
   bool unwind_with_fixup = internal_stacktrace::ShouldFixUpStack();
+
+#ifdef _WIN32
   if (unwind_with_fixup) {
-    if constexpr (kHaveAlloca) {
-      // Some implementations of FixUpStack may need to be passed frame
-      // information from Unwind, even if the caller doesn't need that
-      // information. We allocate the necessary buffers for such implementations
-      // here.
-      if (frames == nullptr) {
-        frames = static_cast<uintptr_t*>(alloca(max_depth * sizeof(*frames)));
+    // TODO(b/434184677): Fixups are flaky and not supported on Windows
+    unwind_with_fixup = false;
+#ifndef NDEBUG
+    abort();
+#endif
+  }
+#endif
+
+  if (unwind_with_fixup) {
+    // Some implementations of FixUpStack may need to be passed frame
+    // information from Unwind, even if the caller doesn't need that
+    // information. We allocate the necessary buffers for such implementations
+    // here.
+
+    if (frames == nullptr) {
+      if (max_depth <= std::size(frames_stackbuf)) {
+        frames = frames_stackbuf;
+      } else {
+        frames = static_cast<uintptr_t*>(allocate(max_depth * sizeof(*frames)));
+        must_free_frames = true;
       }
-      if (sizes == nullptr) {
-        sizes = static_cast<int*>(alloca(max_depth * sizeof(*sizes)));
+    }
+
+    if (sizes == nullptr) {
+      if (max_depth <= std::size(sizes_stackbuf)) {
+        sizes = sizes_stackbuf;
+      } else {
+        sizes = static_cast<int*>(allocate(max_depth * sizeof(*sizes)));
+        must_free_sizes = true;
       }
     }
   }
@@ -140,6 +161,15 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE inline int Unwind(void** result, uintptr_t* frames,
   if (unwind_with_fixup) {
     internal_stacktrace::FixUpStack(result, frames, sizes, max_depth, size);
   }
+
+  if (must_free_sizes) {
+    base_internal::LowLevelAlloc::Free(sizes);
+  }
+
+  if (must_free_frames) {
+    base_internal::LowLevelAlloc::Free(frames);
+  }
+
   ABSL_BLOCK_TAIL_CALL_OPTIMIZATION();
   return static_cast<int>(size);
 }

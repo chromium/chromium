@@ -21,6 +21,7 @@
 #include <cerrno>
 #include <csignal>
 #include <cstring>
+#include <memory>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -32,6 +33,7 @@
 static int g_should_fixup_calls = 0;
 static int g_fixup_calls = 0;
 static bool g_enable_fixup = false;
+static uintptr_t g_last_fixup_frame_address = 0;
 
 #if ABSL_HAVE_ATTRIBUTE_WEAK
 bool absl::internal_stacktrace::ShouldFixUpStack() {
@@ -41,6 +43,11 @@ bool absl::internal_stacktrace::ShouldFixUpStack() {
 
 void absl::internal_stacktrace::FixUpStack(void**, uintptr_t*, int*, size_t,
                                            size_t&) {
+  const void* frame_address = nullptr;
+#if ABSL_HAVE_BUILTIN(__builtin_frame_address)
+  frame_address = __builtin_frame_address(0);
+#endif
+  g_last_fixup_frame_address = reinterpret_cast<uintptr_t>(frame_address);
   ++g_fixup_calls;
 }
 #endif
@@ -85,11 +92,21 @@ TEST(StackTrace, HugeFrame) {
 
 // This is a separate function to avoid inlining.
 ABSL_ATTRIBUTE_NOINLINE static void FixupNoFixupEquivalenceNoInline() {
+#if !ABSL_HAVE_ATTRIBUTE_WEAK
+  GTEST_SKIP() << "Need weak symbol support";
+#endif
 #if defined(__riscv)
   GTEST_SKIP() << "Skipping test on RISC-V due to pre-existing failure";
 #endif
+#if defined(_WIN32)
+  // TODO(b/434184677): Add support for fixups on Windows if needed
+  GTEST_SKIP() << "Skipping test on Windows due to lack of support for fixups";
+#endif
+  bool can_rely_on_frame_pointers = false;
+  if (!can_rely_on_frame_pointers) {
+    GTEST_SKIP() << "Frame pointers are required, but not guaranteed in OSS";
+  }
 
-#if ABSL_HAVE_ATTRIBUTE_WEAK
   // This test is known not to pass on MSVC (due to weak symbols)
 
   const Cleanup restore_state([enable_fixup = g_enable_fixup,
@@ -209,18 +226,61 @@ ABSL_ATTRIBUTE_NOINLINE static void FixupNoFixupEquivalenceNoInline() {
       ContainerEq(absl::MakeSpan(b.frames, static_cast<size_t>(b.depth))));
   EXPECT_GT(g_should_fixup_calls, 0);
   EXPECT_GE(g_should_fixup_calls, g_fixup_calls);
-
-  // ==========================================================================
-#else
-  GTEST_SKIP() << "Need weak symbol support";
-#endif
 }
 
 TEST(StackTrace, FixupNoFixupEquivalence) { FixupNoFixupEquivalenceNoInline(); }
 
+TEST(StackTrace, FixupLowStackUsage) {
+#if !ABSL_HAVE_ATTRIBUTE_WEAK
+  GTEST_SKIP() << "Skipping test on MSVC due to weak symbols";
+#endif
+#if defined(_WIN32)
+  // TODO(b/434184677): Add support for fixups on Windows if needed
+  GTEST_SKIP() << "Skipping test on Windows due to lack of support for fixups";
+#endif
+
+  const Cleanup restore_state([enable_fixup = g_enable_fixup,
+                               fixup_calls = g_fixup_calls,
+                               should_fixup_calls = g_should_fixup_calls]() {
+    g_enable_fixup = enable_fixup;
+    g_fixup_calls = fixup_calls;
+    g_should_fixup_calls = should_fixup_calls;
+  });
+
+  g_enable_fixup = true;
+
+  // Request a ton of stack frames, regardless of how many are actually used.
+  // It's fine to request more frames than we have, since functions preallocate
+  // memory before discovering how high the stack really is, and we're really
+  // just trying to make sure the preallocations don't overflow the stack.
+  //
+  // Note that we loop in order to cover all sides of any branches in the
+  // implementation that switch allocation behavior (e.g., from stack to heap)
+  // and to ensure that no sides allocate too much stack space.
+  constexpr size_t kPageSize = 4096;
+  for (size_t depth = 2; depth < (1 << 20); depth += depth / 2) {
+    const auto stack = std::make_unique<void*[]>(depth);
+    const auto frames = std::make_unique<int[]>(depth);
+
+    absl::GetStackFrames(stack.get(), frames.get(), static_cast<int>(depth), 0);
+    const void* frame_address = nullptr;
+#if ABSL_HAVE_BUILTIN(__builtin_frame_address)
+    frame_address = __builtin_frame_address(0);
+#endif
+    size_t stack_usage =
+        reinterpret_cast<uintptr_t>(frame_address) - g_last_fixup_frame_address;
+    EXPECT_LT(stack_usage, kPageSize);
+  }
+}
+
 TEST(StackTrace, CustomUnwinderPerformsFixup) {
-#if ABSL_HAVE_ATTRIBUTE_WEAK
-  // This test is known not to pass on MSVC (due to weak symbols)
+#if !ABSL_HAVE_ATTRIBUTE_WEAK
+  GTEST_SKIP() << "Need weak symbol support";
+#endif
+#if defined(_WIN32)
+  // TODO(b/434184677): Add support for fixups on Windows if needed
+  GTEST_SKIP() << "Skipping test on Windows due to lack of support for fixups";
+#endif
 
   constexpr int kSkip = 1;  // Skip our own frame, whose return PCs won't match
   constexpr auto kStackCount = 1;
@@ -266,9 +326,6 @@ TEST(StackTrace, CustomUnwinderPerformsFixup) {
                                   nullptr, nullptr);
   EXPECT_GT(g_should_fixup_calls, 0);
   EXPECT_GT(g_fixup_calls, 0);
-#else
-  GTEST_SKIP() << "Need weak symbol support";
-#endif
 }
 
 #if ABSL_HAVE_BUILTIN(__builtin_frame_address)

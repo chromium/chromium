@@ -237,6 +237,8 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #error ABSL_HAVE_TLS cannot be directly set
 #elif (defined(__linux__)) && (defined(__clang__) || defined(_GLIBCXX_HAVE_TLS))
 #define ABSL_HAVE_TLS 1
+#elif defined(__INTEL_LLVM_COMPILER)
+#define ABSL_HAVE_TLS 1
 #endif
 
 // ABSL_HAVE_STD_IS_TRIVIALLY_DESTRUCTIBLE

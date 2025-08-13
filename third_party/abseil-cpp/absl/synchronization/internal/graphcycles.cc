@@ -58,7 +58,7 @@ ABSL_CONST_INIT static absl::base_internal::SpinLock arena_mu(
 ABSL_CONST_INIT static base_internal::LowLevelAlloc::Arena* arena;
 
 static void InitArenaIfNecessary() {
-  base_internal::SpinLockHolder l(&arena_mu);
+  base_internal::SpinLockHolder l(arena_mu);
   if (arena == nullptr) {
     arena = base_internal::LowLevelAlloc::NewArena(0);
   }

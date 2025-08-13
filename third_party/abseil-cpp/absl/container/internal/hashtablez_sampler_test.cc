@@ -90,7 +90,7 @@ TEST(HashtablezInfoTest, PrepareForSampling) {
   const size_t test_value_size = 13;
 
   HashtablezInfo info;
-  absl::MutexLock l(&info.init_mu);
+  absl::MutexLock l(info.init_mu);
   info.PrepareForSampling(test_stride, test_element_size,
                           /*key_size=*/test_key_size,
                           /*value_size=*/test_value_size,
@@ -148,7 +148,7 @@ TEST(HashtablezInfoTest, PrepareForSampling) {
 
 TEST(HashtablezInfoTest, RecordStorageChanged) {
   HashtablezInfo info;
-  absl::MutexLock l(&info.init_mu);
+  absl::MutexLock l(info.init_mu);
   const int64_t test_stride = 21;
   const size_t test_element_size = 19;
   const size_t test_key_size = 17;
@@ -168,7 +168,7 @@ TEST(HashtablezInfoTest, RecordStorageChanged) {
 
 TEST(HashtablezInfoTest, RecordInsert) {
   HashtablezInfo info;
-  absl::MutexLock l(&info.init_mu);
+  absl::MutexLock l(info.init_mu);
   const int64_t test_stride = 25;
   const size_t test_element_size = 23;
   const size_t test_key_size = 21;
@@ -203,7 +203,7 @@ TEST(HashtablezInfoTest, RecordErase) {
   const size_t test_value_size = 25;
 
   HashtablezInfo info;
-  absl::MutexLock l(&info.init_mu);
+  absl::MutexLock l(info.init_mu);
   info.PrepareForSampling(test_stride, test_element_size,
                           /*key_size=*/test_key_size,
                           /*value_size=*/test_value_size,
@@ -227,7 +227,7 @@ TEST(HashtablezInfoTest, RecordRehash) {
   const size_t test_key_size = 29;
   const size_t test_value_size = 27;
   HashtablezInfo info;
-  absl::MutexLock l(&info.init_mu);
+  absl::MutexLock l(info.init_mu);
   info.PrepareForSampling(test_stride, test_element_size,
                           /*key_size=*/test_key_size,
                           /*value_size=*/test_value_size,
@@ -259,7 +259,7 @@ TEST(HashtablezInfoTest, RecordRehash) {
 
 TEST(HashtablezInfoTest, RecordReservation) {
   HashtablezInfo info;
-  absl::MutexLock l(&info.init_mu);
+  absl::MutexLock l(info.init_mu);
   const int64_t test_stride = 35;
   const size_t test_element_size = 33;
   const size_t test_key_size = 31;

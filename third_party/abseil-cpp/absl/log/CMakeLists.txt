@@ -560,6 +560,8 @@ absl_cc_library(
 absl_cc_library(
   NAME
     log_entry
+  SRCS
+    "log_entry.cc"
   HDRS
     "log_entry.h"
   COPTS
@@ -570,6 +572,7 @@ absl_cc_library(
     absl::config
     absl::core_headers
     absl::log_internal_config
+    absl::log_internal_proto
     absl::log_severity
     absl::span
     absl::strings

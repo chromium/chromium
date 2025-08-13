@@ -200,6 +200,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "log/initialize.cc"
   "log/initialize.h"
   "log/log.h"
+  "log/log_entry.cc"
   "log/log_entry.h"
   "log/log_sink.cc"
   "log/log_sink.h"
