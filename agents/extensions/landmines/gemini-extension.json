@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "contextFileName": "GEMINI.md",
   "excludeTools": [
-    "run_shell_command(autoninja)",
     "glob",
     "search_file_content",
     "run_shell_command(find .)",

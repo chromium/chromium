@@ -27,10 +27,13 @@ single agentic tool.
 <!-- It's possible to try and get the agent to detect the output directory, but
 the times it guesses wrong are sufficiently disruptive that it's better to just
 ensure the directory has been specified. -->
-* Do not attempt a build or compile without first establishing the correct
-  output directory. If you have not been told the directory, ask for it.
-<!-- The "landmines" extension instructs it otherwise. -->
+* Do not attempt a build without first establishing the correct output
+  directory and target. If you have not been given them, and you plan on doing
+  a build, then stop and ask before starting on any other tasks.
+<!-- Not that important since autoninja.py automatically adds --quiet when
+GEMINI_CLI=1 is set, but nice for the command to be correct from the start.-->
 * Unless otherwise instructed, build with: `autoninja --quiet -C {OUT_DIR} {TARGET}`
+  * If given an `autoninja` command that is missing `--quiet`, add `--quiet`.
 
 ## Testing
 

@@ -1,6 +1,3 @@
-Any time you are instructed to run `autoninja`, use
-`agents/extensions/landmines/agent_autoninja` in its place.
-
 Do not use the `read_many_files` tool. Read files one at a time with
 `read_file`.
 
