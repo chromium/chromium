@@ -2,15 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import collections
 import pathlib
+import typing
 
-from compiler import Compiler
 from graph import all_headers
-from graph import CompileStatus
+from graph import calculate_rdeps
 from graph import Header
 from graph import IncludeDir
-from graph import calculate_rdeps
+
+if typing.TYPE_CHECKING:
+  # To fix circular dependency.
+  from compiler import Compiler
 
 IGNORED_MODULES = [
     # This is a builtin module with feature requirements.
@@ -36,7 +38,7 @@ SYSROOT_PRECOMPILED_HEADERS = [
 ]
 
 
-def fix_graph(graph: dict[str, Header], compiler: Compiler):
+def fix_graph(graph: dict[str, Header], compiler: 'Compiler'):
   """Applies manual augmentation of the header graph."""
 
   def add_dep(frm, to):

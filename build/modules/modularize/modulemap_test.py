@@ -123,21 +123,20 @@ class ModulemapTest(unittest.TestCase):
         })
 
     got_modules = {
-        mod: [str(path.relative_to(_TESTDATA)) for path in paths]
-        for mod, paths in got_modules.items()
+        mod: str(path.relative_to(_TESTDATA))
+        for mod, path in got_modules.items()
     }
 
     self.assertEqual(
         got_modules, {
-            'container': ['sysroot/module.modulemap'],
-            'first':
-            ['sysroot/module.modulemap', 'sysroot/importable.modulemap'],
-            'nested': ['Frameworks/nested.framework/Modules/module.modulemap'],
-            'second': ['sysroot/importable.modulemap'],
-            'simple': ['Frameworks/simple.framework/Modules/module.modulemap'],
-            'subdir': ['sysroot/subdir/module.modulemap'],
+            'container': 'sysroot/module.modulemap',
+            'first': 'sysroot/importable.modulemap',
+            'nested': 'Frameworks/nested.framework/Modules/module.modulemap',
+            'second': 'sysroot/importable.modulemap',
+            'simple': 'Frameworks/simple.framework/Modules/module.modulemap',
+            'subdir': 'sysroot/subdir/module.modulemap',
             'umbrella':
-            ['Frameworks/umbrella.framework/Modules/module.modulemap'],
+            'Frameworks/umbrella.framework/Modules/module.modulemap',
         })
 
 

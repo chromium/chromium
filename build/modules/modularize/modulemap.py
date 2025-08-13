@@ -18,8 +18,7 @@ _EXTERN_MODULE = re.compile(r'^(\s*)extern module ([^ ]*) "([^"]*)"')
 
 
 def _parse_modulemap(include_dir: pathlib.Path, mm_path: pathlib.Path,
-                     include_kind: IncludeDir,
-                     modules: collections.defaultdict[str, list],
+                     include_kind: IncludeDir, modules: dict[str, pathlib.Path],
                      headers: set[Header]):
   # The modulemap's paths are relative to the modulemap, but the include's
   # paths are relative to d.
@@ -48,6 +47,7 @@ def _parse_modulemap(include_dir: pathlib.Path, mm_path: pathlib.Path,
     else:
       return rel_prefix + rel
 
+  current_module = None
   with mm_path.open() as f:
     for line in f:
       match = _MODULE_START.match(line)
@@ -56,8 +56,7 @@ def _parse_modulemap(include_dir: pathlib.Path, mm_path: pathlib.Path,
         if not indent:
           # It must be a root module
           current_module = mod
-          if mm_path not in modules[current_module]:
-            modules[current_module].append(mm_path)
+          modules[current_module] = mm_path
         if is_framework:
           # This is a bit hacky, but frameworks don't go deeper than two layers.
           if not indent:
@@ -102,15 +101,23 @@ def _parse_modulemap(include_dir: pathlib.Path, mm_path: pathlib.Path,
       extern = _EXTERN_MODULE.match(line)
       if extern is not None:
         indent, extern_module_name, modulemap = extern.groups()
-        paths = modules[current_module if indent else extern_module_name]
-        if mm_path not in paths:
-          paths.append(mm_path)
+        # The same module can be defined in multiple files. If it is, we can use
+        # the root module.modulemap's extern module foo "foo.modulemap" to
+        # resolve which one is the canonical definition.
+        if current_module is None:
+          modules[extern_module_name] = include_dir / modulemap
         submap_headers = set()
-        _parse_modulemap(include_dir,
-                         include_dir / modulemap,
-                         include_kind,
-                         modules=modules,
-                         headers=submap_headers)
+        submap_modules = {}
+        _parse_modulemap(
+            include_dir,
+            include_dir / modulemap,
+            include_kind,
+            modules=modules if current_module is None else submap_modules,
+            headers=submap_headers)
+        for k, v in submap_modules.items():
+          if k not in submap_modules:
+            submap_modules[k] = v
+
         # For module foo { extern module bar }, although the module is bar, the
         # compilation unit is foo
         if indent:
@@ -121,7 +128,7 @@ def _parse_modulemap(include_dir: pathlib.Path, mm_path: pathlib.Path,
 
 def calculate_modules(
     include_kinds: list[tuple[pathlib.Path, IncludeDir]]
-) -> tuple[dict[str, list[pathlib.Path]], set[Header]]:
+) -> tuple[dict[str, pathlib.Path], set[Header]]:
   """Calculates modules and the headers contained within.
 
   Args:
@@ -130,7 +137,7 @@ def calculate_modules(
   Returns:
     A mapping from module names to modulemaps, and headers defined by modulemaps
   """
-  modules = collections.defaultdict(list)
+  modules = {}
   headers = set()
   for d, kind in include_kinds:
     if kind == IncludeDir.Framework:
@@ -144,18 +151,21 @@ def calculate_modules(
                            modules=modules,
                            headers=headers)
     else:
-      if (d / 'module.modulemap').is_file():
-        _parse_modulemap(d,
-                         d / 'module.modulemap',
-                         include_kind=kind,
-                         modules=modules,
-                         headers=headers)
       # One level deep is sufficient for the apple sysroot.
       # ** doesn't work because otherwise it includes the things referenced by
       # the root module.modulemap
       for modulemap in d.glob('*/module.modulemap'):
         _parse_modulemap(d,
                          modulemap,
+                         include_kind=kind,
+                         modules=modules,
+                         headers=headers)
+
+      # Intentionally place this after the previous parse_modulemap so that we
+      # override the modules.
+      if (d / 'module.modulemap').is_file():
+        _parse_modulemap(d,
+                         d / 'module.modulemap',
                          include_kind=kind,
                          modules=modules,
                          headers=headers)

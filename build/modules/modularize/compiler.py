@@ -276,10 +276,10 @@ class Compiler:
   def _modules_and_headers(self):
     return modulemap.calculate_modules(self.include_dirs)
 
-  def modulemaps_for_modules(self):
+  def modulemaps_for_modules(self) -> dict[str, pathlib.Path]:
     return self._modules_and_headers()[0]
 
-  def modulemap_headers(self):
+  def modulemap_headers(self) -> set[Header]:
     return self._modules_and_headers()[1]
 
   @_maybe_cache
@@ -288,7 +288,7 @@ class Compiler:
     if self._error_dir is not None:
       shutil.rmtree(self._error_dir, ignore_errors=True)
 
-    graph: dict[HeaderRef, Header] = {}
+    graph: dict[str, Header] = {}
     uncompiled = []
     seen = set()
 
