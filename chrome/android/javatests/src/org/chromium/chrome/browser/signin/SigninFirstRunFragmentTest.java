@@ -376,6 +376,9 @@ public class SigninFirstRunFragmentTest {
                     when(IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(mSigninManagerMock);
+                    when(IdentityServicesProvider.get()
+                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
+                            .thenReturn(mIdentityManagerMock);
                     PrefService prefService =
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     prefService.setBoolean(Pref.SIGNIN_ALLOWED, false);
@@ -438,6 +441,10 @@ public class SigninFirstRunFragmentTest {
                     when(IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(mSigninManagerMock);
+                    when(IdentityServicesProvider.get()
+                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
+                            .thenReturn(mIdentityManagerMock);
+
                     PrefService prefService =
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     prefService.setBoolean(Pref.SIGNIN_ALLOWED, false);

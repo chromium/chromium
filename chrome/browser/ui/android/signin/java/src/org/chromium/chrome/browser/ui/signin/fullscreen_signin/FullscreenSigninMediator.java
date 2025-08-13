@@ -103,7 +103,7 @@ public class FullscreenSigninMediator
     private final @SigninAccessPoint int mAccessPoint;
     private final FullscreenSigninConfig mConfig;
     private final PropertyModel mModel;
-    private final ProfileDataCache mProfileDataCache;
+    private @Nullable ProfileDataCache mProfileDataCache;
     private boolean mDestroyed;
 
     /** Whether the initial load phase has been completed. See {@link #onInitialLoadCompleted}. */
@@ -131,7 +131,6 @@ public class FullscreenSigninMediator
         mDelegate = delegate;
         mPrivacyPreferencesManager = privacyPreferencesManager;
         mAccessPoint = accessPoint;
-        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
         mConfig = config;
 
         mInitialLoadCompleted =
@@ -167,8 +166,6 @@ public class FullscreenSigninMediator
                     .onAvailable(ignored -> onChildAccountStatusAvailable());
         }
 
-        mProfileDataCache.addObserver(this);
-
         mAccountManagerFacade.addObserver(this);
         updateAccounts(
                 AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts()));
@@ -181,7 +178,9 @@ public class FullscreenSigninMediator
 
     void destroy() {
         assert !mDestroyed;
-        mProfileDataCache.removeObserver(this);
+        if (mProfileDataCache != null) {
+            mProfileDataCache.removeObserver(this);
+        }
         mAccountManagerFacade.removeObserver(this);
         mDestroyed = true;
     }
@@ -250,6 +249,22 @@ public class FullscreenSigninMediator
      *     also means that native has been initialized.
      */
     void onInitialLoadCompleted(boolean hasPolicies) {
+        if (mProfileDataCache == null) {
+            Profile profile = mDelegate.getProfileSupplier().get().getOriginalProfile();
+            IdentityManager identityManager =
+                    IdentityServicesProvider.get().getIdentityManager(assertNonNull(profile));
+            mProfileDataCache =
+                    ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                            mContext, assertNonNull(identityManager));
+            mProfileDataCache.addObserver(this);
+            updateSelectedAccountData();
+        }
+
+        AccountUtils.checkIsSubjectToParentalControls(
+                mAccountManagerFacade,
+                AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts()),
+                this::onChildAccountStatusReady);
+
         boolean isMetricsReportingDisabledByPolicy = false;
         Log.i(TAG, "#onInitialLoadCompleted() hasPolicies:" + hasPolicies);
         if (hasPolicies) {
@@ -312,7 +327,10 @@ public class FullscreenSigninMediator
     /** Implements {@link ProfileDataCache.Observer}. */
     @Override
     public void onProfileDataUpdated(String accountEmail) {
-        updateSelectedAccountData(accountEmail);
+        if (mSelectedAccount != null
+                && TextUtils.equals(mSelectedAccount.getEmail(), accountEmail)) {
+            updateSelectedAccountData();
+        }
     }
 
     /** Implements {@link AccountsChangeObserver}. */
@@ -554,15 +572,14 @@ public class FullscreenSigninMediator
 
     private void setSelectedAccount(CoreAccountInfo account) {
         mSelectedAccount = account;
-        updateSelectedAccountData(account.getEmail());
+        updateSelectedAccountData();
     }
 
-    private void updateSelectedAccountData(String accountEmail) {
-        if (mSelectedAccount != null
-                && TextUtils.equals(mSelectedAccount.getEmail(), accountEmail)) {
+    private void updateSelectedAccountData() {
+        if (mProfileDataCache != null && mSelectedAccount != null) {
             mModel.set(
                     FullscreenSigninProperties.SELECTED_ACCOUNT_DATA,
-                    mProfileDataCache.getProfileDataOrDefault(accountEmail));
+                    mProfileDataCache.getProfileDataOrDefault(mSelectedAccount.getEmail()));
         }
     }
 
@@ -602,6 +619,9 @@ public class FullscreenSigninMediator
     }
 
     private void onChildAccountStatusReady(boolean isChild, @Nullable CoreAccountInfo childInfo) {
+        if (mProfileDataCache == null) {
+            return;
+        }
         mModel.set(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED, isChild);
         // Selected account data will be updated in {@link #onProfileDataUpdated}
         mProfileDataCache.setBadge(
