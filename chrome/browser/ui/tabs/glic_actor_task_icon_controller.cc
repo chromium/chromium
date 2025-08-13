@@ -9,6 +9,9 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#endif
 
 namespace tabs {
 
@@ -19,6 +22,7 @@ GlicActorTaskIconController::GlicActorTaskIconController(
       tab_strip_action_container_(tab_strip_action_container) {
   if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
     RegisterFloatyTaskStateCallback();
+    UpdateCurrentUiState();
   }
 }
 
@@ -32,8 +36,19 @@ void GlicActorTaskIconController::RegisterFloatyTaskStateCallback() {
           ->RegisterFloatyTaskStateChange(
               base::BindRepeating(&GlicActorTaskIconController::OnStateUpdate,
                                   base::Unretained(this))));
-  // TODO(crbug.com/422439520): Call GetUiState() and update current window to
-  // maintain consistency across multiple windows.
+#endif
+}
+
+void GlicActorTaskIconController::UpdateCurrentUiState() {
+#if BUILDFLAG(ENABLE_GLIC)
+  actor::ui::ActorUiStateManagerInterface::UiState ui_state =
+      actor::ActorKeyedService::Get(profile_)
+          ->GetActorUiStateManager()
+          ->GetUiState();
+  auto* glic_keyed_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
+  OnStateUpdate(ui_state, glic_keyed_service->window_controller().state(),
+                glic_keyed_service->host().GetPrimaryCurrentView());
 #endif
 }
 

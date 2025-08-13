@@ -45,7 +45,7 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   std::vector<tabs::TabInterface*> GetTabs(TaskId id);
 
   // Returns the current profile scoped ui state.
-  UiState GetUiState() const;
+  UiState GetUiState() const override;
 
  protected:
   UiState state_ = UiState::kInactive;

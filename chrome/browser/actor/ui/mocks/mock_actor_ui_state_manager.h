@@ -36,6 +36,7 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
               (tabs::TabInterface * tab),
               (override));
   MOCK_METHOD(void, MaybeShowToast, (BrowserWindowInterface * bwi), (override));
+  MOCK_METHOD(UiState, GetUiState, (), (const override));
 
 #if BUILDFLAG(ENABLE_GLIC)
   MOCK_METHOD(void,

@@ -36,7 +36,12 @@ class GlicActorTaskIconController {
   const raw_ptr<Profile> profile_;
   const raw_ptr<TabStripActionContainer> tab_strip_action_container_;
 
+  // Subscribe to updates from the ActorUiStateManager.
   void RegisterFloatyTaskStateCallback();
+
+  // Get the current task and floaty state and update the UI. Called on window
+  // creation to maintain state across multiple windows.
+  void UpdateCurrentUiState();
 
   std::vector<base::CallbackListSubscription>
       floaty_task_state_change_callback_subscription_;

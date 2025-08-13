@@ -56,6 +56,9 @@ class ActorUiStateManagerInterface {
   // Shows a maximum of kToastShownMax per profile.
   virtual void MaybeShowToast(BrowserWindowInterface* bwi) = 0;
 
+  // Returns the current UI state.
+  virtual UiState GetUiState() const = 0;
+
 #if BUILDFLAG(ENABLE_GLIC)
   // Called on glic window (floaty) state change OR view change.
   virtual void OnGlicUpdateFloatyState(
