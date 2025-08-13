@@ -1169,6 +1169,11 @@
       status: "stable",
     },
     {
+      // An update of anchor positioning (primarily how scrolling affects
+      // layout, but includes other inter-connected changes).
+      name: "CSSAnchorUpdate",
+    },
+    {
       // Let transforms affect anchor() and anchor-size() functions.
       name: "CSSAnchorWithTransforms",
       status: "experimental",
