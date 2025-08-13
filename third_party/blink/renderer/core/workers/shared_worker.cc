@@ -34,6 +34,7 @@
 #include <optional>
 
 #include "base/feature_list.h"
+#include "build/buildflag.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/features.h"
@@ -63,6 +64,9 @@ namespace {
 
 void RecordSharedWorkerUsage(LocalDOMWindow* window) {
   UseCounter::Count(window, WebFeature::kSharedWorkerStart);
+#if BUILDFLAG(IS_ANDROID)
+  UseCounter::Count(window, WebFeature::kSharedWorkerStartOnAndroid);
+#endif
 
   if (window->IsCrossSiteSubframe())
     UseCounter::Count(window, WebFeature::kThirdPartySharedWorker);
