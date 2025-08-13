@@ -167,8 +167,6 @@ crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hv
 crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_constant_3000000 [ Failure ]
 crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_3000000 [ Failure ]
 
-# Graphite failures
-crbug.com/419454905 [ android graphite-enabled ] WebCodecs_MixedSourceEncoding_avc1.42001E_prefer-hardware [ Failure ]
 
 # Known issues with hvc1 variants with hvc1 + camera + prefers-software to reproduce
 crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
@@ -305,11 +303,11 @@ crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_*hvc*prefer-hardware* [ F
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_ContentHint_hvc1.1.6.L123.00_detail [ Failure ]
 crbug.com/416294710 [ angle-metal intel-0x3e9b sequoia ] WebCodecs_ContentHint_hvc1.1.6.L123.00_motion [ Failure ]
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_ContentHint_hvc1.1.6.L123.00_text [ Failure ]
-crbug.com/416294710 [ graphite-disabled intel-0x3e9b sequoia ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_arraybuffer [ Failure ]
-crbug.com/416294710 [ graphite-disabled intel-0x3e9b sequoia ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_capture [ Failure ]
-crbug.com/416294710 [ graphite-disabled intel-0x3e9b sequoia ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_hw_decoder [ Failure ]
-crbug.com/416294710 [ graphite-disabled intel-0x3e9b sequoia ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_offscreen [ Failure ]
-crbug.com/416294710 [ graphite-disabled intel-0x3e9b sequoia ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_sw_decoder [ Failure ]
+crbug.com/416294710 [ angle-opengl graphite-disabled intel-0x3e9b sequoia ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_arraybuffer [ Failure ]
+crbug.com/416294710 [ angle-opengl graphite-disabled intel-0x3e9b sequoia ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_capture [ Failure ]
+crbug.com/416294710 [ angle-opengl graphite-disabled intel-0x3e9b sequoia ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_hw_decoder [ Failure ]
+crbug.com/416294710 [ angle-opengl graphite-disabled intel-0x3e9b sequoia ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_offscreen [ Failure ]
+crbug.com/416294710 [ angle-opengl graphite-disabled intel-0x3e9b sequoia ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_sw_decoder [ Failure ]
 
 # Mac Intel SharedImage Synchronization Flakes
 crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_DrawImage_camera [ Failure ]
