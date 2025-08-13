@@ -67,7 +67,21 @@ base::expected<base::Version, IwaVersion::IwaVersionParseError> ParseIwaVersion(
     components.push_back(static_cast<uint32_t>(number));
   }
 
-  return base::Version(components);
+  return base::Version(std::move(components));
+}
+
+base::expected<base::Version, IwaVersion::IwaVersionParseError> ParseIwaVersion(
+    std::vector<uint32_t> components) {
+  if (components.empty()) {
+    return base::unexpected(IwaVersion::IwaVersionParseError::kNoComponents);
+  }
+
+  if (components.size() > IwaVersion::kMaxNumberOfComponents) {
+    return base::unexpected(
+        IwaVersion::IwaVersionParseError::kTooManyComponents);
+  }
+
+  return base::Version(std::move(components));
 }
 
 }  // namespace
@@ -75,6 +89,13 @@ base::expected<base::Version, IwaVersion::IwaVersionParseError> ParseIwaVersion(
 base::expected<IwaVersion, IwaVersion::IwaVersionParseError> IwaVersion::Create(
     std::string_view version_string) {
   return ParseIwaVersion(version_string).transform([](base::Version version) {
+    return IwaVersion(std::move(version));
+  });
+}
+
+base::expected<IwaVersion, IwaVersion::IwaVersionParseError> IwaVersion::Create(
+    std::vector<uint32_t> components) {
+  return ParseIwaVersion(components).transform([](base::Version version) {
     return IwaVersion(std::move(version));
   });
 }
@@ -99,6 +120,10 @@ std::string IwaVersion::GetErrorString(IwaVersionParseError error) {
           kMaxNumberOfComponents);
   }
   return "Unknown IWA version parse error";
+}
+
+std::ostream& operator<<(std::ostream& stream, const IwaVersion& v) {
+  return stream << v.GetString();
 }
 
 }  // namespace web_app

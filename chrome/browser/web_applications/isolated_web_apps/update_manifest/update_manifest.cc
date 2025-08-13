@@ -21,7 +21,6 @@
 #include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
-#include "base/version.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -34,7 +33,7 @@ base::expected<std::vector<UpdateManifest::VersionEntry>,
                UpdateManifest::JsonFormatError>
 ParseVersions(const base::Value::List& version_entries_value,
               const GURL& update_manifest_url) {
-  base::flat_map<base::Version, UpdateManifest::VersionEntry> version_entry_map;
+  base::flat_map<IwaVersion, UpdateManifest::VersionEntry> version_entry_map;
   for (const auto& version_entry_value : version_entries_value) {
     const base::Value::Dict* version_entry_dict =
         version_entry_value.GetIfDict();
@@ -225,7 +224,7 @@ std::optional<UpdateManifest::VersionEntry> UpdateManifest::GetLatestVersion(
 }
 
 std::optional<UpdateManifest::VersionEntry> UpdateManifest::GetVersion(
-    const base::Version& version,
+    const IwaVersion& version,
     const UpdateChannel& channel) const {
   for (const VersionEntry& version_entry : version_entries_) {
     if (version_entry.channels().contains(channel) &&
@@ -261,7 +260,7 @@ UpdateManifest::VersionEntry::ParseFromJson(
   ASSIGN_OR_RETURN(auto channels,
                    ParseAndValidateChannels(
                        version_entry_dict.Find(kUpdateManifestChannelsKey)));
-  return VersionEntry(std::move(src), std::move(*version), std::move(channels));
+  return VersionEntry(std::move(src), std::move(version), std::move(channels));
 }
 
 UpdateManifest::ChannelMetadata::ChannelMetadata(
@@ -291,7 +290,7 @@ void PrintTo(const UpdateManifest::ChannelMetadata& channel_metadata,
 
 UpdateManifest::VersionEntry::VersionEntry(
     GURL src,
-    base::Version version,
+    IwaVersion version,
     base::flat_set<UpdateChannel> channels)
     : src_(std::move(src)),
       version_(std::move(version)),
@@ -308,8 +307,7 @@ GURL UpdateManifest::VersionEntry::src() const {
   return src_;
 }
 
-base::Version UpdateManifest::VersionEntry::version() const {
-  CHECK(version_.IsValid());
+IwaVersion UpdateManifest::VersionEntry::version() const {
   return version_;
 }
 

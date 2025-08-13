@@ -111,11 +111,11 @@ TEST_F(UpdateManifestFetcherTest, FetchesValidManifest) {
                        ElementsAre(
                            UpdateManifest::VersionEntry{
                                GURL("https://other.com/bundle.swbn"),
-                               base::Version("1.2.3"),
+                               *IwaVersion::Create("1.2.3"),
                                {*UpdateChannel::Create("default")}},
                            UpdateManifest::VersionEntry{
                                GURL("https://example.com/foo/bundle.swbn"),
-                               base::Version("3.2.1"),
+                               *IwaVersion::Create("3.2.1"),
                                {*UpdateChannel::Create("default")}}))));
 }
 

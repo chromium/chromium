@@ -21,16 +21,17 @@ using ::testing::ElementsAreArray;
 using ::testing::HasSubstr;
 using IwaVersionParseError = IwaVersion::IwaVersionParseError;
 
-struct IwaVersionTestParam {
+struct IwaVersionFromStringTestParam {
   std::string version_string;
   base::expected<std::vector<uint32_t>, IwaVersionParseError>
       expected_components;
 };
 
-using IwaVersionTest = testing::TestWithParam<IwaVersionTestParam>;
+using IwaVersionFromStringTest =
+    testing::TestWithParam<IwaVersionFromStringTestParam>;
 
-TEST_P(IwaVersionTest, ParseVersion) {
-  const IwaVersionTestParam& param = GetParam();
+TEST_P(IwaVersionFromStringTest, ParseVersion) {
+  const IwaVersionFromStringTestParam& param = GetParam();
   base::expected<IwaVersion, IwaVersionParseError> result =
       IwaVersion::Create(param.version_string);
 
@@ -40,9 +41,9 @@ TEST_P(IwaVersionTest, ParseVersion) {
 
   if (result.has_value()) {
     // Both result and expected_result have values.
-    EXPECT_THAT(result.value()->components(),
+    EXPECT_THAT(result.value().version().components(),
                 ElementsAreArray(expected_result.value()));
-    EXPECT_TRUE(result.value()->IsValid());
+    EXPECT_TRUE(result.value().version().IsValid());
   } else {
     // Both result and expected_result have errors.
     EXPECT_EQ(result.error(), expected_result.error());
@@ -51,8 +52,8 @@ TEST_P(IwaVersionTest, ParseVersion) {
 
 INSTANTIATE_TEST_SUITE_P(
     ValidVersions,
-    IwaVersionTest,
-    testing::ValuesIn(std::vector<IwaVersionTestParam>{
+    IwaVersionFromStringTest,
+    testing::ValuesIn(std::vector<IwaVersionFromStringTestParam>{
         {.version_string = "1",
          .expected_components = std::vector<uint32_t>{1}},
         {.version_string = "0",
@@ -72,12 +73,13 @@ INSTANTIATE_TEST_SUITE_P(
         {.version_string = "4294967295.4294967294.4294967293",
          .expected_components = std::vector<uint32_t>{4294967295U, 4294967294U,
                                                       4294967293U}},
-    }));
+        {.version_string = "1.2.0.3",
+         .expected_components = std::vector<uint32_t>{1, 2, 0, 3}}}));
 
 INSTANTIATE_TEST_SUITE_P(
     InvalidVersions,
-    IwaVersionTest,
-    testing::ValuesIn(std::vector<IwaVersionTestParam>{
+    IwaVersionFromStringTest,
+    testing::ValuesIn(std::vector<IwaVersionFromStringTestParam>{
         {.version_string = "",
          .expected_components =
              base::unexpected(IwaVersionParseError::kNoComponents)},
@@ -139,8 +141,64 @@ INSTANTIATE_TEST_SUITE_P(
         {.version_string = "1.2.03",
          .expected_components =
              base::unexpected(IwaVersionParseError::kLeadingZero)},
-        {.version_string = "1.2.0.3",
-         .expected_components = std::vector<uint32_t>{1, 2, 0, 3}},
+    }));
+
+struct IwaVersionFromComponentsTestParam {
+  std::vector<uint32_t> input_components;
+  base::expected<std::vector<uint32_t>, IwaVersionParseError> expected_result;
+};
+
+using IwaVersionFromComponentsTest =
+    testing::TestWithParam<IwaVersionFromComponentsTestParam>;
+
+TEST_P(IwaVersionFromComponentsTest, CreateFromComponents) {
+  const auto& param = GetParam();
+  base::expected<IwaVersion, IwaVersionParseError> result =
+      IwaVersion::Create(param.input_components);
+
+  const auto& expected_result = param.expected_result;
+
+  ASSERT_EQ(result.has_value(), expected_result.has_value());
+
+  if (result.has_value()) {
+    EXPECT_THAT(result.value().version().components(),
+                ElementsAreArray(expected_result.value()));
+    EXPECT_TRUE(result.value().version().IsValid());
+  } else {
+    EXPECT_EQ(result.error(), expected_result.error());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ValidComponents,
+    IwaVersionFromComponentsTest,
+    testing::ValuesIn(std::vector<IwaVersionFromComponentsTestParam>{
+        {.input_components = {1}, .expected_result = std::vector<uint32_t>{1}},
+        {.input_components = {0}, .expected_result = std::vector<uint32_t>{0}},
+        {.input_components = {1, 2},
+         .expected_result = std::vector<uint32_t>{1, 2}},
+        {.input_components = {1, 2, 3},
+         .expected_result = std::vector<uint32_t>{1, 2, 3}},
+        {.input_components = {1, 2, 3, 4},
+         .expected_result = std::vector<uint32_t>{1, 2, 3, 4}},
+        {.input_components = {0, 0, 0},
+         .expected_result = std::vector<uint32_t>{0, 0, 0}},
+        {.input_components = {10, 20, 30},
+         .expected_result = std::vector<uint32_t>{10, 20, 30}},
+        {.input_components = {4294967295U},
+         .expected_result = std::vector<uint32_t>{4294967295U}},
+    }));
+
+INSTANTIATE_TEST_SUITE_P(
+    InvalidComponents,
+    IwaVersionFromComponentsTest,
+    testing::ValuesIn(std::vector<IwaVersionFromComponentsTestParam>{
+        {.input_components = {},
+         .expected_result =
+             base::unexpected(IwaVersionParseError::kNoComponents)},
+        {.input_components = {1, 2, 3, 4, 5},
+         .expected_result =
+             base::unexpected(IwaVersionParseError::kTooManyComponents)},
     }));
 
 using IwaVersionGetErrorStringTest =

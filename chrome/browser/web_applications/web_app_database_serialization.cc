@@ -1211,7 +1211,7 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
     }
 
     auto isolation_data_builder = IsolationData::Builder(
-        std::move(*location), std::move(*(iwa_version.value())));
+        std::move(*location), std::move(iwa_version->version()));
 
     const google::protobuf::RepeatedPtrField<std::string>& partitions =
         proto.isolation_data().controlled_frame_partitions();
@@ -1269,7 +1269,7 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
       isolation_data_builder.SetPendingUpdateInfo(
           IsolationData::PendingUpdateInfo(
               std::move(*pending_location),
-              std::move(*(pending_iwa_version.value())),
+              std::move((pending_iwa_version->version())),
               std::move(pending_integrity_block_data)));
     }
 

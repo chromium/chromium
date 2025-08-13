@@ -102,9 +102,11 @@ IsolatedWebAppInstallSource GetIsolatedWebAppInstallSource(
 std::optional<UpdateManifest::VersionEntry> GetVersionWithOptions(
     const UpdateManifest& update_manifest,
     const IsolatedWebAppExternalInstallOptions& install_options) {
-  if (install_options.pinned_version()) {
-    return update_manifest.GetVersion(*install_options.pinned_version(),
-                                      install_options.update_channel());
+  if (install_options.pinned_version().has_value()) {
+    // TODO: (crbug.com/437038363) Adjust to IwaVersion.
+    return update_manifest.GetVersion(
+        *IwaVersion::Create(install_options.pinned_version()->GetString()),
+        install_options.update_channel());
   } else {
     return update_manifest.GetLatestVersion(install_options.update_channel());
   }
@@ -340,7 +342,7 @@ void IwaInstaller::OnUpdateManifestParsed(
                            " from " +
                            version_to_install->src().possibly_invalid_spec()));
   std::move(next_step_callback)
-      .Run(version_to_install->src(), version_to_install->version());
+      .Run(version_to_install->src(), version_to_install->version().version());
 }
 
 void IwaInstaller::DownloadWebBundle(

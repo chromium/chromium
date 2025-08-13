@@ -43,7 +43,6 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "base/version.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -82,6 +81,7 @@
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/browser/service_worker_context.h"
@@ -1103,13 +1103,14 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
       }
     };
 
-    base::Version version = base::Version({
+    IwaVersion iwa_version = *IwaVersion::Create({
         random.next_uint(UINT32_MAX - 1U),
         random.next_uint(),
         random.next_uint(),
     });
 
-    auto idb = IsolationData::Builder(get_location_type(), version);
+    auto idb =
+        IsolationData::Builder(get_location_type(), iwa_version.version());
     std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data =
         CreateIntegrityBlockData(random);
     if (integrity_block_data) {
@@ -1120,23 +1121,23 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
       idb.SetControlledFramePartitions({"partition_name"});
     }
     if (random.next_bool()) {
-      base::Version pending_version = [&] {
+      IwaVersion pending_version = [&] {
         if (random.next_bool()) {
           // Case where `pending_version == version`. Useful for validating key
           // rotation scenarios.
-          return version;
+          return iwa_version;
         }
         // Otherwise, create `pending_version > version`.
-        uint32_t major_version = version.components()[0];
+        uint32_t major_version = iwa_version.version().components()[0];
         CHECK_LT(major_version, UINT32_MAX - 1U);
         uint32_t delta = random.next_uint(UINT32_MAX - 1U - major_version) + 1;
         // `major_version` + `delta` < UINT32_MAX.
-        return base::Version(
+        return *IwaVersion::Create(
             {major_version + delta, random.next_uint(), random.next_uint()});
       }();
-      CHECK_GE(pending_version, version);
+      CHECK_GE(pending_version, iwa_version);
       IsolationData::PendingUpdateInfo pending_update_info(
-          get_location_type(), pending_version, integrity_block_data);
+          get_location_type(), pending_version.version(), integrity_block_data);
       idb.SetPendingUpdateInfo(std::move(pending_update_info));
     }
     if (dev_mode && random.next_bool()) {

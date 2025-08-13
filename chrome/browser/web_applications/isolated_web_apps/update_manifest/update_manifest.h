@@ -17,7 +17,7 @@
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/values.h"
-#include "base/version.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "url/gurl.h"
 
@@ -85,7 +85,7 @@ class UpdateManifest {
         const GURL& update_manifest_url);
 
     VersionEntry(GURL src,
-                 base::Version version,
+                 IwaVersion version,
                  base::flat_set<UpdateChannel> channels);
 
     VersionEntry(const VersionEntry& other);
@@ -94,7 +94,7 @@ class UpdateManifest {
     ~VersionEntry();
 
     GURL src() const;
-    base::Version version() const;
+    IwaVersion version() const;
 
     // Each version contains to a set of update channels, which are defined by
     // the IWA's developer. While the field is optional in the spec, it is
@@ -106,7 +106,7 @@ class UpdateManifest {
     friend bool operator==(const VersionEntry& a, const VersionEntry& b);
 
     GURL src_;
-    base::Version version_;
+    IwaVersion version_;
     base::flat_set<UpdateChannel> channels_;
   };
 
@@ -136,7 +136,7 @@ class UpdateManifest {
 
   // Returns version entry for given version and channel. If there is no entry
   // matching the criteria, then it returns `std::nullopt'.
-  std::optional<VersionEntry> GetVersion(const base::Version& version,
+  std::optional<VersionEntry> GetVersion(const IwaVersion& version,
                                          const UpdateChannel& channel) const;
 
   // Returns channel metadata for a provided update channel ID. If no metadata

@@ -256,9 +256,11 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
                    });
 
   std::optional<UpdateManifest::VersionEntry> version_entry;
-  if (task_params_.pinned_version()) {
+  if (task_params_.pinned_version().has_value()) {
+    // TODO: (crbug.com/437038363) Adjust to IwaVersion.
     version_entry = update_manifest.GetVersion(
-        task_params_.pinned_version().value(), task_params_.update_channel());
+        *IwaVersion::Create(task_params_.pinned_version()->GetString()),
+        task_params_.update_channel());
     if (!version_entry) {
       FailWith(Error::kPinnedVersionNotFoundInUpdateManifest);
       return;
@@ -325,7 +327,8 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
     }
   }
 
-  if (pending_update && pending_update->version == version_entry->version() &&
+  if (pending_update &&
+      pending_update->version == version_entry->version().version() &&
       !pending_info_overwrite_allowed_by_key_rotation) {
     // If we already have a pending update for this version, stop. However,
     // we do allow overwriting a pending update with a different pending
@@ -342,7 +345,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
   // the mentioned command will re-check that the new version can be applied.
   VersionChangeValidationResult validation_result =
       ValidateVersionChangeFeasibility(
-          version_entry->version(), currently_installed_version_,
+          version_entry->version().version(), currently_installed_version_,
           task_params_.allow_downgrades(),
           same_version_update_allowed_by_key_rotation);
 
@@ -411,7 +414,8 @@ void IsolatedWebAppUpdateDiscoveryTask::OnTempFileCreated(
   bundle_downloader_->DownloadSignedWebBundle(
       version_entry.src(), bundle_.path(), kWebBundleDownloadTrafficAnnotation,
       base::BindOnce(&IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded,
-                     weak_factory_.GetWeakPtr(), version_entry.version()));
+                     weak_factory_.GetWeakPtr(),
+                     version_entry.version().version()));
 }
 
 void IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded(
