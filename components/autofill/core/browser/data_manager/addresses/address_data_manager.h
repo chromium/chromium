@@ -9,7 +9,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -252,12 +251,12 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
   // but is forwarded from the PDM's history observer.
   void OnHistoryDeletions(const history::DeletionInfo& deletion_info);
 
-  // Returns true if the PDM is currently awaiting an address-related responses
+  // Returns true if the ADM is currently awaiting an address-related responses
   // from the database. In this case, the PDM's address data is currently
   // potentially inconsistent with the database. Once the state has converged,
-  // PersonalDataManagerObserver:: OnPersonalDataChanged() will be called.
+  // AddressDataManagerObserver::OnAddressDataChanged() will be called.
   bool IsAwaitingPendingAddressChanges() const {
-    return ProfileChangesAreOngoing() || pending_profile_query_ != 0;
+    return !ongoing_profile_changes_.empty() || pending_profile_query_ != 0;
   }
 
   // Returns the value of the AutofillProfileEnabled pref.
@@ -369,17 +368,12 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
   // in the PDM after the task on the DB sequence has finished.
   void UpdateProfileInDB(const AutofillProfile& profile);
 
-  // Look at the next profile change for profile with guid = |guid|, and handle
-  // it.
-  void HandleNextProfileChange(const std::string& guid);
-  // returns true if there is any profile change that's still ongoing.
-  bool ProfileChangesAreOngoing() const;
-  // returns true if there is any ongoing change for profile with guid = |guid|
-  // that's still ongoing.
-  bool ProfileChangesAreOngoing(const std::string& guid) const;
-  // Remove the change from the |ongoing_profile_changes_|, handle next task or
-  // Refresh.
-  void OnProfileChangeDone(const std::string& guid);
+  // Look at the next `ongoing_profile_changes_` and schedules the corresponding
+  // database operation.
+  void HandleNextProfileChange();
+
+  // Remove the first `ongoing_profile_changes_` and schedules the next one.
+  void OnProfileChangeDone();
 
   // Logs metrics around the number of stored profiles after the initial load
   // has finished.
@@ -420,9 +414,11 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
                           AutofillWebDataServiceObserverOnUISequence>
       webdata_service_observer_{this};
 
-  // A timely ordered list of ongoing changes for each profile.
-  std::unordered_map<std::string, std::deque<QueuedAutofillProfileChange>>
-      ongoing_profile_changes_;
+  // A timely ordered list of ongoing changes. Changes for different GUIDs
+  // cannot be processed in parallel, since e.g. an add should only be performed
+  // if this doesn't create a duplicate. If a removal of a profile is pending,
+  // an addition of another profile might otherwise be incorrectly dropped.
+  std::deque<QueuedAutofillProfileChange> ongoing_profile_changes_;
 
   // An observer to listen for changes to prefs::kAutofillProfileEnabled.
   std::unique_ptr<BooleanPrefMember> profile_enabled_pref_;
