@@ -1073,7 +1073,15 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 }
 
 // Tests that the contextual chip is visible in Incognito.
-- (void)testContextualChipVisibleInIncognito {
+// TODO(crbug.com/438526871): Test is flaky on iOS Simulator
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testContextualChipVisibleInIncognito \
+  DISABLED_testContextualChipVisibleInIncognito
+#else
+#define MAYBE_testContextualChipVisibleInIncognito \
+  testContextualChipVisibleInIncognito
+#endif
+- (void)MAYBE_testContextualChipVisibleInIncognito {
   // Open a web page in Incognito.
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
