@@ -5,6 +5,9 @@
 // crypto::keypair tests
 #include "crypto/keypair.h"
 
+#include <list>
+
+#include "base/containers/contains.h"
 #include "crypto/test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,6 +39,8 @@ TEST(Keypair, GenerateAndRoundtripPrivateKey) {
   expect_roundtrip(PrivateKey::GenerateRsa2048());
   expect_roundtrip(PrivateKey::GenerateRsa4096());
   expect_roundtrip(PrivateKey::GenerateEcP256());
+  expect_roundtrip(PrivateKey::GenerateEcP384());
+  expect_roundtrip(PrivateKey::GenerateEcP521());
   expect_roundtrip(PrivateKey::GenerateEd25519());
 }
 
@@ -74,6 +79,75 @@ TEST(Keypair, ImportWithTrailingJunkFails) {
   EXPECT_TRUE(PublicKey::FromSubjectPublicKeyInfo(pub));
   pub.push_back(0);
   EXPECT_FALSE(PublicKey::FromSubjectPublicKeyInfo(pub));
+}
+
+TEST(Keypair, PrivateKeyPredicates) {
+  EXPECT_TRUE(FixedRsa2048PrivateKeyForTesting().IsRsa());
+  auto p256 = PrivateKey::GenerateEcP256();
+  EXPECT_TRUE(p256.IsEc() && p256.IsEcP256());
+  auto p384 = PrivateKey::GenerateEcP384();
+  EXPECT_TRUE(p384.IsEc() && p384.IsEcP384());
+  auto p521 = PrivateKey::GenerateEcP521();
+  EXPECT_TRUE(p521.IsEc() && p521.IsEcP521());
+  EXPECT_TRUE(PrivateKey::GenerateEd25519().IsEd25519());
+}
+
+TEST(Keypair, PublicKeyPredicates) {
+  EXPECT_TRUE(FixedRsa2048PublicKeyForTesting().IsRsa());
+  auto p256 = PublicKey::FromPrivateKey(PrivateKey::GenerateEcP256());
+  EXPECT_TRUE(p256.IsEc() && p256.IsEcP256());
+  auto p384 = PublicKey::FromPrivateKey(PrivateKey::GenerateEcP384());
+  EXPECT_TRUE(p384.IsEc() && p384.IsEcP384());
+  auto p521 = PublicKey::FromPrivateKey(PrivateKey::GenerateEcP521());
+  EXPECT_TRUE(p521.IsEc() && p521.IsEcP521());
+  EXPECT_TRUE(
+      PublicKey::FromPrivateKey(PrivateKey::GenerateEd25519()).IsEd25519());
+}
+
+TEST(Keypair, X962UncompressedForm) {
+  auto expect_uncompressed_length = [](const PrivateKey& key, size_t len) {
+    auto uncompressed = key.ToUncompressedForm();
+    EXPECT_EQ(uncompressed.size(), len);
+  };
+
+  // It should be possible to convert EC keys on various curves into
+  // uncompressed forms.
+  expect_uncompressed_length(PrivateKey::GenerateEcP256(), 32 * 2 + 1);
+  expect_uncompressed_length(PrivateKey::GenerateEcP384(), 48 * 2 + 1);
+  // 521 bits = 66 bytes per coordinate
+  expect_uncompressed_length(PrivateKey::GenerateEcP521(), 66 * 2 + 1);
+}
+
+TEST(Keypair, ImportUncompressed) {
+  {
+    auto p256_priv = PrivateKey::GenerateEcP256();
+    auto p256_pub = PublicKey::FromPrivateKey(p256_priv);
+    auto p256_import =
+        PublicKey::FromEcP256Point(p256_priv.ToUncompressedForm());
+    ASSERT_TRUE(p256_import);
+    EXPECT_EQ(p256_pub.ToSubjectPublicKeyInfo(),
+              p256_import->ToSubjectPublicKeyInfo());
+  }
+
+  {
+    auto p384_priv = PrivateKey::GenerateEcP384();
+    auto p384_pub = PublicKey::FromPrivateKey(p384_priv);
+    auto p384_import =
+        PublicKey::FromEcP384Point(p384_priv.ToUncompressedForm());
+    ASSERT_TRUE(p384_import);
+    EXPECT_EQ(p384_pub.ToSubjectPublicKeyInfo(),
+              p384_import->ToSubjectPublicKeyInfo());
+  }
+
+  {
+    auto p521_priv = PrivateKey::GenerateEcP521();
+    auto p521_pub = PublicKey::FromPrivateKey(p521_priv);
+    auto p521_import =
+        PublicKey::FromEcP521Point(p521_priv.ToUncompressedForm());
+    ASSERT_TRUE(p521_import);
+    EXPECT_EQ(p521_pub.ToSubjectPublicKeyInfo(),
+              p521_import->ToSubjectPublicKeyInfo());
+  }
 }
 
 }  // namespace

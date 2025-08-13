@@ -36,6 +36,18 @@ bssl::UniquePtr<EVP_PKEY> GenerateRsa(size_t bits) {
   return key;
 }
 
+bssl::UniquePtr<EVP_PKEY> GenerateEc(int nid) {
+  OpenSSLErrStackTracer err_tracer(FROM_HERE);
+
+  bssl::UniquePtr<EC_KEY> ec_key(EC_KEY_new_by_curve_name(nid));
+  CHECK(ec_key);
+  CHECK(EC_KEY_generate_key(ec_key.get()));
+
+  bssl::UniquePtr<EVP_PKEY> key(EVP_PKEY_new());
+  CHECK(EVP_PKEY_set1_EC_KEY(key.get(), ec_key.get()));
+  return key;
+}
+
 bool IsSupportedEvpId(int evp_id) {
   return evp_id == EVP_PKEY_RSA || evp_id == EVP_PKEY_EC ||
          evp_id == EVP_PKEY_ED25519;
@@ -58,6 +70,25 @@ std::vector<uint8_t> ExportEVPPublicKey(EVP_PKEY* pkey) {
   UNSAFE_BUFFERS(result.assign(data, data + len));
   OPENSSL_free(data);
   return result;
+}
+
+bssl::UniquePtr<EVP_PKEY> EVP_PKEYFromEcPoint(const EC_GROUP* group,
+                                              base::span<const uint8_t> p) {
+  bssl::UniquePtr<EC_KEY> ec(EC_KEY_new());
+  CHECK(ec);
+  CHECK(EC_KEY_set_group(ec.get(), group));
+
+  if (!EC_KEY_oct2key(ec.get(), p.data(), p.size(), nullptr)) {
+    return nullptr;
+  }
+
+  // The only failure mode for EVP_PKEY_new() is memory allocation failures,
+  // and the only failure mode for EVP_PKEY_set1_EC_KEY() is being passed a null
+  // key or EC_KEY object.
+  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
+  CHECK(pkey);
+  CHECK(EVP_PKEY_set1_EC_KEY(pkey.get(), ec.get()));
+  return pkey;
 }
 
 }  // namespace
@@ -86,16 +117,17 @@ PrivateKey PrivateKey::GenerateRsa4096() {
 
 // static
 PrivateKey PrivateKey::GenerateEcP256() {
-  OpenSSLErrStackTracer err_tracer(FROM_HERE);
+  return PrivateKey(GenerateEc(NID_X9_62_prime256v1));
+}
 
-  bssl::UniquePtr<EC_KEY> ec_key(
-      EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
-  CHECK(ec_key);
-  CHECK(EC_KEY_generate_key(ec_key.get()));
+// static
+PrivateKey PrivateKey::GenerateEcP384() {
+  return PrivateKey(GenerateEc(NID_secp384r1));
+}
 
-  bssl::UniquePtr<EVP_PKEY> key(EVP_PKEY_new());
-  CHECK(EVP_PKEY_set1_EC_KEY(key.get(), ec_key.get()));
-  return PrivateKey(std::move(key));
+// static
+PrivateKey PrivateKey::GenerateEcP521() {
+  return PrivateKey(GenerateEc(NID_secp521r1));
 }
 
 // static
@@ -177,11 +209,13 @@ std::vector<uint8_t> PrivateKey::ToSubjectPublicKeyInfo() const {
 std::vector<uint8_t> PrivateKey::ToUncompressedForm() const {
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
-  std::vector<uint8_t> buf(65);
+  std::vector<uint8_t> buf(255);
   EC_KEY* ec_key = EVP_PKEY_get0_EC_KEY(key_.get());
-  CHECK(EC_POINT_point2oct(
+  size_t len = EC_POINT_point2oct(
       EC_KEY_get0_group(ec_key), EC_KEY_get0_public_key(ec_key),
-      POINT_CONVERSION_UNCOMPRESSED, buf.data(), buf.size(), /*ctx=*/nullptr));
+      POINT_CONVERSION_UNCOMPRESSED, buf.data(), buf.size(), /*ctx=*/nullptr);
+  CHECK(len);
+  buf.resize(len);
 
   return buf;
 }
@@ -195,8 +229,6 @@ std::array<uint8_t, 32> PrivateKey::ToEd25519PublicKey() const {
   return result;
 }
 
-PrivateKey::PrivateKey(bssl::UniquePtr<EVP_PKEY> key) : key_(std::move(key)) {}
-
 bool PrivateKey::IsRsa() const {
   return EVP_PKEY_id(key_.get()) == EVP_PKEY_RSA;
 }
@@ -208,6 +240,20 @@ bool PrivateKey::IsEc() const {
 bool PrivateKey::IsEd25519() const {
   return EVP_PKEY_id(key_.get()) == EVP_PKEY_ED25519;
 }
+
+bool PrivateKey::IsEcP256() const {
+  return EVP_PKEY_get_ec_curve_nid(key_.get()) == NID_X9_62_prime256v1;
+}
+
+bool PrivateKey::IsEcP384() const {
+  return EVP_PKEY_get_ec_curve_nid(key_.get()) == NID_secp384r1;
+}
+
+bool PrivateKey::IsEcP521() const {
+  return EVP_PKEY_get_ec_curve_nid(key_.get()) == NID_secp521r1;
+}
+
+PrivateKey::PrivateKey(bssl::UniquePtr<EVP_PKEY> key) : key_(std::move(key)) {}
 
 PublicKey::PublicKey(bssl::UniquePtr<EVP_PKEY> key, crypto::SubtlePassKey)
     : PublicKey(std::move(key)) {}
@@ -270,23 +316,34 @@ std::optional<PublicKey> PublicKey::FromRsaPublicKeyComponents(
   return PublicKey(std::move(pkey));
 }
 
+// static
 std::optional<PublicKey> PublicKey::FromEcP256Point(
     base::span<const uint8_t> p) {
-  bssl::UniquePtr<EC_KEY> ec(EC_KEY_new());
-  CHECK(ec);
-  CHECK(EC_KEY_set_group(ec.get(), EC_group_p256()));
-
-  if (!EC_KEY_oct2key(ec.get(), p.data(), p.size(), nullptr)) {
+  auto key = EVP_PKEYFromEcPoint(EC_group_p256(), p);
+  if (!key) {
     return std::nullopt;
   }
+  return PublicKey(std::move(key));
+}
 
-  // The only failure mode for EVP_PKEY_new() is memory allocation failures,
-  // and the only failure mode for EVP_PKEY_set1_EC_KEY() is being passed a null
-  // key or EC_KEY object.
-  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
-  CHECK(pkey);
-  CHECK(EVP_PKEY_set1_EC_KEY(pkey.get(), ec.get()));
-  return PublicKey(std::move(pkey));
+// static
+std::optional<PublicKey> PublicKey::FromEcP384Point(
+    base::span<const uint8_t> p) {
+  auto key = EVP_PKEYFromEcPoint(EC_group_p384(), p);
+  if (!key) {
+    return std::nullopt;
+  }
+  return PublicKey(std::move(key));
+}
+
+// static
+std::optional<PublicKey> PublicKey::FromEcP521Point(
+    base::span<const uint8_t> p) {
+  auto key = EVP_PKEYFromEcPoint(EC_group_p521(), p);
+  if (!key) {
+    return std::nullopt;
+  }
+  return PublicKey(std::move(key));
 }
 
 // static
@@ -313,6 +370,18 @@ bool PublicKey::IsEc() const {
 
 bool PublicKey::IsEd25519() const {
   return EVP_PKEY_id(key_.get()) == EVP_PKEY_ED25519;
+}
+
+bool PublicKey::IsEcP256() const {
+  return EVP_PKEY_get_ec_curve_nid(key_.get()) == NID_X9_62_prime256v1;
+}
+
+bool PublicKey::IsEcP384() const {
+  return EVP_PKEY_get_ec_curve_nid(key_.get()) == NID_secp384r1;
+}
+
+bool PublicKey::IsEcP521() const {
+  return EVP_PKEY_get_ec_curve_nid(key_.get()) == NID_secp521r1;
 }
 
 PublicKey::PublicKey(bssl::UniquePtr<EVP_PKEY> key) : key_(std::move(key)) {}
