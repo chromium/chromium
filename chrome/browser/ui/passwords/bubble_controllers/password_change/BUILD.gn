@@ -19,10 +19,8 @@ source_set("password_change") {
     "//chrome/browser/favicon",
     "//components/favicon/core",
     "//components/favicon_base",
-    "//components/password_manager/core/browser",
     "//components/strings:components_strings",
     "//content/public/browser",
-    "//ui/base",
   ]
 }
 
@@ -37,6 +35,7 @@ source_set("unit_tests") {
       ":password_change",
       "//base/test:test_support",
       "//chrome/browser/ui:test_support",
+      "//chrome/browser/ui/passwords:test_support_ui",
       "//testing/gmock",
       "//testing/gtest",
     ]

@@ -5649,12 +5649,6 @@ static_library("test_support") {
     sources += [
       "browser_window/test/mock_browser_window_interface.cc",
       "browser_window/test/mock_browser_window_interface.h",
-      "passwords/credential_manager_dialog_controller_mock.cc",
-      "passwords/credential_manager_dialog_controller_mock.h",
-      "passwords/passwords_leak_dialog_delegate_mock.cc",
-      "passwords/passwords_leak_dialog_delegate_mock.h",
-      "passwords/passwords_model_delegate_mock.cc",
-      "passwords/passwords_model_delegate_mock.h",
       "test/popup_test_base.cc",
       "test/popup_test_base.h",
       "test/test_confirm_bubble_model.cc",
@@ -5665,6 +5659,7 @@ static_library("test_support") {
     deps += [
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/content_settings:test_support",
+      "//chrome/browser/ui/passwords:test_support_ui",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/test:test_support_ui",
       "//components/embedder_support",
@@ -5676,13 +5671,7 @@ static_library("test_support") {
       "//components/ukm:test_support",
       "//services/metrics/public/mojom",
     ]
-    public_deps += [
-      "//chrome/browser/ui/exclusive_access",
-
-      # TODO(crbug.com/437811373): Remove this dependency when passwords test_support
-      # code above gets componentized.
-      "//chrome/browser/ui/passwords",
-    ]
+    public_deps += [ "//chrome/browser/ui/exclusive_access" ]
   }
 }
 

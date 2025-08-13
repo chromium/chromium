@@ -36,7 +36,6 @@ source_set("bubble_controllers") {
 
   if (is_linux || is_mac) {
     sources += [ "relaunch_chrome_bubble_controller.h" ]
-    public_deps += [ "//components/prefs" ]
   }
 }
 
@@ -132,7 +131,7 @@ source_set("unit_tests") {
       "//chrome/browser/signin",
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
-      "//chrome/browser/ui:test_support",
+      "//chrome/browser/ui/passwords:test_support_ui",
       "//chrome/test:test_support",
       "//components/password_manager/core/browser",
       "//components/password_manager/core/browser:metrics_util",

@@ -125,6 +125,7 @@ if (!is_android) {
       "//chrome/app:generated_resources",
       "//chrome/app/vector_icons",
       "//chrome/browser/ui:test_support",
+      "//chrome/browser/ui/passwords:test_support_ui",
       "//chrome/test:test_support",
       "//components/autofill/content/browser",
       "//components/autofill/content/browser:test_support",

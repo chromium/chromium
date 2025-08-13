@@ -197,6 +197,31 @@ source_set("test_support") {
   }
 }
 
+source_set("test_support_ui") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (!is_android) {
+    sources += [
+      "credential_manager_dialog_controller_mock.cc",
+      "credential_manager_dialog_controller_mock.h",
+      "passwords_leak_dialog_delegate_mock.cc",
+      "passwords_leak_dialog_delegate_mock.h",
+      "passwords_model_delegate_mock.cc",
+      "passwords_model_delegate_mock.h",
+    ]
+
+    public_deps = [
+      ":passwords",
+      "//base",
+      "//testing/gmock",
+    ]
+
+    deps += [ "//components/signin/public/identity_manager" ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -230,6 +255,7 @@ source_set("unit_tests") {
       "well_known_change_password_navigation_throttle_unittest.cc",
     ]
     deps += [
+      ":test_support_ui",
       "//base:i18n",
       "//chrome/app:generated_resources",
       "//chrome/browser",

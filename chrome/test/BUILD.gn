@@ -8259,6 +8259,7 @@ test("unit_tests") {
       "//chrome/browser/ui/bookmarks:unit_tests",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/extensions:unit_tests",
+      "//chrome/browser/ui/passwords:test_support_ui",
       "//chrome/browser/ui/passwords/bubble_controllers:unit_tests",
       "//chrome/browser/ui/passwords/bubble_controllers/password_change",
       "//chrome/browser/ui/passwords/bubble_controllers/password_change:unit_tests",
