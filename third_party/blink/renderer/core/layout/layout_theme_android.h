@@ -21,6 +21,8 @@ class LayoutThemeAndroid final : public LayoutThemeMobile {
       mojom::blink::ColorScheme color_scheme) const override;
   Color PlatformActiveSelectionForegroundColor(
       mojom::blink::ColorScheme color_scheme) const override;
+  Color PlatformGrammarMarkerUnderlineColor() const override;
+  Color PlatformSpellingMarkerUnderlineColor() const override;
 
  private:
   ~LayoutThemeAndroid() override;

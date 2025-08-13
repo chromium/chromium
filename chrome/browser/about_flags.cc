@@ -6415,7 +6415,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-android-spellcheck-native-ui",
      flag_descriptions::kAndroidSpellcheckNativeUiName,
      flag_descriptions::kAndroidSpellcheckNativeUiDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(spellcheck::kAndroidSpellcheckNativeUi)},
+     FEATURE_VALUE_TYPE(blink::features::kAndroidSpellcheckNativeUi)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"enable-cros-touch-text-editing-redesign",
      flag_descriptions::kTouchTextEditingRedesignName,

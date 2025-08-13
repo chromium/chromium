@@ -75,6 +75,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowURNsInIframes);
 
 #if BUILDFLAG(IS_ANDROID)
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidDesktopWebPrefsLargeDisplays);
+
+// If enabled, renders styling similar to Android native UI for spelling and
+// grammar errors in textboxes.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidSpellcheckNativeUi);
 #endif
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

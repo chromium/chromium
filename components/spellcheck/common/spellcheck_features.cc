@@ -55,10 +55,6 @@ bool IsAndroidSpellCheckFeatureEnabled() {
 BASE_FEATURE(kAndroidGrammarCheck,
              "AndroidGrammarCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAndroidSpellcheckNativeUi,
-             "AndroidSpellcheckNativeUi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)

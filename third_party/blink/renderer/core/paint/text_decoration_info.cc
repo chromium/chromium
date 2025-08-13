@@ -6,8 +6,10 @@
 
 #include <math.h>
 
+#include "base/feature_list.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
 #include "third_party/blink/renderer/core/paint/decoration_line_painter.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
@@ -305,7 +307,17 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
   bool antialias = antialias_;
   if (line == TextDecorationLine::kSpellingError ||
       line == TextDecorationLine::kGrammarError) {
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(features::kAndroidSpellcheckNativeUi)) {
+      style = kSolidStroke;
+      antialias = true;
+      spelling_wave = std::nullopt;
+    } else {
+      style = kWavyStroke;
+      spelling_wave =
+          MakeSpellingGrammarWave(decorating_box_style_->EffectiveZoom());
+    }
+#elif BUILDFLAG(IS_APPLE)
     style = kDottedStroke;
     antialias = true;
 #else
@@ -430,7 +442,17 @@ float TextDecorationInfo::ComputeThickness() const {
   const AppliedTextDecoration& decoration = *applied_text_decoration_;
   if (HasSpellingOrGrammerError()) {
     // Spelling and grammar error thickness doesn't depend on the font size.
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/434081396): Verify with UX that this is accurate.
+    // This number was derived based on visual inspection of the rendered
+    // lines on device.
+    // Android uses 2 "display-independent-pixels". See
+    // "TextAppearance.Suggestion"
+    // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/res/res/values/styles.xml;l=309
+    return (base::FeatureList::IsEnabled(features::kAndroidSpellcheckNativeUi))
+               ? 2.5f * decorating_box_style_->EffectiveZoom()
+               : 1.f * decorating_box_style_->EffectiveZoom();
+#elif BUILDFLAG(IS_APPLE)
     return 2.f * decorating_box_style_->EffectiveZoom();
 #else
     return 1.f * decorating_box_style_->EffectiveZoom();
