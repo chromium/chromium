@@ -27,6 +27,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -127,6 +128,13 @@ base::CommandLine CommandLineArgsForLauncher(
   // during launch.
   if (!extension_app_id.empty()) {
     new_cmd_line.AppendSwitchASCII(switches::kAppId, extension_app_id);
+    // Add --enable-automation switch to support app launches against a browser
+    // process already running with --enable-automation. If not present, app
+    // launches will fail as process hand-off is prohibited in automation mode.
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kEnableAutomation)) {
+      new_cmd_line.AppendSwitch(switches::kEnableAutomation);
+    }
   } else {
     // Use '--app=url' instead of just 'url' to launch the browser with minimal
     // chrome.
