@@ -704,12 +704,8 @@ public class CustomTabsConnection {
     public void prefetch(
             CustomTabsSessionToken session, List<Uri> urls, @Nullable PrefetchOptions options) {
         try (TraceEvent e = TraceEvent.scoped("CustomTabsConnection.prefetch")) {
-            if (!ChromeFeatureList.sPrefetchBrowserInitiatedTriggers.isEnabled()
-                    || !ChromeFeatureList.sCctNavigationalPrefetch.isEnabled()) {
-                Log.w(
-                        TAG,
-                        "Prefetch failed because PrefetchBrowserInitiatedTriggers and/or"
-                                + " CCTNavigationalPrefetch is not enabled.");
+            if (!ChromeFeatureList.sCctNavigationalPrefetch.isEnabled()) {
+                Log.w(TAG, "CCTNavigationalPrefetch is not enabled.");
                 return;
             }
             RecordHistogram.recordBooleanHistogram("CustomTabs.Prefetch.PrefetchCalled", true);

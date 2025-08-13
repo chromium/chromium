@@ -186,8 +186,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // - If the prefetch is browser-initiated, `std::nullopt` (for
   //   `referring_document_token`) is used.
   // - If the prefetch is embedder-initiated, `net::NetworkIsolationKey` of the
-  //   embedder is used. Only used if `kPrefetchBrowserInitiatedTriggers` is
-  //   enabeld. See crbug.com/40942681.
+  //   embedder is used. See crbug.com/40942681.
   //
   // For navigation, `std::optional<DocumentToken>` of the initiating document
   // of the navigation is used.

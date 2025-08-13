@@ -330,7 +330,6 @@ PrefetchContainer::PrefetchContainer(
           /*should_disable_block_until_head_timeout=*/false,
           priority) {
   CHECK(!prefetch_type_.IsRendererInitiated());
-  CHECK(PrefetchBrowserInitiatedTriggersEnabled());
   CHECK(!embedder_histogram_suffix_.value().empty());
 }
 
@@ -378,7 +377,6 @@ PrefetchContainer::PrefetchContainer(
           should_disable_block_until_head_timeout,
           priority) {
   CHECK(!prefetch_type_.IsRendererInitiated());
-  CHECK(PrefetchBrowserInitiatedTriggersEnabled());
   CHECK(!embedder_histogram_suffix_.value().empty());
 }
 

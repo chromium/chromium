@@ -33,8 +33,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.ServerCertificate;
 
@@ -133,35 +131,6 @@ public class AwPrefetchTest extends AwParameterizedTest {
                 IllegalArgumentException.class, callback.getOnErrorHelper().getError().getClass());
         Assert.assertEquals(
                 "URL must have HTTPS scheme for prefetch.",
-                callback.getOnErrorHelper().getError().getMessage());
-        Assert.assertNull(callback.getOnStatusUpdatedHelper().mExtras);
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"AndroidWebView"})
-    @Features.DisableFeatures({ContentFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS})
-    public void testPrefetchRequestFlagCheck() throws Throwable {
-        // Prepare PrefetchParameters
-        Map<String, String> additionalHeaders = new HashMap<>();
-        additionalHeaders.put("foo", "bar");
-        additionalHeaders.put("lorem", "ipsum");
-        AwNoVarySearchData expectedNoVarySearch =
-                new AwNoVarySearchData(false, false, new String[] {"ts", "uid"}, null);
-        AwPrefetchParameters prefetchParameters =
-                new AwPrefetchParameters(additionalHeaders, expectedNoVarySearch, true);
-
-        // Do the prefetch request.
-        TestAwPrefetchCallback callback =
-                startPrefetchingAndWait("https://www.example.com", prefetchParameters);
-
-        // wait then do the checks
-        callback.mOnErrorHelper.waitForNext();
-        Assert.assertEquals(1, callback.getOnErrorHelper().getCallCount());
-        Assert.assertEquals(
-                IllegalStateException.class, callback.getOnErrorHelper().getError().getClass());
-        Assert.assertEquals(
-                "WebView initiated prefetching feature is not enabled.",
                 callback.getOnErrorHelper().getError().getMessage());
         Assert.assertNull(callback.getOnStatusUpdatedHelper().mExtras);
     }

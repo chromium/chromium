@@ -122,10 +122,6 @@ inline constexpr size_t kMaxNumberOfNonImmediatePrefetchesPerPage = 2;
 // Returns true if NIK prefetch scope is enabled. See crbug.com/1502326
 bool PrefetchNIKScopeEnabled();
 
-// Returns true if browser-initiated prefetch is enabled.
-// Please see crbug.com/40946257 for more details.
-bool PrefetchBrowserInitiatedTriggersEnabled();
-
 size_t GetPrefetchDataPipeTeeBodySizeLimit();
 
 // Returns true iff we should use `PrefetchScheduler`.

@@ -116,10 +116,6 @@ TEST_F(PrefetchNetworkContextTest,
 
 TEST_F(PrefetchNetworkContextTest,
        CreateURLLoaderFactoryForBrowserInitiatedTriggersNetworkContext) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kPrefetchBrowserInitiatedTriggers);
-
   const GURL kReferringUrl = GURL("https://test.referring.origin.com");
   const url::Origin kReferringOrigin = url::Origin::Create(kReferringUrl);
 

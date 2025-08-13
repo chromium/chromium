@@ -18,7 +18,6 @@ PrefetchType::PrefetchType(PreloadingTriggerType non_speculation_trigger_type,
                            bool use_prefetch_proxy)
     : trigger_type_(non_speculation_trigger_type),
       use_prefetch_proxy_(use_prefetch_proxy) {
-  CHECK(PrefetchBrowserInitiatedTriggersEnabled());
   CHECK(!IsSpeculationRuleType(non_speculation_trigger_type));
 }
 

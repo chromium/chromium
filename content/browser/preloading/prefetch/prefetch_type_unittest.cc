@@ -12,16 +12,7 @@
 namespace content {
 namespace {
 
-class PrefetchTypeTest : public ::testing::Test {
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kPrefetchBrowserInitiatedTriggers},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+class PrefetchTypeTest : public ::testing::Test {};
 
 TEST_F(PrefetchTypeTest, GetPrefetchTypeParams) {
   PrefetchType prefetch_type1(PreloadingTriggerType::kSpeculationRule,

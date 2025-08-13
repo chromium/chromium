@@ -344,8 +344,6 @@ TEST_F(PrefetchContainerTest, CreatePrefetchContainer) {
 }
 
 TEST_F(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kPrefetchBrowserInitiatedTriggers);
   PrefetchContainer prefetch_container(
       *web_contents(), GURL("https://test.com"),
       PrefetchType(PreloadingTriggerType::kEmbedder,
@@ -1297,8 +1295,6 @@ TEST_F(PrefetchContainerTest, IsIsolatedNetworkRequired) {
 }
 
 TEST_F(PrefetchContainerTest, IsIsolatedNetworkRequired_Embedder) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kPrefetchBrowserInitiatedTriggers);
   auto prefetch_container_default = CreateEmbedderPrefetchContainer(
       GURL("https://test.com/prefetch"), std::nullopt);
   prefetch_container_default->MakeResourceRequest({});

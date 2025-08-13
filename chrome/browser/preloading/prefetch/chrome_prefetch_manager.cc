@@ -21,9 +21,7 @@ void ChromePrefetchManager::StartPrefetchFromCCT(
     bool use_prefetch_proxy,
     const std::optional<url::Origin>& referring_origin) {
   if (!base::FeatureList::IsEnabled(
-          chrome::android::kCCTNavigationalPrefetch) ||
-      !base::FeatureList::IsEnabled(
-          features::kPrefetchBrowserInitiatedTriggers)) {
+          chrome::android::kCCTNavigationalPrefetch)) {
     return;
   }
   auto* preloading_data =

@@ -170,11 +170,6 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
   }
 
   if (!initiator_document_token_.has_value()) {
-    if (!PrefetchBrowserInitiatedTriggersEnabled()) {
-      std::move(get_prefetch_callback).Run({});
-      return;
-    }
-
     // TODO(crbug.com/40288091): Currently PrefetchServingPageMetricsContainer
     // is created only when the navigation is renderer-initiated and its
     // initiator document has PrefetchDocumentManager.

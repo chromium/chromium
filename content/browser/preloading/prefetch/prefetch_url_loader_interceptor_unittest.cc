@@ -661,9 +661,6 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
 TEST_F(PrefetchURLLoaderInterceptorTest,
        DISABLE_ASAN(InterceptNavigation_Embedder)) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kPrefetchBrowserInitiatedTriggers);
-
   const GURL kTestUrl("https://example.com");
 
   EXPECT_CALL(*test_content_browser_client(),
@@ -756,9 +753,6 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 // PrefetchContainer::Key) will be taken into account when matching.
 TEST_F(PrefetchURLLoaderInterceptorTest,
        DISABLE_ASAN(DoNotInterceptNavigationNoMatching)) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kPrefetchBrowserInitiatedTriggers);
-
   const GURL kTestUrl("https://example.com");
 
   EXPECT_CALL(*test_content_browser_client(), WillCreateURLLoaderFactory)

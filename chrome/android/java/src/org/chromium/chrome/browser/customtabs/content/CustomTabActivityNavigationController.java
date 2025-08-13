@@ -239,8 +239,7 @@ public class CustomTabActivityNavigationController
         // Notifies PreloadingImpl that a navigation to CCT is happening. This is used to calculate
         // the recall of CCT prefetch's attempt. Please see
         // PreloadingData::setIsNavigationInDomainCallback for more details.
-        if (ChromeFeatureList.sPrefetchBrowserInitiatedTriggers.isEnabled()
-                && ChromeFeatureList.sCctNavigationalPrefetch.isEnabled()) {
+        if (ChromeFeatureList.sCctNavigationalPrefetch.isEnabled()) {
             WebContents webContents = mTabProvider.getTab().getWebContents();
             if (webContents != null) {
                 PreloadingDataBridge.setIsNavigationInDomainCallbackForCct(webContents);

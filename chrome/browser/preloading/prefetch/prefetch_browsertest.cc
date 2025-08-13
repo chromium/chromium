@@ -28,8 +28,7 @@ namespace {
 class PrefetchBrowserTest : public PlatformBrowserTest {
  public:
   PrefetchBrowserTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kPrefetchBrowserInitiatedTriggers};
+    std::vector<base::test::FeatureRef> enabled_features = {};
 
 #if BUILDFLAG(IS_ANDROID)
     enabled_features.push_back(chrome::android::kCCTNavigationalPrefetch);

@@ -733,12 +733,6 @@ BASE_FEATURE_PARAM(bool,
                    "reuse_search_host",
                    false);
 
-// If enabled, browser-initiated prefetch is allowed.
-// Please see crbug.com/40946257 for more details.
-BASE_FEATURE(kPrefetchBrowserInitiatedTriggers,
-             "PrefetchBrowserInitiatedTriggers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables exposure of ads APIs in the renderer: Attribution Reporting,
 // FLEDGE, Topics, along with a number of other features actively in development
 // within these APIs.

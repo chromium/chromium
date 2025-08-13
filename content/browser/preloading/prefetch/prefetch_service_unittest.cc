@@ -1324,8 +1324,6 @@ TEST_P(PrefetchServiceTest, SuccessCase) {
 }
 
 TEST_P(PrefetchServiceTest, SuccessCase_Browser) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kPrefetchBrowserInitiatedTriggers);
   base::HistogramTester histogram_tester;
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
@@ -1409,8 +1407,6 @@ TEST_P(PrefetchServiceTest, SuccessCase_Browser) {
 }
 
 TEST_P(PrefetchServiceTest, SuccessCase_Browser_NoVarySearch) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kPrefetchBrowserInitiatedTriggers);
   base::HistogramTester histogram_tester;
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
@@ -1480,8 +1476,6 @@ TEST_P(PrefetchServiceTest, SuccessCase_Browser_NoVarySearch) {
 }
 
 TEST_P(PrefetchServiceTest, FailureCase_Browser_ServerErrorResponseCode) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kPrefetchBrowserInitiatedTriggers);
   base::HistogramTester histogram_tester;
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
@@ -1697,9 +1691,6 @@ TEST_P(PrefetchServiceTest, PrefetchDoesNotMatchIfDocumentTokenDoesNotMatch) {
 }
 
 TEST_P(PrefetchServiceTest, SuccessCase_Embedder) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kPrefetchBrowserInitiatedTriggers);
-
   base::HistogramTester histogram_tester;
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
@@ -1758,9 +1749,6 @@ TEST_P(PrefetchServiceTest, SuccessCase_Embedder) {
 
 TEST_P(PrefetchServiceTest,
        PrefetchDoesNotMatchIfDocumentTokenDoesNotMatch_Embedder) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kPrefetchBrowserInitiatedTriggers);
-
   base::HistogramTester histogram_tester;
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
@@ -3498,8 +3486,6 @@ TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(NoVarySearchSuccessCase)) {
 }
 
 TEST_P(PrefetchServiceTest, NoVarySearchSuccessCase_Embedder) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kPrefetchBrowserInitiatedTriggers);
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -7734,8 +7720,6 @@ TEST_P(PrefetchServiceTest,
 
 TEST_P(PrefetchServiceTest,
        DISABLED_CHROMEOS(IsPrefetchDuplicateSameNoVarySearchHint)) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kPrefetchBrowserInitiatedTriggers);
   base::HistogramTester histogram_tester;
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(

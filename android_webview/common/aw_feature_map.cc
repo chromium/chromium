@@ -33,7 +33,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &blink::features::kForceOffTextAutosizing,
     &safe_browsing::kHashPrefixRealTimeLookups,
     &base::features::kPostGetMyMemoryStateToBackground,
-    &::features::kPrefetchBrowserInitiatedTriggers,
     &sensitive_content::features::kSensitiveContent,
     &features::kWebViewBackForwardCache,
     &features::kWebViewCacheSizeLimitDerivedFromAppCacheQuota,

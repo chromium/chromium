@@ -1448,10 +1448,7 @@ public class CustomTabActivityTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({
-        ChromeFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS,
-        ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
-    })
+    @EnableFeatures({ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH})
     public void testNavigationalPrefetch() throws Exception {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
@@ -1483,10 +1480,7 @@ public class CustomTabActivityTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({
-        ChromeFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS,
-        ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
-    })
+    @EnableFeatures({ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH})
     public void testNavigationalPrefetchNotServed() throws Exception {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage2);
@@ -1518,10 +1512,7 @@ public class CustomTabActivityTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({
-        ChromeFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS,
-        ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
-    })
+    @EnableFeatures({ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH})
     public void testNavigationalPrefetchFalseNegative() throws Exception {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);

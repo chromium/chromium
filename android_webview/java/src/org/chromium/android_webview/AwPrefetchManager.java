@@ -19,13 +19,11 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.AwPrefetchCallback.StatusCode;
-import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.content_public.browser.ContentFeatureList;
 
 import java.util.Optional;
 import java.util.Queue;
@@ -75,11 +73,6 @@ public class AwPrefetchManager {
         final Exception error;
         if (!UrlUtilities.isHttps(url)) {
             error = new IllegalArgumentException("URL must have HTTPS scheme for prefetch.");
-        } else if (!AwFeatureMap.isEnabled(
-                ContentFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS)) {
-            error =
-                    new IllegalStateException(
-                            "WebView initiated prefetching feature is not" + " enabled.");
         } else if (prefetchParameters != null) {
             Optional<IllegalArgumentException> exception =
                     AwBrowserContext.validateAdditionalHeaders(

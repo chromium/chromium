@@ -56,9 +56,6 @@ public class ContentFeatureList {
     public static final String WEB_IDENTITY_DIGITAL_CREDENTIALS_CREATION =
             "WebIdentityDigitalCredentialsCreation";
 
-    public static final String PREFETCH_BROWSER_INITIATED_TRIGGERS =
-            "PrefetchBrowserInitiatedTriggers";
-
     public static final String DIPS_TTL = "DIPSTtl";
 
     public static final MutableFlagWithSafeDefault sAccessibilityDeprecateJavaNodeCache =

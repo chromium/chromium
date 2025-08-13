@@ -295,11 +295,6 @@ bool PrefetchNIKScopeEnabled() {
   return base::FeatureList::IsEnabled(features::kPrefetchNIKScope);
 }
 
-bool PrefetchBrowserInitiatedTriggersEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kPrefetchBrowserInitiatedTriggers);
-}
-
 size_t GetPrefetchDataPipeTeeBodySizeLimit() {
   return static_cast<size_t>(features::kPrefetchReusableBodySizeLimit.Get());
 }

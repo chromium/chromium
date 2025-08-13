@@ -906,10 +906,7 @@ public class CustomTabsConnectionTest {
     /** Tests that prefetch() with valid Uri and default PrefetchOptions succeeds. */
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS,
-        ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
-    })
+    @EnableFeatures({ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH})
     public void testPrefetch() throws Exception {
         prepareEmbeddedTestServer();
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
@@ -928,10 +925,7 @@ public class CustomTabsConnectionTest {
     /** Tests that prefetch() also succeeds if we run warmup beforehand */
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS,
-        ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
-    })
+    @EnableFeatures({ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH})
     public void testPrefetchWithWarmup() throws Exception {
         prepareEmbeddedTestServer();
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
@@ -951,10 +945,7 @@ public class CustomTabsConnectionTest {
     /** Tests that prefetch() with invalid Uri fails. */
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS,
-        ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
-    })
+    @EnableFeatures({ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH})
     public void testPrefetchWithInvalidUri() throws Exception {
         prepareEmbeddedTestServer();
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
@@ -1016,10 +1007,7 @@ public class CustomTabsConnectionTest {
      */
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS,
-        ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
-    })
+    @EnableFeatures({ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH})
     public void testPrefetchWithValidSourceOriginUri() throws Exception {
         String sourceOrigin = URL;
         String prefetchUrl = URL2;
@@ -1048,10 +1036,7 @@ public class CustomTabsConnectionTest {
      */
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS,
-        ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
-    })
+    @EnableFeatures({ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH})
     public void testPrefetchWithInvalidSourceOriginUri() throws Exception {
         String invalidSourceOrigin = URL;
         String prefetchUrl = URL2;
