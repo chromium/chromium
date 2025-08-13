@@ -1202,7 +1202,7 @@ class ScopedMaskLuminanceLayer {
 PhysicalBoxStrut ComputeSnappedBorders(
     const BoxBackgroundPaintContext& bg_paint_context) {
   const PhysicalBoxStrut border_widths = bg_paint_context.BorderOutsets();
-  return PhysicalBoxStrut(
+  return PhysicalBoxStrut::FromInts(
       border_widths.top.ToInt(), border_widths.right.ToInt(),
       border_widths.bottom.ToInt(), border_widths.left.ToInt());
 }

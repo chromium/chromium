@@ -208,8 +208,9 @@ ContouredRect ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
     PhysicalBoxSides sides_to_include) {
   return PixelSnappedContouredBorderWithOutsets(
       style, border_rect,
-      PhysicalBoxStrut(-style.BorderTopWidth(), -style.BorderRightWidth(),
-                       -style.BorderBottomWidth(), -style.BorderLeftWidth()),
+      PhysicalBoxStrut::FromInts(
+          -style.BorderTopWidth(), -style.BorderRightWidth(),
+          -style.BorderBottomWidth(), -style.BorderLeftWidth()),
       sides_to_include);
 }
 

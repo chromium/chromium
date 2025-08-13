@@ -909,8 +909,8 @@ void OutlinePainter::PaintOutlineRects(
         AdjustedOutlineOffset(*united_outline_rect, info.offset);
     BoxBorderPainter::PaintSingleRectOutline(
         paint_info.context, style, outline_rects[0], info.width,
-        PhysicalBoxStrut(offset.top(), offset.right(), offset.bottom(),
-                         offset.left()));
+        PhysicalBoxStrut::FromInts(offset.top(), offset.right(),
+                                   offset.bottom(), offset.left()));
     return;
   }
 

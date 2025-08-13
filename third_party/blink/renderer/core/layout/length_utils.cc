@@ -1536,8 +1536,9 @@ BoxStrut ComputeMarginsFor(const ConstraintSpace& constraint_space,
 namespace {
 
 BoxStrut ComputeBordersInternal(const ComputedStyle& style) {
-  return PhysicalBoxStrut(style.BorderTopWidth(), style.BorderRightWidth(),
-                          style.BorderBottomWidth(), style.BorderLeftWidth())
+  return PhysicalBoxStrut::FromInts(
+             style.BorderTopWidth(), style.BorderRightWidth(),
+             style.BorderBottomWidth(), style.BorderLeftWidth())
       .ConvertToLogical(style.GetWritingDirection());
 }
 

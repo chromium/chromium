@@ -2432,7 +2432,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
 PhysicalBoxStrut BoxBorderPainter::DoubleStripeOutsets(
     BorderEdge::DoubleBorderStripe stripe) const {
   return outer_outsets_ -
-         PhysicalBoxStrut(
+         PhysicalBoxStrut::FromInts(
              Edge(BoxSide::kTop).GetDoubleBorderStripeWidth(stripe),
              Edge(BoxSide::kRight).GetDoubleBorderStripeWidth(stripe),
              Edge(BoxSide::kBottom).GetDoubleBorderStripeWidth(stripe),
@@ -2441,10 +2441,10 @@ PhysicalBoxStrut BoxBorderPainter::DoubleStripeOutsets(
 
 PhysicalBoxStrut BoxBorderPainter::CenterOutsets() const {
   return outer_outsets_ -
-         PhysicalBoxStrut(Edge(BoxSide::kTop).UsedWidth() * 0.5,
-                          Edge(BoxSide::kRight).UsedWidth() * 0.5,
-                          Edge(BoxSide::kBottom).UsedWidth() * 0.5,
-                          Edge(BoxSide::kLeft).UsedWidth() * 0.5);
+         PhysicalBoxStrut::FromInts(Edge(BoxSide::kTop).UsedWidth() * 0.5,
+                                    Edge(BoxSide::kRight).UsedWidth() * 0.5,
+                                    Edge(BoxSide::kBottom).UsedWidth() * 0.5,
+                                    Edge(BoxSide::kLeft).UsedWidth() * 0.5);
 }
 
 bool BoxBorderPainter::ColorsMatchAtCorner(BoxSide side,
