@@ -271,7 +271,6 @@ bool IOSChromeSavePasswordInfoBarDelegate::Accept() {
             changed_password_form_with_backup =
                 password_manager_util::FindChangedPasswordLoginWithBackup(
                     *form_to_save_)) {
-      form_to_save_->OnRemovePasswordBackupNote();
       const password_manager::PasswordForm& pending_credentials =
           form_to_save_->GetPendingCredentials();
       if (changed_password_form_with_backup->GetPasswordBackup().value() ==

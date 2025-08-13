@@ -988,9 +988,6 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
   if (const password_manager::PasswordForm* changed_password_form_with_backup =
           password_manager_util::FindChangedPasswordLoginWithBackup(
               *passwords_data_.form_manager())) {
-    // If the new password to be saved should override a backup password,
-    // this function sets an empty backup to the submitted form.
-    passwords_data_.form_manager()->OnRemovePasswordBackupNote();
     HandlePasswordRecoveryFinished(
         username, password,
         changed_password_form_with_backup->GetPasswordBackup().value());

@@ -448,12 +448,6 @@ std::optional<std::u16string> PasswordForm::GetPasswordBackup() const {
                                       : std::nullopt;
 }
 
-std::optional<std::u16string> PasswordForm::GetPasswordBackupOrEmpty() const {
-  const PasswordNote* note =
-      GetNote(notes, PasswordNote::kPasswordChangeBackupNoteName);
-  return note ? std::make_optional(note->value) : std::nullopt;
-}
-
 std::optional<base::Time> PasswordForm::GetPasswordBackupDateCreated() const {
   const PasswordNote* note =
       GetNote(notes, PasswordNote::kPasswordChangeBackupNoteName);

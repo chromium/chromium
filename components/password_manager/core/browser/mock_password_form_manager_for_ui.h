@@ -59,7 +59,6 @@ class MockPasswordFormManagerForUI : public PasswordFormManagerForUI {
               OnUpdatePasswordFromPrompt,
               (const std::u16string&),
               (override));
-  MOCK_METHOD(void, OnRemovePasswordBackupNote, (), (override));
   MOCK_METHOD(void, OnNopeUpdateClicked, (), (override));
   MOCK_METHOD(void, OnNeverClicked, (), (override));
   MOCK_METHOD(void, OnNoInteraction, (bool), (override));
