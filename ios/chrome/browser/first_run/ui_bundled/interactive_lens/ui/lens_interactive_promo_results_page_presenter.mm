@@ -96,6 +96,8 @@ const CGFloat kOpacityAnimationDuration = 0.4;
   }
 
   [self resultsPagePresentationWillAppear];
+  [self.interactivePromoDelegate
+      lensInteractivePromoResultsPagePresenterWillPresentResults:self];
 
   auto presentationComplete = ^{
     if (completion) {
@@ -182,6 +184,8 @@ const CGFloat kOpacityAnimationDuration = 0.4;
 
 - (void)hideBottomSheetWithCompletion:(void (^)(void))completion {
   [self dismissResultsPageAnimated:YES completion:completion];
+  [self.interactivePromoDelegate
+      lensInteractivePromoResultsPagePresenterDidDismissResults:self];
 }
 
 - (void)showInfoMessage:(LensOverlayBottomSheetInfoMessageType)infoMessageType {

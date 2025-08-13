@@ -56,12 +56,17 @@
   // Now that the view has been laid out, create the lens overlay.
   // TODO(crbug.com/416480202): Consider pre-warming the Lens Overlay for cases
   // where the it might take longer to start up.
+  __weak InteractiveLensOverlayPromoViewController* weakPromoViewController =
+      _promoViewController;
   LensResultsPresenterFactory factory =
       ^(LensOverlayContainerViewController* baseViewController,
         LensResultPageViewController* resultsViewController) {
-        return [[LensInteractivePromoResultsPagePresenter alloc]
-            initWithBaseViewController:baseViewController
-              resultPageViewController:resultsViewController];
+        LensInteractivePromoResultsPagePresenter* presenter =
+            [[LensInteractivePromoResultsPagePresenter alloc]
+                initWithBaseViewController:baseViewController
+                  resultPageViewController:resultsViewController];
+        presenter.interactivePromoDelegate = weakPromoViewController;
+        return presenter;
       };
 
   [_lensOverlayHandler

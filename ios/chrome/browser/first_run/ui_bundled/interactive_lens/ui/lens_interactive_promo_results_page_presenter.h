@@ -9,8 +9,22 @@
 
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_results_page_presenting.h"
 
+@class LensInteractivePromoResultsPagePresenter;
 @class LensOverlayContainerViewController;
 @class LensResultPageViewController;
+
+// Delegate for the LensInteractivePromoResultsPagePresenter.
+@protocol LensInteractivePromoResultsPagePresenterDelegate <NSObject>
+
+// Called when the presenter is about to present the results page.
+- (void)lensInteractivePromoResultsPagePresenterWillPresentResults:
+    (LensInteractivePromoResultsPagePresenter*)presenter;
+
+// Called when the presenter dismisses the results page.
+- (void)lensInteractivePromoResultsPagePresenterDidDismissResults:
+    (LensInteractivePromoResultsPagePresenter*)presenter;
+
+@end
 
 // A simplified presenter for the Lens results bottom sheet, designed
 // specifically for the interactive First Run Experience (FRE) promo.
@@ -27,6 +41,10 @@
 // interactions.
 @interface LensInteractivePromoResultsPagePresenter
     : NSObject <LensOverlayResultsPagePresenting>
+
+// The delegate for this presenter.
+@property(nonatomic, weak) id<LensInteractivePromoResultsPagePresenterDelegate>
+    interactivePromoDelegate;
 
 // Initializes the presenter with `baseViewController` and
 // `resultViewController`.
