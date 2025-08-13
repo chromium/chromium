@@ -1,0 +1,25 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file
+
+assert(is_chromeos)
+
+component("auto_sign_out") {
+  sources = [
+    "auto_sign_out_service.cc",
+    "auto_sign_out_service.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "auto_sign_out_service_unittest.cc" ]
+
+  deps = [
+    ":auto_sign_out",
+    "//testing/gtest",
+  ]
+}

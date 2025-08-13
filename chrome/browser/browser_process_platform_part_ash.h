@@ -25,6 +25,7 @@ class EssentialSearchManager;
 namespace ash {
 class AccountManagerFactory;
 class AshProxyMonitor;
+class AutoSignOutService;
 class BrowserContextFlusher;
 class BrowserRestoreObserver;
 class ChromeSessionManager;
@@ -162,6 +163,10 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
     return in_session_password_change_manager_.get();
   }
 
+  ash::AutoSignOutService* auto_sign_out_service() {
+    return auto_sign_out_service_.get();
+  }
+
   ash::system::TimeZoneResolverManager* GetTimezoneResolverManager();
 
   // Overridden from BrowserProcessPlatformPartBase:
@@ -177,7 +182,6 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   static void EnsureFactoryBuilt();
 
  private:
-
   friend class BrowserProcessPlatformPartTestApi;
 
   void CreateProfileHelper();
@@ -246,6 +250,8 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   std::unique_ptr<ash::AshProxyMonitor> ash_proxy_monitor_;
 
   std::unique_ptr<ash::SecureDnsManager> secure_dns_manager_;
+
+  std::unique_ptr<ash::AutoSignOutService> auto_sign_out_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

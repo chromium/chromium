@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/browser_process_platform_part_ash.h"
+
+#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -42,7 +45,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "url/url_constants.h"
-
 namespace {
 
 Browser* FindOneOtherBrowserForProfile(Profile* profile,
@@ -270,4 +272,35 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
   EXPECT_EQ(1, tab_strip_model->GetTabCount());
   EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
             tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
+}
+
+class AutoSignOutTest : public InProcessBrowserTest {
+ public:
+  AutoSignOutTest() {
+    feature_list_.InitAndEnableFeature(ash::features::kAutoSignOut);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class AutoSignOutDisabledTest : public InProcessBrowserTest {
+ public:
+  AutoSignOutDisabledTest() {
+    feature_list_.InitAndDisableFeature(ash::features::kAutoSignOut);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AutoSignOutTest, ServiceCreatedWhenFlagEnabled) {
+  auto* service = g_browser_process->platform_part()->auto_sign_out_service();
+  EXPECT_NE(nullptr, service);
+}
+
+IN_PROC_BROWSER_TEST_F(AutoSignOutDisabledTest,
+                       ServiceNotCreatedWhenFlagDisabled) {
+  auto* service = g_browser_process->platform_part()->auto_sign_out_service();
+  EXPECT_EQ(nullptr, service);
 }

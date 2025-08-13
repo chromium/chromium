@@ -5650,6 +5650,7 @@ static_library("browser") {
       "//chromeos/ash/components/assistant:buildflags",
       "//chromeos/ash/components/audio",
       "//chromeos/ash/components/audio/public/mojom",
+      "//chromeos/ash/components/auto_sign_out",
       "//chromeos/ash/components/boca",
       "//chromeos/ash/components/boca/on_task",
       "//chromeos/ash/components/browser_context_helper",
