@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Launch.WebAppLaunchHandlerClientMode"
-    enum="WebAppLaunchHandlerClientMode" expires_after="2025-12-08">
+    enum="WebAppLaunchHandlerClientMode" expires_after="2026-02-09">
   <owner>alancutter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1739,7 +1739,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.LaunchSource" enum="LaunchSource"
-    expires_after="2025-12-08">
+    expires_after="2026-02-09">
   <owner>phillis@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

@@ -335,7 +335,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.DetachedResourceRequest.FinalStatus"
-    enum="NetErrorCodes" expires_after="2025-12-07">
+    enum="NetErrorCodes" expires_after="2026-02-09">
   <owner>lizeb@chromium.org</owner>
   <owner>cct-team@google.com</owner>
   <summary>

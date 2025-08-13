@@ -680,7 +680,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceLocalAccountPolicyRefresh3"
-    enum="EnterprisePolicyRefresh" expires_after="2025-12-07">
+    enum="EnterprisePolicyRefresh" expires_after="2026-02-09">
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -730,7 +730,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DevicePolicyRefresh3"
-    enum="EnterprisePolicyRefresh" expires_after="2025-12-07">
+    enum="EnterprisePolicyRefresh" expires_after="2026-02-09">
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -1371,7 +1371,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.ConfidentialContentsCount" units="entries"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>aidazolic@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -2793,7 +2793,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2025-12-07">
+    enum="EnterprisePolicyInvalidations" expires_after="2026-02-09">
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -4118,7 +4118,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.SystemCallCount" units="count"
-    expires_after="2025-11-01">
+    expires_after="2026-02-09">
   <owner>nafisabedin@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>

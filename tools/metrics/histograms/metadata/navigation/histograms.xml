@@ -1169,7 +1169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.GestureTransition.ScreenshotCacheSize" units="MB"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>liuwilliam@google.com</owner>
   <owner>baranerf@google.com</owner>
   <owner>chrome-seamless-core@google.com</owner>
@@ -2449,7 +2449,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.ThrottleDeferredEvent"
-    enum="NavigationThrottleEvent" expires_after="2025-12-07">
+    enum="NavigationThrottleEvent" expires_after="2026-02-09">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2475,7 +2475,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.ThrottleEventDurationTime.{Event}" units="ms"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2488,7 +2488,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.ThrottleEventExecutionTime.{Event}" units="ms"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2515,7 +2515,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.ThrottleTotalDeferCount{Condition}"
-    units="throttles" expires_after="2025-12-07">
+    units="throttles" expires_after="2026-02-09">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2527,7 +2527,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.ThrottleTotalDeferTime{Condition}" units="ms"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>

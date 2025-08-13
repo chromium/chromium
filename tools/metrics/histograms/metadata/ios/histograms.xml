@@ -1228,7 +1228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.Shown"
-    enum="IOSDefaultBrowserPromoType" expires_after="2025-12-07">
+    enum="IOSDefaultBrowserPromoType" expires_after="2026-02-09">
   <owner>gayane@chromium.org</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>The default browser promo type shown to the user.</summary>
@@ -1292,7 +1292,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserSettingsPageUsage{Source}"
-    enum="IOSDefaultBrowserSettingsPageUsage" expires_after="2025-12-07">
+    enum="IOSDefaultBrowserSettingsPageUsage" expires_after="2026-02-09">
   <owner>gayane@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -1317,7 +1317,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserVideoPromo.Fullscreen"
-    enum="IOSDefaultBrowserVideoPromoAction" expires_after="2025-12-07">
+    enum="IOSDefaultBrowserVideoPromoAction" expires_after="2026-02-09">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <owner>bling-mony-pod@google.com</owner>
