@@ -507,7 +507,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
   if (suggest_template.has_value() && suggest_template->has_type_icon()) {
     // Update this assertion and the switch below whenever values are added.
     static_assert(omnibox::SuggestTemplateInfo::IconType_MAX ==
-                  omnibox::SuggestTemplateInfo::TRENDING);
+                  omnibox::SuggestTemplateInfo::SUB_ARROW_RIGHT);
     switch (suggest_template->type_icon()) {
       case omnibox::SuggestTemplateInfo::ICON_TYPE_UNSPECIFIED:
         // When not specified, fall back on regular match icon logic below.
@@ -520,6 +520,8 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
         return omnibox::kSearchSparkIcon;
       case omnibox::SuggestTemplateInfo::TRENDING:
         return omnibox::kTrendingUpChromeRefreshIcon;
+      case omnibox::SuggestTemplateInfo::SUB_ARROW_RIGHT:
+        return omnibox::kSubdirectoryArrowRightIcon;
       default:
         // Out of range value defaults to search loupe.
         return vector_icons::kSearchChromeRefreshIcon;
@@ -1740,6 +1742,17 @@ bool AutocompleteMatch::IsContextualSearchSuggestion() const {
 bool AutocompleteMatch::IsToolbelt() const {
   return type == AutocompleteMatchType::NULL_RESULT_MESSAGE &&
          !actions.empty() && omnibox_feature_configs::Toolbelt::Get().enabled;
+}
+
+bool AutocompleteMatch::HasLensSearchAction() const {
+  return (
+      suggest_template.has_value() &&
+      std::ranges::any_of(
+          suggest_template->action_suggestions(), [](const auto& action) {
+            return action.action_type() ==
+                   omnibox::SuggestTemplateInfo::TemplateAction::ActionType::
+                       SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS;
+          }));
 }
 
 bool AutocompleteMatch::IsSearchAimSuggestion() const {

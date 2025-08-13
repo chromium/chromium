@@ -569,6 +569,9 @@ struct AutocompleteMatch {
   // Checks if this match is a AI mode suggestion.
   bool IsSearchAimSuggestion() const;
 
+  // Checks if this match has a Lens search action.
+  bool HasLensSearchAction() const;
+
   // Returns true if this match may attach one or more `actions`.
   // This method is used to keep actions off of matches with types that don't
   // mix well with Pedals or other actions (e.g. entities).

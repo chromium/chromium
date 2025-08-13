@@ -34,6 +34,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Website"/>
   <int value="4" label="Reviews"/>
   <int value="5" label="Aim"/>
+  <int value="6" label="Lens"/>
 </enum>
 
 <enum name="BooleanNavigated">

@@ -333,6 +333,11 @@ class AutocompleteController : public AutocompleteProviderListener,
                            ContextualSearchActionAttachedPageKeywordMode);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
                            ContextualSearchActionAttachedInZeroSuggest);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
+                           AttachContextualSearchOpenLensActionToMatches);
+  FRIEND_TEST_ALL_PREFIXES(
+      AutocompleteControllerTest,
+      ContextualSearchOpenLensActionAttachedPageKeywordMode);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest,
                            RedundantKeywordsIgnoredInResult);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest, UpdateSearchboxStats);

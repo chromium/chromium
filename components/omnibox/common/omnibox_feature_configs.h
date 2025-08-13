@@ -159,6 +159,7 @@ struct ContextualSearch : Config<ContextualSearch> {
   DECLARE_FEATURE(kUseApcPaywallSignal);
   DECLARE_FEATURE(kShowSuggestionsOnNoApc);
   DECLARE_FEATURE(kOpenLensActionUITweaks);
+  DECLARE_FEATURE(kSuggestionsFulfilledByLensSupported);
 
   // Whether to use contextual search features, for example the lens action.
   bool IsContextualSearchEnabled() const;
@@ -235,6 +236,12 @@ struct ContextualSearch : Config<ContextualSearch> {
 
   // Whether to show the Lens entrypoint action with the new UI tweaks.
   bool open_lens_action_ui_tweaks;
+
+  // Whether the feature to allow contextual search suggestions to be fulfilled
+  // by Lens is supported. This allows contextual suggestions to open the Lens
+  // overlay in the selection state. This is in contrast to the default behavior
+  // where the suggestion is fulfilled by the contextual searchbox.
+  bool suggestions_fulfilled_by_lens_supported;
 };
 
 // If enabled, allows MIA zero-prefix suggestions in NTP omnibox and realbox.
