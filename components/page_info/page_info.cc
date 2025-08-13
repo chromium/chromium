@@ -66,6 +66,7 @@
 #include "content/public/browser/reload_type.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
+#include "media/base/media_switches.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/cert/cert_status_flags.h"
@@ -146,8 +147,8 @@ ContentSettingsType kPermissionType[] = {
     ContentSettingsType::AR,
     ContentSettingsType::IDLE_DETECTION,
     ContentSettingsType::FEDERATED_IDENTITY_API,
-#if !BUILDFLAG(IS_ANDROID)
     ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
+#if !BUILDFLAG(IS_ANDROID)
     ContentSettingsType::CAPTURED_SURFACE_CONTROL,
 #endif  // !BUILDFLAG(IS_ANDROID)
     ContentSettingsType::AUTOMATIC_FULLSCREEN,
@@ -1349,6 +1350,23 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
               permission_result.status);
     }
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(media::kAutoPictureInPictureAndroid) &&
+      permission_info.type == ContentSettingsType::AUTO_PICTURE_IN_PICTURE) {
+    // On Android, Auto-PiP does not have a prompt. Set the effective default
+    // setting based on the profile type and global default. Auto-PiP is blocked
+    // in Incognito for privacy, or if turned off globally. The global default
+    // is already in permission_info.default_setting. This logic should be
+    // removed when a prompt is implemented for parity with desktop.
+    ContentSetting default_setting =
+        std::get<ContentSetting>(permission_info.default_setting);
+    permission_info.default_setting = (delegate_->IsIncognitoProfile() ||
+                                       default_setting == CONTENT_SETTING_BLOCK)
+                                          ? CONTENT_SETTING_BLOCK
+                                          : CONTENT_SETTING_ALLOW;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Determines whether to show permission |type| in the Page Info UI. Only
@@ -1379,8 +1397,13 @@ bool PageInfo::ShouldShowPermission(
     }
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   if (info.type == ContentSettingsType::AUTO_PICTURE_IN_PICTURE) {
+#if BUILDFLAG(IS_ANDROID)
+    if (!base::FeatureList::IsEnabled(media::kAutoPictureInPictureAndroid)) {
+      return false;
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+
     if (!base::FeatureList::IsEnabled(
             blink::features::kMediaSessionEnterPictureInPicture)) {
       return false;
@@ -1389,7 +1412,6 @@ bool PageInfo::ShouldShowPermission(
       return true;
     }
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (info.type == ContentSettingsType::WEB_PRINTING &&
