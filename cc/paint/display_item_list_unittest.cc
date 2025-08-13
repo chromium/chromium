@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
@@ -41,23 +42,24 @@ namespace cc {
 
 namespace {
 
-bool CompareN32Pixels(void* actual_pixels,
-                      void* expected_pixels,
+bool CompareN32Pixels(base::span<unsigned char> actual_pixels,
+                      base::span<unsigned char> expected_pixels,
                       int width,
                       int height) {
-  if (UNSAFE_TODO(memcmp(actual_pixels, expected_pixels, 4 * width * height)) ==
-      0) {
+  CHECK_EQ(actual_pixels.size(), 4u * width * height);
+  CHECK_EQ(expected_pixels.size(), 4u * width * height);
+  if (actual_pixels == expected_pixels) {
     return true;
   }
 
   SkImageInfo actual_info = SkImageInfo::MakeN32Premul(width, height);
   SkBitmap actual_bitmap;
-  actual_bitmap.installPixels(actual_info, actual_pixels,
+  actual_bitmap.installPixels(actual_info, actual_pixels.data(),
                               actual_info.minRowBytes());
 
   SkImageInfo expected_info = SkImageInfo::MakeN32Premul(width, height);
   SkBitmap expected_bitmap;
-  expected_bitmap.installPixels(expected_info, expected_pixels,
+  expected_bitmap.installPixels(expected_info, expected_pixels.data(),
                                 expected_info.minRowBytes());
 
   std::string gen_bmp_data_url = GetPNGDataUrl(actual_bitmap);
