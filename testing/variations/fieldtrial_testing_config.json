@@ -3183,6 +3183,21 @@
             ]
         }
     ],
+    "AutomotiveBackButtonBarStreamline": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_140",
+                    "enable_features": [
+                        "AutomotiveBackButtonBarStreamline"
+                    ]
+                }
+            ]
+        }
+    ],
     "AvatarButtonSyncPromoWindows": [
         {
             "platforms": [

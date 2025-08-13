@@ -780,7 +780,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAsyncNotificationManagerForDownload =
             newCachedFlag(ASYNC_NOTIFICATION_MANAGER_FOR_DOWNLOAD, true);
     public static final CachedFlag sAutomotiveBackButtonBarStreamline =
-            newCachedFlag(AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE, false);
+            newCachedFlag(
+                    AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sBackgroundThreadPoolFieldTrial =
             newCachedFlag(
                     BACKGROUND_THREAD_POOL_FIELD_TRIAL,

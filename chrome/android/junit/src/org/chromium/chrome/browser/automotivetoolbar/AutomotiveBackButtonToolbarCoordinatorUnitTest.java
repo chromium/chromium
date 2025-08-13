@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -139,6 +140,7 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE)
     public void testFullscreen_onExitFullscreen() {
         mFullscreenObserver =
                 mAutomotiveBackButtonToolbarCoordinator.getFullscreenObserverForTesting();

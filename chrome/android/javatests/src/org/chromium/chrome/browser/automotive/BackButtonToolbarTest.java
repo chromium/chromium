@@ -35,9 +35,13 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags.Add;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -47,6 +51,7 @@ import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.components.browser_ui.widget.FullscreenAlertDialog;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DeviceRestriction;
 
@@ -79,8 +84,9 @@ public class BackButtonToolbarTest {
     @Test
     @SmallTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
+    @DisableFeatures(ChromeFeatureList.AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE)
     @Feature({"Automotive Toolbar"})
-    public void testAutomotiveToolbar_ToolbarView() throws Exception {
+    public void testAutomotiveToolbar_ToolbarView_Legacy() throws Exception {
         // Launch Settings Activity, which uses a Toolbar View to implement the automotive toolbar.
         mSettingsActivityTestRule.startSettingsActivity();
         SettingsActivity settingsActivity = mSettingsActivityTestRule.getActivity();
@@ -88,7 +94,7 @@ public class BackButtonToolbarTest {
         // Check that the automotive toolbar is present with only a back button.
         Toolbar toolbar = settingsActivity.findViewById(R.id.back_button_toolbar);
         assertNotNull(toolbar);
-        assertEquals("Toolbar not visible", View.VISIBLE, toolbar.getVisibility());
+        CriteriaHelper.pollUiThread(() -> toolbar.getVisibility() == View.VISIBLE);
         assertEquals("Toolbar should only contain a back button", 1, toolbar.getChildCount());
         assertThat(toolbar.getChildAt(0), instanceOf(AppCompatImageButton.class));
 
@@ -101,6 +107,26 @@ public class BackButtonToolbarTest {
 
         // Verify that #onBackPressed was called.
         mBackPressCallbackHelper.waitForOnly();
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
+    @EnableFeatures(ChromeFeatureList.AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE)
+    @Feature({"Automotive Toolbar"})
+    public void testAutomotiveToolbar_ToolbarNotShowing() throws Exception {
+        DisplayUtil.setCarmaPhase1Version2ComplianceForTesting(true);
+
+        // Launch Settings Activity, which uses a Toolbar View to implement the automotive toolbar.
+        mSettingsActivityTestRule.startSettingsActivity();
+        SettingsActivity settingsActivity = mSettingsActivityTestRule.getActivity();
+
+        // Check that the automotive toolbar is present with only a back button.
+        Toolbar toolbar = settingsActivity.findViewById(R.id.back_button_toolbar);
+        assertNotNull(toolbar);
+        CriteriaHelper.pollUiThread(() -> toolbar.getVisibility() == View.GONE);
+        assertEquals("Toolbar should only contain a back button", 1, toolbar.getChildCount());
+        assertThat(toolbar.getChildAt(0), instanceOf(AppCompatImageButton.class));
     }
 
     @Test
