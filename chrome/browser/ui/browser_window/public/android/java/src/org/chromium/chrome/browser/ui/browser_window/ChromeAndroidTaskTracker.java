@@ -48,4 +48,11 @@ public interface ChromeAndroidTaskTracker {
      * @param taskId Same as defined by {@link android.app.TaskInfo#taskId}.
      */
     void remove(int taskId);
+
+    /**
+     * Called when an {@link ActivityWindowAndroid} is destroyed.
+     *
+     * @param activityWindowAndroid The {@link ActivityWindowAndroid} that is being destroyed.
+     */
+    void onActivityWindowAndroidDestroy(ActivityWindowAndroid activityWindowAndroid);
 }

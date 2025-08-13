@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.browser_window;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
@@ -95,6 +96,61 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
         // Act & Assert.
         assertEquals(null, mChromeAndroidTaskTracker.get(/* taskId= */ 2));
+    }
+
+    @Test
+    public void onActivityWindowAndroidDestroy_activityWindowAndroidHasDifferentTaskId_noOp() {
+        // Arrange.
+        var activityWindowAndroid1 =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
+        var activityWindowAndroid2 =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 2);
+        var chromeAndroidTask = mChromeAndroidTaskTracker.obtainTask(activityWindowAndroid1);
+
+        // Act.
+        mChromeAndroidTaskTracker.onActivityWindowAndroidDestroy(activityWindowAndroid2);
+
+        // Assert.
+        assertEquals(activityWindowAndroid1, chromeAndroidTask.getActivityWindowAndroid());
+        assertFalse(chromeAndroidTask.isDestroyed());
+        assertEquals(chromeAndroidTask, mChromeAndroidTaskTracker.get(/* taskId= */ 1));
+    }
+
+    @Test
+    public void
+            onActivityWindowAndroidDestroy_activityWindowAndroidHasSameTaskIdButIsDifferentInstance_noOp() {
+        // Arrange.
+        var activityWindowAndroid1 =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
+        var activityWindowAndroid2 =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
+        var chromeAndroidTask = mChromeAndroidTaskTracker.obtainTask(activityWindowAndroid1);
+
+        // Act.
+        mChromeAndroidTaskTracker.onActivityWindowAndroidDestroy(activityWindowAndroid2);
+
+        // Assert.
+        assertEquals(activityWindowAndroid1, chromeAndroidTask.getActivityWindowAndroid());
+        assertFalse(chromeAndroidTask.isDestroyed());
+        assertEquals(chromeAndroidTask, mChromeAndroidTaskTracker.get(/* taskId= */ 1));
+    }
+
+    @Test
+    public void
+            onActivityWindowAndroidDestroy_activityWindowAndroidIsSameInstance_destroysAndRemovesTask() {
+        // Arrange.
+        var activityWindowAndroid =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
+        var chromeAndroidTask = mChromeAndroidTaskTracker.obtainTask(activityWindowAndroid);
+
+        // Act.
+        mChromeAndroidTaskTracker.onActivityWindowAndroidDestroy(activityWindowAndroid);
+
+        // Assert.
+        assertNull(
+                ((ChromeAndroidTaskImpl) chromeAndroidTask).getActivityWindowAndroidForTesting());
+        assertTrue(chromeAndroidTask.isDestroyed());
+        assertNull(mChromeAndroidTaskTracker.get(/* taskId= */ 1));
     }
 
     @Test
