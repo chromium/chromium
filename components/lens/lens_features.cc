@@ -583,6 +583,9 @@ constexpr base::FeatureParam<bool> kOpenAimInSidePanel{
 constexpr base::FeatureParam<bool> kAimSearchboxEnabled{
     &kLensSearchAimM3, "aim-searchbox-enabled", true};
 
+constexpr base::FeatureParam<bool> kSidePanelGhostLoaderDisabledForAim{
+    &kLensSearchAimM3, "side-panel-ghost-loader-disabled-for-aim", true};
+
 const base::FeatureParam<int> kLensOverlayEntrypointLabelAltId{
     &kLensOverlayEntrypointLabelAlt, "id", 0};
 
@@ -1090,6 +1093,11 @@ bool ShouldShowAimInSidePanel() {
 bool GetAimSearchboxEnabled() {
   return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
          kAimSearchboxEnabled.Get();
+}
+
+bool GetSidePanelGhostLoaderDisabledForAim() {
+  return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
+         kSidePanelGhostLoaderDisabledForAim.Get();
 }
 
 bool ShouldUseAltLoadingHintWeb() {

@@ -845,6 +845,10 @@ extern bool ShouldShowAimInSidePanel();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetAimSearchboxEnabled();
 
+// Whether the side panel ghost loader is disabled for AIM interactions.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetSidePanelGhostLoaderDisabledForAim();
+
 // Whether to use the alt loading hint when overlay is opened on web pages.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShouldUseAltLoadingHintWeb();
