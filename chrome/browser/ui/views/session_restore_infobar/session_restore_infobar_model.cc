@@ -38,8 +38,8 @@ SessionRestoreInfobarModel::GetSessionRestoreMessageValue() {
 }
 
 void SessionRestoreInfobarModel::SetInfobarDelegate() {
-  // Called to pass enum to the infobar delegate to display the correct
-  // message in the infobar.
+  // TODO(crbug.com/431828875): Called to pass enum to the infobar delegate to
+  // display the correct message in the infobar.
 }
 
 }  // namespace session_restore_infobar
