@@ -3291,6 +3291,8 @@ static_library("browser") {
       "shell_integration_android.cc",
       "signin/android/signin_bridge.cc",
       "signin/android/signin_bridge.h",
+      "signin/android/signin_bridge_factory.cc",
+      "signin/android/signin_bridge_factory.h",
       "signin/android/signin_manager_android.cc",
       "signin/android/signin_manager_android.h",
       "signin/android/signin_metrics_utils.cc",

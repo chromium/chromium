@@ -9,11 +9,14 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "build/buildflag.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/signin/android/signin_bridge.h"
+#include "chrome/browser/signin/android/signin_bridge_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -45,7 +48,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
-#endif
+#include "ui/android/window_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -54,6 +58,10 @@ const char kMirrorActionAddSession[] = "action=ADDSESSION";
 #if BUILDFLAG(IS_ANDROID)
 const char kMirrorActionGoIncognito[] =
     "action=INCOGNITO,continue_url=http://example.com";
+const char kMirrorActionWithPromoAndContinueUrl[] =
+    "action=ADDSESSION,show_consistency_promo=true,continue_url=http://"
+    "example.com";
+const char kMirrorActionDefault[] = "action=DEFAULT";
 #endif
 #endif
 
@@ -182,6 +190,31 @@ class TestChromeRequestAdapter : public signin::ChromeRequestAdapter {
   std::vector<std::string> headers_to_remove_;
 };
 
+#if BUILDFLAG(IS_ANDROID)
+class MockSigninBridge : public SigninBridge {
+ public:
+  MockSigninBridge() = default;
+
+  MOCK_METHOD(void,
+              OpenAccountManagementScreen,
+              (ui::WindowAndroid * window,
+               signin::GAIAServiceType service_type),
+              (override));
+
+  MOCK_METHOD(void,
+              OpenAccountPickerBottomSheet,
+              (content::WebContents * web_contents,
+               const std::string& continue_url),
+              (override));
+};
+
+std::unique_ptr<KeyedService> BuildMockSigninBridgeForTesting(
+    content::BrowserContext* context) {
+  return std::make_unique<MockSigninBridge>();
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 using ::testing::_;
@@ -190,6 +223,20 @@ class ChromeSigninHelperTest : public ChromeRenderViewHostTestHarness {
  protected:
   ChromeSigninHelperTest() = default;
   ~ChromeSigninHelperTest() override = default;
+
+#if BUILDFLAG(IS_ANDROID)
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    mock_signin_bridge_ = static_cast<MockSigninBridge*>(
+        SigninBridgeFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile(), base::BindRepeating(&BuildMockSigninBridgeForTesting)));
+  }
+
+  MockSigninBridge* signin_bridge() { return mock_signin_bridge_; }
+
+ private:
+  raw_ptr<MockSigninBridge> mock_signin_bridge_ = nullptr;
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -383,6 +430,75 @@ TEST_F(ChromeSigninHelperTest, MirrorGoIncognitoInactiveWebContents) {
   EXPECT_CALL(mock_web_contents_delegate, OpenURLFromTab(_, _, _)).Times(0);
   task_environment()->RunUntilIdle();
 }
+
+// Tests that receiving an action with show_consistency_promo parameter
+// within kChromeManageAccountsHeader opens the bottom sheet with the correct
+// continue URL.
+TEST_F(ChromeSigninHelperTest, OpenBottomSheet) {
+  std::unique_ptr<content::WebContents> web_contents(CreateTestWebContents());
+
+  TestTabModel tab_model(profile());
+  TabModelList::AddTabModel(&tab_model);
+  base::ScopedClosureRunner remover(base::BindOnce(
+      TabModelList::RemoveTabModel, base::Unretained(&tab_model)));
+
+  // WebContents should be considered foremost for kChromeManageAccountsHeader
+  // to be processed.
+  tab_model.SetWebContentsList({web_contents.get()});
+  tab_model.SetIsActiveModel(true);
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
+      window_android = ui::WindowAndroid::CreateForTesting();
+  window_android.get()->get()->AddChild(web_contents->GetNativeView());
+
+  // Process the header.
+  TestResponseAdapter response_adapter(
+      signin::kChromeManageAccountsHeader, kMirrorActionWithPromoAndContinueUrl,
+      /*is_outermost_main_frame=*/true, web_contents.get());
+
+  // Check that the sign-in bridge is called to open the sign-in bottom sheet
+  // with the correct continue URL.
+  EXPECT_CALL(*signin_bridge(),
+              OpenAccountPickerBottomSheet(_, "http://example.com"))
+      .Times(1);
+
+  signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
+                                                   false /* is_incognito */);
+  task_environment()->RunUntilIdle();
+}
+
+// Tests that receiving DEFAULT action within kChromeManageAccountsHeader
+// opens the account management screen.
+TEST_F(ChromeSigninHelperTest, OpenAccountManagementScreen) {
+  std::unique_ptr<content::WebContents> web_contents(CreateTestWebContents());
+
+  TestTabModel tab_model(profile());
+  TabModelList::AddTabModel(&tab_model);
+  base::ScopedClosureRunner remover(base::BindOnce(
+      TabModelList::RemoveTabModel, base::Unretained(&tab_model)));
+
+  // WebContents should be considered foremost for kChromeManageAccountsHeader
+  // to be processed.
+  tab_model.SetWebContentsList({web_contents.get()});
+  tab_model.SetIsActiveModel(true);
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
+      window_android = ui::WindowAndroid::CreateForTesting();
+  window_android.get()->get()->AddChild(web_contents->GetNativeView());
+
+  // Process the header.
+  TestResponseAdapter response_adapter(
+      signin::kChromeManageAccountsHeader, kMirrorActionDefault,
+      /*is_outermost_main_frame=*/true, web_contents.get());
+
+  // Check that the sign-in bridge is called to open the management screen.
+  EXPECT_CALL(*signin_bridge(), OpenAccountManagementScreen(_, _)).Times(1);
+
+  signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
+                                                   false /* is_incognito */);
+  task_environment()->RunUntilIdle();
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(ChromeSigninHelperTest, NonEligibleURL) {

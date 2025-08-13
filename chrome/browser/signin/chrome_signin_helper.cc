@@ -39,6 +39,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/signin/android/signin_bridge.h"
+#include "chrome/browser/signin/android/signin_bridge_factory.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/common/webui_url_constants.h"
@@ -334,7 +335,7 @@ void ProcessMirrorHeader(
 
 #elif BUILDFLAG(IS_ANDROID)
   if (manage_accounts_params.show_consistency_promo) {
-    SigninBridge::OpenAccountPickerBottomSheet(
+    SigninBridgeFactory::GetForProfile(profile)->OpenAccountPickerBottomSheet(
         web_contents, manage_accounts_params.continue_url.empty()
                           ? chrome::kChromeUINativeNewTabURL
                           : manage_accounts_params.continue_url);
@@ -355,7 +356,8 @@ void ProcessMirrorHeader(
     auto* window = web_contents->GetNativeView()->GetWindowAndroid();
     if (!window)
       return;
-    SigninBridge::OpenAccountManagementScreen(window, service_type);
+    SigninBridgeFactory::GetForProfile(profile)->OpenAccountManagementScreen(
+        window, service_type);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }

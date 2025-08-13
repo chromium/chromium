@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
 
@@ -19,17 +20,19 @@ class WindowAndroid;
 }
 
 // The glue for Java-side implementation of SigninBridge.
-class SigninBridge {
+class SigninBridge : public KeyedService {
  public:
+  SigninBridge() = default;
+  ~SigninBridge() override = default;
+
   // Opens the account management screen.
-  static void OpenAccountManagementScreen(ui::WindowAndroid* window,
-                                          signin::GAIAServiceType service_type);
+  virtual void OpenAccountManagementScreen(
+      ui::WindowAndroid* window,
+      signin::GAIAServiceType service_type);
 
   // Opens the account picker bottomsheet
-  static void OpenAccountPickerBottomSheet(content::WebContents* web_contents,
-                                           const std::string& continue_url);
-
-  SigninBridge() = delete;
+  virtual void OpenAccountPickerBottomSheet(content::WebContents* web_contents,
+                                            const std::string& continue_url);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_ANDROID_SIGNIN_BRIDGE_H_
