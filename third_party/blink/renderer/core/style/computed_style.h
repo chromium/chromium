@@ -506,6 +506,8 @@ class ComputedStyle final : public ComputedStyleBase {
   }
   bool HasBackdropFilter() const { return HasBackdropFilter(BackdropFilter()); }
 
+  bool HasReferenceFilter() const { return Filter().HasReferenceFilter(); }
+
   // filter (aka -webkit-filter)
   // For containing blocks, use |HasNonInitialFilter()| which includes
   // will-change: filter.

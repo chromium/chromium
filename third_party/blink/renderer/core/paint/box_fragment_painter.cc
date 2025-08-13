@@ -472,7 +472,10 @@ void BoxFragmentPainter::Paint(const PaintInfo& paint_info) {
       paint_info.phase != PaintPhase::kOverlayOverflowControls) {
     PaintAllPhasesAtomically(paint_info);
   } else if (layout_object && layout_object->IsSVGForeignObject()) {
-    ScopedSVGPaintState paint_state(*layout_object, paint_info);
+    // SVG foreign object paints its filter as part of PaintLayerPainter.
+    ScopedSVGPaintState paint_state(
+        *layout_object, paint_info,
+        {ScopedSVGPaintState::PaintComponent::kContent});
     PaintTiming::From(layout_object->GetDocument()).MarkFirstContentfulPaint();
     PaintInternal(paint_info);
   } else {
@@ -851,8 +854,11 @@ void BoxFragmentPainter::PaintLineBoxes(const PaintInfo& paint_info,
   EnsureInlineContext();
   InlineCursor children(box_fragment_, *items_);
   std::optional<ScopedSVGPaintState> paint_state;
-  if (box_fragment_.IsSvgText())
-    paint_state.emplace(*box_fragment_.GetLayoutObject(), paint_info);
+  if (box_fragment_.IsSvgText()) {
+    // This uses all components as the SVG text fragment paints its own filter.
+    paint_state.emplace(*box_fragment_.GetLayoutObject(), paint_info,
+                        ScopedSVGPaintState::PaintBehavior::All());
+  }
 
   PaintInfo child_paint_info(paint_info.ForDescendants());
 
@@ -876,8 +882,8 @@ void BoxFragmentPainter::PaintLineBoxes(const PaintInfo& paint_info,
   if (child_paint_info.phase == PaintPhase::kForeground &&
       child_paint_info.ShouldAddUrlMetadata()) {
     // TODO(crbug.com/1392701): Avoid walking the LayoutObject tree (which is
-    // what AddURLRectsForInlineChildrenRecursively() does). We should walk the
-    // fragment tree instead (if we can figure out how to deal with culled
+    // what AddURLRectsForInlineChildrenRecursively() does). We should walk
+    // the fragment tree instead (if we can figure out how to deal with culled
     // inlines - or get rid of them). Walking the LayoutObject tree means that
     // we'll visit every link in the container for each fragment generated,
     // leading to duplicate entries. This is only fine as long as the absolute
@@ -892,8 +898,9 @@ void BoxFragmentPainter::PaintLineBoxes(const PaintInfo& paint_info,
   }
 
   // If we have no lines then we have no work to do.
-  if (!children)
+  if (!children) {
     return;
+  }
 
   if (child_paint_info.phase == PaintPhase::kForcedColorsModeBackplate &&
       box_fragment_.GetDocument().InForcedColorsMode()) {

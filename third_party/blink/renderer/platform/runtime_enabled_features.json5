@@ -4700,6 +4700,10 @@
       status: "stable",
     },
     {
+      name: "SvgFilterPaintsForHiddenContent",
+      status: "stable",
+    },
+    {
       name: "SvgIgnoreNegativeEllipseRadii",
       status: "stable",
     },

@@ -496,7 +496,9 @@ void PaintLayer::UpdateHasVisibleContent() {
   bool previously_has_visible_content = has_visible_content_;
 
   const LayoutObject& object = GetLayoutObject();
-  if (object.StyleRef().Visibility() == EVisibility::kVisible) {
+  if (object.StyleRef().Visibility() == EVisibility::kVisible ||
+      (object.StyleRef().HasReferenceFilter() &&
+       RuntimeEnabledFeatures::SvgFilterPaintsForHiddenContentEnabled())) {
     has_visible_content_ = true;
   } else {
     // layer may be hidden but still have some visible content, check for this
@@ -508,7 +510,9 @@ void PaintLayer::UpdateHasVisibleContent() {
         r = r->NextInPreOrderAfterChildren(&object);
         continue;
       }
-      if (r->StyleRef().Visibility() == EVisibility::kVisible) {
+      if (r->StyleRef().Visibility() == EVisibility::kVisible ||
+          (r->StyleRef().HasReferenceFilter() &&
+           RuntimeEnabledFeatures::SvgFilterPaintsForHiddenContentEnabled())) {
         has_visible_content_ = true;
         break;
       }
