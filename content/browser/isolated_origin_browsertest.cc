@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
@@ -212,15 +213,7 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
 
 class IsolatedOriginTest : public IsolatedOriginTestBase {
  public:
-  IsolatedOriginTest() {
-    // Setting create_speculative_rfh_delay_ms to deflake
-    // IsolatedServiceWorkerDoesNotReuseUnsuitableProcessWithPendingSiteEntry.
-    // The test may fail if the RFH creation task for hung page is called after
-    // the following navigation in the new tab.
-    features_.InitAndEnableFeatureWithParameters(
-        features::kDeferSpeculativeRFHCreation,
-        {{"create_speculative_rfh_delay_ms", "0"}});
-  }
+  IsolatedOriginTest() = default;
   ~IsolatedOriginTest() override = default;
 
   IsolatedOriginTest(const IsolatedOriginTest&) = delete;
@@ -251,9 +244,6 @@ class IsolatedOriginTest : public IsolatedOriginTestBase {
                            "document.body.appendChild(link);"
                            "link.click();"));
   }
-
- private:
-  base::test::ScopedFeatureList features_;
 };
 
 // Tests that verify the header can be used to opt-in to origin isolation.
@@ -4300,12 +4290,21 @@ IN_PROC_BROWSER_TEST_F(
 
   // Wait for the request and send it.  This will place
   // isolated.foo.com on the list of pending sites for this tab's process.
-  // TODO(crbug.com/437230046): The test can be flaky if we enable the
-  // delay when deferring the speculative RFH creation. We need to make
-  // sure the navigation takes the RFH and RPH of the blank page before
-  // triggering the second request.
   EXPECT_TRUE(manager.WaitForRequestStart());
   manager.ResumeNavigation();
+
+  // Wait for the navigation to take the RFH and RPH of the blank page before
+  // triggering the second request. Since the navigation request may reuse the
+  // RFH of the blank page rather than creating a speculative RFH here, we
+  // cannot use manager.WaitForSpeculativeRFHCreation(). Otherwise the second
+  // navigation may take the RPH of the blank page, causing the service worker
+  // to be matched.
+  auto* request =
+      web_contents()->GetPrimaryFrameTree().root()->navigation_request();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return request->GetAssociatedRFHType() !=
+           NavigationRequest::AssociatedRenderFrameHostType::NONE;
+  }));
 
   // Open a new, unrelated tab and navigate it to an unisolated URL. This
   // should reuse the first process, which is still considered unused at this
