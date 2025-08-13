@@ -57,6 +57,12 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   EncoderStatus::Or<size_t> GetEncodedBitstreamWrittenBytesCount(
       const ScopedD3D12ResourceMap& metadata) override;
 
+  void RefreshDPBAndDescriptors();
+
+  size_t PackAV1BitstreamHeader(
+      const AV1BitstreamBuilder::FrameHeader& frame_header,
+      size_t compressed_size,
+      base::span<uint8_t> bitstream_buffer);
   EncoderStatus::Or<size_t> ReadbackBitstream(
       base::span<uint8_t> bitstream_buffer) override;
 
@@ -68,6 +74,10 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
       const D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAGS& post_encode_flags,
       const D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES& post_encode_values,
       AV1BitstreamBuilder::FrameHeader& frame_header);
+
+  // Returns true if the current picture is a key frame, should be guranteed
+  // to be called after `FillPictureControlParams()`.
+  bool IsKeyFrame() const { return picture_id_ == 0; }
 
   uint32_t max_num_ref_frames_ = 0;
 
@@ -105,6 +115,9 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   AV1BitstreamBuilder::SequenceHeader sequence_header_;
   D3D12VideoEncodeDecodedPictureBuffers<kAV1DPBMaxSize> dpb_;
   int picture_id_ = -1;
+
+  // The metadata of the bitstream buffer for the last encode request.
+  BitstreamBufferMetadata metadata_;
 };
 
 }  // namespace media
