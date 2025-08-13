@@ -1785,6 +1785,10 @@ void PageSpecificContentSettings::ResetMediaBlockedState(
   }
 }
 
+void PageSpecificContentSettings::OnRegisteredForAutoPictureInPictureChanged() {
+  MaybeUpdateLocationBar();
+}
+
 void PageSpecificContentSettings::MaybeNotifySiteDataObservers(
     const AccessDetails& access_details) {
   if (IsEmbeddedPage())

@@ -30,6 +30,10 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/browser/ui/views/overlay/video_overlay_window_views.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
+#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -60,9 +64,14 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/test/test_event.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 using media_session::mojom::MediaSessionAction;
 using testing::_;
@@ -237,33 +246,104 @@ class AutoPipInfoDevToolsWaiter : public content::DevToolsInspectorLogWatcher::
       auto_pip_dev_tools_waiter_observation_{this};
 };
 
+// Simulates clicking on the location icon to open the page info bubble.
+void OpenPageInfoBubble(Browser* browser) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  LocationIconView* location_icon_view =
+      browser_view->toolbar()->location_bar()->location_icon_view();
+  ASSERT_TRUE(location_icon_view);
+  ui::test::TestEvent event;
+  location_icon_view->ShowBubble(event);
+  views::BubbleDialogDelegateView* page_info =
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+  EXPECT_NE(nullptr, page_info);
+  page_info->set_close_on_deactivate(false);
+}
+
+// Helper function to find a label with specific text in a view hierarchy.
+bool FindLabelWithText(const views::View* view, const std::u16string& text) {
+  if (auto* label = views::AsViewClass<const views::Label>(view)) {
+    if (label->GetText() == text) {
+      return true;
+    }
+  }
+
+  for (const views::View* child : view->children()) {
+    if (FindLabelWithText(child, text)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool IsPermissionPresentInPageInfo(ContentSettingsType type) {
+  auto* bubble = views::AsViewClass<PageInfoBubbleView>(
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+  if (!bubble) {
+    return false;
+  }
+
+  const auto* permissions_view = bubble->GetViewByID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_VIEW);
+  if (!permissions_view) {
+    return false;
+  }
+
+  const std::u16string permission_name =
+      PageInfoUI::PermissionTypeToUIString(type);
+  for (const views::View* view : permissions_view->children()) {
+    if (FindLabelWithText(view, permission_name)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 // Helper class to wait for widget bound updates.
 class WidgetBoundsChangeWaiter : public views::WidgetObserver {
  public:
-  explicit WidgetBoundsChangeWaiter(views::Widget* widget) {
-    observation_.Observe(widget);
+  enum class Comparison { kIsEqual, kIsDifferent };
+
+  explicit WidgetBoundsChangeWaiter(views::Widget* widget,
+                                    Comparison comparison)
+      : comparison_(comparison) {
+    if (widget) {
+      observation_.Observe(widget);
+    }
   }
 
-  void WaitForBoundsChange(const gfx::Rect& expected_bounds_in_screen) {
+  // Waits for the widget bounds to meet the comparison criteria with
+  // `reference_bounds`.
+  void Wait(const gfx::Rect& reference_bounds) {
     views::Widget* widget = observation_.GetSource();
-    if (!widget ||
-        widget->GetWindowBoundsInScreen() == expected_bounds_in_screen) {
+    if (!widget) {
       return;
     }
 
-    expected_bounds_in_screen_ = expected_bounds_in_screen;
+    reference_bounds_ = reference_bounds;
+
+    if (IsConditionMet(widget->GetWindowBoundsInScreen())) {
+      return;
+    }
+
     CHECK(bounds_future_.Wait()) << "Waiting for value timed out.";
   }
 
  private:
+  bool IsConditionMet(const gfx::Rect& new_bounds) const {
+    CHECK(reference_bounds_.has_value());
+    return (comparison_ == Comparison::kIsEqual)
+               ? (new_bounds == *reference_bounds_)
+               : (new_bounds != *reference_bounds_);
+  }
+
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override {
-    if (expected_bounds_in_screen_.has_value() &&
-        widget->GetWindowBoundsInScreen() ==
-            expected_bounds_in_screen_.value()) {
-      if (!bounds_future_.IsReady()) {
-        bounds_future_.SetValue();
-      }
+    if (reference_bounds_.has_value() && IsConditionMet(new_bounds) &&
+        !bounds_future_.IsReady()) {
+      bounds_future_.SetValue();
     }
   }
 
@@ -277,7 +357,8 @@ class WidgetBoundsChangeWaiter : public views::WidgetObserver {
   }
 
   base::test::TestFuture<void> bounds_future_;
-  std::optional<gfx::Rect> expected_bounds_in_screen_;
+  const Comparison comparison_;
+  std::optional<gfx::Rect> reference_bounds_;
   base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
       this};
 };
@@ -1530,6 +1611,51 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       AutoPipPermissionShownInPageInfoOnChange) {
+  // Load a page that can register for autopip.
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL(
+          "a.com",
+          "/media/picture-in-picture/autopip-toggle-registration.html")));
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  OpenPageInfoBubble(browser());
+
+  // Initially, the permission should not be shown.
+  EXPECT_FALSE(IsPermissionPresentInPageInfo(
+      ContentSettingsType::AUTO_PICTURE_IN_PICTURE));
+
+  // Simulate the page registering for auto-pip, and wait for the page info
+  // widget to resize.
+  views::Widget* page_info_widget =
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting()->GetWidget();
+  ASSERT_TRUE(page_info_widget);
+
+  const gfx::Rect bounds_before_register =
+      page_info_widget->GetWindowBoundsInScreen();
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+      u"register()", base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
+  WaitForMediaSessionActionRegistered(web_contents);
+  WidgetBoundsChangeWaiter(page_info_widget,
+                           WidgetBoundsChangeWaiter::Comparison::kIsDifferent)
+      .Wait(bounds_before_register);
+
+  // Now the permission should be shown.
+  EXPECT_TRUE(IsPermissionPresentInPageInfo(
+      ContentSettingsType::AUTO_PICTURE_IN_PICTURE));
+
+  // After unregistering, the permission should still be shown.
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+      u"unregister()", base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
+  WaitForMediaSessionActionUnregistered(web_contents);
+
+  EXPECT_TRUE(IsPermissionPresentInPageInfo(
+      ContentSettingsType::AUTO_PICTURE_IN_PICTURE));
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
                        AutoPipReasonSetForDocumentPip_Unknown) {
   // Load a page that registers for autopip and starts using camera/microphone.
   LoadCameraMicrophonePage(browser());
@@ -1590,7 +1716,9 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   pip_widget->SetBounds(moved_bounds);
 
   // Wait for the move to complete, and close the picture-in-picture window.
-  WidgetBoundsChangeWaiter(pip_widget).WaitForBoundsChange(moved_bounds);
+  WidgetBoundsChangeWaiter(pip_widget,
+                           WidgetBoundsChangeWaiter::Comparison::kIsEqual)
+      .Wait(moved_bounds);
   SwitchBackToOpenerAndWaitForPipToClose();
 
   // Re-open the picture-in-picture window, and verify that the new new and old
@@ -1635,7 +1763,9 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   pip_widget->SetBounds(moved_bounds);
 
   // Wait for the move to complete, and close the picture-in-picture window.
-  WidgetBoundsChangeWaiter(pip_widget).WaitForBoundsChange(moved_bounds);
+  WidgetBoundsChangeWaiter(pip_widget,
+                           WidgetBoundsChangeWaiter::Comparison::kIsEqual)
+      .Wait(moved_bounds);
   SwitchBackToOpenerAndWaitForPipToClose();
 
   // Re-open the picture-in-picture window, and verify that the new new and old

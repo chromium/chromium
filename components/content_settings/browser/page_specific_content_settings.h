@@ -494,6 +494,10 @@ class PageSpecificContentSettings
   // bar.
   void ResetMediaBlockedState(ContentSettingsType type, bool update_indicators);
 
+  // Called to update the location bar when a site first registers for automatic
+  // picture-in-picture.
+  void OnRegisteredForAutoPictureInPictureChanged();
+
   void set_media_stream_access_origin_for_testing(const GURL& url) {
     media_stream_access_origin_ = url;
   }

@@ -18,6 +18,7 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "content/public/browser/media_session.h"
@@ -288,13 +289,23 @@ void AutoPictureInPictureTabHelper::MediaSessionInfoChanged(
 
 void AutoPictureInPictureTabHelper::MediaSessionActionsChanged(
     const std::vector<media_session::mojom::MediaSessionAction>& actions) {
+  bool was_available = is_enter_auto_picture_in_picture_available_;
   is_enter_auto_picture_in_picture_available_ =
       std::ranges::find(actions,
                         media_session::mojom::MediaSessionAction::
                             kEnterAutoPictureInPicture) != actions.end();
 
-  if (is_enter_auto_picture_in_picture_available_) {
+  if (is_enter_auto_picture_in_picture_available_ && !was_available) {
     has_ever_registered_for_auto_picture_in_picture_ = true;
+    // Inform PageSpecificContentSettings that this page now has auto
+    // picture-in-picture support. This will cause the UI to update. This is
+    // done so that the UI is updated if the page info menu is already open when
+    // the status changes.
+    auto* pscs = content_settings::PageSpecificContentSettings::GetForFrame(
+        web_contents()->GetPrimaryMainFrame());
+    if (pscs) {
+      pscs->OnRegisteredForAutoPictureInPictureChanged();
+    }
   }
   MaybeStartOrStopObservingTabStrip();
 }

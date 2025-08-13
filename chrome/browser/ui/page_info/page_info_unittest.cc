@@ -22,6 +22,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
@@ -63,8 +64,10 @@
 #include "net/test/test_data_directory.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
+#include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
@@ -613,6 +616,47 @@ TEST_F(PageInfoTest, HideAutograntedRWSPermissions) {
   ExpectPermissionInfoList(expected_visible_permissions,
                            last_permission_info_list());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(https://crbug.com/421606013): Enable test for Android once the
+// permission is available for that platform.
+TEST_F(PageInfoTest, AutoPictureInPicturePermissionShownOnChange) {
+  std::set<ContentSettingsType> expected_visible_permissions;
+
+  // Enable auto-pip feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {blink::features::kMediaSessionEnterPictureInPicture}, {});
+
+  // Create the tab helper.
+  AutoPictureInPictureTabHelper::CreateForWebContents(web_contents());
+
+  // Initially, the permission should not be shown.
+  page_info()->PresentSitePermissionsForTesting();
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+
+  // Simulate the page registering for auto-pip.
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents());
+  std::vector<media_session::mojom::MediaSessionAction> actions;
+  actions.push_back(
+      media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture);
+  tab_helper->MediaSessionActionsChanged(actions);
+
+  // Now the permission should be shown.
+  expected_visible_permissions.insert(
+      ContentSettingsType::AUTO_PICTURE_IN_PICTURE);
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+
+  // After unregistering, the permission should still be shown.
+  actions.clear();
+  tab_helper->MediaSessionActionsChanged(actions);
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(PageInfoTest, IncognitoPermissionsEmptyByDefault) {
   incognito_page_info()->PresentSitePermissionsForTesting();
