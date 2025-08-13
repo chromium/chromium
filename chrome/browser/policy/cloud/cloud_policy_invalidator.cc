@@ -131,7 +131,7 @@ CloudPolicyInvalidator::PolicyInvalidationHandler::PolicyInvalidationHandler(
     PolicyInvalidationScope scope,
     int64_t highest_handled_invalidation_version,
     CloudPolicyCore* core,
-    base::Clock* clock,
+    const base::Clock* clock,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : scope_(scope),
       core_(core),
@@ -160,7 +160,7 @@ CloudPolicyInvalidator::CloudPolicyInvalidator(
     invalidation::InvalidationListener* invalidation_listener,
     CloudPolicyCore* core,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-    base::Clock* clock,
+    const base::Clock* clock,
     int64_t highest_handled_invalidation_version)
     : CloudPolicyInvalidator(scope,
                              invalidation_listener,
@@ -175,7 +175,7 @@ CloudPolicyInvalidator::CloudPolicyInvalidator(
     invalidation::InvalidationListener* invalidation_listener,
     CloudPolicyCore* core,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-    base::Clock* clock,
+    const base::Clock* clock,
     int64_t highest_handled_invalidation_version,
     const std::string& device_local_account_id)
     : policy_invalidation_handler_(scope,

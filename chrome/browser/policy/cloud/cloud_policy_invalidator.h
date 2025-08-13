@@ -76,7 +76,7 @@ class CloudPolicyInvalidator
       invalidation::InvalidationListener* invalidation_listener,
       CloudPolicyCore* core,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-      base::Clock* clock,
+      const base::Clock* clock,
       int64_t highest_handled_invalidation_version,
       const std::string& device_local_account_id);
   CloudPolicyInvalidator(
@@ -84,7 +84,7 @@ class CloudPolicyInvalidator
       invalidation::InvalidationListener* invalidation_listener,
       CloudPolicyCore* core,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-      base::Clock* clock,
+      const base::Clock* clock,
       int64_t highest_handled_invalidation_version);
   CloudPolicyInvalidator(const CloudPolicyInvalidator&) = delete;
   CloudPolicyInvalidator& operator=(const CloudPolicyInvalidator&) = delete;
@@ -118,7 +118,7 @@ class CloudPolicyInvalidator
         PolicyInvalidationScope scope,
         int64_t highest_handled_invalidation_version,
         CloudPolicyCore* core,
-        base::Clock* clock,
+        const base::Clock* clock,
         scoped_refptr<base::SequencedTaskRunner> task_runner);
 
     ~PolicyInvalidationHandler();
@@ -188,7 +188,7 @@ class CloudPolicyInvalidator
     int max_fetch_delay_ = kMaxFetchDelayDefault;
 
     // The clock.
-    const raw_ptr<base::Clock> clock_;
+    const raw_ptr<const base::Clock> clock_;
 
     // Schedules delayed tasks.
     const scoped_refptr<base::SequencedTaskRunner> task_runner_;
