@@ -9551,9 +9551,11 @@ crbug.com/414257771 [ Mac ] external/wpt/notifications/shownotification.https.wi
 crbug.com/392657736 external/wpt/content-security-policy/unsafe-eval/tentative/eval-hashes-override-unsafe-eval.sub.html [ Failure ]
 crbug.com/392657736 external/wpt/content-security-policy/unsafe-eval/tentative/eval-allowed-by-hash.sub.html [ Failure ]
 crbug.com/392657736 external/wpt/content-security-policy/unsafe-eval/tentative/eval-blocked-report-contains-hash.html [ Failure ]
+crbug.com/392657736 external/wpt/content-security-policy/unsafe-eval/tentative/eval-allowed-by-hash-long-script.sub.html [ Failure ]
 crbug.com/392657736 virtual/script-src-hashes-v1-enabled/external/wpt/content-security-policy/unsafe-eval/tentative/eval-hashes-override-unsafe-eval.sub.html [ Pass ]
 crbug.com/392657736 virtual/script-src-hashes-v1-enabled/external/wpt/content-security-policy/unsafe-eval/tentative/eval-allowed-by-hash.sub.html [ Pass ]
 crbug.com/392657736 virtual/script-src-hashes-v1-enabled/external/wpt/content-security-policy/unsafe-eval/tentative/eval-blocked-report-contains-hash.html [ Pass ]
+crbug.com/392657736 virtual/script-src-hashes-v1-enabled/external/wpt/content-security-policy/unsafe-eval/tentative/eval-allowed-by-hash-long-script.sub.html [ Pass ]
 
 # Gardener 2025-06-16
 crbug.com/424918655 [ Mac ] external/wpt/soft-navigation-heuristics/lcp/tentative/contracted-image.html [ Failure Pass ]

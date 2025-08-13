@@ -146,11 +146,19 @@ mojom::ConsoleMessageLevel MessageLevelFromNonFatalErrorLevel(int error_level) {
   return level;
 }
 
+// Converts a v8::String |source| to a blink String, limited to the first
+// |max_length| characters. If |max_length| is set to 0, the full string is
+// used.
 String ToBlinkString(v8::Local<v8::Context> context,
-                     v8::Local<v8::String> source) {
+                     v8::Local<v8::String> source,
+                     size_t max_length) {
   v8::String::Value source_str(v8::Isolate::GetCurrent(), source);
-  size_t len = std::min(ContentSecurityPolicy::kMaxSampleLength,
-                        static_cast<size_t>(source_str.length()));
+  size_t len;
+  if (max_length == 0) {
+    len = static_cast<size_t>(source_str.length());
+  } else {
+    len = std::min(max_length, static_cast<size_t>(source_str.length()));
+  }
   // SAFETY: v8::String::Value guarantees *source_str has source_str.length()
   // length and we guarantee len is equal to or less than source_str.length().
   const auto snippet = UNSAFE_BUFFERS(
@@ -414,7 +422,7 @@ static bool ContentSecurityPolicyCodeGenerationCheck(
       v8::Context::Scope scope(context);
       return policy->AllowEval(ReportingDisposition::kReport,
                                ContentSecurityPolicy::kWillThrowException,
-                               ToBlinkString(context, source));
+                               ToBlinkString(context, source, 0));
     }
   }
   return false;
@@ -502,7 +510,8 @@ bool V8Initializer::WasmCodeGenerationCheckCallbackInMainThread(
   if (!policy || !policy->AllowWasmCodeGeneration(
                      ReportingDisposition::kReport,
                      ContentSecurityPolicy::kWillThrowException,
-                     ToBlinkString(context, source))) {
+                     ToBlinkString(context, source,
+                                   ContentSecurityPolicy::kMaxSampleLength))) {
     return false;
   }
 
