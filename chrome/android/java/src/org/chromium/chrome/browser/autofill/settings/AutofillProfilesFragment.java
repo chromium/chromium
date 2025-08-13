@@ -203,6 +203,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             disabled_settings_info_pref.setSummary(R.string.autofill_disable_settings_explanation);
             disabled_settings_info_pref.setButtonText(
                     getResources().getString(R.string.autofill_disable_settings_button_label));
+            disabled_settings_info_pref.setIconResource(R.drawable.ic_google_services_48dp);
             disabled_settings_info_pref.setOnButtonClick(
                     () -> {
                         SettingsNavigation settingsNavigation =

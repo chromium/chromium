@@ -25,19 +25,49 @@ found in the LICENSE file.
         android:orientation="vertical"
         android:background="@drawable/rounded_corner_card">
 
-        <TextView
-            android:id="@android:id/title"
+    <!--TODO: crbug.com/437874404: Use ConstraintLayout instead of TableLayout. -->
+        <TableLayout
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_marginBottom="@dimen/card_with_button_pref_title_padding_bottom"
-            style="@style/PreferenceTitle" />
+            android:stretchColumns="1">
 
-        <org.chromium.ui.widget.TextViewWithLeading
-            android:id="@android:id/summary"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:layout_marginBottom="@dimen/card_with_button_pref_summary_padding_bottom"
-            style="@style/PreferenceSummary" />
+            <TableRow>
+                <org.chromium.ui.widget.ChromeImageView
+                    android:id="@+id/icon"
+                    android:layout_width="@dimen/card_with_button_pref_icon_size"
+                    android:layout_height="@dimen/card_with_button_pref_icon_size"
+                    android:layout_marginEnd="@dimen/card_with_button_pref_icon_margin_right"
+                    android:gravity="center_vertical"
+                    android:scaleType="centerCrop"
+                    android:importantForAccessibility="no"
+                    android:pivotX="20"
+                    android:pivotY="20"
+                    android:scaleX="2"
+                    android:scaleY="2"
+                    android:layout_column="0"/>
+
+                <TextView
+                    android:id="@android:id/title"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:minHeight="@dimen/card_with_button_pref_icon_size"
+                    android:layout_marginBottom="@dimen/card_with_button_pref_title_padding_bottom"
+                    android:gravity="center_vertical"
+                    style="@style/PreferenceTitle"
+                    android:layout_column="1" />
+            </TableRow>
+
+            <TableRow>
+                <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@android:id/summary"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_marginBottom="@dimen/card_with_button_pref_summary_padding_bottom"
+                    style="@style/PreferenceSummary"
+                    android:layout_column="1"/>
+            </TableRow>
+
+        </TableLayout>
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/card_button"
