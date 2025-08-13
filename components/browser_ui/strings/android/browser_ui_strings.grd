@@ -1338,6 +1338,9 @@
       <message name="IDS_NTP_CUSTOMIZATION_THEME_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the new tab page appearance bottom sheet is fully opened.">
         New tab page appearance bottom sheet opened at full height
       </message>
+      <message name="IDS_NTP_CUSTOMIZATION_CHROME_COLORS_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the new tab page appearance bottom sheet is fully opened.">
+        Chrome colors bottom sheet opened at full height
+      </message>
       <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_CLOSED" desc="Accessibility string that describes a new tab page customization bottom sheet is closed">
         Customize your new tab page bottom sheet closed
       </message>
@@ -1394,6 +1397,12 @@
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_THEME_COLLECTIONS_DAILY_UPDATE" desc="Title of the toggle switch for updating theme collection background daily">
         Refresh daily
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_CHROME_COLORS_TITLE" desc="Title for the Chrome Colors bottom sheet in NTP customization.">
+        Chrome Colors
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_CHROME_COLORS_BOTTOM_SHEET" desc="Accessibility string to announce the currently displaying bottom sheet is the Chrome Colors bottom sheet." is_accessibility_with_no_ui="true">
+        Chrome Colors bottom sheet
       </message>
 
       <!-- Time Last Accessed strings -->

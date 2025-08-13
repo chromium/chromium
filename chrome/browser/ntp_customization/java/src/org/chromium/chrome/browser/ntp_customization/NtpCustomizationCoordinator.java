@@ -70,6 +70,7 @@ public class NtpCustomizationCoordinator {
         BottomSheetType.FEED,
         BottomSheetType.THEME,
         BottomSheetType.MVT,
+        BottomSheetType.CHROME_COLORS,
         BottomSheetType.THEME_COLLECTIONS,
         BottomSheetType.SINGLE_THEME_COLLECTION
     })
@@ -82,7 +83,8 @@ public class NtpCustomizationCoordinator {
         int MVT = 4;
         int THEME_COLLECTIONS = 5;
         int SINGLE_THEME_COLLECTION = 6;
-        int NUM_ENTRIES = 7;
+        int CHROME_COLORS = 7;
+        int NUM_ENTRIES = 8;
     }
 
     /**

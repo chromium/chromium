@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManag
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionsCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
@@ -52,6 +53,7 @@ public class NtpThemeMediator {
     private @Nullable ActivityResultRegistry mActivityResultRegistry;
     private @Nullable ActivityResultLauncher<String> mActivityResultLauncher;
     private @Nullable NtpThemeCollectionsCoordinator mNtpThemeCollectionsCoordinator;
+    private @Nullable NtpChromeColorsCoordinator mNtpChromeColorsCoordinator;
 
     public NtpThemeMediator(
             Context context,
@@ -178,6 +180,12 @@ public class NtpThemeMediator {
     @VisibleForTesting
     void handleChromeColorsSectionClick(View view) {
         updateTrailingIconVisibilityForSectionType(CHROME_COLORS);
+
+        if (mNtpChromeColorsCoordinator == null) {
+            mNtpChromeColorsCoordinator =
+                    new NtpChromeColorsCoordinator(mContext, mBottomSheetDelegate);
+        }
+        mBottomSheetDelegate.showBottomSheet(BottomSheetType.CHROME_COLORS);
     }
 
     @VisibleForTesting
