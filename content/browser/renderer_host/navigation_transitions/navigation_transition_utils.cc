@@ -389,8 +389,8 @@ bool NavigationTransitionUtils::
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (auto* window_android = rwhv->GetNativeView()->GetWindowAndroid();
-      !window_android || !window_android->GetCompositor()) {
+  if (!rwhv->GetNativeView() || !rwhv->GetNativeView()->GetWindowAndroid() ||
+      !rwhv->GetNativeView()->GetWindowAndroid()->GetCompositor()) {
     InvokeTestCallbackForNoScreenshot(navigation_request);
     last_committed_entry->navigation_transition_data()
         .set_cache_hit_or_miss_reason(
