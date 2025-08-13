@@ -44,4 +44,16 @@ public class ResourceOverlayTest {
         Resources resources = InstrumentationRegistry.getTargetContext().getResources();
         assertEquals(42, resources.getInteger(R.integer.resource_overlay_root_tagged_secret));
     }
+
+    /**
+     * Test that when both an android_resources() target and its dependency have
+     * resource_overlay=true with resources of the same name but different values, the dependent
+     * target's value is used. This tests the fix for dependency ordering in resource overlays.
+     */
+    @Test
+    @SmallTest
+    public void testBothTagged() {
+        Resources resources = InstrumentationRegistry.getTargetContext().getResources();
+        assertEquals(42, resources.getInteger(R.integer.resource_overlay_both_tagged_secret));
+    }
 }

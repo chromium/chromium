@@ -732,7 +732,14 @@ def main():
   if params.collects_resources():
     # Safe to sort: Build checks that non-overlay resource have no overlap.
     config['dependency_zips'] = sorted(tv.dependency_zips)
-    config['dependency_zip_overlays'] = list(tv.dependency_zip_overlays)
+
+    overlay_list = list(tv.dependency_zip_overlays)
+    # Reverse overlay list so that dependents override dependencies
+    # The topological walk puts dependencies before dependents, but for resource
+    # overlays we need dependents to come after dependencies in AAPT2's -R list
+    overlay_list.reverse()
+    config['dependency_zip_overlays'] = overlay_list
+
     config['assets'] = sorted(tv.assets)
     config['uncompressed_assets'] = sorted(tv.uncompressed_assets)
 
