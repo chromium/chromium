@@ -202,6 +202,11 @@ export class BidiParser implements BidiCommandParameterParser {
   ): Emulation.SetScreenOrientationOverrideParameters {
     return Parser.Emulation.parseSetScreenOrientationOverrideParams(params);
   }
+  parseSetScriptingEnabledParams(
+    params: unknown,
+  ): Emulation.SetScriptingEnabledParameters {
+    return Parser.Emulation.parseSetScriptingEnabledParams(params);
+  }
   parseSetTimezoneOverrideParams(
     params: unknown,
   ): Emulation.SetTimezoneOverrideParameters {
