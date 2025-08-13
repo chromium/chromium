@@ -11,6 +11,11 @@
 #include "base/threading/platform_thread.h"
 #include "components/viz/service/viz_service_export.h"
 
+namespace base {
+class TimeDelta;
+class TimeTicks;
+}  // namespace base
+
 namespace viz {
 
 // This is a wrapper for the Android `android.os.PerformanceHintManager` APIs

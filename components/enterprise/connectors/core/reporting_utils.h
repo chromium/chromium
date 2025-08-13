@@ -17,6 +17,10 @@
 #include "components/enterprise/data_controls/core/browser/verdict.h"
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
+namespace base {
+class Time;
+}
+
 namespace enterprise_connectors {
 
 // The maximum number of referrers to include in the referrer chain.

@@ -17,6 +17,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "testing/gtest/include/gtest/gtest.h"

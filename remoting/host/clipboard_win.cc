@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "base/win/message_window.h"
 #include "base/win/scoped_hglobal.h"
 #include "remoting/base/constants.h"

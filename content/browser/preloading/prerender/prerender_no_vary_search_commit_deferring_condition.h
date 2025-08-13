@@ -13,6 +13,10 @@
 #include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/browser/frame_tree_node_id.h"
 
+namespace base {
+class TimeTicks;
+}
+
 namespace content {
 
 class NavigationRequest;

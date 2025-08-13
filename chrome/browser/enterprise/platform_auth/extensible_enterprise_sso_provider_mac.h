@@ -7,6 +7,7 @@
 #include <set>
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider.h"
 #include "url/gurl.h"

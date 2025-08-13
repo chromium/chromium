@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "base/time/time.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
 

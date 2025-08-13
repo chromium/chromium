@@ -4,6 +4,7 @@
 
 #include "services/device/usb/usb_context.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libusb/src/libusb/libusb.h"
 

@@ -6,6 +6,7 @@
 #define COMPONENTS_DATA_SHARING_PUBLIC_LOGGER_H_
 
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "components/data_sharing/public/logger_common.mojom.h"
 
 namespace data_sharing {

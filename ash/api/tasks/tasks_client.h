@@ -13,6 +13,10 @@
 #include "google_apis/common/api_error_codes.h"
 #include "ui/base/models/list_model.h"
 
+namespace base {
+class Time;
+}
+
 namespace ash::api {
 
 struct Task;

@@ -7,6 +7,10 @@
 
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 
+namespace base {
+class Time;
+}  // namespace base
+
 namespace content {
 class WebContents;
 }  // namespace content

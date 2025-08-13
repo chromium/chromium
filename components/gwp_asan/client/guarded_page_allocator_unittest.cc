@@ -22,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/time/time.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/client/gwp_asan.h"

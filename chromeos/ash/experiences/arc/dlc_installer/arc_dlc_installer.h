@@ -18,6 +18,10 @@ namespace ash {
 class CrosSettings;
 }
 
+namespace base {
+class TimeTicks;
+}
+
 namespace arc {
 
 class ArcDlcInstallHardwareChecker;

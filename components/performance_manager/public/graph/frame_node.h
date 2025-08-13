@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node.h"

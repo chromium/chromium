@@ -29,6 +29,10 @@
 #include "net/http/http_request_info.h"
 #include "url/gurl.h"
 
+namespace base {
+class Time;
+}
+
 namespace net {
 
 class HttpResponseHeaders;

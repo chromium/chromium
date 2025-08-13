@@ -14,6 +14,10 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
+namespace base {
+class Time;
+}
+
 class GaiaId;
 class PrefService;
 class PrefRegistrySimple;
