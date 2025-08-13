@@ -415,8 +415,14 @@
   <message name="IDS_AUTOFILL_ENABLE_PROFILES_TOGGLE_LABEL" desc="Label for a toggle that allows users to control whether addresses should be saved and forms should be autofilled with them. Sentence-Cased." formatter_data="android_java">
     Save and fill addresses
   </message>
+  <message name="IDS_AUTOFILL_DISABLE_SETTINGS_EXPLANATION_TITLE" desc="Title of the card explaining why the settings page was disabled. Sentence-Cased." formatter_data="android_java">
+  Google isn’t your autofill provider
+  </message>
   <message name="IDS_AUTOFILL_DISABLE_SETTINGS_EXPLANATION" desc="Explanation why the settings page was disabled. Sentence-Cased." formatter_data="android_java">
-    Google isn’t your autofill provider. To enable these settings and use payment info from your Google Account, visit <ph name="BEGIN_LINK">&lt;link&gt;</ph>Autofill services settings<ph name="END_LINK">&lt;/link&gt;</ph>.
+    To enable these settings and use payment info from your Google Account, visit autofill services settings.
+  </message>
+  <message name="IDS_AUTOFILL_DISABLE_SETTINGS_BUTTON_LABEL" desc="Button that opens the autofill services settings page. Sentence-Cased." formatter_data="android_java">
+    Autofill services settings
   </message>
   <message name="IDS_AUTOFILL_ENABLE_CREDIT_CARDS_TOGGLE_LABEL" desc="Label for a toggle that allows users to control whether credit cards should be saved and forms should be autofilled with it. Sentence-Cased." formatter_data="android_java">
     Save and fill payment methods

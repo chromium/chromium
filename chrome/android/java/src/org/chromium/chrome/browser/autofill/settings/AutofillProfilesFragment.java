@@ -12,11 +12,9 @@ import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.text.SpannableString;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
@@ -39,18 +37,23 @@ import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
+import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
+import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
+import org.chromium.components.browser_ui.settings.CardWithButtonPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.plus_addresses.PlusAddressesUserActions;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -58,8 +61,6 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.text.ChromeClickableSpan;
-import org.chromium.ui.text.SpanApplier;
 
 /** Autofill profiles fragment, which allows the user to edit autofill profiles. */
 @NullMarked
@@ -193,10 +194,25 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         getPreferenceScreen().setOrderingAsAdded(true);
 
         if (disabledSettingsInThirdPartyMode()) {
-            // Add the information string at the top.
-            Preference disabled_settings_info_pref = new Preference(getStyledContext());
+            // Add the information card at the top.
+            CardWithButtonPreference disabled_settings_info_pref =
+                    new CardWithButtonPreference(getStyledContext(), null);
             disabled_settings_info_pref.setKey(DISABLED_SETTINGS_INFO);
-            disabled_settings_info_pref.setSummary(getDisableSettingsExplanation());
+            disabled_settings_info_pref.setTitle(
+                    R.string.autofill_disable_settings_explanation_title);
+            disabled_settings_info_pref.setSummary(R.string.autofill_disable_settings_explanation);
+            disabled_settings_info_pref.setButtonText(
+                    getResources().getString(R.string.autofill_disable_settings_button_label));
+            disabled_settings_info_pref.setOnButtonClick(
+                    () -> {
+                        SettingsNavigation settingsNavigation =
+                                SettingsNavigationFactory.createSettingsNavigation();
+                        settingsNavigation.startSettings(
+                                getPreferenceManager().getContext(),
+                                AutofillOptionsFragment.class,
+                                AutofillOptionsFragment.createRequiredArgs(
+                                        AutofillOptionsReferrer.AUTOFILL_PROFILES_FRAGMENT));
+                    });
             getPreferenceScreen().addPreference(disabled_settings_info_pref);
         }
 
@@ -397,20 +413,5 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                         == AndroidAutofillAvailabilityStatus.AVAILABLE
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN);
-    }
-
-    private SpannableString getDisableSettingsExplanation() {
-        return SpanApplier.applySpans(
-                getString(R.string.autofill_disable_settings_explanation),
-                new SpanApplier.SpanInfo(
-                        "<link>",
-                        "</link>",
-                        new ChromeClickableSpan(
-                                getPreferenceManager().getContext(),
-                                this::onLinkToAutofillOptionsClicked)));
-    }
-
-    private void onLinkToAutofillOptionsClicked(View unusedView) {
-        // TODO(crbug.com/428918449): Implement.
     }
 }
