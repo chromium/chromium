@@ -177,7 +177,10 @@ class ExtensionActionViewController
   scoped_refptr<const extensions::Extension> extension_;
 
   // The corresponding browser.
+  // TODO(crbug.com/437774758): To be removed in favor of profile_ (or browser
+  // window interface) so controller can be compiled on Desktop Android.
   const raw_ptr<Browser> browser_;
+  const raw_ptr<Profile> profile_;
 
   // The browser action this view represents. The ExtensionAction is not owned
   // by this class.
