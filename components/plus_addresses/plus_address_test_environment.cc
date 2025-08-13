@@ -4,7 +4,7 @@
 
 #include "components/plus_addresses/plus_address_test_environment.h"
 
-#include "components/plus_addresses/plus_address_prefs.h"
+#include "components/plus_addresses/core/common/plus_address_prefs.h"
 
 namespace plus_addresses::test {
 

@@ -64,7 +64,7 @@ source_set("browser_prefs") {
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
     "//components/payments/core",
-    "//components/plus_addresses:prefs",
+    "//components/plus_addresses/core/common:prefs",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/pref_registry",

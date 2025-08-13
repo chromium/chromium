@@ -11,3 +11,15 @@ component("features") {
   ]
   public_deps = [ "//base" ]
 }
+
+source_set("prefs") {
+  sources = [
+    "plus_address_prefs.cc",
+    "plus_address_prefs.h",
+  ]
+  deps = [
+    "//base",
+    "//components/pref_registry",
+    "//components/prefs",
+  ]
+}

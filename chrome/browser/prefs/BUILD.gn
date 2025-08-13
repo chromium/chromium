@@ -123,7 +123,7 @@ source_set("impl") {
     "//components/password_manager/core/browser",
     "//components/performance_manager",
     "//components/permissions",
-    "//components/plus_addresses:prefs",
+    "//components/plus_addresses/core/common:prefs",
     "//components/pref_registry",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/privacy_sandbox:tpcd",

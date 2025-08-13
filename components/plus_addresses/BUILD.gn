@@ -43,18 +43,6 @@ source_set("parsing") {
   ]
 }
 
-source_set("prefs") {
-  sources = [
-    "plus_address_prefs.cc",
-    "plus_address_prefs.h",
-  ]
-  deps = [
-    "//base",
-    "//components/pref_registry",
-    "//components/prefs",
-  ]
-}
-
 source_set("hats_utils") {
   sources = [ "plus_address_hats_utils.h" ]
 }
@@ -103,9 +91,9 @@ source_set("plus_addresses") {
     ":blocklist_data",
     ":hats_utils",
     ":parsing",
-    ":prefs",
     "//components/affiliations/core/browser:affiliations",
     "//components/feature_engagement/public",
+    "//components/plus_addresses/core/common:prefs",
     "//components/plus_addresses/metrics",
     "//components/plus_addresses/metrics:submission_logger",
     "//components/plus_addresses/resources/strings",
@@ -158,7 +146,6 @@ source_set("unit_tests") {
     ":hats_utils",
     ":parsing",
     ":plus_addresses",
-    ":prefs",
     ":test_support",
     "//base/test:test_support",
     "//components/affiliations/core/browser:affiliations",
@@ -167,6 +154,7 @@ source_set("unit_tests") {
     "//components/feature_engagement/public",
     "//components/os_crypt/async/browser:test_support",
     "//components/plus_addresses/core/common:features",
+    "//components/plus_addresses/core/common:prefs",
     "//components/plus_addresses/metrics",
     "//components/plus_addresses/resources/strings",
     "//components/plus_addresses/settings:test_support",
@@ -196,13 +184,13 @@ static_library("test_support") {
   ]
   deps = [
     ":hats_utils",
-    ":prefs",
     "//base",
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/feature_engagement/public",
+    "//components/plus_addresses/core/common:prefs",
     "//components/plus_addresses/resources/strings",
     "//components/strings:components_strings_grit",
     "//net:test_support",

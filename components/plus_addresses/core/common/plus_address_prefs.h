@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_PREFS_H_
-#define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_PREFS_H_
+#ifndef COMPONENTS_PLUS_ADDRESSES_CORE_COMMON_PLUS_ADDRESS_PREFS_H_
+#define COMPONENTS_PLUS_ADDRESSES_CORE_COMMON_PLUS_ADDRESS_PREFS_H_
 
 #include <string_view>
 
@@ -37,4 +37,4 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace plus_addresses::prefs
 
-#endif  // COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_PREFS_H_
+#endif  // COMPONENTS_PLUS_ADDRESSES_CORE_COMMON_PLUS_ADDRESS_PREFS_H_
