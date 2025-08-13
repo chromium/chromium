@@ -1639,6 +1639,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2110941575868943054">Kereshetnek Bluetooth-eszközöket</translation>
 <translation id="211144231511833662">Típusok törlése</translation>
 <translation id="2111670510994270194">Új lap jobbra</translation>
+<translation id="2111778868023567359">Ezen az oldalon többé nem jelennek meg lapcsoportok</translation>
 <translation id="2112554630428445878">Üdvözöljük, <ph name="USERNAME" />!</translation>
 <translation id="21133533946938348">Lap rögzítése</translation>
 <translation id="2113479184312716848">&amp;Fájl megnyitása...</translation>
@@ -6476,6 +6477,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5496730470963166430">Nem jeleníthetnek meg előugró ablakokat, és nem használhatnak átirányításokat</translation>
 <translation id="5497250476399536588">A Címek és egyebek között találja</translation>
 <translation id="5497251278400702716">Ez a fájl</translation>
+<translation id="549762298434242239">Ez a bővítmény nem megbízható a fokozott védelemmel ellátott Biztonságos Böngészés szerint. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">A Chrome nem tudta ellenőrizni ezt a telepítőcsomagot</translation>
 <translation id="5498967291577176373">Nevére, címére vagy telefonszámára vonatkozó szövegközi javaslatokkal gyorsabban gépelhet</translation>
 <translation id="5499211612787418966">Ez a párbeszédpanel jelenleg nincs fókuszban. Nyomja le az Alt + Shift + A billentyűparancsot, ha erre a párbeszédpanelre szeretne fókuszálni.</translation>
@@ -6841,6 +6843,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5780973441651030252">Folyamatprioritás</translation>
 <translation id="5781092003150880845">Szinkronizálás mint <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Az iskolai fiókjában lévő adatok személyes fiókba történő áthelyezése</translation>
+<translation id="5781244749114921664">Lapcsoportok elrejtve</translation>
 <translation id="5782227691023083829">A fordítás folyamatban...</translation>
 <translation id="5783346913439924978">Fejkövetés</translation>
 <translation id="57838592816432529">Némítás</translation>

@@ -700,6 +700,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2154484045852737596">Izmenite karticu</translation>
 <translation id="2154739667870063220">Restartuj</translation>
 <translation id="2155260325161282517">5×7 in</translation>
+<translation id="2156467141257470387">Možete da koristite sačuvane adrese u svim Google proizvodima. Time ne menjate postojeću adresu na poslu. Biće sačuvana na Google nalogu, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Obaveštenja o praćenju cena</translation>
 <translation id="21613918653299710">Onlajn galerije slika</translation>
 <translation id="2161656808144014275">Tekst</translation>
@@ -2997,6 +2998,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5984570616552610254">Vlažnost komore</translation>
 <translation id="598637245381783098">Otvaranje aplikacije za plaćanje nije uspelo</translation>
 <translation id="5989320800837274978">Nisu navedeni ni fiksni proksi serveri niti URL adresa .pac skripte.</translation>
+<translation id="5989917734461988169">Možete da koristite sačuvane adrese u svim Google proizvodima. Time ne menjate postojeću kućnu adresu. Biće sačuvana na Google nalogu, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Presavijanje u obliku polu-harmonike</translation>
 <translation id="5992805036496113940">Pogledajte informacije koje se koriste za prikazivanje oglasa</translation>
 <translation id="5995727681868049093">Upravljajte informacijama, privatnošću i bezbednošću na Google nalogu</translation>
@@ -4898,6 +4900,7 @@ Dodatni detalji:
 <translation id="9139318394846604261">Šoping</translation>
 <translation id="9140198744651252040">Chrome pregledač želi da koristi otisak prsta za automatsko popunjavanje lozinki</translation>
 <translation id="9141013498910525015">Upravljajte adresama</translation>
+<translation id="9141435142213469335">Sačuvajte adresu sa više informacija</translation>
 <translation id="9141672681283222114">PR je dozvoljen ovaj put</translation>
 <translation id="9143898823728499852">Možete da popunite ovu karticu automatski jer je <ph name="CARD_ISSUER_NAME" /> nalog povezan sa Google Pay-om</translation>
 <translation id="9144951720726881238">Datum isteka:</translation>

@@ -507,6 +507,7 @@
 <translation id="2931440415625410757">ಸೂಚನೆಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2952278131021475699">Lens ಕ್ಯಾಮರಾ ಹುಡುಕಾಟ</translation>
 <translation id="2962516096219646456">ಎಲ್ಲಾ ಆಟೋಫಿಲ್‌ ಡೇಟಾವನ್ನು ನೋಡಿ</translation>
+<translation id="2965594942405840553">ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="2969979262385602596">ಸೈನ್ ಇನ್ ವಿಫಲವಾಗಿದೆ. ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2975761176769946178">URL ಅಗತ್ಯವಿದೆ</translation>
 <translation id="297667759942911166">ಟ್ಯಾಬ್ ಗುಂಪುಗಳಲ್ಲಿ ಕೊಲಾಬೊರೇಟ್ ಮಾಡಿ</translation>
@@ -657,6 +658,7 @@
 <translation id="3595252146048399851">ಏನನ್ನು ಸಿಂಕ್ ಮಾಡಬೇಕು ಎಂಬುದನ್ನು <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಯಾವಾಗ ಬೇಕಾದರೂ ನೀವು ಆಯ್ಕೆ ಮಾಡಬಹುದು. Google, ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು ಆಧರಿಸಿ, Search ಮತ್ತು ಇತರ ಸೇವೆಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಬಹುದು.</translation>
 <translation id="3602260545951981695">"ವರ್ಧಿತ ಸುರಕ್ಷತೆ" ಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3610041351087301930">ರೀಡರ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
+<translation id="3610866916973186448">ಹೌದು, ಅಳಿಸಿ</translation>
 <translation id="3622175633937495219">ಹುಡುಕಾಟದ ಇತಿಹಾಸ (<ph name="COUNT" /> ಕಂಡುಬಂದಿದೆ)</translation>
 <translation id="3625008969091706597">ಹಿಂತಿರುಗಲು ನೀವು ಅಂಚನ್ನು ಸ್ವೈಪ್ ಮಾಡಬಹುದು.</translation>
 <translation id="362709345066740529">ನಿಮ್ಮ ಕಾರ್ಡ್‌ಗಳು, ಫೀಡ್ ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಇಲ್ಲಿ ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
@@ -1950,6 +1952,7 @@
 <translation id="8561999115126307258">{count,plural, =1{ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಮೇಲ್ಭಾಗದಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಾಗಿ {count} ಆಯ್ಕೆ ಲಭ್ಯವಿದೆ.}one{ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಮೇಲ್ಭಾಗದಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಾಗಿ {count} ಆಯ್ಕೆಗಳು ಲಭ್ಯವಿವೆ.}other{ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಮೇಲ್ಭಾಗದಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಾಗಿ {count} ಆಯ್ಕೆಗಳು ಲಭ್ಯವಿವೆ.}}</translation>
 <translation id="8564894539416715395">ಹೊಸ ಟ್ಯಾಬ್‌ ಪುಟ</translation>
 <translation id="8569721750632860947">ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಗೆ ನೀವು ಯಾವ URL ಅನ್ನು ಸೇರಿಸಲು ಬಯಸುತ್ತೀರಿ?</translation>
+<translation id="8571019948162152515">"<ph name="FILENAME" />" ಅಳಿಸಬೇಕೇ?</translation>
 <translation id="8571213806525832805">ಕಳೆದ 4 ವಾರಗಳು</translation>
 <translation id="8577056989960190117">ಮುಕ್ತಾಯ ವರ್ಷವನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಿ <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">ಆಫ್</translation>

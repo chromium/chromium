@@ -1032,7 +1032,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2690699652723742414">Últimos 30 días</translation>
 <translation id="2691385045260836588">Modelo</translation>
 <translation id="2691924980723297736">Advertencia de seguridad</translation>
-<translation id="2696385693639654606">Chrome Enterprise Core te permite gestionar políticas, aplicaciones y extensiones del navegador desde la nube</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core te permite gestionar políticas, apps y extensiones del navegador desde la nube</translation>
 <translation id="2697248912349197812">Preguntar a <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Submenú disponible. Usa <ph name="SHORTCUT" /> para desplazarte hasta otras opciones.</translation>
 <translation id="2701514975700770343">Boca abajo</translation>
@@ -1673,6 +1673,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3744899669254331632">No puedes acceder a <ph name="SITE" /> en este momento porque el sitio web ha enviado credenciales codificadas que Chromium no puede procesar. Los ataques y los errores de red suelen ser temporales, por lo que es probable que esta página funcione más tarde.</translation>
 <translation id="3745599309295009257">Tu texto y el contenido y la URL de la página en la que estás escribiendo se enviarán a Google. Un equipo de personas revisará esos datos, que se utilizarán para mejorar esta función. No introduzcas información personal (como datos médicos o financieros). No uses esta herramienta en sitios que contengan información privada o sensible.</translation>
 <translation id="3748009735914587286">Metal (brillo intenso)</translation>
+<translation id="3749600200023337912">Es posible que se use tu método de pago automático guardado para este pago. Para desactivar las carteras electrónicas o las apps de pago en Chrome, ve a tu <ph name="BEGIN_LINK1" />configuración de pago<ph name="END_LINK1" />.</translation>
 <translation id="3752181611900535304">¿Guardar dirección en la cuenta?</translation>
 <translation id="3752543821772132562">Se ha ignorado porque no se ha establecido <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Salir del modo imagen en imagen</translation>
@@ -2698,10 +2699,10 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5464236009658034488">Material de oficina</translation>
 <translation id="5465724643247062031">Cristal (opaco)</translation>
 <translation id="5466018172325111652">¿No has recibido el código? <ph name="BEGIN_LINK" />Obtener nuevo código<ph name="END_LINK" /></translation>
-<translation id="5466818462212249084">Aplicaciones para pagos</translation>
+<translation id="5466818462212249084">apps para pagos</translation>
 <translation id="5470861586879999274">&amp;Rehacer edición</translation>
 <translation id="5472588168895083535">Seguimiento de manos bloqueado</translation>
-<translation id="5477756102936130143">Habilitar la redirección a aplicaciones para pagos compatibles</translation>
+<translation id="5477756102936130143">Habilitar la redirección a apps para pagos compatibles</translation>
 <translation id="5479505548832623900">Es probable que la extensión la ignore.</translation>
 <translation id="547963486735802022">Prueba a transferir tus archivos de nuevo</translation>
 <translation id="5481076368049295676">Es posible que este contenido intente instalar software peligroso que robe o elimine tu información en el dispositivo. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
@@ -3561,6 +3562,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6890956352250146925">Opciones de cookies y datos de sitios</translation>
 <translation id="6891596781022320156">No se admite el nivel de la política.</translation>
 <translation id="6893057134494550310">Papel de aluminio laminado</translation>
+<translation id="6893204630281237373">Para desactivar la app para pagos en Chrome, ve a tu <ph name="BEGIN_LINK1" />configuración de pago<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Tu tarjeta se ha confirmado</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897140037006041989">User-agent</translation>

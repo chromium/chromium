@@ -1639,6 +1639,7 @@
 <translation id="2110941575868943054">‏יש הרשאה לאתר מכשירי Bluetooth</translation>
 <translation id="211144231511833662">ניקוי הסוגים</translation>
 <translation id="2111670510994270194">כרטיסייה חדשה מצד ימין</translation>
+<translation id="2111778868023567359">קבוצות הכרטיסיות לא יוצגו יותר בדף הזה</translation>
 <translation id="2112554630428445878">שלום, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">הצמדת כרטיסייה</translation>
 <translation id="2113479184312716848">פתיחת &amp;קובץ...</translation>
@@ -2050,6 +2051,7 @@
 <translation id="2392369802118427583">הפעלה</translation>
 <translation id="2393136602862631930">‏הגדרת האפליקציה <ph name="APP_NAME" /> ב-Chromebook</translation>
 <translation id="2393313392064891208">‏תוכן התנאים של Google ChromeOS Flex</translation>
+<translation id="2393944685985256805">‫<ph name="MODULE_NAME" /> מוסתר</translation>
 <translation id="2395616325548404795">רישום המכשיר שלך <ph name="DEVICE_TYPE" /> לניהול ארגוני הסתיים בהצלחה, אך השליחה של פרטי הנכס והמיקום שלו נכשלה. יש להזין את המידע הזה ידנית במסוף הניהול של המכשיר.</translation>
 <translation id="2396783860772170191">יש להזין קוד אימות בן 4 ספרות (0000-9999)</translation>
 <translation id="2398546389094871088">‏ביצוע Powerwash למכשיר לא יסיר את פרופילי ה-eSIM. יש לעבור אל ה<ph name="LINK_BEGIN" />הגדרות לנייד<ph name="LINK_END" /> כדי להסיר את הפרופילים האלה באופן ידני.</translation>
@@ -2656,6 +2658,7 @@
 <translation id="2794522004398861033">‏יש להתחבר לרשת Wi-Fi או אתרנט כדי להגדיר eSIM</translation>
 <translation id="2794977172822818797">הוספת האתרים שפתוחים כרגע</translation>
 <translation id="2795716239552913152">אתרים משתמשים בדרך כלל במיקום המכשיר כדי לתמוך בתכונות או פרטים רלוונטיים, כמו חדשות מקומיות או חנויות בקרבת מקום</translation>
+<translation id="2797712124653482791">הסתרה למשך <ph name="DISMISS_DAYS" /> ימים</translation>
 <translation id="2798347533012571708">המשך קבלת עדכונים</translation>
 <translation id="2799162042226656283">‏ה-Chrome שלך</translation>
 <translation id="2799223571221894425">הפעלה מחדש</translation>
@@ -4080,6 +4083,10 @@
 <translation id="3800764353337460026">סגנון סמלים</translation>
 <translation id="3800828618615365228">‏תנאים נוספים של Google Chrome ו-ChromeOS</translation>
 <translation id="3800898876950197674">כדי לאשר את ההתקנה של התוסף הזה, עליך להזין את הסיסמה שלך.</translation>
+<translation id="3801131837165361989">‏מוצגות לך הצעות להתאמה אישית של Chrome כדי שיהיה לך קל יותר להשתמש בו לצרכים היומיומיים.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        ניתן לנהל את ההגדרות דרך התפריט בכרטיס או לראות עוד אפשרויות ב"התאמה אישית של Chrome".</translation>
 <translation id="3801449494961771207">בחירת הקול שישמש להמרת טקסט לדיבור</translation>
 <translation id="3802486193901166966">אין צורך בהרשאות מיוחדות או הרשאות גישה נוספות לאתרים כדי להשתמש בתוסף הזה</translation>
 <translation id="380329542618494757">שם</translation>
@@ -6478,6 +6485,7 @@
 <translation id="5496730470963166430">לא מורשים להציג חלונות קופצים או להשתמש בהפניות אוטומטיות</translation>
 <translation id="5497250476399536588">אפשר למצוא אותה בכתובות שלך ובאפשרויות הנוספות</translation>
 <translation id="5497251278400702716">הקובץ הזה</translation>
+<translation id="549762298434242239">לפי הגרסה המשופרת של גלישה בטוחה, התוסף הזה לא מהימן. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">‏Chrome לא הצליח לאמת את חבילת ההתקנה הזו</translation>
 <translation id="5498967291577176373">הצעות של שם, כתובת או מספר טלפון המוצגות בתוך השורה ועוזרות לכתוב מהר יותר</translation>
 <translation id="5499211612787418966">‏אין התמקדות בתיבת הדו-שיח הזו. כדי להתמקד בתיבת הדו-שיח הזו, צריך להקיש על Alt +‏ Shift A.</translation>
@@ -6539,6 +6547,7 @@
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">בחירת ההגדרה</translation>
 <translation id="5551573675707792127">מקלדת וקלט טקסט</translation>
+<translation id="5551753770140674714">‏הנתונים מסונכרנים באמצעות משפט הסיסמה שלך לסנכרון. ההצפנה לא כוללת אמצעי תשלום וכתובות שנשמרו ב-Google Pay.</translation>
 <translation id="5553089923092577885">מיפויי מדיניות אישור </translation>
 <translation id="5554240068773209752">יש ללחוץ כאן כדי להתאים אישית את הפקדים</translation>
 <translation id="5554403733534868102">אחרי עדכון זה, לא יהיה צורך להמתין לעדכונים יותר</translation>
@@ -6842,6 +6851,7 @@
 <translation id="5780973441651030252">עדיפות תהליך</translation>
 <translation id="5781092003150880845">סנכרון בשם <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">העברת הנתונים מהחשבון הבית ספרי שלך לחשבון האישי שלך</translation>
+<translation id="5781244749114921664">קבוצות הכרטיסיות מוסתרות</translation>
 <translation id="5782227691023083829">מתבצע תרגום...</translation>
 <translation id="5783346913439924978">מעקב אחר תנועות הראש</translation>
 <translation id="57838592816432529">השתקה</translation>
@@ -10029,6 +10039,7 @@
 <translation id="8008704580256716350">קובץ חשוד חסום</translation>
 <translation id="8009196983040865987">‏כשמשתמשים בתכונה 'סדר בכרטיסיות', השמות וכתובות ה-URL של הכרטיסיות הפתוחות נשלחים אל Google כדי ליצור קבוצות כרטיסיות מומלצות</translation>
 <translation id="8009225694047762179">ניהול סיסמאות</translation>
+<translation id="8010312870936510509">‏הנתונים הוצפנו באמצעות ביטוי הסיסמה שלך לסנכרון בשעה <ph name="TIME" />. הנתונים המוצפנים לא כוללים אמצעי תשלום וכתובות מ-Google Pay.</translation>
 <translation id="8011372169388649948">הסימנייה '<ph name="BOOKMARK_TITLE" />' הועברה.</translation>
 <translation id="8012188750847319132">‏מקש Caps Lock</translation>
 <translation id="8012463809859447963">פרטי הרשת לשיתוף אינטרנט מיידי בין מכשירים</translation>
@@ -11580,7 +11591,7 @@
 <translation id="9057354806206861646">לוח זמנים של עדכונים</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{בערך התראה אחת ביום}one{בערך {NUM_NOTIFICATION} התראות ביום}two{בערך {NUM_NOTIFICATION} התראות ביום}other{בערך {NUM_NOTIFICATION} התראות ביום}}</translation>
 <translation id="9058760336383947367">‏אפשר לראות את קובץ PPD של המדפסת</translation>
-<translation id="9061521313218438086">‏אם Chrome מוצא שאחת מהסיסמאות שלך גלויה בפרצה באבטחת המידע, מנהל הסיסמאות של Google יכול להציע לשנות אותה בשבילך אם החשבון מחובר.</translation>
+<translation id="9061521313218438086">‏אם Chrome מוצא שאחת מהסיסמאות שלך נכללת במידע שדלף בפרצה באבטחת מידע, מנהל הסיסמאות של Google יכול להציע לשנות אותה בשבילך אם החשבון מחובר.</translation>
 <translation id="9061694916020926968">‏צריך להיכנס לחשבון Google כדי להשתמש ב-Steam ל-Chromebook (בטא). עליך להיכנס לחשבון ולנסות שוב.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">שגיאה משורה <ph name="ERROR_LINE_START" /> עד <ph name="ERROR_LINE_END" /></translation>

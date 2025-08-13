@@ -2052,6 +2052,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2392369802118427583">Kích hoạt</translation>
 <translation id="2393136602862631930">Thiết lập ứng dụng <ph name="APP_NAME" /> trên Chromebook</translation>
 <translation id="2393313392064891208">Nội dung điều khoản của Google ChromeOS Flex</translation>
+<translation id="2393944685985256805">Đã ẩn <ph name="MODULE_NAME" /></translation>
 <translation id="2395616325548404795">Thiết bị <ph name="DEVICE_TYPE" /> của bạn đã được đăng ký thành công cho quản lý doanh nghiệp, nhưng không gửi được thông tin phần tử và vị trí. Vui lòng nhập thủ công thông tin này từ Bảng điều khiển dành cho quản trị viên của thiết bị này.</translation>
 <translation id="2396783860772170191">Nhập mã pin có 4 chữ số (0000-9999)</translation>
 <translation id="2398546389094871088">Việc định dạng lại thiết bị bằng chức năng Powerwash sẽ không xóa hồ sơ eSIM của bạn. Hãy chuyển đến phần <ph name="LINK_BEGIN" />Cài đặt cho thiết bị di động<ph name="LINK_END" /> để xóa những hồ sơ này theo cách thủ công.</translation>
@@ -2658,6 +2659,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2794522004398861033">Hãy kết nối Wi-Fi hoặc Ethernet để thiết lập eSIM</translation>
 <translation id="2794977172822818797">Thêm các trang web hiện tại</translation>
 <translation id="2795716239552913152">Các trang web thường sử dụng thông tin vị trí của bạn cho các tính năng hoặc thông tin liên quan, như tin tức địa phương hoặc cửa hàng lân cận</translation>
+<translation id="2797712124653482791">Ẩn trong <ph name="DISMISS_DAYS" /> ngày</translation>
 <translation id="2798347533012571708">Duy trì cập nhật</translation>
 <translation id="2799162042226656283">Chrome của bạn</translation>
 <translation id="2799223571221894425">Chạy lại</translation>
@@ -4082,6 +4084,10 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3800764353337460026">Kiểu biểu tượng</translation>
 <translation id="3800828618615365228">Các điều khoản bổ sung của Google Chrome và Chrome OS</translation>
 <translation id="3800898876950197674">Nhập mật khẩu để cho phép tiện ích này.</translation>
+<translation id="3801131837165361989">Đây chính là các đề xuất về cách cá nhân hoá Chrome, giúp Chrome hữu ích hơn để đáp ứng nhu cầu hằng ngày của bạn.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Bạn có thể quản lý chế độ cài đặt qua trình đơn thẻ hoặc xem tuỳ chọn khác trong phần Tuỳ chỉnh Chrome.</translation>
 <translation id="3801449494961771207">Giọng nói của hệ thống dành cho tính năng chuyển văn bản sang lời nói</translation>
 <translation id="3802486193901166966">Tiện ích này không yêu cầu quyền đặc biệt nào cũng như không có thêm quyền truy cập nào vào trang web</translation>
 <translation id="380329542618494757">Tên</translation>
@@ -6541,6 +6547,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">Chọn mục đích thiết lập</translation>
 <translation id="5551573675707792127">Bàn phím và phương thức nhập văn bản</translation>
+<translation id="5551753770140674714">Dữ liệu được mã hoá với cụm mật khẩu đồng bộ hoá của bạn. Dữ liệu này không bao gồm địa chỉ và phương thức thanh toán trong Google Pay.</translation>
 <translation id="5553089923092577885">Ánh xạ Chính sách của Chứng chỉ</translation>
 <translation id="5554240068773209752">Nhấp vào đây để tuỳ chỉnh quyền kiểm soát</translation>
 <translation id="5554403733534868102">Sau lần này, bạn sẽ không phải đợi bản cập nhật nữa</translation>
@@ -10031,6 +10038,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8008704580256716350">Đã chặn tệp đáng ngờ</translation>
 <translation id="8009196983040865987">Khi bạn sử dụng tính năng sắp xếp thẻ, tiêu đề và URL của các thẻ đang mở sẽ được gửi đến Google để tạo nhóm thẻ đề xuất</translation>
 <translation id="8009225694047762179">Quản lý mật khẩu</translation>
+<translation id="8010312870936510509">Dữ liệu đã được mã hoá bằng cụm mật khẩu đồng bộ hoá của bạn vào <ph name="TIME" />. Dữ liệu này không bao gồm địa chỉ và phương thức thanh toán trên Google Pay.</translation>
 <translation id="8011372169388649948">Đã di chuyển "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8012463809859447963">Thông tin chi tiết về Điểm phát sóng tức thì</translation>

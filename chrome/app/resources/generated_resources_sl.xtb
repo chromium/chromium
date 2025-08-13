@@ -1643,6 +1643,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2110941575868943054">Dovoljeno je iskanje naprav Bluetooth.</translation>
 <translation id="211144231511833662">Počisti vrste</translation>
 <translation id="2111670510994270194">Novi zavihek na desni</translation>
+<translation id="2111778868023567359">Skupine zavihkov na tej strani ne bodo več prikazane</translation>
 <translation id="2112554630428445878">Pozdravljeni, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Pripni zavihek</translation>
 <translation id="2113479184312716848">Odpri &amp;datoteko ...</translation>
@@ -6481,6 +6482,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5496730470963166430">Ni dovoljeno pošiljanje pojavnih oken ali uporaba preusmeritev</translation>
 <translation id="5497250476399536588">Najdete ga v razdelku Naslovi in drugo</translation>
 <translation id="5497251278400702716">Ta datoteka</translation>
+<translation id="549762298434242239">Izboljšano varno brskanje ne zaupa tej razširitvi. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">Chrome ni uspel preveriti tega namestitvenega svežnja</translation>
 <translation id="5498967291577176373">Pišite hitreje s sprotnimi predlogi imena, naslova ali telefonske številke</translation>
 <translation id="5499211612787418966">To pogovorno okno trenutno ni izbrano. Pritisnite Alt + Shift + A, če ga želite izbrati.</translation>
@@ -6847,6 +6849,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5780973441651030252">Prednost postopkov</translation>
 <translation id="5781092003150880845">Sinhronizacija z računom uporabnika <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Premaknite podatke iz šolskega računa v osebni račun</translation>
+<translation id="5781244749114921664">Skupine zavihkov so skrite</translation>
 <translation id="5782227691023083829">Prevajanje ...</translation>
 <translation id="5783346913439924978">Spremljanje premikov glave</translation>
 <translation id="57838592816432529">Izklopi zvok</translation>

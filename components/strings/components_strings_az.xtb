@@ -700,6 +700,7 @@
 <translation id="2154484045852737596">Kartı redaktə edin</translation>
 <translation id="2154739667870063220">Yenidən başladın</translation>
 <translation id="2155260325161282517">5 x 7 düym</translation>
+<translation id="2156467141257470387">Yadda saxlanılmış ünvanları Google məhsullarında istifadə edə bilərsiniz. Bu, mövcud iş ünvanınızı dəyişməyəcək. O, Google Hesabınızda yadda saxlanılacaq, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Qiymət izləmə bildirişləri</translation>
 <translation id="21613918653299710">Onlayn Görüntü Qalleriyaları</translation>
 <translation id="2161656808144014275">Mətn</translation>
@@ -1668,6 +1669,7 @@
 <translation id="3744899669254331632">Sayt güvənsiz kredensiallar göndərdiyi üçün <ph name="SITE" /> ünvanına girə bilməzsiniz.</translation>
 <translation id="3745599309295009257">Mətn, yazdığınız səhifənin kontent və URL-i Google-a göndəriləcək, insanlar tərəfindən nəzərdən keçiriləcək və bu funksiyanı təkmilləşdirmək üçün istifadə ediləcək. Şəxsi məlumat (tibbi və ya maliyyə detalları kimi) daxil etməyin. Şəxsi və ya həssas məlumat olan saytlarda bu alətdən istifadə etməyin.</translation>
 <translation id="3748009735914587286">Metal (çox parlaq)</translation>
+<translation id="3749600200023337912">Yadda saxladığınız avtomatik ödəniş metodu bu ödəniş üçün istifadə edilə bilər. Chrome-da e-pulqabıları və ya ödəniş tətbiqini söndürmək üçün <ph name="BEGIN_LINK1" />ödəniş ayarlarına<ph name="END_LINK1" /> keçin</translation>
 <translation id="3752181611900535304">Ünvan hesabda yadda saxlanılsın?</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> ayarlanmadığına görə nəzərə alınmayıb.</translation>
 <translation id="3754210790023674521">Şəkildə şəkil rejimindən çıxın</translation>
@@ -2992,6 +2994,7 @@
 <translation id="5984570616552610254">Kameranın rütubəti</translation>
 <translation id="598637245381783098">Ödəniş tətbiqini açmaq mümkün deyil</translation>
 <translation id="5989320800837274978">Proksi serverlər və .pac skript URL-i göstərilməyib.</translation>
+<translation id="5989917734461988169">Yadda saxlanılmış ünvanları Google məhsullarında istifadə edə bilərsiniz. Bu, mövcud ev ünvanınızı dəyişməyəcək. O, Google Hesabınızda yadda saxlanılacaq, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Mühəndislikdə Z-qatlama</translation>
 <translation id="5992805036496113940">Sizə reklam göstərmək üçün istifadə olunan məlumata baxın</translation>
 <translation id="5995727681868049093">Google Hesabınızda məlumat, məxfilik və təhlükəsizliyinizi idarə edin</translation>
@@ -3555,6 +3558,7 @@
 <translation id="6890956352250146925">Kukilər və sayt datası üçün seçimlər</translation>
 <translation id="6891596781022320156">Qayda səviyyəsi dəstəklənmir.</translation>
 <translation id="6893057134494550310">Laminasiya folqası</translation>
+<translation id="6893204630281237373">Chrome-da ödəniş tətbiqini söndürmək üçün <ph name="BEGIN_LINK1" />ödəniş ayarlarına<ph name="END_LINK1" /> keçin</translation>
 <translation id="6895330447102777224">Kartınız təsdiqləndi</translation>
 <translation id="6896758677409633944">Kopyalayın</translation>
 <translation id="6897140037006041989">İstifadəçi Agent</translation>
@@ -4891,6 +4895,7 @@
 <translation id="9139318394846604261">Alış-veriş</translation>
 <translation id="9140198744651252040">Chrome brauzeri parolları avtomatik doldurmaq üçün barmaq izindən istifadə etmək istəyir</translation>
 <translation id="9141013498910525015">Ünvanları idarə edin</translation>
+<translation id="9141435142213469335">Ünvanı əlavə məlumatla yadda saxlayın</translation>
 <translation id="9141672681283222114">Bu dəfə AR icazəsi verildi</translation>
 <translation id="9143898823728499852"><ph name="CARD_ISSUER_NAME" /> hesabınız Google Pay ilə əlaqələndirildiyinə görə bu kartı avtomatik doldura bilərsiniz</translation>
 <translation id="9144951720726881238">Bitmə tarixi:</translation>

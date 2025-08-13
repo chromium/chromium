@@ -700,6 +700,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2154484045852737596">Uredi karticu</translation>
 <translation id="2154739667870063220">Ponovo pokreni</translation>
 <translation id="2155260325161282517">5 x 7 in</translation>
+<translation id="2156467141257470387">Možete koristiti sačuvane adrese na Googleovim proizvodima. Time se neće promijeniti vaša postojeća poslovna adresa. Sačuvat će se na Google računu <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Obavještenja o praćenju cijene</translation>
 <translation id="21613918653299710">Online galerije slika</translation>
 <translation id="2161656808144014275">Tekst</translation>
@@ -1672,7 +1673,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3744899669254331632">Trenutno ne možete posjetiti <ph name="SITE" /> jer je ova web lokacija poslala kodirane akreditive koje Chromium ne može obraditi. Greške i napadi na mreži su obično privremeni, pa će ova web lokacija vjerovatno raditi kasnije.</translation>
 <translation id="3745599309295009257">Vaš tekst te sadržaj i URL stranice na kojoj pišete će se poslati Googleu, osobe će ih pregledati i koristit će se za poboljšanje ove funkcije. Nemojte unositi lične informacije (kao što su zdravstveni ili finansijski podaci) niti koristiti ovaj alat na web lokacijama koje sadržavaju privatne ili osjetljive informacije.</translation>
 <translation id="3748009735914587286">Metal (visoki sjaj)</translation>
-<translation id="3749600200023337912">Spremljeni način automatskog plaćanja može se upotrebljavati za ovo plaćanje. Da biste isključili e-novčanike ili aplikaciju za plaćanje u Chromeu, otvorite <ph name="BEGIN_LINK1" />postavke plaćanja<ph name="END_LINK1" /></translation>
+<translation id="3749600200023337912">Sačuvani način automatskog plaćanja se može upotrijebiti za ovo plaćanje. Da isključite e-novčanike ili aplikaciju za plaćanje u Chromeu, idite u <ph name="BEGIN_LINK1" />postavke plaćanja<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">Sačuvati adresu na račun?</translation>
 <translation id="3752543821772132562">Zanemareno jer pravilo <ph name="POLICY_NAME" /> nije postavljeno.</translation>
 <translation id="3754210790023674521">Izađi iz načina rada slike u slici</translation>
@@ -2997,6 +2998,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5984570616552610254">Vlažnost komore</translation>
 <translation id="598637245381783098">Nije moguće otvoriti aplikaciju za plaćanje</translation>
 <translation id="5989320800837274978">Nije naveden fiksni proksi server niti URL pac skripte.</translation>
+<translation id="5989917734461988169">Možete koristiti sačuvane adrese na Googleovim proizvodima. Time se neće promijeniti vaša postojeća kućna adresa. Sačuvat će se na Google računu <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Inženjersko Z-presavijanje</translation>
 <translation id="5992805036496113940">Pogledajte informacije korištene za prikazivanje oglasa</translation>
 <translation id="5995727681868049093">Upravljajte podacima, privatnošću i sigurnošću na Google računu</translation>
@@ -3560,7 +3562,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6890956352250146925">Opcije za kolačiće i podatke web lokacija</translation>
 <translation id="6891596781022320156">Nije podržan nivo pravila.</translation>
 <translation id="6893057134494550310">Plastifikacijska folija</translation>
-<translation id="6893204630281237373">Da biste isključili aplikaciju za plaćanje u Chromeu, otvorite <ph name="BEGIN_LINK1" />postavke plaćanja<ph name="END_LINK1" /></translation>
+<translation id="6893204630281237373">Da isključite aplikaciju za plaćanje u Chromeu, idite u <ph name="BEGIN_LINK1" />postavke plaćanja<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Vaša kartica je potvrđena</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6897140037006041989">Korisnički agent</translation>
@@ -4898,6 +4900,7 @@ Dodatni detalji:
 <translation id="9139318394846604261">Kupovina</translation>
 <translation id="9140198744651252040">Preglednik Chrome želi upotrijebiti otisak prsta za automatsko popunjavanje lozinki</translation>
 <translation id="9141013498910525015">Upravljajte adresama</translation>
+<translation id="9141435142213469335">Sačuvajte adresu s više informacija</translation>
 <translation id="9141672681283222114">AR je dozvoljen samo ovaj put</translation>
 <translation id="9143898823728499852">Možete automatski popuniti ovu karticu jer je <ph name="CARD_ISSUER_NAME" /> račun povezan s Google Payom</translation>
 <translation id="9144951720726881238">Datum isteka:</translation>

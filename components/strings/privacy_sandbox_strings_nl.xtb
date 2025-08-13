@@ -117,10 +117,10 @@
 <translation id="6774168155917940386">Google vereist dat bedrijven openbaar verklaren dat ze deze gegevens niet gebruiken om je te volgen op meerdere sites. Sommige sites kunnen je activiteit gebruiken om de functionaliteit te personaliseren voor meer dan alleen advertenties. Ze kunnen deze gegevens ook combineren met andere informatie die ze al over je hebben. Bedrijven zijn ervoor verantwoordelijk je te laten weten hoe ze je gegevens gebruiken. Meer informatie vind je in ons <ph name="BEGIN_LINK" />Privacybeleid<ph name="END_LINK" />.</translation>
 <translation id="6789193059040353742">Of een getoonde advertentie wordt gepersonaliseerd, is afhankelijk van verschillende factoren, waaronder deze instelling, <ph name="BEGIN_LINK1" />advertentieonderwerpen<ph name="LINK_END1" />, je <ph name="BEGIN_LINK2" />cookie-instellingen<ph name="LINK_END2" /> en of de site die je bekijkt advertenties personaliseert.</translation>
 <translation id="6904948821498934430">Chromium blokkeert cookies van derden in de incognitomodus, maar je hebt een uitzondering gemaakt voor deze site.</translation>
-<translation id="6968337645683500044">Alleen beschikbaar als de incognitomodus wordt geopend vanuit een ingelogd Chromium-tabblad</translation>
+<translation id="6968337645683500044">Alleen beschikbaar als de gebruiker is ingelogd bij Chrome en de incognitomodus opent vanuit een tabblad</translation>
 <translation id="6984151429741932257">Beperk de toegang tot je IP-adres</translation>
 <translation id="7084100010522077571">Meer informatie over advertentiemeting</translation>
-<translation id="721207178659484186">De privacyservers van Google kunnen je IP-adres zien, maar niet je browsebestemming als ze je IP-adres beschermen</translation>
+<translation id="721207178659484186">Als je IP-adres wordt beschermd, kunnen de privacyservers van Google je IP-adres zien, maar niet je browsebestemming</translation>
 <translation id="7315780377187123731">Meer informatie over de optie Cookies van derden blokkeren</translation>
 <translation id="737025278945207416">Sommige sites kunnen je activiteit gebruiken om de functionaliteit te personaliseren voor meer dan alleen advertenties. Ze kunnen advertentieonderwerpen ook langer dan 4 weken opslaan en deze combineren met andere informatie die ze al over je hebben.</translation>
 <translation id="7374493521304367420">Sites kunnen nog steeds cookies gebruiken om browse-activiteit op hun eigen site te bekijken</translation>
@@ -146,7 +146,7 @@
 <translation id="8365690958942020052">Een site die je bezoekt kan om deze informatie vragen. Dit kunnen je advertentieonderwerpen zijn of advertenties die worden voorgesteld door sites die je hebt bezocht.</translation>
 <translation id="839994149685752920">Sites kunnen cookies van derden gebruiken om content en advertenties te personaliseren</translation>
 <translation id="8428213095426709021">Instellingen</translation>
-<translation id="8430082659493731737">Alleen beschikbaar als de incognitomodus wordt geopend vanuit een ingelogd Chrome-tabblad</translation>
+<translation id="8430082659493731737">Alleen beschikbaar als de gebruiker is ingelogd bij Chrome en de incognitomodus opent vanuit een tabblad</translation>
 <translation id="8442977418416307640">Wordt geopend in een gewoon Chromium-venster</translation>
 <translation id="8486457244881562857">De beveiligingsmaatregelen worden onderbroken totdat alle incognitovensters zijn gesloten. <ph name="BEGIN_LINK" />Feedback sturen<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Opent het Privacybeleid op een nieuw tabblad</translation>

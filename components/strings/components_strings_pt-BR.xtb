@@ -1672,6 +1672,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3744899669254331632">Você não pode visitar <ph name="SITE" /> agora porque o website enviou credenciais embaralhadas que o Chromium não consegue processar. Erros de rede e ataques são geralmente temporários, de modo que esta página provavelmente funcionará mais tarde.</translation>
 <translation id="3745599309295009257">O texto, o conteúdo e o URL da página em que você está escrevendo serão enviados ao Google, revisados por humanos e usados para melhorar esse recurso. Evite inserir informações pessoais, como detalhes médicos ou financeiros. Evite também usar essa ferramenta em sites que contenham informações particulares ou sensíveis.</translation>
 <translation id="3748009735914587286">Metal (alto brilho)</translation>
+<translation id="3749600200023337912">Sua forma de pagamento automático salva pode ser usada para este pagamento. Para desativar as carteiras digitais ou o app de pagamento no Chrome, acesse as <ph name="BEGIN_LINK1" />configurações de pagamento<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">Salvar endereço na conta?</translation>
 <translation id="3752543821772132562">Ignorada porque a política <ph name="POLICY_NAME" /> não está definida.</translation>
 <translation id="3754210790023674521">Sair do modo picture-in-picture</translation>
@@ -3559,6 +3560,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6890956352250146925">Opções para cookies e dados do site</translation>
 <translation id="6891596781022320156">O nível da política não é suportado.</translation>
 <translation id="6893057134494550310">Laminado</translation>
+<translation id="6893204630281237373">Para desativar o app de pagamento no Chrome, acesse as <ph name="BEGIN_LINK1" />configurações de pagamento<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Seu cartão foi confirmado</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897140037006041989">Agente do usuário</translation>

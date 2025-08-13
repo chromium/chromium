@@ -700,6 +700,7 @@
 <translation id="2154484045852737596">Измените картицу</translation>
 <translation id="2154739667870063220">Рестартуј</translation>
 <translation id="2155260325161282517">5×7 in</translation>
+<translation id="2156467141257470387">Можете да користите сачуване адресе у свим Google производима. Тиме не мењате постојећу адресу на послу. Биће сачувана на Google налогу, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Обавештења о праћењу цена</translation>
 <translation id="21613918653299710">Онлајн галерије слика</translation>
 <translation id="2161656808144014275">Текст</translation>
@@ -2997,6 +2998,7 @@
 <translation id="5984570616552610254">Влажност коморе</translation>
 <translation id="598637245381783098">Отварање апликације за плаћање није успело</translation>
 <translation id="5989320800837274978">Нису наведени ни фиксни прокси сервери нити URL адреса .pac скрипте.</translation>
+<translation id="5989917734461988169">Можете да користите сачуване адресе у свим Google производима. Тиме не мењате постојећу кућну адресу. Биће сачувана на Google налогу, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Пресавијање у облику полу-хармонике</translation>
 <translation id="5992805036496113940">Погледајте информације које се користе за приказивање огласа</translation>
 <translation id="5995727681868049093">Управљајте информацијама, приватношћу и безбедношћу на Google налогу</translation>
@@ -4898,6 +4900,7 @@
 <translation id="9139318394846604261">Шопинг</translation>
 <translation id="9140198744651252040">Chrome прегледач жели да користи отисак прста за аутоматско попуњавање лозинки</translation>
 <translation id="9141013498910525015">Управљајте адресама</translation>
+<translation id="9141435142213469335">Сачувајте адресу са више информација</translation>
 <translation id="9141672681283222114">ПР је дозвољен овај пут</translation>
 <translation id="9143898823728499852">Можете да попуните ову картицу аутоматски јер је <ph name="CARD_ISSUER_NAME" /> налог повезан са Google Pay-ом</translation>
 <translation id="9144951720726881238">Датум истека:</translation>

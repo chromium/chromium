@@ -4474,6 +4474,13 @@ URL 패턴은 <ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" />와 충
           이 정책이 설정되면 사용자가 변경하거나 재정의할 수 없습니다.
 
           이 정책이 설정되지 않으면 처음에는 로그인 화면에서 캐럿 강조표시가 사용되지 않지만 나중에 사용자가 언제든지 사용 설정할 수 있습니다.</translation>
+<translation id="4182333458177354245"><ph name="PRODUCT_NAME" />에서 기본적인 생성형 AI 모델을 다운로드하고 로컬에서 추론에 사용하는 방법을 구성합니다.
+
+정책을 허용됨(0)으로 설정하거나 설정하지 않으면 모델이 자동으로 다운로드되어 추론에 사용됩니다.
+
+정책을 사용 안 함(1)으로 설정하면 모델이 다운로드되지 않습니다.
+
+<ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />에서 모델 다운로드를 사용 중지할 수도 있습니다.</translation>
 <translation id="4182348537826882258"><ph name="URL_BLOCKLIST_POLICY_NAME" /> 정책을 설정하면 금지된 URL이 있는 웹페이지의 로드가 중지됩니다. 관리자는 차단할 URL 패턴 목록을 지정할 수 있습니다. 설정하지 않으면 브라우저에서 URL이 차단되지 않습니다. <ph name="URL_ALLOWLIST_POLICY_NAME" />에서 최대 1,000개의 예외를 정의할 수 있습니다. URL 패턴의 형식을 지정하는 방법을 확인하세요(https://support.google.com/chrome/a?p=url_blocklist_filter_format).
 
 참고: 이 정책은 데이터가 동적으로 로드되는 인페이지 자바스크립트 URL에는 적용되지 않습니다. example.com/abc를 차단해도 example.com에서 XMLHTTPRequest를 사용하여 로드할 수 있습니다. 또한 이 정책은 웹페이지에서 검색주소창에 표시되는 URL을 자바스크립트 기록 API를 사용하여 차단된 URL로 업데이트하는 것을 방지하지 않습니다.

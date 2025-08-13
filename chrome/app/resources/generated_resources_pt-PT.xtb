@@ -2039,6 +2039,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2392369802118427583">Ativar</translation>
 <translation id="2393136602862631930">Configure o <ph name="APP_NAME" /> no Chromebook</translation>
 <translation id="2393313392064891208">Conteúdo dos Termos do Google ChromeOS Flex</translation>
+<translation id="2393944685985256805"><ph name="MODULE_NAME" /> oculto</translation>
 <translation id="2395616325548404795">O seu <ph name="DEVICE_TYPE" /> foi inscrito com êxito para gestão empresarial, mas não enviou as respetivas informações de recurso e de localização. Introduza essas informações para este dispositivo manualmente a partir da Consola do gestor.</translation>
 <translation id="2396783860772170191">Introduza o PIN de 4 dígitos (0000-9999)</translation>
 <translation id="2398546389094871088">A função Powerwash do dispositivo não remove os seus perfis de eSIM. Aceda a <ph name="LINK_BEGIN" />Definições para dispositivos móveis<ph name="LINK_END" /> para remover manualmente estes perfis.</translation>
@@ -2645,6 +2646,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2794522004398861033">Estabeleça ligação ao Wi-Fi ou à Ethernet para configurar o eSIM</translation>
 <translation id="2794977172822818797">Adicionar sites atuais</translation>
 <translation id="2795716239552913152">Normalmente, os sites utilizam a sua localização para funcionalidades ou informações relevantes, como notícias locais ou lojas próximas.</translation>
+<translation id="2797712124653482791">Ocultar durante <ph name="DISMISS_DAYS" /> dias</translation>
 <translation id="2798347533012571708">Manter atualizações</translation>
 <translation id="2799162042226656283">O seu Chrome</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
@@ -4070,6 +4072,10 @@ Quer pará-lo?</translation>
 <translation id="3800764353337460026">Estilo do símbolo</translation>
 <translation id="3800828618615365228">Termos Adicionais do Google Chrome e Chrome OS</translation>
 <translation id="3800898876950197674">Para permitir esta extensão, introduza a palavra-passe.</translation>
+<translation id="3801131837165361989">Está a ver sugestões sobre como personalizar o Chrome e torná-lo mais eficaz para as suas necessidades diárias.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Pode gerir definições no menu do cartão ou ver mais opções em Personalizar o Chrome.</translation>
 <translation id="3801449494961771207">Voz da conversão de texto em voz do sistema</translation>
 <translation id="3802486193901166966">Esta extensão não requer autorizações especiais e não tem acesso adicional a sites</translation>
 <translation id="380329542618494757">Nome</translation>
@@ -6529,6 +6535,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">Escolha a configuração</translation>
 <translation id="5551573675707792127">Teclado e introdução de texto</translation>
+<translation id="5551753770140674714">Os dados são encriptados com a sua frase de acesso de sincronização. Isto não inclui métodos de pagamento nem moradas do Google Pay.</translation>
 <translation id="5553089923092577885">Mapeamentos de políticas de certificados</translation>
 <translation id="5554240068773209752">Clique aqui para personalizar os controlos</translation>
 <translation id="5554403733534868102">Depois desta atualização, não terá de aguardar por outras</translation>
@@ -10018,6 +10025,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8008704580256716350">Ficheiro suspeito bloqueado</translation>
 <translation id="8009196983040865987">Quando usa o organizador de separadores, os títulos e os URLs dos separadores abertos são enviados para a Google para gerar grupos de separadores sugeridos</translation>
 <translation id="8009225694047762179">Gerir palavras-passe</translation>
+<translation id="8010312870936510509">Os dados foram encriptados com a sua frase de acesso de sincronização a <ph name="TIME" />. Não estão incluídos métodos de pagamento nem moradas do Google Pay.</translation>
 <translation id="8011372169388649948">"<ph name="BOOKMARK_TITLE" />" movido.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Detalhes da zona Wi-Fi instantânea</translation>

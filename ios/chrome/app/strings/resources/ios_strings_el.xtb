@@ -507,6 +507,7 @@
 <translation id="2931440415625410757">Εμφάνιση οδηγιών</translation>
 <translation id="2952278131021475699">Αναζήτηση με κάμερα στο Lens</translation>
 <translation id="2962516096219646456">Εμφάνιση όλων των δεδομένων αυτόματης συμπλήρωσης</translation>
+<translation id="2965594942405840553">Δεν είναι δυνατή η αναίρεση αυτής της ενέργειας</translation>
 <translation id="2969979262385602596">Αποτυχία σύνδεσης. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="2975761176769946178">Απαιτείται URL</translation>
 <translation id="297667759942911166">Συνεργασία σε ομάδες καρτελών</translation>
@@ -657,6 +658,7 @@
 <translation id="3595252146048399851">Μπορείτε πάντα να επιλέξετε τα στοιχεία που θέλετε να συγχρονίσετε στις <ph name="BEGIN_LINK" />ρυθμίσεις<ph name="END_LINK" />. Η Google μπορεί να εξατομικεύει την Αναζήτηση και άλλες υπηρεσίες με βάση το ιστορικό σας.</translation>
 <translation id="3602260545951981695">Επιλέξτε Βελτιωμένη προστασία</translation>
 <translation id="3610041351087301930">Απόκρυψη αναγνώστη</translation>
+<translation id="3610866916973186448">Ναι, διαγραφή</translation>
 <translation id="3622175633937495219">Ιστορικό αναζήτησης (Βρέθηκαν <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Μπορείτε να σύρετε την άκρη για μετάβαση προς τα πίσω.</translation>
 <translation id="362709345066740529">Προσαρμόστε εδώ τις κάρτες, τη ροή και άλλα</translation>
@@ -1951,6 +1953,7 @@
 <translation id="8561999115126307258">{count,plural, =1{Διατίθεται {count} επιλογή κωδικού πρόσβασης πάνω από το πληκτρολόγιο.}other{Διατίθενται {count} επιλογές κωδικού πρόσβασης πάνω από το πληκτρολόγιο.}}</translation>
 <translation id="8564894539416715395">Σελίδα Νέα καρτέλα</translation>
 <translation id="8569721750632860947">Ποιο URL θέλετε να προσθέσετε στη λίστα ανάγνωσης;</translation>
+<translation id="8571019948162152515">Να διαγραφεί το πιστοποιητικό <ph name="FILENAME" />;</translation>
 <translation id="8571213806525832805">Τελευταίες 4 εβδομάδες</translation>
 <translation id="8577056989960190117">Αυτόματη συμπλήρωση του έτους λήξης <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Ανενεργό</translation>

@@ -364,7 +364,7 @@
 <translation id="159274626729231974">פסטיבלי סרטים</translation>
 <translation id="1593359183944365958">270 מעלות</translation>
 <translation id="1594030484168838125">בחירה</translation>
-<translation id="1595731774593926493">מחיקת מספר הפנייה לערעור</translation>
+<translation id="1595731774593926493">‏מחיקת מספר Redress</translation>
 <translation id="1597307423671074806">‏סרטון WebM</translation>
 <translation id="159800670740560023">‏קישור לטיפ ל-Chrome, אפשר ללחוץ על Enter כדי לפתוח <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
 <translation id="1599199147673445968">כרטיס חדש? <ph name="BEGIN_LINK" />להזנת פרטי הכרטיס<ph name="END_LINK" /></translation>
@@ -700,6 +700,7 @@
 <translation id="2154484045852737596">עריכת כרטיס</translation>
 <translation id="2154739667870063220">הפעלה מחדש</translation>
 <translation id="2155260325161282517">‏5x7 אינץ'</translation>
+<translation id="2156467141257470387">‏אפשר להשתמש בכתובות שמורות במוצרי Google. הפעולה הזו לא תשנה את כתובת העבודה הקיימת שלך. הכתובת תישמר בחשבון Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">התראות על מעקב אחר מחירים</translation>
 <translation id="21613918653299710">גלריות תמונות אונליין</translation>
 <translation id="2161656808144014275">טקסט</translation>
@@ -757,7 +758,7 @@
 <translation id="2233745931693710080">Compact Disc</translation>
 <translation id="2235344399760031203">‏קובצי cookie של צד שלישי חסומים</translation>
 <translation id="2239100178324503013">שליחה</translation>
-<translation id="224130779555573777">הוספת מספר פנייה לערעור</translation>
+<translation id="224130779555573777">‏הוספת מספר Redress</translation>
 <translation id="2241693394036365668">הורדת קובץ</translation>
 <translation id="2242389809734574253">‏הודעת שמירת מספר ה-IBAN נסגרה.</translation>
 <translation id="2246264294482514010">‏10x12 אינץ'</translation>
@@ -2944,7 +2945,7 @@ Del</translation>
 <translation id="5886961930368713749">שליחת משוב להשוואה</translation>
 <translation id="5887400589839399685">הכרטיס נשמר</translation>
 <translation id="5887687176710214216">הכניסה האחרונה בוצעה אתמול</translation>
-<translation id="5890248301649767931">לשמור את מספר הפנייה לערעור?</translation>
+<translation id="5890248301649767931">‏לשמור את מספר ה-Redress?</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
 <translation id="5895187275912066135">הונפק בתאריך</translation>
 <translation id="5898767305816764989">‏כפתור 'אהבתי', לוחצים על Enter כדי לשלוח משוב שאהבת את <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -3002,6 +3003,7 @@ Del</translation>
 <translation id="5984570616552610254">לחות בתא</translation>
 <translation id="598637245381783098">לא ניתן לפתוח את אפליקציית התשלומים</translation>
 <translation id="5989320800837274978">‏לא צוינו שרתי Proxy קבועים ולא כתובת אתר של סקריפט ‎.pac</translation>
+<translation id="5989917734461988169">‏אפשר להשתמש בכתובות שמורות במוצרי Google. הפעולה הזו לא תשנה את כתובת המגורים הקיימת שלך. הכתובת תישמר בחשבון Google, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">‏קיפול מסוג Engineering Z</translation>
 <translation id="5992805036496113940">צפייה במידע שמשמש להצגת המודעות</translation>
 <translation id="5995727681868049093">‏ניהול של המידע, הפרטיות והאבטחה בחשבון Google</translation>
@@ -3575,7 +3577,7 @@ Del</translation>
 <translation id="6905163627763043954">נסה זאת</translation>
 <translation id="6907458757809079309">כושר גופני</translation>
 <translation id="691024665142758461">להוריד מספר קבצים</translation>
-<translation id="691046363691324218">מספר הפנייה לערעור</translation>
+<translation id="691046363691324218">‏מספר ה-Redress</translation>
 <translation id="6915804003454593391">משתמש:</translation>
 <translation id="6916193791494646625">יש לציין את הסיבה להורדה (חובה)</translation>
 <translation id="6917795328362592458">הסיסמה שבה השתמשת עכשיו אותרה בפרצה באבטחת מידע. כדי להגן על החשבונות שלך, לפי מנהל הסיסמאות, מומלץ לבדוק את הסיסמאות השמורות שלך.</translation>
@@ -4525,7 +4527,7 @@ Del</translation>
 <translation id="8457125768502047971">ללא הגבלת זמן</translation>
 <translation id="8458202188076138974">‏9.5x12 אינץ' (Letter Extra)</translation>
 <translation id="8460854335417802511">להפעלת ההגדרה</translation>
-<translation id="8461289985785035071">עריכת מספר הפנייה לערעור</translation>
+<translation id="8461289985785035071">‏עריכת מספר Redress</translation>
 <translation id="8461694314515752532">הצפנת נתונים מסונכרנים בעזרת ביטוי סיסמה אישי לסנכרון</translation>
 <translation id="8461973047386722744">לא נמצאו סיסמאות</translation>
 <translation id="8467494337615822642">‏מעבר לדף בדיקת האבטחה ב-Chrome בהגדרות</translation>
@@ -4833,7 +4835,7 @@ Del</translation>
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">‏רוצה לנסות את Chrome Enterprise Core?</translation>
 <translation id="9027531288681624875">כדי לצאת מהמסך המלא, צריך ללחוץ לחיצה ארוכה על |<ph name="ACCELERATOR" />|</translation>
-<translation id="9031426777610376427">לעדכן את מספר הפנייה לערעור?</translation>
+<translation id="9031426777610376427">‏לעדכן את מספר ה-Redress?</translation>
 <translation id="9035022520814077154">שגיאת אבטחה</translation>
 <translation id="9035824888276246493">שמירת קודי האבטחה</translation>
 <translation id="9036306139374661733">לאפשר את הגישה למיקרופון?</translation>
@@ -4903,6 +4905,7 @@ Del</translation>
 <translation id="9139318394846604261">קניות</translation>
 <translation id="9140198744651252040">‏דפדפן Chrome רוצה להשתמש בטביעת אצבע למילוי אוטומטי של סיסמאות</translation>
 <translation id="9141013498910525015">ניהול כתובות</translation>
+<translation id="9141435142213469335">שמירת הכתובת עם מידע נוסף</translation>
 <translation id="9141672681283222114">‏יש אישור לשימוש חד-פעמי ב-AR</translation>
 <translation id="9143898823728499852">‏אפשר למלא את הפרטים של הכרטיס הזה באופן אוטומטי כי החשבון ב-<ph name="CARD_ISSUER_NAME" /> מקושר ל-Google Pay</translation>
 <translation id="9144951720726881238">תאריך תפוגה:</translation>

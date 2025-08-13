@@ -700,6 +700,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2154484045852737596">Editar tarjeta</translation>
 <translation id="2154739667870063220">Reiniciar</translation>
 <translation id="2155260325161282517">12.7 × 17.8 cm (5 × 7 in)</translation>
+<translation id="2156467141257470387">Puedes usar las direcciones guardadas en todos los productos de Google. Esto no cambiará tu dirección de trabajo existente. Se guardará en tu Cuenta de Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Notificaciones de seguimiento de precios</translation>
 <translation id="21613918653299710">Galerías de imágenes en línea</translation>
 <translation id="2161656808144014275">Texto</translation>
@@ -2998,6 +2999,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5984570616552610254">Humedad de la cámara</translation>
 <translation id="598637245381783098">No se puede abrir la app de pago</translation>
 <translation id="5989320800837274978">No se especifican servidores proxy fijos ni URL de secuencias de comandos .pac.</translation>
+<translation id="5989917734461988169">Puedes usar las direcciones guardadas en todos los productos de Google. Esto no cambiará tu dirección particular existente. Se guardará en tu Cuenta de Google, <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Plegado en Z para ingeniería</translation>
 <translation id="5992805036496113940">Ver la información que se usa para mostrarte anuncios</translation>
 <translation id="5995727681868049093">Administrar la información, privacidad y seguridad de tu Cuenta de Google</translation>
@@ -4900,6 +4902,7 @@ Detalles adicionales:
 <translation id="9139318394846604261">Compras</translation>
 <translation id="9140198744651252040">El navegador Chrome quiere usar la huella dactilar para autocompletar contraseñas</translation>
 <translation id="9141013498910525015">Administrar direcciones</translation>
+<translation id="9141435142213469335">Guardar la dirección con más información</translation>
 <translation id="9141672681283222114">Se permitió la RA esta vez</translation>
 <translation id="9143898823728499852">Puedes autocompletar esta tarjeta porque tu cuenta de <ph name="CARD_ISSUER_NAME" /> está vinculada a Google Pay</translation>
 <translation id="9144951720726881238">Fecha de vencimiento:</translation>

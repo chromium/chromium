@@ -1632,6 +1632,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2110941575868943054">Dopušteno je traženje Bluetooth uređaja</translation>
 <translation id="211144231511833662">Izbriši vrste</translation>
 <translation id="2111670510994270194">Nova kartica s desne strane</translation>
+<translation id="2111778868023567359">Grupe kartica više vam se neće prikazivati na ovoj stranici</translation>
 <translation id="2112554630428445878">Dobro došli, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Pričvrsti karticu</translation>
 <translation id="2113479184312716848">Open &amp;File... (Otvori datoteku...)</translation>
@@ -6465,6 +6466,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5496730470963166430">Nije dopušteno slanje skočnih prozora i upotreba preusmjeravanja</translation>
 <translation id="5497250476399536588">Možete je pronaći u odjeljcima Adrese i Više</translation>
 <translation id="5497251278400702716">Ova datoteka</translation>
+<translation id="549762298434242239">Poboljšano sigurno pregledavanje ne smatra to proširenje pouzdanim. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">Chrome nije uspio potvrditi ovaj paket za instalaciju</translation>
 <translation id="5498967291577176373">Pišite brže pomoću prijedloga u tekstu vašeg imena, adrese ili telefonskog broja</translation>
 <translation id="5499211612787418966">Ovaj dijalog trenutačno nije fokusiran. Pritisnite Alt – Shift A da biste fokusirali ovaj dijalog.</translation>
@@ -6827,6 +6829,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5780973441651030252">Prioritet obrade</translation>
 <translation id="5781092003150880845">Sinkroniziraj kao <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Premjestite podatke sa školskog računa na osobni račun</translation>
+<translation id="5781244749114921664">Grupe kartica su skrivene</translation>
 <translation id="5782227691023083829">Prijevod u tijeku...</translation>
 <translation id="5783346913439924978">Praćenje pokreta glave</translation>
 <translation id="57838592816432529">Isključi zvuk</translation>

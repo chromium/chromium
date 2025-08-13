@@ -700,6 +700,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2154484045852737596">Uredite karticu</translation>
 <translation id="2154739667870063220">Ponovo pokreni</translation>
 <translation id="2155260325161282517">5 x 7 in</translation>
+<translation id="2156467141257470387">Spremljene adrese možete upotrijebiti na Googleovim proizvodima. Time se neće promijeniti vaša postojeća poslovna adresa. Spremit će se na vaš Google račun <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Obavijesti o praćenju cijena</translation>
 <translation id="21613918653299710">Online galerije slika</translation>
 <translation id="2161656808144014275">Tekst</translation>
@@ -2996,6 +2997,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5984570616552610254">Vlažnost komore</translation>
 <translation id="598637245381783098">Aplikacija za plaćanje ne može se otvoriti</translation>
 <translation id="5989320800837274978">Nisu određeni fiksni proxy poslužitelji ni URL .pac skripte.</translation>
+<translation id="5989917734461988169">Spremljene adrese možete upotrijebiti na Googleovim proizvodima. Time se neće promijeniti vaša postojeća kućna adresa. Spremit će se na vaš Google račun <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Presavijanje u obliku harmonike s dva nabora</translation>
 <translation id="5992805036496113940">Pregled podataka koji se upotrebljavaju za prikazivanje oglasa</translation>
 <translation id="5995727681868049093">Upravljajte podacima, privatnošću i sigurnošću na svojem Google računu</translation>
@@ -4899,6 +4901,7 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="9139318394846604261">Kupnja</translation>
 <translation id="9140198744651252040">Preglednik Chrome zahtijeva otisak prsta radi automatskog popunjavanja zaporki</translation>
 <translation id="9141013498910525015">Upravljanje adresama</translation>
+<translation id="9141435142213469335">Spremite adresu s više informacija</translation>
 <translation id="9141672681283222114">Virtualna stvarnost dopuštena je ovaj put</translation>
 <translation id="9143898823728499852">Možete automatski popuniti podatke o toj kartici jer je vaš <ph name="CARD_ISSUER_NAME" /> račun povezan s Google Payom</translation>
 <translation id="9144951720726881238">Datum isteka:</translation>

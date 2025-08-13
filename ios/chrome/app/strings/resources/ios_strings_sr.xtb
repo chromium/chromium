@@ -507,6 +507,7 @@
 <translation id="2931440415625410757">Прикажи упутства</translation>
 <translation id="2952278131021475699">Претрага помоћу камере Објектива</translation>
 <translation id="2962516096219646456">Погледајте све податке Аутоматског попуњавања</translation>
+<translation id="2965594942405840553">Ова радња не може да се опозове</translation>
 <translation id="2969979262385602596">Пријављивање није успело. Пробајте поново касније.</translation>
 <translation id="2975761176769946178">URL је обавезан</translation>
 <translation id="297667759942911166">Сарађујте у групама картица</translation>
@@ -657,6 +658,7 @@
 <translation id="3595252146048399851">Увек можете да одаберете шта ћете синхронизовати у <ph name="BEGIN_LINK" />подешавањима<ph name="END_LINK" />. Google може да персонализује Претрагу и друге услуге на основу историје.</translation>
 <translation id="3602260545951981695">Одаберите Побољшана заштита</translation>
 <translation id="3610041351087301930">Сакриј читач</translation>
+<translation id="3610866916973186448">Да, избриши</translation>
 <translation id="3622175633937495219">Историја претраге (пронађених: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Можете да превучете ивицу да бисте ишли назад.</translation>
 <translation id="362709345066740529">Овде прилагодите картице, фид и друго</translation>
@@ -1950,6 +1952,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8561999115126307258">{count,plural, =1{{count} опција за лозинку је доступна изнад тастатуре.}one{{count} опција за лозинку је доступна изнад тастатуре.}few{{count} опције за лозинку су доступне изнад тастатуре.}other{{count} опција за лозинку је доступно изнад тастатуре.}}</translation>
 <translation id="8564894539416715395">Страница Нова картица</translation>
 <translation id="8569721750632860947">Који URL желите да додате на листу за читање?</translation>
+<translation id="8571019948162152515">Желите да избришете „<ph name="FILENAME" />“?</translation>
 <translation id="8571213806525832805">Последње 4 недеље</translation>
 <translation id="8577056989960190117">Аутоматски попуните годину истека <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Искључено</translation>

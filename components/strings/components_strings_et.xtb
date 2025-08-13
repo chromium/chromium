@@ -700,6 +700,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2154484045852737596">Kaardi muutmine</translation>
 <translation id="2154739667870063220">Taaskäivita</translation>
 <translation id="2155260325161282517">5 × 7 tolli</translation>
+<translation id="2156467141257470387">Salvestatud aadresse saate kasutada kõigis Google'i teenustes. See ei muuda teie olemasolevat töökoha aadressi. See salvestatakse teie Google'i kontole <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Hinna jälgimise märguanded</translation>
 <translation id="21613918653299710">Veebipõhised pildigaleriid</translation>
 <translation id="2161656808144014275">Tekst</translation>
@@ -1672,6 +1673,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3744899669254331632">Te ei saa saiti <ph name="SITE" /> praegu külastada, sest veebisait saatis tagasi arusaamatud mandaadid, mida Chromium ei saa töödelda. Võrguvead ja -rünnakud on tavaliselt ajutised, nii et leht tõenäoliselt hiljem töötab.</translation>
 <translation id="3745599309295009257">Teie tekst ja sisu ning lehe URL, millel kirjutate, saadetakse Google'ile, inimesed vaatavad selle üle ning seda kasutatakse selle funktsiooni täiustamiseks. Ärge sisestage isiklikku teavet (nt meditsiini- või finantsdetaile) ega kasutage seda tööriista saitidel, mis sisaldavad privaatset või delikaatset teavet.</translation>
 <translation id="3748009735914587286">Metall (kõrgläikega)</translation>
+<translation id="3749600200023337912">Selle makse tegemiseks võidakse kasutada teie salvestatud automaatmakse viisi. E-rahakottide või makserakenduse väljalülitamiseks Chrome'is avage <ph name="BEGIN_LINK1" />makseseaded<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">Kas salvestada aadress kontole?</translation>
 <translation id="3752543821772132562">Eirati, sest reegel <ph name="POLICY_NAME" /> on seadistamata.</translation>
 <translation id="3754210790023674521">Välju režiimist Pilt pildis</translation>
@@ -2996,6 +2998,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5984570616552610254">Kambri niiskus</translation>
 <translation id="598637245381783098">Makserakendust ei saa avada</translation>
 <translation id="5989320800837274978">Määratud ei ole fikseeritud puhverservereid ega pac-skriptiga URL-i.</translation>
+<translation id="5989917734461988169">Salvestatud aadresse saate kasutada kõigis Google'i teenustes. See ei muuda teie olemasolevat kodust aadressi. See salvestatakse teie Google'i kontole <ph name="ACCOUNT" />.</translation>
 <translation id="5992691462791905444">Z-kujuliselt volditud</translation>
 <translation id="5992805036496113940">Vaadake, millist teavet kasutatakse teile reklaamide esitamiseks</translation>
 <translation id="5995727681868049093">Google'i kontol teabe, privaatsuse ja turvalisuse haldamine</translation>
@@ -3559,6 +3562,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6890956352250146925">Küpsisefailide ja saidi andmete valikud</translation>
 <translation id="6891596781022320156">Reegli taset ei toetata.</translation>
 <translation id="6893057134494550310">Fooliumlehega lamineerimine</translation>
+<translation id="6893204630281237373">Makserakenduse väljalülitamiseks Chrome'is avage oma <ph name="BEGIN_LINK1" />makseseaded<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Teie kaart on kinnitatud</translation>
 <translation id="6896758677409633944">Kopeeri</translation>
 <translation id="6897140037006041989">Kasutajaagent</translation>
@@ -4896,6 +4900,7 @@ Lisateave:
 <translation id="9139318394846604261">Ostlemine</translation>
 <translation id="9140198744651252040">Chrome'i brauser soovib kasutada paroolide automaattäitmiseks sõrmejälge</translation>
 <translation id="9141013498910525015">Aadresside haldamine</translation>
+<translation id="9141435142213469335">Salvestage aadress koos lisateabega</translation>
 <translation id="9141672681283222114">AR on see kord lubatud</translation>
 <translation id="9143898823728499852">Saate selle kaardi teabe automaatselt täita, kuna teie konto teenuses <ph name="CARD_ISSUER_NAME" /> on Google Payga lingitud</translation>
 <translation id="9144951720726881238">Aegumiskuupäev:</translation>

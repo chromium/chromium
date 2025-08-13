@@ -1643,6 +1643,7 @@
 <translation id="2110941575868943054">Дозволено шукати пристрої з Bluetooth</translation>
 <translation id="211144231511833662">Очистити типи</translation>
 <translation id="2111670510994270194">Нова вкладка праворуч</translation>
+<translation id="2111778868023567359">Ви більше не бачитимете групи вкладок на цій сторінці</translation>
 <translation id="2112554630428445878">Вітаємо, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Закріпити вкладку</translation>
 <translation id="2113479184312716848">Відкрити &amp;файл...</translation>
@@ -6479,6 +6480,7 @@
 <translation id="5496730470963166430">Заборонено показувати спливаючі вікна чи використовувати переспрямування</translation>
 <translation id="5497250476399536588">Ви можете знайти її в розділі "Адреси й інше"</translation>
 <translation id="5497251278400702716">Цей файл</translation>
+<translation id="549762298434242239">Це розширення не відповідає вимогам Безпечного перегляду з розширеним захистом. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">Веб-переглядачу Chrome не вдалося перевірити цей пакет встановлення</translation>
 <translation id="5498967291577176373">Пишіть швидше з вбудованими підказками щодо імені, адреси або номеру телефону</translation>
 <translation id="5499211612787418966">Це вікно не виділено. Щоб виділити його, натисніть Alt + Shift + A.</translation>
@@ -6841,6 +6843,7 @@
 <translation id="5780973441651030252">Пріоритет обробки</translation>
 <translation id="5781092003150880845">Синхронізувати як <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Перенесення даних з облікового запису закладу освіти в особистий</translation>
+<translation id="5781244749114921664">Групи вкладок приховано</translation>
 <translation id="5782227691023083829">Виконується переклад сторінки...</translation>
 <translation id="5783346913439924978">Відстеження руху голови</translation>
 <translation id="57838592816432529">Вимкнути звук</translation>

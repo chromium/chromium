@@ -700,6 +700,7 @@
 <translation id="2154484045852737596">ویرایش کارت</translation>
 <translation id="2154739667870063220">بازراه‌اندازی</translation>
 <translation id="2155260325161282517">۷ × ۵ اینچ</translation>
+<translation id="2156467141257470387">‏می‌توانید از نشانی‌های ذخیره‌شده در محصولات مختلف Google استفاده کنید. این کار نشانی محل کار فعلی‌تان را تغییر نخواهد داد. این نشانی در «حساب Google» شما، <ph name="ACCOUNT" />، ذخیره خواهد شد.</translation>
 <translation id="2157640075051554492">اعلان‌های ردیابی قیمت</translation>
 <translation id="21613918653299710">گالری تصاویر آنلاین</translation>
 <translation id="2161656808144014275">نوشتار</translation>
@@ -2997,6 +2998,7 @@
 <translation id="5984570616552610254">رطوبت محفظه</translation>
 <translation id="598637245381783098">برنامه پرداخت باز نشد</translation>
 <translation id="5989320800837274978">‏سرور پروکسی ثابت و URL اسکریپت pac. تعیین نشده‌اند.</translation>
+<translation id="5989917734461988169">‏می‌توانید از نشانی‌های ذخیره‌شده در محصولات مختلف Google استفاده کنید. این کار نشانی خانه فعلی‌تان را تغییر نخواهد داد. این نشانی در «حساب Google» شما، <ph name="ACCOUNT" />، ذخیره خواهد شد.</translation>
 <translation id="5992691462791905444">‏تاخوردگی Z شکل مهندسی</translation>
 <translation id="5992805036496113940">دیدن اطلاعاتی که برای نمایش آگهی به شما استفاده می‌شود</translation>
 <translation id="5995727681868049093">‏مدیریت اطلاعات، حریم خصوصی، و امنیت در «حساب Google»</translation>
@@ -4898,6 +4900,7 @@
 <translation id="9139318394846604261">خرید</translation>
 <translation id="9140198744651252040">‏مرورگر Chrome می‌خواهد از اثر انگشت برای تکمیل خودکار گذرواژه‌ها استفاده کند</translation>
 <translation id="9141013498910525015">مدیریت نشانی‌ها</translation>
+<translation id="9141435142213469335">ذخیره کردن نشانی با اطلاعات بیشتر</translation>
 <translation id="9141672681283222114">«واقعیت افزوده» این بار مجاز شد</translation>
 <translation id="9143898823728499852">‏می‌توانید اطلاعات این کارت را به‌طور خودکار تکمیل کنید، زیرا حساب <ph name="CARD_ISSUER_NAME" /> شما به Google Pay پیوند شده است</translation>
 <translation id="9144951720726881238">تاریخ انقضا:</translation>

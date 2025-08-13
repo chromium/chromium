@@ -1631,6 +1631,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2110941575868943054">Lubatakse Bluetooth-seadmeid otsida</translation>
 <translation id="211144231511833662">Kustuta tüübid</translation>
 <translation id="2111670510994270194">Uus vaheleht paremale</translation>
+<translation id="2111778868023567359">Te ei näe sellel lehel enam vahelehegruppe.</translation>
 <translation id="2112554630428445878">Tere tulemast, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Kinnita vaheleht</translation>
 <translation id="2113479184312716848">Ava &amp;fail ...</translation>
@@ -6469,6 +6470,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5496730470963166430">Pole lubatud saata hüpikaknaid ega kasutada ümbersuunamisi</translation>
 <translation id="5497250476399536588">Leiate selle oma jaotisest Aadressid ja muu</translation>
 <translation id="5497251278400702716">See fail</translation>
+<translation id="549762298434242239">Täiustatud ohutu sirvimine ei usalda seda laiendust. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">Chrome'il ei õnnestunud seda installipaketti kinnitada</translation>
 <translation id="5498967291577176373">Tekstisisesed soovitused aitavad teil kiiremini sisestada näiteks oma nime, aadressi või telefoninumbrit</translation>
 <translation id="5499211612787418966">See dialoog pole praegu esile tõstetud. Selle dialoogi esiletõstmiseks vajutage klahve Alt-Tõstuklahv A.</translation>
@@ -6833,6 +6835,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5780973441651030252">Protsessi prioriteet</translation>
 <translation id="5781092003150880845">Sünkrooni kasutajana <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Saate kanda oma koolikonto andmed üle oma isiklikule kontole</translation>
+<translation id="5781244749114921664">Vahelehegrupid on peidetud.</translation>
 <translation id="5782227691023083829">Tõlkimine...</translation>
 <translation id="5783346913439924978">Pea jälgimine</translation>
 <translation id="57838592816432529">Vaigista</translation>

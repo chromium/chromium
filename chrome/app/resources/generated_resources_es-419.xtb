@@ -1627,6 +1627,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2110941575868943054">Puede buscar dispositivos Bluetooth</translation>
 <translation id="211144231511833662">Borrar tipos</translation>
 <translation id="2111670510994270194">Nueva pestaña a la derecha</translation>
+<translation id="2111778868023567359">No volverás a ver los grupos de pestañas en esta página</translation>
 <translation id="2112554630428445878">Te damos la bienvenida, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Fijar pestaña</translation>
 <translation id="2113479184312716848">Abrir &amp;archivo...</translation>
@@ -6462,6 +6463,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5496730470963166430">No puede enviar ventanas emergentes ni usar redireccionamientos</translation>
 <translation id="5497250476399536588">Puedes encontrarlo en Direcciones y más</translation>
 <translation id="5497251278400702716">Este archivo</translation>
+<translation id="549762298434242239">La Navegación segura mejorada no confía en esta extensión. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">Chrome no pudo verificar este paquete de instalación</translation>
 <translation id="5498967291577176373">Escribe más rápido con las sugerencias de texto para tu nombre, dirección o número de teléfono</translation>
 <translation id="5499211612787418966">Este diálogo no está enfocado en este momento. Presiona Alt+Mayúsculas+A para enfocar este diálogo.</translation>
@@ -6826,6 +6828,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5780973441651030252">Prioridad del proceso</translation>
 <translation id="5781092003150880845">Sincronizar como <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Transfiere los datos de tu cuenta de institución educativa a tu cuenta personal</translation>
+<translation id="5781244749114921664">Se ocultaron los grupos de pestañas</translation>
 <translation id="5782227691023083829">Traduciendo...</translation>
 <translation id="5783346913439924978">Monitoreo de cabeza</translation>
 <translation id="57838592816432529">Silenciar</translation>

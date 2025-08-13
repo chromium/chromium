@@ -1628,6 +1628,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2110941575868943054">Traženje Bluetooth uređaja je dozvoljeno</translation>
 <translation id="211144231511833662">Obriši tipove</translation>
 <translation id="2111670510994270194">Nova kartica na desnoj strani</translation>
+<translation id="2111778868023567359">Više nećete videti grupe kartica na ovoj stranici</translation>
 <translation id="2112554630428445878">Dobro došli, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Zakači karticu</translation>
 <translation id="2113479184312716848">Open &amp;File... (Otvori datoteku)</translation>
@@ -6461,6 +6462,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5496730470963166430">Nije im dozvoljeno da šalju iskačuće prozore ili da koriste preusmeravanja</translation>
 <translation id="5497250476399536588">Možete da je pronađete u odeljku Adrese i drugo</translation>
 <translation id="5497251278400702716">Ova datoteka</translation>
+<translation id="549762298434242239">Poboljšano bezbedno pregledanje ne smatra ovaj dodatak pouzdanim. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">Chrome nije uspeo da verifikuje ovaj paket za instalaciju</translation>
 <translation id="5498967291577176373">Pišite brže pomoću predloga za ime, adresu ili broj telefona u tekstu</translation>
 <translation id="5499211612787418966">Ovaj dijalog trenutno nije fokusiran. Pritisnite Alt-Shift A da biste fokusirali ovaj dijalog.</translation>
@@ -6826,6 +6828,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5780973441651030252">Prioritet procesa</translation>
 <translation id="5781092003150880845">Sinhronizuj kao <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Premestite podatke školskog naloga na lični nalog</translation>
+<translation id="5781244749114921664">Grupe kartica su skrivene</translation>
 <translation id="5782227691023083829">Prevođenje je u toku...</translation>
 <translation id="5783346913439924978">Praćenje glave</translation>
 <translation id="57838592816432529">Isključi zvuk</translation>

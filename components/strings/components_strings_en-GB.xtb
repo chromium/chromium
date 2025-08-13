@@ -1672,6 +1672,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3744899669254331632">You cannot visit <ph name="SITE" /> right now because the website sent scrambled credentials that Chromium cannot process. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
 <translation id="3745599309295009257">Your text and the content and URL of the page that you're writing on will be sent to Google, reviewed by humans and used to improve this feature. Avoid entering personal information (like medical or financial details) or using this tool on sites that contain private or sensitive information.</translation>
 <translation id="3748009735914587286">Metal (high gloss)</translation>
+<translation id="3749600200023337912">Your saved auto-pay method may be used for this payment. To turn off eWallets or payment app in Chrome, go to your <ph name="BEGIN_LINK1" />payment settings<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">Save address in account?</translation>
 <translation id="3752543821772132562">Ignored because <ph name="POLICY_NAME" /> is not set.</translation>
 <translation id="3754210790023674521">Exit picture-in-picture</translation>
@@ -3559,6 +3560,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6890956352250146925">Options for cookies and site data</translation>
 <translation id="6891596781022320156">Policy level is not supported.</translation>
 <translation id="6893057134494550310">Laminating foil</translation>
+<translation id="6893204630281237373">To turn off payment app in Chrome, go to your <ph name="BEGIN_LINK1" />payment settings<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Your card is confirmed</translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6897140037006041989">User agent</translation>

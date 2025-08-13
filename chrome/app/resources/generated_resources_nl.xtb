@@ -1630,6 +1630,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2110941575868943054">Toestemming om naar bluetooth-apparaten te zoeken</translation>
 <translation id="211144231511833662">Typen wissen</translation>
 <translation id="2111670510994270194">Nieuw tabblad aan rechterkant</translation>
+<translation id="2111778868023567359">Je ziet Tabbladgroepen niet meer op deze pagina</translation>
 <translation id="2112554630428445878">Welkom, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Tabblad vastzetten</translation>
 <translation id="2113479184312716848">Bestand &amp;openen...</translation>
@@ -6460,6 +6461,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5496730470963166430">Geen toestemming om pop-ups te sturen of omleidingen te gebruiken</translation>
 <translation id="5497250476399536588">Je vindt deze in Adressen en meer</translation>
 <translation id="5497251278400702716">Dit bestand</translation>
+<translation id="549762298434242239">Deze extensie wordt niet vertrouwd door de uitgebreide versie van Safe Browsing. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">Chrome kan deze installatiebundel niet verifiëren</translation>
 <translation id="5498967291577176373">Schrijf sneller met inline suggesties voor je naam, adres of telefoonnummer</translation>
 <translation id="5499211612787418966">De focus staat momenteel niet op dit dialoogvenster. Druk op Alt-Shift-A om de focus op dit dialoogvenster te zetten.</translation>
@@ -6822,6 +6824,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5780973441651030252">Procesprioriteit</translation>
 <translation id="5781092003150880845">Synchroniseren als <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">De gegevens van je schoolaccount overzetten naar je persoonlijke account</translation>
+<translation id="5781244749114921664">Tabbladgroepen verborgen</translation>
 <translation id="5782227691023083829">Vertalen...</translation>
 <translation id="5783346913439924978">Hoofdtracking</translation>
 <translation id="57838592816432529">Geluid uitzetten</translation>

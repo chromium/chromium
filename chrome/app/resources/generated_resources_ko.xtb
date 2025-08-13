@@ -1641,6 +1641,7 @@
 <translation id="2110941575868943054">블루투스 기기 검색 허용됨</translation>
 <translation id="211144231511833662">유형 지우기</translation>
 <translation id="2111670510994270194">오른쪽에 새 탭 열기</translation>
+<translation id="2111778868023567359">이 페이지에 탭 그룹이 더 이상 표시되지 않습니다.</translation>
 <translation id="2112554630428445878"><ph name="USERNAME" />님, 환영합니다</translation>
 <translation id="21133533946938348">탭 고정</translation>
 <translation id="2113479184312716848">파일 열기(&amp;F)...</translation>
@@ -6479,6 +6480,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5496730470963166430">팝업 전송 또는 리디렉션 사용이 허용되지 않음</translation>
 <translation id="5497250476399536588">'주소 및 기타'에서 찾을 수 있습니다</translation>
 <translation id="5497251278400702716">이 파일</translation>
+<translation id="549762298434242239">향상된 세이프 브라우징에서 신뢰하지 않는 확장 프로그램입니다. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">Chrome에서 이 설치 번들을 확인할 수 없습니다</translation>
 <translation id="5498967291577176373">이름, 주소, 전화번호와 같은 인라인 추천 항목을 사용해 빠르게 작성하세요.</translation>
 <translation id="5499211612787418966">현재 이 대화상자에 포커스가 지정되지 않았습니다. Alt+Shift+A를 눌러 이 대화상자에 포커스를 지정하세요.</translation>
@@ -6843,6 +6845,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5780973441651030252">프로세스 우선순위</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" />님의 계정에 동기화</translation>
 <translation id="5781120434102258025">학교 계정 데이터를 개인 계정으로 이전하세요.</translation>
+<translation id="5781244749114921664">탭 그룹을 숨겼습니다.</translation>
 <translation id="5782227691023083829">번역 중...</translation>
 <translation id="5783346913439924978">헤드 트래킹</translation>
 <translation id="57838592816432529">음소거</translation>

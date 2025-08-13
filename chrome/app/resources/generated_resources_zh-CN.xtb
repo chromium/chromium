@@ -1623,6 +1623,7 @@
 <translation id="2110941575868943054">可以寻找蓝牙设备</translation>
 <translation id="211144231511833662">清除类型</translation>
 <translation id="2111670510994270194">在右侧新增标签页</translation>
+<translation id="2111778868023567359">此页面不会再显示标签页分组</translation>
 <translation id="2112554630428445878">欢迎您，<ph name="USERNAME" /></translation>
 <translation id="21133533946938348">固定标签页</translation>
 <translation id="2113479184312716848">打开文件(&amp;F)...</translation>
@@ -6452,6 +6453,7 @@
 <translation id="5496730470963166430">不允许发送弹出式窗口或使用重定向</translation>
 <translation id="5497250476399536588">您可以在“地址和其他信息”中找到它</translation>
 <translation id="5497251278400702716">此文件</translation>
+<translation id="549762298434242239">增强型安全浏览功能不信任此扩展程序。<ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">Chrome 未能验证此安装包</translation>
 <translation id="5498967291577176373">提供与您名字、地址或电话号码有关的内嵌建议，帮助您提高输入速度</translation>
 <translation id="5499211612787418966">此对话框目前未被聚焦。按 Alt+Shift+A 即可聚焦于此对话框。</translation>
@@ -6814,6 +6816,7 @@
 <translation id="5780973441651030252">进程优先级</translation>
 <translation id="5781092003150880845">以<ph name="ACCOUNT_FULL_NAME" />的身份同步</translation>
 <translation id="5781120434102258025">将学校账号数据转移到个人账号</translation>
+<translation id="5781244749114921664">标签页分组已隐藏</translation>
 <translation id="5782227691023083829">正在翻译...</translation>
 <translation id="5783346913439924978">头部追踪</translation>
 <translation id="57838592816432529">静音</translation>

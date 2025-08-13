@@ -1632,6 +1632,7 @@
 <translation id="2110941575868943054">Разрешено искать устройства Bluetooth</translation>
 <translation id="211144231511833662">Снять флажки типов</translation>
 <translation id="2111670510994270194">Новая вкладка справа</translation>
+<translation id="2111778868023567359">Больше группы вкладок не будут показываться на этой странице.</translation>
 <translation id="2112554630428445878">Здравствуйте, <ph name="USERNAME" />!</translation>
 <translation id="21133533946938348">Закрепить вкладку</translation>
 <translation id="2113479184312716848">Открыть &amp;файл...</translation>
@@ -6466,6 +6467,7 @@
 <translation id="5496730470963166430">Запретить сайтам показывать всплывающие окна или использовать переадресацию</translation>
 <translation id="5497250476399536588">Вы найдете его в разделе "Адреса и другие данные".</translation>
 <translation id="5497251278400702716">Этот файл</translation>
+<translation id="549762298434242239">Это расширение не отвечает стандартам улучшенного Безопасного просмотра. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">Chrome не удалось проверить этот набор для установки</translation>
 <translation id="5498967291577176373">Ускорить ввод данных благодаря подсказкам с вашим именем, адресом и номером телефона</translation>
 <translation id="5499211612787418966">Это диалоговое окно находится не в фокусе. Чтобы это исправить, нажмите Alt + Shift + A.</translation>
@@ -6830,6 +6832,7 @@
 <translation id="5780973441651030252">Приоритет процессов</translation>
 <translation id="5781092003150880845">Синхронизировать с аккаунтом пользователя <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Перенести данные из учебного аккаунта в личный</translation>
+<translation id="5781244749114921664">Группы вкладок скрыты.</translation>
 <translation id="5782227691023083829">Перевод...</translation>
 <translation id="5783346913439924978">Отслеживание движения головы</translation>
 <translation id="57838592816432529">Отключить звук</translation>

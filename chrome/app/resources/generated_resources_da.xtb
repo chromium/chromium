@@ -1642,6 +1642,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2110941575868943054">Har tilladelse til at søge efter Bluetooth-enheder</translation>
 <translation id="211144231511833662">Ryd typer</translation>
 <translation id="2111670510994270194">Ny fane til højre</translation>
+<translation id="2111778868023567359">Du vil ikke længere se fanegrupper på denne side</translation>
 <translation id="2112554630428445878">Velkommen, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Fastgør fane</translation>
 <translation id="2113479184312716848">Åbn &amp;fil...</translation>
@@ -6480,6 +6481,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5496730470963166430">Har ikke tilladelse til at sende pop op-vinduer eller bruge omdirigeringer</translation>
 <translation id="5497250476399536588">Du kan finde den under Adresser m.m.</translation>
 <translation id="5497251278400702716">Denne fil</translation>
+<translation id="549762298434242239">Denne udvidelse er ikke pålidelig ifølge Udvidet beskyttet browsing. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">Chrome kunne ikke verificere denne installationspakke</translation>
 <translation id="5498967291577176373">Skriv hurtigere med indlejrede forslag til dit navn, din adresse eller dit telefonnummer</translation>
 <translation id="5499211612787418966">Denne dialogboks er ikke fremhævet i øjeblikket. Tryk på Alt+Shift+A for at fremhæve denne dialogboks.</translation>
@@ -6844,6 +6846,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5780973441651030252">Procesprioritet</translation>
 <translation id="5781092003150880845">Synkroniser som <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Flyt dine skolekontodata til din personlige konto</translation>
+<translation id="5781244749114921664">Fanegrupperne er skjult</translation>
 <translation id="5782227691023083829">Oversætter ...</translation>
 <translation id="5783346913439924978">Registrering af hovedbevægelser</translation>
 <translation id="57838592816432529">Slå lyden fra</translation>

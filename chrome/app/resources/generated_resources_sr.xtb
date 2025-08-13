@@ -1628,6 +1628,7 @@
 <translation id="2110941575868943054">Тражење Bluetooth уређаја је дозвољено</translation>
 <translation id="211144231511833662">Обриши типове</translation>
 <translation id="2111670510994270194">Нова картица на десној страни</translation>
+<translation id="2111778868023567359">Више нећете видети групе картица на овој страници</translation>
 <translation id="2112554630428445878">Добро дошли, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Закачи картицу</translation>
 <translation id="2113479184312716848">Open &amp;File... (Отвори датотеку)</translation>
@@ -6461,6 +6462,7 @@
 <translation id="5496730470963166430">Није им дозвољено да шаљу искачуће прозоре или да користе преусмеравања</translation>
 <translation id="5497250476399536588">Можете да је пронађете у одељку Адресе и друго</translation>
 <translation id="5497251278400702716">Ова датотека</translation>
+<translation id="549762298434242239">Побољшано безбедно прегледање не сматра овај додатак поузданим. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="5497739595514726398">Chrome није успео да верификује овај пакет за инсталацију</translation>
 <translation id="5498967291577176373">Пишите брже помоћу предлога за име, адресу или број телефона у тексту</translation>
 <translation id="5499211612787418966">Овај дијалог тренутно није фокусиран. Притисните Alt-Shift A да бисте фокусирали овај дијалог.</translation>
@@ -6826,6 +6828,7 @@
 <translation id="5780973441651030252">Приоритет процеса</translation>
 <translation id="5781092003150880845">Синхронизуј као <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781120434102258025">Преместите податке школског налога на лични налог</translation>
+<translation id="5781244749114921664">Групе картица су скривене</translation>
 <translation id="5782227691023083829">Превођење је у току...</translation>
 <translation id="5783346913439924978">Праћење главе</translation>
 <translation id="57838592816432529">Искључи звук</translation>
