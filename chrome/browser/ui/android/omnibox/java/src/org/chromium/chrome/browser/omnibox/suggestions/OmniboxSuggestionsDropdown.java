@@ -69,6 +69,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private @Nullable GestureObserver mGestureObserver;
     private float mChildVerticalTranslation;
     private float mChildAlpha = 1.0f;
+    private boolean mToolbarOnTop = true;
 
     private final int mBaseBottomPadding;
 
@@ -418,10 +419,13 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             return mSelectionController.selectNextItem();
         }
 
-        if (KeyNavigationUtil.isGoDown(event)) {
+        boolean isGoDownKey = KeyNavigationUtil.isGoDown(event);
+        boolean isGoUpKey = KeyNavigationUtil.isGoUp(event);
+
+        if ((mToolbarOnTop && isGoDownKey) || (!mToolbarOnTop && isGoUpKey)) {
             mSelectionController.selectNextItem();
             return true;
-        } else if (KeyNavigationUtil.isGoUp(event)) {
+        } else if ((mToolbarOnTop && isGoUpKey) || (!mToolbarOnTop && isGoDownKey)) {
             mSelectionController.selectPreviousItem();
             return true;
         } else if (KeyNavigationUtil.isEnter(event)) {
@@ -479,11 +483,11 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     /* package */ void setToolbarPosition(@ControlsPosition int toolbarPosition) {
-        boolean isOnTop = toolbarPosition != ControlsPosition.BOTTOM;
-        mLayoutScrollListener.setToolbarPosition(isOnTop);
+        mToolbarOnTop = toolbarPosition != ControlsPosition.BOTTOM;
+        mLayoutScrollListener.setToolbarPosition(mToolbarOnTop);
 
         var params = (FrameLayout.LayoutParams) getLayoutParams();
-        params.gravity = isOnTop ? Gravity.TOP : Gravity.BOTTOM;
+        params.gravity = mToolbarOnTop ? Gravity.TOP : Gravity.BOTTOM;
         setLayoutParams(params);
     }
 
