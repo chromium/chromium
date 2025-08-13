@@ -562,6 +562,12 @@ void V4L2StatefulVideoDecoder::Reset(base::OnceClosure closure) {
   weak_ptr_factory_for_CAPTURE_availability_.InvalidateWeakPtrs();
   cancelable_task_tracker_.TryCancelAll();
 
+  if (wake_event_.is_valid()) {
+    const uint64_t buf = 1;
+    const auto res = HANDLE_EINTR(write(wake_event_.get(), &buf, sizeof(buf)));
+    PLOG_IF(ERROR, res < 0) << "Error writing to |wake_event_|";
+  }
+
   if (h264_frame_reassembler_) {
     h264_frame_reassembler_ = std::make_unique<H264FrameReassembler>();
   }
