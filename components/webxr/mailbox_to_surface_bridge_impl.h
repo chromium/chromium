@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "device/vr/android/mailbox_to_surface_bridge.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -63,7 +64,7 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBufferHandle buffer_handle,
-      gfx::BufferFormat buffer_format,
+      viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       gpu::SharedImageUsageSet usage,

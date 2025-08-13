@@ -105,7 +105,8 @@ bool XrImageTransportBase::ResizeSharedBuffer(WebXrPresentationState* webxr,
   // Remove reference to previous image (if any).
   buffer->local_eglimage.reset();
 
-  static constexpr gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
+  static constexpr viz::SharedImageFormat format =
+      viz::SinglePlaneFormat::kRGBA_8888;
   static constexpr gfx::BufferUsage usage = gfx::BufferUsage::SCANOUT;
 
   // The SharedImages created here will eventually be transferred to other

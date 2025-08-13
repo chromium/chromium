@@ -147,7 +147,7 @@ void MailboxToSurfaceBridgeImpl::CreateGpuFence(
 scoped_refptr<gpu::ClientSharedImage>
 MailboxToSurfaceBridgeImpl::CreateSharedImage(
     gfx::GpuMemoryBufferHandle buffer_handle,
-    gfx::BufferFormat buffer_format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     gpu::SharedImageUsageSet usage,
@@ -158,10 +158,9 @@ MailboxToSurfaceBridgeImpl::CreateSharedImage(
   auto* sii = context_provider_->SharedImageInterface();
   DCHECK(sii);
 
-  CHECK_EQ(buffer_format, gfx::BufferFormat::RGBA_8888);
+  CHECK_EQ(format, viz::SinglePlaneFormat::kRGBA_8888);
   auto client_shared_image = sii->CreateSharedImage(
-      {viz::SinglePlaneFormat::kRGBA_8888, size, color_space, usage,
-       "WebXrMailboxToSurfaceBridge"},
+      {format, size, color_space, usage, "WebXrMailboxToSurfaceBridge"},
       std::move(buffer_handle));
   CHECK(client_shared_image);
   sync_token = sii->GenVerifiedSyncToken();

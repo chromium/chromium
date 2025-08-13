@@ -21,6 +21,10 @@ class ClientSharedImage;
 struct SyncToken;
 }  // namespace gpu
 
+namespace viz {
+class SharedImageFormat;
+}  // namespace viz
+
 namespace device {
 class MailboxToSurfaceBridge {
  public:
@@ -58,7 +62,7 @@ class MailboxToSurfaceBridge {
   // reference to the |buffer_handle|.
   virtual scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBufferHandle buffer_handle,
-      gfx::BufferFormat buffer_format,
+      viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       gpu::SharedImageUsageSet usage,

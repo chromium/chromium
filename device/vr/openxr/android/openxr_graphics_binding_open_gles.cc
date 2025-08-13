@@ -247,7 +247,8 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
   // Remove reference to previous image (if any).
   swap_chain_info.local_eglimage.reset();
 
-  static constexpr gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
+  static constexpr viz::SharedImageFormat format =
+      viz::SinglePlaneFormat::kRGBA_8888;
   static constexpr gfx::BufferUsage usage = gfx::BufferUsage::SCANOUT;
 
   // The SharedImages created here will eventually be transferred to other

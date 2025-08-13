@@ -159,7 +159,8 @@ bool GraphicsDelegateAndroid::EnsureMemoryBuffer() {
   // Remove reference to previous image (if any).
   shared_buffer_->local_eglimage.reset();
 
-  static constexpr gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
+  static constexpr viz::SharedImageFormat format =
+      viz::SinglePlaneFormat::kRGBA_8888;
   static constexpr gfx::BufferUsage usage = gfx::BufferUsage::SCANOUT;
   gpu::SharedImageUsageSet shared_image_usage =
       gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
