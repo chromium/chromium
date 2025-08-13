@@ -28,7 +28,9 @@ class WebUIDataSource;
 class HistoryUtil {
  public:
   static HistorySignInState GetSignInState(Profile* profile);
-  static content::WebUIDataSource* PopulateSourceForSidePanelHistory(
+  // Populates `source` with strings and configuration data that's used by both
+  // the main chrome://history UI and the history side panel.
+  static content::WebUIDataSource* PopulateCommonSourceForHistory(
       content::WebUIDataSource* source,
       Profile* profile);
 };

@@ -58,7 +58,7 @@ HistorySignInState HistoryUtil::GetSignInState(Profile* profile) {
 }
 
 // Static
-content::WebUIDataSource* HistoryUtil::PopulateSourceForSidePanelHistory(
+content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
     content::WebUIDataSource* source,
     Profile* profile) {
   static constexpr webui::LocalizedString kStrings[] = {

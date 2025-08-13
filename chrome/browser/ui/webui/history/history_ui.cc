@@ -77,7 +77,7 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       "useHistorySyncOptinScreen",
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
 
-  HistoryUtil::PopulateSourceForSidePanelHistory(source, profile);
+  HistoryUtil::PopulateCommonSourceForHistory(source, profile);
 
   static constexpr webui::LocalizedString kStrings[] = {
       // Localized strings (alphabetical order).

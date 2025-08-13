@@ -69,7 +69,7 @@ HistorySidePanelUI::HistorySidePanelUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIHistorySidePanelHost);
 
-  HistoryUtil::PopulateSourceForSidePanelHistory(source, profile);
+  HistoryUtil::PopulateCommonSourceForHistory(source, profile);
 
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/true);
 
