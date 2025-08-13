@@ -6,9 +6,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import <array>
+
 #import "base/apple/bridging.h"
 #import "base/apple/foundation_util.h"
 #import "base/apple/scoped_cftyperef.h"
+#import "base/containers/span.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "crypto/features.h"
@@ -22,7 +25,8 @@ using base::apple::CFToNSPtrCast;
 // Use unique names for the test item to avoid conflicts.
 const char kTestServiceName[] = "KeychainAccessibilityMigrationTest.Service";
 const char kTestAccountName[] = "KeychainAccessibilityMigrationTest.Account";
-const std::vector<uint8_t> kTestPassword = {'s', 'e', 'c', 'r', 'e', 't'};
+const auto kTestPassword =
+    std::to_array<uint8_t>({'s', 'e', 'c', 'r', 'e', 't'});
 
 }  // namespace
 
@@ -115,7 +119,8 @@ TEST_F(KeychainAccessibilityMigrationIOSTest, PRE_MigrateItem) {
   ASSERT_TRUE(result.has_value())
       << "PRE_MigrateItem: FindGenericPassword failed. OSStatus: "
       << result.error();
-  EXPECT_EQ(result.value(), kTestPassword);
+  EXPECT_EQ(base::as_byte_span(result.value()),
+            base::as_byte_span(kTestPassword));
 }
 
 // Phase 2: Read keychain item with kMigrateIOSKeychainAccessibility enabled.
@@ -141,7 +146,8 @@ TEST_F(KeychainAccessibilityMigrationIOSTest, MigrateItem) {
   ASSERT_TRUE(result.has_value())
       << "MigrateItem: FindGenericPassword failed. OSStatus: "
       << result.error();
-  EXPECT_EQ(result.value(), kTestPassword);
+  EXPECT_EQ(base::as_byte_span(result.value()),
+            base::as_byte_span(kTestPassword));
 
   // Check that the accessibility is `kSecAttrAccessibleAfterFirstUnlock` after
   // migration.

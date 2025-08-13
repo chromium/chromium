@@ -151,6 +151,7 @@ component("crypto") {
   }
 
   defines = [ "CRYPTO_IMPLEMENTATION" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 if (is_apple) {
@@ -210,10 +211,6 @@ test("crypto_unittests") {
       "unexportable_key_mac_unittest.mm",
       "user_verifying_key_mac_unittest.mm",
     ]
-
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   # Some files are built when NSS is used for the platform certificate library.
@@ -242,6 +239,8 @@ test("crypto_unittests") {
   if (is_apple) {
     deps += [ ":mock_apple_keychain" ]
   }
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {
@@ -292,7 +291,5 @@ static_library("test_support") {
     "//base",
   ]
 
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
