@@ -73,6 +73,9 @@ class SafariDataImporter {
   // data type is optional and may or may not be present.
   void PrepareImport(const base::FilePath& path);
 
+  // Logs the file size of the uncompressed ZIP file.
+  void LogFileSize(int64_t file_size_bytes);
+
   // Called after calling `PrepareImport` in order to complete the import
   // process. In case of password conflicts, `selected_password_ids` provides
   // the list of conflicting passwords to import.
@@ -108,6 +111,9 @@ class SafariDataImporter {
 
     // Returns the uncompressed size of a file within the zip file archive.
     size_t GetUncompressedFileSizeInBytes(FileType filetype);
+
+    // Gets the size of the file at `path`. Returns nullopt on failure.
+    std::optional<int64_t> GetInitialFileSize(const base::FilePath& path);
 
     struct BookmarkUnzipResult {
       std::optional<base::FilePath> path;

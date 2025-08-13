@@ -50,8 +50,10 @@ void LogTotalFailureError(TotalFailureError error) {
                                 error);
 }
 
-void LogInputFileSize(size_t size_bytes) {
+void LogInputFileSize(std::optional<int64_t> size_bytes_optional) {
+  int64_t size_bytes = size_bytes_optional.value_or(0);
   int file_size_kb = static_cast<int>(size_bytes / 1024);
+
   base::UmaHistogramMemoryKB("UserDataImporter.Safari.TotalFileSize",
                              file_size_kb);
 }
@@ -272,8 +274,9 @@ void SafariDataImporter::PrepareImport(const base::FilePath& path) {
     return;
   }
 
-  // TODO(crbug.com/407587751): Log the total filesize.
-  LogInputFileSize(0);
+  blocking_worker_.AsyncCall(&BlockingWorker::GetInitialFileSize)
+      .WithArgs(path)
+      .Then(base::BindOnce(&LogInputFileSize));
 
   blocking_worker_.AsyncCall(&BlockingWorker::CreateZipFileArchive)
       .WithArgs(std::move(zip_filename))
@@ -376,6 +379,11 @@ size_t SafariDataImporter::BlockingWorker::GetUncompressedFileSizeInBytes(
     FileType filetype) {
   return zip_file_archive_ ? (*zip_file_archive_)->get_file_size_bytes(filetype)
                            : 0u;
+}
+
+std::optional<int64_t> SafariDataImporter::BlockingWorker::GetInitialFileSize(
+    const base::FilePath& path) {
+  return base::GetFileSize(path);
 }
 
 SafariDataImporter::BlockingWorker::BookmarkUnzipResult::BookmarkUnzipResult(
