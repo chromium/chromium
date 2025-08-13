@@ -996,11 +996,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   lens_overlay_view_ =
       contents_container->AddChildView(std::move(lens_overlay_view));
 
-  watermark_view_ = contents_container->AddChildView(
-      std::make_unique<enterprise_watermark::WatermarkView>());
-
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
-      contents_view, lens_overlay_view_, watermark_view_));
+      contents_view, lens_overlay_view_));
 
   toolbar_ = top_container_->AddChildView(
       std::make_unique<ToolbarView>(browser_.get(), this));
@@ -1136,7 +1133,6 @@ BrowserView::~BrowserView() {
   contents_container_view_ = nullptr;
   lens_overlay_view_ = nullptr;
   window_scrim_view_ = nullptr;
-  watermark_view_ = nullptr;
   contents_container_ = nullptr;
   vertical_tab_strip_container_ = nullptr;
   unified_side_panel_ = nullptr;
@@ -6206,16 +6202,6 @@ bool BrowserView::IsBrowserAWebApp() const {
   is_web_app = is_web_app && !browser()->app_controller()->system_app();
 #endif
   return is_web_app;
-}
-
-void BrowserView::ApplyWatermarkSettings(const std::string& watermark_text) {
-  if (watermark_view_) {
-    PrefService* prefs = browser_->profile()->GetPrefs();
-    watermark_view_->SetString(watermark_text,
-                               enterprise_watermark::GetFillColor(prefs),
-                               enterprise_watermark::GetOutlineColor(prefs),
-                               enterprise_watermark::GetFontSize(prefs));
-  }
 }
 
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)

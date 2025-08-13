@@ -8,11 +8,8 @@
 #include "ui/views/view.h"
 
 ContentsLayoutManager::ContentsLayoutManager(views::View* contents_view,
-                                             views::View* lens_overlay_view,
-                                             views::View* watermark_view)
-    : contents_view_(contents_view),
-      lens_overlay_view_(lens_overlay_view),
-      watermark_view_(watermark_view) {}
+                                             views::View* lens_overlay_view)
+    : contents_view_(contents_view), lens_overlay_view_(lens_overlay_view) {}
 
 ContentsLayoutManager::~ContentsLayoutManager() = default;
 
@@ -42,13 +39,6 @@ views::ProposedLayout ContentsLayoutManager::CalculateProposedLayout(
   layouts.child_layouts.emplace_back(lens_overlay_view_.get(),
                                      lens_overlay_view_->GetVisible(),
                                      contents_rect, optional_size_bound);
-
-  // Enterprise watermark view is always overlaid, even when empty.
-  if (watermark_view_) {
-    layouts.child_layouts.emplace_back(
-        watermark_view_.get(), watermark_view_->GetVisible(),
-        gfx::Rect(0, 0, width, height), views::SizeBounds(container_size));
-  }
 
   layouts.host_size = gfx::Size(width, height);
   return layouts;

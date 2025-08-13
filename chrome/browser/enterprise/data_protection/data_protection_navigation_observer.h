@@ -92,7 +92,7 @@ class DataProtectionNavigationObserver : public content::WebContentsObserver {
   // RealTimeUrlLookupService or not.
   // This function is public to be called by tests and should no be called by
   // non-test code other that `DataProtectionNavigationObserver` and
-  // `DataProtectionNavigationController`.
+  // `DataProtectionViewController`.
   static void ApplyDataProtectionSettings(Profile* profile,
                                           content::WebContents* web_contents,
                                           Callback callback);

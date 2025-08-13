@@ -12,14 +12,12 @@
 // WARNING: DO NOT ADD NEW FEATURES HERE. New views in the content area
 // should be added to ContentsContainerView. This is so that we can
 // support Split View where there will be multiple instances of Contents
-// WebView and associated overlay views. The layout for the remaining
-// views in this file are being moved and this class will be deleted soon.
-// Please consult estalin@ and corising@ for any additional guidance.
+// WebView and associated overlay views. Please consult estalin@ and
+// corising@ for any additional guidance.
 class ContentsLayoutManager : public views::LayoutManagerBase {
  public:
   ContentsLayoutManager(views::View* contents_view,
-                        views::View* lens_overlay_view,
-                        views::View* watermark_view = nullptr);
+                        views::View* lens_overlay_view);
 
   ContentsLayoutManager(const ContentsLayoutManager&) = delete;
   ContentsLayoutManager& operator=(const ContentsLayoutManager&) = delete;
@@ -34,7 +32,6 @@ class ContentsLayoutManager : public views::LayoutManagerBase {
  private:
   const raw_ptr<views::View> contents_view_;
   const raw_ptr<views::View> lens_overlay_view_;
-  const raw_ptr<views::View> watermark_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_CONTENTS_LAYOUT_MANAGER_H_

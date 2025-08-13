@@ -31,6 +31,10 @@ namespace views {
 class WebView;
 }  // namespace views
 
+namespace enterprise_watermark {
+class WatermarkView;
+}  // namespace enterprise_watermark
+
 // ContentsContainerView is owned by MultiContentsView and holds the
 // ContentsWebView and the outlines and minitoolbar when in split view.
 class ContentsContainerView : public views::View,
@@ -71,6 +75,14 @@ class ContentsContainerView : public views::View,
     return new_tab_footer_view_;
   }
   ScrimView* GetInactiveSplitScrimView() { return inactive_split_scrim_view_; }
+  enterprise_watermark::WatermarkView* GetWatermarkView() {
+    return watermark_view_;
+  }
+
+  void ApplyWatermarkSettings(const std::string& watermark_text,
+                              SkColor fill_color,
+                              SkColor outline_color,
+                              int font_size);
 
   void UpdateBorderAndOverlay(bool is_in_split,
                               bool is_active,
@@ -119,6 +131,9 @@ class ContentsContainerView : public views::View,
   raw_ptr<new_tab_footer::NewTabFooterWebView> new_tab_footer_view_ = nullptr;
   // Separator between the web contents and the Footer.
   raw_ptr<views::View> new_tab_footer_view_separator_ = nullptr;
+
+  // The view that overlays a watermark on the contents container.
+  raw_ptr<enterprise_watermark::WatermarkView> watermark_view_ = nullptr;
 
   // The scrim view that covers the content area when a tab-modal dialog is
   // open.

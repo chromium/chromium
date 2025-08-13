@@ -5,11 +5,9 @@
 #include "chrome/browser/ui/webui/watermark/watermark_page_handler.h"
 
 #include "base/types/to_address.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_ui_controller.h"
 #include "chrome/browser/enterprise/watermark/settings.h"
-#include "chrome/browser/enterprise/watermark/watermark_view.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -28,15 +26,11 @@ void WatermarkPageHandler::SetWatermarkStyle(
   // The Watermark WebUI loads only in browser-associated contexts.
   CHECK(bwi);
 
-  // TODO(crbug.com/428946261): Update WatermarkView to use UnownedUserData and
-  // fetch it directly from the BrowserWindowInterface.
-  enterprise_watermark::WatermarkView* watermark_view =
-      bwi->GetBrowserForMigrationOnly()->GetBrowserView().watermark_view();
-  if (!watermark_view) {
-    return;
-  }
+  auto* data_protection_ui_controller =
+      enterprise_data_protection::DataProtectionUIController::From(bwi);
+  CHECK(data_protection_ui_controller);
 
-  watermark_view->SetString(
+  data_protection_ui_controller->ApplyWatermarkSettings(
       "Watermark Test Page",
       SkColorSetA(
           enterprise_watermark::kBaseFillRGB,

@@ -16,6 +16,7 @@
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/devtools/devtools_ui_controller.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_ui_controller.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
@@ -554,6 +555,12 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
               browser_view->GetActiveContentsContainerView()
                   ->GetActorOverlayView());
     }
+
+    data_protection_ui_controller_ =
+        GetUserDataFactory()
+            .CreateInstance<
+                enterprise_data_protection::DataProtectionUIController>(
+                *browser_view->browser(), browser_view);
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -634,6 +641,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   if (devtools_ui_controller_) {
     devtools_ui_controller_->TearDown();
   }
+
+  data_protection_ui_controller_.reset();
 
   desktop_browser_window_capabilities_.reset();
   signin_view_controller_->TearDownPreBrowserWindowDestruction();

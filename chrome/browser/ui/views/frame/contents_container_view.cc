@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
+#include "chrome/browser/enterprise/watermark/watermark_view.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -81,6 +82,9 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
             browser_view->browser()));
     new_tab_footer_view_->SetVisible(false);
   }
+
+  watermark_view_ =
+      AddChildView(std::make_unique<enterprise_watermark::WatermarkView>());
 
   contents_scrim_view_ = AddChildView(std::make_unique<ScrimView>());
   contents_scrim_view_->layer()->SetName("ContentsScrimView");
@@ -275,6 +279,15 @@ void ContentsContainerView::SetContentsResizingStrategy(
   InvalidateLayout();
 }
 
+void ContentsContainerView::ApplyWatermarkSettings(
+    const std::string& watermark_text,
+    SkColor fill_color,
+    SkColor outline_color,
+    int font_size) {
+  watermark_view_->SetString(watermark_text, fill_color, outline_color,
+                             font_size);
+}
+
 void ContentsContainerView::UpdateDevToolsDockedPlacement() {
   DevToolsDockedPlacement placement = DevToolsDockedPlacement::kUnknown;
   gfx::Rect contents_view_bounds = contents_view_->bounds();
@@ -387,6 +400,11 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
                                      contents_scrim_view_->GetVisible(),
                                      full_contents_bounds);
 
+  CHECK(watermark_view_);
+  layouts.child_layouts.emplace_back(watermark_view_.get(),
+                                     watermark_view_->GetVisible(),
+                                     full_contents_bounds);
+
   // The inactive split scrim view should cover the entire contents bounds
   // including over devtools and other views.
   if (inactive_split_scrim_view_) {
@@ -397,9 +415,9 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
 
   // Actor Overlay view bounds are the same as the contents view.
   if (actor_overlay_view_) {
-    layouts.child_layouts.emplace_back(actor_overlay_view_.get(),
-                                       actor_overlay_view_->GetVisible(),
-                                       contents_rect, size_bounds);
+    layouts.child_layouts.emplace_back(
+        actor_overlay_view_.get(), actor_overlay_view_->GetVisible(),
+        non_devtools_contents_bounds, size_bounds);
   }
 
   if (mini_toolbar_) {

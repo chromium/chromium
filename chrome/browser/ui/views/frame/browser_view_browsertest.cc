@@ -10,15 +10,11 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
-#include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
-#include "chrome/browser/enterprise/watermark/watermark_view.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -952,18 +948,6 @@ class FakeRealTimeUrlLookupService
           referring_app_info,
       bool use_cache) override {
     auto response = std::make_unique<safe_browsing::RTLookupResponse>();
-    safe_browsing::RTLookupResponse::ThreatInfo* new_threat_info =
-        response->add_threat_info();
-    safe_browsing::MatchedUrlNavigationRule* matched_url_navigation_rule =
-        new_threat_info->mutable_matched_url_navigation_rule();
-
-    // Only add a watermark for watermark.com URLs.
-    if (url.host() == "watermark.com") {
-      safe_browsing::MatchedUrlNavigationRule::WatermarkMessage wm;
-      wm.set_watermark_message("custom_messge");
-      wm.mutable_timestamp()->set_seconds(base::Time::Now().ToTimeT());
-      *matched_url_navigation_rule->mutable_watermark_message() = wm;
-    }
 
     callback_task_runner->PostTask(
         FROM_HERE,
@@ -975,7 +959,9 @@ class FakeRealTimeUrlLookupService
 
 class BrowserViewDataProtectionTest : public InProcessBrowserTest {
  public:
-  BrowserViewDataProtectionTest() = default;
+  BrowserViewDataProtectionTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kSideBySide);
+  }
   BrowserViewDataProtectionTest(const BrowserViewDataProtectionTest&) = delete;
   BrowserViewDataProtectionTest& operator=(
       const BrowserViewDataProtectionTest&) = delete;
@@ -1022,178 +1008,11 @@ class BrowserViewDataProtectionTest : public InProcessBrowserTest {
   }
 
  private:
-  // TODO(https://crbug.com/423465927): Explore a better approach to make the
-  // existing tests run with the prewarm feature enabled.
-  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
-      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   base::CallbackListSubscription create_services_subscription_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace
-
-IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest, Apply_NoWatermark) {
-  NavigateToAndWait(GURL("https://nowatermark.com"));
-  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
-                   ->get_watermark_view_for_testing()
-                   ->has_text_for_testing());
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest,
-                       Apply_Nav_NoWatermark_Watermark) {
-  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-
-  // Initial page loaded into the browser view is a chrome:// URL that has no
-  // watermark.
-  EXPECT_FALSE(
-      browser_view->get_watermark_view_for_testing()->has_text_for_testing());
-
-  base::test::TestFuture<void> future;
-  browser()
-      ->GetActiveTabInterface()
-      ->GetTabFeatures()
-      ->data_protection_controller()
-      ->SetCallbackForTesting(future.GetCallback());
-  // Navigate to a page that should show a watermark.  The watermark should
-  // show even while the page loads.
-  auto* web_contents = NavigateAsync(GURL("https://watermark.com"));
-  EXPECT_TRUE(future.Wait());
-  EXPECT_TRUE(
-      browser_view->get_watermark_view_for_testing()->has_text_for_testing());
-
-  // Once the page loads, the watermark should remain.
-  content::WaitForLoadStop(web_contents);
-  EXPECT_TRUE(
-      browser_view->get_watermark_view_for_testing()->has_text_for_testing());
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest,
-                       Apply_Nav_Watermark_NoWatermark) {
-  // Start on a page that should show a watermark.
-  NavigateToAndWait(GURL("https://watermark.com"));
-  EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
-                  ->get_watermark_view_for_testing()
-                  ->has_text_for_testing());
-
-  // Navigate to a page that should not show a watermark.  The watermark should
-  // still show while the page loads.
-  auto* web_contents = NavigateAsync(GURL("https://nowatermark.com"));
-  EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
-                  ->get_watermark_view_for_testing()
-                  ->has_text_for_testing());
-
-  // Once the page loads, the watermark should be cleared.
-  content::WaitForLoadStop(web_contents);
-  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
-                   ->get_watermark_view_for_testing()
-                   ->has_text_for_testing());
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest,
-                       Apply_SwitchTab_ToWatermark) {
-  NavigateToAndWait(GURL("https://watermark.com"));
-
-  // Create a second tab with a page that should not be watermarked.
-  // AddTabAtIndex() waits for the load to finish and activates the tab.
-  ASSERT_TRUE(
-      AddTabAtIndex(1, GURL("chrome://version"), ui::PAGE_TRANSITION_LINK));
-  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
-                   ->get_watermark_view_for_testing()
-                   ->has_text_for_testing());
-
-  // Switch active tabs back to watermarked page.
-  browser()->tab_strip_model()->ActivateTabAt(
-      0, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kMouse));
-  EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
-                  ->get_watermark_view_for_testing()
-                  ->has_text_for_testing());
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest,
-                       Apply_SwitchTab_ToWatermark_NoWait) {
-  NavigateToAndWait(GURL("https://watermark.com"));
-
-  // Create a second tab with a page that should not be watermarked. We
-  // intentionally do not wait for the load to finish. The watermark should
-  // not be showing.
-  NavigateParams params(browser(), GURL("chrome://version"),
-                        ui::PAGE_TRANSITION_LINK);
-  params.tabstrip_index = 1;
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&params);
-  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
-                   ->get_watermark_view_for_testing()
-                   ->has_text_for_testing());
-
-  // Switch back to the watermarked tab. The watermark should still be showing.
-  browser()->tab_strip_model()->ActivateTabAt(
-      0, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kMouse));
-  EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
-                  ->get_watermark_view_for_testing()
-                  ->has_text_for_testing());
-
-  // Wait for the second (now backgrounded) tab to finish loading. The watermark
-  // should still be showing.
-  content::WaitForLoadStop(params.navigated_or_inserted_contents);
-  EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
-                  ->get_watermark_view_for_testing()
-                  ->has_text_for_testing());
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest,
-                       Apply_SwitchTab_ToWatermark_PartialWait) {
-  // Initial page should be watermarked.
-  NavigateToAndWait(GURL("https://watermark.com"));
-  EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
-                  ->get_watermark_view_for_testing()
-                  ->has_text_for_testing());
-
-  // Create a second tab. Navigate to a page that does not have a watermark.
-  // Part way through the navigation, switch to the first tab again.
-  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  NavigateParams params(browser(), GURL("https://nowatermark.com"),
-                        ui::PAGE_TRANSITION_LINK);
-  params.tabstrip_index = 1;
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&params);
-  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
-                   ->get_watermark_view_for_testing()
-                   ->has_text_for_testing());
-  // Initial page loaded into the browser view is a chrome:// URL that has no
-  // watermark.
-  EXPECT_FALSE(
-      browser_view->get_watermark_view_for_testing()->has_text_for_testing());
-
-  base::test::TestFuture<void> future;
-  browser()
-      ->GetActiveTabInterface()
-      ->GetTabFeatures()
-      ->data_protection_controller()
-      ->SetCallbackForTesting(future.GetCallback());
-
-  // Wait for the navigation to partially complete. The load is not complete but
-  // DataProtectionNavigationController::ApplyDataProtectionSettings has been
-  // called with the verdict to clear the watermark.
-  EXPECT_TRUE(future.Wait());
-  EXPECT_FALSE(
-      browser_view->get_watermark_view_for_testing()->has_text_for_testing());
-
-  // Switch back to the watermarked tab. The watermark should show immediately.
-  browser()->tab_strip_model()->ActivateTabAt(
-      0, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kMouse));
-  EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
-                  ->get_watermark_view_for_testing()
-                  ->has_text_for_testing());
-
-  // Wait for the second (now backgrounded) tab to finish loading. The watermark
-  // should still be showing.
-  content::WaitForLoadStop(params.navigated_or_inserted_contents);
-  EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
-                  ->get_watermark_view_for_testing()
-                  ->has_text_for_testing());
-}
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 

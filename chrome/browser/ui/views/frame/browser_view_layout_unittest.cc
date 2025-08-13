@@ -228,8 +228,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         CreateFixedSizeView(gfx::Size(kBaseWidth, 600)));
     contents_container_->SetLayoutManager(
         std::make_unique<ContentsLayoutManager>(contents_web_view_,
-                                                lens_overlay_view_,
-                                                /*watermark_view=*/nullptr));
+                                                lens_overlay_view_));
 
     auto delegate = std::make_unique<MockBrowserViewLayoutDelegate>(
         immersive_mode_controller_.get());

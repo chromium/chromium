@@ -119,6 +119,10 @@ class GlicNudgeController;
 class GlicActorTaskIconController;
 }  // namespace tabs
 
+namespace enterprise_data_protection {
+class DataProtectionUIController;
+}  // namespace enterprise_data_protection
+
 namespace tab_groups {
 class DeletionDialogController;
 }  // namespace tab_groups
@@ -586,6 +590,9 @@ class BrowserWindowFeatures {
       new_tab_footer_controller_;
 
   std::unique_ptr<DevtoolsUIController> devtools_ui_controller_;
+
+  std::unique_ptr<enterprise_data_protection::DataProtectionUIController>
+      data_protection_ui_controller_;
 
   std::unique_ptr<ReadingListSidePanelCoordinator>
       reading_list_side_panel_coordinator_;
