@@ -252,8 +252,12 @@ Examples of a few specific situations that may lead to script failure:
       (this CL can't be landed on its own - it needs to be combined
       with the actual update CL):
         ```sh
-        $ # Fix the patches
+        $ # Get the updated crate code
+        $ ./tools/crates/run_gnrt.py update foo
+        $ ./tools/crates/run_gnrt.py vendor --no-patches foo
         $ git commit -a -m ...
+        $ # Manually apply patches, creating separate commits for patch file updates
+        $ git rebase -i # drop everything but the patch file commits
         $ git cl upload
         ```
     - Restart the script (the CL created by the script can't be landed
