@@ -46,8 +46,11 @@ export class LogListElement extends CrLitElement {
           return !this.hideAutofill_;
         case OptimizationTarget.kPassword:
           return !this.hidePasswordManager_;
-        default:
+        case OptimizationTarget.kUnknown:
           return true;
+        default:
+          const exhaustiveCheck: never = log.optimizationTarget;
+          throw new Error(`Unhandled Enum case: ${exhaustiveCheck}`);
       }
     });
   }
@@ -77,8 +80,11 @@ export class LogListElement extends CrLitElement {
       case OptimizationTarget.kPassword:
         this.hidePasswordManager_ = !enabled;
         break;
-      default:
+      case OptimizationTarget.kUnknown:
         break;
+      default:
+        const exhaustiveCheck: never = target;
+        throw new Error(`Unhandled Enum case: ${exhaustiveCheck}`);
     }
   }
 
@@ -101,8 +107,11 @@ export class LogListElement extends CrLitElement {
         return 'autofill';
       case OptimizationTarget.kPassword:
         return 'password';
-      default:
+      case OptimizationTarget.kUnknown:
         return '';
+      default:
+        const exhaustiveCheck: never = target;
+        throw new Error(`Unhandled Enum case: ${exhaustiveCheck}`);
     }
   }
 
@@ -112,8 +121,11 @@ export class LogListElement extends CrLitElement {
         return 'Autofill';
       case OptimizationTarget.kPassword:
         return 'PWM';
-      default:
+      case OptimizationTarget.kUnknown:
         return 'Unknown';
+      default:
+        const exhaustiveCheck: never = target;
+        throw new Error(`Unhandled Enum case: ${exhaustiveCheck}`);
     }
   }
 

@@ -8,17 +8,19 @@ import type {AppElement} from './app.js';
 
 export function getHtml(this: AppElement) {
   // clang-format off
-  return html`
-    ${this.logEntries_.length > 0 ? html`
-      <log-list .logEntries="${this.logEntries_}"
-          .selectedLogEntry="${this.selectedLog_}"
-          @log-selected="${this.onLogSelected_}">
-      </log-list>
-      <log-details .log="${this.selectedLog_}"></log-details>
-    ` : html`
+  if (this.logEntries_.length === 0) {
+    return html`
       <div class="empty-message">
         Trigger some ML predictions while this page is open to record logs.
       </div>
-    `}`;
+    `;
+  }
+  return html`
+    <log-list .logEntries="${this.logEntries_}"
+        .selectedLogEntry="${this.selectedLog_}"
+        @log-selected="${this.onLogSelected_}">
+    </log-list>
+    <log-details .log="${this.selectedLog_}"></log-details>
+  `;
   // clang-format on
 }
