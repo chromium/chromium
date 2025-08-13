@@ -29,6 +29,12 @@ constexpr char kMarketingBackendConnectorName[] = "marketing_backend_connector";
 constexpr char kPasswordSyncTokenFetcherName[] = "password_sync_token_fetcher";
 constexpr char kLocaleSwitchScreenName[] = "locale_switch_screen";
 constexpr char kTokenHandleServiceName[] = "token_handle_service";
+constexpr char kSupervisedUserListFamilyMembersName[] =
+    "supervised_user_list_family_members";
+constexpr char kSupervisedUserClassifyUrlName[] =
+    "supervised_user_classify_url";
+constexpr char kSupervisedUserCreatePermissionRequestName[] =
+    "supervised_user_create_permission_request";
 
 }  // namespace
 
@@ -133,6 +139,18 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
       return OAuthConsumer(
           /*name=*/kTokenHandleServiceName,
           /*scopes=*/{GaiaConstants::kOAuth1LoginScope});
+    case OAuthConsumerId::kSupervisedUserListFamilyMembers:
+      return OAuthConsumer(
+          /*name=*/kSupervisedUserListFamilyMembersName,
+          /*scopes=*/{GaiaConstants::kKidFamilyReadonlyOAuth2Scope});
+    case OAuthConsumerId::kSupervisedUserClassifyUrl:
+      return OAuthConsumer(
+          /*name=*/kSupervisedUserClassifyUrlName,
+          /*scopes=*/{GaiaConstants::kClassifyUrlKidPermissionOAuth2Scope});
+    case OAuthConsumerId::kSupervisedUserCreatePermissionRequest:
+      return OAuthConsumer(
+          /*name=*/kSupervisedUserCreatePermissionRequestName,
+          /*scopes=*/{GaiaConstants::kClassifyUrlKidPermissionOAuth2Scope});
   }
   NOTREACHED();
 }

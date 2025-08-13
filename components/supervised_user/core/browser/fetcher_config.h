@@ -49,8 +49,8 @@ struct AccessTokenConfig {
   // signin::PrimaryAccountAccessTokenFetcher::Mode docs.
   std::optional<signin::PrimaryAccountAccessTokenFetcher::Mode> mode;
 
-  // The OAuth 2.0 permission scope to request the authorization token.
-  std::string_view oauth2_scope;
+  // The OAuth 2.0 feature id to request the authorization token.
+  signin::OAuthConsumerId oauth_consumer_id;
 };
 
 // Configuration bundle for the ProtoFetcher.
@@ -134,9 +134,8 @@ inline constexpr FetcherConfig kClassifyUrlConfig = {
             .credentials_requirement =
                 AccessTokenConfig::CredentialsRequirement::kStrict,
             .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-            // TODO(crbug.com/284523446): Refer to GaiaConstants rather than
-            // literal.
-            .oauth2_scope = "https://www.googleapis.com/auth/kid.permission",
+            .oauth_consumer_id =
+                signin::OAuthConsumerId::kSupervisedUserClassifyUrl,
         },
     .request_priority = net::IDLE,
 };
@@ -153,10 +152,8 @@ inline constexpr FetcherConfig kClassifyUrlConfigWaitUntilAccessTokenAvailable =
                     AccessTokenConfig::CredentialsRequirement::kStrict,
                 .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::
                     kWaitUntilAvailable,
-                // TODO(crbug.com/284523446): Refer to GaiaConstants rather than
-                // literal.
-                .oauth2_scope =
-                    "https://www.googleapis.com/auth/kid.permission",
+                .oauth_consumer_id =
+                    signin::OAuthConsumerId::kSupervisedUserClassifyUrl,
             },
         .request_priority = net::IDLE,
 };
@@ -171,9 +168,8 @@ inline constexpr FetcherConfig kClassifyUrlConfigBestEffort = {
             .credentials_requirement =
                 AccessTokenConfig::CredentialsRequirement::kBestEffort,
             .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-            // TODO(crbug.com/284523446): Refer to GaiaConstants rather than
-            // literal.
-            .oauth2_scope = "https://www.googleapis.com/auth/kid.permission",
+            .oauth_consumer_id =
+                signin::OAuthConsumerId::kSupervisedUserClassifyUrl,
         },
     .request_priority = net::IDLE,
 };
@@ -227,11 +223,8 @@ inline constexpr FetcherConfig kListFamilyMembersConfig{
             // latency sensitive.
             .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::
                 kWaitUntilAvailable,
-
-            // TODO(crbug.com/284523446): Refer to GaiaConstants rather than
-            // literal.
-            .oauth2_scope =
-                "https://www.googleapis.com/auth/kid.family.readonly",
+            .oauth_consumer_id =
+                signin::OAuthConsumerId::kSupervisedUserListFamilyMembers,
         },
     .request_priority = net::IDLE,
 };
@@ -248,9 +241,8 @@ inline constexpr FetcherConfig kCreatePermissionRequestConfig = {
             // Fail the fetch right away when access token is not immediately
             // available.
             .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-            // TODO(crbug.com/284523446): Refer to GaiaConstants rather than
-            // literal.
-            .oauth2_scope = "https://www.googleapis.com/auth/kid.permission",
+            .oauth_consumer_id =
+                signin::OAuthConsumerId::kSupervisedUserCreatePermissionRequest,
         },
     .request_priority = net::IDLE,
 };

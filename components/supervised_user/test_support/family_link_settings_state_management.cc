@@ -104,8 +104,8 @@ constexpr FetcherConfig kDefineChromeTestStateConfig{
     .access_token_config =
         AccessTokenConfig{
             .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-            // TODO(b/284523446): Refer to GaiaConstants rather than literal.
-            .oauth2_scope = "https://www.googleapis.com/auth/kid.permission",
+            .oauth_consumer_id =
+                signin::OAuthConsumerId::kSupervisedUserClassifyUrl,
         },
     .request_priority = net::IDLE,
 };
@@ -118,9 +118,8 @@ constexpr FetcherConfig kResetChromeTestStateConfig{
     .access_token_config =
         AccessTokenConfig{
             .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-            // TODO(b/284523446): Refer to GaiaConstants rather than
-            // literal.
-            .oauth2_scope = "https://www.googleapis.com/auth/kid.permission",
+            .oauth_consumer_id =
+                signin::OAuthConsumerId::kSupervisedUserClassifyUrl,
         },
     .request_priority = net::IDLE,
 };

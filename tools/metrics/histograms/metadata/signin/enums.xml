@@ -721,6 +721,9 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Password Sync token fetcher"/>
   <int value="15" label="Locale Switch Screen"/>
   <int value="16" label="Token Handle Service"/>
+  <int value="17" label="Supervised User (list family members)"/>
+  <int value="18" label="Supervised User (classify url)"/>
+  <int value="19" label="Supervised User (create permission request)"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->
