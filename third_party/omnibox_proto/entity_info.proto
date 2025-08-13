@@ -95,5 +95,6 @@ message CategoryInfo {
     LOCAL_POI = 25;
     LOCALITY = 26;
     FICTIONAL_CHARACTERS = 27;
+    MOTORCYCLES = 28;
   }
 }
