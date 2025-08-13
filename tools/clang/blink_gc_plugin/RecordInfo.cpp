@@ -162,7 +162,7 @@ void RecordInfo::walkBases() {
       if (!type)
         base = GetDependentTemplatedDecl(*it.getType());
       else {
-#ifdef LLVM_FORCE_HEAD_REVISION
+#ifdef CLANG_ELABORATED_TYPE_CHANGES
         base = cast_or_null<CXXRecordDecl>(
             type->getOriginalDecl()->getDefinition());
 #else
@@ -586,7 +586,7 @@ Edge* RecordInfo::CreateEdgeFromOriginalType(const Type* type) {
     return nullptr;
 
   // look for "typedef ... iterator;"
-#ifdef LLVM_FORCE_HEAD_REVISION
+#ifdef CLANG_ELABORATED_TYPE_CHANGES
   const TypedefType* typedefType = dyn_cast<TypedefType>(type);
   if (!typedefType) {
     return nullptr;

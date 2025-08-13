@@ -231,7 +231,7 @@ bool CheckIPCVisitor::CheckType(QualType type, CheckDetails* details) const {
 
     if (auto* record = dyn_cast<RecordType>(type)) {
       if (auto* spec = dyn_cast<ClassTemplateSpecializationDecl>(
-#ifdef LLVM_FORCE_HEAD_REVISION
+#ifdef CLANG_ELABORATED_TYPE_CHANGES
               record->getOriginalDecl())) {
 #else
               record->getDecl())) {

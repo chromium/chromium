@@ -40,7 +40,7 @@ bool hasName(const TagDecl* decl,
 // any namespace qualifiers. This is similar to desugaring, except that for
 // ElaboratedTypes, desugar will unwrap too much.
 const Type* UnwrapType(const Type* type) {
-#ifndef LLVM_FORCE_HEAD_REVISION
+#ifndef CLANG_ELABORATED_TYPE_CHANGES
   if (const ElaboratedType* elaborated = dyn_cast<ElaboratedType>(type)) {
     return UnwrapType(elaborated->getNamedType().getTypePtr());
   }
@@ -904,7 +904,7 @@ FindBadConstructsConsumer::ClassifyType(const Type* type) {
       return ClassifyType(subst_type);
     }
 
-#ifndef LLVM_FORCE_HEAD_REVISION
+#ifndef CLANG_ELABORATED_TYPE_CHANGES
     case Type::Elaborated: {
       // Quote from the LLVM documentation:
       // "Represents a type that was referred to using an elaborated type
@@ -1001,7 +1001,7 @@ bool FindBadConstructsConsumer::HasPublicDtorCallback(
     return false;
   }
 
-#ifdef LLVM_FORCE_HEAD_REVISION
+#ifdef CLANG_ELABORATED_TYPE_CHANGES
   CXXRecordDecl* record = dyn_cast<CXXRecordDecl>(
       base->getType()->getAs<RecordType>()->getOriginalDecl());
 #else
@@ -1123,7 +1123,7 @@ void FindBadConstructsConsumer::CheckRefCountedDtors(
     // The record with the problem will always be the last record
     // in the path, since it is the record that stopped the search.
     const CXXRecordDecl* problem_record = dyn_cast<CXXRecordDecl>(
-#ifdef LLVM_FORCE_HEAD_REVISION
+#ifdef CLANG_ELABORATED_TYPE_CHANGES
         it->back().Base->getType()->getAs<RecordType>()->getOriginalDecl());
 #else
         it->back().Base->getType()->getAs<RecordType>()->getDecl());
@@ -1183,7 +1183,7 @@ void FindBadConstructsConsumer::CheckWeakPtrFactoryMembers(
           const TemplateArgument& arg =
               template_spec_type->template_arguments()[0];
           if (arg.getAsType().getTypePtr()->getAsCXXRecordDecl() ==
-#ifdef LLVM_FORCE_HEAD_REVISION
+#ifdef CLANG_ELABORATED_TYPE_CHANGES
               instance()
                   .getASTContext()
                   .getCanonicalTagType(record)
@@ -1292,7 +1292,7 @@ void FindBadConstructsConsumer::CheckDeducedAutoPointer(
   if (deduced_type.getCanonicalType()->isFunctionPointerType()) {
     return;
   }
-#ifndef LLVM_FORCE_HEAD_REVISION
+#ifndef CLANG_ELABORATED_TYPE_CHANGES
   // Elaborated types wrap the type that we're interested in, so we need to
   // step through them. Inside, there may be a template param type, a pointer
   // type, etc. For example, this function returns an ElaboratedType, which

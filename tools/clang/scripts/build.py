@@ -191,6 +191,14 @@ MODIFICATION_DATES = {
 }
 
 
+def IsGitAncestorToHead(git_repository, commit):
+  """Returns if commit is an ancestor of HEAD."""
+  return RunCommand([
+      'git', '-C', git_repository, 'merge-base', '--is-ancestor', commit, 'HEAD'
+  ],
+                           fail_hard=False)
+
+
 def GitCherryPick(git_repository,
                   commit,
                   git_remote=None,
@@ -203,10 +211,7 @@ def GitCherryPick(git_repository,
     RunCommand(git_cmd +
                ['fetch', '--recurse-submodules=no', git_remote_name, commit])
 
-  is_ancestor = RunCommand(git_cmd +
-                           ['merge-base', '--is-ancestor', commit, 'HEAD'],
-                           fail_hard=False)
-  if is_ancestor:
+  if IsGitAncestorToHead(commit):
     print('Commit already an ancestor; skipping.')
     return
 
@@ -1192,6 +1197,12 @@ def main():
   if args.llvm_force_head_revision:
     cflags += ['-DLLVM_FORCE_HEAD_REVISION']
     cxxflags += ['-DLLVM_FORCE_HEAD_REVISION']
+
+  # TODO(https://crbug.com/437910658): remove once we roll past clang change
+  if IsGitAncestorToHead(LLVM_DIR,
+                         '91cdd35008e9ab32dffb7e401cdd7313b3461892'):
+    cflags += ['-DCLANG_ELABORATED_TYPE_CHANGES']
+    cxxflags += ['-DCLANG_ELABORATED_TYPE_CHANGES']
 
   # Build PDBs for archival on Windows.  Don't use RelWithDebInfo since it
   # has different optimization defaults than Release.

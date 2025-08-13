@@ -437,7 +437,7 @@ AST_MATCHER(clang::CXXRecordDecl, isDisallowedNewClass) {
   auto& context = Finder->getASTContext();
 
   auto gc_matcher = GarbageCollectedType();
-#ifdef LLVM_FORCE_HEAD_REVISION
+#ifdef CLANG_ELABORATED_TYPE_CHANGES
   if (gc_matcher.matches(context.getCanonicalTagType(&Node), Finder, Builder)) {
 #else
   if (gc_matcher.matches(context.getTypeDeclType(&Node), Finder, Builder)) {

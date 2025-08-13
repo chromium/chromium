@@ -97,7 +97,7 @@ bool CheckTraceVisitor::IsTraceCallName(const std::string& name) {
 
 CXXRecordDecl* CheckTraceVisitor::GetDependentTemplatedDecl(
     DependentScopeDeclRefExpr* expr) {
-#ifdef LLVM_FORCE_HEAD_REVISION
+#ifdef CLANG_ELABORATED_TYPE_CHANGES
   NestedNameSpecifier qual = expr->getQualifier();
 #else
   NestedNameSpecifier* qual = expr->getQualifier();
@@ -105,7 +105,7 @@ CXXRecordDecl* CheckTraceVisitor::GetDependentTemplatedDecl(
   if (!qual)
     return 0;
 
-#ifdef LLVM_FORCE_HEAD_REVISION
+#ifdef CLANG_ELABORATED_TYPE_CHANGES
   const Type* type = qual.getAsType();
 #else
   const Type* type = qual->getAsType();
@@ -150,7 +150,7 @@ void CheckTraceVisitor::CheckDependentScopeDeclRefExpr(
   std::string fn_name = expr->getDeclName().getAsString();
 
   // Check for T::Trace(visitor).
-#ifdef LLVM_FORCE_HEAD_REVISION
+#ifdef CLANG_ELABORATED_TYPE_CHANGES
   if (NestedNameSpecifier qual = expr->getQualifier()) {
     if (const Type* type = qual.getAsType()) {
 #else
@@ -211,7 +211,7 @@ bool CheckTraceVisitor::CheckTraceBaseCall(CallExpr* call) {
     if (!trace_decl || !Config::IsTraceMethod(trace_decl))
       return false;
 
-#ifdef LLVM_FORCE_HEAD_REVISION
+#ifdef CLANG_ELABORATED_TYPE_CHANGES
     const Type* type = callee->getQualifier().getAsType();
 #else
     const Type* type = callee->getQualifier()->getAsType();
@@ -435,14 +435,14 @@ bool CheckTraceVisitor::CheckImplicitCastExpr(CallExpr* call,
   DeclRefExpr* sub_expr = dyn_cast<DeclRefExpr>(expr->getSubExpr());
   if (!sub_expr)
     return false;
-#ifdef LLVM_FORCE_HEAD_REVISION
+#ifdef CLANG_ELABORATED_TYPE_CHANGES
   NestedNameSpecifier qualifier = sub_expr->getQualifier();
 #else
   NestedNameSpecifier* qualifier = sub_expr->getQualifier();
 #endif
   if (!qualifier)
     return false;
-#ifdef LLVM_FORCE_HEAD_REVISION
+#ifdef CLANG_ELABORATED_TYPE_CHANGES
   CXXRecordDecl* class_decl = qualifier.getAsRecordDecl();
 #else
   CXXRecordDecl* class_decl = qualifier->getAsRecordDecl();

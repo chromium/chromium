@@ -83,7 +83,7 @@ void BlinkDataMemberTypeChecker::CheckField(const FieldDecl* field) {
       type = array->getElementType().getTypePtr();
       continue;
     }
-#ifndef LLVM_FORCE_HEAD_REVISION
+#ifndef CLANG_ELABORATED_TYPE_CHANGES
     if (auto* elaborated = dyn_cast<ElaboratedType>(type)) {
       // Find the underlying type of the elaborated type. E.g. for
       // |TypeName v;| where |TypeName| is not a built-in type, v's type is an
