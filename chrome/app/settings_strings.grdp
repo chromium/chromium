@@ -916,6 +916,12 @@
   <message name="IDS_SETTINGS_MANAGE_OTHER_DATA_SUB_LABEL" desc="Sub-label for the 'Manage other Google Data' option in the 'Delete Browsing Data' dialog, explaining to the user that search history and passwords can be deleted outside of Chrome in their respective management settings.">
     Search history and passwords can be deleted in their management settings
   </message>
+   <message name="IDS_SETTINGS_MANAGE_PASSWORDS_SUB_LABEL" desc="Sub-label for the 'Manage other Data' subpage entrypoint in the 'Delete Browsing Data' dialog, explaining to the user that passwords can only be deleted in their management settings.">
+    Passwords can be deleted in their management settings
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_GEMINI_PASSWORDS_OTHER_DATA_SUB_LABEL" desc="Sub-label for the 'Manage Other Google Data' option in the 'Delete Browsing Data' dialog, explaining to the user that search history, Gemini history, and passwords can be deleted outside of Chrome in their respective management settings.">
+    Search history, Gemini history, and passwords can be deleted in their management settings
+  </message>
   <message name="IDS_SETTINGS_OTHER_DATA_DESCRIPTION" desc="Description text at the top of the 'Other Google data' subpage in the 'Delete browsing data' settings dialog. It informs users that data linked in this page are not managed or deleted in Chrome.">
     To delete this data, go to its management settings
   </message>

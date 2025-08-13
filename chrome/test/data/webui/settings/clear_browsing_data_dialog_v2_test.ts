@@ -650,6 +650,10 @@ suite('DeleteBrowsingDataDialog', function() {
   });
 
   test('OtherGoogleDataRow', async function() {
+    loadTimeData.overrideValues({
+      showGlicSettings: false,
+    });
+    await createDialog();
     function setSignedInAndDseState(
         signedInState: SignedInState, isGoogleDse: boolean) {
       webUIListenerCallback('update-sync-state', {
@@ -726,6 +730,67 @@ suite('DeleteBrowsingDataDialog', function() {
         dialog.$.manageOtherGoogleDataRow.label);
     assertEquals(
         loadTimeData.getString('managePasswordsSubLabel'),
+        dialog.$.manageOtherGoogleDataRow.subLabel);
+
+    // Case 7: User is signed-out, has Google as DSE, and actor flags are ON.
+    loadTimeData.overrideValues({
+      showGlicSettings: true,
+    });
+    await createDialog();
+    setSignedInAndDseState(SignedInState.SIGNED_OUT, /*isGoogleDse=*/ true);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('manageOtherGoogleDataLabel'),
+        dialog.$.manageOtherGoogleDataRow.label);
+    assertEquals(
+        loadTimeData.getString('managePasswordsSubLabel'),
+        dialog.$.manageOtherGoogleDataRow.subLabel);
+
+    // Case 8: User is signed out, does not have Google as DSE. Actor flags are
+    // on.
+    setSignedInAndDseState(SignedInState.SIGNED_OUT, /*isGoogleDse=*/ false);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('manageOtherDataLabel'),
+        dialog.$.manageOtherGoogleDataRow.label);
+    assertEquals(
+        loadTimeData.getString('manageOtherDataSubLabel'),
+        dialog.$.manageOtherGoogleDataRow.subLabel);
+
+    // Case 9: User is signed in, does not have Google as DSE. Actor flags on.
+    setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ false);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('manageOtherDataLabel'),
+        dialog.$.manageOtherGoogleDataRow.label);
+    assertEquals(
+        loadTimeData.getString('manageSearchGeminiPasswordsSubLabel'),
+        dialog.$.manageOtherGoogleDataRow.subLabel);
+
+    // Case 10: User is signed-in, has Google as DSE. Actor flags are on.
+    setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ true);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('manageOtherGoogleDataLabel'),
+        dialog.$.manageOtherGoogleDataRow.label);
+    assertEquals(
+        loadTimeData.getString('manageSearchGeminiPasswordsSubLabel'),
+        dialog.$.manageOtherGoogleDataRow.subLabel);
+
+    // TODO(crbug.com/429984946): Remove once crbug.com/429984946 launched.
+    // Case 11: User is signed-in, has Google as DSE. Integration flag is off.
+    loadTimeData.overrideValues({
+      showGlicSettings: true,
+      enableBrowsingHistoryActorIntegrationM1: false,
+    });
+    await createDialog();
+    setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ true);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('manageOtherGoogleDataLabel'),
+        dialog.$.manageOtherGoogleDataRow.label);
+    assertEquals(
+        loadTimeData.getString('manageOtherDataSubLabel'),
         dialog.$.manageOtherGoogleDataRow.subLabel);
   });
 

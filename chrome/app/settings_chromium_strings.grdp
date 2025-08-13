@@ -127,11 +127,6 @@ Chromium understands forms better and can autofill them faster for you. This set
     </if>
   </if>
 
-  <!-- Delete Browsing Data -->
-  <message name="IDS_SETTINGS_MANAGE_PASSWORDS_SUB_LABEL" desc="Sub-label for the 'Manage other Data' subpage entrypoint in the 'Delete Browsing Data' dialog, explaining to the user that passwords can only be deleted outside of Chromium.">
-    Passwords can only be deleted outside Chromium
-  </message>
-
   <!-- Preloading Page-->
   <message name="IDS_SETTINGS_PRELOAD_PAGES_STANDARD_PRELOADING_WHEN_ON_BULLET_TWO" desc="Bullet point in the standard preloading and when on column. Informs the user about what the standard preloading setting does.">
     Chromium preloads pages you're likely to visit, so that they load more quickly when you visit them

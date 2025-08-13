@@ -369,10 +369,17 @@ export class SettingsClearBrowsingDataDialogV2Element extends
   }
 
   private computeOtherGoogleDataRowSubLabel_() {
-    if (!this.isSignedIn_() && this.isGoogleDse_) {
-      return loadTimeData.getString('managePasswordsSubLabel');
+    if (loadTimeData.getBoolean('showGlicSettings') &&
+        loadTimeData.getBoolean('enableBrowsingHistoryActorIntegrationM1') &&
+        this.isSignedIn_()) {
+      return loadTimeData.getString('manageSearchGeminiPasswordsSubLabel');
     }
-    return loadTimeData.getString('manageOtherDataSubLabel');
+
+    if (this.isSignedIn_() || !this.isGoogleDse_) {
+      return loadTimeData.getString('manageOtherDataSubLabel');
+    }
+
+    return loadTimeData.getString('managePasswordsSubLabel');
   }
 
   private onTimePeriodChanged_() {
