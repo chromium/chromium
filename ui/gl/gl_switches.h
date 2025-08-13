@@ -9,6 +9,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "ui/gl/gl_export.h"
@@ -85,8 +86,8 @@ GL_EXPORT extern const char kTintDcLayer[];
 GL_EXPORT extern const char kDisableGLDrawingForTests[];
 GL_EXPORT extern const char kOverrideUseSoftwareGLForTests[];
 
-GL_EXPORT extern const char* const kGLSwitchesCopiedFromGpuProcessHost[];
-GL_EXPORT extern const size_t kGLSwitchesCopiedFromGpuProcessHostNumSwitches;
+GL_EXPORT extern const base::span<const char* const>
+    kGLSwitchesCopiedFromGpuProcessHost;
 
 #if BUILDFLAG(IS_ANDROID)
 GL_EXPORT extern const char kDisableAndroidNativeFenceSyncForTesting[];

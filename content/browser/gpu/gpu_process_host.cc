@@ -17,6 +17,7 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -1305,10 +1306,8 @@ bool GpuProcessHost::LaunchGpuProcess() {
   // If you want a browser command-line switch passed to the GPU process
   // you need to add it to |kSwitchNames| at the beginning of this file.
   cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames);
-  cmd_line->CopySwitchesFrom(
-      browser_command_line,
-      UNSAFE_TODO({switches::kGLSwitchesCopiedFromGpuProcessHost,
-                   switches::kGLSwitchesCopiedFromGpuProcessHostNumSwitches}));
+  cmd_line->CopySwitchesFrom(browser_command_line,
+                             switches::kGLSwitchesCopiedFromGpuProcessHost);
 
   if (browser_command_line.HasSwitch(switches::kDisableFrameRateLimit))
     cmd_line->AppendSwitch(switches::kDisableGpuVsync);

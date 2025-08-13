@@ -4,6 +4,8 @@
 
 #include "ui/gl/gl_switches.h"
 
+#include <array>
+
 #include "base/trace_event/trace_event.h"
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
@@ -173,7 +175,7 @@ const char kTintDcLayer[] = "tint-dc-layer";
 // This is the list of switches passed from this file that are passed from the
 // GpuProcessHost to the GPU Process. Add your switch to this list if you need
 // to read it in the GPU process, else don't add it.
-const char* const kGLSwitchesCopiedFromGpuProcessHost[] = {
+const auto kGLSwitchesCopiedFromGpuProcessHostArray = std::to_array({
     kDisableGpuDriverBugWorkarounds,
     kDisableGpuVsync,
     kEnableGPUServiceLogging,
@@ -189,9 +191,11 @@ const char* const kGLSwitchesCopiedFromGpuProcessHost[] = {
     kDirectCompositionVideoSwapChainFormat,
     kTintDcLayer,
     kEnableUnsafeSwiftShader,
-};
-const size_t kGLSwitchesCopiedFromGpuProcessHostNumSwitches =
-    std::size(kGLSwitchesCopiedFromGpuProcessHost);
+});
+// An external span to the array above, so that it can be exposed from the
+// header file without specifying the size of the array manually.
+const base::span<const char* const> kGLSwitchesCopiedFromGpuProcessHost =
+    kGLSwitchesCopiedFromGpuProcessHostArray;
 
 #if BUILDFLAG(IS_ANDROID)
 // On some Android emulators with software GL, ANGLE
