@@ -25,9 +25,6 @@ const char kPNGPath[] = "/chromium_logo.png";
 // Path which leads to a MOV file.
 const char kMOVPath[] = "/video_sample.mov";
 
-// Accessibility ID of the Activity menu.
-NSString* kActivityMenuIdentifier = @"ActivityListView";
-
 }  // namespace
 
 using base::test::ios::kWaitForDownloadTimeout;
