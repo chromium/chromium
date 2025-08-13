@@ -82,6 +82,14 @@ export class ComposeboxElement extends I18nMixinLit
       files_: {type: Object},
       input_: {type: String},
       imageFileTypes_: {type: String},
+      isCollapsible: {
+        reflect: true,
+        type: Boolean,
+      },
+      expanded_: {
+        reflect: true,
+        type: Boolean,
+      },
       inputsDisabled_: {
         reflect: true,
         type: Boolean,
@@ -114,6 +122,13 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor files_: Map<UnguessableToken, ComposeboxFile> = new Map();
   protected accessor imageFileTypes_: string =
       loadTimeData.getString('composeboxImageFileTypes');
+  // If isCollapsible is set to true, the composebox will be a pill shape until
+  // it gets focused, at which point it will expand. If false, defaults to the
+  // expanded state.
+  protected accessor isCollapsible: boolean = false;
+  // Whether the composebox is currently expanded. Always true if isCollapsible
+  // is false.
+  protected accessor expanded_: boolean;
   protected accessor input_: string = '';
   protected accessor inputsDisabled_: boolean = false;
   protected accessor submitEnabled_: boolean = false;
@@ -150,6 +165,9 @@ export class ComposeboxElement extends I18nMixinLit
 
   override connectedCallback() {
     super.connectedCallback();
+
+    // Set the initial expanded state based on the inputted property.
+    this.expanded_ = !this.isCollapsible;
 
     this.listenerIds = [
       this.callbackRouter_.onFileUploadStatusChanged.addListener(
@@ -381,6 +399,17 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
+  protected handleComposeboxFocusIn_() {
+    this.expanded_ = true;
+    this.submitting_ = false;
+  }
+
+  protected handleComposeboxFocusOut_() {
+    // If the input is blurred and the composebox is expandable, collapse it.
+    // Else, keep the composebox expanded.
+    this.expanded_ = !this.isCollapsible;
+  }
+
   protected onKeydown_(e: KeyboardEvent) {
     if (e.key === 'Escape' && this.composeboxCloseByEscape_) {
       this.closeComposebox_();
@@ -389,6 +418,10 @@ export class ComposeboxElement extends I18nMixinLit
 
   private closeComposebox_() {
     this.fire('close-composebox', {composeboxText: this.$.input.value});
+
+    if (this.isCollapsible) {
+      this.expanded_ = false;
+    }
   }
 
   protected onSubmitClick_(e: KeyboardEvent|MouseEvent) {
@@ -396,6 +429,14 @@ export class ComposeboxElement extends I18nMixinLit
         this.$.input.value.trim(), (e as MouseEvent).button || 0, e.altKey,
         e.ctrlKey, e.metaKey, e.shiftKey);
     this.submitting_ = true;
+
+    // If the composebox is expandable, collapse it and clear the input after
+    // submitting.
+    if (this.isCollapsible) {
+      this.resetText();
+      this.$.input.blur();
+      this.submitEnabled_ = false;
+    }
   }
 
   private recordFileValidationMetric_(

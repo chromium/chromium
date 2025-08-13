@@ -26,6 +26,7 @@
   );
   --standard-curve: cubic-bezier(0.4, 0, 0.2, 1);
   --gradient-curve: cubic-bezier(0.2, 0, 0, 1);
+  --emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
 
   --start-angle-open: 30deg;
   --end-angle-open: 245deg;
@@ -41,7 +42,13 @@
   --expand-ease-out-duration: 300ms;
   --expand-duration: calc(var(--expand-ease-in-duration) + var(--expand-delay) + var(--expand-ease-out-duration));
 
+  --icon-entry-transition: opacity var(--expand-ease-out-duration)
+    linear 800ms;
+  --icon-exit-transition: opacity var(--expand-ease-in-duration)
+    var(--emphasized-accelerate);
+
   --height-expand-duration: 600ms;
+  --submit-enabled-transition: opactiy 255ms;
 
   border-radius: 24px;
   font-size: var(--cr-composebox-font-size, 18px);
@@ -86,13 +93,29 @@
 }
 
 #composebox {
-  animation: var(--height-expand-duration) slide-down var(--standard-curve);
   display: flex;
   pointer-events: auto;
   position: relative;
+  overflow: hidden;
+}
+
+:host([is-collapsible]) #composebox {
+  transition: min-height var(--height-expand-duration) var(--standard-curve),
+              max-height var(--height-expand-duration) var(--standard-curve);
+  min-height: 60px;
+  max-height: 60px;
+}
+
+:host(:not([is-collapsible])) #composebox {
+  /* If the composebox is not expandable, meaning expanded_ is always true,
+   * then the above transition will never be triggered. Instead, manually
+   * start the animation so it expands as soon as it is rendered */
+    animation: var(--height-expand-duration) slide-down var(--standard-curve);
+}
+
+:host([expanded_]) #composebox {
   min-height: 136px;
   max-height: 254px;
-  overflow: hidden;
 }
 
 @keyframes slide-down {
@@ -136,11 +159,16 @@
   max-height: calc-size(fit-content, min(size - 24px, 190px));
   min-height: 72px;
   outline: none;
-  padding: 24px 0 0;
+  padding: 20px 0 0;
   position: relative;
   resize: none;
   scrollbar-width: none;
+  transition: padding var(--height-expand-duration) var(--standard-curve);
   width: 100%;
+}
+
+:host([expanded_]) #input {
+  padding: 24px 0 0;
 }
 
 @keyframes color-change {
@@ -168,9 +196,7 @@
   --cr-icon-button-hover-background-color:
       var(--color-new-tab-page-composebox-hover);
   --cr-icon-button-size: 48px;
-  animation: icon-fade-in var(--expand-duration) linear;
   color: var(--color-new-tab-page-composebox-upload-button);
-  opacity: 1;
 }
 
 :host([inputs-disabled_]) .upload-icon {
@@ -188,19 +214,8 @@
       var(--color-new-tab-page-composebox-hover);
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-size: 48px;
-  animation: icon-fade-in var(--expand-duration) linear;
-  opacity: 1;
   position: absolute;
   right: 16px;
-}
-
-@keyframes icon-fade-in {
-  0% {
-    opacity: 0;
-  }
-  70% {
-    opacity: 0;
-  }
 }
 
 :host-context([dir='rtl']) .action-icon {
@@ -223,6 +238,7 @@
   bottom: var(--input-bottom-spacing);
   cursor: default;
   opacity: 30%;
+  transition: var(--submit-enabled-transition);
 }
 
 #submitIcon:focus-visible:focus {
@@ -234,6 +250,17 @@
 :host([submit-enabled_]) #submitIcon {
   cursor: pointer;
   opacity: 100%;
+}
+
+/* Controls the opacity of the icons when the composebox is expanded/collapsed. */
+.icon-fade {
+  opacity: 0;
+  transition: var(--icon-exit-transition);
+}
+
+:host([expanded_]) .icon-fade {
+  opacity: 1;
+  transition: var(--icon-entry-transition);
 }
 
 @media (forced-colors: active) {
@@ -263,8 +290,6 @@
 }
 
 .gradient:before {
-  animation: gradient-spin-expand var(--glif-rotation-duration)
-    var(--gradient-curve) forwards;
   background: var(--brand-gradient);
   border-radius: 50%;
   contain: paint;
@@ -278,6 +303,11 @@
   translate: -50% -50%;
   opacity: 0;
   width: 900px;
+}
+
+:host([expanded_]) .gradient:before {
+  animation: gradient-spin-expand var(--glif-rotation-duration)
+    var(--gradient-curve) forwards;
 }
 
 @keyframes gradient-spin-expand {
@@ -349,9 +379,6 @@
 }
 
 .background:before {
-  animation: plate-background-blur-on-expand var(--glif-rotation-duration)
-      var(--standard-curve),
-    color-pulse-on-expand var(--expand-duration) var(--standard-curve);
   background: var(--ntp-composebox-background-color);
   border-radius: inherit;
   content: '';
@@ -359,6 +386,12 @@
   inset: 0;
   position: absolute;
   filter: blur(0);
+}
+
+:host([expanded_]) .background:before{
+animation: plate-background-blur-on-expand var(--glif-rotation-duration)
+      var(--standard-curve),
+    color-pulse-on-expand var(--expand-duration) var(--standard-curve);
 }
 
 @keyframes plate-background-blur-on-expand {
@@ -382,6 +415,7 @@
     }
 }
 
+:host([expanded_]) .background,
 :host([submitting_]) .background {
   animation: gradient-border-width-close var(--glif-rotation-duration)
     var(--standard-curve);
