@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/web/model/progress_indicator_app_interface.h"
 
-#import <MaterialComponents/MaterialProgressView.h>
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
@@ -14,8 +13,7 @@
 
 + (id<GREYMatcher>)progressViewWithProgress:(CGFloat)progress {
   GREYMatchesBlock matches = ^BOOL(UIView* view) {
-    MDCProgressView* progressView =
-        base::apple::ObjCCast<MDCProgressView>(view);
+    UIProgressView* progressView = base::apple::ObjCCast<UIProgressView>(view);
     return progressView && progressView.progress == progress;
   };
 

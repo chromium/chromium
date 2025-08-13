@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/toolbar/ui_bundled/primary_toolbar_view_controller.h"
 
-#import <MaterialComponents/MaterialProgressView.h>
-
 #import "base/check.h"
 #import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"

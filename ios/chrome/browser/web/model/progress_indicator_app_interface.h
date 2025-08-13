@@ -11,11 +11,11 @@
 @protocol GREYMatcher;
 
 // ProgressIndicatorAppInterface contains helpers for interacting with
-// MDCProgressViews. These helpers are compiled into the app binary and can be
+// UIProgressViews. These helpers are compiled into the app binary and can be
 // called from either app or test code.
 @interface ProgressIndicatorAppInterface : NSObject
 
-// Matcher for an MDCProgressView with `progress`.
+// Matcher for an UIProgressView with `progress`.
 + (id<GREYMatcher>)progressViewWithProgress:(CGFloat)progress;
 
 @end

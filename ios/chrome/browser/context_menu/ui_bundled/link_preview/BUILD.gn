@@ -35,8 +35,8 @@ source_set("link_preview_ui") {
   deps = [
     ":constants",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/toolbar/ui_bundled:ui",
     "//ios/chrome/common/ui/colors",
-    "//ios/third_party/material_components_ios",
     "//ui/gfx",
   ]
 }

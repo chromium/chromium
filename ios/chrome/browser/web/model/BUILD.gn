@@ -459,7 +459,6 @@ source_set("eg_app_support+eg2") {
     "//ios/components/security_interstitials/lookalikes",
     "//ios/testing/earl_grey:eg_app_support+eg2",
     "//ios/third_party/earl_grey2:app_framework+link",
-    "//ios/third_party/material_components_ios",
     "//ios/web/public",
     "//net",
   ]

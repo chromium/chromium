@@ -4,10 +4,9 @@
 
 #import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_view_controller.h"
 
-#import <MaterialComponents/MaterialProgressView.h>
-
 #import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/toolbar_progress_bar.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ui/gfx/ios/uikit_util.h"
 
@@ -30,7 +29,7 @@ const CGFloat kProgressBarHeight = 2.0f;
 @property(nonatomic, strong) UILabel* URLBarLabel;
 
 // Progress bar displayed below the URL bar.
-@property(nonatomic, strong) MDCProgressView* progressBar;
+@property(nonatomic, strong) ToolbarProgressBar* progressBar;
 
 // YES if the page is loading.
 @property(nonatomic, assign, getter=isLoading) BOOL loading;
@@ -84,7 +83,7 @@ const CGFloat kProgressBarHeight = 2.0f;
   separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
   separator.translatesAutoresizingMaskIntoConstraints = NO;
 
-  self.progressBar = [[MDCProgressView alloc] init];
+  self.progressBar = [[ToolbarProgressBar alloc] init];
   self.progressBar.translatesAutoresizingMaskIntoConstraints = NO;
   self.progressBar.hidden = YES;
   self.progressBar.accessibilityIdentifier = kPreviewProgressBarIdentifier;
@@ -139,7 +138,7 @@ const CGFloat kProgressBarHeight = 2.0f;
   if (!loading) {
     [self finishProgressBar];
   } else if (self.progressBar.hidden) {
-    [self.progressBar setProgress:0];
+    [self.progressBar setProgress:0 animated:NO completion:nil];
     [self updateProgressBarVisibility];
   }
 }

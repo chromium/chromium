@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_tab_group_state.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_utils.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/toolbar_progress_bar.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/ui_util.h"

@@ -5,11 +5,22 @@
 #ifndef IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_TOOLBAR_PROGRESS_BAR_H_
 #define IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_TOOLBAR_PROGRESS_BAR_H_
 
-#import <MaterialComponents/MaterialProgressView.h>
+#import <UIKit/UIKit.h>
 
 // Progress bar for the toolbar, that indicate that the progress is about the
 // page load when read via voice over.
-@interface ToolbarProgressBar : MDCProgressView
+@interface ToolbarProgressBar : UIProgressView
+
+// Sets the progress, with an optional animation and completion block.
+- (void)setProgress:(float)progress
+           animated:(BOOL)animated
+         completion:(void (^)(BOOL finished))completion;
+
+// Sets the hidden state, with an optional animation and completion block.
+- (void)setHidden:(BOOL)hidden
+         animated:(BOOL)animated
+       completion:(void (^)(BOOL finished))completion;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_TOOLBAR_PROGRESS_BAR_H_
