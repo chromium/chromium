@@ -157,12 +157,15 @@ CSSVariableData::CSSVariableData(PassKey,
       has_root_font_units_(has_root_font_units),
       has_line_height_units_(has_line_height_units),
       has_dashed_functions_(has_dashed_functions) {
+  // SAFETY: This constructor is only reachable from CSSVariableData::Create()
+  // (because it requires a PassKey), which allocates enough memory in
+  // AdditionalBytes to hold the string.
   if (is_8bit_) {
     std::ranges::copy(original_text.Span8(),
-                      UNSAFE_TODO(reinterpret_cast<LChar*>(this + 1)));
+                      UNSAFE_BUFFERS(reinterpret_cast<LChar*>(this + 1)));
   } else {
     std::ranges::copy(original_text.Span16(),
-                      UNSAFE_TODO(reinterpret_cast<UChar*>(this + 1)));
+                      UNSAFE_BUFFERS(reinterpret_cast<UChar*>(this + 1)));
   }
 }
 
