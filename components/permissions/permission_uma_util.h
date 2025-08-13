@@ -883,6 +883,12 @@ class PermissionUmaUtil {
       bool cancel_previous_task,
       PredictionModelType model_type);
 
+  // Records whether the returning passage embedder task is outdated (a new
+  // passage embedder task has started).
+  static void RecordFinishedPassageEmbeddingsTaskOutdated(
+      bool outdated,
+      PredictionModelType model_type);
+
   // Records the status of language detection during the Aiv4 workflow.
   static void RecordLanguageDetectionStatus(LanguageDetectionStatus status);
 

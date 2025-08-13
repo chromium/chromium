@@ -172,10 +172,12 @@ constexpr char kAIv4NotificationsHoldbackResponseHistogram[] =
     "Permissions.AIv4.Response.Notifications";
 constexpr char kAiv4LanguageDetectionStatusHistogram[] =
     "Permissions.AIv4.LanguageDetectionStatus";
-constexpr char kAiv4RenderedTextAcquireSuccess[] =
+constexpr char kAiv4RenderedTextAcquireSuccessHistogram[] =
     "Permissions.AIv4.RenderedTextAcquireSuccess";
-constexpr char kAiv4TryCancelPreviousEmbeddingsModelExecution[] =
+constexpr char kAiv4TryCancelPreviousEmbeddingsModelExecutionHistogram[] =
     "Permissions.AIv4.TryCancelPreviousEmbeddingsModelExecution";
+constexpr char kAiv4FinishedPassageEmbeddingsTaskOutdatedHistogram[] =
+    "Permissions.AIv4.FinishedPassageEmbeddingsTaskOutdated";
 
 // A CPSSv1 model that returns a constant value of 0.5;
 // its meaning is defined by the max_likely threshold we use in the
@@ -1480,12 +1482,17 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
   histogram_tester().ExpectTotalCount(kAIv4InquiryDurationHistogram,
                                       /*expected_count=*/1);
 
-  histogram_tester().ExpectBucketCount(kAiv4RenderedTextAcquireSuccess,
+  histogram_tester().ExpectBucketCount(kAiv4RenderedTextAcquireSuccessHistogram,
                                        /*sample=*/1,
                                        /*expected_count=*/1);
 
   histogram_tester().ExpectBucketCount(
-      kAiv4TryCancelPreviousEmbeddingsModelExecution,
+      kAiv4TryCancelPreviousEmbeddingsModelExecutionHistogram,
+      /*sample=*/0,
+      /*expected_count=*/1);
+
+  histogram_tester().ExpectBucketCount(
+      kAiv4FinishedPassageEmbeddingsTaskOutdatedHistogram,
       /*sample=*/0,
       /*expected_count=*/1);
 
