@@ -7306,6 +7306,32 @@ class ChromeDriverLogTest(CustomChromeDriverInstanceTest):
     with open(tmp_log_path, 'r') as f:
       self.assertTrue(self.LOG_MESSAGE in f.read())
 
+  def testRendererCrashSkipsChromeDriverStackTrace(self):
+    '''Regression test for crbug.com/395131239'''
+    _, tmp_log_path = tempfile.mkstemp(prefix='chromedriver_log_')
+    chromedriver_server = self.CreateChromeDriverServer(
+        _CHROMEDRIVER_BINARY, log_path=tmp_log_path)
+    try:
+      driver = chromedriver.ChromeDriver(
+          chromedriver_server.GetUrl(), chromedriver_server.GetPid(),
+          chrome_binary=_CHROME_BINARY,
+          http_timeout=_HTTP_TIMEOUT)
+      # Cause the renderer to crash.
+      driver.SendCommandAndGetResult("Page.crash", {})
+      # allow time to complete writing the minidump.
+      time.sleep(2)
+    except chromedriver.ChromeDriverException as e:
+      # Ensure a ChromeDriver stack trace is not printed.
+      self.assertFalse("StackTrace:" in str(e))
+      self.assertTrue("tab crashed" in str(e))
+    finally:
+      chromedriver_server.Kill()
+    with open(tmp_log_path, 'r') as f:
+      log_contents = f.read()
+      # Assert that there's renderer crash stack trace available in log.
+      self.assertTrue("NOTREACHED hit." in log_contents)
+      self.assertTrue("[end of stack trace]" in log_contents)
+
   def testDisablingDriverLogsSuppressesChromeDriverLog(self):
     _, tmp_log_path = tempfile.mkstemp(prefix='chromedriver_log_')
     chromedriver_server = self.CreateChromeDriverServer(

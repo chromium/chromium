@@ -85,32 +85,40 @@ const char* StatusCodeToString(StatusCode code) {
   }
 }
 
+bool ShouldCollectStackTrace(StatusCode code) {
+  return (code != kOk && code != kTabCrashed);
+}
+
 Status::Status(StatusCode code) : code_(code), msg_(StatusCodeToString(code)) {
-  if (code != kOk)
+  if (ShouldCollectStackTrace(code)) {
     stack_trace_ = base::debug::StackTrace().ToString();
+  }
 }
 
 Status::Status(StatusCode code, const std::string& details)
     : code_(code),
       msg_(StatusCodeToString(code) + std::string(": ") + details) {
-  if (code != kOk)
-        stack_trace_ = base::debug::StackTrace().ToString();
+  if (ShouldCollectStackTrace(code)) {
+    stack_trace_ = base::debug::StackTrace().ToString();
+  }
 }
 
 Status::Status(StatusCode code, const Status& cause)
     : code_(code),
       msg_(StatusCodeToString(code) + std::string("\nfrom ") +
            cause.message()) {
-  if (code != kOk)
+  if (ShouldCollectStackTrace(code)) {
     stack_trace_ = cause.stack_trace();
+  }
 }
 
 Status::Status(StatusCode code, const std::string& details, const Status& cause)
     : code_(code),
       msg_(StatusCodeToString(code) + std::string(": ") + details + "\nfrom " +
            cause.message()) {
-  if (code != kOk)
+  if (ShouldCollectStackTrace(code)) {
     stack_trace_ = cause.stack_trace();
+  }
 }
 
 Status::~Status() = default;
