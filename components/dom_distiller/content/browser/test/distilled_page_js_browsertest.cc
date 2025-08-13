@@ -68,5 +68,9 @@ IN_PROC_BROWSER_TEST_F(DistilledPageJsTest, SettingsDialogTest) {
   LoadAndExecuteTestScript("settings_dialog_tester.js");
 }
 
+IN_PROC_BROWSER_TEST_F(DistilledPageJsTest, AddClassesToYTIFramesTest) {
+  LoadAndExecuteTestScript("add_classes_to_yt_iframes.js");
+}
+
 }  // namespace
 }  // namespace dom_distiller
