@@ -732,8 +732,11 @@ class IndexPopulator final : public NativeEventListener {
     EventTarget* target = event->RawTarget();
     IDBRequest* request = static_cast<IDBRequest*>(target);
 
+    // This event would be dispatched by native code, so create scopes required
+    // by possible V8 usage within.
     ScriptState::Scope scope(script_state_);
-
+    v8::MicrotasksScope microtasksScope(
+        script_state_->GetContext(), v8::MicrotasksScope::kDoNotRunMicrotasks);
     IDBAny* cursor_any = request->ResultAsAny();
     IDBCursorWithValue* cursor = nullptr;
     if (cursor_any->GetType() == IDBAny::kIDBCursorWithValueType)
