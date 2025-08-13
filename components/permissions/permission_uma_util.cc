@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -2073,8 +2074,8 @@ void PermissionUmaUtil::RecordActionBrowserAlwaysActive(
 
 // static
 void PermissionUmaUtil::RecordPredictionModelInquireTime(
-    base::TimeTicks model_inquire_start_time,
-    PredictionModelType model_type) {
+    PredictionModelType model_type,
+    base::TimeTicks model_inquire_start_time) {
   std::string histogram_name =
       base::StrCat({"Permissions.", GetPredictionModelString(model_type),
                     ".InquiryDuration"});
@@ -2084,8 +2085,8 @@ void PermissionUmaUtil::RecordPredictionModelInquireTime(
 
 // static
 void PermissionUmaUtil::RecordRenderedTextAcquireSuccessForAivX(
-    bool success,
-    PredictionModelType model_type) {
+    PredictionModelType model_type,
+    bool success) {
   // Only AIv1 and AIv4 models use the rendered text as input.
   DCHECK(model_type == PredictionModelType::kOnDeviceAiV1Model ||
          model_type == PredictionModelType::kOnDeviceAiV4Model);
@@ -2098,10 +2099,10 @@ void PermissionUmaUtil::RecordRenderedTextAcquireSuccessForAivX(
 
 // static
 void PermissionUmaUtil::RecordTryCancelPreviousEmbeddingsModelExecution(
-    bool cancel_previous_task,
-    PredictionModelType model_type) {
+    PredictionModelType model_type,
+    bool cancel_previous_task) {
   // Only the AIv4 model requires the passage embedding model.
-  DCHECK(model_type == PredictionModelType::kOnDeviceAiV4Model);
+  DCHECK_EQ(model_type, PredictionModelType::kOnDeviceAiV4Model);
 
   std::string success_histogram_name =
       base::StrCat({"Permissions.", GetPredictionModelString(model_type),
@@ -2111,10 +2112,10 @@ void PermissionUmaUtil::RecordTryCancelPreviousEmbeddingsModelExecution(
 
 // static
 void PermissionUmaUtil::RecordFinishedPassageEmbeddingsTaskOutdated(
-    bool outdated,
-    PredictionModelType model_type) {
+    PredictionModelType model_type,
+    bool outdated) {
   // Only the AIv4 model requires the passage embedding model.
-  DCHECK(model_type == PredictionModelType::kOnDeviceAiV4Model);
+  DCHECK_EQ(model_type, PredictionModelType::kOnDeviceAiV4Model);
 
   std::string success_histogram_name =
       base::StrCat({"Permissions.", GetPredictionModelString(model_type),
@@ -2123,10 +2124,30 @@ void PermissionUmaUtil::RecordFinishedPassageEmbeddingsTaskOutdated(
 }
 
 // static
+void PermissionUmaUtil::RecordPassageEmbeddingModelExecutionTimeAndStatus(
+    PredictionModelType model_type,
+    base::TimeTicks model_inquire_start_time,
+    passage_embeddings::ComputeEmbeddingsStatus status) {
+  // Only the AIv4 model requires the passage embedding model.
+  DCHECK_EQ(model_type, PredictionModelType::kOnDeviceAiV4Model);
+
+  std::string status_histogram_name =
+      base::StrCat({"Permissions.", GetPredictionModelString(model_type),
+                    ".ComputeEmbeddingsStatus"});
+  base::UmaHistogramEnumeration(status_histogram_name, status);
+
+  std::string time_histogram_name =
+      base::StrCat({"Permissions.", GetPredictionModelString(model_type),
+                    ".ComputeEmbeddingsDuration"});
+  base::UmaHistogramMediumTimes(
+      time_histogram_name, base::TimeTicks::Now() - model_inquire_start_time);
+}
+
+// static
 void PermissionUmaUtil::RecordSnapshotTakenTimeAndSuccessForAivX(
-    bool success,
+    PredictionModelType model_type,
     base::TimeTicks snapshot_inquire_start_time,
-    PredictionModelType model_type) {
+    bool success) {
   // Only AIv3 and AIv4 models use snapshots as input.
   DCHECK(model_type == PredictionModelType::kOnDeviceAiV3Model ||
          model_type == PredictionModelType::kOnDeviceAiV4Model);

@@ -485,37 +485,69 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.AIv4.ComputeEmbeddingsDuration" units="ms"
+    expires_after="2026-02-01">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the time it took for the permissions prediction service to inquire
+    the passage embeddings model during the AIv4 model execution workflow.
+    Recorded for pages in English on which rendered text could be acquired with
+    success and the text is considered suitable as input for the AIv4 model
+    (i.e. it's long enough).
+  </summary>
+</histogram>
+
+<histogram name="Permissions.AIv4.ComputeEmbeddingsStatus"
+    enum="ComputeEmbeddingsStatus" expires_after="2026-02-01">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the status of passage embeddings model computation for rendered_text
+    required during the AIv4 model execution flow. Recorded for pages in English
+    on which rendered text could be acquired with success and the text is
+    considered suitable as input for the AIv4 model (i.e. it's long enough).
+  </summary>
+</histogram>
+
 <histogram name="Permissions.AIv4.FinishedPassageEmbeddingsTaskOutdated"
-    enum="BooleanSuccess" expires_after="2025-12-02">
+    enum="BooleanSuccess" expires_after="2026-02-01">
   <owner>elklm@chromium.org</owner>
   <owner>hempjudith@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Records whether a returning passage embeddings task was outdated, i.e. a new
     passage embeddings task was started in the meantime. This should not happen
-    as we try-cancel the task, but we want to be sure.
+    as we try-cancel the task, but we want to be sure. Recorded for pages in
+    English on which rendered text could be acquired with success and the text
+    is considered suitable as input for the AIv4 model (i.e. it's long enough).
   </summary>
 </histogram>
 
 <histogram name="Permissions.AIv4.LanguageDetectionStatus"
-    enum="LanguageDetectionStatus" expires_after="2025-12-02">
+    enum="LanguageDetectionStatus" expires_after="2026-02-01">
   <owner>elklm@chromium.org</owner>
   <owner>hempjudith@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Records the status of asynchronous language detection required during the
-    AIv4 model execution flow.
+    AIv4 model execution flow. Recorded for all Aiv4 workflows, as detecting the
+    pages language is the very first step.
   </summary>
 </histogram>
 
 <histogram name="Permissions.AIv4.TryCancelPreviousEmbeddingsModelExecution"
-    enum="BooleanSuccess" expires_after="2025-12-02">
+    enum="BooleanSuccess" expires_after="2026-02-01">
   <owner>elklm@chromium.org</owner>
   <owner>hempjudith@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Records whether there still is an ongoing execution of the passage
-    embeddings model when we try to call it again.
+    embeddings model when we try to call it again. Recorded for pages in English
+    on which rendered text could be acquired with success and the text is
+    considered suitable as input for the AIv4 model (i.e. it's long enough).
   </summary>
 </histogram>
 

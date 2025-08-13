@@ -257,6 +257,7 @@ class PredictionBasedPermissionUiSelector
   // and calls the model_execution_callback in any case. Failures will get
   // propagated and should be handled by the model_execution_callback callback.
   void OnPassageEmbeddingsComputed(
+      base::TimeTicks model_inquire_start_time,
       ModelExecutionData model_data,
       ModelExecutionCallback model_execution_callback,
       std::vector<std::string> passages,

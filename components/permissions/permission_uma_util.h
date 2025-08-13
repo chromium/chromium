@@ -16,6 +16,7 @@
 #include "base/version.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/passage_embeddings/passage_embeddings_types.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
@@ -862,32 +863,38 @@ class PermissionUmaUtil {
 
   // Records the execution time of prediction model inquiries.
   static void RecordPredictionModelInquireTime(
-      base::TimeTicks model_inquire_start_time,
-      PredictionModelType model_type);
+      PredictionModelType model_type,
+      base::TimeTicks model_inquire_start_time);
 
   // Records the success and duration of taking a screenshot for AIvX models.
   static void RecordSnapshotTakenTimeAndSuccessForAivX(
-      bool success,
+      PredictionModelType model_type,
       base::TimeTicks snapshot_inquire_start_time,
-      PredictionModelType model_type);
+      bool success);
 
   // Records whether we could fetch the rendered text successfully and it was
   // useful for prediction (i.e. longer than 10 characters).
   static void RecordRenderedTextAcquireSuccessForAivX(
-      bool success,
-      PredictionModelType model_type);
+      PredictionModelType model_type,
+      bool success);
 
   // Records whether we needed to cancel the previous passage embeddings model
   // call before starting a new one.
   static void RecordTryCancelPreviousEmbeddingsModelExecution(
-      bool cancel_previous_task,
-      PredictionModelType model_type);
+      PredictionModelType model_type,
+      bool cancel_previous_task);
 
   // Records whether the returning passage embedder task is outdated (a new
   // passage embedder task has started).
   static void RecordFinishedPassageEmbeddingsTaskOutdated(
-      bool outdated,
-      PredictionModelType model_type);
+      PredictionModelType model_type,
+      bool outdated);
+
+  // Records the success and duration of taking a screenshot for AIvX models.
+  static void RecordPassageEmbeddingModelExecutionTimeAndStatus(
+      PredictionModelType model_type,
+      base::TimeTicks snapshot_inquire_start_time,
+      passage_embeddings::ComputeEmbeddingsStatus status);
 
   // Records the status of language detection during the Aiv4 workflow.
   static void RecordLanguageDetectionStatus(LanguageDetectionStatus status);

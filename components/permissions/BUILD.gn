@@ -135,6 +135,7 @@ source_set("permissions") {
     "//components/favicon/core",
     "//components/guest_view/buildflags",
     "//components/keyed_service/content",
+    "//components/passage_embeddings",
     "//components/permissions/vector_icons",
     "//components/pref_registry",
     "//components/prefs",
