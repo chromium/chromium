@@ -8,16 +8,16 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.FrameLayout;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,10 +28,9 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.KeyNavigationUtil;
@@ -95,10 +94,17 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         private boolean mCurrentGestureAffectedKeyboardState;
         private @Nullable Runnable mSuggestionDropdownScrollListener;
         private @Nullable Runnable mSuggestionDropdownOverscrolledToTopListener;
+        private boolean mToolbarOnTop = true;
 
         public SuggestionLayoutScrollListener(Context context) {
             super(context);
             mLastKeyboardShownState = true;
+        }
+
+        void setToolbarPosition(boolean isToolbarOnTop) {
+            mToolbarOnTop = isToolbarOnTop;
+            setStackFromEnd(!isToolbarOnTop);
+            setReverseLayout(!isToolbarOnTop);
         }
 
         @Override
@@ -141,6 +147,9 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             // the Most Visited Sites), where a horizontal finger swipe could result in a series of
             // keyboard show/hide events.
             if (mCurrentGestureAffectedKeyboardState) return resultingDeltaY;
+
+            // Do not handle bottom omnibox yet (lots of corner cases).
+            if (!mToolbarOnTop) return resultingDeltaY;
 
             // If the effective scroll distance is:
             // - same as the desired one, we have enough content to scroll in a given direction
@@ -376,29 +385,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         return manager.findViewByPosition(index);
     }
 
-    /**
-     * Update the suggestion popup background to reflect the current state.
-     *
-     * @param brandedColorScheme The {@link @BrandedColorScheme}.
-     */
-    public void refreshPopupBackground(@BrandedColorScheme int brandedColorScheme) {
-        int color =
-                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
-                        getContext(), brandedColorScheme);
-
-        if (!isHardwareAccelerated()) {
-            // When HW acceleration is disabled, changing mSuggestionList' items somehow erases
-            // mOmniboxResultsContainer' background from the area not covered by
-            // mSuggestionList. To make sure mOmniboxResultsContainer is always redrawn, we make
-            // list background color slightly transparent. This makes mSuggestionList.isOpaque()
-            // to return false, and forces redraw of the parent view (mOmniboxResultsContainer).
-            if (Color.alpha(color) == 255) {
-                color = Color.argb(254, Color.red(color), Color.green(color), Color.blue(color));
-            }
-        }
-        setBackground(new ColorDrawable(color));
-    }
-
     @Override
     public void setAdapter(@Nullable Adapter adapter) {
         mAdapter = (OmniboxSuggestionsDropdownAdapter) adapter;
@@ -490,6 +476,15 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     /* package */ void cancelWindowContentChangedAnnouncement() {
         mHandler.removeCallbacksAndMessages(TOKEN_ACCESSIBILITY_FOCUS);
+    }
+
+    /* package */ void setToolbarPosition(@ControlsPosition int toolbarPosition) {
+        boolean isOnTop = toolbarPosition != ControlsPosition.BOTTOM;
+        mLayoutScrollListener.setToolbarPosition(isOnTop);
+
+        var params = (FrameLayout.LayoutParams) getLayoutParams();
+        params.gravity = isOnTop ? Gravity.TOP : Gravity.BOTTOM;
+        setLayoutParams(params);
     }
 
     @VisibleForTesting

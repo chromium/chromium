@@ -65,6 +65,9 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     /** Whether the dropdown should draw over top of the anchor view. */
     static final ReadableBooleanPropertyKey DRAW_OVER_ANCHOR = new ReadableBooleanPropertyKey();
 
+    /** On-screen placement of the Toolbar. */
+    public static final WritableIntPropertyKey TOOLBAR_POSITION = new WritableIntPropertyKey();
+
     /**
      * Whether the dropdown container should always be visible, even if there's no suggestions to
      * show.
@@ -83,20 +86,21 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
+                ACTIVITY_WINDOW_FOCUSED,
                 ALPHA,
                 CHILD_TRANSLATION_Y,
-                OMNIBOX_SESSION_ACTIVE,
-                EMBEDDER,
-                SUGGESTION_MODELS,
                 COLOR_SCHEME,
-                GESTURE_OBSERVER,
+                CONTAINER_ALWAYS_VISIBLE,
+                DRAW_OVER_ANCHOR,
                 DROPDOWN_HEIGHT_CHANGE_LISTENER,
                 DROPDOWN_SCROLL_LISTENER,
                 DROPDOWN_SCROLL_TO_TOP_LISTENER,
+                EMBEDDER,
+                GESTURE_OBSERVER,
+                IS_LARGE_SCREEN,
                 LIST_IS_FINAL,
-                DRAW_OVER_ANCHOR,
-                CONTAINER_ALWAYS_VISIBLE,
-                ACTIVITY_WINDOW_FOCUSED,
-                IS_LARGE_SCREEN
+                OMNIBOX_SESSION_ACTIVE,
+                SUGGESTION_MODELS,
+                TOOLBAR_POSITION,
             };
 }

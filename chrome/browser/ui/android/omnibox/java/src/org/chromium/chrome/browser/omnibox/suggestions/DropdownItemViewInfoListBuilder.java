@@ -239,16 +239,24 @@ class DropdownItemViewInfoListBuilder {
             result.add(new DropdownItemViewInfo(mGroupSeparatorProcessor, model, groupDetails));
         }
 
+        boolean toolbarOnBottom = mToolbarPositionSupplier.get() == ControlsPosition.BOTTOM;
+        var roundingStartEdge =
+                toolbarOnBottom
+                        ? DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED
+                        : DropdownCommonProperties.BG_TOP_CORNER_ROUNDED;
+        var roundingEndEdge =
+                toolbarOnBottom
+                        ? DropdownCommonProperties.BG_TOP_CORNER_ROUNDED
+                        : DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED;
+
         for (int indexInList = 0; indexInList < numGroupMatches; indexInList++) {
             var indexOnList = firstVerticalPosition + indexInList;
             AutocompleteMatch match = groupMatches.get(indexInList);
             var processor = getProcessorForSuggestion(match, indexOnList);
             var model = processor.createModel();
 
-            model.set(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED, indexInList == 0);
-            model.set(
-                    DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED,
-                    indexInList == numGroupMatches - 1);
+            model.set(roundingStartEdge, indexInList == 0);
+            model.set(roundingEndEdge, indexInList == numGroupMatches - 1);
             model.set(DropdownCommonProperties.SHOW_DIVIDER, indexInList < numGroupMatches - 1);
 
             processor.populateModel(input, match, model, indexOnList);

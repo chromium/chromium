@@ -18,7 +18,7 @@ found in the LICENSE file.
         android:id="@+id/omnibox_suggestions_dropdown"
         android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:clipToPadding="false"/>
 
 </org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsContainer>

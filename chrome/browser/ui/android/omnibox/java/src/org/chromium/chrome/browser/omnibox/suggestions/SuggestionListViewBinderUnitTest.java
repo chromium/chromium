@@ -127,6 +127,7 @@ public class SuggestionListViewBinderUnitTest {
 
     @Test
     public void suggestionsContainerNotVisible_colorScheme() {
+        mListModel.set(SuggestionListProperties.IS_LARGE_SCREEN, true);
         mListModel.set(SuggestionListProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT);
         mListModel.set(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE, false);
         assertEquals(0, ((ColorDrawable) mContainer.getBackground()).getAlpha());

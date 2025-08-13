@@ -1178,6 +1178,9 @@ class AutocompleteMediator
                         && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                         && mContext.getResources().getConfiguration().screenWidthDp
                                 >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP);
+        mListPropertyModel.set(
+                SuggestionListProperties.TOOLBAR_POSITION,
+                mDataProvider.getToolbarPositionSupplier().get());
     }
 
     /** Trigger autocomplete for the given query. */
