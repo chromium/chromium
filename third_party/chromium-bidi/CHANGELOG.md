@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v7.3.2...chromium-bidi-v8.0.0) (2025-08-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 141.0.7354.0 ([#3628](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3628))
+
+### Features
+
+* **chrome:** update the pinned browser version to 141.0.7354.0 ([#3628](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3628)) ([bf73edf](https://github.com/GoogleChromeLabs/chromium-bidi/commit/bf73edfd432794778e0a6a427a27924dae6255d6))
+* implement `emulation.setScriptingEnabled` command ([#3566](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3566)) ([a4a4033](https://github.com/GoogleChromeLabs/chromium-bidi/commit/a4a40334f287b4b5dfe0b020eb5aa196c44994f0))
+* support user prompts on OOPiF ([#3647](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3647)) ([73a4ff6](https://github.com/GoogleChromeLabs/chromium-bidi/commit/73a4ff6f1e9312f4cfe9f741d1f48708b74fdbf0))
+
 ## [7.3.2](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v7.3.1...chromium-bidi-v7.3.2) (2025-08-08)
 
 
