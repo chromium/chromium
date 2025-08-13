@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_FEATURES_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_FEATURES_H_
 
+#include <string>
+#include <vector>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
@@ -111,6 +114,39 @@ BASE_DECLARE_FEATURE_PARAM(NtpBrowserPromoType, kNtpBrowserPromoType);
 
 // Returns the current NTP promo type, or kNone if it is not enabled.
 extern NtpBrowserPromoType GetNtpBrowserPromoType();
+
+// A list of promo IDs to suppress.
+BASE_DECLARE_FEATURE_PARAM(std::string, kNtpBrowserPromoSuppressList);
+
+// The number of sessions a promo may stay in the top spot before being
+// rotated out.
+BASE_DECLARE_FEATURE_PARAM(int, kNtpBrowserPromoMaxTopSpotSessions);
+
+// How long a promo stays in the "completed" section of the setup list.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kNtpBrowserPromoCompletedDuration);
+
+// How long a promo is hidden after being clicked.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kNtpBrowserPromoClickedHideDuration);
+
+// How long all promos are hidden after being snoozed.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kNtpBrowserPromosSnoozedHideDuration);
+
+// The maximum number of promos to display in setup-list mode.
+BASE_DECLARE_FEATURE_PARAM(int, kNtpBrowserPromoSetupListPromoLimit);
+
+// The maximum number of promos to display in individual-promo mode.
+BASE_DECLARE_FEATURE_PARAM(int, kNtpBrowserPromoIndividualPromoLimit);
+
+// Accessors for `kEnableNtpBrowserPromos` parameters.
+extern std::vector<std::string> GetNtpBrowserPromoSuppressList();
+extern int GetNtpBrowserPromoMaxTopSpotSessions();
+extern base::TimeDelta GetNtpBrowserPromoCompletedDuration();
+extern base::TimeDelta GetNtpBrowserPromoClickedHideDuration();
+extern base::TimeDelta GetNtpBrowserPromosSnoozedHideDuration();
+extern int GetNtpBrowserPromoSetupListPromoLimit();
+extern int GetNtpBrowserPromoIndividualPromoLimit();
 
 }  // namespace user_education::features
 

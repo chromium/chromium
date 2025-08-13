@@ -12,6 +12,8 @@
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_identifier.h"
+#include "components/user_education/common/ntp_promo/ntp_promo_specification.h"
+#include "components/user_education/common/user_education_storage_service.h"
 
 class BrowserWindowInterface;
 class Profile;
@@ -56,6 +58,35 @@ struct NtpShowablePromos {
   std::vector<NtpShowablePromo> completed;
 };
 
+// This struct holds the values of controller-specific feature parameters.
+// An instance of this struct is passed to the `NtpPromoController` constructor.
+struct NtpPromoControllerParams {
+  NtpPromoControllerParams();
+  ~NtpPromoControllerParams();
+  NtpPromoControllerParams(const NtpPromoControllerParams&) noexcept;
+  NtpPromoControllerParams& operator=(NtpPromoControllerParams&&) noexcept;
+
+  // The number of sessions a promo may stay in the top spot before being
+  // rotated out.
+  int max_top_spot_sessions = 0;
+
+  // How long a promo stays in the "completed" section of the setup list.
+  base::TimeDelta completed_show_duration;
+
+  // How long a promo is hidden after being clicked.
+  base::TimeDelta clicked_hide_duration;
+
+  // How long all promos are hidden after being snoozed.
+  base::TimeDelta promos_snoozed_hide_duration;
+
+  // A list of promo IDs to suppress.
+  // TODO(crbug.com/427784414): Hook up this setting.
+  std::vector<NtpPromoIdentifier> suppress_list;
+};
+
+// Returns controller parameters from Finch-controllable feature params.
+NtpPromoControllerParams GetNtpPromoControllerParams();
+
 // Controls display of New Tab Page promos.
 class NtpPromoController {
  public:
@@ -64,7 +95,8 @@ class NtpPromoController {
   void operator=(const NtpPromoController&) = delete;
 
   NtpPromoController(NtpPromoRegistry& registry,
-                     UserEducationStorageService& storage_service);
+                     UserEducationStorageService& storage_service,
+                     const NtpPromoControllerParams& params);
 
   // Determines if there are any showable promos. This may return false if
   // promos are snoozed or disabled, or if there are no eligible promos to show.
@@ -96,12 +128,6 @@ class NtpPromoController {
   // indefinitely.
   virtual void SetAllPromosDisabled(bool disable);
 
-  // Returns the duration for which a promo can be shown after completion.
-  static base::TimeDelta GetCompletedPromoShowDurationForTest();
-
-  // Returns the duration for which a promo will be hidden after being clicked.
-  static base::TimeDelta GetClickedPromoHideDurationForTest();
-
  private:
   // Internal variation of promo list generation, shared between "has promos"
   // and "make promo lists" logic. When only checking if there are promos to
@@ -124,9 +150,15 @@ class NtpPromoController {
   std::vector<NtpShowablePromo> MakeShowablePromos(
       const std::vector<NtpPromoIdentifier>& ids);
 
+  // Determines whether an individual promo should be shown.
+  bool ShouldShowPromo(const NtpPromoData& prefs,
+                       NtpPromoSpecification::Eligibility eligibility,
+                       const base::Time& now);
+
   const raw_ref<NtpPromoRegistry> registry_;
   const raw_ref<UserEducationStorageService> storage_service_;
   std::unique_ptr<NtpPromoOrderPolicy> order_policy_;
+  const NtpPromoControllerParams params_;
 };
 
 }  // namespace user_education

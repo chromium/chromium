@@ -118,7 +118,8 @@ class NtpPromoHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   user_education::NtpPromoRegistry promo_registry_;
   user_education::test::TestUserEducationStorageService storage_service_;
-  MockController mock_controller_{promo_registry_, storage_service_};
+  MockController mock_controller_{promo_registry_, storage_service_,
+                                  user_education::NtpPromoControllerParams()};
   MockClient mock_client_;
   MockBrowserWindowInterface mock_browser_;
   std::unique_ptr<NtpPromoHandler> handler_ = NtpPromoHandler::CreateForTesting(

@@ -21,10 +21,6 @@ namespace {
 
 using Eligibility = NtpPromoSpecification::Eligibility;
 
-constexpr int kNumSessionsBetweenTopPromoRotation = 3;
-constexpr base::TimeDelta kCompletedPromoShowDuration = base::Days(7);
-constexpr base::TimeDelta kClickedPromoHideDuration = base::Days(90);
-
 constexpr char kPromoMetricPrefix[] = "UserEducation.NtpPromos.Promos.";
 // LINT.IfChange(NtpPromoActions)
 constexpr char kPromoMetricShownSuffix[] = ".Shown";
@@ -32,36 +28,6 @@ constexpr char kPromoMetricShownTopSpotSuffix[] = ".ShownTopSpot";
 constexpr char kPromoMetricClickedSuffix[] = ".Clicked";
 constexpr char kPromoMetricCompletedSuffix[] = ".Completed";
 // LINT.ThenChange(//tools/metrics/histograms/metadata/user_education/histograms.xml:NtpPromoActions)
-
-// Decides whether a promo should be shown or not, based on the supplied
-// data. If this logic becomes more complex, consider pulling it out to a
-// separate file (crbug.com/435159508).
-bool ShouldShowPromo(const NtpPromoData& prefs,
-                     Eligibility eligibility,
-                     const base::Time& now) {
-  // If an eligible promo has been clicked recently, don't show it again for
-  // a period of time.
-  if (eligibility == Eligibility::kEligible && !prefs.last_clicked.is_null() &&
-      ((now - prefs.last_clicked) < kClickedPromoHideDuration)) {
-    return false;
-  }
-
-  // If the promo reports itself as complete, but was never invoked by the
-  // user, don't show it (eg. user is already signed in).
-  if (eligibility == Eligibility::kCompleted && prefs.last_clicked.is_null()) {
-    return false;
-  }
-
-  // If the promo was marked complete sufficiently long ago, don't show it.
-  // Likewise if the completion time is nonsense (in the future).
-  if (!prefs.completed.is_null() &&
-      ((now - prefs.completed >= kCompletedPromoShowDuration) ||
-       (now < prefs.completed))) {
-    return false;
-  }
-
-  return true;
-}
 
 void LogPromoMetric(const NtpPromoIdentifier& id, const std::string& suffix) {
   base::UmaHistogramBoolean(base::StrCat({kPromoMetricPrefix, id, suffix}),
@@ -86,6 +52,20 @@ void LogPromoCompleted(const NtpPromoIdentifier& id) {
 
 }  // namespace
 
+NtpPromoControllerParams GetNtpPromoControllerParams() {
+  NtpPromoControllerParams params;
+  params.max_top_spot_sessions =
+      features::GetNtpBrowserPromoMaxTopSpotSessions();
+  params.completed_show_duration =
+      features::GetNtpBrowserPromoCompletedDuration();
+  params.clicked_hide_duration =
+      features::GetNtpBrowserPromoClickedHideDuration();
+  params.promos_snoozed_hide_duration =
+      features::GetNtpBrowserPromosSnoozedHideDuration();
+  params.suppress_list = features::GetNtpBrowserPromoSuppressList();
+  return params;
+}
+
 NtpShowablePromo::NtpShowablePromo() = default;
 NtpShowablePromo::NtpShowablePromo(std::string_view id_,
                                    std::string_view icon_name_,
@@ -106,13 +86,20 @@ NtpShowablePromos::NtpShowablePromos(NtpShowablePromos&&) noexcept = default;
 NtpShowablePromos& NtpShowablePromos::operator=(NtpShowablePromos&&) noexcept =
     default;
 
+NtpPromoControllerParams::NtpPromoControllerParams() = default;
+NtpPromoControllerParams::~NtpPromoControllerParams() = default;
+NtpPromoControllerParams::NtpPromoControllerParams(
+    const NtpPromoControllerParams&) noexcept = default;
+NtpPromoControllerParams& NtpPromoControllerParams::operator=(
+    NtpPromoControllerParams&&) noexcept = default;
+
 NtpPromoController::NtpPromoController(
     NtpPromoRegistry& registry,
-    UserEducationStorageService& storage_service)
-    : registry_(registry), storage_service_(storage_service) {
-  // TODO(crbug.com/421398754): Allow Finch to override ordering criteria.
+    UserEducationStorageService& storage_service,
+    const NtpPromoControllerParams& params)
+    : registry_(registry), storage_service_(storage_service), params_(params) {
   order_policy_ = std::make_unique<NtpPromoOrderPolicy>(
-      registry, storage_service, kNumSessionsBetweenTopPromoRotation);
+      registry, storage_service, params_.max_top_spot_sessions);
 }
 
 NtpPromoController::~NtpPromoController() = default;
@@ -224,16 +211,6 @@ void NtpPromoController::SetAllPromosDisabled(bool disabled) {
   storage_service_->SaveNtpPromoPreferences(prefs);
 }
 
-// static
-base::TimeDelta NtpPromoController::GetCompletedPromoShowDurationForTest() {
-  return kCompletedPromoShowDuration;
-}
-
-// static
-base::TimeDelta NtpPromoController::GetClickedPromoHideDurationForTest() {
-  return kClickedPromoHideDuration;
-}
-
 void NtpPromoController::OnPromoShownInTopSpot(NtpPromoIdentifier id) {
   const int current_session = storage_service_->GetSessionNumber();
   // If no data is present, default-construct.
@@ -281,8 +258,39 @@ NtpPromoIdentifier NtpPromoController::GetMostRecentTopSpotPromo() {
 bool NtpPromoController::ArePromosBlocked() const {
   NtpPromoPreferences prefs = storage_service_->ReadNtpPromoPreferences();
   return prefs.disabled ||
-         base::Time::Now() <
-             prefs.last_snoozed + features::GetNtpSetupListSnoozeTime();
+         (!prefs.last_snoozed.is_null() &&
+          base::Time::Now() <
+              prefs.last_snoozed + params_.promos_snoozed_hide_duration);
+}
+
+// Decides whether a promo should be shown or not, based on the supplied
+// data. If this logic becomes more complex, consider pulling it out to a
+// separate file (crbug.com/435159508).
+bool NtpPromoController::ShouldShowPromo(const NtpPromoData& prefs,
+                                         Eligibility eligibility,
+                                         const base::Time& now) {
+  // If an eligible promo has been clicked recently, don't show it again for
+  // a period of time.
+  if (eligibility == Eligibility::kEligible && !prefs.last_clicked.is_null() &&
+      ((now - prefs.last_clicked) < params_.clicked_hide_duration)) {
+    return false;
+  }
+
+  // If the promo reports itself as complete, but was never invoked by the
+  // user, don't show it (eg. user is already signed in).
+  if (eligibility == Eligibility::kCompleted && prefs.last_clicked.is_null()) {
+    return false;
+  }
+
+  // If the promo was marked complete sufficiently long ago, don't show it.
+  // Likewise if the completion time is nonsense (in the future).
+  if (!prefs.completed.is_null() &&
+      ((now - prefs.completed >= params_.completed_show_duration) ||
+       (now < prefs.completed))) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace user_education

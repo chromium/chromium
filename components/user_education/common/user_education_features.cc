@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_split.h"
 #include "base/time/time.h"
 
 namespace user_education::features {
@@ -59,12 +60,40 @@ inline constexpr char kPollingInterval[] = "polling_interval";
 inline constexpr base::TimeDelta kDefaultPollingInterval =
     base::Milliseconds(500);
 
-inline constexpr base::TimeDelta kDefaultNtpSetupListSnoozeTime = base::Days(7);
 inline constexpr char kNtpBrowserPromoTypeOptionName[] = "promo-type";
 inline constexpr std::array<base::FeatureParam<NtpBrowserPromoType>::Option, 2U>
     kNtpBrowserPromoTypeOptions({{NtpBrowserPromoType::kSimple, "simple"},
                                  {NtpBrowserPromoType::kSetupList,
                                   "setuplist"}});
+
+inline constexpr char kNtpBrowserPromoSuppressListName[] = "suppress-list";
+
+inline constexpr char kNtpBrowserPromoMaxTopSpotSessionsName[] =
+    "session-rotation";
+inline constexpr int kDefaultNtpBrowserPromoMaxTopSpotSessions = 3;
+
+inline constexpr char kNtpBrowserPromoCompletedDurationName[] =
+    "completed-duration";
+inline constexpr base::TimeDelta kDefaultNtpBrowserPromoCompletedDuration =
+    base::Days(7);
+
+inline constexpr char kNtpBrowserPromoClickedHideDurationName[] =
+    "clicked-duration";
+inline constexpr base::TimeDelta kDefaultNtpBrowserPromoClickedHideDuration =
+    base::Days(90);
+
+inline constexpr char kNtpBrowserPromosSnoozedHideDurationName[] =
+    "snoozed-duration";
+inline constexpr base::TimeDelta kDefaultNtpBrowserPromosSnoozedHideDuration =
+    base::Days(7);
+
+inline constexpr char kNtpBrowserPromoSetupListPromoLimitName[] =
+    "setup-list-limit";
+inline constexpr int kDefaultNtpBrowserPromoSetupListPromoLimit = 10;
+
+inline constexpr char kNtpBrowserPromoIndividualPromoLimitName[] =
+    "individual-promo-limit";
+inline constexpr int kDefaultNtpBrowserPromoIndividualPromoLimit = 1;
 
 }  // namespace
 
@@ -173,7 +202,7 @@ base::TimeDelta GetPromoControllerPollingInterval() {
 }
 
 base::TimeDelta GetNtpSetupListSnoozeTime() {
-  return kDefaultNtpSetupListSnoozeTime;
+  return GetNtpBrowserPromosSnoozedHideDuration();
 }
 
 BASE_FEATURE(kEnableNtpBrowserPromos,
@@ -192,6 +221,78 @@ NtpBrowserPromoType GetNtpBrowserPromoType() {
     return kNtpBrowserPromoType.Get();
   }
   return NtpBrowserPromoType::kNone;
+}
+
+BASE_FEATURE_PARAM(std::string,
+                   kNtpBrowserPromoSuppressList,
+                   &kEnableNtpBrowserPromos,
+                   kNtpBrowserPromoSuppressListName,
+                   "");
+
+BASE_FEATURE_PARAM(int,
+                   kNtpBrowserPromoMaxTopSpotSessions,
+                   &kEnableNtpBrowserPromos,
+                   kNtpBrowserPromoMaxTopSpotSessionsName,
+                   kDefaultNtpBrowserPromoMaxTopSpotSessions);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kNtpBrowserPromoCompletedDuration,
+                   &kEnableNtpBrowserPromos,
+                   kNtpBrowserPromoCompletedDurationName,
+                   kDefaultNtpBrowserPromoCompletedDuration);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kNtpBrowserPromoClickedHideDuration,
+                   &kEnableNtpBrowserPromos,
+                   kNtpBrowserPromoClickedHideDurationName,
+                   kDefaultNtpBrowserPromoClickedHideDuration);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kNtpBrowserPromosSnoozedHideDuration,
+                   &kEnableNtpBrowserPromos,
+                   kNtpBrowserPromosSnoozedHideDurationName,
+                   kDefaultNtpBrowserPromosSnoozedHideDuration);
+
+BASE_FEATURE_PARAM(int,
+                   kNtpBrowserPromoSetupListPromoLimit,
+                   &kEnableNtpBrowserPromos,
+                   kNtpBrowserPromoSetupListPromoLimitName,
+                   kDefaultNtpBrowserPromoSetupListPromoLimit);
+
+BASE_FEATURE_PARAM(int,
+                   kNtpBrowserPromoIndividualPromoLimit,
+                   &kEnableNtpBrowserPromos,
+                   kNtpBrowserPromoIndividualPromoLimitName,
+                   kDefaultNtpBrowserPromoIndividualPromoLimit);
+
+std::vector<std::string> GetNtpBrowserPromoSuppressList() {
+  const std::string suppressed_list = kNtpBrowserPromoSuppressList.Get();
+  return base::SplitString(suppressed_list, ",", base::TRIM_WHITESPACE,
+                           base::SPLIT_WANT_NONEMPTY);
+}
+
+int GetNtpBrowserPromoMaxTopSpotSessions() {
+  return kNtpBrowserPromoMaxTopSpotSessions.Get();
+}
+
+base::TimeDelta GetNtpBrowserPromoCompletedDuration() {
+  return kNtpBrowserPromoCompletedDuration.Get();
+}
+
+base::TimeDelta GetNtpBrowserPromoClickedHideDuration() {
+  return kNtpBrowserPromoClickedHideDuration.Get();
+}
+
+base::TimeDelta GetNtpBrowserPromosSnoozedHideDuration() {
+  return kNtpBrowserPromosSnoozedHideDuration.Get();
+}
+
+int GetNtpBrowserPromoSetupListPromoLimit() {
+  return kNtpBrowserPromoSetupListPromoLimit.Get();
+}
+
+int GetNtpBrowserPromoIndividualPromoLimit() {
+  return kNtpBrowserPromoIndividualPromoLimit.Get();
 }
 
 }  // namespace user_education::features
