@@ -230,6 +230,11 @@ chromium-metrics-reviews@google.com.
   <variant name="AIv4"/>
 </variants>
 
+<variants name="RenderedTextBasedPredictionModels">
+  <variant name="AIv1"/>
+  <variant name="AIv4"/>
+</variants>
+
 <variants name="SnapshotBasedPredictionModels">
   <variant name="AIv3"/>
   <variant name="AIv4"/>
@@ -1848,6 +1853,19 @@ chromium-metrics-reviews@google.com.
     available model.
   </summary>
   <token key="PredictionModel" variants="RelevanceOutputPredictionModels"/>
+</histogram>
+
+<histogram name="Permissions.{PredictionModel}.RenderedTextAcquireSuccess"
+    enum="BooleanSuccess" expires_after="2025-12-02">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the rendered text was fetched successfully and was suitable
+    as input for model execution. Specifically, we require it to be longer than
+    10 characters to be used as input for the {PredictionModel} model.
+  </summary>
+  <token key="PredictionModel" variants="RenderedTextBasedPredictionModels"/>
 </histogram>
 
 <histogram name="Permissions.{PredictionModel}.Response.{PermissionType}"

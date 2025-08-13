@@ -2083,6 +2083,20 @@ void PermissionUmaUtil::RecordPredictionModelInquireTime(
 }
 
 // static
+void PermissionUmaUtil::RecordRenderedTextAcquireSuccessForAivX(
+    bool success,
+    PredictionModelType model_type) {
+  // Only AIv1 and AIv4 models use the rendered text as input.
+  DCHECK(model_type == PredictionModelType::kOnDeviceAiV1Model ||
+         model_type == PredictionModelType::kOnDeviceAiV4Model);
+
+  std::string success_histogram_name =
+      base::StrCat({"Permissions.", GetPredictionModelString(model_type),
+                    ".RenderedTextAcquireSuccess"});
+  base::UmaHistogramBoolean(success_histogram_name, success);
+}
+
+// static
 void PermissionUmaUtil::RecordSnapshotTakenTimeAndSuccessForAivX(
     bool success,
     base::TimeTicks snapshot_inquire_start_time,
