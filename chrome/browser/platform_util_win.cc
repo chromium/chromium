@@ -14,6 +14,7 @@
 #include <wrl/client.h>
 
 #include "base/base_paths.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -86,6 +87,10 @@ void ShowItemInFolderOnWorkerThread(const base::FilePath& full_path) {
   }
 }
 
+BASE_FEATURE(kEnforceShellExecutePathLimitation,
+             "EnforceShellExecutePathLimitation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 void OpenExternalOnWorkerThread(const GURL& url) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -96,15 +101,22 @@ void OpenExternalOnWorkerThread(const GURL& url) {
   escaped_url.insert(0, "\"");
   escaped_url += "\"";
 
-  // According to Mozilla in uriloader/exthandler/win/nsOSHelperAppService.cpp:
-  // "Some versions of windows (Win2k before SP3, Win XP before SP1) crash in
-  // ShellExecute on long URLs (bug 161357 on bugzilla.mozilla.org). IE 5 and 6
-  // support URLS of 2083 chars in length, 2K is safe."
+  // https://crbug.com/41322340
+  // Previously, ShellExecuteA appeared to crash for Win2K before SP3 and WinXP
+  // before SP1 for long URLs. Chrome no longer supports these OSes and
+  // ShellExecuteA appears robust to crashes even above the Windows system
+  // max path length of 32,767 at least for Win11.
   //
-  // It may be possible to increase this. https://crbug.com/727909
-  const size_t kMaxUrlLength = 2048;
-  if (escaped_url.length() > kMaxUrlLength)
+  // The flag arrangement allows for us to rapidly reinstate the path limitation
+  // in case the tests for ShellExecuteA was wrong.
+  //
+  // TODO(http://crbug.com/438512182): Remove this If there are no crashes
+  // caused by the removal of limitations in the field.
+  constexpr size_t kMaxUrlLength = 2048;
+  if (base::FeatureList::IsEnabled(kEnforceShellExecutePathLimitation) &&
+      escaped_url.length() > kMaxUrlLength) {
     return;
+  }
 
   // Specify %windir%\system32 as the CWD so that any new proc spawned does not
   // inherit this proc's CWD. Without this, uninstalls may be broken by a
