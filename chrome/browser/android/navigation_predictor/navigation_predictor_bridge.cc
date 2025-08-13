@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
+#include "base/containers/extend.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
@@ -31,35 +32,51 @@ SearchEnginePreconnector* GetSearchEnginePreconnector(Profile* profile) {
     return nullptr;
   return navigation_predictor_service->search_engine_preconnector();
 }
+
+// Retrieves all the profiles which is active including OffTheRecord profiles.
+std::vector<Profile*> GetActiveProfiles(Profile* profile) {
+  std::vector<Profile*> profiles{profile};
+  if (profile && SearchEnginePreconnector::ShouldBeEnabledForOffTheRecord()) {
+    base::Extend(profiles, profile->GetAllOffTheRecordProfiles());
+  }
+  return profiles;
+}
 }  // namespace
 
 static void JNI_NavigationPredictorBridge_OnColdStart(JNIEnv* env,
                                                       Profile* profile) {
-  SearchEnginePreconnector* search_engine_preconnector =
-      GetSearchEnginePreconnector(profile);
-  if (!search_engine_preconnector) {
-    return;
+  for (auto* target : GetActiveProfiles(profile)) {
+    SearchEnginePreconnector* search_engine_preconnector =
+        GetSearchEnginePreconnector(target);
+    if (!search_engine_preconnector) {
+      return;
+    }
+    search_engine_preconnector->StartPreconnecting(/*with_startup_delay=*/true);
   }
-  search_engine_preconnector->StartPreconnecting(/*with_startup_delay=*/true);
 }
 
 static void JNI_NavigationPredictorBridge_OnActivityWarmResumed(
     JNIEnv* env,
     Profile* profile) {
-  SearchEnginePreconnector* search_engine_preconnector =
-      GetSearchEnginePreconnector(profile);
-  if (!search_engine_preconnector) {
-    return;
+  for (auto* target : GetActiveProfiles(profile)) {
+    SearchEnginePreconnector* search_engine_preconnector =
+        GetSearchEnginePreconnector(target);
+    if (!search_engine_preconnector) {
+      return;
+    }
+    search_engine_preconnector->StartPreconnecting(
+        /*with_startup_delay=*/false);
   }
-  search_engine_preconnector->StartPreconnecting(/*with_startup_delay=*/false);
 }
 
 static void JNI_NavigationPredictorBridge_OnPause(JNIEnv* env,
                                                   Profile* profile) {
-  SearchEnginePreconnector* search_engine_preconnector =
-      GetSearchEnginePreconnector(profile);
-  if (!search_engine_preconnector) {
-    return;
+  for (auto* target : GetActiveProfiles(profile)) {
+    SearchEnginePreconnector* search_engine_preconnector =
+        GetSearchEnginePreconnector(target);
+    if (!search_engine_preconnector) {
+      return;
+    }
+    search_engine_preconnector->StopPreconnecting();
   }
-  search_engine_preconnector->StopPreconnecting();
 }
