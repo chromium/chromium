@@ -1883,19 +1883,13 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   }
 
   if (net::features::kIpPrivacyEnableIppInDevTools.Get()) {
-    base::Value::Dict devtools_ip_protection_dict;
-    devtools_ip_protection_dict.Set(
-        "enabled", net::features::kIpPrivacyEnableIppInDevTools.Get());
     response_dict.Set("devToolsIpProtectionInDevTools",
-                      std::move(devtools_ip_protection_dict));
+                      base::Value::Dict().Set("enabled", true));
   }
 
   if (net::features::kIpPrivacyEnableIppPanelInDevTools.Get()) {
-    base::Value::Dict devtools_ip_protection_panel_dict;
-    devtools_ip_protection_panel_dict.Set(
-        "enabled", net::features::kIpPrivacyEnableIppPanelInDevTools.Get());
     response_dict.Set("devToolsIpProtectionPanelInDevTools",
-                      std::move(devtools_ip_protection_panel_dict));
+                      base::Value::Dict().Set("enabled", true));
   }
 
   base::Value::Dict deep_links_via_extensibility_api_dict;
