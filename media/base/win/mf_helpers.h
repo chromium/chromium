@@ -45,26 +45,32 @@ inline std::string PrintHr(logging::SystemErrorCode error_code) {
 // See discussion thread at:
 // https://groups.google.com/a/chromium.org/d/msg/cxx/zw5Xmcs--S4/r7Fwb-TsCAAJ
 
-#define RETURN_IF_FAILED(expr)                                          \
-  do {                                                                  \
-    HRESULT hresult = (expr);                                           \
-    if (FAILED(hresult)) {                                              \
+#define RETURN_IF_FAILED(expr)                                         \
+  do {                                                                 \
+    HRESULT hresult = (expr);                                          \
+    if (FAILED(hresult)) {                                             \
       LOG(ERROR) << __func__ << ": failed with \"" << PrintHr(hresult) \
-                  << "\"";                                              \
-      return hresult;                                                   \
-    }                                                                   \
+                 << "\"";                                              \
+      return hresult;                                                  \
+    }                                                                  \
   } while (0)
 
 #define RETURN_ON_FAILURE(success, log, ret) \
   do {                                       \
     if (!(success)) {                        \
-      LOG(ERROR) << log;                    \
+      LOG(ERROR) << log;                     \
       return ret;                            \
     }                                        \
   } while (0)
 
-#define RETURN_ON_HR_FAILURE(hresult, log, ret) \
-  RETURN_ON_FAILURE(SUCCEEDED(hresult), log << ", " << PrintHr(hresult), ret);
+#define RETURN_ON_HR_FAILURE(expr, log, ret)         \
+  do {                                               \
+    HRESULT hresult = (expr);                        \
+    if (FAILED(hresult)) {                           \
+      LOG(ERROR) << log << ", " << PrintHr(hresult); \
+      return ret;                                    \
+    }                                                \
+  } while (0)
 
 // Creates a Media Foundation sample with one buffer of length |buffer_length|
 // on a |align|-byte boundary. Alignment must be a perfect power of 2 or 0.
