@@ -2879,8 +2879,6 @@ crbug.com/435704771 external/wpt/navigation-api/navigation-methods/return-value/
 crbug.com/435620308 external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/438234176 [ Mac14 ] external/wpt/IndexedDB/keygenerator.any.html [ Timeout ]
-crbug.com/438234176 [ Win10.20h2 ] external/wpt/IndexedDB/keygenerator.any.html [ Timeout ]
 crbug.com/438309772 [ Mac14 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/exclusion-filters-require-filters.https.window.html [ Pass Timeout ]
 crbug.com/438309772 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/exclusion-filters-require-filters.https.window.html [ Pass Timeout ]
 crbug.com/438294026 [ Mac14 ] external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html [ Skip Timeout ]
@@ -2909,10 +2907,6 @@ crbug.com/438321211 [ Mac14 ] virtual/dbsc-enabled/external/wpt/device-bound-ses
 crbug.com/438321211 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/session-cookie-has-no-attributes.https.html [ Timeout ]
 crbug.com/438321211 [ Mac14 ] virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/set-authorization.https.html [ Crash ]
 crbug.com/438321211 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/set-authorization.https.html [ Crash ]
-crbug.com/438234176 [ Win10.20h2 ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore_createIndex.any.worker.html [ Timeout ]
-crbug.com/438234176 [ Win10.20h2 ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/key_invalid.any.html [ Timeout ]
-crbug.com/438234176 [ Win10.20h2 ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/keypath_invalid.any.html [ Timeout ]
-crbug.com/438234176 [ Win10.20h2 ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/reading-autoincrement-indexes.any.sharedworker.html [ Timeout ]
 crbug.com/438246977 virtual/threaded/external/wpt/css/css-view-transitions/pseudo-element-overflow-clip-with-border-radius.html [ Failure ]
 crbug.com/438246977 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/pseudo-element-overflow-clip-with-border-radius.html [ Failure ]
 crbug.com/438246977 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-element-overflow-clip-with-border-radius.html [ Failure ]
