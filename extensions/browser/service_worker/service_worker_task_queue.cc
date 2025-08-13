@@ -865,6 +865,7 @@ void ServiceWorkerTaskQueue::OnRegistrationStoredSync(int64_t registration_id,
 }
 
 void ServiceWorkerTaskQueue::OnReportConsoleMessageSync(
+    int render_process_id,
     int64_t version_id,
     const GURL& scope,
     const content::ConsoleMessage& message) {
@@ -885,7 +886,7 @@ void ServiceWorkerTaskQueue::OnReportConsoleMessageSync(
       message.source_url,
       content::ConsoleMessageLevelToLogSeverity(message.message_level),
       -1 /* a service worker does not have a render_view_id */,
-      -1 /* TODO(crbug.com/40771841): Retrieve render_process_id */);
+      render_process_id);
 
   ExtensionsBrowserClient::Get()->ReportError(browser_context_,
                                               std::move(error_instance));

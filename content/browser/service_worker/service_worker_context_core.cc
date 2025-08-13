@@ -1357,8 +1357,10 @@ void ServiceWorkerContextCore::OnReportConsoleMessage(
       version->version_id(), version->scope(), version->key(), console_message);
 
   for (auto& observer : sync_observer_list_->observers) {
-    observer.OnReportConsoleMessageSync(version->version_id(), version->scope(),
-                                        console_message);
+    observer.OnReportConsoleMessageSync(
+        version->embedded_worker() ? version->embedded_worker()->process_id()
+                                   : ChildProcessHost::kInvalidUniqueID,
+        version->version_id(), version->scope(), console_message);
   }
 }
 

@@ -108,7 +108,8 @@ class ServiceWorkerContextObserverSynchronous : public base::CheckedObserver {
 
   // Called when a console message is reported for the service worker with id
   // |version_id|.
-  virtual void OnReportConsoleMessageSync(int64_t version_id,
+  virtual void OnReportConsoleMessageSync(int render_process_id,
+                                          int64_t version_id,
                                           const GURL& scope,
                                           const ConsoleMessage& message) {}
 
