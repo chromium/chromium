@@ -22,67 +22,78 @@ class InstallIntegrationTest(unittest.TestCase):
     def setUp(self):
         """Sets up the test environment."""
         self.tmpdir = tempfile.mkdtemp()
-        self.source_extensions_dir = Path(
-            self.tmpdir) / 'agents' / 'extensions'
+        self.project_root = Path(self.tmpdir) / 'src'
+        self.source_extensions_dir = (
+            self.project_root / 'agents' / 'extensions'
+        )
         self.source_extensions_dir.mkdir(parents=True)
-        self.target_extensions_dir = Path(
-            self.tmpdir) / '.gemini' / 'extensions'
+        self.install_script_path = self.source_extensions_dir / 'install.py'
+        self.install_script_path.touch()
+
+        self.target_extensions_dir = (
+            self.project_root / '.gemini' / 'extensions'
+        )
         self.target_extensions_dir.mkdir(parents=True)
-        self.global_extension_dir = Path(
-            self.tmpdir) / 'home' / '.gemini' / 'extensions'
+        self.global_extension_dir = (
+            Path(self.tmpdir) / 'home' / '.gemini' / 'extensions'
+        )
         self.global_extension_dir.mkdir(parents=True, exist_ok=True)
 
         # Create sample extensions
         self.extension1_dir = self.source_extensions_dir / 'sample_1'
         self.extension1_dir.mkdir()
-        with open(self.extension1_dir / 'gemini-extension.json',
-                  'w',
-                  encoding='utf-8') as f:
+        with open(
+            self.extension1_dir / 'gemini-extension.json', 'w', encoding='utf-8'
+        ) as f:
             f.write('{"name": "sample_1", "version": "1.0.0"}')
         (self.extension1_dir / 'tests').mkdir()
-        with open(self.extension1_dir / 'tests' / 'test.py',
-                  'w',
-                  encoding='utf-8') as f:
+        with open(
+            self.extension1_dir / 'tests' / 'test.py', 'w', encoding='utf-8'
+        ) as f:
             f.write('print("hello")')
 
         self.extension2_dir = self.source_extensions_dir / 'sample_2'
         self.extension2_dir.mkdir()
-        with open(self.extension2_dir / 'gemini-extension.json',
-                  'w',
-                  encoding='utf-8') as f:
+        with open(
+            self.extension2_dir / 'gemini-extension.json', 'w', encoding='utf-8'
+        ) as f:
             f.write('{"name": "sample_2", "version": "2.0.0"}')
 
-        self.internal_extensions_dir = Path(
-            self.tmpdir) / 'internal' / 'agents' / 'extensions'
+        self.internal_extensions_dir = (
+            self.project_root / 'internal' / 'agents' / 'extensions'
+        )
         self.internal_extensions_dir.mkdir(parents=True)
         self.extension3_dir = self.internal_extensions_dir / 'sample_3'
         self.extension3_dir.mkdir()
-        with open(self.extension3_dir / 'gemini-extension.json',
-                  'w',
-                  encoding='utf-8') as f:
+        with open(
+            self.extension3_dir / 'gemini-extension.json', 'w', encoding='utf-8'
+        ) as f:
             f.write('{"name": "sample_3", "version": "3.0.0"}')
 
         # Patch the script's dependencies
-        self.mock_extensions_dirs = patch('install.get_extensions_dirs',
-                                          return_value=[
-                                              self.source_extensions_dir,
-                                              self.internal_extensions_dir
-                                          ])
-        self.mock_project_root = patch('install.get_project_root',
-                                     return_value=Path(self.tmpdir))
-        self.mock_home = patch('pathlib.Path.home',
-                               return_value=Path(self.tmpdir) / 'home')
+        self.mock_extensions_dirs = patch(
+            'install.get_extensions_dirs',
+            return_value=[
+                self.source_extensions_dir,
+                self.internal_extensions_dir,
+            ],
+        )
+        self.mock_install_file = patch(
+            'install.__file__', self.install_script_path
+        )
+        self.mock_home = patch(
+            'pathlib.Path.home', return_value=Path(self.tmpdir) / 'home'
+        )
 
         self.mock_extensions_dirs.start()
-        self.mock_project_root.start()
+        self.mock_install_file.start()
         self.mock_home.start()
 
     def tearDown(self):
         """Tears down the test environment."""
         shutil.rmtree(self.tmpdir)
         self.mock_extensions_dirs.stop()
-        self.mock_project_root.stop()
-        self.mock_home.stop()
+        self.mock_install_file.stop()
 
     def test_list_from_multiple_sources(self):
         """Tests listing extensions from multiple source directories."""

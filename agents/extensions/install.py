@@ -37,21 +37,17 @@ def get_extensions_from_dir(extensions_dir: Path) -> list[str]:
 
 
 def get_project_root() -> Path | None:
-    """Gets the project root using `gclient root`."""
+    """Gets the project root."""
     try:
-        gclient_root = subprocess.check_output(
-            ['gclient', 'root'], encoding='utf-8'
-        ).strip()
-        if gclient_root:
-            project_root = Path(gclient_root) / 'src'
-            if project_root.is_dir():
-                return project_root
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        print(
-            "Error: Could not determine project root. Please ensure 'gclient' "
-            "is in your PATH and that you are in a gclient project.",
-            file=sys.stderr)
-    return None
+        # Derive the `chromium/src` directory from `__file__` because:
+        # 1. We can't assume a valid `git` environment (cogfs with Cider-G).
+        # 2. We can't assume a valid `gclient` environment (e.g., in a `git
+        #    worktree` created by the prompt evaluation script).
+        return Path(__file__).parents[2]
+    except IndexError:
+        print(f"Error: Could not determine project root for {__file__}.",
+              file=sys.stderr)
+        return None
 
 
 def get_extensions_dirs(project_root: Path | None) -> list[Path]:

@@ -292,31 +292,20 @@ class InstallTest(unittest.TestCase):
                 self.assertIn('sample_2', output)
                 self.assertIn('sample_3', output)
 
-    @patch('subprocess.check_output')
-    def test_get_project_root(self, mock_check_output):
-        """get_project_root() can find the root using `gclient root`."""
-        mock_check_output.return_value = str(self.gclient_root)
-        project_root = install.get_project_root()
-        self.assertEqual(project_root, self.project_root)
-
-    @patch('subprocess.check_output', side_effect=FileNotFoundError)
-    def test_get_project_root_gclient_not_found(self, mock_check_output):
-        """Tests get_project_root() when gclient is not found."""
-        with patch('sys.stderr', new_callable=io.StringIO) as mock_stderr:
+    def test_get_project_root(self):
+        """Tests the get_project_root function."""
+        with patch('install.__file__', self.install_script_path):
             project_root = install.get_project_root()
-            self.assertIsNone(project_root)
-            self.assertIn('Could not determine project root',
-                          mock_stderr.getvalue())
+            self.assertEqual(project_root, self.project_root)
 
-    @patch('subprocess.check_output',
-           side_effect=subprocess.CalledProcessError(1, 'gclient'))
-    def test_get_project_root_gclient_fails(self, mock_check_output):
-        """Tests get_project_root() when gclient fails."""
-        with patch('sys.stderr', new_callable=io.StringIO) as mock_stderr:
-            project_root = install.get_project_root()
-            self.assertIsNone(project_root)
-            self.assertIn('Could not determine project root',
-                          mock_stderr.getvalue())
+    def test_get_project_root_error(self):
+        """Tests the get_project_root function when an error occurs."""
+        with patch('install.__file__', Path('invalid/path')):
+            with patch('sys.stderr', new_callable=io.StringIO) as mock_stderr:
+                project_root = install.get_project_root()
+                self.assertIsNone(project_root)
+                self.assertIn('Could not determine project root',
+                              mock_stderr.getvalue())
 
 
 if __name__ == '__main__':
