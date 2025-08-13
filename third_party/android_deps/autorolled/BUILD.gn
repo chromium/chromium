@@ -12,6 +12,13 @@ template("define_autorolled_targets") {
 
   # === Generated Code Start ===
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("com_android_extensions_xr_extensions_xr_java") {
+    jar_path = "autorolled/cipd/libs/com_android_extensions_xr_extensions_xr/extensions-xr-1.0.0.jar"
+    output_name = "com_android_extensions_xr_extensions_xr"
+    enable_bytecode_checks = false
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_google_errorprone_error_prone_annotations_java") {
     jar_path = "autorolled/cipd/libs/com_google_errorprone_error_prone_annotations/error_prone_annotations-2.41.0.jar"
     output_name = "com_google_errorprone_error_prone_annotations"

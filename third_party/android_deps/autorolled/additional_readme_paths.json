@@ -1,5 +1,6 @@
 [
     "committed/libs/com_airbnb_android_lottie",
+    "committed/libs/com_android_extensions_xr_extensions_xr",
     "committed/libs/com_google_android_annotations",
     "committed/libs/com_google_android_datatransport_transport_api",
     "committed/libs/com_google_android_datatransport_transport_backend_cct",
