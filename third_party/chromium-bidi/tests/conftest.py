@@ -567,8 +567,9 @@ def get_cdp_session_id(websocket):
 
 @pytest.fixture
 def query_selector(websocket, context_id):
-    """Return an element matching the given selector"""
-    async def query_selector(selector: str) -> str:
+    """ Return an element matching the given selector in the default or provided
+    browsing context. """
+    async def query_selector(selector: str, context_id=context_id) -> str:
         result = await execute_command(
             websocket, {
                 "method": "script.evaluate",
@@ -588,15 +589,41 @@ def query_selector(websocket, context_id):
 
 @pytest.fixture
 def activate_main_tab(websocket, context_id, get_cdp_session_id):
-    """Actives the main tab"""
-    async def activate_main_tab():
-        session_id = await get_cdp_session_id(context_id)
+    """
+    Activates the tab for the default or given browsing context.
+    """
+    async def get_top_level_context_id(context_id_):
+        """ Returns the top-level context id for the given context id."""
+
+        context_to_top_level_map = {}
+
+        # Build a map from each context_id to its top-level context_id.
+        # This handles nested contexts (e.g., iframes within iframes).
+        def populate_map(contexts, top_level_id):
+            for context_ in contexts:
+                context_to_top_level_map[context_["context"]] = top_level_id
+                if "children" in context_:
+                    populate_map(context_["children"], top_level_id)
+
+        resp = await get_tree(websocket)
+        for context in resp["contexts"]:
+            # Iterate through top-level contexts.
+            populate_map([context], context["context"])
+
+        if context_id_ not in context_to_top_level_map:
+            raise Exception(f"Unknown context_id: {context_id_}")
+
+        # If the initial_context_id is found in the map, return its
+        # corresponding top-level context_id. Otherwise, return the original.
+        return context_to_top_level_map.get(context_id_, context_id_)
+
+    async def activate_main_tab(context_id_=context_id):
+        top_level_context_id = await get_top_level_context_id(context_id_)
         await execute_command(
             websocket, {
-                "method": "goog:cdp.sendCommand",
+                "method": "browsingContext.activate",
                 "params": {
-                    "method": "Page.bringToFront",
-                    "session": session_id
+                    "context": top_level_context_id
                 }
             })
 

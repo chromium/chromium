@@ -680,6 +680,10 @@ export class CdpTarget {
       promises.push(this.setExtraHeaders(config.extraHeaders));
     }
 
+    if (config.scriptingEnabled !== undefined) {
+      promises.push(this.setScriptingEnabled(config.scriptingEnabled));
+    }
+
     if (config.acceptInsecureCerts !== undefined) {
       promises.push(
         this.cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
@@ -848,6 +852,12 @@ export class CdpTarget {
         locale,
       });
     }
+  }
+
+  async setScriptingEnabled(scriptingEnabled: false | null): Promise<void> {
+    await this.cdpClient.sendCommand('Emulation.setScriptExecutionDisabled', {
+      value: scriptingEnabled === false,
+    });
   }
 
   async setTimezoneOverride(timezone: string | null): Promise<void> {

@@ -338,9 +338,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseSetScreenOrientationOverrideParams(command.params),
         );
       case 'emulation.setScriptingEnabled':
-        this.#parser.parseSetScriptingEnabledParams(command.params);
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#emulationProcessor.setScriptingEnabled(
+          this.#parser.parseSetScriptingEnabledParams(command.params),
         );
       case 'emulation.setTimezoneOverride':
         return await this.#emulationProcessor.setTimezoneOverride(

@@ -1932,6 +1932,15 @@ export class BrowsingContextImpl {
   ): Promise<void> {
     await this.#cdpTarget.setScreenOrientationOverride(screenOrientation);
   }
+
+  async setScriptingEnabled(scriptingEnabled: false | null) {
+    await Promise.all(
+      this.#getAllRelatedCdpTargets().map(
+        async (cdpTarget) =>
+          await cdpTarget.setScriptingEnabled(scriptingEnabled),
+      ),
+    );
+  }
 }
 
 export function serializeOrigin(origin: string) {

@@ -142,6 +142,39 @@ export class EmulationProcessor {
     return {};
   }
 
+  async setScriptingEnabled(
+    params: Emulation.SetScriptingEnabledParameters,
+  ): Promise<EmptyResult> {
+    const scriptingEnabled = params.enabled;
+
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+    );
+
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          scriptingEnabled,
+        },
+      );
+    }
+
+    for (const userContextId of params.userContexts ?? []) {
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        scriptingEnabled,
+      });
+    }
+
+    await Promise.all(
+      browsingContexts.map(
+        async (context) => await context.setScriptingEnabled(scriptingEnabled),
+      ),
+    );
+    return {};
+  }
+
   async setScreenOrientationOverride(
     params: Emulation.SetScreenOrientationOverrideParameters,
   ): Promise<EmptyResult> {
