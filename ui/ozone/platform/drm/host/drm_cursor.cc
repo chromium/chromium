@@ -126,6 +126,7 @@ void DrmCursor::OnWindowRemoved(gfx::AcceleratedWidget window) {
       confined_bounds_ = dest_window->GetCursorConfinedBounds();
       SetCursorLocationLocked(gfx::PointF(confined_bounds_.CenterPoint()));
       SendCursorShowLocked();
+      dest_window->GenerateMouseMove(GetLocationWithoutLock());
     } else {
       window_ = gfx::kNullAcceleratedWidget;
       display_bounds_in_screen_ = gfx::Rect();
@@ -148,6 +149,8 @@ void DrmCursor::CommitBoundsChange(
     confined_bounds_ = new_confined_bounds;
     SetCursorLocationLocked(location_);
     SendCursorShowLocked();
+    DrmWindowHost* drm_window_host = window_manager_->GetWindow(window);
+    drm_window_host->GenerateMouseMove(GetLocationWithoutLock());
   }
 }
 
@@ -242,7 +245,7 @@ bool DrmCursor::IsCursorVisible() {
 
 gfx::PointF DrmCursor::GetLocation() {
   base::AutoLock lock(lock_);
-  return location_ + display_bounds_in_screen_.OffsetFromOrigin();
+  return GetLocationWithoutLock();
 }
 
 gfx::Rect DrmCursor::GetCursorConfinedBounds() {
@@ -302,6 +305,11 @@ void DrmCursor::MoveLockTested(gfx::AcceleratedWidget window,
                                const gfx::Point& point) {
   lock_.AssertAcquired();
   proxy_->Move(window, point);
+}
+
+gfx::PointF DrmCursor::GetLocationWithoutLock()
+    EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+  return location_ + display_bounds_in_screen_.OffsetFromOrigin();
 }
 
 }  // namespace ui

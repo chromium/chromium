@@ -92,6 +92,7 @@ class DrmWindowHost : public PlatformWindow,
   void SizeConstraintsChanged() override;
 
   void OnMouseEnter();
+  void GenerateMouseMove(const gfx::PointF& location);
 
   // PlatformEventDispatcher:
   bool CanDispatchEvent(const PlatformEvent& event) override;

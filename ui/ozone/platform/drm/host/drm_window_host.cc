@@ -147,6 +147,11 @@ void DrmWindowHost::MoveCursorTo(const gfx::Point& location) {
   event_factory_->WarpCursorTo(widget_, gfx::PointF(location));
 }
 
+void DrmWindowHost::GenerateMouseMove(const gfx::PointF& location) {
+  window_manager_->ResetWindowMouseCurrentlyOn();
+  event_factory_->GenerateMouseMove(location);
+}
+
 void DrmWindowHost::ConfineCursorToBounds(const gfx::Rect& bounds) {
   if (cursor_confined_bounds_ == bounds)
     return;

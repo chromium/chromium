@@ -466,104 +466,31 @@ WindowTreeHostManager::GetAllRootWindowControllers() {
 }
 
 void WindowTreeHostManager::UpdateMouseLocationAfterDisplayChange() {
-  // If the mouse is currently on a display in native location,
-  // use the same native location. Otherwise find the display closest
-  // to the current cursor location in screen coordinates.
-
-  gfx::Point point_in_screen =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
-  gfx::Point target_location_in_native;
-  int64_t closest_distance_squared = -1;
-  display::DisplayManager* display_manager = GetDisplayManager();
-
-  aura::Window* dst_root_window = nullptr;
-  for (size_t i = 0; i < display_manager->GetNumDisplays(); ++i) {
-    const display::Display& display = display_manager->GetDisplayAt(i);
-    const display::ManagedDisplayInfo display_info =
-        display_manager->GetDisplayInfo(display.id());
-    aura::Window* root_window = GetRootWindowForDisplayId(display.id());
-    if (display_info.bounds_in_native().Contains(
-            cursor_location_in_native_coords_for_restore_)) {
-      dst_root_window = root_window;
-      target_location_in_native = cursor_location_in_native_coords_for_restore_;
-      break;
-    }
-    gfx::Point center = display.bounds().CenterPoint();
-    // Use the distance squared from the center of the display. This is not
-    // exactly "closest" display, but good enough to pick one
-    // appropriate (and there are at most two displays).
-    // We don't care about actual distance, only relative to other displays, so
-    // using the LengthSquared() is cheaper than Length().
-
-    int64_t distance_squared = (center - point_in_screen).LengthSquared();
-    if (closest_distance_squared < 0 ||
-        closest_distance_squared > distance_squared) {
-      ::wm::ConvertPointFromScreen(root_window, &center);
-      root_window->GetHost()->ConvertDIPToScreenInPixels(&center);
-      dst_root_window = root_window;
-      target_location_in_native = center;
-      closest_distance_squared = distance_squared;
-    }
-  }
-
-  gfx::Point target_location_in_root = target_location_in_native;
-  dst_root_window->GetHost()->ConvertScreenInPixelsToDIP(
-      &target_location_in_root);
-
-  gfx::Point target_location_in_screen = target_location_in_root;
-  ::wm::ConvertPointToScreen(dst_root_window, &target_location_in_screen);
-  const display::Display& target_display =
-      display_manager->FindDisplayContainingPoint(target_location_in_screen);
-  // If the original location isn't on any of new display, let ozone move
-  // the cursor.
-  if (!target_display.is_valid())
-    return;
-  int64_t target_display_id = target_display.id();
-
-  // Do not move the cursor if the cursor's location did not change. This avoids
-  // moving (and showing) the cursor:
-  // - At startup.
-  // - When the device is rotated in tablet mode.
-  // |cursor_display_id_for_restore_| is checked to ensure that the cursor is
-  // moved when the cursor's native position does not change but the display
-  // that it is on has changed. This occurs when swapping the primary display.
-  if (target_location_in_native !=
-          cursor_location_in_native_coords_for_restore_ ||
-      target_display_id != cursor_display_id_for_restore_) {
-    if (Shell::Get()->cursor_manager()) {
-      if (Shell::Get()->cursor_manager()->IsCursorVisible()) {
-        dst_root_window->MoveCursorTo(target_location_in_root);
-      } else if (target_display_id != cursor_display_id_for_restore_) {
-        Shell::Get()->cursor_manager()->SetDisplay(target_display);
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
+    // DRM cursor controls how cursor position should be updated on the device
+    // when the display configuration changes.  The following code is a best
+    // effort to emulate DRM's cursor implementation, but not 100% equivalent.
+    auto* screen = display::Screen::GetScreen();
+    auto* cursor_manager = Shell::Get()->cursor_manager();
+    auto display_id = cursor_manager->GetDisplay().id();
+    display::Display display;
+    if (screen->GetDisplayWithDisplayId(display_id, &display)) {
+      cursor_manager->SetDisplay(display);
+      gfx::Point point_in_screen =
+          display::Screen::GetScreen()->GetCursorScreenPoint();
+      if (!display.bounds().Contains(point_in_screen)) {
+        aura::Window* root_window =
+            ash::Shell::GetRootWindowForDisplayId(display_id);
+        CHECK(root_window);
+        // The mouse location is outside of the current display, and the
+        // information about the logical location in that display is already
+        // lost after relayout. Just move the cursor to center point instead in
+        // linux-chromeos environment.
+        gfx::Point center = root_window->bounds().CenterPoint();
+        aura::WindowTreeHost* host = root_window->GetHost();
+        host->MoveCursorToLocationInDIP(center);
       }
     }
-    return;
-  }
-
-  // Convert the screen coords restore location to native, rather than comparing
-  // screen locations directly. Converting back and forth causes floating point
-  // values to be floored at each step, so the conversions must be performed
-  // equally.
-  gfx::Point restore_location_in_native =
-      cursor_location_in_screen_coords_for_restore_;
-  ::wm::ConvertPointFromScreen(dst_root_window, &restore_location_in_native);
-  dst_root_window->GetHost()->ConvertDIPToScreenInPixels(
-      &restore_location_in_native);
-
-  if (target_location_in_native != restore_location_in_native) {
-    // The cursor's native position did not change but its screen position did
-    // change. This occurs when the scale factor or the rotation of the display
-    // that the cursor is on changes.
-    // TODO: conditional should not be necessary. http://crbug.com/631103.
-    if (Shell::Get()->cursor_manager())
-      Shell::Get()->cursor_manager()->SetDisplay(target_display);
-
-    // Update the cursor's root location. This ends up dispatching a synthetic
-    // mouse move. The synthetic mouse move updates the composited cursor's
-    // location and hover effects. Synthetic mouse moves do not affect the
-    // cursor's visibility.
-    dst_root_window->GetHost()->dispatcher()->OnCursorMovedToRootLocation(
-        target_location_in_root);
   }
 }
 

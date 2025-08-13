@@ -72,6 +72,8 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   void WarpCursorTo(gfx::AcceleratedWidget widget,
                     const gfx::PointF& location);
 
+  void GenerateMouseMove(const gfx::PointF& location);
+
   std::unique_ptr<SystemInputInjector> CreateSystemInputInjector();
 
   InputControllerEvdev* input_controller() { return &input_controller_; }

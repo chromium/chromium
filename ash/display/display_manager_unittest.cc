@@ -2579,54 +2579,6 @@ TEST_F(DisplayManagerTest, RotateExternalDisplayWithNonNativeMode) {
   EXPECT_EQ(display::Display::ROTATE_90, external_info.GetActiveRotation());
 }
 
-TEST_F(DisplayManagerTest, UpdateMouseCursorAfterRotateZoom) {
-  // Make sure just rotating will not change native location.
-  UpdateDisplay("300x200,200x150");
-  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
-  aura::Env* env = aura::Env::GetInstance();
-
-  ui::test::EventGenerator generator1(root_windows[0]);
-  ui::test::EventGenerator generator2(root_windows[1]);
-
-  // Test on 1st display.
-  generator1.MoveMouseToInHost(150, 50);
-  EXPECT_EQ(gfx::Point(150, 50), env->last_mouse_location());
-  UpdateDisplay("300x200/r,200x150");
-  EXPECT_EQ(gfx::Point(50, 150), env->last_mouse_location());
-
-  // Test on 2nd display.
-  generator2.MoveMouseToInHost(50, 100);
-  EXPECT_EQ(gfx::Point(250, 100), env->last_mouse_location());
-  UpdateDisplay("300x200/r,200x150/l");
-  EXPECT_EQ(gfx::Point(250, 50), env->last_mouse_location());
-
-  // The native location is now outside, so move to the center
-  // of closest display.
-  UpdateDisplay("300x200/r,100x50/l");
-  EXPECT_EQ(gfx::Point(225, 50), env->last_mouse_location());
-
-  // Make sure just zooming will not change native location.
-  UpdateDisplay("600x400*2,400x300");
-
-  // Test on 1st display.
-  generator1.MoveMouseToInHost(200, 300);
-  EXPECT_EQ(gfx::Point(100, 150), env->last_mouse_location());
-  UpdateDisplay("600x400*2@1.5,400x300");
-  EXPECT_EQ(gfx::Point(66, 100), env->last_mouse_location());
-
-  // Test on 2nd display.
-  UpdateDisplay("600x400,400x300*2");
-  generator2.MoveMouseToInHost(200, 250);
-  EXPECT_EQ(gfx::Point(700, 125), env->last_mouse_location());
-  UpdateDisplay("600x400,400x300*2@1.5");
-  EXPECT_EQ(gfx::Point(666, 84), env->last_mouse_location());
-
-  // The native location is now outside, so move to the
-  // center of closest display.
-  UpdateDisplay("600x400,400x200*2@1.5");
-  EXPECT_EQ(gfx::Point(665, 66), env->last_mouse_location());
-}
-
 class TestDisplayObserver : public display::DisplayObserver {
  public:
   TestDisplayObserver() = default;

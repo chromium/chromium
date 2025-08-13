@@ -60,6 +60,10 @@ class DrmWindowHostManager {
   // Called when a mouse physicall moved into the |window|.
   void MouseOnWindow(DrmWindowHost* window);
 
+  // Reset the `window_mouse_currently_on_` so that next mouse move will invoke
+  // 'PlatformWindowDelegate::OnMouseEnter`.
+  void ResetWindowMouseCurrentlyOn();
+
   // Gets the current widget recipient of mouse events.
   gfx::AcceleratedWidget event_grabber() const { return event_grabber_; }
 

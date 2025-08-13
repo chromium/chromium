@@ -580,6 +580,17 @@ void EventFactoryEvdev::WarpCursorTo(gfx::AcceleratedWidget widget,
               PointerDetails(EventPointerType::kMouse), EventTimeForNow())));
 }
 
+void EventFactoryEvdev::GenerateMouseMove(const gfx::PointF& location) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&EventFactoryEvdev::DispatchMouseMoveEvent,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                MouseMoveEventParams(
+                                    -1 /* device_id */, EF_NONE, location,
+                                    nullptr /* ordinal_delta */,
+                                    PointerDetails(EventPointerType::kMouse),
+                                    EventTimeForNow())));
+}
+
 int EventFactoryEvdev::NextDeviceId() {
   return ++last_device_id_;
 }
