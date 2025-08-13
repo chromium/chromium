@@ -345,6 +345,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kInstanceSwitcherV2,
     &kKeyboardEscBackNavigation,
     &kLensOnQuickActionSearchWidget,
+    &kLoadNativeEarly,
     &kMagicStackAndroid,
     &kMayLaunchUrlUsesSeparateStoragePartition,
     &kMediaIndicatorsAndroid,
@@ -1087,6 +1088,10 @@ BASE_FEATURE(kHomepageIsNewTabPagePolicyAndroid,
 
 BASE_FEATURE(kLegacyTabStateDeprecation,
              "LegacyTabStateDeprecation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLoadNativeEarly,
+             "LoadNativeEarly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLockBackPressHandlerAtStart,

@@ -14809,6 +14809,21 @@
             ]
         }
     ],
+    "LoadNativeEarly": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LoadNativeEarly"
+                    ]
+                }
+            ]
+        }
+    ],
     "LoadingPhaseBufferTimeAfterFirstMeaningfulPaint": [
         {
             "platforms": [

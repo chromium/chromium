@@ -465,6 +465,7 @@ public abstract class ChromeFeatureList {
     public static final String LEGACY_TAB_STATE_DEPRECATION = "LegacyTabStateDeprecation";
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
     public static final String LINKED_SERVICES_SETTING = "LinkedServicesSetting";
+    public static final String LOAD_NATIVE_EARLY = "LoadNativeEarly";
     public static final String LOADING_PREDICTOR_LIMIT_PRECONNECT_SOCKET_COUNT =
             "LoadingPredictorLimitPreconnectSocketCount";
     public static final String LOCAL_NETWORK_ACCESS = "LocalNetworkAccessChecks";
@@ -940,6 +941,9 @@ public abstract class ChromeFeatureList {
                     LEGACY_TAB_STATE_DEPRECATION,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sLoadNativeEarly =
+            newCachedFlag(
+                    LOAD_NATIVE_EARLY, /* defaultValue= */ false, /* defaultValueInTests= */ true);
     public static final CachedFlag sLockBackPressHandlerAtStart =
             newCachedFlag(LOCK_BACK_PRESS_HANDLER_AT_START, true);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, true);
@@ -1171,6 +1175,7 @@ public abstract class ChromeFeatureList {
                     sKeyboardEscBackNavigation,
                     sIncognitoThemeOverlayTesting,
                     sLegacyTabStateDeprecation,
+                    sLoadNativeEarly,
                     sLockBackPressHandlerAtStart,
                     sMagicStackAndroid,
                     sMaliciousApkDownloadCheck,
