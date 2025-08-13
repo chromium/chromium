@@ -21,7 +21,9 @@
         <structure type="lottie" name="IDR_AURA_CURSOR_CONTEXT_MENU_LOTTIE" file="vector/common/pointers/context_menu.json" compress="gzip" />
         <structure type="lottie" name="IDR_AURA_CURSOR_NO_DROP_LOTTIE" file="vector/common/pointers/nodrop.json" compress="gzip" />
         <structure type="lottie" name="IDR_AURA_CURSOR_IBEAM_LOTTIE" file="vector/common/pointers/xterm.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_MOVE_LOTTIE" file="vector/common/pointers/move.json" compress="gzip" />
         <structure type="lottie" name="IDR_AURA_CURSOR_THROBBER_LOTTIE" file="vector/common/pointers/throbber.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_XTERM_HORIZ_LOTTIE" file="vector/common/pointers/xterm_horiz.json" compress="gzip" />
       </if>
     </structures>
   </release>
