@@ -1072,7 +1072,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
 }
 
 // TODO(crbug.com/435271214): Re-enable this test
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_testDeferredFocusedTabStateAtCreation \
   DISABLED_testDeferredFocusedTabStateAtCreation
 #else
