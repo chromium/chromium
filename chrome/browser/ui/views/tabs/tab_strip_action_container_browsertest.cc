@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   ASSERT_THAT(GlicActorButtonContainer()->children(), SizeIs(1));
 
   auto* task_icon_controller =
-      browser()->browser_window_features()->glic_actor_task_icon_controller();
+      tabs::GlicActorTaskIconController::From(browser());
   task_icon_controller->OnStateUpdate(
       actor::ui::ActorUiStateManagerInterface::TaskIconUiState::kShown,
       glic::GlicWindowController::State::kClosed,
@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
 
   auto* task_icon_controller =
-      browser()->browser_window_features()->glic_actor_task_icon_controller();
+      tabs::GlicActorTaskIconController::From(browser());
 
   task_icon_controller->OnStateUpdate(
       actor::ui::ActorUiStateManagerInterface::TaskIconUiState::kNeedsAttention,
@@ -588,7 +588,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        ResetTaskIconOnCheckTaskToActiveStateChange) {
   auto* task_icon_controller =
-      browser()->browser_window_features()->glic_actor_task_icon_controller();
+      tabs::GlicActorTaskIconController::From(browser());
 
   task_icon_controller->OnStateUpdate(
       actor::ui::ActorUiStateManagerInterface::TaskIconUiState::kNeedsAttention,

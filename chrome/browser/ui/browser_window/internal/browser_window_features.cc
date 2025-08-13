@@ -529,10 +529,13 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 
       if (features::kGlicActorUiTaskIcon.Get() &&
           browser_->GetProfile()->IsRegularProfile()) {
+        // Includes browser twice to enable injecting for testing.
         glic_actor_task_icon_controller_ =
-            std::make_unique<tabs::GlicActorTaskIconController>(
-                browser_->GetProfile(), browser_view->tab_strip_region_view()
-                                            ->GetTabStripActionContainer());
+            GetUserDataFactory()
+                .CreateInstance<tabs::GlicActorTaskIconController>(
+                    *browser_, browser_,
+                    browser_view->tab_strip_region_view()
+                        ->GetTabStripActionContainer());
       }
     }
 

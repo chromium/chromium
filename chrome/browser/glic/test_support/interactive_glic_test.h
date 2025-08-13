@@ -430,7 +430,7 @@ class InteractiveGlicTestT : public T {
   // Send a task state update to show the actor task icon in the tab strip.
   void StartTaskAndShowActorTaskIcon() {
     auto* task_icon_controller =
-        browser()->browser_window_features()->glic_actor_task_icon_controller();
+        tabs::GlicActorTaskIconController::From(browser());
     task_icon_controller->OnStateUpdate(
         actor::ui::ActorUiStateManagerInterface::TaskIconUiState::kShown,
         glic::GlicWindowController::State::kClosed,

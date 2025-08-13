@@ -340,6 +340,7 @@ if (!is_android) {
       "//base",
       "//chrome/browser/actor/ui",
       "//components/keyed_service/core",
+      "//ui/base/unowned_user_data",
     ]
     if (enable_glic) {
       public_deps += [ "//chrome/browser/glic" ]

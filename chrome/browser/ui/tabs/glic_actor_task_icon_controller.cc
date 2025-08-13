@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -15,11 +16,13 @@
 
 namespace tabs {
 
+DEFINE_USER_DATA(GlicActorTaskIconController);
 GlicActorTaskIconController::GlicActorTaskIconController(
-    Profile* profile,
+    BrowserWindowInterface* browser,
     TabStripActionContainer* tab_strip_action_container)
-    : profile_(profile),
-      tab_strip_action_container_(tab_strip_action_container) {
+    : profile_(browser->GetProfile()),
+      tab_strip_action_container_(tab_strip_action_container),
+      scoped_data_holder_(browser->GetUnownedUserDataHost(), *this) {
   if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
     RegisterTaskIconStateCallback();
     UpdateCurrentTaskIconUiState();
@@ -27,6 +30,13 @@ GlicActorTaskIconController::GlicActorTaskIconController(
 }
 
 GlicActorTaskIconController::~GlicActorTaskIconController() = default;
+
+// static
+GlicActorTaskIconController* GlicActorTaskIconController::From(
+    BrowserWindowInterface* browser) {
+  return ui::ScopedUnownedUserData<GlicActorTaskIconController>::Get(
+      browser->GetUnownedUserDataHost());
+}
 
 void GlicActorTaskIconController::RegisterTaskIconStateCallback() {
 #if BUILDFLAG(ENABLE_GLIC)

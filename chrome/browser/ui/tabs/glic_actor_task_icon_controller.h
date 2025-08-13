@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -18,9 +19,11 @@ class TabStripActionContainer;
 namespace tabs {
 class GlicActorTaskIconController {
  public:
+  DECLARE_USER_DATA(GlicActorTaskIconController);
   explicit GlicActorTaskIconController(
-      Profile* profile,
+      BrowserWindowInterface* browser,
       TabStripActionContainer* tab_strip_action_container);
+  static GlicActorTaskIconController* From(BrowserWindowInterface* browser);
   GlicActorTaskIconController(const GlicActorTaskIconController&) = delete;
   GlicActorTaskIconController& operator=(
       const GlicActorTaskIconController& other) = delete;
@@ -46,6 +49,8 @@ class GlicActorTaskIconController {
 
   std::vector<base::CallbackListSubscription>
       task_icon_state_change_callback_subscription_;
+
+  ::ui::ScopedUnownedUserData<GlicActorTaskIconController> scoped_data_holder_;
 };
 }  // namespace tabs
 

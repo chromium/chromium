@@ -282,10 +282,6 @@ class BrowserWindowFeatures {
     return glic_nudge_controller_.get();
   }
 
-  tabs::GlicActorTaskIconController* glic_actor_task_icon_controller() {
-    return glic_actor_task_icon_controller_.get();
-  }
-
   TabStripModel* tab_strip_model() { return tab_strip_model_; }
 
   // Returns a pointer to the ToastController for the browser window. This can
