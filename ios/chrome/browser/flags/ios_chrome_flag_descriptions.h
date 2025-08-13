@@ -113,6 +113,9 @@ extern const char kAutofillEnableRankingFormulaCreditCardsDescription[];
 extern const char kAutofillEnableSupportForHomeAndWorkName[];
 extern const char kAutofillEnableSupportForHomeAndWorkDescription[];
 
+extern const char kAutofillEnableSupportForNameAndEmailName[];
+extern const char kAutofillEnableSupportForNameAndEmailDescription[];
+
 extern const char kAutofillIsolatedWorldForJavascriptIOSName[];
 extern const char kAutofillIsolatedWorldForJavascriptIOSDescription[];
 

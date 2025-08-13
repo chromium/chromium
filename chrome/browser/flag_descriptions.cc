@@ -911,6 +911,12 @@ const char kAutofillEnableSupportForHomeAndWorkDescription[] =
     "When enabled, Home and Work addresses from MyAccount are available for "
     "autofilling";
 
+const char kAutofillEnableSupportForNameAndEmailName[] =
+    "Support for name and email addresses in Autofill";
+const char kAutofillEnableSupportForNameAndEmailDescription[] =
+    "When enabled, a name and email profile with data comming from the account "
+    "will be created for autofilling.";
+
 #if BUILDFLAG(IS_ANDROID)
 const char kAutofillEnableSyncingOfPixBankAccountsName[] =
     "Sync Pix bank accounts from Google Payments";

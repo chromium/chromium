@@ -9457,6 +9457,8 @@ from previous Chrome versions.
   <int value="-1707563271" label="LauncherLocalImageSearchRelevance:disabled"/>
   <int value="-1706483123" label="VmStatusPage:enabled"/>
   <int value="-1705594316" label="EnablePendingModePasswordsPromo:enabled"/>
+  <int value="-1705323599"
+      label="AutofillEnableSupportForNameAndEmail:enabled"/>
   <int value="-1704858964" label="DefaultSiteInstanceGroups:disabled"/>
   <int value="-1704630681" label="MediaAppPdfA11yOcr:enabled"/>
   <int value="-1704472714" label="UseMessagesGoogleComDomain:disabled"/>
@@ -12400,6 +12402,8 @@ from previous Chrome versions.
   <int value="-641777884" label="SharedHighlightingManager:enabled"/>
   <int value="-641719457" label="disable-compositor-touch-hit-testing"/>
   <int value="-641423897" label="CompositeAfterPaint:disabled"/>
+  <int value="-641005173"
+      label="AutofillEnableSupportForNameAndEmail:disabled"/>
   <int value="-640915559" label="FastPairHandshakeRefactor:enabled"/>
   <int value="-640191786" label="DesktopPWAsWithoutExtensions:enabled"/>
   <int value="-639070391" label="FreezeUserAgent:disabled"/>
