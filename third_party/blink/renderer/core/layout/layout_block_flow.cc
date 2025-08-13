@@ -142,8 +142,8 @@ void LayoutBlockFlow::AddChildBeforeDescendant(
     LayoutObject* new_child,
     LayoutObject* before_descendant) {
   NOT_DESTROYED();
-  DCHECK(RuntimeEnabledFeatures::LayoutAddChildBeforeDescendantFixEnabled());
   DCHECK_NE(before_descendant->Parent(), this);
+
   LayoutObject* before_descendant_container = before_descendant->Parent();
   while (before_descendant_container->Parent() != this) {
     before_descendant_container = before_descendant_container->Parent();
@@ -196,11 +196,7 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
                                LayoutObject* before_child) {
   NOT_DESTROYED();
   if (before_child && before_child->Parent() != this) {
-    if (RuntimeEnabledFeatures::LayoutAddChildBeforeDescendantFixEnabled()) {
-      AddChildBeforeDescendant(new_child, before_child);
-    } else {
-      AddChildBeforeDescendantDeprecated(new_child, before_child);
-    }
+    AddChildBeforeDescendant(new_child, before_child);
     return;
   }
 

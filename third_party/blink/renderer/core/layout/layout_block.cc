@@ -197,9 +197,9 @@ bool LayoutBlock::RespectsCSSOverflow() const {
 void LayoutBlock::AddChildBeforeDescendant(LayoutObject* new_child,
                                            LayoutObject* before_descendant) {
   NOT_DESTROYED();
-  DCHECK(RuntimeEnabledFeatures::LayoutAddChildBeforeDescendantFixEnabled());
   DCHECK(!IsLayoutBlockFlow());
   DCHECK_NE(before_descendant->Parent(), this);
+
   LayoutObject* before_descendant_container = before_descendant->Parent();
   while (before_descendant_container->Parent() != this) {
     before_descendant_container = before_descendant_container->Parent();
@@ -231,68 +231,11 @@ void LayoutBlock::AddChildBeforeDescendant(LayoutObject* new_child,
   AddChild(new_child, before_child);
 }
 
-void LayoutBlock::AddChildBeforeDescendantDeprecated(
-    LayoutObject* new_child,
-    LayoutObject* before_descendant) {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutAddChildBeforeDescendantFixEnabled());
-  DCHECK_NE(before_descendant->Parent(), this);
-  LayoutObject* before_descendant_container = before_descendant->Parent();
-  while (before_descendant_container->Parent() != this)
-    before_descendant_container = before_descendant_container->Parent();
-  DCHECK(before_descendant_container);
-
-  // We really can't go on if what we have found isn't anonymous. We're not
-  // supposed to use some random non-anonymous object and put the child there.
-  // That's a recipe for security issues.
-  CHECK(before_descendant_container->IsAnonymous());
-
-  // If the requested insertion point is not one of our children, then this is
-  // because there is an anonymous container within this object that contains
-  // the beforeDescendant.
-  if (before_descendant_container->IsAnonymousBlockFlow()) {
-    // Insert the child into the anonymous block box instead of here. Note that
-    // a LayoutOutsideListMarker is out-of-flow for tree building purposes, and
-    // that is not inline level, although IsInline() is true.
-    if ((new_child->IsInline() && !new_child->IsLayoutOutsideListMarker()) ||
-        (new_child->IsFloatingOrOutOfFlowPositioned() && IsLayoutBlockFlow()) ||
-        before_descendant->Parent()->SlowFirstChild() != before_descendant) {
-      before_descendant_container->AddChild(new_child, before_descendant);
-    } else {
-      AddChild(new_child, before_descendant->Parent());
-    }
-    return;
-  }
-
-  DCHECK(before_descendant_container->IsTable());
-  if (new_child->IsTablePart()) {
-    // Insert into the anonymous table.
-    before_descendant_container->AddChild(new_child, before_descendant);
-    return;
-  }
-
-  LayoutObject* before_child =
-      SplitAnonymousBoxesAroundChild(before_descendant);
-
-  DCHECK_EQ(before_child->Parent(), this);
-  if (before_child->Parent() != this) {
-    // We should never reach here. If we do, we need to use the
-    // safe fallback to use the topmost beforeChild container.
-    before_child = before_descendant_container;
-  }
-
-  AddChild(new_child, before_child);
-}
-
 void LayoutBlock::AddChild(LayoutObject* new_child,
                            LayoutObject* before_child) {
   NOT_DESTROYED();
   if (before_child && before_child->Parent() != this) {
-    if (RuntimeEnabledFeatures::LayoutAddChildBeforeDescendantFixEnabled()) {
-      AddChildBeforeDescendant(new_child, before_child);
-    } else {
-      AddChildBeforeDescendantDeprecated(new_child, before_child);
-    }
+    AddChildBeforeDescendant(new_child, before_child);
     return;
   }
 

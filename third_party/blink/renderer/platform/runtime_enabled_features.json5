@@ -2832,10 +2832,6 @@
       public: true,
     },
     {
-      name: "LayoutAddChildBeforeDescendantFix",
-      status: "stable",
-    },
-    {
       name: "LayoutFlexNewRowAlgorithm",
       status: "stable",
     },
