@@ -59,7 +59,6 @@ class SafetyHubMenuNotificationServiceTest
     ChromeRenderViewHostTestHarness::SetUp();
     feature_list_.InitWithFeatures(
         {
-            features::kSafetyHub,
 #if BUILDFLAG(IS_ANDROID)
             features::kSafetyHubFollowup,
 #endif  // BUILDFLAG(IS_ANDROID)

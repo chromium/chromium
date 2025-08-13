@@ -87,7 +87,6 @@ class UnusedSitePermissionsManagerTest
     enabled_features.push_back(
         content_settings::features::
             kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions);
-    enabled_features.push_back(features::kSafetyHub);
     feature_list_.InitWithFeatures(
         /*enabled_features=*/enabled_features,
         /*disabled_features=*/{});
@@ -338,10 +337,7 @@ class UnusedSitePermissionsManagerNameMigrationTest
   UnusedSitePermissionsManagerNameMigrationTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {content_settings::features::kSafetyCheckUnusedSitePermissions,
-         content_settings::features::
-             kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions,
-         features::kSafetyHub},
+        {content_settings::features::kSafetyCheckUnusedSitePermissions},
         /*disabled_features=*/{});
   }
 

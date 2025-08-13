@@ -425,11 +425,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public boolean isSafetyHubEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB);
-    }
-
-    @Override
     public boolean isPermissionAutorevocationEnabled() {
         return UserPrefs.get(mProfile).getBoolean(Pref.UNUSED_SITE_PERMISSIONS_REVOCATION_ENABLED);
     }

@@ -96,7 +96,7 @@ class SafetyHubHandlerTest : public testing::Test {
          content_settings::features::
              kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions,
          features::kSafetyHubExtensionsUwSTrigger,
-         features::kSafetyHubExtensionsOffStoreTrigger, features::kSafetyHub},
+         features::kSafetyHubExtensionsOffStoreTrigger},
         /*disabled_features=*/{});
   }
 

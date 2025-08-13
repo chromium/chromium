@@ -39,7 +39,6 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures({
-    ChromeFeatureList.SAFETY_HUB,
     NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED,
     ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION + ":shadow_run/false"
 })

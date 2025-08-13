@@ -559,8 +559,7 @@ class TestAppMenuModelSafetyHubTest : public AppMenuModelTest {
  public:
   TestAppMenuModelSafetyHubTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSafetyHub,
-                              features::kSafetyHubHaTSOneOffSurvey},
+        /*enabled_features=*/{features::kSafetyHubHaTSOneOffSurvey},
         /*disabled_features=*/{});
   }
 

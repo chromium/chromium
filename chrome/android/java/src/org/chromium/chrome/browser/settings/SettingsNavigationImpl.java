@@ -17,8 +17,6 @@ import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragm
 import org.chromium.chrome.browser.autofill.settings.FinancialAccountsManagementFragment;
 import org.chromium.chrome.browser.autofill.settings.NonCardPaymentMethodsManagementFragment;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
@@ -45,13 +43,9 @@ public class SettingsNavigationImpl implements SettingsNavigation {
                 fragmentArgs =
                         ClearBrowsingDataFragment.createFragmentArgs(context.getClass().getName());
                 break;
-            case SettingsFragment.SAFETY_CHECK:
-                if (!ChromeFeatureList.sSafetyHub.isEnabled()) {
-                    fragmentArgs = SafetyCheckSettingsFragment.createBundle(true);
-                }
-                break;
             case SettingsFragment.MAIN:
             case SettingsFragment.PAYMENT_METHODS:
+            case SettingsFragment.SAFETY_CHECK:
             case SettingsFragment.SITE:
             case SettingsFragment.ACCESSIBILITY:
             case SettingsFragment.GOOGLE_SERVICES:
@@ -108,11 +102,7 @@ public class SettingsNavigationImpl implements SettingsNavigation {
             case SettingsFragment.PAYMENT_METHODS:
                 return AutofillPaymentMethodsFragment.class;
             case SettingsFragment.SAFETY_CHECK:
-                if (ChromeFeatureList.sSafetyHub.isEnabled()) {
-                    return SafetyHubFragment.class;
-                } else {
-                    return SafetyCheckSettingsFragment.class;
-                }
+                return SafetyHubFragment.class;
             case SettingsFragment.SITE:
                 return SiteSettings.class;
             case SettingsFragment.ACCESSIBILITY:

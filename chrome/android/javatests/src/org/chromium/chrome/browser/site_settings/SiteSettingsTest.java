@@ -4052,7 +4052,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testAutorevokePermissionsSwitch() {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -4087,19 +4086,6 @@ public class SiteSettingsTest {
                 });
         histogramExpectation.assertExpected();
 
-        settingsActivity.finish();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @DisableFeatures(ChromeFeatureList.SAFETY_HUB)
-    public void testAutorevokePermissionsSwitchNotDisplayed() {
-        final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
-        final SiteSettings siteSettingsFragment = (SiteSettings) settingsActivity.getMainFragment();
-        // Verify that the preference does not exist.
-        assertNull(
-                siteSettingsFragment.findPreference(SiteSettings.PERMISSION_AUTOREVOCATION_PREF));
         settingsActivity.finish();
     }
 

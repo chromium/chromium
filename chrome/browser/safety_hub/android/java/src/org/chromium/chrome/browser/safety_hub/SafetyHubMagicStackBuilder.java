@@ -14,7 +14,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
@@ -94,12 +93,7 @@ public class SafetyHubMagicStackBuilder implements ModuleProviderBuilder, Module
 
         if (!mProfileSupplier.hasValue()) return false;
 
-        if (!ChromeFeatureList.sSafetyHub.isEnabled()
-                && ChromeFeatureList.sSafetyHubAndroidSurvey.isEnabled()) {
-            SafetyHubHatsHelper.getForProfile(getRegularProfile())
-                    .triggerControlHatsSurvey(mTabModelSelector);
-        }
-        return ChromeFeatureList.sSafetyHub.isEnabled();
+        return true;
     }
 
     private Profile getRegularProfile() {

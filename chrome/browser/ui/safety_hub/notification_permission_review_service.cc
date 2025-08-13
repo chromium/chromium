@@ -55,12 +55,6 @@ NotificationPermissionsReviewService::NotificationPermissionsReviewService(
     : engagement_service_(engagement_service), hcsm_(hcsm) {
   content_settings_observation_.Observe(hcsm);
 
-#if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
   // Disruptive notification revocation overlaps with the notification review
   // module. Disable this module when the disruptive revocation is running.
   if (!IsDisruptiveNotificationRevocationEnabled()) {

@@ -82,7 +82,6 @@ public class SafetyHubFetchServiceTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testAccountPasswordsFetchJobScheduledImmediately_WhenConditionsMet() {
         mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
@@ -98,25 +97,6 @@ public class SafetyHubFetchServiceTest {
     }
 
     @Test
-    @Features.DisableFeatures({
-        ChromeFeatureList.SAFETY_HUB,
-        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
-    })
-    public void testAccountPasswordsFetchJobCancelled_WhenFlagDisabled() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true);
-
-        new SafetyHubFetchService(mProfile).onForegroundSessionStart();
-
-        // Verify prefs are cleaned up when task is cancelled.
-        verify(mPrefService, times(1)).clearPref(Pref.BREACHED_CREDENTIALS_COUNT);
-        verify(mPrefService, times(1)).clearPref(Pref.WEAK_CREDENTIALS_COUNT);
-        verify(mPrefService, times(1)).clearPref(Pref.REUSED_CREDENTIALS_COUNT);
-        verify(mTaskScheduler, times(1)).cancel(any(), eq(TaskIds.SAFETY_HUB_JOB_ID));
-        verify(mTaskScheduler, never()).schedule(any(), mTaskInfoCaptor.capture());
-    }
-
-    @Test
-    @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testAccountPasswordsFetchJobCancelled_WhenSigninStatusChanged_SignOut() {
         mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
@@ -133,7 +113,6 @@ public class SafetyHubFetchServiceTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testAccountPasswordsFetchJobScheduled_WhenSigninStatusChanged_SignIn() {
         mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
@@ -150,7 +129,6 @@ public class SafetyHubFetchServiceTest {
 
     @Test
     @Features.EnableFeatures({
-        ChromeFeatureList.SAFETY_HUB,
         ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
     })
     public void testAccountPasswordsFetchJobCancelled_WhenPasswordManagerNotAvailable() {
@@ -168,10 +146,7 @@ public class SafetyHubFetchServiceTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.SAFETY_HUB,
-        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
-    })
+    @Features.EnableFeatures({ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS})
     public void testAccountPasswordsFetchJobRescheduled_whenFetchFails() {
         mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
@@ -186,10 +161,7 @@ public class SafetyHubFetchServiceTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.SAFETY_HUB,
-        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
-    })
+    @Features.EnableFeatures({ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS})
     public void testAccountPasswordsFetchJobRescheduled_whenFetchFailsForOneCredentialType() {
         mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
@@ -210,10 +182,7 @@ public class SafetyHubFetchServiceTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.SAFETY_HUB,
-        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
-    })
+    @Features.EnableFeatures({ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS})
     public void testAccountPasswordsNextTaskScheduled_whenFetchSucceeds() {
         mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
@@ -243,7 +212,6 @@ public class SafetyHubFetchServiceTest {
 
     @Test
     @Features.EnableFeatures({
-        ChromeFeatureList.SAFETY_HUB,
         ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
     })
@@ -262,7 +230,6 @@ public class SafetyHubFetchServiceTest {
 
     @Test
     @Features.EnableFeatures({
-        ChromeFeatureList.SAFETY_HUB,
         ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
     })
@@ -286,7 +253,6 @@ public class SafetyHubFetchServiceTest {
 
     @Test
     @Features.EnableFeatures({
-        ChromeFeatureList.SAFETY_HUB,
         ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
     })
@@ -312,7 +278,6 @@ public class SafetyHubFetchServiceTest {
 
     @Test
     @Features.EnableFeatures({
-        ChromeFeatureList.SAFETY_HUB,
         ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
         ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
     })
@@ -330,7 +295,6 @@ public class SafetyHubFetchServiceTest {
 
     @Test
     @Features.EnableFeatures({
-        ChromeFeatureList.SAFETY_HUB,
         ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
         ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
     })
@@ -348,7 +312,6 @@ public class SafetyHubFetchServiceTest {
 
     @Test
     @Features.EnableFeatures({
-        ChromeFeatureList.SAFETY_HUB,
         ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
     })
@@ -366,7 +329,6 @@ public class SafetyHubFetchServiceTest {
 
     @Test
     @Features.EnableFeatures({
-        ChromeFeatureList.SAFETY_HUB,
         ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
     })
@@ -391,7 +353,6 @@ public class SafetyHubFetchServiceTest {
 
     @Test
     @Features.EnableFeatures({
-        ChromeFeatureList.SAFETY_HUB,
         ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
     })
@@ -410,7 +371,6 @@ public class SafetyHubFetchServiceTest {
 
     @Test
     @Features.EnableFeatures({
-        ChromeFeatureList.SAFETY_HUB,
         ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
     })

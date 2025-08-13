@@ -142,13 +142,11 @@ RevokedPermissionsService::RevokedPermissionsService(
   pref_change_registrar_->Init(prefs);
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kSafetyHub)) {
     pref_change_registrar_->Add(
         safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled,
         base::BindRepeating(&RevokedPermissionsService::
                                 OnPermissionsAutorevocationControlChanged,
                             base::Unretained(this)));
-  }
 #else   // BUILDFLAG(IS_ANDROID)
   pref_change_registrar_->Add(
       safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled,
@@ -557,12 +555,6 @@ base::WeakPtr<SafetyHubService> RevokedPermissionsService::GetAsWeakRef() {
 }
 
 bool RevokedPermissionsService::IsUnusedSiteAutoRevocationEnabled() {
-#if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
-    return false;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
   return pref_change_registrar_->prefs()->GetBoolean(
       safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled);
 }

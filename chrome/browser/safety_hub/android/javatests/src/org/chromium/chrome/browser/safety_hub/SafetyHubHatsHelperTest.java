@@ -116,15 +116,6 @@ public class SafetyHubHatsHelperTest {
 
     @Test
     @SmallTest
-    public void testTriggerControlHatsSurvey() {
-        SafetyHubHatsHelper safetyHubHatsHelper = new SafetyHubHatsHelper(mProfile);
-        safetyHubHatsHelper.triggerControlHatsSurvey(mTabModelSelector);
-
-        verifyHatsTrigger(SafetyHubHatsHelper.CONTROL_NOTIFICATION_MODULE, false);
-    }
-
-    @Test
-    @SmallTest
     public void testTriggerProactiveHatsSurvey_WhenCardShown() {
         SafetyHubHatsHelper safetyHubHatsHelper = new SafetyHubHatsHelper(mProfile);
         safetyHubHatsHelper.triggerProactiveHatsSurveyWhenCardShown(

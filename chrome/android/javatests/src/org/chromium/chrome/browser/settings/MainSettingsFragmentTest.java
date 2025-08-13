@@ -80,7 +80,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
 import org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
@@ -102,9 +101,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
-import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
@@ -260,15 +257,9 @@ public class MainSettingsFragmentTest {
         mRenderTestRule.render(accountRow, "main_settings_signin_disabled_by_policy_account");
     }
 
-    /**
-     * Test for the "Account" section.
-     *
-     * <p>TODO(b/324562205): update to check for Safety Hub instead of Safety Check once it's fully
-     * launched.
-     */
+    /** Test for the "Account" section. */
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testStartup() {
         startSettings();
 
@@ -317,9 +308,9 @@ public class MainSettingsFragmentTest {
         if (BuildInfo.getInstance().isAutomotive) {
             Assert.assertNull(
                     "Safety check should not be shown on automotive",
-                    mMainSettings.findPreference(MainSettings.PREF_SAFETY_CHECK));
+                    mMainSettings.findPreference(MainSettings.PREF_SAFETY_HUB));
         } else {
-            assertSettingsExists(MainSettings.PREF_SAFETY_CHECK, SafetyCheckSettingsFragment.class);
+            assertSettingsExists(MainSettings.PREF_SAFETY_HUB, SafetyHubFragment.class);
         }
         assertSettingsExists("accessibility", AccessibilitySettings.class);
         assertSettingsExists("content_settings", SiteSettings.class);
@@ -331,7 +322,6 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testConsistentOrder() {
         startSettings();
         @Nullable Preference prevPref = null;
@@ -773,59 +763,6 @@ public class MainSettingsFragmentTest {
     public void testTabsSettingsOn() {
         startSettings();
         assertSettingsExists(MainSettings.PREF_TABS, TabsSettings.class);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.SAFETY_HUB)
-    public void testSafetyHubFlagOn() {
-        startSettings();
-        if (BuildInfo.getInstance().isAutomotive) {
-            Assert.assertNull(
-                    "Safety hub should not be shown on automotive",
-                    mMainSettings.findPreference(MainSettings.PREF_SAFETY_HUB));
-            Assert.assertNull(
-                    "Safety check should not be shown on automotive",
-                    mMainSettings.findPreference(MainSettings.PREF_SAFETY_CHECK));
-            return;
-        }
-
-        assertSettingsExists(MainSettings.PREF_SAFETY_HUB, SafetyHubFragment.class);
-        // Safety check should be hidden when safety hub is enabled.
-        Assert.assertNull(
-                "Safety check setting should be hidden",
-                mMainSettings.findPreference(MainSettings.PREF_SAFETY_CHECK));
-
-        // Verify that the correct metrics are logged.
-        HistogramWatcher histogramExpectation =
-                HistogramWatcher.newSingleRecordWatcher(
-                        SafetyHubMetricUtils.EXTERNAL_INTERACTIONS_HISTOGRAM_NAME,
-                        SafetyHubMetricUtils.ExternalInteractions.OPEN_FROM_SETTINGS_PAGE);
-        onView(withId(R.id.recycler_view))
-                .perform(scrollTo(hasDescendant(withText(R.string.prefs_safety_check))));
-        onView(withText(R.string.prefs_safety_check)).perform(click());
-        histogramExpectation.assertExpected();
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.SAFETY_HUB)
-    public void testSafetyHubFlagOff() {
-        startSettings();
-        if (BuildInfo.getInstance().isAutomotive) {
-            Assert.assertNull(
-                    "Safety hub should not be shown on automotive",
-                    mMainSettings.findPreference(MainSettings.PREF_SAFETY_HUB));
-            Assert.assertNull(
-                    "Safety check should not be shown on automotive",
-                    mMainSettings.findPreference(MainSettings.PREF_SAFETY_CHECK));
-        } else {
-            assertSettingsExists(MainSettings.PREF_SAFETY_CHECK, SafetyCheckSettingsFragment.class);
-            // Safety hub should be hidden when the flag is disabled.
-            Assert.assertNull(
-                    "Safety hub setting should be hidden",
-                    mMainSettings.findPreference(MainSettings.PREF_SAFETY_HUB));
-        }
     }
 
     @Test

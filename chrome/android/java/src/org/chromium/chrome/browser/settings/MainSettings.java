@@ -109,7 +109,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_UI_THEME = "ui_theme";
     public static final String PREF_AUTOFILL_SECTION = "autofill_section";
     public static final String PREF_PRIVACY = "privacy";
-    public static final String PREF_SAFETY_CHECK = "safety_check";
     public static final String PREF_NOTIFICATIONS = "notifications";
     public static final String PREF_DOWNLOADS = "downloads";
     public static final String PREF_DEVELOPER = "developer";
@@ -304,12 +303,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
         }
 
         if (BuildInfo.getInstance().isAutomotive) {
-            getPreferenceScreen().removePreference(findPreference(PREF_SAFETY_CHECK));
-            getPreferenceScreen().removePreference(findPreference(PREF_SAFETY_HUB));
-        } else if (!ChromeFeatureList.sSafetyHub.isEnabled()) {
             getPreferenceScreen().removePreference(findPreference(PREF_SAFETY_HUB));
         } else {
-            getPreferenceScreen().removePreference(findPreference(PREF_SAFETY_CHECK));
             findPreference(PREF_SAFETY_HUB)
                     .setOnPreferenceClickListener(
                             preference -> {

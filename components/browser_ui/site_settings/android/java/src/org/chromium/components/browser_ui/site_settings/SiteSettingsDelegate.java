@@ -231,11 +231,6 @@ public interface SiteSettingsDelegate {
     void getBrowsingDataModel(Callback<BrowsingDataModel> callback);
 
     /**
-     * @return whether the Safety Hub is enabled.
-     */
-    boolean isSafetyHubEnabled();
-
-    /**
      * @return whether the unused site permission autorevocation is enabled.
      */
     boolean isPermissionAutorevocationEnabled();

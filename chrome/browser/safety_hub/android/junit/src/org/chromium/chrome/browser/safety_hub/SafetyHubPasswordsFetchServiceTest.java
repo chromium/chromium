@@ -49,10 +49,7 @@ import java.util.Collection;
 public class SafetyHubPasswordsFetchServiceTest {
     @RunWith(ParameterizedRobolectricTestRunner.class)
     @Batch(Batch.UNIT_TESTS)
-    @Features.EnableFeatures({
-        ChromeFeatureList.SAFETY_HUB,
-        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
-    })
+    @Features.EnableFeatures({ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS})
     public static class SafetyHubPasswordsFetchServiceParamTests {
         private static final String TEST_EMAIL_ADDRESS = "test@email.com";
 
@@ -277,10 +274,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
     @RunWith(BaseRobolectricTestRunner.class)
     @Batch(Batch.UNIT_TESTS)
-    @Features.EnableFeatures({
-        ChromeFeatureList.SAFETY_HUB,
-        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
-    })
+    @Features.EnableFeatures({ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS})
     public static class SafetyHubPasswordsFetchServiceSingleTests {
         @Rule public SafetyHubTestRule mSafetyHubTestRule = new SafetyHubTestRule();
 

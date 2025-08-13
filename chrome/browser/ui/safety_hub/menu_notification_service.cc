@@ -125,8 +125,7 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
         stored_notifications);
   }
 #else   // !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kSafetyHub) &&
-      base::FeatureList::IsEnabled(features::kSafetyHubFollowup)) {
+  if (base::FeatureList::IsEnabled(features::kSafetyHubFollowup)) {
     pref_dict_key_map_.emplace(safety_hub::SafetyHubModuleType::PASSWORDS,
                                "passwords");
     SetInfoElement(

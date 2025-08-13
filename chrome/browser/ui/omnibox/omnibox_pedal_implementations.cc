@@ -429,37 +429,15 @@ class OmniboxPedalRunChromeSafetyCheck : public OmniboxPedal {
   ~OmniboxPedalRunChromeSafetyCheck() override = default;
 
   LabelStrings GetLabelStrings() {
-#if BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(features::kSafetyHub)) {
       return LabelStrings(
           IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2_HINT,
           IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2_SUGGESTION_CONTENTS,
           IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2_SUFFIX,
           IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2);
-    }
-    return LabelStrings(
-        IDS_ANDROID_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_HINT,
-        IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUGGESTION_CONTENTS,
-        IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUFFIX,
-        IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK);
-#else   // BUILDFLAG(IS_ANDROID)
-    return LabelStrings(
-        IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2_HINT,
-        IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2_SUGGESTION_CONTENTS,
-        IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2_SUFFIX,
-        IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2);
-#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   GURL GetUrl() {
-#if BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(features::kSafetyHub)) {
-      return GURL("chrome://settings/safetyCheck");
-    }
-    return GURL("chrome://settings/safetyCheck?activateSafetyCheck");
-#else   // BUILDFLAG(IS_ANDROID)
     return GURL("chrome://settings/safetyCheck");
-#endif  // BUILDFLAG(IS_ANDROID)
   }
 };
 
