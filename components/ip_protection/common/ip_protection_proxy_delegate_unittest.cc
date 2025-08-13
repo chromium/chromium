@@ -452,6 +452,33 @@ TEST_F(IpProtectionProxyDelegateTest, AddsDebugExperimentArm) {
   }
 }
 
+TEST_F(IpProtectionProxyDelegateTest,
+       DoesNotAddDebugExperimentArmToNonIppProxy) {
+  std::map<std::string, std::string> parameters;
+  parameters[net::features::kIpPrivacyDebugExperimentArm.name] = "13";
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy, std::move(parameters));
+
+  auto masked_domain_list_manager = CreateMdlManager(
+      /*first_party_map=*/{});
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  // These will be unused but ensure these not being set isn't the reason for
+  // the header not being added.
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
+  auto delegate = CreateDelegate(ipp_core.get());
+
+  net::HttpRequestHeaders headers;
+  auto non_ipp_chain = net::ProxyChain(net::ProxyServer::FromSchemeHostAndPort(
+      net::ProxyServer::SCHEME_HTTPS, "proxy.com", std::nullopt));
+  EXPECT_THAT(delegate->OnBeforeTunnelRequest(non_ipp_chain,
+                                              /*chain_index=*/0, &headers),
+              IsOk());
+  EXPECT_TRUE(headers.IsEmpty());
+}
+
 TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyDeprioritizesBadProxies) {
   std::map<std::string, std::set<std::string>> first_party_map;
   first_party_map["example.com"] = {};
