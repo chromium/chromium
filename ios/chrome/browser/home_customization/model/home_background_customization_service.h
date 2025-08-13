@@ -7,12 +7,14 @@
 
 #import <string>
 
+#import "base/memory/raw_ref.h"
 #import "base/observer_list.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/values.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/sync/protocol/theme_specifics_ios.pb.h"
 #import "components/sync/protocol/theme_types.pb.h"
-#include "ios/chrome/browser/home_customization/model/framing_coordinates.h"
+#import "ios/chrome/browser/home_customization/model/framing_coordinates.h"
 #import "third_party/skia/include/core/SkColor.h"
 
 class GURL;

@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
+#import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager_factory.h"
 #import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_constants.h"
@@ -105,6 +106,8 @@
       HomeBackgroundCustomizationServiceFactory::GetForProfile(profile);
   image_fetcher::ImageFetcherService* imageFetcherService =
       ImageFetcherServiceFactory::GetForProfile(profile);
+  UserUploadedImageManager* userUploadedImageManager =
+      UserUploadedImageManagerFactory::GetForProfile(profile);
   BrowserViewVisibilityNotifierBrowserAgent*
       browserViewVisibilityNotifierBrowserAgent =
           BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(browser);
@@ -125,6 +128,7 @@
              regionalCapabilitiesService:regionalCapabilitiesService
           backgroundCustomizationService:backgroundCustomizationService
                      imageFetcherService:imageFetcherService
+                userUploadedImageManager:userUploadedImageManager
            browserViewVisibilityNotifier:
                browserViewVisibilityNotifierBrowserAgent
       discoverFeedVisibilityBrowserAgent:discoverFeedVisibilityBrowserAgent

@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/home_customization/model/framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer_bridge.h"
+#import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -174,6 +175,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
       _backgroundCustomizationServiceObserverBridge;
   // Used to fetch and cache images for the background.
   raw_ptr<image_fetcher::ImageFetcherService> _imageFetcherService;
+  raw_ptr<UserUploadedImageManager> _userUploadedImageManager;
   // Observer to keep track of the syncing status.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
   raw_ptr<signin::IdentityManager> _identityManager;
@@ -205,6 +207,8 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
             (HomeBackgroundCustomizationService*)backgroundCustomizationService
                    imageFetcherService:
                        (image_fetcher::ImageFetcherService*)imageFetcherService
+              userUploadedImageManager:
+                  (UserUploadedImageManager*)userUploadedImageManager
          browserViewVisibilityNotifier:
              (BrowserViewVisibilityNotifierBrowserAgent*)
                  browserViewVisibilityNotifierBrowserAgent
@@ -241,6 +245,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
     _regionalCapabilitiesService = regionalCapabilitiesService;
     _backgroundCustomizationService = backgroundCustomizationService;
     _imageFetcherService = imageFetcherService;
+    _userUploadedImageManager = userUploadedImageManager;
     _signedInIdentity =
         _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
     _tracker = tracker;
@@ -640,21 +645,10 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 // with the specified framing coordinates.
 - (void)handleUserUploadedBackground:(const std::string&)imagePath
                   framingCoordinates:(const FramingCoordinates&)coordinates {
-  // Convert file path to NSURL.
-  NSString* imagePathString = base::SysUTF8ToNSString(imagePath);
-  NSURL* imageURL = [NSURL fileURLWithPath:imagePathString];
-
-  // Load the image from disk.
-  NSData* imageData = [NSData dataWithContentsOfURL:imageURL];
-  if (!imageData) {
+  UIImage* image = _userUploadedImageManager->LoadUserUploadedImage(
+      base::FilePath(imagePath));
+  if (!image) {
     // Clear the corrupted data.
-    _backgroundCustomizationService->ClearCurrentUserUploadedBackground();
-    [self.consumer setBackgroundImage:nil];
-    return;
-  }
-
-  UIImage* originalImage = [UIImage imageWithData:imageData];
-  if (!originalImage) {
     _backgroundCustomizationService->ClearCurrentUserUploadedBackground();
     [self.consumer setBackgroundImage:nil];
     return;
@@ -662,7 +656,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 
   // Apply framing coordinates to frame the image.
   UIImage* framedImage = [self applyFramingCoordinates:coordinates
-                                               toImage:originalImage];
+                                               toImage:image];
 
   [self.consumer setBackgroundImage:framedImage];
 }

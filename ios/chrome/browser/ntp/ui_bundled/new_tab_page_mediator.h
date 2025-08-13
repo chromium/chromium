@@ -45,6 +45,7 @@ class PlaceholderService;
 class PrefService;
 class TemplateURLService;
 class UrlLoadingBrowserAgent;
+class UserUploadedImageManager;
 @protocol UserAccountImageUpdateDelegate;
 
 // Mediator for the NTP Home panel, handling the interactions with the
@@ -70,6 +71,8 @@ class UrlLoadingBrowserAgent;
             (HomeBackgroundCustomizationService*)backgroundCustomizationService
                    imageFetcherService:
                        (image_fetcher::ImageFetcherService*)imageFetcherService
+              userUploadedImageManager:
+                  (UserUploadedImageManager*)userUploadedImageManager
          browserViewVisibilityNotifier:
              (BrowserViewVisibilityNotifierBrowserAgent*)
                  browserViewVisibilityNotifierBrowserAgent

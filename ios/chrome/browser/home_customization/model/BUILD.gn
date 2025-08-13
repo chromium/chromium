@@ -26,6 +26,10 @@ source_set("model") {
     "home_customization_background_photo_framing_coordinates.mm",
     "ntp_background_service_factory.h",
     "ntp_background_service_factory.mm",
+    "user_uploaded_image_manager.h",
+    "user_uploaded_image_manager.mm",
+    "user_uploaded_image_manager_factory.h",
+    "user_uploaded_image_manager_factory.mm",
   ]
   deps = [
     "//base",

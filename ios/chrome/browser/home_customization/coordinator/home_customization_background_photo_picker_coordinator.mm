@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/google/model/google_logo_service_factory.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_photo_framing_mediator.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
+#import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager_factory.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_view_controller.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -100,9 +101,11 @@
   if (!_mediator) {
     HomeBackgroundCustomizationService* backgroundService =
         HomeBackgroundCustomizationServiceFactory::GetForProfile(self.profile);
+    UserUploadedImageManager* userUploadedImageManager =
+        UserUploadedImageManagerFactory::GetForProfile(self.profile);
     _mediator = [[HomeCustomizationBackgroundPhotoFramingMediator alloc]
-         initWithFilePath:self.profile->GetStatePath()
-        backgroundService:backgroundService];
+        initWithUserUploadedImageManager:userUploadedImageManager
+                       backgroundService:backgroundService];
   }
 
   // Create the logo vendor
