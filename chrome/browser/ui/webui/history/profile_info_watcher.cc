@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/profile_info_watcher.h"
+#include "chrome/browser/ui/webui/history/profile_info_watcher.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
