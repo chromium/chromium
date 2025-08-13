@@ -943,6 +943,11 @@ extern const char kNewContentForCheckerboardedScrollsDescription[];
 extern const char kNewMacNotificationAPIName[];
 extern const char kNewMacNotificationAPIDescription[];
 
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kNewTabAddsToActiveGroupName[];
+extern const char kNewTabAddsToActiveGroupDescription[];
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_ANDROID)
 extern const char kNewTabPageCustomizationName[];
 extern const char kNewTabPageCustomizationDescription[];

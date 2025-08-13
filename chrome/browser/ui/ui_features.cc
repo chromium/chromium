@@ -627,4 +627,14 @@ BASE_FEATURE(kSessionRestoreInfobar,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kNewTabAddsToActiveGroup,
+             "kNewTabAddsToActiveGroup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsNewTabButtonAddsToActiveGroupEnabled() {
+  return base::FeatureList::IsEnabled(kNewTabAddsToActiveGroup);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace features

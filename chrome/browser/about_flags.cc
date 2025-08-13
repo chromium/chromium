@@ -13093,6 +13093,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableSupportForHomeAndWork)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"new-tab-adds-to-active-group",
+     flag_descriptions::kNewTabAddsToActiveGroupName,
+     flag_descriptions::kNewTabAddsToActiveGroupDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kNewTabAddsToActiveGroup)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_ANDROID)
     {"incognito-theme-overlay-testing",
      flag_descriptions::kIncognitoThemeOverlayTestingName,

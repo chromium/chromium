@@ -369,6 +369,12 @@ BASE_DECLARE_FEATURE_PARAM(bool, kTabSearchToolbarButton);
 
 bool HasTabSearchToolbarButton();
 
+#if !BUILDFLAG(IS_ANDROID)
+// Controls whether to add new tabs to active tab group or to the end of the
+// tab strip.
+BASE_DECLARE_FEATURE(kNewTabAddsToActiveGroup);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Controls whether to show a toast for Chrome non milestone update.
 BASE_DECLARE_FEATURE(kNonMilestoneUpdateToast);
 

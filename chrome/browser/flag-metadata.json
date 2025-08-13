@@ -6858,6 +6858,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "new-tab-adds-to-active-group",
+    "owners": [ "dominicaustria@google.com", "top-chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "new-tab-page-customization",
     "owners": ["hanxi@chromium.org", "yanlinghu@google.com", "clank-start@google.com"],
     "expiry_milestone": 150

@@ -131,6 +131,14 @@ const char kNewContentForCheckerboardedScrollsDescription[] =
     "prioritize the new content over scrolling with the intention of "
     "decreasing the amount of checkerboarded frames.";
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kNewTabAddsToActiveGroupName[] = "Add new tabs to active tab group.";
+
+const char kNewTabAddsToActiveGroupDescription[] =
+    "If enabled, and there is a tab group is focused, then new tabs "
+    "will be added to the focused tab group.";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_ANDROID)
 const char kNewTabPageCustomizationName[] = "Customize the new tab page";
 const char kNewTabPageCustomizationDescription[] =
