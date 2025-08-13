@@ -1488,6 +1488,44 @@ public class EdgeToEdgeControllerTest {
         verify(mEdgeToEdgeDebuggingInfo).uploadReport();
     }
 
+    @Test
+    public void pushSafeAreaInsetUpdate_notDrawingToEdge() {
+        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(false);
+        doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();
+        mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(0, 0);
+        assertBottomInsetForSafeArea(0);
+    }
+
+    @Test
+    public void pushSafeAreaInsetUpdate_drawingToEdgeInFullscreen() {
+        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
+        doReturn(true).when(mFullscreenManager).getPersistentFullscreenMode();
+        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
+        mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(0, 0);
+        assertBottomInsetForSafeArea(0);
+    }
+
+    @Test
+    public void pushSafeAreaInsetUpdate_drawingToEdgeNoPadding() {
+        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
+        doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();
+        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
+        mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(0, 0);
+        assertBottomInsetForSafeArea(BOTTOM_INSET);
+    }
+
+    @Test
+    public void pushSafeAreaInsetUpdate_drawingToEdgeWithKeyboardPadding() {
+        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
+        doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();
+        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
+        mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(IME_INSETS_KEYBOARD);
+
+        mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(0, 0);
+
+        assertBottomInsetForSafeArea(0);
+    }
+
     void assertToEdgeExpectations() {
         // Pad the top only, bottom is ToEdge.
         verify(mOsWrapper, atLeastOnce())

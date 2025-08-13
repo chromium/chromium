@@ -785,7 +785,12 @@ public class EdgeToEdgeControllerImpl
         // when Chrome does not draw into the system bar region. See https://crbug.com/359659885.
         boolean hasBottomSafeArea =
                 (mIsDrawingToEdge && !mFullscreenManager.getPersistentFullscreenMode());
-        int bottomInsetOnSafeArea = hasBottomSafeArea ? mSystemInsets.bottom : 0;
+
+        // When the content view is padded (e.g. when keyboard is showing), we should not count the
+        // padding as part of the bottom safe area.
+        int safeAreaInsets = Math.max(mSystemInsets.bottom - mAppliedContentViewPadding.bottom, 0);
+
+        int bottomInsetOnSafeArea = hasBottomSafeArea ? safeAreaInsets : 0;
         mInsetObserver.updateBottomInsetForEdgeToEdge(bottomInsetOnSafeArea);
     }
 
