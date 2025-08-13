@@ -1,3 +1,5 @@
+@../../../styleguide/java/java.md
+
 # Chrome for Android Instructions
 
 You are building specifically for Chrome for Android, so you can assume that any
