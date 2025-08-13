@@ -352,7 +352,7 @@
     {
         "name": "core",
         "group": "androidx.core",
-        "version": "1.17.0-SNAPSHOT"
+        "version": "1.17.0"
     },
     {
         "name": "core-animation",
@@ -367,7 +367,7 @@
     {
         "name": "core-ktx",
         "group": "androidx.core",
-        "version": "1.17.0-SNAPSHOT"
+        "version": "1.17.0"
     },
     {
         "name": "core-viewtree",
