@@ -21,6 +21,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.metrics.RecordHistogram;
@@ -48,6 +49,7 @@ public class PopupCreator {
     public static final String EXTRA_REQUESTED_WINDOW_FEATURES =
             "chrome.browser.app.tab_activity_glue.PopupCreator.EXTRA_REQUESTED_WINDOW_FEATURES";
 
+    private static final String TAG = "PopupCreator";
     private static @Nullable Boolean sArePopupsEnabledForTesting;
     private static @Nullable ReparentingTask sReparentingTaskForTesting;
     private static @Nullable Insets sInsetsForecastForTesting;
@@ -106,11 +108,13 @@ public class PopupCreator {
         }
 
         if (requestedWindowFeaturesDp == null) {
+            Log.v(TAG, "adjustWindowBounds: requestedWindowFeaturesDp is null -- bailing out");
             return;
         }
 
         final WebContents webContents = activity.getActivityTab().getWebContents();
         if (webContents == null) {
+            Log.w(TAG, "adjustWindowBounds: webContents is null -- bailing out");
             return;
         }
 
@@ -119,10 +123,26 @@ public class PopupCreator {
         final Rect realWindowBoundsPx =
                 new Rect(activity.getWindowManager().getCurrentWindowMetrics().getBounds());
         final Rect targetWindowBoundsPx = new Rect(realWindowBoundsPx);
+        Log.v(
+                TAG,
+                "adjustWindowBounds: current viewport size = ("
+                        + realViewportWidthDp
+                        + " x "
+                        + realViewportHeightDp
+                        + ") [dp]");
+        Log.v(TAG, "adjustWindowBounds: top-level window bounds = " + realWindowBoundsPx + " [px]");
+        Log.v(
+                TAG,
+                "adjustWindowBounds: requested WindowFeatures = "
+                        + requestedWindowFeaturesDp
+                        + " [dp]");
 
         if (requestedWindowFeaturesDp.width != null && requestedWindowFeaturesDp.height != null) {
             final WindowAndroid windowAndroid = activity.getWindowAndroid();
             if (windowAndroid == null) {
+                Log.w(
+                        TAG,
+                        "adjustWindowBounds: activity.getWindowAndroid() is null -- bailing out");
                 return;
             }
 
@@ -161,23 +181,63 @@ public class PopupCreator {
                         "Android.MultiWindowMode.PopupBoundsAdjustment.DeltaHeight.Positive.InDisplay",
                         Math.abs(heightDiffDp));
             }
+
+            Log.v(TAG, "adjustWindowBounds: widthDiffDp = " + widthDiffDp + " dp");
+            Log.v(TAG, "adjustWindowBounds: widthDiffPx = " + widthDiffPx + " px");
+            Log.v(TAG, "adjustWindowBounds: heightDiffDp = " + heightDiffDp + " dp");
+            Log.v(TAG, "adjustWindowBounds: heightDiffPx = " + heightDiffPx + " px");
+            Log.v(TAG, "adjustWindowBounds: display.getDipScale() = " + display.getDipScale());
+
+            final InsetObserver insetObserver = windowAndroid.getInsetObserver();
+            Insets windowInsetsOnSourceDisplay = Insets.NONE;
+            if (insetObserver != null && insetObserver.getLastRawWindowInsets() != null) {
+                windowInsetsOnSourceDisplay =
+                        insetObserver
+                                .getLastRawWindowInsets()
+                                .getInsets(WindowInsetsCompat.Type.captionBar());
+            }
+            Log.v(
+                    TAG,
+                    "adjustWindowBounds: current window insets = "
+                            + windowInsetsOnSourceDisplay
+                            + " [px]");
+            Log.v(
+                    TAG,
+                    "adjustWindowBounds: getTopControlsHeight from activity's BCM = "
+                            + activity.getBrowserControlsManager().getTopControlsHeight()
+                            + " px");
+            Log.v(
+                    TAG,
+                    "adjustWindowBounds: getTopControlsHairlineHeight from activity's BCM = "
+                            + activity.getBrowserControlsManager().getTopControlsHairlineHeight()
+                            + " px");
         }
 
         if (realWindowBoundsPx.equals(targetWindowBoundsPx)) {
+            Log.v(TAG, "adjustWindowBounds: perfect match -- no repositioning required");
             return;
         }
+        Log.v(
+                TAG,
+                "adjustWindowBounds: repositioning required -- current bounds = "
+                        + realWindowBoundsPx
+                        + ", target bounds = "
+                        + targetWindowBoundsPx);
 
         final AconfigFlaggedApiDelegate delegate =
                 ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
         if (delegate == null) {
+            Log.w(TAG, "adjustWindowBounds: AconfigFlaggedApiDelegate is null -- bailing out");
             return;
         }
 
         final AppTask appTask = AndroidTaskUtils.getAppTaskFromId(activity, activity.getTaskId());
         if (appTask == null) {
+            Log.w(TAG, "adjustWindowBounds: cannot find the AppTask -- bailing out");
             return;
         }
 
+        Log.v(TAG, "adjustWindowBounds: dispatching the moveTaskTo call");
         delegate.moveTaskTo(appTask, INVALID_DISPLAY /* current display */, targetWindowBoundsPx);
     }
 
@@ -191,6 +251,7 @@ public class PopupCreator {
             return sInsetsForecastForTesting;
         }
         if (sourceWindow == null) {
+            Log.w(TAG, "getPopupInsetsForecast: sourceWindow is null -- bailing out");
             return Insets.NONE;
         }
 
@@ -207,6 +268,11 @@ public class PopupCreator {
                             .getLastRawWindowInsets()
                             .getInsets(WindowInsetsCompat.Type.captionBar());
         }
+        Log.v(
+                TAG,
+                "getPopupInsetsForecast: windowInsetsOnSourceDisplay = "
+                        + windowInsetsOnSourceDisplay
+                        + " [px]");
 
         final float densityFactor =
                 targetDisplay.getDipScale() / sourceWindow.getDisplay().getDipScale();
@@ -222,14 +288,25 @@ public class PopupCreator {
                                 (windowInsetsOnSourceDisplay.top
                                                 + windowInsetsOnSourceDisplay.bottom)
                                         * densityFactor));
+        Log.v(
+                TAG,
+                "getPopupInsetsForecast: forecastedWindowInsetsOnTargetDisplay = "
+                        + forecastedWindowInsetsOnTargetDisplay
+                        + " [px]");
 
         final int totalTopControlsHeightPx =
                 predictBrowserTopControlsTotalHeightPx(targetDisplayContext);
+        Log.v(
+                TAG,
+                "getPopupInsetsForecast: totalTopControlsHeightPx = "
+                        + totalTopControlsHeightPx
+                        + " px");
 
         final Insets totalInsets =
                 Insets.add(
                         forecastedWindowInsetsOnTargetDisplay,
                         Insets.of(0, 0, 0, totalTopControlsHeightPx));
+        Log.v(TAG, "getPopupInsetsForecast: totalInsets = " + totalInsets + " [px]");
         final Insets invertedTotalInsets = Insets.subtract(Insets.NONE, totalInsets);
         return invertedTotalInsets;
     }
@@ -247,6 +324,16 @@ public class PopupCreator {
                 targetDisplayContext
                         .getResources()
                         .getDimensionPixelSize(R.dimen.toolbar_hairline_height);
+        Log.v(
+                TAG,
+                "predictBrowserTopControlsTotalHeightPx: customTabsHeaderHeightPx = "
+                        + customTabsHeaderHeightPx
+                        + " px");
+        Log.v(
+                TAG,
+                "predictBrowserTopControlsTotalHeightPx: toolbarHairlineHeightPx = "
+                        + toolbarHairlineHeightPx
+                        + " px");
         return customTabsHeaderHeightPx + toolbarHairlineHeightPx;
     }
 
@@ -289,10 +376,12 @@ public class PopupCreator {
             if (localCoordinatesPx.second != null) {
                 if (ChromeFeatureList.isEnabled(
                         ChromeFeatureList.ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS)) {
+                    Log.v(TAG, "createPopupActivityOptions: DO apply insets = " + insets);
                     final Rect outerBounds =
                             WindowInsetsUtils.insetRectangle(localCoordinatesPx.second, insets);
                     activityOptions.setLaunchBounds(outerBounds);
                 } else {
+                    Log.v(TAG, "createPopupActivityOptions: DO NOT apply insets = " + insets);
                     activityOptions.setLaunchBounds(localCoordinatesPx.second);
                 }
             }
