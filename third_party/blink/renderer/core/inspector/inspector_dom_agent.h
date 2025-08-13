@@ -430,7 +430,6 @@ class CORE_EXPORT InspectorDOMAgent final
   HashSet<int> distributed_nodes_requested_;
   HashMap<int, int> cached_child_count_;
   HeapHashSet<WeakMember<Node>> forced_popovers_;
-  HeapHashSet<WeakMember<Node>> popovers_currently_being_hidden_;
   int last_node_id_;
   Member<Document> document_;
   using SearchResults =

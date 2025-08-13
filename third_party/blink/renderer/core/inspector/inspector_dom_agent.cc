@@ -2018,8 +2018,10 @@ protocol::Response InspectorDOMAgent::forceShowPopover(
   if (!enable) {
     if (forced_popovers_.Contains(node)) {
       forced_popovers_.erase(node);
-      popovers_currently_being_hidden_.insert(node);
       HidePopover(node);
+      NodeToIdMap* nodes_map = document_node_to_id_map_.Get();
+      int id = PushNodePathToFrontend(node, nodes_map);
+      (*out_node_ids)->push_back(id);
     }
   } else {
     auto* element = DynamicTo<HTMLElement>(node);
@@ -2029,23 +2031,10 @@ protocol::Response InspectorDOMAgent::forceShowPopover(
 
     bool should_open = forced_popovers_.insert(node).is_new_entry;
     if (should_open && !element->popoverOpen()) {
-      // Insert the current node into the hiding list to signal that we're a
-      // force-open is in progress ...
-      popovers_currently_being_hidden_.insert(node);
       element->ShowPopoverInternal(/*invoker=*/nullptr,
                                    /*exception_state=*/nullptr);
-      // ... and remove it after.
-      popovers_currently_being_hidden_.erase(node);
     }
   }
-  NodeToIdMap* nodes_map = document_node_to_id_map_.Get();
-  for (Node* closed_node : popovers_currently_being_hidden_) {
-    if (closed_node) {
-      int id = PushNodePathToFrontend(closed_node, nodes_map);
-      (*out_node_ids)->push_back(id);
-    }
-  }
-  popovers_currently_being_hidden_.clear();
   return protocol::Response::Success();
 }
 
@@ -2053,15 +2042,7 @@ void InspectorDOMAgent::WillHidePopover(HTMLElement* element,
                                         bool* force_open) {
   if (base::FeatureList::IsEnabled(features::kDevToolsAllowPopoverForcing) &&
       force_open && forced_popovers_.Contains(element)) {
-    if (!popovers_currently_being_hidden_.empty()) {
-      // We are currently in the process of force-hiding a popover, that means
-      // we're getting called during cleanup of the popover stack. Don't keep
-      // this popover open, but record that it's being closed.
-      popovers_currently_being_hidden_.insert(element);
-      forced_popovers_.erase(element);
-    } else {
-      *force_open = true;
-    }
+    *force_open = true;
   }
 }
 
@@ -3190,7 +3171,6 @@ void InspectorDOMAgent::Trace(Visitor* visitor) const {
   visitor->Trace(dom_editor_);
   visitor->Trace(node_to_creation_source_location_map_);
   visitor->Trace(forced_popovers_);
-  visitor->Trace(popovers_currently_being_hidden_);
   InspectorBaseAgent::Trace(visitor);
 }
 
