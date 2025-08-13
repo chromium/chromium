@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
@@ -36,6 +37,12 @@
 #include "content/public/common/content_features.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#endif
 
 namespace internal {
 const char kHistogramPrerenderPredictionStatusDefaultSearchEngine[] =
@@ -459,6 +466,17 @@ PrerenderManager::PrewarmDecision PrerenderManager::ShouldPrewarm(
     // https://wicg.github.io/document-picture-in-picture/#close-on-navigate.
     return PrewarmDecision::kInPictureInPicture;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* browser = chrome::FindBrowserWithTab(web_contents())) {
+    if (browser->app_controller() &&
+        browser->app_controller()->IsIsolatedWebApp()) {
+      // Disable the feature in the Isolated Web App window as it disallows
+      // cross-origin navigation.
+      return PrewarmDecision::kInIsolatedWebApp;
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   return PrewarmDecision::kReady;
 }
