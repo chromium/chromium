@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.74"
 name = "clap_builder"
-version = "4.5.42"
+version = "4.5.44"
 build = false
 include = [
     "build.rs",
@@ -42,22 +42,22 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/clap-rs/clap"
 
 [package.metadata.docs.rs]
-cargo-args = [
-    "-Zunstable-options",
-    "-Zrustdoc-scrape-examples",
-]
 features = ["unstable-doc"]
 rustdoc-args = [
     "--cfg",
     "docsrs",
+]
+cargo-args = [
+    "-Zunstable-options",
+    "-Zrustdoc-scrape-examples",
 ]
 
 [package.metadata.playground]
 features = ["unstable-doc"]
 
 [package.metadata.release]
-dependent-version = "upgrade"
 shared-version = true
+dependent-version = "upgrade"
 tag-name = "v{{version}}"
 
 [features]

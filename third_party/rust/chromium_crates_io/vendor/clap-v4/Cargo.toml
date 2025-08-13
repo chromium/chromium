@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.74"
 name = "clap"
-version = "4.5.42"
+version = "4.5.44"
 build = false
 include = [
     "build.rs",
@@ -58,54 +58,54 @@ tag-name = "v{{version}}"
 
 [[package.metadata.release.pre-release-replacements]]
 file = "CHANGELOG.md"
-min = 1
-replace = "{{version}}"
 search = "Unreleased"
-
-[[package.metadata.release.pre-release-replacements]]
-exactly = 1
-file = "CHANGELOG.md"
-replace = "...{{tag_name}}"
-search = '\.\.\.HEAD'
-
-[[package.metadata.release.pre-release-replacements]]
-file = "CHANGELOG.md"
+replace = "{{version}}"
 min = 1
-replace = "{{date}}"
-search = "ReleaseDate"
 
 [[package.metadata.release.pre-release-replacements]]
-exactly = 1
 file = "CHANGELOG.md"
+search = '\.\.\.HEAD'
+replace = "...{{tag_name}}"
+exactly = 1
+
+[[package.metadata.release.pre-release-replacements]]
+file = "CHANGELOG.md"
+search = "ReleaseDate"
+replace = "{{date}}"
+min = 1
+
+[[package.metadata.release.pre-release-replacements]]
+file = "CHANGELOG.md"
+search = "<!-- next-header -->"
 replace = """
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
 """
-search = "<!-- next-header -->"
+exactly = 1
 
 [[package.metadata.release.pre-release-replacements]]
-exactly = 1
 file = "CHANGELOG.md"
+search = "<!-- next-url -->"
 replace = """
 <!-- next-url -->
 [Unreleased]: https://github.com/clap-rs/clap/compare/{{tag_name}}...HEAD"""
-search = "<!-- next-url -->"
-
-[[package.metadata.release.pre-release-replacements]]
-file = "CITATION.cff"
-replace = "date-released: {{date}}"
-search = "^date-released: ....-..-.."
-
-[[package.metadata.release.pre-release-replacements]]
-file = "CITATION.cff"
-replace = "version: {{version}}"
-search = '^version: .+\..+\..+'
-
-[[package.metadata.release.pre-release-replacements]]
 exactly = 1
+
+[[package.metadata.release.pre-release-replacements]]
+file = "CITATION.cff"
+search = "^date-released: ....-..-.."
+replace = "date-released: {{date}}"
+
+[[package.metadata.release.pre-release-replacements]]
+file = "CITATION.cff"
+search = '^version: .+\..+\..+'
+replace = "version: {{version}}"
+
+[[package.metadata.release.pre-release-replacements]]
 file = "src/lib.rs"
-replace = "blob/v{{version}}/CHANGELOG.md"
 search = 'blob/v.+\..+\..+/CHANGELOG.md'
+replace = "blob/v{{version}}/CHANGELOG.md"
+exactly = 1
 
 [features]
 cargo = ["clap_builder/cargo"]
@@ -509,7 +509,7 @@ doc-scrape-examples = true
 required-features = ["derive"]
 
 [dependencies.clap_builder]
-version = "=4.5.42"
+version = "=4.5.44"
 default-features = false
 
 [dependencies.clap_derive]
