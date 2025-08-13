@@ -16,6 +16,7 @@
         <structure type="lottie" name="IDR_AURA_CURSOR_GRAB_LOTTIE" file="vector/common/pointers/fleur.json" compress="gzip" />
         <structure type="lottie" name="IDR_AURA_CURSOR_GRABBING_LOTTIE" file="vector/common/pointers/hand3.json" compress="gzip" />
         <structure type="lottie" name="IDR_AURA_CURSOR_HAND_LOTTIE" file="vector/common/pointers/hand2.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_HELP_LOTTIE" file="vector/common/pointers/help.json" compress="gzip" />
         <structure type="lottie" name="IDR_AURA_CURSOR_COPY_LOTTIE" file="vector/common/pointers/copy.json" compress="gzip" />
         <structure type="lottie" name="IDR_AURA_CURSOR_CONTEXT_MENU_LOTTIE" file="vector/common/pointers/context_menu.json" compress="gzip" />
         <structure type="lottie" name="IDR_AURA_CURSOR_NO_DROP_LOTTIE" file="vector/common/pointers/nodrop.json" compress="gzip" />
