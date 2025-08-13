@@ -633,8 +633,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 : "Pinned and grouped states are mutually exclusive.";
 
         if (tabGroupId != null && !tabGroupExists(tabGroupId)) {
-            // TODO(crbug.com/429145597): Restore title, color, and collapsed state from persistence
-            // layer.
+            TabGroupVisualDataStore.migrateToTokenKeyedStorage(tab.getRootId(), tabGroupId);
             createDetachedTabGroup(tabGroupId);
         }
         // When migrating to tab collections we cease the use of root id. After reading any
@@ -1338,6 +1337,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public void setTabGroupTitle(Token tabGroupId, @Nullable String title) {
         assertOnUiThread();
+        TabGroupVisualDataStore.storeTabGroupTitle(tabGroupId, title);
         if (mNativeTabCollectionTabModelImplPtr == 0) return;
         TabCollectionTabModelImplJni.get()
                 .updateTabGroupVisualData(
@@ -1354,6 +1354,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public void deleteTabGroupTitle(Token tabGroupId) {
         if (!tabGroupExists(tabGroupId)) return;
+        TabGroupVisualDataStore.deleteTabGroupTitle(tabGroupId);
         setTabGroupTitle(tabGroupId, "");
     }
 
@@ -1381,6 +1382,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public void setTabGroupColor(Token tabGroupId, @TabGroupColorId int color) {
         assertOnUiThread();
+        TabGroupVisualDataStore.storeTabGroupColor(tabGroupId, color);
         if (mNativeTabCollectionTabModelImplPtr == 0) return;
         TabCollectionTabModelImplJni.get()
                 .updateTabGroupVisualData(
@@ -1397,6 +1399,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public void deleteTabGroupColor(Token tabGroupId) {
         if (!tabGroupExists(tabGroupId)) return;
+        TabGroupVisualDataStore.deleteTabGroupColor(tabGroupId);
         setTabGroupColor(tabGroupId, TabGroupColorId.GREY);
     }
 
@@ -1411,6 +1414,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public void setTabGroupCollapsed(Token tabGroupId, boolean isCollapsed, boolean animate) {
         assertOnUiThread();
+        TabGroupVisualDataStore.storeTabGroupCollapsed(tabGroupId, isCollapsed);
         if (mNativeTabCollectionTabModelImplPtr == 0) return;
         TabCollectionTabModelImplJni.get()
                 .updateTabGroupVisualData(
@@ -1427,6 +1431,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public void deleteTabGroupCollapsed(Token tabGroupId) {
         if (!tabGroupExists(tabGroupId)) return;
+        TabGroupVisualDataStore.deleteTabGroupCollapsed(tabGroupId);
         setTabGroupCollapsed(tabGroupId, false, false);
     }
 
@@ -1979,15 +1984,25 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     private void createDetachedTabGroup(Token tabGroupId) {
-        @TabGroupColorId int colorId = TabGroupColorUtils.getNextSuggestedColorId(this);
+        String storedTitle = TabGroupVisualDataStore.getTabGroupTitle(tabGroupId);
+        String title = (storedTitle != null) ? storedTitle : "";
+
+        int storedColorId = TabGroupVisualDataStore.getTabGroupColor(tabGroupId);
+        @TabGroupColorId
+        int colorId =
+                (storedColorId != TabGroupColorUtils.INVALID_COLOR_ID)
+                        ? storedColorId
+                        : TabGroupColorUtils.getNextSuggestedColorId(this);
+
+        boolean isCollapsed = TabGroupVisualDataStore.getTabGroupCollapsed(tabGroupId);
 
         TabCollectionTabModelImplJni.get()
                 .createTabGroup(
                         mNativeTabCollectionTabModelImplPtr,
                         tabGroupId,
-                        /* title= */ "",
+                        title,
                         colorId,
-                        /* isCollapsed= */ false);
+                        isCollapsed);
     }
 
     /**
@@ -2078,6 +2093,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     private void closeDetachedTabGroup(Token tabGroupId) {
+        TabGroupVisualDataStore.deleteAllVisualDataForGroup(tabGroupId);
         TabCollectionTabModelImplJni.get()
                 .closeDetachedTabGroup(mNativeTabCollectionTabModelImplPtr, tabGroupId);
     }

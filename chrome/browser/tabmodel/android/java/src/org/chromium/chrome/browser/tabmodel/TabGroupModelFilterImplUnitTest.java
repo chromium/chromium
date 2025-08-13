@@ -2978,4 +2978,49 @@ public class TabGroupModelFilterImplUnitTest {
         verify(mTabModel).unpinTab(mTab1.getId());
         verify(mTabModel).unpinTab(mTab5.getId());
     }
+
+    @Test
+    public void testMigrationFromTabCollections() {
+        // Reset the setup.
+        mTabs.clear();
+        mTabGroupModelFilter =
+                new TabGroupModelFilterImpl(
+                        mTabModel, mTabUngrouper, /* wasTabCollectionsActive= */ true);
+        mTabGroupModelFilter.addTabGroupObserver(mTabGroupModelFilterObserver);
+
+        // Prepare tabs as if they came from TabCollectionTabModelImpl.
+        Tab tab1 = prepareTab(TAB1_ID, TAB1_ID, TAB2_TAB_GROUP_ID, Tab.INVALID_TAB_ID);
+        Tab tab2 = prepareTab(TAB2_ID, TAB2_ID, TAB2_TAB_GROUP_ID, Tab.INVALID_TAB_ID);
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_ID, TAB5_TAB_GROUP_ID, Tab.INVALID_TAB_ID);
+        Tab tab4 = prepareTab(TAB4_ID, TAB4_ID, TAB5_TAB_GROUP_ID, Tab.INVALID_TAB_ID);
+
+        // Setup visual data store with token-keyed data.
+        TabGroupVisualDataStore.storeTabGroupTitle(TAB2_TAB_GROUP_ID, "Group 1");
+        TabGroupVisualDataStore.storeTabGroupColor(TAB2_TAB_GROUP_ID, TabGroupColorId.BLUE);
+        TabGroupVisualDataStore.storeTabGroupCollapsed(TAB2_TAB_GROUP_ID, true);
+        TabGroupVisualDataStore.storeTabGroupTitle(TAB5_TAB_GROUP_ID, "Group 2");
+        TabGroupVisualDataStore.storeTabGroupColor(TAB5_TAB_GROUP_ID, TabGroupColorId.RED);
+        TabGroupVisualDataStore.storeTabGroupCollapsed(TAB5_TAB_GROUP_ID, false);
+
+        // Add tabs to the model.
+        addTabToTabModel(-1, tab1);
+        addTabToTabModel(-1, tab2);
+        addTabToTabModel(-1, tab3);
+        addTabToTabModel(-1, tab4);
+        mTabGroupModelFilter.restoreCompleted();
+
+        // Verify group re-formation.
+        assertEquals(TAB1_ID, tab1.getRootId());
+        assertEquals(TAB1_ID, tab2.getRootId());
+        assertEquals(TAB3_ID, tab3.getRootId());
+        assertEquals(TAB3_ID, tab4.getRootId());
+
+        // Verify data migration.
+        assertEquals("Group 1", TabGroupVisualDataStore.getTabGroupTitle(TAB1_ID));
+        assertEquals(TabGroupColorId.BLUE, TabGroupVisualDataStore.getTabGroupColor(TAB1_ID));
+        assertTrue(TabGroupVisualDataStore.getTabGroupCollapsed(TAB1_ID));
+        assertEquals("Group 2", TabGroupVisualDataStore.getTabGroupTitle(TAB3_ID));
+        assertEquals(TabGroupColorId.RED, TabGroupVisualDataStore.getTabGroupColor(TAB3_ID));
+        assertFalse(TabGroupVisualDataStore.getTabGroupCollapsed(TAB3_ID));
+    }
 }

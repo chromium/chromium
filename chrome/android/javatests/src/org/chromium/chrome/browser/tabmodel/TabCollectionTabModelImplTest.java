@@ -1401,6 +1401,42 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
+    public void testCloseTabGroup_VisualDataRemoved() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        mergeListOfTabsToGroup(List.of(tab0, tab1), tab0);
+        Token groupId = tab0.getTabGroupId();
+        assertNotNull(groupId);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    String title = "Test title";
+                    mCollectionModel.setTabGroupTitle(groupId, title);
+                    mCollectionModel.setTabGroupColor(groupId, TabGroupColorId.BLUE);
+                    mCollectionModel.setTabGroupCollapsed(groupId, true, false);
+
+                    assertEquals(title, TabGroupVisualDataStore.getTabGroupTitle(groupId));
+                    assertEquals(
+                            TabGroupColorId.BLUE,
+                            TabGroupVisualDataStore.getTabGroupColor(groupId));
+                    assertTrue(TabGroupVisualDataStore.getTabGroupCollapsed(groupId));
+
+                    mCollectionModel.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tab0, tab1))
+                                    .allowUndo(false)
+                                    .build());
+
+                    assertFalse(mCollectionModel.tabGroupExists(groupId));
+                    assertNull(TabGroupVisualDataStore.getTabGroupTitle(groupId));
+                    assertEquals(
+                            TabGroupColorUtils.INVALID_COLOR_ID,
+                            TabGroupVisualDataStore.getTabGroupColor(groupId));
+                    assertFalse(TabGroupVisualDataStore.getTabGroupCollapsed(groupId));
+                });
+    }
+
+    @Test
+    @MediumTest
     public void testRepresentativeTabLogic() {
         // Setup: tab0, {tab1, tab3} (in group), tab2
         Tab tab0 = getTabAt(0);

@@ -958,6 +958,8 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                     mGroupIdToRootIdMap.getOrDefault(tabGroupId, Tab.INVALID_TAB_ID);
             if (migratationRootId != Tab.INVALID_TAB_ID) {
                 tab.setRootId(migratationRootId);
+            } else {
+                TabGroupVisualDataStore.migrateFromTokenKeyedStorage(tabGroupId, tab.getRootId());
             }
         }
 
