@@ -5591,15 +5591,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NetworkService.IpProtection.{ProxyLayer}.TokenCount.{Event}"
     units="tokens" expires_after="2026-01-18">
-  <owner>abhipatel@chromium.org</owner>
+  <owner>awillia@chromium.org</owner>
   <owner>src/components/ip_protection/OWNERS</owner>
   <summary>
     Records the number of IP Protection auth tokens involved in a specific event
-    for {ProxyLayer}. The histogram indicates that {Event}. Allows calculation
-    of tokens lost to other causes (e.g. shutdown) by comparing Issued vs.
-    (Spent + Expired). Recorded when tokens are successfully fetched, spent, or
-    garbage-collected. Expected counts are typically 1 for Spent, and
-    potentially higher for Issued/Expired (up to batch size or cache size).
+    for {ProxyLayer}. The histogram indicates that {Event}. Recorded when tokens
+    are successfully issued, spent, expired, or orphaned. Expected counts are
+    typically 1 for Spent, and potentially higher for other events (up to batch
+    size or cache size).
   </summary>
   <token key="ProxyLayer">
     <variant name="ProxyA"/>
@@ -5608,6 +5607,9 @@ chromium-metrics-reviews@google.com.
   <token key="Event">
     <variant name="Expired" summary="Token removed from cache due to expiry."/>
     <variant name="Issued" summary="Tokens successfully fetched and cached."/>
+    <variant name="Orphaned"
+        summary="Tokens discarded (neither spent nor expired) on network
+                 context destruction."/>
     <variant name="Spent" summary="Token used for a proxy connection."/>
   </token>
 </histogram>

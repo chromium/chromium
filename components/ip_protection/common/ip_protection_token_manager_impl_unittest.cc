@@ -59,6 +59,8 @@ constexpr char kProxyBTokenCountSpentHistogram[] =
     "NetworkService.IpProtection.ProxyB.TokenCount.Spent";
 constexpr char kProxyBTokenCountExpiredHistogram[] =
     "NetworkService.IpProtection.ProxyB.TokenCount.Expired";
+constexpr char kProxyATokenCountOrphanedHistogram[] =
+    "NetworkService.IpProtection.ProxyA.TokenCount.Orphaned";
 
 constexpr base::TimeDelta kTokenLimitExceededDelay = base::Minutes(10);
 constexpr base::TimeDelta kTokenRateMeasurementInterval = base::Minutes(5);
@@ -288,6 +290,38 @@ class IpProtectionTokenManagerImplTest : public testing::Test {
 
   base::HistogramTester histogram_tester_;
 };
+
+TEST_F(IpProtectionTokenManagerImplTest, DtorWithNoTokens) {
+  // No orphaned tokens should be logged if the cache is empty.
+  ipp_proxy_a_token_fetcher_ = nullptr;
+  ipp_proxy_a_token_manager_.reset();
+  histogram_tester_.ExpectTotalCount(kProxyATokenCountOrphanedHistogram, 0);
+}
+
+TEST_F(IpProtectionTokenManagerImplTest, DtorWithOrphanedTokens) {
+  // Add a token to the cache.
+  ipp_proxy_a_token_fetcher_->ExpectTryGetAuthTokensCall(
+      expected_batch_size_, TokenBatch(1, kFutureExpiration, kMountainViewGeo));
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
+
+  // Destroy the token manager and verify that the orphaned token is logged.
+  ipp_proxy_a_token_fetcher_ = nullptr;
+  ipp_proxy_a_token_manager_.reset();
+  histogram_tester_.ExpectUniqueSample(kProxyATokenCountOrphanedHistogram, 1,
+                                       1);
+}
+
+TEST_F(IpProtectionTokenManagerImplTest, DtorWithExpiredTokens) {
+  // Add an expired token to the cache.
+  ipp_proxy_a_token_fetcher_->ExpectTryGetAuthTokensCall(
+      expected_batch_size_, TokenBatch(1, kPastExpiration, kMountainViewGeo));
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
+
+  // Destroy the token manager and verify that no orphaned tokens are logged.
+  ipp_proxy_a_token_fetcher_ = nullptr;
+  ipp_proxy_a_token_manager_.reset();
+  histogram_tester_.ExpectTotalCount(kProxyATokenCountOrphanedHistogram, 0);
+}
 
 // `IsAuthTokenAvailable()` returns false on an empty cache.
 TEST_F(IpProtectionTokenManagerImplTest, IsAuthTokenAvailableFalseEmpty) {

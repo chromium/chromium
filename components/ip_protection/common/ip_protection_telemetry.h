@@ -82,12 +82,15 @@ enum class AuthTokenResultForGeo {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:IpProtectionGetAuthTokenResultForGeo)
 
-// An enumeration of events affecting the token count.
+// An enumeration of events affecting the token count. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
 enum class IpProtectionTokenCountEvent {
   kIssued = 0,
   kSpent = 1,
   kExpired = 2,
-  kMaxValue = kExpired,
+  kOrphaned = 3,
+  kMaxValue = kOrphaned,
 };
 
 // An abstract interface for all of the telemetry associated with IP Protection.
