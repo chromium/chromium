@@ -171,12 +171,16 @@ public class HistoricalTabModelObserver implements TabModelObserver {
         if (tabGroupId == null) return false;
 
         boolean groupExists = mTabGroupModelFilter.tabGroupExists(tabGroupId);
-        if (groupExists
-                && entry.getTabs().size() != mTabGroupModelFilter.getTabCountForGroup(tabGroupId)) {
-            // Case: Group information not lost yet (non-undoable closure). Rely on whether all the
-            // tabs in the group are closing.
-            return true;
-        } else if (!groupExists) {
+        if (groupExists) {
+            List<Tab> tabsInGroup = mTabGroupModelFilter.getTabsInGroup(tabGroupId);
+            if (tabsInGroup.size() != entry.getTabs().size()
+                    || !entry.getTabs().containsAll(tabsInGroup)) {
+                // Case: Group information not lost yet (non-undoable closure). Rely on whether all
+                // the
+                // tabs in the group are closing.
+                return true;
+            }
+        } else {
             // Case: Group information already lost (undoable closure). Rely on whether any unclosed
             // tabs share a tab group id with the closing group.
             TabList comprehensiveModel = mTabGroupModelFilter.getTabModel().getComprehensiveModel();
@@ -196,8 +200,8 @@ public class HistoricalTabModelObserver implements TabModelObserver {
         if (mTabGroupModelFilter.tabGroupExists(tabGroupId)) {
             // Case: Group information not lost yet (non-undoable closure). Rely on whether the tab
             // is the only tab in its tab group.
-            return mTabGroupModelFilter.isTabInTabGroup(tab)
-                    && mTabGroupModelFilter.getTabCountForGroup(tabGroupId) == 1;
+            List<Tab> tabs = mTabGroupModelFilter.getTabsInGroup(tabGroupId);
+            return tabs.size() == 1 && tabs.contains(tab);
         } else {
             // Case: Group information already lost (undoable closure). Rely on whether the tab
             // still has a tab group ID.

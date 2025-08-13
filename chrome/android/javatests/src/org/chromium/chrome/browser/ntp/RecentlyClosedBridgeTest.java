@@ -1730,7 +1730,8 @@ public class RecentlyClosedBridgeTest {
             String[] titles,
             String[] urls) {
         assert titles.length == urls.length;
-        Assert.assertTrue(cls.isInstance(entry));
+        Assert.assertTrue(
+                "Entry was " + entry.getClass() + " wanted " + cls, cls.isInstance(entry));
 
         if (cls == RecentlyClosedTab.class) {
             assert groupTitles.length == 0;
