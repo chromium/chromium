@@ -1297,12 +1297,12 @@ float AudioParamHandler::ValuesForFrameRange(size_t start_frame,
 }
 
 float AudioParamHandler::ValuesForFrameRangeImpl(
-    size_t start_frame,
-    size_t end_frame,
+    const size_t start_frame,
+    const size_t end_frame,
     float default_value,
     base::span<float> values,
-    double sample_rate,
-    double control_rate,
+    const double sample_rate,
+    const double control_rate,
     unsigned render_quantum_frames) {
   DCHECK_GE(values.size(), 1u);
 
@@ -1358,11 +1358,11 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
                    : ParamEvent::Type::kLastType,
         current_frame, sample_rate, control_rate, value);
 
-    float value1 = event->Value();
-    double time1 = event->Time();
+    const float value1 = event->Value();
+    const double time1 = event->Time();
 
     // Check to see if an event was cancelled.
-    auto [value2, time2, next_event_type] = HandleCancelValues(
+    const auto [value2, time2, next_event_type] = HandleCancelValues(
         event, next_event, next_event ? next_event->Value() : value1,
         next_event ? next_event->Time() : end_frame / sample_rate + 1);
 
@@ -1383,34 +1383,29 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
     // However, `time2` can be very large, so compute this carefully in the case
     // where `time2` exceeds the size of a size_t.
 
-    size_t fill_to_end_frame = end_frame;
-    if (end_frame > time2 * sample_rate) {
-      fill_to_end_frame = static_cast<size_t>(ceil(time2 * sample_rate));
-    }
+    const size_t fill_to_end_frame =
+        end_frame > time2 * sample_rate
+            ? static_cast<size_t>(ceil(time2 * sample_rate))
+            : end_frame;
 
     DCHECK_GE(fill_to_end_frame, start_frame);
-    size_t fill_to_frame = fill_to_end_frame - start_frame;
-    fill_to_frame = std::min(fill_to_frame, values.size());
+    const size_t fill_to_frame =
+        std::min(fill_to_end_frame - start_frame, values.size());
     // Time should be monotonically forward. So `fill_to_frame` should be
     // greater than or equal to `write_index`. We have ensured that the time
     // does not overlap when inserting events.
     CHECK_GE(fill_to_frame, write_index);
 
-    const AutomationState current_state = {
-        start_frame,  end_frame,     sample_rate,
-        control_rate, fill_to_frame, fill_to_end_frame,
-        value1,       time1,         value2,
-        time2,        event,         i,
-    };
-
     // First handle linear and exponential ramps which require looking ahead to
     // the next event.
     if (next_event_type == ParamEvent::Type::kLinearRampToValue) {
       std::tie(current_frame, value, write_index) = ProcessLinearRamp(
-          current_state, values, current_frame, value, write_index);
+          fill_to_frame, time1, time2, value1, value2, sample_rate, values,
+          current_frame, value, write_index);
     } else if (next_event_type == ParamEvent::Type::kExponentialRampToValue) {
       std::tie(current_frame, value, write_index) = ProcessExponentialRamp(
-          current_state, values, current_frame, value, write_index);
+          fill_to_frame, time1, time2, value1, value2, sample_rate, values,
+          current_frame, value, write_index);
     } else {
       // Handle event types not requiring looking ahead to the next event.
       switch (event->GetType()) {
@@ -1428,8 +1423,10 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
         }
 
         case ParamEvent::Type::kCancelValues: {
-          std::tie(current_frame, value, write_index) = ProcessCancelValues(
-              current_state, values, current_frame, value, write_index);
+          std::tie(current_frame, value, write_index) =
+              ProcessCancelValues(fill_to_frame, time1, sample_rate,
+                                  control_rate, fill_to_end_frame, event, i,
+                                  values, current_frame, value, write_index);
           break;
         }
 
@@ -1447,14 +1444,18 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
         }
 
         case ParamEvent::Type::kSetTarget: {
-          std::tie(current_frame, value, write_index) = ProcessSetTarget(
-              current_state, values, current_frame, value, write_index);
+          std::tie(current_frame, value, write_index) =
+              ProcessSetTarget(fill_to_frame, time1, value1, sample_rate,
+                               control_rate, fill_to_end_frame, event, values,
+                               current_frame, value, write_index);
           break;
         }
 
         case ParamEvent::Type::kSetValueCurve: {
           std::tie(current_frame, value, write_index) = ProcessSetValueCurve(
-              current_state, values, current_frame, value, write_index);
+              fill_to_frame, time1, sample_rate, start_frame, end_frame,
+              fill_to_end_frame, event, values, current_frame, value,
+              write_index);
           break;
         }
         case ParamEvent::Type::kLastType:
@@ -1747,18 +1748,16 @@ AudioParamHandler::HandleCancelValues(const ParamEvent* current_event,
 }
 
 std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessLinearRamp(
-    const AutomationState& current_state,
+    const size_t fill_to_frame,
+    const double time1,
+    const double time2,
+    const float value1,
+    const float value2,
+    const double sample_rate,
     base::span<float> values,
     size_t current_frame,
     float value,
     unsigned write_index) {
-  auto fill_to_frame = current_state.fill_to_frame;
-  auto time1 = current_state.time1;
-  auto time2 = current_state.time2;
-  auto value1 = current_state.value1;
-  auto value2 = current_state.value2;
-  auto sample_rate = current_state.sample_rate;
-
   double delta_time = time2 - time1;
   DCHECK_GE(delta_time, 0);
   // Since delta_time is a double, 1/delta_time can easily overflow a float.
@@ -1827,18 +1826,16 @@ std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessLinearRamp(
 }
 
 std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessExponentialRamp(
-    const AutomationState& current_state,
+    const size_t fill_to_frame,
+    const double time1,
+    const double time2,
+    const float value1,
+    const float value2,
+    const double sample_rate,
     base::span<float> values,
     size_t current_frame,
     float value,
     unsigned write_index) {
-  auto fill_to_frame = current_state.fill_to_frame;
-  auto time1 = current_state.time1;
-  auto time2 = current_state.time2;
-  auto value1 = current_state.value1;
-  auto value2 = current_state.value2;
-  auto sample_rate = current_state.sample_rate;
-
   DCHECK_GE(fill_to_frame, write_index);
   if (value1 * value2 <= 0 || time1 >= time2) {
     // It's an error 1) if `value1` and `value2` have opposite signs or if one
@@ -1900,18 +1897,17 @@ std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessExponentialRamp(
 }
 
 std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessSetTarget(
-    const AutomationState& current_state,
+    const size_t fill_to_frame,
+    const double time1,
+    const float value1,
+    const double sample_rate,
+    const double control_rate,
+    const size_t fill_to_end_frame,
+    const ParamEvent* const event,
     base::span<float> values,
     size_t current_frame,
     float value,
     unsigned write_index) {
-  auto fill_to_frame = current_state.fill_to_frame;
-  auto time1 = current_state.time1;
-  auto value1 = current_state.value1;
-  auto sample_rate = current_state.sample_rate;
-  auto control_rate = current_state.control_rate;
-  auto fill_to_end_frame = current_state.fill_to_end_frame;
-  auto* event = current_state.event.get();
   DCHECK_GE(fill_to_frame, write_index);
 
   // Exponential approach to target value with given time constant.
@@ -2019,18 +2015,17 @@ std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessSetTarget(
 }
 
 std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessSetValueCurve(
-    const AutomationState& current_state,
+    size_t fill_to_frame,
+    const double time1,
+    const double sample_rate,
+    const size_t start_frame,
+    const size_t end_frame,
+    size_t fill_to_end_frame,
+    const ParamEvent* const event,
     base::span<float> values,
     size_t current_frame,
     float value,
     unsigned write_index) {
-  auto fill_to_frame = current_state.fill_to_frame;
-  auto time1 = current_state.time1;
-  auto sample_rate = current_state.sample_rate;
-  auto start_frame = current_state.start_frame;
-  auto end_frame = current_state.end_frame;
-  auto fill_to_end_frame = current_state.fill_to_end_frame;
-  auto* event = current_state.event.get();
   DCHECK_GE(fill_to_frame, write_index);
 
   base::span<const float> curve_data(event->Curve());
@@ -2220,18 +2215,17 @@ std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessSetValueCurve(
 }
 
 std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessCancelValues(
-    const AutomationState& current_state,
+    const size_t fill_to_frame,
+    const double time1,
+    const double sample_rate,
+    const double control_rate,
+    const size_t fill_to_end_frame,
+    const ParamEvent* const event,
+    const int event_index,
     base::span<float> values,
     size_t current_frame,
     float value,
     unsigned write_index) {
-  auto fill_to_frame = current_state.fill_to_frame;
-  auto time1 = current_state.time1;
-  auto sample_rate = current_state.sample_rate;
-  auto control_rate = current_state.control_rate;
-  auto fill_to_end_frame = current_state.fill_to_end_frame;
-  auto* event = current_state.event.get();
-  auto event_index = current_state.event_index;
   DCHECK_GE(fill_to_frame, write_index);
 
   // If the previous event was a SetTarget or ExponentialRamp
