@@ -400,7 +400,10 @@ def __rules(ctx):
             "remote": config.get(ctx, "remote-link"),
             "canonicalize_dir": True,
             "platform_ref": "large",
-            "timeout": "60m" if use_thin_lto else "10m",
+            # Remote linking with ThinLTO takes much longer.
+            # Linking browser_tests takes 50m locally. On remote with gVisor,
+            # it takes even more.
+            "timeout": "80m" if use_thin_lto else "10m",
         },
     ])
     return rules
