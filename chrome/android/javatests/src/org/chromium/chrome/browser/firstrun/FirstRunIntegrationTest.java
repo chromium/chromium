@@ -44,6 +44,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BuildInfo;
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
@@ -58,6 +59,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -930,7 +932,6 @@ public class FirstRunIntegrationTest {
     }
 
     private void setUpLocaleManagerDelegate(@SearchEnginePromoType final int searchPromoType) {
-        // Force the LocaleManager into a specific state.
         LocaleManagerDelegate mockDelegate =
                 new LocaleManagerDelegate() {
                     @Override
@@ -943,6 +944,13 @@ public class FirstRunIntegrationTest {
                         return TemplateUrlServiceFactory.getForProfile(
                                         ProfileManager.getLastUsedRegularProfile())
                                 .getTemplateUrls();
+                    }
+
+                    @Override
+                    public void showSearchEnginePromoIfNeeded(
+                            final Activity activity,
+                            final @Nullable Callback<Boolean> onSearchEngineFinalized) {
+                        // Do nothing to avoid showing {@link DefaultSearchEngineDialogCoordinator}.
                     }
                 };
         ThreadUtils.runOnUiThreadBlocking(
