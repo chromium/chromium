@@ -496,6 +496,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.AIv4.TryCancelPreviousEmbeddingsModelExecution"
+    enum="BooleanSuccess" expires_after="2025-12-02">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether there still is an ongoing execution of the passage
+    embeddings model when we try to call it again.
+  </summary>
+</histogram>
+
 <histogram
     name="Permissions.AndroidSystemLevel.{SystemPermissionType}.Prompt.Shown"
     enum="Boolean" expires_after="2026-01-04">

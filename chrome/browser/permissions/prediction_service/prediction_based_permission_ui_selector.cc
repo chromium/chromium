@@ -896,9 +896,13 @@ void PredictionBasedPermissionUiSelector::
               profile_)) {
     if (auto* passage_embedder =
             prediction_model_handler_provider->GetPassageEmbedder()) {
-      if (passage_embeddings_task_id_ != std::nullopt) {
+      bool previous_task_needs_canceling =
+          (passage_embeddings_task_id_ != std::nullopt);
+      PermissionUmaUtil::RecordTryCancelPreviousEmbeddingsModelExecution(
+          previous_task_needs_canceling,
+          PredictionModelType::kOnDeviceAiV4Model);
+      if (previous_task_needs_canceling) {
         VLOG(1) << "[PermissionsAIv4]: The embedding task did not return yet";
-        // TODO(chrbug.com/382447738) Add histogram to track this
         // Try to cancel the embedding task for the previous query, if any.
         passage_embedder->TryCancel(*passage_embeddings_task_id_);
       }
