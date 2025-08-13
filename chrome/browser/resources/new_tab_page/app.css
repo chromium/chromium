@@ -36,11 +36,11 @@
  * Hide everything that should not display when the composebox is open
  * so they are not tabbable.
  */
-:host([show-composebox_]:not[closing-composebox]) cr-most-visited,
-:host([show-composebox_]:not[closing-composebox]) ntp-middle-slot-promo,
-:host([show-composebox_]:not[closing-composebox]) ntp-modules,
-:host([show-composebox_]:not[closing-composebox]) #backgroundImageAttribution,
-:host([show-composebox_]:not[closing-composebox]) ntp-customize-buttons {
+:host([show-composebox_]:not([closing-composebox])) cr-most-visited,
+:host([show-composebox_]:not([closing-composebox])) ntp-middle-slot-promo,
+:host([show-composebox_]:not([closing-composebox])) ntp-modules,
+:host([show-composebox_]:not([closing-composebox])) #backgroundImageAttribution,
+:host([show-composebox_]:not([closing-composebox])) ntp-customize-buttons {
   display: none;
 }
 
