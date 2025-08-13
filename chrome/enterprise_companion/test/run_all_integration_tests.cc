@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/test/launcher/unit_test_launcher.h"
@@ -74,7 +70,8 @@ int main(int argc, char* argv[]) {
   // Otherwise, don't run branded tests on a developer's system because doing so
   // can break the updater on the system.
   if (!std::getenv("ISOLATED_OUTDIR") &&
-      std::strcmp(PRODUCT_FULLNAME_STRING, "ChromiumEnterpriseCompanion")) {
+      UNSAFE_TODO(std::strcmp(PRODUCT_FULLNAME_STRING,
+                              "ChromiumEnterpriseCompanion"))) {
     VLOG(1) << "Running branded enterprise companion tests can break the "
                "updater for the branded browser. If you don't care about "
                "broken updaters and want to run the branded enterprise "

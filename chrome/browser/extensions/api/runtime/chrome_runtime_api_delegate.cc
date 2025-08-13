@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -347,36 +343,36 @@ extensions::api::runtime::PlatformNaclArch GetPlatformInfoNaClArch() {
 
 bool ChromeRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
   const char* os = update_client::UpdateQueryParams::GetOS();
-  if (strcmp(os, "mac") == 0) {
+  if (UNSAFE_TODO(strcmp(os, "mac")) == 0) {
     info->os = extensions::api::runtime::PlatformOs::kMac;
-  } else if (strcmp(os, "win") == 0) {
+  } else if (UNSAFE_TODO(strcmp(os, "win")) == 0) {
     info->os = extensions::api::runtime::PlatformOs::kWin;
-  } else if (strcmp(os, "cros") == 0) {
+  } else if (UNSAFE_TODO(strcmp(os, "cros")) == 0) {
     info->os = extensions::api::runtime::PlatformOs::kCros;
-  } else if (strcmp(os, "linux") == 0) {
+  } else if (UNSAFE_TODO(strcmp(os, "linux")) == 0) {
     info->os = extensions::api::runtime::PlatformOs::kLinux;
-  } else if (strcmp(os, "openbsd") == 0) {
+  } else if (UNSAFE_TODO(strcmp(os, "openbsd")) == 0) {
     info->os = extensions::api::runtime::PlatformOs::kOpenbsd;
-  } else if (strcmp(os, "android") == 0) {
+  } else if (UNSAFE_TODO(strcmp(os, "android")) == 0) {
     info->os = extensions::api::runtime::PlatformOs::kAndroid;
   } else {
     NOTREACHED() << "Platform not supported: " << os;
   }
 
   const char* arch = update_client::UpdateQueryParams::GetArch();
-  if (strcmp(arch, "arm") == 0) {
+  if (UNSAFE_TODO(strcmp(arch, "arm")) == 0) {
     info->arch = extensions::api::runtime::PlatformArch::kArm;
-  } else if (strcmp(arch, "arm64") == 0) {
+  } else if (UNSAFE_TODO(strcmp(arch, "arm64")) == 0) {
     info->arch = extensions::api::runtime::PlatformArch::kArm64;
-  } else if (strcmp(arch, "x86") == 0) {
+  } else if (UNSAFE_TODO(strcmp(arch, "x86")) == 0) {
     info->arch = extensions::api::runtime::PlatformArch::kX86_32;
-  } else if (strcmp(arch, "x64") == 0) {
+  } else if (UNSAFE_TODO(strcmp(arch, "x64")) == 0) {
     info->arch = extensions::api::runtime::PlatformArch::kX86_64;
-  } else if (strcmp(arch, "mipsel") == 0) {
+  } else if (UNSAFE_TODO(strcmp(arch, "mipsel")) == 0) {
     info->arch = extensions::api::runtime::PlatformArch::kMips;
-  } else if (strcmp(arch, "mips64el") == 0) {
+  } else if (UNSAFE_TODO(strcmp(arch, "mips64el")) == 0) {
     info->arch = extensions::api::runtime::PlatformArch::kMips64;
-  } else if (strcmp(arch, "riscv64") == 0) {
+  } else if (UNSAFE_TODO(strcmp(arch, "riscv64")) == 0) {
     info->arch = extensions::api::runtime::PlatformArch::kRiscv64;
   } else {
     NOTREACHED();

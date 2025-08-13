@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/services/file_util/public/cpp/sandboxed_zip_analyzer.h"
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -166,9 +162,10 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
     EXPECT_EQ(data.download_type, binary.download_type());
     ASSERT_TRUE(binary.has_digests());
     ASSERT_TRUE(binary.digests().has_sha256());
-    EXPECT_EQ(std::string(data.sha256_digest,
-                          data.sha256_digest + crypto::kSHA256Length),
-              binary.digests().sha256());
+    UNSAFE_TODO(
+        EXPECT_EQ(std::string(data.sha256_digest,
+                              data.sha256_digest + crypto::kSHA256Length),
+                  binary.digests().sha256()));
     EXPECT_FALSE(binary.digests().has_sha1());
     EXPECT_FALSE(binary.digests().has_md5());
     ASSERT_TRUE(binary.has_length());

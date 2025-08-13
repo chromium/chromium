@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/renderer/v8_unwinder.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/profiler/register_context_registers.h"
 #include "build/build_config.h"
 #include "v8/include/v8-isolate.h"
@@ -198,7 +194,7 @@ void V8Unwinder::UpdateModules(base::UnwinderStateCapture* capture_state) {
   // sample. Code ranges provided by V8 are in sorted order.
   v8::MemoryRange* const code_ranges_start = code_ranges->buffer();
   v8::MemoryRange* const code_ranges_end =
-      code_ranges_start + code_ranges->size();
+      UNSAFE_TODO(code_ranges_start + code_ranges->size());
   CHECK(std::is_sorted(code_ranges_start, code_ranges_end, less_than));
   v8::MemoryRange* range_it = code_ranges_start;
   auto modules_it = modules_.begin();
@@ -208,7 +204,7 @@ void V8Unwinder::UpdateModules(base::UnwinderStateCapture* capture_state) {
       new_modules.push_back(
           std::make_unique<V8Module>(*range_it, V8Module::kNonEmbedded));
       modules_.insert(modules_it, new_modules.back().get());
-      ++range_it;
+      UNSAFE_TODO(++range_it);
     } else if (less_than(*modules_it, *range_it)) {
       // Avoid deleting the embedded code range module if it wasn't provided in
       // |code_ranges|. This could happen if |code_ranges| had insufficient
@@ -221,7 +217,7 @@ void V8Unwinder::UpdateModules(base::UnwinderStateCapture* capture_state) {
       }
     } else {
       // The range already has a module, so there's nothing to do.
-      ++range_it;
+      UNSAFE_TODO(++range_it);
       ++modules_it;
     }
   }
@@ -230,7 +226,7 @@ void V8Unwinder::UpdateModules(base::UnwinderStateCapture* capture_state) {
     new_modules.push_back(
         std::make_unique<V8Module>(*range_it, V8Module::kNonEmbedded));
     modules_.insert(modules_it, new_modules.back().get());
-    ++range_it;
+    UNSAFE_TODO(++range_it);
   }
 
   while (modules_it != modules_.end()) {

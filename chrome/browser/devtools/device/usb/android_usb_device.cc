@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/devtools/device/usb/android_usb_device.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
@@ -60,7 +56,7 @@ uint32_t Checksum(const std::string& data) {
   int count = data.length();
   uint32_t sum = 0;
   while (count-- > 0)
-    sum += *x++;
+    sum += *UNSAFE_TODO(x++);
   return sum;
 }
 
@@ -298,7 +294,8 @@ void AndroidUsbDevice::Queue(std::unique_ptr<AdbMessage> message) {
     auto body_buffer = base::MakeRefCounted<base::RefCountedBytes>(body_length);
     {
       auto& v = body_buffer->as_vector();
-      memcpy(v.data(), message->body.data(), message->body.length());
+      UNSAFE_TODO(
+          memcpy(v.data(), message->body.data(), message->body.length()));
       if (append_zero) {
         v[body_length - 1] = 0;
       }
@@ -365,11 +362,11 @@ void AndroidUsbDevice::ParseHeader(UsbTransferStatus status,
 
   DumpMessage(false, buffer.data(), buffer.size());
   const auto* header = reinterpret_cast<const uint32_t*>(buffer.data());
-  std::unique_ptr<AdbMessage> message(
-      new AdbMessage(header[0], header[1], header[2], ""));
-  uint32_t data_length = header[3];
-  uint32_t data_check = header[4];
-  uint32_t magic = header[5];
+  std::unique_ptr<AdbMessage> message(new AdbMessage(
+      header[0], UNSAFE_TODO(header[1]), UNSAFE_TODO(header[2]), ""));
+  uint32_t data_length = UNSAFE_TODO(header[3]);
+  uint32_t data_check = UNSAFE_TODO(header[4]);
+  uint32_t magic = UNSAFE_TODO(header[5]);
   if ((message->command ^ 0xffffffff) != magic) {
     TransferError(UsbTransferStatus::TRANSFER_ERROR);
     return;

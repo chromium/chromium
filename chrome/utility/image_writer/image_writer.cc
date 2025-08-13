@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/utility/image_writer/image_writer.h"
 
 #include <string.h>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/location.h"
 #include "base/memory/aligned_memory.h"
@@ -127,10 +123,10 @@ void ImageWriter::WriteChunk() {
   // DASD buffers require memory alignment on some systems.
   std::unique_ptr<char, base::AlignedFreeDeleter> buffer(static_cast<char*>(
       base::AlignedAlloc(kBurningBlockSize, kMemoryAlignment)));
-  memset(buffer.get(), 0, kBurningBlockSize);
+  UNSAFE_TODO(memset(buffer.get(), 0, kBurningBlockSize));
 
-  int bytes_read = image_file_.Read(bytes_processed_, buffer.get(),
-                                    kBurningBlockSize);
+  int bytes_read = UNSAFE_TODO(
+      image_file_.Read(bytes_processed_, buffer.get(), kBurningBlockSize));
 
   if (bytes_read > 0) {
     // Always attempt to write a whole block, as writing DASD requires sector-
@@ -138,8 +134,8 @@ void ImageWriter::WriteChunk() {
     int bytes_to_write = bytes_read + (kMemoryAlignment - 1) -
                          (bytes_read - 1) % kMemoryAlignment;
     DCHECK_EQ(0, bytes_to_write % kMemoryAlignment);
-    int bytes_written =
-        device_file_.Write(bytes_processed_, buffer.get(), bytes_to_write);
+    int bytes_written = UNSAFE_TODO(
+        device_file_.Write(bytes_processed_, buffer.get(), bytes_to_write));
 
     if (bytes_written < bytes_read) {
       Error(error::kWriteImage);
@@ -172,20 +168,20 @@ void ImageWriter::VerifyChunk() {
       static_cast<char*>(
           base::AlignedAlloc(kBurningBlockSize, kMemoryAlignment)));
 
-  int bytes_read = image_file_.Read(bytes_processed_, image_buffer.data(),
-                                    kBurningBlockSize);
+  int bytes_read = UNSAFE_TODO(image_file_.Read(
+      bytes_processed_, image_buffer.data(), kBurningBlockSize));
 
   if (bytes_read > 0) {
-    if (device_file_.Read(bytes_processed_,
-                          device_buffer.get(),
-                          kBurningBlockSize) < bytes_read) {
+    if (UNSAFE_TODO(device_file_.Read(bytes_processed_, device_buffer.get(),
+                                      kBurningBlockSize)) < bytes_read) {
       LOG(ERROR) << "Failed to read " << bytes_read << " bytes of "
                  << "device at offset " << bytes_processed_;
       Error(error::kReadDevice);
       return;
     }
 
-    if (memcmp(image_buffer.data(), device_buffer.get(), bytes_read) != 0) {
+    if (UNSAFE_TODO(memcmp(image_buffer.data(), device_buffer.get(),
+                           bytes_read)) != 0) {
       LOG(ERROR) << "Write verification failed when comparing " << bytes_read
                  << " bytes at " << bytes_processed_;
       Error(error::kVerificationFailed);

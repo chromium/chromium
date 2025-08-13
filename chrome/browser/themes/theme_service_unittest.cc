@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/themes/theme_service.h"
 
 #include <cmath>
 
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -685,7 +681,7 @@ TEST_P(ColorProviderTest, OmniboxContrast) {
             << " - " << color2;
       };
   for (const ui::ColorId* ids : contrasting_ids) {
-    check_sufficient_contrast(ids[0], ids[1]);
+    check_sufficient_contrast(ids[0], UNSAFE_TODO(ids[1]));
   }
 #if !BUILDFLAG(USE_GTK)
   // TODO(crbug.com/40847971): GTK does not have a sufficiently

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.h"
 
 #include <algorithm>
@@ -18,6 +13,7 @@
 
 #include "base/allocator/partition_alloc_support.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/cpu.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -671,7 +667,8 @@ void RecordLinuxDistro() {
   std::string trimmed = TrimLinuxDistro(base::ToLowerASCII(distro));
   auto* it = std::upper_bound(kDistroPrefixes, std::end(kDistroPrefixes),
                               trimmed, Compare());
-  if (it != kDistroPrefixes && base::StartsWith(trimmed, (--it)->first)) {
+  if (it != kDistroPrefixes &&
+      base::StartsWith(trimmed, (UNSAFE_TODO(--it))->first)) {
     base::UmaHistogramEnumeration("Linux.Distro3", it->second);
   } else {
     base::UmaHistogramEnumeration("Linux.Distro3", UmaLinuxDistro::kOther);

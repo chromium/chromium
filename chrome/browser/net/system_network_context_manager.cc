@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/net/system_network_context_manager.h"
 
 #include <algorithm>
@@ -17,6 +12,7 @@
 #include "base/build_time.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -339,7 +335,7 @@ std::vector<network::mojom::CTLogInfoPtr> GetStaticCtLogListMojo() {
     }
 
     for (size_t i = 0; i < ct_log.previous_operators_length; i++) {
-      const auto& op = ct_log.previous_operators[i];
+      const auto& op = UNSAFE_TODO(ct_log.previous_operators[i]);
       network::mojom::PreviousOperatorEntryPtr previous_operator =
           network::mojom::PreviousOperatorEntry::New();
       previous_operator->name = op.name;

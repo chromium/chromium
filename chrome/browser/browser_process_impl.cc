@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/browser_process_impl.h"
 
 #include <stddef.h>
@@ -20,6 +15,7 @@
 
 #include "base/atomic_ref_count.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -950,15 +946,16 @@ void BrowserProcessImpl::CreateDevToolsProtocolHandler() {
     case RemoteDebuggingServer::NotStartedReason::kNotRequested:
       break;
     case RemoteDebuggingServer::NotStartedReason::kDisabledByPolicy:
-      fputs("\nDevTools remote debugging is disallowed by the system admin.\n",
-            stderr);
+      UNSAFE_TODO(fputs(
+          "\nDevTools remote debugging is disallowed by the system admin.\n",
+          stderr));
       fflush(stderr);
       break;
     case RemoteDebuggingServer::NotStartedReason::kDisabledByDefaultUserDataDir:
-      fputs(
+      UNSAFE_TODO(fputs(
           "\nDevTools remote debugging requires a non-default data directory. "
           "Specify this using --user-data-dir.\n",
-          stderr);
+          stderr));
       fflush(stderr);
       break;
   }

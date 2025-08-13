@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 // Defines the Chrome Extensions BrowsingData API functions, which entail
 // clearing browsing data, and clearing the browser's cache (which, let's be
 // honest, are the same thing), as specified in the extension API JSON.
@@ -16,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
@@ -55,30 +51,51 @@ static_assert((kFilterableDataTypes &
               "chrome_browsing_data_remover::FILTERABLE_DATA_TYPES");
 
 uint64_t MaskForKey(const char* key) {
-  if (strcmp(key, extension_browsing_data_api_constants::kCacheKey) == 0)
+  if (UNSAFE_TODO(
+          strcmp(key, extension_browsing_data_api_constants::kCacheKey)) == 0) {
     return content::BrowsingDataRemover::DATA_TYPE_CACHE;
-  if (strcmp(key, extension_browsing_data_api_constants::kCookiesKey) == 0) {
+  }
+  if (UNSAFE_TODO(strcmp(
+          key, extension_browsing_data_api_constants::kCookiesKey)) == 0) {
     return content::BrowsingDataRemover::DATA_TYPE_COOKIES;
   }
-  if (strcmp(key, extension_browsing_data_api_constants::kDownloadsKey) == 0)
+  if (UNSAFE_TODO(strcmp(
+          key, extension_browsing_data_api_constants::kDownloadsKey)) == 0) {
     return content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS;
-  if (strcmp(key, extension_browsing_data_api_constants::kFileSystemsKey) == 0)
+  }
+  if (UNSAFE_TODO(strcmp(
+          key, extension_browsing_data_api_constants::kFileSystemsKey)) == 0) {
     return content::BrowsingDataRemover::DATA_TYPE_FILE_SYSTEMS;
-  if (strcmp(key, extension_browsing_data_api_constants::kFormDataKey) == 0)
+  }
+  if (UNSAFE_TODO(strcmp(
+          key, extension_browsing_data_api_constants::kFormDataKey)) == 0) {
     return chrome_browsing_data_remover::DATA_TYPE_FORM_DATA;
-  if (strcmp(key, extension_browsing_data_api_constants::kHistoryKey) == 0)
+  }
+  if (UNSAFE_TODO(strcmp(
+          key, extension_browsing_data_api_constants::kHistoryKey)) == 0) {
     return chrome_browsing_data_remover::DATA_TYPE_HISTORY;
-  if (strcmp(key, extension_browsing_data_api_constants::kIndexedDBKey) == 0)
+  }
+  if (UNSAFE_TODO(strcmp(
+          key, extension_browsing_data_api_constants::kIndexedDBKey)) == 0) {
     return content::BrowsingDataRemover::DATA_TYPE_INDEXED_DB;
-  if (strcmp(key, extension_browsing_data_api_constants::kLocalStorageKey) == 0)
+  }
+  if (UNSAFE_TODO(strcmp(
+          key, extension_browsing_data_api_constants::kLocalStorageKey)) == 0) {
     return content::BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE;
-  if (strcmp(key, extension_browsing_data_api_constants::kPasswordsKey) == 0)
+  }
+  if (UNSAFE_TODO(strcmp(
+          key, extension_browsing_data_api_constants::kPasswordsKey)) == 0) {
     return chrome_browsing_data_remover::DATA_TYPE_PASSWORDS;
-  if (strcmp(key, extension_browsing_data_api_constants::kServiceWorkersKey) ==
-      0)
+  }
+  if (UNSAFE_TODO(strcmp(
+          key, extension_browsing_data_api_constants::kServiceWorkersKey)) ==
+      0) {
     return content::BrowsingDataRemover::DATA_TYPE_SERVICE_WORKERS;
-  if (strcmp(key, extension_browsing_data_api_constants::kCacheStorageKey) == 0)
+  }
+  if (UNSAFE_TODO(strcmp(
+          key, extension_browsing_data_api_constants::kCacheStorageKey)) == 0) {
     return content::BrowsingDataRemover::DATA_TYPE_CACHE_STORAGE;
+  }
 
   return 0ULL;
 }

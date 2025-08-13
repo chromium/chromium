@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 
 #include <functional>
@@ -15,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -425,8 +421,8 @@ base::FilePath GetOsIntegrationResourcesDirectoryForApp(
 }
 
 base::span<const int> GetDesiredIconSizesForShortcut() {
-  return base::span<const int>(kDesiredIconSizesForShortcut,
-                               GetNumDesiredIconSizesForShortcut());
+  return UNSAFE_TODO(base::span<const int>(
+      kDesiredIconSizesForShortcut, GetNumDesiredIconSizesForShortcut()));
 }
 
 gfx::ImageSkia CreateDefaultApplicationIcon(int size) {

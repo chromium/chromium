@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -69,7 +65,8 @@ class MultipartUploadRequestTest : public testing::Test {
     base::MappedReadOnlyRegion region =
         base::ReadOnlySharedMemoryRegion::Create(content.size());
     EXPECT_TRUE(region.IsValid());
-    std::memcpy(region.mapping.memory(), content.data(), content.size());
+    UNSAFE_TODO(
+        std::memcpy(region.mapping.memory(), content.data(), content.size()));
     return std::move(region.region);
   }
 

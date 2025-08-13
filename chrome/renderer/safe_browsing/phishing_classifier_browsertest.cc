@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
@@ -205,8 +201,8 @@ class PhishingClassifierTest
     mapped_region_ =
         base::ReadOnlySharedMemoryRegion::Create(model_str.length());
     ASSERT_TRUE(mapped_region_.IsValid());
-    memcpy(mapped_region_.mapping.memory(), model_str.data(),
-           model_str.length());
+    UNSAFE_TODO(memcpy(mapped_region_.mapping.memory(), model_str.data(),
+                       model_str.length()));
     base::File tflite_model;
     base::FilePath tflite_path;
     GetTfliteModelPath(&tflite_path),

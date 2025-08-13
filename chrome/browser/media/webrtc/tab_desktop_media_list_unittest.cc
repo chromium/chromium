@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
 
 #include <memory>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
@@ -79,13 +75,17 @@ gfx::Image CreateGrayscaleImage(gfx::Size size, uint8_t greyscale_value) {
   // Set greyscale value for all pixels.
   for (int y = 0; y < result.height(); ++y) {
     for (int x = 0; x < result.width(); ++x) {
-      pixels_data[result.rowBytes() * y + x * result.bytesPerPixel()] =
+      UNSAFE_TODO(
+          pixels_data[result.rowBytes() * y + x * result.bytesPerPixel()]) =
           greyscale_value;
-      pixels_data[result.rowBytes() * y + x * result.bytesPerPixel() + 1] =
+      UNSAFE_TODO(
+          pixels_data[result.rowBytes() * y + x * result.bytesPerPixel() + 1]) =
           greyscale_value;
-      pixels_data[result.rowBytes() * y + x * result.bytesPerPixel() + 2] =
+      UNSAFE_TODO(
+          pixels_data[result.rowBytes() * y + x * result.bytesPerPixel() + 2]) =
           greyscale_value;
-      pixels_data[result.rowBytes() * y + x * result.bytesPerPixel() + 3] =
+      UNSAFE_TODO(
+          pixels_data[result.rowBytes() * y + x * result.bytesPerPixel() + 3]) =
           0xff;
     }
   }

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 
 #include <string.h>
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -307,8 +303,8 @@ bool ImageWriterTestUtils::ImageWrittenToDevice() {
     return false;
   }
 
-  return memcmp(image_buffer.data(), device_buffer.data(), *image_bytes_read) ==
-         0;
+  return UNSAFE_TODO(memcmp(image_buffer.data(), device_buffer.data(),
+                            *image_bytes_read)) == 0;
 }
 
 bool ImageWriterTestUtils::FillFile(const base::FilePath& file,

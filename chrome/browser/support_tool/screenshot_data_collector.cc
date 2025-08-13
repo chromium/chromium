@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/support_tool/screenshot_data_collector.h"
 
 #include <cstdint>
 #include <vector>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
@@ -115,9 +111,9 @@ void ScreenshotDataCollector::ConvertDesktopFrameToBase64JPEG(
     base::span<uint32_t> bitmap_buffer =
         UNSAFE_SKBITMAP_GETADDR32(bitmap, 0, i);
     // Again, `frame_bytes` is the actual size of the data in a row.
-    memcpy(bitmap_buffer.data(), frame_buffer, frame_bytes);
+    UNSAFE_TODO(memcpy(bitmap_buffer.data(), frame_buffer, frame_bytes));
     // Moves to where the next row's data begins.
-    frame_buffer += frame->stride();
+    UNSAFE_TODO(frame_buffer += frame->stride());
   }
   bitmap.setImmutable();
 

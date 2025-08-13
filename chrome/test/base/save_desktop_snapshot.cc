@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/test/base/save_desktop_snapshot.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
@@ -81,9 +77,9 @@ SkBitmap CaptureScreen() {
   // Create an image from the frame.
   SkBitmap result;
   result.allocN32Pixels(frame->size().width(), frame->size().height(), true);
-  memcpy(result.getAddr32(0, 0), frame->data(),
-         frame->size().width() * frame->size().height() *
-             webrtc::DesktopFrame::kBytesPerPixel);
+  UNSAFE_TODO(memcpy(result.getAddr32(0, 0), frame->data(),
+                     frame->size().width() * frame->size().height() *
+                         webrtc::DesktopFrame::kBytesPerPixel));
   return result;
 }
 

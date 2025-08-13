@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -228,7 +224,7 @@ UScriptCode GetScriptOfFontPref(const char* pref_name) {
 
   size_t len = strlen(pref_name);
   DCHECK_GT(len, kScriptNameLength);
-  const char* scriptName = &pref_name[len - kScriptNameLength];
+  const char* scriptName = &UNSAFE_TODO(pref_name[len - kScriptNameLength]);
   int32_t code = u_getPropertyValueEnum(UCHAR_SCRIPT, scriptName);
   DCHECK(code >= 0 && code < USCRIPT_CODE_LIMIT);
   return static_cast<UScriptCode>(code);

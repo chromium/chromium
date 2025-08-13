@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/renderer/trusted_vault_encryption_keys_extension.h"
 
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -50,7 +46,7 @@ std::vector<uint8_t> ArrayBufferAsBytes(
   const uint8_t* start =
       reinterpret_cast<const uint8_t*>(backing_store->Data());
   const size_t length = backing_store->ByteLength();
-  return std::vector<uint8_t>(start, start + length);
+  return std::vector<uint8_t>(start, UNSAFE_TODO(start + length));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

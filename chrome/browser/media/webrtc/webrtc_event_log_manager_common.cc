@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"
 
 #include <algorithm>
 #include <limits>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -536,7 +532,7 @@ GzipLogCompressor::GzipLogCompressor(
     : state_(State::PRE_HEADER),
       budget_(SizeAfterOverheadReservation(max_size_bytes)),
       compressed_size_estimator_(std::move(compressed_size_estimator)) {
-  memset(&stream_, 0, sizeof(z_stream));
+  UNSAFE_TODO(memset(&stream_, 0, sizeof(z_stream)));
   // Using (MAX_WBITS + 16) triggers the creation of a GZIP header.
   const int result =
       deflateInit2(&stream_, Z_DEFAULT_COMPRESSION, Z_DEFLATED, MAX_WBITS + 16,

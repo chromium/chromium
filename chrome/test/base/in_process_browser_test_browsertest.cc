@@ -3,11 +3,6 @@
 // found in the LICENSE file.
 
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/test/base/in_process_browser_test.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
@@ -85,7 +81,7 @@ class InProcessBrowserTestP
       public ::testing::WithParamInterface<const char*> {};
 
 IN_PROC_BROWSER_TEST_P(InProcessBrowserTestP, TestP) {
-  EXPECT_EQ(0, strcmp("foo", GetParam()));
+  UNSAFE_TODO(EXPECT_EQ(0, strcmp("foo", GetParam())));
 }
 
 INSTANTIATE_TEST_SUITE_P(IPBTP,

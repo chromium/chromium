@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/shell_integration_linux.h"
 
 #include <fcntl.h>
@@ -25,6 +20,7 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -680,7 +676,7 @@ std::string GetDesktopFileContentsForCommand(
     if (data_dump[0] == '\n') {
       // Older versions of glib produce a leading newline. If this is the case,
       // remove it to avoid double-newline after the shebang.
-      output_buffer += (data_dump + 1);
+      output_buffer += (UNSAFE_TODO(data_dump + 1));
     } else {
       output_buffer += data_dump;
     }
@@ -790,7 +786,7 @@ std::string GetDirectoryFileContents(const std::u16string& title,
     if (data_dump[0] == '\n') {
       // Older versions of glib produce a leading newline. If this is the case,
       // remove it to avoid double-newline after the shebang.
-      output_buffer += (data_dump + 1);
+      output_buffer += (UNSAFE_TODO(data_dump + 1));
     } else {
       output_buffer += data_dump;
     }

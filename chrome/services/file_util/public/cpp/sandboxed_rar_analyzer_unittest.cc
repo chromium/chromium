@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
 
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -93,9 +89,10 @@ class SandboxedRarAnalyzerTest : public testing::Test {
     ASSERT_TRUE(binary.has_download_type());
     EXPECT_EQ(data.download_type, binary.download_type());
     ASSERT_TRUE(binary.has_digests());
-    EXPECT_EQ(std::string(data.sha256_digest,
-                          data.sha256_digest + crypto::kSHA256Length),
-              binary.digests().sha256());
+    UNSAFE_TODO(
+        EXPECT_EQ(std::string(data.sha256_digest,
+                              data.sha256_digest + crypto::kSHA256Length),
+                  binary.digests().sha256()));
     ASSERT_TRUE(binary.has_length());
     EXPECT_EQ(data.length, binary.length());
 

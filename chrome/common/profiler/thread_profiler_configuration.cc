@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/common/profiler/thread_profiler_configuration.h"
 
 #include <variant>
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
@@ -203,8 +199,9 @@ ThreadProfilerConfiguration::ChooseVariationGroup(
 
   double chosen = randValue * total_weight;  // Max is inclusive.
   double cumulative_weight = 0;
-  const Variation* last_item = variations.end() - 1;
-  for (const Variation* it = variations.begin(); it != last_item; ++it) {
+  const Variation* last_item = UNSAFE_TODO(variations.end() - 1);
+  for (const Variation* it = variations.begin(); it != last_item;
+       UNSAFE_TODO(++it)) {
     cumulative_weight += it->weight;
     if (chosen < cumulative_weight) {
       return it->group;
