@@ -213,13 +213,18 @@ void ActorTask::AddTab(tabs::TabHandle tab_handle, AddTabCallback callback) {
   }
 
   CHECK(!actuation_mode_runners_.contains(tab_handle));
-  if (tab_handle.Get() && tab_handle.Get()->GetContents()) {
-    content::WebContents* web_contents = tab_handle.Get()->GetContents();
+  tabs::TabInterface* tab = tab_handle.Get();
+  // GetContents may be null in unit tests.
+  if (tab && tab->GetContents()) {
+    content::WebContents* web_contents = tab->GetContents();
     actuation_mode_runners_.emplace(
         tab_handle, web_contents->IncrementCapturerCount(gfx::Size(),
                                                          /*stay_hidden=*/false,
                                                          /*stay_awake=*/true,
                                                          /*is_activity=*/true));
+
+    tab_subscriptions_.push_back(tab->RegisterWillDetach(base::BindRepeating(
+        &ActorTask::OnTabWillDetach, weak_ptr_factory_.GetWeakPtr())));
   }
 
   // Notify the UI of the new tab.
@@ -246,6 +251,21 @@ void ActorTask::RemoveTab(tabs::TabHandle tab_handle) {
                                   ui::UiEventDispatcher::RemoveTab{
                                       .task_id = id_, .handle = tab_handle}));
   }
+}
+
+void ActorTask::OnTabWillDetach(tabs::TabInterface* tab,
+                                tabs::TabInterface::DetachReason reason) {
+  if (reason != tabs::TabInterface::DetachReason::kDelete) {
+    return;
+  }
+  if (!IsActingOnTab(tab->GetHandle())) {
+    return;
+  }
+
+  // TODO(mcnee): This will also stop a task that's paused. Should we leave
+  // paused tasks as is?
+
+  actor::ActorKeyedService::Get(profile_)->StopTask(id(), /*success=*/false);
 }
 
 bool ActorTask::IsActingOnTab(tabs::TabHandle tab) const {

@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -460,6 +461,7 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   auto WaitForActorTaskState(mojom::ActorTaskState expected_state) {
     // WaitForActorTaskState doesn't reliably check the stopped state, since the
     // observable may have already been deleted.
+    // Use PrepareForStopStateChange/WaitForActorTaskStateToStopped instead.
     EXPECT_NE(expected_state, mojom::ActorTaskState::kStopped);
 
     return InAnyContext(WithElement(
@@ -474,6 +476,36 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
               });
               )js",
               task_id.value(), base::to_underlying(expected_state));
+          ASSERT_TRUE(content::ExecJs(glic_contents, script));
+        }));
+  }
+
+  // Gets a reference to a state observable for use in
+  // WaitForActorTaskStateToStopped.
+  auto PrepareForStopStateChange() {
+    return InAnyContext(WithElement(
+        kGlicContentsElementId, [&task_id = task_id_](ui::TrackedElement* el) {
+          content::WebContents* glic_contents =
+              AsInstrumentedWebContents(el)->web_contents();
+          std::string script = content::JsReplace(
+              "window.taskStateObs = client.browser.getActorTaskState($1);",
+              task_id.value());
+          ASSERT_TRUE(content::ExecJs(glic_contents, script));
+        }));
+  }
+
+  // Uses the state observable from PrepareForStopStateChange to await a state
+  // change to stopped.
+  auto WaitForActorTaskStateChangeToStopped() {
+    return InAnyContext(
+        WithElement(kGlicContentsElementId, [](ui::TrackedElement* el) {
+          content::WebContents* glic_contents =
+              AsInstrumentedWebContents(el)->web_contents();
+          std::string script = content::JsReplace(
+              "window.taskStateObs.waitUntil((state) => { "
+              "  return state == $1; "
+              "});",
+              base::to_underlying(mojom::ActorTaskState::kStopped));
           ASSERT_TRUE(content::ExecJs(glic_contents, script));
         }));
   }
@@ -593,6 +625,17 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
           DevToolsWindowTesting::OpenDevToolsWindowSync(contents,
                                                         /*is_docked=*/false);
         }));
+  }
+
+  auto CloseTab(ui::ElementIdentifier tab) {
+    return InAnyContext(
+        WithElement(tab, [this](ui::TrackedElement* el) {
+          content::WebContents* contents =
+              AsInstrumentedWebContents(el)->web_contents();
+          content::WebContentsDestroyedWatcher destroyed_watcher(contents);
+          chrome::CloseWebContents(browser(), contents, true);
+          destroyed_watcher.Wait();
+        }).SetMustRemainVisible(false));
   }
 
   auto NavigateFrame(ui::ElementIdentifier webcontents_id,
@@ -888,6 +931,24 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, StopActorTask) {
     ClickAction(kClickableButtonLabel,
         actor::mojom::ActionResultCode::kTaskWentAway),
     CheckIsActingOnTab(kNewActorTabId, false));
+  // clang-format on
+}
+
+// Tests that closing a tab that's being acted on stops the associated task.
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, StopActorTaskOnTabClose) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+
+  RunTestSequence(
+      // clang-format off
+    InitializeWithOpenGlicWindow(),
+    StartActorTaskInNewTab(task_url, kNewActorTabId),
+    CheckIsActingOnTab(kNewActorTabId, true),
+    PrepareForStopStateChange(),
+    CloseTab(kNewActorTabId),
+    WaitForActorTaskStateChangeToStopped());
   // clang-format on
 }
 

@@ -8,6 +8,7 @@
 #include <iosfwd>
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
@@ -128,6 +129,8 @@ class ActorTask {
                      std::optional<size_t> index_of_failed_action,
                      std::vector<optimization_guide::proto::ScriptToolResult>
                          script_tool_results);
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason);
 
   State state_ = State::kCreated;
   raw_ptr<Profile> profile_;
@@ -149,7 +152,12 @@ class ActorTask {
   base::TimeDelta total_active_time_;
 
   // The set of all tabs this task has acted upon.
+  // TODO(mcnee): We have additional tab related state below. We could wrap them
+  // up into a struct and have the handle be a map key for easier management.
   absl::flat_hash_set<tabs::TabHandle> tab_handles_;
+
+  // Holds subscriptions for TabInterface callbacks.
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
   // A map from a tab's handle to a ScopedClosureRunner that keeps the tab
   // in "actuation mode". This is released when the tab is removed from the
