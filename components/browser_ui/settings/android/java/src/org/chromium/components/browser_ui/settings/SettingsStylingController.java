@@ -80,11 +80,22 @@ public class SettingsStylingController {
         return visiblePreferences;
     }
 
+    /**
+     * Returns whether the given preference should be excluded from background styling decoration.
+     *
+     * @param preference The preference to check.
+     * @return Whether to skip decoration.
+     */
+    private boolean shouldSkipDecoration(Preference preference) {
+        return preference instanceof PreferenceCategory
+                || preference instanceof TextMessagePreference;
+    }
+
     private @NonNull BackgroundStyleDetails getBackgroundStyleDetailsForPosition(
             ArrayList<Preference> visiblePreferences, int position) {
 
         Preference currentPref = visiblePreferences.get(position);
-        if (currentPref instanceof PreferenceCategory) {
+        if (shouldSkipDecoration(currentPref)) {
             return BackgroundStyleDetails.EMPTY;
         }
 
@@ -94,8 +105,8 @@ public class SettingsStylingController {
                         ? visiblePreferences.get(position + 1)
                         : null;
 
-        boolean isTop = (prefAbove == null) || (prefAbove instanceof PreferenceCategory);
-        boolean isBottom = (prefBelow == null) || (prefBelow instanceof PreferenceCategory);
+        boolean isTop = (prefAbove == null) || shouldSkipDecoration(prefAbove);
+        boolean isBottom = (prefBelow == null) || shouldSkipDecoration(prefBelow);
 
         if (isTop && isBottom) {
             return new BackgroundStyleDetails(mOuterRadius, mOuterRadius);

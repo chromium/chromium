@@ -66,6 +66,12 @@ public class SettingsStylingControllerTest {
         return preference;
     }
 
+    private TextMessagePreference createTextMessagePreference(boolean visible) {
+        TextMessagePreference textMessagePreference = new TextMessagePreference(mContext, null);
+        textMessagePreference.setVisible(visible);
+        return textMessagePreference;
+    }
+
     @Test
     @SmallTest
     public void testBackgroundStyle_WithSingleItem() {
@@ -95,6 +101,19 @@ public class SettingsStylingControllerTest {
 
     @Test
     @SmallTest
+    public void testBackgroundStyle_WithTextMessagePreference() {
+        mPreferenceScreen.addPreference(createPreference(true));
+        mPreferenceScreen.addPreference(createTextMessagePreference(true));
+
+        ArrayList<BackgroundStyleDetails> styles = mController.generateBackgroundStyleDetails();
+        assertEquals(2, styles.size());
+        assertEquals(mOuterRadius, styles.get(0).topRadius, 0);
+        assertEquals(mOuterRadius, styles.get(0).bottomRadius, 0);
+        assertSame(BackgroundStyleDetails.EMPTY, styles.get(1));
+    }
+
+    @Test
+    @SmallTest
     public void testBackgroundStyle_WithComplexLayout() {
         mPreferenceScreen.addPreference(createPreference(true));
         mPreferenceScreen.addPreference(createPreference(true));
@@ -104,9 +123,9 @@ public class SettingsStylingControllerTest {
         mPreferenceScreen.addPreference(createPreference(true));
         mPreferenceScreen.addPreference(createPreference(true));
         mPreferenceScreen.addPreference(createPreference(true));
+        mPreferenceScreen.addPreference(createTextMessagePreference(true));
 
         ArrayList<BackgroundStyleDetails> styles = mController.generateBackgroundStyleDetails();
-        assertEquals(8, styles.size());
 
         // PrefA, PrefB
         assertEquals(mOuterRadius, styles.get(0).topRadius, 0);
@@ -131,6 +150,9 @@ public class SettingsStylingControllerTest {
         assertEquals(mInnerRadius, styles.get(6).bottomRadius, 0);
         assertEquals(mInnerRadius, styles.get(7).topRadius, 0);
         assertEquals(mOuterRadius, styles.get(7).bottomRadius, 0);
+
+        // Text Preference
+        assertSame(BackgroundStyleDetails.EMPTY, styles.get(4));
     }
 
     @Test
