@@ -75,7 +75,7 @@ bool IsAccessibilityPerformanceMeasurementExperimentEnabled() {
 
 BASE_FEATURE(kAccessibilityUseAXBitset,
              "AccessibilityUseAXBitset",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityUseAXBitsetEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityUseAXBitset);
 }
