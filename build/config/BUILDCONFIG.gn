@@ -158,25 +158,9 @@ declare_args() {
   # DON'T ADD MORE FLAGS HERE. Read the comment above.
 }
 
-import("//build/toolchain/rbe.gni")
-
 declare_args() {
   # Debug build. Enabling official builds automatically sets is_debug to false.
   is_debug = !is_official_build
-
-  # Use explicit Clang header modules for libc++.
-  # We'll gradually expand supported platform of modules
-  # (https://crbug.com/40440396).
-  # For details on the current state of modules in Chromium see
-  # https://chromium.googlesource.com/chromium/src/+/main/docs/modules.md
-  # We explicitly need this flag in this file because it's read by this file.
-  # Currently we enables this only on non-official Linux x64 build on Linux x64
-  # machine.
-  use_clang_modules =
-      !is_official_build && is_clang && host_os == "linux" &&
-      host_cpu == "x64" && target_os == "linux" && target_cpu == "x64" &&
-      # reclient doesn't handle headers in modulemap config.
-      !use_reclient
 }
 
 declare_args() {
@@ -579,9 +563,7 @@ foreach(_target_type,
         ]) {
   template(_target_type) {
     target(_target_type, target_name) {
-      forward_variables_from(invoker,
-                             "*",
-                             TESTONLY_AND_VISIBILITY + [ "use_clang_modules" ])
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       if (!defined(inputs)) {
         inputs = []
@@ -594,18 +576,16 @@ foreach(_target_type,
         public_deps = []
       }
 
-      if (use_clang_modules) {
-        # When Clang modules are used, libc++ headers must be copied (to the gen
-        # directory) regardless of whether the libc++ module is used in this
-        # target.
-        public_deps += [
-          "//buildtools/third_party/libc++:copy_custom_headers($default_toolchain)",
-          "//buildtools/third_party/libc++:copy_libcxx_headers($default_toolchain)",
-        ]
-      }
+      # When Clang modules are used, libc++ headers must be copied (to the gen
+      # directory) regardless of whether the libc++ module is used in this
+      # target.
+      public_deps += [
+        "//buildtools/third_party/libc++:copy_custom_headers($default_toolchain)",
+        "//buildtools/third_party/libc++:copy_libcxx_headers($default_toolchain)",
+      ]
 
       if (!defined(use_libcxx_modules)) {
-        use_libcxx_modules = use_clang_modules
+        use_libcxx_modules = true
       }
 
       if (filter_include(
@@ -626,12 +606,8 @@ foreach(_target_type,
       }
 
       if (use_libcxx_modules) {
-        # This is necessary for Clang modules builds.
+        # Add a dependency needed for Clang modules builds.
         deps += [ "//buildtools/third_party/libc++:all_modules" ]
-        if (!defined(defines)) {
-          defines = []
-        }
-        defines += [ "USE_LIBCXX_MODULES" ]
       }
 
       # Consumed by the unsafe-buffers plugin during compile.
@@ -677,10 +653,7 @@ foreach(_target_type,
     target(_target_type, _target_name) {
       forward_variables_from(invoker,
                              "*",
-                             TESTONLY_AND_VISIBILITY + [
-                                   "no_default_deps",
-                                   "use_clang_modules",
-                                 ])
+                             TESTONLY_AND_VISIBILITY + [ "no_default_deps" ])
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       if (!defined(inputs)) {
         inputs = []
@@ -722,18 +695,16 @@ foreach(_target_type,
         public_deps = []
       }
 
-      if (use_clang_modules) {
-        # When Clang modules are used, libc++ headers must be copied (to the gen
-        # directory) regardless of whether the libc++ module is used in this
-        # target.
-        public_deps += [
-          "//buildtools/third_party/libc++:copy_custom_headers($default_toolchain)",
-          "//buildtools/third_party/libc++:copy_libcxx_headers($default_toolchain)",
-        ]
-      }
+      # When Clang modules are used, libc++ headers must be copied (to the gen
+      # directory) regardless of whether the libc++ module is used in this
+      # target.
+      public_deps += [
+        "//buildtools/third_party/libc++:copy_custom_headers($default_toolchain)",
+        "//buildtools/third_party/libc++:copy_libcxx_headers($default_toolchain)",
+      ]
 
       if (!defined(use_libcxx_modules)) {
-        use_libcxx_modules = use_clang_modules
+        use_libcxx_modules = true
       }
 
       if (filter_include(
@@ -754,12 +725,8 @@ foreach(_target_type,
       }
 
       if (use_libcxx_modules) {
-        # These are necessary for Clang modules builds.
+        # Add a dependency needed for Clang modules builds.
         deps += [ "//buildtools/third_party/libc++:all_modules" ]
-        if (!defined(defines)) {
-          defines = []
-        }
-        defines += [ "USE_LIBCXX_MODULES" ]
       }
 
       # On Android, write shared library output file to metadata. We will use

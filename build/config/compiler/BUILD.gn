@@ -1889,6 +1889,8 @@ config("libcxx_module") {
       # unnecessarily using extern "C".
       "-Wno-module-import-in-extern-c",
     ]
+
+    defines = [ "USE_LIBCXX_MODULES" ]
   }
 }
 

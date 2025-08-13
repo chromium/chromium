@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/c++/c++.gni")
+import("//build/config/cast.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/siso.gni")
 import("//build/toolchain/toolchain.gni")
@@ -46,6 +46,20 @@ declare_args() {
   # Set to true to enable output of ThinLTO index and import files used for
   # creating a Chromium MLGO corpus in the ThinLTO case.
   lld_emit_indexes_and_imports = false
+
+  # Use explicit Clang header modules for libc++.
+  # We'll gradually expand supported platform of modules
+  # (https://crbug.com/40440396).
+  # For details on the current state of modules in Chromium see
+  # https://chromium.googlesource.com/chromium/src/+/main/docs/modules.md
+  # We explicitly need this flag in this file because it's read by this file.
+  # Currently we enables this only on non-official Linux x64 build on Linux x64
+  # machine.
+  use_clang_modules =
+      !is_official_build && is_clang && host_os == "linux" &&
+      host_cpu == "x64" && target_os == "linux" && target_cpu == "x64" &&
+      # reclient doesn't handle headers in modulemap config.
+      !use_reclient
 }
 
 # We don't really need to collect a corpus for the host tools, just for the target.
