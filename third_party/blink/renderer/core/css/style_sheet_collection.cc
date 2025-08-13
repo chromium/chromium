@@ -87,7 +87,7 @@ static void ExtractMixinsFromRules(
         ExtractMixinsFromRules(supports_rule->ChildRules(), medium, mixins);
       }
     } else if (auto* mixin_rule = DynamicTo<StyleRuleMixin>(rule)) {
-      mixins.insert(mixin_rule->GetName(), mixin_rule);
+      mixins.Set(mixin_rule->GetName(), mixin_rule);
     }
   }
 }
