@@ -121,8 +121,8 @@ message AutofillAiFieldEvent {
   // would have two different values.
   uint64 field_session_identifier = 3 [features = { field_presence: IMPLICIT }];
 
-  // The signature of the field (mod 1021). This is the hash identifier used to
-  // denote this field for query and voting purposes. See
+  // The signature of the field. This is the hash identifier used to denote this
+  // field for query and voting purposes. See
   // components/autofill/core/common/signatures.cc for more details.
   uint64 field_signature = 4 [features = { field_presence: IMPLICIT }];
 
@@ -145,8 +145,8 @@ message AutofillAiFieldEvent {
   // AutofillAi.KeyMetrics.
   uint64 form_session_identifier = 8 [features = { field_presence: IMPLICIT }];
 
-  // The signature of the form (mod 1021). This is the hash identifier used to
-  // denote this form for query and voting purposes. See
+  // The signature of the form. This is the hash identifier used to denote this
+  // form for query and voting purposes. See
   // components/autofill/core/common/signatures.cc for more details.
   uint64 form_signature = 9 [features = { field_presence: IMPLICIT }];
 
@@ -208,8 +208,8 @@ message AutofillAiKeyMetrics {
   // AutofillAi.FieldInfo.
   uint64 form_session_identifier = 5 [features = { field_presence: IMPLICIT }];
 
-  // The signature of the form (mod 1021). This is the hash identifier used to
-  // denote this form for query and voting purposes. See
+  // The signature of the form. This is the hash identifier used to denote this
+  // form for query and voting purposes. See
   // components/autofill/core/common/signatures.cc for more details.
   uint64 form_signature = 6 [features = { field_presence: IMPLICIT }];
 
