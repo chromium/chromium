@@ -9629,6 +9629,8 @@ crbug.com/431033198 [ Linux ] external/wpt/css/css-conditional/container-queries
 crbug.com/431170125 [ Win11-arm64 ] external/wpt/css/cssom-view/idlharness.html [ Failure Pass ]
 crbug.com/431170125 [ Win11-arm64 ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/idlharness.html [ Failure Pass ]
 
+crbug.com/414631999 http/tests/devtools/webaudio/audio-context-selector-test.js [ Failure Pass ]
+
 # Gardener 2025-07-14
 crbug.com/431095012 [ Mac ] external/wpt/css/css-conditional/container-queries/font-relative-units-dynamic.html [ Failure Pass ]
 
