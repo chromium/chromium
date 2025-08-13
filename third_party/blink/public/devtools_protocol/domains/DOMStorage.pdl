@@ -4,6 +4,7 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# Query and modify DOM storage.
 experimental domain DOMStorage
 
   type SerializedStorageKey extends string

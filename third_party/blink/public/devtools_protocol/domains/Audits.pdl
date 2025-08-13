@@ -4,6 +4,7 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# Audits domain allows investigation of page violations and possible improvements.
 experimental domain Audits
   depends on Network
 
@@ -752,5 +753,3 @@ experimental domain Audits
   event issueAdded
     parameters
       InspectorIssue issue
-
-# Defines commands and events for browser extensions.

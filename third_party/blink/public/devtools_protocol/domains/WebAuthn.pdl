@@ -4,6 +4,8 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# This domain allows configuring virtual authenticators to test the WebAuthn
+# API.
 experimental domain WebAuthn
   type AuthenticatorId extends string
 
@@ -226,5 +228,3 @@ experimental domain WebAuthn
     parameters
       AuthenticatorId authenticatorId
       Credential credential
-
-# This domain allows detailed inspection of media elements

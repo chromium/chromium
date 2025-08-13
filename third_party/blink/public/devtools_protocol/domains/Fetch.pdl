@@ -4,6 +4,7 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# A domain for letting clients substitute browser's network layer with client code.
 domain Fetch
   depends on Network
   depends on IO
@@ -248,6 +249,3 @@ domain Fetch
       # If this is set, client should respond with continueRequest that
       # contains AuthChallengeResponse.
       AuthChallenge authChallenge
-
-# This domain allows inspection of Web Audio API.
-# https://webaudio.github.io/web-audio-api/

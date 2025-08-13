@@ -4,6 +4,8 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# This domain allows inspection of Web Audio API.
+# https://webaudio.github.io/web-audio-api/
 experimental domain WebAudio
 
   # An unique ID for a graph object (AudioContext, AudioNode, AudioParam) in Web Audio API
@@ -201,6 +203,3 @@ experimental domain WebAudio
       GraphObjectId sourceId
       GraphObjectId destinationId
       optional number sourceOutputIndex
-
-# This domain allows configuring virtual authenticators to test the WebAuthn
-# API.

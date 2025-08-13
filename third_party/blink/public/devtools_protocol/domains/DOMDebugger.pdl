@@ -4,6 +4,8 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# DOM debugging allows setting breakpoints on particular DOM operations and events. JavaScript
+# execution will stop on these operations as if there was a regular breakpoint set.
 domain DOMDebugger
   depends on DOM
   depends on Runtime
@@ -124,7 +126,3 @@ domain DOMDebugger
     parameters
       # Resource URL substring. All XHRs having this substring in the URL will get stopped upon.
       string url
-
-# EventBreakpoints permits setting JavaScript breakpoints on operations and events
-# occurring in native code invoked from JavaScript. Once breakpoint is hit, it is
-# reported through Debugger domain, similarly to regular breakpoints being hit.

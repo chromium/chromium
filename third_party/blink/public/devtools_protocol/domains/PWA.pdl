@@ -4,6 +4,7 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# This domain allows interacting with the browser to control PWAs.
 experimental domain PWA
 
   # The following types are the replica of
@@ -139,6 +140,3 @@ experimental domain PWA
       # supported yet.
       optional boolean linkCapturing
       optional DisplayMode displayMode
-
-# This domain allows configuring virtual Bluetooth devices to test
-# the web-bluetooth API.

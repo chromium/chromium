@@ -18,5 +18,3 @@ experimental domain DeviceOrientation
       number beta
       # Mock gamma
       number gamma
-
-# This domain emulates different environments for the page.

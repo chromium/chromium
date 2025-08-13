@@ -4,6 +4,7 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# Supports additional targets discovery and allows to attach to them.
 domain Target
 
   type TargetID extends string
@@ -322,5 +323,3 @@ domain Target
     returns
       # The targetId of DevTools page target.
       TargetID targetId
-
-# The Tethering domain defines methods and events for browser port binding.

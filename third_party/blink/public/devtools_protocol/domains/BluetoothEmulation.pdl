@@ -4,6 +4,8 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# This domain allows configuring virtual Bluetooth devices to test
+# the web-bluetooth API.
 experimental domain BluetoothEmulation
   # Indicates the various states of Central.
   type CentralState extends string

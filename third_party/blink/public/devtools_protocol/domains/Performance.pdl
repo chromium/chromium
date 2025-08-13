@@ -52,6 +52,3 @@ domain Performance
       array of Metric metrics
       # Timestamp title.
       string title
-
-# Reporting of performance timeline events, as specified in
-# https://w3c.github.io/performance-timeline/#dom-performanceobserver.

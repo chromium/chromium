@@ -288,5 +288,3 @@ experimental domain Preload
     parameters
       Network.LoaderId loaderId
       array of PreloadingAttemptSource preloadingAttemptSources
-
-# This domain allows interacting with the FedCM dialog.

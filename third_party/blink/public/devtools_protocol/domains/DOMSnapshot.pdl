@@ -4,6 +4,7 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# This domain facilitates obtaining document snapshots with DOM, layout, and style information.
 experimental domain DOMSnapshot
   depends on CSS
   depends on DOM
@@ -316,5 +317,3 @@ experimental domain DOMSnapshot
       array of DocumentSnapshot documents
       # Shared string table that all string properties refer to with indexes.
       array of string strings
-
-# Query and modify DOM storage.

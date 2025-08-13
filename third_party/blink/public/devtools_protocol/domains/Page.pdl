@@ -4,6 +4,7 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# Actions and events related to the inspected page belong to the page domain.
 domain Page
   depends on Debugger
   depends on DOM

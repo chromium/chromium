@@ -4,6 +4,7 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# The SystemInfo domain defines methods and events for querying low-level system information.
 experimental domain SystemInfo
 
   # Describes a single graphics processor (GPU).
@@ -142,5 +143,3 @@ experimental domain SystemInfo
     returns
       # An array of process info blocks.
       array of ProcessInfo processInfo
-
-# Supports additional targets discovery and allows to attach to them.

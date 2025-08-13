@@ -4,6 +4,7 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# Defines commands and events for browser extensions.
 experimental domain Extensions
   # Storage areas.
   type StorageArea extends string
@@ -69,5 +70,3 @@ experimental domain Extensions
       StorageArea storageArea
       # Values to set.
       object values
-
-# Defines commands and events for Autofill.

@@ -123,6 +123,3 @@ experimental domain CacheStorage
       # Count of returned entries from this storage. If pathFilter is empty, it
       # is the count of all entries from this storage.
       number returnCount
-
-# A domain for interacting with Cast, Presentation API, and Remote Playback API
-# functionalities.

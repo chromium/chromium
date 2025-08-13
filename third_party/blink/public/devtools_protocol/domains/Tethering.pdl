@@ -4,6 +4,7 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# The Tethering domain defines methods and events for browser port binding.
 experimental domain Tethering
 
   # Request browser port binding.

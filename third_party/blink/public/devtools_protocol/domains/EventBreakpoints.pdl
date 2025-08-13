@@ -4,6 +4,9 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# EventBreakpoints permits setting JavaScript breakpoints on operations and events
+# occurring in native code invoked from JavaScript. Once breakpoint is hit, it is
+# reported through Debugger domain, similarly to regular breakpoints being hit.
 experimental domain EventBreakpoints
   # Sets breakpoint on particular native event.
   command setInstrumentationBreakpoint
@@ -19,5 +22,3 @@ experimental domain EventBreakpoints
 
   # Removes all breakpoints
   command disable
-
-# This domain facilitates obtaining document snapshots with DOM, layout, and style information.

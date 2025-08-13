@@ -4,6 +4,7 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# Defines events for background web platform features.
 experimental domain BackgroundService
   # The Background Service that will be associated with the commands/events.
   # Every Background Service operates independently, but they share the same
@@ -74,5 +75,3 @@ experimental domain BackgroundService
   event backgroundServiceEventReceived
     parameters
       BackgroundServiceEvent backgroundServiceEvent
-
-# The Browser domain defines methods and events for browser managing.

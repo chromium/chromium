@@ -4,6 +4,7 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# Provides access to log entries.
 domain Log
   depends on Runtime
   depends on Network

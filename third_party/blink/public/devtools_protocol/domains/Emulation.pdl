@@ -4,6 +4,7 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# This domain emulates different environments for the page.
 domain Emulation
   depends on DOM
   depends on Page
@@ -519,5 +520,3 @@ domain Emulation
       # This will cause an element of size 100svh to be `difference` pixels smaller than an element
       # of size 100lvh.
       integer difference
-
-# This domain provides experimental commands only supported in headless mode.

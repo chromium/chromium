@@ -155,5 +155,3 @@ domain Tracing
       optional StreamFormat traceFormat
       # Compression format of returned stream.
       optional StreamCompression streamCompression
-
-# A domain for letting clients substitute browser's network layer with client code.

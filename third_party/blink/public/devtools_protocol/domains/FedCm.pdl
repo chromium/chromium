@@ -4,6 +4,7 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# This domain allows interacting with the FedCM dialog.
 experimental domain FedCm
   # Whether this is a sign-up or sign-in action for this account, i.e.
   # whether this account has ever been used to sign in to this RP before.
@@ -97,5 +98,3 @@ experimental domain FedCm
   # Resets the cooldown time, if any, to allow the next FedCM call to show
   # a dialog even if one was recently dismissed by the user.
   command resetCooldown
-
-# This domain allows interacting with the browser to control PWAs.

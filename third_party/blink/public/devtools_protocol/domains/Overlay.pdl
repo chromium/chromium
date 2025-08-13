@@ -4,6 +4,7 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# This domain provides various functionality related to drawing atop the inspected page.
 experimental domain Overlay
   depends on DOM
   depends on Page
@@ -492,5 +493,3 @@ experimental domain Overlay
 
   # Fired when user cancels the inspect mode.
   event inspectModeCanceled
-
-# Actions and events related to the inspected page belong to the page domain.

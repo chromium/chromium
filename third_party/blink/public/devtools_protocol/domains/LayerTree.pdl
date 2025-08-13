@@ -176,5 +176,3 @@ experimental domain LayerTree
     parameters
       # Layer tree, absent if not in the compositing mode.
       optional array of Layer layers
-
-# Provides access to log entries.

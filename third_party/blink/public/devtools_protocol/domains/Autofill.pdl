@@ -4,6 +4,7 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# Defines commands and events for Autofill.
 experimental domain Autofill
   type CreditCard extends object
     properties
@@ -103,5 +104,3 @@ experimental domain Autofill
 
   # Enables autofill domain notifications.
   command enable
-
-# Defines events for background web platform features.

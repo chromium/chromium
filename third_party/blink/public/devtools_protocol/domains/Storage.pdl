@@ -911,5 +911,3 @@ experimental domain Storage
       string owner
       string name
       array of binary hashes
-
-# The SystemInfo domain defines methods and events for querying low-level system information.

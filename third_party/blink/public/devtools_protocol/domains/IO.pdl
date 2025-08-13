@@ -4,6 +4,7 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# Input/Output operations for streams produced by DevTools.
 domain IO
 
   # This is either obtained from another method or specified as `blob:<uuid>` where

@@ -4,6 +4,8 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# Network domain allows tracking network activities of the page. It exposes information about http,
+# file, data and other requests and responses, their headers, bodies, timing, etc.
 domain Network
   depends on Debugger
   depends on Runtime
@@ -2035,5 +2037,3 @@ domain Network
 
       # Whether 3pc heuristics exceptions should be enabled; false by default.
       boolean disableThirdPartyCookieHeuristics
-
-# This domain provides various functionality related to drawing atop the inspected page.

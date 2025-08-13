@@ -4,6 +4,7 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# This domain provides experimental commands only supported in headless mode.
 experimental domain HeadlessExperimental
   depends on Page
   depends on Runtime
@@ -53,5 +54,3 @@ experimental domain HeadlessExperimental
 
   # Enables headless events for the target.
   deprecated command enable
-
-# Input/Output operations for streams produced by DevTools.

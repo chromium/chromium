@@ -4,6 +4,8 @@
 #
 # Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
+# Reporting of performance timeline events, as specified in
+# https://w3c.github.io/performance-timeline/#dom-performanceobserver.
 experimental domain PerformanceTimeline
   depends on DOM
   depends on Network
@@ -67,5 +69,3 @@ experimental domain PerformanceTimeline
   event timelineEventAdded
     parameters
       TimelineEvent event
-
-# Security
