@@ -41,7 +41,6 @@
 #include "chrome/browser/extensions/external_loader.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -528,7 +527,7 @@ void ServicesCustomizationDocument::SetApplied(bool val) {
 // static
 base::FilePath ServicesCustomizationDocument::GetCustomizedWallpaperCacheDir() {
   base::FilePath custom_wallpaper_dir;
-  if (!base::PathService::Get(chrome::DIR_CHROMEOS_CUSTOM_WALLPAPERS,
+  if (!base::PathService::Get(ash::DIR_CUSTOM_WALLPAPERS,
                               &custom_wallpaper_dir)) {
     LOG(DFATAL) << "Unable to get custom wallpaper dir.";
     return base::FilePath();

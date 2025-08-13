@@ -167,6 +167,9 @@ void ChromeUnitTestSuite::InitializeProviders() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   ash::RegisterPathProvider();
+  CHECK(base::PathService::OverrideWithoutCheckForTesting(
+      ash::DIR_USER_DATA,
+      base::PathService::CheckedGet(chrome::DIR_USER_DATA)));
   chromeos::dbus_paths::RegisterPathProvider();
 #endif
 

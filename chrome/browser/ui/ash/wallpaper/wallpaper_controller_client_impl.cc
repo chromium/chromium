@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
@@ -50,7 +51,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
@@ -466,10 +466,9 @@ void WallpaperControllerClientImpl::InitController() {
       std::make_unique<ash::WallpaperDriveFsDelegateImpl>());
 
   base::FilePath wallpapers;
-  CHECK(base::PathService::Get(chrome::DIR_CHROMEOS_WALLPAPERS, &wallpapers));
+  CHECK(base::PathService::Get(ash::DIR_WALLPAPERS, &wallpapers));
   base::FilePath custom_wallpapers;
-  CHECK(base::PathService::Get(chrome::DIR_CHROMEOS_CUSTOM_WALLPAPERS,
-                               &custom_wallpapers));
+  CHECK(base::PathService::Get(ash::DIR_CUSTOM_WALLPAPERS, &custom_wallpapers));
   base::FilePath device_policy_wallpaper = GetDeviceWallpaperImageFilePath();
   wallpaper_controller_->Init(wallpapers, custom_wallpapers,
                               device_policy_wallpaper);

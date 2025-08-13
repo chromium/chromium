@@ -596,6 +596,14 @@ void InitializeUserDataDir(base::CommandLine* command_line) {
   // child or service processes will attempt to use the invalid directory.
   if (specified_directory_was_invalid)
     command_line->AppendSwitchPath(switches::kUserDataDir, user_data_dir);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Set the same value to ash::DIR_USER_DATA. The directory should be already
+  // created above, so `create` should be set to false.
+  CHECK(base::PathService::OverrideAndCreateIfNeeded(
+      ash::DIR_USER_DATA, user_data_dir, /*absolute=*/false, /*create=*/false));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #endif  // BUILDFLAG(IS_WIN)
 }
 

@@ -27,7 +27,6 @@ static_library("early_prefs") {
     "//ash/constants",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/osauth/impl",
     "//chromeos/ash/components/osauth/public",
