@@ -17,7 +17,7 @@ import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/pol
 import {eventToPromise} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {assertWithinThreshold} from '../utils/object_utils.js';
-import {addEmptyTextToPage, addGenericWordsToPageNormalized, addTextToPage, createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
+import {addEmptyRegionTextToPage, addEmptyTextToPage, addGenericRegionWordsToPageNormalized, addGenericWordsToPageNormalized, addRegionTextToPage, createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
@@ -167,7 +167,7 @@ suite('SimplifiedSelection', function() {
         eventToPromise('finished-receiving-text', document.body);
     await addEmptyTextToPage(callbackRouterRemote);
     await receivedTextEventPromise;
-    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    await addGenericRegionWordsToPageNormalized(callbackRouterRemote);
 
     // Simulate a new selection being created.
     textLayerElement.onSelectionStart();
@@ -188,6 +188,88 @@ suite('SimplifiedSelection', function() {
         showSelectedRegionContextMenuEvent.detail.selectionEndIndex, -1);
   });
 
+  test('InjectedImageUsesFullTextForHighlights', async () => {
+    // Set the full text response.
+    await addGenericWordsToPageNormalized(callbackRouterRemote);
+
+    // Set the selected region to contain "hello" and "there".
+    const selectedRegion: CenterRotatedBox = {
+      box: {x: 0.1, y: 0.1, width: 0.15, height: 0.15},
+      rotation: 0,
+      coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
+    };
+    callbackRouterRemote.setPostRegionSelection(selectedRegion);
+    await flushTasks();
+
+    // Send region text for an injected image. The words in this response
+    // should be ignored for highlighting, but will be stored as the region
+    // text.
+    await addEmptyRegionTextToPage(
+        callbackRouterRemote, /*isInjectedImage=*/ true);
+    await waitAfterNextRender(textLayerElement);
+
+    // Verify the highlighted lines are from the full text response, not the
+    // injected region text response.
+    const highlightedLineElements: NodeListOf<Element> =
+        textLayerElement.shadowRoot.querySelectorAll('.highlighted-line');
+    assertEquals(1, highlightedLineElements.length);
+  });
+
+  test('FullTextAfterRegionTextForInjectedImage', async () => {
+    // Set the selected region to contain "hello" and "there".
+    const selectedRegion: CenterRotatedBox = {
+      box: {x: 0.1, y: 0.1, width: 0.15, height: 0.15},
+      rotation: 0,
+      coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
+    };
+    callbackRouterRemote.setPostRegionSelection(selectedRegion);
+    await flushTasks();
+
+    // Send region text for an injected image, but with no words. This
+    // simulates the region text response arriving before the full text
+    // response.
+    await addEmptyRegionTextToPage(
+        callbackRouterRemote, /*isInjectedImage=*/ true);
+    await waitAfterNextRender(textLayerElement);
+
+    // No highlights should be rendered yet.
+    let highlightedLineElements: NodeListOf<Element> =
+        textLayerElement.shadowRoot.querySelectorAll('.highlighted-line');
+    assertEquals(0, highlightedLineElements.length);
+
+    // Now, send the full text response.
+    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    await waitAfterNextRender(textLayerElement);
+
+    // Highlights should now be rendered based on the full text response.
+    highlightedLineElements =
+        textLayerElement.shadowRoot.querySelectorAll('.highlighted-line');
+    assertEquals(1, highlightedLineElements.length);
+  });
+
+  test('RegionTextReceivedLogsSemanticEvents', async () => {
+    // Set up empty full text response.
+    await addEmptyTextToPage(callbackRouterRemote);
+    let semanticEventArgs = await testBrowserProxy.handler.getArgs(
+        'recordLensOverlaySemanticEvent');
+    // No semantic events should be logged yet.
+    assertEquals(0, semanticEventArgs.length);
+
+    // Add region text. This should log a start event.
+    await addGenericRegionWordsToPageNormalized(callbackRouterRemote);
+    assertEquals(1, semanticEventArgs.length);
+    assertEquals(SemanticEvent.kTextGleamsViewStart, semanticEventArgs[0]);
+
+    // Add new region text. This should log an end event for the previous
+    // text, and a start event for the new text.
+    await addGenericRegionWordsToPageNormalized(callbackRouterRemote);
+    semanticEventArgs = await testBrowserProxy.handler.getArgs(
+        'recordLensOverlaySemanticEvent');
+    assertEquals(3, semanticEventArgs.length);
+    assertEquals(SemanticEvent.kTextGleamsViewEnd, semanticEventArgs[1]);
+    assertEquals(SemanticEvent.kTextGleamsViewStart, semanticEventArgs[2]);
+  });
+
   test('HasActionedTextResetsAfterNewSelection', async () => {
     await addEmptyTextToPage(callbackRouterRemote);
     assertFalse(textLayerElement.getHasActionedTextForTesting());
@@ -195,7 +277,7 @@ suite('SimplifiedSelection', function() {
     // Simulate a new selection being created.
     textLayerElement.onSelectionStart();
     textLayerElement.onSelectionFinish();
-    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    await addGenericRegionWordsToPageNormalized(callbackRouterRemote);
 
     // Simulate an action.
     textLayerElement.onCopyDetectedText(/*startIndex=*/ 0,
@@ -207,7 +289,7 @@ suite('SimplifiedSelection', function() {
     textLayerElement.onSelectionStart();
     assertFalse(textLayerElement.getHasActionedTextForTesting());
     textLayerElement.onSelectionFinish();
-    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    await addGenericRegionWordsToPageNormalized(callbackRouterRemote);
 
     // Simulate an action.
     textLayerElement.selectAndTranslateWords(/*startIndex=*/ 0,
@@ -310,7 +392,7 @@ suite('SimplifiedSelection', function() {
   test('SelectedRegionContextMenuAppearsWithRegionText', async () => {
     // Two add text calls to have text be used from the region.
     await addEmptyTextToPage(callbackRouterRemote);
-    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    await addGenericRegionWordsToPageNormalized(callbackRouterRemote);
 
     const semanticEventArgs = await testBrowserProxy.handler.getArgs(
         'recordLensOverlaySemanticEvent');
@@ -375,7 +457,7 @@ suite('SimplifiedSelection', function() {
     assertEquals(expectedStartIndex, -1);
     assertEquals(expectedEndIndex, -1);
     assertEquals(expectedText, '');
-    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    await addGenericRegionWordsToPageNormalized(callbackRouterRemote);
 
     assertEquals(expectedStartIndex, 0);
     assertEquals(expectedEndIndex, 2);
@@ -402,7 +484,7 @@ suite('SimplifiedSelection', function() {
     textLayerElement.selectAndTranslateWords(/*startIndex=*/ 0,
                                              /*endIndex=*/ 2);
     // The next text received will be considered part of the region response.
-    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    await addGenericRegionWordsToPageNormalized(callbackRouterRemote);
     const textQuery = await testBrowserProxy.handler.whenCalled(
         'issueTranslateSelectionRequest');
     assertDeepEquals('hello there test', textQuery);
@@ -412,7 +494,7 @@ suite('SimplifiedSelection', function() {
   test('ShowHighlightedRegionText', async () => {
     await addEmptyTextToPage(callbackRouterRemote);
     // Add 3 words to the region text response.
-    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    await addGenericRegionWordsToPageNormalized(callbackRouterRemote);
     await waitAfterNextRender(textLayerElement);
 
     const highlightedLineElements: NodeListOf<Element> =
@@ -456,7 +538,7 @@ suite('SimplifiedSelection', function() {
   test('NewRegionTextClearsHighlights', async () => {
     await addEmptyTextToPage(callbackRouterRemote);
     // Add 3 words to the region text response.
-    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    await addGenericRegionWordsToPageNormalized(callbackRouterRemote);
     await waitAfterNextRender(textLayerElement);
     assertEquals(
         2,
@@ -464,7 +546,7 @@ suite('SimplifiedSelection', function() {
             .length);
 
     // Getting a follow-up text response should clear highlights.
-    await addEmptyTextToPage(callbackRouterRemote);
+    await addEmptyRegionTextToPage(callbackRouterRemote);
     await waitAfterNextRender(textLayerElement);
     assertEquals(
         0,
@@ -472,7 +554,7 @@ suite('SimplifiedSelection', function() {
             .length);
 
     // Add 3 words to the region text response.
-    await addTextToPage(callbackRouterRemote, TOP_TO_BOTTOM_TEXT);
+    await addRegionTextToPage(callbackRouterRemote, TOP_TO_BOTTOM_TEXT);
     await waitAfterNextRender(textLayerElement);
     assertEquals(
         2,
@@ -483,7 +565,7 @@ suite('SimplifiedSelection', function() {
   test('ShowHighlightedRegionTextCurvedText', async () => {
     await addEmptyTextToPage(callbackRouterRemote);
     // Add 3 words with writing direction kTopToBottom.
-    await addTextToPage(callbackRouterRemote, CURVED_TEXT);
+    await addRegionTextToPage(callbackRouterRemote, CURVED_TEXT);
     await waitAfterNextRender(textLayerElement);
 
     const highlightedLineElements: NodeListOf<HTMLElement> =
@@ -526,7 +608,7 @@ suite('SimplifiedSelection', function() {
   test('ShowHighlightedRegionTextTopToBottomWritingDirection', async () => {
     await addEmptyTextToPage(callbackRouterRemote);
     // Add 3 words with writing direction kTopToBottom.
-    await addTextToPage(callbackRouterRemote, TOP_TO_BOTTOM_TEXT);
+    await addRegionTextToPage(callbackRouterRemote, TOP_TO_BOTTOM_TEXT);
     await waitAfterNextRender(textLayerElement);
 
     const highlightedLineElements: NodeListOf<Element> =
@@ -577,7 +659,7 @@ suite('SimplifiedSelection', function() {
 
     // Receiving text mid-selection should not be used.
     textLayerElement.onSelectionStart();
-    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    await addGenericRegionWordsToPageNormalized(callbackRouterRemote);
     textLayerElement.onSelectionFinish();
 
     // There should still be no highlighted lines.
@@ -588,7 +670,7 @@ suite('SimplifiedSelection', function() {
             .length);
 
     // Text receievd now should render highlighted lines on the overlay.
-    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    await addGenericRegionWordsToPageNormalized(callbackRouterRemote);
     await waitAfterNextRender(textLayerElement);
     assertEquals(
         2,
@@ -629,7 +711,7 @@ suite('SimplifiedSelection', function() {
   test('ClearAllSelectionsClearsHighlightedLines', async () => {
     await addEmptyTextToPage(callbackRouterRemote);
     // Add 3 words to the region text response.
-    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    await addGenericRegionWordsToPageNormalized(callbackRouterRemote);
     await waitAfterNextRender(textLayerElement);
 
     assertFalse(textLayerElement.getHasActionedTextForTesting());
@@ -658,7 +740,7 @@ suite('SimplifiedSelection', function() {
   test('ClearRegionSelectionClearsHighlightedLines', async () => {
     await addEmptyTextToPage(callbackRouterRemote);
     // Add 3 words to the region text response.
-    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    await addGenericRegionWordsToPageNormalized(callbackRouterRemote);
     await waitAfterNextRender(textLayerElement);
 
     assertFalse(textLayerElement.getHasActionedTextForTesting());

@@ -429,6 +429,11 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
     last_received_text_ = std::move(text);
   }
 
+  void RegionTextReceived(lens::mojom::TextPtr text,
+                          bool is_injected_image) override {
+    last_received_text_ = std::move(text);
+  }
+
   void ThemeReceived(lens::mojom::OverlayThemePtr theme) override {
     last_received_theme_ = std::move(theme);
   }

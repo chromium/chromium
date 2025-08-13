@@ -255,6 +255,10 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // ready.
   void SendText(lens::mojom::TextPtr text);
 
+  // Send region text data to the WebUI and indicates whether the text is from
+  // an injected image. If the WebUI is not ready, this is a no-op.
+  void SendRegionText(lens::mojom::TextPtr text, bool is_injected_image);
+
   // Creates theme with data obtained from `palette_id` to be sent to the WebUI.
   lens::mojom::OverlayThemePtr CreateTheme(lens::PaletteId palette_id);
 

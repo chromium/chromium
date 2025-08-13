@@ -401,6 +401,14 @@ void LensOverlayController::SendText(lens::mojom::TextPtr text) {
   page_->TextReceived(std::move(text));
 }
 
+void LensOverlayController::SendRegionText(lens::mojom::TextPtr text,
+                                           bool is_injected_image) {
+  if (!page_) {
+    return;
+  }
+  page_->RegionTextReceived(std::move(text), is_injected_image);
+}
+
 lens::mojom::OverlayThemePtr LensOverlayController::CreateTheme(
     lens::PaletteId palette_id) {
   CHECK(base::Contains(lens::kPaletteColors, palette_id));
@@ -2604,7 +2612,8 @@ void LensOverlayController::HandleInteractionURLResponse(
 
 void LensOverlayController::HandleInteractionResponse(
     lens::mojom::TextPtr text) {
-  SendText(std::move(text));
+  const bool is_injected_image = lens_selection_type_ == lens::INJECTED_IMAGE;
+  SendRegionText(std::move(text), is_injected_image);
 }
 
 void LensOverlayController::HandlePageContentUploadProgress(uint64_t position,

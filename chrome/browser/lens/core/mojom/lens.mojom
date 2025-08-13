@@ -240,6 +240,13 @@ interface LensPage {
   // Passes Text received from Lens to WebUI for rendering.
   TextReceived(Text text);
 
+  // Passes region text received from Lens to WebUI for rendering. Also
+  // indicates whether the text was received for an injected image. An injected
+  // image is a preselected region that was sent to the Lens overlay on open.
+  // It differs from a regular region search because the image bytes are not
+  // cropped from the page screenshot.
+  RegionTextReceived(Text text, bool is_injected_image);
+
   // Passes the dynamic theme to WebUI.
   ThemeReceived(OverlayTheme theme);
 
