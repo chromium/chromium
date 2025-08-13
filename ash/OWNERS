@@ -4,9 +4,11 @@ jamescook@chromium.org
 oshima@chromium.org
 xiyuan@chromium.org
 
+# For code clean up/refactoring.
+hidehiko@chromium.org
+
 # For WindowManager related.
 xdai@chromium.org
-
 
 # These are for the common case of adding or renaming a few items. If you're
 # doing structural changes, please get a review from a reviewer above.
