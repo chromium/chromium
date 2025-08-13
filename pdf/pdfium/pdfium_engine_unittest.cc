@@ -1267,6 +1267,30 @@ TEST_P(PDFiumEngineTest, GetScreenRectsForCaret) {
               ElementsAre(kExpectedRect3));
 }
 
+TEST_P(PDFiumEngineTest, GetScreenRectsForCaretBlankPage) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+  ASSERT_EQ(0u, engine->GetCharCount(0));
+
+  EXPECT_THAT(engine->GetScreenRectsForCaret({0, 0}),
+              ElementsAre(gfx::Rect(18, 16, 3, 17)));
+}
+
+TEST_P(PDFiumEngineTest, GetScreenRectsForCaretMiniBlankPage) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank_mini.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+  ASSERT_EQ(0u, engine->GetCharCount(0));
+
+  // Page is too small to fit a caret.
+  EXPECT_THAT(engine->GetScreenRectsForCaret({0, 0}), IsEmpty());
+}
+
 TEST_P(PDFiumEngineTest, InvalidateRect) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =

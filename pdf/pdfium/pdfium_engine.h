@@ -897,6 +897,11 @@ class PDFiumEngine : public DocumentLoader::Client,
   // coordinates. (i.e. 0,0 is top left corner of plugin area)
   gfx::Rect GetScreenRect(const gfx::Rect& rect) const;
 
+  // Returns screen rects for a caret at the top-left of the no-text PDF page,
+  // or an empty vector if the caret cannot fit on the page.
+  std::vector<gfx::Rect> GetNoTextPageScreenRectsForCaret(
+      PDFiumPage* page) const;
+
   // Given an image `region`, highlights `rect`.
   // `highlighted_rects` contains the already highlighted rectangles and will be
   // updated to include `rect` if `rect` has not already been highlighted.

@@ -948,6 +948,11 @@ std::vector<gfx::Rect> PDFiumEngine::GetScreenRectsForCaret(
     const PageCharacterIndex& index) const {
   CHECK(PageIndexInBounds(index.page_index));
   PDFiumPage* page = pages_[index.page_index].get();
+
+  if (page->GetCharCount() == 0 && index.char_index == 0) {
+    return GetNoTextPageScreenRectsForCaret(page);
+  }
+
   CHECK(page->IsCharIndexInBounds(index.char_index));
 
   PDFiumRange range(page, index.char_index, 1);
@@ -1090,7 +1095,7 @@ void PDFiumEngine::SetCaretBrowsingEnabled(bool enabled) {
   CHECK(features::kPdfInk2TextHighlighting.Get());
   CHECK(!client_->IsPrintPreview());
 
-  if (pages_.empty() || pages_[0]->GetCharCount() == 0) {
+  if (pages_.empty()) {
     return;
   }
 
@@ -3571,6 +3576,31 @@ gfx::Rect PDFiumEngine::GetPageScreenRect(int page_index) const {
 
 gfx::Rect PDFiumEngine::GetScreenRect(const gfx::Rect& rect) const {
   return draw_utils::GetScreenRect(rect, position_, current_zoom_);
+}
+
+std::vector<gfx::Rect> PDFiumEngine::GetNoTextPageScreenRectsForCaret(
+    PDFiumPage* page) const {
+  FS_RECTF page_bounds;
+  auto result = FPDF_GetPageBoundingBox(page->GetPage(), &page_bounds);
+  CHECK(result);
+
+  // TODO(crbug.com/437807125): Determine default caret offset and height.
+  static constexpr float kCaretOffset = 10.0f;
+  static constexpr float kCaretHeight = 12.0f;
+
+  const float caret_left = page_bounds.left + kCaretOffset;
+  const float caret_top = page_bounds.top - kCaretOffset;
+  const float caret_right = caret_left + PdfCaret::kCaretWidth;
+  const float caret_bottom = caret_top - kCaretHeight;
+
+  // The PDF page is too small to display the default caret size.
+  if (caret_right >= page_bounds.right || caret_top >= page_bounds.top) {
+    return {};
+  }
+
+  return {page->PageToScreen(GetVisibleRect().origin(), current_zoom_,
+                             caret_left, caret_top, caret_right, caret_bottom,
+                             GetCurrentOrientation())};
 }
 
 void PDFiumEngine::Highlight(const RegionData& region,

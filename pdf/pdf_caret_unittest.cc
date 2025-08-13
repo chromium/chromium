@@ -196,6 +196,17 @@ class PdfCaretTest : public testing::Test {
   SkBitmap bitmap_;
 };
 
+TEST_F(PdfCaretTest, NonTextPage) {
+  EXPECT_CALL(client(), GetCharCount(0)).WillRepeatedly(Return(0));
+  constexpr gfx::Rect kDefaultCaret{10, 10, 1, 12};
+  SetUpChar(kTestChar0, '\0', {kDefaultCaret});
+  InitializeCaretAtChar(kTestChar0);
+
+  caret().SetVisibility(true);
+
+  TestDrawCaret(kDefaultCaret);
+}
+
 TEST_F(PdfCaretTest, SetVisibility) {
   EXPECT_CALL(client(), GetCharCount(0)).WillRepeatedly(Return(1));
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});

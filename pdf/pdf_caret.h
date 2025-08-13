@@ -21,6 +21,9 @@ struct RegionData;
 // movement. For now, only used if Ink2 text highlighting is enabled.
 class PdfCaret {
  public:
+  // The pixel width of the caret.
+  static constexpr int kCaretWidth = 1;
+
   // The default interval the caret should blink if not set by
   // `SetBlinkInterval()`. Exposed for testing.
   static constexpr base::TimeDelta kDefaultBlinkInterval =
