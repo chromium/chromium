@@ -139,9 +139,8 @@ void TabScrubber::OnScrollEvent(ui::ScrollEvent* event) {
   }
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  TabStrip* tab_strip = browser_view->tabstrip();
 
-  if (tab_strip->IsAnimating()) {
+  if (browser_view->tab_strip_view()->IsAnimating()) {
     if (FinishScrub(false)) {
       event->SetHandled();
     }

@@ -234,10 +234,6 @@ class TabStrip : public views::View,
 
   TabDragContext* GetDragContext();
 
-  // Returns true if Tabs in this TabStrip are currently changing size or
-  // position.
-  bool IsAnimating() const;
-
   // Stops any ongoing animations. If `layout` is true and an animation is
   // ongoing this does a layout.
   void StopAnimating(bool layout);

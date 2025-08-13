@@ -1584,10 +1584,6 @@ TabDragContext* TabStrip::GetDragContext() {
   return base::to_address(drag_context_);
 }
 
-bool TabStrip::IsAnimating() const {
-  return tab_container_->IsAnimating() || drag_context_->IsAnimatingDragEnd();
-}
-
 void TabStrip::StopAnimating(bool layout) {
   if (layout) {
     tab_container_->CompleteAnimationAndLayout();
@@ -1653,7 +1649,7 @@ const views::View* TabStrip::GetTabClosingModeMouseWatcherHostView() const {
 }
 
 bool TabStrip::IsAnimatingInTabStrip() const {
-  return IsAnimating();
+  return tab_container_->IsAnimating() || drag_context_->IsAnimatingDragEnd();
 }
 
 void TabStrip::UpdateAnimationTarget(TabSlotView* tab_slot_view,
@@ -1889,7 +1885,7 @@ void TabStrip::MaybeStartDrag(
   // mouse is down... during an animation tabs are being resized automatically,
   // so the View system can misinterpret this easily if the mouse is down that
   // the user is dragging.
-  if (IsAnimating() || controller_->HasAvailableDragActions() == 0) {
+  if (IsAnimatingInTabStrip() || controller_->HasAvailableDragActions() == 0) {
     return;
   }
 
@@ -2036,7 +2032,8 @@ bool TabStrip::CanPaintThrobberToLayer() const {
   // could be sliding in or out; for other modes, there's no tab strip.
   const bool dragging = drag_context_->IsDragStarted();
   const views::Widget* widget = GetWidget();
-  return widget && !dragging && !IsAnimating() && !widget->IsFullscreen();
+  return widget && !dragging && !IsAnimatingInTabStrip() &&
+         !widget->IsFullscreen();
 }
 
 bool TabStrip::HasVisibleBackgroundTabShapes() const {
@@ -2313,7 +2310,7 @@ const Tab* TabStrip::GetLastVisibleTab() const {
 }
 
 void TabStrip::CloseTabInternal(int model_index, CloseTabSource source) {
-  if (!tab_container_->InTabClose() && IsAnimating()) {
+  if (!tab_container_->InTabClose() && IsAnimatingInTabStrip()) {
     // Cancel any current animations. We do this as remove uses the current
     // ideal bounds and we need to know ideal bounds is in a good state.
     tab_container_->CompleteAnimationAndLayout();

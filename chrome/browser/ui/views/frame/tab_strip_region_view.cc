@@ -520,7 +520,7 @@ glic::GlicButton* TabStripRegionView::GetGlicButton() const {
 }
 
 bool TabStripRegionView::IsAnimating() const {
-  return tab_strip_->IsAnimating();
+  return tab_strip_->IsAnimatingInTabStrip();
 }
 
 std::optional<int> TabStripRegionView::GetFocusedTabIndex() const {

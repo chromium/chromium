@@ -556,9 +556,9 @@ TEST_P(TabStripTest, ResetBoundsForDraggedTabs) {
 
   // Ending the drag triggers the tabstrip to begin animating this tab back
   // to its ideal bounds.
-  ASSERT_FALSE(tab_strip_->IsAnimating());
+  ASSERT_FALSE(tab_strip_->IsAnimatingInTabStrip());
   StopDragging();
-  EXPECT_TRUE(tab_strip_->IsAnimating());
+  EXPECT_TRUE(tab_strip_->IsAnimatingInTabStrip());
 
   // Change the ideal bounds of the tabs mid-animation by selecting a
   // different tab.
