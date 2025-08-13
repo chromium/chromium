@@ -1654,12 +1654,18 @@ source_set("platform_browser_tests") {
         "//chrome/browser/ui/views/location_bar",
       ]
     }
+
+    if (!is_chromeos) {
+      sources += [ "../browser/extensions/api/web_authentication_proxy/web_authentication_proxy_apitest.cc" ]
+    }
+
     if (is_chromeos) {
       deps += [
         "//chrome/browser/ui/webui/ash/parent_access:test_support",
         "//chromeos/services/tts",
       ]
     }
+
     data += [
       "//chrome/test/data/extensions/",
       "//extensions/test/data/",
@@ -4726,7 +4732,6 @@ if (!is_android) {
       if (is_win || is_linux || is_mac) {
         sources += [
           "../browser/extensions/api/experimental_actor/experimental_actor_apitest.cc",
-          "../browser/extensions/api/web_authentication_proxy/web_authentication_proxy_apitest.cc",
           "../browser/supervised_user/supervised_user_pending_state_navigation_browsertest.cc",
           "../browser/ui/views/web_apps/file_handler_launch_dialog_browsertest.cc",
         ]
