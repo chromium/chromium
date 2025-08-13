@@ -119,6 +119,10 @@ class PredictionBasedPermissionUiSelector
       std::unique_ptr<permissions::LanguageDetectionObserver>
           language_detection_observer);
 
+  void set_callback_for_testing(DecisionMadeCallback callback) {
+    callback_ = std::move(callback);
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(
       PredictionBasedPermissionUiExpectedPredictionSourceTest,

@@ -1001,6 +1001,17 @@ chromium-metrics-reviews@google.com.
   <token key="PermissionType" variants="AllPermissionTypes"/>
 </histogram>
 
+<histogram name="Permissions.PredictionService.ConcurrentRequests"
+    enum="PermissionPredictionSupportedType" expires_after="2025-10-07">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever a notifications or geolocation permission is sent to the
+    prediction service. Records whether there is a concurrent request.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.PredictionService.MSBB" enum="BooleanEnabled"
     expires_after="2025-10-07">
   <owner>elklm@chromium.org</owner>

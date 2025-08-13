@@ -303,6 +303,26 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
     permissions::PermissionRequest* request,
     DecisionMadeCallback callback) {
   VLOG(1) << "[CPSS] Selector activated";
+
+  // If callback is already set, it means that the selector was already
+  // activated for a previous permission request and the decision has not been
+  // delivered yet. This can happen if the page triggers a permission request
+  // while the previous permission request is still pending. In this case, we
+  // ignore the new request as we cannot stop previously activated evaluation.
+  // callback_ is reset to prevent the decision from being delivered to the
+  // obsolete request.
+  if (callback_) {
+    VLOG(1) << "[CPSS] Concurrent permission requests evaluations are not "
+               "supported.";
+    Cancel();
+
+    PermissionUmaUtil::RecordPermissionPredictionConcurrentRequests(
+        request->request_type());
+
+    std::move(callback).Run(Decision::UseNormalUiAndShowNoWarning());
+    return;
+  }
+
   callback_ = std::move(callback);
   last_permission_request_relevance_ = std::nullopt;
   last_request_grant_likelihood_ = std::nullopt;
