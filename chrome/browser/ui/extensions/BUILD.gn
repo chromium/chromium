@@ -20,8 +20,10 @@ source_set("extensions") {
 
   if (enable_extensions_core) {
     sources += [
+      "extension_dialog_utils.h",
       "extension_install_ui.h",
       "extensions_dialogs.h",
+      "reload_page_dialog_controller.h",
     ]
 
     if (is_android) {
@@ -95,8 +97,17 @@ source_set("impl") {
   deps = [ ":extensions" ]
 
   if (enable_extensions_core) {
-    sources += [ "extension_install_ui.cc" ]
-    deps += [ "//chrome/browser/profiles:profile" ]
+    sources += [
+      "extension_install_blocked_dialog.cc",
+      "extension_install_ui.cc",
+      "extension_multiple_uninstall_dialog.cc",
+      "extension_uninstall_dialog_impl.cc",
+      "reload_page_dialog_controller.cc",
+    ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/profiles:profile",
+    ]
 
     if (is_win || is_mac || is_linux || is_chromeos) {
       sources += [ "extension_install_ui_desktop.cc" ]
@@ -115,8 +126,18 @@ source_set("impl") {
       ]
     }
     if (is_android) {
-      sources += [ "extension_install_ui_android.cc" ]
-      deps += [ "//extensions/common" ]
+      sources += [
+        "extension_dialog_utils_android.cc",
+        "extension_install_ui_android.cc",
+      ]
+      deps += [
+        "//extensions/common",
+        "//ui/android",
+      ]
+    }
+    if (toolkit_views) {
+      sources += [ "extension_dialog_utils_views.cc" ]
+      deps += [ "//chrome/browser/ui/views/frame:toolbar_button_provider" ]
     }
   }
 

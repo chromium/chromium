@@ -340,6 +340,8 @@ static_library("ui") {
     "//chrome/browser/ui/bluetooth:impl",
     "//chrome/browser/ui/cookie_controls",
     "//chrome/browser/ui/digital_credentials",
+    "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/extensions:impl",
     "//chrome/browser/ui/file_system_access",
     "//chrome/browser/ui/file_system_access:impl",
     "//chrome/browser/ui/find_bar",
@@ -751,6 +753,10 @@ static_library("ui") {
     # header gets componentized:
     # - c/b/ui/chrome_select_file_policy.h
     "//chrome/browser/ui/passwords/settings:impl",
+
+    # TODO(crbug.com/420905611): Remove this circular dependency when c/b/ui/browser_dialogs.h
+    # gets componentized.
+    "//chrome/browser/ui/extensions:impl",
   ]
 
   if (enable_vr && is_win) {
@@ -966,7 +972,6 @@ static_library("ui") {
         "android/extensions/extension_actions_bridge_factory.h",
         "android/extensions/extension_keybinding_registry_android.cc",
         "android/extensions/extension_keybinding_registry_android.h",
-        "extensions/extension_dialog_utils_android.cc",
       ]
 
       deps += [
@@ -4907,10 +4912,6 @@ static_library("ui") {
         "views/autofill/address_sign_in_promo_view.h",
       ]
     }
-
-    if (enable_extensions_core) {
-      sources += [ "extensions/extension_dialog_utils_views.cc" ]
-    }
   }
 
   # TODO(https://crbug.com/330808104): Delete this code.
@@ -4966,12 +4967,6 @@ static_library("ui") {
 
   if (enable_extensions_core) {
     sources += [
-      "extensions/extension_dialog_utils.h",
-      "extensions/extension_install_blocked_dialog.cc",
-      "extensions/extension_multiple_uninstall_dialog.cc",
-      "extensions/extension_uninstall_dialog_impl.cc",
-      "extensions/reload_page_dialog_controller.cc",
-      "extensions/reload_page_dialog_controller.h",
       "webui/extensions/extension_icon_source.cc",
       "webui/extensions/extension_icon_source.h",
       "webui/extensions/extensions_internals_source.cc",
@@ -4989,8 +4984,6 @@ static_library("ui") {
     ]
     deps += [
       "//chrome/browser/extensions",
-      "//chrome/browser/ui/extensions",
-      "//chrome/browser/ui/extensions:impl",
       "//extensions/common",
     ]
 
@@ -5008,10 +5001,8 @@ static_library("ui") {
       "//chrome/browser/extensions/api/omnibox",
       "//chrome/browser/policy:policy_util",
       "//chrome/browser/profiles",
-      "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/extensions:extension_enable_flow_delegate",
       "//chrome/browser/ui/extensions:extension_popup_types",
-      "//chrome/browser/ui/extensions:impl",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/webui/extensions_zero_state_promo:mojo_bindings",
       "//chrome/browser/web_applications",
@@ -5034,7 +5025,6 @@ static_library("ui") {
     allow_circular_includes_from += [
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/apps/platform_apps/api",
-      "//chrome/browser/ui/extensions:impl",
     ]
 
     sources += [
