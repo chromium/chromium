@@ -24,27 +24,27 @@ namespace {
 base::FilePath GetBundleFullName(
     const base::FilePath& cache_dir,
     const web_package::SignedWebBundleId& web_bundle_id,
-    const base::Version& version) {
+    const IwaVersion& version) {
   return IwaCacheClient::GetBundleFullName(
       IwaCacheClient::GetCacheDirectoryForBundleWithVersion(
-          cache_dir, web_bundle_id, version));
+          cache_dir, web_bundle_id, version.version()));
 }
 
 // Expects the following bundle path:
 // "/var/cache/device_local_account_iwa/<mgs|kiosk>/<bundle_id>/<version>/" +
 //   "main.swbn"
 // Returns `std::nullopt` if version cannot be parsed.
-std::optional<base::Version> ExtractVersionFromCacheBundlePath(
+std::optional<IwaVersion> ExtractVersionFromCacheBundlePath(
     const base::FilePath& file) {
   static constexpr int kVersionOffsetInPath = 2;
 
   std::vector<base::FilePath::StringType> components = file.GetComponents();
   if (components.size() >= kVersionOffsetInPath &&
       file.Extension() == ".swbn") {
-    base::Version version =
-        base::Version(components[components.size() - kVersionOffsetInPath]);
-    if (version.IsValid()) {
-      return version;
+    const auto iwa_version = IwaVersion::Create(
+        components[components.size() - kVersionOffsetInPath]);
+    if (iwa_version.has_value()) {
+      return *std::move(iwa_version);
     }
   }
   LOG(ERROR) << "Cannot extract bundle version from path: " << file;
@@ -55,17 +55,17 @@ std::optional<base::Version> ExtractVersionFromCacheBundlePath(
 // `GetBundleCachePathCommand::StartWithLock`.
 GetBundleCachePathResult GetBundleCachePathImpl(
     const web_package::SignedWebBundleId& web_bundle_id,
-    const std::optional<base::Version>& version,
+    const std::optional<IwaVersion>& version,
     SessionType session_type) {
   const base::FilePath cache_dir =
       IwaCacheClient::GetCacheBaseDirectoryForSessionType(session_type);
 
   if (version) {
     base::FilePath expected_file_path =
-        GetBundleFullName(cache_dir, web_bundle_id, version.value());
+        GetBundleFullName(cache_dir, web_bundle_id, *version);
     if (base::PathIsReadable(expected_file_path)) {
       return GetBundleCachePathSuccess(std::move(expected_file_path),
-                                       std::move(version.value()));
+                                       *std::move(version));
     }
     return base::unexpected(GetBundleCachePathError::kProvidedVersionNotFound);
   }
@@ -76,14 +76,14 @@ GetBundleCachePathResult GetBundleCachePathImpl(
                                          base::FileEnumerator::FILES);
 
   std::optional<base::FilePath> newest_version_path = std::nullopt;
-  std::optional<base::Version> newest_version = std::nullopt;
+  std::optional<IwaVersion> newest_version = std::nullopt;
   bundle_files_iter.ForEach([&newest_version_path, &newest_version](
                                 const base::FilePath& current_path) {
-    std::optional<base::Version> current_version =
+    std::optional<IwaVersion> current_version =
         ExtractVersionFromCacheBundlePath(current_path);
 
     if (newest_version < current_version) {
-      newest_version = current_version;
+      newest_version = std::move(current_version);
       newest_version_path = current_path;
     }
   });
@@ -116,7 +116,7 @@ std::string GetBundleCachePathErrorToString(GetBundleCachePathError error) {
 
 GetBundleCachePathCommand::GetBundleCachePathCommand(
     const IsolatedWebAppUrlInfo& url_info,
-    const std::optional<base::Version>& version,
+    const std::optional<IwaVersion>& version,
     SessionType session_type,
     Callback callback)
     : WebAppCommand<AppLock, GetBundleCachePathResult>(

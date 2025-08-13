@@ -24,6 +24,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
@@ -339,7 +340,7 @@ class WebAppCommandScheduler {
   // version.
   void GetIsolatedWebAppBundleCachePath(
       const IsolatedWebAppUrlInfo& url_info,
-      const std::optional<base::Version>& version,
+      const std::optional<IwaVersion>& version,
       IwaCacheClient::SessionType session_type,
       base::OnceCallback<void(
           base::expected<GetBundleCachePathSuccess, GetBundleCachePathError>)>

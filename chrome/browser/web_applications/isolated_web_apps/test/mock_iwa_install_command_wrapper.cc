@@ -92,7 +92,7 @@ MockIwaInstallCommandWrapper::~MockIwaInstallCommandWrapper() = default;
 void MockIwaInstallCommandWrapper::Install(
     const IsolatedWebAppInstallSource& install_source,
     const IsolatedWebAppUrlInfo& url_info,
-    const base::Version& expected_version,
+    const IwaVersion& expected_version,
     WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) {
   install_source_ = install_source;
   url_info_ = url_info;
@@ -112,7 +112,7 @@ void MockIwaInstallCommandWrapper::ScheduleCommand() {
   command_was_scheduled_ = true;
   provider_->command_manager().ScheduleCommand(
       std::make_unique<MockInstallIsolatedWebApp>(
-          *url_info_, *install_source_, *expected_version_,
+          *url_info_, *install_source_, expected_version_->version(),
           IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
               *profile_),
           /*optional_keep_alive=*/nullptr,

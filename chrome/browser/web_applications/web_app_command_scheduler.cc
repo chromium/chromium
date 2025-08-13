@@ -383,7 +383,7 @@ void WebAppCommandScheduler::CheckIsolatedWebAppBundleInstallability(
 #if BUILDFLAG(IS_CHROMEOS)
 void WebAppCommandScheduler::GetIsolatedWebAppBundleCachePath(
     const IsolatedWebAppUrlInfo& url_info,
-    const std::optional<base::Version>& version,
+    const std::optional<IwaVersion>& version,
     IwaCacheClient::SessionType session_type,
     base::OnceCallback<void(base::expected<GetBundleCachePathSuccess,
                                            GetBundleCachePathError>)> callback,

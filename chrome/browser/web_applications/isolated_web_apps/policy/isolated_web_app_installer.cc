@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/types/expected_macros.h"
-#include "base/version.h"
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
@@ -121,14 +120,14 @@ IwaInstaller::IwaInstallCommandWrapperImpl::IwaInstallCommandWrapperImpl(
 void IwaInstaller::IwaInstallCommandWrapperImpl::Install(
     const IsolatedWebAppInstallSource& install_source,
     const IsolatedWebAppUrlInfo& url_info,
-    const base::Version& expected_version,
+    const IwaVersion& expected_version,
     WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) {
   // There is no need to keep the browser or profile alive when
   // policy-installing an IWA. If the browser or profile shut down, installation
   // will be re-attempted the next time they start, assuming that the policy is
   // still set.
   provider_->scheduler().InstallIsolatedWebApp(
-      url_info, install_source, expected_version,
+      url_info, install_source, expected_version.version(),
       /*optional_keep_alive=*/nullptr,
       /*optional_profile_keep_alive=*/nullptr, std::move(callback));
 }
@@ -191,11 +190,19 @@ void IwaInstaller::Start() {
     IsolatedWebAppUrlInfo url_info =
         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
             install_options_.web_bundle_id());
+    // TODO: (crbug.com/437038363) Adjust to IwaVersion.
+    std::optional<IwaVersion> pinned_version;
+    if (install_options_.pinned_version().has_value()) {
+      auto iwa_version =
+          IwaVersion::Create(install_options_.pinned_version()->GetString());
+      if (iwa_version.has_value()) {
+        pinned_version = *std::move(iwa_version);
+      }
+    }
     CHECK_DEREF(provider_.get())
         .scheduler()
         .GetIsolatedWebAppBundleCachePath(
-            url_info, install_options_.pinned_version(),
-            IwaCacheClient::GetCurrentSessionType(),
+            url_info, pinned_version, IwaCacheClient::GetCurrentSessionType(),
             base::BindOnce(&IwaInstaller::OnBundleCachePathReceived,
                            weak_factory_.GetWeakPtr()));
     return;
@@ -220,7 +227,7 @@ void IwaInstaller::OnBundleCachePathReceived(GetBundleCachePathResult result) {
 }
 
 void IwaInstaller::InstallFromCache(const base::FilePath& cache_file,
-                                    const base::Version& version) {
+                                    const IwaVersion& version) {
   log_->Append(base::Value("start installing from the cache"));
   IsolatedWebAppUrlInfo url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
@@ -298,7 +305,7 @@ void IwaInstaller::OnTempFileCreated(base::OnceClosure next_step_callback,
 }
 
 void IwaInstaller::DownloadUpdateManifest(
-    base::OnceCallback<void(GURL, base::Version)> next_step_callback) {
+    base::OnceCallback<void(GURL, IwaVersion)> next_step_callback) {
   log_->Append(base::Value(
       "Downloading Update Manifest from " +
       install_options_.update_manifest_url().possibly_invalid_spec()));
@@ -312,7 +319,7 @@ void IwaInstaller::DownloadUpdateManifest(
 }
 
 void IwaInstaller::OnUpdateManifestParsed(
-    base::OnceCallback<void(GURL, base::Version)> next_step_callback,
+    base::OnceCallback<void(GURL, IwaVersion)> next_step_callback,
     base::expected<UpdateManifest, UpdateManifestFetcher::Error> fetch_result) {
   update_manifest_fetcher_.reset();
   ASSIGN_OR_RETURN(
@@ -342,13 +349,13 @@ void IwaInstaller::OnUpdateManifestParsed(
                            " from " +
                            version_to_install->src().possibly_invalid_spec()));
   std::move(next_step_callback)
-      .Run(version_to_install->src(), version_to_install->version().version());
+      .Run(version_to_install->src(), version_to_install->version());
 }
 
 void IwaInstaller::DownloadWebBundle(
-    base::OnceCallback<void(base::Version)> next_step_callback,
+    base::OnceCallback<void(IwaVersion)> next_step_callback,
     GURL web_bundle_url,
-    base::Version expected_version) {
+    IwaVersion expected_version) {
   log_->Append(base::Value("Downloading Web Bundle from " +
                            web_bundle_url.possibly_invalid_spec()));
 
@@ -376,8 +383,7 @@ void IwaInstaller::OnWebBundleDownloaded(base::OnceClosure next_step_callback,
   std::move(next_step_callback).Run();
 }
 
-void IwaInstaller::RunInstallFromInternetCommand(
-    base::Version expected_version) {
+void IwaInstaller::RunInstallFromInternetCommand(IwaVersion expected_version) {
   log_->Append(base::Value("Running install command, expected version: " +
                            expected_version.GetString()));
   IsolatedWebAppUrlInfo url_info =
@@ -393,7 +399,7 @@ void IwaInstaller::RunInstallFromInternetCommand(
 }
 
 void IwaInstaller::OnIwaInstalledFromInternet(
-    base::Version installed_version,
+    IwaVersion installed_version,
     base::expected<InstallIsolatedWebAppCommandSuccess,
                    InstallIsolatedWebAppCommandError> result) {
   if (!result.has_value()) {
