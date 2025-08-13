@@ -144,7 +144,7 @@ class CORE_EXPORT Event : public ScriptWrappable {
   void SetType(const AtomicString& type) { type_ = type; }
 
   // Web exposed target of the event. Can't be a pseudo-element.
-  EventTarget* target() const { return target_.Get(); }
+  EventTarget* target() const;
   void SetTarget(EventTarget*);
 
   // This is the target that the event was dispatched to, without any

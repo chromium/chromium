@@ -256,6 +256,14 @@ void Event::preventDefault() {
     prevent_default_called_on_uncancelable_event_ = true;
 }
 
+EventTarget* Event::target() const {
+  DCHECK(!target_ || !target_->ToNode() ||
+         !target_->ToNode()->IsPseudoElement())
+      << "Event target should not be a pseudo-element, but got "
+      << target_->ToNode()->DebugName();
+  return target_.Get();
+}
+
 void Event::SetTarget(EventTarget* target) {
   if (target_ == target)
     return;
