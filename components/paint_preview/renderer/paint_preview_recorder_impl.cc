@@ -274,6 +274,12 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
       bounds.set_x(
           GetBoundOrigin(document_size.width(), bounds.width(), offset.x()));
       break;
+    case mojom::ClipCoordOverride::kScrollOffset:
+      // Note: we don't have to go out of our way to clamp to within the
+      // document, since the browser's normal handling of the scroll offset
+      // takes care of that.
+      bounds.set_x(offset.x());
+      break;
   }
   switch (params->clip_y_coord_override) {
     case mojom::ClipCoordOverride::kNone:
@@ -281,6 +287,12 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
     case mojom::ClipCoordOverride::kCenterOnScrollOffset:
       bounds.set_y(
           GetBoundOrigin(document_size.height(), bounds.height(), offset.y()));
+      break;
+    case mojom::ClipCoordOverride::kScrollOffset:
+      // Note: we don't have to go out of our way to clamp to within the
+      // document, since the browser's normal handling of the scroll offset
+      // takes care of that.
+      bounds.set_y(offset.y());
       break;
   }
 
