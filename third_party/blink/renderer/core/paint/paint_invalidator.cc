@@ -184,7 +184,7 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
     if (object.Parent()->ShouldSkipNextLayoutShiftTracking())
       return true;
     // Report if the parent is in a different transform space.
-    const auto* parent_context = context.ParentContext();
+    const auto* parent_context = context.parent_context;
     if (!parent_context || !parent_context->transform_ ||
         parent_context->transform_ != tree_builder_context.current.transform)
       return true;
