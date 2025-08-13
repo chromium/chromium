@@ -1334,6 +1334,7 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
     DCHECK_EQ(0, static_cast<int>(decoded_image.src_rect_offset().height()));
 
     sk_image = decoded_image.image();
+    gainmap_sk_image = decoded_image.gainmap_image();
     SkSize scale_adjustment = SkSize::Make(
         op->scale_adjustment.width() * decoded_image.scale_adjustment().width(),
         op->scale_adjustment.height() *
@@ -1463,6 +1464,7 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
     sampling = PaintFlags::FilterQualityToSkSamplingOptions(
         decoded_image.filter_quality(), scale);
     sk_image = decoded_image.image();
+    gainmap_sk_image = decoded_image.gainmap_image();
   } else {
     adjusted_src = AdjustSrcRectForScale(op->src, op->scale_adjustment);
     SkM44 matrix = canvas->getLocalToDevice() *

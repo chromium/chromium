@@ -33,6 +33,13 @@ class CC_PAINT_EXPORT DecodedDrawImage {
                    const SkSize& scale_adjustment,
                    PaintFlags::FilterQuality filter_quality,
                    bool is_budgeted);
+  DecodedDrawImage(sk_sp<SkImage> image,
+                   sk_sp<SkImage> gainmap_image,
+                   sk_sp<ColorFilter> dark_mode_color_filter,
+                   const SkSize& src_rect_offset,
+                   const SkSize& scale_adjustment,
+                   PaintFlags::FilterQuality filter_quality,
+                   bool is_budgeted);
   DecodedDrawImage(const gpu::Mailbox& mailbox,
                    PaintFlags::FilterQuality filter_quality);
   DecodedDrawImage(std::optional<uint32_t> transfer_cache_entry_id,
@@ -51,12 +58,16 @@ class CC_PAINT_EXPORT DecodedDrawImage {
   ~DecodedDrawImage();
 
   const sk_sp<SkImage>& image() const { return image_; }
+  const sk_sp<SkImage>& gainmap_image() const { return gainmap_image_; }
   const sk_sp<ColorFilter>& dark_mode_color_filter() const {
     return dark_mode_color_filter_;
   }
   std::optional<uint32_t> transfer_cache_entry_id() const {
     return transfer_cache_entry_id_;
   }
+
+  // The source rect offset and scale adjustment are in the coordinate system
+  // of `image()` and not `gainmap_image()`.
   const SkSize& src_rect_offset() const { return src_rect_offset_; }
   const SkSize& scale_adjustment() const { return scale_adjustment_; }
   PaintFlags::FilterQuality filter_quality() const { return filter_quality_; }
@@ -75,6 +86,7 @@ class CC_PAINT_EXPORT DecodedDrawImage {
 
  private:
   sk_sp<SkImage> image_;
+  sk_sp<SkImage> gainmap_image_;
   gpu::Mailbox mailbox_;
   std::optional<uint32_t> transfer_cache_entry_id_;
   sk_sp<ColorFilter> dark_mode_color_filter_;
