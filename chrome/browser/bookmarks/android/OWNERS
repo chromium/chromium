@@ -2,3 +2,6 @@ bsazonov@chromium.org
 mdjones@chromium.org
 twellington@chromium.org
 wylieb@google.com
+
+per-file .../bar/*=mschillaci@google.com
+per-file .../bar/*=eleanorlee@google.com
