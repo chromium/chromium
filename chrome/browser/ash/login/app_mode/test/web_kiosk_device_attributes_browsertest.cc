@@ -2,46 +2,50 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+#include <cstddef>
+#include <string>
+#include <tuple>
+
 #include "base/check_deref.h"
 #include "base/files/file_path.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/app_mode/test/fake_origin_test_server_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
-#include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/permissions/features.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "url/origin.h"
 
 namespace {
 
-// Waits until the 'navigator.managed' JS object is defined.
+// Device Attribute APIs is defined when the page finishes loading.
 // Used in tests to prevent API calls before the test web page has loaded.
 void WaitForDeviceAttributesApiObject(content::WebContents& web_contents) {
-  ash::test::TestPredicateWaiter(
-      base::BindRepeating(
-          [](content::WebContents* web_contents) {
-            return content::EvalJs(web_contents,
-                                   "typeof navigator.managed !== 'undefined'")
-                .ExtractBool();
-          },
-          &web_contents))
-      .Wait();
+  ASSERT_TRUE(WaitForLoadStop(&web_contents));
 }
 
 content::EvalJsResult CallDeviceAttributesApi(
@@ -274,7 +278,6 @@ IN_PROC_BROWSER_TEST_P(WebKioskDeviceAttributesTest,
   MaybeSetEnterprisePoliciesForOrigin(kTrustedOrigin);
   ASSERT_TRUE(content::NavigateToURL(
       &web_contents, GURL(kTrustedOrigin).Resolve(kKioskPagePath)));
-
   WaitForDeviceAttributesApiObject(web_contents);
 
   ASSERT_EQ(kAttributeNames.size(), kExpectedAttributeValues.size());
@@ -299,7 +302,6 @@ IN_PROC_BROWSER_TEST_P(
   MaybeSetEnterprisePoliciesForOrigin(kTrustedOrigin);
   ASSERT_TRUE(content::NavigateToURL(
       &web_contents, GURL(kUntrustedOrigin).Resolve(kKioskPagePath)));
-
   WaitForDeviceAttributesApiObject(web_contents);
 
   // All methods should return the same error.

@@ -9,7 +9,6 @@
 #include <string_view>
 #include <tuple>
 
-#include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -18,7 +17,6 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
-#include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -33,14 +31,15 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
-#include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/host_port_pair.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "url/gurl.h"
@@ -91,23 +90,6 @@ KioskMixin::Config GetKioskIwaManualLaunchConfig(
                                          /*auto_launch_account_id=*/{},
                                          {iwa_option}};
   return kiosk_iwa_config;
-}
-
-// Waits until a `js_name` is defined. Is used to prevent API calls before the
-// test web page has loaded.
-void WaitForJsObject(content::WebContents* web_contents,
-                     const std::string& js_name) {
-  ash::test::TestPredicateWaiter(
-      base::BindRepeating(
-          [](content::WebContents* web_contents, const std::string& js_name) {
-            return content::EvalJs(
-                       web_contents,
-                       base::ReplaceStringPlaceholders(
-                           "typeof $1 !== 'undefined'", {js_name}, nullptr))
-                .ExtractBool();
-          },
-          web_contents, js_name))
-      .Wait();
 }
 
 content::EvalJsResult CallDeviceAttributesApi(
@@ -260,6 +242,7 @@ class KioskIwaDeviceAttributesApiTest
     SelectFirstBrowser();
     ASSERT_NE(web_contents(), nullptr);
     ASSERT_EQ(web_contents()->GetVisibleURL(), kAppOrigin.GetURL());
+    ASSERT_TRUE(WaitForLoadStop(web_contents()));
   }
 
   const url::Origin kAppOrigin =
@@ -282,8 +265,6 @@ IN_PROC_BROWSER_TEST_P(KioskIwaDeviceAttributesApiTest,
           ? !IsBlockPolicySet() && IsPermissionsPolicyGranted()
           : IsAllowPolicySet();
   MaybeSetEnterprisePoliciesForIwaOrigin();
-
-  WaitForJsObject(web_contents(), "navigator.managed");
 
   ASSERT_EQ(kDeviceAttributeNames.size(),
             kExpectedDeviceAttributeValues.size());

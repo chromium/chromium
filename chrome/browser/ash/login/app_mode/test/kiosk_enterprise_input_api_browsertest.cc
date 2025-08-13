@@ -25,7 +25,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_navigation_observer.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -154,8 +153,7 @@ class KioskEnterpriseInputApiBrowserTest
     extension_ready.set_extension_id(std::string(kExtensionId));
     ASSERT_TRUE(kiosk::test::WaitKioskLaunched());
     // `chrome.runtime` only gets defined once the page finishes loading.
-    content::TestNavigationObserver(&GetAppWebContents())
-        .WaitForNavigationFinished();
+    ASSERT_TRUE(WaitForLoadStop(&GetAppWebContents()));
     ASSERT_TRUE(extension_ready.WaitUntilSatisfied());
   }
 

@@ -14,21 +14,18 @@
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/accelerators/accelerator.h"
 
 namespace ash {
 
 using kiosk::test::WaitKioskLaunched;
 
 namespace {
-
-void WaitForPageLoaded(content::WebContents* web_contents) {
-  content::TestNavigationObserver(web_contents).WaitForNavigationFinished();
-}
 
 int WindowWidth(content::WebContents* web_contents) {
   return content::EvalJs(web_contents, "window.innerWidth").ExtractInt();
@@ -88,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, ZoomAccelerators) {
   ASSERT_NE(web_contents, nullptr);
 
   // Await page load so accelerators are processed. Prevents a race condition.
-  WaitForPageLoaded(web_contents);
+  ASSERT_TRUE(WaitForLoadStop(web_contents));
 
   int initial_width = WindowWidthAfterChange(web_contents, 0);
   ASSERT_GT(initial_width, 0);
