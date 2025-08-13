@@ -237,3 +237,11 @@ group("all_modules") {
     ":sys_stage2",
   ]
 }
+
+config("all_modulemap_configs") {
+  configs = [
+    "//buildtools/third_party/libc++:builtin_modulemap",
+    "//buildtools/third_party/libc++:libcxx_modulemap",
+    ":sysroot_modulemap",
+  ]
+}

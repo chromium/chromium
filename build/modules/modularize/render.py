@@ -84,7 +84,9 @@ def render_build_gn(out_dir: pathlib.Path, targets: list[Target],
   f = io.StringIO()
   f.write(_HEADER)
   f.write('import("//buildtools/third_party/libc++/modules.gni")\n\n')
+  all_modulemap_configs = []
   if compiler.sysroot_dir == IncludeDir.Sysroot:
+    all_modulemap_configs.append("sysroot_modulemap")
     f.write(_SYSROOT_MODULEMAP)
 
   for target in sorted(targets):
@@ -118,6 +120,15 @@ def render_build_gn(out_dir: pathlib.Path, targets: list[Target],
   f.write('  public_deps = [\n')
   for target in sorted(targets):
     f.write(f'    ":{target.name}",\n')
+  f.write('  ]\n')
+  f.write('}\n\n')
+
+  f.write('config("all_modulemap_configs") {\n')
+  f.write('  configs = [\n')
+  f.write('    "//buildtools/third_party/libc++:builtin_modulemap",\n')
+  f.write('    "//buildtools/third_party/libc++:libcxx_modulemap",\n')
+  for target in sorted(all_modulemap_configs):
+    f.write(f'    ":{target}",\n')
   f.write('  ]\n')
   f.write('}\n')
 
