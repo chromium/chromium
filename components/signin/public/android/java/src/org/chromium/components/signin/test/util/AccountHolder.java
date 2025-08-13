@@ -10,6 +10,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
@@ -24,8 +25,9 @@ import java.util.UUID;
  * This class is used by the {@link FakeAccountManagerDelegate} and {@link FakeAccountManagerFacade}
  * to hold information about a given account, such as its password and set of granted auth tokens.
  */
+@NullMarked
 public class AccountHolder {
-    private AccountInfo mAccountInfo;
+    private final AccountInfo mAccountInfo;
     private final Map<String, AccessTokenData> mAccessTokens =
             Collections.synchronizedMap(new HashMap<>());
 
@@ -56,21 +58,9 @@ public class AccountHolder {
      * @return true if the auth token was found
      */
     boolean removeAccessToken(String accessToken) {
-        synchronized (mAccessTokens) {
-            String foundKey = null;
-            for (Map.Entry<String, AccessTokenData> tokenEntry : mAccessTokens.entrySet()) {
-                if (accessToken.equals(tokenEntry.getValue().getToken())) {
-                    foundKey = tokenEntry.getKey();
-                    break;
-                }
-            }
-            if (foundKey == null) {
-                return false;
-            } else {
-                mAccessTokens.remove(foundKey);
-                return true;
-            }
-        }
+        return mAccessTokens
+                .values()
+                .removeIf(tokenData -> accessToken.equals(tokenData.getToken()));
     }
 
     @Override
@@ -79,7 +69,7 @@ public class AccountHolder {
     }
 
     @Override
-    public boolean equals(Object that) {
+    public boolean equals(@Nullable Object that) {
         return that instanceof AccountHolder
                 && mAccountInfo.equals(((AccountHolder) that).mAccountInfo);
     }
@@ -87,15 +77,5 @@ public class AccountHolder {
     public AccountCapabilities getAccountCapabilities() {
         ThreadUtils.checkUiThread();
         return mAccountInfo.getAccountCapabilities();
-    }
-
-    /** Manually replace the previously set capabilities with given accountCapabilities */
-    public void setAccountCapabilities(AccountCapabilities accountCapabilities) {
-        ThreadUtils.checkUiThread();
-        final AccountInfo oldAccountInfo = mAccountInfo;
-        mAccountInfo =
-                new AccountInfo.Builder(oldAccountInfo)
-                        .accountCapabilities(accountCapabilities)
-                        .build();
     }
 }
