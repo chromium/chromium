@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.browser.app.tab_activity_glue;
 
+import static android.view.Display.INVALID_DISPLAY;
+
 import android.app.ActivityManager;
+import android.app.ActivityManager.AppTask;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Build;
 import android.util.Pair;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
@@ -17,12 +21,16 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.WindowFeatures;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 
@@ -71,6 +79,65 @@ public class PopupCreator {
         ActivityManager am =
                 ContextUtils.getApplicationContext().getSystemService(ActivityManager.class);
         return delegate.isTaskMoveAllowedOnDisplay(am, display.getDisplayId());
+    }
+
+    /**
+     * Adjusts window bounds of given {@link ChromeActivity} to match requested {@link
+     * WindowFeatures} using at most one {@link android.app.ActivityManager.AppTask#moveTaskTo} call
+     * on best-effort basis.
+     */
+    public static void adjustWindowBoundsToRequested(
+            ChromeActivity activity, @Nullable WindowFeatures requestedWindowFeaturesDp) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) {
+            return;
+        }
+
+        if (requestedWindowFeaturesDp == null) {
+            return;
+        }
+
+        final WebContents webContents = activity.getActivityTab().getWebContents();
+        if (webContents == null) {
+            return;
+        }
+
+        final int realViewportWidthDp = webContents.getWidth();
+        final int realViewportHeightDp = webContents.getHeight();
+        final Rect realWindowBoundsPx =
+                new Rect(activity.getWindowManager().getCurrentWindowMetrics().getBounds());
+        final Rect targetWindowBoundsPx = new Rect(realWindowBoundsPx);
+
+        if (requestedWindowFeaturesDp.width != null && requestedWindowFeaturesDp.height != null) {
+            final WindowAndroid windowAndroid = activity.getWindowAndroid();
+            if (windowAndroid == null) {
+                return;
+            }
+
+            DisplayAndroid display = windowAndroid.getDisplay();
+
+            final int widthDiffDp = requestedWindowFeaturesDp.width - realViewportWidthDp;
+            final int heightDiffDp = requestedWindowFeaturesDp.height - realViewportHeightDp;
+
+            targetWindowBoundsPx.right += DisplayUtil.dpToPx(display, widthDiffDp);
+            targetWindowBoundsPx.bottom += DisplayUtil.dpToPx(display, heightDiffDp);
+        }
+
+        if (realWindowBoundsPx.equals(targetWindowBoundsPx)) {
+            return;
+        }
+
+        final AconfigFlaggedApiDelegate delegate =
+                ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
+        if (delegate == null) {
+            return;
+        }
+
+        final AppTask appTask = AndroidTaskUtils.getAppTaskFromId(activity, activity.getTaskId());
+        if (appTask == null) {
+            return;
+        }
+
+        delegate.moveTaskTo(appTask, INVALID_DISPLAY /* current display */, targetWindowBoundsPx);
     }
 
     public static void setArePopupsEnabledForTesting(boolean value) {

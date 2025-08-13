@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import androidx.test.filters.MediumTest;
 
@@ -14,8 +15,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.transit.TransitAsserts;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -28,13 +29,14 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.CctPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.testhtmls.PopupOnClickPageStation;
+import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Tests whether popup windows appear as CCTs. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "Safer to not batch as we are using multiple Android tasks")
 @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
 @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
 @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
@@ -69,5 +71,45 @@ public class PopupMultiwindowPTTest {
                 mCtaTestRule.tabsCount(/* incognito= */ false));
 
         TransitAsserts.assertFinalDestinations(page, popup);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.DESKTOP)
+    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_RESIZE_AFTER_SPAWN)
+    public void testLaunchBoundsSize() throws Exception {
+        PopupOnClickPageStation page =
+                PopupOnClickPageStation.loadInCurrentTab(
+                        mCtaTestRule.getActivityTestRule(), mEntryPage);
+        CctPageStation popup = page.clickLinkToOpenPopupWithBoundsExpectNewWindow();
+
+        TransitAsserts.assertFinalDestinations(page, popup);
+
+        // from /chrome/test/data/android/popup_on_click.html
+        final int expectedWidthDp = 800;
+        final int expectedHeightDp = 600;
+
+        final int receivedWidthDp =
+                Integer.parseInt(
+                        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                popup.webContentsElement.get(), "window.innerWidth"));
+        final int receivedHeightDp =
+                Integer.parseInt(
+                        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                popup.webContentsElement.get(), "window.innerHeight"));
+
+        assertTrue(
+                "Inner width of the popup window is invalid, expected: "
+                        + expectedWidthDp
+                        + "+-1, got: "
+                        + receivedWidthDp,
+                expectedWidthDp - 1 <= receivedWidthDp && receivedWidthDp <= expectedWidthDp + 1);
+        assertTrue(
+                "Inner height of the popup window is invalid, expected: "
+                        + expectedHeightDp
+                        + "+-1, got: "
+                        + receivedHeightDp,
+                expectedHeightDp - 1 <= receivedHeightDp
+                        && receivedHeightDp <= expectedHeightDp + 1);
     }
 }

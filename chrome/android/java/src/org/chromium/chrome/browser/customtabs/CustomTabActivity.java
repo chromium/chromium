@@ -43,6 +43,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
+import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreator;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics;
@@ -235,6 +236,15 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                                     mConnection.getClientPackageNameForSession(mSession));
                 });
         super.finishNativeInitialization();
+
+        // Window bounds adjustments are called here because we probe WebContents' width and height
+        // from the native object.
+        if (getIntentDataProvider().getUiType() == CustomTabsUiType.POPUP
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.ANDROID_WINDOW_POPUP_RESIZE_AFTER_SPAWN)) {
+            PopupCreator.adjustWindowBoundsToRequested(
+                    this, getIntentDataProvider().getRequestedWindowFeatures());
+        }
     }
 
     @Override
