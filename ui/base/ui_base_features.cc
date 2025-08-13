@@ -21,6 +21,12 @@
 
 namespace features {
 
+// If enabled, generates an empty GestureScrollUpdate if the preceding TouchMove
+// event had no gestures and sends both events together.
+BASE_FEATURE(kSendEmptyGestureScrollUpdate,
+             "SendEmptyGestureScrollUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN)
 // If enabled, calculate native window occlusion - Windows-only.
 BASE_FEATURE(kCalculateNativeWinOcclusion,
