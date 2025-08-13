@@ -54,9 +54,11 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   Element* commandForElement() const;
   AtomicString command() const;
   void setCommand(const AtomicString& type);
+
   static CommandEventType GetCommandEventType(
       const AtomicString& type,
       ExecutionContext* execution_context);
+  static void HandleCommandForActivation(Event& event, HTMLElement& element);
 
   // Override for inertness in order to make customizable <select> button inert.
   // TODO(crbug.com/1511354): Replace this with interactivity:inert in
@@ -115,6 +117,11 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   bool RecalcWillValidate() const override;
 
   int DefaultTabIndex() const override;
+
+  static Element* RetrieveCommandForTargetElement(const HTMLElement& invoker);
+  static AtomicString GetCommand(const AtomicString& action,
+                                 ExecutionContext* execution_context);
+  bool IsFormAssociatedSubmitButton() const;
 
   static std::optional<Type> TypeFromString(const AtomicString&);
 

@@ -3074,13 +3074,18 @@ void HTMLElement::DefaultEventHandler(Event& event) {
 
   if (RuntimeEnabledFeatures::ElementInternalsDotTypeEnabled() &&
       IsCustomButton()) {
+    HTMLButtonElement::HandleCommandForActivation(event, *this);
+    if (event.DefaultHandled()) {
+      return;
+    }
     HTMLFormControlElement::HandlePopoverActivation(event, *this);
   }
 
   if (event.type() == event_type_names::kKeypress && keyboard_event) {
     HandleKeypressEvent(*keyboard_event);
-    if (event.DefaultHandled())
+    if (event.DefaultHandled()) {
       return;
+    }
   }
 
   Element::DefaultEventHandler(event);

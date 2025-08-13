@@ -115,13 +115,14 @@ std::optional<HTMLButtonElement::Type> HTMLButtonElement::TypeFromString(
     const AtomicString& string) {
   if (EqualIgnoringASCIICase(string, keywords::kReset)) {
     return kReset;
-  } else if (EqualIgnoringASCIICase(string, keywords::kButton)) {
-    return kButton;
-  } else if (EqualIgnoringASCIICase(string, keywords::kSubmit)) {
-    return kSubmit;
-  } else {
-    return std::nullopt;
   }
+  if (EqualIgnoringASCIICase(string, keywords::kButton)) {
+    return kButton;
+  }
+  if (EqualIgnoringASCIICase(string, keywords::kSubmit)) {
+    return kSubmit;
+  }
+  return std::nullopt;
 }
 
 void HTMLButtonElement::ParseAttribute(
@@ -185,23 +186,39 @@ void HTMLButtonElement::SetTypeInternal(Type type) {
   }
 }
 
-Element* HTMLButtonElement::commandForElement() const {
-  if (!IsInTreeScope() || IsDisabledFormControl() ||
-      (Form() && FastHasAttribute(html_names::kTypeAttr) && type_ == kSubmit)) {
+// static
+Element* HTMLButtonElement::RetrieveCommandForTargetElement(
+    const HTMLElement& invoker) {
+  if (!invoker.IsInTreeScope() || invoker.IsDisabledFormControl()) {
     return nullptr;
   }
 
-  return GetElementAttributeResolvingReferenceTarget(
+  if (auto* button = DynamicTo<HTMLButtonElement>(invoker);
+      button && button->IsFormAssociatedSubmitButton()) {
+    return nullptr;
+  }
+
+  return invoker.GetElementAttributeResolvingReferenceTarget(
       html_names::kCommandforAttr);
+}
+
+bool HTMLButtonElement::IsFormAssociatedSubmitButton() const {
+  return Form() && FastHasAttribute(html_names::kTypeAttr) && type_ == kSubmit;
+}
+
+Element* HTMLButtonElement::commandForElement() const {
+  return RetrieveCommandForTargetElement(*this);
 }
 
 void HTMLButtonElement::setCommand(const AtomicString& type) {
   setAttribute(html_names::kCommandAttr, type);
 }
 
-AtomicString HTMLButtonElement::command() const {
-  const AtomicString& action = FastGetAttribute(html_names::kCommandAttr);
-  CommandEventType type = GetCommandEventType(action, GetExecutionContext());
+// static
+AtomicString HTMLButtonElement::GetCommand(
+    const AtomicString& action,
+    ExecutionContext* execution_context) {
+  const CommandEventType type = GetCommandEventType(action, execution_context);
   switch (type) {
     case CommandEventType::kNone:
       return g_empty_atom;
@@ -209,10 +226,15 @@ AtomicString HTMLButtonElement::command() const {
       return action;
     default: {
       const AtomicString& lower_action = action.LowerASCII();
-      DCHECK_EQ(GetCommandEventType(lower_action, GetExecutionContext()), type);
+      DCHECK_EQ(GetCommandEventType(lower_action, execution_context), type);
       return lower_action;
     }
   }
+}
+
+AtomicString HTMLButtonElement::command() const {
+  return GetCommand(FastGetAttribute(html_names::kCommandAttr),
+                    GetExecutionContext());
 }
 
 // static
@@ -330,6 +352,42 @@ CommandEventType HTMLButtonElement::GetCommandEventType(
   return CommandEventType::kNone;
 }
 
+// static
+void HTMLButtonElement::HandleCommandForActivation(Event& event,
+                                                   HTMLElement& element) {
+  if (event.type() != event_type_names::kDOMActivate) {
+    return;
+  }
+
+  // Buttons with a commandfor will dispatch a CommandEvent on the target of the
+  // invoker, and run `HandleCommandInternal` to perform default logic.
+  if (Element* command_target = RetrieveCommandForTargetElement(element)) {
+    // commandfor & popovertarget shouldn't be combined, so warn.
+    if (element.FastHasAttribute(html_names::kPopovertargetAttr)) {
+      element.AddConsoleMessage(
+          mojom::blink::ConsoleMessageSource::kOther,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "popovertarget is ignored on elements with commandfor.");
+    }
+    const AtomicString& action =
+        element.FastGetAttribute(html_names::kCommandAttr);
+    const auto command_event_type =
+        GetCommandEventType(action, element.GetExecutionContext());
+    bool is_valid_builtin =
+        command_target->IsValidBuiltinCommand(element, command_event_type);
+    if (is_valid_builtin || command_event_type == CommandEventType::kCustom) {
+      Event* command_event = CommandEvent::Create(
+          event_type_names::kCommand,
+          GetCommand(action, element.GetExecutionContext()), &element);
+      command_target->DispatchEvent(*command_event);
+      if (is_valid_builtin && !command_event->defaultPrevented()) {
+        command_target->HandleCommandInternal(element, command_event_type);
+      }
+    }
+    event.SetDefaultHandled();
+  }
+}
+
 void HTMLButtonElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kDOMActivate) {
     if (auto* form = Form();
@@ -374,32 +432,11 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
         return;
       }
     }
+  }
 
-    // Buttons with a commandfor will dispatch a CommandEvent on the
-    // target of the invoker, and run `HandleCommandInternal` to perform default
-    // logic.
-    if (Element* command_target = commandForElement()) {
-      // commandfor & popovertarget shouldn't be combined, so warn.
-      if (FastHasAttribute(html_names::kPopovertargetAttr)) {
-        AddConsoleMessage(
-            mojom::blink::ConsoleMessageSource::kOther,
-            mojom::blink::ConsoleMessageLevel::kWarning,
-            "popovertarget is ignored on elements with commandfor.");
-      }
-      auto action = GetCommandEventType(
-          FastGetAttribute(html_names::kCommandAttr), GetExecutionContext());
-      bool is_valid_builtin =
-          command_target->IsValidBuiltinCommand(*this, action);
-      if (is_valid_builtin || action == CommandEventType::kCustom) {
-        Event* command_event =
-            CommandEvent::Create(event_type_names::kCommand, command(), this);
-        command_target->DispatchEvent(*command_event);
-        if (is_valid_builtin && !command_event->defaultPrevented()) {
-          command_target->HandleCommandInternal(*this, action);
-        }
-      }
-      return;
-    }
+  HandleCommandForActivation(event, *this);
+  if (event.DefaultHandled()) {
+    return;
   }
 
   if (HandleKeyboardActivation(event)) {
