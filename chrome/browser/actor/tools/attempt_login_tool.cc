@@ -50,6 +50,7 @@ mojom::ActionResultCode LoginResultToActorResult(
     case actor_login::LoginStatusResult::kErrorNoSigninForm:
     case actor_login::LoginStatusResult::kErrorInvalidCredential:
     case actor_login::LoginStatusResult::kErrorNoFillableFields:
+    case actor_login::LoginStatusResult::kErrorFillingNotAllowed:
       return mojom::ActionResultCode::kError;
   }
 }

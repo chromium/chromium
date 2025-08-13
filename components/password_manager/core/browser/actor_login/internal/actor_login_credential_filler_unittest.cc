@@ -70,6 +70,11 @@ class MockStubPasswordManagerDriver
   MOCK_METHOD(bool, IsInPrimaryMainFrame, (), (const, override));
 };
 
+class MockPasswordManagerClient : public StubPasswordManagerClient {
+ public:
+  MOCK_METHOD(bool, IsFillingEnabled, (const GURL&), (const, override));
+};
+
 password_manager::PasswordForm CreateSavedPasswordForm(
     const GURL& url,
     const std::u16string& username,
@@ -106,6 +111,8 @@ class ActorLoginCredentialFillerTest : public ::testing::Test {
     ON_CALL(mock_password_manager_, GetPasswordFormCache())
         .WillByDefault(Return(&mock_form_cache_));
     ON_CALL(mock_driver_, IsInPrimaryMainFrame).WillByDefault(Return(true));
+    ON_CALL(mock_password_manager_, GetClient())
+        .WillByDefault(Return(&stub_client_));
   }
 
   void TearDown() override { OSCryptMocker::TearDown(); }
@@ -503,6 +510,26 @@ TEST_F(ActorLoginCredentialFillerTest, FillBothFails) {
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(false));
   EXPECT_CALL(callback, Run(Eq(LoginStatusResult::kErrorNoFillableFields)));
+  filler.AttemptLogin(&mock_password_manager_);
+}
+
+TEST_F(ActorLoginCredentialFillerTest, FillingIsDisabled) {
+  const url::Origin origin =
+      url::Origin::Create(GURL("https://example.com/login"));
+  const Credential credential =
+      CreateTestCredential(u"username", origin.GetURL());
+
+  MockPasswordManagerClient mock_client;
+  EXPECT_CALL(mock_password_manager_, GetClient())
+      .WillOnce(Return(&mock_client));
+  EXPECT_CALL(mock_client, IsFillingEnabled(origin.GetURL()))
+      .WillOnce(Return(false));
+
+  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
+  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
+
+  EXPECT_CALL(mock_callback,
+              Run(Eq(LoginStatusResult::kErrorFillingNotAllowed)));
   filler.AttemptLogin(&mock_password_manager_);
 }
 

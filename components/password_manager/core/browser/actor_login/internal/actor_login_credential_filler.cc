@@ -16,6 +16,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
@@ -81,6 +82,18 @@ ActorLoginCredentialFiller::~ActorLoginCredentialFiller() = default;
 void ActorLoginCredentialFiller::AttemptLogin(
     password_manager::PasswordManagerInterface* password_manager) {
   CHECK(password_manager);
+
+  password_manager::PasswordManagerClient* client =
+      password_manager->GetClient();
+  CHECK(client);
+  // AttemptLogin wouldn't fill even without this check, because
+  // `PasswordFormManager` isn't created if this returns false. However, if we
+  // don't add the check here, the error message returned to the caller would be
+  // "kErrorNoSigninForm", which would be inaccurate.
+  if (!client->IsFillingEnabled(origin_.GetURL())) {
+    std::move(callback_).Run(LoginStatusResult::kErrorFillingNotAllowed);
+    return;
+  }
 
   CHECK(network::IsOriginPotentiallyTrustworthy(origin_));
 

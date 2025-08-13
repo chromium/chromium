@@ -81,6 +81,8 @@ enum class LoginStatusResult {
   kErrorInvalidCredential,
   // Neither the username, nor the password field could be filled.
   kErrorNoFillableFields,
+  // Filling is disallowed (e.g. because of a policy).
+  kErrorFillingNotAllowed,
 };
 
 using LoginStatusResultOrError =

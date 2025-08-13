@@ -258,6 +258,21 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
   ExpectErrorResult(result, mojom::ActionResultCode::kError);
 }
 
+IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
+                       FillingNotAllowedForGivenUrl) {
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kErrorFillingNotAllowed);
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+}
+
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, FailedAttemptLogin) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");

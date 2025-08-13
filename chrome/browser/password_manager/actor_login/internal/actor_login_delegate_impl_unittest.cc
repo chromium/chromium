@@ -122,6 +122,8 @@ class ActorLoginDelegateImplTest : public ::testing::Test {
         .WillByDefault(Return(&mock_password_manager_));
     ON_CALL(mock_password_manager_, GetPasswordFormCache())
         .WillByDefault(Return(&mock_form_cache_));
+    ON_CALL(mock_password_manager_, GetClient())
+        .WillByDefault(Return(&client_));
     ON_CALL(mock_form_cache_, GetFormManagers())
         .WillByDefault(Return(base::span(form_managers_)));
   }
@@ -207,6 +209,7 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLogin_FeatureOn) {
       .WillOnce(Return(&mock_password_manager));
   EXPECT_CALL(mock_password_manager, GetPasswordFormCache())
       .WillOnce(Return(&mock_form_cache));
+  EXPECT_CALL(mock_password_manager, GetClient()).WillOnce(Return(&client_));
   EXPECT_CALL(mock_form_cache, GetFormManagers())
       .WillOnce(Return(base::span(form_managers)));
 
