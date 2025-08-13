@@ -62,6 +62,7 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
 }
 
 OmniboxPopupSelection OmniboxPopupSelection::GetNextSelection(
+    const AutocompleteInput& input,
     const AutocompleteResult& result,
     TemplateURLService* template_url_service,
     Direction direction,
@@ -80,7 +81,8 @@ OmniboxPopupSelection OmniboxPopupSelection::GetNextSelection(
   // in practice it's only something like ~10 elements long, and makes the code
   // easy to reason about.
   std::vector<OmniboxPopupSelection> all_available_selections =
-      GetAllAvailableSelectionsSorted(result, template_url_service, step);
+      GetAllAvailableSelectionsSorted(input, result, template_url_service,
+                                      step);
 
   if (all_available_selections.empty()) {
     return *this;
@@ -127,53 +129,66 @@ OmniboxPopupSelection OmniboxPopupSelection::GetNextSelection(
   NOTREACHED();
 }
 
+// static
 std::vector<OmniboxPopupSelection>
 OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
+    const AutocompleteInput& input,
     const AutocompleteResult& result,
     TemplateURLService* template_url_service,
-    Step step) const {
+    Step step) {
   // First enumerate all the accessible states based on `direction` and `step`,
   // as well as enabled feature flags. This doesn't mean each match will have
   // all of these states - just that it's possible to get there, if available.
   std::vector<LineState> all_states;
-  if (step == kWholeLine || step == kAllLines) {
-    all_states.push_back(NORMAL);
-    // Whole line stepping can go straight into keyword mode.
-    all_states.push_back(KEYWORD_MODE);
-  } else {
-    all_states.push_back(NORMAL);
-    all_states.push_back(KEYWORD_MODE);
+  switch (step) {
+    case kWholeLine:
+    case kAllLines:
+      all_states.push_back(NORMAL);
+      // Whole line stepping can go straight into keyword mode.
+      all_states.push_back(KEYWORD_MODE);
+      break;
+    case kStateOrLine:
+      all_states.push_back(NORMAL);
+      all_states.push_back(KEYWORD_MODE);
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    all_states.push_back(FOCUSED_BUTTON_AIM);
-    all_states.push_back(FOCUSED_BUTTON_ACTION);
+      all_states.push_back(FOCUSED_BUTTON_AIM);
+      all_states.push_back(FOCUSED_BUTTON_ACTION);
 #endif
-    all_states.push_back(FOCUSED_BUTTON_THUMBS_UP);
-    all_states.push_back(FOCUSED_BUTTON_THUMBS_DOWN);
-    all_states.push_back(FOCUSED_BUTTON_REMOVE_SUGGESTION);
-    all_states.push_back(FOCUSED_IPH_LINK);
+      all_states.push_back(FOCUSED_BUTTON_THUMBS_UP);
+      all_states.push_back(FOCUSED_BUTTON_THUMBS_DOWN);
+      all_states.push_back(FOCUSED_BUTTON_REMOVE_SUGGESTION);
+      all_states.push_back(FOCUSED_IPH_LINK);
+      break;
   }
   DCHECK(std::is_sorted(all_states.begin(), all_states.end()))
-      << "This algorithm depends on a sorted list of line states.";
+      << "Line states must be added in sorted order for the algorithm to work.";
 
   std::vector<OmniboxPopupSelection> available_selections;
   const bool aim_button_enabled =
       base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint);
-  // Special case which puts the AIM button as the first selection in the order
-  // only if there's no match selected yet (current line is `kNoMatch`).
-  if (aim_button_enabled && step == kStateOrLine && this->line == kNoMatch) {
-    available_selections.push_back(
-        OmniboxPopupSelection(kNoMatch, FOCUSED_BUTTON_AIM, 0));
+  // The AIM button is included as a special case selection on the `kNoMatch`
+  // line if:
+  // - The AIM button is enabled,
+  // - The user is moving focus with tab or shift-tab (`kStateOrLine`).
+  // - The user is in zero suggest state. When they're not in zero suggest, the
+  //   AIM button selection will instead be added to the default match, below.
+  // Note that the ordering logic in `operator<=>` ensures that `kNoMatch` comes
+  // before other selections.
+  if (aim_button_enabled && step == kStateOrLine && input.IsZeroSuggest()) {
+    available_selections.emplace_back(kNoMatch, FOCUSED_BUTTON_AIM);
   }
   // Now, for each accessible line, add all the available line states to a list.
   for (size_t line_number = 0; line_number < result.size(); ++line_number) {
     for (LineState line_state : all_states) {
       if (line_state == FOCUSED_BUTTON_AIM) {
-        // Only the first line should include the AIM button in the focus order,
-        // and only if we're not in keyword mode.
+        // The AIM button is included in the focus order if:
+        // - The AIM button is enabled,
+        // - This is the first match (`line_number == 0`),
+        // - The match is not from a keyword (not in keyword mode),
+        // - The input is not ZeroSuggest (i.e., the user has typed something).
         if (aim_button_enabled && line_number == 0 &&
-            !result.match_at(0).from_keyword) {
-          available_selections.push_back(
-              OmniboxPopupSelection(line_number, line_state));
+            !result.match_at(0).from_keyword && !input.IsZeroSuggest()) {
+          available_selections.emplace_back(line_number, line_state);
         }
       } else if (line_state == FOCUSED_BUTTON_ACTION) {
         constexpr size_t kMaxActionCount = 8;
