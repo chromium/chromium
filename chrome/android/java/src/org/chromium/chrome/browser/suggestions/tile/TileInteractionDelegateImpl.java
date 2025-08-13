@@ -79,11 +79,6 @@ class TileInteractionDelegateImpl
     }
 
     private void maybePrerender(GURL url) {
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2)) {
-            return;
-        }
-
         // Avoid resetting the delayed task if witness several MotionEvent.ACTION_DOWN in a row. If
         // the URL has been scheduled to be prerendered or already prerendered, it should be
         // skipped.
@@ -108,11 +103,6 @@ class TileInteractionDelegateImpl
     // This function cancels scheduled prerendering or calls stopPrerendering to stop stale
     // prerendering.
     private void cancelPrerender() {
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2)) {
-            return;
-        }
-
         if (mPrerenderRunnable != null) {
             mPrerenderRunnable.cancel();
             mPrerenderRunnable = null;

@@ -355,7 +355,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kMvcUpdateViewWhenModelChanged,
     &kNativePageTransitionHardwareCapture,
     &kNavBarColorAnimation,
-    &kNewTabPageAndroidTriggerForPrerender2,
     &kNotificationPermissionVariant,
     &kNotificationPermissionBottomSheet,
     &kNotificationTrampoline,
@@ -1149,10 +1148,6 @@ BASE_FEATURE(kNativePageTransitionHardwareCapture,
 
 BASE_FEATURE(kNavBarColorAnimation,
              "NavBarColorAnimation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kNewTabPageAndroidTriggerForPrerender2,
-             "NewTabPageAndroidTriggerForPrerender2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNotificationPermissionVariant,

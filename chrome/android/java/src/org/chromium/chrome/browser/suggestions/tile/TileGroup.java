@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
@@ -358,11 +357,7 @@ public class TileGroup implements MostVisitedSites.Observer {
         mUiDelegate.addDestructionObserver(mOfflineModelObserver);
         mCustomTileModificationDelegate = new CustomTileModificationDelegateImpl();
 
-        mPrerenderDelay =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2,
-                        "prerender_new_tab_page_on_touch_trigger",
-                        0);
+        mPrerenderDelay = 0;
     }
 
     @Override

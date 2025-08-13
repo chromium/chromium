@@ -7956,14 +7956,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "prerender2-new-tab-page-android",
-    "owners": [
-      "robertlin@chromium.org",
-      "//content/browser/preloading/prerender/OWNERS"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "prerender2-reuse-host",
     "owners": [
       "gjc@google.com",

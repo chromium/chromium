@@ -1951,9 +1951,6 @@ extern const char kPrerender2EarlyDocumentLifecycleUpdateDescription[];
 extern const char kTreesInVizName[];
 extern const char kTreesInVizDescription[];
 
-extern const char kPrerender2ForNewTabPageAndroidName[];
-extern const char kPrerender2ForNewTabPageAndroidDescription[];
-
 extern const char kEnableOmniboxSearchPrefetchName[];
 extern const char kEnableOmniboxSearchPrefetchDescription[];
 

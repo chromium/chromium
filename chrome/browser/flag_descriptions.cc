@@ -3395,11 +3395,6 @@ const char kTreesInVizDescription[] =
     "instead of a CompositorFrame. This allows viz to generate and submit "
     "the CompositorFrame directly.";
 
-const char kPrerender2ForNewTabPageAndroidName[] =
-    "Enable prerendering on New Tab Page Android";
-const char kPrerender2ForNewTabPageAndroidDescription[] =
-    "Enables prerendering for navigations initiated by New Tab Page on Android";
-
 const char kEnableOmniboxSearchPrefetchName[] = "Omnibox prefetch Search";
 const char kEnableOmniboxSearchPrefetchDescription[] =
     "Allows omnibox to prefetch likely search suggestions provided by the "

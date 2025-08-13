@@ -9216,14 +9216,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTreesInVizDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kTreesInViz)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"prerender2-new-tab-page-android",
-     flag_descriptions::kPrerender2ForNewTabPageAndroidName,
-     flag_descriptions::kPrerender2ForNewTabPageAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kNewTabPageAndroidTriggerForPrerender2)},
-#endif
-
     {"omnibox-search-prefetch",
      flag_descriptions::kEnableOmniboxSearchPrefetchName,
      flag_descriptions::kEnableOmniboxSearchPrefetchDescription, kOsAll,
