@@ -97,7 +97,8 @@ void DeviceDisablingManagerTestBase::TearDown() {
 
 void DeviceDisablingManagerTestBase::CreateDeviceDisablingManager() {
   device_disabling_manager_ = std::make_unique<DeviceDisablingManager>(
-      this, CrosSettings::Get(), &fake_user_manager_);
+      TestingBrowserProcess::GetGlobal()->local_state(), this,
+      CrosSettings::Get(), &fake_user_manager_);
   device_disabling_manager_->Init();
 }
 
