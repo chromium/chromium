@@ -28720,6 +28720,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarTabMenu.MoveTabToGroup">
+  <owner>jhimawan@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User moved a tab to a synced tab group via the tab context menu on tab strip
+    on Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabMenu.MoveTabToIncognitoGroup">
+  <owner>jhimawan@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User moved a tab to an incognito tab group via the tab context menu on tab
+    strip on Android.
+  </description>
+</action>
+
 <action name="MobileToolbarTabMenu.MoveTabToNewWindow">
   <owner>jhimawan@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
@@ -28734,6 +28752,15 @@ should be able to be added at any place in this file.
   <owner>clank-large-form-factors@google.com</owner>
   <description>
     User moved a tab to another window via the tab context menu on tab strip on
+    Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabMenu.NewGroup">
+  <owner>jhimawan@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User created a new tab group via the tab context menu on tab strip on
     Android.
   </description>
 </action>

@@ -7,26 +7,38 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType.ACTIVE;
 import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_STRIP_CONTEXT_MENU;
+import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.createNewGroupForTabs;
+import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.mergeTabsToDest;
+import static org.chromium.chrome.browser.tasks.tab_management.GroupWindowState.IN_CURRENT_CLOSING;
+import static org.chromium.components.tab_groups.TabGroupColorPickerUtils.getTabGroupColorPickerItemColor;
 import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM_WITH_SUBMENU;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_DRAWABLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE_ID;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.text.TextUtils;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
@@ -41,14 +53,20 @@ import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tabwindow.WindowId;
+import org.chromium.chrome.browser.tasks.tab_management.GroupWindowChecker;
+import org.chromium.chrome.browser.tasks.tab_management.GroupWindowState;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -61,7 +79,10 @@ import org.chromium.ui.widget.RectProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * A coordinator for the context menu on the tab strip by long-pressing on a tab. It is responsible
@@ -72,8 +93,10 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
     @SuppressWarnings("HidingField")
     private final Supplier<TabModel> mTabModelSupplier;
 
+    private final TabGroupModelFilter mTabGroupModelFilter;
     private final MultiInstanceManager mMultiInstanceManager;
     private final WindowAndroid mWindowAndroid;
+    private final Context mContext;
 
     private TabContextMenuCoordinator(
             Supplier<TabModel> tabModelSupplier,
@@ -82,6 +105,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
             MultiInstanceManager multiInstanceManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid,
+            Context context,
             @Nullable TabGroupSyncService tabGroupSyncService,
             CollaborationService collaborationService) {
         super(
@@ -97,8 +121,10 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                 collaborationService,
                 windowAndroid.getActivity().get());
         mTabModelSupplier = tabModelSupplier;
+        mTabGroupModelFilter = tabGroupModelFilter;
         mMultiInstanceManager = multiInstanceManager;
         mWindowAndroid = windowAndroid;
+        mContext = context;
     }
 
     /**
@@ -120,7 +146,8 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             MultiInstanceManager multiInstanceManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
-            WindowAndroid windowAndroid) {
+            WindowAndroid windowAndroid,
+            Context context) {
         Profile profile = assumeNonNull(tabModelSupplier.get().getProfile());
 
         @Nullable TabGroupSyncService tabGroupSyncService =
@@ -136,6 +163,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                 multiInstanceManager,
                 shareDelegateSupplier,
                 windowAndroid,
+                context,
                 tabGroupSyncService,
                 collaborationService);
     }
@@ -212,8 +240,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
         if (tab == null) return;
         boolean isIncognito = mTabModelSupplier.get().isIncognitoBranded();
 
-        itemList.add(
-                buildListItem(R.string.menu_add_tab_to_group, R.id.add_to_tab_group, isIncognito));
+        itemList.add(createMoveToTabGroupItem(tab, isIncognito));
 
         if (tab.getTabGroupId() != null) {
             // Show the option to remove the tab from its group iff the tab is already in a group.
@@ -261,10 +288,165 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
         return TabShareUtils.getCollaborationIdOrNull(tab.getTabGroupId(), mTabGroupSyncService);
     }
 
+    private ListItem createMoveToTabGroupItem(Tab tab, boolean isIncognito) {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)) {
+            return buildListItem(
+                    R.string.menu_add_tab_to_group, R.id.add_to_tab_group, isIncognito);
+        }
+        List<ListItem> submenuItems = new ArrayList<>();
+        // "Add to new group" item
+        submenuItems.add(
+                new ListItem(
+                        MENU_ITEM,
+                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                .with(TITLE_ID, R.string.create_new_group_row_title)
+                                .with(ENABLED, true)
+                                .with(
+                                        CLICK_LISTENER,
+                                        (v) -> {
+                                            RecordUserAction.record(
+                                                    "MobileToolbarTabMenu.NewGroup");
+                                            createNewGroupForTabs(
+                                                    List.of(tab),
+                                                    mTabGroupModelFilter,
+                                                    /* tabMovedCallback= */ null,
+                                                    /* tabGroupCreationCallback= */ null);
+                                        })
+                                .build()));
+        // Available tab groups.
+        @Nullable Token groupToNotBeIncluded = tab.getTabGroupId();
+        List<ListItem> potentialGroups =
+                isIncognito
+                        ? getIncognitoTabGroups(tab, groupToNotBeIncluded)
+                        : getRegularTabGroups(tab, groupToNotBeIncluded);
+        if (!potentialGroups.isEmpty()) {
+            submenuItems.add(buildMenuDivider(isIncognito));
+            submenuItems.addAll(potentialGroups);
+        }
+
+        return new ListItem(
+                MENU_ITEM_WITH_SUBMENU,
+                new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
+                        .with(TITLE, mContext.getString(R.string.menu_add_tab_to_group))
+                        .with(ENABLED, true)
+                        .with(SUBMENU_ITEMS, submenuItems)
+                        .build());
+    }
+
+    private List<ListItem> getRegularTabGroups(Tab tab, @Nullable Token groupToNotBeIncluded) {
+        GroupWindowChecker windowChecker =
+                new GroupWindowChecker(mTabGroupSyncService, mTabGroupModelFilter);
+        List<SavedTabGroup> sortedTabGroups =
+                windowChecker.getSortedGroupList(
+                        groupWindowState ->
+                                groupWindowState != IN_CURRENT_CLOSING
+                                        // TODO(crbug.com/437327793): Support group in other window
+                                        && groupWindowState != GroupWindowState.IN_ANOTHER
+                                        && groupWindowState != GroupWindowState.HIDDEN,
+                        (a, b) -> Long.compare(b.updateTimeMs, a.updateTimeMs));
+
+        List<ListItem> result = new ArrayList<>();
+
+        // TODO(crbug.com/437327793): Stop filtering out Inactive windows if we can support moving a
+        // tab to a group in an Inactive window.
+        Set<Integer> activeInstanceIds = new HashSet<>();
+        List<InstanceInfo> activeInstances = mMultiInstanceManager.getInstanceInfo(ACTIVE);
+        for (InstanceInfo activeInstance : activeInstances) {
+            activeInstanceIds.add(activeInstance.instanceId);
+        }
+
+        for (SavedTabGroup tabGroup : sortedTabGroups) {
+            if (tabGroup.localId == null) continue;
+            if (Objects.equals(groupToNotBeIncluded, tabGroup.localId.tabGroupId)) {
+                continue;
+            }
+            Token groupId = tabGroup.localId.tabGroupId;
+
+            TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
+            @WindowId int windowId = tabWindowManager.findWindowIdForTabGroup(groupId);
+            if (!activeInstanceIds.contains(windowId)) continue; // Skip groups w/o active window.
+
+            @Nullable Integer firstTabInGroupTabId = tabGroup.savedTabs.get(0).localId;
+            assert firstTabInGroupTabId != null : "Tab groups shouldn't be empty";
+            String fallbackLabel =
+                    TabGroupTitleUtils.getDefaultTitle(
+                            mContext, mTabGroupModelFilter.getTabCountForGroup(groupId));
+            String label = TextUtils.isEmpty(tabGroup.title) ? fallbackLabel : tabGroup.title;
+            result.add(
+                    new ListItem(
+                            MENU_ITEM,
+                            new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                    .with(TITLE, label)
+                                    .with(ENABLED, true)
+                                    .with(
+                                            CLICK_LISTENER,
+                                            (v) -> {
+                                                RecordUserAction.record(
+                                                        "MobileToolbarTabMenu.MoveTabToGroup");
+                                                mergeTabsToDest(
+                                                        List.of(tab),
+                                                        firstTabInGroupTabId,
+                                                        mTabGroupModelFilter,
+                                                        /* tabMovedCallback= */ null);
+                                            })
+                                    .with(START_ICON_DRAWABLE, getCircleDrawable(groupId))
+                                    .build()));
+        }
+        return result;
+    }
+
+    private List<ListItem> getIncognitoTabGroups(Tab tab, @Nullable Token groupToNotBeIncluded) {
+        List<ListItem> result = new ArrayList<>();
+        for (Token groupId : mTabGroupModelFilter.getAllTabGroupIds()) {
+            if (Objects.equals(groupToNotBeIncluded, groupId)) {
+                continue;
+            }
+
+            int tabIdInGroup = mTabGroupModelFilter.getGroupLastShownTabId(groupId);
+            result.add(
+                    new ListItem(
+                            MENU_ITEM,
+                            new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                    .with(TITLE, mTabGroupModelFilter.getTabGroupTitle(groupId))
+                                    .with(ENABLED, true)
+                                    .with(
+                                            CLICK_LISTENER,
+                                            (v) -> {
+                                                RecordUserAction.record(
+                                                        "MobileToolbarTabMenu.MoveTabToIncognitoGroup");
+                                                mergeTabsToDest(
+                                                        List.of(tab),
+                                                        tabIdInGroup,
+                                                        mTabGroupModelFilter,
+                                                        /* tabMovedCallback= */ null);
+                                            })
+                                    .with(START_ICON_DRAWABLE, getCircleDrawable(groupId))
+                                    .build()));
+        }
+        return result;
+    }
+
+    private @Nullable GradientDrawable getCircleDrawable(Token groupId) {
+        @Nullable Drawable sourceDrawable =
+                mContext.getDrawable(R.drawable.tab_group_dialog_color_icon);
+        @Nullable GradientDrawable circleDrawable = null;
+        if (sourceDrawable != null) {
+            circleDrawable = (GradientDrawable) sourceDrawable.mutate();
+            @ColorInt
+            int color =
+                    getTabGroupColorPickerItemColor(
+                            mContext,
+                            mTabGroupModelFilter.getTabGroupColor(groupId),
+                            /* isIncognito= */ false);
+            circleDrawable.setColor(color);
+        }
+        return circleDrawable;
+    }
+
     private ListItem createMoveToWindowItem(Tab tab, boolean isIncognito) {
-        Activity activity = assumeNonNull(mWindowAndroid.getActivity().get());
         String title =
-                activity.getResources()
+                mContext.getResources()
                         .getQuantityString(
                                 R.plurals.move_tab_to_another_window,
                                 MultiWindowUtils.getInstanceCount());
