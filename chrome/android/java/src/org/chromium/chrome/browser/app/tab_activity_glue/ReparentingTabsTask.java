@@ -18,9 +18,9 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.MultiTabMetadata;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /** Takes care of reparenting a list of Tab objects from one Activity to another. */
@@ -87,13 +87,9 @@ public class ReparentingTabsTask {
 
         if (mTabs == null || mTabs.isEmpty()) return;
 
-        ArrayList<Integer> tabIdsToReparent = new ArrayList<>();
-        ArrayList<String> urlsToReparent = new ArrayList<>();
         boolean isIncognito = mTabs.get(0).isIncognito();
 
         for (Tab tab : mTabs) {
-            tabIdsToReparent.add(tab.getId());
-            urlsToReparent.add(tab.getUrl().getSpec());
             AsyncTabParamsManagerSingleton.getInstance()
                     .add(tab.getId(), new TabReparentingParams(tab, finalizeCallback));
             ReparentingTask.from(tab).detach();
@@ -106,11 +102,7 @@ public class ReparentingTabsTask {
             intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
         }
 
-        Bundle multiTabBundle = new Bundle();
-        multiTabBundle.putIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS, tabIdsToReparent);
-        multiTabBundle.putStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS, urlsToReparent);
-
-        intent.putExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA, multiTabBundle);
+        IntentHandler.setMultiTabMetadata(intent, MultiTabMetadata.create(mTabs));
         IntentUtils.addTrustedIntentExtras(intent);
     }
 }

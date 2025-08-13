@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.renderer_host.ChromeNavigationUiData;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.MultiTabMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -274,19 +275,12 @@ public class IntentHandler {
      */
     public static final String EXTRA_TAB_GROUP_METADATA =
             "org.chromium.chrome.browser.tab_group_metadata";
-
     /**
      * A Bundle containing a list of tab IDs and URLs to reparent as a multi-tab selection. See
      * TabGroupMetadata.KEY_TAB_IDS and TabGroupMetadata.KEY_TAB_URLS.
      */
     public static final String EXTRA_MULTI_TAB_REPARENTING_METADATA =
             "org.chromium.chrome.browser.multi_tab_reparenting_metadata";
-
-    /** Used as the key to store the tab ids during multi tab reparenting. */
-    public static final String MULTI_TAB_KEY_TAB_IDS = "MultiTabReparentingIdsKey";
-
-    /** Used as the key to store the tab urls during multi tab reparenting. */
-    public static final String MULTI_TAB_KEY_TAB_URLS = "MultiTabReparentingUrlsKey";
 
     /** Used to measure the duration of the tab group drag drop reparenting process. */
     public static final String EXTRA_REPARENT_START_TIME =
@@ -945,17 +939,16 @@ public class IntentHandler {
         // wild.
         try {
             // If the intent contains a list of tabs to reparent, it's a valid intent from Chrome.
-            if (intent.hasExtra(EXTRA_MULTI_TAB_REPARENTING_METADATA)) {
+            @Nullable MultiTabMetadata multiTabMetadata = getMultiTabMetadata(intent);
+            if (multiTabMetadata != null) {
                 // Exit early if the incognito intent is not allowed.
                 if (IntentUtils.safeGetBooleanExtra(intent, EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
                         && !isAllowedIncognitoIntent(
                                 wasIntentSenderChrome(intent), isCustomTab, intent)) {
                     return true;
                 }
-                Bundle multiTabBundle = intent.getBundleExtra(EXTRA_MULTI_TAB_REPARENTING_METADATA);
-                ArrayList<Integer> tabIds =
-                        multiTabBundle.getIntegerArrayList(MULTI_TAB_KEY_TAB_IDS);
-                ArrayList<String> urls = multiTabBundle.getStringArrayList(MULTI_TAB_KEY_TAB_URLS);
+                ArrayList<Integer> tabIds = multiTabMetadata.tabIds;
+                ArrayList<String> urls = multiTabMetadata.urls;
 
                 if (urls == null || tabIds == null || urls.size() != tabIds.size()) {
                     assert false : "Urls and tabIds size are mismatched or empty.";
@@ -1504,6 +1497,16 @@ public class IntentHandler {
     }
 
     /**
+     * Sets the The {@link MultiTabMetadata} for multi tab drag drop to transfer tab data between
+     * windows.
+     *
+     * @param intent The Intent to be set.
+     */
+    public static void setMultiTabMetadata(Intent intent, MultiTabMetadata multiTabMetadata) {
+        intent.putExtra(EXTRA_MULTI_TAB_REPARENTING_METADATA, multiTabMetadata.toBundle());
+    }
+
+    /**
      * @param intent An Intent to be checked.
      * @return The {@link TabGroupMetadata} for tab group drag drop to transfer tab group data
      *     between windows.
@@ -1511,6 +1514,17 @@ public class IntentHandler {
     public static @Nullable TabGroupMetadata getTabGroupMetadata(Intent intent) {
         Bundle bundle = IntentUtils.safeGetBundleExtra(intent, EXTRA_TAB_GROUP_METADATA);
         return TabGroupMetadata.maybeCreateFromBundle(bundle);
+    }
+
+    /**
+     * @param intent An Intent to be checked.
+     * @return The {@link MultiTabMetadata} for multi tab drag drop to transfer tab data between
+     *     windows.
+     */
+    public static @Nullable MultiTabMetadata getMultiTabMetadata(Intent intent) {
+        Bundle bundle =
+                IntentUtils.safeGetBundleExtra(intent, EXTRA_MULTI_TAB_REPARENTING_METADATA);
+        return MultiTabMetadata.maybeCreateFromBundle(bundle);
     }
 
     /**

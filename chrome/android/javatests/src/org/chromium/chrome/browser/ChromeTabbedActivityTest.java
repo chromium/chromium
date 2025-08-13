@@ -12,7 +12,6 @@ import static org.chromium.chrome.browser.TabbedMismatchedIndicesHandler.HISTOGR
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
-import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.Browser;
 
@@ -62,6 +61,7 @@ import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
+import org.chromium.chrome.browser.tabmodel.MultiTabMetadata;
 import org.chromium.chrome.browser.tabmodel.RedirectTabCreator;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
@@ -784,16 +784,15 @@ public class ChromeTabbedActivityTest {
         reparentingIntent.setClass(mActivity, ChromeTabbedActivity.class);
         reparentingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        Bundle multiTabBundle = new Bundle();
-        ArrayList<Integer> tabIds = new ArrayList<>(List.of(101, 102));
-        ArrayList<String> urls =
-                new ArrayList<>(
-                        List.of(JUnitTestGURLs.URL_1.getSpec(), JUnitTestGURLs.URL_2.getSpec()));
-        multiTabBundle.putIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS, tabIds);
-        multiTabBundle.putStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS, urls);
-
-        reparentingIntent.putExtra(
-                IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA, multiTabBundle);
+        IntentHandler.setMultiTabMetadata(
+                reparentingIntent,
+                MultiTabMetadata.createForTesting(
+                        /* tabIds= */ new ArrayList<>(List.of(101, 102)),
+                        /* urls= */ new ArrayList<>(
+                                List.of(
+                                        JUnitTestGURLs.URL_1.getSpec(),
+                                        JUnitTestGURLs.URL_2.getSpec())),
+                        /* isIncognito= */ false));
 
         ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(reparentingIntent));
 
@@ -823,12 +822,12 @@ public class ChromeTabbedActivityTest {
         reparentingIntent.setClass(mActivity, ChromeTabbedActivity.class);
         reparentingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        Bundle multiTabBundle = new Bundle();
-        multiTabBundle.putIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS, new ArrayList<>());
-        multiTabBundle.putStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS, new ArrayList<>());
-
-        reparentingIntent.putExtra(
-                IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA, multiTabBundle);
+        IntentHandler.setMultiTabMetadata(
+                reparentingIntent,
+                MultiTabMetadata.createForTesting(
+                        /* tabIds= */ new ArrayList<>(),
+                        /* urls= */ new ArrayList<>(),
+                        /* isIncognito= */ false));
 
         ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(reparentingIntent));
 
@@ -854,15 +853,13 @@ public class ChromeTabbedActivityTest {
         reparentingIntent.setClass(mActivity, ChromeTabbedActivity.class);
         reparentingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        Bundle multiTabBundle = new Bundle();
         // Mismatch: 2 IDs, 1 URL. This should be handled gracefully without crashing.
-        ArrayList<Integer> tabIds = new ArrayList<>(List.of(101, 102));
-        ArrayList<String> urls = new ArrayList<>(List.of(JUnitTestGURLs.URL_1.getSpec()));
-        multiTabBundle.putIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS, tabIds);
-        multiTabBundle.putStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS, urls);
-
-        reparentingIntent.putExtra(
-                IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA, multiTabBundle);
+        IntentHandler.setMultiTabMetadata(
+                reparentingIntent,
+                MultiTabMetadata.createForTesting(
+                        /* tabIds= */ new ArrayList<>(List.of(101, 102)),
+                        /* urls= */ new ArrayList<>(List.of(JUnitTestGURLs.URL_1.getSpec())),
+                        /* isIncognito= */ false));
 
         ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(reparentingIntent));
 
@@ -906,15 +903,15 @@ public class ChromeTabbedActivityTest {
         dragIntent.setClass(mActivity, ChromeTabbedActivity.class);
         dragIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        Bundle multiTabBundle = new Bundle();
-        ArrayList<Integer> tabIds = new ArrayList<>(List.of(201, 202));
-        ArrayList<String> urls =
-                new ArrayList<>(
-                        List.of(JUnitTestGURLs.URL_1.getSpec(), JUnitTestGURLs.URL_2.getSpec()));
-        multiTabBundle.putIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS, tabIds);
-        multiTabBundle.putStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS, urls);
-
-        dragIntent.putExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA, multiTabBundle);
+        IntentHandler.setMultiTabMetadata(
+                dragIntent,
+                MultiTabMetadata.createForTesting(
+                        /* tabIds= */ new ArrayList<>(List.of(201, 202)),
+                        /* urls= */ new ArrayList<>(
+                                List.of(
+                                        JUnitTestGURLs.URL_1.getSpec(),
+                                        JUnitTestGURLs.URL_2.getSpec())),
+                        /* isIncognito= */ false));
 
         ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(dragIntent));
 
@@ -944,11 +941,12 @@ public class ChromeTabbedActivityTest {
         dragIntent.setClass(mActivity, ChromeTabbedActivity.class);
         dragIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        Bundle multiTabBundle = new Bundle();
-        multiTabBundle.putIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS, new ArrayList<>());
-        multiTabBundle.putStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS, new ArrayList<>());
-
-        dragIntent.putExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA, multiTabBundle);
+        IntentHandler.setMultiTabMetadata(
+                dragIntent,
+                MultiTabMetadata.createForTesting(
+                        /* tabIds= */ new ArrayList<>(),
+                        /* urls= */ new ArrayList<>(),
+                        /* isIncognito= */ false));
 
         ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(dragIntent));
 
@@ -974,14 +972,12 @@ public class ChromeTabbedActivityTest {
         dragIntent.setClass(mActivity, ChromeTabbedActivity.class);
         dragIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        Bundle multiTabBundle = new Bundle();
-        // Mismatch: 2 IDs, 1 URL. This should be handled gracefully without crashing.
-        ArrayList<Integer> tabIds = new ArrayList<>(List.of(201, 202));
-        ArrayList<String> urls = new ArrayList<>(List.of(JUnitTestGURLs.URL_1.getSpec()));
-        multiTabBundle.putIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS, tabIds);
-        multiTabBundle.putStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS, urls);
-
-        dragIntent.putExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA, multiTabBundle);
+        IntentHandler.setMultiTabMetadata(
+                dragIntent,
+                MultiTabMetadata.createForTesting(
+                        /* tabIds= */ new ArrayList<>(List.of(201, 202)),
+                        /* urls= */ new ArrayList<>(List.of(JUnitTestGURLs.URL_1.getSpec())),
+                        /* isIncognito= */ false));
 
         ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(dragIntent));
 

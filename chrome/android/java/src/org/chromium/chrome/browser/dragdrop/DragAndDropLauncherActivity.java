@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.MultiTabMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.dragdrop.DragDropMetricUtils;
@@ -35,7 +36,6 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.ui.util.XrUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /** A helper activity for routing Chrome tab, tab group and link drag & drop launcher intents. */
@@ -195,16 +195,7 @@ public class DragAndDropLauncherActivity extends Activity {
     @VisibleForTesting
     static Intent getMultiTabIntent(Intent intent, @Nullable List<Tab> tabs) {
         intent.putExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.TAB_IN_STRIP);
-        ArrayList<Integer> tabIds = new ArrayList<>();
-        ArrayList<String> tabUrls = new ArrayList<>();
-        for (Tab tab : assumeNonNull(tabs)) {
-            tabIds.add(tab.getId());
-            tabUrls.add(tab.getUrl().getSpec());
-        }
-        Bundle multiTabBundle = new Bundle();
-        multiTabBundle.putIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS, tabIds);
-        multiTabBundle.putStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS, tabUrls);
-        intent.putExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA, multiTabBundle);
+        IntentHandler.setMultiTabMetadata(intent, MultiTabMetadata.create(tabs));
         return intent;
     }
 

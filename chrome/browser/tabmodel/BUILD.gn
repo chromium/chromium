@@ -29,6 +29,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelInternal.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/MismatchedIndicesHandler.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/MultiTabMetadata.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/NextTabPolicy.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/PassthroughTabRemover.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/PassthroughTabUngrouper.java",
@@ -115,6 +116,7 @@ robolectric_library("junit") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/tabmodel/ArchivedTabCountSupplierUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabGroupModelFilterImplUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/MultiTabMetadataUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/ReadOnlyIteratorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabClosureParamsUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabClosureParamsUtilsUnitTest.java",

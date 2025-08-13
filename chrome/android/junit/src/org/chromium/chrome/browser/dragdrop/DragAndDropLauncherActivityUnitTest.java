@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,6 +32,7 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.MultiTabMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
@@ -231,8 +231,7 @@ public class DragAndDropLauncherActivityUnitTest {
                     buildTabGroupMetadata(),
                     IntentHandler.getTabGroupMetadata(intent));
         } else if (isMultiTabDrag) {
-            Bundle bundle =
-                    intent.getBundleExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA);
+            MultiTabMetadata multiTabMetadata = IntentHandler.getMultiTabMetadata(intent);
             assertEquals(
                     "The EXTRA_URL_SOURCE intent extra value should match.",
                     UrlIntentSource.TAB_IN_STRIP,
@@ -241,11 +240,11 @@ public class DragAndDropLauncherActivityUnitTest {
             assertEquals(
                     "The intent data value should match.",
                     Collections.singletonList(tab.getUrl().getSpec()),
-                    bundle.getStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS));
+                    multiTabMetadata.urls);
             assertEquals(
                     "The intent data value should match.",
                     Collections.singletonList(tab.getId()),
-                    bundle.getIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS));
+                    multiTabMetadata.tabIds);
         } else {
             assertEquals(
                     "The EXTRA_URL_SOURCE intent extra value should match.",

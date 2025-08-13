@@ -237,6 +237,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
+import org.chromium.chrome.browser.tabmodel.MultiTabMetadata;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.RedirectTabCreator;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
@@ -1835,13 +1836,10 @@ public class ChromeTabbedActivity extends ChromeActivity {
      */
     private boolean maybeHandleMultipleUrlIntent(Intent intent) {
         @TabOpenType int tabOpenType = IntentHandler.getTabOpenType(intent);
-        Bundle multiTabBundle =
-                intent.getBundleExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA);
-        if (multiTabBundle == null) return false;
-        ArrayList<Integer> tabIds =
-                multiTabBundle.getIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS);
-        ArrayList<String> urls =
-                multiTabBundle.getStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS);
+        MultiTabMetadata multiTabMetadata = IntentHandler.getMultiTabMetadata(intent);
+        if (multiTabMetadata == null) return false;
+        ArrayList<Integer> tabIds = multiTabMetadata.tabIds;
+        ArrayList<String> urls = multiTabMetadata.urls;
 
         for (int i = 0; i < urls.size(); i++) {
             int tabId = tabIds.get(i);
@@ -2714,11 +2712,10 @@ public class ChromeTabbedActivity extends ChromeActivity {
     }
 
     private boolean maybeLaunchDraggedMultiTabInWindow(Intent intent) {
-        Bundle multiTabBundle =
-                intent.getBundleExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA);
-        ArrayList<Integer> draggedTabIds =
-                multiTabBundle.getIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS);
+        MultiTabMetadata multiTabMetadata = IntentHandler.getMultiTabMetadata(intent);
+        ArrayList<Integer> draggedTabIds = multiTabMetadata.tabIds;
         if (draggedTabIds.isEmpty()) return false;
+
         if (!IntentHandler.wasIntentSenderChrome(intent)) return false;
         if (mMultiInstanceManager == null) return false;
 
