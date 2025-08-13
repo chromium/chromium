@@ -165,9 +165,6 @@ class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
   unsigned NumberOfInputs() const { return inputs_.size(); }
   unsigned NumberOfOutputs() const { return outputs_.size(); }
 
-  // Number of output channels.  This only matters for ScriptProcessorNodes.
-  virtual unsigned NumberOfOutputChannels() const;
-
   // The argument must be less than numberOfInputs().
   AudioNodeInput& Input(unsigned);
   // The argument must be less than numberOfOutputs().

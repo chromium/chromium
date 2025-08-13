@@ -49,9 +49,7 @@ class ScriptProcessorHandler final : public AudioHandler {
   void SetChannelCount(uint32_t, ExceptionState&) override;
   void SetChannelCountMode(V8ChannelCountMode::Enum, ExceptionState&) override;
 
-  uint32_t NumberOfOutputChannels() const override {
-    return number_of_output_channels_;
-  }
+  uint32_t NumberOfOutputChannels() const { return number_of_output_channels_; }
 
   uint32_t BufferSize() const { return buffer_size_; }
 

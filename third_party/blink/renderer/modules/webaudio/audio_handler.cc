@@ -564,15 +564,6 @@ void AudioHandler::UpdateChannelInterpretation() {
   channel_interpretation_ = new_channel_interpretation_;
 }
 
-unsigned AudioHandler::NumberOfOutputChannels() const {
-  // This should only be called for ScriptProcessorNodes which are the only
-  // nodes where you can have an output with 0 channels.  All other nodes have
-  // at least one output channel, so there's no reason other nodes should
-  // ever call this function.
-  NOTREACHED() << "numberOfOutputChannels() not valid for node type "
-               << NodeTypeName();
-}
-
 void AudioHandler::SendLogMessage(const char* const function_name,
                                   const String& message) {
   WebRtcLogMessage(String::Format("[WA]AH::%s %s [type=%s, this=0x%" PRIXPTR
