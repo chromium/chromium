@@ -62,7 +62,7 @@ class MockTestClient : public PdfCaretClient {
   MOCK_METHOD(uint32_t, GetCharCount, (uint32_t page_index), (const override));
 
   MOCK_METHOD(std::vector<gfx::Rect>,
-              GetScreenRectsForChar,
+              GetScreenRectsForCaret,
               (const PageCharacterIndex& index),
               (const override));
 
@@ -175,7 +175,7 @@ class PdfCaretTest : public testing::Test {
   void SetUpChar(const PageCharacterIndex& index,
                  uint32_t unicode_char,
                  std::vector<gfx::Rect> rects) {
-    EXPECT_CALL(client_, GetScreenRectsForChar(index))
+    EXPECT_CALL(client_, GetScreenRectsForCaret(index))
         .WillRepeatedly(Return(std::move(rects)));
   }
 
@@ -415,7 +415,7 @@ TEST_F(PdfCaretTest, OnGeometryChanged) {
   EXPECT_TRUE(VerifyBlankRendering());
 }
 
-TEST_F(PdfCaretTest, SetPosition) {
+TEST_F(PdfCaretTest, SetChar) {
   EXPECT_CALL(client(), GetCharCount(0)).WillRepeatedly(Return(2));
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
   // Set up second char two pixels to the right of the first char.
@@ -443,7 +443,7 @@ TEST_F(PdfCaretTest, SetPosition) {
   TestDrawCaret(kTestChar0Caret);
 }
 
-TEST_F(PdfCaretTest, SetPositionSpecialChars) {
+TEST_F(PdfCaretTest, SetCharSpecialChars) {
   EXPECT_CALL(client(), GetCharCount(0)).WillRepeatedly(Return(4));
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
   InitializeCaretAtChar(kTestChar0);
@@ -470,7 +470,7 @@ TEST_F(PdfCaretTest, SetPositionSpecialChars) {
   TestDrawCaret(gfx::Rect{10, 26, 1, 8});
 }
 
-TEST_F(PdfCaretTest, SetPositionMultiPage) {
+TEST_F(PdfCaretTest, SetCharMultiPage) {
   SetUpMultiPageTest();
   InitializeCaretAtChar(kTestChar0);
   caret().SetVisibility(true);

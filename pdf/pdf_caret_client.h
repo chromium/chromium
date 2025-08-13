@@ -23,9 +23,9 @@ class PdfCaretClient {
   // index, otherwise crashes.
   virtual uint32_t GetCharCount(uint32_t page_index) const = 0;
 
-  // Gets the screen rects for the given char. `index` must be a valid char on a
-  // page, otherwise crashes.
-  virtual std::vector<gfx::Rect> GetScreenRectsForChar(
+  // Gets the screen rects for the caret at `index`. `index` must be a valid
+  // char on a page, otherwise crashes.
+  virtual std::vector<gfx::Rect> GetScreenRectsForCaret(
       const PageCharacterIndex& index) const = 0;
 
   // Notifies the client to invalidate `rect` for the caret.

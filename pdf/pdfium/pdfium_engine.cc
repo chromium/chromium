@@ -944,7 +944,7 @@ uint32_t PDFiumEngine::GetCharCount(uint32_t page_index) const {
   return base::checked_cast<uint32_t>(pages_[page_index]->GetCharCount());
 }
 
-std::vector<gfx::Rect> PDFiumEngine::GetScreenRectsForChar(
+std::vector<gfx::Rect> PDFiumEngine::GetScreenRectsForCaret(
     const PageCharacterIndex& index) const {
   CHECK(PageIndexInBounds(index.page_index));
   PDFiumPage* page = pages_[index.page_index].get();

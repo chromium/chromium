@@ -142,7 +142,7 @@ gfx::Rect PdfCaret::GetScreenRectForChar(
   }
 
   const std::vector<gfx::Rect> screen_rects =
-      client_->GetScreenRectsForChar(index);
+      client_->GetScreenRectsForCaret(index);
   return !screen_rects.empty() ? screen_rects[0] : gfx::Rect();
 }
 

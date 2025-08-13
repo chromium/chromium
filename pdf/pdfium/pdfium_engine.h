@@ -499,7 +499,7 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   // PdfCaretClient:
   uint32_t GetCharCount(uint32_t page_index) const override;
-  std::vector<gfx::Rect> GetScreenRectsForChar(
+  std::vector<gfx::Rect> GetScreenRectsForCaret(
       const PageCharacterIndex& index) const override;
   void InvalidateRect(const gfx::Rect& rect) override;
 
