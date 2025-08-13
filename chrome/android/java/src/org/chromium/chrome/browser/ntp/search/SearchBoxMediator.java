@@ -72,6 +72,11 @@ class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
             mActivityLifecycleDispatcher.unregister(this);
             mActivityLifecycleDispatcher = null;
         }
+
+        mModel.set(SearchBoxProperties.LENS_CLICK_CALLBACK, null);
+        mModel.set(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK, null);
+        mModel.set(SearchBoxProperties.COMPOSEPLATE_BUTTON_CLICK_CALLBACK, null);
+        mModel.set(SearchBoxProperties.VOICE_SEARCH_DRAWABLE, null);
     }
 
     @Override
