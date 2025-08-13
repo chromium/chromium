@@ -554,7 +554,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
     if (features::kGlicActorUiOverlay.Get()) {
       // TODO(crbug.com/433999185): Handle split view.
       actor_overlay_window_controller_ =
-          std::make_unique<actor::ui::ActorOverlayWindowController>(
+          GetUserDataFactory().CreateInstance<ActorOverlayWindowController>(
+              *browser_, browser_,
               browser_view->GetActiveContentsContainerView()
                   ->GetActorOverlayView());
     }

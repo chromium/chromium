@@ -4,15 +4,24 @@
 
 #include "chrome/browser/actor/ui/actor_overlay_window_controller.h"
 
-namespace actor::ui {
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+
+DEFINE_USER_DATA(ActorOverlayWindowController);
 
 ActorOverlayWindowController::ActorOverlayWindowController(
+    BrowserWindowInterface* browser_window_interface,
     views::View* actor_overlay_view_container)
-    : actor_overlay_view_container_(actor_overlay_view_container) {
-  CHECK(actor_overlay_view_container_);
-}
+    : actor_overlay_view_container_(actor_overlay_view_container),
+      scoped_data_holder_(browser_window_interface->GetUnownedUserDataHost(),
+                          *this) {}
 
 ActorOverlayWindowController::~ActorOverlayWindowController() = default;
+
+// static
+ActorOverlayWindowController* ActorOverlayWindowController::From(
+    BrowserWindowInterface* browser_window_interface) {
+  return Get(browser_window_interface->GetUnownedUserDataHost());
+}
 
 views::WebView* ActorOverlayWindowController::AddChildWebView(
     std::unique_ptr<views::WebView> web_view) {
@@ -41,5 +50,3 @@ void ActorOverlayWindowController::MaybeUpdateContainerVisibility() {
     actor_overlay_view_container_->SetVisible(any_child_visible);
   }
 }
-
-}  // namespace actor::ui

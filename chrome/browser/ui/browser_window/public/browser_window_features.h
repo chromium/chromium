@@ -19,9 +19,7 @@ class GlicIphController;
 }  // namespace glic
 #endif
 
-namespace actor::ui {
 class ActorOverlayWindowController;
-}  // namespace actor::ui
 
 class ActorBorderViewController;
 class BookmarkBarController;
@@ -260,10 +258,6 @@ class BrowserWindowFeatures {
 
   lens::LensOverlayEntryPointController* lens_overlay_entry_point_controller() {
     return lens_overlay_entry_point_controller_.get();
-  }
-
-  actor::ui::ActorOverlayWindowController* actor_overlay_window_controller() {
-    return actor_overlay_window_controller_.get();
   }
 
   lens::LensRegionSearchController* lens_region_search_controller() {
@@ -535,7 +529,7 @@ class BrowserWindowFeatures {
   std::unique_ptr<DownloadToolbarUIController> download_toolbar_ui_controller_;
 #endif
 
-  std::unique_ptr<actor::ui::ActorOverlayWindowController>
+  std::unique_ptr<ActorOverlayWindowController>
       actor_overlay_window_controller_;
 
   std::unique_ptr<ActorBorderViewController> actor_border_view_controller_;

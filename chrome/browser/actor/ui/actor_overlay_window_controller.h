@@ -5,16 +5,23 @@
 #ifndef CHROME_BROWSER_ACTOR_UI_ACTOR_OVERLAY_WINDOW_CONTROLLER_H_
 #define CHROME_BROWSER_ACTOR_UI_ACTOR_OVERLAY_WINDOW_CONTROLLER_H_
 
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 
-namespace actor::ui {
+class BrowserWindowInterface;
 
 class ActorOverlayWindowController {
  public:
+  DECLARE_USER_DATA(ActorOverlayWindowController);
+
   explicit ActorOverlayWindowController(
+      BrowserWindowInterface* browser_window_interface,
       views::View* actor_overlay_view_container);
   ~ActorOverlayWindowController();
+
+  static ActorOverlayWindowController* From(
+      BrowserWindowInterface* browser_window_interface);
 
   // Adds a child WebView to the overlay container, transferring ownership of
   // `web_view` to the container. The container's visibility is automatically
@@ -31,8 +38,7 @@ class ActorOverlayWindowController {
 
  private:
   raw_ptr<views::View> actor_overlay_view_container_;
+  ::ui::ScopedUnownedUserData<ActorOverlayWindowController> scoped_data_holder_;
 };
-
-}  // namespace actor::ui
 
 #endif  // CHROME_BROWSER_ACTOR_UI_ACTOR_OVERLAY_WINDOW_CONTROLLER_H_
