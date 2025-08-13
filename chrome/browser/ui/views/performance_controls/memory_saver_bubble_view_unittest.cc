@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/byte_count.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,7 +43,7 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
-constexpr int kMemorySavingsKilobytes = 100 * 1024;
+constexpr base::ByteCount kMemorySavings = base::MiB(100);
 }  // namespace
 
 class MemorySaverBubbleViewTest
@@ -53,7 +54,7 @@ class MemorySaverBubbleViewTest
   void SetUp() override {
     MemorySaverUnitTestMixin::SetUp();
 
-    AddNewTab(kMemorySavingsKilobytes,
+    AddNewTab(kMemorySavings.InKiB(),
               ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
     SetMemorySaverModeEnabled(true);
@@ -130,7 +131,7 @@ TEST_F(MemorySaverBubbleViewTest, ShouldRenderDomainInDialogSubtitle) {
 
 TEST_F(MemorySaverBubbleViewTest,
        ShowDialogWithoutExcludeSiteButtonInGuestMode) {
-  AddNewTab(kMemorySavingsKilobytes,
+  AddNewTab(kMemorySavings.InKiB(),
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
   TestingProfile* const testprofile = browser()->profile()->AsTestingProfile();
@@ -149,7 +150,7 @@ TEST_F(MemorySaverBubbleViewTest,
 
 TEST_F(MemorySaverBubbleViewTest,
        ShouldCollapseChipAfterNavigatingTabsWithDialogOpen) {
-  AddNewTab(kMemorySavingsKilobytes,
+  AddNewTab(kMemorySavings.InKiB(),
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   content::WebContents* web_contents =
@@ -179,8 +180,8 @@ TEST_F(MemorySaverBubbleViewTest, ShouldRenderMemorySavingsInResourceView) {
 
   views::Label* label = GetMatchingView<views::Label>(
       MemorySaverResourceView::kMemorySaverResourceViewMemorySavingsElementId);
-  EXPECT_TRUE(label->GetText().find(ui::FormatBytes(
-                  kMemorySavingsKilobytes * 1024)) != std::string::npos);
+  EXPECT_TRUE(label->GetText().find(ui::FormatBytes(kMemorySavings)) !=
+              std::string::npos);
 }
 
 // The memory savings should not be rendered within the text above the resource
@@ -193,9 +194,8 @@ TEST_F(MemorySaverBubbleViewTest,
 
   views::Label* label = GetMatchingView<views::Label>(
       MemorySaverBubbleView::kMemorySaverDialogBodyElementId);
-  EXPECT_EQ(
-      label->GetText().find(ui::FormatBytes(kMemorySavingsKilobytes * 1024)),
-      std::string::npos);
+  EXPECT_EQ(label->GetText().find(ui::FormatBytes(kMemorySavings)),
+            std::string::npos);
 
   EXPECT_NE(label->GetText().find(
                 l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_BODY)),

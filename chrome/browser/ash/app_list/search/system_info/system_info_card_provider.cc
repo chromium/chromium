@@ -17,6 +17,7 @@
 #include "ash/app_list/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
+#include "base/byte_count.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -74,10 +75,6 @@ constexpr char kHistogramBatteryCrosHealthdProbeErrorPrefix[] =
     "Apps.AppList.SystemInfoProvider.CrosHealthdProbeError.BatteryInfo";
 constexpr char kHistogramBatteryErrorPrefix[] =
     "Apps.AppList.SystemInfoProvider.Error.Battery";
-
-double ConvertKBtoBytes(uint32_t amount) {
-  return static_cast<double>(amount) * 1024;
-}
 
 }  // namespace
 
@@ -209,9 +206,9 @@ void SystemInfoCardProvider::OnMemoryUsageUpdated(bool create_result,
   }
 
   std::u16string available_memory_gb =
-      ui::FormatBytes(ConvertKBtoBytes(memory_info_->available_memory_kib));
+      ui::FormatBytes(base::KiB(memory_info_->available_memory_kib));
   std::u16string total_memory_gb =
-      ui::FormatBytes(ConvertKBtoBytes(memory_info_->total_memory_kib));
+      ui::FormatBytes(base::KiB(memory_info_->total_memory_kib));
 
   double used_memory_kb =
       memory_info_->total_memory_kib - memory_info_->available_memory_kib;
@@ -543,8 +540,8 @@ void SystemInfoCardProvider::CreateStorageAnswerCard() {
   int64_t total_bytes = storage_items_total_bytes_[total_space_index];
   int64_t available_bytes = storage_items_total_bytes_[free_disk_space_index];
   int64_t in_use_bytes = total_bytes - available_bytes;
-  std::u16string in_use_size = ui::FormatBytes(in_use_bytes);
-  std::u16string total_size = ui::FormatBytes(total_bytes);
+  std::u16string in_use_size = ui::FormatBytes(base::ByteCount(in_use_bytes));
+  std::u16string total_size = ui::FormatBytes(base::ByteCount(total_bytes));
   std::u16string description = l10n_util::GetStringFUTF16(
       IDS_ASH_STORAGE_STATUS_IN_LAUNCHER_DESCRIPTION, in_use_size, total_size);
 

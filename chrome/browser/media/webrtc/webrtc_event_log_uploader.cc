@@ -102,10 +102,11 @@ void BindURLLoaderFactoryReceiver(
 }
 
 void OnURLLoadUploadProgress(uint64_t current, uint64_t total) {
-  ui::DataUnits unit = ui::GetByteDisplayUnits(total);
+  ui::DataUnits unit = ui::GetByteDisplayUnits(base::ByteCount(total));
   VLOG(1) << "WebRTC event log upload progress: "
-          << FormatBytesWithUnits(current, unit, false) << " / "
-          << FormatBytesWithUnits(total, unit, true) << ".";
+          << FormatBytesWithUnits(base::ByteCount(current), unit, false)
+          << " / " << FormatBytesWithUnits(base::ByteCount(total), unit, true)
+          << ".";
 }
 }  // namespace
 

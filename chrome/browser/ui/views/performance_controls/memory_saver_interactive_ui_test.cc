@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/byte_count.h"
 #include "base/callback_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -602,20 +603,21 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest, CloseBubbleOnTabSwitch) {
 IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
                        BubbleCorrectlyReportingMemorySaved) {
   // Simulate a page larger than the threshold for showing savings UI.
-  constexpr int64_t kMemoryUsageKb = 1024 * 1024;
+  static constexpr base::ByteCount kMemoryUsage = base::GiB(1);
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage)),
       DiscardAndReloadTab(0, kFirstTabContents),
-      SetTabPreDiscardMemoryUsageKb(0, kMemoryUsageKb), PressPageActionButton(),
+      SetTabPreDiscardMemoryUsageKb(0, kMemoryUsage.InKiB()),
+      PressPageActionButton(),
       WaitForShow(MemorySaverResourceView::
                       kMemorySaverResourceViewMemorySavingsElementId),
       CheckView(MemorySaverResourceView::
                     kMemorySaverResourceViewMemorySavingsElementId,
                 [](views::Label* label) {
-                  return label->GetText().find(ui::FormatBytes(
-                             kMemoryUsageKb * 1024)) != std::string::npos;
+                  return label->GetText().find(ui::FormatBytes(kMemoryUsage)) !=
+                         std::string::npos;
                 })
 
   );

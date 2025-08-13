@@ -1151,7 +1151,8 @@ std::u16string DownloadItemNotification::GetStatusString() const {
       } else {
         // Otherwise, the download should be completed.
         // "3.4 MB from example.com"
-        std::u16string size = ui::FormatBytes(item_->GetCompletedBytes());
+        std::u16string size =
+            ui::FormatBytes(base::ByteCount(item_->GetCompletedBytes()));
         return l10n_util::GetStringFUTF16(
             IDS_DOWNLOAD_NOTIFICATION_STATUS_COMPLETED, size, host_name);
       }
@@ -1162,9 +1163,10 @@ std::u16string DownloadItemNotification::GetStatusString() const {
 
   // Indication of progress (E.g.:"100/200 MB" or "100 MB"), or just the
   // received bytes if the |show_size_ratio| flag is false.
-  std::u16string size = show_size_ratio
-                            ? item_->GetProgressSizesString()
-                            : ui::FormatBytes(item_->GetCompletedBytes());
+  std::u16string size =
+      show_size_ratio
+          ? item_->GetProgressSizesString()
+          : ui::FormatBytes(base::ByteCount(item_->GetCompletedBytes()));
 
   return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_NOTIFICATION_STATUS_SHORT,
                                     size, host_name);

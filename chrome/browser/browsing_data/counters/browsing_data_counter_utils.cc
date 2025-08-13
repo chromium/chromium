@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/utf_string_conversions.h"
@@ -59,12 +60,12 @@ namespace {
 // A helper function to display the size of cache in units of MB or higher.
 // We need this, as 1 MB is the lowest nonzero cache size displayed by the
 // counter.
-std::u16string FormatBytesMBOrHigher(ResultInt bytes) {
-  if (ui::GetByteDisplayUnits(bytes) >= ui::DataUnits::DATA_UNITS_MEBIBYTE)
+std::u16string FormatBytesMBOrHigher(base::ByteCount bytes) {
+  if (ui::GetByteDisplayUnits(bytes) >= ui::DataUnits::kMebibyte) {
     return ui::FormatBytes(bytes);
+  }
 
-  return ui::FormatBytesWithUnits(
-      bytes, ui::DataUnits::DATA_UNITS_MEBIBYTE, true);
+  return ui::FormatBytesWithUnits(bytes, ui::DataUnits::kMebibyte, true);
 }
 }  // namespace
 
@@ -100,14 +101,14 @@ std::u16string GetChromeCounterTextFromResult(
     // Cache counter.
     const auto* cache_result =
         static_cast<const CacheCounter::CacheResult*>(result);
-    int64_t cache_size_bytes = cache_result->cache_size();
+    base::ByteCount cache_size_bytes =
+        base::ByteCount(cache_result->cache_size());
     bool is_upper_limit = cache_result->is_upper_limit();
     bool is_basic_tab = pref_name == browsing_data::prefs::kDeleteCacheBasic;
 
     // Three cases: Nonzero result for the entire cache, nonzero result for
     // a subset of cache (i.e. a finite time interval), and almost zero (< 1MB).
-    static const int kBytesInAMegabyte = 1024 * 1024;
-    if (cache_size_bytes >= kBytesInAMegabyte) {
+    if (cache_size_bytes >= base::MiB(1)) {
       std::u16string formatted_size = FormatBytesMBOrHigher(cache_size_bytes);
       if (!is_upper_limit) {
 #if BUILDFLAG(IS_ANDROID)

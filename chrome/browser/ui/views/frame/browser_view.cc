@@ -12,6 +12,7 @@
 #include <set>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
@@ -4085,7 +4086,8 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
     if (tab_data.discarded_memory_savings_in_bytes > 0) {
       title = l10n_util::GetStringFUTF16(
           IDS_TAB_AX_MEMORY_SAVINGS, title,
-          ui::FormatBytes(tab_data.discarded_memory_savings_in_bytes));
+          ui::FormatBytes(
+              base::ByteCount(tab_data.discarded_memory_savings_in_bytes)));
     }
   } else if (tab_data.tab_resource_usage &&
              tab_data.tab_resource_usage->memory_usage_in_bytes() > 0) {
@@ -4096,8 +4098,8 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
     if (is_high_memory_usage || is_for_tab) {
       const int message_id = is_high_memory_usage ? IDS_TAB_AX_HIGH_MEMORY_USAGE
                                                   : IDS_TAB_AX_MEMORY_USAGE;
-      title = l10n_util::GetStringFUTF16(message_id, title,
-                                         ui::FormatBytes(memory_used));
+      title = l10n_util::GetStringFUTF16(
+          message_id, title, ui::FormatBytes(base::ByteCount(memory_used)));
     }
   } else if (tab_data.collaboration_messaging &&
              tab_data.collaboration_messaging->HasMessage()) {

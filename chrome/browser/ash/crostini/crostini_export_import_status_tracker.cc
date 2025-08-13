@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crostini/crostini_export_import_status_tracker.h"
 
+#include "base/byte_count.h"
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
@@ -90,7 +91,7 @@ void CrostiniExportImportStatusTracker::SetStatusFailedInsufficientSpace(
       Status::FAILED_INSUFFICIENT_SPACE,
       l10n_util::GetStringFUTF16(
           IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_SPACE,
-          ui::FormatBytes(additional_required_space)));
+          ui::FormatBytes(base::ByteCount(additional_required_space))));
 }
 
 void CrostiniExportImportStatusTracker::

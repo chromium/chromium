@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "base/byte_count.h"
 #include "base/i18n/message_formatter.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
@@ -56,12 +57,13 @@ LowDiskSpaceDialogView::LowDiskSpaceDialogView(views::View* anchor_view,
                 IDS_ASH_ARC_NEARBY_SHARE_LOW_DISK_SPACE_DIALOG_MESSAGE_PH),
             file_count,
             NearbyShareResourceGetter::GetInstance()->GetFeatureName(),
-            ui::FormatBytes(required_disk_space));
+            ui::FormatBytes(base::ByteCount(required_disk_space)));
   } else {
     low_disk_space_dialog_message = base::ReplaceStringPlaceholders(
         l10n_util::GetPluralStringFUTF16(
             IDS_ASH_ARC_NEARBY_SHARE_LOW_DISK_SPACE_DIALOG_MESSAGE, file_count),
-        ui::FormatBytes(required_disk_space), /*offset=*/nullptr);
+        ui::FormatBytes(base::ByteCount(required_disk_space)),
+        /*offset=*/nullptr);
   }
   AddDialogMessage(low_disk_space_dialog_message);
 }

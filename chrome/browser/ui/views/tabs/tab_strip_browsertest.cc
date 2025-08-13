@@ -1023,7 +1023,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
                 IDS_TAB_AX_MEMORY_USAGE,
                 l10n_util::GetStringFUTF16(
                     IDS_TAB_AX_LABEL_AUDIO_PLAYING_FORMAT, title),
-                ui::FormatBytes(100)),
+                ui::FormatBytes(base::ByteCount(100))),
             data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 

@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/byte_count.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
@@ -6350,7 +6351,7 @@ TEST_F(SiteSettingsHandlerTest, HandleGetFormattedBytes) {
   EXPECT_EQ("cr.webUIResponse", data.function_name());
   EXPECT_EQ(kCallbackId, data.arg1()->GetString());
   ASSERT_TRUE(data.arg2()->GetBool());
-  EXPECT_EQ(base::UTF16ToUTF8(ui::FormatBytes(int64_t(size))),
+  EXPECT_EQ(base::UTF16ToUTF8(ui::FormatBytes(base::ByteCount(size))),
             data.arg3()->GetString());
 }
 

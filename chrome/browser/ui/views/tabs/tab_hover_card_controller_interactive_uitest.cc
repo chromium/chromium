@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/byte_count.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -566,8 +567,8 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterWithDiscardInteractiveUiTest,
   EXPECT_EQ(
       l10n_util::FormatString(
           l10n_util::GetStringUTF16(IDS_HOVERCARD_INACTIVE_TAB_MEMORY_SAVINGS),
-          {ui::FormatBytes(
-              tab_renderer_data.discarded_memory_savings_in_bytes)},
+          {ui::FormatBytes(base::ByteCount(
+              tab_renderer_data.discarded_memory_savings_in_bytes))},
           nullptr),
       alert_row->footer_label()->GetText());
 }
@@ -593,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
       GetPrimaryPerformanceRowFromHoverCard(SimulateHoverTab(browser(), 1));
   EXPECT_EQ(l10n_util::FormatString(
                 l10n_util::GetStringUTF16(IDS_HOVERCARD_TAB_MEMORY_USAGE),
-                {ui::FormatBytes(bytes_used)}, nullptr),
+                {ui::FormatBytes(base::ByteCount(bytes_used))}, nullptr),
             performance_row->footer_label()->GetText());
   EXPECT_FALSE(performance_row->icon()->GetImageModel().IsEmpty());
 
@@ -605,7 +606,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
       ->OnTabResourceMetricsRefreshed();
   EXPECT_EQ(l10n_util::FormatString(
                 l10n_util::GetStringUTF16(IDS_HOVERCARD_TAB_HIGH_MEMORY_USAGE),
-                {ui::FormatBytes(bytes_used)}, nullptr),
+                {ui::FormatBytes(base::ByteCount(bytes_used))}, nullptr),
             performance_row->footer_label()->GetText());
 }
 
@@ -638,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
       ->OnTabResourceMetricsRefreshed();
   EXPECT_EQ(l10n_util::FormatString(
                 l10n_util::GetStringUTF16(IDS_HOVERCARD_TAB_HIGH_MEMORY_USAGE),
-                {ui::FormatBytes(bytes_used)}, nullptr),
+                {ui::FormatBytes(base::ByteCount(bytes_used))}, nullptr),
             performance_row->footer_label()->GetText());
 }
 
@@ -712,7 +713,8 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
                 GetPrimaryPerformanceRowFromHoverCard(bubble)->footer_label();
             return performance_label->GetText().find(l10n_util::GetStringFUTF16(
                        IDS_HOVERCARD_TAB_MEMORY_USAGE,
-                       ui::FormatBytes(bytes_used))) != std::string::npos;
+                       ui::FormatBytes(base::ByteCount(bytes_used)))) !=
+                   std::string::npos;
           },
           false));
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_controller.h"
 
+#include "base/byte_count.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -53,7 +54,7 @@ void MemorySaverChipController::ShowEducationChip() {
 void MemorySaverChipController::ShowMemorySavedChip(int64_t bytes_saved) {
   page_action_controller_->Show(kActionShowMemorySaverChip);
   page_action_controller_->ShowSuggestionChip(kActionShowMemorySaverChip);
-  std::u16string savings_string = ui::FormatBytes(bytes_saved);
+  std::u16string savings_string = ui::FormatBytes(base::ByteCount(bytes_saved));
   // TODO(crbug.com/376283619): Cover IDS_MEMORY_SAVER_CHIP_WITH_SAVINGS_ACCNAME
   auto chip_text = l10n_util::GetStringFUTF16(
       IDS_MEMORY_SAVER_CHIP_SAVINGS_LABEL, {savings_string});

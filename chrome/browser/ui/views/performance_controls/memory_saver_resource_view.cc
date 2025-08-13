@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/byte_count.h"
 #include "base/numerics/angle_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/grit/generated_resources.h"
@@ -197,7 +198,8 @@ MemorySaverResourceView::MemorySaverResourceView(
   auto* gauge_view =
       AddChildView(std::make_unique<GaugeView>(memory_savings_bytes));
 
-  std::u16string formatted_savings = ui::FormatBytes(memory_savings_bytes);
+  std::u16string formatted_savings =
+      ui::FormatBytes(base::ByteCount(memory_savings_bytes));
   auto* memory_savings = gauge_view->AddChildView(
       std::make_unique<views::Label>(formatted_savings));
   memory_savings->SetProperty(views::kElementIdentifierKey,

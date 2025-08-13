@@ -886,7 +886,7 @@ void SiteSettingsHandler::OnGetUsageInfo() {
   }
 
   if (size > 0) {
-    usage_string = base::UTF16ToUTF8(ui::FormatBytes(size));
+    usage_string = base::UTF16ToUTF8(ui::FormatBytes(base::ByteCount(size)));
   }
 
   auto* privacy_sandbox_service =
@@ -1380,7 +1380,7 @@ void SiteSettingsHandler::HandleGetFormattedBytes(
     const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(2U, args.size());
-  int64_t num_bytes = static_cast<int64_t>(args[1].GetDouble());
+  base::ByteCount num_bytes = base::ByteCount(args[1].GetDouble());
   ResolveJavascriptCallback(/*callback_id=*/args[0],
                             base::Value(ui::FormatBytes(num_bytes)));
 }

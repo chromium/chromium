@@ -4,11 +4,9 @@
 
 #include "ui/base/text/bytes_formatting.h"
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include <array>
 
+#include "base/byte_count.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,65 +14,66 @@ namespace ui {
 
 TEST(BytesFormattingTest, GetByteDisplayUnits) {
   struct Cases {
-    int64_t bytes;
+    base::ByteCount bytes;
     DataUnits expected;
   };
   static const auto cases = std::to_array<Cases>({
-      {0, DATA_UNITS_BYTE},
-      {512, DATA_UNITS_BYTE},
-      {10 * 1024, DATA_UNITS_KIBIBYTE},
-      {10 * 1024 * 1024, DATA_UNITS_MEBIBYTE},
-      {10LL * 1024 * 1024 * 1024, DATA_UNITS_GIBIBYTE},
-      {10LL * 1024 * 1024 * 1024 * 1024, DATA_UNITS_TEBIBYTE},
-      {~(1LL << 63), DATA_UNITS_PEBIBYTE},
+      {base::ByteCount(0), DataUnits::kByte},
+      {base::ByteCount(512), DataUnits::kByte},
+      {base::KiB(10), DataUnits::kKibibyte},
+      {base::MiB(10), DataUnits::kMebibyte},
+      {base::GiB(10), DataUnits::kGibibyte},
+      {base::TiB(10), DataUnits::kTebibyte},
+      {base::ByteCount::Max(), DataUnits::kPebibyte},
   });
 
-  for (size_t i = 0; i < std::size(cases); ++i)
-    EXPECT_EQ(cases[i].expected, GetByteDisplayUnits(cases[i].bytes));
+  for (const auto& test_case : cases) {
+    EXPECT_EQ(test_case.expected, GetByteDisplayUnits(test_case.bytes));
+  }
 }
 
 TEST(BytesFormattingTest, FormatBytes) {
   struct Cases {
-    int64_t bytes;
+    base::ByteCount bytes;
     DataUnits units;
     const char* expected;
     const char* expected_with_units;
   };
   static const auto cases = std::to_array<Cases>({
-      // Expected behavior: we show one post-decimal digit when we have
-      // under two pre-decimal digits, except in cases where it makes no
-      // sense (zero or bytes).
-      // Since we switch units once we cross the 1000 mark, this keeps
-      // the display of file sizes or bytes consistently around three
-      // digits.
-      {0, DATA_UNITS_BYTE, "0", "0 B"},
-      {512, DATA_UNITS_BYTE, "512", "512 B"},
-      {512, DATA_UNITS_KIBIBYTE, "0.5", "0.5 KB"},
-      {1024 * 1024, DATA_UNITS_KIBIBYTE, "1,024", "1,024 KB"},
-      {1024 * 1024, DATA_UNITS_MEBIBYTE, "1.0", "1.0 MB"},
-      {1024 * 1024 * 1024, DATA_UNITS_GIBIBYTE, "1.0", "1.0 GB"},
-      {10LL * 1024 * 1024 * 1024, DATA_UNITS_GIBIBYTE, "10.0", "10.0 GB"},
-      {99LL * 1024 * 1024 * 1024, DATA_UNITS_GIBIBYTE, "99.0", "99.0 GB"},
-      {105LL * 1024 * 1024 * 1024, DATA_UNITS_GIBIBYTE, "105", "105 GB"},
-      {105LL * 1024 * 1024 * 1024 + 500LL * 1024 * 1024, DATA_UNITS_GIBIBYTE,
-       "105", "105 GB"},
-      {~(1LL << 63), DATA_UNITS_GIBIBYTE, "8,589,934,592", "8,589,934,592 GB"},
-      {~(1LL << 63), DATA_UNITS_PEBIBYTE, "8,192", "8,192 PB"},
+      // Expected behavior: we show one post-decimal digit when we have under
+      // two pre-decimal digits, except in cases where it makes no sense (zero
+      // or bytes).
+      //
+      // Since we switch units once we cross the 1000 mark, this keeps the
+      // display of file sizes or bytes consistently around three digits.
+      {base::ByteCount(0), DataUnits::kByte, "0", "0 B"},
+      {base::ByteCount(512), DataUnits::kByte, "512", "512 B"},
+      {base::ByteCount(512), DataUnits::kKibibyte, "0.5", "0.5 KB"},
+      {base::MiB(1), DataUnits::kKibibyte, "1,024", "1,024 KB"},
+      {base::MiB(1), DataUnits::kMebibyte, "1.0", "1.0 MB"},
+      {base::GiB(1), DataUnits::kGibibyte, "1.0", "1.0 GB"},
+      {base::GiB(10), DataUnits::kGibibyte, "10.0", "10.0 GB"},
+      {base::GiB(99), DataUnits::kGibibyte, "99.0", "99.0 GB"},
+      {base::GiB(105), DataUnits::kGibibyte, "105", "105 GB"},
+      {base::GiB(105) + base::MiB(500), DataUnits::kGibibyte, "105", "105 GB"},
+      {base::ByteCount::Max(), DataUnits::kGibibyte, "8,589,934,592",
+       "8,589,934,592 GB"},
+      {base::ByteCount::Max(), DataUnits::kPebibyte, "8,192", "8,192 PB"},
 
-      {99 * 1024 + 103, DATA_UNITS_KIBIBYTE, "99.1", "99.1 KB"},
-      {1024 * 1024 + 103, DATA_UNITS_KIBIBYTE, "1,024", "1,024 KB"},
-      {1024 * 1024 + 205 * 1024, DATA_UNITS_MEBIBYTE, "1.2", "1.2 MB"},
-      {1024 * 1024 * 1024 + (927 * 1024 * 1024), DATA_UNITS_GIBIBYTE, "1.9",
-       "1.9 GB"},
-      {10LL * 1024 * 1024 * 1024, DATA_UNITS_GIBIBYTE, "10.0", "10.0 GB"},
-      {100LL * 1024 * 1024 * 1024, DATA_UNITS_GIBIBYTE, "100", "100 GB"},
+      {base::KiB(99) + base::ByteCount(103), DataUnits::kKibibyte, "99.1",
+       "99.1 KB"},
+      {base::MiB(1) + base::ByteCount(103), DataUnits::kKibibyte, "1,024",
+       "1,024 KB"},
+      {base::MiB(1) + base::KiB(205), DataUnits::kMebibyte, "1.2", "1.2 MB"},
+      {base::GiB(1) + base::MiB(927), DataUnits::kGibibyte, "1.9", "1.9 GB"},
+      {base::GiB(100), DataUnits::kGibibyte, "100", "100 GB"},
   });
 
-  for (size_t i = 0; i < std::size(cases); ++i) {
-    EXPECT_EQ(base::ASCIIToUTF16(cases[i].expected),
-              FormatBytesWithUnits(cases[i].bytes, cases[i].units, false));
-    EXPECT_EQ(base::ASCIIToUTF16(cases[i].expected_with_units),
-              FormatBytesWithUnits(cases[i].bytes, cases[i].units, true));
+  for (const auto& test_case : cases) {
+    EXPECT_EQ(base::ASCIIToUTF16(test_case.expected),
+              FormatBytesWithUnits(test_case.bytes, test_case.units, false));
+    EXPECT_EQ(base::ASCIIToUTF16(test_case.expected_with_units),
+              FormatBytesWithUnits(test_case.bytes, test_case.units, true));
   }
 }
 

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/byte_count.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
@@ -247,7 +248,7 @@ std::u16string DownloadItemModel::GetTabProgressStatusText() const {
   } else {
     size = download_->GetReceivedBytes();
   }
-  std::u16string received_size = ui::FormatBytes(size);
+  std::u16string received_size = ui::FormatBytes(base::ByteCount(size));
   std::u16string amount = received_size;
 
   // Adjust both strings for the locale direction since we don't yet know which
@@ -255,7 +256,7 @@ std::u16string DownloadItemModel::GetTabProgressStatusText() const {
   base::i18n::AdjustStringForLocaleDirection(&amount);
 
   if (total) {
-    std::u16string total_text = ui::FormatBytes(total);
+    std::u16string total_text = ui::FormatBytes(base::ByteCount(total));
     base::i18n::AdjustStringForLocaleDirection(&total_text);
 
     base::i18n::AdjustStringForLocaleDirection(&received_size);
@@ -265,7 +266,7 @@ std::u16string DownloadItemModel::GetTabProgressStatusText() const {
     amount.assign(received_size);
   }
   int64_t current_speed = download_->CurrentSpeed();
-  std::u16string speed_text = ui::FormatSpeed(current_speed);
+  std::u16string speed_text = ui::FormatSpeed(base::ByteCount(current_speed));
   base::i18n::AdjustStringForLocaleDirection(&speed_text);
 
   base::TimeDelta remaining;
