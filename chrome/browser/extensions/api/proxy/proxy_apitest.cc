@@ -144,10 +144,8 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsChangeOnDisableEnable) {
                    pref_service);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that proxy settings corresponding to an extension are removed when
 // the extension is uninstalled.
-// TODO(crbug.com/431085489): enable proxy api tests on desktop Android.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsRemovedOnUninstall) {
   ASSERT_TRUE(
       RunExtensionTest("proxy/direct", {}, {.allow_in_incognito = true}))
@@ -162,7 +160,6 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsRemovedOnUninstall) {
   UninstallExtension(extension->id());
   ExpectNoSettings(pref_service);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that proxy settings corresponding to an extension are removed when
 // the extension is blocklisted by management policy. Regression test for
