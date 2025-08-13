@@ -99,7 +99,7 @@ class CRYPTO_EXPORT Md5 {
   void Finish(base::span<uint8_t, kSize> result);
   std::array<uint8_t, kSize> Finish();
 
-  Md5 MakeMd5HasherForTesting();
+  static Md5 MakeMd5HasherForTesting();
   static std::array<uint8_t, kSize> HashForTesting(
       base::span<const uint8_t> data);
 

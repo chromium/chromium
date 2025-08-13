@@ -47,10 +47,12 @@ Md5& Md5::operator=(Md5&& other) {
 
 Md5::~Md5() = default;
 
+// static
 Md5 Md5::MakeMd5HasherForTesting() {
   return {};
 }
 
+// static
 std::array<uint8_t, Md5::kSize> Md5::HashForTesting(
     base::span<const uint8_t> data) {
   return Hash(data);
