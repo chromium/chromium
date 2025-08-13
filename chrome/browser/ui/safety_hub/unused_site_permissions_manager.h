@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
@@ -20,6 +21,8 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
 
 class PrefChangeRegistrar;
 class PrefService;
@@ -76,6 +79,29 @@ class UnusedSitePermissionsManager {
   // Called by TabHelper when a URL was visited.
   void OnPageVisited(const url::Origin& origin);
 
+  // Re-grants permissions that are auto-revoked ones and removes the origin
+  // from revoked permissions list.
+  void RegrantPermissionsForOrigin(const url::Origin& origin);
+
+  // Reverse changes made by |RegrantPermissionsForOrigin|. Adds this origin to
+  // the removed permissions list and resets its permissions.
+  void UndoRegrantPermissionsForOrigin(const PermissionsData& permission);
+
+  // Removes a pattern from the list of revoked permissions so that the entry is
+  // no longer shown to the user. Does not affect permissions themselves.
+  void DeletePatternFromRevokedUnusedSitePermissionList(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern);
+
+  // Stores revoked permissions data on HCSM.
+  void StorePermissionInUnusedSitePermissionSetting(
+      const std::set<ContentSettingsType>& permissions,
+      const base::Value::Dict& chooser_permissions_data,
+      const std::optional<content_settings::ContentSettingConstraints>
+          constraint,
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern);
+
   // Test support:
   void SetClockForTesting(base::Clock* clock);
   std::vector<ContentSettingEntry> GetTrackedUnusedPermissionsForTesting();
@@ -92,20 +118,9 @@ class UnusedSitePermissionsManager {
       UnusedSitePermissionsManagerTest,
       UpdateIntegerValuesToGroupName_UnknownContentSettings);
 
-  // Stores revoked permissions data on HCSM.
-  void StorePermissionInUnusedSitePermissionSetting(
-      const std::set<ContentSettingsType>& permissions,
-      const base::Value::Dict& chooser_permissions_data,
-      const std::optional<content_settings::ContentSettingConstraints>
-          constraint,
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern);
-
-  // Since the permissions are a const set, reconstruct a const set
-  // of unused site content setting types by removing `NOTIFICATIONS`
-  // from the set if it is in there.
-  const std::set<ContentSettingsType> GetRevokedUnusedSitePermissionTypes(
-      const std::set<ContentSettingsType> permissions);
+  // If the user clicked "Allow again" for an auto-revoked origin, the
+  // permissions for that site should not be auto-revoked again by the service.
+  void IgnoreOriginForAutoRevocation(const url::Origin& origin);
 
   // Convert all integer permission values to string, if there is any
   // permission represented by integer.

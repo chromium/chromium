@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 
-#include <memory>
-
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -24,10 +22,8 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
-#include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
@@ -54,34 +50,6 @@
 #endif
 
 namespace {
-
-// Reflects the maximum number of days between a permissions being revoked and
-// the time when the user regrants the permission through the unused site
-// permission module of Safete Check. The maximum number of days is determined
-// by `kRevocationCleanUpThreshold`.
-size_t kAllowAgainMetricsExclusiveMaxCount = 31;
-
-// Using a single bucket per day, following the value of
-// |kAllowAgainMetricsExclusiveMaxCount|.
-size_t kAllowAgainMetricsBuckets = 31;
-
-bool IsContentSetting(ContentSettingsType type) {
-  auto* content_setting_registry =
-      content_settings::ContentSettingsRegistry::GetInstance();
-  return content_setting_registry->Get(type);
-}
-
-bool IsWebsiteSetting(ContentSettingsType type) {
-  auto* website_setting_registry =
-      content_settings::WebsiteSettingsRegistry::GetInstance();
-  return website_setting_registry->Get(type);
-}
-
-bool IsChooserPermissionSupported() {
-  return base::FeatureList::IsEnabled(
-      content_settings::features::
-          kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions);
-}
 
 content_settings::ContentSettingConstraints GetConstraintFromInfo(
     const content_settings::SettingInfo& info) {
@@ -272,8 +240,9 @@ void RevokedPermissionsService::OnContentSettingChanged(
 
   if (content_settings::IsPermissionEligibleForAutoRevocation(
           content_type_set.GetType())) {
-    DeletePatternFromRevokedUnusedSitePermissionList(primary_pattern,
-                                                     secondary_pattern);
+    unused_site_permissions_manager_
+        ->DeletePatternFromRevokedUnusedSitePermissionList(primary_pattern,
+                                                           secondary_pattern);
   }
 
   if (content_type_set.GetType() == ContentSettingsType::NOTIFICATIONS) {
@@ -306,74 +275,7 @@ void RevokedPermissionsService::RegrantPermissionsForOrigin(
     disruptive_notification_manager_->RegrantPermissionForUrl(origin.GetURL());
   }
 
-  content_settings::SettingInfo info;
-  base::Value stored_value(hcsm()->GetWebsiteSetting(
-      origin.GetURL(), origin.GetURL(),
-      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, &info));
-
-  if (!stored_value.is_dict()) {
-    return;
-  }
-
-  base::Value::List* permission_type_list =
-      stored_value.GetDict().FindList(permissions::kRevokedKey);
-  CHECK(permission_type_list);
-  // Set this to true to prevent `OnContentSettingChanged` from removing
-  // revoked setting values, since this is set with specific values below.
-  is_unused_site_revocation_running_ = true;
-  for (auto& permission_type : *permission_type_list) {
-    // Look up ContentSettingsRegistry to see if type is content setting
-    // or website setting.
-    ContentSettingsType type =
-        UnusedSitePermissionsManager::ConvertKeyToContentSettingsType(
-            permission_type.GetString());
-    if (IsContentSetting(type)) {
-      // ContentSettingsRegistry-based permissions with ALLOW value were
-      // revoked; re-grant them by setting ALLOW again.
-      hcsm()->SetContentSettingCustomScope(
-          info.primary_pattern, info.secondary_pattern, type,
-          ContentSetting::CONTENT_SETTING_ALLOW);
-    } else if (IsChooserPermissionSupported() && IsWebsiteSetting(type)) {
-      auto* chooser_permissions_data = stored_value.GetDict().FindDict(
-          permissions::kRevokedChooserPermissionsKey);
-      // There should be always data attached for a revoked chooser permission.
-      CHECK(chooser_permissions_data);
-      // Chooser permissions are WebsiteSettingsRegistry-based, so it is
-      // re-granted by restoring the previously revoked Website Setting value.
-      auto* revoked_value = chooser_permissions_data->FindDict(
-          UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(type));
-      CHECK(revoked_value);
-      hcsm()->SetWebsiteSettingCustomScope(
-          info.primary_pattern, info.secondary_pattern, type,
-          base::Value(std::move(*revoked_value)));
-    } else {
-      NOTREACHED()
-          << "Unable to find ContentSettingsType in neither "
-          << "ContentSettingsRegistry nor WebsiteSettingsRegistry: "
-          << UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
-                 type);
-    }
-  }
-  // Set this back to false, so that `OnContentSettingChanged` can cleanup
-  // revoked settings if necessary.
-  is_unused_site_revocation_running_ = false;
-
-  // Ignore origin from future auto-revocations.
-  IgnoreOriginForAutoRevocation(origin);
-
-  // Remove origin from revoked permissions list.
-  DeletePatternFromRevokedUnusedSitePermissionList(info.primary_pattern,
-                                                   info.secondary_pattern);
-
-  // Record the days elapsed from auto-revocation to regrant.
-  base::Time revoked_time =
-      info.metadata.expiration() -
-      content_settings::features::
-          kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
-  base::UmaHistogramCustomCounts(
-      "Settings.SafetyCheck.UnusedSitePermissionsAllowAgainDays",
-      (clock_->Now() - revoked_time).InDays(), 0,
-      kAllowAgainMetricsExclusiveMaxCount, kAllowAgainMetricsBuckets);
+  unused_site_permissions_manager_->RegrantPermissionsForOrigin(origin);
 }
 
 void RevokedPermissionsService::UndoRegrantPermissionsForOrigin(
@@ -392,44 +294,8 @@ void RevokedPermissionsService::UndoRegrantPermissionsForOrigin(
         permissions_data.constraints.Clone());
   }
 
-  // If `permissions_data` had abusive notifications revoked, remove the
-  // `NOTIFICATIONS` setting from the list of permission types to handle below,
-  // since these were already handled. If there are no unused site permissions
-  // to handle below, then return. Otherwise, handle them below.
-  const std::set<ContentSettingsType> unused_site_permission_types =
-      GetRevokedUnusedSitePermissionTypes(permissions_data.permission_types);
-  if (unused_site_permission_types.empty()) {
-    return;
-  }
-
-  // Set this to true to prevent `OnContentSettingChanged` from removing
-  // revoked setting values, since this is set with specific values below.
-  is_unused_site_revocation_running_ = true;
-  for (const auto& permission : unused_site_permission_types) {
-    if (IsContentSetting(permission)) {
-      hcsm()->SetContentSettingCustomScope(
-          permissions_data.primary_pattern, ContentSettingsPattern::Wildcard(),
-          permission, ContentSetting::CONTENT_SETTING_DEFAULT);
-    } else if (IsChooserPermissionSupported() && IsWebsiteSetting(permission)) {
-      hcsm()->SetWebsiteSettingDefaultScope(
-          permissions_data.primary_pattern.ToRepresentativeUrl(), GURL(),
-          permission, base::Value());
-    } else {
-      NOTREACHED()
-          << "Unable to find ContentSettingsType in neither "
-          << "ContentSettingsRegistry nor WebsiteSettingsRegistry: "
-          << UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
-                 permission);
-    }
-  }
-  // Set this back to false, so that `OnContentSettingChanged` can cleanup
-  // revoked settings if necessary.
-  is_unused_site_revocation_running_ = false;
-
-  StorePermissionInUnusedSitePermissionSetting(
-      unused_site_permission_types, permissions_data.chooser_permissions_data,
-      permissions_data.constraints.Clone(), permissions_data.primary_pattern,
-      ContentSettingsPattern::Wildcard());
+  unused_site_permissions_manager_->UndoRegrantPermissionsForOrigin(
+      permissions_data);
 }
 
 void RevokedPermissionsService::ClearRevokedPermissionsList() {
@@ -443,28 +309,10 @@ void RevokedPermissionsService::ClearRevokedPermissionsList() {
 
   for (const auto& revoked_permissions : hcsm()->GetSettingsForOneType(
            ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS)) {
-    DeletePatternFromRevokedUnusedSitePermissionList(
-        revoked_permissions.primary_pattern,
-        revoked_permissions.secondary_pattern);
-  }
-}
-
-void RevokedPermissionsService::IgnoreOriginForAutoRevocation(
-    const url::Origin& origin) {
-  auto* registry = content_settings::ContentSettingsRegistry::GetInstance();
-
-  for (const content_settings::ContentSettingsInfo* info : *registry) {
-    ContentSettingsType type = info->website_settings_info()->type();
-
-    for (const auto& setting : hcsm()->GetSettingsForOneType(type)) {
-      if (setting.metadata.last_visited() != base::Time() &&
-          setting.primary_pattern.MatchesSingleOrigin() &&
-          setting.primary_pattern.Matches(origin.GetURL())) {
-        hcsm()->ResetLastVisitedTime(setting.primary_pattern,
-                                     setting.secondary_pattern, type);
-        break;
-      }
-    }
+    unused_site_permissions_manager_
+        ->DeletePatternFromRevokedUnusedSitePermissionList(
+            revoked_permissions.primary_pattern,
+            revoked_permissions.secondary_pattern);
   }
 }
 
@@ -472,15 +320,6 @@ void RevokedPermissionsService::IgnoreOriginForAutoRevocation(
 void RevokedPermissionsService::OnPageVisited(const url::Origin& origin) {
   CHECK(unused_site_permissions_manager_);
   unused_site_permissions_manager_->OnPageVisited(origin);
-}
-
-void RevokedPermissionsService::
-    DeletePatternFromRevokedUnusedSitePermissionList(
-        const ContentSettingsPattern& primary_pattern,
-        const ContentSettingsPattern& secondary_pattern) {
-  hcsm()->SetWebsiteSettingCustomScope(
-      primary_pattern, secondary_pattern,
-      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, {});
 }
 
 base::OnceCallback<std::unique_ptr<SafetyHubResult>()>
@@ -659,11 +498,13 @@ void RevokedPermissionsService::RestoreDeletedRevokedPermissionsList(
     const std::vector<PermissionsData>& permissions_data_list) {
   for (const auto& permissions_data : permissions_data_list) {
     if (IsUnusedPermissionRevocation(permissions_data.revocation_type)) {
-      StorePermissionInUnusedSitePermissionSetting(
-          permissions_data.permission_types,
-          permissions_data.chooser_permissions_data,
-          permissions_data.constraints.Clone(),
-          permissions_data.primary_pattern, ContentSettingsPattern::Wildcard());
+      unused_site_permissions_manager_
+          ->StorePermissionInUnusedSitePermissionSetting(
+              permissions_data.permission_types,
+              permissions_data.chooser_permissions_data,
+              permissions_data.constraints.Clone(),
+              permissions_data.primary_pattern,
+              ContentSettingsPattern::Wildcard());
     }
 
     if (IsAbusiveNotificationAutoRevocationEnabled() &&
@@ -682,77 +523,6 @@ void RevokedPermissionsService::RestoreDeletedRevokedPermissionsList(
           permissions_data.constraints.Clone());
     }
   }
-}
-
-void RevokedPermissionsService::StorePermissionInUnusedSitePermissionSetting(
-    const std::set<ContentSettingsType>& permissions,
-    const base::Value::Dict& chooser_permissions_data,
-    const std::optional<content_settings::ContentSettingConstraints> constraint,
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern) {
-  // This method only pertains to permissions other than `NOTIFICATIONS`, since
-  // these permissions are not revoked for unused sites.
-  const std::set<ContentSettingsType>& unused_site_permission_types =
-      GetRevokedUnusedSitePermissionTypes(permissions);
-  GURL url = GURL(primary_pattern.ToString());
-  // The url should be valid as it is checked that the pattern represents a
-  // single origin.
-  CHECK(url.is_valid());
-  // Get the current value of the setting to append the recently revoked
-  // permissions.
-  base::Value cur_value(hcsm()->GetWebsiteSetting(
-      url, url, ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS));
-
-  base::Value::Dict dict = cur_value.is_dict() ? std::move(cur_value.GetDict())
-                                               : base::Value::Dict();
-  base::Value::List permission_type_list =
-      dict.FindList(permissions::kRevokedKey)
-          ? std::move(*dict.FindList(permissions::kRevokedKey))
-          : base::Value::List();
-
-  for (const auto& permission : unused_site_permission_types) {
-    // Chooser permissions (not ContentSettingsRegistry-based) should have
-    // corresponding data to be restored in `chooser_permissions_data`.
-    CHECK(IsContentSetting(permission) || !IsChooserPermissionSupported() ||
-          chooser_permissions_data.contains(
-              UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
-                  permission)));
-    permission_type_list.Append(
-        UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
-            permission));
-  }
-
-  dict.Set(permissions::kRevokedKey,
-           base::Value::List(std::move(permission_type_list)));
-
-  if (IsChooserPermissionSupported() && !chooser_permissions_data.empty()) {
-    base::Value::Dict existing_chooser_permissions_data =
-        dict.FindDict(permissions::kRevokedChooserPermissionsKey)
-            ? std::move(
-                  *dict.FindDict(permissions::kRevokedChooserPermissionsKey))
-            : base::Value::Dict();
-    for (auto data : chooser_permissions_data) {
-      // Chooser permissions data should have its permission type included in
-      // `permissions` set.
-      CHECK(permissions.contains(
-          UnusedSitePermissionsManager::ConvertKeyToContentSettingsType(
-              data.first)));
-      existing_chooser_permissions_data.Set(data.first, data.second.Clone());
-    }
-    dict.Set(permissions::kRevokedChooserPermissionsKey,
-             base::Value::Dict(std::move(existing_chooser_permissions_data)));
-  }
-
-  content_settings::ContentSettingConstraints default_constraint(clock_->Now());
-  default_constraint.set_lifetime(safety_hub_util::GetCleanUpThreshold());
-
-  // Set website setting for the list of recently revoked permissions and
-  // previously revoked permissions, if exists.
-  hcsm()->SetWebsiteSettingCustomScope(
-      primary_pattern, secondary_pattern,
-      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
-      base::Value(std::move(dict)),
-      constraint.has_value() ? constraint.value() : default_constraint);
 }
 
 void RevokedPermissionsService::OnPermissionsAutorevocationControlChanged() {
@@ -799,17 +569,4 @@ bool RevokedPermissionsService::IsUnusedSiteAutoRevocationEnabled() {
 
 bool RevokedPermissionsService::IsAbusiveNotificationAutoRevocationEnabled() {
   return safe_browsing::IsSafeBrowsingEnabled(*pref_change_registrar_->prefs());
-}
-
-const std::set<ContentSettingsType>
-RevokedPermissionsService::GetRevokedUnusedSitePermissionTypes(
-    const std::set<ContentSettingsType> permissions) {
-  std::set<ContentSettingsType>
-      permissions_without_revoked_abusive_notification_manager = permissions;
-  if (permissions_without_revoked_abusive_notification_manager.contains(
-          ContentSettingsType::NOTIFICATIONS)) {
-    permissions_without_revoked_abusive_notification_manager.erase(
-        ContentSettingsType::NOTIFICATIONS);
-  }
-  return permissions_without_revoked_abusive_notification_manager;
 }

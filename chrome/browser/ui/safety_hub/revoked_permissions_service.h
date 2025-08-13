@@ -7,7 +7,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/clock.h"
@@ -83,10 +82,6 @@ class RevokedPermissionsService final : public SafetyHubService,
   // KeyedService implementation.
   void Shutdown() override;
 
-  // If the user clicked "Allow again" for an auto-revoked origin, the
-  // permissions for that site should not be auto-revoked again by the service.
-  void IgnoreOriginForAutoRevocation(const url::Origin& origin);
-
   // Re-grants permissions that are auto-revoked ones and removes the origin
   // from revoked permissions list.
   void RegrantPermissionsForOrigin(const url::Origin& origin);
@@ -127,22 +122,6 @@ class RevokedPermissionsService final : public SafetyHubService,
   // Called by TabHelper when a URL was visited.
   void OnPageVisited(const url::Origin& origin);
 
-  // Removes a pattern from the list of revoked unused site permissions so
-  // that the entry is no longer shown to the user. Does not affect permissions
-  // themselves.
-  void DeletePatternFromRevokedUnusedSitePermissionList(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern);
-
-  // Stores revoked permissions data on HCSM.
-  void StorePermissionInUnusedSitePermissionSetting(
-      const std::set<ContentSettingsType>& permissions,
-      const base::Value::Dict& chooser_permissions_data,
-      const std::optional<content_settings::ContentSettingConstraints>
-          constraint,
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern);
-
   HostContentSettingsMap* hcsm() {
     return HostContentSettingsMapFactory::GetForProfile(browser_context_.get());
   }
@@ -174,12 +153,6 @@ class RevokedPermissionsService final : public SafetyHubService,
   // notification permissions.
   bool IsAbusiveNotificationAutoRevocationEnabled();
 
-  // Since the permissions are a const set, reconstruct a const set
-  // of unused site content setting types by removing `NOTIFICATIONS`
-  // from the set if it is in there.
-  const std::set<ContentSettingsType> GetRevokedUnusedSitePermissionTypes(
-      const std::set<ContentSettingsType> permissions);
-
   raw_ptr<content::BrowserContext> browser_context_;
 
   // Observer to watch for content settings changed.
@@ -203,11 +176,6 @@ class RevokedPermissionsService final : public SafetyHubService,
   // Object for unused site permissions revocation.
   std::unique_ptr<UnusedSitePermissionsManager>
       unused_site_permissions_manager_;
-
-  // Returns true if automatic check and revocation of unused site permissions
-  // is occurring. This value is used in `OnContentSettingChanged` to help
-  // decide whether to clean up revoked permission data.
-  bool is_unused_site_revocation_running_ = false;
 
   base::WeakPtrFactory<RevokedPermissionsService> weak_factory_{this};
 };

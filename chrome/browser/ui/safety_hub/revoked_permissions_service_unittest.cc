@@ -1261,27 +1261,6 @@ TEST_P(RevokedPermissionsServiceTest, RestoreClearedRevokedPermissionsList) {
   }
 }
 
-TEST_P(RevokedPermissionsServiceTest, RecordRegrantMetricForAllowAgain) {
-  SetupRevokedUnusedPermissionSite(url1);
-  SetupRevokedUnusedPermissionSite(url2);
-  EXPECT_EQ(2U, GetRevokedUnusedPermissions(hcsm()).size());
-
-  // Advance 14 days; this will be the expected histogram sample.
-  clock()->Advance(base::Days(14));
-  base::HistogramTester histogram_tester;
-
-  // Allow the permission for `url` again
-  service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url1)));
-
-  // Only a single entry should be recorded in the histogram.
-  const std::vector<base::Bucket> buckets = histogram_tester.GetAllSamples(
-      "Settings.SafetyCheck.UnusedSitePermissionsAllowAgainDays");
-  EXPECT_EQ(1U, buckets.size());
-  // The recorded metric should be the elapsed days since the revocation.
-  histogram_tester.ExpectUniqueSample(
-      "Settings.SafetyCheck.UnusedSitePermissionsAllowAgainDays", 14, 1);
-}
-
 TEST_P(RevokedPermissionsServiceTest,
        RemoveSiteFromRevokedPermissionsListOnPermissionChange) {
   if (ShouldSetupSafeBrowsing()) {
