@@ -147,12 +147,6 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         value: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),
       },
 
-      enableAutomaticFullscreenContentSetting_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting'),
-      },
-
       enableHandTrackingContentSetting_: {
         type: Boolean,
         value: () =>
@@ -210,7 +204,6 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   declare private enableSmartCardReadersContentSetting_: boolean;
   // </if>
   declare private autoPictureInPictureEnabled_: boolean;
-  declare private enableAutomaticFullscreenContentSetting_: boolean;
   declare private enableHandTrackingContentSetting_: boolean;
   declare private capturedSurfaceControlEnabled_: boolean;
   declare private enablePermissionSiteSettingsRadioButton_: boolean;

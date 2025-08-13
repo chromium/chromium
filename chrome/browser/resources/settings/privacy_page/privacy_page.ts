@@ -206,12 +206,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
-      enableAutomaticFullscreenContentSetting_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting'),
-      },
-
       focusConfig_: {
         type: Object,
         value() {
@@ -332,7 +326,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   declare private enableWebPrintingContentSetting_: boolean;
   declare private isPrivacySandboxRestricted_: boolean;
   declare private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
-  declare private enableAutomaticFullscreenContentSetting_: boolean;
   private privateStateTokensEnabled_: boolean;
   declare private autoPictureInPictureEnabled_: boolean;
   declare private capturedSurfaceControlEnabled_: boolean;

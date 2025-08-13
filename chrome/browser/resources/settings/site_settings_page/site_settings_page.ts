@@ -87,8 +87,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.AUTOMATIC_FULLSCREEN,
       label: 'siteSettingsAutomaticFullscreen',
       icon: 'cr:fullscreen',
-      shouldShow: () =>
-          loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting'),
     },
     {
       route: routes.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE,

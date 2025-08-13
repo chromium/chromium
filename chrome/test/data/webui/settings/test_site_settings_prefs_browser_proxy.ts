@@ -86,6 +86,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       ContentSettingsTypes.AR,
       ContentSettingsTypes.AUTO_PICTURE_IN_PICTURE,
       ContentSettingsTypes.AUTOMATIC_DOWNLOADS,
+      ContentSettingsTypes.AUTOMATIC_FULLSCREEN,
       ContentSettingsTypes.BACKGROUND_SYNC,
       ContentSettingsTypes.BLUETOOTH_DEVICES,
       ContentSettingsTypes.BLUETOOTH_SCANNING,
@@ -117,10 +118,6 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
 
     if (loadTimeData.getBoolean('enableWebPrintingContentSetting')) {
       this.categoryList_.push(ContentSettingsTypes.WEB_PRINTING);
-    }
-
-    if (loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting')) {
-      this.categoryList_.push(ContentSettingsTypes.AUTOMATIC_FULLSCREEN);
     }
 
     if (loadTimeData.getBoolean('capturedSurfaceControlEnabled')) {
