@@ -1104,6 +1104,10 @@
   <message name="IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT" desc="The text informing the user that they will be asked to review their order in the Buy-Now-Pay-Later Terms of Service dialog.">
     After you review your order, you must sign into or create an <ph name="BNPL_ISSUER_NAME">$1</ph> account. This account will be automatically linked to Google Pay.
   </message>
+  <!--TODO(crbug.com/424259928): Remove V2 text and edit original ToS review text string after mergeback is submitted.-->
+  <message name="IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT_V2" desc="The text informing the user that they will be asked to review their order in the Buy-Now-Pay-Later Terms of Service dialog." translateable="false">
+    After you review your order, you must sign into or create an account with <ph name="BNPL_ISSUER_NAME">$1</ph>. This account will be automatically linked to Google Pay.
+  </message>
   <message name="IDS_AUTOFILL_BNPL_TOS_APPROVE_TEXT" desc="The text informing the user that that BNPL issuer will check and approve their eligibility in the Buy-Now-Pay-Later Terms of Service dialog.">
     <ph name="BNPL_ISSUER_NAME">$1</ph> will check your eligibility (this won't affect your credit score). If approved, <ph name="BNPL_ISSUER_NAME">$1</ph> will provide payment plans for you to choose from and complete your purchase.
   </message>
