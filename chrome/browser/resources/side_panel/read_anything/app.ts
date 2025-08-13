@@ -536,10 +536,6 @@ export class AppElement extends AppElementBase implements
 
   protected updateLinks_() {
     this.contentController_.updateLinks(this.hasContent_, this.shadowRoot);
-    if (this.isReadAloudEnabled_) {
-      this.speechController_.onLinksToggled();
-    }
-    this.contentController_.loadImages();
   }
 
   protected updateImages_() {

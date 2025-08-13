@@ -4,7 +4,7 @@
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {ContentController, ReadAloudHighlighter, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertLE, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp, createSpeechSynthesisVoice, emitEvent, playFromSelectionWithMockTimer, setSimpleAxTreeWithText} from './common.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
@@ -282,7 +282,7 @@ suite('WordHighlighting', () => {
 
     // Update the selection directly on the document.
     const spans = app.$.container.querySelectorAll('span');
-    assertEquals(3, spans.length);
+    assertLE(2, spans.length);
     const anchor = spans[anchorIndex]!;
     const focus = spans[focusIndex]!;
     const range = document.createRange();

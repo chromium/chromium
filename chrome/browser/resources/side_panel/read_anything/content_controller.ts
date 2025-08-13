@@ -5,12 +5,16 @@
 import {assert} from '//resources/js/assert.js';
 
 import {NodeStore} from './node_store.js';
+import {previousReadHighlightClass} from './read_aloud/highlighter.js';
 import {SpeechController} from './read_aloud/speech_controller.js';
 
+const DATA_PREFIX = 'data-';
 const LINK_DATA_ATTR = 'link';
 const LINKS_OFF_TAG = 'span';
 const LINKS_ON_TAG = 'a';
-const LINKS_OFF_SELECTOR = LINKS_OFF_TAG + '[data-' + LINK_DATA_ATTR + ']';
+const LINKS_OFF_SELECTOR =
+    LINKS_OFF_TAG + '[' + DATA_PREFIX + LINK_DATA_ATTR + ']';
+export const HIGHLIGHTED_LINK_CLASS = 'highlighted-link';
 
 // Reading mode sometimes needs to use a different html tag to display a
 // particular node than the one used in the main panel. This maps the tags
@@ -81,11 +85,7 @@ export class ContentController {
     }
 
     if (url && element.nodeName === 'A') {
-      element.setAttribute('href', url);
-      element.onclick = (event: MouseEvent) => {
-        event.preventDefault();
-        chrome.readingMode.onLinkClicked(nodeId);
-      };
+      this.setLinkAttributes_(element, url, nodeId);
     }
     const language = chrome.readingMode.getLanguage(nodeId);
     if (language) {
@@ -101,6 +101,15 @@ export class ContentController {
       const childNode = this.buildSubtree(childNodeId);
       node.appendChild(childNode);
     }
+  }
+
+  private setLinkAttributes_(
+      element: HTMLElement, url: string, nodeId: number) {
+    element.setAttribute('href', url);
+    element.onclick = (event: MouseEvent) => {
+      event.preventDefault();
+      chrome.readingMode.onLinkClicked(nodeId);
+    };
   }
 
   private createTextNode_(nodeId: number): Node {
@@ -136,17 +145,62 @@ export class ContentController {
       return;
     }
 
-    const selector =
-        this.shouldShowLinks_() ? LINKS_OFF_SELECTOR : LINKS_ON_TAG;
-    const elements = shadowRoot.querySelectorAll(selector);
-
+    const showLinks = this.shouldShowLinks_();
+    const selector = showLinks ? LINKS_OFF_SELECTOR : LINKS_ON_TAG;
+    const elements = shadowRoot.querySelectorAll<HTMLElement>(selector);
     for (const elem of elements) {
-      assert(elem instanceof HTMLElement, 'link is not an HTMLElement');
-      const nodeId = this.nodeStore_.getAxId(elem);
-      assert(nodeId !== undefined, 'link node id is undefined');
-      const replacement = this.buildSubtree(nodeId);
-      this.nodeStore_.replaceDomNode(elem, replacement);
+      this.transformLinkContainer_(elem, showLinks);
     }
+  }
+
+  private transformLinkContainer_(
+      elemToReplace: HTMLElement, showLinks: boolean) {
+    const nodeId = this.nodeStore_.getAxId(elemToReplace);
+    assert(nodeId !== undefined, 'link node id is undefined');
+    const newTag = showLinks ? LINKS_ON_TAG : LINKS_OFF_TAG;
+    const newElem = document.createElement(newTag);
+    // Move children to preserve inner highlighting or other formatting.
+    while (elemToReplace.firstChild) {
+      // appendChild moves the child to the new element, so the next call to
+      // elemToReplace.firstChild will get the next child.
+      newElem.appendChild(elemToReplace.firstChild);
+    }
+
+    // Copy all attributes from the old element to the new one.
+    for (const attrName of elemToReplace.getAttributeNames()) {
+      // Skip the attributes we are manually changing.
+      if (attrName === 'href' || attrName === DATA_PREFIX + LINK_DATA_ATTR) {
+        continue;
+      }
+      const attrValue = elemToReplace.getAttribute(attrName)!;
+      newElem.setAttribute(attrName, attrValue);
+    }
+
+    // Set the url information on the new element.
+    if (showLinks) {
+      const url = elemToReplace.dataset[LINK_DATA_ATTR] ?? '';
+      this.setLinkAttributes_(newElem, url, nodeId);
+    } else {
+      const url = elemToReplace.getAttribute('href') ?? '';
+      newElem.dataset[LINK_DATA_ATTR] = url;
+    }
+
+    // Remove the highlighting formatting when showing links, and add it back
+    // when hiding links if they were highlighted.
+    const originalClass =
+        showLinks ? previousReadHighlightClass : HIGHLIGHTED_LINK_CLASS;
+    const newClass =
+        showLinks ? HIGHLIGHTED_LINK_CLASS : previousReadHighlightClass;
+    const highlightedNodes =
+        Array.from(newElem.querySelectorAll<HTMLElement>('.' + originalClass));
+    if (newElem.classList.contains(originalClass)) {
+      highlightedNodes.push(newElem);
+    }
+    highlightedNodes.forEach(node => {
+      node.classList.replace(originalClass, newClass);
+    });
+
+    this.nodeStore_.replaceDomNode(elemToReplace, newElem);
   }
 
   // TODO(crbug.com/40910704): Potentially hide links during distillation.

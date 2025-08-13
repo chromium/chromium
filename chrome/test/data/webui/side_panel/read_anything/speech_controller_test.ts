@@ -1,8 +1,8 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {BrowserProxy, currentReadHighlightClass, MAX_SPEECH_LENGTH, NodeStore, ReadAloudHighlighter, SpeechBrowserProxyImpl, SpeechController, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertGT, assertNotEquals, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {BrowserProxy, MAX_SPEECH_LENGTH, NodeStore, ReadAloudHighlighter, SpeechBrowserProxyImpl, SpeechController, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechErrorEvent, createSpeechSynthesisVoice, createWordBoundaryEvent, mockMetrics, setSimpleAxTreeWithText, setSimpleNodeStoreWithText, setSimpleTreeWithText} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -776,50 +776,6 @@ suite('SpeechController', () => {
 
     speechController.onVoiceSelected(voice3);
     assertFalse(wordBoundaries.hasBoundaries());
-  });
-
-  test('onLinksToggled rehighlights', () => {
-    const text = 'Life was a chore, so';
-    const id = 2;
-    chrome.readingMode.getCurrentText = () => [id];
-    chrome.readingMode.getTextContent = () => text;
-    chrome.readingMode.getCurrentTextStartIndex = () => 0;
-    chrome.readingMode.getCurrentTextEndIndex = () => text.length;
-    const sentence = document.createElement('p');
-    sentence.appendChild(document.createTextNode(text));
-    nodeStore.setDomNode(sentence, id);
-    nodeStore.setDomNode(sentence, id);
-    speechController.onHighlightGranularityChange(
-        chrome.readingMode.sentenceHighlighting);
-    speechController.onPlayPauseToggle(null, text);
-    assertTrue(highlighter.hasCurrentHighlights());
-    speech.reset();
-
-    speechController.onLinksToggled();
-
-    assertTrue(highlighter.hasCurrentHighlights());
-    assertStringContains(
-        (nodeStore.getDomNode(id) as Element).innerHTML,
-        currentReadHighlightClass);
-  });
-
-  test('onLinksToggled does not highlight if no highlights', () => {
-    const text = 'She set sail';
-    const id = 2;
-    chrome.readingMode.getCurrentText = () => [];
-    const sentence = document.createElement('p');
-    sentence.appendChild(document.createTextNode(text));
-    nodeStore.setDomNode(sentence, id);
-    speechController.onHighlightGranularityChange(
-        chrome.readingMode.sentenceHighlighting);
-    assertFalse(highlighter.hasCurrentHighlights());
-
-    speechController.onLinksToggled();
-
-    assertFalse(highlighter.hasCurrentHighlights());
-    assertStringExcludes(
-        (nodeStore.getDomNode(id) as Element).innerHTML,
-        currentReadHighlightClass);
   });
 
   test('set previous reading position without saved state does nothing', () => {

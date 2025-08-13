@@ -231,15 +231,6 @@ export class SpeechController {
     this.logger_.logHighlightGranularity(newGranularity);
   }
 
-  onLinksToggled() {
-    // Rehighlight the current granularity text after links have been
-    // toggled on or off to ensure the entire granularity segment is
-    // highlighted.
-    if (this.highlighter_.hasCurrentHighlights()) {
-      this.highlightCurrentGranularity_(chrome.readingMode.getCurrentText());
-    }
-  }
-
   onPlayPauseToggle(selection: Selection|null, textContent: string|null) {
     if (this.isSpeechActive()) {
       this.stopSpeech_(PauseActionSource.BUTTON_CLICK);

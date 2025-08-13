@@ -7,7 +7,7 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {ContentController, NodeStore, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentController, HIGHLIGHTED_LINK_CLASS, NodeStore, previousReadHighlightClass, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -233,6 +233,80 @@ suite('ContentController', () => {
       assertTrue(!!link);
       assertEquals(linkUrl, link.href);
     });
+
+    test('restores previous highlighting when hiding links', () => {
+      const innerSpan = document.createElement('span');
+      innerSpan.classList.add(HIGHLIGHTED_LINK_CLASS);
+      link.appendChild(innerSpan);
+      shadowRoot.appendChild(link);
+      nodeStore.setDomNode(link, linkId);
+      chrome.readingMode.linksEnabled = false;
+
+      contentController.updateLinks(true, shadowRoot);
+
+      const newInnerSpan = shadowRoot.querySelector('span[data-link] span');
+      assertTrue(!!newInnerSpan);
+      assertTrue(newInnerSpan.classList.contains(previousReadHighlightClass));
+      assertFalse(newInnerSpan.classList.contains(HIGHLIGHTED_LINK_CLASS));
+    });
+
+    test('removes previous highlighting when showing links', () => {
+      const innerSpan = document.createElement('span');
+      innerSpan.classList.add(previousReadHighlightClass);
+      const outerSpan = document.createElement('span');
+      outerSpan.dataset['link'] = linkUrl;
+      outerSpan.appendChild(innerSpan);
+      shadowRoot.appendChild(outerSpan);
+      nodeStore.setDomNode(outerSpan, linkId);
+      chrome.readingMode.linksEnabled = true;
+
+      contentController.updateLinks(true, shadowRoot);
+
+      const newInnerSpan = shadowRoot.querySelector('a span');
+      assertTrue(!!newInnerSpan);
+      assertTrue(newInnerSpan.classList.contains(HIGHLIGHTED_LINK_CLASS));
+      assertFalse(newInnerSpan.classList.contains(previousReadHighlightClass));
+    });
+
+    test(
+        'does not add previous highlighting when hiding links that were not' +
+            ' highlighted',
+        () => {
+          const innerSpan = document.createElement('span');
+          link.appendChild(innerSpan);
+          shadowRoot.appendChild(link);
+          nodeStore.setDomNode(link, linkId);
+          chrome.readingMode.linksEnabled = false;
+
+          contentController.updateLinks(true, shadowRoot);
+
+          const newInnerSpan = shadowRoot.querySelector('span[data-link] span');
+          assertTrue(!!newInnerSpan);
+          assertFalse(
+              newInnerSpan.classList.contains(previousReadHighlightClass));
+          assertFalse(newInnerSpan.classList.contains(HIGHLIGHTED_LINK_CLASS));
+        });
+
+    test(
+        'does not mark as highlighted when showing links that were not' +
+            ' highlighted',
+        () => {
+          const innerSpan = document.createElement('span');
+          const outerSpan = document.createElement('span');
+          outerSpan.dataset['link'] = linkUrl;
+          outerSpan.appendChild(innerSpan);
+          shadowRoot.appendChild(outerSpan);
+          nodeStore.setDomNode(outerSpan, linkId);
+          chrome.readingMode.linksEnabled = true;
+
+          contentController.updateLinks(true, shadowRoot);
+
+          const newInnerSpan = shadowRoot.querySelector('a span');
+          assertTrue(!!newInnerSpan);
+          assertFalse(newInnerSpan.classList.contains(HIGHLIGHTED_LINK_CLASS));
+          assertFalse(
+              newInnerSpan.classList.contains(previousReadHighlightClass));
+        });
   });
 
   suite('loadImages', () => {
