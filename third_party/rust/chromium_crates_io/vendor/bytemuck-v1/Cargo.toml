@@ -12,7 +12,7 @@
 [package]
 edition = "2018"
 name = "bytemuck"
-version = "1.23.1"
+version = "1.23.2"
 authors = ["Lokathor <zefria@gmail.com>"]
 build = false
 exclude = ["/pedantic.bat"]
@@ -136,7 +136,7 @@ name = "wrapper_forgets"
 path = "tests/wrapper_forgets.rs"
 
 [dependencies.bytemuck_derive]
-version = "1.4.1"
+version = "1.10.1"
 optional = true
 
 [lints.rust.unexpected_cfgs]

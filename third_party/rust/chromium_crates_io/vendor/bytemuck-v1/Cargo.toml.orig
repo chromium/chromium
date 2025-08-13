@@ -1,7 +1,7 @@
 [package]
 name = "bytemuck"
 description = "A crate for mucking around with piles of bytes."
-version = "1.23.1"
+version = "1.23.2"
 authors = ["Lokathor <zefria@gmail.com>"]
 repository = "https://github.com/Lokathor/bytemuck"
 readme = "README.md"
@@ -105,7 +105,7 @@ nightly_float = []
 nightly_docs = []
 
 [dependencies]
-bytemuck_derive = { version = "1.4.1", path = "derive", optional = true }
+bytemuck_derive = { version = "1.10.1", path = "derive", optional = true }
 
 [lints.rust]
 unexpected_cfgs = { level = "deny", check-cfg = ['cfg(target_arch, values("spirv"))'] }

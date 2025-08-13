@@ -1,5 +1,9 @@
 # `bytemuck` changelog
 
+## 1.23.2
+
+* bump `derive` minimum version.
+
 ## 1.23.1
 
 * Added a windows-only `ZeroableInOption` impl for "stdcall" functions.

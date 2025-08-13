@@ -1,7 +1,7 @@
 Name: bytemuck
 URL: https://crates.io/crates/bytemuck
-Version: 1.23.1
-Revision: ebb132677b7599ac30b6455d64a091edc73ddb95
+Version: 1.23.2
+Revision: c069a2f6a4c7f3416257d0378c799085aa5626bb
 Update Mechanism: Manual
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/bytemuck-v1/LICENSE-APACHE

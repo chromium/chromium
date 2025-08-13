@@ -19,6 +19,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/anybitpattern.rs",
     "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/checked.rs",
     "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/contiguous.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/derive.rs",
     "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/internal.rs",
     "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/lib.rs",
     "//third_party/rust/chromium_crates_io/vendor/bytemuck-v1/src/must.rs",
@@ -38,7 +39,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "bytemuck"
   cargo_pkg_description = "A crate for mucking around with piles of bytes."
   cargo_pkg_repository = "https://github.com/Lokathor/bytemuck"
-  cargo_pkg_version = "1.23.1"
+  cargo_pkg_version = "1.23.2"
 
   allow_unsafe = true
 
