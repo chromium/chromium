@@ -75,12 +75,14 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
   // should run on a sequence that can block, e.g. a base::SequencedTaskRunner
   // with base::MayBlock(). If nullptr, SetDiffCallback() cannot be used off of
   // the AddressTrackerLinux's sequence.
-  AddressTrackerLinux(const base::RepeatingClosure& address_callback,
-                      const base::RepeatingClosure& link_callback,
-                      const base::RepeatingClosure& tunnel_callback,
-                      const std::unordered_set<std::string>& ignored_interfaces,
-                      scoped_refptr<base::SequencedTaskRunner>
-                          blocking_thread_runner = nullptr);
+  AddressTrackerLinux(
+      const base::RepeatingCallback<
+          void(NetworkChangeNotifier::IPAddressChangeType)>& address_callback,
+      const base::RepeatingClosure& link_callback,
+      const base::RepeatingClosure& tunnel_callback,
+      const std::unordered_set<std::string>& ignored_interfaces,
+      scoped_refptr<base::SequencedTaskRunner> blocking_thread_runner =
+          nullptr);
   ~AddressTrackerLinux() override;
 
   // In tracking mode, it starts watching the system configuration for
@@ -245,8 +247,8 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
   GetInterfaceNameFunction get_interface_name_;
 
   DiffCallback diff_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::RepeatingClosure address_callback_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::RepeatingCallback<void(NetworkChangeNotifier::IPAddressChangeType)>
+      address_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::RepeatingClosure link_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::RepeatingClosure tunnel_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 

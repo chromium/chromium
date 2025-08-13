@@ -122,7 +122,7 @@ class NetworkChangeNotifier::NetworkChangeCalculator
   }
 
   // NetworkChangeNotifier::IPAddressObserver implementation.
-  void OnIPAddressChanged() override {
+  void OnIPAddressChanged(IPAddressChangeType change_type) override {
     DCHECK(thread_checker_.CalledOnValidThread());
     pending_connection_type_ = GetConnectionType();
     base::TimeDelta delay = last_announced_connection_type_ == CONNECTION_NONE
@@ -521,6 +521,22 @@ base::cstring_view NetworkChangeNotifier::ConnectionTypeToString(
   return kConnectionTypeNames[type];
 }
 
+// static
+base::cstring_view NetworkChangeNotifier::IPAddressChangeTypeToString(
+    IPAddressChangeType type) {
+  static constexpr auto kChangeTypeNames = std::to_array<base::cstring_view>({
+      "IP_ADDRESS_CHANGE_NONE",
+      "IP_ADDRESS_CHANGE_NORMAL",
+      "IP_ADDRESS_CHANGE_IPV6_TEMPADDR",
+  });
+  static_assert(std::size(kChangeTypeNames) == IP_ADDRESS_CHANGE_LAST + 1,
+                "IPAddressChangeType name count should match");
+  if (type < IP_ADDRESS_CHANGE_NONE || type > IP_ADDRESS_CHANGE_LAST) {
+    NOTREACHED();
+  }
+  return kChangeTypeNames[type];
+}
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // static
 AddressMapOwnerLinux* NetworkChangeNotifier::GetAddressMapOwner() {
@@ -788,9 +804,11 @@ void NetworkChangeNotifier::TriggerNonSystemDnsChange() {
 }
 
 // static
-void NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests() {
+void NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests(
+    IPAddressChangeType change_type) {
   if (g_network_change_notifier)
-    g_network_change_notifier->NotifyObserversOfIPAddressChangeImpl();
+    g_network_change_notifier->NotifyObserversOfIPAddressChangeImpl(
+        change_type);
 }
 
 // static
@@ -939,10 +957,12 @@ bool NetworkChangeNotifier::IsDefaultNetworkActiveInternal() {
 }
 
 // static
-void NetworkChangeNotifier::NotifyObserversOfIPAddressChange() {
+void NetworkChangeNotifier::NotifyObserversOfIPAddressChange(
+    IPAddressChangeType change_type) {
   if (g_network_change_notifier &&
       !NetworkChangeNotifier::test_notifications_only_) {
-    g_network_change_notifier->NotifyObserversOfIPAddressChangeImpl();
+    g_network_change_notifier->NotifyObserversOfIPAddressChangeImpl(
+        change_type);
   }
 }
 
@@ -1021,10 +1041,11 @@ void NetworkChangeNotifier::StopSystemDnsConfigNotifier() {
   system_dns_config_notifier_ = nullptr;
 }
 
-void NetworkChangeNotifier::NotifyObserversOfIPAddressChangeImpl() {
+void NetworkChangeNotifier::NotifyObserversOfIPAddressChangeImpl(
+    IPAddressChangeType change_type) {
   TRACE_EVENT_INSTANT("net", "NetworkChangeNotifier::IPAddressChange", track_);
   GetObserverList().ip_address_observer_list_->Notify(
-      FROM_HERE, &IPAddressObserver::OnIPAddressChanged);
+      FROM_HERE, &IPAddressObserver::OnIPAddressChanged, change_type);
 }
 
 void NetworkChangeNotifier::NotifyObserversOfConnectionTypeChangeImpl(

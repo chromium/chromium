@@ -1135,7 +1135,8 @@ bool TransportClientSocketPool::FindTopStalledGroup(Group** group,
   return has_stalled_group;
 }
 
-void TransportClientSocketPool::OnIPAddressChanged() {
+void TransportClientSocketPool::OnIPAddressChanged(
+    NetworkChangeNotifier::IPAddressChangeType change_type) {
   DCHECK(cleanup_on_ip_address_change_);
   FlushWithError(ERR_NETWORK_CHANGED, kNetworkChanged);
 }

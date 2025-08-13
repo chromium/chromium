@@ -536,7 +536,8 @@ std::unique_ptr<base::Value> SpdySessionPool::SpdySessionPoolInfoToValue()
   return std::make_unique<base::Value>(std::move(list));
 }
 
-void SpdySessionPool::OnIPAddressChanged() {
+void SpdySessionPool::OnIPAddressChanged(
+    NetworkChangeNotifier::IPAddressChangeType change_type) {
   DCHECK(cleanup_sessions_on_ip_address_changed_);
   if (go_away_on_ip_change_) {
     MakeCurrentSessionsGoingAway(ERR_NETWORK_CHANGED);

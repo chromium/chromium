@@ -508,7 +508,9 @@ class NET_EXPORT HostResolverManager
   void TryServingAllJobsFromHosts();
 
   // NetworkChangeNotifier::IPAddressObserver:
-  void OnIPAddressChanged() override;
+  void OnIPAddressChanged(
+      NetworkChangeNotifier::IPAddressChangeType change_type =
+          NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL) override;
 
   // NetworkChangeNotifier::ConnectionTypeObserver:
   void OnConnectionTypeChanged(

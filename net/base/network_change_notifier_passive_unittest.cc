@@ -55,14 +55,16 @@ class NetworkChangeNotifierPassiveTest : public testing::Test {
 
 class MockIPAddressObserver : public NetworkChangeNotifier::IPAddressObserver {
  public:
-  MOCK_METHOD0(OnIPAddressChanged, void());
+  MOCK_METHOD1(OnIPAddressChanged,
+               void(NetworkChangeNotifier::IPAddressChangeType));
 };
 
 TEST_F(NetworkChangeNotifierPassiveTest, OnIPAddressChanged) {
   testing::StrictMock<MockIPAddressObserver> observer;
   NetworkChangeNotifier::AddIPAddressObserver(&observer);
 
-  EXPECT_CALL(observer, OnIPAddressChanged());
+  EXPECT_CALL(observer, OnIPAddressChanged(
+                            NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL));
   notifier()->OnIPAddressChanged();
   FastForwardUntilIdle();
 

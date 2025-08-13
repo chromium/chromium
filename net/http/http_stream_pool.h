@@ -242,7 +242,9 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   bool IsPoolStalled();
 
   // NetworkChangeNotifier::IPAddressObserver methods:
-  void OnIPAddressChanged() override;
+  void OnIPAddressChanged(
+      NetworkChangeNotifier::IPAddressChangeType change_type =
+          NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL) override;
 
   // SSLClientContext::Observer methods.
   void OnSSLConfigChanged(

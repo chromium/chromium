@@ -180,7 +180,8 @@ AddressTrackerLinux::AddressTrackerLinux()
       tracking_(false) {}
 
 AddressTrackerLinux::AddressTrackerLinux(
-    const base::RepeatingClosure& address_callback,
+    const base::RepeatingCallback<
+        void(NetworkChangeNotifier::IPAddressChangeType)>& address_callback,
     const base::RepeatingClosure& link_callback,
     const base::RepeatingClosure& tunnel_callback,
     const std::unordered_set<std::string>& ignored_interfaces,
@@ -614,7 +615,7 @@ void AddressTrackerLinux::OnFileCanReadWithoutBlocking() {
     RunDiffCallback();
   }
   if (address_changed) {
-    address_callback_.Run();
+    address_callback_.Run(NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL);
   }
   if (link_changed) {
     link_callback_.Run();

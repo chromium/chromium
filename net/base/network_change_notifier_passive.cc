@@ -53,9 +53,10 @@ void NetworkChangeNotifierPassive::OnDNSChanged() {
   GetCurrentSystemDnsConfigNotifier()->RefreshConfig();
 }
 
-void NetworkChangeNotifierPassive::OnIPAddressChanged() {
+void NetworkChangeNotifierPassive::OnIPAddressChanged(
+    IPAddressChangeType change_type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  NetworkChangeNotifier::NotifyObserversOfIPAddressChange();
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChange(change_type);
 }
 
 void NetworkChangeNotifierPassive::OnConnectionChanged(

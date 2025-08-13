@@ -44,7 +44,11 @@ class TestIPAddressObserver : public NetworkChangeNotifier::IPAddressObserver {
   }
 
   // Implements NetworkChangeNotifier::IPAddressObserver:
-  void OnIPAddressChanged() override { ip_address_changed_ = true; }
+  void OnIPAddressChanged(
+      NetworkChangeNotifier::IPAddressChangeType change_type =
+          NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL) override {
+    ip_address_changed_ = true;
+  }
 
   bool ip_address_changed() const { return ip_address_changed_; }
 

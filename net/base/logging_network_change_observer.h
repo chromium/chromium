@@ -33,7 +33,9 @@ class NET_EXPORT LoggingNetworkChangeObserver
 
  private:
   // NetworkChangeNotifier::IPAddressObserver implementation.
-  void OnIPAddressChanged() override;
+  void OnIPAddressChanged(
+      NetworkChangeNotifier::IPAddressChangeType change_type =
+          NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL) override;
 
   // NetworkChangeNotifier::ConnectionTypeObserver implementation.
   void OnConnectionTypeChanged(

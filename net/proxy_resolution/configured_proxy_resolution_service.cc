@@ -1516,7 +1516,8 @@ void ConfiguredProxyResolutionService::InitializeUsingDecidedConfig(
     OnInitProxyResolverComplete(rv);
 }
 
-void ConfiguredProxyResolutionService::OnIPAddressChanged() {
+void ConfiguredProxyResolutionService::OnIPAddressChanged(
+    NetworkChangeNotifier::IPAddressChangeType change_type) {
   // See the comment block by |kDelayAfterNetworkChangesMs| for info.
   stall_proxy_autoconfig_until_ =
       TimeTicks::Now() + stall_proxy_auto_config_delay_;

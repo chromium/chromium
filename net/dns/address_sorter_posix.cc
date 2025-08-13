@@ -407,7 +407,8 @@ void AddressSorterPosix::Sort(const std::vector<IPEndPoint>& endpoints,
   }
 }
 
-void AddressSorterPosix::OnIPAddressChanged() {
+void AddressSorterPosix::OnIPAddressChanged(
+    NetworkChangeNotifier::IPAddressChangeType change_type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   source_map_.clear();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

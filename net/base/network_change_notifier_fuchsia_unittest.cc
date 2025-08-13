@@ -326,7 +326,9 @@ class FakeIPAddressObserver final
   }
 
   // IPAddressObserver implementation.
-  void OnIPAddressChanged() override {
+  void OnIPAddressChanged(
+      NetworkChangeNotifier::IPAddressChangeType change_type =
+          NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL) override {
     ip_change_count_++;
     if (quit_loop_ && ip_change_count_ >= expected_count_)
       std::move(quit_loop_).Run();

@@ -273,7 +273,8 @@ void HttpStreamPool::DecrementTotalConnectingStreamCount(size_t amount) {
                 total_connecting_stream_count_);
 }
 
-void HttpStreamPool::OnIPAddressChanged() {
+void HttpStreamPool::OnIPAddressChanged(
+    NetworkChangeNotifier::IPAddressChangeType change_type) {
   CHECK(cleanup_on_ip_address_change_);
   for (const auto& group : groups_) {
     group.second->FlushWithError(ERR_NETWORK_CHANGED,

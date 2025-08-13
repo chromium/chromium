@@ -20,7 +20,8 @@ NetworkConnection::~NetworkConnection() {
   NetworkChangeNotifier::RemoveIPAddressObserver(this);
 }
 
-void NetworkConnection::OnIPAddressChanged() {
+void NetworkConnection::OnIPAddressChanged(
+    NetworkChangeNotifier::IPAddressChangeType change_type) {
   OnConnectionTypeChanged(NetworkChangeNotifier::GetConnectionType());
 }
 

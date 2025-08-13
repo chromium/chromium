@@ -41,7 +41,7 @@ class NetworkChangeNotifierLinux::BlockingThreadObjects {
   void InitForTesting(base::ScopedFD netlink_fd);  // IN-TEST
 
  private:
-  void OnIPAddressChanged();
+  void OnIPAddressChanged(IPAddressChangeType change_type);
   void OnLinkChanged();
   // Used to detect online/offline state and IP address changes.
   internal::AddressTrackerLinux address_tracker_;
@@ -74,8 +74,9 @@ void NetworkChangeNotifierLinux::BlockingThreadObjects::InitForTesting(
   last_type_ = GetCurrentConnectionType();
 }
 
-void NetworkChangeNotifierLinux::BlockingThreadObjects::OnIPAddressChanged() {
-  NetworkChangeNotifier::NotifyObserversOfIPAddressChange();
+void NetworkChangeNotifierLinux::BlockingThreadObjects::OnIPAddressChanged(
+    IPAddressChangeType change_type) {
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChange(change_type);
   // When the IP address of a network interface is added/deleted, the
   // connection type may have changed.
   OnLinkChanged();

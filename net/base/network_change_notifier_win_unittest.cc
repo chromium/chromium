@@ -81,7 +81,8 @@ class TestIPAddressObserver : public NetworkChangeNotifier::IPAddressObserver {
     NetworkChangeNotifier::RemoveIPAddressObserver(this);
   }
 
-  MOCK_METHOD0(OnIPAddressChanged, void());
+  MOCK_METHOD1(OnIPAddressChanged,
+               void(NetworkChangeNotifier::IPAddressChangeType));
 };
 
 class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
@@ -94,7 +95,10 @@ class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
     EXPECT_FALSE(network_change_notifier_.is_watching());
     EXPECT_EQ(0, network_change_notifier_.sequential_failures());
 
-    EXPECT_CALL(test_ip_address_observer_, OnIPAddressChanged()).Times(0);
+    EXPECT_CALL(
+        test_ip_address_observer_,
+        OnIPAddressChanged(NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL))
+        .Times(0);
     EXPECT_CALL(network_change_notifier_, WatchForAddressChangeInternal())
         .WillOnce(Return(true));
 
@@ -114,7 +118,10 @@ class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
     EXPECT_FALSE(network_change_notifier_.is_watching());
     EXPECT_EQ(0, network_change_notifier_.sequential_failures());
 
-    EXPECT_CALL(test_ip_address_observer_, OnIPAddressChanged()).Times(0);
+    EXPECT_CALL(
+        test_ip_address_observer_,
+        OnIPAddressChanged(NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL))
+        .Times(0);
     EXPECT_CALL(network_change_notifier_, WatchForAddressChangeInternal())
         // Due to an expected race, it's theoretically possible for more than
         // one call to occur, though unlikely.
@@ -137,7 +144,10 @@ class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
     EXPECT_TRUE(network_change_notifier_.is_watching());
     EXPECT_EQ(0, network_change_notifier_.sequential_failures());
 
-    EXPECT_CALL(test_ip_address_observer_, OnIPAddressChanged()).Times(1);
+    EXPECT_CALL(
+        test_ip_address_observer_,
+        OnIPAddressChanged(NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL))
+        .Times(1);
     EXPECT_CALL(network_change_notifier_, WatchForAddressChangeInternal())
         .WillOnce(Return(true));
 
@@ -156,7 +166,10 @@ class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
     EXPECT_TRUE(network_change_notifier_.is_watching());
     EXPECT_EQ(0, network_change_notifier_.sequential_failures());
 
-    EXPECT_CALL(test_ip_address_observer_, OnIPAddressChanged()).Times(1);
+    EXPECT_CALL(
+        test_ip_address_observer_,
+        OnIPAddressChanged(NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL))
+        .Times(1);
     EXPECT_CALL(network_change_notifier_, WatchForAddressChangeInternal())
         // Due to an expected race, it's theoretically possible for more than
         // one call to occur, though unlikely.
@@ -182,7 +195,9 @@ class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
 
     base::RunLoop run_loop;
 
-    EXPECT_CALL(test_ip_address_observer_, OnIPAddressChanged())
+    EXPECT_CALL(
+        test_ip_address_observer_,
+        OnIPAddressChanged(NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL))
         .WillOnce(Invoke(&run_loop, &base::RunLoop::QuitWhenIdle));
     EXPECT_CALL(network_change_notifier_, WatchForAddressChangeInternal())
         .WillOnce(Return(true));
@@ -205,7 +220,10 @@ class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
     int initial_sequential_failures =
         network_change_notifier_.sequential_failures();
 
-    EXPECT_CALL(test_ip_address_observer_, OnIPAddressChanged()).Times(0);
+    EXPECT_CALL(
+        test_ip_address_observer_,
+        OnIPAddressChanged(NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL))
+        .Times(0);
     EXPECT_CALL(network_change_notifier_, WatchForAddressChangeInternal())
         // Due to an expected race, it's theoretically possible for more than
         // one call to occur, though unlikely.
