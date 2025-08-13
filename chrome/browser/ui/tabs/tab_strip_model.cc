@@ -2824,17 +2824,37 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
 
 void TabStripModel::AddToNewGroupFromContextIndex(int context_index) {
   std::vector<int> indices_to_add = GetIndicesForCommand(context_index);
+  CHECK(!indices_to_add.empty());
+
+  std::vector<tabs::TabInterface*> tabs_to_add;
+  for (const int index : indices_to_add) {
+    tabs_to_add.push_back(GetTabAtIndex(index));
+  }
+
   std::vector<tab_groups::TabGroupId> groups_to_delete =
       GetGroupsDestroyedFromRemovingIndices(indices_to_add);
   MarkTabGroupsForClosing(groups_to_delete);
 
   base::OnceCallback<void()> callback = base::BindOnce(
-      [](TabStripModel* model, std::vector<int> indices) {
+      [](TabStripModel* model, std::vector<tabs::TabInterface*> tabs) {
+        std::vector<int> indices;
+        for (tabs::TabInterface* tab : tabs) {
+          const int index = model->GetIndexOfTab(tab);
+          if (index == kNoTab) {
+            continue;
+          }
+          indices.push_back(index);
+        }
+
+        if (indices.empty()) {
+          return;
+        }
+
         std::optional<tab_groups::TabGroupId> new_group_id =
             model->AddToNewGroup(indices);
         model->OpenTabGroupEditor(new_group_id.value());
       },
-      base::Unretained(this), indices_to_add);
+      base::Unretained(this), tabs_to_add);
 
   if (groups_to_delete.empty()) {
     std::move(callback).Run();
@@ -2847,7 +2867,7 @@ void TabStripModel::AddToNewGroupFromContextIndex(int context_index) {
 void TabStripModel::ExecuteAddToExistingGroupCommand(
     int context_index,
     const tab_groups::TabGroupId& group) {
-  if (!group_model_) {
+  if (!group_model_ || !group_model_->ContainsTabGroup(group)) {
     return;
   }
 
@@ -2858,6 +2878,12 @@ void TabStripModel::ExecuteAddToExistingGroupCommand(
   }
 
   std::vector<int> indices = GetIndicesForCommand(context_index);
+  CHECK(!indices.empty());
+
+  std::vector<tabs::TabInterface*> tabs;
+  for (const int index : indices) {
+    tabs.push_back(GetTabAtIndex(index));
+  }
 
   std::vector<tab_groups::TabGroupId> groups_to_delete =
       GetGroupsDestroyedFromRemovingIndices(indices);
@@ -2867,9 +2893,24 @@ void TabStripModel::ExecuteAddToExistingGroupCommand(
   // to be deleted, but it is the group that is being added to then the there
   // are no actual deletions occuring. Otherwise the group deletion must be
   // confirmed.
-  base::OnceCallback<void()> callback =
-      base::BindOnce(&TabStripModel::AddToExistingGroup, base::Unretained(this),
-                     indices, group, false);
+  base::OnceCallback<void()> callback = base::BindOnce(
+      [](TabStripModel* model, std::vector<tabs::TabInterface*> tabs,
+         const tab_groups::TabGroupId& group) {
+        if (!model->group_model()->ContainsTabGroup(group)) {
+          return;
+        }
+        std::vector<int> indices;
+        for (tabs::TabInterface* tab : tabs) {
+          const int index = model->GetIndexOfTab(tab);
+          if (index == kNoTab) {
+            continue;
+          }
+          indices.push_back(index);
+        }
+
+        model->AddToExistingGroup(indices, group, false);
+      },
+      base::Unretained(this), tabs, group);
 
   if (!groups_to_delete.empty() &&
       !(groups_to_delete.size() == 1 && groups_to_delete[0] == group)) {
