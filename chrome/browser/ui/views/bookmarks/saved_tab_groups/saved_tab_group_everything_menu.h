@@ -5,6 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_EVERYTHING_MENU_H_
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_EVERYTHING_MENU_H_
 
+#include <map>
+#include <memory>
+#include <optional>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "chrome/browser/ui/browser.h"
@@ -112,7 +117,7 @@ class STGEverythingMenu : public views::MenuDelegate,
   std::vector<base::Uuid> sorted_non_empty_tab_groups_;
 
   // Owned by the Everything button.
-  raw_ptr<views::MenuButtonController> menu_button_controller_;
+  raw_ptr<views::MenuButtonController> const menu_button_controller_;
 
   // Whether or not a saved tab group item in the Everything menu should have
   // submenu. True for 3-dot menu.
@@ -130,8 +135,8 @@ class STGEverythingMenu : public views::MenuDelegate,
   std::unique_ptr<AppMenuSubMenuModelDelegate> submenu_delegate_;
   std::optional<base::Uuid> latest_group_id_;
 
-  raw_ptr<Browser> browser_;
-  raw_ptr<views::Widget> widget_;
+  raw_ptr<Browser> const browser_;
+  raw_ptr<views::Widget> const widget_;
 };
 
 }  // namespace tab_groups

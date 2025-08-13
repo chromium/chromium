@@ -30,12 +30,12 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
-static constexpr int kUIUpdateIconSize = 16;
+constexpr int kUIUpdateIconSize = 16;
 
 // TODO(pengchaocai): Explore a generic command id solution if there are more
 // use cases than app menu.
-static constexpr int kMinCommandId = AppMenuModel::kMinTabGroupsCommandId;
-static constexpr int kGap = AppMenuModel::kNumUnboundedMenuTypes;
+constexpr int kMinCommandId = AppMenuModel::kMinTabGroupsCommandId;
+constexpr int kGap = AppMenuModel::kNumUnboundedMenuTypes;
 
 void AddModelToParent(ui::MenuModel* model, views::MenuItemView* parent) {
   for (size_t i = 0, max = model->GetItemCount(); i < max; ++i) {
