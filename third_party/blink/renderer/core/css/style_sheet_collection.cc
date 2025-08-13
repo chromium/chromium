@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/rule_set_diff.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_sheet_candidate.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -90,6 +91,24 @@ static void ExtractMixinsFromRules(
       mixins.Set(mixin_rule->GetName(), mixin_rule);
     }
   }
+}
+
+static void ExtractMixinsFromSheet(const StyleSheetContents& contents,
+                                   const MediaQueryEvaluator& medium,
+                                   MixinMap& mixins) {
+  for (const StyleRuleImport* import_rule : contents.ImportRules()) {
+    if (!import_rule->GetStyleSheet()) {
+      continue;
+    }
+    if (!import_rule->IsSupported()) {
+      continue;
+    }
+    if (!MatchMediaForMixins(medium, import_rule->MediaQueries())) {
+      continue;
+    }
+    ExtractMixinsFromSheet(*import_rule->GetStyleSheet(), medium, mixins);
+  }
+  ExtractMixinsFromRules(contents.ChildRules(), medium, mixins);
 }
 
 // Creates RuleSets for everything in active_style_sheets.
@@ -239,8 +258,7 @@ void StyleSheetCollection::PrepareUpdateActiveStyleSheets(
 
   mixins_.clear();
   for (auto& [css_sheet, rule_set] : new_active_style_sheets) {
-    ExtractMixinsFromRules(css_sheet->Contents()->ChildRules(), medium,
-                           mixins_);
+    ExtractMixinsFromSheet(*css_sheet->Contents(), medium, mixins_);
   }
 
   DCHECK(pending_active_style_sheets_.empty());
