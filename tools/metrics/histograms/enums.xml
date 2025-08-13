@@ -14529,6 +14529,7 @@ from previous Chrome versions.
   <int value="138345654" label="enable-ambient-authentication-in-incognito"/>
   <int value="138598687"
       label="HappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite:enabled"/>
+  <int value="138916133" label="OmniboxMultimodalInput:disabled"/>
   <int value="138995035" label="SafeBrowsingAsyncRealTimeCheck:enabled"/>
   <int value="139569991" label="SharingDeviceExpiration:disabled"/>
   <int value="139974547" label="ControlledFrame:enabled"/>
@@ -17508,6 +17509,7 @@ from previous Chrome versions.
   <int value="1231206336" label="CrOSLateBootAllowFpmcuBetaFirmware:enabled"/>
   <int value="1231489022" label="SyncAutofillWalletCredentialData:disabled"/>
   <int value="1232707660" label="FilesKernelDrivers:enabled"/>
+  <int value="1233218014" label="OmniboxMultimodalInput:enabled"/>
   <int value="1233310128" label="ExoConsumedByImeByFlag:enabled"/>
   <int value="1234601252" label="ForceUseAPDownloadProtection:enabled"/>
   <int value="1234891176" label="AnimateSuggestionsListAppearance:enabled"/>

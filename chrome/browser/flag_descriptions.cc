@@ -2835,6 +2835,10 @@ const char kOmniboxMultilineEditFieldName[] = "Omnibox Multiline edit field";
 const char kOmniboxMultilineEditFieldDescription[] =
     "When enabled, allows Omnibox input to span across multiple lines";
 
+const char kOmniboxMultimodalInputName[] = "Omnibox Multimodal Input";
+const char kOmniboxMultimodalInputDescription[] =
+    "When enabled, the multimodal input toolbar is shown in the Omnibox.";
+
 const char kOmniboxNumNtpZpsRecentSearchesName[] =
     "Omnibox: Recent Searches on new tab page ZPS";
 const char kOmniboxNumNtpZpsRecentSearchesDescription[] =

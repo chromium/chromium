@@ -200,6 +200,9 @@ BASE_FEATURE(kOmniboxAssistantVoiceSearch,
              "OmniboxAssistantVoiceSearch",
              DISABLED);
 
+// When enabled, the multimodal input button is shown in the Omnibox.
+BASE_FEATURE(kOmniboxMultimodalInput, "OmniboxMultimodalInput", DISABLED);
+
 // Whether the AI Mode entrypoint is shown in the Omnibox as a RHS button.
 BASE_FEATURE(kAiModeOmniboxEntryPoint, "AiModeOmniboxEntryPoint", DISABLED);
 
@@ -430,6 +433,7 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxMobileParityUpdateV2,
       &kOmniboxSiteSearch,
       &kOmniboxAimShortcutTypedState,
+      &kOmniboxMultimodalInput,
       &kMultilineEditField};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);

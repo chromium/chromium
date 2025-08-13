@@ -7006,6 +7006,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxMultilineEditFieldDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kMultilineEditField)},
 
+    {"omnibox-multimodal-input", flag_descriptions::kOmniboxMultimodalInputName,
+     flag_descriptions::kOmniboxMultimodalInputDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxMultimodalInput)},
+
     {"omnibox-site-search", flag_descriptions::kOmniboxSiteSearchName,
      flag_descriptions::kOmniboxSiteSearchDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxSiteSearch)},

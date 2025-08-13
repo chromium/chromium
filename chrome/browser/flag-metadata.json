@@ -7401,6 +7401,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "omnibox-multimodal-input",
+    "owners": [ "ender@google.com", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "omnibox-num-ntp-zps-recent-searches",
     "owners": ["ender@google.com", "chrome-mobile-search@google.com"],
     "expiry_milestone": 300

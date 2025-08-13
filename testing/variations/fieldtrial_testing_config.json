@@ -16651,6 +16651,21 @@
             ]
         }
     ],
+    "OmniboxMultimodalInput": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "disable_features": [
+                        "OmniboxMultimodalInput"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxOnDeviceBrainModel": [
         {
             "platforms": [
