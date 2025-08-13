@@ -186,7 +186,8 @@ std::vector<VEAFactoryFunction> GetVEAFactoryFunctions(
   vea_factory_functions->push_back(base::BindRepeating(&CreateVTVEA));
 #endif
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(kD3D12VideoEncodeAccelerator)) {
+  if (base::FeatureList::IsEnabled(kD3D12VideoEncodeAccelerator) &&
+      !gpu_workarounds.disable_d3d12_video_encoder) {
     vea_factory_functions->push_back(
         base::BindRepeating(&CreateD3D12VEA, gpu_workarounds, gpu_device));
   } else {

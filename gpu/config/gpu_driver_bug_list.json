@@ -3681,6 +3681,62 @@
       "features": [
         "disable_d3d12_h264_encoding"
       ]
+    },
+    {
+      "id": 459,
+      "cr_bugs": [40275246],
+      "description": "D3D12 AVC hardware encoding does not support LTR on old Intel drivers.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "active",
+      "driver_version": {
+        "op": "<",
+        "value": "31.0.101.2111"
+      },
+      "features": [
+        "disable_d3d12_h264_encoding"
+      ]
+    },
+    {
+      "id": 460,
+      "cr_bugs": [40275246],
+      "description": "D3D12 AV1 hardware encoding produces corrupted bitstream on NVidia GPUs.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x10de",
+      "multi_gpu_category": "active",
+      "features": [
+        "disable_d3d12_av1_encoding"
+      ]
+    },
+    {
+      "id": 461,
+      "cr_bugs": [40275246],
+      "description": "D3D12 video encoder produces video streams with artifacts on AMD GPUs.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "multi_gpu_category": "active",
+      "features": [
+        "disable_d3d12_video_encoder"
+      ]
+    },
+    {
+      "id": 462,
+      "cr_bugs": [40275246],
+      "description": "D3D12 video encoder does not work on Qualcomm GPUs.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x4d4f4351",
+      "multi_gpu_category": "active",
+      "features": [
+        "disable_d3d12_video_encoder"
+      ]
     }
   ]
 }

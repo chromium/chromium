@@ -305,7 +305,9 @@ D3D12VideoEncodeAccelerator::D3D12VideoEncodeAccelerator(
     codecs_.push_back(D3D12_VIDEO_ENCODER_CODEC_HEVC);
   }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  codecs_.push_back(D3D12_VIDEO_ENCODER_CODEC_AV1);
+  if (!gpu_workarounds.disable_d3d12_av1_encoding) {
+    codecs_.push_back(D3D12_VIDEO_ENCODER_CODEC_AV1);
+  }
 
   child_weak_this_ = child_weak_this_factory_.GetWeakPtr();
   encoder_weak_this_ = encoder_weak_this_factory_.GetWeakPtr();
