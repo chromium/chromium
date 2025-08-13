@@ -599,6 +599,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.EntryRejectionStatus"
+    enum="HttpCacheEntryRejectionStatus" expires_after="2026-08-11">
+  <owner>leimy@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records the outcome of considering whether to reject a cache entry based on
+    in-memory hints. This is used to avoid accessing disk for entries that are
+    likely to be unusable. Recorded every time we try to open a cache entry, but
+    there is no active one.
+  </summary>
+</histogram>
+
 <histogram name="HttpCache.Experimental.Read.EntryContentSize" units="bytes"
     expires_after="2026-02-01">
   <owner>anthonyvd@chromium.org</owner>

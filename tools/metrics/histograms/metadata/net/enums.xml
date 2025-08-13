@@ -489,6 +489,19 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="SpdyProxy Secure Server (Invalid)"/>
 </enum>
 
+<!-- LINT.IfChange(HttpCacheEntryRejectionStatus) -->
+
+<enum name="HttpCacheEntryRejectionStatus">
+  <int value="0" label="Rejection"/>
+  <int value="1" label="No Rejection Usable"/>
+  <int value="2" label="No Rejection Partial"/>
+  <int value="3" label="No Rejection Non-Read-Write-Mode"/>
+  <int value="4" label="No Rejection Skip Cache Validation"/>
+  <int value="5" label="No Rejection Load Only From Cache"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_cache_transaction.h:HttpCacheEntryRejectionStatus) -->
+
 <!-- LINT.IfChange(HttpCacheNotCoveredReason) -->
 
 <enum name="HttpCacheNotCoveredReason">

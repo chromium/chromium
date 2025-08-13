@@ -3078,11 +3078,12 @@ bool HttpCache::Transaction::ConditionalizeRequest() {
   return true;
 }
 
-bool HttpCache::Transaction::MaybeRejectBasedOnEntryInMemoryData(
+HttpCache::Transaction::HttpCacheEntryRejectionStatus
+HttpCache::Transaction::GetHttpCacheEntryRejectionStatus(
     uint8_t in_memory_info) {
   // Not going to be clever with those...
   if (partial_) {
-    return false;
+    return HttpCacheEntryRejectionStatus::kNoRejectionPartial;
   }
 
   // Avoiding open based on in-memory hints requires us to be permitted to
@@ -3091,19 +3092,33 @@ bool HttpCache::Transaction::MaybeRejectBasedOnEntryInMemoryData(
   // first place, so we shouldn't see it here.
   DCHECK_NE(mode_, WRITE);
   if (mode_ != READ_WRITE) {
-    return false;
+    return HttpCacheEntryRejectionStatus::kNoRejectionNonReadWriteMode;
   }
 
   // If we are loading ignoring cache validity (aka back button), obviously
   // can't reject things based on it.  Also if LOAD_ONLY_FROM_CACHE there is no
   // hope of network offering anything better.
-  if (effective_load_flags_ & LOAD_SKIP_CACHE_VALIDATION ||
-      effective_load_flags_ & LOAD_ONLY_FROM_CACHE) {
-    return false;
+  if (effective_load_flags_ & LOAD_SKIP_CACHE_VALIDATION) {
+    return HttpCacheEntryRejectionStatus::kNoRejectionSkipCacheValidation;
+  }
+
+  if (effective_load_flags_ & LOAD_ONLY_FROM_CACHE) {
+    return HttpCacheEntryRejectionStatus::kNoRejectionLoadOnlyFromCache;
   }
 
   return (in_memory_info & HINT_UNUSABLE_PER_CACHING_HEADERS) ==
-         HINT_UNUSABLE_PER_CACHING_HEADERS;
+                 HINT_UNUSABLE_PER_CACHING_HEADERS
+             ? HttpCacheEntryRejectionStatus::kRejection
+             : HttpCacheEntryRejectionStatus::kNoRejectionUsable;
+}
+
+bool HttpCache::Transaction::MaybeRejectBasedOnEntryInMemoryData(
+    uint8_t in_memory_info) {
+  HttpCacheEntryRejectionStatus status =
+      GetHttpCacheEntryRejectionStatus(in_memory_info);
+  base::UmaHistogramEnumeration("HttpCache.EntryRejectionStatus", status);
+
+  return status == HttpCacheEntryRejectionStatus::kRejection;
 }
 
 bool HttpCache::Transaction::ComputeUnusablePerCachingHeaders() {
