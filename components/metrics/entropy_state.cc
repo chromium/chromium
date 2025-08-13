@@ -103,8 +103,9 @@ std::string EntropyState::GetHighEntropySource(
   // sources ever becomes small enough (see UMA.LowEntropySourceValue), we could
   // remove it, and just use the new source here.
   int low_entropy_source = GetOldLowEntropySource();
-  if (low_entropy_source == kLowEntropySourceNotSet)
+  if (low_entropy_source == kLowEntropySourceNotSet) {
     low_entropy_source = GetLowEntropySource();
+  }
 
   return initial_client_id + base::NumberToString(low_entropy_source);
 }
@@ -172,8 +173,9 @@ void EntropyState::UpdateLowEntropySources() {
   // The default value for |low_entropy_source_| and the default pref value are
   // both |kLowEntropySourceNotSet|, which indicates the value has not been set.
   if (low_entropy_source_ != kLowEntropySourceNotSet &&
-      pseudo_low_entropy_source_ != kLowEntropySourceNotSet)
+      pseudo_low_entropy_source_ != kLowEntropySourceNotSet) {
     return;
+  }
 
   const base::CommandLine* command_line(base::CommandLine::ForCurrentProcess());
   // Only try to load the value from prefs if the user did not request a reset.
@@ -183,15 +185,18 @@ void EntropyState::UpdateLowEntropySources() {
   // UpdateLowEntropySources().
   if (!command_line->HasSwitch(switches::kResetVariationState)) {
     int new_pref = local_state_->GetInteger(prefs::kMetricsLowEntropySource);
-    if (IsValidLowEntropySource(new_pref))
+    if (IsValidLowEntropySource(new_pref)) {
       low_entropy_source_ = new_pref;
+    }
     int old_pref = local_state_->GetInteger(prefs::kMetricsOldLowEntropySource);
-    if (IsValidLowEntropySource(old_pref))
+    if (IsValidLowEntropySource(old_pref)) {
       old_low_entropy_source_ = old_pref;
+    }
     int pseudo_pref =
         local_state_->GetInteger(prefs::kMetricsPseudoLowEntropySource);
-    if (IsValidLowEntropySource(pseudo_pref))
+    if (IsValidLowEntropySource(pseudo_pref)) {
       pseudo_low_entropy_source_ = pseudo_pref;
+    }
   }
 
   // If the new source is missing or corrupt (or requested to be reset), then

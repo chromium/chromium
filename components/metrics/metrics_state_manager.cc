@@ -130,8 +130,9 @@ class MetricsStateMetricsProvider : public MetricsProvider {
 
     ClonedInstallInfo cloned =
         ClonedInstallDetector::ReadClonedInstallInfo(local_state_);
-    if (cloned.reset_count == 0)
+    if (cloned.reset_count == 0) {
       return;
+    }
     auto* cloned_install_info = system_profile->mutable_cloned_install_info();
     if (metrics_ids_were_reset_) {
       // Only report the cloned from client_id in the resetting session.
@@ -543,8 +544,9 @@ std::unique_ptr<ClientInfo> MetricsStateManager::LoadClientInfo() {
   // If a cloned install was detected, loading ClientInfo from backup will be
   // a race condition with clearing the backup. Skip all backup reads for this
   // session.
-  if (metrics_ids_were_reset_)
+  if (metrics_ids_were_reset_) {
     return nullptr;
+  }
 
   std::unique_ptr<ClientInfo> client_info = load_client_info_.Run();
 
@@ -586,8 +588,9 @@ std::string MetricsStateManager::GetHighEntropySource() {
 
 void MetricsStateManager::UpdateEntropySourceReturnedValue(
     EntropySourceType type) {
-  if (entropy_source_returned_ != ENTROPY_SOURCE_NONE)
+  if (entropy_source_returned_ != ENTROPY_SOURCE_NONE) {
     return;
+  }
 
   entropy_source_returned_ = type;
   base::UmaHistogramEnumeration("UMA.EntropySourceType", type,
@@ -595,8 +598,9 @@ void MetricsStateManager::UpdateEntropySourceReturnedValue(
 }
 
 void MetricsStateManager::ResetMetricsIDsIfNecessary() {
-  if (!ShouldResetClientIdsOnClonedInstall())
+  if (!ShouldResetClientIdsOnClonedInstall()) {
     return;
+  }
   metrics_ids_were_reset_ = true;
   previous_client_id_ = ReadClientId(local_state_);
 
@@ -632,8 +636,9 @@ bool MetricsStateManager::ShouldGenerateProvisionalClientId(bool is_first_run) {
   // We should only generate a provisional client ID on the first run. If for
   // some reason there is already a client ID, we do not generate one either.
   // This can happen if metrics reporting is managed by a policy.
-  if (!is_first_run || !client_id_.empty())
+  if (!is_first_run || !client_id_.empty()) {
     return false;
+  }
 
   // Return false if |kMetricsReportingEnabled| is managed by a policy. For
   // example, if metrics reporting is disabled by a policy, then
@@ -642,8 +647,9 @@ bool MetricsStateManager::ShouldGenerateProvisionalClientId(bool is_first_run) {
   // by a policy, then the default value of |kMetricsReportingEnabled| will be
   // true, and so a client ID will have already been generated (we would have
   // returned false already because of the previous check).
-  if (local_state_->IsManagedPreference(prefs::kMetricsReportingEnabled))
+  if (local_state_->IsManagedPreference(prefs::kMetricsReportingEnabled)) {
     return false;
+  }
 
   // If this is a non-Google-Chrome-branded build, we do not want to generate a
   // provisional client ID because metrics reporting is not enabled on those

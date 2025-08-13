@@ -455,8 +455,9 @@ void MetricsService::Stop() {
 }
 
 void MetricsService::EnableReporting() {
-  if (reporting_service_.reporting_active())
+  if (reporting_service_.reporting_active()) {
     return;
+  }
   reporting_service_.EnableReporting();
   StartSchedulerIfNecessary();
 }
@@ -488,8 +489,9 @@ bool MetricsService::WasLastShutdownClean() const {
 void MetricsService::EnableRecording() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (recording_state_ == ACTIVE)
+  if (recording_state_ == ACTIVE) {
     return;
+  }
   recording_state_ = ACTIVE;
 
   state_manager_->ForceClientIdCreation();
@@ -559,8 +561,9 @@ void MetricsService::HandleIdleSinceLastTransmission(bool in_idle) {
   // If there wasn't a lot of action, maybe the computer was asleep, in which
   // case, the log transmissions should have stopped.  Here we start them up
   // again.
-  if (!in_idle && idle_since_last_transmission_)
+  if (!in_idle && idle_since_last_transmission_) {
     StartSchedulerIfNecessary();
+  }
   idle_since_last_transmission_ = in_idle;
 }
 
@@ -731,8 +734,9 @@ void MetricsService::MarkCurrentHistogramsAsReported() {
 #if BUILDFLAG(IS_CHROMEOS)
 void MetricsService::SetUserLogStore(
     std::unique_ptr<UnsentLogStore> user_log_store) {
-  if (log_store()->has_alternate_ongoing_log_store())
+  if (log_store()->has_alternate_ongoing_log_store()) {
     return;
+  }
 
   if (state_ >= SENDING_LOGS) {
     // Closes the current log so that a new log can be opened in the user log
@@ -845,8 +849,9 @@ bool MetricsService::StageCurrentLogForTest() {
 
   MetricsLogStore* const log_store = reporting_service_.metrics_log_store();
   log_store->StageNextLog();
-  if (!log_store->has_staged_log())
+  if (!log_store->has_staged_log()) {
     return false;
+  }
 
   OpenNewLog();
   return true;
@@ -919,8 +924,9 @@ void MetricsService::InitializeMetricsState() {
   // number of different edge cases, such as if the last version crashed before
   // it could save off a system profile or if UMA reporting is disabled (which
   // normally results in stats being accumulated).
-  if (version_changed && !has_initial_stability_log)
+  if (version_changed && !has_initial_stability_log) {
     ClearSavedStabilityMetrics();
+  }
 
   // If the version changed, the system profile is obsolete and needs to be
   // cleared. This is to avoid the stability data misattribution that could
@@ -929,8 +935,9 @@ void MetricsService::InitializeMetricsState() {
   // stability log, an operation that requires the previous version's system
   // profile. At this point, stability metrics pertaining to the previous
   // version have been cleared.
-  if (version_changed)
+  if (version_changed) {
     recorder.ClearEnvironmentFromPrefs();
+  }
 
   // Update session ID.
   ++session_id_;
@@ -1098,8 +1105,9 @@ void MetricsService::CloseCurrentLog(
   // as how much memory is being used) before reporting.
   base::PersistentHistogramAllocator* allocator =
       base::GlobalHistogramAllocator::Get();
-  if (allocator)
+  if (allocator) {
     allocator->UpdateTrackingHistograms();
+  }
 
   // Put incremental data (histogram deltas, and realtime stats deltas) at the
   // end of all log transmissions (initial log handles this separately).
@@ -1221,8 +1229,9 @@ void MetricsService::PushPendingLogsToPersistentStorage(
 
 void MetricsService::StartSchedulerIfNecessary() {
   // Never schedule cutting or uploading of logs in test mode.
-  if (test_mode_active_)
+  if (test_mode_active_) {
     return;
+  }
 
   // Even if reporting is disabled, the scheduler is needed to trigger the
   // creation of the first ongoing log, which must be done in order for any logs

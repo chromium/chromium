@@ -75,8 +75,9 @@ class TestLogStore : public LogStore {
     }
   }
   void DiscardStagedLog(std::string_view reason) override {
-    if (!has_staged_log())
+    if (!has_staged_log()) {
       return;
+    }
     logs_.pop_front();
     staged_log_hash_.clear();
   }

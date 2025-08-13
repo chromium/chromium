@@ -51,8 +51,9 @@ bool EnvironmentRecorder::LoadEnvironmentFromPrefs(
 
   const std::string base64_system_profile =
       local_state_->GetString(prefs::kStabilitySavedSystemProfile);
-  if (base64_system_profile.empty())
+  if (base64_system_profile.empty()) {
     return false;
+  }
   const std::string system_profile_hash =
       local_state_->GetString(prefs::kStabilitySavedSystemProfileHash);
 

@@ -25,8 +25,9 @@ void EncodeHistogramDelta(std::string_view histogram_name,
 
   HistogramEventProto* histogram_proto = uma_proto->add_histogram_event();
   histogram_proto->set_name_hash(base::HashMetricName(histogram_name));
-  if (snapshot.sum() != 0)
+  if (snapshot.sum() != 0) {
     histogram_proto->set_sum(snapshot.sum());
+  }
 
   for (std::unique_ptr<SampleCountIterator> it = snapshot.Iterator();
        !it->Done(); it->Next()) {

@@ -56,8 +56,9 @@ void FieldTrialsProvider::ProvideSystemProfileMetricsWithLogCreationTime(
   log_creation_time_ = log_creation_time;
 
   const std::string& version = variations::GetSeedVersion();
-  if (!version.empty())
+  if (!version.empty()) {
     system_profile_proto->set_variations_seed_version(version);
+  }
 
   // TODO(crbug.com/40133600): Determine whether this can be deleted.
   GetAndWriteFieldTrials(system_profile_proto);

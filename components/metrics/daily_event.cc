@@ -17,8 +17,9 @@ namespace {
 
 void RecordIntervalTypeHistogram(const std::string& histogram_name,
                                  DailyEvent::IntervalType type) {
-  if (histogram_name.empty())
+  if (histogram_name.empty()) {
     return;
+  }
   base::UmaHistogramEnumeration(histogram_name, type);
 }
 

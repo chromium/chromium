@@ -34,8 +34,9 @@ bool HasGmsCoreVersionChanged(PrefService* local_state) {
   std::string current_version = base::android::device_info::gms_version_code();
 
   // If the last version is empty, treat it as consistent.
-  if (previous_version.empty())
+  if (previous_version.empty()) {
     return false;
+  }
 
   return previous_version != current_version;
 }
@@ -100,8 +101,9 @@ void StabilityMetricsProvider::ProvideStabilityMetrics(
       system_profile->mutable_stability();
 
   int pref_value = 0;
-  if (GetAndClearPrefValue(prefs::kStabilityLaunchCount, &pref_value))
+  if (GetAndClearPrefValue(prefs::kStabilityLaunchCount, &pref_value)) {
     stability->set_launch_count(pref_value);
+  }
   if (GetAndClearPrefValue(prefs::kStabilityCrashCountDueToGmsCoreUpdate,
                            &pref_value)) {
     stability->set_crash_count_due_to_gms_core_update(pref_value);

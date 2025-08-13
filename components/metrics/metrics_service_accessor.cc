@@ -50,8 +50,9 @@ bool MetricsServiceAccessor::RegisterSyntheticFieldTrial(
     std::string_view trial_name,
     std::string_view group_name,
     variations::SyntheticTrialAnnotationMode annotation_mode) {
-  if (!metrics_service)
+  if (!metrics_service) {
     return false;
+  }
 
   variations::SyntheticTrialGroup trial_group(trial_name, group_name,
                                               annotation_mode);

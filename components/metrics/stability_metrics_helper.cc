@@ -44,8 +44,9 @@ int MapCrashExitCodeForHistogram(int exit_code) {
   // Since |abs(STATUS_GUARD_PAGE_VIOLATION) == MAX_INT| it causes problems in
   // histograms.cc. Solve this by remapping it to a smaller value, which
   // hopefully doesn't conflict with other codes.
-  if (static_cast<DWORD>(exit_code) == STATUS_GUARD_PAGE_VIOLATION)
+  if (static_cast<DWORD>(exit_code) == STATUS_GUARD_PAGE_VIOLATION) {
     return 0x1FCF7EC3;  // Randomly picked number.
+  }
 #endif
 
   return std::abs(exit_code);

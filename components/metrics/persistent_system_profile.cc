@@ -102,27 +102,31 @@ bool PersistentSystemProfile::RecordAllocator::Write(RecordType type,
   // Allocate space and write records until everything has been stored.
   do {
     if (end_offset_ == alloc_size_) {
-      if (!AddSegment(remaining_size))
+      if (!AddSegment(remaining_size)) {
         return false;
+      }
     }
     // Write out as much of the data as possible. `data` and `remaining_size`
     // are updated in place.
-    if (!WriteData(type, &data, &remaining_size))
+    if (!WriteData(type, &data, &remaining_size)) {
       return false;
+    }
   } while (remaining_size > 0);
 
   return true;
 }
 
 bool PersistentSystemProfile::RecordAllocator::HasMoreData() const {
-  if (alloc_reference_ == 0 && !NextSegment())
+  if (alloc_reference_ == 0 && !NextSegment()) {
     return false;
+  }
 
   char* block =
       allocator_->GetAsArray<char>(alloc_reference_, kTypeIdSystemProfile,
                                    base::PersistentMemoryAllocator::kSizeAny);
-  if (!block)
+  if (!block) {
     return false;
+  }
 
   RecordHeader header;
   header.as_atomic =
@@ -173,8 +177,9 @@ bool PersistentSystemProfile::RecordAllocator::AddSegment(size_t min_size) {
   size_t new_alloc_size = 0;
   uint32_t ref =
       allocator_->Allocate(size, kTypeIdSystemProfile, &new_alloc_size);
-  if (!ref)
+  if (!ref) {
     return false;  // Allocator must be full.
+  }
   allocator_->MakeIterable(ref);
 
   alloc_reference_ = ref;
@@ -188,8 +193,9 @@ bool PersistentSystemProfile::RecordAllocator::WriteData(RecordType type,
   char* block =
       allocator_->GetAsArray<char>(alloc_reference_, kTypeIdSystemProfile,
                                    base::PersistentMemoryAllocator::kSizeAny);
-  if (!block)
+  if (!block) {
     return false;  // It's bad if there is no accessible block.
+  }
 
   const size_t max_write_size = std::min(
       kMaxRecordSize, alloc_size_ - end_offset_ - sizeof(RecordHeader));
@@ -309,24 +315,28 @@ void PersistentSystemProfile::SetSystemProfile(
     bool complete) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (allocators_.empty() || serialized_profile.empty())
+  if (allocators_.empty() || serialized_profile.empty()) {
     return;
+  }
 
   for (auto& allocator : allocators_) {
     // Don't overwrite a complete profile with an incomplete one.
-    if (!complete && allocator.has_complete_profile())
+    if (!complete && allocator.has_complete_profile()) {
       continue;
+    }
     // System profile always starts fresh.
     allocator.Reset();
     // Write out the serialized profile.
     allocator.Write(kSystemProfileProto, serialized_profile);
     // Indicate if this is a complete profile.
-    if (complete)
+    if (complete) {
       allocator.set_complete_profile();
+    }
   }
 
-  if (complete)
+  if (complete) {
     all_have_complete_profile_ = true;
+  }
 }
 
 void PersistentSystemProfile::SetSystemProfile(
@@ -334,12 +344,14 @@ void PersistentSystemProfile::SetSystemProfile(
     bool complete) {
   // Avoid serialization if passed profile is not complete and all allocators
   // already have complete ones.
-  if (!complete && all_have_complete_profile_)
+  if (!complete && all_have_complete_profile_) {
     return;
+  }
 
   std::string serialized_profile;
-  if (!profile.SerializeToString(&serialized_profile))
+  if (!profile.SerializeToString(&serialized_profile)) {
     return;
+  }
   SetSystemProfile(serialized_profile, complete);
 }
 
@@ -387,11 +399,13 @@ bool PersistentSystemProfile::GetSystemProfile(
       return false;
   } while (type != kSystemProfileProto);
 
-  if (!system_profile)
+  if (!system_profile) {
     return true;
+  }
 
-  if (!system_profile->ParseFromString(record))
+  if (!system_profile->ParseFromString(record)) {
     return false;
+  }
 
   MergeUpdateRecords(memory_allocator, system_profile);
 

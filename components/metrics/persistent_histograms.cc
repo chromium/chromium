@@ -60,10 +60,12 @@ void DeleteOldWindowsTempFiles(const base::FilePath& dir) {
     }
 
     const auto& info = file_iter.GetInfo();
-    if (info.IsDirectory())
+    if (info.IsDirectory()) {
       continue;
-    if (info.GetLastModifiedTime() > one_day_ago)
+    }
+    if (info.GetLastModifiedTime() > one_day_ago) {
       continue;
+    }
 
     base::DeleteFile(path);
   }
@@ -256,8 +258,9 @@ void InstantiatePersistentHistograms(const base::FilePath& metrics_dir,
   if (mode == kMappedFile) {
     int major, minor, bugfix;
     base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
-    if (major == 4 && minor == 4 && bugfix == 0)
+    if (major == 4 && minor == 4 && bugfix == 0) {
       mode = kLocalMemory;
+    }
   }
 #endif
 

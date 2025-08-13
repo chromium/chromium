@@ -60,8 +60,9 @@ std::string MachineIdProvider::GetMachineId() const {
       sizeof(STORAGE_PROPERTY_QUERY), &header,
       sizeof(STORAGE_DESCRIPTOR_HEADER), &bytes_returned, nullptr);
 
-  if (!status)
+  if (!status) {
     return std::string();
+  }
 
   // Query for the actual serial number.
   std::vector<int8_t> output_buf(header.Size);
@@ -70,8 +71,9 @@ std::string MachineIdProvider::GetMachineId() const {
                       sizeof(STORAGE_PROPERTY_QUERY), &output_buf[0],
                       output_buf.size(), &bytes_returned, nullptr);
 
-  if (!status)
+  if (!status) {
     return std::string();
+  }
 
   const STORAGE_DEVICE_DESCRIPTOR* device_descriptor =
       reinterpret_cast<STORAGE_DEVICE_DESCRIPTOR*>(&output_buf[0]);
@@ -79,16 +81,18 @@ std::string MachineIdProvider::GetMachineId() const {
   // The serial number is stored in the |output_buf| as a null-terminated
   // string starting at the specified offset.
   const DWORD offset = device_descriptor->SerialNumberOffset;
-  if (offset >= output_buf.size())
+  if (offset >= output_buf.size()) {
     return std::string();
+  }
 
   // Make sure that the null-terminator exists.
   const std::vector<int8_t>::iterator serial_number_begin =
       output_buf.begin() + offset;
   const std::vector<int8_t>::iterator null_location =
       std::find(serial_number_begin, output_buf.end(), '\0');
-  if (null_location == output_buf.end())
+  if (null_location == output_buf.end()) {
     return std::string();
+  }
 
   const char* serial_number =
       reinterpret_cast<const char*>(&output_buf[offset]);

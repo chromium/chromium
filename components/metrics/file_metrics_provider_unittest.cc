@@ -757,8 +757,9 @@ TEST_P(FileMetricsProviderTest, AccessCountLimitedDirectory) {
 
 TEST_P(FileMetricsProviderTest, AccessSizeLimitedDirectory) {
   // This only works with large files that are big enough to count.
-  if (!create_large_files_)
+  if (!create_large_files_) {
     return;
+  }
 
   ASSERT_FALSE(PathExists(metrics_file()));
 

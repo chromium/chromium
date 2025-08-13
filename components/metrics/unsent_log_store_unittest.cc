@@ -288,14 +288,15 @@ TEST_F(UnsentLogStoreTest, LongAndLargeLogList) {
   std::string log_data = GenerateLogWithMinCompressedSize(log_size);
   LogMetadata log_metadata;
   for (size_t i = 0; i < log_count; ++i) {
-    if (i == log_count - kLogCountLimit)
+    if (i == log_count - kLogCountLimit) {
       unsent_log_store.StoreLog(
           target_log, log_metadata,
           MetricsLogsEventManager::CreateReason::kUnknown);
-    else
+    } else {
       unsent_log_store.StoreLog(
           log_data, log_metadata,
           MetricsLogsEventManager::CreateReason::kUnknown);
+    }
   }
 
   unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);

@@ -24,8 +24,9 @@ DelegatingProvider::GetProviders() {
 }
 
 void DelegatingProvider::Init() {
-  for (auto& provider : metrics_providers_)
+  for (auto& provider : metrics_providers_) {
     provider->Init();
+  }
 }
 
 void DelegatingProvider::AsyncInit(base::OnceClosure done_callback) {
@@ -37,28 +38,33 @@ void DelegatingProvider::AsyncInit(base::OnceClosure done_callback) {
 }
 
 void DelegatingProvider::OnDidCreateMetricsLog() {
-  for (auto& provider : metrics_providers_)
+  for (auto& provider : metrics_providers_) {
     provider->OnDidCreateMetricsLog();
+  }
 }
 
 void DelegatingProvider::OnRecordingEnabled() {
-  for (auto& provider : metrics_providers_)
+  for (auto& provider : metrics_providers_) {
     provider->OnRecordingEnabled();
+  }
 }
 
 void DelegatingProvider::OnRecordingDisabled() {
-  for (auto& provider : metrics_providers_)
+  for (auto& provider : metrics_providers_) {
     provider->OnRecordingDisabled();
+  }
 }
 
 void DelegatingProvider::OnClientStateCleared() {
-  for (auto& provider : metrics_providers_)
+  for (auto& provider : metrics_providers_) {
     provider->OnClientStateCleared();
+  }
 }
 
 void DelegatingProvider::OnAppEnterBackground() {
-  for (auto& provider : metrics_providers_)
+  for (auto& provider : metrics_providers_) {
     provider->OnAppEnterBackground();
+  }
 }
 
 void DelegatingProvider::OnPageLoadStarted() {
@@ -92,44 +98,51 @@ bool DelegatingProvider::HasPreviousSessionData() {
   // response) in case they do any kind of setup work in preparation for
   // the later call to RecordInitialHistogramSnapshots().
   bool has_stability_metrics = false;
-  for (auto& provider : metrics_providers_)
+  for (auto& provider : metrics_providers_) {
     has_stability_metrics |= provider->HasPreviousSessionData();
+  }
 
   return has_stability_metrics;
 }
 
 void DelegatingProvider::ProvidePreviousSessionData(
     ChromeUserMetricsExtension* uma_proto) {
-  for (const auto& provider : metrics_providers_)
+  for (const auto& provider : metrics_providers_) {
     provider->ProvidePreviousSessionData(uma_proto);
+  }
 }
 
 void DelegatingProvider::ProvideCurrentSessionData(
     ChromeUserMetricsExtension* uma_proto) {
-  for (const auto& provider : metrics_providers_)
+  for (const auto& provider : metrics_providers_) {
     provider->ProvideCurrentSessionData(uma_proto);
+  }
 }
 
 void DelegatingProvider::ProvideCurrentSessionUKMData() {
-  for (const auto& provider : metrics_providers_)
+  for (const auto& provider : metrics_providers_) {
     provider->ProvideCurrentSessionUKMData();
+  }
 }
 
 void DelegatingProvider::ClearSavedStabilityMetrics() {
-  for (auto& provider : metrics_providers_)
+  for (auto& provider : metrics_providers_) {
     provider->ClearSavedStabilityMetrics();
+  }
 }
 
 void DelegatingProvider::RecordHistogramSnapshots(
     base::HistogramSnapshotManager* snapshot_manager) {
-  for (auto& provider : metrics_providers_)
+  for (auto& provider : metrics_providers_) {
     provider->RecordHistogramSnapshots(snapshot_manager);
+  }
 }
 
 void DelegatingProvider::RecordInitialHistogramSnapshots(
     base::HistogramSnapshotManager* snapshot_manager) {
-  for (auto& provider : metrics_providers_)
+  for (auto& provider : metrics_providers_) {
     provider->RecordInitialHistogramSnapshots(snapshot_manager);
+  }
 }
 
 }  // namespace metrics

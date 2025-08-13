@@ -45,8 +45,9 @@ bool HasDateChangedSinceLastCall(PrefService* prefs, const char* pref_name) {
   DCHECK(prefs);
   DCHECK(pref_name);
   base::Time now = base::Time::Now();
-  if (IsStoredDateToday(prefs, pref_name, now))
+  if (IsStoredDateToday(prefs, pref_name, now)) {
     return false;
+  }
   UpdateStoredDate(prefs, pref_name, now);
   return true;
 }

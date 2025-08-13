@@ -78,8 +78,9 @@ void ReportingService::Stop() {
 
 void ReportingService::EnableReporting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (reporting_active_)
+  if (reporting_active_) {
     return;
+  }
   reporting_active_ = true;
   Start();
 }
@@ -216,8 +217,9 @@ void ReportingService::SendNextLog() {
 void ReportingService::SendStagedLog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(log_store()->has_staged_log());
-  if (!log_store()->has_staged_log())
+  if (!log_store()->has_staged_log()) {
     return;
+  }
 
   CHECK(!log_upload_in_progress_);
   log_upload_in_progress_ = true;
@@ -314,8 +316,9 @@ void ReportingService::OnLogUploadComplete(
     }
 
     if (discard_log) {
-      if (upload_succeeded)
+      if (upload_succeeded) {
         log_store()->MarkStagedLogAsSent();
+      }
 
       log_store()->DiscardStagedLog(discard_reason);
       // Store the updated list to disk now that the removed log is uploaded.
