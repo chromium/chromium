@@ -25,7 +25,8 @@ class PermissionsAiv4Handler;
 class PredictionModelHandlerProvider : public KeyedService {
  public:
   explicit PredictionModelHandlerProvider(
-      OptimizationGuideKeyedService* optimization_guide);
+      OptimizationGuideKeyedService* optimization_guide,
+      passage_embeddings::Embedder* passage_embedder);
   ~PredictionModelHandlerProvider() override;
   PredictionModelHandlerProvider(const PredictionModelHandlerProvider&) =
       delete;
@@ -64,8 +65,7 @@ class PredictionModelHandlerProvider : public KeyedService {
   std::unique_ptr<PermissionsAiv4Handler> geolocation_aiv4_handler_;
   // This embedder is required to preprocess the inner_text to create the
   // embeddings we use for the AIv4 tflite model as input.
-  std::optional<raw_ptr<passage_embeddings::Embedder>>
-      passage_embedder_for_testing;
+  raw_ptr<passage_embeddings::Embedder> passage_embedder_;
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 };
 }  // namespace permissions
