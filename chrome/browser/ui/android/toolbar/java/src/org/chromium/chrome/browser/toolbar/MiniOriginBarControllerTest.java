@@ -73,7 +73,7 @@ public class MiniOriginBarControllerTest {
     @Mock private WebContentsImpl mWebContents;
     @Mock private ImeAdapterImpl mImeAdapter;
     @Captor ArgumentCaptor<TouchEventObserver> mTouchEventObserverCaptor;
-    @Captor private ArgumentCaptor<FrameLayout.LayoutParams> mLayoutParamsCaptor;
+    @Captor private ArgumentCaptor<CoordinatorLayout.LayoutParams> mLayoutParamsCaptor;
 
     private Context mContext;
     private final CoordinatorLayout.LayoutParams mControlContainerLayoutParams =

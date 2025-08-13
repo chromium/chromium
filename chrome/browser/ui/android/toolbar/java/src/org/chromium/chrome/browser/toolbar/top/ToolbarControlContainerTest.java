@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbar
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter.ToolbarInMotionStage;
-import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceFrameLayout;
+import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceCoordinatorLayout;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.ui.base.TestActivity;
@@ -540,7 +540,7 @@ public class ToolbarControlContainerTest {
         verify(mToolbarView).setVisibility(View.GONE);
         verify(mToolbarView).removeView(mLocationBarView);
         assertEquals(Color.RED, ((ColorDrawable) controlContainer.getBackground()).getColor());
-        ToolbarViewResourceFrameLayout toolbarViewResourceFrameLayout =
+        ToolbarViewResourceCoordinatorLayout toolbarViewResourceFrameLayout =
                 controlContainer.getToolbarContainerForTesting();
         assertEquals(
                 mLocationBarView,
@@ -573,7 +573,7 @@ public class ToolbarControlContainerTest {
                 mBrowserStateBrowserControlsVisibilityDelegate,
                 mLayoutStateProviderSupplier,
                 mFullscreenManager);
-        ToolbarControlContainer.ToolbarViewResourceFrameLayout toolbarContainer =
+        ToolbarControlContainer.ToolbarViewResourceCoordinatorLayout toolbarContainer =
                 controlContainer.findViewById(R.id.toolbar_container);
         toolbarContainer.setVisibility(View.GONE);
 

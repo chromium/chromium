@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsAnimationCompat.BoundsCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -298,8 +299,8 @@ public class MiniOriginBarController implements Observer {
                         + mContext.getResources()
                                 .getDimensionPixelSize(R.dimen.toolbar_hairline_height);
         var minifiedLayoutParams =
-                new FrameLayout.LayoutParams(
-                        LayoutParams.WRAP_CONTENT, newLocationBarHeight, Gravity.CENTER_VERTICAL);
+                new CoordinatorLayout.LayoutParams(LayoutParams.WRAP_CONTENT, newLocationBarHeight);
+        minifiedLayoutParams.gravity = Gravity.CENTER_VERTICAL;
 
         var locationBarView = mLocationBar.getContainerView();
         locationBarView.setLayoutParams(minifiedLayoutParams);

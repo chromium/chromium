@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -538,20 +537,20 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
         // Commit the new layer sizes and visibilities we calculated above to avoid inconsistency.
         mBottomControlsStacker.requestLayerUpdate(false);
-        FrameLayout.LayoutParams hairlineLayoutParams =
+        CoordinatorLayout.LayoutParams hairlineLayoutParams =
                 mControlContainer.mutateHairlineLayoutParams();
-        hairlineLayoutParams.topMargin =
-                newControlsPosition == ControlsPosition.TOP ? controlContainerHeight : 0;
-        hairlineLayoutParams.bottomMargin =
-                newControlsPosition == ControlsPosition.BOTTOM ? controlContainerHeight : 0;
+        hairlineLayoutParams.anchorGravity =
+                newControlsPosition == ControlsPosition.TOP ? Gravity.BOTTOM : Gravity.TOP;
         LayoutParams layoutParams = mControlContainer.mutateLayoutParams();
         int verticalGravity =
                 newControlsPosition == ControlsPosition.TOP ? Gravity.TOP : Gravity.BOTTOM;
         layoutParams.gravity = Gravity.START | verticalGravity;
-        FrameLayout.LayoutParams toolbarLayoutParams =
+        CoordinatorLayout.LayoutParams toolbarLayoutParams =
                 mControlContainer.mutateToolbarLayoutParams();
         toolbarLayoutParams.topMargin =
                 newControlsPosition == ControlsPosition.BOTTOM ? mHairlineHeight : 0;
+        toolbarLayoutParams.bottomMargin =
+                newControlsPosition == ControlsPosition.BOTTOM ? 0 : mHairlineHeight;
     }
 
     @VisibleForTesting
@@ -657,12 +656,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             mControlContainerHeight = mControlContainer.getToolbarHeight();
         } else {
             mControlContainerHeight = height;
-        }
-
-        if (assumeNonNull(mCurrentPosition.get()) == ControlsPosition.BOTTOM) {
-            mControlContainer.mutateHairlineLayoutParams().bottomMargin = mControlContainerHeight;
-        } else {
-            mControlContainer.mutateHairlineLayoutParams().topMargin = mControlContainerHeight;
         }
 
         mBottomControlsStacker.requestLayerUpdate(false);

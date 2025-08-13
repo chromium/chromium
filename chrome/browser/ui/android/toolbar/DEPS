@@ -3,6 +3,7 @@ include_rules = [
   "+cc/input/android/java/src/org/chromium/cc/input/OffsetTag.java",
   "+chrome/android/features/tab_ui/public",
   "+components/browser_ui/edge_to_edge/android",
+  "+components/browser_ui/widget/android",
   "+components/browser_ui/styles/android",
   "+components/dom_distiller/core/android",
   "+components/embedder_support/android",
