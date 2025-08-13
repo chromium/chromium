@@ -463,6 +463,36 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
         base::HeapArray<uint8_t>::CopiedFrom(side_data);
   }
 
+  if (decrypt_config) {
+    buffer->set_decrypt_config(std::move(decrypt_config));
+  }
+
+  if (packet->duration >= 0) {
+    // Treat durations under 1ms as not having duration, later stages of the
+    // pipeline will then use the timestamps to estimate duration. Incorrect
+    // duration information can lead to stuttering effects during seeking. See
+    // https://crbug.com/397343886.
+    auto d = ConvertStreamTimestamp(stream_->time_base, packet->duration);
+    buffer->set_duration(d <= base::Milliseconds(1) ? kNoTimestamp : d);
+  } else {
+    // TODO(wolenetz): Remove when FFmpeg stops returning negative durations.
+    // https://crbug.com/394418
+    DVLOG(1) << "FFmpeg returned a buffer with a negative duration! "
+             << packet->duration;
+    buffer->set_duration(kNoTimestamp);
+  }
+
+  // Note: If pts is kNoFFmpegTimestamp, stream_timestamp will be kNoTimestamp.
+  const base::TimeDelta stream_timestamp =
+      ConvertStreamTimestamp(stream_->time_base, packet->pts);
+
+  if (stream_timestamp == kNoTimestamp ||
+      stream_timestamp == kInfiniteDuration) {
+    MEDIA_LOG(ERROR, media_log_) << "FFmpegDemuxer: PTS is not defined";
+    demuxer_->NotifyDemuxerError(DEMUXER_ERROR_COULD_NOT_PARSE);
+    return;
+  }
+
   size_t skip_samples_size = 0;
   const uint32_t* skip_samples_ptr =
       reinterpret_cast<const uint32_t*>(av_packet_get_side_data(
@@ -497,40 +527,25 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
       DCHECK(is_audio);
       const int samples_per_second =
           audio_decoder_config().samples_per_second();
+      auto front_discard =
+          FramesToTimeDelta(discard_front_samples, samples_per_second);
       buffer->set_discard_padding(std::make_pair(
-          FramesToTimeDelta(discard_front_samples, samples_per_second),
+          front_discard,
           FramesToTimeDelta(discard_end_samples, samples_per_second)));
+
+      // In cases where the first buffer has a discard which spans multiple
+      // packets (or we just can't tell), treat negative timestamps as being
+      // dropped. Duration may be inaccurate, so instead of tracking a total
+      // amount discarded (like AudioDiscardHelper does post-decode), just flag
+      // that any negative timestamps should be treated as partially discarded.
+      if (front_discard > buffer->duration() ||
+          buffer->duration() == kNoTimestamp) {
+        // We add one millisecond of padding to adjust for inaccurate durations
+        // and rounding errors which might occur with FramesToTimeDelta().
+        fixup_negative_timestamps_until_ =
+            stream_timestamp + front_discard + base::Milliseconds(1);
+      }
     }
-  }
-
-  if (decrypt_config) {
-    buffer->set_decrypt_config(std::move(decrypt_config));
-  }
-
-  if (packet->duration >= 0) {
-    // Treat durations under 1ms as not having duration, later stages of the
-    // pipeline will then use the timestamps to estimate duration. Incorrect
-    // duration information can lead to stuttering effects during seeking. See
-    // https://crbug.com/397343886.
-    auto d = ConvertStreamTimestamp(stream_->time_base, packet->duration);
-    buffer->set_duration(d <= base::Milliseconds(1) ? kNoTimestamp : d);
-  } else {
-    // TODO(wolenetz): Remove when FFmpeg stops returning negative durations.
-    // https://crbug.com/394418
-    DVLOG(1) << "FFmpeg returned a buffer with a negative duration! "
-             << packet->duration;
-    buffer->set_duration(kNoTimestamp);
-  }
-
-  // Note: If pts is kNoFFmpegTimestamp, stream_timestamp will be kNoTimestamp.
-  const base::TimeDelta stream_timestamp =
-      ConvertStreamTimestamp(stream_->time_base, packet->pts);
-
-  if (stream_timestamp == kNoTimestamp ||
-      stream_timestamp == kInfiniteDuration) {
-    MEDIA_LOG(ERROR, media_log_) << "FFmpegDemuxer: PTS is not defined";
-    demuxer_->NotifyDemuxerError(DEMUXER_ERROR_COULD_NOT_PARSE);
-    return;
   }
 
   // If this file has negative timestamps don't rebase any other stream types
@@ -561,7 +576,8 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
   if (is_audio) {
     // Fixup negative timestamps where the before-zero portion is completely
     // discarded after decoding.
-    if (buffer->timestamp().is_negative()) {
+    if (buffer->timestamp().is_negative() && buffer->discard_padding() &&
+        buffer->discard_padding()->first != kInfiniteDuration) {
       // Discard padding may also remove samples after zero.
       auto discard_padding = buffer->discard_padding();
       auto fixed_ts = (discard_padding.has_value() ? discard_padding->first
@@ -576,6 +592,15 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
       if (fixed_ts >= base::TimeDelta()) {
         buffer->set_timestamp(fixed_ts);
       }
+    }
+
+    // Treat this buffer as if it was partially discarded by a front discard
+    // indicated by a previous packet.
+    if (fixup_negative_timestamps_until_ &&
+        stream_timestamp < fixup_negative_timestamps_until_.value() &&
+        last_packet_timestamp_ != kNoTimestamp &&
+        buffer->timestamp().is_negative()) {
+      buffer->set_timestamp(last_packet_timestamp_);
     }
 
     // Only allow negative timestamps past if we know they'll be fixed up by the
@@ -724,6 +749,7 @@ void FFmpegDemuxerStream::FlushBuffers(bool preserve_packet_position) {
   end_of_stream_ = false;
   last_packet_timestamp_ = kNoTimestamp;
   last_packet_duration_ = kNoTimestamp;
+  fixup_negative_timestamps_until_.reset();
   aborted_ = false;
 }
 
