@@ -228,10 +228,14 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_showSettings {
+  NSString* titleID = @"IDS_IOS_KEYBOARD_SHOW_SETTINGS";
+  if (@available(iOS 26, *)) {
+    titleID = @"IDS_IOS_KEYBOARD_SETTINGS";
+  }
   return [self cr_commandWithInput:@","
                      modifierFlags:Command
                             action:@selector(keyCommand_showSettings)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_SHOW_SETTINGS"];
+                   titleIDAsString:titleID];
 }
 
 + (UIKeyCommand*)cr_stop {

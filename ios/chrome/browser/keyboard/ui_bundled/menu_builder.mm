@@ -23,10 +23,15 @@
   }
 
   if (@available(iOS 26, *)) {
-    // Application: Remove the Application menu, as it contains a system entry
-    // to open the Settings app, as it conflicts with the in-app settings key
-    // command.
-    [builder removeMenuForIdentifier:UIMenuApplication];
+    // Application: Add elements.
+    NSArray<UIMenuElement*>* applicationElements = @[
+      UIKeyCommand.cr_showSettings,
+      UIKeyCommand.cr_clearBrowsingData,
+    ];
+    [builder replaceChildrenOfMenuForIdentifier:UIMenuApplication
+                              fromChildrenBlock:^(NSArray<UIMenuElement*>* _) {
+                                return applicationElements;
+                              }];
 
     // File: Add elements.
     NSArray<UIMenuElement*>* fileElements = @[
@@ -75,7 +80,6 @@
                UIKeyCommand.cr_forward,
                UIKeyCommand.cr_reopenLastClosedTab,
                UIKeyCommand.cr_showHistory,
-               UIKeyCommand.cr_clearBrowsingData,
              ]];
     [builder insertSiblingMenu:historyMenu afterMenuForIdentifier:UIMenuView];
 
@@ -100,7 +104,6 @@
       UIKeyCommand.cr_select3,
       UIKeyCommand.cr_select9,
       UIKeyCommand.cr_showDownloads,
-      UIKeyCommand.cr_showSettings,
     ];
     [self insertElements:windowElements
         atStartOfMenuForIdentifier:UIMenuWindow
