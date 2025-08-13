@@ -190,6 +190,7 @@ void PasswordChangeToast::UpdateLayout(ToastOptions configuration) {
   close_button_->SetVisible(configuration.has_close_button);
 
   layout_manager_->SetInteriorMargin(CalculateInteriorMargin());
+  GetViewAccessibility().AnnounceText(configuration.text);
 }
 
 gfx::Insets PasswordChangeToast::CalculateInteriorMargin() {
