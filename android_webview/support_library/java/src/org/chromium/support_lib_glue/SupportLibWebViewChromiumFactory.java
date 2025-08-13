@@ -119,7 +119,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.WARM_UP_RENDERER_PROCESS,
                 Features.EXTRA_HEADER_FOR_ORIGINS,
                 Features.BACK_FORWARD_CACHE_SETTINGS,
-                Features.PRECONNECT + Features.DEV_SUFFIX,
+                Features.PRECONNECT,
                 Features.HYPERLINK_CONTEXT_MENU_ITEMS + Features.DEV_SUFFIX,
                 Features.ASYNC_WEBVIEW_STARTUP_ASYNC_STARTUP_LOCATIONS + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
