@@ -31,15 +31,10 @@ html {
   }
 }
 
-
- body {
-     margin: 16px;
- }
-
- img {
-    width: 100%;
-    height: auto;
- }
+img {
+  width: 100%;
+  height: auto;
+}
 
 /* Margins and paddings. */
 
@@ -51,24 +46,28 @@ article, h1, h2, h3, p, figure, div, ul, ol, li {
 /*
   GENERAL RULE: Apply vertical spacing between sibling elements within an
   article. This rule targets direct children of the <article> itself, as well
-  as children inside any <div>, <ul>, or <ol> containers, no matter how
-  deeply they are nested.
+  as children inside any <div> no matter how deeply they are nested.
 */
 article > * + *,
-article :is(div, section, ul, ol) > * + * {
+article :is(section, div) > * + * {
   margin-top: 1.5rem; /* 24dp */
 }
 
 /*
-  EXCEPTION: Use tighter spacing for a paragraph that immediately follows a
-  heading. Because this selector is more specific, it will correctly
-  override the general rule above.
+  EXCEPTION: Use tighter spacing for the following:
+  - A paragraph that immediately follows a heading.
+  - Contents of lists, and figures.
 */
 article h1 + p,
 article h2 + p,
-article h3 + p {
-  margin-top: 0.75rem; /* ~12dp */
+article h3 + p,
+article h4 + p,
+article h5 + p,
+article h6 + p,
+article :is(ul, ol, figure) * {
+  margin-top: 0.75rem !important; /* 12dp */
 }
+
 /* Text rules. */
 
 html {
