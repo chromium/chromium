@@ -10,7 +10,6 @@
 #include <variant>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
@@ -107,8 +106,7 @@ KioskIwaUpdateData::KioskIwaUpdateData(
 KioskIwaUpdateData::~KioskIwaUpdateData() = default;
 
 std::optional<web_package::SignedWebBundleId> GetCurrentKioskIwaBundleId() {
-  if (!ash::features::IsIsolatedWebAppKioskEnabled() ||
-      !chromeos::IsIwaKioskSession()) {
+  if (!chromeos::IsIwaKioskSession()) {
     return std::nullopt;
   }
 
@@ -123,8 +121,7 @@ std::optional<web_package::SignedWebBundleId> GetCurrentKioskIwaBundleId() {
 }
 
 std::optional<KioskIwaUpdateData> GetCurrentKioskIwaUpdateData() {
-  if (!ash::features::IsIsolatedWebAppKioskEnabled() ||
-      !chromeos::IsIwaKioskSession()) {
+  if (!chromeos::IsIwaKioskSession()) {
     return std::nullopt;
   }
 

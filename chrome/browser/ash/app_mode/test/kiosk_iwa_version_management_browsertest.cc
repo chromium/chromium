@@ -8,14 +8,12 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/test/gmock_expected_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
@@ -288,8 +286,7 @@ class KioskIwaVersionManagementBaseTest
       base::OnceCallback<KioskMixin::Config(const GURL& update_manifest_url)>;
 
   explicit KioskIwaVersionManagementBaseTest(ConfigCreator config_creator)
-      : feature_list_(ash::features::kIsolatedWebAppKiosk),
-        iwa_server_mixin_(&mixin_host_),
+      : iwa_server_mixin_(&mixin_host_),
         kiosk_mixin_(&mixin_host_,
                      std::move(config_creator).Run(GetUpdateManifestUrl())) {
     // Prevents a race condition (often in debug builds) where a network service
@@ -351,7 +348,6 @@ class KioskIwaVersionManagementBaseTest
         ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE, cache_root_dir_);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   web_app::IsolatedWebAppUpdateServerMixin iwa_server_mixin_;
   KioskMixin kiosk_mixin_;
   base::FilePath cache_root_dir_;

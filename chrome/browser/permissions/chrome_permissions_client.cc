@@ -148,8 +148,7 @@ std::optional<url::Origin> GetCurrentKioskOrigin() {
     return url::Origin::Create(app_data->install_url());
   }
 
-  if (ash::features::IsIsolatedWebAppKioskEnabled() &&
-      chromeos::IsIwaKioskSession()) {
+  if (chromeos::IsIwaKioskSession()) {
     const AccountId& account_id =
         user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
     const ash::KioskIwaData* iwa_data =

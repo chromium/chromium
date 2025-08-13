@@ -1680,11 +1680,6 @@ BASE_FEATURE(kIppFirstSetupForUsbPrinters,
              "IppFirstSetupForUsbPrinters",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Kiosk sessions with Isolated Web Apps.
-BASE_FEATURE(kIsolatedWebAppKiosk,
-             "IsolatedWebAppKiosk",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables correct handling of the function key row in Japanese.
 BASE_FEATURE(kJapaneseFunctionRow,
              "JapaneseFunctionRow",
@@ -3902,10 +3897,6 @@ bool IsInternalServerSideSpeechRecognitionEnabledByFinch() {
 
 bool IsIppClientInfoEnabled() {
   return base::FeatureList::IsEnabled(kIppClientInfo);
-}
-
-bool IsIsolatedWebAppKioskEnabled() {
-  return base::FeatureList::IsEnabled(kIsolatedWebAppKiosk);
 }
 
 bool IsJupiterScreensaverEnabled() {

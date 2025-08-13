@@ -9,7 +9,6 @@
 #include <string_view>
 #include <tuple>
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -209,13 +208,12 @@ class KioskIwaDeviceAttributesApiTest
   void InitFeatureList() {
     if (IsDeviceAttributesPermissionPolicyFeatureFlagEnabled()) {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{ash::features::kIsolatedWebAppKiosk,
-                                blink::features::
+          /*enabled_features=*/{blink::features::
                                     kDeviceAttributesPermissionPolicy},
           /*disabled_features=*/{});
     } else {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{ash::features::kIsolatedWebAppKiosk},
+          /*enabled_features=*/{},
           /*disabled_features=*/{
               blink::features::kDeviceAttributesPermissionPolicy});
     }

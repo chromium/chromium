@@ -7,9 +7,7 @@
 #include <string_view>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/strings/string_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -203,8 +201,6 @@ class KioskIwaPermissionsBaseTest : public MixinBasedInProcessBrowserTest {
                                              GetTestWebBundleId().id(),
                                              /*port=*/0);
 
-  base::test::ScopedFeatureList feature_list_{
-      ash::features::kIsolatedWebAppKiosk};
   web_app::IsolatedWebAppUpdateServerMixin iwa_server_mixin_{&mixin_host_};
   KioskMixin kiosk_{
       &mixin_host_,

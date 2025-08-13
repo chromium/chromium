@@ -4,8 +4,6 @@
 
 #include <string_view>
 
-#include "ash/constants/ash_features.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
@@ -60,8 +58,6 @@ class KioskIwaTest : public MixinBasedInProcessBrowserTest {
   KioskIwaTest& operator=(const KioskIwaTest&) = delete;
 
  protected:
-  base::test::ScopedFeatureList feature_list_{
-      ash::features::kIsolatedWebAppKiosk};
   web_app::IsolatedWebAppUpdateServerMixin iwa_server_mixin_{&mixin_host_};
   KioskMixin kiosk_{&mixin_host_,
                     GetKioskIwaConfig(iwa_server_mixin_.GetUpdateManifestUrl(

@@ -39,7 +39,6 @@ static_library("policy_util") {
   ]
   public_deps = []
   deps = [
-    "//ash/constants",
     "//chrome/browser/ash/policy/core",
     "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",

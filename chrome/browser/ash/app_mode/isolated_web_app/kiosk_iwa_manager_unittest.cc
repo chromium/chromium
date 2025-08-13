@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -117,9 +116,9 @@ class MockKioskAppManagerObserver : public KioskAppManagerObserver {
 
 }  // namespace
 
-class KioskIwaManagerBaseTest : public testing::Test {
+class KioskIwaManagerTest : public testing::Test {
  public:
-  KioskIwaManagerBaseTest()
+  KioskIwaManagerTest()
       : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
         iwa_manager_(
             CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state())) {
@@ -127,7 +126,7 @@ class KioskIwaManagerBaseTest : public testing::Test {
     iwa_manager().AddObserver(&observer());
   }
 
-  ~KioskIwaManagerBaseTest() override {
+  ~KioskIwaManagerTest() override {
     task_environment_.RunUntilIdle();
     iwa_manager().RemoveObserver(&observer());
   }
@@ -152,16 +151,6 @@ class KioskIwaManagerBaseTest : public testing::Test {
         ash::kAccountsPrefDeviceLocalAccountAutoLoginDelay, 0);
   }
 
-  void DisableFeatureSwitch() {
-    scoped_feature_list_.InitAndDisableFeature(
-        ash::features::kIsolatedWebAppKiosk);
-  }
-
-  void EnableFeatureSwitch() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kIsolatedWebAppKiosk);
-  }
-
   MockKioskAppManagerObserver& observer() { return observer_; }
   KioskIwaManager& iwa_manager() { return iwa_manager_; }
 
@@ -175,29 +164,6 @@ class KioskIwaManagerBaseTest : public testing::Test {
 
   MockKioskAppManagerObserver observer_;
   KioskIwaManager iwa_manager_;
-};
-
-class KioskIwaManagerFeatureOffTest : public KioskIwaManagerBaseTest {
-  void SetUp() override {
-    DisableFeatureSwitch();
-    SetDefaultTestAccount(/*with_autolaunch=*/true);
-  }
-};
-
-TEST_F(KioskIwaManagerFeatureOffTest, GetInstance) {
-  KioskIwaManager* iwa_manager_ptr = KioskIwaManager::Get();
-  ASSERT_NE(iwa_manager_ptr, nullptr);
-  ASSERT_EQ(iwa_manager_ptr, &iwa_manager());
-}
-
-TEST_F(KioskIwaManagerFeatureOffTest, ReturnsEmptyResults) {
-  EXPECT_TRUE(iwa_manager().GetApps().empty());
-  EXPECT_EQ(iwa_manager().GetApp(kExpectedIwaKioskAccountId), nullptr);
-  EXPECT_EQ(iwa_manager().GetAutoLaunchAccountId(), std::nullopt);
-}
-
-class KioskIwaManagerTest : public KioskIwaManagerBaseTest {
-  void SetUp() override { EnableFeatureSwitch(); }
 };
 
 TEST_F(KioskIwaManagerTest, GetInstance) {

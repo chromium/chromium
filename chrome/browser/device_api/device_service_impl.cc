@@ -40,7 +40,6 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_data.h"
@@ -78,8 +77,7 @@ std::optional<url::Origin> MaybeGetCurrentKioskOrigin() {
   if (chromeos::IsWebKioskSession()) {
     return GetWebKioskOrigin();
   }
-  if (ash::features::IsIsolatedWebAppKioskEnabled() &&
-      chromeos::IsIwaKioskSession()) {
+  if (chromeos::IsIwaKioskSession()) {
     return GetIwaKioskOrigin();
   }
   return std::nullopt;
