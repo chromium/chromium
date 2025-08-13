@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -210,7 +211,8 @@ public class MultiInstanceManagerApi31Test {
                                 "Activity tab should be non-null.",
                                 activity.getActivityTab(),
                                 notNullValue()));
-        ChromeTabUtils.loadUrlOnUiThread(activity.getActivityTab(), UrlConstants.GOOGLE_URL);
+        Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab());
+        ChromeTabUtils.loadUrlOnUiThread(tab, UrlConstants.GOOGLE_URL);
         return activity;
     }
 

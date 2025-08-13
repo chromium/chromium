@@ -344,12 +344,12 @@ public class BookmarkBarTest {
     }
 
     private @Nullable Tab getCurrentTab() {
-        return mCtaTestRule.getActivity().getActivityTab();
+        return mCtaTestRule.getActivityTab();
     }
 
     private @Nullable Tab getLastTab() {
         final var tabModel = mCtaTestRule.getActivity().getCurrentTabModel();
-        return tabModel.getTabAt(tabModel.getCount() - 1);
+        return ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(tabModel.getCount() - 1));
     }
 
     private @NonNull GURL getTestServerUrl(@NonNull String relativeUrl) {

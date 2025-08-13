@@ -231,7 +231,7 @@ public class SensitiveContentTest {
     @MediumTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     public void testTabHasSensitiveContentAttributeIsUpdated() {
-        final Tab tab = mCtaTestRule.getActivity().getActivityTab();
+        final Tab tab = mCtaTestRule.getActivityTab();
         assertFalse(tab.getTabHasSensitiveContent());
 
         CtaPageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
@@ -656,7 +656,7 @@ public class SensitiveContentTest {
     }
 
     private View getContentViewOfCurrentTab() {
-        return mCtaTestRule.getActivity().getActivityTab().getContentView();
+        return mCtaTestRule.getActivityTab().getContentView();
     }
 
     private void initializeLayoutManagerPhone(

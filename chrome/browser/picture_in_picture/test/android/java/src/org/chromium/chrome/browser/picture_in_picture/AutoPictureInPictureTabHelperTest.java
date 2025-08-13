@@ -334,7 +334,7 @@ public class AutoPictureInPictureTabHelperTest {
         String url = mActivityTestRule.getTestServer().getURL(pageUrl);
         mPage = mPage.loadWebPageProgrammatically(url);
 
-        WebContents webContents = mActivity.getCurrentWebContents();
+        WebContents webContents = mActivityTestRule.getWebContents();
         AutoPictureInPictureTabHelperTestUtils.initializeForTesting(webContents);
         return webContents;
     }

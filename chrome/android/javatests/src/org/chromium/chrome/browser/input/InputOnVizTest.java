@@ -139,8 +139,7 @@ public class InputOnVizTest {
 
     @Test
     public void handlesOverscrollsWithInputVizard() throws Exception {
-        TabLoadObserver observer =
-                new TabLoadObserver(mActivityTestRule.getActivity().getActivityTab());
+        TabLoadObserver observer = new TabLoadObserver(mActivityTestRule.getActivityTab());
         observer.fullyLoadUrl(mLongHtmlTestPageUri);
 
         UserActionTester userActionTester = new UserActionTester();
@@ -151,8 +150,7 @@ public class InputOnVizTest {
                                 TransferInputToVizResult.SUCCESSFULLY_TRANSFERRED)
                         .build();
 
-        WebContentsUtils.waitForCopyableViewInWebContents(
-                mActivityTestRule.getActivity().getActivityTab().getWebContents());
+        WebContentsUtils.waitForCopyableViewInWebContents(mActivityTestRule.getWebContents());
 
         // Scrolling down should trigger refresh effect on the page.
         UiAutomatorUtils.getInstance().swipeDownVertically(0.6f);

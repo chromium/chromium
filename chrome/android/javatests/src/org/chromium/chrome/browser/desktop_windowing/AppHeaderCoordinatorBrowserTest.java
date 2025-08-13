@@ -388,7 +388,7 @@ public class AppHeaderCoordinatorBrowserTest {
                 mActivityTestRule
                         .getTestServer()
                         .getURL("/chrome/test/data/android/page_with_editable.html"));
-        DOMUtils.clickNode(activity.getActivityTab().getWebContents(), TEXTFIELD_DOM_ID);
+        DOMUtils.clickNode(mActivityTestRule.getWebContents(), TEXTFIELD_DOM_ID);
         CriteriaHelper.pollUiThread(
                 () -> {
                     boolean isKeyboardShowing =
@@ -414,8 +414,7 @@ public class AppHeaderCoordinatorBrowserTest {
 
         // Remove input field focus to hide the keyboard.
         JavaScriptUtils.executeJavaScript(
-                activity.getActivityTab().getWebContents(),
-                "document.querySelector('input').blur()");
+                mActivityTestRule.getWebContents(), "document.querySelector('input').blur()");
 
         // Verify that the root view bottom padding uses the nav bar bottom inset.
         CriteriaHelper.pollUiThread(
@@ -459,7 +458,7 @@ public class AppHeaderCoordinatorBrowserTest {
                 mActivityTestRule
                         .getTestServer()
                         .getURL("/chrome/test/data/android/page_with_editable.html"));
-        DOMUtils.clickNode(activity.getActivityTab().getWebContents(), TEXTFIELD_DOM_ID);
+        DOMUtils.clickNode(mActivityTestRule.getWebContents(), TEXTFIELD_DOM_ID);
         CriteriaHelper.pollUiThread(
                 () -> {
                     boolean isKeyboardShowing =
@@ -481,8 +480,7 @@ public class AppHeaderCoordinatorBrowserTest {
 
         // Remove input field focus to hide the keyboard.
         JavaScriptUtils.executeJavaScript(
-                activity.getActivityTab().getWebContents(),
-                "document.querySelector('input').blur()");
+                mActivityTestRule.getWebContents(), "document.querySelector('input').blur()");
 
         // Verify that the root view is not padded by any inset because it has been handled
         // by E2E controller.

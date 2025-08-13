@@ -78,7 +78,7 @@ public class BookmarkTabletTest {
                 mActivityTestRule.getActivity().findViewById(R.id.selectable_list_recycler_view);
         mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
         mBookmarkManagerCoordinator =
-                ((BookmarkPage) mActivityTestRule.getActivity().getActivityTab().getNativePage())
+                ((BookmarkPage) mActivityTestRule.getActivityTab().getNativePage())
                         .getManagerForTesting();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -110,7 +110,7 @@ public class BookmarkTabletTest {
     @Test
     @MediumTest
     public void switchBetweenTabs_editVisibility() throws Exception {
-        Tab bookmarksTab = mActivityTestRule.getActivity().getActivityTab();
+        Tab bookmarksTab = mActivityTestRule.getActivityTab();
         openBookmarkManager();
         BookmarkTestUtil.openMobileBookmarks(
                 mItemsContainer,

@@ -377,7 +377,7 @@ public class EdgeToEdgeInstrumentationTest {
                         + "opted in.",
                 Color.TRANSPARENT,
                 mActivity.getWindow().getNavigationBarColor());
-        assertNavigationBarColor(mActivity.getActivityTab().getBackgroundColor());
+        assertNavigationBarColor(mActivityTestRule.getActivityTab().getBackgroundColor());
 
         TabUiTestHelper.enterTabSwitcher(mActivity);
         assertEquals(
@@ -390,7 +390,7 @@ public class EdgeToEdgeInstrumentationTest {
                 "Should stay toEdge upon leaving the Tab Switcher.",
                 Color.TRANSPARENT,
                 mActivity.getWindow().getNavigationBarColor());
-        assertNavigationBarColor(mActivity.getActivityTab().getBackgroundColor());
+        assertNavigationBarColor(mActivityTestRule.getActivityTab().getBackgroundColor());
     }
 
     @Test
