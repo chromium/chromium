@@ -69,6 +69,7 @@ public class SettingsStylingController {
     }
 
     private ArrayList<Preference> getVisiblePreferences() {
+        if (mPreferenceScreen == null) return new ArrayList<>();
         ArrayList<Preference> visiblePreferences = new ArrayList<>();
         for (int i = 0; i < mPreferenceScreen.getPreferenceCount(); i++) {
             Preference preference = mPreferenceScreen.getPreference(i);
