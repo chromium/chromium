@@ -25614,6 +25614,209 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="V8.GC.FullCycle">
+  <owner>etiennep@chromium.org</owner>
+  <summary>
+    Records information on memory and timing of a full GC cycle, reported at the
+    end of the cycle.
+  </summary>
+  <metric name="Duration.MainThread">
+    <summary>
+      Main thread only duration of the whole garbage collection of the unified
+      heap. This is rounded down to the nearest exponential bucket (with a
+      bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Duration.MainThread.Atomic">
+    <summary>
+      Main thread duration of the atomic pause of the garbage collection of the
+      unified heap. This is rounded down to the nearest exponential bucket (with
+      a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Duration.MainThread.Atomic.Cpp">
+    <summary>
+      Main thread duration of the atomic pause of the garbage collection of the
+      managed C++ heap. This is rounded down to the nearest exponential bucket
+      (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Duration.MainThread.Cpp">
+    <summary>
+      Main thread only duration of a whole garbage collection of the managed C++
+      heap. This is rounded down to the nearest exponential bucket (with a
+      bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Duration.Total">
+    <summary>
+      Overall duration of a whole garbage collection of the unified heap. This
+      is rounded down to the nearest exponential bucket (with a bucket ratio of
+      1.3).
+    </summary>
+  </metric>
+  <metric name="Duration.Total.Cpp">
+    <summary>
+      Overall duration of a whole garbage collection of the managed C++ heap.
+      This is rounded down to the nearest exponential bucket (with a bucket
+      ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Global.ConsumedBytes.Baseline">
+    <summary>
+      Amount of global consumed memory right after the previous full garbage
+      collection cycle, used as baseline for limit computation. This is rounded
+      down to the nearest exponential bucket (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Global.ConsumedBytes.Current">
+    <summary>
+      Amount of global consumed memory right before the current full garbage
+      collection cycle. This is rounded down to the nearest exponential bucket
+      (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Global.ConsumedBytes.DeltaCurrent">
+    <summary>
+      Delta between the current and baseline amount of global consumed memory
+      for the current full garbage collection cycle. This is rounded down to the
+      nearest exponential bucket (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Global.ConsumedBytes.DeltaLimit">
+    <summary>
+      Delta between the limit and baseline amount of global consumed memory for
+      the current full garbage collection cycle. This is rounded down to the
+      nearest exponential bucket (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Global.ConsumedBytes.Limit">
+    <summary>
+      Allocation limit on golbal consumed memory used before the current full
+      garbage collection cycle. This is rounded down to the nearest exponential
+      bucket (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="IsLoading" enum="Boolean">
+    <summary>
+      Indicates whether the cylce started while loading state was true.
+    </summary>
+  </metric>
+  <metric name="Memory.BytesFreed">
+    <summary>
+      Amount of allocated memory freed by the garbage collection of the managed
+      C++ heap. This is rounded down to the nearest exponential bucket (with a
+      bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Memory.BytesFreed.Cpp">
+    <summary>
+      Amount of allocated memory freed by the garbage collection of the managed
+      C++ heap. This is rounded down to the nearest exponential bucket (with a
+      bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Objects.BytesAfter">
+    <summary>
+      Amount of used memory after the garbage collection of the unified heap.
+      This is rounded down to the nearest exponential bucket (with a bucket
+      ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Objects.BytesAfter.Cpp">
+    <summary>
+      Amount of used memory after the garbage collection of the managed C++
+      heap. This is rounded down to the nearest exponential bucket (with a
+      bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Objects.BytesBefore">
+    <summary>
+      Amount of used memory before the full garbage collection of the unified
+      heap. This is rounded down to the nearest exponential bucket (with a
+      bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Objects.BytesBefore.Cpp">
+    <summary>
+      Amount of used memory before the full garbage collection of the managed
+      C++ heap. This is rounded down to the nearest exponential bucket (with a
+      bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Objects.BytesFreed">
+    <summary>
+      Amount of used memory freed by the garbage collection of the unified heap.
+      This is rounded down to the nearest exponential bucket (with a bucket
+      ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Objects.BytesFreed.Cpp">
+    <summary>
+      Amount of used memory freed by the garbage collection of the managed C++
+      heap. This is rounded down to the nearest exponential bucket (with a
+      bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="OldGeneration.ConsumedBytes.Baseline">
+    <summary>
+      Amount of old generation consumed memory right after the previous full
+      garbage collection cycle, used as baseline for limit computation. This is
+      rounded down to the nearest exponential bucket (with a bucket ratio of
+      1.3).
+    </summary>
+  </metric>
+  <metric name="OldGeneration.ConsumedBytes.Current">
+    <summary>
+      Amount of old generation consumed memory right before the current full
+      garbage collection cycle. This is rounded down to the nearest exponential
+      bucket (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="OldGeneration.ConsumedBytes.DeltaCurrent">
+    <summary>
+      Delta between the current and baseline amount of old generation consumed
+      memory for the current full garbage collection cycle. This is rounded down
+      to the nearest exponential bucket (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="OldGeneration.ConsumedBytes.DeltaLimit">
+    <summary>
+      Delta between the limit and baseline amount of old generation consumed
+      memory for the current full garbage collection cycle. This is rounded down
+      to the nearest exponential bucket (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="OldGeneration.ConsumedBytes.Limit">
+    <summary>
+      Allocation limit on old generation consumed memory used before the current
+      full garbage collection cycle. This is rounded down to the nearest
+      exponential bucket (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Priority" enum="GarbageCollectionPriority">
+    <summary>
+      The priority the current full garbage collection cycle was running at.
+    </summary>
+  </metric>
+  <metric name="Reason" enum="GarbageCollectionReason">
+    <summary>
+      Reason the current full garbage collection cycle was started.
+    </summary>
+  </metric>
+  <metric name="Reason.IncrementalMarking" enum="GarbageCollectionReason">
+    <summary>
+      Reason incremental marking was started before the current full garbage
+      collection cycle if any.
+    </summary>
+  </metric>
+  <metric name="ReduceMemory" enum="Boolean">
+    <summary>
+      Indictaes whether ReduceMemoryFootprint flag was set.
+    </summary>
+  </metric>
+</event>
+
 <event name="V8.Wasm.ModuleCompiled">
   <owner>ecmziegler@chromium.org</owner>
   <summary>
