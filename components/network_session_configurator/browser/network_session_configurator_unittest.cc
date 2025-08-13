@@ -19,7 +19,6 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/variations/variations_associated_data.h"
 #include "net/base/features.h"
-#include "net/base/host_mapping_rules.h"
 #include "net/base/host_port_pair.h"
 #include "net/disk_cache/backend_experiment.h"
 #include "net/disk_cache/buildflags.h"
@@ -829,20 +828,6 @@ TEST_F(NetworkSessionConfiguratorTest, IgnoreCertificateErrors) {
   command_line.AppendSwitch(switches::kIgnoreCertificateErrors);
   ParseCommandLineAndFieldTrials(command_line);
   EXPECT_TRUE(params_.ignore_certificate_errors);
-}
-
-TEST_F(NetworkSessionConfiguratorTest, HostRules) {
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII(switches::kHostRules, "map *.com foo");
-  ParseCommandLineAndFieldTrials(command_line);
-
-  net::HostPortPair host_port_pair("spam.net", 80);
-  EXPECT_FALSE(params_.host_mapping_rules.RewriteHost(&host_port_pair));
-  EXPECT_EQ("spam.net", host_port_pair.host());
-
-  host_port_pair = net::HostPortPair("spam.com", 80);
-  EXPECT_TRUE(params_.host_mapping_rules.RewriteHost(&host_port_pair));
-  EXPECT_EQ("foo", host_port_pair.host());
 }
 
 TEST_F(NetworkSessionConfiguratorTest, DefaultCacheBackend) {

@@ -54,14 +54,6 @@ class HttpStreamFactory::JobController
   const Job* alternative_job() const { return alternative_job_.get(); }
   const Job* dns_alpn_h3_job() const { return dns_alpn_h3_job_.get(); }
 
-  // Modifies `url` in-place, applying any applicable HostMappingRules of
-  // `session_` to it.
-  void RewriteUrlWithHostMappingRules(GURL& url) const;
-
-  // Same as RewriteUrlWithHostMappingRules(), but duplicates `url` instead of
-  // modifying it.
-  GURL DuplicateUrlWithHostMappingRules(const GURL& url) const;
-
   // Methods below are called by HttpStreamFactory only.
   // Creates request and hands out to HttpStreamFactory, this will also create
   // Job(s) and start serving the created request.
@@ -392,12 +384,8 @@ class HttpStreamFactory::JobController
   State next_state_ = STATE_RESOLVE_PROXY;
   std::unique_ptr<ProxyResolutionRequest> proxy_resolve_request_;
   // The URL from the input `http_request_info`.
-  // TODO(https://crbug.com/332724851): Remove this, and update code to use
-  // `origin_url_`.
-  const GURL http_request_info_url_;
-  // The same as `request_info_url_`, but with any applicable rules in
-  // HostMappingRules applied to it.
-  // TODO: Make this use SchemeHostPort instead, and rename it.
+  // TODO(crbug.com/40070729): Is this still useful? Should we remove this in
+  // and use request_info_.url directly?
   const GURL origin_url_;
   const StreamRequestInfo request_info_;
   ProxyInfo proxy_info_;

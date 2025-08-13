@@ -16,6 +16,10 @@ const char kForcePermissionPolicyUnloadDefaultEnabled[] =
 
 // These mappings only apply to the host resolver.
 const char kHostResolverRules[] = "host-resolver-rules";
+// Deprecated alias for backwards compatibility, now does the same thing as
+// --host-resolver-rules which should be used instead.
+// TODO(crbug.com/40070729): consider removing in some future release.
+const char kHostRules[] = "host-rules";
 
 // A set of public key hashes for which to ignore certificate-related errors.
 //

@@ -45,26 +45,6 @@ NETWORK_SWITCH(kQuicVersion, "quic-version")
 NETWORK_SWITCH(kTestingFixedHttpPort, "testing-fixed-http-port")
 NETWORK_SWITCH(kTestingFixedHttpsPort, "testing-fixed-https-port")
 
-// Comma-separated list of rules that control how hostnames are mapped.
-//
-// For example:
-//    "MAP * 127.0.0.1" --> Forces all hostnames to be mapped to 127.0.0.1
-//    "MAP *.google.com proxy" --> Forces all google.com subdomains to be
-//                                 resolved to "proxy".
-//    "MAP test.com [::1]:77 --> Forces "test.com" to resolve to IPv6 loopback.
-//                               Will also force the port of the resulting
-//                               socket address to be 77.
-//    "MAP * baz, EXCLUDE www.google.com" --> Remaps everything to "baz",
-//                                            except for "www.google.com".
-//
-// These mappings apply to the endpoint host in a net::URLRequest (the TCP
-// connect and host resolver in a direct connection, and the CONNECT in an http
-// proxy connection, and the endpoint host in a SOCKS proxy connection).
-//
-// TODO(mmenke): Can we just remove this?  host-resolver-rules is more generally
-// useful.
-NETWORK_SWITCH(kHostRules, "host-rules")
-
 // Enable "greasing" HTTP/2 frame types, that is, sending frames of reserved
 // types.  See https://tools.ietf.org/html/draft-bishop-httpbis-grease-00 for
 // more detail.

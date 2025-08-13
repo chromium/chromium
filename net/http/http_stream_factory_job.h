@@ -381,15 +381,15 @@ class HttpStreamFactory::Job
   bool started_ = false;
 
   // The server we are trying to reach, could be that of the origin or of the
-  // alternative service (after applying host mapping rules). The scheme of this
-  // is always HTTP or HTTPS, even for websockets requests.
+  // alternative service. The scheme of this is always HTTP or HTTPS, even for
+  // websockets requests.
   const url::SchemeHostPort destination_;
 
-  // The origin url we're trying to reach. This url may be different from the
-  // original request when host mapping rules are set-up. It has the original
-  // scheme, so may be HTTP, HTTPS, WS, or WSS. It does not change when there's
-  // an alternate service, but it does take into account host mapping rules,
-  // unlike `request_info_.url`.
+  // The origin url we're trying to reach. It has the original scheme, so may
+  // be HTTP, HTTPS, WS, or WSS. It does not change when there's an alternate
+  // service,
+  // TODO(crbug.com/40070729): Is this still useful? Should we remove this in
+  // and use request_info_.url directly?
   const GURL origin_url_;
 
   // True if request is for Websocket.

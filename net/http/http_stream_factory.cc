@@ -16,7 +16,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "net/base/host_mapping_rules.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_anonymization_key.h"
@@ -147,21 +146,11 @@ void HttpStreamFactory::ProcessAlternativeServices(
   }
 
   session->http_server_properties()->SetAlternativeServices(
-      RewriteHost(http_server), network_anonymization_key,
+      http_server, network_anonymization_key,
       net::ProcessAlternativeServices(
           alternative_service_vector, session->params().enable_http2,
           session->params().enable_quic,
           session->context().quic_context->params()->supported_versions));
-}
-
-url::SchemeHostPort HttpStreamFactory::RewriteHost(
-    const url::SchemeHostPort& server) {
-  HostPortPair host_port_pair(server.host(), server.port());
-  const HostMappingRules* mapping_rules = GetHostMappingRules();
-  if (mapping_rules)
-    mapping_rules->RewriteHost(&host_port_pair);
-  return url::SchemeHostPort(server.scheme(), host_port_pair.host(),
-                             host_port_pair.port());
 }
 
 std::unique_ptr<HttpStreamRequest> HttpStreamFactory::RequestStream(
@@ -270,10 +259,6 @@ void HttpStreamFactory::PreconnectStreams(int num_streams,
   JobController* job_controller_raw_ptr = job_controller.get();
   job_controller_set_.insert(std::move(job_controller));
   job_controller_raw_ptr->Preconnect(num_streams);
-}
-
-const HostMappingRules* HttpStreamFactory::GetHostMappingRules() const {
-  return &session_->params().host_mapping_rules;
 }
 
 void HttpStreamFactory::OnJobControllerComplete(JobController* controller) {

@@ -25,7 +25,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "build/buildflag.h"
-#include "net/base/host_mapping_rules.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_export.h"
 #include "net/http/http_auth_cache.h"
@@ -82,7 +81,6 @@ struct NET_EXPORT HttpNetworkSessionParams {
   HttpNetworkSessionParams(const HttpNetworkSessionParams& other);
   ~HttpNetworkSessionParams();
 
-  HostMappingRules host_mapping_rules;
   bool ignore_certificate_errors = false;
   uint16_t testing_fixed_http_port = 0;
   uint16_t testing_fixed_https_port = 0;

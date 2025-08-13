@@ -38,7 +38,6 @@
 
 namespace net {
 
-class HostMappingRules;
 class HttpNetworkSession;
 class HttpResponseHeaders;
 
@@ -167,8 +166,6 @@ class NET_EXPORT HttpStreamFactory {
   // TODO: Make this take StreamRequestInfo instead.
   void PreconnectStreams(int num_streams, HttpRequestInfo& info);
 
-  const HostMappingRules* GetHostMappingRules() const;
-
  private:
   FRIEND_TEST_ALL_PREFIXES(HttpStreamRequestTest, SetPriority);
 
@@ -176,8 +173,6 @@ class NET_EXPORT HttpStreamFactory {
 
   using JobControllerSet =
       std::set<std::unique_ptr<JobController>, base::UniquePtrComparator>;
-
-  url::SchemeHostPort RewriteHost(const url::SchemeHostPort& server);
 
   // Values must not be changed or reused.  Keep in sync with identically named
   // enum in histograms.xml.

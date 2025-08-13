@@ -2989,8 +2989,25 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
             std::move(network_layer));
       }));
 
-  builder.set_host_mapping_rules(
-      command_line->GetSwitchValueASCII(switches::kHostResolverRules));
+  if (command_line->HasSwitch(switches::kHostResolverRules)) {
+    builder.set_host_mapping_rules(
+        command_line->GetSwitchValueASCII(switches::kHostResolverRules));
+  } else if (command_line->HasSwitch(switches::kHostRules)) {
+    LOG(WARNING)
+        << "The --" << switches::kHostRules
+        << " command line switch is deprecated, and now has the same behavior "
+           "as --"
+        << switches::kHostResolverRules << ". Use --"
+        << switches::kHostResolverRules
+        << " directly to avoid this LOG message. If you get certificate error "
+           "where --"
+        << switches::kHostRules
+        << " previously did not give one, you need to ensure the server has a "
+           "valid certificate for the mapped hostname, not the destination "
+           "hostname.";
+    builder.set_host_mapping_rules(
+        command_line->GetSwitchValueASCII(switches::kHostRules));
+  }
 
 #if BUILDFLAG(IS_WIN)
   if (params_->socket_brokers) {

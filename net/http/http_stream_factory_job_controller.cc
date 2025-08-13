@@ -16,7 +16,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "net/base/features.h"
-#include "net/base/host_mapping_rules.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/privacy_mode.h"
@@ -162,8 +161,7 @@ HttpStreamFactory::JobController::JobController(
       delay_main_job_with_available_spdy_session_(
           delay_main_job_with_available_spdy_session),
       management_config_(http_request_info.connection_management_config),
-      http_request_info_url_(http_request_info.url),
-      origin_url_(DuplicateUrlWithHostMappingRules(http_request_info.url)),
+      origin_url_(http_request_info.url),
       request_info_(http_request_info),
       allowed_bad_certs_(allowed_bad_certs),
       net_log_(NetLogWithSource::Make(
@@ -184,9 +182,6 @@ HttpStreamFactory::JobController::JobController(
   net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_JOB_CONTROLLER, [&] {
     base::Value::Dict dict;
     dict.Set("url", http_request_info.url.possibly_invalid_spec());
-    if (origin_url_ != http_request_info.url) {
-      dict.Set("url_after_host_mapping", origin_url_.possibly_invalid_spec());
-    }
     dict.Set("is_preconnect", is_preconnect_);
     dict.Set("privacy_mode",
              PrivacyModeToDebugString(request_info_.privacy_mode));
@@ -864,7 +859,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
   // Create an alternative job if alternative service is set up for this domain.
   // This is applicable even if the connection will be made via a proxy.
   alternative_service_info_ = GetAlternativeServiceInfoFor(
-      http_request_info_url_, request_info_, delegate_, stream_type_);
+      origin_url_, request_info_, delegate_, stream_type_);
 
   if (session_->host_resolver()->IsHappyEyeballsV3Enabled() &&
       proxy_info_.is_direct() && !is_websocket_) {
@@ -916,7 +911,6 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
         !preconnect_job->HasAvailableQuicSession()) {
       GURL alternative_url = CreateAltSvcUrl(
           origin_url_, alternative_service_info_.GetHostPortPair());
-      RewriteUrlWithHostMappingRules(alternative_url);
 
       url::SchemeHostPort alternative_destination =
           url::SchemeHostPort(alternative_url);
@@ -966,7 +960,6 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
 
     GURL alternative_url = CreateAltSvcUrl(
         origin_url_, alternative_service_info_.GetHostPortPair());
-    RewriteUrlWithHostMappingRules(alternative_url);
 
     url::SchemeHostPort alternative_destination =
         url::SchemeHostPort(alternative_url);
@@ -1028,7 +1021,7 @@ void HttpStreamFactory::JobController::ClearInappropriateJobs() {
   if (alternative_job_ && dns_alpn_h3_job_ &&
       (alternative_job_->HasAvailableQuicSession() ||
        (alternative_service_info_.alternative_service() ==
-        GetAlternativeServiceForDnsJob(http_request_info_url_)))) {
+        GetAlternativeServiceForDnsJob(origin_url_)))) {
     // Clear |dns_alpn_h3_job_|, when there is an active session available for
     // |alternative_job_| or |alternative_job_| was created for the same
     // destination.
@@ -1168,7 +1161,7 @@ void HttpStreamFactory::JobController::MaybeReportBrokenAlternativeService(
   if (alt_job_net_error == ERR_NETWORK_CHANGED ||
       alt_job_net_error == ERR_INTERNET_DISCONNECTED ||
       (alt_job_net_error == ERR_NAME_NOT_RESOLVED &&
-       http_request_info_url_.host() == alt_service.host)) {
+       origin_url_.host() == alt_service.host)) {
     // No need to mark alternative service as broken.
     return;
   }
@@ -1200,8 +1193,8 @@ void HttpStreamFactory::JobController::MaybeNotifyFactoryOfCompletion() {
       "Net.AlternateServiceFailed");
   // Report for the DNS alt job if apply.
   MaybeReportBrokenAlternativeService(
-      GetAlternativeServiceForDnsJob(http_request_info_url_),
-      dns_alpn_h3_job_net_error_, dns_alpn_h3_job_failed_on_default_network_,
+      GetAlternativeServiceForDnsJob(origin_url_), dns_alpn_h3_job_net_error_,
+      dns_alpn_h3_job_failed_on_default_network_,
       "Net.AlternateServiceForDnsAlpnH3Failed");
 
   // Reset error status for Jobs after reporting brokenness to avoid redundant
@@ -1221,18 +1214,6 @@ void HttpStreamFactory::JobController::NotifyRequestFailed(int rv) {
   }
   delegate_->OnStreamFailed(rv, NetErrorDetails(), ProxyInfo(),
                             ResolveErrorInfo());
-}
-
-void HttpStreamFactory::JobController::RewriteUrlWithHostMappingRules(
-    GURL& url) const {
-  session_->params().host_mapping_rules.RewriteUrl(url);
-}
-
-GURL HttpStreamFactory::JobController::DuplicateUrlWithHostMappingRules(
-    const GURL& url) const {
-  GURL copy = url;
-  RewriteUrlWithHostMappingRules(copy);
-  return copy;
 }
 
 AlternativeServiceInfo
@@ -1369,10 +1350,8 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
     }
 
     // Check whether there is an existing QUIC session to use for this origin.
-    GURL mapped_origin = original_url;
-    RewriteUrlWithHostMappingRules(mapped_origin);
     QuicSessionKey session_key(
-        HostPortPair::FromURL(mapped_origin), request_info.privacy_mode,
+        HostPortPair::FromURL(original_url), request_info.privacy_mode,
         proxy_info_.proxy_chain(), SessionUsage::kDestination,
         request_info.socket_tag, request_info.network_anonymization_key,
         request_info.secure_dns_policy, /*require_dns_https_alpn=*/false,
@@ -1384,7 +1363,6 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
         !session_->context().quic_context->params()->allow_remote_alt_svc) {
       continue;
     }
-    RewriteUrlWithHostMappingRules(destination);
 
     if (session_->quic_session_pool()->CanUseExistingSession(
             session_key, url::SchemeHostPort(destination))) {

@@ -355,7 +355,6 @@ SpdySessionDependencies::SpdyCreateSessionWithSocketFactory(
 HttpNetworkSessionParams SpdySessionDependencies::CreateSessionParams(
     SpdySessionDependencies* session_deps) {
   HttpNetworkSessionParams params;
-  params.host_mapping_rules = session_deps->host_mapping_rules;
   params.enable_spdy_ping_based_connection_checking = session_deps->enable_ping;
   params.enable_user_alternate_protocol_ports =
       session_deps->enable_user_alternate_protocol_ports;

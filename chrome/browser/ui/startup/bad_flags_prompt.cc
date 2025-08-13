@@ -71,7 +71,7 @@ namespace {
 const char* const kBadFlags[] = {
     // These flags allow redirecting user traffic.
     network::switches::kHostResolverRules,
-    switches::kHostRules,
+    network::switches::kHostRules,
 
     // These flags disable sandbox-related security.
     sandbox::policy::switches::kDisableGpuSandbox,

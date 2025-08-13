@@ -537,13 +537,8 @@ void HttpNetworkTransaction::PrepareForAuthRestart(HttpAuth::Target target) {
   // Authorization schemes incompatible with HTTP/2 are unsupported for proxies.
   if (target == HttpAuth::AUTH_SERVER &&
       auth_controllers_[target]->NeedsHTTP11()) {
-    // SetHTTP11Requited requires URLs be rewritten first, if there are any
-    // applicable rules.
-    GURL rewritten_url = request_->url;
-    session_->params().host_mapping_rules.RewriteUrl(rewritten_url);
-
     session_->http_server_properties()->SetHTTP11Required(
-        url::SchemeHostPort(rewritten_url), network_anonymization_key_);
+        url::SchemeHostPort(request_->url), network_anonymization_key_);
     stream_->SetHTTP11Required();
   }
 
