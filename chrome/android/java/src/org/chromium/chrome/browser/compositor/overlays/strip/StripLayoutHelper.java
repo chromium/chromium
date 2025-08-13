@@ -2255,7 +2255,8 @@ public class StripLayoutHelper
                             mTabGroupListBottomSheetCoordinator,
                             mMultiInstanceManager,
                             mShareDelegateSupplier,
-                            mWindowAndroid);
+                            mWindowAndroid,
+                            mContext);
         }
         RectProvider anchorRectProvider = new RectProvider();
         getAnchorRect(tab, anchorRectProvider);
