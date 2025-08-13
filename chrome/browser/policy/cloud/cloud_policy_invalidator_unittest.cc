@@ -62,9 +62,7 @@ class CloudPolicyInvalidatorTestBase : public testing::Test {
   ~CloudPolicyInvalidatorTestBase() override;
 
   // Starts the invalidator which will be tested.
-  // `highest_handled_invalidation_version` is the highest invalidation version
-  // that was handled already before this invalidator was created.
-  void StartInvalidator(int64_t highest_handled_invalidation_version = 0);
+  void StartInvalidator();
 
   const CloudPolicyInvalidator* invalidator() const {
     return invalidator_.get();
@@ -170,13 +168,11 @@ CloudPolicyInvalidatorTestBase::~CloudPolicyInvalidatorTestBase() {
   core_.Disconnect();
 }
 
-void CloudPolicyInvalidatorTestBase::StartInvalidator(
-    int64_t highest_handled_invalidation_version) {
+void CloudPolicyInvalidatorTestBase::StartInvalidator() {
   invalidator_ = std::make_unique<CloudPolicyInvalidator>(
       GetPolicyInvalidationScope(), &invalidation_listener_, &core_,
       task_environment_.GetMainThreadTaskRunner(),
-      task_environment_.GetMockClock(), highest_handled_invalidation_version,
-      kDeviceLocalAccountId);
+      task_environment_.GetMockClock(), kDeviceLocalAccountId);
 }
 
 void CloudPolicyInvalidatorTestBase::ConnectCore() {
@@ -516,7 +512,14 @@ TEST_F(CloudPolicyInvalidatorTest, IgnoresOldInvalidations) {
   ConnectCore();
   StartRefreshScheduler();
   EnableInvalidationListener();
-  StartInvalidator(/*highest_handled_invalidation_version=*/V(2));
+  StartInvalidator();
+
+  const invalidation::DirectInvalidation inv0 = FireInvalidation(V(2), "test2");
+  FastForwardByInvalidationDelay();
+  EXPECT_EQ(GetPolicyRefreshCountAndReset(), 1);
+  EXPECT_TRUE(ClientInvalidationInfoMatches(inv0));
+  StorePolicy(V(2));
+  EXPECT_EQ(V(2), invalidator()->highest_handled_invalidation_version());
 
   // Check that an invalidation whose version is lower than the highest handled
   // so far is acknowledged but ignored otherwise.

@@ -352,8 +352,7 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
   policy_invalidator_ = std::make_unique<CloudPolicyInvalidator>(
       PolicyInvalidationScope::kCBCM, policy_invalidation_listener, core,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
-      base::DefaultClock::GetInstance(),
-      0 /* highest_handled_invalidation_version */);
+      base::DefaultClock::GetInstance());
 
   core->StartRemoteCommandsService(
       std::make_unique<enterprise_commands::CBCMRemoteCommandsFactory>(),

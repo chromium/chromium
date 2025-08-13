@@ -123,16 +123,10 @@ const char* CloudPolicyInvalidator::GetPolicyInvalidationMetricName(
 
 CloudPolicyInvalidator::PolicyInvalidationHandler::PolicyInvalidationHandler(
     PolicyInvalidationScope scope,
-    int64_t highest_handled_invalidation_version,
     CloudPolicyCore* core,
     const base::Clock* clock,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : scope_(scope),
-      core_(core),
-      highest_handled_invalidation_version_(
-          highest_handled_invalidation_version),
-      clock_(clock),
-      task_runner_(task_runner) {
+    : scope_(scope), core_(core), clock_(clock), task_runner_(task_runner) {
   CHECK(task_runner.get());
   // |highest_handled_invalidation_version_| indicates the highest actual
   // invalidation version handled. Since actual invalidations can have only
@@ -154,14 +148,12 @@ CloudPolicyInvalidator::CloudPolicyInvalidator(
     invalidation::InvalidationListener* invalidation_listener,
     CloudPolicyCore* core,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-    const base::Clock* clock,
-    int64_t highest_handled_invalidation_version)
+    const base::Clock* clock)
     : CloudPolicyInvalidator(scope,
                              invalidation_listener,
                              core,
                              task_runner,
                              clock,
-                             highest_handled_invalidation_version,
                              /*device_local_account_id=*/"") {}
 
 CloudPolicyInvalidator::CloudPolicyInvalidator(
@@ -170,13 +162,8 @@ CloudPolicyInvalidator::CloudPolicyInvalidator(
     CloudPolicyCore* core,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const base::Clock* clock,
-    int64_t highest_handled_invalidation_version,
     const std::string& device_local_account_id)
-    : policy_invalidation_handler_(scope,
-                                   highest_handled_invalidation_version,
-                                   core,
-                                   clock,
-                                   std::move(task_runner)),
+    : policy_invalidation_handler_(scope, core, clock, std::move(task_runner)),
       scope_(scope),
       core_(core),
       invalidation_listener_(invalidation_listener),

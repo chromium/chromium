@@ -83,15 +83,13 @@ class CloudPolicyInvalidator
       CloudPolicyCore* core,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       const base::Clock* clock,
-      int64_t highest_handled_invalidation_version,
       const std::string& device_local_account_id);
   CloudPolicyInvalidator(
       PolicyInvalidationScope scope,
       invalidation::InvalidationListener* invalidation_listener,
       CloudPolicyCore* core,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-      const base::Clock* clock,
-      int64_t highest_handled_invalidation_version);
+      const base::Clock* clock);
   CloudPolicyInvalidator(const CloudPolicyInvalidator&) = delete;
   CloudPolicyInvalidator& operator=(const CloudPolicyInvalidator&) = delete;
   ~CloudPolicyInvalidator() override;
@@ -122,7 +120,6 @@ class CloudPolicyInvalidator
    public:
     PolicyInvalidationHandler(
         PolicyInvalidationScope scope,
-        int64_t highest_handled_invalidation_version,
         CloudPolicyCore* core,
         const base::Clock* clock,
         scoped_refptr<base::SequencedTaskRunner> task_runner);
@@ -183,7 +180,7 @@ class CloudPolicyInvalidator
     std::optional<int64_t> in_progress_invalidation_version_;
 
     // The highest invalidation version that was handled already.
-    int64_t highest_handled_invalidation_version_;
+    int64_t highest_handled_invalidation_version_ = 0;
 
     // The hash value of the current policy. This is used to determine if a new
     // policy is different from the current one.

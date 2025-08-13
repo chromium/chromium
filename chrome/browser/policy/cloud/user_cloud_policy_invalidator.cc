@@ -72,8 +72,7 @@ void UserCloudPolicyInvalidator::OnProfileInitializationComplete(
           policy::kPolicyInvalidationProjectNumber),
       policy_manager_->core(),
       base::SingleThreadTaskRunner::GetCurrentDefault(),
-      base::DefaultClock::GetInstance(),
-      /*highest_handled_invalidation_version=*/0);
+      base::DefaultClock::GetInstance());
 }
 
 }  // namespace policy

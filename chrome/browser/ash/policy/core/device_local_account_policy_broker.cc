@@ -209,8 +209,7 @@ void DeviceLocalAccountPolicyBroker::ConnectIfPossible(
   invalidator_ = std::make_unique<CloudPolicyInvalidator>(
       PolicyInvalidationScope::kDeviceLocalAccount, invalidation_listener_,
       &core_, base::SingleThreadTaskRunner::GetCurrentDefault(),
-      base::DefaultClock::GetInstance(),
-      /*highest_handled_invalidation_version=*/0, account_id_);
+      base::DefaultClock::GetInstance(), account_id_);
 }
 
 void DeviceLocalAccountPolicyBroker::UpdateRefreshDelay() {

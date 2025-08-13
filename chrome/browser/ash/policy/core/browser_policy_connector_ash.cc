@@ -245,8 +245,7 @@ void BrowserPolicyConnectorAsh::Init(
         PolicyInvalidationScope::kDevice, policy_invalidation_listener,
         device_cloud_policy_manager_->core(),
         base::SingleThreadTaskRunner::GetCurrentDefault(),
-        base::DefaultClock::GetInstance(),
-        /*highest_handled_invalidation_version=*/0);
+        base::DefaultClock::GetInstance());
 
     invalidation::InvalidationListener* remote_commands_invalidation_listener =
         invalidation_listener_per_project_
