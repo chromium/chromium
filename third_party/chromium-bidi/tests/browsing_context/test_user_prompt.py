@@ -20,9 +20,14 @@ from test_helpers import (AnyExtending, execute_command, goto_url,
 
 PROMPT_MESSAGE = 'Prompt Opened'
 
+TOP_LEVEL_CONTEXT = 'top-level-context'
+SAME_PROCESS_IFRAME = 'same-process-iframe'
+OOPiF = 'OOPiF'
+
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("frame_level", ["top", "nested"])
+@pytest.mark.parametrize("frame_level",
+                         [TOP_LEVEL_CONTEXT, SAME_PROCESS_IFRAME, OOPiF])
 @pytest.mark.parametrize("prompt_type", ["alert", "confirm", "prompt"])
 @pytest.mark.parametrize('capabilities', [{}, {
     'unhandledPromptBehavior': 'dismiss'
@@ -94,9 +99,16 @@ PROMPT_MESSAGE = 'Prompt Opened'
 }],
                          indirect=True)
 async def test_browsingContext_userPromptOpened_capabilityRespected(
-        websocket, context_id, iframe_id, frame_level, prompt_type,
+        websocket, context_id, iframe_id, frame_level, prompt_type, html,
         capabilities):
-    targe_context_id = iframe_id if frame_level == "nested" else context_id
+    if frame_level == TOP_LEVEL_CONTEXT:
+        targe_context_id = context_id
+    else:
+        targe_context_id = iframe_id
+        if frame_level == OOPiF:
+            # Move iFrame out of process
+            await goto_url(websocket, targe_context_id,
+                           html("", same_origin=False))
 
     await subscribe(websocket, [
         "browsingContext.userPromptOpened", "browsingContext.userPromptClosed"
@@ -169,7 +181,8 @@ async def test_browsingContext_userPromptOpened_capabilityRespected(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("frame_level", ["top", "nested"])
+@pytest.mark.parametrize("frame_level",
+                         [TOP_LEVEL_CONTEXT, SAME_PROCESS_IFRAME, OOPiF])
 @pytest.mark.parametrize('capabilities', [{}, {
     'unhandledPromptBehavior': 'dismiss'
 }, {
@@ -211,9 +224,10 @@ async def test_browsingContext_userPromptOpened_capabilityRespected(
                          indirect=True)
 async def test_browsingContext_beforeUnloadPromptOpened_capabilityRespected(
         websocket, context_id, iframe_id, html, frame_level, capabilities):
-    targe_context_id = iframe_id if frame_level == "nested" else context_id
-
-    await subscribe(websocket, ["browsingContext.userPromptOpened"])
+    if frame_level == TOP_LEVEL_CONTEXT:
+        targe_context_id = context_id
+    else:
+        targe_context_id = iframe_id
 
     url = html("""
         <script>
@@ -222,9 +236,12 @@ async def test_browsingContext_beforeUnloadPromptOpened_capabilityRespected(
                 event.preventDefault();
             });
         </script>
-        """)
+        """,
+               same_origin=frame_level != OOPiF)
 
     await goto_url(websocket, targe_context_id, url)
+
+    await subscribe(websocket, ["browsingContext.userPromptOpened"])
 
     # We need to interact with the page to trigger "beforeunload"
     await execute_command(

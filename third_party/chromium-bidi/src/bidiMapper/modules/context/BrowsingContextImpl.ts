@@ -1137,10 +1137,13 @@ export class BrowsingContextImpl {
   }
 
   async handleUserPrompt(accept?: boolean, userText?: string): Promise<void> {
-    await this.#cdpTarget.cdpClient.sendCommand('Page.handleJavaScriptDialog', {
-      accept: accept ?? true,
-      promptText: userText,
-    });
+    await this.top.#cdpTarget.cdpClient.sendCommand(
+      'Page.handleJavaScriptDialog',
+      {
+        accept: accept ?? true,
+        promptText: userText,
+      },
+    );
   }
 
   async activate(): Promise<void> {
