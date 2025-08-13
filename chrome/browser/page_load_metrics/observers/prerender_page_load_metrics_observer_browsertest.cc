@@ -777,8 +777,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
             shifting_duration.InMilliseconds());
 }
 
+// TODO(crbug.com/438364202): Re-enable this test
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ResponseBodyReceivedAfterActivation \
+  DISABLED_ResponseBodyReceivedAfterActivation
+#else
+#define MAYBE_ResponseBodyReceivedAfterActivation \
+  ResponseBodyReceivedAfterActivation
+#endif
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
-                       ResponseBodyReceivedAfterActivation) {
+                       MAYBE_ResponseBodyReceivedAfterActivation) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/title2.html");
   ASSERT_TRUE(embedded_test_server()->Start());
