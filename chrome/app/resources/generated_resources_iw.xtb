@@ -11576,7 +11576,7 @@
 <translation id="9057354806206861646">לוח זמנים של עדכונים</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{בערך התראה אחת ביום}one{בערך {NUM_NOTIFICATION} התראות ביום}two{בערך {NUM_NOTIFICATION} התראות ביום}other{בערך {NUM_NOTIFICATION} התראות ביום}}</translation>
 <translation id="9058760336383947367">‏אפשר לראות את קובץ PPD של המדפסת</translation>
-<translation id="9061521313218438086">‏אם Chrome מוצא שאחת מהסיסמאות שלך גלויה בפרצה באבטחת המידע, מנהל הסיסמאות של Google יכול להציע לשנות אותה בשבילך אם החשבון מחובר.</translation>
+<translation id="9061521313218438086">‏אם Chrome מוצא שאחת מהסיסמאות שלך נכללת במידע שדלף בפרצה באבטחת מידע, מנהל הסיסמאות של Google יכול להציע לשנות אותה בשבילך אם החשבון מחובר.</translation>
 <translation id="9061694916020926968">‏צריך להיכנס לחשבון Google כדי להשתמש ב-Steam ל-Chromebook (בטא). עליך להיכנס לחשבון ולנסות שוב.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">שגיאה משורה <ph name="ERROR_LINE_START" /> עד <ph name="ERROR_LINE_END" /></translation>

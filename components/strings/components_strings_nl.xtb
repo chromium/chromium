@@ -237,6 +237,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1384725838384960382">Blad voor beveiligde verificatie van betalingsgegevens</translation>
 <translation id="1386623374109090026">Annotaties</translation>
 <translation id="138810468159004008">Toestaan tijdens websitebezoek</translation>
+<translation id="1391145880481608015">Meer informatie over deze waarschuwing</translation>
 <translation id="139161720020179799">Donkergrijs 1</translation>
 <translation id="1391625539203220400">IBAN opslaan op dit apparaat?</translation>
 <translation id="1392813880755413602">OpenDocument-presentatie</translation>
@@ -1441,6 +1442,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="340924996148642843">Vergelijken is op dit moment niet beschikbaar.</translation>
 <translation id="3409896703495473338">Beveiligingsinstellingen beheren</translation>
 <translation id="3411091017011773343">Upload over <ph name="HOURS" /> uur</translation>
+<translation id="3413466783792948876">Het is het veiligst om deze site later te bezoeken als je nu een openbaar netwerk gebruikt. Je loopt minder risico als je een vertrouwd netwerk, zoals je wifi-netwerk thuis of op het werk, gebruikt.</translation>
 <translation id="3414275587143250384">Gedistribueerde systemen en cloudcomputing</translation>
 <translation id="3414952576877147120">Grootte:</translation>
 <translation id="341513675006332771">Knop Chrome Dino-game spelen. Activeer deze om de Dino Run-game in Chrome te spelen.</translation>
@@ -1683,6 +1685,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3781428340399460090">Felroze</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-apparaten</translation>
+<translation id="3785246317262748285">Meestal maak je veilig verbinding met sites, maar Chrome kan op dit moment geen beveiligde verbinding gebruiken. Een aanvaller probeert je netwerkverbinding af te luisteren of aan te passen. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Beste overeenkomsten voor '<ph name="SEARCH_QUERY" />'</translation>
 <translation id="3789155188480882154">Grootte 16</translation>
 <translation id="3789841737615482174">Installeren</translation>
@@ -3214,6 +3217,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6340739886198108203">Op basis van het beheerdersbeleid wordt afgeraden screenshots of opnamen te maken als er vertrouwelijke content zichtbaar is:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Op basis van het beheerdersbeleid wordt afgeraden dit bestand te uploaden naar <ph name="DESTINATION_NAME" />}other{Op basis van het beheerdersbeleid wordt afgeraden deze bestanden te uploaden naar <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Zojuist</translation>
+<translation id="6342171901363060580">Je ziet deze waarschuwing omdat deze site geen HTTPS ondersteunt en je in de incognitomodus zit. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Route</translation>
 <translation id="6348220984832452017">Actieve variaties</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> installeren</translation>
@@ -3479,6 +3483,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">YouTube gebruiken met de keuzes van je ouder of voogd</translation>
 <translation id="6779348349813025131">Google Wachtwoordmanager heeft toegang tot macOS-sleutelhanger nodig</translation>
+<translation id="6780449997190414928">Meestal kun je beveiligd verbinding maken met deze site, maar deze keer is het Chrome niet gelukt. Een aanvaller probeert je netwerkverbinding af te luisteren of aan te passen. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Je kunt je zoekmachine op elk moment wijzigen via de instellingen van Chrome.</translation>
 <translation id="6786145470008421571">Envelop 6 x 9 inch</translation>
 <translation id="67862343314499040">Violet</translation>
@@ -3510,6 +3515,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6831043979455480757">Vertalen</translation>
 <translation id="683108308100148227">Item verbergen</translation>
 <translation id="6832753933931306326">Het formulier is ingevuld</translation>
+<translation id="6834757537110528125">Deze site ondersteunt geen beveiligde verbinding</translation>
 <translation id="6841864657731852591">Gravurecilinder</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Handen volgen deze keer toegestaan</translation>
@@ -3774,6 +3780,7 @@ Aanvullende informatie:
 <translation id="7257453341537973799">Loopbaanbronnen en -planning</translation>
 <translation id="725866823122871198">Er kan geen privéverbinding met <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tot stand worden gebracht, omdat de datum en tijd van de computer (<ph name="DATE_AND_TIME" />) onjuist zijn.</translation>
 <translation id="7260075294900977274">Een nieuwe slimme map waarmee je al je winkelpagina's op één plek kunt opslaan en automatisch prijzen kunt volgen, prijsinzichten kunt krijgen en meer.</translation>
+<translation id="7264942008235065057">Deze site blijft geblokkeerd omdat je Geavanceerde beveiliging van Google gebruikt. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Adres is alleen beschikbaar op dit apparaat</translation>
 <translation id="7269151392155523061">De snelkoppeling kan niet gelijk zijn aan het zoekwoord van de zoekaggregator dat is gedefinieerd door <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Bestanden die je downloadt, worden voor analyse naar Google Cloud of naar derden gestuurd. Ze kunnen bijvoorbeeld worden gescand op gevoelige gegevens of malware en worden opgeslagen op basis van het bedrijfsbeleid en zichtbaar zijn voor je beheerder.</translation>
@@ -3902,6 +3909,7 @@ Aanvullende informatie:
 <translation id="7469935732330206581">Formulier is niet beveiligd</translation>
 <translation id="7470854469646445678">Waarom wil je dit kopiëren? (vereist)</translation>
 <translation id="7471007961486718967">Waarom wil je dit overzetten? (vereist)</translation>
+<translation id="7473033553872550521">Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet naar HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Nee, bedankt</translation>
 <translation id="7481312909269577407">Vooruit</translation>
 <translation id="7481603210197454575">Envelop Italiaans</translation>
@@ -4428,6 +4436,7 @@ Aanvullende informatie:
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Inschrijving via virtuele kaart is op volledige hoogte geopend</translation>
+<translation id="834805203690963649">Aanvallers kunnen informatie zien en wijzigen die je naar de site stuurt of van de site krijgt.</translation>
 <translation id="8349305172487531364">Bookmarkbalk</translation>
 <translation id="8350416046273606058">De snelkoppeling mag geen spaties bevatten: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="8351131234907093545">Notitie maken</translation>

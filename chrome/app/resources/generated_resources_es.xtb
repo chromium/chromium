@@ -1371,7 +1371,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1931152874660185993">No hay componentes instalados.</translation>
 <translation id="1931410639376954712">Instalando <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Posterior a</translation>
-<translation id="1933070475689690969">Actividad en las aplicaciones de Gemini</translation>
+<translation id="1933070475689690969">Actividad en las apps de Gemini</translation>
 <translation id="1933489278505808700">Tiene permiso para leer y modificar</translation>
 <translation id="1935303383381416800">Puede ver tu ubicación</translation>
 <translation id="193565226207940518">Herramienta de asistencia</translation>
@@ -2534,7 +2534,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Cuando la precisión de la ubicación está activada, la información sobre las señales inalámbricas, como los puntos de acceso Wi-Fi y las torres de redes móviles, junto con los datos de los sensores del dispositivo, como el acelerómetro y el giroscopio, se usan para estimar con mayor precisión la ubicación del dispositivo, que las aplicaciones y los servicios de Android utilizan para proporcionar funciones basadas en la ubicación. Para ello, Google recopila periódicamente la información de los sensores de dispositivos y señales inalámbricas que hay cerca de este dispositivo para recoger las ubicaciones de las señales inalámbricas.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google usa la información recogida de este dispositivo para mejorar la precisión de la ubicación y los servicios basados en la ubicación, así como para optimizar, proporcionar y mantener en general los servicios de Google. Tratamos esta información según los intereses legítimos de Google y de terceros para satisfacer las necesidades de los usuarios. Esta información no se usa para identificar a nadie.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Puedes desactivar la precisión de la ubicación en cualquier momento en los ajustes de ubicación de este dispositivo en Ajustes &gt; Privacidad y seguridad &gt; Controles de privacidad &gt; Acceso a la ubicación &gt; Ajustes de ubicación avanzados. Si este ajuste está desactivado, no se recogerá ningún dato de precisión de la ubicación. En el caso de las aplicaciones y los servicios de Android, solo se usa la dirección IP (si está disponible) para determinar la ubicación de este dispositivo, lo que puede afectar a la disponibilidad y la precisión de las ubicaciones de las aplicaciones y los servicios de Android como Google Maps.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="2729940704980595903">Consulta y gestiona tu actividad en las aplicaciones de Gemini</translation>
+<translation id="2729940704980595903">Consulta y gestiona tu actividad en las apps de Gemini</translation>
 <translation id="2730029791981212295">Creando copia de seguridad de las aplicaciones y archivos de Linux</translation>
 <translation id="2730550884708194161">Información sobre los perfiles de trabajo</translation>
 <translation id="2730596696987224099">Elegir una personalizada</translation>
@@ -2935,7 +2935,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3003967365858406397">Tu <ph name="PHONE_NAME" /> creará una conexión Wi-Fi privada.</translation>
 <translation id="3004385386820284928">Personalizar teclas del teclado</translation>
 <translation id="3006881078666935414">No hay datos de uso</translation>
-<translation id="3007555010975143508">Estas aplicaciones se usarán para grabar tu pantalla:</translation>
+<translation id="3007555010975143508">Estas apps se usarán para grabar tu pantalla:</translation>
 <translation id="3007771295016901659">Duplicar pestaña</translation>
 <translation id="3008142279736625920">Tarta de queso</translation>
 <translation id="3008272652534848354">Restablecer permisos</translation>
@@ -3517,7 +3517,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="343578350365773421">No hay papel</translation>
 <translation id="3435896845095436175">Habilitar</translation>
-<translation id="3437072258256045988">Gestiona tu actividad en las aplicaciones de Gemini</translation>
+<translation id="3437072258256045988">Gestiona tu actividad en las apps de Gemini</translation>
 <translation id="3437397693214267762">Consulta tu Calendario de Outlook y tus archivos de SharePoint y de OneDrive</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Permitir siempre que <ph name="HOST" /> acceda al micrófono</translation>
@@ -3591,7 +3591,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3487007233252413104">función anónima</translation>
 <translation id="3487649228420469005">Se ha completado el análisis</translation>
 <translation id="3488199663160411179">nombre</translation>
-<translation id="3489457144969823485">Las aplicaciones de Chrome dejaron de ejecutarse en dispositivos ChromeOS en julio del 2025. Prueba otra aplicación.</translation>
+<translation id="3489457144969823485">Las apps de Chrome dejaron de ejecutarse en dispositivos ChromeOS en julio del 2025. Prueba otra app.</translation>
 <translation id="3490695139702884919">Descargando… <ph name="PERCENT" /> %</translation>
 <translation id="3491171603443463516">Los datos locales se pueden restaurar si olvidas tu PIN o contraseña</translation>
 <translation id="3491616972057195633">Teclas de rebote</translation>
@@ -4932,7 +4932,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4406883609789734330">Subtítulos automáticos</translation>
 <translation id="4408599188496843485">Ay&amp;uda</translation>
 <translation id="4409271659088619928">Usas el buscador <ph name="DSE" />. Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si corresponde).</translation>
-<translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />. Recibirás una notificación cuando empiece la grabación.}=2{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" /> y <ph name="APP1_NAME" />. Recibirás una notificación cuando empiece la grabación.}=3{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y aplicación más. Recibirás una notificación cuando empiece la grabación.}other{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y # aplicaciones más. Recibirás una notificación cuando empiece la grabación.}}</translation>
+<translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />. Recibirás una notificación cuando empiece la grabación.}=2{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" /> y <ph name="APP1_NAME" />. Recibirás una notificación cuando empiece la grabación.}=3{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y app más. Recibirás una notificación cuando empiece la grabación.}other{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y # apps más. Recibirás una notificación cuando empiece la grabación.}}</translation>
 <translation id="4409697491990005945">Márgenes</translation>
 <translation id="4409779593816003679">Contraseñas y &amp;Autocompletar</translation>
 <translation id="4410545552906060960">Usa un número PIN en lugar de una contraseña para desbloquear el dispositivo. Para crear el PIN más tarde, ve a Configuración.</translation>
@@ -5762,7 +5762,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5001526427543320409">Cookies de terceros</translation>
 <translation id="5003070249435823986">Usa el gesto para entrar en el modo de desplazamiento y, a continuación, mueve la cabeza en la dirección en la que quieras desplazarte. Vuelve a usar el gesto para salir del modo de desplazamiento.</translation>
 <translation id="5003993274120026347">Siguiente frase</translation>
-<translation id="5005113238422129109">Usa el micrófono para chatear con Gemini. Cuando le hablas a Gemini, el audio se almacena en Actividad en las aplicaciones de Gemini (si la opción está activada).</translation>
+<translation id="5005113238422129109">Usa el micrófono para chatear con Gemini. Cuando le hablas a Gemini, el audio se almacena en Actividad en las apps de Gemini (si la opción está activada).</translation>
 <translation id="5005311809885666699">Guardado desde Chrome</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
 <translation id="5006218871145547804">ADB de aplicaciones Android en Crostini</translation>
@@ -7391,7 +7391,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{¿Quitar extensión?}other{¿Quitar # extensiones?}}</translation>
 <translation id="6180510783007738939">Herramienta de línea</translation>
 <translation id="6180550893222597997">¿Qué llave de acceso quieres usar en <ph name="APP_NAME" />?</translation>
-<translation id="6181218116951226898">A veces, las aplicaciones actualizan su branding. Revisa todos los cambios para asegurarte de que estás de acuerdo con ellos antes de la actualización.</translation>
+<translation id="6181218116951226898">A veces, las apps actualizan su branding. Revisa todos los cambios para asegurarte de que estás de acuerdo con ellos antes de la actualización.</translation>
 <translation id="6181431612547969857">Descarga bloqueada</translation>
 <translation id="6183369864942961155">Tema claro/oscuro automático</translation>
 <translation id="6184099524311454384">Buscar pestañas</translation>
@@ -7451,7 +7451,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="622484624075952240">Abajo</translation>
 <translation id="622537739776246443">Se eliminará el perfil</translation>
 <translation id="6225475702458870625">Conexión de datos disponible desde tu <ph name="PHONE_NAME" /></translation>
-<translation id="622568138962270592">Actividad en las aplicaciones de Gemini</translation>
+<translation id="622568138962270592">Actividad en las apps de Gemini</translation>
 <translation id="6226777517901268232">Archivo de clave privada (opcional)</translation>
 <translation id="6227280783235722609">extensión</translation>
 <translation id="622902691730729894">Desfijar grupo de la barra de marcadores</translation>
@@ -8284,7 +8284,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6811792477922751991">Usar la tecla del menú de aplicaciones para cambiar el comportamiento de las teclas de función</translation>
 <translation id="6812349420832218321">No se puede ejecutar <ph name="PRODUCT_NAME" /> como raíz.</translation>
 <translation id="6812841287760418429">Mantener cambios</translation>
-<translation id="681360534161436378">{NUM_APPS,plural,offset:2 =1{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />.}=2{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" /> y <ph name="APP1_NAME" />.}=3{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y 1 aplicación más.}other{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y # aplicaciones más.}}</translation>
+<translation id="681360534161436378">{NUM_APPS,plural,offset:2 =1{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />.}=2{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" /> y <ph name="APP1_NAME" />.}=3{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y 1 app más.}other{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y # apps más.}}</translation>
 <translation id="6813907279658683733">Toda la pantalla</translation>
 <translation id="6814754908910736855">Información de clientes de Wi-Fi Direct:</translation>
 <translation id="6815376457351236663">Abrir de todos modos</translation>
@@ -8327,7 +8327,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6840155290835956714">Preguntar antes de enviar</translation>
 <translation id="6840184929775541289">No es una entidad emisora de certificados.</translation>
 <translation id="6840214587087739194">Dirección eliminada</translation>
-<translation id="6841076158433142214">No recibirás ninguna notificación cuando estas aplicaciones se usen para grabar tu pantalla:</translation>
+<translation id="6841076158433142214">No recibirás ninguna notificación cuando estas apps se usen para grabar tu pantalla:</translation>
 <translation id="6841143363521180029">Cifrado</translation>
 <translation id="6841186874966388268">Errores</translation>
 <translation id="6842135459748401207">Solo los dispositivos con sesión iniciada en <ph name="USER_EMAIL" /></translation>
@@ -9614,7 +9614,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7751260505918304024">Mostrar todo</translation>
 <translation id="7752832973194460442">Información de la aplicación Android</translation>
 <translation id="7753735457098489144">No se ha podido realizar la instalación porque falta espacio de almacenamiento. Para liberar espacio, elimina archivos del almacenamiento del dispositivo.</translation>
-<translation id="7754704193130578113">Preguntar dónde se guardará cada archivo antes de descargarlo</translation>
+<translation id="7754704193130578113">Preguntar dónde guardar cada archivo antes de descargarlo</translation>
 <translation id="7757592200364144203">Cambiar nombre del dispositivo</translation>
 <translation id="7757739382819740102">Los contactos que estén cerca pueden compartir contenido contigo. Se necesita autorización.</translation>
 <translation id="7757787379047923882">Texto compartido desde <ph name="DEVICE_NAME" /></translation>
@@ -11522,7 +11522,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9033765790910064284">Continuar de todos modos</translation>
 <translation id="9033857511263905942">&amp;Pegar</translation>
 <translation id="903480517321259405">Vuelve a escribir el PIN</translation>
-<translation id="9035157477209989051">Recibirás una notificación cuando estas aplicaciones se usen para grabar tu pantalla:</translation>
+<translation id="9035157477209989051">Recibirás una notificación cuando estas apps se usen para grabar tu pantalla:</translation>
 <translation id="9036484080057916082">Lista de marcas de tiempo de certificados firmados</translation>
 <translation id="9037054491984310631">Conectado a un dispositivo Bluetooth llamado <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">El dispositivo no está permitido</translation>
@@ -11742,7 +11742,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9182556968660520230">No permitir que los sitios reproduzcan contenido protegido</translation>
 <translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplicación}other{# aplicaciones}}</translation>
-<translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />. No recibirás ninguna notificación cuando empiece la grabación.}=2{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" /> y <ph name="APP1_NAME" />. No recibirás ninguna notificación cuando empiece la grabación.}=3{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y 1 aplicación más. No recibirás ninguna notificación cuando empiece la grabación.}other{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y # aplicaciones más. No recibirás ninguna notificación cuando se inicie la grabación.}}</translation>
+<translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />. No recibirás ninguna notificación cuando empiece la grabación.}=2{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" /> y <ph name="APP1_NAME" />. No recibirás ninguna notificación cuando empiece la grabación.}=3{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y 1 app más. No recibirás ninguna notificación cuando empiece la grabación.}other{Tu administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y # apps más. No recibirás ninguna notificación cuando se inicie la grabación.}}</translation>
 <translation id="9186963452600581158">Iniciar sesión con la cuenta de Google de un niño/a</translation>
 <translation id="9187967020623675250">Las teclas no coinciden. Pulsa cualquier tecla para <ph name="RESPONSE" />.</translation>
 <translation id="9192019773545828776">Escucha mensajes de voz para poder usar el dispositivo sin mirar la pantalla. Se pueden recibir mensajes en braille con un dispositivo conectado. Pulsa Ctrl + Alt + Z para activar o desactivar ChromeVox. Usa la tecla de búsqueda + flecha hacia la izquierda o hacia la derecha para desplazarte. Pulsa la tecla de búsqueda y la barra espaciadora para seleccionar (activar).</translation>

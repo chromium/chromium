@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">सुरक्षित पेमेंट क्रेडेंशियल ची ऑथेंटिकेशन शीट</translation>
 <translation id="1386623374109090026">भाष्ये</translation>
 <translation id="138810468159004008">साइटला भेट देताना अनुमती द्या</translation>
+<translation id="1391145880481608015">या चेतावणीबद्दल अधिक जाणून घ्या</translation>
 <translation id="139161720020179799">गडद राखाडी १</translation>
 <translation id="1391625539203220400">या डिव्हाइसवर IBAN सेव्ह करायचा का?</translation>
 <translation id="1392813880755413602">OpenDocument प्रेझेंटेशन</translation>
@@ -1444,6 +1445,7 @@
 <translation id="340924996148642843">तुलना करणे सध्या उपलब्ध नाही</translation>
 <translation id="3409896703495473338">सुरक्षा सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> तासांनी अपलोड करा</translation>
+<translation id="3413466783792948876">तुम्ही सार्वजनिक नेटवर्क वापरत असल्यास, या साइटला नंतर भेट देणे सर्वात सुरक्षित आहे. तुमच्या घरामधील किंवा ऑफिसमधील वाय-फाय यासारखे विश्वसनीय नेटवर्क वापरण्यात कमी जोखीम असते.</translation>
 <translation id="3414275587143250384">डिस्ट्रिब्यूटेड आणि क्लाउड कॉंप्युटिंग</translation>
 <translation id="3414952576877147120">आकार:</translation>
 <translation id="341513675006332771">Chrome Dino गेम खेळा बटण, Chrome मध्ये Dino Run गेम खेळण्यासाठी ॲक्टिव्हेट करा</translation>
@@ -1687,6 +1689,7 @@
 <translation id="3781428340399460090">गडद गुलाबी</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">ब्लूटूथ डिव्हाइस</translation>
+<translation id="3785246317262748285">तुम्ही सामान्यपणे साइटशी सुरक्षितरीत्या कनेक्ट करता, पण Chrome ला या वेळी सुरक्षित कनेक्शन वापरता आले नाही. हल्लेखोर हा तुमच्या नेटवर्क कनेक्शनवरील माहिती चोरण्याचा किंवा त्यामध्ये फेरबदल करण्याचा प्रयत्न करत असू शकतो. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" यासाठी सर्वोत्तम जुळण्या</translation>
 <translation id="3789155188480882154">आकार १६</translation>
 <translation id="3789841737615482174">स्थापना करा</translation>
@@ -3221,6 +3224,7 @@
 <translation id="6340739886198108203">गोपनीय आशय दिसत असेल तेव्हा, अ‍ॅडमिनिस्ट्रेटर धोरण स्क्रीनशॉट घेण्याची किंवा रेकॉर्ड करण्याची शिफारस करत नाही:</translation>
 <translation id="6341434961864773665">{0,plural, =1{अ‍ॅडमिनिस्ट्रेटर धोरण ही फाइल <ph name="DESTINATION_NAME" /> वर अपलोड करण्याची शिफारस करत नाही}other{अ‍ॅडमिनिस्ट्रेटर धोरण या फाइल <ph name="DESTINATION_NAME" /> वर अपलोड करण्याची शिफारस करत नाही}}</translation>
 <translation id="6342069812937806050">आत्ताच</translation>
+<translation id="6342171901363060580">तुम्हाला ही चेतावणी दिसत आहे, कारण ही साइट HTTPS ला सपोर्ट करत नाही आणि तुम्ही गुप्त मोडमध्ये आहात. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">दिशानिर्देश</translation>
 <translation id="6348220984832452017">अ‍ॅक्टिव्ह व्हेरिएशन</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> इंस्टॉल करा</translation>
@@ -3486,6 +3490,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">तुमच्या पालकाच्या निवडींसह YouTube वापरा</translation>
 <translation id="6779348349813025131">Google Password Manager साठी MacOS Keychain चा अ‍ॅक्सेस आवश्यक आहे</translation>
+<translation id="6780449997190414928">तुम्ही सामान्यपणे या साइटशी सुरक्षितपणे कनेक्ट करता, पण Chrome ला यावेळी सुरक्षित कनेक्शन वापरता आले नाही. हल्लेखोर हा तुमच्या नेटवर्क कनेक्शनवरील माहिती चोरण्याचा किंवा त्यामध्ये फेरबदल करण्याचा प्रयत्न करत असू शकतो. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">तुम्ही तुमचे शोध इंजीन Chrome सेटिंग्जमध्ये कधीही बदलू शकता.</translation>
 <translation id="6786145470008421571">एन्व्हलप ६ x ९ इंच</translation>
 <translation id="67862343314499040">जांभळा</translation>
@@ -3517,6 +3522,7 @@
 <translation id="6831043979455480757">भाषांतर करा</translation>
 <translation id="683108308100148227">आयटम लपवा</translation>
 <translation id="6832753933931306326">फॉर्म भरला गेला आहे</translation>
+<translation id="6834757537110528125">ही साइट सुरक्षित कनेक्शनला सपोर्ट करत नाही</translation>
 <translation id="6841864657731852591">ग्रॅव्ह्यूर सिलिंडर</translation>
 <translation id="6842196666980060516">१८४ x २६० मिमी</translation>
 <translation id="6844998850832008753">या वेळी हँड ट्रॅकिंगला अनुमती आहे</translation>
@@ -3781,6 +3787,7 @@
 <translation id="7257453341537973799">करिअर स्रोत आणि नियोजन</translation>
 <translation id="725866823122871198">तुमच्या कॉंप्युटरची तारीख आणि वेळ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> चुकीची असल्यामुळे (<ph name="DATE_AND_TIME" />)सह खाजगी कनेक्शन इंस्टॉल केले जाऊ शकत नाही.</translation>
 <translation id="7260075294900977274">नवीन स्मार्ट फोल्डर जे तुम्हाला तुमची सर्व खरेदी पेज एकाच ठिकाणी सेव्ह करण्यात आणि किमतीचा आपोआप माग ठेवण्यात, किंमतीचे इनसाइट मिळवण्यास आणि बरेच काही करण्यात मदत करते</translation>
+<translation id="7264942008235065057">तुम्ही Google च्या Advanced Protection Program अंतर्गत असल्यामुळे ही साइट ब्लॉक केलेली राहील. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">पत्ता फक्त या डिव्हाइसवर उपलब्ध आहे</translation>
 <translation id="7269151392155523061">शॉर्टकट हा <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> नुसार परिभाषित केलेल्या शोध अ‍ॅग्रिगेटर कीवर्डसारखा असू शकत नाही: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">तुम्ही डाउनलोड केलेल्या फाइल विश्लेषणासाठी Google Cloud किंवा तृतीय पक्षांकडे पाठवल्या जातात. उदाहरणार्थ, त्या संवेदनशील डेटा किंवा मालवेअरसाठी स्कॅन केल्या जाऊ शकतात आणि कंपनीच्या धोरणांच्या आधारावर स्टोअर केल्या जाऊ शकतात व तुमच्या अ‍ॅडमिनिस्ट्रेटरला दृश्यमान असू शकतात.</translation>
@@ -3909,6 +3916,7 @@
 <translation id="7469935732330206581">हा फॉर्म सुरक्षित नाही</translation>
 <translation id="7470854469646445678">कॉपी करण्याचे कारण द्या (आवश्यक)</translation>
 <translation id="7471007961486718967">ट्रान्सफर करण्याचे कारण द्या (आवश्यक)</translation>
+<translation id="7473033553872550521">तुम्ही साइटच्या मालकाशीदेखील संपर्क साधू शकता आणि त्यांना HTTPS वर अपग्रेड करण्याबाबत सुचवू शकता. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">नाही, नको</translation>
 <translation id="7481312909269577407">पुढील</translation>
 <translation id="7481603210197454575">एन्व्हलप इटालियन</translation>
@@ -4435,6 +4443,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">व्हर्च्युअल कार्डची नोंदणी पूर्ण उंचीवर उघडली आहे</translation>
+<translation id="834805203690963649">तुम्ही साइटवरून मिळवत किंवा पाठवत असलेली माहिती हल्लेखोर पाहू आणि बदलू शकतात.</translation>
 <translation id="8349305172487531364">बुकमार्क बार</translation>
 <translation id="8350416046273606058">शॉर्टकटमध्ये स्पेस असू शकत नाहीत: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">टीप तयार करा</translation>

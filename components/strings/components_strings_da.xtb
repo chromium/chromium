@@ -237,6 +237,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1384725838384960382">Ark til godkendelse af loginoplysninger til sikker betaling</translation>
 <translation id="1386623374109090026">Annoteringer</translation>
 <translation id="138810468159004008">Tillad, mens du besøger websitet</translation>
+<translation id="1391145880481608015">Få flere oplysninger om denne advarsel</translation>
 <translation id="139161720020179799">Mørkegrå 1</translation>
 <translation id="1391625539203220400">Vil du gemme IBAN-nummeret på denne enhed?</translation>
 <translation id="1392813880755413602">OpenDocument-præsentation</translation>
@@ -1444,6 +1445,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="340924996148642843">Det er ikke muligt at sammenligne lige nu.</translation>
 <translation id="3409896703495473338">Administrer sikkerhedsindstillinger</translation>
 <translation id="3411091017011773343">Upload om <ph name="HOURS" /> t.</translation>
+<translation id="3413466783792948876">Hvis du bruger et offentligt netværk, så er det sikrest at vente og besøge dette website senere. Det er mindre risikabelt at bruge et netværk, du har tillid til, f.eks. Wi-Fi-netværket derhjemme eller på din arbejdsplads.</translation>
 <translation id="3414275587143250384">Distribueret computing og cloud computing</translation>
 <translation id="3414952576877147120">Størrelse:</translation>
 <translation id="341513675006332771">Knappen Spil Chrome Dino, aktivér for at spille Dino Run-spillet i Chrome</translation>
@@ -1688,6 +1690,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3781428340399460090">Varm lyserød</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-enheder</translation>
+<translation id="3785246317262748285">Du opretter normalt forbindelse til websites på en sikker måde, men Chrome kunne ikke anvende en sikker forbindelse denne gang. Det kan skyldes, at en hacker prøver at opfange eller ændre din netværksforbindelse. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Bedste match for "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Størrelse 16</translation>
 <translation id="3789841737615482174">Installer</translation>
@@ -3221,6 +3224,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6340739886198108203">Administratorpolitikken fraråder screenshots og optagelser, når der vises fortroligt indhold på skærmen:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Administratorpolitikken fraråder at uploade denne fil til <ph name="DESTINATION_NAME" />}one{Administratorpolitikken fraråder at uploade denne fil til <ph name="DESTINATION_NAME" />}other{Administratorpolitikken fraråder at uploade disse filer til <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Lige nu</translation>
+<translation id="6342171901363060580">Du ser denne advarsel, fordi dette website ikke understøtter HTTPS, og du er i inkognitotilstand. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Rutevejledning</translation>
 <translation id="6348220984832452017">Aktive variationer</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
@@ -3486,6 +3490,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Brug YouTube med din forælders valg</translation>
 <translation id="6779348349813025131">Google Adgangs­kode­admin­istrator skal have adgang til macOS-nøgleringen</translation>
+<translation id="6780449997190414928">Du opretter normalt forbindelse til dette website på sikker vis, men Chrome kunne ikke bruge en sikker forbindelse denne gang. Det kan skyldes, at en hacker prøver at opfange eller ændre din netværksforbindelse. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Du kan til enhver tid ændre din søgemaskine i Chrome-indstillingerne.</translation>
 <translation id="6786145470008421571">Konvolut 6 x 9 tommer</translation>
 <translation id="67862343314499040">Violet</translation>
@@ -3517,6 +3522,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6831043979455480757">Oversæt</translation>
 <translation id="683108308100148227">Skjul punkt</translation>
 <translation id="6832753933931306326">Formularen blev udfyldt</translation>
+<translation id="6834757537110528125">Dette website understøtter ikke en sikker forbindelse</translation>
 <translation id="6841864657731852591">Dybtrykscylinder</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Registrering af håndbevægelser er tilladt denne gang</translation>
@@ -3781,6 +3787,7 @@ Yderligere oplysninger:
 <translation id="7257453341537973799">Karriereressourcer og -planlægning</translation>
 <translation id="725866823122871198">Der kunne ikke oprettes en privat forbindelse til <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, da dato og tid (<ph name="DATE_AND_TIME" />) på din enhed er forkerte.</translation>
 <translation id="7260075294900977274">En ny smart mappe, der hjælper dig med at gemme alle dine shoppingsider på ét sted, ligesom den også giver dig mulighed for automatisk at overvåge priser, få prisinfo og meget mere</translation>
+<translation id="7264942008235065057">Dette website forbliver blokeret, fordi du er tilmeldt Googles program Avanceret beskyttelse. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Adressen er kun tilgængelig på denne enhed</translation>
 <translation id="7269151392155523061">Genvejen kan ikke være den samme som søgeordet for søgeaggregatoren, som er defineret af <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">De filer, du downloader, sendes til Google Cloud eller tredjeparter, hvor de analyseres. De kan f.eks. blive scannet for følsomme oplysninger eller malware, og de kan blive gemt i henhold til virksomhedens politikker og være synlige for din administrator.</translation>
@@ -3909,6 +3916,7 @@ Yderligere oplysninger:
 <translation id="7469935732330206581">Formularen er ikke sikker</translation>
 <translation id="7470854469646445678">Angiv årsag til kopiering (påkrævet)</translation>
 <translation id="7471007961486718967">Angiv årsag til overførsel (påkrævet)</translation>
+<translation id="7473033553872550521">Du kan også kontakte websiteejeren og foreslå en opgradering til HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Nej tak</translation>
 <translation id="7481312909269577407">Frem</translation>
 <translation id="7481603210197454575">Konvolut Italiensk</translation>
@@ -4435,6 +4443,7 @@ Yderligere oplysninger:
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Tilmelding via virtuelt kort er åbnet i fuld højde</translation>
+<translation id="834805203690963649">Hackere kan se og ændre oplysninger, du sender eller modtager fra websitet.</translation>
 <translation id="8349305172487531364">Bogmærkelinje</translation>
 <translation id="8350416046273606058">Genvejen må ikke indeholde mellemrum: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Opret note</translation>

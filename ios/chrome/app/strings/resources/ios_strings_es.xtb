@@ -170,7 +170,7 @@
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="164673457281113247">{count,plural, =1{Marcador guardado}other{Marcadores guardados}}</translation>
-<translation id="1651260071709244114">Aplicaciones</translation>
+<translation id="1651260071709244114">apps</translation>
 <translation id="1652051421944182562">Activar notificaciones de Comprobación de tu estado…</translation>
 <translation id="1652333207707886577">Personalizar el menú</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Tiempo restante: {TIME} segundos}=1{Tiempo restante: {TIME} segundo}other{Tiempo restante: {TIME} segundos}}</translation>
@@ -1374,7 +1374,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6331836477476466332">Un navegador más seguro y potente para ti</translation>
 <translation id="6335744088476213315">Esta tarjeta muestra los productos que has visto recientemente y que te podría interesar seguir para recibir alertas de bajadas de precio</translation>
 <translation id="6337234675334993532">Cifrado</translation>
-<translation id="6337313937331295309">Aviso de Privacidad de las Aplicaciones de Gemini</translation>
+<translation id="6337313937331295309">Aviso de Privacidad de las apps de Gemini</translation>
 <translation id="633809752005859102">Se ha producido un problema grave. Lo investigaremos para solucionarlo.</translation>
 <translation id="6339793034470834130">Para usar el inspector web, conéctate a Safari en tu ordenador mediante un cable y accede a tu iPhone desde el menú Desarrollo. Puedes habilitar el menú Desarrollo en la sección Avanzado de los ajustes de Safari de tu ordenador.</translation>
 <translation id="6340285871011301182">Traducción parcial no disponible.</translation>

@@ -513,6 +513,7 @@
 <translation id="2931440415625410757">સૂચનાઓ બતાવો</translation>
 <translation id="2952278131021475699">Lens કૅમેરા વડે શોધની સુવિધા</translation>
 <translation id="2962516096219646456">ઑટોમૅટિક રીતે ભરવાની સુવિધાનો બધો ડેટા જુઓ</translation>
+<translation id="2965594942405840553">આ ક્રિયા રદ કરી શકાતી નથી</translation>
 <translation id="2969979262385602596">સાઇન ઇન કરવામાં નિષ્ફળ. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.</translation>
 <translation id="2975761176769946178">URL જરૂરી છે</translation>
 <translation id="297667759942911166">ટૅબના ગ્રૂપમાં સહયોગ કરો</translation>
@@ -664,6 +665,7 @@
 <translation id="3596414637720633074">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો</translation>
 <translation id="3602260545951981695">"વધારેલું સંરક્ષણ" પસંદ કરો</translation>
 <translation id="3610041351087301930">રીડર છુપાવો</translation>
+<translation id="3610866916973186448">હા, ડિલીટ કરો</translation>
 <translation id="3622175633937495219">શોધ ઇતિહાસ (<ph name="COUNT" /> મળ્યાં)</translation>
 <translation id="3625008969091706597">તમે પાછળ જવા માટે, કિનારીને સ્વાઇપ કરી શકો છો.</translation>
 <translation id="362709345066740529">અહીં તમારા કાર્ડ, ફીડ અને બીજું ઘણું કસ્ટમાઇઝ કરો</translation>
@@ -1973,6 +1975,7 @@
 <translation id="8561999115126307258">{count,plural, =1{તમારા કીબોર્ડ પર પાસવર્ડ માટે {count} વિકલ્પ ઉપલબ્ધ છે.}one{તમારા કીબોર્ડ પર પાસવર્ડ માટે {count} વિકલ્પ ઉપલબ્ધ છે.}other{તમારા કીબોર્ડ પર પાસવર્ડ માટે {count} વિકલ્પ ઉપલબ્ધ છે.}}</translation>
 <translation id="8564894539416715395">નવું ટૅબ પેજ</translation>
 <translation id="8569721750632860947">તમે તમારા વાંચન સૂચિમાં કયું URL ઉમેરવા માગો છો?</translation>
+<translation id="8571019948162152515">"<ph name="FILENAME" />"ને ડિલીટ કરીએ?</translation>
 <translation id="8571213806525832805">છેલ્લા 4 અઠવાડિયા</translation>
 <translation id="8577056989960190117">સમયસમાપ્તિનું વર્ષ <ph name="YEAR" /> ઑટોમૅટિક રીતે ભરાય</translation>
 <translation id="8588404856427128947">બંધ</translation>

@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">Foaie de autentificare cu date de conectare pentru plăți securizate</translation>
 <translation id="1386623374109090026">Adnotări</translation>
 <translation id="138810468159004008">Permite în timpul accesării site-ului</translation>
+<translation id="1391145880481608015">Află mai multe despre acest avertisment</translation>
 <translation id="139161720020179799">Gri închis 1</translation>
 <translation id="1391625539203220400">Salvezi codul IBAN pe acest dispozitiv?</translation>
 <translation id="1392813880755413602">Prezentare OpenDocument</translation>
@@ -1444,6 +1445,7 @@
 <translation id="340924996148642843">Momentan, Compare nu este disponibil</translation>
 <translation id="3409896703495473338">Gestionează setările de securitate</translation>
 <translation id="3411091017011773343">Încarcă în <ph name="HOURS" /> h</translation>
+<translation id="3413466783792948876">Cel mai sigur este să accesezi site-ul mai târziu dacă folosești o rețea publică. Riscul este mai mic într-o rețea de încredere, cum ar fi rețeaua Wi-Fi de acasă sau de la serviciu.</translation>
 <translation id="3414275587143250384">Cloud computing și sisteme distribuite</translation>
 <translation id="3414952576877147120">Dimensiune:</translation>
 <translation id="341513675006332771">Butonul Joacă Chrome Dino din Chrome, activează pentru a juca Dino Run în Chrome</translation>
@@ -1688,6 +1690,7 @@
 <translation id="3781428340399460090">Roz aprins</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispozitive Bluetooth</translation>
+<translation id="3785246317262748285">De obicei, te conectezi în siguranță la site-uri, dar Chrome nu a putut folosi o conexiune securizată de data aceasta. Un atacator ar putea încerca să intercepteze sau să modifice conexiunea la rețea. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Cele mai potrivite rezultate pentru „<ph name="SEARCH_QUERY" />”</translation>
 <translation id="3789155188480882154">Mărimea 16</translation>
 <translation id="3789841737615482174">Instalează</translation>
@@ -3221,6 +3224,7 @@
 <translation id="6340739886198108203">Politica implementată de administrator nu recomandă să faci capturi de ecran sau înregistrări atunci când este vizibil conținut confidențial:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Politica implementată de administrator nu recomandă să încarci acest fișier în <ph name="DESTINATION_NAME" />}few{Politica implementată de administrator nu recomandă să încarci aceste fișiere în <ph name="DESTINATION_NAME" />}other{Politica implementată de administrator nu recomandă să încarci aceste fișiere în <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Adineauri</translation>
+<translation id="6342171901363060580">Avertismentul se afișează deoarece acest site nu acceptă HTTPS, iar tu ești în modul incognito. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Indicații de orientare</translation>
 <translation id="6348220984832452017">Variante active</translation>
 <translation id="6349101878882523185">Instalează <ph name="APP_NAME" /></translation>
@@ -3486,6 +3490,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Folosește YouTube cu opțiunile părintelui</translation>
 <translation id="6779348349813025131">Managerul de parole Google are nevoie de acces la MacOS Keychain</translation>
+<translation id="6780449997190414928">De obicei, te conectezi în siguranță la acest site, dar Chrome nu a putut folosi o conexiune securizată de data aceasta. Un atacator ar putea încerca să intercepteze sau să modifice conexiunea la rețea. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Poți să schimbi oricând motorul de căutare din setările Chrome.</translation>
 <translation id="6786145470008421571">Plic de 6 x 9 inchi</translation>
 <translation id="67862343314499040">Violet</translation>
@@ -3517,6 +3522,7 @@
 <translation id="6831043979455480757">Tradu</translation>
 <translation id="683108308100148227">Ascunde elementul</translation>
 <translation id="6832753933931306326">Formularul a fost completat</translation>
+<translation id="6834757537110528125">Site-ul nu acceptă o conexiune securizată</translation>
 <translation id="6841864657731852591">Cilindru pentru gravură</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Urmărirea mâinilor este permisă de data aceasta</translation>
@@ -3781,6 +3787,7 @@ Detalii suplimentare:
 <translation id="7257453341537973799">Resurse și planificare a carierei</translation>
 <translation id="725866823122871198">O conexiune privată la <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> nu poate fi stabilită, deoarece data și ora computerului (<ph name="DATE_AND_TIME" />) sunt incorecte.</translation>
 <translation id="7260075294900977274">Un nou dosar inteligent care te ajută să salvezi toate paginile de cumpărături într-un singur loc și să urmărești automat prețurile, să primești statistici despre prețuri și altele</translation>
+<translation id="7264942008235065057">Site-ul va rămâne blocat deoarece te-ai înscris în programul Protecție avansată de la Google. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Adresa este disponibilă doar pe acest dispozitiv</translation>
 <translation id="7269151392155523061">Comanda rapidă nu poate fi identică cu cuvântul cheie al agregatorului de căutare, definit de <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Fișierele pe care le descarci sunt trimise la Google Cloud sau la terți spre analiză. De exemplu, se pot căuta date sensibile sau programe malware și pot să fie stocate conform politicilor companiei și să fie vizibile pentru administrator.</translation>
@@ -3909,6 +3916,7 @@ Detalii suplimentare:
 <translation id="7469935732330206581">Formularul nu este sigur</translation>
 <translation id="7470854469646445678">Specifică motivul copierii (obligatoriu)</translation>
 <translation id="7471007961486718967">Specifică motivul transferului (obligatoriu)</translation>
+<translation id="7473033553872550521">Poți și să contactezi proprietarul site-ului și să-i sugerezi să facă upgrade la HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Nu, mulțumesc</translation>
 <translation id="7481312909269577407">Înainte</translation>
 <translation id="7481603210197454575">Plic italienesc</translation>
@@ -4435,6 +4443,7 @@ Detalii suplimentare:
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Înregistrarea cardului virtual s-a deschis la înălțimea completă</translation>
+<translation id="834805203690963649">Atacatorii pot să vadă și să modifice informațiile pe care le trimiți sau le primești de la site.</translation>
 <translation id="8349305172487531364">Bara de marcaje</translation>
 <translation id="8350416046273606058">Comanda rapidă nu poate conține spații: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="8351131234907093545">Creează o notă</translation>

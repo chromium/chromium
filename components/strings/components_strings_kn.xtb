@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">ಸುರಕ್ಷಿತ ಪಾವತಿ ರುಜುವಾತು ದೃಢೀಕರಣ ಶೀಟ್</translation>
 <translation id="1386623374109090026">ಟಿಪ್ಪಣಿಗಳು</translation>
 <translation id="138810468159004008">ಸೈಟ್‌ಗೆ ಭೇಟಿ ನೀಡುವಾಗ ಅನುಮತಿಸಿ</translation>
+<translation id="1391145880481608015">ಈ ಎಚ್ಚರಿಕೆಯ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="139161720020179799">ಕಡು ಬೂದು 1</translation>
 <translation id="1391625539203220400">ಈ ಸಾಧನಕ್ಕೆ IBAN ಅನ್ನು ಉಳಿಸುವುದೇ?</translation>
 <translation id="1392813880755413602">OpenDocument ಪ್ರಸ್ತುತಿ</translation>
@@ -1442,6 +1443,7 @@
 <translation id="340924996148642843">ಹೋಲಿಕೆ ಸದ್ಯಕ್ಕೆ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="3409896703495473338">ಭದ್ರತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> ಗಂಟೆಯಲ್ಲಿ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ</translation>
+<translation id="3413466783792948876">ನೀವು ಸಾರ್ವಜನಿಕ ನೆಟ್‌ವರ್ಕ್ ಬಳಸುತ್ತಿದ್ದರೆ ನಂತರ ಈ ಸೈಟ್‌ಗೆ ಭೇಟಿ ನೀಡುವುದು ಸುರಕ್ಷಿತವಾಗಿದೆ. ನಿಮ್ಮ ಮನೆ ಅಥವಾ ಕಚೇರಿಯ ವೈ-ಫೈ ನಂತಹ ವಿಶ್ವಾಸಾರ್ಹ ನೆಟ್‌ವರ್ಕ್‌ನಿಂದ ಕಡಿಮೆ ಅಪಾಯವಿರುತ್ತದೆ.</translation>
 <translation id="3414275587143250384">ಡಿಸ್ಟ್ರಿಬ್ಯೂಟೆಡ್ ಮತ್ತು ಕ್ಲೌಡ್ ಕಂಪ್ಯೂಟಿಂಗ್</translation>
 <translation id="3414952576877147120">ಗಾತ್ರ:</translation>
 <translation id="341513675006332771">Chrome Dino ಗೇಮ್ ಆಡಿ ಬಟನ್, Chrome ನಲ್ಲಿ Dino Run ಗೇಮ್ ಅನ್ನು ಆಡಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -1685,6 +1687,7 @@
 <translation id="3781428340399460090">ಗಾಢ ಗುಲಾಬಿ</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">ಬ್ಲೂಟೂತ್‌‌ ಸಾಧನಗಳು</translation>
+<translation id="3785246317262748285">ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ಸೈಟ್‌ಗಳಿಗೆ ಸುರಕ್ಷಿತವಾಗಿ ಕನೆಕ್ಟ್‌ ಆಗಿರುತ್ತೀರಿ, ಆದರೆ Chrome ಗೆ ಈ ಸಮಯದಲ್ಲಿ ಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್ ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಅಟ್ಯಾಕರ್‌ಗಳು ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಕದ್ದಾಲಿಕೆ ಮಾಡಲು ಅಥವಾ ಮಾರ್ಪಡಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರಬಹುದು. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" ಗಾಗಿ ಉತ್ತಮ ಹೊಂದಾಣಿಕೆಗಳು</translation>
 <translation id="3789155188480882154">ಗಾತ್ರ 16</translation>
 <translation id="3789841737615482174">ಇನ್‌ಸ್ಟಾಲ್</translation>
@@ -3217,6 +3220,7 @@
 <translation id="6340739886198108203">ನಿರ್ವಾಹಕರ ನೀತಿಯು ಗೌಪ್ಯ ಕಂಟೆಂಟ್ ಕಾಣಿಸುತ್ತಿರುವಾಗ ಸ್ಕ್ರೀನ್‌ಶಾಟ್‌ಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳುವುದನ್ನು ಮತ್ತು ರೆಕಾರ್ಡ್ ಮಾಡುವುದನ್ನು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ:</translation>
 <translation id="6341434961864773665">{0,plural, =1{ನಿರ್ವಾಹಕರ ನೀತಿಯು ಈ ಫೈಲ್ ಅನ್ನು <ph name="DESTINATION_NAME" /> ಗೆ ಅಪ್‌ಲೋಡ್ ಮಾಡುವುದನ್ನು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}one{ನಿರ್ವಾಹಕರ ನೀತಿಯು ಈ ಫೈಲ್‌ಗಳನ್ನು <ph name="DESTINATION_NAME" /> ಗೆ ವರ್ಗಾಯಿಸಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}other{ನಿರ್ವಾಹಕರ ನೀತಿಯು ಈ ಫೈಲ್‌ಗಳನ್ನು <ph name="DESTINATION_NAME" /> ಗೆ ವರ್ಗಾಯಿಸಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}}</translation>
 <translation id="6342069812937806050">ಇದೀಗ</translation>
+<translation id="6342171901363060580">ನೀವು ಈ ಎಚ್ಚರಿಕೆಯನ್ನು ನೋಡುತ್ತಿರುವುದು ಏಕೆಂದರೆ ಈ ಸೈಟ್ HTTPS ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ ಮತ್ತು ನೀವು ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿರುವಿರಿ. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">ಮಾರ್ಗಗಳು</translation>
 <translation id="6348220984832452017">ಸಕ್ರಿಯ ವ್ಯತ್ಯಾಸಗಳು</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
@@ -3483,6 +3487,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">ನಿಮ್ಮ ಪೋಷಕರ ಆಯ್ಕೆಗಳೊಂದಿಗೆ YouTube ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="6779348349813025131">Google Password Manager ಗೆ MacOS Keychain ನ ಆ್ಯಕ್ಸೆಸ್ ಅಗತ್ಯವಿದೆ</translation>
+<translation id="6780449997190414928">ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ಈ ಸೈಟ್‌ಗೆ ಸುರಕ್ಷಿತವಾಗಿ ಕನೆಕ್ಟ್‌ ಆಗುತ್ತೀರಿ, ಆದರೆ Chrome ಗೆ ಈ ಸಮಯದಲ್ಲಿ ಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್‌ ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಅಟ್ಯಾಕರ್‌ಗಳು ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಕದ್ದಾಲಿಕೆ ಮಾಡಲು ಅಥವಾ ಮಾರ್ಪಡಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರಬಹುದು. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Chrome ನ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಸರ್ಚ್ ಎಂಜಿನ್ ಅನ್ನು ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="6786145470008421571">ಎನ್ವಲಪ್ 6 x 9 ಇಂಚು</translation>
 <translation id="67862343314499040">ನೇರಳೆ</translation>
@@ -3514,6 +3519,7 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="683108308100148227">ಐಟಂ ಮರೆಮಾಡಿ</translation>
 <translation id="6832753933931306326">ಫಾರ್ಮ್ ಅನ್ನು ಭರ್ತಿ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="6834757537110528125">ಈ ಸೈಟ್ ಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್ ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
 <translation id="6841864657731852591">ಗ್ರೇವರ್ ಸಿಲಿಂಡರ್</translation>
 <translation id="6842196666980060516">184 x 260 ಮಿಮೀ</translation>
 <translation id="6844998850832008753">ಹ್ಯಾಂಡ್ ಟ್ರ್ಯಾಕಿಂಗ್ ಅನ್ನು ಈ ಬಾರಿ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -3778,6 +3784,7 @@
 <translation id="7257453341537973799">ವೃತ್ತಿ ಸಂಪನ್ಮೂಲಗಳು ಮತ್ತು ಪ್ಲಾನಿಂಗ್</translation>
 <translation id="725866823122871198">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನ ದಿನಾಂಕ ಮತ್ತು ಸಮಯ (<ph name="DATE_AND_TIME" />) ತಪ್ಪಾಗಿರುವುದರಿಂದ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ಗೆ ಖಾಸಗಿ ಸಂಪರ್ಕವನ್ನು ಸ್ಥಾಪಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="7260075294900977274">ನಿಮ್ಮ ಎಲ್ಲಾ ಶಾಪಿಂಗ್ ಪುಟಗಳನ್ನು ಒಂದೇ ಸ್ಥಳದಲ್ಲಿ ಸೇವ್ ಮಾಡಲು, ಬೆಲೆಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಟ್ರ್ಯಾಕ್ ಮಾಡಲು, ದರದ ಒಳನೋಟಗಳನ್ನು ಪಡೆಯಲು ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಮಾಡಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡುವ ಹೊಸ ಸ್ಮಾರ್ಟ್ ಫೋಲ್ಡರ್</translation>
+<translation id="7264942008235065057">ನೀವು Google ನ ಸುಧಾರಿತ ರಕ್ಷಣಾ ಪ್ರೋಗ್ರಾಂನ ಅಡಿಯಲ್ಲಿರುವುದರಿಂದ ಈ ಸೈಟ್ ನಿರ್ಬಂಧಿತವಾಗಿರುತ್ತದೆ. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ವಿಳಾಸ ಲಭ್ಯವಿದೆ</translation>
 <translation id="7269151392155523061">ಶಾರ್ಟ್‌ಕಟ್ <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> ದಿಂದ ವ್ಯಾಖ್ಯಾನಿಸಲಾದ ಹುಡುಕಾಟ ಅಗ್ರಿಗೇಟರ್ ಕೀವರ್ಡ್‌ನಂತೆಯೇ ಇರುವಂತಿಲ್ಲ: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">ನೀವು ಡೌನ್‌ಲೋಡ್ ಮಾಡುವ ಫೈಲ್‌ಗಳನ್ನು ವಿಶ್ಲೇಷಣೆಗಾಗಿ Google Cloud ಅಥವಾ ಥರ್ಡ್-ಪಾರ್ಟಿಗಳಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ಉದಾಹರಣೆಗೆ, ಅವುಗಳನ್ನು ಸೂಕ್ಷ್ಮವಾದ ವೈಯಕ್ತಿಕ ಡೇಟಾ ಅಥವಾ ಮಾಲ್‌ವೇರ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಬಹುದು ಹಾಗೂ ಕಂಪನಿಯ ನೀತಿಗಳ ಆಧಾರದ ಮೇಲೆ ಸಂಗ್ರಹಿಸಬಹುದು ಮತ್ತು ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಗೆ ಗೋಚರಿಸಬಹುದು.</translation>
@@ -3905,6 +3912,7 @@
 <translation id="7469935732330206581">ಫಾರ್ಮ್ ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
 <translation id="7470854469646445678">ನಕಲಿಸಿದಕ್ಕಾಗಿ ಕಾರಣವನ್ನು ನೀಡಿ (ಅಗತ್ಯವಿದೆ)</translation>
 <translation id="7471007961486718967">ವರ್ಗಾಯಿಸುತ್ತಿರುವುದಕ್ಕಾಗಿ ಕಾರಣವನ್ನು ನೀಡಿ (ಅಗತ್ಯವಿದೆ)</translation>
+<translation id="7473033553872550521">ನೀವು ಸೈಟ್ ಮಾಲೀಕರನ್ನು ಸಂಪರ್ಕಿಸಬಹುದು ಮತ್ತು ಅವರಿಗೆ HTTPS ಗೆ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಲು ಸೂಚಿಸಬಹುದು. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">ಬೇಡ</translation>
 <translation id="7481312909269577407">ಫಾರ್ವರ್ಡ್</translation>
 <translation id="7481603210197454575">ಎನ್ವಲಪ್ ಇಟಾಲಿಯನ್</translation>
@@ -4431,6 +4439,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">ಸಂಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ನೋಂದಣಿಯನ್ನು ತೆರೆಯಲಾಗಿದೆ</translation>
+<translation id="834805203690963649">ನೀವು ಕಳುಹಿಸುವ ಅಥವಾ ವೆಬ್‌ಸೈಟ್‌ನಿಂದ ಸ್ವೀಕರಿಸುವ ಮಾಹಿತಿಯನ್ನು ದಾಳಿಕೋರರು ವೀಕ್ಷಿಸಬಹುದು ಮತ್ತು ಮಾರ್ಪಡಿಸಬಹುದು.</translation>
 <translation id="8349305172487531364">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳ ಬಾರ್</translation>
 <translation id="8350416046273606058">ಶಾರ್ಟ್‌ಕಟ್ ಸ್ಪೇಸ್‌ಗಳನ್ನು ಒಳಗೊಂಡಿರಬಾರದು: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">ಟಿಪ್ಪಣಿ ರಚಿಸಿ</translation>

@@ -237,6 +237,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1384725838384960382">Biztonságos fizetés hitelesítési adatainak hitelesítési űrlapja</translation>
 <translation id="1386623374109090026">Annotációk</translation>
 <translation id="138810468159004008">Engedélyezés a webhely felkeresésekor</translation>
+<translation id="1391145880481608015">További információ erről a figyelmeztetésről.</translation>
 <translation id="139161720020179799">Sötétszürke 1</translation>
 <translation id="1391625539203220400">Menti az IBAN-t erre az eszközre?</translation>
 <translation id="1392813880755413602">OpenDocument-prezentáció</translation>
@@ -1442,6 +1443,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="340924996148642843">Az összehasonlítás jelenleg nem áll rendelkezésre</translation>
 <translation id="3409896703495473338">Biztonsági beállítások kezelése</translation>
 <translation id="3411091017011773343">Feltöltés <ph name="HOURS" /> óra múlva</translation>
+<translation id="3413466783792948876">Ha nyilvános hálózatot használ, az a legbiztonságosabb, ha később látogatja meg ezt a webhelyet. A megbízható hálózatok (pl. otthoni vagy munkahelyi Wi-Fi) kisebb kockázatot jelentenek.</translation>
 <translation id="3414275587143250384">Elosztott rendszerek és felhőalapú számítástechnika</translation>
 <translation id="3414952576877147120">Méret:</translation>
 <translation id="341513675006332771">Chrome-dinó játék elindítása gomb. A gombot megnyomva elindíthatja a Dino Run játékot a Chrome-ban.</translation>
@@ -1686,6 +1688,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3781428340399460090">Élénk rózsaszín</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-eszközök</translation>
+<translation id="3785246317262748285">Ön általában biztonságosan csatlakozik a webhelyekhez, de a Chrome ez alkalommal nem tudott biztonságos kapcsolatot használni. Előfordulhat, hogy támadó próbálja meg lehallgatni vagy módosítani az Ön hálózati kapcsolatát. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">A legjobb találatok a következőre: „<ph name="SEARCH_QUERY" />”</translation>
 <translation id="3789155188480882154">Méret: 16</translation>
 <translation id="3789841737615482174">Telepítés</translation>
@@ -3218,6 +3221,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6340739886198108203">A rendszergazda által beállított házirend nem javasolja képernyőképek vagy felvételek készítését, amikor a következő bizalmas tartalmak láthatók:</translation>
 <translation id="6341434961864773665">{0,plural, =1{A rendszergazda által beállított házirend nem javasolja ennek a fájlnak a feltöltését a következő helyre: <ph name="DESTINATION_NAME" />}other{A rendszergazda által beállított házirend nem javasolja ezeknek a fájloknak a feltöltését a következő helyre: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Éppen most</translation>
+<translation id="6342171901363060580">Azért látja ezt a figyelmeztetést, mert ez a webhely nem támogatja a HTTPS-t, és Ön inkognitó módban van. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Útvonalterv</translation>
 <translation id="6348220984832452017">Aktív változatok</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> telepítése</translation>
@@ -3483,6 +3487,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">A YouTube használata a szülő által megadott beállításokkal</translation>
 <translation id="6779348349813025131">A Google Jelszókezelő hozzáférést igényel a macOS Keychain szolgáltatásához</translation>
+<translation id="6780449997190414928">Ön általában biztonságosan csatlakozik ehhez a webhelyhez, de a Chrome ez alkalommal nem tudott biztonságos kapcsolatot használni. Előfordulhat, hogy támadó próbálja meg lehallgatni vagy módosítani az Ön hálózati kapcsolatát. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Keresőmotorját bármikor módosíthatja a Chrome beállításai között</translation>
 <translation id="6786145470008421571">6 × 9 hüvelykes boríték</translation>
 <translation id="67862343314499040">Ibolyaszín</translation>
@@ -3514,6 +3519,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6831043979455480757">Fordítás</translation>
 <translation id="683108308100148227">Elem elrejtése</translation>
 <translation id="6832753933931306326">Űrlap kitöltve</translation>
+<translation id="6834757537110528125">Ez a webhely nem támogatja a biztonságos kapcsolatot</translation>
 <translation id="6841864657731852591">Gravűrhenger</translation>
 <translation id="6842196666980060516">184 × 260 mm</translation>
 <translation id="6844998850832008753">A kézmozgás követése erre az alkalomra engedélyezve van</translation>
@@ -3778,6 +3784,7 @@ További részletek:
 <translation id="7257453341537973799">Karrieranyagok és karriertervezés</translation>
 <translation id="725866823122871198">Nem hozható létre privát kapcsolat a következővel: <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, mert a számítógép dátum- és időbeállítása helytelen (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="7260075294900977274">Új intelligens mappa, amelynek segítségével egy helyen mentheti az összes vásárlási oldalát, automatikusan nyomon követheti az árakat, valamint árváltozásokról és -összehasonlításokról szóló értesítéseket, illetve egyéb információkat tekinthet meg</translation>
+<translation id="7264942008235065057">Ez a webhely továbbra is le lesz tiltva, mert Ön részt vesz a Google Speciális védelem programjában. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">A cím csak ezen az eszközön áll rendelkezésre</translation>
 <translation id="7269151392155523061">A gyorsparancs nem egyezhet meg a(z) <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> által meghatározott keresőösszesítő kulcsszóval: <ph name="SHORTCUT_NAME" />.</translation>
 <translation id="7273111226200291353">A böngésző elemzés céljából a Google Cloudnak vagy harmadik feleknek továbbítja a letöltött fájlokat. A Google Cloud vagy a harmadik fél például bizalmas adatokat vagy rosszindulatú programokat kereshet a fájlokban, és az is előfordulhat, hogy a vállalati irányelvek alapján tárolni fogják majd őket, illetve láthatók lesznek a rendszergazda számára.</translation>
@@ -3906,6 +3913,7 @@ További részletek:
 <translation id="7469935732330206581">Az űrlap nem biztonságos</translation>
 <translation id="7470854469646445678">Adja meg a másolás okát (kötelező)</translation>
 <translation id="7471007961486718967">Adja meg az átvitel okát (kötelező)</translation>
+<translation id="7473033553872550521">Felveheti a kapcsolatot a webhelytulajdonossal is, és javasolhatja neki, hogy váltson HTTPS-re. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Nem, köszönöm</translation>
 <translation id="7481312909269577407">Előre</translation>
 <translation id="7481603210197454575">Olasz boríték</translation>
@@ -4433,6 +4441,7 @@ További részletek:
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">A Virtuális kártya regisztrációja párbeszédpanel teljes magasságban van megnyitva</translation>
+<translation id="834805203690963649">A támadók láthatják és módosíthatják az adatokat, amelyeket a webhelyről küld, vagy ott fogad.</translation>
 <translation id="8349305172487531364">Könyvjelzősáv</translation>
 <translation id="8350416046273606058">A billentyűparancs nem tartalmazhat szóközt: „<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="8351131234907093545">Jegyzet létrehozása</translation>

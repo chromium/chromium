@@ -513,6 +513,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="2931440415625410757">Prikaži uputstva</translation>
 <translation id="2952278131021475699">Pretraga pomoću kamere Objektiva</translation>
 <translation id="2962516096219646456">Pogledajte sve podatke Automatskog popunjavanja</translation>
+<translation id="2965594942405840553">Ova radnja ne može da se opozove</translation>
 <translation id="2969979262385602596">Prijavljivanje nije uspelo. Probajte ponovo kasnije.</translation>
 <translation id="2975761176769946178">URL je obavezan</translation>
 <translation id="297667759942911166">Sarađujte u grupama kartica</translation>
@@ -664,6 +665,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3596414637720633074">Blokira kolačiće trećih strana u režimu bez arhiviranja</translation>
 <translation id="3602260545951981695">Odaberite Poboljšana zaštita</translation>
 <translation id="3610041351087301930">Sakrij čitač</translation>
+<translation id="3610866916973186448">Da, izbriši</translation>
 <translation id="3622175633937495219">Istorija pretrage (pronađenih: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Možete da prevučete ivicu da biste išli nazad.</translation>
 <translation id="362709345066740529">Ovde prilagodite kartice, fid i drugo</translation>
@@ -1973,6 +1975,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8561999115126307258">{count,plural, =1{{count} opcija za lozinku je dostupna iznad tastature.}one{{count} opcija za lozinku je dostupna iznad tastature.}few{{count} opcije za lozinku su dostupne iznad tastature.}other{{count} opcija za lozinku je dostupno iznad tastature.}}</translation>
 <translation id="8564894539416715395">Stranica Nova kartica</translation>
 <translation id="8569721750632860947">Koji URL želite da dodate na listu za čitanje?</translation>
+<translation id="8571019948162152515">Želite da izbrišete „<ph name="FILENAME" />“?</translation>
 <translation id="8571213806525832805">Poslednje 4 nedelje</translation>
 <translation id="8577056989960190117">Automatski popunite godinu isteka <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Isključeno</translation>

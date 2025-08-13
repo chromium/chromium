@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">保護されたお支払い認証情報の認証シート</translation>
 <translation id="1386623374109090026">アノテーション</translation>
 <translation id="138810468159004008">サイトへのアクセス時は許可</translation>
+<translation id="1391145880481608015">この警告の詳細</translation>
 <translation id="139161720020179799">ダークグレー 1</translation>
 <translation id="1391625539203220400">IBAN をこのデバイスに保存しますか？</translation>
 <translation id="1392813880755413602">OpenDocument プレゼンテーション</translation>
@@ -1444,6 +1445,7 @@
 <translation id="340924996148642843">比較機能は現在使用できません</translation>
 <translation id="3409896703495473338">セキュリティ設定を管理</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> 時間後にアップロード</translation>
+<translation id="3413466783792948876">公共ネットワークを使用している場合は、後でこのサイトにアクセスするのが最も安全です。自宅や職場の Wi-Fi など、信頼できるネットワークを使用することで、リスクが軽減されます。</translation>
 <translation id="3414275587143250384">分散コンピューティング、クラウド コンピューティング</translation>
 <translation id="3414952576877147120">サイズ:</translation>
 <translation id="341513675006332771">[Chrome Dino ゲームをプレイ] ボタンです。実行すると、Chrome で Dino Run ゲームをプレイできます</translation>
@@ -1688,6 +1690,7 @@
 <translation id="3781428340399460090">ホットピンク</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetoothデバイス</translation>
+<translation id="3785246317262748285">通常はサイトに安全に接続できますが、今回は安全な接続を使用できませんでした。攻撃者がネットワーク接続を傍受するか変更しようとしている可能性があります。<ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">「<ph name="SEARCH_QUERY" />」と一致する結果</translation>
 <translation id="3789155188480882154">サイズ 16</translation>
 <translation id="3789841737615482174">インストール</translation>
@@ -3221,6 +3224,7 @@
 <translation id="6340739886198108203">管理者のポリシー設定では、機密コンテンツが表示されている画面の撮影や録画は推奨されていません。</translation>
 <translation id="6341434961864773665">{0,plural, =1{管理者のポリシーでは、このファイルを <ph name="DESTINATION_NAME" /> にアップロードすることは推奨されていません}other{管理者のポリシーでは、これらのファイルを <ph name="DESTINATION_NAME" /> にアップロードすることは推奨されていません}}</translation>
 <translation id="6342069812937806050">たった今</translation>
+<translation id="6342171901363060580">この警告は、サイトが HTTPS に対応しておらず、シークレット モードを使用している場合に表示されます。<ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">経路案内</translation>
 <translation id="6348220984832452017">バリエーションを有効にする</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> をインストールします</translation>
@@ -3486,6 +3490,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">保護者の設定に従って YouTube をお使いください</translation>
 <translation id="6779348349813025131">Google パスワード マネージャーに MacOS キーチェーンへのアクセスを許可する必要があります</translation>
+<translation id="6780449997190414928">通常はこのサイトに安全に接続できますが、今回は安全な接続を使用できませんでした。攻撃者がネットワーク接続を傍受するか変更しようとしている可能性があります。<ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">検索エンジンは Chrome の設定でいつでも変更できます。</translation>
 <translation id="6786145470008421571">6x9 インチ封筒</translation>
 <translation id="67862343314499040">バイオレット</translation>
@@ -3517,6 +3522,7 @@
 <translation id="6831043979455480757">翻訳</translation>
 <translation id="683108308100148227">項目を隠す</translation>
 <translation id="6832753933931306326">フォームに入力しました</translation>
+<translation id="6834757537110528125">このサイトは安全な接続をサポートしていません</translation>
 <translation id="6841864657731852591">グラビア シリンダー</translation>
 <translation id="6842196666980060516">184x260 mm</translation>
 <translation id="6844998850832008753">今回のみハンド トラッキングを許可しました</translation>
@@ -3781,6 +3787,7 @@
 <translation id="7257453341537973799">キャリア設計、プランニング</translation>
 <translation id="725866823122871198">パソコンの日時（<ph name="DATE_AND_TIME" />）が正しくないため、<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> へのプライベート接続を確立できません。</translation>
 <translation id="7260075294900977274">新しいスマート フォルダを使用すると、すべてのショッピング ページを 1 か所に保存して、価格のトラッキングや検討などを自動的に行えます</translation>
+<translation id="7264942008235065057">Google の高度な保護機能プログラムを使用しているため、このサイトはブロックされたままになります。<ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">住所はこのデバイスでのみ使用できます</translation>
 <translation id="7269151392155523061"><ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> で定義された検索アグリゲータのキーワードと同じショートカットを指定することはできません: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">ダウンロードしたファイルは分析のため Google Cloud または第三者に送信されます。たとえば、機密データやマルウェアがないかスキャンされ、会社のポリシーに基づいて保存され、管理者に公開されます。</translation>
@@ -3909,6 +3916,7 @@
 <translation id="7469935732330206581">安全でないフォーム</translation>
 <translation id="7470854469646445678">コピーする理由をお知らせください（必須）</translation>
 <translation id="7471007961486718967">転送する理由をお知らせください（必須）</translation>
+<translation id="7473033553872550521">サイトの所有者に連絡して、HTTPS へのアップグレードを提案することもできます。<ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">スキップ</translation>
 <translation id="7481312909269577407">進む</translation>
 <translation id="7481603210197454575">イタリア封筒</translation>
@@ -4436,6 +4444,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" /> / <ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">仮想カードの登録が画面全体に表示されています</translation>
+<translation id="834805203690963649">サイトとの間で送受信する情報を攻撃者が見たり変更したりする可能性があります。</translation>
 <translation id="8349305172487531364">ブックマーク バー</translation>
 <translation id="8350416046273606058">ショートカットにスペースを含めることはできません: 「<ph name="SHORTCUT_NAME" />」</translation>
 <translation id="8351131234907093545">メモを作成</translation>

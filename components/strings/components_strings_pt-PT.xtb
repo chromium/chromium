@@ -237,6 +237,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1384725838384960382">Página de autenticação das credenciais de pagamento seguro</translation>
 <translation id="1386623374109090026">Notas</translation>
 <translation id="138810468159004008">Permitir ao visitar o site</translation>
+<translation id="1391145880481608015">Saiba mais acerca deste aviso</translation>
 <translation id="139161720020179799">Cinzento-escuro 1</translation>
 <translation id="1391625539203220400">Guardar IBAN neste dispositivo?</translation>
 <translation id="1392813880755413602">Apresentação OpenDocument</translation>
@@ -1444,6 +1445,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="340924996148642843">De momento, a funcionalidade Compare não está disponível</translation>
 <translation id="3409896703495473338">Gerir definições de segurança</translation>
 <translation id="3411091017011773343">Carregar dentro de <ph name="HOURS" /> h</translation>
+<translation id="3413466783792948876">É mais seguro visitar este site mais tarde se estiver a usar uma rede pública. O risco de usar uma rede fidedigna, como o Wi-Fi doméstico ou do trabalho, é menor.</translation>
 <translation id="3414275587143250384">Computação na nuvem e distribuída</translation>
 <translation id="3414952576877147120">Tamanho:</translation>
 <translation id="341513675006332771">Botão Jogar Chrome Dino; ative para jogar o Dino Run no Chrome</translation>
@@ -1688,6 +1690,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3781428340399460090">Rosa choque</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositivos Bluetooth</translation>
+<translation id="3785246317262748285">Costuma estabelecer ligação aos sites em segurança, mas o Chrome não conseguiu usar uma ligação segura desta vez. Um atacante pode estar a tentar intercetar ou modificar a sua ligação de rede. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Melhores correspondências para "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Tamanho 16</translation>
 <translation id="3789841737615482174">Instalar</translation>
@@ -3221,6 +3224,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6340739886198108203">A política do administrador não recomenda fazer capturas de ecrã nem gravações quando existe conteúdo confidencial visível:</translation>
 <translation id="6341434961864773665">{0,plural, =1{A política do administrador não recomenda o carregamento deste ficheiro para <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda o carregamento destes ficheiros para <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Mesmo agora</translation>
+<translation id="6342171901363060580">Está a ver este aviso porque o site não é compatível com HTTPS e está no Modo de navegação anónima. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Direções</translation>
 <translation id="6348220984832452017">Variações ativas</translation>
 <translation id="6349101878882523185">Instale a aplicação <ph name="APP_NAME" /></translation>
@@ -3486,6 +3490,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Usa o YouTube com as opções dos teus pais</translation>
 <translation id="6779348349813025131">O Gestor de Palavras-passe da Google precisa de acesso ao Porta-chaves macOS</translation>
+<translation id="6780449997190414928">Costuma estabelecer ligação a este site em segurança, mas o Chrome não conseguiu usar uma ligação segura desta vez. Um atacante pode estar a tentar intercetar ou modificar a sua ligação de rede. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Pode alterar o seu motor de pesquisa em qualquer altura nas definições do Chrome.</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 pol.</translation>
 <translation id="67862343314499040">Violeta</translation>
@@ -3517,6 +3522,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="683108308100148227">Ocultar item</translation>
 <translation id="6832753933931306326">O formulário foi preenchido</translation>
+<translation id="6834757537110528125">Este site não é compatível com uma ligação segura</translation>
 <translation id="6841864657731852591">Rotogravura</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Monitorização das mãos permitida desta vez</translation>
@@ -3781,6 +3787,7 @@ Detalhes adicionais:
 <translation id="7257453341537973799">Recursos e planeamento de carreiras</translation>
 <translation id="725866823122871198">Não é possível estabelecer uma ligação privada a <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, porque a data e a hora do computador (<ph name="DATE_AND_TIME" />) estão incorretas.</translation>
 <translation id="7260075294900977274">Uma nova pasta inteligente que ajuda a guardar todas as páginas de compras num único lugar, bem como a monitorizar preços automaticamente, extrair estatísticas de preço e muito mais</translation>
+<translation id="7264942008235065057">Este site vai permanecer bloqueado porque está no Programa de Proteção avançada da Google. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">A morada só está disponível neste dispositivo</translation>
 <translation id="7269151392155523061">O atalho não pode ser igual à palavra-chave do agregador de pesquisa definida por <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Os ficheiros que transfere são enviados para o Google Cloud ou terceiros para análise. Por exemplo, podem ser analisados quanto a dados confidenciais ou software malicioso, ser armazenados com base nas políticas da empresa e ficar visíveis para o seu administrador.</translation>
@@ -3908,6 +3915,7 @@ Detalhes adicionais:
 <translation id="7469935732330206581">O formulário não é seguro</translation>
 <translation id="7470854469646445678">Indique o motivo da cópia (obrigatório)</translation>
 <translation id="7471007961486718967">Indique o motivo da transferência (obrigatório)</translation>
+<translation id="7473033553872550521">Também pode contactar o proprietário do site e sugerir que atualize para HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Não</translation>
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7481603210197454575">Envelope Italian</translation>
@@ -4434,6 +4442,7 @@ Detalhes adicionais:
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Inscrição de cartão virtual aberta à altura total</translation>
+<translation id="834805203690963649">Os atacantes podem ver e alterar as informações enviadas ou recebidas do site.</translation>
 <translation id="8349305172487531364">Barra de marcadores</translation>
 <translation id="8350416046273606058">O atalho não pode conter espaços: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Criar nota</translation>

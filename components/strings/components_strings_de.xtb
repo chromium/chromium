@@ -237,6 +237,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1384725838384960382">Ansicht zum Authentifizieren der sicheren Anmeldedaten für Zahlungen</translation>
 <translation id="1386623374109090026">Anmerkungen</translation>
 <translation id="138810468159004008">Beim Besuch der Website erlauben</translation>
+<translation id="1391145880481608015">Weitere Informationen zu dieser Warnung</translation>
 <translation id="139161720020179799">Dunkelgrau 1</translation>
 <translation id="1391625539203220400">IBAN auf diesem Gerät speichern?</translation>
 <translation id="1392813880755413602">OpenDocument-Präsentation</translation>
@@ -1444,6 +1445,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="340924996148642843">Compare ist momentan nicht verfügbar</translation>
 <translation id="3409896703495473338">Sicherheitseinstellungen verwalten</translation>
 <translation id="3411091017011773343">In <ph name="HOURS" /> Std. hochladen</translation>
+<translation id="3413466783792948876">Wenn du ein öffentliches Netzwerk verwendest, ist es am sichersten, diese Website erst später aufzurufen. Das Risiko ist bei einem vertrauenswürdigen Netzwerk – wie dem WLAN zu Hause oder am Arbeitsplatz – geringer.</translation>
 <translation id="3414275587143250384">Verteilte Rechnersysteme und Cloud-Computing</translation>
 <translation id="3414952576877147120">Größe:</translation>
 <translation id="341513675006332771">Schaltfläche „Chrome Dino spielen“ – aktivieren, um Chrome Dino zu spielen</translation>
@@ -1686,6 +1688,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3781428340399460090">Dunkelrosa</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-Geräte</translation>
+<translation id="3785246317262748285">Normalerweise nutzt du verschlüsselte Verbindungen zu Websites, aber Chrome konnte in diesem Fall keine solche Verbindung verwenden. Möglicherweise versucht ein Angreifer, deine Onlineaktivitäten zu beobachten oder deine Netzwerkverbindung zu modifizieren. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Beste Ergebnisse für „<ph name="SEARCH_QUERY" />“</translation>
 <translation id="3789155188480882154">Größe 16</translation>
 <translation id="3789841737615482174">Installieren</translation>
@@ -3219,6 +3222,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6340739886198108203">Gemäß der Administratorrichtlinie wird nicht empfohlen, Screenshots oder Aufnahmen zu machen, wenn vertrauliche Inhalte zu sehen sind:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Datei auf <ph name="DESTINATION_NAME" /> hochzuladen}other{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Dateien auf <ph name="DESTINATION_NAME" /> hochzuladen}}</translation>
 <translation id="6342069812937806050">Gerade eben</translation>
+<translation id="6342171901363060580">Du siehst diese Warnung, weil diese Website kein HTTPS unterstützt und du den Inkognitomodus nutzt. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Route</translation>
 <translation id="6348220984832452017">Aktive Variationen</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> installieren</translation>
@@ -3484,6 +3488,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">YouTube mit den Einstellungen deines Elternteils verwenden</translation>
 <translation id="6779348349813025131">Der Google Passwortmanager benötigt Zugriff auf den macOS-Schlüsselbund</translation>
+<translation id="6780449997190414928">Normalerweise nutzt du eine verschlüsselte Verbindung zu dieser Website, aber Chrome konnte in diesem Fall keine solche Verbindung verwenden. Möglicherweise versucht ein Angreifer, deine Onlineaktivitäten zu beobachten oder deine Netzwerkverbindung zu modifizieren. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Du kannst deine Suchmaschine jederzeit in den Einstellungen von Chrome ändern.</translation>
 <translation id="6786145470008421571">Umschlag 6 × 9 Zoll</translation>
 <translation id="67862343314499040">Violett</translation>
@@ -3515,6 +3520,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6831043979455480757">Übersetzen</translation>
 <translation id="683108308100148227">Punkt ausblenden</translation>
 <translation id="6832753933931306326">Das Formular wurde ausgefüllt</translation>
+<translation id="6834757537110528125">Diese Website unterstützt keine verschlüsselte Verbindung</translation>
 <translation id="6841864657731852591">Tiefdruckzylinder</translation>
 <translation id="6842196666980060516">184 × 260 mm</translation>
 <translation id="6844998850832008753">Handtracking dieses Mal zugelassen</translation>
@@ -3779,6 +3785,7 @@ Weitere Details:
 <translation id="7257453341537973799">Karriereplanung</translation>
 <translation id="725866823122871198">Es kann keine private Verbindung zu <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> hergestellt werden, weil Datum und Uhrzeit deines Computers falsch sind (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="7260075294900977274">Ein neuer intelligenter Ordner, in dem du alle deine Shoppingseiten an einem einzigen Ort speichern und beispielsweise automatisch Preise beobachten und Preisinformationen abrufen kannst</translation>
+<translation id="7264942008235065057">Diese Website bleibt gesperrt, weil du das erweiterte Sicherheitsprogramm von Google nutzt. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Die Adresse ist nur auf diesem Gerät verfügbar</translation>
 <translation id="7269151392155523061">Das Kürzel darf nicht mit dem von <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> festgelegten Suchaggregator-Suchbegriff übereinstimmen: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Dateien, die du herunterlädst, werden zur Analyse an Google Cloud oder Dritte gesendet. Sie können beispielsweise auf sensible Daten oder Malware geprüft und gemäß Unternehmensrichtlinien gespeichert und für deinen Administrator sichtbar sein.</translation>
@@ -3907,6 +3914,7 @@ Weitere Details:
 <translation id="7469935732330206581">Dieses Formular ist nicht sicher</translation>
 <translation id="7470854469646445678">Gib den Grund für das Kopieren an (erforderlich)</translation>
 <translation id="7471007961486718967">Gib den Grund für die Übertragung an (erforderlich)</translation>
+<translation id="7473033553872550521">Du kannst auch den Websiteinhaber kontaktieren und ihm vorschlagen, auf HTTPS umzustellen. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Nein, danke</translation>
 <translation id="7481312909269577407">Vorwärts</translation>
 <translation id="7481603210197454575">Umschlag Italienisch</translation>
@@ -4433,6 +4441,7 @@ Weitere Details:
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Ansicht zur Registrierung der virtuellen Karte vollständig geöffnet</translation>
+<translation id="834805203690963649">Angreifer können Informationen, die du an die Website sendest oder von der Website erhältst, sehen und ändern.</translation>
 <translation id="8349305172487531364">Lesezeichenleiste</translation>
 <translation id="8350416046273606058">Kürzel darf keine Leerzeichen enthalten: „<ph name="SHORTCUT_NAME" />“</translation>
 <translation id="8351131234907093545">Notiz erstellen</translation>

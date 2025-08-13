@@ -237,6 +237,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1384725838384960382">Veilige betaling se eiebewysstawingblad</translation>
 <translation id="1386623374109090026">Aantekeninge</translation>
 <translation id="138810468159004008">Laat toe terwyl jy die werf besoek</translation>
+<translation id="1391145880481608015">Kry meer inligting oor hierdie waarskuwing</translation>
 <translation id="139161720020179799">Donkergrys 1</translation>
 <translation id="1391625539203220400">Stoor IBAN op hierdie toestel?</translation>
 <translation id="1392813880755413602">OpenDocument-aanbieding</translation>
@@ -1444,6 +1445,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="340924996148642843">Vergelyk is nie tans beskikbaar nie.</translation>
 <translation id="3409896703495473338">Bestuur sekuriteitinstellings</translation>
 <translation id="3411091017011773343">Laai op oor <ph name="HOURS" /> uur</translation>
+<translation id="3413466783792948876">As jy 'n publieke netwerk gebruik, is dit veiliger om later hierdie werf te besoek. Daar is minder risiko met ’n vertroude netwerk, soos die wi-fi by jou huis of werk.</translation>
 <translation id="3414275587143250384">Verspreide en wolkverwerking</translation>
 <translation id="3414952576877147120">Grootte:</translation>
 <translation id="341513675006332771">Knoppie om Chrome Dino-speletjie te speel; aktiveer om die Dino Run-speletjie in Chrome te speel</translation>
@@ -1688,6 +1690,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3781428340399460090">Helderpienk</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-toestelle</translation>
+<translation id="3785246317262748285">Jy koppel gewoonlik veilig aan werwe, maar Chrome kon nie hierdie keer ’n veilige verbinding gebruik nie. ’n Aanvaller probeer dalk afluister of jou netwerkverbinding wysig. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Beste passings vir “<ph name="SEARCH_QUERY" />”</translation>
 <translation id="3789155188480882154">Grootte 16</translation>
 <translation id="3789841737615482174">Installeer</translation>
@@ -3221,6 +3224,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6340739886198108203">Administrateursbeleid beveel nie aan dat skermskote geneem of opnames gemaak word wanneer vertroulike inhoud sigbaar is nie:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Administrateursbeleid beveel aan dat jy nie hierdie lêer na <ph name="DESTINATION_NAME" /> toe oplaai nie}other{Administrateursbeleid beveel aan dat jy nie hierdie lêers na <ph name="DESTINATION_NAME" /> toe oplaai nie}}</translation>
 <translation id="6342069812937806050">Nou net</translation>
+<translation id="6342171901363060580">Jy sien hierdie waarskuwing omdat hierdie werf nie HTTPS steun nie en jy in Incognitomodus is. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Aanwysings</translation>
 <translation id="6348220984832452017">Aktiewe variasies</translation>
 <translation id="6349101878882523185">Installeer <ph name="APP_NAME" /></translation>
@@ -3486,6 +3490,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Gebruik YouTube met jou ouer se keuses</translation>
 <translation id="6779348349813025131">Google Wagwoordbestuurder het toegang tot MacOS Keychain nodig</translation>
+<translation id="6780449997190414928">Jy verbind gewoonlik veilig aan hierdie werf, maar Chrome kon nie hierdie keer ’n veilige verbinding gebruik nie. ’n Aanvaller probeer dalk afluister of jou netwerkverbinding wysig. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Jy kan enige tyd jou soekenjin in Chrome se instellings verander.</translation>
 <translation id="6786145470008421571">Koevert 6x9 dm.</translation>
 <translation id="67862343314499040">Pers</translation>
@@ -3517,6 +3522,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6831043979455480757">Vertaal</translation>
 <translation id="683108308100148227">Versteek item</translation>
 <translation id="6832753933931306326">Die vorm is ingevul</translation>
+<translation id="6834757537110528125">Hierdie werf steun nie ’n veilige verbinding nie</translation>
 <translation id="6841864657731852591">Gravuresilinder</translation>
 <translation id="6842196666980060516">184x260 mm</translation>
 <translation id="6844998850832008753">Handnasporing word hierdie keer toegelaat</translation>
@@ -3780,6 +3786,7 @@ Bykomende besonderhede:
 <translation id="7257453341537973799">Loopbaanhulpbronne en -beplanning</translation>
 <translation id="725866823122871198">'n Private verbinding aan <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kan nie gevestig word nie omdat jou rekenaar se datum en tyd (<ph name="DATE_AND_TIME" />) verkeerd is.</translation>
 <translation id="7260075294900977274">’n Nuwe slim vouer wat jou help om al jou inkopiebladsye op een plek te stoor en outomaties pryse dop te hou, prysinsigte te kry, en nog meer</translation>
+<translation id="7264942008235065057">Hierdie werf sal geblokkeer bly want jy is onder Google se Gevorderde Beskerming-program. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Adres is net op hierdie toestel beskikbaar</translation>
 <translation id="7269151392155523061">Kortpad kan nie dieselfde wees as die soektogsamevoegersleutelwoord wat deur <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> gedefinieer is nie: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Lêers wat jy aflaai, word na Google Cloud of derde partye gestuur om ontleed te word. Hulle kan byvoorbeeld vir sensitiewe data of wanware geskandeer word en kan op grond van maatskappybeleide geberg word en sigbaar vir jou administrateur wees.</translation>
@@ -3908,6 +3915,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7469935732330206581">Vorm is nie veilig nie</translation>
 <translation id="7470854469646445678">Verskaf rede vir kopiëring (vereis)</translation>
 <translation id="7471007961486718967">Verskaf rede vir oordrag (vereis)</translation>
+<translation id="7473033553872550521">Jy kan ook die werfeienaar kontak en voorstel dat hulle na HTTPS opgradeer. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Nee, Dankie</translation>
 <translation id="7481312909269577407">Vorentoe</translation>
 <translation id="7481603210197454575">Koevert Italiaans</translation>
@@ -4434,6 +4442,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Virtuele kaartinskrywing is teen volle hoogte oopgemaak</translation>
+<translation id="834805203690963649">Inligting wat jy na die werf stuur of van die werf af ontvang, kan deur aanvallers gesien en verander word.</translation>
 <translation id="8349305172487531364">Boekmerkebalk</translation>
 <translation id="8350416046273606058">Kortpad kan nie spasies bevat nie: “<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="8351131234907093545">Skep nota</translation>

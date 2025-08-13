@@ -513,6 +513,7 @@
 <translation id="2931440415625410757">نمایش دستورالعمل‌ها</translation>
 <translation id="2952278131021475699">جستجوی دوربینی با «لنز»</translation>
 <translation id="2962516096219646456">دیدن همه داده‌های تکمیل خودکار</translation>
+<translation id="2965594942405840553">این کنش واگردشدنی نیست</translation>
 <translation id="2969979262385602596">ورود به سیستم انجام نشد. بعداً دوباره امتحان کنید.</translation>
 <translation id="2975761176769946178">نشانی وب الزامی است</translation>
 <translation id="297667759942911166">در گروه‌های برگه مشارکت کنید</translation>
@@ -664,6 +665,7 @@
 <translation id="3596414637720633074">مسدود کردن کوکی‌های طرف سوم در «حالت ناشناس»</translation>
 <translation id="3602260545951981695">«محافظت بهبودیافته» را انتخاب کنید</translation>
 <translation id="3610041351087301930">پنهان کردن خواننده</translation>
+<translation id="3610866916973186448">بله، حذف شود</translation>
 <translation id="3622175633937495219">سابقه «جستجو» (<ph name="COUNT" /> مورد پیدا شد)</translation>
 <translation id="3625008969091706597">برای رفتن به عقب، می‌توانید از لبه تند بکشید.</translation>
 <translation id="362709345066740529">کارت‌ها، فید، و موارد دیگر را اینجا سفارشی‌سازی کنید</translation>
@@ -1973,6 +1975,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8561999115126307258">{count,plural, =1{‫{count} گزینه برای گذرواژه در بالای صفحه‌کلید وجود دارد.}one{‫{count} گزینه برای گذرواژه در بالای صفحه‌کلید وجود دارد.}other{‫{count} گزینه برای گذرواژه در بالای صفحه‌کلید وجود دارد.}}</translation>
 <translation id="8564894539416715395">صفحه برگه جدید</translation>
 <translation id="8569721750632860947">کدام نشانی وب را می‌خواهید به فهرست خواندن اضافه کنید؟</translation>
+<translation id="8571019948162152515">‫«<ph name="FILENAME" />» حذف شود؟</translation>
 <translation id="8571213806525832805">۴ هفته گذشته</translation>
 <translation id="8577056989960190117">تکمیل خودکار سال انقضا <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">خاموش</translation>

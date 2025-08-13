@@ -237,6 +237,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1384725838384960382">Drošu maksājumu akreditācijas datu autentifikācijas lapa</translation>
 <translation id="1386623374109090026">Komentāri</translation>
 <translation id="138810468159004008">Atļaut vietnes apmeklēšanas laikā</translation>
+<translation id="1391145880481608015">Uzziniet vairāk par šo brīdinājumu.</translation>
 <translation id="139161720020179799">Tumši pelēka 1</translation>
 <translation id="1391625539203220400">Vai saglabāt IBAN šajā ierīcē?</translation>
 <translation id="1392813880755413602">OpenDocument prezentācija</translation>
@@ -1444,6 +1445,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="340924996148642843">Salīdzināšana pašlaik nav pieejama</translation>
 <translation id="3409896703495473338">Pārvaldīt drošības iestatījumus</translation>
 <translation id="3411091017011773343">Augšupielādēt pēc <ph name="HOURS" /> h</translation>
+<translation id="3413466783792948876">Ja izmantojat publisku tīklu, visdrošāk ir apmeklēt šo vietni vēlāk. Uzticamā tīklā, piemēram, mājas vai darba Wi-Fi tīklā, risks ir mazāks.</translation>
 <translation id="3414275587143250384">Izkliedētā skaitļošana un mākoņdatošana</translation>
 <translation id="3414952576877147120">Lielums:</translation>
 <translation id="341513675006332771">Poga “Spēlēt Chrome dinozaura spēli”. Aktivizējiet, lai pārlūkā Chrome spēlētu dinozaura skriešanas spēli.</translation>
@@ -1687,6 +1689,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3781428340399460090">Spilgti rozā</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth ierīces</translation>
+<translation id="3785246317262748285">Parasti jūs izveidojat drošu savienojumu ar vietnēm, taču šoreiz Chrome nevarēja izmantot drošu savienojumu. Iespējams, kāds uzbrucējs mēģina izsekot jūsu darbības vai mainīt jūsu tīkla savienojumu. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Precīzākās atbilstības vaicājumam “<ph name="SEARCH_QUERY" />”</translation>
 <translation id="3789155188480882154">16. izmērs</translation>
 <translation id="3789841737615482174">Instalēt</translation>
@@ -3219,6 +3222,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6340739886198108203">Administratora politika nosaka, ka nav ieteicams izveidot ekrānuzņēmumus vai videoierakstus, ja ir redzams konfidenciāls saturs.</translation>
 <translation id="6341434961864773665">{0,plural, =1{Administratora politika nosaka, ka nav ieteicams augšupielādēt šo failu šeit: <ph name="DESTINATION_NAME" />}zero{Administratora politika nosaka, ka nav ieteicams augšupielādēt šos failus šeit: <ph name="DESTINATION_NAME" />}one{Administratora politika nosaka, ka nav ieteicams augšupielādēt šos failus šeit: <ph name="DESTINATION_NAME" />}other{Administratora politika nosaka, ka nav ieteicams augšupielādēt šos failus šeit: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Tikko</translation>
+<translation id="6342171901363060580">Šis brīdinājums tiek rādīts, jo šajā vietnē netiek atbalstīts protokols HTTPS un jūs izmantojat inkognito režīmu. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Iegūt norādes</translation>
 <translation id="6348220984832452017">Aktīvie varianti</translation>
 <translation id="6349101878882523185">Instalēt <ph name="APP_NAME" /> lietotni</translation>
@@ -3484,6 +3488,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Izmantojiet pakalpojumu YouTube ar vecāku izvēlēm</translation>
 <translation id="6779348349813025131">Google paroļu pārvaldniekam ir nepieciešama piekļuve MacOS sistēmai Keychain</translation>
+<translation id="6780449997190414928">Parasti jūs izveidojat drošu savienojumu ar šo vietni, taču šoreiz Chrome nevarēja izmantot drošu savienojumu. Iespējams, kāds uzbrucējs mēģina izsekot jūsu darbības vai mainīt jūsu tīkla savienojumu. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Jebkurā brīdī Chrome iestatījumos varat mainīt meklētājprogrammu.</translation>
 <translation id="6786145470008421571">Aploksne (6 x 9 collas)</translation>
 <translation id="67862343314499040">Violeta</translation>
@@ -3515,6 +3520,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6831043979455480757">Tulkot</translation>
 <translation id="683108308100148227">Paslēpt vienumu</translation>
 <translation id="6832753933931306326">Veidlapa tika aizpildīta</translation>
+<translation id="6834757537110528125">Šī vietne neatbalsta drošu savienojumu</translation>
 <translation id="6841864657731852591">Dobspiedes cilindrs</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Roku kustību izsekošana ir atļauta šajā reizē</translation>
@@ -3779,6 +3785,7 @@ Papildu informācija:
 <translation id="7257453341537973799">Karjeras iespējas un plānošana</translation>
 <translation id="725866823122871198">Nevar izveidot privātu savienojumu ar <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, jo jūsu datora datums un laiks (<ph name="DATE_AND_TIME" />) nav pareizs.</translation>
 <translation id="7260075294900977274">Jauna viedā mape, kas palīdz vienuviet saglabāt visas pirkumu lapas un automātiski izsekot cenām, gūt cenu ieskatus un veikt citas darbības.</translation>
+<translation id="7264942008235065057">Šī vietne joprojām būs bloķēta, jo piedalāties Google papildu aizsardzības programmā. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Adrese ir pieejama tikai šajā ierīcē.</translation>
 <translation id="7269151392155523061">Saīsne nedrīkst būt tāda pati kā meklēšanas apkopotāja atslēgvārds, kas definēts politikā <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Jūsu lejupielādētie faili tiek nosūtīti uz Google Cloud vai trešajām pusēm, lai veiktu analīzi. Piemēram, šie faili var tikt pārmeklēti, lai konstatētu, vai tajos ir sensitīvi dati vai ļaunprātīga programmatūra, un uzglabāti saskaņā ar uzņēmuma politikām, turklāt tie var būt redzami jūsu administratoram.</translation>
@@ -3907,6 +3914,7 @@ Papildu informācija:
 <translation id="7469935732330206581">Veidlapa nav droša</translation>
 <translation id="7470854469646445678">Norādiet kopēšanas iemeslu (obligāti)</translation>
 <translation id="7471007961486718967">Norādiet pārsūtīšanas iemeslu (obligāti)</translation>
+<translation id="7473033553872550521">Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz protokolu HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Nē, paldies!</translation>
 <translation id="7481312909269577407">Pārsūtīt</translation>
 <translation id="7481603210197454575">Itāļu aploksne</translation>
@@ -4433,6 +4441,7 @@ Papildu informācija:
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Virtuālās kartes reģistrācijas dialoglodziņš ir atvērts pilnā augstumā</translation>
+<translation id="834805203690963649">Uzbrucēji var skatīt un mainīt informāciju, ko sūtāt šai vietnei vai saņemat no tās.</translation>
 <translation id="8349305172487531364">Grāmatzīmju josla</translation>
 <translation id="8350416046273606058">Saīsnē nedrīkst būt atstarpes: “<ph name="SHORTCUT_NAME" />”.</translation>
 <translation id="8351131234907093545">Izveidot piezīmi</translation>

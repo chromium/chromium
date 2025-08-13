@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">সুৰক্ষিত পৰিশোধৰ ক্ৰিডেনশ্বিয়েলৰ বিশ্বাসযোগ্যতা প্ৰমাণীকৰণ শ্বীট</translation>
 <translation id="1386623374109090026">এন’টেশ্বন</translation>
 <translation id="138810468159004008">ছাইটটো চোৱাৰ সময়ত অনুমতি দিয়ক</translation>
+<translation id="1391145880481608015">এই সকীয়নিৰ বিষয়ে অধিক জানক</translation>
 <translation id="139161720020179799">গাঢ় ধোঁৱাবৰণীয়া ১</translation>
 <translation id="1391625539203220400">এই ডিভাইচত IBAN ছেভ কৰিবনে?</translation>
 <translation id="1392813880755413602">OpenDocument উপস্থাপন</translation>
@@ -1442,6 +1443,7 @@
 <translation id="340924996148642843">তুলনা কৰাৰ সুবিধা এই মুহূৰ্তত উপলব্ধ নহয়</translation>
 <translation id="3409896703495473338">সুৰক্ষাৰ ছেটিং পৰিচালনা কৰক</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> ঘণ্টাত আপল’ড কৰক</translation>
+<translation id="3413466783792948876">আপুনি যদি ৰাজহুৱা নেটৱৰ্ক ব্যৱহাৰ কৰি আছে, এই ছাইটটো পাছত চোৱাটো নিৰাপদ হ’ব। আপোনাৰ ঘৰ বা কৰ্মস্থানৰ ৱাই-ফাইৰ দৰে বিশ্বস্ত নেটৱৰ্কৰ পৰা চালে বিপদাশংকা কম হয়।</translation>
 <translation id="3414275587143250384">বিতৰণ কৰা আৰু ক্লাউড কম্পিউটিং</translation>
 <translation id="3414952576877147120">আকাৰ:</translation>
 <translation id="341513675006332771">Chrome Dino গে’মটো খেলাৰ বুটাম, Chromeত Dino Run গে’মটো খেলিবলৈ সক্ৰিয় কৰক</translation>
@@ -1685,6 +1687,7 @@
 <translation id="3781428340399460090">উজ্জ্বল গুলপীয়া</translation>
 <translation id="3783418713923659662">MasterCard গ্ৰহণ কৰে</translation>
 <translation id="3784372983762739446">ব্লুটুথ ডিভাইচসমূহ</translation>
+<translation id="3785246317262748285">আপুনি সচৰাচৰ ছাইটসমূহৰ সৈতে সুৰক্ষিতভাৱে সংযোগ কৰে, কিন্তু Chromeএ এইবাৰ এটা সুৰক্ষিত সংযোগ ব্যৱহাৰ কৰিব নোৱাৰিলে। কোনো আক্ৰমণকাৰীয়ে আপোনাৰ নেটৱৰ্ক সংযোগত গোপনে নজৰ ৰাখিবলৈ অথবা সেয়া সংশোধন কৰিবলৈ চেষ্টা কৰি থাকিব পাৰে। <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />"ৰ বাবে শ্ৰেষ্ঠ মিল</translation>
 <translation id="3789155188480882154">আকাৰ ১৬</translation>
 <translation id="3789841737615482174">ইনষ্টল কৰক</translation>
@@ -3216,6 +3219,7 @@
 <translation id="6340739886198108203">প্ৰশাসকৰ নীতিয়ে গোপনীয় সমল দেখা পোৱা হৈ থকাৰ সময়ত স্ক্ৰীনশ্বট লোৱা অথবা ৰেকৰ্ডিং কৰাটো চুপাৰিছ নকৰে:</translation>
 <translation id="6341434961864773665">{0,plural, =1{প্ৰশাসকৰ নীতিয়ে এই ফাইলটো <ph name="DESTINATION_NAME" />ত আপল’ড কৰাটো চুপাৰিছ নকৰে}one{প্ৰশাসকৰ নীতিয়ে এই ফাইলসমূহ <ph name="DESTINATION_NAME" />ত আপল’ড কৰাটো চুপাৰিছ নকৰে}other{প্ৰশাসকৰ নীতিয়ে এই ফাইলসমূহ <ph name="DESTINATION_NAME" />ত আপল’ড কৰাটো চুপাৰিছ নকৰে}}</translation>
 <translation id="6342069812937806050">খন্তেক পূর্বে</translation>
+<translation id="6342171901363060580">আপুনি এই সকীয়নিটো দেখা পাইছে কাৰণ এই ছাইটটোৱে HTTPS সমৰ্থন নকৰে আৰু আপুনি ইনক’গনিট’ ম’ডত আছে। <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">দিক্-নিৰ্দেশনা</translation>
 <translation id="6348220984832452017">ভিন্নতা সক্ৰিয় কৰক</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ইনষ্টল কৰক</translation>
@@ -3481,6 +3485,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">আপোনাৰ অভিভাৱকৰ পচন্দ অনুসৰি YouTube ব্যৱহাৰ কৰক</translation>
 <translation id="6779348349813025131">Google Password Managerএ MacOS কীচেইন এক্সেছ কৰাৰ প্ৰয়োজন</translation>
+<translation id="6780449997190414928">আপুনি সচৰাচৰ এই ছাইটটোত সুৰক্ষিতভাৱে সংযোগ কৰে, কিন্তু Chromeএ এইবাৰ এটা সুৰক্ষিত সংযোগ ব্যৱহাৰ কৰিব নোৱাৰিলে। কোনো আক্ৰমণকাৰীয়ে আপোনাৰ নেটৱৰ্ক সংযোগত গোপনে নজৰ ৰাখিবলৈ অথবা সেয়া সংশোধন কৰিবলৈ চেষ্টা কৰি থাকিব পাৰে। <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">আপুনি যিকোনো সময়তে Chromeৰ ছেটিঙত আপোনাৰ সন্ধানৰ ইঞ্জিনটো সলনি কৰিব পাৰে।</translation>
 <translation id="6786145470008421571">এনভেল’প ৬ x ৯ ইঞ্চি</translation>
 <translation id="67862343314499040">বেঙুনীয়া</translation>
@@ -3512,6 +3517,7 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="683108308100148227">বস্তু লুকুৱাওক</translation>
 <translation id="6832753933931306326">ফ’ৰ্মখন পূৰ কৰা হৈছে</translation>
+<translation id="6834757537110528125">এই ছাইটটোৱে সুৰক্ষিত সংযোগ সমৰ্থন নকৰে</translation>
 <translation id="6841864657731852591">গ্ৰেভিউৰ চিলিণ্ডাৰ</translation>
 <translation id="6842196666980060516">১৮৪ x ২৬০ মি.মি.</translation>
 <translation id="6844998850832008753">এই সময়ত হাতৰ ট্ৰেকিঙৰ অনুমতি দিয়া হৈছে</translation>
@@ -3775,6 +3781,7 @@
 <translation id="7257453341537973799">জীৱিকা সম্পৰ্কীয় সম্পদ আৰু পৰিকল্পনা</translation>
 <translation id="725866823122871198">আপোনাৰ কম্পিউটাৰৰ তাৰিখ আৰু সময় (<ph name="DATE_AND_TIME" />) ভুল হৈ থকাৰ বাবে <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />ৰ সৈতে ব্যক্তিগত সংযোগ স্থাপন কৰিব নোৱাৰি।</translation>
 <translation id="7260075294900977274">আপোনাৰ আটাইবোৰ শ্বপিঙৰ পৃষ্ঠা এঠাইতে ছেভ কৰা আৰু স্বয়ংক্ৰিয়ভাৱে দাম ট্ৰেক কৰা, দাম সম্পর্কীয় অন্তৰ্দৃষ্টিসমূহ আৰু বহুতো তথ্য পোৱাত সহায় কৰা এটা নতুন স্মার্ট ফ'ল্ডাৰ</translation>
+<translation id="7264942008235065057">আপুনি Googleৰ সুৰক্ষা সম্পৰ্কীয় উন্নত সুবিধাৰ প্ৰ’গ্ৰামৰ অংশ হোৱা বাবে এই ছাইটটো অৱৰোধ হৈয়ে থাকিব। <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">ঠিকনাটো কেৱল এই ডিভাইচটোত উপলব্ধ</translation>
 <translation id="7269151392155523061">শ্বৰ্টকাটটো <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />এ সংজ্ঞাবদ্ধ কৰা সন্ধান এগ্ৰিগে’টৰ কীৱৰ্ডটোৰ সৈতে একেই হ'ব নোৱাৰে: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">আপুনি ডাউনল’ড কৰা ফাইলসমূহ বিশ্লেষণৰ বাবে Google Cloud বা তৃতীয় পক্ষলৈ পঠিওৱা হয়। উদাহৰণস্বৰূপে, সেইবিলাক সংবেদনশীল ডেটা বা মালৱেৰৰ বাবে স্কেন কৰা হ’ব পাৰে আৰু কোম্পানীৰ নীতিৰ ওপৰত ভিত্তি কৰি ষ্ট’ৰ কৰা হ’ব পাৰে আৰু প্ৰশাসকৰ বাবে দৃশ্যমান হ’ব পাৰে।</translation>
@@ -3903,6 +3910,7 @@
 <translation id="7469935732330206581">ফৰ্মখন সুৰক্ষিত নহয়</translation>
 <translation id="7470854469646445678">প্ৰতিলিপি কৰাৰ কাৰণ দিয়ক (আৱশ্যকীয়)</translation>
 <translation id="7471007961486718967">স্থানান্তৰণ কৰাৰ কাৰণ দিয়ক (আৱশ্যকীয়)</translation>
+<translation id="7473033553872550521">আপুনি ছাইটৰ গৰাকীৰ সৈতেও যোগাযোগ কৰিব পাৰে আৰু তেওঁক HTTPSলৈ আপগ্ৰে’ড কৰাৰ বাবে পৰামৰ্শ দিব পাৰে। <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">নালাগে, ধন্যবাদ</translation>
 <translation id="7481312909269577407">ফৰৱাৰ্ড কৰক</translation>
 <translation id="7481603210197454575">এনভেল’প ইটালিয়ান</translation>
@@ -4429,6 +4437,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">ভাৰ্চুৱেল কাৰ্ডৰ পঞ্জীয়ন পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
+<translation id="834805203690963649">আপুনি ছাইটটোলৈ পঠিওৱা বা ছাইটটোৰ পৰা লাভ কৰা তথ্য আক্ৰমণকাৰীয়ে চাব আৰু সলনি কৰিব পাৰে।</translation>
 <translation id="8349305172487531364">বুকমাৰ্কৰ বাৰ</translation>
 <translation id="8350416046273606058">শ্বৰ্টকাটত স্পেচ থাকিব নোৱাৰে: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">টোকা সৃষ্টি কৰক</translation>

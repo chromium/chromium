@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">ຊີດການພິສູດຢືນຢັນຂໍ້ມູນການເຂົ້າສູ່ລະບົບການຈ່າຍເງິນແບບປອດໄພ</translation>
 <translation id="1386623374109090026">ການອະທິບາຍຄວາມເຫັນ</translation>
 <translation id="138810468159004008">ອະນຸຍາດໃນລະຫວ່າງເຂົ້າເບິ່ງເວັບໄຊ</translation>
+<translation id="1391145880481608015">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຳເຕືອນນີ້</translation>
 <translation id="139161720020179799">ສີເທົາເຂັ້ມທີ 1</translation>
 <translation id="1391625539203220400">ບັນທຶກ IBAN ໃສ່ອຸປະກອນນີ້ບໍ?</translation>
 <translation id="1392813880755413602">ພຣີເຊັນເທເຊິນ OpenDocument</translation>
@@ -1444,6 +1445,7 @@
 <translation id="340924996148642843">ການປຽບທຽບບໍ່ພ້ອມໃຫ້ນຳໃຊ້ໃນຕອນນີ້</translation>
 <translation id="3409896703495473338">ຈັດການການຕັ້ງຄ່າຄວາມປອດໄພ</translation>
 <translation id="3411091017011773343">ອັບໂຫຼດໃນອີກ <ph name="HOURS" /> ຊມ</translation>
+<translation id="3413466783792948876">ການເຂົ້າເບິ່ງເວັບໄຊນີ້ໃນພາຍຫຼັງຈະປອດໄພທີ່ສຸດຫາກທ່ານກຳລັງໃຊ້ເຄືອຂ່າຍສາທາລະນະ. ໂດຍຈະມີຄວາມສ່ຽງໜ້ອຍລົງຫາກໃຊ້ເຄືອຂ່າຍທີ່ເຊື່ອຖືໄດ້ ເຊັ່ນ: Wi-Fi ຢູ່ເຮືອນ ຫຼື ຢູ່ຫ້ອງການຂອງທ່ານ.</translation>
 <translation id="3414275587143250384">ການປະມວນຜົນແບບກະຈາຍ ແລະ ແບບຄລາວ</translation>
 <translation id="3414952576877147120">ຂະໜາດ:</translation>
 <translation id="341513675006332771">ປຸ່ມຫຼິ້ນເກມ Chrome Dino, ເປີດນຳໃຊ້ເພື່ອຫຼິ້ນເກມ Dino Run ໃນ Chrome</translation>
@@ -1688,6 +1690,7 @@
 <translation id="3781428340399460090">ສີ​ບົວ​ເຂັ້ມ</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">ອຸປະກອນ Bluetooth</translation>
+<translation id="3785246317262748285">ໂດຍປົກກະຕິແລ້ວທ່ານຈະເຊື່ອມຕໍ່ກັບເວັບໄຊຕ່າງໆຢ່າງປອດໄພ, ແຕ່ Chrome ບໍ່ສາມາດໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພໄດ້ໃນເວລານີ້. ຜູ້ໂຈມຕີອາດກຳລັງພະຍາຍາມລັກຟັງ ຫຼື ແກ້ໄຂການເຊື່ອມຕໍ່ເຄືອຂ່າຍຂອງທ່ານ. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">ຜົນຮັບທີ່ກົງທີ່ສຸດສຳລັບ "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">ຂະໜາດ 16</translation>
 <translation id="3789841737615482174">​ຕິດ​ຕັ້ງ</translation>
@@ -3221,6 +3224,7 @@
 <translation id="6340739886198108203">ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ຖ່າຍຮູບ ຫຼື ບັນທຶກໜ້າຈໍໃນເວລາປາກົດມີເນື້ອຫາທີ່ເປັນຄວາມລັບ:</translation>
 <translation id="6341434961864773665">{0,plural, =1{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ອັບໂຫຼດໄຟລ໌ນີ້ໄປໃສ່ <ph name="DESTINATION_NAME" />}other{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ອັບໂຫຼດໄຟລ໌ເຫຼົ່ານີ້ໄປໃສ່ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">ເມື່ອກີ້ນີ້</translation>
+<translation id="6342171901363060580">ທ່ານເຫັນຄຳເຕືອນນີ້ເນື່ອງຈາກເວັບໄຊນີ້ບໍ່ຮອງຮັບ HTTPS ແລະ ທ່ານກຳລັງໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນຢູ່. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">ເສັ້ນທາງ</translation>
 <translation id="6348220984832452017">ຮູບແບບທີ່ນຳໃຊ້ຢູ່</translation>
 <translation id="6349101878882523185">ຕິດຕັ້ງ <ph name="APP_NAME" /></translation>
@@ -3486,6 +3490,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">ໃຊ້ YouTube ກັບຕົວເລືອກຂອງຜູ້ປົກຄອງຂອງທ່ານ</translation>
 <translation id="6779348349813025131">ຕົວຈັດການລະຫັດຜ່ານ Google ຕ້ອງການສິດເຂົ້າເຖິງ Keychain ຂອງ MacOS</translation>
+<translation id="6780449997190414928">ໂດຍປົກກະຕິແລ້ວທ່ານຈະເຊື່ອມຕໍ່ກັບເວັບໄຊນີ້ຢ່າງປອດໄພ, ແຕ່ Chrome ບໍ່ສາມາດໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພໄດ້ໃນເວລານີ້. ຜູ້ໂຈມຕີອາດກຳລັງພະຍາຍາມລັກຟັງ ຫຼື ແກ້ໄຂການເຊື່ອມຕໍ່ເຄືອຂ່າຍຂອງທ່ານ. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">ທ່ານສາມາດປ່ຽນໂປຣແກຣມຊອກຫາຂອງທ່ານໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າຂອງ Chrome.</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 ນິ້ວ</translation>
 <translation id="67862343314499040">ສີມ່ວງ</translation>
@@ -3517,6 +3522,7 @@
 <translation id="6831043979455480757">ແປພາສາ</translation>
 <translation id="683108308100148227">ເຊື່ອງລາຍການ</translation>
 <translation id="6832753933931306326">ຕື່ມຂໍ້ມູນໃສ່ແບບຟອມແລ້ວ</translation>
+<translation id="6834757537110528125">ເວັບໄຊນີ້ບໍ່ຮອງຮັບການເຊື່ອມຕໍ່ທີ່ປອດໄພ</translation>
 <translation id="6841864657731852591">ກະບອກພິມຮູບ</translation>
 <translation id="6842196666980060516">184 x 260 ມມ</translation>
 <translation id="6844998850832008753">ອະນຸຍາດໃຫ້ໃຊ້ການຕິດຕາມການເຄື່ອນໄຫວຂອງມືໃນເທື່ອນີ້</translation>
@@ -3780,6 +3786,7 @@
 <translation id="7257453341537973799">ແຫຼ່ງຂໍ້ມູນ ແລະ ການວາງແຜນອາຊີບ</translation>
 <translation id="725866823122871198">ບໍ່​ສາ​ມາດ​ຕັ້ງ​ການ​ເຊື່ອມ​ຕໍ່​ສ່ວນ​ຕົວ​ກັບ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ໄດ້ ເພາະ​ວ່າ​ວັນ​ທີ ແລະ​ເວ​ລາ​ຄອມ​ພິວ​ເຕີ​ຂອງ​ທ່ານ (<ph name="DATE_AND_TIME" />) ບໍ່​ຖືກ​ຕ້ອງ.</translation>
 <translation id="7260075294900977274">ໂຟນເດີອັດສະລິຍະໃໝ່ທີ່ຊ່ວຍໃຫ້ທ່ານບັນທຶກໜ້າຊື້ເຄື່ອງທັງໝົດຂອງທ່ານໄວ້ໃນບ່ອນດຽວ, ຮວມທັງຕິດຕາມລາຄາ, ຮັບຂໍ້ມູນເຈາະເລິກດ້ານລາຄາ ແລະ ຂໍ້ມູນອື່ນໆໄດ້ໂດຍອັດຕະໂນມັດ</translation>
+<translation id="7264942008235065057">ເວັບໄຊນີ້ຈະຍັງຄົງຖືກບລັອກເນື່ອງຈາກທ່ານຢູ່ພາຍໃຕ້ໂປຣແກຣມການປົກປ້ອງຂັ້ນສູງຂອງ Google. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">ທີ່ຢູ່ມີໃຫ້ຢູ່ອຸປະກອນນີ້ເທົ່ານັ້ນ</translation>
 <translation id="7269151392155523061">ທາງລັດຕ້ອງບໍ່ຄືກັບຄີເວີດຂອງຜູ້ຮວບຮວມການຊອກຫາທີ່ກຳນົດໂດຍ <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">ໄຟລ໌ທີ່ທ່ານດາວໂຫຼດຈະຖືກສົ່ງໃຫ້ Google Cloud ຫຼື ພາກສ່ວນທີສາມເພື່ອວິເຄາະ. ຕົວຢ່າງ: ພວກມັນອາດຖືກສະແກນເພື່ອຊອກຫາຂໍ້ມູນທີ່ລະອຽດອ່ອນ ຫຼື ເມົາແວ ແລະ ອາດຖືກຈັດເກັບຕາມນະໂຍບາຍບໍລິສັດ ແລະ ສະແດງໃຫ້ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານເຫັນ.</translation>
@@ -3908,6 +3915,7 @@
 <translation id="7469935732330206581">ແບບຟອມບໍ່ປອດໄພ</translation>
 <translation id="7470854469646445678">ໃຫ້ເຫດຜົນສໍາລັບການສຳເນົາ (ຈຳເປັນ)</translation>
 <translation id="7471007961486718967">ໃຫ້ເຫດຜົນສໍາລັບການໂອນ (ຈຳເປັນ)</translation>
+<translation id="7473033553872550521">ນອກຈາກນີ້, ທ່ານຍັງອາດຕິດຕໍ່ເຈົ້າຂອງເວັບໄຊ ແລະ ແນະນຳໃຫ້ເຂົາເຈົ້າອັບເກຣດເປັນ HTTPS ກໍໄດ້. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">​ບໍ່, ຂອບ​ໃຈ</translation>
 <translation id="7481312909269577407">ສົ່ງຕໍ່</translation>
 <translation id="7481603210197454575">Envelope Italian</translation>
@@ -4434,6 +4442,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">ເປີດການລົງທະບຽນບັດສະເໝືອນແບບເຕັມຄວາມສູງແລ້ວ</translation>
+<translation id="834805203690963649">ຜູ້ໂຈມຕີສາມາດເບິ່ງ ແລະ ປ່ຽນແປງຂໍ້ມູນທີ່ທ່ານສົ່ງ ຫຼື ຮັບຈາກເວັບໄຊໄດ້.</translation>
 <translation id="8349305172487531364">ແຖບບຸກມາກສ໌</translation>
 <translation id="8350416046273606058">ທາງລັດບໍ່ສາມາດມີຍະຫວ່າງໄດ້: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">ສ້າງບັນທຶກ</translation>

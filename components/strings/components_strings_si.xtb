@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">ආරක්ෂිත ගෙවීම් අක්තපත්‍ර සත්‍යාපනය කිරීමේ පත්‍රය</translation>
 <translation id="1386623374109090026">අනුසටහන්</translation>
 <translation id="138810468159004008">අඩවියට පිවිසීමේ දී ඉඩ දෙන්න</translation>
+<translation id="1391145880481608015">මෙම අනතුරු ඇඟවීම ගැන තව දැන ගන්න</translation>
 <translation id="139161720020179799">තද අළු 1</translation>
 <translation id="1391625539203220400">මෙම උපාංගයට IBAN සුරකින්න ද?</translation>
 <translation id="1392813880755413602">OpenDocument ඉදිරිපත් කිරීම</translation>
@@ -1444,6 +1445,7 @@
 <translation id="340924996148642843">සංසන්දනය දැන් නොමැත</translation>
 <translation id="3409896703495473338">ආරක්ෂක සැකසීම් කළමනාකරණය කරන්න</translation>
 <translation id="3411091017011773343">පැය <ph name="HOURS" />කින් උඩුගත කරන්න</translation>
+<translation id="3413466783792948876">ඔබ පොදු ජාලයක් භාවිත කරන්නේ නම් පසුව මෙම අඩවියට පිවිසීම වඩාත් සුරක්ෂිත වේ. ඔබේ නිවසේ හෝ කාර්යාලයේ Wi-Fi වැනි විශ්වාසදායී ජාලයකින් අඩු අවදානමක් ඇත.</translation>
 <translation id="3414275587143250384">බෙදාහරින ලද සහ ක්ලවුඩ් පරිගණකය</translation>
 <translation id="3414952576877147120">ප්‍රමාණය:</translation>
 <translation id="341513675006332771">Chrome Dino ක්‍රීඩාව කරන්න බොත්තම, Chrome තුළ Dino දිවීමේ ක්‍රීඩාව කිරීමට සක්‍රිය කරන්න</translation>
@@ -1688,6 +1690,7 @@
 <translation id="3781428340399460090">උණුසුම් රෝස</translation>
 <translation id="3783418713923659662">මාස්ටර්කාඩ්</translation>
 <translation id="3784372983762739446">බ්ලූටූත් උපාංග</translation>
+<translation id="3785246317262748285">ඔබ සාමාන්‍යයෙන් අඩවිවලට සුරක්ෂිතව සම්බන්ධ වන නමුත්, Chrome හට මෙවර සුරක්ෂිත සම්බන්ධතාවක් භාවිත කළ නොහැකි විය. ප්‍රහාරකයෙකු ඔබේ ජාල සම්බන්‍ධතාවට සවන් දීමට හෝ එය වෙනස් කිරීමට උත්සාහ කරමින් සිටීමට ඉඩ ඇත. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" සඳහා හොඳම ගැළපීම්</translation>
 <translation id="3789155188480882154">ප්‍රමාණය 16</translation>
 <translation id="3789841737615482174">ස්ථාපනය</translation>
@@ -3221,6 +3224,7 @@
 <translation id="6340739886198108203">පරිපාලක ප්‍රතිපත්තිය රහසිගත අන්තර්ගතය දෘශ්‍යමාන වන විට තිරපිටපත් හෝ පටිගත කිරීම් ගැනීම නිර්දේශ නොකරයි:</translation>
 <translation id="6341434961864773665">{0,plural, =1{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනුව <ph name="DESTINATION_NAME" /> වෙත උඩුගත කිරීම නිර්දේශ නොකරයි}one{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනු <ph name="DESTINATION_NAME" /> වෙත උඩුගත කිරීම නිර්දේශ නොකරයි}other{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනු <ph name="DESTINATION_NAME" /> වෙත උඩුගත කිරීම නිර්දේශ නොකරයි}}</translation>
 <translation id="6342069812937806050">මේ දැන්</translation>
+<translation id="6342171901363060580">මෙම අඩවිය HTTPS වෙත සහය නොදක්වන නිසා සහ ඔබ අප්‍රසිද්ධ ප්‍රකාරයේ සිටින නිසා ඔබට මෙම අනතුරු ඇඟවීම පෙනේ. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">දිශාවන්</translation>
 <translation id="6348220984832452017">සක්‍රිය විචලන</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ස්ථාපන කරන්න</translation>
@@ -3486,6 +3490,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">ඔබේ මාපියන්ගේ තේරීම් සමග YouTube භාවිත කරන්න</translation>
 <translation id="6779348349813025131">Google මුරපද කළමනාකරුට MacOS Keychain වෙත ප්‍රවේශය අවශ්‍යයි</translation>
+<translation id="6780449997190414928">ඔබ සාමාන්‍යයෙන් මෙම අඩවියට සුරක්ෂිතව සම්බන්ධ වන නමුත්, Chrome හට මෙවර සුරක්ෂිත සම්බන්ධතාවක් භාවිත කළ නොහැකි විය. ප්‍රහාරකයෙකු ඔබේ ජාල සම්බන්‍ධතාවට සවන් දීමට හෝ එය වෙනස් කිරීමට උත්සාහ කරමින් සිටීමට ඉඩ ඇත. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">ඔබට Chrome හි සැකසීම් තුළ ඕනෑම වේලාවක ඔබේ සෙවීම් යන්ත්‍රය වෙනස් කළ හැක.</translation>
 <translation id="6786145470008421571">ලියුම් කවරය අඟල් 6 x 9</translation>
 <translation id="67862343314499040">ජම්බූල</translation>
@@ -3517,6 +3522,7 @@
 <translation id="6831043979455480757">පරිවර්තනය කරන්න</translation>
 <translation id="683108308100148227">අයිතමය සඟවන්න</translation>
 <translation id="6832753933931306326">පෝරමය පුරවා ඇත</translation>
+<translation id="6834757537110528125">මෙම අඩවිය සුරක්ෂිත සම්බන්ධතාවයකට සහාය නොදක්වයි</translation>
 <translation id="6841864657731852591">ඡායා උත්කීරණ සිලින්ඩරය</translation>
 <translation id="6842196666980060516">මිමි 184 x 260</translation>
 <translation id="6844998850832008753">මෙවර හස්ත ලුහුබැඳීමට ඉඩ දී ඇත</translation>
@@ -3780,6 +3786,7 @@
 <translation id="7257453341537973799">වෘත්තීය සම්පත් සහ සැලසුම්</translation>
 <translation id="725866823122871198">ඔබගේ පරිගණකයේ දිනය සහ වේලාව (<ph name="DATE_AND_TIME" />) වැරදි නිසා <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> වෙත පුද්ගලික සම්බන්ධතාවය ස්ථාපනය කළ නොහැක.</translation>
 <translation id="7260075294900977274">ඔබේ සියලු සාප්පු සවාරි පිටු එක තැනක සුරැකීමට, සහ මිල ගණන් ස්වයංක්‍රීයව නිරීක්ෂණය කිරීමට, මිල ඇතුළාන්ත ලබා ගැනීමට, සහ තවත් දේ සඳහා ඔබට උදවු කරන නව ස්මාර්ට් ෆෝල්ඩරයක්</translation>
+<translation id="7264942008235065057">ඔබ Google හි උසස් ආරක්ෂණ වැඩසටහන යටතේ සිටින බැවින් මෙම අඩවිය අවහිරව පවතිනු ඇත. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">ලිපිනය ලබා ගත හැක්කේ මෙම උපාංගයෙහි පමණි</translation>
 <translation id="7269151392155523061">කෙටිමඟ <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /> මගින් අර්ථ දක්වා ඇති සෙවීම් එකතු කිරීමේ මූල පදයට සමාන විය නොහැක</translation>
 <translation id="7273111226200291353">ඔබ බාගත කරන ගොනු විශ්ලේෂණය සඳහා Google Cloud හෝ තෙවන පාර්ශව වෙත යවනු ලැබේ. උදාහරණයක් ලෙස, ඒවා සංවේදී දත්ත හෝ අනිෂ්ට මෘදුකාංග සඳහා ස්කෑන් කළ හැකි අතර සමාගම් ප්‍රතිපත්ති මත පදනම්ව ගබඩා කළ හැකි අතර ඔබේ පරිපාලකයාට දෘශ්‍යමාන වේ.</translation>
@@ -3908,6 +3915,7 @@
 <translation id="7469935732330206581">පෝරමය ආරක්ෂිත නැත</translation>
 <translation id="7470854469646445678">පිටපත් කිරීමට හේතුව සපයන්න (අවශ්‍යයි)</translation>
 <translation id="7471007961486718967">මාරු කිරීමට හේතුව සපයන්න (අවශ්‍යයි)</translation>
+<translation id="7473033553872550521">ඔබට වෙබ් අඩවි හිමිකරු අමතා HTTPS වෙත උත්ශ්‍රේණි කිරීමට යෝජනා කළ හැක. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">එපා ස්තූතියි</translation>
 <translation id="7481312909269577407">ඉදිරියට යන්න</translation>
 <translation id="7481603210197454575">ලියුම් කවරය ඉතාලි</translation>
@@ -4434,6 +4442,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">අතථ්‍ය කාඩ්පත් ලියාපදිංචි කිරීම පුර්ණ උසක දී විවෘත විය</translation>
+<translation id="834805203690963649">ඔබ වෙබ් අඩවියෙන් යවන හෝ ලබන තොරතුරු ප්‍රහාරකයින්ට බැලීමට සහ වෙනස් කිරීමට හැක.</translation>
 <translation id="8349305172487531364">පිටු සලකුණු බාර් එක</translation>
 <translation id="8350416046273606058">කෙටිමඟේ හිස්තැන් අඩංගු විය නොහැක: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">සටහන සාදන්න</translation>

@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">Коопсуз төлөм үчүн эсептик дайындардын аныктыгын текшерүү барагы</translation>
 <translation id="1386623374109090026">Аннотациялар</translation>
 <translation id="138810468159004008">Сайтка киргенде уруксат берүү</translation>
+<translation id="1391145880481608015">Бул эскертүү жөнүндө кеңири маалымат алыңыз</translation>
 <translation id="139161720020179799">Кочкул боз 1</translation>
 <translation id="1391625539203220400">IBAN кодун бул түзмөккө сактайсызбы?</translation>
 <translation id="1392813880755413602">OpenDocument презентациясы</translation>
@@ -1444,6 +1445,7 @@
 <translation id="340924996148642843">Салыштыруу учурда жеткиликсиз</translation>
 <translation id="3409896703495473338">Коопсуздук параметрлерин башкаруу</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> сааттан кийин жүктөлүп берилет</translation>
+<translation id="3413466783792948876">Эгер жалпыга ачык тармакты колдонуп жатсаңыз, коопсуздугуңуз үчүн бул сайтка кийинчерээк өтүңүз. Үйдөгү же жумуштагы ишенимдүү Wi-Fi тармагынан кирсеңиз, коркунуч азыраак болот.</translation>
 <translation id="3414275587143250384">Дайындарды булутта иштетүү кызматы</translation>
 <translation id="3414952576877147120">Өлчөм:</translation>
 <translation id="341513675006332771">"Chrome Dino оюнун ойноо" баскычы. Dino Run оюнун Chrome'до ойноо үчүн иштетиңиз</translation>
@@ -1687,6 +1689,7 @@
 <translation id="3781428340399460090">Ачык кызгылтым</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth түзмөктөрү</translation>
+<translation id="3785246317262748285">Адатта сайттарга коопсуз туташасыз, бирок Chrome бул жолу коопсуз байланышууну колдоно алган жок. Чабуулчу тармак туташууңузга көз салып же өзгөртүүгө аракет кылышы мүмкүн.<ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" издөөсү боюнча эң мыкты дал келүүлөр</translation>
 <translation id="3789155188480882154">Өлчөмү: 16</translation>
 <translation id="3789841737615482174">Орнотуу</translation>
@@ -3220,6 +3223,7 @@
 <translation id="6340739886198108203">Администратордун саясаты купуя мазмун көрүнүп турганда скриншотторду тартууну же жаздырууну сунуштабайт:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Администратордун саясаты бул файлды төмөнкүгө жүктөп берүүнү сунуштабайт: <ph name="DESTINATION_NAME" />}other{Администратордун саясаты бул файлдарды төмөнкүгө жүктөп берүүнү сунуштабайт: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Жаңы эле</translation>
+<translation id="6342171901363060580">Бул сайтта HTTPS колдоого алынбагандыктан жана Жашыруун режимде болгонуңуз үчүн ушул эскертүүнү көрүп жатасыз. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Багыттар</translation>
 <translation id="6348220984832452017">Активдүү варианттар</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> колдонмосун орнотуу</translation>
@@ -3485,6 +3489,7 @@
 <translation id="6775759552199460396">JIS B2 (515mm x 728mm)</translation>
 <translation id="6777088782163649345">YouTube'ду ата-энең тандаган функциялар менен колдон</translation>
 <translation id="6779348349813025131">Сырсөздөрдү башкаргыч MacOS Keychain'ге мүмкүнчүлүк алышы керек</translation>
+<translation id="6780449997190414928">Адатта бул сайтка коопсуз туташасыз, бирок Chrome бул жолу коопсуз байланышууну колдоно алган жок. Чабуулчу тармак туташууңузга көз салып же өзгөртүүгө аракет кылышы мүмкүн.<ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Демейки издөө куралын Chrome’дун параметрлеринен каалаган убакта өзгөртө аласыз.</translation>
 <translation id="6786145470008421571">Конверт 6 x 9 дюйм</translation>
 <translation id="67862343314499040">Кызгылт көк</translation>
@@ -3516,6 +3521,7 @@
 <translation id="6831043979455480757">Которуу</translation>
 <translation id="683108308100148227">Нерсени жашыруу</translation>
 <translation id="6832753933931306326">Форма толтурулду</translation>
+<translation id="6834757537110528125">Бул сайт коопсуз байланышты камсыздай албайт</translation>
 <translation id="6841864657731852591">Басып чыгаруу үчүн цилиндр</translation>
 <translation id="6842196666980060516">184 x 260 мм.</translation>
 <translation id="6844998850832008753">Колдорго көз салууга ушул жолу уруксат берилди</translation>
@@ -3779,6 +3785,7 @@
 <translation id="7257453341537973799">Карьера ресурстары жана пландаштыруу</translation>
 <translation id="725866823122871198">Компьютериңиздин күнү жана убакыты (<ph name="DATE_AND_TIME" />) туура эмес болгондуктан, <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> менен купуя туташуу мүмкүн болбой жатат.</translation>
 <translation id="7260075294900977274">Бааларга автоматтык түрдө көз салуу, статистиканы жана башкаларды көрүү үчүн бардык соода барактарын бир жерде сактаган жаңы акылдуу папка</translation>
+<translation id="7264942008235065057">Бул сайт бөгөттөлгөн бойдон калат, анткени сиз Google'дун Күчөтүлгөн коргоо программасы тарабынан коргоо алып жатасыз. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Дарек ушул түзмөктө гана жеткиликтүү</translation>
 <translation id="7269151392155523061">Ыкчам баскыч <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /> аныктаган издөөнү бириктиргичтин ачкыч сөзү менен бирдей болбошу керек</translation>
 <translation id="7273111226200291353">Сиз жүктөп алган файлдар Google Булутка же үчүнчү тараптын кызматтарына талдоо үчүн жөнөтүлөт. Мисалы, аларда купуя маалыматтын же кесепеттүү программанын болуусу текшерилип, компаниянын эрежелерине ылайык сакталып, администраторуңузга көрүнүшү мүмкүн.</translation>
@@ -3907,6 +3914,7 @@
 <translation id="7469935732330206581">Форма кооптуу</translation>
 <translation id="7470854469646445678">Көчүрүүнүн себебин көрсөтүңүз (милдеттүү)</translation>
 <translation id="7471007961486718967">Өткөрүүнүн себебин көрсөтүңүз (милдеттүү)</translation>
+<translation id="7473033553872550521">Сайттын ээси менен байланышып, туташууну HTTPS'ке жаңыртууну сунуштасаңыз да болот. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Жок, рахмат</translation>
 <translation id="7481312909269577407">Багыттоо</translation>
 <translation id="7481603210197454575">Конверт Италиянча</translation>
@@ -4433,6 +4441,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Виртуалдык картаны каттоо диалогу толук экранда ачылды</translation>
+<translation id="834805203690963649">Бул сайтка жөнөткөн же алган маалыматты чабуулчулар көрүп жана өзгөртө алышат.</translation>
 <translation id="8349305172487531364">Кыстармалар тилкеси</translation>
 <translation id="8350416046273606058">Ыкчам баскыч боштуктарды камтыбашы керек: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Эскертүү түзүү</translation>

@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">صفحة مصادقة بيانات اعتماد الدفع الآمن</translation>
 <translation id="1386623374109090026">تعليقات توضيحية</translation>
 <translation id="138810468159004008">السماح بالاستخدام أثناء زيارة الموقع الإلكتروني</translation>
+<translation id="1391145880481608015">مزيد من المعلومات حول هذا التحذير</translation>
 <translation id="139161720020179799">رمادي داكن 1</translation>
 <translation id="1391625539203220400">‏هل تريد حفظ رقم الحساب بصيغة IBAN على هذا الجهاز؟</translation>
 <translation id="1392813880755413602">‏عرض تقديمي من OpenDocument</translation>
@@ -1445,6 +1446,7 @@
 <translation id="340924996148642843">ميزة المقارنة غير متوفّرة الآن</translation>
 <translation id="3409896703495473338">إدارة إعدادات الأمان</translation>
 <translation id="3411091017011773343">بدء التحميل بعد <ph name="HOURS" /> ساعة</translation>
+<translation id="3413466783792948876">‏للحفاظ على أمانك، من الأفضل زيارة هذا الموقع الإلكتروني لاحقًا في حال استخدامك لشبكة Wi-Fi عامة. ننصحك باستخدام شبكة موثوق بها وأكثر أمانًا، مثل شبكة Wi-Fi في منزلك أو مكان عملك.</translation>
 <translation id="3414275587143250384">حوسبة موزعة وحوسبة سحابية</translation>
 <translation id="3414952576877147120">الحجم:</translation>
 <translation id="341513675006332771">‏زر تشغيل لعبة الديناصور في Chrome: انقر على هذا الزر لتشغيل هذه اللعبة في Chrome.</translation>
@@ -1689,6 +1691,7 @@
 <translation id="3781428340399460090">وردي برّاق</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">أجهزة بلوتوث</translation>
+<translation id="3785246317262748285">‏يمكنك عادةً الاتصال بالمواقع الإلكترونية بشكل آمن، ولكن تعذَّر على Chrome استخدام اتصال آمن في الوقت الحالي، وقد يحاول أحد المهاجمين التجسس على اتصالك بالشبكة أو تعديله. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">أفضل نتيجة مطابِقة لعبارة البحث "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">الحجم 16</translation>
 <translation id="3789841737615482174">تثبيت</translation>
@@ -3223,6 +3226,7 @@
 <translation id="6340739886198108203">حسب سياسة المشرف، لا يُنصح بأخذ لقطات شاشة أو تسجيل فيديوهات لمحتوى سرّي معروض على الشاشة:</translation>
 <translation id="6341434961864773665">{0,plural, =1{لا تنصح سياسة المشرف بتحميل هذا الملف إلى <ph name="DESTINATION_NAME" />.}zero{لا تنصح سياسة المشرف بتحميل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}two{لا تنصح سياسة المشرف بتحميل هذين الملفَين إلى <ph name="DESTINATION_NAME" />.}few{لا تنصح سياسة المشرف بتحميل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}many{لا تنصح سياسة المشرف بتحميل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}other{لا تنصح سياسة المشرف بتحميل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="6342069812937806050">الآن</translation>
+<translation id="6342171901363060580">‏يظهر لك هذا التحذير لأنّ هذا الموقع الإلكتروني لا يتوافق مع بروتوكول HTTPS أثناء استخدامك لوضع التصفّح المتخفي. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">بدء الاتجاهات</translation>
 <translation id="6348220984832452017">الأنماط المتنوّعة المفعَّلة</translation>
 <translation id="6349101878882523185">تثبيت "<ph name="APP_NAME" />"</translation>
@@ -3488,6 +3492,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">‏استخدام YouTube وفق الخيارات التي حدّدها أحد الوالدَين</translation>
 <translation id="6779348349813025131">‏يحتاج "مدير كلمات المرور في Google" إلى الإذن بالوصول إلى تطبيق MacOS Keychain.</translation>
+<translation id="6780449997190414928">‏يمكنك عادةً الاتصال بهذا الموقع الإلكتروني بشكل آمن، ولكن تعذَّر على Chrome استخدام اتصال آمن في الوقت الحالي، وقد يحاول أحد المهاجمين التجسس على اتصالك بالشبكة أو تعديله. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">‏يمكنك تغيير محرك البحث في أي وقت من خلال إعدادات Chrome.</translation>
 <translation id="6786145470008421571">ظرف مقاس 15 × 23 سم</translation>
 <translation id="67862343314499040">بنفسجي</translation>
@@ -3519,6 +3524,7 @@
 <translation id="6831043979455480757">ترجمة</translation>
 <translation id="683108308100148227">إخفاء العنصر</translation>
 <translation id="6832753933931306326">تم ملء النموذج.</translation>
+<translation id="6834757537110528125">لا يتيح هذا الموقع الإلكتروني اتصالاً آمنًا</translation>
 <translation id="6841864657731852591">أسطوانة محفورة</translation>
 <translation id="6842196666980060516">184 × 260 ملم</translation>
 <translation id="6844998850832008753">تمّ السماح بميزة "تتبُّع اليد" هذه المرة</translation>
@@ -3783,6 +3789,7 @@
 <translation id="7257453341537973799">مراجع ونصائح تتعلّق بالمسار الوظيفي</translation>
 <translation id="725866823122871198">تعذر إنشاء اتصال خاص بـ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> نظرًا لأن التاريخ والوقت لجهاز الكمبيوتر (<ph name="DATE_AND_TIME" />) غير صحيحين.</translation>
 <translation id="7260075294900977274">مجلّد ذكي جديد يساعدك في حفظ جميع صفحات التسوّق في مكان واحد وتتبُّع الأسعار تلقائيًا والحصول على معلومات مفصّلة عن الأسعار وغير ذلك</translation>
+<translation id="7264942008235065057">‏سيظل هذا الموقع الإلكتروني محظورًا بسبب اشتراكك في "برنامج الحماية المتقدّمة" من Google. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">يتوفّر العنوان على هذا الجهاز فقط.</translation>
 <translation id="7269151392155523061">يجب ألا يكون الاختصار مطابِقًا للكلمة الرئيسية لمُجمِّع البحث التي حدّدتها <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />‏: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">‏يتم إرسال الملفات التي تنزِّلها إلى Google Cloud أو جهات خارجية لتحليلها. على سبيل المثال، قد يتم فحص هذه الملفات بحثًا عن بيانات حسّاسة أو برامج ضارة وتخزينها استنادًا إلى سياسات الشركة، وقد تظهر للمشرف.</translation>
@@ -3911,6 +3918,7 @@
 <translation id="7469935732330206581">النموذج غير آمن</translation>
 <translation id="7470854469646445678">أدخِل سببًا للنسخ (مطلوب).</translation>
 <translation id="7471007961486718967">أدخِل سببًا للنقل (مطلوب).</translation>
+<translation id="7473033553872550521">‏يمكنك أيضًا التواصل مع مالك الموقع الإلكتروني واقتراح الترقية إلى بروتوكول HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">لا، شكرًا</translation>
 <translation id="7481312909269577407">إلى الأمام</translation>
 <translation id="7481603210197454575">ظرف إيطالي</translation>
@@ -4438,6 +4446,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">تم فتح تسجيل البطاقة الافتراضية بطول الشاشة.</translation>
+<translation id="834805203690963649">يمكن للمهاجمين قراءة أو تغيير المعلومات التي يتم إرسالها أو تلقّيها من الموقع الإلكتروني.</translation>
 <translation id="8349305172487531364">شريط الإشارات</translation>
 <translation id="8350416046273606058">لا يمكن أن يحتوي الاختصار على مسافات: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">إنشاء ملاحظة</translation>

@@ -513,6 +513,7 @@
 <translation id="2931440415625410757">显示说明</translation>
 <translation id="2952278131021475699">智能镜头拍照搜索</translation>
 <translation id="2962516096219646456">查看所有自动填充数据</translation>
+<translation id="2965594942405840553">此操作无法撤消</translation>
 <translation id="2969979262385602596">登录失败，请稍后重试。</translation>
 <translation id="2975761176769946178">必须提供网址</translation>
 <translation id="297667759942911166">在标签页分组中协作</translation>
@@ -664,6 +665,7 @@
 <translation id="3596414637720633074">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="3602260545951981695">选择“增强型保护”</translation>
 <translation id="3610041351087301930">隐藏阅读器</translation>
+<translation id="3610866916973186448">是，删除</translation>
 <translation id="3622175633937495219">在历史记录中搜索（找到 <ph name="COUNT" /> 项结果）</translation>
 <translation id="3625008969091706597">滑动边缘即可返回。</translation>
 <translation id="362709345066740529">在此处自定义卡片、信息流等</translation>
@@ -1973,6 +1975,7 @@
 <translation id="8561999115126307258">{count,plural, =1{键盘上方显示了 {count} 个密码选项。}other{键盘上方显示了 {count} 个密码选项。}}</translation>
 <translation id="8564894539416715395">新标签页</translation>
 <translation id="8569721750632860947">您想向阅读清单中添加哪些网址？</translation>
+<translation id="8571019948162152515">要删除“<ph name="FILENAME" />”吗？</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
 <translation id="8577056989960190117">自动填充失效年份 <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">已关闭</translation>

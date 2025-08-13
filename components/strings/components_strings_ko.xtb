@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">보안 결제 사용자 인증 정보 승인 시트</translation>
 <translation id="1386623374109090026">주석</translation>
 <translation id="138810468159004008">사이트에 있는 동안 허용</translation>
+<translation id="1391145880481608015">이 경고 자세히 알아보기</translation>
 <translation id="139161720020179799">짙은 회색 1</translation>
 <translation id="1391625539203220400">이 기기에 IBAN을 저장하시겠습니까?</translation>
 <translation id="1392813880755413602">OpenDocument 프레젠테이션</translation>
@@ -1444,6 +1445,7 @@
 <translation id="340924996148642843">지금은 비교 기능을 사용할 수 없습니다</translation>
 <translation id="3409896703495473338">보안 설정 관리</translation>
 <translation id="3411091017011773343"><ph name="HOURS" />시간 후 업로드</translation>
+<translation id="3413466783792948876">공용 네트워크를 사용 중이라면 나중에 이 사이트를 방문하는 것이 가장 안전합니다. 집이나 직장 Wi-Fi와 같이 신뢰할 수 있는 네트워크를 사용하면 위험이 적습니다.</translation>
 <translation id="3414275587143250384">분산 및 클라우드 컴퓨팅</translation>
 <translation id="3414952576877147120">크기:</translation>
 <translation id="341513675006332771">Chrome 공룡 게임 플레이 버튼, Chrome에서 공룡 게임을 플레이하려면 활성화하세요.</translation>
@@ -1688,6 +1690,7 @@
 <translation id="3781428340399460090">진한 분홍색</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">블루투스 장치</translation>
+<translation id="3785246317262748285">일반적으로 사이트에 안전하게 연결되지만, 이번에는 Chrome에서 보안 연결을 사용할 수 없습니다. 공격자가 네트워크 연결을 도청하거나 수정하려고 시도하는 것일 수 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">‘<ph name="SEARCH_QUERY" />’의 최적 일치 항목</translation>
 <translation id="3789155188480882154">크기 16</translation>
 <translation id="3789841737615482174">설치</translation>
@@ -3221,6 +3224,7 @@
 <translation id="6340739886198108203">관리자 정책에 따라 기밀 콘텐츠가 화면에 표시되어 있을 때 스크린샷을 찍거나 녹화하지 않는 것이 좋습니다.</translation>
 <translation id="6341434961864773665">{0,plural, =1{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에 업로드하지 않는 것이 좋습니다.}other{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에 업로드하지 않는 것이 좋습니다.}}</translation>
 <translation id="6342069812937806050">방금</translation>
+<translation id="6342171901363060580">HTTPS를 지원하지 않는 사이트이며 현재 시크릿 모드를 사용하고 있기 때문에 이 경고가 표시되었습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">경로</translation>
 <translation id="6348220984832452017">활성 버전</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> 설치</translation>
@@ -3486,6 +3490,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">부모님의 선택사항이 적용된 YouTube 사용하기</translation>
 <translation id="6779348349813025131">Google 비밀번호 관리자에 MacOS 키체인 액세스 권한 필요</translation>
+<translation id="6780449997190414928">일반적으로 이 사이트에 안전하게 연결되지만, 이번에는 Chrome에서 보안 연결을 사용할 수 없습니다. 공격자가 네트워크 연결을 도청하거나 수정하려고 시도하는 것일 수 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">언제든지 Chrome 설정에서 검색엔진을 변경할 수 있습니다.</translation>
 <translation id="6786145470008421571">봉투 6 x 9 in</translation>
 <translation id="67862343314499040">보라색</translation>
@@ -3517,6 +3522,7 @@
 <translation id="6831043979455480757">번역</translation>
 <translation id="683108308100148227">항목 숨기기</translation>
 <translation id="6832753933931306326">양식이 작성되었습니다</translation>
+<translation id="6834757537110528125">이 사이트는 보안 연결을 지원하지 않습니다</translation>
 <translation id="6841864657731852591">그라비어 실린더</translation>
 <translation id="6842196666980060516">184x260mm</translation>
 <translation id="6844998850832008753">이번에는 손 추적이 허용됨</translation>
@@ -3781,6 +3787,7 @@
 <translation id="7257453341537973799">이직 정보 및 계획</translation>
 <translation id="725866823122871198">컴퓨터의 날짜와 시간(<ph name="DATE_AND_TIME" />)이 잘못되어 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />에 대한 비공개 연결을 설정할 수 없습니다.</translation>
 <translation id="7260075294900977274">새로운 스마트 폴더를 통해 모든 쇼핑 페이지를 한곳에 저장하고, 자동으로 가격을 추적하고, 가격 정보를 확인하는 등 다양한 작업을 할 수 있습니다.</translation>
+<translation id="7264942008235065057">Google의 고급 보호 프로그램에 가입되어 있으므로 이 사이트는 차단된 상태로 유지됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">주소는 이 기기에서만 사용할 수 있습니다</translation>
 <translation id="7269151392155523061">바로가기는 <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />에서 정의한 검색 애그리게이터 키워드와 같을 수 없습니다. <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">다운로드한 파일은 분석을 위해 Google Cloud 또는 서드 파티로 전송됩니다. 예를 들어, 민감한 정보 또는 멀웨어를 찾기 위해 파일을 스캔할 수 있으며 회사 정책에 따라 보관되어 관리자가 볼 수도 있습니다.</translation>
@@ -3908,6 +3915,7 @@
 <translation id="7469935732330206581">안전하지 않은 양식</translation>
 <translation id="7470854469646445678">복사 사유 입력(필수)</translation>
 <translation id="7471007961486718967">이전 사유 입력(필수)</translation>
+<translation id="7473033553872550521">사이트 소유자에게 연락하여 HTTPS로 업그레이드할 것을 제안할 수도 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">나중에</translation>
 <translation id="7481312909269577407">앞으로</translation>
 <translation id="7481603210197454575">봉투 Italian</translation>
@@ -4434,6 +4442,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_YEAR" />/<ph name="EXPIRATION_MONTH" /></translation>
 <translation id="8344776605855290140">가상 카드 등록이 전체 높이로 열림</translation>
+<translation id="834805203690963649">공격자는 사용자가 사이트에서 보내거나 받는 정보를 보고 변경할 수 있습니다.</translation>
 <translation id="8349305172487531364">북마크바</translation>
 <translation id="8350416046273606058">단축어에는 공백을 포함할 수 없습니다. "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">메모 만들기</translation>

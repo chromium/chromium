@@ -237,6 +237,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1384725838384960382">Suojatun maksun kirjautumistietojen todennuspaneeli</translation>
 <translation id="1386623374109090026">Kommentit</translation>
 <translation id="138810468159004008">Salli sivustolla käytäessä</translation>
+<translation id="1391145880481608015">Lue lisää tästä varoituksesta</translation>
 <translation id="139161720020179799">Tummanharmaa 1</translation>
 <translation id="1391625539203220400">Tallennetaanko IBAN tälle laitteelle?</translation>
 <translation id="1392813880755413602">OpenDocument-esitys</translation>
@@ -1445,6 +1446,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="340924996148642843">Vertailu ei ole juuri nyt käytettävissä.</translation>
 <translation id="3409896703495473338">Muuta tietoturva-asetuksia</translation>
 <translation id="3411091017011773343">Lataa <ph name="HOURS" /> tunnin kuluttua</translation>
+<translation id="3413466783792948876">Tällä sivustolle on turvallisinta käydä myöhemmin, jos käytät julkista verkkoa. Luotetut verkot, esimerkiksi kodin tai työpaikan Wi-Fi, ovat turvallisempia.</translation>
 <translation id="3414275587143250384">Jaettu tietojenkäsittely ja pilvipalvelut</translation>
 <translation id="3414952576877147120">Koko:</translation>
 <translation id="341513675006332771">Pelaa Chromen Dino peliä ‑painike, aktivoi pelataksesi Dino Run ‑peliä Chromessa</translation>
@@ -1689,6 +1691,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3781428340399460090">Pinkki</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-laitteet</translation>
+<translation id="3785246317262748285">Muodostat yleensä yhteyden sivustoihin suojatusti, mutta Chrome ei voinut tällä kertaa käyttää turvallista yhteyttä. Hyökkääjä saattaa yrittää salakuunnella tai muokata verkkoyhteyttäsi. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Parhaat osumat haulla "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Koko 16</translation>
 <translation id="3789841737615482174">Asenna</translation>
@@ -3222,6 +3225,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6340739886198108203">Järjestelmänvalvojakäytännössä ei suositella kuvakaappausten ottamista tai tallenteen kuvaamista, kun luottamuksellinen sisältö on näkyvissä:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Järjestelmänvalvojakäytännössä ei suositella tiedoston lataamista tänne: <ph name="DESTINATION_NAME" />.}other{Järjestelmänvalvojakäytännössä ei suositella tiedostojen lataamista tänne: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Valmistui juuri</translation>
+<translation id="6342171901363060580">Näet tämän varoituksen, koska sivusto ei tue HTTPS:ää ja olet incognito-tilassa. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Reittiohjeet</translation>
 <translation id="6348220984832452017">Aktiiviset muunnelmat</translation>
 <translation id="6349101878882523185">Asenna <ph name="APP_NAME" /></translation>
@@ -3487,6 +3491,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6775759552199460396">JIS B2 (515 mm x 728 mm)</translation>
 <translation id="6777088782163649345">Käytä YouTubea vanhempien valintojen kanssa</translation>
 <translation id="6779348349813025131">Google Salasanat tarvitsee pääsyn MacOS-avainnippuun</translation>
+<translation id="6780449997190414928">Muodostat yleensä yhteyden tähän sivustoon suojatusti, mutta Chrome ei voinut tällä kertaa käyttää turvallista yhteyttä. Hyökkääjä saattaa yrittää salakuunnella tai muokata verkkoyhteyttäsi. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Voit vaihtaa hakukoneen milloin tahansa Chromen asetuksista.</translation>
 <translation id="6786145470008421571">Kirjekuori 152 x 228 mm</translation>
 <translation id="67862343314499040">Lila</translation>
@@ -3518,6 +3523,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6831043979455480757">Käännä</translation>
 <translation id="683108308100148227">Piilota kohta</translation>
 <translation id="6832753933931306326">Lomake on täytetty</translation>
+<translation id="6834757537110528125">Tämä sivusto ei tue turvallista yhteyttä</translation>
 <translation id="6841864657731852591">Gravure-sylinteri</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Käsien liikkeen seuranta sallittu tällä kerralla</translation>
@@ -3782,6 +3788,7 @@ Lisätietoja:
 <translation id="7257453341537973799">Ammatinvalinta ja urasuunnittelu</translation>
 <translation id="725866823122871198">Verkkotunnukseen <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ei voi muodostaa salattua yhteyttä, koska tietokoneesi aika ja päivämäärä (<ph name="DATE_AND_TIME" />) ovat virheelliset.</translation>
 <translation id="7260075294900977274">Uusi älykäs kansio, jonka avulla voit tallentaa kaikki ostossivusi yhteen paikkaan, seurata automaattisesti hintoja, saada hintatilastoja ja paljon muuta</translation>
+<translation id="7264942008235065057">Sivusto pysyy estettynä, koska Googlen Lisäsuojaus-ohjelma on käytössä. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Osoite on saatavilla vain tällä laitteella</translation>
 <translation id="7269151392155523061">Pikakuvake ei voi olla sama kuin hakujen koontipalvelun avainsana, jonka <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> on määrittänyt: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Lataamasi tiedostot lähetetään Google Cloudiin tai kolmansille osapuolille analysoitaviksi. Ne voidaan esimerkiksi skannata arkaluontoisten tietojen tai haittaohjelmien varalta, tallentaa yrityksen käytäntöjen mukaisesti ja ne voivat näkyä järjestelmänvalvojalle.</translation>
@@ -3910,6 +3917,7 @@ Lisätietoja:
 <translation id="7469935732330206581">Lomake ei ole suojattu</translation>
 <translation id="7470854469646445678">Lisää kopioinnin syy (pakollinen)</translation>
 <translation id="7471007961486718967">Lisää siirron syy (pakollinen)</translation>
+<translation id="7473033553872550521">Voit myös ottaa yhteyttä sivuston omistajaan ja ehdottaa, että hän päivittäisi sivuston HTTPS-protokollaan. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Ei kiitos</translation>
 <translation id="7481312909269577407">Seuraava</translation>
 <translation id="7481603210197454575">Kirjekuori italialainen</translation>
@@ -4436,6 +4444,7 @@ Lisätietoja:
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Virtuaalikortin rekisteröinti avattu koko näytön kokoisena</translation>
+<translation id="834805203690963649">Hyökkääjät voivat nähdä ja muuttaa tietoja, joita lähetät sivustolle tai vastaanotat sieltä.</translation>
 <translation id="8349305172487531364">Kirjanmerkkipalkki</translation>
 <translation id="8350416046273606058">Pikanäppäimessä ei voi olla välilyöntejä: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Luo muistiinpano</translation>

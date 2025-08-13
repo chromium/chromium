@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">محفوظ طریقے سے ادائیگی کرنے کیلئے سند کی تصدیق کرنے کی شیٹ</translation>
 <translation id="1386623374109090026">تشریحات</translation>
 <translation id="138810468159004008">سائٹ کو ملاحظہ کرتے وقت اجازت دیں</translation>
+<translation id="1391145880481608015">اس وارننگ کے بارے میں مزید جانیں</translation>
 <translation id="139161720020179799">گہرا خاکستری 1</translation>
 <translation id="1391625539203220400">‏IBAN کو اس آلہ میں محفوظ کریں؟</translation>
 <translation id="1392813880755413602">‏‫OpenDocument پیشکش</translation>
@@ -1445,6 +1446,7 @@
 <translation id="340924996148642843">موازنہ ابھی دستیاب نہیں ہے</translation>
 <translation id="3409896703495473338">سیکیورٹی کی ترتیبات کا نظم کریں</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> گھنٹے میں اپ لوڈ کریں</translation>
+<translation id="3413466783792948876">‏اگر آپ کوئی عوامی نیٹ ورک استعمال کر رہے ہیں تو اس سائٹ کو بعد میں ملاحظہ کرنا محفوظ ترین ہے۔ قابل اعتماد نیٹ ورک، جیسے آپ کے گھر یا دفتر کے Wi-Fi سے کم خطرہ لاحق ہوتا ہے۔</translation>
 <translation id="3414275587143250384">تقسیم کردہ اور کلاؤڈ کمپیوٹنگ</translation>
 <translation id="3414952576877147120">سائز:</translation>
 <translation id="341513675006332771">‏Chrome ڈائنوسار گیم کھیلیں بٹن، Chrome میں Dino Run گیم کھیلنے کے لیے فعال کریں</translation>
@@ -1689,6 +1691,7 @@
 <translation id="3781428340399460090">گہرا گلابی</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">بلوٹوتھ آلات</translation>
+<translation id="3785246317262748285">‏آپ ان سائٹس سے عموماً محفوظ طریقے سے منسلک ہوتے ہیں لیکن Chrome اس بار محفوظ کنکشن استعمال نہیں کر سکا۔ کوئی حملہ آور آپ کے نیٹ ورک کنکشن کی جاسوسی یا اس میں ترمیم کرنے کی کوشش کر سکتا ہے۔ <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" کے لیے بہترین مماثلتیں</translation>
 <translation id="3789155188480882154">سائز 16</translation>
 <translation id="3789841737615482174">انسٹال کریں</translation>
@@ -3223,6 +3226,7 @@
 <translation id="6340739886198108203">منتظم کی پالیسی رازدارانہ مواد کے مرئی ہونے پر اسکرین شاٹس یا ریکارڈنگز لینے کی تجویز نہیں کرتی ہے:</translation>
 <translation id="6341434961864773665">{0,plural, =1{منتظم کی پالیسی اس فائل کو <ph name="DESTINATION_NAME" /> میں اپ لوڈ کرنے کی تجویز نہیں کرتی ہے}other{منتظم کی پالیسی ان فائلز کو <ph name="DESTINATION_NAME" /> میں اپ لوڈ کرنے کی تجویز نہیں کرتی ہے}}</translation>
 <translation id="6342069812937806050">ابھی ابھی</translation>
+<translation id="6342171901363060580">‏آپ یہ وارننگ اس لیے دیکھ رہے ہیں کیونکہ یہ سائٹ HTTPS کو سپورٹ نہیں کرتی ہے اور آپ پوشیدگی وضع میں ہیں۔ <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">ڈائریکشنز</translation>
 <translation id="6348220984832452017">فعال تغیرات</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> انسٹال کریں</translation>
@@ -3488,6 +3492,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">‏اپنے والدین کے انتخاب کے ساتھ YouTube کا استعمال کریں</translation>
 <translation id="6779348349813025131">‏Google پاس ورڈ مینیجر کو MacOS Keychain تک رسائی درکار ہے</translation>
+<translation id="6780449997190414928">‏آپ اس سائٹ سے عموماً محفوظ طریقے سے منسلک ہوتے ہیں، لیکن Chrome اس بار محفوظ کنکشن استعمال نہیں کر سکا۔ کوئی حملہ آور آپ کے نیٹ ورک کنکشن کی جاسوسی یا اس میں ترمیم کرنے کی کوشش کر سکتا ہے۔ <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">‏آپ Chrome کی ترتیبات میں کسی بھی وقت اپنا سرچ انجن تبدیل کر سکتے ہیں۔</translation>
 <translation id="6786145470008421571">‏‎6 x 9 انچ لفافہ</translation>
 <translation id="67862343314499040">وائلیٹ</translation>
@@ -3519,6 +3524,7 @@
 <translation id="6831043979455480757">ترجمہ کریں</translation>
 <translation id="683108308100148227">آئٹم چھپائیں</translation>
 <translation id="6832753933931306326">فارم پُر کیا گیا</translation>
+<translation id="6834757537110528125">یہ سائٹ محفوظ کنکشن کو سپورٹ نہیں کرتی ہے</translation>
 <translation id="6841864657731852591">گریوور سلنڈر</translation>
 <translation id="6842196666980060516">‏‎184 x 260 ملی میٹر</translation>
 <translation id="6844998850832008753">اس وقت ہینڈ ٹریکنگ کی اجازت ہے</translation>
@@ -3782,6 +3788,7 @@
 <translation id="7257453341537973799">کیریئر کے وسائل اور پلاننگ</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> سے ایک نجی کنکشن تشکیل نہیں دیا جا سکتا ہے کیونکہ آپ کے کمپیوٹر کی تاریخ اور وقت (<ph name="DATE_AND_TIME" />) غلط ہیں۔</translation>
 <translation id="7260075294900977274">ایک ایسا نیا اسمارٹ فولڈر جو آپ کی خریداری کے تمام صفحات کو ایک جگہ محفوظ کرنے میں آپ کی مدد کرتا ہے اور خودکار طور پر قیمتوں کو ٹریک کرتا ہے اور قیمت سے متعلق حقائق وغیرہ حاصل کرتا ہے</translation>
+<translation id="7264942008235065057">‏یہ سائٹ بلاک رہے گی کیونکہ آپ Google کے اعلی تحفظ کے پروگرام کے تحت ہیں۔ <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">پتہ صرف اس آلہ پر دستیاب ہے</translation>
 <translation id="7269151392155523061">شارٹ کٹ <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> کے ذریعہ وضاحت کردہ تلاش کے جمع کنندہ کلیدی لفظ سے مماثل نہیں ہو سکتا: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">‏جن فائلز کو آپ ڈاؤن لوڈ کرتے ہیں وہ Google کلاؤڈ یا فریقین ثالث کو تجزیے کیلئے بھیجی جاتی ہیں۔ مثال کے طور پر، انہیں حساس ڈیٹا یا میلوئیر کے لیے اسکین کیا جا سکتا ہے اور کمپنی کی پالیسیوں کی بنیاد پر اسٹور کیا جا سکتا ہے اور یہ آپ کے منتظم کو دکھائی دے سکتی ہیں۔</translation>
@@ -3910,6 +3917,7 @@
 <translation id="7469935732330206581">فارم محفوظ نہیں ہے</translation>
 <translation id="7470854469646445678">کاپی کرنے کی وجہ فراہم کریں (درکار ہے)</translation>
 <translation id="7471007961486718967">منتقل کرنے کی وجہ فراہم کریں (درکار ہے)</translation>
+<translation id="7473033553872550521">‏آپ سائٹ کے مالک سے بھی رابطہ کر سکتے ہیں اور انہیں HTTPS میں اپ گریڈ کرنے کی تجویز بھی دے سکتے ہیں۔ <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">نہیں شکریہ</translation>
 <translation id="7481312909269577407">فارورڈ کریں</translation>
 <translation id="7481603210197454575">اطالوی لفافہ</translation>
@@ -4436,6 +4444,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">ورچوئل کارڈ کا اندراج پوری اسکرین پر کھلا ہے</translation>
+<translation id="834805203690963649">حملہ آور اس معلومات کو دیکھ اور اس میں تبدیلی کر سکتے ہیں جو آپ سائٹ سے بھیجتے یا موصول کرتے ہیں۔</translation>
 <translation id="8349305172487531364">بُک مارکس بار</translation>
 <translation id="8350416046273606058">شارٹ کٹ میں اسپیسز شامل نہیں ہو سکتے: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">نوٹ بنائیں</translation>

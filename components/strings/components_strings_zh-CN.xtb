@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">安全付款凭据身份验证表单</translation>
 <translation id="1386623374109090026">注释</translation>
 <translation id="138810468159004008">访问该网站时允许</translation>
+<translation id="1391145880481608015">详细了解此警告</translation>
 <translation id="139161720020179799">深灰色 1</translation>
 <translation id="1391625539203220400">要将 IBAN 保存到此设备吗？</translation>
 <translation id="1392813880755413602">OpenDocument 演示文稿</translation>
@@ -1442,6 +1443,7 @@
 <translation id="340924996148642843">目前无法使用比较功能</translation>
 <translation id="3409896703495473338">管理安全设置</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> 小时后上传</translation>
+<translation id="3413466783792948876">如果您使用的是公共网络，安全起见，建议您稍后再访问此网站。使用您信任的网络（例如家中或单位的 Wi-Fi）可以降低风险。</translation>
 <translation id="3414275587143250384">分布式计算与云计算</translation>
 <translation id="3414952576877147120">大小：</translation>
 <translation id="341513675006332771">“玩 Chrome 恐龙游戏”按钮，激活它即可在 Chrome 中玩《Dino Run》游戏</translation>
@@ -1684,6 +1686,7 @@
 <translation id="3781428340399460090">艳粉色</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">蓝牙设备</translation>
+<translation id="3785246317262748285">您通常可以安全地连接到网站，但目前 Chrome 无法使用安全连接。攻击者可能会试图窃听或篡改您的网络连接。<ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">与“<ph name="SEARCH_QUERY" />”最相符的搜索结果</translation>
 <translation id="3789155188480882154">大小：16</translation>
 <translation id="3789841737615482174">安装</translation>
@@ -3216,6 +3219,7 @@
 <translation id="6340739886198108203">管理员政策不建议在屏幕显示机密内容时截屏/录屏：</translation>
 <translation id="6341434961864773665">{0,plural, =1{管理员政策不建议将这个文件上传到<ph name="DESTINATION_NAME" />}other{管理员政策不建议将这些文件上传到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">刚刚</translation>
+<translation id="6342171901363060580">您之所以会看到此警告，是因为该网站不支持 HTTPS 且您处于无痕模式。<ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">路线</translation>
 <translation id="6348220984832452017">使用中的变体</translation>
 <translation id="6349101878882523185">安装“<ph name="APP_NAME" />”</translation>
@@ -3481,6 +3485,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">按照家长选择的设置使用 YouTube</translation>
 <translation id="6779348349813025131">Google 密码管理工具需要获权访问 MacOS 钥匙串</translation>
+<translation id="6780449997190414928">您通常可以安全地连接到此网站，但目前 Chrome 无法使用安全连接。攻击者可能会试图窃听或篡改您的网络连接。<ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">您可以随时在 Chrome 的设置中更改搜索引擎。</translation>
 <translation id="6786145470008421571">6 x 9 英寸信封</translation>
 <translation id="67862343314499040">紫罗兰色</translation>
@@ -3512,6 +3517,7 @@
 <translation id="6831043979455480757">翻译</translation>
 <translation id="683108308100148227">隐藏菜单项</translation>
 <translation id="6832753933931306326">已填写此表单</translation>
+<translation id="6834757537110528125">此网站不支持安全连接</translation>
 <translation id="6841864657731852591">凹版滚筒</translation>
 <translation id="6842196666980060516">184 x 260 毫米</translation>
 <translation id="6844998850832008753">这次允许使用手部跟踪</translation>
@@ -3776,6 +3782,7 @@
 <translation id="7257453341537973799">职业资源与规划</translation>
 <translation id="725866823122871198">您计算机的日期和时间（<ph name="DATE_AND_TIME" />）不正确，因此无法与 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私密连接。</translation>
 <translation id="7260075294900977274">一个新的智能文件夹，可帮助您在一个地方集中保存所有购物页面，并自动跟踪价格、获取价格分析洞见，等等</translation>
+<translation id="7264942008235065057">由于您已加入 Google 的高级保护计划，此网站将被屏蔽。<ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">地址只能保存在该设备上</translation>
 <translation id="7269151392155523061">下述快捷字词不能与 <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> 所定义的搜索聚合器关键字相同：<ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">系统会将您下载的文件发送给 Google Cloud 或第三方以供分析。例如，这些文件可能会被扫描以确定其是否包含敏感数据或恶意软件，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
@@ -3904,6 +3911,7 @@
 <translation id="7469935732330206581">表单不安全</translation>
 <translation id="7470854469646445678">请提供复制原因（必填）</translation>
 <translation id="7471007961486718967">请提供转移原因（必填）</translation>
+<translation id="7473033553872550521">您也可以联系网站所有者，建议他们升级到 HTTPS。<ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">不用了</translation>
 <translation id="7481312909269577407">前进</translation>
 <translation id="7481603210197454575">意式信封</translation>
@@ -4430,6 +4438,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">虚拟卡注册对话框已全屏打开</translation>
+<translation id="834805203690963649">攻击者能够查看和篡改您通过该网站发送或接收的信息。</translation>
 <translation id="8349305172487531364">书签栏</translation>
 <translation id="8350416046273606058">快捷字词不得包含空格：“<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="8351131234907093545">创建记事</translation>

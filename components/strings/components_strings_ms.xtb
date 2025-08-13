@@ -237,6 +237,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1384725838384960382">Helaian pengesahan bukti kelayakan pembayaran selamat</translation>
 <translation id="1386623374109090026">Anotasi</translation>
 <translation id="138810468159004008">Benarkan semasa laman dilawati</translation>
+<translation id="1391145880481608015">Ketahui amaran ini dengan lebih lanjut</translation>
 <translation id="139161720020179799">Kelabu Gelap 1</translation>
 <translation id="1391625539203220400">Simpan IBAN pada peranti ini?</translation>
 <translation id="1392813880755413602">Pembentangan OpenDocument</translation>
@@ -1444,6 +1445,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="340924996148642843">Perbandingan tidak tersedia sekarang</translation>
 <translation id="3409896703495473338">Urus tetapan keselamatan</translation>
 <translation id="3411091017011773343">Muat naik selepas <ph name="HOURS" /> jam</translation>
+<translation id="3413466783792948876">Anda akan lebih selamat jika melawati laman ini kemudian jika anda menggunakan rangkaian awam. Terdapat kurang risiko daripada rangkaian yang dipercayai, seperti Wi-Fi rumah atau tempat kerja anda.</translation>
 <translation id="3414275587143250384">Pengkomputeran Awan &amp; Teragih</translation>
 <translation id="3414952576877147120">Saiz:</translation>
 <translation id="341513675006332771">Butang main permainan Chrome Dino, aktifkan untuk bermain permainan Dino Run dalam Chrome</translation>
@@ -1689,6 +1691,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3781428340399460090">Merah Jambu Hangat</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Peranti Bluetooth</translation>
+<translation id="3785246317262748285">Anda biasanya menyambung kepada laman secara selamat tetapi Chrome tidak dapat menggunakan sambungan selamat pada kali ini. Penyerang mungkin cuba untuk mencuri dengar atau mengubah suai sambungan rangkaian anda. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Padanan terbaik untuk "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Saiz 16</translation>
 <translation id="3789841737615482174">Pasang</translation>
@@ -3222,6 +3225,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6340739886198108203">Dasar pentadbir tidak mengesyorkan mengambil tangkapan skrin atau rakaman apabila kandungan sulit kelihatan:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Dasar pentadbir tidak mengesyorkan anda memuat naik fail ini ke <ph name="DESTINATION_NAME" />}other{Dasar pentadbir tidak mengesyorkan anda memuat naik fail ini ke <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Sebentar tadi</translation>
+<translation id="6342171901363060580">Anda melihat amaran ini kerana laman ini tidak menyokong HTTPS dan anda berada dalam Mod inkognito. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Arah</translation>
 <translation id="6348220984832452017">Variasi Aktif</translation>
 <translation id="6349101878882523185">Pasang <ph name="APP_NAME" /></translation>
@@ -3487,6 +3491,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Gunakan YouTube dengan pilihan ibu bapa anda</translation>
 <translation id="6779348349813025131">Google Password Manager memerlukan akses kepada MacOS Keychain</translation>
+<translation id="6780449997190414928">Anda biasanya menyambung kepada laman ini dengan selamat tetapi Chrome tidak dapat menggunakan sambungan selamat pada masa ini. Penyerang mungkin cuba untuk mencuri dengar atau mengubah suai sambungan rangkaian anda. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Anda boleh menukar enjin carian anda pada bila-bila masa dalam tetapan Chrome.</translation>
 <translation id="6786145470008421571">Sampul 6 x 9 inci</translation>
 <translation id="67862343314499040">Ungu Lembayung</translation>
@@ -3518,6 +3523,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6831043979455480757">Terjemah</translation>
 <translation id="683108308100148227">Sembunyikan item</translation>
 <translation id="6832753933931306326">Borang telah diisi</translation>
+<translation id="6834757537110528125">Laman ini tidak menyokong sambungan selamat</translation>
 <translation id="6841864657731852591">Silinder Gravur</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Penjejakan tangan dibenarkan pada masa ini</translation>
@@ -3782,6 +3788,7 @@ Butiran tambahan:
 <translation id="7257453341537973799">Sumber &amp; Perancangan Kerjaya</translation>
 <translation id="725866823122871198">Sambungan peribadi ke <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tidak boleh diwujudkan kerana tarikh dan masa komputer anda (<ph name="DATE_AND_TIME" />) tidak betul.</translation>
 <translation id="7260075294900977274">Folder pintar baharu yang membantu anda menyimpan semua halaman beli-belah anda pada satu tempat dan menjejaki harga, mendapatkan cerapan harga dan banyak lagi secara automatik</translation>
+<translation id="7264942008235065057">Laman ini akan terus disekat kerana anda dilindungi oleh Program Perlindungan Lanjutan Google. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Alamat tersedia hanya pada peranti ini</translation>
 <translation id="7269151392155523061">Pintasan tidak boleh sama dengan kata kunci pengagregat carian yang ditakrifkan oleh <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Fail yang anda muat turun dihantar kepada Google Cloud atau pihak ketiga untuk dianalisis. Contohnya, fail tersebut mungkin diimbas untuk mencari data sensitif atau perisian hasad dan mungkin disimpan berdasarkan dasar syarikat dan dapat dilihat oleh pentadbir anda.</translation>
@@ -3910,6 +3917,7 @@ Butiran tambahan:
 <translation id="7469935732330206581">Borang tidak selamat</translation>
 <translation id="7470854469646445678">Berikan sebab untuk menyalin fail (diperlukan)</translation>
 <translation id="7471007961486718967">Berikan sebab untuk memindahkan fail (diperlukan)</translation>
+<translation id="7473033553872550521">Anda juga boleh menghubungi pemilik laman tersebut dan mencadangkan agar mereka meningkatkan protokol komunikasi kepada HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Tidak, Terima Kasih</translation>
 <translation id="7481312909269577407">Majukan</translation>
 <translation id="7481603210197454575">Sampul Itali</translation>
@@ -4436,6 +4444,7 @@ Butiran tambahan:
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Pendaftaran kad maya dibuka pada ketinggian penuh</translation>
+<translation id="834805203690963649">Penyerang dapat melihat dan mengubah maklumat yang anda hantar atau terima daripada laman tersebut.</translation>
 <translation id="8349305172487531364">Bar penanda halaman</translation>
 <translation id="8350416046273606058">Pintasan tidak boleh mengandungi ruang: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Buat nota</translation>

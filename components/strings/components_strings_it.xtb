@@ -237,6 +237,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1384725838384960382">Foglio per l'autenticazione delle credenziali di pagamento sicure</translation>
 <translation id="1386623374109090026">Annotazioni</translation>
 <translation id="138810468159004008">Consenti durante la visita al sito</translation>
+<translation id="1391145880481608015">Scopri di più su questo avviso</translation>
 <translation id="139161720020179799">Grigio scuro 1</translation>
 <translation id="1391625539203220400">Vuoi salvare l'IBAN su questo dispositivo?</translation>
 <translation id="1392813880755413602">Presentazione OpenDocument</translation>
@@ -1441,6 +1442,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="340924996148642843">La funzionalità di confronto non è al momento disponibile</translation>
 <translation id="3409896703495473338">Gestisci le impostazioni di sicurezza</translation>
 <translation id="3411091017011773343">Carica tra <ph name="HOURS" /> h</translation>
+<translation id="3413466783792948876">Se utilizzi una rete pubblica, è più sicuro visitare questo sito in un secondo momento. Con una rete affidabile, come il Wi-Fi di casa o del lavoro, corri meno rischi.</translation>
 <translation id="3414275587143250384">Sistemi distribuiti e cloud computing</translation>
 <translation id="3414952576877147120">Dimensioni:</translation>
 <translation id="341513675006332771">Pulsante Gioca a Dino di Chrome, attiva per giocare a Dino in Chrome</translation>
@@ -1685,6 +1687,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3781428340399460090">Fucsia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositivi Bluetooth</translation>
+<translation id="3785246317262748285">In genere ti connetti ai siti in modo sicuro, ma questa volta Chrome non ha potuto usare una connessione sicura. Un malintenzionato potrebbe tentare di intercettare o modificare la connessione di rete. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">I risultati più pertinenti per "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Dimensione 16</translation>
 <translation id="3789841737615482174">Installa</translation>
@@ -3217,6 +3220,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6340739886198108203">La policy dell'amministratore sconsiglia l'acquisizione di screenshot o registrazioni quando sono visibili contenuti riservati:</translation>
 <translation id="6341434961864773665">{0,plural, =1{La policy dell'amministratore sconsiglia di caricare questo file su <ph name="DESTINATION_NAME" />}other{La policy dell'amministratore sconsiglia di caricare questi file su <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">In questo momento</translation>
+<translation id="6342171901363060580">Questo avviso è stato visualizzato perché il sito non supporta HTTPS e sei in modalità di navigazione in incognito. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Indicazioni stradali</translation>
 <translation id="6348220984832452017">Varianti attive</translation>
 <translation id="6349101878882523185">Installa <ph name="APP_NAME" /></translation>
@@ -3482,6 +3486,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Usa YouTube con le scelte del tuo genitore</translation>
 <translation id="6779348349813025131">Gestore delle password di Google richiede l'accesso al Portachiavi di macOS</translation>
+<translation id="6780449997190414928">In genere ti connetti a questo sito in modo sicuro, ma questa volta Chrome non è riuscito a utilizzare una connessione sicura. Un malintenzionato potrebbe tentare di intercettare o modificare la connessione di rete. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Puoi modificare il motore di ricerca in qualsiasi momento nelle impostazioni di Chrome.</translation>
 <translation id="6786145470008421571">Busta 6 x 9 pollici</translation>
 <translation id="67862343314499040">Lilla</translation>
@@ -3513,6 +3518,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6831043979455480757">Traduci</translation>
 <translation id="683108308100148227">Nascondi elemento</translation>
 <translation id="6832753933931306326">Il modulo è stato compilato</translation>
+<translation id="6834757537110528125">Questo sito non supporta una connessione sicura</translation>
 <translation id="6841864657731852591">Cilindro per rotocalco</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Tracciamento delle mani consentito questa volta</translation>
@@ -3777,6 +3783,7 @@ Ulteriori dettagli:
 <translation id="7257453341537973799">Pianificazione carriera e risorse</translation>
 <translation id="725866823122871198">Impossibile stabilire una connessione privata con il sito <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> perché data e ora del computer (<ph name="DATE_AND_TIME" />) sono sbagliate.</translation>
 <translation id="7260075294900977274">Una nuova cartella intelligente che ti consente di salvare tutte le tue pagine di shopping in un unico posto, monitorare automaticamente i prezzi, ottenere approfondimenti sul prezzo e altro ancora</translation>
+<translation id="7264942008235065057">Questo sito rimarrà bloccato perché è attivo il programma di protezione avanzata di Google. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">L'indirizzo è disponibile solo su questo dispositivo</translation>
 <translation id="7269151392155523061">La scorciatoia non può essere uguale alla parola chiave dell'aggregatore di ricerca definita da <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">I file che scarichi vengono inviati a Google Cloud o a terze parti per essere analizzati. Ad esempio, potrebbero essere analizzati per rilevare dati sensibili o malware, essere archiviati in base alle policy aziendali ed essere visibili al tuo amministratore.</translation>
@@ -3905,6 +3912,7 @@ Ulteriori dettagli:
 <translation id="7469935732330206581">Modulo non sicuro</translation>
 <translation id="7470854469646445678">Specifica il motivo della copia (obbligatorio)</translation>
 <translation id="7471007961486718967">Specifica il motivo del trasferimento (obbligatorio)</translation>
+<translation id="7473033553872550521">Puoi anche contattare il proprietario del sito e suggerire di eseguire l'upgrade a HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">No, grazie</translation>
 <translation id="7481312909269577407">Avanti</translation>
 <translation id="7481603210197454575">Busta Italian</translation>
@@ -4431,6 +4439,7 @@ Ulteriori dettagli:
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Registrazione della carta virtuale aperta a schermo intero</translation>
+<translation id="834805203690963649">I malintenzionati possono visualizzare e modificare le informazioni che invii o ricevi dal sito.</translation>
 <translation id="8349305172487531364">Barra dei preferiti</translation>
 <translation id="8350416046273606058">La scorciatoia non può contenere spazi: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Crea nota</translation>

@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">Қауіпсіз төлем деректерін аутентификациялау парағы</translation>
 <translation id="1386623374109090026">Аннотациялар</translation>
 <translation id="138810468159004008">Сайтқа кірген кезде рұқсат беру</translation>
+<translation id="1391145880481608015">Бұл ескерту туралы толық ақпарат</translation>
 <translation id="139161720020179799">Күңгірт сұр 1</translation>
 <translation id="1391625539203220400">IBAN-ді осы құрылғыға сақтау керек пе?</translation>
 <translation id="1392813880755413602">OpenDocument презентациясы</translation>
@@ -1443,6 +1444,7 @@
 <translation id="340924996148642843">Салыстыру функциясы қазір қолжетімді емес</translation>
 <translation id="3409896703495473338">Қауіпсіздік параметрлерін басқару</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> сағатта жүктеп салу</translation>
+<translation id="3413466783792948876">Қоғамдық жерлердегі желіні қолданып отырсаңыз, қауіпсіздігіңіз үшін ең дұрысы — бұл сайтқа кейін кіру. Үйдегі не жұмыстағы Wi-Fi сияқты сенімді желілердегі қауіп деңгейі төмен болады.</translation>
 <translation id="3414275587143250384">Деректерді үлестіру және бұлтта өңдеу</translation>
 <translation id="3414952576877147120">Көлемі:</translation>
 <translation id="341513675006332771">"Chrome Dino ойынын ойнау" түймесі, Chrome-да Dino Run ойынын ойнау үшін белсендіріңіз</translation>
@@ -1687,6 +1689,7 @@
 <translation id="3781428340399460090">Қою алқызыл</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth құрылғылары</translation>
+<translation id="3785246317262748285">Әдетте сайттарға қауіпсіз қосыласыз, бірақ Chrome бұл жолы қауіпсіз байланысты пайдалана алмады. Шабуылдаушы желі байланысыңызды ұстап қалуға немесе өзгертуге әрекет жасауы мүмкін. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" сұрауы үшін ең қолайлы сәйкестіктер</translation>
 <translation id="3789155188480882154">Өлшемі: 16</translation>
 <translation id="3789841737615482174">Орнату</translation>
@@ -3220,6 +3223,7 @@
 <translation id="6340739886198108203">Әкімші саясаты құпия контент көрсетілген кезде, скриншот жасауды немесе жазуды ұсынбайды.</translation>
 <translation id="6341434961864773665">{0,plural, =1{Әкімші саясатына сәйкес бұл файлды <ph name="DESTINATION_NAME" /> жадына жүктеп салу ұсынылмайды.}other{Әкімші саясатына сәйкес бұл файлдарды <ph name="DESTINATION_NAME" /> жадына жүктеп салу ұсынылмайды.}}</translation>
 <translation id="6342069812937806050">Қазір ғана</translation>
+<translation id="6342171901363060580">Бұл сайт HTTPS протоколына қолдау көрсетпейтіндіктен және сіз инкогнито режимінде болғандығыңыздан, осы ескерту көрсетілді. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Бағыттар</translation>
 <translation id="6348220984832452017">Белсенді нұсқалар</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> қолданбасын орнату</translation>
@@ -3485,6 +3489,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">YouTube-ті ата-анаңыз таңдаған параметрлермен пайдаланыңыз</translation>
 <translation id="6779348349813025131">Google Password Manager қызметіне MacOS кілттер тізбегін пайдалануға рұқсат қажет</translation>
+<translation id="6780449997190414928">Әдетте бұл сайтқа қауіпсіз қосыласыз, бірақ Chrome бұл жолы қауіпсіз байланысты пайдалана алмады. Шабуылдаушы желі байланысыңызды ұстап қалуға немесе өзгертуге әрекет жасауы мүмкін. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Іздеу жүйесін Chrome параметрлерінен кез келген уақытта өзгерте аласыз.</translation>
 <translation id="6786145470008421571">152 x 229 мм хатқалта</translation>
 <translation id="67862343314499040">Ақшыл күлгін</translation>
@@ -3516,6 +3521,7 @@
 <translation id="6831043979455480757">Аудару</translation>
 <translation id="683108308100148227">Элементті жасыру</translation>
 <translation id="6832753933931306326">Үлгі толтырылған</translation>
+<translation id="6834757537110528125">Бұл сайт қауіпсіз байланысқа қолдау көрсетпейді</translation>
 <translation id="6841864657731852591">Формалық цилиндр</translation>
 <translation id="6842196666980060516">184 x 260 мм</translation>
 <translation id="6844998850832008753">Бұл жолы қолды бақылау функциясына рұқсат берілді</translation>
@@ -3779,6 +3785,7 @@
 <translation id="7257453341537973799">Мансапты жоспарлау және ресурстар</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> доменімен оңаша байланыс орнату мүмкін емес, себебі компьютеріңіздің күні мен уақыты (<ph name="DATE_AND_TIME" />) дұрыс емес.</translation>
 <translation id="7260075294900977274">Қалаулы тауарлардың беттерін бір жерге сақтауға, бағаларды автоматты түрде бақылауға, баға статистикасын алуға және т.б. мүмкіндік беретін жаңа смарт қалта</translation>
+<translation id="7264942008235065057">Бұл сайт блокталған күйі қалады, себебі Google-дың күшейтілген қорғаныс бағдарламасы жұмыс істеп жатыр. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Мекенжай тек осы құрылғыда қолжетімді</translation>
 <translation id="7269151392155523061">Жылдам пәрмен <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> анықтаған іздеу топтаушысы кілтсөзімен бірдей болмауы керек: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Сіз жүктеп алатын файлдар Google Cloud қызметіне немесе үшінші тараптарға талдау үшін жіберіледі. Мысалы, олар құпия деректерді немесе зиянды бағдарламаны анықтау үшін сканерленуі, компания саясаттарына сәйкес сақталуы және әкімшіге көрінуі мүмкін.</translation>
@@ -3907,6 +3914,7 @@
 <translation id="7469935732330206581">Үлгі қорғалмаған</translation>
 <translation id="7470854469646445678">Көшіру себебін көрсетіңіз (міндетті)</translation>
 <translation id="7471007961486718967">Тасымалдау себебін көрсетіңіз (міндетті)</translation>
+<translation id="7473033553872550521">Сайт иесіне хабарласып, HTTPS кеңейтіміне жаңартуға кеңес берсеңіз де болады. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Жоқ, рақмет</translation>
 <translation id="7481312909269577407">Басқаға жіберу</translation>
 <translation id="7481603210197454575">Italian хатқалтасы</translation>
@@ -4433,6 +4441,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Виртуалдық картаны тіркеудің диалогтік терезесі толық ашылды</translation>
+<translation id="834805203690963649">Сіз сайтқа жіберетін не сайттан алатын ақпаратты шабуылдаушылар көруі және өзгертуі мүмкін.</translation>
 <translation id="8349305172487531364">Бетбелгілер жолағы</translation>
 <translation id="8350416046273606058">Жылдам пәрменде бос орындар болмауы керек: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Ескертпе жасау</translation>

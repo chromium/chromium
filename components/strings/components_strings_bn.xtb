@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">নিরাপদ পেমেন্ট ক্রেডেনশিয়াল যাচাই করার শিট</translation>
 <translation id="1386623374109090026">টিকা</translation>
 <translation id="138810468159004008">সাইট দেখার সময় অনুমতি দিন</translation>
+<translation id="1391145880481608015">এই সতর্কতা সম্পর্কে আরও জানুন</translation>
 <translation id="139161720020179799">গাঢ় ধূসর ১</translation>
 <translation id="1391625539203220400">এই ডিভাইসে IBAN সেভ করবেন?</translation>
 <translation id="1392813880755413602">OpenDocument Presentation</translation>
@@ -1445,6 +1446,7 @@
 <translation id="340924996148642843">এই মুহুর্তে তুলনা করার সুবিধা উপলভ্য নয়</translation>
 <translation id="3409896703495473338">আপনার নিরাপত্তা সেটিংস ম্যানেজ করুন</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> ঘণ্টায় আপলোড করুন</translation>
+<translation id="3413466783792948876">আপনি যদি কোনও পাবলিক নেটওয়ার্ক ব্যবহার করেন, তাহলে সবচেয়ে নিরাপদ হল আপনি পরে সাইটে যান। আপনার বাড়ি বা অফিসের ওয়াই-ফাইয়ের মতো বিশ্বস্ত নেটওয়ার্কের ক্ষেত্রে ঝুঁকির সম্ভাবনা কম।</translation>
 <translation id="3414275587143250384">ডিস্ট্রিবিউট করা হয়েছে এবং ক্লাউড কম্পিউটিং</translation>
 <translation id="3414952576877147120">মাপ:</translation>
 <translation id="341513675006332771">'Chrome ডাইনো গেম খেলুন' বোতাম, Chrome-এ Dino Run গেম খেলতে এটি চালু করুন</translation>
@@ -1689,6 +1691,7 @@
 <translation id="3781428340399460090">হট গোলাপী</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">ব্লুটুথ ডিভাইস</translation>
+<translation id="3785246317262748285">সাধারণত আপনি সুরক্ষিতভাবে সাইটের সাথে কানেক্ট করেন, তবে Chrome এই মুহূর্তে কোনও সুরক্ষিত কানেকশন ব্যবহার করতে পারছে না। কোনও হ্যাকার আপনার নেটওয়ার্ক কানেকশনে গোপনে আড়ি পাততে বা সেটি পরিবর্তন করার চেষ্টা করতে পারে। <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />"-এর জন্য মিলে যাওয়া সেরা ফলাফল</translation>
 <translation id="3789155188480882154">সাইজ ১৬</translation>
 <translation id="3789841737615482174">ইনস্টল করুন</translation>
@@ -3221,6 +3224,7 @@
 <translation id="6340739886198108203">গোপনীয় কন্টেন্ট দেখা গেলে অ্যাডমিনিস্ট্রেটরের নীতি স্ক্রিনশট নেওয়া অথবা রেকর্ডিং করার সাজেশন দেয় না:</translation>
 <translation id="6341434961864773665">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল আপলোড করা যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এইসব ফাইল আপলোড করা যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এইসব ফাইল আপলোড করা যাবে না}}</translation>
 <translation id="6342069812937806050">এখনই</translation>
+<translation id="6342171901363060580">আপনি এই সতর্কতা দেখছেন কারণ আপনি ছদ্মবেশী মোড ব্যবহার করচেন এবং এই সাইটে HTTPS কাজ করে না। <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">দিকনির্দেশ</translation>
 <translation id="6348220984832452017">অ্যাক্টিভ ভ্যারিয়েশন</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ইনস্টল করুন</translation>
@@ -3486,6 +3490,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">তোমার অভিভাবকের পছন্দ অনুযায়ী YouTube ব্যবহার করো</translation>
 <translation id="6779348349813025131">Google Password Manager-এর MacOS Keychain-এর অ্যাক্সেস প্রয়োজন</translation>
+<translation id="6780449997190414928">সাধারণত আপনি সুরক্ষিতভাবে এই সাইটের সাথে কানেক্ট করেন, তবে Chrome এই মুহূর্তে কোনও সুরক্ষিত কানেকশন ব্যবহার করতে পারছে না। কোনও হ্যাকার আপনার নেটওয়ার্ক কানেকশনে গোপনে আড়ি পাততে বা সেটি পরিবর্তন করার চেষ্টা করতে পারে। <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">আপনি Chrome-এর সেটিংস থেকে সার্চ ইঞ্জিন যেকোনও সময়ে পরিবর্তন করতে পারবেন।</translation>
 <translation id="6786145470008421571">এনভেলপ ৬ x ৯ ইঞ্চি</translation>
 <translation id="67862343314499040">বেগুনি</translation>
@@ -3517,6 +3522,7 @@
 <translation id="6831043979455480757">অনুবাদ</translation>
 <translation id="683108308100148227">আইটেম লুকান</translation>
 <translation id="6832753933931306326">এতে ফর্ম পূরণ করা হয়েছে</translation>
+<translation id="6834757537110528125">এই সাইটে সুরক্ষিত কানেকশন ব্যবহার করার সুবিধা নেই</translation>
 <translation id="6841864657731852591">গ্র্যাভিউর সিলিন্ডার</translation>
 <translation id="6842196666980060516">১৮৪ x ২৬০ মিমি</translation>
 <translation id="6844998850832008753">এই মুহূর্তে হাত ট্র্যাক করার অনুমতি দেওয়া হয়েছে</translation>
@@ -3781,6 +3787,7 @@
 <translation id="7257453341537973799">কেরিয়ার সংক্রান্ত রিসোর্স ও পরিকল্পনা</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> এ একটি ব্যক্তিগত সংযোগ স্থাপন করা যায়নি কারণ আপনার কম্পিউটারের তারিখ এবং সময় (<ph name="DATE_AND_TIME" />) সঠিক নয়৷</translation>
 <translation id="7260075294900977274">নতুন স্মার্ট ফোল্ডার, যা আপনাকে একই জায়গায় কেনাকাটা সম্পর্কিত সব পৃষ্ঠা সেভ করতে এবং অটোমেটিক দাম ট্র্যাক করতে, প্রাইস ইনসাইট পেতে এবং আরও অনেক কিছু করতে সাহায্য করে</translation>
+<translation id="7264942008235065057">আপনি Google-এর উন্নত সুরক্ষা প্রোগ্রামের আওতায় থাকার কারণে এই সাইটি ব্লক করা অবস্থায় থাকবে। <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">শুধু এই ডিভাইসে ঠিকানা উপলভ্য হবে</translation>
 <translation id="7269151392155523061">শর্টকাট ও <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />-এর মাধ্যমে বেছে নেওয়া সার্চ এগ্রিগেটর কীওয়ার্ড দুটি এক হতে পারে না: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">আপনার ডাউনলোড করা ফাইল Google Cloud-এ বা থার্ড-পার্টির কাছে বিশ্লেষণ করার জন্য পাঠানো হয়। যেমন, সংবেদনশীল ব্যক্তিগত তথ্য বা ম্যালওয়্যার রয়েছে কিনা তা জানার জন্য সেগুলি স্ক্যান করা হতে পারে এবং কোম্পানির নীতির উপরে ভিত্তি করে সেভ করা হতে পারে ও আপনার অ্যাডমিনিস্ট্রেটর সেগুলি দেখতে পেতে পারেন।</translation>
@@ -3909,6 +3916,7 @@
 <translation id="7469935732330206581">ফর্ম নিরাপদ নয়</translation>
 <translation id="7470854469646445678">কপি করার কারণ লিখুন (খালি রাখা যাবে না)</translation>
 <translation id="7471007961486718967">ট্রান্সফার করার কারণ লিখুন (খালি রাখা যাবে না)</translation>
+<translation id="7473033553872550521">এছাড়াও, আপনি সাইটের মালিকের সাথে যোগাযোগ করতে এবং তাকে HTTPS-এ আপগ্রেড করার সাজেশনও দিতে পারেন। <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">না থাক</translation>
 <translation id="7481312909269577407">ফরওয়ার্ড</translation>
 <translation id="7481603210197454575">এনভেলপ ইতালিয়ান</translation>
@@ -4435,6 +4443,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">ভার্চুয়াল কার্ড এনরোলমেন্ট সম্পূর্ণ স্ক্রিন জুড়ে খোলা হয়েছে</translation>
+<translation id="834805203690963649">আপনি সাইটে যে তথ্য পাঠান অথবা সাইট থেকে যে তথ্য পান, হ্যাকর তা দেখতে ও পরিবর্তন করতে পারে।</translation>
 <translation id="8349305172487531364">বুকমার্কস বার</translation>
 <translation id="8350416046273606058">শর্টকাটে স্পেস থাকা চলবে না: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">নোট তৈরি করুন</translation>

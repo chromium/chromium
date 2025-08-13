@@ -513,6 +513,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="2931440415625410757">Instructies tonen</translation>
 <translation id="2952278131021475699">Zoeken met Lens-camera</translation>
 <translation id="2962516096219646456">Alle gegevens voor automatisch invullen bekijken</translation>
+<translation id="2965594942405840553">Deze actie kan niet ongedaan worden gemaakt</translation>
 <translation id="2969979262385602596">Kan niet inloggen. Probeer het later opnieuw.</translation>
 <translation id="2975761176769946178">Er is een URL vereist</translation>
 <translation id="297667759942911166">Samenwerken in tabbladgroepen</translation>
@@ -664,6 +665,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3596414637720633074">Cookies van derden blokkeren in incognitomodus</translation>
 <translation id="3602260545951981695">Kies Geoptimaliseerde beveiliging</translation>
 <translation id="3610041351087301930">Lezer verbergen</translation>
+<translation id="3610866916973186448">Ja, verwijderen</translation>
 <translation id="3622175633937495219">Zoekgeschiedenis (<ph name="COUNT" /> gevonden)</translation>
 <translation id="3625008969091706597">Je kunt over de rand swipen om terug te gaan.</translation>
 <translation id="362709345066740529">Pas hier onder andere je kaarten en feed aan</translation>
@@ -1973,6 +1975,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8561999115126307258">{count,plural, =1{{count} optie voor wachtwoord beschikbaar boven je toetsenbord.}other{{count} opties voor wachtwoorden beschikbaar boven je toetsenbord.}}</translation>
 <translation id="8564894539416715395">Pagina Nieuw tabblad</translation>
 <translation id="8569721750632860947">Welke URL wil je toevoegen aan je leeslijst?</translation>
+<translation id="8571019948162152515"><ph name="FILENAME" /> verwijderen?</translation>
 <translation id="8571213806525832805">Afgelopen 4 weken</translation>
 <translation id="8577056989960190117">Het vervaljaar <ph name="YEAR" /> automatisch invullen</translation>
 <translation id="8588404856427128947">Uit</translation>

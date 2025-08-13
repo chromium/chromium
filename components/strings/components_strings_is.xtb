@@ -237,6 +237,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1384725838384960382">Sannvottunarsíða fyrir skilríki öruggrar greiðslu</translation>
 <translation id="1386623374109090026">Skýringar</translation>
 <translation id="138810468159004008">Leyfa á meðan þú ferð á svæðið</translation>
+<translation id="1391145880481608015">Nánar um þessa viðvörun</translation>
 <translation id="139161720020179799">Dökkgrár 1</translation>
 <translation id="1391625539203220400">Vista IBAN í þessu tæki?</translation>
 <translation id="1392813880755413602">OpenDocument-kynning</translation>
@@ -1444,6 +1445,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="340924996148642843">Samanburður er ekki í boði í augnablikinu</translation>
 <translation id="3409896703495473338">Stjórna öryggisstillingum</translation>
 <translation id="3411091017011773343">Upphleðsla eftir <ph name="HOURS" /> klst.</translation>
+<translation id="3413466783792948876">Öruggara er að opna þetta vefsvæði síðar ef þú ert að nota opið net. Það felst minni áhætta í traustu neti, s.s. WiFi-netinu heima hjá þér eða í vinnunni.</translation>
 <translation id="3414275587143250384">Samtengd tölvuvinnsla og skýjatölvun</translation>
 <translation id="3414952576877147120">Stærð:</translation>
 <translation id="341513675006332771">Hnappurinn „Spila Chrome Dino-leikinn“, virkjaðu til að spila Dino Run-leikinn í Chrome</translation>
@@ -1688,6 +1690,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3781428340399460090">Dökkbleikur</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-tæki</translation>
+<translation id="3785246317262748285">Yfirleitt tengistu vefsvæðum á öruggan hátt en Chrome gat ekki notað örugga tengingu í þetta sinn. Árásaraðili gæti verið að reyna að hlera eða breyta nettengingunni þinni. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Bestu samsvaranirnar fyrir „<ph name="SEARCH_QUERY" />“</translation>
 <translation id="3789155188480882154">Stærð 16</translation>
 <translation id="3789841737615482174">Setja upp</translation>
@@ -3221,6 +3224,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6340739886198108203">Regla kerfisstjóra ræður gegn því að taka skjámyndir eða taka upp þegar trúnaðarupplýsingar eru sýnilegar:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Regla kerfisstjóra mælir ekki með að hlaða þessari skrá upp á <ph name="DESTINATION_NAME" />}one{Regla kerfisstjóra mælir ekki með að hlaða þessum skrám upp á <ph name="DESTINATION_NAME" />}other{Regla kerfisstjóra mælir ekki með að hlaða þessum skrám upp á <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Rétt í þessu</translation>
+<translation id="6342171901363060580">Þessi viðvörun birtist vegna þess að þetta vefsvæði styður ekki HTTPS og þú ert í huliðsstillingu. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Leiðarlýsing</translation>
 <translation id="6348220984832452017">Virk afbrigði</translation>
 <translation id="6349101878882523185">Setja upp <ph name="APP_NAME" /></translation>
@@ -3486,6 +3490,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Notaðu YouTube með valkostunum sem foreldri þitt valdi</translation>
 <translation id="6779348349813025131">Google-aðgangsorðastjórnun þarf aðgang að MacOS Keychain</translation>
+<translation id="6780449997190414928">Yfirleitt tengistu þessu vefsvæði á öruggan hátt en Chrome gat ekki notað örugga tengingu í þetta sinn. Árásaraðili gæti verið að reyna að hlera eða breyta nettengingunni þinni. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Þú getur skipt um leitarvél hvenær sem er í stillingum Chrome.</translation>
 <translation id="6786145470008421571">Umslag: 16 x 23 cm</translation>
 <translation id="67862343314499040">Fjólublár</translation>
@@ -3517,6 +3522,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6831043979455480757">Þýða</translation>
 <translation id="683108308100148227">Fela atriði</translation>
 <translation id="6832753933931306326">Eyðublaðið var fyllt út</translation>
+<translation id="6834757537110528125">Þetta vefsvæði styður ekki örugga tengingu</translation>
 <translation id="6841864657731852591">Ætingarkefli</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Rakning handahreyfinga leyfð í þetta skipti</translation>
@@ -3780,6 +3786,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7257453341537973799">Tilföng og skipulag fyrir atvinnuleit</translation>
 <translation id="725866823122871198">Ekki er hægt að koma á lokaðri tengingu við <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> vegna þess að dag- og tímasetning tölvunnar (<ph name="DATE_AND_TIME" />) er röng.</translation>
 <translation id="7260075294900977274">Ný snjallmappa sem auðveldar þér að vista allar verslunarsíður á einum stað, fylgjast sjálfkrafa með verði, fá upplýsingar um verð og fleira</translation>
+<translation id="7264942008235065057">Þetta vefsvæði verður áfram á bannlista vegna þess að kveikt er á Áætlun Google um ítarlega vernd. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Heimilisfangið er eingöngu tiltækt í þessu tæki</translation>
 <translation id="7269151392155523061">Flýtileiðin má ekki vera sú sama og leitarorð leitarsamansafnara sem skilgreint er af <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Skrár sem þú sækir eru sendar til Google Cloud eða þriðju aðila til greiningar. Þær gætu til dæmis verið skannaðar í leit að viðkvæmum upplýsingum eða spilliforritum og kunna að vera geymdar í samræmi við stefnu fyrirtækisins og vera sýnilegar fyrir kerfisstjóra.</translation>
@@ -3908,6 +3915,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7469935732330206581">Eyðublaðið er ekki öruggt</translation>
 <translation id="7470854469646445678">Gefðu upp ástæðu afritunar (áskilið)</translation>
 <translation id="7471007961486718967">Gefðu upp ástæðu flutnings (áskilið)</translation>
+<translation id="7473033553872550521">Þú getur einnig haft samband við eiganda vefsvæðisins og lagt til að það sé uppfært í HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Nei, takk</translation>
 <translation id="7481312909269577407">Áfram</translation>
 <translation id="7481603210197454575">Umslag: ítalskt</translation>
@@ -4434,6 +4442,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Skráning sýndarkorts opnuð í fullri hæð</translation>
+<translation id="834805203690963649">Tölvuþrjótar geta skoðað og breytt upplýsingum sem þú sendir eða móttekur frá vefsvæðinu.</translation>
 <translation id="8349305172487531364">Bókamerkjastika</translation>
 <translation id="8350416046273606058">Flýtileið má ekki innihalda bil: „<ph name="SHORTCUT_NAME" />“</translation>
 <translation id="8351131234907093545">Búa til glósu</translation>

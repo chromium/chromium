@@ -513,6 +513,7 @@
 <translation id="2931440415625410757">নির্দেশাবলী দেখুন</translation>
 <translation id="2952278131021475699">Lens-এর ক্যামেরার মাধ্যমে সার্চ করার সুবিধা</translation>
 <translation id="2962516096219646456">সব অটোফিল ডেটা দেখুন</translation>
+<translation id="2965594942405840553">এই অ্যাকশন আগের অবস্থায় ফেরানো যাবে না</translation>
 <translation id="2969979262385602596">সাইন-ইন করা যায়নি৷ অনুগ্রহ করে পরে আবার চেষ্টা করুন৷</translation>
 <translation id="2975761176769946178">URL দিতে হবে</translation>
 <translation id="297667759942911166">ট্যাব গ্রুপে কোলাবরেট করুন</translation>
@@ -664,6 +665,7 @@
 <translation id="3596414637720633074">ছদ্মবেশী মোডে থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="3602260545951981695">"উন্নত সুরক্ষা" বিকল্প বেছে নিন</translation>
 <translation id="3610041351087301930">রিডার মোড লুকান</translation>
+<translation id="3610866916973186448">হ্যাঁ, মুছুন</translation>
 <translation id="3622175633937495219">সার্চ ইতিহাস (<ph name="COUNT" />টি পাওয়া গেছে)</translation>
 <translation id="3625008969091706597">পিছনে যেতে প্রান্তটি সোয়াইপ করতে পারবেন।</translation>
 <translation id="362709345066740529">এখান থেকে আপনার কার্ড, ফিড ও আরও অনেক কিছু কাস্টমাইজ করুন</translation>
@@ -1974,6 +1976,7 @@
 <translation id="8561999115126307258">{count,plural, =1{আপনার কীবোর্ডের উপরে পাসওয়ার্ডের জন্য {count}টি বিকল্প উপলভ্য আছে।}one{আপনার কীবোর্ডের উপরে পাসওয়ার্ডের জন্য {count}টি বিকল্প উপলভ্য আছে।}other{আপনার কীবোর্ডের উপরে পাসওয়ার্ডের জন্য {count}টি বিকল্প উপলভ্য আছে।}}</translation>
 <translation id="8564894539416715395">'নতুন ট্যাব' পৃষ্ঠা</translation>
 <translation id="8569721750632860947">আপনার পড়ার তালিকাতে কোন URL যোগ করতে চান?</translation>
+<translation id="8571019948162152515">"<ph name="FILENAME" />" মুছবেন?</translation>
 <translation id="8571213806525832805">গত ৪ সপ্তাহ</translation>
 <translation id="8577056989960190117">মেয়াদ শেষ হওয়ার বছর <ph name="YEAR" /> অটোফিল করুন</translation>
 <translation id="8588404856427128947">বন্ধ করা আছে</translation>

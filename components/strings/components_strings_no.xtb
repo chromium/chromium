@@ -237,6 +237,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1384725838384960382">Ark for sikker autentisering av betalingslegitimasjon</translation>
 <translation id="1386623374109090026">Annoteringer</translation>
 <translation id="138810468159004008">Tillat mens du er på nettstedet</translation>
+<translation id="1391145880481608015">Finn ut mer om denne advarselen</translation>
 <translation id="139161720020179799">Mørkegrå 1</translation>
 <translation id="1391625539203220400">Vil du lagre IBAN-nummeret på denne enheten?</translation>
 <translation id="1392813880755413602">OpenDocument-presentasjon</translation>
@@ -1444,6 +1445,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="340924996148642843">Sammenligning er ikke tilgjengelig akkurat nå</translation>
 <translation id="3409896703495473338">Administrer sikkerhetsinnstillinger</translation>
 <translation id="3411091017011773343">Last opp om <ph name="HOURS" /> t</translation>
+<translation id="3413466783792948876">Det er tryggest å besøke dette nettstedet senere hvis du bruker et offentlig nettverk. Pålitelige nettverk har lavere risiko, for eksempel wifi-nettverket hjemme eller på jobb.</translation>
 <translation id="3414275587143250384">Distribuert databehandling og databehandling i nettskyen</translation>
 <translation id="3414952576877147120">Størrelse:</translation>
 <translation id="341513675006332771">Knappen «Spill Chrome Dino-spillet» – aktiver for å spille Dino Run-spillet i Chrome</translation>
@@ -1688,6 +1690,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3781428340399460090">Knallrosa</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-enheter</translation>
+<translation id="3785246317262748285">Du pleier å ha en sikker tilkobling til nettsteder, men Chrome kunne ikke bruke en sikker tilkobling denne gangen. Det kan hende at angripere prøver å tyvlytte på eller modifisere nettverkstilkoblingen din. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Beste treff for «<ph name="SEARCH_QUERY" />»</translation>
 <translation id="3789155188480882154">Størrelse 16</translation>
 <translation id="3789841737615482174">Installer</translation>
@@ -3221,6 +3224,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6340739886198108203">Administratorreglene anbefaler ikke at du tar skjermbilder eller gjør opptak når konfidensielt innhold er synlig:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Administratorreglene anbefaler ikke at du laster opp denne filen til <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du laster opp disse filene til <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Akkurat nå</translation>
+<translation id="6342171901363060580">Du ser denne advarselen fordi dette nettstedet ikke støtter HTTPS og du er i inkognitomodus. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Veibeskrivelser</translation>
 <translation id="6348220984832452017">Aktive variasjoner</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
@@ -3486,6 +3490,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Bruk YouTube med innstillingene som forelderen din har valgt</translation>
 <translation id="6779348349813025131">Google Passordlagring trenger tilgang til macOS-nøkkelring</translation>
+<translation id="6780449997190414928">Du pleier å ha en sikker tilkobling til dette nettstedet, men Chrome kunne ikke bruke en sikker tilkobling denne gangen. Det kan hende at angripere prøver å tyvlytte på eller modifisere nettverkstilkoblingen din. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Du kan når som helst bytte søkemotor i Chrome-innstillingene.</translation>
 <translation id="6786145470008421571">Konvolutt 6 x 9 tommer</translation>
 <translation id="67862343314499040">Fiolett</translation>
@@ -3517,6 +3522,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6831043979455480757">Oversett</translation>
 <translation id="683108308100148227">Skjul element</translation>
 <translation id="6832753933931306326">Skjemaet ble fylt ut</translation>
+<translation id="6834757537110528125">Dette nettstedet støtter ikke sikker tilkobling</translation>
 <translation id="6841864657731852591">Dyptrykksylinder</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Håndsporing er tillatt denne gangen</translation>
@@ -3780,6 +3786,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7257453341537973799">Karriereressurser og -planlegging</translation>
 <translation id="725866823122871198">En privat forbindelse til <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kan ikke opprettes fordi datoen og klokkeslettet (<ph name="DATE_AND_TIME" />) på datamaskinen er feil.</translation>
 <translation id="7260075294900977274">En ny smart mappe du kan bruke til å lagre alle handlesidene dine på ett sted, slik at du kan spore priser automatisk, få prisstatistikk med mer</translation>
+<translation id="7264942008235065057">Dette nettstedet forblir blokkert fordi du er underlagt Googles Avansert beskyttelse-program. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Adressen er bare tilgjengelig på denne enheten</translation>
 <translation id="7269151392155523061">Snarveien kan ikke være lik søkeordet for søkeaggregatoren som er definert av <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Filer du laster ned, sendes til Google Cloud eller tredjeparter for analyse. De kan for eksempel bli skannet for sensitive data eller skadelig programvare, og de kan bli lagret i henhold til bedriftens retningslinjer og være synlige for administratoren din.</translation>
@@ -3908,6 +3915,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7469935732330206581">Skjemaet er ikke sikkert</translation>
 <translation id="7470854469646445678">Oppgi årsaken til kopieringen (obligatorisk)</translation>
 <translation id="7471007961486718967">Oppgi årsaken til overføringen (obligatorisk)</translation>
+<translation id="7473033553872550521">Du kan også kontakte nettstedseieren og foreslå at vedkommende oppgraderer til HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Nei takk</translation>
 <translation id="7481312909269577407">Frem</translation>
 <translation id="7481603210197454575">Italiensk konvolutt</translation>
@@ -4434,6 +4442,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Registrering med virtuelt kort er åpnet i full høyde</translation>
+<translation id="834805203690963649">Angripere kan se og endre informasjon du sender til eller mottar fra nettstedet.</translation>
 <translation id="8349305172487531364">Bokmerkerad</translation>
 <translation id="8350416046273606058">Snarveien kan ikke inneholde mellomrom: «<ph name="SHORTCUT_NAME" />»</translation>
 <translation id="8351131234907093545">Opprett et notat</translation>

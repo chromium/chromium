@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">ชีตการตรวจสอบสิทธิ์ข้อมูลเข้าสู่ระบบการชำระเงินที่ปลอดภัย</translation>
 <translation id="1386623374109090026">คำอธิบายประกอบ</translation>
 <translation id="138810468159004008">อนุญาตขณะเข้าชมเว็บไซต์</translation>
+<translation id="1391145880481608015">ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้</translation>
 <translation id="139161720020179799">เทาเข้ม 1</translation>
 <translation id="1391625539203220400">บันทึก IBAN ไว้ในอุปกรณ์นี้ไหม</translation>
 <translation id="1392813880755413602">งานนำเสนอ OpenDocument</translation>
@@ -1444,6 +1445,7 @@
 <translation id="340924996148642843">การเปรียบเทียบไม่พร้อมใช้งานในขณะนี้</translation>
 <translation id="3409896703495473338">จัดการการตั้งค่าความปลอดภัย</translation>
 <translation id="3411091017011773343">อัปโหลดในอีก <ph name="HOURS" /> ชม.</translation>
+<translation id="3413466783792948876">ควรเข้าชมเว็บไซต์นี้ในภายหลัง หรือเมื่อใช้เครือข่ายสาธารณะจึงจะปลอดภัยที่สุด เครือข่ายที่เชื่อถือได้ เช่น Wi-Fi ที่บ้านหรือที่ทำงานจะมีความเสี่ยงน้อยกว่า</translation>
 <translation id="3414275587143250384">การประมวลผลแบบกระจายและแบบคลาวด์</translation>
 <translation id="3414952576877147120">ขนาด:</translation>
 <translation id="341513675006332771">ปุ่มเล่นเกมไดโนเสาร์ Chrome เปิดใช้งานเพื่อเล่นเกมไดโนเสาร์วิ่งใน Chrome</translation>
@@ -1687,6 +1689,7 @@
 <translation id="3781428340399460090">ชมพูเจิดจ้า</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">อุปกรณ์บลูทูธ</translation>
+<translation id="3785246317262748285">โดยปกติคุณจะเชื่อมต่อกับเว็บไซต์ต่างๆ อย่างปลอดภัย แต่ Chrome ไม่สามารถใช้การเชื่อมต่อที่ปลอดภัยได้ในขณะนี้ ผู้โจมตีอาจกำลังพยายามดักฟังหรือแก้ไขการเชื่อมต่อเครือข่ายของคุณ <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">ผลลัพธ์ที่ตรงที่สุดสำหรับ "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">ขนาด 16</translation>
 <translation id="3789841737615482174">ติดตั้ง</translation>
@@ -3220,6 +3223,7 @@
 <translation id="6340739886198108203">นโยบายของผู้ดูแลระบบไม่แนะนำให้ถ่ายภาพหน้าจอหรือบันทึกวิดีโอเมื่อมีการแสดงเนื้อหาที่เป็นความลับ</translation>
 <translation id="6341434961864773665">{0,plural, =1{นโยบายของผู้ดูแลระบบไม่แนะนำให้อัปโหลดไฟล์นี้ไปยัง <ph name="DESTINATION_NAME" />}other{นโยบายของผู้ดูแลระบบไม่แนะนำให้อัปโหลดไฟล์เหล่านี้ไปยัง <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">เมื่อสักครู่</translation>
+<translation id="6342171901363060580">คุณเห็นคำเตือนนี้เพราะเว็บไซต์นี้ไม่รองรับ HTTPS และคุณกำลังใช้โหมดไม่ระบุตัวตนอยู่ <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">เส้นทาง</translation>
 <translation id="6348220984832452017">รูปแบบที่ใช้งานอยู่</translation>
 <translation id="6349101878882523185">ติดตั้ง <ph name="APP_NAME" /></translation>
@@ -3485,6 +3489,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">ใช้ YouTube กับตัวเลือกของผู้ปกครอง</translation>
 <translation id="6779348349813025131">เครื่องมือจัดการรหัสผ่านบน Google ต้องการสิทธิ์เข้าถึง Keychain ของ MacOS</translation>
+<translation id="6780449997190414928">โดยปกติคุณจะเชื่อมต่อกับเว็บไซต์นี้อย่างปลอดภัย แต่ Chrome ไม่สามารถใช้การเชื่อมต่อที่ปลอดภัยได้ในขณะนี้ ผู้โจมตีอาจกำลังพยายามดักฟังหรือแก้ไขการเชื่อมต่อเครือข่ายของคุณ <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">คุณเปลี่ยนเครื่องมือค้นหาได้ตลอดเวลาในการตั้งค่าของ Chrome</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 นิ้ว</translation>
 <translation id="67862343314499040">ม่วงอมน้ำเงิน</translation>
@@ -3516,6 +3521,7 @@
 <translation id="6831043979455480757">แปลภาษา</translation>
 <translation id="683108308100148227">ซ่อนรายการ</translation>
 <translation id="6832753933931306326">กรอกข้อมูลในแบบฟอร์มแล้ว</translation>
+<translation id="6834757537110528125">เว็บไซต์นี้ไม่รองรับการเชื่อมต่อที่ปลอดภัย</translation>
 <translation id="6841864657731852591">กระบอกพิมพ์ภาพ</translation>
 <translation id="6842196666980060516">184 x 260 มม.</translation>
 <translation id="6844998850832008753">อนุญาตให้ใช้การติดตามการเคลื่อนไหวของมือในครั้งนี้</translation>
@@ -3780,6 +3786,7 @@
 <translation id="7257453341537973799">การวางแผนและแหล่งข้อมูลตำแหน่งงาน</translation>
 <translation id="725866823122871198">ไม่สามารถเริ่มการเชื่อมต่อส่วนตัวกับ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ได้เนื่องจากวันที่และเวลาของคอมพิวเตอร์ (<ph name="DATE_AND_TIME" />) ไม่ถูกต้อง</translation>
 <translation id="7260075294900977274">โฟลเดอร์อัจฉริยะใหม่ที่ช่วยให้คุณบันทึกหน้าช็อปปิ้งทั้งหมดไว้ในที่เดียว รวมถึงติดตามราคา ดูข้อมูลเชิงลึกด้านราคา และอื่นๆ ได้โดยอัตโนมัติ</translation>
+<translation id="7264942008235065057">เว็บไซต์นี้จะยังคงถูกบล็อกเนื่องจากคุณอยู่ในโปรแกรมการปกป้องขั้นสูงของ Google <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">ที่อยู่จะใช้งานได้เฉพาะบนอุปกรณ์นี้เท่านั้น</translation>
 <translation id="7269151392155523061">ทางลัดต้องไม่เหมือนกับคีย์เวิร์ดของผู้รวบรวมข้อมูลการค้นหาที่กำหนดโดย <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">ไฟล์ที่คุณดาวน์โหลดจะส่งไปยัง Google Cloud หรือบุคคลที่สามเพื่อทำการวิเคราะห์ เช่น อาจสแกนหาข้อมูลที่ละเอียดอ่อนหรือมัลแวร์ และอาจจัดเก็บตามนโยบายบริษัทและผู้ดูแลระบบมองเห็นได้</translation>
@@ -3908,6 +3915,7 @@
 <translation id="7469935732330206581">ฟอร์มไม่ปลอดภัย</translation>
 <translation id="7470854469646445678">ระบุเหตุผลในการคัดลอก (ต้องระบุ)</translation>
 <translation id="7471007961486718967">ระบุเหตุผลในการโอน (ต้องระบุ)</translation>
+<translation id="7473033553872550521">คุณอาจติดต่อเจ้าของเว็บไซต์และแนะนำให้อัปเกรดเป็น HTTPS ก็ได้ <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">ไม่เป็นไร</translation>
 <translation id="7481312909269577407">ส่งต่อ</translation>
 <translation id="7481603210197454575">Envelope Italian</translation>
@@ -4434,6 +4442,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">การลงทะเบียนบัตรเสมือนที่เปิดอยู่แบบเต็มความสูง</translation>
+<translation id="834805203690963649">ผู้โจมตีสามารถดูและเปลี่ยนแปลงข้อมูลที่คุณส่งหรือรับจากเว็บไซต์ได้</translation>
 <translation id="8349305172487531364">แถบบุ๊กมาร์ก</translation>
 <translation id="8350416046273606058">ทางลัดจะมีเว้นวรรคไม่ได้: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">สร้างโน้ต</translation>

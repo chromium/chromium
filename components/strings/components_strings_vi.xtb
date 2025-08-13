@@ -237,6 +237,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1384725838384960382">Bảng xác thực thông tin thanh toán an toàn</translation>
 <translation id="1386623374109090026">Chú thích</translation>
 <translation id="138810468159004008">Cho phép mỗi khi truy cập trang web</translation>
+<translation id="1391145880481608015">Tìm hiểu thêm về cảnh báo này</translation>
 <translation id="139161720020179799">Xám đậm 1</translation>
 <translation id="1391625539203220400">Lưu IBAN vào thiết bị này?</translation>
 <translation id="1392813880755413602">Bản trình bày OpenDocument</translation>
@@ -1444,6 +1445,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="340924996148642843">Tính năng so sánh hiện không sẵn dùng.</translation>
 <translation id="3409896703495473338">Quản lý chế độ cài đặt bảo mật</translation>
 <translation id="3411091017011773343">Tải lên sau <ph name="HOURS" /> giờ nữa</translation>
+<translation id="3413466783792948876">Nếu đang dùng mạng công cộng, bạn nên truy cập trang web này vào lúc khác để đảm bảo an toàn. Những mạng đáng tin cậy, chẳng hạn như Wi-Fi tại nhà hoặc nơi làm việc, sẽ có ít rủi ro hơn.</translation>
 <translation id="3414275587143250384">Điện toán đám mây và hệ thống phân phối</translation>
 <translation id="3414952576877147120">Kích thước:</translation>
 <translation id="341513675006332771">Nút Chơi Trò chơi khủng long trên Chrome, hãy nhấn nút này để chơi trò chơi khủng long trên Chrome</translation>
@@ -1688,6 +1690,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3781428340399460090">Hồng đậm</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Thiết bị Bluetooth</translation>
+<translation id="3785246317262748285">Bạn thường kết nối an toàn với các trang web nhưng lần này Chrome không thể sử dụng kết nối an toàn. Kẻ tấn công có thể đang tìm cách nghe trộm hoặc sửa đổi kết nối mạng của bạn. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Kết quả phù hợp nhất cho "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Kích thước 16</translation>
 <translation id="3789841737615482174">Cài đặt</translation>
@@ -3221,6 +3224,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6340739886198108203">Chính sách của quản trị viên không khuyến khích chụp ảnh màn hình hoặc ghi âm khi đang có nội dung bảo mật trên màn hình:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Theo chính sách của quản trị viên, bạn không nên tải tệp này lên <ph name="DESTINATION_NAME" />}other{Theo chính sách của quản trị viên, bạn không nên tải các tệp này lên <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Vừa xong</translation>
+<translation id="6342171901363060580">Cảnh báo này xuất hiện vì đây là trang web không hỗ trợ HTTPS và bạn đang ở Chế độ ẩn danh. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Đường đi</translation>
 <translation id="6348220984832452017">Biến thể đang hoạt động</translation>
 <translation id="6349101878882523185">Cài đặt <ph name="APP_NAME" /></translation>
@@ -3486,6 +3490,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Sử dụng YouTube theo lựa chọn của cha mẹ</translation>
 <translation id="6779348349813025131">Trình quản lý mật khẩu của Google cần quyền truy cập vào MacOS Keychain</translation>
+<translation id="6780449997190414928">Bạn thường kết nối an toàn với trang web này nhưng lần này Chrome không thể sử dụng kết nối bảo mật. Kẻ tấn công có thể đang tìm cách nghe trộm hoặc sửa đổi kết nối mạng của bạn. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Bạn có thể thay đổi công cụ tìm kiếm bất kỳ lúc nào trong phần cài đặt của Chrome.</translation>
 <translation id="6786145470008421571">Phong bì 6 x 9 inch</translation>
 <translation id="67862343314499040">Tím vi-ô-lét</translation>
@@ -3517,6 +3522,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6831043979455480757">Dịch</translation>
 <translation id="683108308100148227">Ẩn mục</translation>
 <translation id="6832753933931306326">Biểu mẫu đã được điền thông tin</translation>
+<translation id="6834757537110528125">Trang web này không hỗ trợ kết nối bảo mật</translation>
 <translation id="6841864657731852591">In ống đồng</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Đã cho phép theo dõi cử chỉ tay cho lần này</translation>
@@ -3781,6 +3787,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7257453341537973799">Hoạch định và nguồn lực xây dựng sự nghiệp</translation>
 <translation id="725866823122871198">Không thể thiết lập kết nối riêng tư với <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> vì ngày và giờ (<ph name="DATE_AND_TIME" />) trên máy tính của bạn không đúng.</translation>
 <translation id="7260075294900977274">Đây là một thư mục thông minh mới ra mắt, giúp bạn lưu tất cả các trang mua sắm ở cùng một nơi, tự động theo dõi giá và nhận thông tin chi tiết về giá, v.v.</translation>
+<translation id="7264942008235065057">Trang web này sẽ tiếp tục bị chặn vì bạn đang tham gia Chương trình Bảo vệ nâng cao của Google. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Địa chỉ chỉ dùng được trên thiết bị này</translation>
 <translation id="7269151392155523061">Lối tắt không được giống với từ khoá của công cụ tổng hợp nội dung tìm kiếm do <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> xác định: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Các tệp bạn tải xuống được gửi đến Google Cloud hoặc bên thứ ba để phân tích. Ví dụ: Các tệp này có thể được quét để tìm xem có dữ liệu nhạy cảm hoặc phần mềm độc hại hay không và có thể được lưu trữ dựa trên chính sách của công ty. Quản trị viên cũng có thể thấy các tệp này.</translation>
@@ -3909,6 +3916,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7469935732330206581">Biểu mẫu không an toàn</translation>
 <translation id="7470854469646445678">Cung cấp lý do sao chép tệp (bắt buộc)</translation>
 <translation id="7471007961486718967">Cung cấp lý do chuyển tệp (bắt buộc)</translation>
+<translation id="7473033553872550521">Bạn cũng có thể liên hệ với chủ sở hữu trang web và đề xuất họ nâng cấp lên HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Không, cảm ơn</translation>
 <translation id="7481312909269577407">Chuyển tiếp</translation>
 <translation id="7481603210197454575">Phong bì kiểu Ý</translation>
@@ -4435,6 +4443,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Đã mở hộp thoại đăng ký thẻ ảo với độ cao chiếm toàn bộ chiều dọc màn hình</translation>
+<translation id="834805203690963649">Những kẻ tấn công có thể xem và thay đổi thông tin bạn gửi hoặc nhận từ trang web này.</translation>
 <translation id="8349305172487531364">Thanh dấu trang</translation>
 <translation id="8350416046273606058">Lối tắt không được chứa dấu cách: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Tạo ghi chú</translation>

@@ -237,6 +237,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1384725838384960382">Fleta e vërtetimit të sigurt të kredencialeve të pagesës</translation>
 <translation id="1386623374109090026">Shënimet</translation>
 <translation id="138810468159004008">Lejo ndërsa viziton sajtin</translation>
+<translation id="1391145880481608015">Mëso më shumë për këtë paralajmërim</translation>
 <translation id="139161720020179799">Gri e errët 1</translation>
 <translation id="1391625539203220400">Të ruhet numri IBAN në këtë pajisje?</translation>
 <translation id="1392813880755413602">Prezantim OpenDocument</translation>
@@ -820,7 +821,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2340263603246777781"><ph name="ORIGIN" /> dëshiron të çiftohet</translation>
 <translation id="2344529975040861103">Mund ta plotësosh automatikisht këtë kartë pasi llogaria jote është e lidhur me Google Pay.</translation>
 <translation id="2346319942568447007">Imazhi që kopjove</translation>
-<translation id="2347764072711098973">Përdor Affirm, Zip ose Klarna për të pagua me kalimin e kohës</translation>
+<translation id="2347764072711098973">Përdor Affirm, Zip ose Klarna për të paguar me kalimin e kohës</translation>
 <translation id="2348509731468399833">Monitorimi i çmimeve ndaloi.</translation>
 <translation id="2349957959687031096">Butoni "Hap skedën 'e fshehtë'". Aktivizoje për të hapur një skedë të re "të fshehtë" për të shfletuar në mënyrë private</translation>
 <translation id="2350796302381711542">Të lejohet <ph name="HANDLER_HOSTNAME" /> të hapë të gjitha lidhjet <ph name="PROTOCOL" /> në vend të <ph name="REPLACED_HANDLER_TITLE" />?</translation>
@@ -1444,6 +1445,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="340924996148642843">Krahasimi nuk ofrohet për momentin</translation>
 <translation id="3409896703495473338">Menaxho cilësimet e sigurisë</translation>
 <translation id="3411091017011773343">Ngarko për <ph name="HOURS" /> orë</translation>
+<translation id="3413466783792948876">Është më e sigurt që ta vizitosh këtë sajt më vonë nëse po përdor një rrjet publik. Ka më pak rrezik nga një rrjet i besuar, si p.sh. rrjeti Wi-Fi i shtëpisë ose i punës.</translation>
 <translation id="3414275587143250384">Shërbimet kompjuterike të shpërndara dhe në renë kompjuterike</translation>
 <translation id="3414952576877147120">Madhësia:</translation>
 <translation id="341513675006332771">Butoni "Luaj lojën Chrome Dino". Aktivizoje për të luajtur lojën Dino Run në Chrome</translation>
@@ -1688,6 +1690,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3781428340399460090">Rozë e ndezur</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Pajisjet me Bluetooth</translation>
+<translation id="3785246317262748285">Zakonisht lidhesh me sajtet në mënyrë të sigurt, por Chrome nuk mund të përdorte një lidhje të sigurt në këtë moment. Një sulmues mund të jetë duke u përpjekur të përgjojë ose modifikojë lidhjen tënde të rrjetit. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Përputhjet më të mira për "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Madhësia 16</translation>
 <translation id="3789841737615482174">Instalo</translation>
@@ -3220,6 +3223,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6340739886198108203">Politika e administratorit nuk rekomandon nxjerrjen e pamjeve të ekranit apo regjistrimeve kur përmbajtja konfidenciale është e dukshme:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Politika e administratorit nuk rekomandon ngarkimin e këtij skedari te: <ph name="DESTINATION_NAME" />}other{Politika e administratorit nuk rekomandon ngarkimin e këtyre skedarëve te: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Pikërisht tani</translation>
+<translation id="6342171901363060580">Po e shikon këtë paralajmërim sepse ky sajt nuk e mbështet protokollin HTTPS dhe je në modalitetin "I fshehtë". <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Udhëzimet</translation>
 <translation id="6348220984832452017">Variantet aktive</translation>
 <translation id="6349101878882523185">Instalo <ph name="APP_NAME" /></translation>
@@ -3485,6 +3489,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Përdor YouTube me zgjedhjet e prindit tënd</translation>
 <translation id="6779348349813025131">"Menaxheri i fjalëkalimeve i Google" ka nevojë për qasje te MacOS Keychain</translation>
+<translation id="6780449997190414928">Zakonisht lidhesh me këtë sajt në mënyrë të sigurt, por Chrome nuk mund të përdorte një lidhje të sigurt në këtë moment. Një sulmues mund të jetë duke u përpjekur të përgjojë ose modifikojë lidhjen tënde të rrjetit. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Mund ta ndryshosh motorin e kërkimit në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="6786145470008421571">Zarf 6 x 9 inç</translation>
 <translation id="67862343314499040">Vjollcë</translation>
@@ -3516,6 +3521,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6831043979455480757">Përkthe</translation>
 <translation id="683108308100148227">Fshih artikullin</translation>
 <translation id="6832753933931306326">Formulari u plotësua</translation>
+<translation id="6834757537110528125">ky sajt nuk mbështet një lidhje të sigurt</translation>
 <translation id="6841864657731852591">Cilindri i gravurës</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Gjurmimi i duarve lejohet këtë herë</translation>
@@ -3779,6 +3785,7 @@ Detaje shtesë:
 <translation id="7257453341537973799">Burime dhe planifikim karriere</translation>
 <translation id="725866823122871198">Nuk mund të vendoset një lidhje private me <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> sepse data dhe ora (<ph name="DATE_AND_TIME" />) e kompjuterit tënd nuk janë të sakta.</translation>
 <translation id="7260075294900977274">Një dosje e re inteligjente që të ndihmon të ruash të gjitha faqet e blerjeve në një vend, si dhe të monitorosh automatikisht çmimet, të marrësh statistika mbi to etj.</translation>
+<translation id="7264942008235065057">Ky sajt do të qëndrojë i bllokuar sepse je në programin e "Mbrojtjes së përparuar" të Google. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Adresa ofrohet vetëm në këtë pajisje</translation>
 <translation id="7269151392155523061">Shkurtorja nuk mund të jetë e njëjtë me fjalën kyçe të përmbledhësit të kërkimit të përcaktuar nga <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Skedarët që shkarkon dërgohen te Google Cloud ose te palë të treta për analizim. Për shembull, ata mund të skanohen për të dhëna delikate ose softuerë keqdashës dhe mund të ruhen bazuar në politikat e kompanisë dhe të jenë të dukshëm për administratorin tënd.</translation>
@@ -3907,6 +3914,7 @@ Detaje shtesë:
 <translation id="7469935732330206581">Formulari nuk është i sigurt</translation>
 <translation id="7470854469646445678">Jep arsyen për kopjimin (e detyrueshme)</translation>
 <translation id="7471007961486718967">Jep arsyen për transferimin (e detyrueshme)</translation>
+<translation id="7473033553872550521">Mund të kontaktosh gjithashtu me zotëruesin e sajtit dhe t'i sugjerosh që ta përmirësojë në HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Jo, faleminderit</translation>
 <translation id="7481312909269577407">Përpara</translation>
 <translation id="7481603210197454575">Zarf italian</translation>
@@ -4433,6 +4441,7 @@ Detaje shtesë:
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Regjistrimi i kartës virtuale u hap në lartësi të plotë</translation>
+<translation id="834805203690963649">Sulmuesit mund të shikojnë dhe të ndryshojnë informacionet që dërgon ose merr nga sajti.</translation>
 <translation id="8349305172487531364">Shiriti i faqeshënuesve</translation>
 <translation id="8350416046273606058">Shkurtorja nuk mund të përfshijë hapësira: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Krijo një shënim</translation>

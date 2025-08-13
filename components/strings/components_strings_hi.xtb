@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">सुरक्षित पेमेंट करने के लिए, क्रेडेंशियल की पुष्टि करने की शीट</translation>
 <translation id="1386623374109090026">टिप्पणियां</translation>
 <translation id="138810468159004008">साइट पर जाने के दौरान अनुमति दें</translation>
+<translation id="1391145880481608015">इस चेतावनी के बारे में ज़्यादा जानें</translation>
 <translation id="139161720020179799">डार्क ग्रे 1</translation>
 <translation id="1391625539203220400">क्या आपको इस डिवाइस पर IBAN सेव करना है?</translation>
 <translation id="1392813880755413602">OpenDocument Presentation</translation>
@@ -1444,6 +1445,7 @@
 <translation id="340924996148642843">फ़िलहाल, तुलना करने की सुविधा उपलब्ध नहीं है</translation>
 <translation id="3409896703495473338">सुरक्षा की सेटिंग मैनेज करें</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> घंटे में अपलोड करें</translation>
+<translation id="3413466783792948876">अगर सार्वजनिक नेटवर्क का इस्तेमाल किया जा रहा है, तो इस साइट पर बाद में जाना सबसे सुरक्षित रहेगा. घर या ऑफ़िस के वाई-फ़ाई जैसे भरोसेमंद नेटवर्क का इस्तेमाल करने से जोखिम का खतरा कम होता है.</translation>
 <translation id="3414275587143250384">डिस्ट्रिब्यूटेड और क्लाउड कंप्यूटिंग</translation>
 <translation id="3414952576877147120">आकार:</translation>
 <translation id="341513675006332771">'Chrome Dino गेम खेलें' बटन, Chrome में Dino Run गेम खेलने के लिए इसे चालू करें</translation>
@@ -1688,6 +1690,7 @@
 <translation id="3781428340399460090">चमकीला गुलाबी</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">ब्लूटूथ डिवाइस</translation>
+<translation id="3785246317262748285">Chrome आम तौर पर आपको साइटों से सुरक्षित तरीके से कनेक्ट करता है, लेकिन इस बार इसे साइट पर सुरक्षित कनेक्शन नहीं मिला. ऐसा हो सकता है कि कोई हमलावर चोरी-छिपे आपके इंटरनेट पर नज़र रख रहा हो या उसमें बदलाव करने की कोशिश कर रहा हो. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" के हिसाब से सबसे सही नतीजे</translation>
 <translation id="3789155188480882154">आकार 16</translation>
 <translation id="3789841737615482174">इंस्‍टॉल करें</translation>
@@ -3221,6 +3224,7 @@
 <translation id="6340739886198108203">जब गोपनीय कॉन्टेंट दिख रहा हो, तो एडमिन नीति स्क्रीनशॉट लेने या रिकॉर्डिंग करने का सुझाव नहीं देती है:</translation>
 <translation id="6341434961864773665">{0,plural, =1{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर अपलोड करने का सुझाव नहीं देती}one{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर अपलोड करने का सुझाव नहीं देती}other{एडमिन नीति, इन फ़ाइलों को <ph name="DESTINATION_NAME" /> पर अपलोड करने का सुझाव नहीं देती}}</translation>
 <translation id="6342069812937806050">अभी</translation>
+<translation id="6342171901363060580">आपको यह चेतावनी इसलिए दिख रही है, क्योंकि यह साइट एचटीटीपीएस के साथ काम नहीं करती. साथ ही, आपके डिवाइस पर गुप्त मोड चालू है. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">निर्देश</translation>
 <translation id="6348220984832452017">इस्तेमाल किए जा सकने वाले वर्शन</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> इंस्टॉल करें</translation>
@@ -3486,6 +3490,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">अपने माता-पिता की चुनी गई सेटिंग के हिसाब से, YouTube का इस्तेमाल करें</translation>
 <translation id="6779348349813025131">Google Password Manager को MacOS Keychain का ऐक्सेस चाहिए</translation>
+<translation id="6780449997190414928">Chrome आम तौर पर आपको इस साइट से सुरक्षित तरीके से कनेक्ट करता है, लेकिन इस बार इसे साइट पर सुरक्षित कनेक्शन नहीं मिला. ऐसा हो सकता है कि कोई हमलावर चोरी-छिपे आपके इंटरनेट पर नज़र रख रहा हो या उसमें बदलाव करने की कोशिश कर रहा हो. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Chrome की सेटिंग में जाकर, सर्च इंजन को किसी भी समय बदला जा सकता है.</translation>
 <translation id="6786145470008421571">6 x 9 इंच का लिफ़ाफ़ा</translation>
 <translation id="67862343314499040">बैंगनी</translation>
@@ -3517,6 +3522,7 @@
 <translation id="6831043979455480757">अनुवाद करें</translation>
 <translation id="683108308100148227">आइटम छिपाएं</translation>
 <translation id="6832753933931306326">फ़ॉर्म ऑटोमैटिक भरा हुआ है</translation>
+<translation id="6834757537110528125">इस साइट पर सुरक्षित कनेक्शन की सुविधा काम नहीं करती</translation>
 <translation id="6841864657731852591">ग्रव्यूअर सिलिंडर</translation>
 <translation id="6842196666980060516">184 x 260 मि॰मी॰</translation>
 <translation id="6844998850832008753">इस समय हाथ ट्रैक करने की सुविधा को इस्तेमाल करने की अनुमति है</translation>
@@ -3781,6 +3787,7 @@
 <translation id="7257453341537973799">करियर से जुड़े संसाधन और योजना बनाना</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> से एक निजी कनेक्‍शन स्‍थापित नहीं किया जा सकता क्‍योंकि आपके कंप्‍यूटर का तारीख और समय (<ph name="DATE_AND_TIME" />) गलत है.</translation>
 <translation id="7260075294900977274">एक नया स्मार्ट फ़ोल्डर, जो खरीदारी वाले सभी पेजों को एक ही जगह पर सेव करने और कीमतों को अपने-आप ट्रैक करने की सुविधा देता है. इसकी मदद से, कीमत की अहम जानकारी पाने के साथ-साथ और भी बहुत कुछ किया जा सकता है</translation>
+<translation id="7264942008235065057">यह साइट ब्लॉक ही रहेगी, क्योंकि आपने Google के Advanced Protection Program के लिए ऑप्ट-इन किया है. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">पता सिर्फ़ इस डिवाइस पर उपलब्ध है</translation>
 <translation id="7269151392155523061">शॉर्टकट और <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> की ओर से तय किया गया सर्च एग्रीगेटर कीवर्ड, दोनों एक जैसे नहीं हो सकते: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">डाउनलोड की गई फ़ाइलों को विश्लेषण के लिए, Google Cloud या तीसरे पक्ष की कंपनियों को भेजा जाता है. उदाहरण के लिए, संवेदनशील जानकारी या मैलवेयर का पता लगाने के लिए, उन फ़ाइलों को स्कैन किया जा सकता है. साथ ही, उन्हें कंपनी की नीतियों के हिसाब से सेव किया जा सकता है और ये आपके एडमिन को दिख सकती हैं.</translation>
@@ -3909,6 +3916,7 @@
 <translation id="7469935732330206581">यह फ़ॉर्म सुरक्षित नहीं है</translation>
 <translation id="7470854469646445678">कॉपी करने की वजह बताएं (ज़रूरी है)</translation>
 <translation id="7471007961486718967">ट्रांसफ़र करने की वजह बताएं (ज़रूरी है)</translation>
+<translation id="7473033553872550521">साइट के मालिक से संपर्क करके, उसे साइट को एचटीटीपीएस पर अपग्रेड करने का सुझाव भी दिया जा सकता है. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">नहीं, रहने दें</translation>
 <translation id="7481312909269577407">आगे जाएं</translation>
 <translation id="7481603210197454575">इटैलियन साइज़ का लिफ़ाफ़ा</translation>
@@ -4435,6 +4443,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">वर्चुअल कार्ड रजिस्टर करने की सुविधा पूरी स्क्रीन पर खुली है</translation>
+<translation id="834805203690963649">हमलावर, साइट से भेजी गई या साइट पर भेजी गई आपकी जानकारी देख सकते हैं और उसमें बदलाव कर सकते हैं.</translation>
 <translation id="8349305172487531364">बुकमार्क बार</translation>
 <translation id="8350416046273606058">शॉर्टकट में स्पेस का इस्तेमाल नहीं किया जा सकता: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">नोट बनाएं</translation>

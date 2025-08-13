@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">Табела за потврду акредитива за безбедно плаћање</translation>
 <translation id="1386623374109090026">Напомене</translation>
 <translation id="138810468159004008">Дозволи приликом посете сајту</translation>
+<translation id="1391145880481608015">Сазнајте више о овом упозорењу</translation>
 <translation id="139161720020179799">Тамносива 1</translation>
 <translation id="1391625539203220400">Желите да сачувате IBAN на овом уређају?</translation>
 <translation id="1392813880755413602">OpenDocument презентација</translation>
@@ -1444,6 +1445,7 @@
 <translation id="340924996148642843">Поређење тренутно није доступно</translation>
 <translation id="3409896703495473338">Управљајте безбедносним подешавањима</translation>
 <translation id="3411091017011773343">Отпреми за <ph name="HOURS" /> с</translation>
+<translation id="3413466783792948876">Најбезбедније је да посетите овај сајт касније ако користите јавну мрежу. Ризик је мањи са поуздане мреже, попут кућне или пословне WiFi мреже.</translation>
 <translation id="3414275587143250384">Дистрибуирано рачунарство и рачунарство у клауду</translation>
 <translation id="3414952576877147120">Величина:</translation>
 <translation id="341513675006332771">Дугме Играј игру Chrome диносаурус, активирајте га да бисте играли игру Диносаурус у Chrome-у</translation>
@@ -1688,6 +1690,7 @@
 <translation id="3781428340399460090">Јаркорозе</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth уређаји</translation>
+<translation id="3785246317262748285">Обично се безбедно повезујете са сајтовима, али Chrome овог пута не може да користи безбедну везу. Нападач можда покушава да шпијунира или измени мрежну везу. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Најбоља подударања за „<ph name="SEARCH_QUERY" />“</translation>
 <translation id="3789155188480882154">Величина 16</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
@@ -3220,6 +3223,7 @@
 <translation id="6340739886198108203">Смернице администратора не препоручују прављење снимака екрана или снимака када је поверљив садржај видљив:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Смернице администратора не препоручују отпремање овог фајла на <ph name="DESTINATION_NAME" />}one{Смернице администратора не препоручују отпремање ових фајлова на <ph name="DESTINATION_NAME" />}few{Смернице администратора не препоручују отпремање ових фајлова на <ph name="DESTINATION_NAME" />}other{Смернице администратора не препоручују отпремање ових фајлова на <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Малопре</translation>
+<translation id="6342171901363060580">Ово упозорење вам се приказује јер овај сајт не подржава HTTPS, а ви сте у режиму без архивирања. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Путања</translation>
 <translation id="6348220984832452017">Активне варијације</translation>
 <translation id="6349101878882523185">Инсталирајте <ph name="APP_NAME" /></translation>
@@ -3485,6 +3489,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Користи YouTube са подешавањима родитеља</translation>
 <translation id="6779348349813025131">Google менаџер лозинки тражи приступ MacOS Keychain-у</translation>
+<translation id="6780449997190414928">Обично се безбедно повезујете с овим сајтом, али Chrome овог пута не може да користи безбедну везу. Нападач можда покушава да шпијунира или измени мрежну везу. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Можете да промените претраживач у сваком тренутку у подешавањима Chrome-а.</translation>
 <translation id="6786145470008421571">Коверта 15×23 cm</translation>
 <translation id="67862343314499040">Љубичаста</translation>
@@ -3516,6 +3521,7 @@
 <translation id="6831043979455480757">Преведи</translation>
 <translation id="683108308100148227">Сакриј ставку</translation>
 <translation id="6832753933931306326">Образац је попуњен</translation>
+<translation id="6834757537110528125">Овај сајт не подржава безбедну везу</translation>
 <translation id="6841864657731852591">Цилиндар за гравирање</translation>
 <translation id="6842196666980060516">184×260 mm</translation>
 <translation id="6844998850832008753">Праћење руку је дозвољено овај пут</translation>
@@ -3780,6 +3786,7 @@
 <translation id="7257453341537973799">Ресурси за каријеру и планирање каријере</translation>
 <translation id="725866823122871198">Није могуће успоставити приватну везу са доменом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> јер време и датум на рачунару (<ph name="DATE_AND_TIME" />) нису тачни.</translation>
 <translation id="7260075294900977274">Нов паметни фолдер који вам помаже да сачувате све странице за куповину на једном месту и аутоматски пратите цене, добијате увид у цене и друго</translation>
+<translation id="7264942008235065057">Овај сајт ће остати блокиран јер сте део Google програма напредне заштите. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Адреса је доступна само на овом уређају</translation>
 <translation id="7269151392155523061">Пречица не може да буде иста као кључна реч агрегатора претраге коју дефинише <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Фајлови које преузмете се шаљу у Google Cloud или трећим странама на анализу. На пример, можда ће бити скенирани у потрази за осетљивим подацима или малвером и могу да буду сачувани на основу смерница предузећа и видљиви су администратору.</translation>
@@ -3908,6 +3915,7 @@
 <translation id="7469935732330206581">Образац није безбедан</translation>
 <translation id="7470854469646445678">Наведите разлог за копирање (обавезно)</translation>
 <translation id="7471007961486718967">Наведите разлог за пренос (обавезно)</translation>
+<translation id="7473033553872550521">Можете и да се обратите власнику сајта и предложите му да надогради на HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Не, хвала</translation>
 <translation id="7481312909269577407">Напред</translation>
 <translation id="7481603210197454575">Италијанска коверта</translation>
@@ -4434,6 +4442,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Регистрација за виртуелну картицу је отворена у пуној висини</translation>
+<translation id="834805203690963649">Нападачи могу да виде и промене информације које шаљете или примате са сајта.</translation>
 <translation id="8349305172487531364">Трака са обележивачима</translation>
 <translation id="8350416046273606058">Пречица не може да садржи размаке: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="8351131234907093545">Направите белешку</translation>

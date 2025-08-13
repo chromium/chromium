@@ -237,6 +237,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1384725838384960382">Sheet para sa pag-authenticate ng kredensyal sa secure na pagbabayad</translation>
 <translation id="1386623374109090026">Mga Anotasyon</translation>
 <translation id="138810468159004008">Payagan habang binibisita ang site</translation>
+<translation id="1391145880481608015">Matuto pa tungkol sa babalang ito</translation>
 <translation id="139161720020179799">Dark Grey 1</translation>
 <translation id="1391625539203220400">I-save ang IBAN sa device na ito?</translation>
 <translation id="1392813880755413602">OpenDocument Presentation</translation>
@@ -1444,6 +1445,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="340924996148642843">Hindi available ang maghambing sa ngayon</translation>
 <translation id="3409896703495473338">Pamahalaan ang mga setting ng seguridad</translation>
 <translation id="3411091017011773343">I-upload sa loob ng <ph name="HOURS" /> (na) oras</translation>
+<translation id="3413466783792948876">Pinakaligtas na bisitahin ang site na ito sa ibang pagkakataon kung gumagamit ka ng pampublikong network. Mas mababa ang panganib mula sa isang pinagkakatiwalaang network, gaya ng iyong Wi-Fi sa bahay o trabaho.</translation>
 <translation id="3414275587143250384">Distributed Computing at Cloud Computing</translation>
 <translation id="3414952576877147120">Laki:</translation>
 <translation id="341513675006332771">Button na Laruin ang Chrome Dino, i-activate para malaro ang Dino Run sa Chrome</translation>
@@ -1688,6 +1690,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3781428340399460090">Hot Pink</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Mga device ng bluetooth</translation>
+<translation id="3785246317262748285">Kadalasang secure kang nakakakonekta sa mga site, pero hindi makagamit ng secure na koneksyon ang Chrome sa ngayon. Posibleng may attacker na sumusubok na alamin o baguhin ang iyong koneksyon ng network. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Pinakamahuhusay na tugma para sa "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Laki 16</translation>
 <translation id="3789841737615482174">Mag-install</translation>
@@ -3221,6 +3224,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6340739886198108203">Hindi inirerekomenda ng patakaran ng administrator ang pagkuha ng mga screenshot o recording kapag may nakikitang kumpidensyal na content:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Hindi inirerekomenda ng patakaran ng administrator na i-upload ang file na ito sa <ph name="DESTINATION_NAME" />}one{Hindi inirerekomenda ng patakaran ng administrator na i-upload ang mga file na ito sa <ph name="DESTINATION_NAME" />}other{Hindi inirerekomenda ng patakaran ng administrator na i-upload ang mga file na ito sa <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Ngayon lang</translation>
+<translation id="6342171901363060580">Nakikita mo ang babalang ito dahil hindi sinusuportahan ng site na ito ang HTTPS at nasa Incognito mode ka. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Mga Direksyon</translation>
 <translation id="6348220984832452017">Mga Aktibong Variation</translation>
 <translation id="6349101878882523185">I-install ang <ph name="APP_NAME" /></translation>
@@ -3486,6 +3490,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Gamitin ang YouTube na may mga pagpili ng iyong magulang</translation>
 <translation id="6779348349813025131">Kailangan ng Google Password Manager ng access sa MacOS Keychain</translation>
+<translation id="6780449997190414928">Kadalasang secure kang nakakakonekta sa site na ito, pero hindi makagamit ng secure na koneksyon ang Chrome sa ngayon. Posibleng may attacker na sumusubok na alamin o baguhin ang iyong koneksyon ng network. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Puwede mong palitan ang iyong search engine anumang oras sa mga setting ng Chrome.</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 in</translation>
 <translation id="67862343314499040">Violet</translation>
@@ -3517,6 +3522,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6831043979455480757">Isalin</translation>
 <translation id="683108308100148227">I-hide ang item</translation>
 <translation id="6832753933931306326">Napunan ang form</translation>
+<translation id="6834757537110528125">Hindi sinusuportahan ng site na ito ang isang secure na koneksyon</translation>
 <translation id="6841864657731852591">Gravure Cylinder</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Pinapayagan ang pag-track sa kamay sa ngayon</translation>
@@ -3781,6 +3787,7 @@ Mga karagdagang detalye:
 <translation id="7257453341537973799">Mga Resource at Pagpaplano para sa Career</translation>
 <translation id="725866823122871198">Hindi makapagtatag ng pribadong koneksyon sa <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> dahil mali ang petsa at oras ng iyong computer (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="7260075294900977274">Isang bagong smart folder na tumutulong sa iyong i-save ang lahat ng iyong page sa pamimili sa iisang lugar, at awtomatikong subaybayan ang mga presyo, makakuha ng mga insight sa presyo, at higit pa</translation>
+<translation id="7264942008235065057">Mananatiling naka-block ang site na ito dahil napapailalim ka sa Programang Advanced na Proteksyon ng Google. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Available lang sa device na ito ang address</translation>
 <translation id="7269151392155523061">Hindi puwedeng magkapareho ang shortcut at ang keyword ng aggregator ng paghahanap na tinutukoy ng <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Ipinapadala sa Google Cloud o mga third party para sa pagsusuri ang mga file na dina-download mo. Halimbawa, puwedeng i-scan ang mga ito para sa sensitibong data o malware at puwede itong i-store batay sa mga patakaran ng kumpanya at posibleng nakikita ito ng iyong administrator.</translation>
@@ -3909,6 +3916,7 @@ Mga karagdagang detalye:
 <translation id="7469935732330206581">Hindi secure ang form</translation>
 <translation id="7470854469646445678">Magbigay ng dahilan para sa pagkopya (nire-require)</translation>
 <translation id="7471007961486718967">Magbigay ng dahilan para sa paglilipat (nire-require)</translation>
+<translation id="7473033553872550521">Puwede ka ring makipag-ugnayan sa may-ari ng site at magmungkahing mag-upgrade siya sa HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Hindi, Salamat</translation>
 <translation id="7481312909269577407">Sumulong</translation>
 <translation id="7481603210197454575">Envelope Italian</translation>
@@ -4435,6 +4443,7 @@ Mga karagdagang detalye:
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Binuksan nang buo ang pag-enroll sa virtual card</translation>
+<translation id="834805203690963649">Makikita at mababago ng mga attacker ang impormasyong ipapadala o matatanggap mo mula sa site.</translation>
 <translation id="8349305172487531364">Bookmarks bar</translation>
 <translation id="8350416046273606058">Hindi puwedeng makaroon ng mga espasyo ang shortcut: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Gumawa ng tala</translation>

@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">ସୁରକ୍ଷିତ ଭାବରେ ପେମେଣ୍ଟ କରିବା ପାଇଁ କ୍ରେଡେନସିଆଲ୍ ପ୍ରମାଣୀକରଣ ସିଟ୍</translation>
 <translation id="1386623374109090026">ଏନୋଟେସନଗୁଡ଼ିକ</translation>
 <translation id="138810468159004008">ସାଇଟକୁ ଭିଜିଟ କରିବା ସମୟରେ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
+<translation id="1391145880481608015">ଏହି ଚେତାବନୀ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="139161720020179799">ଗାଢ଼ ଧୂସର 1</translation>
 <translation id="1391625539203220400">ଏହି ଡିଭାଇସରେ IBAN ସେଭ କରିବେ?</translation>
 <translation id="1392813880755413602">OpenDocument Presentation</translation>
@@ -1442,6 +1443,7 @@
 <translation id="340924996148642843">ବର୍ତ୍ତମାନ ତୁଳନା କରିବା ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="3409896703495473338">ସୁରକ୍ଷା ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> ଘଣ୍ଟାରେ ଅପଲୋଡ କରନ୍ତୁ</translation>
+<translation id="3413466783792948876">ଯଦି ଆପଣ ଏକ ପବ୍ଲିକ ନେଟୱାର୍କ ବ୍ୟବହାର କରୁଛନ୍ତି, ତେବେ ପରେ ଏହି ସାଇଟକୁ ଭିଜିଟ କରିବା ସବୁଠାରୁ ସୁରକ୍ଷିତ ଅଟେ। ଆପଣଙ୍କ ହୋମ କିମ୍ବା ୱାର୍କ ୱାଇ-ଫାଇ ପରି ଏକ ବିଶ୍ୱସ୍ତ ନେଟୱାର୍କରୁ କମ ବିପଦ ରହିଥାଏ।</translation>
 <translation id="3414275587143250384">ଡିଷ୍ଟ୍ରିବ୍ୟୁଟେଡ ଏବଂ କ୍ଲାଉଡ କମ୍ପ୍ୟୁଟିଂ</translation>
 <translation id="3414952576877147120">ଆକାର:</translation>
 <translation id="341513675006332771">'Chrome Dino ଗେମ ଖେଳନ୍ତୁ' ବଟନ, Chromeରେ Dino Run ଗେମ ଖେଳିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
@@ -1685,6 +1687,7 @@
 <translation id="3781428340399460090">ଅତ୍ୟଧିକ ଗୋଲାପି</translation>
 <translation id="3783418713923659662">MasterCard</translation>
 <translation id="3784372983762739446">ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସଗୁଡ଼ିକ</translation>
+<translation id="3785246317262748285">ଆପଣ ସାଧାରଣତଃ ସାଇଟଗୁଡ଼ିକ ସହ ସୁରକ୍ଷିତ ଭାବେ କନେକ୍ଟ କରନ୍ତି, କିନ୍ତୁ Chrome ଏହି ଥର ଏକ ସୁରକ୍ଷିତ କନେକ୍ସନ ବ୍ୟବହାର କରିପାରିଲା ନାହିଁ। ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କ ନେଟୱାର୍କ କନେକ୍ସନ ଉପରେ ଗୋପନରେ ନଜର ରଖିବା କିମ୍ବା ସେଥିରେ ପରିବର୍ତ୍ତନ କରିବାକୁ ଚେଷ୍ଟା କରୁଥାଇପାରନ୍ତି। <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" ପାଇଁ ସର୍ବୋତ୍ତମ ମେଳ</translation>
 <translation id="3789155188480882154">ଆକାର 16</translation>
 <translation id="3789841737615482174">ସଂସ୍ଥାପନ</translation>
@@ -3217,6 +3220,7 @@
 <translation id="6340739886198108203">ଗୋପନୀୟ ବିଷୟବସ୍ତୁ ଦେଖାଯାଉଥିବା ବେଳେ ସ୍କ୍ରିନସଟ ନେବା କିମ୍ବା ରେକର୍ଡ କରିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ:</translation>
 <translation id="6341434961864773665">{0,plural, =1{<ph name="DESTINATION_NAME" />କୁ ଏହି ଫାଇଲ ଅପଲୋଡ କରିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}other{<ph name="DESTINATION_NAME" />କୁ ଏହି ଫାଇଲଗୁଡ଼ିକ ଅପଲୋଡ କରିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}}</translation>
 <translation id="6342069812937806050">ଏହିକ୍ଷଣି</translation>
+<translation id="6342171901363060580">ଏହି ସାଇଟ HTTPSକୁ ସପୋର୍ଟ କରୁନଥିବା ଏବଂ ଆପଣ ଇନକଗ୍ନିଟୋ ମୋଡରେ ଥିବା ଯୋଗୁଁ ଏହି ଚେତାବନୀ ଦେଖୁଛନ୍ତି। <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">ଦିଗନିର୍ଦ୍ଦେଶ</translation>
 <translation id="6348220984832452017">ସକ୍ରିୟ ଭେରିଏସନଗୁଡ଼ିକ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ଇନଷ୍ଟଲ୍‍ କରନ୍ତୁ</translation>
@@ -3482,6 +3486,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">ତୁମ ବାପାମାଙ୍କ ପସନ୍ଦ ଅନୁସାରେ YouTube ବ୍ୟବହାର କର</translation>
 <translation id="6779348349813025131">Google Password Manager MacOS କୀଚେନକୁ ଆକ୍ସେସ ଆବଶ୍ୟକ କରେ</translation>
+<translation id="6780449997190414928">ଆପଣ ସାଧାରଣତଃ ଏହି ସାଇଟକୁ ସୁରକ୍ଷିତ ଭାବେ କନେକ୍ଟ କରନ୍ତି କିନ୍ତୁ Chrome ଏହି ଥର ଏକ ସୁରକ୍ଷିତ କନେକ୍ସନ ବ୍ୟବହାର କରିପାରିଲା ନାହିଁ। ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କ ନେଟୱାର୍କ କନେକ୍ସନ ଉପରେ ଗୋପନରେ ନଜର ରଖିବା କିମ୍ବା ସେଥିରେ ପରିବର୍ତ୍ତନ କରିବାକୁ ଚେଷ୍ଟା କରୁଥାଇପାରନ୍ତି। <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Chromeର ସେଟିଂସରେ ଆପଣ ଯେ କୌଣସି ସମୟରେ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="6786145470008421571">ଏନଭେଲପ 6 x 9 in</translation>
 <translation id="67862343314499040">ବାଇଗଣୀ</translation>
@@ -3513,6 +3518,7 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="683108308100148227">ଆଇଟମକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="6832753933931306326">ଫର୍ମ ପୂରଣ କରାଯାଇଛି</translation>
+<translation id="6834757537110528125">ଏହି ସାଇଟ ଏକ ସୁରକ୍ଷିତ କନେକ୍ସନକୁ ସପୋର୍ଟ କରେ ନାହିଁ</translation>
 <translation id="6841864657731852591">ଗ୍ରେଭର ସିଲିଣ୍ଡର</translation>
 <translation id="6842196666980060516">184 x 260 ମିମି</translation>
 <translation id="6844998850832008753">ଏହି ସମୟରେ ହେଣ୍ଡ ଟ୍ରାକିଂକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
@@ -3776,6 +3782,7 @@
 <translation id="7257453341537973799">କ୍ୟାରିଅର ରିସୋର୍ସ ଏବଂ ପ୍ଲାନିଂ</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />ରୁ ଏକ ବ୍ୟକ୍ତିଗତ ସଂଯୋଗ ସ୍ଥାପନ କରାଯାଇପାରିବ ନାହିଁ କାରଣ ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‌ର ତାରିଖ ଓ ସମୟ (<ph name="DATE_AND_TIME" />) ଭୁଲ୍‍ ଅଟେ।</translation>
 <translation id="7260075294900977274">ଆପଣଙ୍କୁ ଆପଣଙ୍କର ସମସ୍ତ ପୃଷ୍ଠାକୁ ଗୋଟିଏ ସ୍ଥାନରେ ସେଭ କରିବାରେ, ସ୍ୱତଃ ମୂଲ୍ୟ ଟ୍ରାକ କରିବାରେ, ମୂଲ୍ୟ ଇନସାଇଟ ପାଇବାରେ ଏବଂ ଆହୁରି ଅନେକ କିଛି କରିବାରେ ସାହାଯ୍ୟ କରୁଥିବା ଏକ ନୂଆ ସ୍ମାର୍ଟ ଫୋଲ୍ଡର</translation>
+<translation id="7264942008235065057">ଆପଣ Googleର Advanced Protection Program ଅଧୀନରେ ଥିବା ଯୋଗୁଁ ଏହି ସାଇଟ ବ୍ଲକ ହୋଇ ରହିବ। <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">ଠିକଣାଟି କେବଳ ଏହି ଡିଭାଇସରେ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="7269151392155523061"><ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> ଦ୍ୱାରା ପରିଭାଷିତ ହୋଇଥିବା ସର୍ଚ୍ଚ ଏଗ୍ରିଗେଟର କୀୱାର୍ଡ ସହ ସର୍ଟକଟ ସମାନ ହୋଇପାରିବ ନାହିଁ: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">ଆପଣ ଡାଉନଲୋଡ କରୁଥିବା ଫାଇଲଗୁଡ଼ିକୁ ବିଶ୍ଳେଷଣ ପାଇଁ Google Cloud କିମ୍ବା ତୃତୀୟ ପକ୍ଷଗୁଡ଼ିକୁ ପଠାଯାଏ। ଉଦାହରଣ ସ୍ଵରୂପ, ସେଗୁଡ଼ିକୁ ସମ୍ବେଦନଶୀଳ ଡାଟା କିମ୍ବା ମାଲୱେର ପାଇଁ ସ୍କାନ କରାଯାଇପାରେ ଏବଂ କମ୍ପାନୀ ନୀତିଗୁଡ଼ିକ ଆଧାରରେ ଷ୍ଟୋର କରାଯାଇପାରେ ଏବଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କୁ ଦେଖାଯାଇପାରେ।</translation>
@@ -3904,6 +3911,7 @@
 <translation id="7469935732330206581">ଫର୍ମ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
 <translation id="7470854469646445678">କପି କରିବାର କାରଣ ପ୍ରଦାନ କରନ୍ତୁ (ଆବଶ୍ୟକ)</translation>
 <translation id="7471007961486718967">ଟ୍ରାନ୍ସଫର କରିବାର କାରଣ ପ୍ରଦାନ କରନ୍ତୁ (ଆବଶ୍ୟକ)</translation>
+<translation id="7473033553872550521">ଆପଣ ସାଇଟ ମାଲିକଙ୍କୁ କଣ୍ଟାକ୍ଟ କରିପାରନ୍ତି ଏବଂ ସେ HTTPSରେ ଅପଗ୍ରେଡ କରନ୍ତୁ ବୋଲି ପରାମର୍ଶ ମଧ୍ୟ ଦେଇପାରନ୍ତି। <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">ନା, ଧନ୍ୟବାଦ</translation>
 <translation id="7481312909269577407">ଅଗ୍ରଗତି</translation>
 <translation id="7481603210197454575">ଏନଭେଲପ ଇଟାଲିଆନ</translation>
@@ -4430,6 +4438,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">ଭର୍ଚୁଆଲ କାର୍ଡ ପଞ୍ଜିକରଣ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଛି</translation>
+<translation id="834805203690963649">ଆପଣ ସାଇଟକୁ ପଠାଉଥିବା କିମ୍ବା ସେଥିରୁ ପାଉଥିବା ସୂଚନାକୁ ଆକ୍ରମଣକାରୀମାନେ ଦେଖିପାରିବେ ଏବଂ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="8349305172487531364">ବୁକମାର୍କସ୍ ଦଣ୍ଡିକା</translation>
 <translation id="8350416046273606058">ସର୍ଟକଟରେ ସ୍ପେସ ରହିପାରିବ ନାହିଁ: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">ନୋଟ୍ ତିଆରି କରନ୍ତୁ</translation>

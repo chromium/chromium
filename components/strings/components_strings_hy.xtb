@@ -241,6 +241,7 @@
 <translation id="1384725838384960382">Պաշտպանված վճարումների մուտքային տվյալների նույնականացման էկրան</translation>
 <translation id="1386623374109090026">Ծանոթագրություններ</translation>
 <translation id="138810468159004008">Թույլատրել կայք այցելելիս</translation>
+<translation id="1391145880481608015">Իմանալ ավելին այս նախազգուշացման մասին</translation>
 <translation id="139161720020179799">Մուգ մոխրագույն 1</translation>
 <translation id="1391625539203220400">Պահե՞լ IBAN-ն այս սարքում</translation>
 <translation id="1392813880755413602">OpenDocument ներկայացում</translation>
@@ -1450,6 +1451,7 @@
 <translation id="340924996148642843">Համեմատության գործառույթն այս պահին հասանելի չէ</translation>
 <translation id="3409896703495473338">Կառավարել անվտանգության կարգավորումները</translation>
 <translation id="3411091017011773343">Վերբեռնել <ph name="HOURS" /> ժամից</translation>
+<translation id="3413466783792948876">Անվտանգության նկատառումներից ելնելով՝ խորհուրդ ենք տալիս ավելի ուշ այցելել այս կայք, եթե օգտվում եք հանրային ցանցից։ Հարձակման ռիսկն ավելի ցածր կլինի, եթե օգտվեք վստահելի ցանցից, ինչպիսին ձեր տան կամ աշխատավայրի Wi-Fi-ն է։</translation>
 <translation id="3414275587143250384">Քլաուդ քոմփյութինգ</translation>
 <translation id="3414952576877147120">Չափսը՝</translation>
 <translation id="341513675006332771">«Խաղալ Chrome Dino խաղը» կոճակ․ ակտիվացրեք՝ Chrome-ում Dino Run խաղը խաղալու համար</translation>
@@ -1694,6 +1696,7 @@
 <translation id="3781428340399460090">Վառ վարդագույն</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth սարքեր</translation>
+<translation id="3785246317262748285">Սովորաբար դուք անվտանգ եղանակով եք միանում այս կայքերին, սակայն այս անգամ Chrome-ին չհաջողվեց ապահով միացում օգտագործել։ Հաքերները կարող են փորձել լրտեսել ձեր կապը կամ փոփոխել այն։ <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Լավագույն համընկնումները «<ph name="SEARCH_QUERY" />» հարցման համար</translation>
 <translation id="3789155188480882154">Չափ 16</translation>
 <translation id="3789841737615482174">Տեղադրել</translation>
@@ -3230,6 +3233,7 @@
 <translation id="6340739886198108203">Ադմինիստրատորը խորհուրդ չի տալիս սքրինշոթներ կամ տեսագրություններ անել, երբ էկրանին կոնֆիդենցիալ բովանդակություն է երևում։</translation>
 <translation id="6341434961864773665">{0,plural, =1{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը վերբեռնել <ph name="DESTINATION_NAME" />}one{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը վերբեռնել <ph name="DESTINATION_NAME" />}other{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլերը վերբեռնել <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Հենց նոր</translation>
+<translation id="6342171901363060580">Դուք տեսնում եք այս նախազգուշացումը, քանի որ այս կայքը չի աջակցում HTTPS-ը, իսկ դուք ինկոգնիտո ռեժիմում եք։ <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Երթուղիներ</translation>
 <translation id="6348220984832452017">Ընթացիկ տարբերակներ</translation>
 <translation id="6349101878882523185">Տեղադրել <ph name="APP_NAME" /> հավելվածը</translation>
@@ -3495,6 +3499,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Օգտվեք YouTube-ից ձեր ծնողի կարգավորումներով</translation>
 <translation id="6779348349813025131">Google գաղտնաբառերի կառավարչին անհրաժեշտ է MacOS Keychain-ի հասանելիություն</translation>
+<translation id="6780449997190414928">Սովորաբար դուք անվտանգ եղանակով եք միանում այս կայքին, սակայն այս անգամ Chrome-ին չհաջողվեց ապահով միացում օգտագործել։ Հաքերները կարող են փորձել լրտեսել ձեր կապը կամ փոփոխել այն։ <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Դուք ցանկացած ժամանակ կարող եք փոխել ձեր որոնողական համակարգը Chrome-ի կարգավորումներում։</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 դյմ</translation>
 <translation id="67862343314499040">Բաց մանուշակագույն</translation>
@@ -3526,6 +3531,7 @@
 <translation id="6831043979455480757">Թարգմանել</translation>
 <translation id="683108308100148227">Թաքցնել տարրը</translation>
 <translation id="6832753933931306326">Ձևն ինքնալրացվել է</translation>
+<translation id="6834757537110528125">Այս կայքը չի աջակցում ապահով միացում</translation>
 <translation id="6841864657731852591">Գրավյուրային գլան</translation>
 <translation id="6842196666980060516">184 x 260 մմ</translation>
 <translation id="6844998850832008753">Ձեռքերի շարժումների հետագծումն այս պահին թույլատրված է</translation>
@@ -3789,6 +3795,7 @@
 <translation id="7257453341537973799">Կարիերայի ռեսուրսներ և պլանավորում</translation>
 <translation id="725866823122871198">Չհաջողվեց մասնավոր կապակցում հաստատել <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> տիրույթի հետ, քանի որ ձեր համակարգչի ամսաթիվը և ժամը (<ph name="DATE_AND_TIME" />) սխալ են:</translation>
 <translation id="7260075294900977274">Նոր խելացի պանակ, որը կօգնի ձեզ պահել ձեր գնումների բոլոր էջերը մեկ տեղում և ավտոմատ կերպով հետևել գներին, ինչպես նաև ստանալ գների մասին տեղեկություններ և շատ ավելին</translation>
+<translation id="7264942008235065057">Այս կայքն արգելափակված կմնա, քանի որ դուք միացել եք Google-ի Լրացուցիչ պաշտպանության ծրագրին։ <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Հասցեն հասանելի է միայն այս սարքում</translation>
 <translation id="7269151392155523061">Դյուրանցումը չի կարող լինել նույնը, ինչ որոնման ագրեգատորի հիմնաբառն է, որը սահմանված է <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> պարամետրով՝ <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Ձեր ներբեռնած ֆայլերը ուղարկվում են Google Cloud կամ գործընկեր կազմակերպություններին՝ վերլուծության նպատակով։ Օրինակ՝ դրանցում կարող է ստուգվել զգայուն տվյալների կամ վնասագրերի առկայությունը, և դրանք կարող են պահվել կազմակերպության կանոններին համաձայն ու տեսանելի լինել ձեր ադմինիստրատորին։</translation>
@@ -3917,6 +3924,7 @@
 <translation id="7469935732330206581">Ձևն ապահով չէ</translation>
 <translation id="7470854469646445678">Նշեք պատճենման պատճառը (պարտադիր է)</translation>
 <translation id="7471007961486718967">Նշեք փոխանցման պատճառը (պարտադիր է)</translation>
+<translation id="7473033553872550521">Դուք կարող եք նաև կապվել կայքի սեփականատիրոջ հետ և առաջարկել նրան անցնել HTTPS-ի։ <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Ոչ, պետք չէ</translation>
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7481603210197454575">Envelope Italian</translation>
@@ -4443,6 +4451,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Վիրտուալ քարտի գրանցման պատուհանը բացված է ամբողջությամբ</translation>
+<translation id="834805203690963649">Հաքերները կարող են տեսնել և փոխել տեղեկությունները, որոնք դուք ուղարկում կամ ստանում եք կայքից։</translation>
 <translation id="8349305172487531364">Էջանիշների գոտի</translation>
 <translation id="8350416046273606058">Դյուրանցումը չի կարող բացատներ պարունակել՝ «<ph name="SHORTCUT_NAME" />»</translation>
 <translation id="8351131234907093545">Գրառման ստեղծում</translation>

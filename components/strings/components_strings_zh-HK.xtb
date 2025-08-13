@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">安全付款憑證驗證工作表</translation>
 <translation id="1386623374109090026">註解</translation>
 <translation id="138810468159004008">瀏覽此網站時允許</translation>
+<translation id="1391145880481608015">進一步瞭解此警告訊息</translation>
 <translation id="139161720020179799">深灰色 1</translation>
 <translation id="1391625539203220400">要將 IBAN 儲存至此裝置嗎？</translation>
 <translation id="1392813880755413602">OpenDocument 簡報</translation>
@@ -1444,6 +1445,7 @@
 <translation id="340924996148642843">目前無法使用比較功能</translation>
 <translation id="3409896703495473338">管理安全性設定</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> 小時後上載</translation>
+<translation id="3413466783792948876">如果你正使用公共網絡，最安全的做法是稍後才瀏覽此網站。可信的網絡 (例如家用或公司 Wi-Fi) 的風險相對較低。</translation>
 <translation id="3414275587143250384">分散式和雲端運算</translation>
 <translation id="3414952576877147120">大小：</translation>
 <translation id="341513675006332771">玩 Chrome Dino 遊戲按鈕，啟動之後就可以喺 Chrome 玩恐龍遊戲</translation>
@@ -1687,6 +1689,7 @@
 <translation id="3781428340399460090">豔粉紅色</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">藍牙裝置</translation>
+<translation id="3785246317262748285">你通常可經由安全連線前往網站，但 Chrome 目前無法使用安全連線。攻擊者可能會試圖監視或修改你的網絡連線。<ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">「<ph name="SEARCH_QUERY" />」的最相符項目</translation>
 <translation id="3789155188480882154">粗幼：16</translation>
 <translation id="3789841737615482174">安裝</translation>
@@ -3220,6 +3223,7 @@
 <translation id="6340739886198108203">當螢幕上出現機密內容時，管理員政策不建議擷取螢幕截圖或錄製內容：</translation>
 <translation id="6341434961864773665">{0,plural, =1{管理員政策不建議上載此檔案到<ph name="DESTINATION_NAME" />}other{管理員政策不建議上載這些檔案到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">剛剛完成</translation>
+<translation id="6342171901363060580">此網站不支援 HTTPS，且你目前處於無痕模式，因此系統顯示此警告訊息。<ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">規劃路線</translation>
 <translation id="6348220984832452017">使用中的變化版本</translation>
 <translation id="6349101878882523185">安裝「<ph name="APP_NAME" />」</translation>
@@ -3485,6 +3489,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">根據家長所選的設定使用 YouTube</translation>
 <translation id="6779348349813025131">「Google 密碼管理工具」需要存取「MacOS 鑰匙圈」</translation>
+<translation id="6780449997190414928">你通常可經由安全連線前往此網站，但 Chrome 目前無法使用安全連線。攻擊者可能會試圖監視或修改你的網絡連線。<ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">你可在 Chrome 設定中隨時變更搜尋引擎設定。</translation>
 <translation id="6786145470008421571">6 x 9 吋信封</translation>
 <translation id="67862343314499040">紫羅蘭色</translation>
@@ -3516,6 +3521,7 @@
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="683108308100148227">隱藏項目</translation>
 <translation id="6832753933931306326">已經填寫咗表格</translation>
+<translation id="6834757537110528125">此網站不支援安全連線</translation>
 <translation id="6841864657731852591">凹版印刷滾筒</translation>
 <translation id="6842196666980060516">184 x 260 毫米</translation>
 <translation id="6844998850832008753">今次允許用手勢追蹤功能</translation>
@@ -3780,6 +3786,7 @@
 <translation id="7257453341537973799">就業資源和職業生涯規劃</translation>
 <translation id="725866823122871198">您電腦的日期和時間 (<ph name="DATE_AND_TIME" />) 不正確，因此無法建立私人連線至 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />。</translation>
 <translation id="7260075294900977274">全新的智能資料夾可集中儲存所有購物頁面，以及自動追蹤價格、取得價格分析資料等</translation>
+<translation id="7264942008235065057">由於你已加入 Google 的「進階保護計劃」，因此這個網站會保持封鎖狀態。<ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">地址只可以喺呢部裝置上面用</translation>
 <translation id="7269151392155523061">快速鍵不得與 <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> 定義的搜尋聚合器關鍵字相同：<ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">你下載的檔案會傳送至 Google Cloud 或第三方進行分析。例如，Google Cloud 或第三方可能會掃瞄檔案，檢查是否含有敏感資料或惡意軟件，亦可能會根據公司政策儲存這些檔案或向管理員顯示。</translation>
@@ -3908,6 +3915,7 @@
 <translation id="7469935732330206581">表格不安全</translation>
 <translation id="7470854469646445678">請提供複製的原因 (必填)</translation>
 <translation id="7471007961486718967">請提供轉移的原因 (必填)</translation>
+<translation id="7473033553872550521">你亦可聯絡網站擁有者，提議升級至 HTTPS。<ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">不用了，謝謝</translation>
 <translation id="7481312909269577407">向前</translation>
 <translation id="7481603210197454575">Italian 信封</translation>
@@ -4434,6 +4442,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">虛擬卡註冊宜家顯示喺成個畫面</translation>
+<translation id="834805203690963649">攻擊者可以查看和更改你從網站傳送或接收的資料。</translation>
 <translation id="8349305172487531364">書籤列</translation>
 <translation id="8350416046273606058">快速指令不可包含空格：「<ph name="SHORTCUT_NAME" />」</translation>
 <translation id="8351131234907093545">建立筆記</translation>

@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">Экран проверки учетных данных для защищенных платежей</translation>
 <translation id="1386623374109090026">Заметки</translation>
 <translation id="138810468159004008">Разрешить, когда я на сайте</translation>
+<translation id="1391145880481608015">Подробнее об этом уведомлении…</translation>
 <translation id="139161720020179799">Темно-серый 1</translation>
 <translation id="1391625539203220400">Сохранить код IBAN на этом устройстве?</translation>
 <translation id="1392813880755413602">Презентация в формате OpenDocument</translation>
@@ -1443,6 +1444,7 @@
 <translation id="340924996148642843">Функция сравнения сейчас недоступна</translation>
 <translation id="3409896703495473338">Открыть настройки безопасности</translation>
 <translation id="3411091017011773343">Загрузить через <ph name="HOURS" /> ч.</translation>
+<translation id="3413466783792948876">Рекомендуем зайти на эту страницу позже, если вы подключены к общедоступной сети. Безопаснее всего использовать надежную сеть Wi-Fi, например домашнюю или рабочую.</translation>
 <translation id="3414275587143250384">Распределенные и облачные вычисления</translation>
 <translation id="3414952576877147120">Размер:</translation>
 <translation id="341513675006332771">Кнопка "Запустить игру Chrome Dino". Нажмите ее, чтобы сыграть в Chrome Dino.</translation>
@@ -1687,6 +1689,7 @@
 <translation id="3781428340399460090">Ярко-розовый</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Устройства Bluetooth</translation>
+<translation id="3785246317262748285">Обычно подключение к сайтам защищено, но в этот раз Chrome не удалось установить безопасное соединение. Возможно, злоумышленник пытается перехватить или изменить ваше сетевое подключение. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Лучшие совпадения по запросу "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Размер: 16</translation>
 <translation id="3789841737615482174">Установить</translation>
@@ -3220,6 +3223,7 @@
 <translation id="6340739886198108203">Администратор не рекомендует делать снимки и видеозаписи экрана, когда на нем показаны конфиденциальные данные:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Администратор не рекомендует загружать этот файл на <ph name="DESTINATION_NAME" />.}one{Администратор не рекомендует загружать эти файлы на <ph name="DESTINATION_NAME" />.}few{Администратор не рекомендует загружать эти файлы на <ph name="DESTINATION_NAME" />.}many{Администратор не рекомендует загружать эти файлы на <ph name="DESTINATION_NAME" />.}other{Администратор не рекомендует загружать эти файлы на <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="6342069812937806050">только что</translation>
+<translation id="6342171901363060580">Вы видите это уведомление, потому что сайт не поддерживает HTTPS и у вас включен режим инкогнито. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Маршрут</translation>
 <translation id="6348220984832452017">Текущие изменения</translation>
 <translation id="6349101878882523185">Установите приложение "<ph name="APP_NAME" />"</translation>
@@ -3485,6 +3489,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Пользуйся YouTube с родительскими настройками</translation>
 <translation id="6779348349813025131">Google Менеджеру паролей необходим доступ к Связке ключей macOS</translation>
+<translation id="6780449997190414928">Обычно подключение к этому сайту защищено, но в этот раз Chrome не удалось установить безопасное соединение. Возможно, злоумышленник пытается перехватить или изменить ваше сетевое подключение. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">Вы в любой момент можете изменить поисковую систему по умолчанию в настройках Chrome.</translation>
 <translation id="6786145470008421571">Конверт 152 x 229 мм</translation>
 <translation id="67862343314499040">Фиолетовый</translation>
@@ -3516,6 +3521,7 @@
 <translation id="6831043979455480757">Перевести</translation>
 <translation id="683108308100148227">Скрыть запись</translation>
 <translation id="6832753933931306326">Форма была заполнена</translation>
+<translation id="6834757537110528125">Этот сайт не поддерживает защищенное подключение</translation>
 <translation id="6841864657731852591">Цилиндр для глубокой печати</translation>
 <translation id="6842196666980060516">184 x 260 мм</translation>
 <translation id="6844998850832008753">Отслеживание рук разрешено только в этот раз</translation>
@@ -3780,6 +3786,7 @@
 <translation id="7257453341537973799">Планирование карьеры и посвященные ей ресурсы</translation>
 <translation id="725866823122871198">Не удалось установить защищенное соединение с доменом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> из-за неверных настроек системных часов и календаря (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="7260075294900977274">Это новая умная папка, которая позволяет добавлять в закладки страницы с желаемыми покупками, автоматически отслеживать цены, получать полезную информацию и многое другое.</translation>
+<translation id="7264942008235065057">Сайт останется заблокированным, поскольку вы участвуете в программе Дополнительной защиты Google. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Адрес доступен только на этом устройстве</translation>
 <translation id="7269151392155523061">Быстрая команда не должна совпадать с ключевым словом поискового агрегатора, заданным в правиле <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" />.</translation>
 <translation id="7273111226200291353">Скачанные вами файлы отправляются в Google Cloud или сторонние сервисы для анализа. В частности, файлы могут быть просканированы на наличие конфиденциальных данных или вредоносного ПО. Также они могут быть доступны вашему администратору и храниться на основании правил компании.</translation>
@@ -3908,6 +3915,7 @@
 <translation id="7469935732330206581">Форма не защищена</translation>
 <translation id="7470854469646445678">Укажите, зачем вы хотите скопировать файл (обязательно)</translation>
 <translation id="7471007961486718967">Укажите, зачем вы хотите передать файл (обязательно)</translation>
+<translation id="7473033553872550521">Вы также можете предложить владельцу сайта перейти на HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Нет, спасибо</translation>
 <translation id="7481312909269577407">Вперед</translation>
 <translation id="7481603210197454575">Конверт Italian</translation>
@@ -4434,6 +4442,7 @@
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Диалоговое окно создания виртуальной карты открыто на весь экран</translation>
+<translation id="834805203690963649">Злоумышленники могут перехватить и изменить информацию, которой вы обмениваетесь с этим сайтом.</translation>
 <translation id="8349305172487531364">Панель закладок</translation>
 <translation id="8350416046273606058">Быстрая команда "<ph name="SHORTCUT_NAME" />" не должна содержать пробелов.</translation>
 <translation id="8351131234907093545">Создать заметку</translation>

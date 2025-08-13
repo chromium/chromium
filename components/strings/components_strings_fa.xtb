@@ -237,6 +237,7 @@
 <translation id="1384725838384960382">برگ اصالت‌سنجی اطلاعات کاربری پرداخت امن</translation>
 <translation id="1386623374109090026">حاشیه‌نویسی</translation>
 <translation id="138810468159004008">مجاز بودن درحین بازدید از سایت</translation>
+<translation id="1391145880481608015">درباره این هشدار بیشتر بدانید</translation>
 <translation id="139161720020179799">خاکستری تیره ۱</translation>
 <translation id="1391625539203220400">‏IBAN در این دستگاه ذخیره شود؟</translation>
 <translation id="1392813880755413602">‏ارائه OpenDocument</translation>
@@ -1444,6 +1445,7 @@
 <translation id="340924996148642843">مقایسه درحال‌حاضر دردسترس نیست</translation>
 <translation id="3409896703495473338">مدیریت تنظیمات ایمنی</translation>
 <translation id="3411091017011773343">بارگذاری کردن تا <ph name="HOURS" /> ساعت دیگر</translation>
+<translation id="3413466783792948876">‏اگر از شبکه عمومی استفاده می‌کنید، ایمن‌تر است که بعداً از این سایت بازدید کنید. استفاده از شبکه‌های مورداعتماد مثل Wi-Fi خانه یا محل کار خطر کمتری دارند.</translation>
 <translation id="3414275587143250384">پردازش ابری و توزیع‌شده</translation>
 <translation id="3414952576877147120">اندازه:</translation>
 <translation id="341513675006332771">‏دکمه «اجرای بازی دایناسور Chrome»؛ برای بازی کردن بازی دویدن دایناسور در Chrome، آن را فعال کنید</translation>
@@ -1688,6 +1690,7 @@
 <translation id="3781428340399460090">صورتی پررنگ</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">دستگاه‌های بلوتوث</translation>
+<translation id="3785246317262748285">‏معمولاً ازطریق اتصال ایمن به سایت‌ها متصل می‌شوید، اما این بار Chrome نتوانست از اتصال ایمن استفاده کند. ممکن است مهاجمی درحال تلاش برای استراق سمع یا تغییر اتصال شبکه شما باشد. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">منطبق‌ترین نتایج برای «<ph name="SEARCH_QUERY" />»</translation>
 <translation id="3789155188480882154">اندازه ۱۶</translation>
 <translation id="3789841737615482174">نصب</translation>
@@ -3221,6 +3224,7 @@
 <translation id="6340739886198108203">خط‌مشی سرپرست توصیه می‌کند وقتی محتوای محرمانه قابل‌مشاهده است نماگرفت نگیرید یا ضبط نکنید:</translation>
 <translation id="6341434961864773665">{0,plural, =1{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> بارگذاری کنید}one{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> بارگذاری کنید}other{خط‌مشی سرپرست توصیه نمی‌کند این فایل‌ها را در <ph name="DESTINATION_NAME" /> بارگذاری کنید}}</translation>
 <translation id="6342069812937806050">همین حالا</translation>
+<translation id="6342171901363060580">‏این هشدار را می‌بینید زیرا این سایت از HTTPS پشتیبانی نمی‌کند و در «حالت ناشناس» هستید. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">مسیرها</translation>
 <translation id="6348220984832452017">گونه‌های فعال</translation>
 <translation id="6349101878882523185">نصب <ph name="APP_NAME" /></translation>
@@ -3486,6 +3490,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">‏استفاده از YouTube با انتخاب‌های ولی</translation>
 <translation id="6779348349813025131">‏«مدیر گذرواژه Google» باید به MacOS Keychain دسترسی داشته باشد</translation>
+<translation id="6780449997190414928">‏معمولاً ازطریق اتصال ایمن به این سایت متصل می‌شوید، اما این بار Chrome نتوانست از اتصال ایمن استفاده کند. ممکن است مهاجمی درحال تلاش برای استراق سمع یا تغییر اتصال شبکه شما باشد. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">‏هرزمان بخواهید می‌توانید موتور جستجوی پیش‌فرض را در تنظیمات Chrome تغییر دهید.</translation>
 <translation id="6786145470008421571">پاکت ۹×۶ اینچی</translation>
 <translation id="67862343314499040">بنفش</translation>
@@ -3517,6 +3522,7 @@
 <translation id="6831043979455480757">ترجمه</translation>
 <translation id="683108308100148227">پنهان کردن گزینه</translation>
 <translation id="6832753933931306326">فرم به‌طور خودکار تکمیل شده است</translation>
+<translation id="6834757537110528125">این سایت از اتصال ایمن پشتیبانی نمی‌کند</translation>
 <translation id="6841864657731852591">سیلندر گراور</translation>
 <translation id="6842196666980060516">۲۶۰ × ۱۸۴ میلی‌متر</translation>
 <translation id="6844998850832008753">ردیابی دست این بار مجاز شد</translation>
@@ -3781,6 +3787,7 @@
 <translation id="7257453341537973799">برنامه‌ریزی و منابع شغلی</translation>
 <translation id="725866823122871198">اتصال خصوصی به <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> برقرار نمی‌شود زیرا تاریخ و زمان رایانه شما (<ph name="DATE_AND_TIME" />) نادرست است.</translation>
 <translation id="7260075294900977274">پوشه هوشمند جدیدی که به شما کمک می‌کند همه صفحه‌های خریدتان را در یک مکان ذخیره کنید، و به‌طور خودکار قیمت‌ها را پیگیری کنید، اطلاعات آماری قیمت را دریافت کنید، و کارهای دیگری انجام دهید</translation>
+<translation id="7264942008235065057">‏این سایت مسدود خواهد ماند زیرا «برنامه محافظت پیشرفته Google» را فعال کرده‌اید. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">نشانی فقط در این دستگاه دردسترس است</translation>
 <translation id="7269151392155523061">میان‌بر نباید با کلیدواژه جمع‌کننده جستجو که <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> تعریف کرده است یکسان باشد: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">‏فایل‌هایی که بارگیری می‌کنید برای تجزیه‌وتحلیل به Google Cloud یا اشخاص ثالث ارسال می‌شود. مثلاً ممکن است این فایل‌ها ازنظر وجود داده‌های حساس یا بدافزار اسکن شود و براساس خط‌مشی‌های شرکت ذخیره شود و برای سرپرست شما قابل‌مشاهده باشد.</translation>
@@ -3909,6 +3916,7 @@
 <translation id="7469935732330206581">فرم ایمن نیست</translation>
 <translation id="7470854469646445678">دلیلی برای کپی کردن ارائه دهید (الزامی)</translation>
 <translation id="7471007961486718967">دلیلی برای انتقال دادن ارائه دهید (الزامی)</translation>
+<translation id="7473033553872550521">‏همچنین می‌توانید با مالک سایت تماس بگیرید و پیشنهاد دهید که سایت را به HTTPS ارتقا دهد. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">نه متشکرم</translation>
 <translation id="7481312909269577407">ارسال کردن</translation>
 <translation id="7481603210197454575">پاکت ایتالیایی</translation>
@@ -4435,6 +4443,7 @@
 <translation id="8339463238135163999">‫<ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">ثبت‌نام کارت مجازی به‌صورت کامل باز شده است</translation>
+<translation id="834805203690963649">مهاجمان می‌توانند اطلاعاتی را که به سایت ارسال یا از آن دریافت می‌کنید ببینند یا تغییر دهند.</translation>
 <translation id="8349305172487531364">نوار نشانک‌ها</translation>
 <translation id="8350416046273606058">میان‌بر نمی‌تواند حاوی فاصله باشد: «<ph name="SHORTCUT_NAME" />»</translation>
 <translation id="8351131234907093545">یادداشت ایجاد کنید</translation>

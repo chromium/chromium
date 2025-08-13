@@ -513,6 +513,7 @@
 <translation id="2931440415625410757">Показване на инструкциите</translation>
 <translation id="2952278131021475699">Търсене чрез камерата с Обектив</translation>
 <translation id="2962516096219646456">Преглед на всички данни за автоматично попълване</translation>
+<translation id="2965594942405840553">Това действие не може да се отмени</translation>
 <translation id="2969979262385602596">Влизането не бе успешно. Моля, опитайте пак по-късно.</translation>
 <translation id="2975761176769946178">Изисква се URL адрес</translation>
 <translation id="297667759942911166">Сътрудничество в групи раздели</translation>
@@ -664,6 +665,7 @@
 <translation id="3596414637720633074">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
 <translation id="3602260545951981695">Изберете „Подобрена защита“.</translation>
 <translation id="3610041351087301930">Скриване на четеца</translation>
+<translation id="3610866916973186448">Да, искам да се изтрие</translation>
 <translation id="3622175633937495219">История на търсенията (намерени: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Можете да прекарате пръст по края, за да се върнете назад.</translation>
 <translation id="362709345066740529">Персонализирайте картите, емисията и др. оттук</translation>
@@ -1973,6 +1975,7 @@
 <translation id="8561999115126307258">{count,plural, =1{{count} опция за парола е налице над клавиатурата ви.}other{{count} опции за парола са налице над клавиатурата ви.}}</translation>
 <translation id="8564894539416715395">Нов раздел в браузъра</translation>
 <translation id="8569721750632860947">Кой URL адрес искате да добавите към списъка си за четене?</translation>
+<translation id="8571019948162152515">Да се изтрие ли „<ph name="FILENAME" />“?</translation>
 <translation id="8571213806525832805">Последните 4 седмици</translation>
 <translation id="8577056989960190117">Автоматично попълване на годината на валидност: <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Изключено</translation>

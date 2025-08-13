@@ -237,6 +237,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1384725838384960382">Arkusz uwierzytelniania danych logowania na potrzeby bezpiecznych płatności</translation>
 <translation id="1386623374109090026">Adnotacje</translation>
 <translation id="138810468159004008">Zezwalaj podczas odwiedzania witryny</translation>
+<translation id="1391145880481608015">Więcej informacji o tym ostrzeżeniu</translation>
 <translation id="139161720020179799">Ciemnoszary 1</translation>
 <translation id="1391625539203220400">Zapisać numer IBAN na tym urządzeniu?</translation>
 <translation id="1392813880755413602">Prezentacja OpenDocument</translation>
@@ -1444,6 +1445,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="340924996148642843">Porównanie nie jest teraz dostępne</translation>
 <translation id="3409896703495473338">Zarządzaj ustawieniami zabezpieczeń</translation>
 <translation id="3411091017011773343">Prześlij za <ph name="HOURS" /> godz.</translation>
+<translation id="3413466783792948876">Jeśli korzystasz z sieci publicznej, najlepiej będzie odwiedzić tę witrynę później. W zaufanej sieci, np. w domu lub pracy, ryzyko jest mniejsze.</translation>
 <translation id="3414275587143250384">Usługi rozproszone i w chmurze</translation>
 <translation id="3414952576877147120">Rozmiar:</translation>
 <translation id="341513675006332771">Przycisk Zagraj w grę z dinozaurem w Chrome; aktywuj, aby zagrać w grę Dino Run w Chrome</translation>
@@ -1688,6 +1690,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3781428340399460090">Ciepłoróżowy</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Lista urządzeń</translation>
+<translation id="3785246317262748285">Zazwyczaj łączysz się z witrynami w bezpieczny sposób, ale tym razem w Chrome nie udało się użyć bezpiecznego połączenia. Osoba przeprowadzająca atak może próbować podsłuchać lub zmodyfikować Twoje połączenie sieciowe. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Najlepsze wyniki dla hasła „<ph name="SEARCH_QUERY" />”</translation>
 <translation id="3789155188480882154">Rozmiar 16</translation>
 <translation id="3789841737615482174">Zainstaluj</translation>
@@ -3221,6 +3224,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6340739886198108203">Zgodnie z zasadą administratora nie zaleca się robienia zrzutów ekranu, gdy są widoczne treści poufne:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Zgodnie z zasadą administratora nie zaleca się przenoszenia tego pliku, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}few{Zgodnie z zasadą administratora nie zaleca się przenoszenia tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}many{Zgodnie z zasadą administratora nie zaleca się przenoszenia tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}other{Zgodnie z zasadą administratora nie zaleca się przenoszenia tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Przed momentem</translation>
+<translation id="6342171901363060580">Widzisz to ostrzeżenie, ponieważ korzystasz z trybu incognito, a ta witryna nie obsługuje HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Trasa</translation>
 <translation id="6348220984832452017">Aktywne warianty</translation>
 <translation id="6349101878882523185">Zainstaluj aplikację <ph name="APP_NAME" /></translation>
@@ -3486,6 +3490,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Korzystaj z YouTube zgodnie z opcjami ustawionymi przez rodzica</translation>
 <translation id="6779348349813025131">Menedżer haseł Google potrzebuje dostępu do pęku kluczy macOS</translation>
+<translation id="6780449997190414928">Zazwyczaj łączysz się z tą witryną w bezpieczny sposób, ale tym razem w Chrome nie udało się użyć bezpiecznego połączenia. Osoba przeprowadzająca atak może próbować podsłuchać lub zmodyfikować Twoje połączenie sieciowe. <ph name="LEARN_MORE" /></translation>
 <translation id="6785990323398321538">W każdej chwili możesz zmienić wyszukiwarkę w ustawieniach Chrome.</translation>
 <translation id="6786145470008421571">Koperta 6 x 9 cali</translation>
 <translation id="67862343314499040">Fioletowy</translation>
@@ -3517,6 +3522,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6831043979455480757">Tłumacz</translation>
 <translation id="683108308100148227">Ukryj element</translation>
 <translation id="6832753933931306326">Formularz został wypełniony</translation>
+<translation id="6834757537110528125">Ta witryna nie obsługuje bezpiecznego połączenia</translation>
 <translation id="6841864657731852591">Walec wklęsłodrukowy</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Tym razem zezwolono na śledzenie rąk</translation>
@@ -3781,6 +3787,7 @@ Dodatkowe informacje:
 <translation id="7257453341537973799">Informacje zawodowe i planowanie kariery</translation>
 <translation id="725866823122871198">Nie można nawiązać prywatnego połączenia z <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, ponieważ data i godzina (<ph name="DATE_AND_TIME" />) ustawione na komputerze są nieprawidłowe.</translation>
 <translation id="7260075294900977274">Nowy inteligentny folder, który pozwala zapisać wszystkie strony zakupów w 1 miejscu, automatycznie obserwować ceny, sprawdzać statystyki dotyczące cen i korzystać z innych funkcji</translation>
+<translation id="7264942008235065057">Ta witryna pozostanie zablokowana, ponieważ Twoje konto jest objęte programem ochrony zaawansowanej Google. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Adres jest dostępny tylko na tym urządzeniu</translation>
 <translation id="7269151392155523061">Skrót nie może być taki sam jak słowo kluczowe agregatora wyszukiwania zdefiniowane przez zasadę <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Pobierane pliki są wysyłane do Google Cloud lub innych firm w celu przeanalizowania. Na przykład mogą zostać przeskanowane pod kątem danych wrażliwych lub złośliwego oprogramowania, a także mogą być przechowywane zgodnie z zasadami firmy i widoczne dla administratora.</translation>
@@ -3909,6 +3916,7 @@ Dodatkowe informacje:
 <translation id="7469935732330206581">Formularz nie jest bezpieczny</translation>
 <translation id="7470854469646445678">Podaj powód kopiowania (wymagane)</translation>
 <translation id="7471007961486718967">Podaj powód przeniesienia (wymagane)</translation>
+<translation id="7473033553872550521">Możesz też skontaktować się z właścicielem witryny i poprosić go o przejście na HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Nie, dziękuję</translation>
 <translation id="7481312909269577407">Dalej</translation>
 <translation id="7481603210197454575">Koperta włoska</translation>
@@ -4435,6 +4443,7 @@ Dodatkowe informacje:
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Rejestracja karty wirtualnej jest otwarta na całą wysokość</translation>
+<translation id="834805203690963649">Atakujący mogą zobaczyć i zmienić informacje, które wysyłasz do witryny lub które z niej odbierasz.</translation>
 <translation id="8349305172487531364">Pasek zakładek</translation>
 <translation id="8350416046273606058">Skrót nie może zawierać spacji: „<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="8351131234907093545">Utwórz notatkę</translation>
