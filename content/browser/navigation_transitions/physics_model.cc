@@ -308,10 +308,10 @@ PhysicsModel::Result PhysicsModel::OnAnimate(
 
   return Result{
       .foreground_offset_physical =
-          foreground_offset_viewport_ * device_scale_factor_,
+          std::round(foreground_offset_viewport_ * device_scale_factor_),
       .background_offset_physical =
-          ForegroundToBackGroundOffset(foreground_offset_viewport_) *
-          device_scale_factor_,
+          std::round(ForegroundToBackGroundOffset(foreground_offset_viewport_) *
+                     device_scale_factor_),
       // Done only if we have finished playing the terminal animations.
       .done = (spring_position.at_rest &&
                (animation_driver_ == Driver::kSpringInvoke ||
