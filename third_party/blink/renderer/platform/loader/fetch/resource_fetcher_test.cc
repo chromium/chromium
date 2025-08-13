@@ -1215,8 +1215,6 @@ TEST_P(ResourceFetcherTest, DeprioritizeSubframe) {
 }
 
 TEST_P(ResourceFetcherTest, BoostImagePriority) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kBoostImagePriority);
   auto& properties = *MakeGarbageCollected<TestResourceFetcherProperties>();
   auto* fetcher = CreateFetcher(properties);
   ResourceRequest request(KURL("https://www.example.com/"));
