@@ -59,7 +59,7 @@ void TtsExtensionEngineChromeOS::Speak(content::TtsUtterance* utterance,
 
   base::Value::List args = BuildSpeakArgs(utterance, voice);
   if (!RefreshAudioStreamOptionsForExtension(engine_id, profile) &&
-      playback_tts_stream_) {
+      playback_tts_stream_ && audio_parameters_) {
     Play(std::move(args), engine_id, profile);
     return;
   }
