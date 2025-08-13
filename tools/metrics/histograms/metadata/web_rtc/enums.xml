@@ -584,6 +584,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="ResizeMappedTextureFailed"/>
   <int value="11" label="RecreateFramePoolFailed"/>
   <int value="12" label="FramePoolEmpty"/>
+  <int value="13" label="WaitForFirstFrameFailed"/>
 </enum>
 
 <enum name="WebRtcWgcCaptureSessionStartResult">
@@ -599,6 +600,14 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="CreateFreeThreadedFailed"/>
   <int value="10" label="CreateCaptureSessionFailed"/>
   <int value="11" label="StartCaptureFailed"/>
+</enum>
+
+<enum name="WebRtcWgcCaptureSessionWaitForFirstFrameResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="TryGetNextFrameFailed"/>
+  <int value="2" label="AddFrameArrivedCallbackFailed"/>
+  <int value="3" label="WaitingTimedOut"/>
+  <int value="4" label="RemoveFrameArrivedCallbackFailed"/>
 </enum>
 
 </enums>

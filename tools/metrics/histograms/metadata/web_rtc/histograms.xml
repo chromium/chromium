@@ -1143,6 +1143,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.DesktopCapture.Win.WgcCaptureSessionTimeToFirstFrame"
+    units="ms" expires_after="2026-02-05">
+  <owner>alcooper@chromium.org</owner>
+  <owner>ilnik@chromium.org</owner>
+  <owner>gabrielbrito@microsoft.com</owner>
+  <owner>edgecapabilitiesdev@microsoft.com</owner>
+  <summary>
+    This records the time in milliseconds to obtain the first frame from the WGC
+    based capturer.
+  </summary>
+</histogram>
+
+<histogram
+    name="WebRTC.DesktopCapture.Win.WgcCaptureSessionWaitForFirstFrameResult"
+    enum="WebRtcWgcCaptureSessionWaitForFirstFrameResult"
+    expires_after="2026-02-05">
+  <owner>alcooper@chromium.org</owner>
+  <owner>ilnik@chromium.org</owner>
+  <owner>gabrielbrito@microsoft.com</owner>
+  <owner>edgecapabilitiesdev@microsoft.com</owner>
+  <summary>
+    This records the result of waiting for the first frame from the WGC based
+    capturer. The first is defined as being either the first frame ever obtained
+    from WGC frame pool or the first frame obtained after a capture interruption
+    - e.g. when a captured window is brought back after being minimized.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.DesktopCapture.Win.WgcDirtyRegionSupport"
     enum="BooleanActive" expires_after="2026-01-18">
   <owner>henrika@chromium.org</owner>
