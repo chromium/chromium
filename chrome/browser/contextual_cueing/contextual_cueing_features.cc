@@ -10,8 +10,8 @@
 #include "components/variations/service/variations_service.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 namespace contextual_cueing {

@@ -8,8 +8,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"

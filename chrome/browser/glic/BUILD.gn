@@ -25,7 +25,6 @@ source_set("glic") {
     "browser_ui/glic_vector_icon_manager.h",
     "browser_ui/scoped_glic_button_indicator.h",
     "fre/glic_fre_ui.h",
-    "glic_enabling.h",
     "glic_hotkey.h",
     "glic_metrics.h",
     "glic_net_log.h",
@@ -49,6 +48,7 @@ source_set("glic") {
     "host/guest_util.h",
     "host/host.h",
     "public/context/glic_sharing_manager.h",
+    "public/glic_enabling.h",
     "public/glic_keyed_service.h",
     "public/glic_keyed_service_factory.h",
     "widget/glic_view.h",
@@ -98,7 +98,6 @@ source_set("enum") {
 # dependencies that are only needed internally.
 source_set("impl") {
   sources = [
-    "glic_enabling.cc",
     "glic_hotkey.cc",
     "glic_metrics.cc",
     "glic_metrics_provider.cc",
@@ -139,6 +138,7 @@ source_set("impl") {
     "host/host.cc",
     "host/webui_contents_container.cc",
     "host/webui_contents_container.h",
+    "public/glic_enabling.cc",
     "public/glic_keyed_service.cc",
     "public/glic_keyed_service_factory.cc",
     "widget/application_hotkey_delegate.cc",
@@ -173,6 +173,7 @@ source_set("impl") {
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/glic/fre",
     "//chrome/browser/glic/media",
+    "//chrome/browser/glic/shared",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/picture_in_picture",
@@ -180,7 +181,6 @@ source_set("impl") {
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/resources/glic:resources",
     "//chrome/browser/resources/glic/fre:resources",
-    "//chrome/browser/glic/shared",
     "//chrome/browser/signin",
     "//chrome/browser/themes",
     "//chrome/browser/ui:browser_element_identifiers",
@@ -255,13 +255,13 @@ mojom("mojo_bindings") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "glic_enabling_unittest.cc",
     "glic_metrics_unittest.cc",
     "host/context/glic_pin_candidate_comparator_unittest.cc",
     "host/context/glic_screenshot_capturer_unittest.cc",
     "host/context/glic_tab_data_unittest.cc",
     "host/glic_cookie_synchronizer_unittest.cc",
     "host/guest_util_unittest.cc",
+    "public/glic_enabling_unittest.cc",
     "widget/local_hotkey_manager_unittest.cc",
   ]
   deps = [
@@ -293,7 +293,6 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
     "glic_browsertest.cc",
-    "glic_enabling_browsertest.cc",
     "glic_keyed_service_browsertest.cc",
     "glic_net_log_browsertest.cc",
     "glic_policy_browsertest.cc",
@@ -302,6 +301,7 @@ source_set("browser_tests") {
     "host/context/glic_pinned_tab_manager_browsertest.cc",
     "host/glic_api_browsertest.cc",
     "host/guest_util_browsertest.cc",
+    "public/glic_enabling_browsertest.cc",
     "widget/application_hotkey_delegate_browsertest.cc",
   ]
   deps = [
