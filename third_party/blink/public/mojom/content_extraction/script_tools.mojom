@@ -17,5 +17,5 @@ struct ScriptTool {
   string name;
   string description;
   string input_schema;
-  ScriptToolAnnotations annotations;
+  ScriptToolAnnotations? annotations;
 };
