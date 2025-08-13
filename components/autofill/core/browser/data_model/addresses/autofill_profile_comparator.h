@@ -157,6 +157,11 @@ class AutofillProfileComparator {
   // Heuristic: Populate the missing parts of each address from the other.
   // Prefer the abbreviated state, the shorter zip code and routing code, the
   // more verbost city, dependent locality, and address.
+  //
+  // If one of the profiles is `kAccountNameEmail`, returns true and
+  // sets `address` to the address tree of the other profile. Merging two
+  // `kAccountNameEmail` profiles will never happen, since there can be at most
+  // one of them at any given time.
   bool MergeAddresses(const AutofillProfile& new_profile,
                       const AutofillProfile& old_profile,
                       Address& address) const;
@@ -268,6 +273,12 @@ class AutofillProfileComparator {
   // purposes of merging the two profiles. This means one of the addresses is
   // empty, or the addresses are a match. A number of normalization and
   // comparison heuristics are employed to determine if the addresses match.
+  //
+  // If one of the profiles has `kAccountNameEmail` record type, this function
+  // will return true early. While merging `kAccountNameEmail` profile with any
+  // other profile, only the non-`kAccountNameEmail` profile's address data is
+  // used. Merging two `kAccountNameEmail` profiles will never happen, since
+  // there can be at most one of them at any given time.
   //
   // Note that this method does not provide any guidance on actually merging
   // the addresses.

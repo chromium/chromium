@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -731,6 +732,8 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableAddresses) {
   AutofillProfile differentSortingCode =
       CopyAndModify(p1, {{ADDRESS_HOME_SORTING_CODE, u"98000 Monaco"}});
 
+  AutofillProfile name_email_profile{AccountInfo{}};
+
   // A profile with no country uses the legacy address and can be merged with
   // other profiles using the same hierarchy.
   EXPECT_TRUE(comparator_.HaveMergeableAddresses(p1, empty));
@@ -754,6 +757,9 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableAddresses) {
   EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, differentAddress));
   EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, differentLocality));
   EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, differentSortingCode));
+
+  EXPECT_TRUE(comparator_.HaveMergeableAddresses(name_email_profile, p1));
+  EXPECT_TRUE(comparator_.HaveMergeableAddresses(p1, name_email_profile));
 }
 
 TEST_F(AutofillProfileComparatorTest, AreMergeable) {
@@ -1318,6 +1324,21 @@ TEST_F(AutofillProfileComparatorTest, MergeAddressesWithGermanTransliteration) {
 
   MergeAddressesAndExpect(p1, p2, p2.GetAddress());
   MergeAddressesAndExpect(p2, p1, p2.GetAddress());
+}
+
+TEST_F(AutofillProfileComparatorTest, MergeAddressesOneIsAccountNameEmail) {
+  const AutofillProfile address_profile = CreateProfileWithAddress(
+      "Hänsel-Str 33", "", "München", "", "80636", "DE");
+
+  AccountInfo info;
+  info.full_name = "test name";
+  info.email = "testaccount@domain.net";
+  const AutofillProfile account_name_email_profile{info};
+
+  MergeAddressesAndExpect(address_profile, account_name_email_profile,
+                          address_profile.GetAddress());
+  MergeAddressesAndExpect(account_name_email_profile, address_profile,
+                          address_profile.GetAddress());
 }
 
 TEST_F(AutofillProfileComparatorTest,

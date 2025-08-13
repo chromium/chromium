@@ -113,8 +113,9 @@ class AutofillProfile : public FormGroup {
                   AddressCountryCode country_code);
   AutofillProfile(RecordType record_type, AddressCountryCode country_code);
   explicit AutofillProfile(AddressCountryCode country_code);
-  // This constructor creates a profile of type `kAccountNameEmail`.
-  AutofillProfile(const AccountInfo& info, AddressCountryCode country_code);
+  // This constructor creates a profile of type `kAccountNameEmail` with the
+  // `AddressCountryCode` of the `Address` set to `kLegacyHierarchyCountryCode`.
+  explicit AutofillProfile(const AccountInfo& info);
 
   AutofillProfile(const AutofillProfile& profile);
   ~AutofillProfile() override;

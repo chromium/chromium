@@ -98,9 +98,7 @@ void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(
   }
 
   // If Account Name Email profile doesn't exist, create and add it.
-  // Create profile with correct record type and country code based on GeoIP.
-  address_data_manager_->AddProfile(
-      {info, address_data_manager_->GetDefaultCountryCodeForNewAddress()});
+  address_data_manager_->AddProfile(AutofillProfile{info});
 
   pref_service_->SetString(prefs::kAutofillNameAndEmailProfileSignature,
                            new_hash);

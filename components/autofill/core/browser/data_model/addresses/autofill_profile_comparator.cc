@@ -15,7 +15,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/address.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
@@ -452,6 +454,23 @@ bool AutofillProfileComparator::MergeAddresses(
     const AutofillProfile& old_profile,
     Address& address) const {
   DCHECK(HaveMergeableAddresses(new_profile, old_profile));
+  CHECK(!(old_profile.record_type() ==
+              AutofillProfile::RecordType::kAccountNameEmail &&
+          new_profile.record_type() ==
+              AutofillProfile::RecordType::kAccountNameEmail));
+
+  // If one of the profiles is `kAccountNameEmail` profile, sets `address` to
+  // address tree of the other profile and returns true.
+  if (new_profile.record_type() ==
+      AutofillProfile::RecordType::kAccountNameEmail) {
+    address = old_profile.GetAddress();
+    return true;
+  }
+  if (old_profile.record_type() ==
+      AutofillProfile::RecordType::kAccountNameEmail) {
+    address = new_profile.GetAddress();
+    return true;
+  }
 
   address = old_profile.GetAddress();
   return address.MergeStructuredAddress(
@@ -700,6 +719,12 @@ bool AutofillProfileComparator::HaveMergeablePhoneNumbers(
 bool AutofillProfileComparator::HaveMergeableAddresses(
     const AutofillProfile& p1,
     const AutofillProfile& p2) const {
+  CHECK(!(p1.record_type() == AutofillProfile::RecordType::kAccountNameEmail &&
+          p2.record_type() == AutofillProfile::RecordType::kAccountNameEmail));
+  if (p1.record_type() == AutofillProfile::RecordType::kAccountNameEmail ||
+      p2.record_type() == AutofillProfile::RecordType::kAccountNameEmail) {
+    return true;
+  }
   return p2.GetAddress().IsStructuredAddressMergeable(p1.GetAddress());
 }
 
