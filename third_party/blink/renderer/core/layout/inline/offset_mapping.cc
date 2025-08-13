@@ -21,10 +21,6 @@ namespace blink {
 
 namespace {
 
-bool CanUseOffsetMapping(const LayoutObject& object) {
-  return object.IsLayoutBlockFlow();
-}
-
 Position CreatePositionForOffsetMapping(const Node& node, unsigned dom_offset) {
   if (auto* text_node = DynamicTo<Text>(node)) {
     // 'text-transform' may make the rendered text length longer than the
@@ -250,10 +246,9 @@ LayoutBlockFlow* OffsetMapping::GetInlineFormattingContextOf(
     const LayoutObject& object) {
   for (LayoutObject* runner = object.Parent(); runner;
        runner = runner->Parent()) {
-    if (!CanUseOffsetMapping(*runner)) {
-      continue;
+    if (auto* block_flow = DynamicTo<LayoutBlockFlow>(runner)) {
+      return block_flow;
     }
-    return To<LayoutBlockFlow>(runner);
   }
   return nullptr;
 }
