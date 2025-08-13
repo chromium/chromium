@@ -26459,6 +26459,8 @@ others/histograms.xml -->
              and showing the installation dialog."/>
 </enum>
 
+<!-- LINT.IfChange(WebClientHintsType) -->
+
 <enum name="WebClientHintsType">
 <!--
 This must be kept in sync with services/network/public/mojom/web_client_hints_types.mojom
@@ -26495,7 +26497,11 @@ This is true even if the type has been removed from the mojom file.
   <int value="26" label="PartitionedCookies"/>
   <int value="27" label="SaveData"/>
   <int value="28" label="PrefersReducedMotion"/>
+  <int value="29" label="UAFormFactors"/>
+  <int value="30" label="PrefersReducedTransparency"/>
 </enum>
+
+<!-- LINT.ThenChange(//services/network/public/mojom/web_client_hints_types.mojom:WebClientHintsType) -->
 
 <enum name="WebContentsAudioState">
   <int value="0" label="Never played audio"/>

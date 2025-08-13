@@ -1171,10 +1171,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.AcceptCHFrameInterceptor.MismatchClientHint"
+    enum="WebClientHintsType" expires_after="2026-02-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records which client hint caused the Accept-CH frame offload to fail because
+    the hint was not in the enabled list. This is recorded when
+    AcceptCHFrameInterceptor::NeedsObserverCheck returns kHintNotEnabled.
+  </summary>
+</histogram>
+
 <histogram name="Net.AcceptCHFrameInterceptor.NeedsObserverCheckReason"
     enum="NeedsObserverCheckReason" expires_after="2026-02-01">
   <owner>yyanagisawa@chromium.org</owner>
-  <owner>net-dev@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
   <summary>
     The reason why AcceptCHFrameInterceptor::NeedsObserverCheck returns true.
     Recorded every time NeedsObserverCheck is called. It is recorded just before
