@@ -299,6 +299,41 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_ReplacesText) {
             EvalJs(web_contents(), "document.getElementById('input').value"));
 }
 
+// Ensure that the type tool still correctly replaces any existing text in the
+// targeted element when in a subframe.
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
+                       TypeTool_ReplacesTextInSubframe) {
+  const GURL main_frame_url =
+      embedded_test_server()->GetURL("/actor/simple_iframe.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
+
+  const GURL subframe_url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(NavigateIframeToURL(web_contents(), "iframe", subframe_url));
+
+  content::RenderFrameHost* subframe =
+      content::ChildFrameAt(main_frame(), /*index=*/0);
+  ASSERT_TRUE(subframe);
+  ASSERT_EQ(main_frame()->GetRenderWidgetHost(),
+            subframe->GetRenderWidgetHost());
+
+  ASSERT_TRUE(
+      ExecJs(subframe, "document.getElementById('input').value = 'foo bar'"));
+  std::optional<int> input_id =
+      GetDOMNodeIdFromSubframe(*main_frame(), "#iframe", "#input");
+  ASSERT_TRUE(input_id);
+
+  std::string typed_string = "abc";
+  std::unique_ptr<ToolRequest> action =
+      MakeTypeRequest(*subframe, input_id.value(), typed_string,
+                      /*follow_by_enter=*/false);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+  EXPECT_EQ(typed_string,
+            EvalJs(subframe, "document.getElementById('input').value"));
+}
+
 // Ensure that if the page moves focus immediately to a different input box, the
 // type tool correctly operates on the new input box.
 IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_FocusMovesFocus) {

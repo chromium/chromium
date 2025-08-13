@@ -325,27 +325,37 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
   // work around issues so to keep those working we proceed to key dispatch
   // without checking this.
 
-  // Only prepare target if the click resulted in focusing an
-  // editable.
+  // Only prepare target if the click resulted in focusing an editable.
   // TODO(crbug.com/421133798): If the target isn't editable, the existing
   // TypeAction modes don't make sense.
-  WebElement focused = frame_->GetWebFrame()->GetDocument().FocusedElement();
-  if (focused && focused.IsEditable()) {
-    journal_->Log(
-        task_id_, "TypeTool::Execute",
-        absl::StrFormat("Focused element is now %s", base::ToString(focused)));
-    PrepareTargetForMode(*frame_->GetWebFrame(), action_->mode);
-  } else {
+  WebLocalFrame* focused_frame =
+      frame_->GetWebFrame()->FrameWidget()->FocusedWebLocalFrameInWidget();
+  WebElement focused_element =
+      focused_frame ? focused_frame->GetDocument().FocusedElement()
+                    : WebElement();
+  if (focused_element && focused_element.IsEditable()) {
+    journal_->Log(task_id_, "TypeTool::Execute",
+                  absl::StrFormat("Focused element is now %s",
+                                  base::ToString(focused_element)));
+    PrepareTargetForMode(*focused_frame, action_->mode);
+  } else if (focused_element) {
     journal_->Log(
         task_id_, "TypeTool::Execute",
         absl::StrFormat(
             "Target %s is not editable. Typing will proceed without clearing.",
-            base::ToString(focused)));
+            base::ToString(focused_element)));
     // TODO(crbug.com/421133798): If the target isn't editable, the existing
     // TypeAction modes don't make sense.
     ACTOR_LOG() << "Warning: TypeAction::Mode cannot be applied when targeting "
                    "a non-editable ["
-                << focused << "]. https://crbug.com/421133798.";
+                << focused_element << "]. https://crbug.com/421133798.";
+  } else {
+    journal_->Log(task_id_, "TypeTool::Execute",
+                  "No focused element (or no focused local frame) found. "
+                  "Typing will proceed without clearing.");
+    ACTOR_LOG()
+        << "Warning: TypeAction::Mode cannot be applied when there is no "
+           "focused element in the widget. https://crbug.com/432551725.";
   }
 
   if (!base::FeatureList::IsEnabled(features::kGlicActorIncrementalTyping)) {
