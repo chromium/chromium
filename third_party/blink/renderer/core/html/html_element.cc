@@ -1909,7 +1909,7 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
 
     // If this is the target of an active interest invoker, closing the popover
     // constitutes an automatic loss of interest in the invoker.
-    if (Element* upstream_invoker = GetInterestInvoker()) {
+    if (Element* upstream_invoker = SourceInterestInvoker()) {
       DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           GetDocument().GetExecutionContext()));
       DCHECK_EQ(upstream_invoker->InterestForElement(), this);

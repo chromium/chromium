@@ -1192,7 +1192,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   virtual Element* InterestForElement() const { return nullptr; }
   // Returns the active interest invoker for which this element is the target,
   // or nullptr otherwise.
-  Element* GetInterestInvoker() const;
+  Element* SourceInterestInvoker() const;
   // Returns the current state of "interest" in an element that is an interest
   // invoker.
   InterestState GetInterestState();

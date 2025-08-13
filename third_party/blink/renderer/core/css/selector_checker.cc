@@ -2259,7 +2259,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoTargetOfInterest: {
       DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           element.GetDocument().GetExecutionContext()));
-      Element* invoker = element.GetInterestInvoker();
+      Element* invoker = element.SourceInterestInvoker();
       DCHECK(!invoker || invoker->GetInterestState() !=
                              Element::InterestState::kNoInterest);
       return invoker;

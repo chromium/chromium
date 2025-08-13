@@ -1609,7 +1609,7 @@ bool Element::InterestGained(Element& target, InterestState new_state) {
   }
 
   // This is now the target's interest invoker
-  CHECK(!target.GetInterestInvoker());
+  CHECK(!target.SourceInterestInvoker());
   target.EnsureElementRareData()
       .EnsureInterestInvokerTargetData()
       .setInterestInvoker(this);
@@ -1641,7 +1641,7 @@ bool Element::InterestLost(Element& target) {
   }
 
   // If the target still thinks this invoker is its invoker, remove it.
-  if (auto* targets_invoker = target.GetInterestInvoker();
+  if (auto* targets_invoker = target.SourceInterestInvoker();
       targets_invoker && targets_invoker == this) {
     ChangeInterestState(&target, InterestState::kNoInterest);
   }
@@ -1665,7 +1665,7 @@ bool Element::InterestLost(Element& target) {
 void Element::DefaultEventHandler(Event& event) {
   if (RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           GetDocument().GetExecutionContext()) &&
-      (InterestForElement() || GetInterestInvoker() ||
+      (InterestForElement() || SourceInterestInvoker() ||
        GetInterestState() != InterestState::kNoInterest)) [[unlikely]] {
     // Handle new `interestfor` activation via mouse, keyboard, or long-
     // press.
@@ -11244,7 +11244,7 @@ bool Element::GainOrLoseInterest(Element* invoker,
       !invoker->GetDocument().IsActive() ||
       invoker->InterestForElement() != target ||
       (new_state == InterestState::kNoInterest &&
-       target->GetInterestInvoker() != invoker)) {
+       target->SourceInterestInvoker() != invoker)) {
     return false;
   }
 
@@ -11252,7 +11252,7 @@ bool Element::GainOrLoseInterest(Element* invoker,
   // gained or lost. Fire the event and run any default actions.
   switch (new_state) {
     case InterestState::kFullInterest:
-      if (Element* existing_invoker = target->GetInterestInvoker()) {
+      if (Element* existing_invoker = target->SourceInterestInvoker()) {
         // We're gaining interest, but the target already has an active interest
         // invoker. There are two cases:
         //  1. This is the same invoker. An example case is that the gain
@@ -11349,7 +11349,7 @@ void Element::ScheduleInterestLostTask() {
       base::Seconds(hide_delay_seconds)));
 }
 
-Element* Element::GetInterestInvoker() const {
+Element* Element::SourceInterestInvoker() const {
   if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           GetDocument().GetExecutionContext())) {
     return nullptr;
@@ -11418,7 +11418,7 @@ void Element::HandleInterestForHoverOrFocus(InterestSource source,
   }
 
   InvokerData* invoker_data = GetInvokerData();
-  Element* upstream_invoker = GetInterestInvoker();
+  Element* upstream_invoker = SourceInterestInvoker();
   InvokerData* upstream_data =
       upstream_invoker ? upstream_invoker->GetInvokerData() : nullptr;
   DCHECK(!upstream_invoker ||
