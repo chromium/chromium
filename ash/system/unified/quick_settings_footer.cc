@@ -200,7 +200,7 @@ void QsBatteryInfoViewBase::ConfigureIcon(bool bsm_active) {
                  : cros_tokens::kCrosSysOnPositiveContainer);
   const std::optional<SkColor> battery_badge_color =
       bsm_active ? std::optional<SkColor>(GetColorProvider()->GetColor(
-                       cros_tokens::kCrosSysSystemWarningContainer))
+                       cros_tokens::kCrosSysSystemOnWarningContainer))
                  : std::nullopt;
 
   PowerStatus::BatteryImageInfo info =
