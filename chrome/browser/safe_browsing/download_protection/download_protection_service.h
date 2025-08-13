@@ -33,6 +33,7 @@
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
 
@@ -348,8 +349,41 @@ class DownloadProtectionService {
   virtual void RequestFinished(DeepScanningRequest* request);
 #endif
 
+  // Routes the dangerous download opened reports to `SafeBrowsingEventRouter`
+  // and `ReportingEventRouter`, if available.
   void OnDangerousDownloadOpened(download::DownloadItem* item,
                                  Profile* profile);
+
+  // Sends sensitive file bypassed event via `ReportingEventRouter`.
+  void ReportSensitiveFileBypassEnterpriseEvent(
+      download::DownloadItem* item,
+      Profile* profile,
+      const enterprise_connectors::FileMetadata& metadata,
+      const enterprise_connectors::ContentAnalysisResponse::Result& result,
+      const google::protobuf::RepeatedPtrField<ReferrerChainEntry>&
+          referrer_chain);
+
+  // Sends dangerous download opened event via `ReportingEventRouter`.
+  void ReportDangerousDownloadOpenedEnterpriseEvent(
+      download::DownloadItem* item,
+      Profile* profile,
+      const enterprise_connectors::FileMetadata& metadata,
+      const google::protobuf::RepeatedPtrField<ReferrerChainEntry>&
+          referrer_chain);
+  void ReportDangerousDownloadOpenedEnterpriseEvent(
+      download::DownloadItem* item,
+      Profile* profile,
+      const google::protobuf::RepeatedPtrField<ReferrerChainEntry>&
+          referrer_chain);
+
+  // Sends dangerous download opened event via `SafeBrowsingPrivateEventRouter`.
+  void ReportDangerousDownloadOpenedSafeBrowsingEvent(
+      download::DownloadItem* item,
+      Profile* profile,
+      const enterprise_connectors::FileMetadata& metadata);
+  void ReportDangerousDownloadOpenedSafeBrowsingEvent(
+      download::DownloadItem* item,
+      Profile* profile);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Get the BinaryUploadService for the given |profile|. Virtual so it can be

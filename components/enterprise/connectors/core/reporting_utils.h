@@ -145,6 +145,7 @@ chrome::cros::reporting::proto::DlpSensitiveDataEvent GetDlpSensitiveDataEvent(
     const std::string& content_area_account_email,
     const std::string& profile_identifier,
     const std::string& profile_username,
+    std::optional<std::u16string> user_justification,
     const int64_t content_size,
     const ContentAnalysisResponse::Result& result,
     const ReferrerChain& referrer_chain,

@@ -174,7 +174,7 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
             GURL("https://evil.com/malware.exe"), GURL("https://evil.site.com"),
             "/path/to/malware.exe", "sha256_of_malware_exe", "exe", "scan_id",
             download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
-            1234, referrer_chain);
+            1234);
   }
 
   void TriggerOnSecurityInterstitialShownEvent() {
@@ -414,15 +414,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadOpened) {
       api::safe_browsing_private::OnDangerousDownloadOpened::kEventName);
   event_router_->AddEventObserver(&event_observer);
 
-  base::Value::Dict report;
-  base::RunLoop run_loop;
-  EXPECT_CALL(*client_, UploadSecurityEventReport)
-      .WillOnce(
-          testing::DoAll(CaptureArg(&report),
-                         base::test::RunOnceClosure(run_loop.QuitClosure())));
-
   TriggerOnDangerousDownloadOpenedEvent();
-  run_loop.Run();
 
   base::Value::Dict captured_args =
       event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
@@ -433,39 +425,6 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadOpened) {
   EXPECT_EQ("", CHECK_DEREF(captured_args.FindString("userName")));
   EXPECT_EQ("sha256_of_malware_exe",
             CHECK_DEREF(captured_args.FindString("downloadDigestSha256")));
-
-  Mock::VerifyAndClearExpectations(client_.get());
-  const base::Value::List* event_list =
-      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
-  ASSERT_NE(nullptr, event_list);
-  ASSERT_EQ(1u, event_list->size());
-  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
-  const base::Value::Dict* event =
-      wrapper.FindDict(enterprise_connectors::kKeyDangerousDownloadEvent);
-  EXPECT_NE(nullptr, event);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/40941444): To fix the tests for ChromeOS.
-  EXPECT_EQ("malware.exe",
-#else
-  EXPECT_EQ("/path/to/malware.exe",
-#endif  // BUILDFLAG(IS_CHROMEOS)
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
-  EXPECT_EQ("exe", *event->FindString(
-                       SafeBrowsingPrivateEventRouter::kKeyContentType));
-  EXPECT_EQ("1234", *event->FindString(
-                        SafeBrowsingPrivateEventRouter::kKeyContentSize));
-  EXPECT_EQ(enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTrigger));
-  EXPECT_EQ(
-      enterprise_connectors::EventResultToString(
-          enterprise_connectors::EventResult::BYPASSED),
-      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
-  EXPECT_EQ("scan_id",
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyScanId));
-  const base::Value::List& referrers =
-      *event->FindList(SafeBrowsingPrivateEventRouter::kKeyReferrers);
-  EXPECT_EQ(1u, referrers.size());
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest,
@@ -629,22 +588,6 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestUnauthorizedOnPasswordChanged) {
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest,
-       TestUnauthorizedOnDangerousDownloadOpened) {
-  SetUpRouters(/*authorized=*/false);
-  SafeBrowsingEventObserver event_observer(
-      api::safe_browsing_private::OnDangerousDownloadOpened::kEventName);
-  event_router_->AddEventObserver(&event_observer);
-
-  base::Value report;
-  EXPECT_CALL(*client_, UploadSecurityEventReport).Times(0);
-
-  TriggerOnDangerousDownloadOpenedEvent();
-
-  Mock::VerifyAndClearExpectations(client_.get());
-  EXPECT_EQ(base::Value::Type::NONE, report.type());
-}
-
-TEST_F(SafeBrowsingPrivateEventRouterTest,
        TestUnauthorizedOnSecurityInterstitialProceeded) {
   SetUpRouters(/*authorized=*/false);
   SafeBrowsingEventObserver event_observer(
@@ -776,28 +719,15 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestPasswordReuseEnabled) {
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestDangerousDownloadEnabled) {
-  std::set<std::string> enabled_event_names;
-  enabled_event_names.insert(enterprise_connectors::kKeyDangerousDownloadEvent);
-  SetUpRouters(/*authorized=*/true, /*realtime_reporting_enable=*/true,
-               enabled_event_names);
-
+  SetUpRouters();
   SafeBrowsingEventObserver event_observer(
       api::safe_browsing_private::OnDangerousDownloadOpened::kEventName);
   event_router_->AddEventObserver(&event_observer);
 
-  base::RunLoop run_loop;
-  EXPECT_CALL(*client_, UploadSecurityEventReport)
-      .Times(1)
-      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   TriggerOnDangerousDownloadOpenedEvent();
-  run_loop.Run();
 
   // Assert the event actually did fire.
   ASSERT_EQ(1u, event_observer.PassEventArgs().GetList().size());
-
-  // Make sure UploadSecurityEventReport was called the expected number of
-  // times.
-  Mock::VerifyAndClearExpectations(client_.get());
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestInterstitialEnabled) {
@@ -1014,7 +944,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::make_tuple(enterprise_connectors::kKeyPasswordChangedEvent, 1),
         testing::make_tuple(enterprise_connectors::kKeyPasswordReuseEvent, 1),
         testing::make_tuple(enterprise_connectors::kKeyDangerousDownloadEvent,
-                            1),
+                            0),
         testing::make_tuple(enterprise_connectors::kKeyInterstitialEvent, 2)));
 
 }  // namespace extensions

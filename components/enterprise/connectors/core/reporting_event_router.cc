@@ -490,6 +490,7 @@ void ReportingEventRouter::OnSensitiveDataEvent(
     const std::string& content_transfer_method,
     const std::string& source_email,
     const std::string& content_area_account_email,
+    std::optional<std::u16string> user_justification,
     const ContentAnalysisResponse::Result& result,
     const int64_t content_size,
     const ReferrerChain& referrer_chain,
@@ -512,8 +513,8 @@ void ReportingEventRouter::OnSensitiveDataEvent(
         download_digest_sha256, mime_type, trigger, scan_id,
         content_transfer_method, source_email, content_area_account_email,
         reporting_client_->GetProfileIdentifier(),
-        reporting_client_->GetProfileUserName(), content_size, result,
-        referrer_chain, event_result);
+        reporting_client_->GetProfileUserName(), user_justification,
+        content_size, result, referrer_chain, event_result);
     *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
@@ -551,6 +552,9 @@ void ReportingEventRouter::OnSensitiveDataEvent(
     }
     if (!source_email.empty()) {
       event.Set(kKeySourceWebAppSignedInAccount, source_email);
+    }
+    if (user_justification.has_value()) {
+      event.Set(kKeyUserJustification, user_justification.value());
     }
 
     AddAnalysisConnectorVerdictToEvent(result, event);
@@ -681,11 +685,11 @@ void ReportingEventRouter::OnAnalysisConnectorResult(
         mime_type, trigger, scan_id, content_transfer_method, content_size,
         referrer_chain, event_result);
   } else if (result.tag() == "dlp") {
-    OnSensitiveDataEvent(url, tab_url, source, destination, file_name,
-                         download_digest_sha256, mime_type, trigger, scan_id,
-                         content_transfer_method, source_email,
-                         content_area_account_email, result, content_size,
-                         referrer_chain, event_result);
+    OnSensitiveDataEvent(
+        url, tab_url, source, destination, file_name, download_digest_sha256,
+        mime_type, trigger, scan_id, content_transfer_method, source_email,
+        content_area_account_email, /*user_justification=*/std::nullopt, result,
+        content_size, referrer_chain, event_result);
   }
 }
 

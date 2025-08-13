@@ -281,7 +281,9 @@ TEST(ReportingUtilsTest, GetDlpSensitiveDataEvent) {
       /*source_active_user_email=*/"source@gmail.com",
       /*content_area_account_email=*/"content@gmail.com",
       /*profile_identifier=*/"identifier",
-      /*profile_username=*/"profile_username", /*content_size=*/-1,
+      /*profile_username=*/"profile_username",
+      /*user_justification*/ u"justification",
+      /*content_size=*/-1,
       /*result=*/*result,
       /*referrer_chain=*/referrer_chain,
       /*event_result=*/EventResult::BLOCKED);
@@ -304,6 +306,7 @@ TEST(ReportingUtilsTest, GetDlpSensitiveDataEvent) {
   ASSERT_EQ(event.web_app_signed_in_account(), "content@gmail.com");
   ASSERT_EQ(event.profile_identifier(), "identifier");
   ASSERT_EQ(event.profile_user_name(), "profile_username");
+  ASSERT_EQ(event.user_justification(), "justification");
   ASSERT_FALSE(event.content_size());
   ASSERT_EQ(event.event_result(),
             chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);

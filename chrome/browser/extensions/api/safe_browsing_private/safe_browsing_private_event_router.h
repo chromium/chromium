@@ -98,16 +98,14 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
   void OnPolicySpecifiedPasswordChanged(const std::string& user_name);
 
   // Notifies listeners that the user just opened a dangerous download.
-  void OnDangerousDownloadOpened(
-      const GURL& download_url,
-      const GURL& tab_url,
-      const std::string& file_name,
-      const std::string& download_digest_sha256,
-      const std::string& mime_type,
-      const std::string& scan_id,
-      const download::DownloadDangerType danger_type,
-      const int64_t content_size,
-      const safe_browsing::ReferrerChain& referrer_chain);
+  void OnDangerousDownloadOpened(const GURL& download_url,
+                                 const GURL& tab_url,
+                                 const std::string& file_name,
+                                 const std::string& download_digest_sha256,
+                                 const std::string& mime_type,
+                                 const std::string& scan_id,
+                                 const download::DownloadDangerType danger_type,
+                                 const int64_t content_size);
 
   // Notifies listeners that the user saw a security interstitial.
   void OnSecurityInterstitialShown(const GURL& url,
@@ -118,24 +116,6 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
   void OnSecurityInterstitialProceeded(const GURL& url,
                                        const std::string& reason,
                                        int net_error_code);
-
-  // Notifies listeners that an analysis connector violation was bypassed.
-  void OnAnalysisConnectorWarningBypassed(
-      const GURL& url,
-      const GURL& tab_url,
-      const std::string& source,
-      const std::string& destination,
-      const std::string& file_name,
-      const std::string& download_digest_sha256,
-      const std::string& mime_type,
-      const std::string& trigger,
-      const std::string& scan_id,
-      const std::string& content_transfer_method,
-      const std::string& active_user_email,
-      const safe_browsing::ReferrerChain& referrer_chain,
-      const enterprise_connectors::ContentAnalysisResponse::Result& result,
-      const int64_t content_size,
-      std::optional<std::u16string> user_justification);
 
  private:
   // Returns filename with full path if full path is required;

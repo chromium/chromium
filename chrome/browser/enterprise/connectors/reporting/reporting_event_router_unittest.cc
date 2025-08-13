@@ -995,7 +995,8 @@ TEST_P(ReportingEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
       "exampleDestination", "encrypted.zip", "sha256_of_data",
       "application/zip", "FILE_UPLOAD", "123",
       "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP", "test@gmail.com",
-      "gaia@gmail.com", *result, 200, referrer_chain, EventResult::ALLOWED);
+      "gaia@gmail.com", /*user_justification=*/std::nullopt, *result, 200,
+      referrer_chain, EventResult::ALLOWED);
   run_loop.Run();
 }
 
@@ -1083,7 +1084,8 @@ TEST_P(ReportingEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
       GURL("about:blank"), GURL("about:blank"), "exampleSource",
       "exampleDestination", "encrypted.zip", "sha256_of_data",
       "application/zip", "FILE_DOWNLOAD", "123", "", "test@gmail.com",
-      "gaia@gmail.com", *result, 200, referrer_chain, EventResult::BLOCKED);
+      "gaia@gmail.com", /*user_justification=*/std::nullopt, *result, 200,
+      referrer_chain, EventResult::BLOCKED);
   run_loop.Run();
 }
 

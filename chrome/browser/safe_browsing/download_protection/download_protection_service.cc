@@ -65,6 +65,11 @@
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
 #endif
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
+#include "components/enterprise/connectors/core/reporting_event_router.h"
+#endif
+
 using content::BrowserThread;
 using ReportThreatDetailsResult =
     safe_browsing::PingManager::ReportThreatDetailsResult;
@@ -493,25 +498,129 @@ void DownloadProtectionService::ReportDelayedBypassEvent(
   download_protection_observer_.ReportDelayedBypassEvent(download, danger_type);
 }
 
-void DownloadProtectionService::OnDangerousDownloadOpened(
+void DownloadProtectionService::ReportSensitiveFileBypassEnterpriseEvent(
+    download::DownloadItem* item,
+    Profile* profile,
+    const enterprise_connectors::FileMetadata& metadata,
+    const enterprise_connectors::ContentAnalysisResponse::Result& result,
+    const google::protobuf::RepeatedPtrField<ReferrerChainEntry>&
+        referrer_chain) {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  auto* reporting_event_router =
+      enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
+          profile);
+  if (!reporting_event_router) {
+    return;
+  }
+  enterprise_connectors::DownloadContentAreaUserProvider info(*item);
+
+  reporting_event_router->OnSensitiveDataEvent(
+      item->GetURL(), item->GetTabUrl(), /*source=*/"",
+      /*destination=*/"", metadata.filename, metadata.sha256,
+      metadata.mime_type,
+      enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+      metadata.scan_response.request_token(),
+      /*content_transfer_method=*/"", /*source_email=*/"",
+      info.GetContentAreaAccountEmail(),
+      /*user_justification=*/std::nullopt, result, metadata.size,
+      referrer_chain, enterprise_connectors::EventResult::BYPASSED);
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+}
+
+void DownloadProtectionService::ReportDangerousDownloadOpenedEnterpriseEvent(
+    download::DownloadItem* item,
+    Profile* profile,
+    const enterprise_connectors::FileMetadata& metadata,
+    const google::protobuf::RepeatedPtrField<ReferrerChainEntry>&
+        referrer_chain) {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  enterprise_connectors::ReportingEventRouter* reporting_event_router =
+      enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
+          profile);
+  if (!reporting_event_router) {
+    return;
+  }
+
+  reporting_event_router->OnDangerousDownloadEvent(
+      item->GetURL(), item->GetTabUrl(), metadata.filename, metadata.sha256,
+      item->GetDangerType(), metadata.mime_type,
+      enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+      metadata.scan_response.request_token(), metadata.size, referrer_chain,
+      enterprise_connectors::EventResult::BYPASSED);
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+}
+
+void DownloadProtectionService::ReportDangerousDownloadOpenedEnterpriseEvent(
+    download::DownloadItem* item,
+    Profile* profile,
+    const google::protobuf::RepeatedPtrField<ReferrerChainEntry>&
+        referrer_chain) {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  enterprise_connectors::ReportingEventRouter* reporting_event_router =
+      enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
+          profile);
+  if (!reporting_event_router) {
+    return;
+  }
+
+  reporting_event_router->OnDangerousDownloadEvent(
+      item->GetURL(), item->GetTabUrl(),
+      item->GetTargetFilePath().AsUTF8Unsafe(),
+      base::HexEncode(item->GetHash()), item->GetDangerType(),
+      item->GetMimeType(),
+      enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+      /*scan_id*/ "", item->GetTotalBytes(), referrer_chain,
+      enterprise_connectors::EventResult::BYPASSED);
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+}
+
+void DownloadProtectionService::ReportDangerousDownloadOpenedSafeBrowsingEvent(
+    download::DownloadItem* item,
+    Profile* profile,
+    const enterprise_connectors::FileMetadata& metadata) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extensions::SafeBrowsingPrivateEventRouter* safe_browsing_event_router =
+      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
+  if (!safe_browsing_event_router) {
+    return;
+  }
+
+  safe_browsing_event_router->OnDangerousDownloadOpened(
+      item->GetURL(), item->GetTabUrl(), metadata.filename, metadata.sha256,
+      metadata.mime_type, metadata.scan_response.request_token(),
+      item->GetDangerType(), metadata.size);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+}
+
+void DownloadProtectionService::ReportDangerousDownloadOpenedSafeBrowsingEvent(
     download::DownloadItem* item,
     Profile* profile) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  std::string raw_digest_sha256 = item->GetHash();
-  auto* router =
+  extensions::SafeBrowsingPrivateEventRouter* safe_browsing_event_router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
-  if (!router)
+  if (!safe_browsing_event_router) {
     return;
-
-  auto* scan_result = static_cast<enterprise_connectors::ScanResult*>(
-      item->GetUserData(enterprise_connectors::ScanResult::kKey));
-
-  google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
-      referrer_chain;
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-    referrer_chain =
-        safe_browsing::GetOrIdentifyReferrerChainForEnterprise(*item);
   }
+  safe_browsing_event_router->OnDangerousDownloadOpened(
+      item->GetURL(), item->GetTabUrl(),
+      item->GetTargetFilePath().AsUTF8Unsafe(),
+      base::HexEncode(item->GetHash()), item->GetMimeType(), /*scan_id*/ "",
+      item->GetDangerType(), item->GetTotalBytes());
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+}
+
+void DownloadProtectionService::OnDangerousDownloadOpened(
+    download::DownloadItem* item,
+    Profile* profile) {
+  enterprise_connectors::ScanResult* scan_result =
+      static_cast<enterprise_connectors::ScanResult*>(
+          item->GetUserData(enterprise_connectors::ScanResult::kKey));
+
+  google::protobuf::RepeatedPtrField<ReferrerChainEntry> referrer_chain;
+  if (base::FeatureList::IsEnabled(kEnhancedFieldsForSecOps)) {
+    referrer_chain = GetOrIdentifyReferrerChainForEnterprise(*item);
+  }
+
   // A download with a verdict of "sensitive data warning" can be opened and
   // |item->IsDangerous()| will return |true| for it but the reported event
   // should be a "sensitive file bypass" event rather than a "dangerous file
@@ -522,17 +631,12 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
     enterprise_connectors::DownloadContentAreaUserProvider info(*item);
     for (const auto& metadata : scan_result->file_metadata) {
       for (const auto& result : metadata.scan_response.results()) {
-        if (result.tag() != "dlp")
+        if (result.tag() != "dlp") {
           continue;
+        }
 
-        router->OnAnalysisConnectorWarningBypassed(
-            item->GetURL(), item->GetTabUrl(), "", "", metadata.filename,
-            metadata.sha256, metadata.mime_type,
-            enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-            metadata.scan_response.request_token(), "",
-            info.GetContentAreaAccountEmail(), referrer_chain, result,
-            metadata.size,
-            /*user_justification=*/std::nullopt);
+        ReportSensitiveFileBypassEnterpriseEvent(item, profile, metadata,
+                                                 result, referrer_chain);
 
         // There won't be multiple DLP verdicts in the same response, so no need
         // to keep iterating.
@@ -541,19 +645,14 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
     }
   } else if (scan_result) {
     for (const auto& metadata : scan_result->file_metadata) {
-      router->OnDangerousDownloadOpened(
-          item->GetURL(), item->GetTabUrl(), metadata.filename, metadata.sha256,
-          metadata.mime_type, metadata.scan_response.request_token(),
-          item->GetDangerType(), metadata.size, referrer_chain);
+      ReportDangerousDownloadOpenedEnterpriseEvent(item, profile, metadata,
+                                                   referrer_chain);
+      ReportDangerousDownloadOpenedSafeBrowsingEvent(item, profile, metadata);
     }
   } else {
-    router->OnDangerousDownloadOpened(
-        item->GetURL(), item->GetTabUrl(),
-        item->GetTargetFilePath().AsUTF8Unsafe(),
-        base::HexEncode(raw_digest_sha256), item->GetMimeType(), /*scan_id*/ "",
-        item->GetDangerType(), item->GetTotalBytes(), referrer_chain);
+    ReportDangerousDownloadOpenedEnterpriseEvent(item, profile, referrer_chain);
+    ReportDangerousDownloadOpenedSafeBrowsingEvent(item, profile);
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 const GURL& DownloadProtectionService::GetDownloadRequestUrl() const {

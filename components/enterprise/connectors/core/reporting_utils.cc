@@ -633,6 +633,7 @@ proto::DlpSensitiveDataEvent GetDlpSensitiveDataEvent(
     const std::string& content_area_account_email,
     const std::string& profile_identifier,
     const std::string& profile_username,
+    std::optional<std::u16string> user_justification,
     const int64_t content_size,
     const ContentAnalysisResponse::Result& result,
     const ReferrerChain& referrer_chain,
@@ -663,6 +664,10 @@ proto::DlpSensitiveDataEvent GetDlpSensitiveDataEvent(
 
   event.set_profile_identifier(profile_identifier);
   event.set_profile_user_name(profile_username);
+
+  if (user_justification.has_value()) {
+    event.set_user_justification(base::UTF16ToUTF8(user_justification.value()));
+  }
 
   // |content_size| can be set to -1 to indicate an unknown size, in
   // which case the field is not set.

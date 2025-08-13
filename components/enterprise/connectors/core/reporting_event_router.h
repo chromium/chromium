@@ -109,6 +109,7 @@ class ReportingEventRouter : public KeyedService {
                             const std::string& content_transfer_method,
                             const std::string& source_email,
                             const std::string& content_area_account_email,
+                            std::optional<std::u16string> user_justification,
                             const ContentAnalysisResponse::Result& result,
                             const int64_t content_size,
                             const ReferrerChain& referrer_chain,

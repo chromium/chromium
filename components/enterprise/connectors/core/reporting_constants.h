@@ -216,6 +216,7 @@ inline constexpr char kKeyReferrers[] = "referrers";
 inline constexpr char kKeySourceWebAppSignedInAccount[] =
     "sourceWebAppSignedInAccount";
 inline constexpr char kKeyWebAppSignedInAccount[] = "webAppSignedInAccount";
+inline constexpr char kKeyUserJustification[] = "userJustification";
 
 enum EnterpriseRealTimeUrlCheckMode {
   REAL_TIME_CHECK_DISABLED = 0,
