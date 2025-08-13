@@ -62,6 +62,8 @@ static_library("screens") {
     "family_link_notice_screen.h",
     "fingerprint_setup_screen.cc",
     "fingerprint_setup_screen.h",
+    "fjord_station_setup_screen.cc",
+    "fjord_station_setup_screen.h",
     "fjord_touch_controller_screen.cc",
     "fjord_touch_controller_screen.h",
     "gaia_info_screen.cc",

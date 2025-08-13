@@ -73,6 +73,8 @@ static_library("login") {
     "fingerprint_setup_screen_handler.h",
     "fjord_oobe_util.cc",
     "fjord_oobe_util.h",
+    "fjord_station_setup_screen_handler.cc",
+    "fjord_station_setup_screen_handler.h",
     "fjord_touch_controller_screen_handler.cc",
     "fjord_touch_controller_screen_handler.h",
     "gaia_info_screen_handler.cc",

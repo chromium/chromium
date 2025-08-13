@@ -77,6 +77,7 @@ import './screens/oobe/demo_preferences.js';
 import './screens/oobe/demo_setup.js';
 import './screens/oobe/enable_debugging.js';
 import './screens/oobe/enterprise_enrollment.js';
+import './screens/oobe/fjord_station_setup.js';
 import './screens/oobe/fjord_touch_controller.js';
 import './screens/oobe/hid_detection.js';
 import './screens/oobe/oobe_network.js';
@@ -252,6 +253,11 @@ export const oobeScreensList: OobeTypes.ScreensList = [
   {tag: 'demo-setup-element', id: 'demo-setup'},
   {tag: 'enable-debugging-element', id: 'debugging'},
   {tag: 'enterprise-enrollment-element', id: 'enterprise-enrollment'},
+  {
+    tag: 'fjord-station-setup-element',
+    id: 'fjord-station-setup',
+    condition: 'isFjordOobeEnabled',
+  },
   {
     tag: 'fjord-touch-controller-element',
     id: 'fjord-touch-controller',

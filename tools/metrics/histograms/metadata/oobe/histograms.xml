@@ -46,6 +46,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Factor-setup-success"/>
   <variant name="Family-link-notice"/>
   <variant name="Fingerprint-setup"/>
+  <variant name="Fjord-station-setup"/>
   <variant name="Fjord-touch-controller"/>
   <variant name="Gaia-info"/>
   <variant name="Gaia-password-changed"
@@ -140,6 +141,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Factor-setup-success"/>
   <variant name="Family-link-notice"/>
   <variant name="Fingerprint-setup"/>
+  <variant name="Fjord-station-setup"/>
   <variant name="Fjord-touch-controller"/>
   <variant name="Gaia-info"/>
   <variant name="Gaia-password-changed"
