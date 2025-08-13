@@ -860,6 +860,20 @@
                   'chromeos/ash/components/dbus/hermes/|'\
                   'chrome/test/data/webui/cr_components/chromeos/cellular_setup/',
     },
+    'chromeos_diagnostics': {
+      'filepath': 'ash/webui/diagnostics_ui/|'\
+                  'ash/system/diagnostics/|'\
+                  'chrome/common/chromeos/extensions/|'\
+                  'chrome/browser/ash/diagnostics/|'\
+                  'chrome/browser/chromeos/extensions/telemetry/|'\
+                  'chrome/browser/resources/chromeos/healthd_internals/|'\
+                  'chrome/browser/ui/webui/ash/healthd_internals/|'\
+                  'chromeos/ash/services/cros_healthd/|'\
+                  'chromeos/ash/components/telemetry_extension/|'\
+                  'chromeos/ash/services/cros_healthd/public/mojom/|'\
+                  'chromeos/crosapi/cpp/telemetry/|'\
+                  'docs/telemetry_extension/',
+    },
     'chromeos_login': {
       'filepath': 'ash/login/|'\
                   'chrome/browser/ash/login/|'\
@@ -1141,12 +1155,6 @@
     },
     'devtools': {
       'filepath': 'devtools',
-    },
-    'diagnostics_mojo': {
-      'filepath': 'chromeos/ash/services/cros_healthd/public/mojom/',
-    },
-    'diagnostics_ui': {
-      'filepath': 'ash/webui/diagnostics_ui/',
     },
     'discardable_memory': {
         'filepath': 'components/discardable_memory/',
@@ -2814,6 +2822,11 @@
                           'jiajunz+watch-cellular@google.com',
                           'khorimoto+watch-cellular@chromium.org',
                           'nikhilcn@google.com'],
+    'chromeos_diagnostics': ['chungsheng+watch@google.com',
+                             'byronlee+watch@chromium.org',
+                             'weiluanwang+watch@google.com',
+                             'dennyh+watch@google.com',
+                             'menghuan+watch@google.com'],
     'chromeos_login': ['tbarzic+watch@chromium.org',
                       'rrsilva+watch-chromium@google.com'],
     'chromeos_media_app': ['cros-essential-apps-dev-watch@chromium.org'],
@@ -2925,13 +2938,6 @@
     'device_chooser': ['mattreynolds+watch@chromium.org',
                        'odejesush+watch@chromium.org'],
     'devtools': ['devtools-reviews@chromium.org'],
-    'diagnostics_mojo': ['ashleydp+watch-diagnostics_mojo@google.com',
-                         'gavindodd+watch-diagnostics_mojo@google.com',
-                         'michaelcheco+watch-diagnostics_mojo@google.com'],
-    'diagnostics_ui': ['gavinwill+diagnostics-watch@chromium.org',
-                       'michaelcheco+diagnostics-watch@google.com',
-                       'gavindodd+diagnostics-watch@google.com',
-                       'ashleydp+diagnostics-watch@google.com'],
     'discardable_memory': ['thiabaud+watch-discardable-memory@google.com'],
     'disk_cache': ['gavinp+disk@chromium.org'],
     'dom_storage': ['dmurph+watchingdomstorage@chromium.org',
