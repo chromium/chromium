@@ -213,7 +213,8 @@ void CloudPolicyInvalidatorTestBase::StorePolicy(int64_t invalidation_version,
   store_.set_policy_data_for_testing(std::move(data));
   base::Value::Dict policies;
   policies.Set(key::kMaxInvalidationFetchDelay,
-               CloudPolicyInvalidator::kMaxFetchDelayMin);
+               static_cast<int>(
+                   CloudPolicyInvalidator::kMaxFetchDelayMin.InMilliseconds()));
   store_.policy_map_.LoadFrom(policies, POLICY_LEVEL_MANDATORY,
                               POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD);
   store_.NotifyStoreLoaded();
@@ -279,9 +280,8 @@ void CloudPolicyInvalidatorTestBase::FastForwardByInvalidationDelay() {
   const auto* delay_policy_value = store_.policy_map().GetValue(
       key::kMaxInvalidationFetchDelay, base::Value::Type::INTEGER);
   const base::TimeDelta max_delay =
-      delay_policy_value
-          ? base::Milliseconds(delay_policy_value->GetInt())
-          : base::Milliseconds(CloudPolicyInvalidator::kMaxFetchDelayMax);
+      delay_policy_value ? base::Milliseconds(delay_policy_value->GetInt())
+                         : CloudPolicyInvalidator::kMaxFetchDelayMax;
   FastForwardBy(max_delay);
 }
 
@@ -433,7 +433,7 @@ TEST_F(CloudPolicyInvalidatorTest, HandlesInvalidationWithoutPayload) {
   // Fire an invalidation and check that it triggered a policy refresh only
   // after kMissingPayloadDelay + random delay.
   const invalidation::DirectInvalidation inv = FireInvalidation(V(12), "");
-  FastForwardBy(base::Minutes(CloudPolicyInvalidator::kMissingPayloadDelay));
+  FastForwardBy(CloudPolicyInvalidator::kMissingPayloadDelay);
 
   // Verify that invalidation is not yet handled as we did not pass random
   // delay.
@@ -692,8 +692,7 @@ TEST_P(CloudPolicyInvalidatorUserTypedTest, RefreshMetricsNoInvalidations) {
   EXPECT_EQ(2, GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
 
   // After the grace period elapses, invalidations are ON.
-  FastForwardBy(
-      base::Seconds(CloudPolicyInvalidator::kInvalidationGracePeriod));
+  FastForwardBy(CloudPolicyInvalidator::kInvalidationGracePeriod);
   StorePolicy(0, /*policy_changed=*/false);
   StorePolicy(0, /*policy_changed=*/true);
   EXPECT_EQ(3, GetCount(METRIC_POLICY_REFRESH_UNCHANGED));
@@ -715,8 +714,7 @@ TEST_P(CloudPolicyInvalidatorUserTypedTest, RefreshMetricsNoInvalidations) {
   EXPECT_EQ(4, GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
 
   // After the grace period elapses, invalidations are ON.
-  FastForwardBy(
-      base::Seconds(CloudPolicyInvalidator::kInvalidationGracePeriod));
+  FastForwardBy(CloudPolicyInvalidator::kInvalidationGracePeriod);
   StorePolicy(0, /*policy_changed=*/false);
   StorePolicy(0, /*policy_changed=*/true);
 
@@ -736,8 +734,7 @@ TEST_P(CloudPolicyInvalidatorUserTypedTest, RefreshMetricsInvalidation) {
   StorePolicy();
   EXPECT_EQ(1, GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
 
-  FastForwardBy(
-      base::Seconds(CloudPolicyInvalidator::kInvalidationGracePeriod));
+  FastForwardBy(CloudPolicyInvalidator::kInvalidationGracePeriod);
   FireInvalidation(V(5), "test");
   FastForwardByInvalidationDelay();
 
@@ -794,7 +791,7 @@ TEST_P(CloudPolicyInvalidatorUserTypedTest, ExpiredInvalidations) {
   // Fire expired invalidation without a payload.
   inv = FireInvalidation(GetVersion(expired_invalidation_timestamp), "");
   FastForwardByInvalidationDelay();
-  FastForwardBy(base::Minutes(CloudPolicyInvalidator::kMissingPayloadDelay));
+  FastForwardBy(CloudPolicyInvalidator::kMissingPayloadDelay);
   EXPECT_EQ(GetPolicyRefreshCountAndReset(), 0);
 
   // Invalidations fired after the last fetch should not be ignored.
@@ -804,7 +801,7 @@ TEST_P(CloudPolicyInvalidatorUserTypedTest, ExpiredInvalidations) {
   // Fire a fine invalidation without a payload.
   inv = FireInvalidation(GetVersion(non_expired_invalidaiton_timestamp), "");
   FastForwardByInvalidationDelay();
-  FastForwardBy(base::Minutes(CloudPolicyInvalidator::kMissingPayloadDelay));
+  FastForwardBy(CloudPolicyInvalidator::kMissingPayloadDelay);
   EXPECT_TRUE(ClientInvalidationInfoMatches(inv));
   EXPECT_EQ(GetPolicyRefreshCountAndReset(), 1);
 

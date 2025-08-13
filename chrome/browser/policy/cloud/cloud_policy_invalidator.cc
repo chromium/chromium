@@ -91,12 +91,6 @@ size_t CalculatePolicyHash(const enterprise_management::PolicyData* policy) {
 
 }  // namespace
 
-const int CloudPolicyInvalidator::kMissingPayloadDelay = 5;
-const int CloudPolicyInvalidator::kMaxFetchDelayDefault = 10000;
-const int CloudPolicyInvalidator::kMaxFetchDelayMin = 1000;
-const int CloudPolicyInvalidator::kMaxFetchDelayMax = 300000;
-const int CloudPolicyInvalidator::kInvalidationGracePeriod = 10;
-
 // static
 const char* CloudPolicyInvalidator::GetPolicyRefreshMetricName(
     PolicyInvalidationScope scope) {
@@ -379,8 +373,7 @@ void CloudPolicyInvalidator::PolicyInvalidationHandler::HandleInvalidation(
   // before fetching the policy. Delay for at least 20ms so that if multiple
   // invalidations are received in quick succession, only one fetch will be
   // performed.
-  base::TimeDelta delay =
-      base::Milliseconds(base::RandInt(20, max_fetch_delay_));
+  base::TimeDelta delay = base::RandTimeDelta(kMinFetchDelay, max_fetch_delay_);
 
   // If there is a payload, the policy can be refreshed at any time, so set
   // the version and payload on the client immediately. Otherwise, the refresh
@@ -388,7 +381,7 @@ void CloudPolicyInvalidator::PolicyInvalidationHandler::HandleInvalidation(
   if (!payload.empty()) {
     core_->client()->SetInvalidationInfo(version, payload);
   } else {
-    delay += base::Minutes(kMissingPayloadDelay);
+    delay += kMissingPayloadDelay;
   }
 
   // Schedule the policy to be refreshed.
@@ -407,7 +400,7 @@ void CloudPolicyInvalidator::PolicyInvalidationHandler::UpdateMaxFetchDelay(
   const base::Value* delay_policy_value = policy_map.GetValue(
       key::kMaxInvalidationFetchDelay, base::Value::Type::INTEGER);
   if (delay_policy_value) {
-    set_max_fetch_delay(delay_policy_value->GetInt());
+    set_max_fetch_delay(base::Milliseconds(delay_policy_value->GetInt()));
     return;
   }
 #endif
@@ -416,7 +409,7 @@ void CloudPolicyInvalidator::PolicyInvalidationHandler::UpdateMaxFetchDelay(
 }
 
 void CloudPolicyInvalidator::PolicyInvalidationHandler::set_max_fetch_delay(
-    int delay) {
+    base::TimeDelta delay) {
   if (delay < kMaxFetchDelayMin) {
     max_fetch_delay_ = kMaxFetchDelayMin;
   } else if (delay > kMaxFetchDelayMax) {
@@ -465,7 +458,7 @@ bool CloudPolicyInvalidator::PolicyInvalidationHandler::
   // period.
   const base::TimeDelta elapsed =
       clock_->Now() - invalidations_enabled_time_.value();
-  return elapsed.InSeconds() >= kInvalidationGracePeriod;
+  return elapsed >= kInvalidationGracePeriod;
 }
 
 void CloudPolicyInvalidator::PolicyInvalidationHandler::

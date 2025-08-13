@@ -39,16 +39,22 @@ class CloudPolicyInvalidator
  public:
   // The number of minutes to delay a policy refresh after receiving an
   // invalidation with no payload.
-  static const int kMissingPayloadDelay;
+  static constexpr base::TimeDelta kMissingPayloadDelay = base::Minutes(5);
 
-  // The default, min and max values for max_fetch_delay_.
-  static const int kMaxFetchDelayDefault;
-  static const int kMaxFetchDelayMin;
-  static const int kMaxFetchDelayMax;
+  // The value for minimal delay of triggering a policy refresh after an
+  // received invalidation.
+  static constexpr base::TimeDelta kMinFetchDelay = base::Milliseconds(20);
 
-  // The grace period, in seconds, to allow for invalidations to be received
+  // The default, min and max values for `max_fetch_delay_`.
+  static constexpr base::TimeDelta kMaxFetchDelayDefault =
+      base::Milliseconds(10000);
+  static constexpr base::TimeDelta kMaxFetchDelayMin = base::Milliseconds(1000);
+  static constexpr base::TimeDelta kMaxFetchDelayMax =
+      base::Milliseconds(300000);
+
+  // The grace period, to allow for invalidations to be received
   // once the invalidation service starts up.
-  static const int kInvalidationGracePeriod;
+  static constexpr base::TimeDelta kInvalidationGracePeriod = base::Seconds(10);
 
   // Returns a name of a refresh metric associated with the given scope.
   static const char* GetPolicyRefreshMetricName(PolicyInvalidationScope scope);
@@ -148,7 +154,7 @@ class CloudPolicyInvalidator
     }
 
    private:
-    void set_max_fetch_delay(int delay);
+    void set_max_fetch_delay(base::TimeDelta delay);
 
     // Refresh the policy.
     // |is_missing_payload| is set to true if the callback is being invoked in
@@ -183,9 +189,9 @@ class CloudPolicyInvalidator
     // policy is different from the current one.
     std::optional<size_t> policy_hash_value_;
 
-    // The maximum random delay, in ms, between receiving an invalidation and
+    // The maximum random delay, between receiving an invalidation and
     // fetching the new policy.
-    int max_fetch_delay_ = kMaxFetchDelayDefault;
+    base::TimeDelta max_fetch_delay_ = kMaxFetchDelayDefault;
 
     // The clock.
     const raw_ptr<const base::Clock> clock_;
