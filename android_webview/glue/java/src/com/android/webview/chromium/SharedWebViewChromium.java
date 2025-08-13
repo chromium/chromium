@@ -15,6 +15,7 @@ import org.chromium.android_webview.ScriptHandler;
 import org.chromium.android_webview.WebMessageListener;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 
@@ -206,9 +207,17 @@ public class SharedWebViewChromium {
     }
 
     protected boolean checkNeedsPost() {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.WebView.Startup.CheckNeedsPost.IsChromiumInitialized",
+                mAwInit.isChromiumInitialized());
         boolean needsPost = !mAwInit.isChromiumInitialized() || !ThreadUtils.runningOnUiThread();
         if (!needsPost && mAwContents == null) {
             throw new IllegalStateException("AwContents must be created if we are not posting!");
+        }
+        if (mAwInit.isChromiumInitialized()) {
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.WebView.Startup.CheckNeedsPost.CalledOnUiThread",
+                    ThreadUtils.runningOnUiThread());
         }
         return needsPost;
     }

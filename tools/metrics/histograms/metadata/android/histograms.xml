@@ -8395,6 +8395,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Startup.CheckNeedsPost.CalledOnUiThread"
+    enum="Boolean" expires_after="2026-05-26">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Reports whether or not `checkNeedsPost`
+    (https://source.chromium.org/chromium/chromium/src/+/main:android_webview/glue/java/src/com/android/webview/chromium/SharedWebViewChromium.java;l=208;drc=6712edb4e0491c96b69c7346ac278e5c093b6584)
+    is called on the Chromium UI thread.
+
+    Conditions for recording this metric: Chromium is initialized and AwContents
+    is not null.
+
+    `checkNeedsPost` is called by various WebView APIs.
+
+    Only recorded on Android WebView.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.Startup.CheckNeedsPost.IsChromiumInitialized"
+    enum="Boolean" expires_after="2026-05-26">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Reports whether or not `checkNeedsPost`
+    (https://source.chromium.org/chromium/chromium/src/+/main:android_webview/glue/java/src/com/android/webview/chromium/SharedWebViewChromium.java;l=208;drc=6712edb4e0491c96b69c7346ac278e5c093b6584)
+    is called before Chromium is initialized or not.
+
+    `checkNeedsPost` is called by various WebView APIs.
+
+    Only recorded on Android WebView.
+  </summary>
+</histogram>
+
 <histogram
     name="Android.WebView.Startup.ChromiumInitTime.AsyncToSyncSwitchReason"
     enum="WebViewStartupCallSite" expires_after="2025-12-31">
@@ -8762,6 +8795,20 @@ chromium-metrics-reviews@google.com.
     <variant name="MetricsBridgeService"/>
     <variant name="VariationsSeedServer"/>
   </token>
+</histogram>
+
+<histogram name="Android.WebView.Startup.WebViewInitCalledOnAndroidMainLooper"
+    enum="Boolean" expires_after="2026-05-26">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Reports whether or not `WebViewChromium#init` is called on the main looper.
+
+    This will be emitted each time within a call to the WebView constructor.
+
+    Only recorded on Android WebView on apps whose target SDK version is less
+    than JELLY_BEAN_MR2.
+  </summary>
 </histogram>
 
 <histogram name="Android.WebView.StorageAccessAutoGrantTime" units="ms"

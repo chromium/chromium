@@ -19,6 +19,7 @@ import android.net.http.SslCertificate;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.print.PrintDocumentAdapter;
@@ -735,6 +736,9 @@ class WebViewChromium
                 //    already started using a different thread as the UI thread.
                 checkThread();
             } else {
+                RecordHistogram.recordBooleanHistogram(
+                        "Android.WebView.Startup.WebViewInitCalledOnAndroidMainLooper",
+                        Looper.getMainLooper() == Looper.myLooper());
                 // For older apps, only the view methods that relate to the view hierarchy must come
                 // from a single thread. Other calls, including the constructor itself, can come
                 // from any thread, and will be posted to the UI thread if necessary.
