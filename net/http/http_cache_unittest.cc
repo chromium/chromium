@@ -2994,49 +2994,6 @@ TEST_F(HttpCacheRangeGetTest, FailedCacheAccess) {
   EXPECT_EQ(0, cache.disk_cache()->create_count());
 }
 
-// There was a bug (crbug.com/434955776) where one transaction's DoLoop could be
-// re-entered by another transaction's DoLoop. This would corrupt the state of
-// Transactions, causing content-length to become 0. This is a regression test
-// for that bug.
-TEST_F(HttpCacheRangeGetTest, ParallelRangeRequestUnconditionalizableResponse) {
-  MockHttpCache cache;
-
-  const MockTransaction kRangeGET_200Response = {
-      .url = "http://www.google.com/",
-      .method = "GET",
-      .request_headers = "Range: bytes=0-\r\n" EXTRA_HEADER,
-      .load_flags = LOAD_NORMAL,
-      .status = "HTTP/1.1 200 OK",
-      .response_headers = "Content-Length: 10\n",
-      .data = "0123456789",
-      .test_mode = TEST_MODE_NORMAL,
-      .cert_status = 0,
-      .ssl_connection_status = 0,
-      .start_return_code = OK,
-      .read_return_code = OK,
-  };
-  ScopedMockTransaction transaction(kRangeGET_200Response);
-  MockHttpRequest request(transaction);
-  std::vector<std::unique_ptr<Context>> context_list;
-  const int kNumTransactions = 3;
-
-  for (int i = 0; i < kNumTransactions; ++i) {
-    context_list.push_back(std::make_unique<Context>());
-    auto& c = context_list[i];
-    c->trans = cache.CreateTransaction();
-    ASSERT_TRUE(c->trans);
-    c->result =
-        c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
-  }
-
-  for (int i = 0; i < kNumTransactions; ++i) {
-    auto& c = context_list[i];
-    c->result = c->callback.WaitForResult();
-    EXPECT_EQ(c->trans->GetResponseInfo()->headers->GetContentLength(), 10);
-    ReadAndVerifyTransaction(c->trans.get(), kRangeGET_200Response);
-  }
-}
-
 // Tests that we can have parallel validation on range requests.
 TEST_F(HttpCacheRangeGetTest, ParallelValidationNoMatch) {
   MockHttpCache cache;
@@ -3067,14 +3024,19 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationNoMatch) {
   // Allow all requests to move from the Create queue to the active entry.
   base::RunLoop().RunUntilIdle();
 
-  // The first entry should have been doomed. Since the 1st transaction has not
-  // started writing to the cache, MockDiskEntry::CouldBeSparse() returns false
-  // leading to restarting the dooming the entry and restarting the second
-  // transaction.
+  // First entry created is doomed due to 2nd transaction's validation leading
+  // to restarting of the queued transactions.
   EXPECT_TRUE(cache.IsWriterPresent(request.CacheKey()));
-  EXPECT_EQ(kNumTransactions, cache.network_layer()->transaction_count());
+
+  // TODO(shivanisha): The restarted transactions race for creating the entry
+  // and thus instead of all 4 succeeding, 2 of them succeed. This is very
+  // implementation specific and happens because the queued transactions get
+  // restarted synchronously and get to the queue of creating the entry before
+  // the transaction that is restarting them. Fix the test to make it less
+  // vulnerable to any scheduling changes in the code.
+  EXPECT_EQ(5, cache.network_layer()->transaction_count());
   EXPECT_EQ(0, cache.disk_cache()->open_count());
-  EXPECT_EQ(kNumTransactions, cache.disk_cache()->create_count());
+  EXPECT_EQ(3, cache.disk_cache()->create_count());
 
   for (auto& context : context_list) {
     EXPECT_EQ(LOAD_STATE_IDLE, context->trans->GetLoadState());
@@ -3089,9 +3051,9 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationNoMatch) {
     ReadAndVerifyTransaction(c->trans.get(), kRangeGET_TransactionOK);
   }
 
-  EXPECT_EQ(kNumTransactions, cache.network_layer()->transaction_count());
+  EXPECT_EQ(5, cache.network_layer()->transaction_count());
   EXPECT_EQ(0, cache.disk_cache()->open_count());
-  EXPECT_EQ(kNumTransactions, cache.disk_cache()->create_count());
+  EXPECT_EQ(3, cache.disk_cache()->create_count());
 }
 
 // Tests that if a transaction is dooming the entry and the entry was doomed by
@@ -3849,10 +3811,9 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationRestartDoneHeaders) {
 
   // Create another network transaction since the 2nd transaction is restarted.
   // 30-39 will be read from network, 40-49 from the cache and 50-59 from the
-  // network. The cached entry is opened after the writer transaction closes the
-  // entry.
+  // network.
   EXPECT_EQ(4, cache.network_layer()->transaction_count());
-  EXPECT_EQ(1, cache.disk_cache()->open_count());
+  EXPECT_EQ(0, cache.disk_cache()->open_count());
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 
   // Fetch from the cache to check that ranges 30-49 have been successfully
@@ -3868,7 +3829,7 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationRestartDoneHeaders) {
   }
 
   EXPECT_EQ(4, cache.network_layer()->transaction_count());
-  EXPECT_EQ(2, cache.disk_cache()->open_count());
+  EXPECT_EQ(1, cache.disk_cache()->open_count());
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 }
 

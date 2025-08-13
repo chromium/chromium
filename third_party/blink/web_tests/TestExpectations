@@ -9654,6 +9654,9 @@ crbug.com/419705502 [ Mac ] http/tests/devtools/elements/styles-2/nested-pseudo-
 # Gardener 2025-07-23
 crbug.com/40253082 [ Mac14 ] virtual/controls-refresh-hc/fast/forms/color-scheme/select/select-multiple-appearance-basic.html [ Failure ]
 
+# Gardener 2025-07-30
+crbug.com/434955776 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/windows-1252.html?include=loading [ Pass Timeout ]
+
 # Gardener 2025-08-04
 crbug.com/436140064 [ Win ] images/png-crbug423310049.html [ Failure ]
 crbug.com/436163716 [ Win ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Crash Timeout ]
