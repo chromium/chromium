@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -60,6 +61,10 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
 #endif
 
 namespace content {
@@ -274,6 +279,10 @@ void RenderViewHostTestHarness::TearDown() {
   // Make sure that we flush any messages related to WebContentsImpl destruction
   // before we destroy the browser context.
   base::RunLoop().RunUntilIdle();
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+  dbus_thread_linux::ShutdownOnDBusThreadAndBlock();
+#endif
 
 #if BUILDFLAG(IS_WIN)
   ole_initializer_.reset();

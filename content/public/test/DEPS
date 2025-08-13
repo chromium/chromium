@@ -102,5 +102,8 @@ specific_include_rules = {
   ],
   "browser_fuzztest_support.h": [
     "+third_party/fuzztest/src/fuzztest/fuzztest.h"
+  ],
+  "test_renderer_host.cc": [
+    "+components/dbus/thread_linux/dbus_thread_linux.h"
   ]
 }

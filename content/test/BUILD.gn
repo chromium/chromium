@@ -569,6 +569,7 @@ static_library("test_support") {
     ":content_test_mojo_bindings",
     ":web_ui_mojo_test_resources",
     "//build:chromeos_buildflags",
+    "//build/config/linux/dbus:buildflags",
     "//cc:test_support",
     "//cc/slim",
     "//components/attribution_reporting:data_host_mojom",
@@ -845,6 +846,10 @@ static_library("test_support") {
 
   if (is_fuchsia) {
     public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec:fuchsia.mediacodec_hlcpp" ]
+  }
+
+  if (use_dbus) {
+    deps += [ "//components/dbus" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
