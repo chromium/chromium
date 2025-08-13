@@ -141,13 +141,20 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         @Override
         public void insertUndoneTabClosureAt(Tab tab, int insertIndex) {
             assert !tab.isDestroyed() : "Attempting to undo tab that is destroyed.";
+            Token tabGroupId = tab.getTabGroupId();
+            boolean restoredTabGroup = tabGroupId != null && !tabGroupExists(tabGroupId);
             TabCollectionTabModelImplJni.get()
                     .addTabRecursive(
                             mNativeTabCollectionTabModelImplPtr,
                             tab,
                             insertIndex,
-                            tab.getTabGroupId(),
+                            tabGroupId,
                             tab.getIsPinned());
+
+            if (restoredTabGroup) {
+                assumeNonNull(tabGroupId);
+                setLastShownTabForGroup(tabGroupId, tab);
+            }
 
             tab.onAddedToTabModel(
                     mCurrentTabSupplier, TabCollectionTabModelImpl.this::isTabMultiSelected);
@@ -161,7 +168,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             if (noTabIsActivated) {
                 mCurrentTabSupplier.set(tab);
             }
-            Token tabGroupId = tab.getTabGroupId();
             if (tabGroupId != null) {
                 mHidingTabGroups.remove(tabGroupId);
             }

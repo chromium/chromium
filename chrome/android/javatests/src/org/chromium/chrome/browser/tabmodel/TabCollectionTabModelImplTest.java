@@ -2926,10 +2926,12 @@ public class TabCollectionTabModelImplTest {
                     }
                 };
 
+        String groupTitle = "Test Group";
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCollectionModel.addTabGroupObserver(groupObserver);
                     mCollectionModel.addObserver(modelObserver);
+                    mCollectionModel.setTabGroupTitle(tabGroupId, groupTitle);
                     mCollectionModel.closeTabs(
                             TabClosureParams.closeTabs(groupTabs)
                                     .allowUndo(true)
@@ -2950,21 +2952,24 @@ public class TabCollectionTabModelImplTest {
                     assertTrue(mCollectionModel.isClosurePending(tab1.getId()));
                 });
 
-        // Undo the closure
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mCollectionModel.cancelTabClosure(tab0.getId());
                     mCollectionModel.cancelTabClosure(tab1.getId());
+                    mCollectionModel.cancelTabClosure(tab0.getId());
                 });
         onTabCloseUndoneHelper.waitForCallback(0, 2);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assertFalse(mCollectionModel.isTabGroupHiding(tabGroupId));
                     assertTrue(mCollectionModel.tabGroupExists(tabGroupId));
+                    assertEquals(tab1.getId(), mCollectionModel.getGroupLastShownTabId(tabGroupId));
+                    assertFalse(mCollectionModel.isTabGroupHiding(tabGroupId));
                     assertFalse(mCollectionModel.detachedTabGroupExists(tabGroupId));
                     assertFalse(mCollectionModel.isClosurePending(tab0.getId()));
                     assertFalse(mCollectionModel.isClosurePending(tab1.getId()));
+                    assertEquals(tabGroupId, tab0.getTabGroupId());
+                    assertEquals(tabGroupId, tab1.getTabGroupId());
+                    assertEquals(groupTitle, mCollectionModel.getTabGroupTitle(tabGroupId));
 
                     mCollectionModel.removeTabGroupObserver(groupObserver);
                     mCollectionModel.removeObserver(modelObserver);
