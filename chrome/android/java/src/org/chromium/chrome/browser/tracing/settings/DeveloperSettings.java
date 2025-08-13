@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.tracing.settings;
 
 import android.os.Bundle;
 
-import androidx.preference.PreferenceFragmentCompat;
-
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -19,12 +17,14 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /** Settings fragment containing preferences aimed at Chrome and web developers. */
 @NullMarked
-public class DeveloperSettings extends PreferenceFragmentCompat implements EmbeddableSettingsPage {
+public class DeveloperSettings extends ChromeBaseSettingsFragment
+        implements EmbeddableSettingsPage {
     private static final String UI_PREF_BETA_STABLE_HINT = "beta_stable_hint";
 
     // Non-translated strings:
