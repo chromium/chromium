@@ -97,7 +97,6 @@ public class WebsitePermissionsFetcher {
             case ContentSettingsType.AR:
             case ContentSettingsType.CLIPBOARD_READ_WRITE:
             case ContentSettingsType.FILE_SYSTEM_WRITE_GUARD:
-            case ContentSettingsType.GEOLOCATION:
             case ContentSettingsType.HAND_TRACKING:
             case ContentSettingsType.IDLE_DETECTION:
             case ContentSettingsType.MEDIASTREAM_CAMERA:
@@ -117,6 +116,12 @@ public class WebsitePermissionsFetcher {
             case ContentSettingsType.SERIAL_GUARD:
             case ContentSettingsType.USB_GUARD:
                 return WebsitePermissionsType.CHOSEN_OBJECT_INFO;
+            case ContentSettingsType.GEOLOCATION:
+                if (!PermissionsAndroidFeatureMap.isEnabled(
+                        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)) {
+                    return WebsitePermissionsType.PERMISSION_INFO;
+                }
+                break;
             case ContentSettingsType.GEOLOCATION_WITH_OPTIONS:
                 if (PermissionsAndroidFeatureMap.isEnabled(
                         PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)) {

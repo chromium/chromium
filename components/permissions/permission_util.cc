@@ -233,11 +233,21 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
                                        PermissionType* out) {
   switch (type) {
     case ContentSettingsType::GEOLOCATION:
-      *out = PermissionType::GEOLOCATION;
-      break;
+      if (!base::FeatureList::IsEnabled(
+              content_settings::features::kApproximateGeolocationPermission)) {
+        *out = PermissionType::GEOLOCATION;
+        break;
+      } else {
+        return false;
+      }
     case ContentSettingsType::GEOLOCATION_WITH_OPTIONS:
-      *out = PermissionType::GEOLOCATION;
-      break;
+      if (base::FeatureList::IsEnabled(
+              content_settings::features::kApproximateGeolocationPermission)) {
+        *out = PermissionType::GEOLOCATION;
+        break;
+      } else {
+        return false;
+      }
     case ContentSettingsType::NOTIFICATIONS:
       *out = PermissionType::NOTIFICATIONS;
       break;

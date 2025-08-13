@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permissions_client.h"
@@ -304,7 +305,12 @@ std::optional<ContentSettingsType> RequestTypeToContentSettingsType(
       return ContentSettingsType::LOCAL_NETWORK_ACCESS;
 #endif
     case RequestType::kGeolocation:
-      return ContentSettingsType::GEOLOCATION;
+      if (base::FeatureList::IsEnabled(
+              content_settings::features::kApproximateGeolocationPermission)) {
+        return ContentSettingsType::GEOLOCATION_WITH_OPTIONS;
+      } else {
+        return ContentSettingsType::GEOLOCATION;
+      }
     case RequestType::kHandTracking:
       return ContentSettingsType::HAND_TRACKING;
     case RequestType::kIdleDetection:

@@ -53,6 +53,8 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.permissions.PermissionDialogController;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
+import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -79,6 +81,15 @@ public class PageInfoDiscoverabilityTest {
 
     private static final String GEOLOCATION_TEST =
             "/chrome/test/data/geolocation/geolocation_on_load.html";
+
+    private static int getGeolocationType() {
+        boolean enabled =
+                PermissionsAndroidFeatureMap.isEnabled(
+                        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION);
+        return enabled
+                ? ContentSettingsType.GEOLOCATION_WITH_OPTIONS
+                : ContentSettingsType.GEOLOCATION;
+    }
 
     /**
      * Parameter provider for testing the different |RequestType|s that affect discoverability. The
@@ -294,7 +305,7 @@ public class PageInfoDiscoverabilityTest {
                 /* javascriptToExecute= */ null,
                 /* missingPermissionPromptTextId= */ 0);
 
-        Assert.assertEquals(ContentSettingsType.GEOLOCATION, mMediator.getLastPermission());
+        Assert.assertEquals(getGeolocationType(), mMediator.getLastPermission());
     }
 
     /** Tests omnibox permission when permission is blocked by the user. */
@@ -326,7 +337,7 @@ public class PageInfoDiscoverabilityTest {
                 /* javascriptToExecute= */ null,
                 /* missingPermissionPromptTextId= */ 0);
 
-        Assert.assertEquals(ContentSettingsType.GEOLOCATION, mMediator.getLastPermission());
+        Assert.assertEquals(getGeolocationType(), mMediator.getLastPermission());
     }
 
     @Test

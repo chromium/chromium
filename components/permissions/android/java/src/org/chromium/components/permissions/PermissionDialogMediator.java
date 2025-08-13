@@ -85,17 +85,17 @@ public class PermissionDialogMediator
         mDialogDelegate = delegate;
         mModalDialogManager = manager;
 
-        boolean isGeolocationConntentSetting =
+        boolean isGeolocationContentSetting =
                 mDialogDelegate.getContentSettingsTypes().length == 1
                         && mDialogDelegate.getContentSettingsTypes()[0]
-                                == ContentSettingsType.GEOLOCATION;
+                                == ContentSettingsType.GEOLOCATION_WITH_OPTIONS;
         boolean isApproximateGeolocationEnabled =
                 PermissionsAndroidFeatureMap.isEnabled(
                         PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION);
 
         LinearLayout locationPrecisionContainer = view.findViewById(R.id.custom_view_container);
 
-        if (isGeolocationConntentSetting
+        if (isGeolocationContentSetting
                 && isApproximateGeolocationEnabled
                 && locationPrecisionContainer != null) {
 

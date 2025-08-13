@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -624,7 +625,17 @@ std::string GetPermissionStringForUma(
     ContentSettingsType content_setting_type) {
   switch (content_setting_type) {
     case ContentSettingsType::GEOLOCATION:
-      return "Geolocation";
+      if (!base::FeatureList::IsEnabled(
+              content_settings::features::kApproximateGeolocationPermission)) {
+        return "Geolocation";
+      }
+      break;
+    case ContentSettingsType::GEOLOCATION_WITH_OPTIONS:
+      if (base::FeatureList::IsEnabled(
+              content_settings::features::kApproximateGeolocationPermission)) {
+        return "Geolocation";
+      }
+      break;
     case ContentSettingsType::NOTIFICATIONS:
       return "Notifications";
     case ContentSettingsType::MIDI_SYSEX:
@@ -673,13 +684,14 @@ std::string GetPermissionStringForUma(
       return "WebAppInstallation";
     case ContentSettingsType::LOCAL_NETWORK_ACCESS:
       return "LocalNetworkAccess";
-    // The user is not prompted for these permissions thus there is no
-    // permission action recorded for them.
     default:
-      NOTREACHED() << "PERMISSION "
-                   << PermissionUtil::GetPermissionString(content_setting_type)
-                   << " not accounted for";
+      break;
   }
+  // The user is not prompted for these permissions thus there is no
+  // permission action recorded for them.
+  NOTREACHED() << "PERMISSION "
+               << PermissionUtil::GetPermissionString(content_setting_type)
+               << " not accounted for";
 }
 
 }  // anonymous namespace
@@ -1896,8 +1908,12 @@ void PermissionUmaUtil::RecordCrossOriginFrameActionAndPolicyConfiguration(
 void PermissionUmaUtil::RecordTopLevelPermissionsHeaderPolicyOnNavigation(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);
-  static constexpr ContentSettingsType kContentSettingsTypesForMetrics[] = {
-      ContentSettingsType::GEOLOCATION, ContentSettingsType::MEDIASTREAM_CAMERA,
+  const ContentSettingsType kContentSettingsTypesForMetrics[] = {
+      base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)
+          ? ContentSettingsType::GEOLOCATION_WITH_OPTIONS
+          : ContentSettingsType::GEOLOCATION,
+      ContentSettingsType::MEDIASTREAM_CAMERA,
       ContentSettingsType::MEDIASTREAM_MIC};
 
   for (const auto content_settings_type : kContentSettingsTypesForMetrics) {
