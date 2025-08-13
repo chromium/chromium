@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -17,6 +19,9 @@
 
 class BwgTabHelperTest : public PlatformTest {
  protected:
+  BwgTabHelperTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -32,9 +37,14 @@ class BwgTabHelperTest : public PlatformTest {
 
   bool IsBwgUiShowing() { return tab_helper_->is_bwg_ui_showing_; }
 
+  bool IsBwgSessionActiveInBackground() {
+    return tab_helper_->is_bwg_session_active_in_background_;
+  }
+
   // Environment objects are declared first, so they are destroyed last.
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
 
   // Profile and services that depend on the environment are declared next.
   std::unique_ptr<TestProfileIOS> profile_;
@@ -53,6 +63,76 @@ TEST_F(BwgTabHelperTest, TestGetIsBwgSessionActiveInBackground) {
   tab_helper_->SetBwgUiShowing(true);
   tab_helper_->WasHidden(web_state_.get());
   ASSERT_TRUE(tab_helper_->GetIsBwgSessionActiveInBackground());
+}
+
+TEST_F(BwgTabHelperTest, TestDeactivateBWGSession) {
+  tab_helper_->SetBwgUiShowing(true);
+  tab_helper_->WasHidden(web_state_.get());
+  ASSERT_TRUE(IsBwgSessionActiveInBackground());
+  // BWG is still considered as being shown in this case.
+  ASSERT_TRUE(IsBwgUiShowing());
+
+  tab_helper_->DeactivateBWGSession();
+  ASSERT_FALSE(IsBwgSessionActiveInBackground());
+  ASSERT_FALSE(IsBwgUiShowing());
+}
+
+TEST_F(BwgTabHelperTest, TestPrepareBwgFreBackgrounding) {
+  ASSERT_FALSE(IsBwgSessionActiveInBackground());
+  tab_helper_->PrepareBwgFreBackgrounding();
+  ASSERT_TRUE(IsBwgSessionActiveInBackground());
+}
+
+TEST_F(BwgTabHelperTest, TestShouldShowZeroState_NoLastInteraction) {
+  ASSERT_TRUE(tab_helper_->ShouldShowZeroState());
+}
+
+TEST_F(BwgTabHelperTest, TestShouldShowZeroState_SameURL) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kPageActionMenu},
+      /*disabled_features=*/{kGeminiCrossTab});
+  GURL url("https://www.chromium.org");
+  web_state_->SetCurrentURL(url);
+  tab_helper_->CreateOrUpdateBwgSessionInStorage("server_id");
+  ASSERT_FALSE(tab_helper_->ShouldShowZeroState());
+}
+
+TEST_F(BwgTabHelperTest, TestShouldShowZeroState_DifferentURL) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kPageActionMenu},
+      /*disabled_features=*/{kGeminiCrossTab});
+  GURL url1("https://www.chromium.org");
+  web_state_->SetCurrentURL(url1);
+  tab_helper_->CreateOrUpdateBwgSessionInStorage("server_id");
+
+  GURL url2("https://www.google.com");
+  web_state_->SetCurrentURL(url2);
+  ASSERT_TRUE(tab_helper_->ShouldShowZeroState());
+}
+
+TEST_F(BwgTabHelperTest,
+       TestShouldShowZeroState_GeminiCrossTabEnabled_SameURL) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kPageActionMenu, kGeminiCrossTab},
+      /*disabled_features=*/{});
+  GURL url("https://www.chromium.org");
+  web_state_->SetCurrentURL(url);
+  tab_helper_->CreateOrUpdateBwgSessionInStorage("server_id");
+  ASSERT_FALSE(tab_helper_->ShouldShowZeroState());
+}
+
+TEST_F(BwgTabHelperTest,
+       TestShouldShowZeroState_GeminiCrossTabEnabled_DifferentURL) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kPageActionMenu, kGeminiCrossTab},
+      /*disabled_features=*/{});
+  GURL url1("https://www.chromium.org");
+  web_state_->SetCurrentURL(url1);
+  tab_helper_->CreateOrUpdateBwgSessionInStorage("server_id");
+
+  GURL url2("https://www.google.com");
+  web_state_->SetCurrentURL(url2);
+  ASSERT_TRUE(tab_helper_->ShouldShowZeroState());
 }
 
 // TODO(crbug.com/430313339): Add a test for the last interaction case.
@@ -85,4 +165,27 @@ TEST_F(BwgTabHelperTest, TestGetServerId) {
   tab_helper_->CreateOrUpdateBwgSessionInStorage(server_id);
   ASSERT_TRUE(tab_helper_->GetServerId().has_value());
   ASSERT_EQ(server_id, tab_helper_->GetServerId().value());
+}
+
+TEST_F(BwgTabHelperTest, TestGetServerId_Expired) {
+  std::string server_id = "test_server_id";
+  tab_helper_->CreateOrUpdateBwgSessionInStorage(server_id);
+  ASSERT_TRUE(tab_helper_->GetServerId().has_value());
+
+  // Fast forward time to expire the session.
+  task_environment_.FastForwardBy(BWGSessionValidityDuration() +
+                                  base::Seconds(1));
+
+  ASSERT_FALSE(tab_helper_->GetServerId().has_value());
+}
+
+TEST_F(BwgTabHelperTest, WebStateDestroyed) {
+  // Set some state.
+  tab_helper_->SetBwgUiShowing(true);
+  tab_helper_->PrepareBwgFreBackgrounding();
+
+  // Destroy the webstate.
+  web_state_.reset();
+
+  // The test passes if it doesn't crash.
 }
