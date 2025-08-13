@@ -40,12 +40,6 @@ interface ProxyResolvingSocket {
 struct ProxyResolvingSocketOptions {
   // Establish a TLS connection on top of the TCP connection.
   bool use_tls = false;
-
-  // Tries to do a fake TLS handshake on the connection.
-  // This is sometimes used with XMPP to pass through proxies.
-  // See webrtc::FakeSSLClientSocket for more details.
-  // Should not be used with |use_tls| set to true.
-  bool fake_tls_handshake = false;
 };
 
 // Factory interface for creating ProxyResolvingSocket. Each factory instance

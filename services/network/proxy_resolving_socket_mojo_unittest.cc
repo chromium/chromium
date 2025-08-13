@@ -12,7 +12,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "components/webrtc/fake_ssl_client_socket.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -39,7 +38,6 @@ class ProxyResolvingSocketTestBase {
  public:
   ProxyResolvingSocketTestBase(bool use_tls)
       : use_tls_(use_tls),
-        fake_tls_handshake_(false),
         task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   ProxyResolvingSocketTestBase(const ProxyResolvingSocketTestBase&) = delete;
@@ -109,7 +107,6 @@ class ProxyResolvingSocketTestBase {
     network::mojom::ProxyResolvingSocketOptionsPtr options =
         network::mojom::ProxyResolvingSocketOptions::New();
     options->use_tls = use_tls_;
-    options->fake_tls_handshake = fake_tls_handshake_;
     factory_remote_->CreateProxyResolvingSocket(
         url, net::NetworkAnonymizationKey(), std::move(options),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
@@ -137,7 +134,6 @@ class ProxyResolvingSocketTestBase {
   }
 
   bool use_tls() const { return use_tls_; }
-  void set_fake_tls_handshake(bool val) { fake_tls_handshake_ = val; }
 
   mojom::ProxyResolvingSocketFactory* factory() {
     return factory_remote_.get();
@@ -145,7 +141,6 @@ class ProxyResolvingSocketTestBase {
 
  private:
   const bool use_tls_;
-  bool fake_tls_handshake_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<net::MockClientSocketFactory> mock_client_socket_factory_;
   std::unique_ptr<net::URLRequestContext> context_;
@@ -332,44 +327,6 @@ class ProxyResolvingSocketMojoTest : public ProxyResolvingSocketTestBase,
 
   ~ProxyResolvingSocketMojoTest() override {}
 };
-
-TEST_F(ProxyResolvingSocketMojoTest, ConnectWithFakeTLSHandshake) {
-  const GURL kDestination("https://example.com:443");
-  std::string_view kTestMsg = "abcdefghij";
-
-  Init("DIRECT");
-  set_fake_tls_handshake(true);
-
-  std::string_view client_hello =
-      webrtc::FakeSSLClientSocket::GetSslClientHello();
-  std::string_view server_hello =
-      webrtc::FakeSSLClientSocket::GetSslServerHello();
-  std::vector<net::MockRead> reads = {
-      net::MockRead(net::ASYNC, 1, server_hello),
-      net::MockRead(net::ASYNC, 2, kTestMsg),
-      net::MockRead(net::ASYNC, net::OK, 3)};
-
-  std::vector<net::MockWrite> writes = {
-      net::MockWrite(net::ASYNC, 0, client_hello)};
-
-  net::StaticSocketDataProvider data_provider(reads, writes);
-  data_provider.set_connect_data(net::MockConnect(net::ASYNC, net::OK));
-  mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
-
-  mojo::PendingRemote<mojom::ProxyResolvingSocket> socket;
-  mojo::ScopedDataPipeConsumerHandle client_socket_receive_handle;
-  mojo::ScopedDataPipeProducerHandle client_socket_send_handle;
-  net::IPEndPoint actual_remote_addr;
-  EXPECT_EQ(net::OK, CreateSocketSync(socket.InitWithNewPipeAndPassReceiver(),
-                                      mojo::NullRemote() /* socket_observer*/,
-                                      &actual_remote_addr, kDestination,
-                                      &client_socket_receive_handle,
-                                      &client_socket_send_handle));
-
-  EXPECT_EQ(kTestMsg, Read(&client_socket_receive_handle, kTestMsg.size()));
-  EXPECT_TRUE(data_provider.AllReadDataConsumed());
-  EXPECT_TRUE(data_provider.AllWriteDataConsumed());
-}
 
 // Tests that when ProxyResolvingSocket remote is destroyed but not the
 // ProxyResolvingSocketFactory, the connect callback is not dropped.

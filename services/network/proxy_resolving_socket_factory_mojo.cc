@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "components/webrtc/fake_ssl_client_socket.h"
 #include "net/url_request/url_request_context.h"
 #include "services/network/proxy_resolving_client_socket.h"
 #include "services/network/proxy_resolving_client_socket_factory.h"
@@ -31,12 +30,6 @@ void ProxyResolvingSocketFactoryMojo::CreateProxyResolvingSocket(
     CreateProxyResolvingSocketCallback callback) {
   std::unique_ptr<net::StreamSocket> net_socket = factory_impl_.CreateSocket(
       url, network_anonymization_key, options && options->use_tls);
-  if (options && options->fake_tls_handshake) {
-    DCHECK(!options->use_tls);
-    net_socket =
-        std::make_unique<webrtc::FakeSSLClientSocket>(std::move(net_socket));
-  }
-
   auto socket = std::make_unique<ProxyResolvingSocketMojo>(
       std::move(net_socket),
       static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation),
