@@ -6821,7 +6821,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDsDisabled) {
   socket_factory()->AddSocketDataProvider(&data);
   SSLSocketDataProvider ssl(ASYNC, OK);
   // Trust Anchor IDs should not be sent because the feature is disabled.
-  ssl.expected_trust_anchor_ids = std::vector<uint8_t>();
+  ssl.expect_no_trust_anchor_ids = true;
   socket_factory()->AddSSLSocketDataProvider(&ssl);
 
   resolver()
@@ -6844,7 +6844,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDsDisabled) {
                                     1);
   histogram_tester.ExpectUniqueSample(
       "Net.SSL.TrustAnchorIDsResult",
-      SSLClientSocket::TrustAnchorIDsResult::kSuccessInitial, 1);
+      SSLClientSocket::TrustAnchorIDsResult::kDnsSuccessInitial, 1);
 }
 
 // Tests that TLS Trust Anchor IDs are sent when the feature flag is enabled.
@@ -6886,7 +6886,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDs) {
                                     1);
   histogram_tester.ExpectUniqueSample(
       "Net.SSL.TrustAnchorIDsResult",
-      SSLClientSocket::TrustAnchorIDsResult::kSuccessInitial, 1);
+      SSLClientSocket::TrustAnchorIDsResult::kDnsSuccessInitial, 1);
 }
 
 // Tests that TLS Trust Anchor IDs are sent even when ECH is disabled.

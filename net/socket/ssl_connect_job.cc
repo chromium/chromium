@@ -389,11 +389,15 @@ int SSLConnectJob::DoSSLConnect() {
       !ssl_client_context()->config().trust_anchor_ids.empty()) {
     if (!trust_anchor_ids_for_retry_.empty()) {
       ssl_config.trust_anchor_ids = trust_anchor_ids_for_retry_;
-    } else if (endpoint_result_ &&
-               !endpoint_result_->metadata.trust_anchor_ids.empty()) {
+    } else if (endpoint_result_) {
       ssl_config.trust_anchor_ids = SSLConfig::SelectTrustAnchorIDs(
           endpoint_result_->metadata.trust_anchor_ids,
           ssl_client_context()->config().trust_anchor_ids);
+    } else {
+      // Send an empty trust_anchors extension to signal we support the
+      // extension and can trigger the retry flow if the server picked a
+      // certificate wrong.
+      ssl_config.trust_anchor_ids.emplace();
     }
   }
 

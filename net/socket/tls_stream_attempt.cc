@@ -54,7 +54,7 @@ TlsStreamAttempt::TlsStreamAttempt(const StreamAttemptParams* params,
       delegate_(delegate) {
   // ECH and trust anchor IDs are configured via DNS after GetServiceEndpoint().
   DCHECK(base_ssl_config_.ech_config_list.empty());
-  DCHECK(base_ssl_config_.trust_anchor_ids.empty());
+  DCHECK(!base_ssl_config_.trust_anchor_ids.has_value());
 }
 
 TlsStreamAttempt::~TlsStreamAttempt() {
@@ -201,7 +201,7 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
     const SSLContextConfig& ssl_context_config =
         params().ssl_client_context->config();
     ssl_config_ = base_ssl_config_;
-    if (!endpoint->metadata.trust_anchor_ids.empty() &&
+    if (!ssl_context_config.trust_anchor_ids.empty() &&
         base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
       ssl_config_->trust_anchor_ids =
           SSLConfig::SelectTrustAnchorIDs(endpoint->metadata.trust_anchor_ids,

@@ -836,12 +836,11 @@ int SSLClientSocketImpl::Init() {
   SSL_set_permute_extensions(ssl_.get(), 1);
 
   // Configure BoringSSL to send Trust Anchor IDs, if provided.
-  if (!ssl_config_.trust_anchor_ids.empty()) {
-    if (!SSL_set1_requested_trust_anchors(
-            ssl_.get(), ssl_config_.trust_anchor_ids.data(),
-            ssl_config_.trust_anchor_ids.size())) {
-      return ERR_UNEXPECTED;
-    }
+  if (ssl_config_.trust_anchor_ids.has_value() &&
+      !SSL_set1_requested_trust_anchors(ssl_.get(),
+                                        ssl_config_.trust_anchor_ids->data(),
+                                        ssl_config_.trust_anchor_ids->size())) {
+    return ERR_UNEXPECTED;
   }
 
   return OK;

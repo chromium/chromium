@@ -54,15 +54,31 @@ class NET_EXPORT SSLClientSocket : public SSLSocket {
   // These values are persisted to logs. Entries should not be renumbered
   // and numeric values should never be reused.
   enum class TrustAnchorIDsResult {
-    // The connection succeeded on the initial connection.
-    kSuccessInitial = 0,
-    // The connection failed on the initial connection, without retrying.
-    kErrorInitial = 1,
-    // The connection succeeded after retrying with fresh Trust Anchor IDs.
-    kSuccessRetry = 2,
-    // The connection failed after retrying with fresh Trust Anchor IDs.
-    kErrorRetry = 3,
-    kMaxValue = kErrorRetry,
+    // There was a DNS hint, and the connection succeeded on the initial
+    // connection.
+    kDnsSuccessInitial = 0,
+    // There was a DNS hint, and the connection failed on the initial
+    // connection, without retrying.
+    kDnsErrorInitial = 1,
+    // There was a DNS hint, and the connection succeeded after retrying with
+    // fresh Trust Anchor IDs.
+    kDnsSuccessRetry = 2,
+    // There was a DNS hint, and the connection failed after retrying with fresh
+    // Trust Anchor IDs.
+    kDnsErrorRetry = 3,
+    // There was no DNS hint, and the connection succeeded on the initial
+    // connection.
+    kNoDnsSuccessInitial = 4,
+    // There was no DNS hint, and the connection failed on the initial
+    // connection, without retrying.
+    kNoDnsErrorInitial = 5,
+    // There was no DNS hint, and the connection succeeded after retrying with
+    // fresh Trust Anchor IDs.
+    kNoDnsSuccessRetry = 6,
+    // There was no DNS hint, and the connection failed after retrying with
+    // fresh Trust Anchor IDs.
+    kNoDnsErrorRetry = 7,
+    kMaxValue = kNoDnsErrorRetry,
   };
 
   SSLClientSocket();

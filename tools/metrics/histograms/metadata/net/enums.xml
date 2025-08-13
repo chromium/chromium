@@ -3079,17 +3079,32 @@ Called by update_net_trust_anchors.py.-->
 
 <enum name="SSLTrustAnchorIDsResult">
   <summary>
-    The result of a TLS connection that advertised Trust Anchor IDs in DNS
+    Whether a TLS connection relied on the trust anchor ID retry.
   </summary>
-  <int value="0" label="The connection succeeded on the initial connection"/>
+  <int value="0"
+      label="There was a DNS hint, and the connection succeeded on the
+             initial connection"/>
   <int value="1"
-      label="The connection failed on the initial connection, and the client
-             didn't retry"/>
+      label="There was a DNS hint, and the connection failed on the initial
+             connection, without retrying"/>
   <int value="2"
-      label="The connection succeeded after retrying with fresh Trust Anchor
-             IDs"/>
+      label="There was a DNS hint, and the connection succeeded after
+             retrying with fresh Trust Anchor IDs"/>
   <int value="3"
-      label="The connection failed after retrying with fresh Trust Anchor IDs"/>
+      label="There was a DNS hint, and the connection failed after retrying
+             with fresh Trust Anchor IDs"/>
+  <int value="4"
+      label="There was no DNS hint, and the connection succeeded on the
+             initial connection"/>
+  <int value="5"
+      label="There was no DNS hint, and the connection failed on the initial
+             connection, without retrying"/>
+  <int value="6"
+      label="There was no DNS hint, and the connection succeeded after
+             retrying with fresh Trust Anchor IDs"/>
+  <int value="7"
+      label="There was no DNS hint, and the connection failed after retrying
+             with fresh Trust Anchor IDs"/>
 </enum>
 
 <enum name="StorageAccessNetRequestKind">

@@ -7705,14 +7705,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SSL.TrustAnchorIDsResult" enum="SSLTrustAnchorIDsResult"
-    expires_after="2025-10-26">
+    expires_after="2026-06-01">
   <owner>davidben@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
-    For each TLS connection that offered Trust Anchor IDs over DNS, what was the
-    result of that connection. In particular, this measures if the retry flow
-    was needed and, if so, whether it fixed the connection.
+    For each TLS connection, recorded when the connection attempt completes,
+    whether the trust anchor IDs retry flow was triggered and, if so, whether it
+    fixed the connection.
   </summary>
 </histogram>
 
@@ -7754,7 +7754,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SSL_Connection_Error_TrustAnchorIDs" enum="NetErrorCodes"
-    expires_after="2025-10-26">
+    expires_after="2026-06-01">
   <owner>davidben@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
@@ -7785,7 +7785,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SSL_Connection_Latency_TrustAnchorIDs" units="ms"
-    expires_after="2025-10-26">
+    expires_after="2026-06-01">
   <owner>davidben@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>

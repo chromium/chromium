@@ -1717,6 +1717,9 @@ quic::QuicSSLConfig QuicChromiumClientSession::GetSSLConfig() const {
                                   ech_config_list_.end());
   }
   if (base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
+    // TODO(crbug.com/432044228): This should still configure the extension when
+    // `trust_anchor_ids_` is empty, after QUICHE has been updated to make
+    // `trust_anchor_ids` a `std::optional`.
     if (!trust_anchor_ids_.empty() &&
         !ssl_context_config.trust_anchor_ids.empty()) {
       std::vector<uint8_t> selected_trust_anchor_ids =

@@ -668,7 +668,7 @@ TEST_F(TlsStreamAttemptTest, TrustAnchorIDsRetry) {
                                     1);
   histogram_tester.ExpectUniqueSample(
       "Net.SSL.TrustAnchorIDsResult",
-      SSLClientSocket::TrustAnchorIDsResult::kSuccessRetry, 1);
+      SSLClientSocket::TrustAnchorIDsResult::kDnsSuccessRetry, 1);
 }
 
 // Tests that TlsStreamAttempt does not restart when it sends TLS Trust Anchor
@@ -713,7 +713,7 @@ TEST_F(TlsStreamAttemptTest, NoRetryIfNoServerTrustAnchorIDs) {
                                       std::abs(ERR_CERT_AUTHORITY_INVALID), 1);
   histogram_tester.ExpectUniqueSample(
       "Net.SSL.TrustAnchorIDsResult",
-      SSLClientSocket::TrustAnchorIDsResult::kErrorInitial, 1);
+      SSLClientSocket::TrustAnchorIDsResult::kDnsErrorInitial, 1);
 }
 
 // Tests that TlsStreamAttempt does not restart when it sends TLS Trust Anchor
@@ -760,7 +760,7 @@ TEST_F(TlsStreamAttemptTest, NoRetryIfNoIntersectionWithServerTrustAnchorIDs) {
                                       std::abs(ERR_CERT_AUTHORITY_INVALID), 1);
   histogram_tester.ExpectUniqueSample(
       "Net.SSL.TrustAnchorIDsResult",
-      SSLClientSocket::TrustAnchorIDsResult::kErrorInitial, 1);
+      SSLClientSocket::TrustAnchorIDsResult::kDnsErrorInitial, 1);
 }
 
 // Tests that TlsStreamAttempt does not restart when it sends TLS Trust Anchor
@@ -801,7 +801,7 @@ TEST_F(TlsStreamAttemptTest, NoTrustAnchorIDsRetryIfNotCertificateError) {
                                       1);
   histogram_tester.ExpectUniqueSample(
       "Net.SSL.TrustAnchorIDsResult",
-      SSLClientSocket::TrustAnchorIDsResult::kErrorInitial, 1);
+      SSLClientSocket::TrustAnchorIDsResult::kDnsErrorInitial, 1);
 }
 
 // Tests that TlsStreamAttempt restarts only once when it sends TLS Trust Anchor
@@ -859,7 +859,62 @@ TEST_F(TlsStreamAttemptTest, TrustAnchorIDsRetryOnlyOnce) {
                                       std::abs(ERR_CERT_AUTHORITY_INVALID), 1);
   histogram_tester.ExpectUniqueSample(
       "Net.SSL.TrustAnchorIDsResult",
-      SSLClientSocket::TrustAnchorIDsResult::kErrorRetry, 1);
+      SSLClientSocket::TrustAnchorIDsResult::kDnsErrorRetry, 1);
+}
+
+// Tests that TlsStreamAttempt continues to send the trust anchors extension,
+// and handle retries, even if there were no IDs in the service endpoint.
+TEST_F(TlsStreamAttemptTest, TrustAnchorIDsNoDnsThenRetry) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTLSTrustAnchorIDs);
+
+  const std::vector<uint8_t> id1 = {0x01, 0x02, 0x03};
+  const std::vector<uint8_t> id2 = {0x02, 0x02};
+  const std::vector<uint8_t> id3 = {0x03, 0x03};
+  const std::vector<uint8_t> id4 = {0x04, 0x04};
+
+  SetTrustedTrustAnchorIDs({id1, id2, id3});
+  ServiceEndpoint service_endpoint;
+
+  StaticSocketDataProvider data;
+  socket_factory().AddSocketDataProvider(&data);
+  // The service endpoint had no trust anchor hints, but the first connection
+  // attempt should still send an empty trust anchor ID extension. Configure it
+  // to fail with a certificate error, simulating the server's default
+  // certificate being unacceptable.
+  SSLSocketDataProvider ssl_fail(ASYNC, ERR_CERT_AUTHORITY_INVALID);
+  ssl_fail.expected_trust_anchor_ids = std::vector<uint8_t>{};
+  // Simulate the server having non-default certificates available, which would
+  // be acceptable.
+  ssl_fail.server_trust_anchor_ids_for_retry = {id2, id4};
+  socket_factory().AddSSLSocketDataProvider(&ssl_fail);
+
+  // The second connection attempt should now request a trust anchor ID.
+  // Configure it to now succeed, simulating the server sending an acceptable
+  // non-default certificate.
+  StaticSocketDataProvider retry_data;
+  socket_factory().AddSocketDataProvider(&retry_data);
+  SSLSocketDataProvider retry_ssl(ASYNC, OK);
+  retry_ssl.expected_trust_anchor_ids = EncodeTrustAnchorIDs({id2});
+  socket_factory().AddSSLSocketDataProvider(&retry_ssl);
+
+  TlsStreamAttemptHelper helper(params(), SSLConfig(),
+                                std::move(service_endpoint));
+  int rv = helper.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  base::HistogramTester histogram_tester;
+  rv = helper.WaitForCompletion();
+  EXPECT_THAT(rv, IsOk());
+  // These metrics are only recorded when there is a DNS hint.
+  histogram_tester.ExpectTotalCount("Net.SSL_Connection_Error_TrustAnchorIDs",
+                                    0);
+  histogram_tester.ExpectTotalCount("Net.SSL_Connection_Latency_TrustAnchorIDs",
+                                    0);
+  // But even without a DNS hint, we record the result of a retry.
+  histogram_tester.ExpectUniqueSample(
+      "Net.SSL.TrustAnchorIDsResult",
+      SSLClientSocket::TrustAnchorIDsResult::kNoDnsSuccessRetry, 1);
 }
 
 }  // namespace net
