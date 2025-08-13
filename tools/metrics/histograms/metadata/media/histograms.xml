@@ -4588,6 +4588,16 @@ chromium-metrics-reviews@google.com.
   <token key="VideoCodec" variants="VideoCodec"/>
 </histogram>
 
+<histogram name="Media.MediaFoundationAudioDecoder.CreateDecoderFailure.XheAac"
+    enum="Hresult" expires_after="M146">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    HRESULT error codes from MediaFoundationAudioDecoder::CreateDecoder() when
+    trying to initialize a decoder for XHE-AAC.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaFoundationRenderer.CreateMediaEngineError"
     enum="Hresult" expires_after="2026-01-15">
   <owner>xhwang@chromium.org</owner>

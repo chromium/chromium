@@ -72,8 +72,8 @@ class MEDIA_EXPORT MediaFoundationAudioDecoder : public AudioDecoder {
   //     Any time Reset() is called.
   enum class DecoderState { kUninitialized, kNormal, kDecodeFinished, kError };
 
-  bool CreateDecoder();
-  bool ConfigureOutput();
+  HRESULT CreateDecoder();
+  HRESULT ConfigureOutput();
 
   enum class OutputStatus { kSuccess, kNeedMoreInput, kStreamChange, kFailed };
   enum class PumpState { kNormal, kStreamChange };
