@@ -357,11 +357,7 @@ class OnDeviceModelServiceController final : public mojom::ModelBroker {
   base::SafeRef<on_device_model::ServiceClient> service_client_;
   SafetyClient safety_client_;
 
-  // Map from feature to its adaptation assets. Present only for features that
-  // have valid model adaptation. It could be missing for features that require
-  // model adaptation, but they have not been loaded yet.
-  base::flat_map<ModelBasedCapabilityKey, MaybeAdaptationMetadata>
-      model_adaptation_metadata_;
+  AdaptationMetadataMap adaptation_metadata_;
   std::optional<OnDeviceModelMetadataLoader> model_metadata_loader_;
 
   std::map<ModelBasedCapabilityKey, SolutionProvider> solution_providers_;

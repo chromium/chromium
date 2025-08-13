@@ -197,7 +197,8 @@ OnDeviceModelServiceController::CreateSession(
 
   CHECK(base_model_controller_->model_metadata());
   CHECK(features::internal::GetOptimizationTargetForCapability(feature));
-  MaybeAdaptationMetadata adaptation_metadata = GetFeatureMetadata(feature);
+  MaybeAdaptationMetadata adaptation_metadata =
+      adaptation_metadata_.Get(feature);
   CHECK(adaptation_metadata.has_value());
 
   OnDeviceOptions opts;
@@ -252,13 +253,12 @@ void OnDeviceModelServiceController::MaybeUpdateModelAdaptation(
     ModelBasedCapabilityKey feature,
     base::expected<OnDeviceModelAdaptationMetadata, AdaptationUnavailability>
         adaptation_metadata) {
-  MaybeAdaptationMetadata& current_metadata = GetFeatureMetadata(feature);
-  if (current_metadata == adaptation_metadata) {
+  if (!adaptation_metadata_.MaybeUpdate(feature,
+                                        std::move(adaptation_metadata))) {
     // Duplicate update (can be caused by multiple profiles).
     // Don't invalidate the existing controller.
     return;
   }
-  current_metadata = std::move(adaptation_metadata);
   base_model_controller_->EraseController(feature);
   UpdateSolutionProvider(feature);
 }
@@ -317,12 +317,7 @@ void OnDeviceModelServiceController::OnDeviceModelClient::
 
 MaybeAdaptationMetadata& OnDeviceModelServiceController::GetFeatureMetadata(
     ModelBasedCapabilityKey feature) {
-  auto it =
-      model_adaptation_metadata_
-          .emplace(feature,
-                   base::unexpected(AdaptationUnavailability::kUpdatePending))
-          .first;
-  return it->second;
+  return adaptation_metadata_.Get(feature);
 }
 
 void OnDeviceModelServiceController::AddOnDeviceModelAvailabilityChangeObserver(
@@ -361,7 +356,7 @@ OnDeviceModelServiceController::GetSolution(ModelBasedCapabilityKey feature) {
   }
 
   // Check feature config.
-  MaybeAdaptationMetadata metadata = GetFeatureMetadata(feature);
+  MaybeAdaptationMetadata metadata = adaptation_metadata_.Get(feature);
   if (!metadata.has_value()) {
     if (metadata.error() == AdaptationUnavailability::kNotSupported) {
       return base::unexpected(

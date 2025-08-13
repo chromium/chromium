@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -101,6 +102,24 @@ class OnDeviceModelAdaptationMetadata {
 
 using MaybeAdaptationMetadata =
     base::expected<OnDeviceModelAdaptationMetadata, AdaptationUnavailability>;
+
+// Adaptation map stores adaptation metadata or unavailability reason for each
+// feature, defaulting to AdaptationUnavailability::kUpdatePending.
+class AdaptationMetadataMap {
+ public:
+  AdaptationMetadataMap();
+  ~AdaptationMetadataMap();
+
+  MaybeAdaptationMetadata& Get(ModelBasedCapabilityKey feature);
+
+  // Updates the metadata if it has changed.
+  // Returns whether the metadata was updated.
+  bool MaybeUpdate(ModelBasedCapabilityKey feature,
+                   MaybeAdaptationMetadata metadata);
+
+ private:
+  base::flat_map<ModelBasedCapabilityKey, MaybeAdaptationMetadata> metadata_;
+};
 
 // Loads model adaptation assets for a particular feature. Performs adaptation
 // model compatibility checks with the base model and reloads the assets if the

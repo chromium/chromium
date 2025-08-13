@@ -163,6 +163,30 @@ OnDeviceModelAdaptationMetadata::asset_paths() const {
   return base::OptionalToPtr(asset_paths_);
 }
 
+AdaptationMetadataMap::AdaptationMetadataMap() = default;
+AdaptationMetadataMap::~AdaptationMetadataMap() = default;
+MaybeAdaptationMetadata& AdaptationMetadataMap::Get(
+    ModelBasedCapabilityKey feature) {
+  auto it =
+      metadata_
+          .emplace(feature,
+                   base::unexpected(AdaptationUnavailability::kUpdatePending))
+          .first;
+  return it->second;
+}
+
+bool AdaptationMetadataMap::MaybeUpdate(ModelBasedCapabilityKey feature,
+                                        MaybeAdaptationMetadata metadata) {
+  MaybeAdaptationMetadata& current_metadata = Get(feature);
+  if (current_metadata == metadata) {
+    // Duplicate update (can be caused by multiple profiles providing updates).
+    // Keep the existing copy.
+    return false;
+  }
+  current_metadata = std::move(metadata);
+  return true;
+}
+
 OnDeviceModelAdaptationLoader::OnDeviceModelAdaptationLoader(
     ModelBasedCapabilityKey feature,
     OptimizationGuideModelProvider* model_provider,
