@@ -422,12 +422,12 @@ void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
       return std::move(model_execution_callback).Run(std::move(model_data));
     }
 
-    // Aiv4
+    // Aiv4.
     auto fallback_callback =
         base::BindOnce(&PredictionBasedPermissionUiSelector::InquireServerModel,
                        weak_ptr_factory_.GetWeakPtr(),
                        PredictionRequestFeatures(model_data.features),
-                       std::move(model_data.request_metadata));
+                       model_data.request_metadata);
 
     auto on_passage_embeddings_computed_callback = base::BindOnce(
         &PredictionBasedPermissionUiSelector::OnPassageEmbeddingsComputed,
