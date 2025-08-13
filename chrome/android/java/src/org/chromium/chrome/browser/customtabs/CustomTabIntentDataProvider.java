@@ -32,6 +32,8 @@ import static androidx.browser.trusted.LaunchHandlerClientMode.FOCUS_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_NEW;
 
+import static org.chromium.chrome.browser.app.tab_activity_glue.PopupCreator.EXTRA_REQUESTED_WINDOW_FEATURES;
+
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
@@ -95,6 +97,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils;
+import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -1790,5 +1793,18 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 && ChromeFeatureList.sCctAdaptiveButtonEnableOpenInBrowser.getValue()
                 && ChromeFeatureList.sCctAdaptiveButtonDefaultVariant.getValue()
                         == AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER;
+    }
+
+    @Override
+    public WindowFeatures getRequestedWindowFeatures() {
+        if (mUiType != CustomTabsUiType.POPUP) {
+            return null;
+        }
+        final Bundle bundle =
+                IntentUtils.safeGetBundleExtra(getIntent(), EXTRA_REQUESTED_WINDOW_FEATURES);
+        if (bundle == null) {
+            return new WindowFeatures();
+        }
+        return new WindowFeatures(bundle);
     }
 }

@@ -29,6 +29,9 @@ import org.chromium.ui.display.DisplayUtil;
 /** Handles launching new popup windows as CCTs. */
 @NullMarked
 public class PopupCreator {
+    public static final String EXTRA_REQUESTED_WINDOW_FEATURES =
+            "chrome.browser.app.tab_activity_glue.PopupCreator.EXTRA_REQUESTED_WINDOW_FEATURES";
+
     private static @Nullable Boolean sArePopupsEnabledForTesting;
     private static @Nullable ReparentingTask sReparentingTaskForTesting;
 
@@ -38,6 +41,7 @@ public class PopupCreator {
             Tab tab, WindowFeatures windowFeatures, DisplayAndroid display) {
         Intent intent = initializePopupIntent();
         ActivityOptions activityOptions = createPopupActivityOptions(windowFeatures, display);
+        intent.putExtra(EXTRA_REQUESTED_WINDOW_FEATURES, windowFeatures.toBundle());
 
         getReparentingTask(tab)
                 .begin(

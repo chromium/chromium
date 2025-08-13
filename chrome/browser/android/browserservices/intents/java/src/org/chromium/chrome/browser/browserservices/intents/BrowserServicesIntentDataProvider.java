@@ -35,6 +35,7 @@ import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.device.mojom.ScreenOrientationLockType;
 import org.chromium.net.NetId;
@@ -811,5 +812,12 @@ public abstract class BrowserServicesIntentDataProvider {
      */
     public int getAndroidBrowserHelperVersion() {
         return 0;
+    }
+
+    /**
+     * @return properties of window bounds requested by the opener if this CCT is a popup.
+     */
+    public @Nullable WindowFeatures getRequestedWindowFeatures() {
+        return null;
     }
 }

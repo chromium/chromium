@@ -9,6 +9,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.app.tab_activity_glue.PopupCreator.EXTRA_REQUESTED_WINDOW_FEATURES;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
@@ -131,6 +133,22 @@ public class PopupCreatorUnitTest {
                 "The intent sent to reparenting task doesn't specify FLAG_ACTIVITY_NEW_TASK",
                 Intent.FLAG_ACTIVITY_NEW_TASK,
                 sentIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK);
+    }
+
+    @Test
+    public void testIntentParams_passesWindowFeatures() {
+        final WindowFeatures windowFeatures = new WindowFeatures(12, 34, 56, null);
+        PopupCreator.moveTabToNewPopup(mTab, windowFeatures, mDisplay);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(mReparentingTask).begin(any(), captor.capture(), any(), any());
+        Intent sentIntent = captor.getValue();
+
+        Assert.assertEquals(
+                "The intent sent to reparenting task doesn't specify a correct Bundle of requested"
+                        + " window features",
+                windowFeatures,
+                new WindowFeatures(sentIntent.getBundleExtra(EXTRA_REQUESTED_WINDOW_FEATURES)));
     }
 
     private ActivityOptions getActivityOptionsPassedToReparentingTask() {
