@@ -329,7 +329,7 @@ public class TabUiThemeProvider {
      */
     public static int getMessageCardBackgroundResourceId(boolean isIncognito) {
         return isIncognito
-                ? R.drawable.card_background_corners_16dp_baseline
+                ? R.drawable.card_background_corners_16dp_baseline_dark
                 : R.drawable.card_background_corners_16dp;
     }
 
