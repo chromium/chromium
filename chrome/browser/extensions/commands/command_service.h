@@ -59,10 +59,14 @@ class CommandService : public BrowserContextKeyedAPI,
   // ACTIVE means developer-assigned keys that were granted or user-assigned
   // keys.
   //
+  // ACTIVE_OR_USER_MODIFIED means ACTIVE plus keys explicitly cleared by the
+  // user.
+  //
   // ALL is all of the above.
   enum QueryType {
     ALL,
     ACTIVE,
+    ACTIVE_OR_USER_MODIFIED,
   };
 
   // An enum specifying whether the command is global in scope or not. Global
@@ -234,7 +238,7 @@ class CommandService : public BrowserContextKeyedAPI,
   // Returns true if the user modified a command's shortcut key from the
   // `extension`-suggested value.
   bool IsCommandShortcutUserModified(const Extension* extension,
-                                     const std::string& command_name);
+                                     const std::string& command_name) const;
 
   // A weak pointer to the profile we are associated with. Not owned by us.
   raw_ptr<Profile> profile_;

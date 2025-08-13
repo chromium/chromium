@@ -26,6 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/command.h"
 #include "ui/base/accelerators/command_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
@@ -438,8 +439,9 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, RemoveShortcutSurvivesUpdate) {
   EXPECT_TRUE(accelerator.IsAltDown());
 
   // Remove the keybinding.
-  command_service->RemoveKeybindingPrefs(
-      kExtensionId, manifest_values::kBrowserActionCommandEvent);
+  command_service->UpdateKeybindingPrefs(
+      kExtensionId, manifest_values::kBrowserActionCommandEvent,
+      /*keystroke=*/"");
 
   // Verify it got removed.
   accelerator =
@@ -542,6 +544,21 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
               Command::AcceleratorToString(command.accelerator()));
     EXPECT_FALSE(active);
   }
+
+  command_service->UpdateKeybindingPrefs(
+      extension->id(), manifest_values::kBrowserActionCommandEvent,
+      /*keystroke=*/"");
+
+  {
+    Command command;
+    bool active = true;
+    EXPECT_TRUE(command_service->GetExtensionActionCommand(
+        extension->id(), ActionInfo::Type::kBrowser, CommandService::ALL,
+        &command, &active));
+
+    EXPECT_EQ(ui::VKEY_UNKNOWN, command.accelerator().key_code());
+    EXPECT_FALSE(active);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(CommandServiceTest,
@@ -629,6 +646,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
               Command::AcceleratorToString(command.accelerator()));
   }
 
+  // Tests that removing the keybinding pref restores the default binding.
   command_service->RemoveKeybindingPrefs(extension->id(), kBasicNamedCommand);
 
   {
@@ -641,6 +659,20 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
     ui::Command command = command_map[kBasicNamedCommand];
     EXPECT_EQ(kBasicNamedKeybinding,
               Command::AcceleratorToString(command.accelerator()));
+  }
+
+  // Tests that setting an empty keybinding string unsets the binding.
+  command_service->UpdateKeybindingPrefs(extension->id(), kBasicNamedCommand,
+                                         /*keystroke=*/"");
+  {
+    ui::CommandMap command_map;
+    EXPECT_TRUE(command_service->GetNamedCommands(
+        extension->id(), CommandService::ALL, CommandService::ANY_SCOPE,
+        &command_map));
+
+    ASSERT_EQ(1u, command_map.count(kBasicNamedCommand));
+    ui::Command command = command_map[kBasicNamedCommand];
+    EXPECT_EQ(ui::VKEY_UNKNOWN, command.accelerator().key_code());
   }
 }
 

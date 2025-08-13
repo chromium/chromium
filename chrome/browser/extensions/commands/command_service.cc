@@ -90,6 +90,47 @@ void MergeSuggestedKeyPrefs(const ExtensionId& extension_id,
       extension_id, kCommands, base::Value(std::move(suggested_key_prefs)));
 }
 
+// Clears the "was_assigned" preference for a list of `removed_commands`. This
+// is called when a keybinding is removed to signify that the suggested key is
+// no longer assigned, so it can be auto-assigned again in the future.
+void ClearSuggestedKeyWasAssignedPrefs(
+    const ExtensionId& extension_id,
+    ExtensionPrefs& extension_prefs,
+    const std::vector<Command>& removed_commands) {
+  if (removed_commands.empty()) {
+    return;
+  }
+
+  ExtensionPrefs::ScopedDictionaryUpdate updater(&extension_prefs, extension_id,
+                                                 kCommands);
+  std::unique_ptr<prefs::DictionaryValueUpdate> current_prefs = updater.Get();
+
+  for (const Command& removed_command : removed_commands) {
+    std::unique_ptr<prefs::DictionaryValueUpdate> command_prefs;
+    if (current_prefs->GetDictionary(removed_command.command_name(),
+                                     &command_prefs)) {
+      command_prefs->Remove(kSuggestedKeyWasAssigned);
+    }
+  }
+}
+
+// Returns true if a command is relevant for the given `query_type`.
+bool IsCommandRelevant(CommandService::QueryType query_type,
+                       bool is_active,
+                       bool user_modified) {
+  switch (query_type) {
+    case CommandService::ALL:
+      return true;
+    case CommandService::ACTIVE:
+      return is_active;
+    case CommandService::ACTIVE_OR_USER_MODIFIED:
+      // We want to be able to include commands that were explicitly unset by
+      // the user (via ACTIVE_OR_USER_MODIFIED) so that we don't override
+      // their preference with the default binding. See crbug.com/436279086.
+      return is_active || user_modified;
+  }
+}
+
 }  // namespace
 
 // static
@@ -145,15 +186,20 @@ bool CommandService::GetNamedCommands(const ExtensionId& extension_id,
         FindCommandByName(extension_id, named_command.second.command_name());
     ui::Accelerator shortcut_assigned = saved_command.accelerator();
 
-    if (type == ACTIVE && shortcut_assigned.key_code() == ui::VKEY_UNKNOWN)
+    bool user_modified = IsCommandShortcutUserModified(
+        extension, named_command.second.command_name());
+    bool is_active = shortcut_assigned.key_code() != ui::VKEY_UNKNOWN;
+    if (!IsCommandRelevant(type, is_active, user_modified)) {
       continue;
+    }
 
     ui::Command command = named_command.second;
     if (scope != ANY_SCOPE && ((scope == GLOBAL) != saved_command.global()))
       continue;
 
-    if (shortcut_assigned.key_code() != ui::VKEY_UNKNOWN)
+    if (is_active || user_modified) {
       command.set_accelerator(shortcut_assigned);
+    }
     command.set_global(saved_command.global());
 
     (*command_map)[named_command.second.command_name()] = command;
@@ -167,15 +213,14 @@ bool CommandService::AddKeybindingPref(const ui::Accelerator& accelerator,
                                        const std::string& command_name,
                                        bool allow_overrides,
                                        bool global) {
-  if (accelerator.key_code() == ui::VKEY_UNKNOWN)
-    return false;
-
   // Nothing needs to be done if the existing command is the same as the desired
   // new one.
   Command existing_command = FindCommandByName(extension_id, command_name);
-  if (existing_command.accelerator() == accelerator &&
-      existing_command.global() == global)
+  if (existing_command.command_name() == command_name &&
+      existing_command.accelerator() == accelerator &&
+      existing_command.global() == global) {
     return true;
+  }
 
   // Media Keys are allowed to be used by named command only.
   DCHECK(!accelerator.IsMediaKey() ||
@@ -206,13 +251,14 @@ bool CommandService::AddKeybindingPref(const ui::Accelerator& accelerator,
   if (existing_command.accelerator().key_code() != ui::VKEY_UNKNOWN)
     RemoveKeybindingPrefs(extension_id, command_name);
 
-  // Set the keybinding pref.
-  base::Value::Dict keybinding;
-  keybinding.Set(kExtension, extension_id);
-  keybinding.Set(kCommandName, command_name);
-  keybinding.Set(kGlobal, global);
-
-  bindings.Set(key, std::move(keybinding));
+  if (accelerator.key_code() != ui::VKEY_UNKNOWN) {
+    // Set the keybinding pref.
+    base::Value::Dict keybinding;
+    keybinding.Set(kExtension, extension_id);
+    keybinding.Set(kCommandName, command_name);
+    keybinding.Set(kGlobal, global);
+    bindings.Set(key, std::move(keybinding));
+  }
 
   // Set the was_assigned pref for the suggested key.
   base::Value::Dict command_keys;
@@ -224,8 +270,13 @@ bool CommandService::AddKeybindingPref(const ui::Accelerator& accelerator,
 
   // Fetch the newly-updated command, and notify the observers.
   Command command = FindCommandByName(extension_id, command_name);
-  for (auto& observer : observers_)
-    observer.OnExtensionCommandAdded(extension_id, command);
+  for (auto& observer : observers_) {
+    if (accelerator.key_code() != ui::VKEY_UNKNOWN) {
+      observer.OnExtensionCommandAdded(extension_id, command);
+    } else {
+      observer.OnExtensionCommandRemoved(extension_id, command);
+    }
+  }
 
   return true;
 }
@@ -356,10 +407,8 @@ void CommandService::RemoveRelinquishedKeybindings(const Extension* extension) {
   // Remove keybindings if they have been removed by the extension and the user
   // has not modified them.
   ui::CommandMap existing_command_map;
-  if (GetNamedCommands(extension->id(),
-                       CommandService::ACTIVE,
-                       CommandService::REGULAR,
-                       &existing_command_map)) {
+  if (GetNamedCommands(extension->id(), CommandService::ACTIVE_OR_USER_MODIFIED,
+                       CommandService::REGULAR, &existing_command_map)) {
     const ui::CommandMap* new_command_map =
         CommandsInfo::GetNamedCommands(extension);
     for (ui::CommandMap::const_iterator it = existing_command_map.begin();
@@ -375,8 +424,8 @@ void CommandService::RemoveRelinquishedKeybindings(const Extension* extension) {
   auto remove_overrides_if_unused = [this, extension](ActionInfo::Type type) {
     Command existing_command;
     if (!GetExtensionActionCommand(extension->id(), type,
-                                   CommandService::ACTIVE, &existing_command,
-                                   nullptr)) {
+                                   CommandService::ACTIVE_OR_USER_MODIFIED,
+                                   &existing_command, nullptr)) {
       // No keybindings to remove.
       return;
     }
@@ -620,7 +669,7 @@ void CommandService::RemoveDefunctExtensionSuggestedCommandPrefs(
 
 bool CommandService::IsCommandShortcutUserModified(
     const Extension* extension,
-    const std::string& command_name) {
+    const std::string& command_name) const {
   // Get the previous suggested key, if any.
   ui::Accelerator suggested_key;
   std::optional<bool> suggested_key_was_assigned;
@@ -684,6 +733,11 @@ void CommandService::RemoveKeybindingPrefs(const ExtensionId& extension_id,
     bindings.Remove(key);
   }
 
+  // When a keybinding is removed, we also clear the "was_assigned" bit in the
+  // extension prefs.
+  ClearSuggestedKeyWasAssignedPrefs(
+      extension_id, *ExtensionPrefs::Get(profile_), removed_commands);
+
   for (const Command& removed_command : removed_commands) {
     for (auto& observer : observers_)
       observer.OnExtensionCommandRemoved(extension_id, removed_command);
@@ -724,15 +778,20 @@ bool CommandService::GetExtensionActionCommand(const ExtensionId& extension_id,
       FindCommandByName(extension_id, requested_command->command_name());
   ui::Accelerator shortcut_assigned = saved_command.accelerator();
 
+  bool is_active = shortcut_assigned.key_code() != ui::VKEY_UNKNOWN;
   if (active)
-    *active = (shortcut_assigned.key_code() != ui::VKEY_UNKNOWN);
+    *active = is_active;
 
-  if (query_type == ACTIVE && shortcut_assigned.key_code() == ui::VKEY_UNKNOWN)
+  bool user_modified = IsCommandShortcutUserModified(
+      extension, requested_command->command_name());
+  if (!IsCommandRelevant(query_type, is_active, user_modified)) {
     return false;
+  }
 
   *command = *requested_command;
-  if (shortcut_assigned.key_code() != ui::VKEY_UNKNOWN)
+  if (is_active || user_modified) {
     command->set_accelerator(shortcut_assigned);
+  }
 
   return true;
 }
