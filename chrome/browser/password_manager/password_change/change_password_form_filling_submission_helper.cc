@@ -259,8 +259,6 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
       base::BindOnce(
           &ChangePasswordFormFillingSubmissionHelper::OnSubmitWithEnterResult,
           weak_ptr_factory_.GetWeakPtr(), driver));
-  submission_verifier_ = std::make_unique<PasswordChangeSubmissionVerifier>(
-      web_contents_, logs_uploader_);
 }
 
 void ChangePasswordFormFillingSubmissionHelper::OnSubmitWithEnterResult(
@@ -272,6 +270,8 @@ void ChangePasswordFormFillingSubmissionHelper::OnSubmitWithEnterResult(
   }
 
   if (success) {
+    submission_verifier_ = std::make_unique<PasswordChangeSubmissionVerifier>(
+        web_contents_, logs_uploader_);
     logs_uploader_->MarkStepSkipped(kSubmitFormFlowStep);
     return;
   }
@@ -346,6 +346,8 @@ void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
     return;
   }
 
+  submission_verifier_ = std::make_unique<PasswordChangeSubmissionVerifier>(
+      web_contents_, logs_uploader_);
   click_helper_ = std::make_unique<ButtonClickHelper>(
       web_contents_.get(), dom_node_id,
       base::BindOnce(
