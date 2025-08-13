@@ -455,8 +455,8 @@ void PropagateExceptionToWasmStreaming(
     v8::Local<v8::Value> exception,
     std::shared_ptr<v8::WasmStreaming>& streaming) {
   ApplyContextToException(script_state, exception,
-                          ExceptionContext(v8::ExceptionContext::kOperation,
-                                           "WebAssembly", "compile"));
+                          v8::ExceptionContext::kOperation, "WebAssembly",
+                          "compile");
   streaming->Abort(exception);
   streaming.reset();
 }

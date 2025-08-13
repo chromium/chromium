@@ -1256,8 +1256,8 @@ void PaymentRequest::OnUpdatePaymentDetails(PaymentDetailsUpdate* details) {
       *GetExecutionContext(), PassThroughException(isolate));
   if (try_catch.HasCaught()) {
     ApplyContextToException(resolver->GetScriptState(), try_catch.Exception(),
-                            ExceptionContext(v8::ExceptionContext::kConstructor,
-                                             "PaymentDetailsUpdate"));
+                            v8::ExceptionContext::kConstructor,
+                            "PaymentDetailsUpdate", "");
     resolver->Reject(try_catch.Exception());
     ClearResolversAndCloseMojoConnection();
     return;

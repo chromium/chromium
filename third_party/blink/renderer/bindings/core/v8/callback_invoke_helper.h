@@ -83,8 +83,7 @@ class CallbackInvokeHelper final {
     if (try_catch.HasCaught()) [[unlikely]] {
       ApplyContextToException(
           callback_->CallbackRelevantScriptState(), try_catch.Exception(),
-          ExceptionContext(v8::ExceptionContext::kOperation, class_like_name_,
-                           property_name_));
+          v8::ExceptionContext::kOperation, class_like_name_, property_name_);
       try_catch.ReThrow();
       return v8::Nothing<ReturnType>();
     }

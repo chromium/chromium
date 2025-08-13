@@ -878,23 +878,15 @@ bool IsInParallelAlgorithmRunnable(ExecutionContext* execution_context,
 
 void ApplyContextToException(ScriptState* script_state,
                              v8::Local<v8::Value> exception,
-                             const ExceptionContext& exception_context) {
-  ApplyContextToException(
-      script_state->GetIsolate(), script_state->GetContext(), exception,
-      exception_context.GetType(), exception_context.GetClassName(),
-      exception_context.GetPropertyName());
-}
-
-void ApplyContextToException(v8::Isolate* isolate,
-                             v8::Local<v8::Context> context,
-                             v8::Local<v8::Value> exception,
                              v8::ExceptionContext type,
                              const char* class_name,
                              const String& property_name) {
+  v8::Isolate* isolate = script_state->GetIsolate();
   if (auto* dom_exception = V8DOMException::ToWrappable(isolate, exception)) {
     dom_exception->AddContextToMessages(type, class_name, property_name);
   } else if (exception->IsObject()) {
     v8::TryCatch try_catch(isolate);
+    v8::Local<v8::Context> context = script_state->GetContext();
     v8::Local<v8::String> message_key = V8String(isolate, "message");
     auto exception_object = exception.As<v8::Object>();
     String updated_message = ExceptionMessages::AddContextToMessage(

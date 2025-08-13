@@ -334,6 +334,12 @@ void V8Initializer::ExceptionPropagationCallback(
     return;
   }
 
+  ScriptState* script_state =
+      ScriptState::MaybeFrom(isolate, isolate->GetCurrentContext());
+  if (!script_state) {
+    return;
+  }
+
   v8::Local<v8::Object> exception = v8_message.GetException();
 
   v8::ExceptionContext context_type = v8_message.GetExceptionContext();
@@ -362,15 +368,14 @@ void V8Initializer::ExceptionPropagationCallback(
            V8PerIsolateData::From(isolate)->TopOfDictionaryStack();
        dictionary_context;
        dictionary_context = dictionary_context->Previous()) {
-    ApplyContextToException(isolate, isolate->GetCurrentContext(), exception,
+    ApplyContextToException(script_state, exception,
                             v8::ExceptionContext::kAttributeGet,
                             dictionary_context->DictionaryName(),
                             dictionary_context->PropertyName());
   }
 
-  ApplyContextToException(isolate, isolate->GetCurrentContext(), exception,
-                          context_type, class_name.Utf8().data(),
-                          property_name);
+  ApplyContextToException(script_state, exception, context_type,
+                          class_name.Utf8().data(), property_name);
 }
 
 static void PromiseRejectHandlerInWorker(v8::PromiseRejectMessage data) {

@@ -94,7 +94,9 @@ void ScriptPromiseResolverBase::RejectWithDOMException(
   v8::Isolate* isolate = script_state_->GetIsolate();
   auto exception =
       V8ThrowDOMException::CreateOrDie(isolate, exception_code, message);
-  ApplyContextToException(script_state_, exception, exception_context_);
+  ApplyContextToException(
+      script_state_, exception, exception_context_.GetType(),
+      exception_context_.GetClassName(), exception_context_.GetPropertyName());
   Reject(exception);
 }
 
@@ -106,7 +108,9 @@ void ScriptPromiseResolverBase::RejectWithSecurityError(
   auto exception = V8ThrowDOMException::CreateOrDie(
       isolate, DOMExceptionCode::kSecurityError, sanitized_message,
       unsanitized_message);
-  ApplyContextToException(script_state_, exception, exception_context_);
+  ApplyContextToException(
+      script_state_, exception, exception_context_.GetType(),
+      exception_context_.GetClassName(), exception_context_.GetPropertyName());
   Reject(exception);
 }
 
