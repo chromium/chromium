@@ -115,6 +115,10 @@ merge to. Within the next ~15 minutes, automation will create a new Merge
 Request issue, link it to the original (parent) issue, copy relevant metadata,
 and assign the issue to you.
 
+If you don't have an existing Chromium Tracker issue, you can request a merge by
+filling out the bug template at
+[crbug.com/merge-request](https://crbug.com/merge-request).
+
 ### Submitting the Merge Request
 
 Follow the instruction in the new Merge Request issue. You will be asked to
