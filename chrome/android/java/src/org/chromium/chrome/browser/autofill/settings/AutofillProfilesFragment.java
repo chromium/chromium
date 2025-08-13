@@ -113,6 +113,10 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                             CustomTabActivity.showInfoPage(
                                     getActivity(), GOOGLE_ACCOUNT_WORK_ADDRESS_EDIT_URL);
                             break;
+                        case RecordType.ACCOUNT_NAME_EMAIL:
+                            CustomTabActivity.showInfoPage(
+                                    getActivity(), GOOGLE_ACCOUNT_NAME_EMAIL_ADDRESS_EDIT_URL);
+                            break;
                         case RecordType.ACCOUNT:
                         case RecordType.LOCAL_OR_SYNCABLE:
                             break;
@@ -129,6 +133,8 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             "https://myaccount.google.com/address/home?utm_source=chrome&utm_campaign=manage_addresses";
     public static final String GOOGLE_ACCOUNT_WORK_ADDRESS_EDIT_URL =
             "https://myaccount.google.com/address/work?utm_source=chrome&utm_campaign=manage_addresses";
+    public static final String GOOGLE_ACCOUNT_NAME_EMAIL_ADDRESS_EDIT_URL =
+            "https://myaccount.google.com/personal-info";
 
     private @Nullable AddressEditorCoordinator mAddressEditor;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();

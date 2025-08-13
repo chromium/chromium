@@ -53,7 +53,7 @@ public class AddressEditorCoordinator {
 
         /**
          * The user has requested to edit an address which cannot be modified in Chrome, such as a
-         * Home or Work profile address.
+         * Home, Work, or account name/email profile address.
          */
         default void onExternalEdit(AutofillProfile profile) {}
     }
