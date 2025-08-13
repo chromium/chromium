@@ -150,8 +150,8 @@ crosapi::mojom::TelemetryDiagnosticCameraSubtestResult Convert(
     cros_healthd::mojom::CameraSubtestResult input);
 
 template <class InputT,
-          class OutputT = decltype(Convert(std::declval<InputT>())),
-          class = std::enable_if_t<std::is_enum_v<InputT>, bool>>
+          class OutputT = decltype(Convert(std::declval<InputT>()))>
+  requires(std::is_enum_v<InputT>)
 std::vector<OutputT> ConvertVector(std::vector<InputT> input) {
   std::vector<OutputT> result;
   for (auto elem : input) {
