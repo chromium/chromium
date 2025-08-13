@@ -327,6 +327,11 @@ public class AutofillManagerWrapper {
         mInputUiObservers.add(new WeakReference<>(observer));
     }
 
+    public void removeInputUiObserver(InputUiObserver observer) {
+        if (observer == null || mInputUiObservers == null) return;
+        mInputUiObservers.removeIf(observerRef -> observerRef.get() == observer);
+    }
+
     @VisibleForTesting
     public void notifyInputUiChange() {
         assumeNonNull(mInputUiObservers);

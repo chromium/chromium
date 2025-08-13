@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage.SmoothTransitionDelegate;
+import org.chromium.components.autofill.AndroidAutofillFeatures;
 import org.chromium.components.autofill.AutofillManagerWrapper;
 import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.autofill.AutofillProviderUMA;
@@ -102,6 +103,7 @@ import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
 import org.chromium.content_public.common.Referrer;
+import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -1172,6 +1174,19 @@ class TabImpl implements Tab {
         return null;
     }
 
+    /**
+     * Helper method to access the activity context if there is one.
+     *
+     * @return a {@link WeakReference} to the {@link Context} belonging to the current activity. It
+     *     can be null if the context has been invalidated (e.g. by destruction) or if there is none
+     *     (e.g. because the window is detached).
+     */
+    private WeakReference<Context> getActivityContext() {
+        return getWindowAndroid() != null && windowHasActivity(getWindowAndroid())
+                ? getWindowAndroid().getContext()
+                : new ImmutableWeakReference<>(null);
+    }
+
     protected void updateWebContentObscured(boolean obscureWebContent) {
         // Update whether or not the current native tab and/or web contents are
         // currently visible (from an accessibility perspective), or whether
@@ -1387,6 +1402,11 @@ class TabImpl implements Tab {
         }
 
         mWindowAndroid = windowAndroid;
+        if (mAutofillProvider != null
+                && AndroidAutofillFeatures.ANDROID_AUTOFILL_UPDATE_CONTEXT_FOR_WEBCONTENTS
+                        .isEnabled()) {
+            mAutofillProvider.switchToContext(getActivityContext());
+        }
         WebContents webContents = getWebContents();
         if (webContents != null) {
             assert mWindowAndroid != null;

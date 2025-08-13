@@ -6,6 +6,8 @@ package org.chromium.components.autofill;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -16,6 +18,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -45,6 +48,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 
@@ -85,12 +89,20 @@ public class AutofillProviderTest {
     @Mock private AutofillProvider.Natives mNativeMock;
     @Mock private RenderCoordinatesImpl mRenderCoordinates;
     @Mock private AutofillManager mAutofillManager;
+    @Mock private AutofillManagerWrapper.InputUiObserver mMockInputUiObserver;
 
     /** AutofillManagerWrapper which keeps track of the virtual id of the field with focus. */
     private class TestAutofillManagerWrapper extends AutofillManagerWrapper {
+        private boolean mDestroyed;
 
         public TestAutofillManagerWrapper(Context context) {
             super(context);
+        }
+
+        @Override
+        public void destroy() {
+            super.destroy();
+            mDestroyed = true;
         }
 
         @Override
@@ -124,9 +136,7 @@ public class AutofillProviderTest {
         mContainerView = Mockito.mock(ViewGroup.class);
 
         AutofillProvider.setAutofillManagerWrapperFactoryForTesting(
-                (context) -> {
-                    return new TestAutofillManagerWrapper(context);
-                });
+                (context) -> new TestAutofillManagerWrapper(context));
 
         mAutofillProvider =
                 new AutofillProvider(
@@ -163,6 +173,29 @@ public class AutofillProviderTest {
         when(mRenderCoordinates.getContentOffsetYPixInt()).thenReturn(0);
 
         AutofillProviderJni.setInstanceForTesting(mNativeMock);
+    }
+
+    @Test
+    public void testContextChangeReinitializesAutofillManager() {
+        TestAutofillManagerWrapper oldManager =
+                (TestAutofillManagerWrapper) mAutofillProvider.getAutofillManagerWrapper();
+        assertFalse(oldManager.mDestroyed);
+
+        // Change context
+        Context newContext = Mockito.mock(Activity.class);
+        when(newContext.getSystemService(AutofillManager.class)).thenReturn(mAutofillManager);
+        mAutofillProvider.switchToContext(new WeakReference<>(newContext));
+
+        // The old manager is destroyed and replaced with a new one.
+        assertTrue(oldManager.mDestroyed);
+        assertNotSame(oldManager, mAutofillProvider.getAutofillManagerWrapper());
+    }
+
+    @Test
+    public void testHandlesNullContextGracefully() {
+        mAutofillProvider.switchToContext(new ImmutableWeakReference(null));
+
+        assertNotNull(mAutofillProvider.getAutofillManagerWrapper());
     }
 
     @Test

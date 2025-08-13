@@ -21,11 +21,12 @@ import org.chromium.build.annotations.NullMarked;
 public class AndroidAutofillFeatures extends Features {
     public static final String ANDROID_AUTOFILL_LAZY_FRAMEWORK_WRAPPER_NAME =
             "AndroidAutofillLazyFrameworkWrapper";
-
     public static final String ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_PASSKEY_LONG_PRESS_NAME =
             "AutofillVirtualViewStructureAndroidPasskeyLongPress";
     public static final String ANDROID_AUTOFILL_FORWARD_IFRAME_ORIGIN_NAME =
             "AndroidAutofillForwardIframeOrigin";
+    public static final String ANDROID_AUTOFILL_UPDATE_CONTEXT_FOR_WEBCONTENTS_NAME =
+            "AndroidAutofillUpdateContextForWebContents";
 
     public static final AndroidAutofillFeatures ANDROID_AUTOFILL_LAZY_FRAMEWORK_WRAPPER =
             new AndroidAutofillFeatures(0, ANDROID_AUTOFILL_LAZY_FRAMEWORK_WRAPPER_NAME);
@@ -33,9 +34,10 @@ public class AndroidAutofillFeatures extends Features {
             ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_PASSKEY_LONG_PRESS =
                     new AndroidAutofillFeatures(
                             1, ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_PASSKEY_LONG_PRESS_NAME);
-
     public static final AndroidAutofillFeatures ANDROID_AUTOFILL_FORWARD_IFRAME_ORIGIN =
             new AndroidAutofillFeatures(2, ANDROID_AUTOFILL_FORWARD_IFRAME_ORIGIN_NAME);
+    public static final AndroidAutofillFeatures ANDROID_AUTOFILL_UPDATE_CONTEXT_FOR_WEBCONTENTS =
+            new AndroidAutofillFeatures(3, ANDROID_AUTOFILL_UPDATE_CONTEXT_FOR_WEBCONTENTS_NAME);
 
     private final int mOrdinal;
 

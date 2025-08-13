@@ -87,7 +87,7 @@ public class AutofillProvider {
     private AutofillProviderUMA mAutofillUMA;
     private AutofillManagerWrapper.InputUiObserver mInputUiObserver;
     private long mAutofillTriggeredTimeMillis;
-    private final WeakReference<Context> mContextRef; // Use `getContext()` to access the Context.
+    private WeakReference<Context> mContextRef; // Use `getContext()` to access the Context.
     private AutofillPopup mDatalistPopup;
     private AutofillSuggestion[] mDatalistSuggestions;
     private WebContentsAccessibility mWebContentsAccessibility;
@@ -104,25 +104,47 @@ public class AutofillProvider {
             String providerName) {
         mWebContents = webContents;
         mProviderName = providerName;
-        mContextRef = assumeNonNull(contextRef);
         try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped("AutofillProvider.constructor")) {
-            if (sAutofillManagerFactoryForTesting != null) {
-                mAutofillManager = sAutofillManagerFactoryForTesting.create(getContext());
-                maybeInitializeUmaRecorder();
-                maybeInitializeInputObserver();
-            } else {
-                if (!AndroidAutofillFeatures.ANDROID_AUTOFILL_LAZY_FRAMEWORK_WRAPPER.isEnabled()) {
-                    initializeFrameworkWrapper();
-                }
-            }
+            switchToContext(contextRef);
             mContainerView = containerView;
         }
         initializeNativeAutofillProvider(webContents);
     }
 
+    /**
+     * This method ensures that a new context will reinitialize the autofill framework to use the
+     * changed context. WebViews should always be created with an activity context which remains
+     * constant. Therefore, this method should be called exactly once and with a valid context. On
+     * Chrome, the context may change with the attachment of the tab to the window and temporarily,
+     * there may be no context.
+     *
+     * @param context a {@link WeakReference} to an activity {@link Context} or null.
+     */
+    public void switchToContext(WeakReference<Context> context) {
+        reset();
+        mContextRef = assumeNonNull(context);
+        if (mAutofillUMA != null) mAutofillUMA.recordSession();
+        if (mAutofillManager != null) {
+            mAutofillManager.destroy();
+            mAutofillManager.removeInputUiObserver(mInputUiObserver);
+        }
+        mAutofillManager = null;
+        mAutofillUMA = null;
+        mInputUiObserver = null;
+        if (sAutofillManagerFactoryForTesting == null
+                && AndroidAutofillFeatures.ANDROID_AUTOFILL_LAZY_FRAMEWORK_WRAPPER.isEnabled()) {
+            return; // Only use lazy initialization when outside tests.
+        }
+
+        initializeFrameworkWrapper();
+    }
+
     private void initializeFrameworkWrapper() {
         if (mAutofillManager != null) return;
-        mAutofillManager = new AutofillManagerWrapper(getContext());
+        mAutofillManager =
+                sAutofillManagerFactoryForTesting != null
+                        ? sAutofillManagerFactoryForTesting.create(getContext())
+                        : new AutofillManagerWrapper(getContext());
         maybeInitializeUmaRecorder();
         maybeInitializeInputObserver();
     }
@@ -137,7 +159,7 @@ public class AutofillProvider {
     }
 
     private void maybeInitializeInputObserver() {
-        if (mInputUiObserver != null) return;
+        if (mInputUiObserver != null || mAutofillManager == null) return;
         mInputUiObserver =
                 () -> {
                     // Not need to report suggestion window displayed if there is no live
@@ -153,7 +175,9 @@ public class AutofillProvider {
     public void destroy() {
         if (mAutofillUMA != null) mAutofillUMA.recordSession();
         detachFromJavaAutofillProvider();
-        getAutofillManagerWrapper().destroy();
+        if (mAutofillManager != null) {
+            mAutofillManager.destroy();
+        }
     }
 
     /**
@@ -626,7 +650,8 @@ public class AutofillProvider {
      *
      * @return The wrapper object. It may be null if the context is not available (yet or anymore).
      */
-    private AutofillManagerWrapper getAutofillManagerWrapper() {
+    @VisibleForTesting
+    AutofillManagerWrapper getAutofillManagerWrapper() {
         if (mAutofillManager == null) {
             initializeFrameworkWrapper();
         }
