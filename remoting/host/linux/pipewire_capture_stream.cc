@@ -17,7 +17,6 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "remoting/host/base/screen_resolution.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
@@ -80,7 +79,7 @@ PipewireCaptureStream::~PipewireCaptureStream() {
 
 void PipewireCaptureStream::SetPipeWireStream(
     std::uint32_t pipewire_node,
-    ScreenResolution initial_resolution,
+    const webrtc::DesktopSize& initial_resolution,
     std::string mapping_id,
     int pipewire_fd) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -92,9 +91,9 @@ void PipewireCaptureStream::SetPipeWireStream(
 
 void PipewireCaptureStream::StartVideoCapture() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  stream_->StartScreenCastStream(
-      pipewire_node_, pipewire_fd_, resolution_.dimensions().width(),
-      resolution_.dimensions().height(), false, &callback_proxy_);
+  stream_->StartScreenCastStream(pipewire_node_, pipewire_fd_,
+                                 resolution_.width(), resolution_.height(),
+                                 false, &callback_proxy_);
 }
 
 void PipewireCaptureStream::SetCallback(
@@ -105,11 +104,12 @@ void PipewireCaptureStream::SetCallback(
                              stream_->CaptureFrame());
 }
 
-void PipewireCaptureStream::SetResolution(ScreenResolution new_resolution) {
+void PipewireCaptureStream::SetResolution(
+    const webrtc::DesktopSize& new_resolution) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   resolution_ = new_resolution;
-  stream_->UpdateScreenCastStreamResolution(resolution_.dimensions().width(),
-                                            resolution_.dimensions().height());
+  stream_->UpdateScreenCastStreamResolution(resolution_.width(),
+                                            resolution_.height());
 }
 
 void PipewireCaptureStream::SetMaxFrameRate(std::uint32_t frame_rate) {

@@ -129,7 +129,8 @@ GnomeInteractionStrategy::CreateDesktopResizer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return std::make_unique<GnomeDesktopResizer>(
-      capture_stream_manager_.GetWeakPtr());
+      capture_stream_manager_.GetWeakPtr(),
+      display_config_client_.GetWeakPtr());
 }
 
 std::unique_ptr<DesktopCapturer> GnomeInteractionStrategy::CreateVideoCapturer(

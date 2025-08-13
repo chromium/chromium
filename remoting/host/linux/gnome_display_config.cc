@@ -197,4 +197,11 @@ ScopedGVariant GnomeDisplayConfig::BuildMonitorsConfigParameters() const {
                                     /*properties=*/nullptr));
 }
 
+std::map<std::string, GnomeDisplayConfig::MonitorInfo>::iterator
+GnomeDisplayConfig::FindMonitor(webrtc::ScreenId screen_id) {
+  return std::ranges::find_if(monitors, [screen_id](const auto& kv) {
+    return GnomeDisplayConfig::GetScreenId(kv.first) == screen_id;
+  });
+}
+
 }  // namespace remoting

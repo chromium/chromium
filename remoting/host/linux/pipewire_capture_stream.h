@@ -15,7 +15,6 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
-#include "remoting/host/base/screen_resolution.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -49,7 +48,7 @@ class PipewireCaptureStream {
   // If specified, |pipewire_fd| is used to communicate with the target PipeWire
   // instance. Otherwise, connects to the default PipeWire instance.
   void SetPipeWireStream(std::uint32_t pipewire_node,
-                         ScreenResolution initial_resolution,
+                         const webrtc::DesktopSize& initial_resolution,
                          std::string mapping_id,
                          int pipewire_fd = webrtc::kInvalidPipeWireFd);
 
@@ -67,7 +66,7 @@ class PipewireCaptureStream {
 
   // Negotiates a new video resolution with PipeWire. If capturing from a
   // virtual monitor, it will be resized to match.
-  void SetResolution(ScreenResolution new_resolution);
+  void SetResolution(const webrtc::DesktopSize& new_resolution);
 
   // Sets the maximum rate at which new frames should be delivered.
   void SetMaxFrameRate(std::uint32_t frame_rate);
@@ -88,7 +87,7 @@ class PipewireCaptureStream {
   // Retrieves the mapping ID previously stored by set_mapping_id().
   std::string_view mapping_id();
 
-  const ScreenResolution& resolution() const {
+  const webrtc::DesktopSize& resolution() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return resolution_;
   }
@@ -138,7 +137,7 @@ class PipewireCaptureStream {
   int pipewire_fd_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::uint32_t pipewire_node_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  ScreenResolution resolution_ GUARDED_BY_CONTEXT(sequence_checker_);
+  webrtc::DesktopSize resolution_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::string mapping_id_ GUARDED_BY_CONTEXT(sequence_checker_);
   webrtc::ScreenId screen_id_ GUARDED_BY_CONTEXT(sequence_checker_);
   webrtc::scoped_refptr<webrtc::SharedScreenCastStream> stream_

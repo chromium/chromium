@@ -79,6 +79,9 @@ struct GnomeDisplayConfig {
   // to pass to D-Bus ApplyMonitorsConfig().
   ScopedGVariant BuildMonitorsConfigParameters() const;
 
+  std::map<std::string, MonitorInfo>::iterator FindMonitor(
+      webrtc::ScreenId screen_id);
+
   // The serial number returned by GNOME. When applying a new monitor config,
   // GNOME will check that the serial number matches, to avoid race-conditions
   // from trying to modify a stale config.

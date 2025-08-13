@@ -17,6 +17,7 @@
 #include "remoting/host/linux/dbus_interfaces/org_gnome_Mutter_ScreenCast.h"
 #include "remoting/host/linux/gnome_display_config_dbus_client.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
 namespace remoting {
 
@@ -263,7 +264,8 @@ void PipewireCaptureStreamManager::OnPipeWireStreamAdded(
   pending_stream_added_signal_.reset();
 
   pending_stream_->SetPipeWireStream(
-      get<0>(args), pending_add_stream_requests_.front().initial_resolution,
+      get<0>(args),
+      pending_add_stream_requests_.front().initial_resolution.dimensions(),
       mapping_id, webrtc::kInvalidPipeWireFd);
   // Start capturing now, which creates the virtual monitor and allows the
   // video capturer to be created.
