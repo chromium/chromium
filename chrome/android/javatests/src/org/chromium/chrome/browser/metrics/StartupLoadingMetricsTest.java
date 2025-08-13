@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.BinderCallsListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -29,7 +30,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.LauncherShortcutActivity;
 import org.chromium.chrome.browser.base.ColdStartTracker;
@@ -406,15 +407,28 @@ public class StartupLoadingMetricsTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.TRACE_BINDER_IPC)
-    @DisabledTest(message = "crbug.com/434923221")
+    @DisableFeatures(ChromeFeatureList.TRACE_BINDER_IPC)
     public void testNtpBinderMetricRecordedCorrectly() throws Exception {
+        // Install BinderCallsListener manually as the feature check is too early for
+        // @EnableFeatures to pick up.
+        BinderCallsListener.setInstanceForTesting(null);
+        boolean success =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            BinderCallsListener listener = BinderCallsListener.getInstance();
+                            return listener.installListener();
+                        });
+        Assert.assertTrue(success);
+
         HistogramWatcher ntpBinderWatcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecordTimes(NTP_COLD_START_BINDER_HISTOGRAM, 1)
                         .build();
         runAndWaitForPageLoadMetricsRecorded(() -> mTabbedActivityTestRule.startOnNtp());
         waitForHistogram(ntpBinderWatcher);
+
+        // Clean up listener.
+        BinderCallsListener.setInstanceForTesting(null);
     }
 
     /**
