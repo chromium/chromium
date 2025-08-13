@@ -332,17 +332,9 @@ static_library("test_support") {
       "../browser/bookmarks/bookmark_test_helpers.h",
       "../browser/bookmarks/bookmark_test_utils.cc",
       "../browser/bookmarks/bookmark_test_utils.h",
-      "../browser/ui/passwords/manage_passwords_test.cc",
-      "../browser/ui/passwords/manage_passwords_test.h",
     ]
 
-    deps += [
-      "//components/bookmarks/managed",
-
-      # TODO(crbug.com/437811373): Remove this dependency when passwords test_support
-      # code above gets componentized.
-      "//chrome/browser/ui/passwords",
-    ]
+    deps += [ "//components/bookmarks/managed" ]
   }
 
   if (enable_extensions_core) {
@@ -2437,6 +2429,7 @@ if (!is_android) {
       "//chrome/browser/ui/omnibox:browser_tests",
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/page_info",
+      "//chrome/browser/ui/passwords:browser_tests",
       "//chrome/browser/ui/performance_controls:browser_tests",
       "//chrome/browser/ui/permission_bubble:browser_tests",
       "//chrome/browser/ui/privacy_sandbox",
@@ -2882,9 +2875,13 @@ if (!is_android) {
     # c/b/ui/views/performance_controls/*browsertest.cc get componentized.
     deps += [ "//chrome/browser/ui/performance_controls/test_support" ]
 
-    # TODO(413315837): Remove this dependency when
+    # TODO(crbug.com/413315837): Remove this dependency when
     # c/b/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_browsertest.cc gets modularized.
     deps += [ "//chrome/browser/privacy_sandbox/notice:factory" ]
+
+    # TODO(crbug.com/437811373): Remove this dependency when
+    # c/b/ui/passwords/password_change_ui_controller.h gets built from `//c/b/ui/passwords:passwords`.
+    deps += [ "//chrome/browser/ui/passwords:impl" ]
 
     allow_circular_includes_from = [
       # `alternate_nav_infobar_delegate_browsertest.cc` includes test_infobar.h, which is
@@ -3553,9 +3550,6 @@ if (!is_android) {
       "../browser/ui/browser_tabrestore_browsertest.cc",
       "../browser/ui/managed_ui_browsertest.cc",
       "../browser/ui/native_window_tracker_browsertest.cc",
-      "../browser/ui/passwords/password_change_ui_controller_browsertest.cc",
-      "../browser/ui/passwords/password_generation_popup_view_browsertest.cc",
-      "../browser/ui/passwords/well_known_change_password_navigation_throttle_browsertest.cc",
       "../browser/ui/promos/ios_promos_utils_browsertest.cc",
       "../browser/ui/renderer_event_injection_browsertest.cc",
       "../browser/ui/tab_modal_confirm_dialog_browsertest.cc",
@@ -5171,6 +5165,7 @@ if (!is_android) {
         "//chrome/browser/ui/media_router",
         "//chrome/browser/ui/media_router:browser_tests",
         "//chrome/browser/ui/page_action:icon_type",
+        "//chrome/browser/ui/passwords:test_support",
         "//chrome/browser/ui/tabs:test_support",
         "//chrome/browser/ui/toasts:browser_tests",
         "//chrome/browser/ui/translate",
@@ -6599,9 +6594,6 @@ test("unit_tests") {
     "../browser/translate/translate_service_unittest.cc",
     "../browser/trusted_vault/trusted_vault_encryption_keys_tab_helper_unittest.cc",
     "../browser/ui/chrome_select_file_policy_unittest.cc",
-    "../browser/ui/passwords/display_account_info_unittest.cc",
-    "../browser/ui/passwords/manage_passwords_state_unittest.cc",
-    "../browser/ui/passwords/settings/password_manager_porter_unittest.cc",
     "../browser/ui/webui/chrome_urls/chrome_urls_handler_unittest.cc",
     "../browser/ui/webui/fileicon_source_unittest.cc",
     "../browser/ui/webui/log_web_ui_url_unittest.cc",
@@ -6660,7 +6652,6 @@ test("unit_tests") {
       "../browser/segmentation_platform/client_util/local_tab_handler_unittest.cc",
       "../browser/site_protection/site_protection_metrics_observer_unittest.cc",
       "../browser/ssl/generated_https_first_mode_pref_unittest.cc",
-      "../browser/ui/passwords/password_cross_domain_confirmation_popup_controller_impl_unittest.cc",
       "../browser/ui/webui/profile_internals/profile_internals_handler_unittest.cc",
       "../browser/webapps/installable/installable_utils_unittest.cc",
     ]
@@ -6936,6 +6927,8 @@ test("unit_tests") {
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/login:unit_tests",
     "//chrome/browser/ui/page_info:unit_tests",
+    "//chrome/browser/ui/passwords:unit_tests",
+    "//chrome/browser/ui/passwords/settings:unit_tests",
     "//chrome/browser/ui/plus_addresses:unit_tests",
     "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/profiles:unit_tests",
@@ -8108,12 +8101,6 @@ test("unit_tests") {
       "../browser/ui/color/material_new_tab_page_color_mixer_unittest.cc",
       "../browser/ui/color/new_tab_page_color_mixer_unittest.cc",
       "../browser/ui/intent_picker_tab_helper_unittest.cc",
-      "../browser/ui/passwords/credential_leak_dialog_controller_impl_unittest.cc",
-      "../browser/ui/passwords/credential_manager_dialog_controller_impl_unittest.cc",
-      "../browser/ui/passwords/manage_passwords_ui_controller_unittest.cc",
-      "../browser/ui/passwords/password_generation_popup_controller_impl_unittest.cc",
-      "../browser/ui/passwords/password_manager_navigation_throttle_unittest.cc",
-      "../browser/ui/passwords/well_known_change_password_navigation_throttle_unittest.cc",
       "../browser/ui/recently_audible_helper_unittest.cc",
       "../browser/ui/url_identity_unittest.cc",
       "../browser/ui/views/accessibility/theme_tracking_non_accessible_image_view_unittest.cc",
@@ -8328,6 +8315,10 @@ test("unit_tests") {
       "//components/tab_groups",
       "//components/webapps/isolated_web_apps",
     ]
+
+    # TODO(crbug.com/437811373): Remove this dependency when
+    # c/b/ui/passwords/password_change_ui_controller.h gets built from `//c/b/ui/passwords:passwords`.
+    deps += [ "//chrome/browser/ui/passwords:impl" ]
 
     # TODO(416215722): Remove when # send_tab_to_self_client_service_unittest.cc
     # gets modularized.
@@ -9553,6 +9544,7 @@ test("unit_tests") {
       "//chrome/browser/extensions/api/cookies:helpers",
       "//chrome/browser/supervised_user",
       "//chrome/browser/ui/global_error:test_support",
+      "//chrome/browser/ui/passwords/settings",
       "//chrome/browser/ui/web_applications:unit_tests",
       "//chrome/browser/web_applications:unit_tests",
       "//chrome/browser/web_applications:web_app_test",
@@ -11728,6 +11720,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/hats:test_support",
         "//chrome/browser/ui/lens",
         "//chrome/browser/ui/media_router",
+        "//chrome/browser/ui/passwords:test_support",
         "//chrome/browser/ui/performance_controls/test_support",
         "//chrome/browser/ui/tabs",
         "//chrome/browser/ui/tabs:tab_group",

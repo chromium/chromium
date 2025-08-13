@@ -64,18 +64,6 @@ static_library("ui") {
     "idle_bubble.h",
     "managed_ui.cc",
     "managed_ui.h",
-    "passwords/account_avatar_fetcher.cc",
-    "passwords/account_avatar_fetcher.h",
-    "passwords/manage_passwords_state.cc",
-    "passwords/manage_passwords_state.h",
-    "passwords/password_manager_navigation_throttle.cc",
-    "passwords/password_manager_navigation_throttle.h",
-    "passwords/settings/password_manager_porter.cc",
-    "passwords/settings/password_manager_porter.h",
-    "passwords/settings/password_manager_porter_interface.h",
-    "passwords/ui_utils.cc",
-    "passwords/well_known_change_password_navigation_throttle.cc",
-    "passwords/well_known_change_password_navigation_throttle.h",
     "recently_audible_helper.cc",
     "recently_audible_helper.h",
     "screen_capture_notification_ui.h",
@@ -366,7 +354,10 @@ static_library("ui") {
     "//chrome/browser/ui/page_action:icon_type",
     "//chrome/browser/ui/page_info",
     "//chrome/browser/ui/page_info:impl",
-    "//chrome/browser/ui/passwords/",
+    "//chrome/browser/ui/passwords",
+    "//chrome/browser/ui/passwords:impl",
+    "//chrome/browser/ui/passwords/settings",
+    "//chrome/browser/ui/passwords/settings:impl",
     "//chrome/browser/ui/prefs",
     "//chrome/browser/ui/prefs:impl",
     "//chrome/browser/ui/profiles",
@@ -749,6 +740,17 @@ static_library("ui") {
     # TODO(crbug.com/364667551): includes //c/b/about_flags.h and other sources
     # from //chrome/browser/ui/webui, which are not modularized yet.
     "//chrome/browser/ui/webui/about:impl",
+
+    # TODO(crbug.com/437811373): Remove this circular dependency when the following
+    # headers get componentized:
+    # - c/b/ui/chrome_pages.h and browser.h
+    # - c/b/ui/webui/password_manager/password_manager_ui.h
+    "//chrome/browser/ui/passwords:impl",
+
+    # TODO(crbug.com/437811373): Remove this circular dependency when the following
+    # header gets componentized:
+    # - c/b/ui/chrome_select_file_policy.h
+    "//chrome/browser/ui/passwords/settings:impl",
   ]
 
   if (enable_vr && is_win) {
@@ -1024,27 +1026,6 @@ static_library("ui") {
       "focus_tab_after_navigation_helper.h",
       "intent_picker_tab_helper.cc",
       "intent_picker_tab_helper.h",
-      "passwords/credential_leak_dialog_controller.h",
-      "passwords/credential_leak_dialog_controller_impl.cc",
-      "passwords/credential_leak_dialog_controller_impl.h",
-      "passwords/credential_manager_dialog_controller.h",
-      "passwords/credential_manager_dialog_controller_impl.cc",
-      "passwords/credential_manager_dialog_controller_impl.h",
-      "passwords/manage_passwords_icon_view.h",
-      "passwords/manage_passwords_ui_controller.cc",
-      "passwords/manage_passwords_ui_controller.h",
-      "passwords/password_base_dialog_controller.h",
-      "passwords/password_change_ui_controller.cc",
-      "passwords/password_change_ui_controller.h",
-      "passwords/password_dialog_prompts.h",
-      "passwords/password_generation_popup_controller.h",
-      "passwords/password_generation_popup_controller_impl.cc",
-      "passwords/password_generation_popup_controller_impl.h",
-      "passwords/password_generation_popup_observer.h",
-      "passwords/password_generation_popup_view.h",
-      "passwords/passwords_client_ui_delegate.cc",
-      "passwords/passwords_client_ui_delegate.h",
-      "passwords/passwords_model_delegate.cc",
       "sad_tab.cc",
       "sad_tab.h",
       "sad_tab_helper.cc",
@@ -2766,9 +2747,6 @@ static_library("ui") {
       "frame/window_frame_util.cc",
       "frame/window_frame_util.h",
       "incognito_clear_browsing_data_dialog_interface.h",
-      "passwords/password_cross_domain_confirmation_popup_controller_impl.cc",
-      "passwords/password_cross_domain_confirmation_popup_controller_impl.h",
-      "passwords/password_cross_domain_confirmation_popup_controller_interface.h",
       "views/autofill/payments/webauthn_dialog_view.cc",
       "views/autofill/payments/webauthn_dialog_view.h",
       "views/close_bubble_on_tab_activation_helper.cc",
@@ -2976,8 +2954,6 @@ static_library("ui") {
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {
-    sources += [ "passwords/password_cross_domain_confirmation_popup_view.h" ]
-
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust:features",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
@@ -4720,7 +4696,6 @@ static_library("ui") {
       # TODO(crbug.com/432061436) Remove this dependency when the following headers get
       # componentized:
       # c/b/ui/browser.h, browser_finder.h, browser_window.h.
-      # c/b/ui/passwords/passwords_model_delegate.h, passwords_client_ui_delegate.h.
       "//chrome/browser/ui/webauthn:impl",
     ]
 
@@ -4762,7 +4737,6 @@ static_library("ui") {
       # TODO(crbug.com/432061436) Remove this circular dependency when the following
       # headers get componentized:
       # c/b/ui/browser.h, browser_finder.h, browser_window.h.
-      # c/b/ui/passwords/passwords_model_delegate.h, passwords_client_ui_delegate.h.
       "//chrome/browser/ui/webauthn:impl",
     ]
 

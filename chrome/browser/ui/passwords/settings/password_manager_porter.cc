@@ -25,9 +25,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
-#if BUILDFLAG(IS_WIN)
-#endif
-
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)

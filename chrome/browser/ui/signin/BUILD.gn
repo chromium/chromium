@@ -141,6 +141,7 @@ if (!is_android) {
         "//chrome/browser/ui/browser_window",
         "//chrome/browser/ui/hats",
         "//chrome/browser/ui/hats:test_support",
+        "//chrome/browser/ui/passwords:test_support",
         "//chrome/browser/ui/webui/signin:test_support_ui",
         "//chrome/test:test_support",
         "//chrome/test:test_support_ui",

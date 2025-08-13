@@ -65,6 +65,7 @@ source_set("impl") {
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/signin",
       "//chrome/common:channel_info",

@@ -878,6 +878,7 @@ source_set("extensions") {
       "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/global_error",
+      "//chrome/browser/ui/passwords/settings",
       "//chrome/browser/ui/tab_contents",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",

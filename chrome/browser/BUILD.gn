@@ -1872,6 +1872,11 @@ static_library("browser") {
     # TODO(crbug.com/432421124): Remove this circular dependency when history_service_factory.h,
     # task_tab_helper.h and supervised_user_navigation_observer.h get componentized.
     "//chrome/browser/ui/sync:impl",
+
+    # TODO(crbug.com/437811373): Remove this circular dependency when the following
+    # headers get componentized:
+    # - c/b/password_manager/chrome_password_manager_client.h
+    "//chrome/browser/ui/passwords:impl",
   ]
 
   public_deps = [
@@ -2073,6 +2078,7 @@ static_library("browser") {
     "//chrome/browser/ui/page_info",
     "//chrome/browser/ui/page_info:impl",
     "//chrome/browser/ui/passwords",
+    "//chrome/browser/ui/passwords:impl",
     "//chrome/browser/ui/prefs",
     "//chrome/browser/ui/prefs:impl",
     "//chrome/browser/ui/profiles",
