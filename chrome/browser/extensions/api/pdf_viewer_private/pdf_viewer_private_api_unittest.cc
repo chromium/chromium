@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/pdf/pdf_test_util.h"
@@ -22,6 +23,7 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "pdf/buildflags.h"
+#include "pdf/pdf_features.h"
 
 namespace extensions {
 
@@ -46,7 +48,9 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
     ChromeRenderViewHostTestHarness::SetUp();
+
     pdf::PdfViewerStreamManager::Create(web_contents());
 
     // For testing purposes, `main_rfh()` represents the extension's
@@ -95,6 +99,7 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<content::RenderFrameHost> extension_host_ = nullptr;
 };
 
@@ -318,7 +323,6 @@ TEST_F(PdfViewerPrivateApiUnitTest,
 // Succeed in sending a request to save a PDF to Drive.
 TEST_F(PdfViewerPrivateApiUnitTest, SaveToDrive) {
   CreateAndClaimStreamContainer();
-
   auto function = base::MakeRefCounted<PdfViewerPrivateSaveToDriveFunction>();
   function->SetRenderFrameHost(extension_host());
 
@@ -368,6 +372,18 @@ TEST_F(PdfViewerPrivateApiUnitTest, SaveToDriveCanceledAndStartNew) {
     EXPECT_TRUE(api_test_utils::RunFunction(function.get(), R"(["ORIGINAL"])",
                                             profile()));
   }
+}
+
+// The request to save a PDF to Drive should fail if the event dispatcher
+// fails to be created.
+TEST_F(PdfViewerPrivateApiUnitTest, SaveToDriveFailedIfEventDispatcherNull) {
+  // Don't create stream container so that event dispatcher fails to be created.
+  auto function = base::MakeRefCounted<PdfViewerPrivateSaveToDriveFunction>();
+  function->SetRenderFrameHost(extension_host());
+
+  EXPECT_EQ("Failed to create event dispatcher",
+            api_test_utils::RunFunctionAndReturnError(
+                function.get(), R"(["ORIGINAL"])", profile()));
 }
 
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
