@@ -109,6 +109,7 @@ source_set("signin") {
 
   if (!is_chromeos) {
     sources += [
+      "history_sync_optin_helper.h",
       "signin_email_confirmation_dialog.h",
       "signin_email_confirmation_ui.h",
       "signin_error_handler.h",
@@ -180,6 +181,7 @@ source_set("signin_impl") {
 
   if (!is_chromeos) {
     sources += [
+      "history_sync_optin_helper.cc",
       "signin_email_confirmation_dialog.cc",
       "signin_email_confirmation_ui.cc",
       "signin_error_handler.cc",
@@ -521,6 +523,7 @@ if (!is_chromeos) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     sources = [
+      "history_sync_optin_helper_browsertest.cc",
       "signin_error_handler_browsertest.cc",
       "turn_sync_on_helper_browsertest.cc",
     ]
