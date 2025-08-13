@@ -31,7 +31,7 @@ class PageSwitcherView : public views::View {
   void ChildPreferredSizeChanged(views::View* child) override;
 
  private:
-  raw_ptr<views::View, DanglingUntriaged> current_page_ = nullptr;
+  raw_ptr<views::View> current_page_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, PageSwitcherView, views::View)
