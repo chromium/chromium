@@ -76,3 +76,24 @@ async def test_local_server_redirect(websocket, context_id, local_server_http):
 async def test_local_server_html(websocket, context_id, html):
     content = "SOME CONTENT"
     assert await get_content(websocket, context_id, html(content)) == content
+
+
+@pytest.mark.asyncio
+async def test_local_server_bad_ssl(websocket, context_id,
+                                    local_server_bad_ssl):
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "unknown error",
+                           "message": "net::ERR_CERT_AUTHORITY_INVALID"
+                       })):
+        assert await get_content(
+            websocket, context_id,
+            local_server_bad_ssl.url_200()) == local_server_bad_ssl.content_200
+
+
+@pytest.mark.asyncio
+async def test_local_server_good_ssl(websocket, context_id,
+                                     local_server_good_ssl):
+    assert await get_content(
+        websocket, context_id,
+        local_server_good_ssl.url_200()) == local_server_good_ssl.content_200

@@ -276,14 +276,14 @@ class LocalHttpServer:
             # Catch any other unexpected errors during check
             return False
 
-    def _wait_for_server_startup(self, max_wait_s: int = 5) -> None:
+    def _wait_for_server_startup(self, max_wait_s: int = 60) -> None:
         """Waits for the Flask server to start by polling a readiness check."""
         start_time_monotonic = time.monotonic()
         while time.monotonic() - start_time_monotonic < max_wait_s:
             if self._check_server_readiness():
                 return
             # Short sleep before retrying
-            time.sleep(0.05)
+            time.sleep(0.1)
         raise RuntimeError(
             f"Flask server failed to start on {self.__protocol}://{self.__host}:{self.__port} within {max_wait_s}s."
         )
