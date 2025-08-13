@@ -46,10 +46,6 @@ class MultiContentsView : public views::View,
   METADATA_HEADER(MultiContentsView, views::View)
 
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMultiContentsViewElementId);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kStartContainerViewScrimElementId);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kEndContainerViewScrimElementId);
-
   struct ViewWidths {
     double start_width = 0;
     double resize_width = 0;

@@ -52,6 +52,7 @@ constexpr int kNewTabFooterHeight = 56;
 
 ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
+  SetProperty(views::kElementIdentifierKey, kContentsContainerViewElementId);
 
   // The default z-order is the order in which children were added to the
   // parent view. So first added devtools and the devtools scrim view (as it
@@ -92,6 +93,8 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
     inactive_split_scrim_view_ =
         AddChildView(std::make_unique<ScrimView>(kColorSplitViewScrim));
+    inactive_split_scrim_view_->SetProperty(views::kElementIdentifierKey,
+                                            kInactiveSplitScrimViewElementId);
     inactive_split_scrim_view_->SetRoundedCorners(kContentRoundedCorners);
   }
 

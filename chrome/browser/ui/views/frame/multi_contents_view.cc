@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
@@ -31,13 +32,6 @@
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/view_class_properties.h"
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
-                                      kMultiContentsViewElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
-                                      kStartContainerViewScrimElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
-                                      kEndContainerViewScrimElementId);
-
 MultiContentsView::MultiContentsView(
     BrowserView* browser_view,
     std::unique_ptr<MultiContentsViewDelegate> delegate)
@@ -54,8 +48,6 @@ MultiContentsView::MultiContentsView(
   contents_container_views_[0]
       ->GetContentsView()
       ->set_is_primary_web_contents_for_window(true);
-  contents_container_views_[0]->GetInactiveSplitScrimView()->SetProperty(
-      views::kElementIdentifierKey, kStartContainerViewScrimElementId);
 
   resize_area_ = AddChildView(std::make_unique<MultiContentsResizeArea>(this));
   resize_area_->SetVisible(false);
@@ -63,8 +55,6 @@ MultiContentsView::MultiContentsView(
   contents_container_views_.push_back(
       AddChildView(std::make_unique<ContentsContainerView>(browser_view_)));
   contents_container_views_[1]->SetVisible(false);
-  contents_container_views_[1]->GetInactiveSplitScrimView()->SetProperty(
-      views::kElementIdentifierKey, kEndContainerViewScrimElementId);
 
   for (auto* contents_container_view : contents_container_views_) {
     web_contents_focused_subscriptions_.push_back(

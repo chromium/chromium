@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
+#include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/test/split_tabs_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/common/webui_url_constants.h"
@@ -112,7 +113,7 @@ class MultiContentsViewUiTest
       base::RepeatingCallback<bool(double, double)> check,
       ui::test::StateIdentifier<MultiContentsViewLayoutObserver> observer_id) {
     auto result = Steps(
-        PollView(observer_id, MultiContentsView::kMultiContentsViewElementId,
+        PollView(observer_id, kMultiContentsViewElementId,
                  [check](const MultiContentsView* multi_contents_view) -> bool {
                    double start_width =
                        multi_contents_view->start_contents_view_for_testing()
@@ -193,29 +194,16 @@ class MultiContentsViewUiTest
 
   auto CheckActiveContentsHasFocus() {
     return CheckView(
-        MultiContentsView::kMultiContentsViewElementId,
+        kMultiContentsViewElementId,
         [](MultiContentsView* multi_contents_view) -> bool {
           return multi_contents_view->GetActiveContentsView()->HasFocus();
         });
-  }
-
-  auto SimulateTriggeringPermissionPrompt(bool show_prompt) {
-    return Do([this, show_prompt]() {
-      split_tabs::SplitTabScrimController* const split_tab_scrim_controller =
-          browser()->browser_window_features()->split_tab_scrim_controller();
-      if (show_prompt) {
-        split_tab_scrim_controller->OnPermissionPromptShown();
-      } else {
-        split_tab_scrim_controller->OnPermissionPromptHidden();
-      }
-    });
   }
 };
 
 // Check that MultiContentsView exists when the side by side flag is enabled
 IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ExistsWithFlag) {
-  RunTestSequence(
-      EnsurePresent(MultiContentsView::kMultiContentsViewElementId));
+  RunTestSequence(EnsurePresent(kMultiContentsViewElementId));
 }
 
 // Create a new split and exit the split view and ensure only 1 contents view is
@@ -566,8 +554,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
       }),
       // Verify the web contents in the split have swapped and the active index
       // is correct.
-      PollView(kMultiContentsViewSwapObserver,
-               MultiContentsView::kMultiContentsViewElementId,
+      PollView(kMultiContentsViewSwapObserver, kMultiContentsViewElementId,
                [&](const MultiContentsView* multi_contents_view) -> bool {
                  bool first_web_contents_set =
                      multi_contents_view->start_contents_view_for_testing()
@@ -622,8 +609,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
       }),
       // Verify the web contents in the split have swapped and the active index
       // is correct.
-      PollView(kMultiContentsViewSwapObserver,
-               MultiContentsView::kMultiContentsViewElementId,
+      PollView(kMultiContentsViewSwapObserver, kMultiContentsViewElementId,
                [&](const MultiContentsView* multi_contents_view) -> bool {
                  bool first_web_contents_set =
                      multi_contents_view->start_contents_view_for_testing()
@@ -719,106 +705,144 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
           u""));
 }
 
-IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
+class MultiContentsViewInactiveScrimUiTest : public MultiContentsViewUiTest {
+ public:
+  MultiContentsViewInactiveScrimUiTest() = default;
+
+  auto SimulateTriggeringPermissionPrompt(bool show_prompt) {
+    return Do([this, show_prompt]() {
+      split_tabs::SplitTabScrimController* const split_tab_scrim_controller =
+          browser()->browser_window_features()->split_tab_scrim_controller();
+      if (show_prompt) {
+        split_tab_scrim_controller->OnPermissionPromptShown();
+      } else {
+        split_tab_scrim_controller->OnPermissionPromptHidden();
+      }
+    });
+  }
+
+  auto CheckScrimVisibility(size_t content_container_index,
+                            bool is_inactive_scrim_visible) {
+    return CheckView(kMultiContentsViewElementId,
+                     [content_container_index, is_inactive_scrim_visible](
+                         MultiContentsView* multi_contents_view) -> bool {
+                       auto contents_container_views =
+                           multi_contents_view->contents_container_views();
+                       EXPECT_LT(content_container_index,
+                                 contents_container_views.size());
+                       return contents_container_views[content_container_index]
+                                  ->GetInactiveSplitScrimView()
+                                  ->GetVisible() == is_inactive_scrim_visible;
+                     });
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewInactiveScrimUiTest,
                        ShowScrimOnOmniboxDropDownOpen) {
   RunTestSequence(
+      // Create a split view
       InstrumentTab(kNewTab), AddInstrumentedTab(kSecondTab, GetTestUrl()),
       SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
-      FocusElement(kNewTab),
-      WaitForHide(MultiContentsView::kEndContainerViewScrimElementId),
-      EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId),
+      FocusElement(kNewTab), CheckScrimVisibility(0, false),
+      CheckScrimVisibility(1, false),
+      // Focus omnibox and verify the inactive scrim is shown for end tab
       FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"query"),
-      WaitForShow(MultiContentsView::kEndContainerViewScrimElementId),
-      EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId),
-      // Move focus to the inactive tab and trigger scrim on the start tab
+      WaitForShow(kInactiveSplitScrimViewElementId, true),
+      CheckScrimVisibility(0, false), CheckScrimVisibility(1, true),
+      // Move focus to the end tab and verify inactive scrim is hidden
       FocusInactiveTabInSplit(),
-      WaitForHide(MultiContentsView::kEndContainerViewScrimElementId),
+      WaitForHide(kInactiveSplitScrimViewElementId, true),
+      CheckScrimVisibility(1, false),
+      // Focus omnibox and confirm that inactive scrim is shown for start tab
       FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"query"),
-      WaitForShow(MultiContentsView::kStartContainerViewScrimElementId),
-      EnsureNotPresent(MultiContentsView::kEndContainerViewScrimElementId));
+      WaitForShow(kInactiveSplitScrimViewElementId, true),
+      CheckScrimVisibility(0, true), CheckScrimVisibility(1, false));
 }
 
-IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
+IN_PROC_BROWSER_TEST_F(MultiContentsViewInactiveScrimUiTest,
                        ScrimUpdatesForMultipleSplitTabs) {
   RunTestSequence(
-      EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId),
-      EnsureNotPresent(MultiContentsView::kEndContainerViewScrimElementId),
-      // Create a split tab and verify that the scrim shows
+      CheckScrimVisibility(0, false), CheckScrimVisibility(1, false),
+      // Create a split tab and verify inactive scrim is shown for end tab
       AddInstrumentedTab(kSecondTab, GetTestUrl()),
       SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
       FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"query"),
-      WaitForShow(MultiContentsView::kEndContainerViewScrimElementId),
-      // Create a second split tab
+      WaitForShow(kInactiveSplitScrimViewElementId, true),
+      CheckScrimVisibility(0, false), CheckScrimVisibility(1, true),
+      SendKeyPress(kOmniboxElementId, ui::VKEY_ESCAPE),
+      WaitForHide(kInactiveSplitScrimViewElementId, true),
+      // Create a second split tab and verify inactive scrim is shown
       AddInstrumentedTab(kThirdTab, GetTestUrl()),
       AddInstrumentedTab(kFourthTab, GetTestUrl()),
       SelectTab(kTabStripElementId, 2), EnterSplitView(2, 3),
+      // Focus on omnibox and verify inactive scrim is shown
       FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"query"),
-      WaitForShow(MultiContentsView::kEndContainerViewScrimElementId),
-      EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId),
+      WaitForShow(kInactiveSplitScrimViewElementId, true),
+      CheckScrimVisibility(0, false), CheckScrimVisibility(1, true),
       // Remove focus from the omnibox split to ensure the second split
       // isn't showing a scrim
       FocusElement(kThirdTab),
-      WaitForHide(MultiContentsView::kEndContainerViewScrimElementId),
-      EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId));
+      WaitForHide(kInactiveSplitScrimViewElementId, true),
+      CheckScrimVisibility(0, false), CheckScrimVisibility(1, false));
 }
 
-IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ScrimShowsForPermissionPrompt) {
+IN_PROC_BROWSER_TEST_F(MultiContentsViewInactiveScrimUiTest,
+                       ScrimShowsForPermissionPrompt) {
   RunTestSequence(
-      EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId),
-      EnsureNotPresent(MultiContentsView::kEndContainerViewScrimElementId),
-      InstrumentTab(kNewTab),
+      CheckScrimVisibility(0, false), CheckScrimVisibility(1, false),
       // Create a split tab and simulate the permission prompt is shown
-      AddInstrumentedTab(kSecondTab, GetTestUrl()),
+      InstrumentTab(kNewTab), AddInstrumentedTab(kSecondTab, GetTestUrl()),
       SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
-      FocusElement(kNewTab),
-      WaitForHide(MultiContentsView::kEndContainerViewScrimElementId),
-      SimulateTriggeringPermissionPrompt(true),
-      WaitForShow(MultiContentsView::kEndContainerViewScrimElementId),
+      FocusElement(kNewTab), CheckScrimVisibility(0, false),
+      CheckScrimVisibility(1, false), SimulateTriggeringPermissionPrompt(true),
+      WaitForShow(kInactiveSplitScrimViewElementId, true),
+      CheckScrimVisibility(0, false), CheckScrimVisibility(1, true),
       // Simulate the permission prompt closed
       SimulateTriggeringPermissionPrompt(false),
-      WaitForHide(MultiContentsView::kEndContainerViewScrimElementId));
+      WaitForHide(kInactiveSplitScrimViewElementId, true),
+      CheckScrimVisibility(0, false), CheckScrimVisibility(1, false));
 }
 
-IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, CoordinateScrimShowReasons) {
+IN_PROC_BROWSER_TEST_F(MultiContentsViewInactiveScrimUiTest,
+                       CoordinateScrimShowReasons) {
   RunTestSequence(
-      EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId),
-      EnsureNotPresent(MultiContentsView::kEndContainerViewScrimElementId),
-      InstrumentTab(kNewTab),
+      CheckScrimVisibility(0, false), CheckScrimVisibility(1, false),
       // Create a split tab and focus the omnibox
-      AddInstrumentedTab(kSecondTab, GetTestUrl()),
+      InstrumentTab(kNewTab), AddInstrumentedTab(kSecondTab, GetTestUrl()),
       SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
       FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"query"),
-      WaitForShow(MultiContentsView::kEndContainerViewScrimElementId),
+      WaitForShow(kInactiveSplitScrimViewElementId, true),
+      CheckScrimVisibility(0, false), CheckScrimVisibility(1, true),
       // Trigger the permission prompt while focusing the omnibox should
       // continue showing the scrim.
-      SimulateTriggeringPermissionPrompt(true),
-      EnsurePresent(MultiContentsView::kEndContainerViewScrimElementId),
-      // removing focus from the omnibox should still have the scrim continue to
+      SimulateTriggeringPermissionPrompt(true), CheckScrimVisibility(1, true),
+      // Removing focus from the omnibox should still have the scrim continue to
       // show because the permission prompt is still showing.
-      FocusElement(kNewTab),
-      EnsurePresent(MultiContentsView::kEndContainerViewScrimElementId),
+      FocusElement(kNewTab), CheckScrimVisibility(1, true),
       // The scrim should hide after the prompt is closed because there is no
       // longer any reason to continue showing the scrim.
       SimulateTriggeringPermissionPrompt(false),
-      WaitForHide(MultiContentsView::kEndContainerViewScrimElementId));
+      WaitForHide(kInactiveSplitScrimViewElementId, true),
+      CheckScrimVisibility(0, false), CheckScrimVisibility(1, false));
 }
 
-IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ScrimShowsForPageInfoBubble) {
+IN_PROC_BROWSER_TEST_F(MultiContentsViewInactiveScrimUiTest,
+                       ScrimShowsForPageInfoBubble) {
   RunTestSequence(
-      EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId),
-      EnsureNotPresent(MultiContentsView::kEndContainerViewScrimElementId),
+      CheckScrimVisibility(0, false), CheckScrimVisibility(1, false),
       InstrumentTab(kNewTab),
       NavigateWebContents(kNewTab, GURL(chrome::kChromeUISettingsURL)),
       AddInstrumentedTab(kSecondTab, GetTestUrl()),
       SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
-      FocusElement(kNewTab),
-      WaitForHide(MultiContentsView::kEndContainerViewScrimElementId),
-      PressButton(kLocationIconElementId),
-      WaitForShow(MultiContentsView::kEndContainerViewScrimElementId),
+      FocusElement(kNewTab), CheckScrimVisibility(0, false),
+      CheckScrimVisibility(1, false), PressButton(kLocationIconElementId),
+      WaitForShow(kInactiveSplitScrimViewElementId, true),
+      CheckScrimVisibility(0, false), CheckScrimVisibility(1, true),
       // Clicking the location icon again should close the page info bubble and
       // hide the scrim.
       MoveMouseTo(kLocationIconElementId), ClickMouse(),
-      WaitForHide(MultiContentsView::kEndContainerViewScrimElementId));
+      WaitForHide(kInactiveSplitScrimViewElementId, true),
+      CheckScrimVisibility(0, false), CheckScrimVisibility(1, false));
 }
 
 // TODO(crbug.com/414590951): There's limited support for testing drag and drop
@@ -907,7 +931,7 @@ class MultiContentsViewDragEntrypointsUiTest : public MultiContentsViewUiTest {
                             }));
                     AddStep(
                         mouse_moves,
-                        WithView(MultiContentsView::kMultiContentsViewElementId,
+                        WithView(kMultiContentsViewElementId,
                                  [jitter](views::View* view) {
                                    gfx::Point target =
                                        PointForDropTargetFromView(view);
@@ -937,8 +961,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewDragEntrypointsUiTest,
       // Drag an href element to the drop target area. The drop
       // target should be shown.
       MoveMouseTo(kNewTab, DeepQuery{"#title1"}),
-      DragMouseToWithoutWait(MultiContentsView::kMultiContentsViewElementId,
-                             PointForDropTarget()),
+      DragMouseToWithoutWait(kMultiContentsViewElementId, PointForDropTarget()),
       WaitForDropTargetVisible());
 }
 
@@ -950,8 +973,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewDragEntrypointsUiTest,
       // Dragging a non-url to the drop target area should have no
       // effect.
       MoveMouseTo(kNewTab, DeepQuery{"#button"}),
-      DragMouseToWithoutWait(MultiContentsView::kMultiContentsViewElementId,
-                             PointForDropTarget()),
+      DragMouseToWithoutWait(kMultiContentsViewElementId, PointForDropTarget()),
       WaitForHide(
           MultiContentsDropTargetView::kMultiContentsDropTargetElementId));
 }
@@ -1004,8 +1026,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBookmarkDragEntrypointsUiTest,
       WaitForActiveTabChange(0), WaitForShow(kBookmarkBarElementId),
       NameBookmarkButton(kBookmarkButtonId, bookmark_title),
       MoveMouseTo(kBookmarkButtonId),
-      DragMouseToWithoutWait(MultiContentsView::kMultiContentsViewElementId,
-                             PointForDropTarget()),
+      DragMouseToWithoutWait(kMultiContentsViewElementId, PointForDropTarget()),
       WaitForDropTargetVisible());
 }
 #endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)

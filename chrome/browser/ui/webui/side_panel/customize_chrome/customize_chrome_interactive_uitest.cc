@@ -214,16 +214,16 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
       // Open NTP with footer showing.
       Steps(AddInstrumentedTab(kNewTabElementId,
                                GURL(chrome::kChromeUINewTabURL)),
-            WaitForShow(kNtpFooterId)),
+            WaitForShow(kNtpFooterViewElementId)),
       // Click the footer toggle.
       Steps(OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
             ClickElement(kLocalCustomizeChromeElementId, kFooterToggle)),
       // Ensure footer hides.
-      WaitForHide(kNtpFooterId),
+      WaitForHide(kNtpFooterViewElementId),
       // Click the footer toggle.
       ClickElement(kLocalCustomizeChromeElementId, kFooterToggle),
       // Ensure footer shows.
-      WaitForShow(kNtpFooterId));
+      WaitForShow(kNtpFooterViewElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
