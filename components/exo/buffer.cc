@@ -574,15 +574,19 @@ std::unique_ptr<Buffer> Buffer::CreateBufferFromGMBHandle(
 // static
 std::unique_ptr<Buffer> Buffer::CreateBuffer(
     gfx::Size buffer_size,
-    gfx::BufferFormat buffer_format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage buffer_usage,
     std::string_view debug_label,
     gpu::SurfaceHandle surface_handle,
     base::WaitableEvent* shutdown_event,
     bool is_overlay_candidate) {
+  // If format is true multiplanar format, we prefer external sampler on
+  // ChromeOS.
+  if (format.is_multi_plane()) {
+    format.SetPrefersExternalSampler();
+  }
   scoped_refptr<gpu::ClientSharedImage> shared_image;
   auto* sii = GetSharedImageInterface();
-  auto format = GetSharedImageFormat(buffer_format);
   if (sii) {
     // Note that we are creating this mappable shared image only to get a
     // GMBHandle from it and use below to create ::Buffer.

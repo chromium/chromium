@@ -49,6 +49,7 @@
 #include "components/exo/test/test_security_delegate.h"
 #include "components/exo/window_properties.h"
 #include "components/exo/wm_helper.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -91,7 +92,7 @@
 
 namespace exo {
 
-const gfx::BufferFormat kOpaqueFormat = gfx::BufferFormat::RGBX_8888;
+const viz::SharedImageFormat kOpaqueFormat = viz::SinglePlaneFormat::kRGBX_8888;
 
 using ShellSurfaceTest = test::ExoTestBase;
 
@@ -2857,7 +2858,7 @@ TEST_F(ShellSurfaceTest, DragMaximizedWindow) {
 TEST_F(ShellSurfaceTest, CaptionWithPopup) {
   constexpr gfx::Size kBufferSize(256, 256);
   auto shell_surface = test::ShellSurfaceBuilder(kBufferSize)
-                           .SetRootBufferFormat(kOpaqueFormat)
+                           .SetRootFormat(kOpaqueFormat)
                            .SetFrame(SurfaceFrameType::NORMAL)
                            .BuildShellSurface();
   auto* surface = shell_surface->root_surface();
@@ -4751,11 +4752,11 @@ TEST_F(ShellSurfaceTest, DisplayLayoutConfigurationUpdatesSurfaceOrigin) {
 TEST_F(ShellSurfaceTest, DisplayScaleChangeDoesNotSendOcclusionUpdates) {
   std::unique_ptr<ShellSurface> shell_surface1 =
       test::ShellSurfaceBuilder({256, 256})
-          .SetRootBufferFormat(kOpaqueFormat)
+          .SetRootFormat(kOpaqueFormat)
           .BuildShellSurface();
   std::unique_ptr<ShellSurface> shell_surface2 =
       test::ShellSurfaceBuilder({256, 256})
-          .SetRootBufferFormat(kOpaqueFormat)
+          .SetRootFormat(kOpaqueFormat)
           .BuildShellSurface();
   auto* surface1 = shell_surface1->root_surface();
   auto* surface2 = shell_surface2->root_surface();

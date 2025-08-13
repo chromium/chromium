@@ -18,6 +18,7 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/test_security_delegate.h"
 #include "components/exo/xdg_shell_surface.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/aura/env.h"
 #include "ui/display/types/display_constants.h"
 
@@ -34,11 +35,11 @@ struct Holder {
   std::unique_ptr<exo::SecurityDelegate> security_delegate_;
 
   void AddRootSurface(const gfx::Size& size,
-                      std::optional<gfx::BufferFormat> buffer_format) {
+                      std::optional<viz::SharedImageFormat> format) {
     auto surface = std::make_unique<exo::Surface>();
     std::unique_ptr<exo::Buffer> buffer;
-    if (!size.IsEmpty() && buffer_format) {
-      buffer = exo::test::ExoTestHelper::CreateBuffer(size, *buffer_format);
+    if (!size.IsEmpty() && format) {
+      buffer = exo::test::ExoTestHelper::CreateBuffer(size, *format);
       surface->Attach(buffer.get());
     }
     root_surface = surface.get();
@@ -107,14 +108,14 @@ ShellSurfaceBuilder::~ShellSurfaceBuilder() = default;
 
 ShellSurfaceBuilder& ShellSurfaceBuilder::SetNoRootBuffer() {
   DCHECK(!built_);
-  root_buffer_format_.reset();
+  root_format_.reset();
   return *this;
 }
 
-ShellSurfaceBuilder& ShellSurfaceBuilder::SetRootBufferFormat(
-    gfx::BufferFormat buffer_format) {
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetRootFormat(
+    viz::SharedImageFormat format) {
   DCHECK(!built_);
-  root_buffer_format_ = buffer_format;
+  root_format_ = format;
   return *this;
 }
 
@@ -328,7 +329,7 @@ std::unique_ptr<ShellSurface> ShellSurfaceBuilder::BuildShellSurface() {
   built_ = true;
 
   auto holder = std::make_unique<Holder>();
-  holder->AddRootSurface(root_buffer_size_, root_buffer_format_);
+  holder->AddRootSurface(root_buffer_size_, root_format_);
   auto shell_surface = std::make_unique<XdgShellSurface>(
       holder->root_surface, origin_, can_minimize_, GetContainer());
 
@@ -393,7 +394,7 @@ ShellSurfaceBuilder::BuildClientControlledShellSurface() {
   DCHECK(IsConfigurationValidForClientControlledShellSurface());
   built_ = true;
   auto holder = std::make_unique<Holder>();
-  holder->AddRootSurface(root_buffer_size_, root_buffer_format_);
+  holder->AddRootSurface(root_buffer_size_, root_format_);
   auto shell_surface = Display().CreateOrGetClientControlledShellSurface(
       holder->root_surface, GetContainer(), default_scale_cancellation_,
       supports_floated_state_);

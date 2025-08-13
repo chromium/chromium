@@ -17,6 +17,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace viz {
+class SharedImageFormat;
+}
+
 namespace exo {
 class ClientControlledShellSurface;
 class SecurityDelegate;
@@ -39,7 +43,7 @@ class ShellSurfaceBuilder {
 
   // Sets parameters common for all ShellSurfaceType.
   ShellSurfaceBuilder& SetNoRootBuffer();
-  ShellSurfaceBuilder& SetRootBufferFormat(gfx::BufferFormat buffer_format);
+  ShellSurfaceBuilder& SetRootFormat(viz::SharedImageFormat format);
   ShellSurfaceBuilder& SetOrigin(const gfx::Point& origin);
   ShellSurfaceBuilder& SetUseSystemModalContainer();
   ShellSurfaceBuilder& EnableSystemModal();
@@ -96,8 +100,8 @@ class ShellSurfaceBuilder {
   int GetContainer();
 
   gfx::Size root_buffer_size_;
-  std::optional<gfx::BufferFormat> root_buffer_format_ =
-      gfx::BufferFormat::RGBA_8888;
+  std::optional<viz::SharedImageFormat> root_format_ =
+      viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Point origin_;
 
   std::optional<gfx::Size> max_size_;

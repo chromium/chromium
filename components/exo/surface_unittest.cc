@@ -32,6 +32,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -570,7 +571,7 @@ TEST_P(SurfaceTest, MAYBE_SetOpaqueRegion) {
   }
 
   auto buffer_without_alpha = test::ExoTestHelper::CreateBuffer(
-      buffer_size, gfx::BufferFormat::RGBX_8888);
+      buffer_size, viz::SinglePlaneFormat::kRGBX_8888);
 
   // Attaching a buffer without an alpha channel doesn't require draw with
   // blending.
@@ -1106,7 +1107,7 @@ TEST_P(SurfaceTest, SetBlendMode) {
 TEST_P(SurfaceTest, OverlayCandidate) {
   gfx::Size buffer_size(1, 1);
   auto buffer = test::ExoTestHelper::CreateBuffer(
-      buffer_size, gfx::BufferFormat::RGBA_8888,
+      buffer_size, viz::SinglePlaneFormat::kRGBA_8888,
       /*is_overlay_candidate=*/true);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
@@ -1125,7 +1126,7 @@ TEST_P(SurfaceTest, OverlayCandidate) {
 TEST_P(SurfaceTest, SetAlpha) {
   gfx::Size buffer_size(1, 1);
   auto buffer = test::ExoTestHelper::CreateBuffer(
-      buffer_size, gfx::BufferFormat::RGBA_8888,
+      buffer_size, viz::SinglePlaneFormat::kRGBA_8888,
       /*is_overlay_candidate=*/true);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
@@ -1182,7 +1183,8 @@ TEST_P(SurfaceTest, SetAlpha) {
 TEST_P(SurfaceTest, DisableNonYUVOverlays) {
   gfx::Size buffer_size(2, 2);
   auto buffer_non_yuv = test::ExoTestHelper::CreateBuffer(
-      buffer_size, gfx::BufferFormat::RGBA_8888, /*is_overlay_candidate=*/true);
+      buffer_size, viz::SinglePlaneFormat::kRGBA_8888,
+      /*is_overlay_candidate=*/true);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
 
@@ -1209,7 +1211,7 @@ TEST_P(SurfaceTest, DisableNonYUVOverlays) {
 TEST_P(SurfaceTest, ForceRgbxTest) {
   gfx::Size buffer_size(1, 1);
   auto buffer = test::ExoTestHelper::CreateBuffer(
-      buffer_size, gfx::BufferFormat::RGBA_8888,
+      buffer_size, viz::SinglePlaneFormat::kRGBA_8888,
       /*is_overlay_candidate=*/true);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
@@ -1238,7 +1240,7 @@ TEST_P(SurfaceTest, ForceRgbxTest) {
 TEST_P(SurfaceTest, ForceRgbxTestNoBufferAlpha) {
   gfx::Size buffer_size(1, 1);
   auto buffer = test::ExoTestHelper::CreateBuffer(
-      buffer_size, gfx::BufferFormat::RGBX_8888,
+      buffer_size, viz::SinglePlaneFormat::kRGBX_8888,
       /*is_overlay_candidate=*/true);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());

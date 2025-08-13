@@ -53,7 +53,7 @@ class Buffer {
 
   static std::unique_ptr<Buffer> CreateBuffer(
       gfx::Size buffer_size,
-      gfx::BufferFormat buffer_format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage buffer_usage,
       std::string_view debug_label,
       gpu::SurfaceHandle surface_handle,
