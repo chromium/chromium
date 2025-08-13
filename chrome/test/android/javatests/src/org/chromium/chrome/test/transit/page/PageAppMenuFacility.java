@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNotNull;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
@@ -92,7 +93,8 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
         assertNotNull(mAddToGroup);
 
         TabGroupModelFilter tabGroupModelFilter = mHostStation.getTabGroupModelFilter();
-        Set<Token> tabGroupIds = tabGroupModelFilter.getAllTabGroupIds();
+        Set<Token> tabGroupIds =
+                ThreadUtils.runOnUiThreadBlocking(() -> tabGroupModelFilter.getAllTabGroupIds());
         return mAddToGroup
                 .scrollToAndSelectTo()
                 .enterFacility(

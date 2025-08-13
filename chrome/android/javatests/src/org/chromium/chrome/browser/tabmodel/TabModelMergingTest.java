@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStoreTest.MockTabPersistentStoreObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -205,28 +206,31 @@ public class TabModelMergingTest {
         mMergeIntoActivity1ExpectedTabs = new String[7];
         mMergeIntoActivity2ExpectedTabs = new String[7];
         for (int i = 0; i < 4; i++) {
-            mMergeIntoActivity1ExpectedTabs[i] =
-                    ChromeTabUtils.getUrlStringOnUiThread(
-                            mActivity1.getTabModelSelector().getModel(false).getTabAt(i));
-            mMergeIntoActivity2ExpectedTabs[i + 3] =
-                    ChromeTabUtils.getUrlStringOnUiThread(
-                            mActivity1.getTabModelSelector().getModel(false).getTabAt(i));
+            int j = i;
+            Tab tab =
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () -> mActivity1.getTabModelSelector().getModel(false).getTabAt(j));
+            mMergeIntoActivity1ExpectedTabs[i] = ChromeTabUtils.getUrlStringOnUiThread(tab);
+            mMergeIntoActivity2ExpectedTabs[i + 3] = ChromeTabUtils.getUrlStringOnUiThread(tab);
         }
         for (int i = 0; i < 3; i++) {
-            mMergeIntoActivity2ExpectedTabs[i] =
-                    ChromeTabUtils.getUrlStringOnUiThread(
-                            mActivity2.getTabModelSelector().getModel(false).getTabAt(i));
-            mMergeIntoActivity1ExpectedTabs[i + 4] =
-                    ChromeTabUtils.getUrlStringOnUiThread(
-                            mActivity2.getTabModelSelector().getModel(false).getTabAt(i));
+            int j = i;
+            Tab tab =
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () -> mActivity2.getTabModelSelector().getModel(false).getTabAt(j));
+            mMergeIntoActivity2ExpectedTabs[i] = ChromeTabUtils.getUrlStringOnUiThread(tab);
+            mMergeIntoActivity1ExpectedTabs[i + 4] = ChromeTabUtils.getUrlStringOnUiThread(tab);
         }
     }
 
     private void mergeTabsAndAssert(
             final ChromeTabbedActivity activity, final String[] expectedTabUrls) {
         String selectedTabUrl =
-                ChromeTabUtils.getUrlStringOnUiThread(
-                        activity.getTabModelSelector().getCurrentTab());
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Tab tab = activity.getTabModelSelector().getCurrentTab();
+                            return tab.getUrl().getSpec();
+                        });
         mergeTabsAndAssert(activity, expectedTabUrls, expectedTabUrls.length, selectedTabUrl);
     }
 

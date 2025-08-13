@@ -222,12 +222,16 @@ public class TabSwitcherListEditorPTTest {
                 Journeys.prepareTabs(pageStation, 10, 0, "about:blank", WebPageStation::newBuilder);
 
         TabModel currentModel = pageStation.getTabModel();
-        List<Tab> tabGroup1 = List.of(currentModel.getTabAt(0), currentModel.getTabAt(3));
+        List<Tab> tabGroup1 =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> List.of(currentModel.getTabAt(0), currentModel.getTabAt(3)));
         List<Tab> tabGroup2 =
-                List.of(
-                        currentModel.getTabAt(1),
-                        currentModel.getTabAt(7),
-                        currentModel.getTabAt(8));
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                List.of(
+                                        currentModel.getTabAt(1),
+                                        currentModel.getTabAt(7),
+                                        currentModel.getTabAt(8)));
 
         RegularTabSwitcherStation tabSwitcher = pageStation.openRegularTabSwitcher();
         TabSwitcherGroupCardFacility groupCard =

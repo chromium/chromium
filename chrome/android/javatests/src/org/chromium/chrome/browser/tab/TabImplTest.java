@@ -112,7 +112,7 @@ public class TabImplTest {
     public void testOnProvideVirtualStructure() {
         var url = mActivityTestRule.getTestServer().getURL(TEST_PATH);
         mActivityTestRule.loadUrl(url);
-        TabImpl tabImpl = (TabImpl) mActivityTestRule.getActivity().getActivityTab();
+        TabImpl tabImpl = (TabImpl) mActivityTestRule.getActivityTab();
         TestViewStructure viewStructure = new TestViewStructure();
 
         ThreadUtils.runOnUiThreadBlocking(

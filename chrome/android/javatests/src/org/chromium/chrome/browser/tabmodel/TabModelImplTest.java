@@ -1272,7 +1272,7 @@ public class TabModelImplTest {
 
         TabModel tabModel = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
 
-        int numTabsBeforeTest = tabModel.getCount();
+        int numTabsBeforeTest = getTabCountOnUiThread(tabModel);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1293,7 +1293,9 @@ public class TabModelImplTest {
                     "Expected new window to be created");
         } else {
             assertEquals(
-                    "Expected a new tab to be created", numTabsBeforeTest + 1, tabModel.getCount());
+                    "Expected a new tab to be created",
+                    numTabsBeforeTest + 1,
+                    getTabCountOnUiThread(tabModel));
         }
     }
 
