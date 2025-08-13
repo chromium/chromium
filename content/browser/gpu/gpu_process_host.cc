@@ -332,6 +332,7 @@ static const char* const kSwitchNames[] = {
     switches::kWebNNOrtDumpModel,
     switches::kWebNNOrtLibraryPathForTesting,
     switches::kWebNNOrtEpLibraryPathForTesting,
+    switches::kWebNNOrtGraphOptimizationLevel,
 #endif
 };
 

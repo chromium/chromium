@@ -16,6 +16,31 @@
 
 namespace webnn::ort {
 
+namespace {
+
+// Helper function to convert a string to GraphOptimizationLevel enum. Return
+// nullopt for invalid input to let ORT decide the optimization level.
+std::optional<GraphOptimizationLevel> StringToOrtGraphOptimizationLevel(
+    std::string_view graph_optimization_level) {
+  if (graph_optimization_level == "DISABLE_ALL") {
+    return ORT_DISABLE_ALL;
+  } else if (graph_optimization_level == "BASIC") {
+    return ORT_ENABLE_BASIC;
+  } else if (graph_optimization_level == "EXTENDED") {
+    return ORT_ENABLE_EXTENDED;
+  } else if (graph_optimization_level == "ALL") {
+    return ORT_ENABLE_ALL;
+  }
+
+  LOG(WARNING) << "[WebNN] Unrecognized graph optimization level: "
+               << graph_optimization_level
+               << ". Supported values: DISABLE_ALL, BASIC, EXTENDED, ALL. "
+               << "Letting ORT decide the optimization level.";
+  return std::nullopt;
+}
+
+}  // namespace
+
 // static
 scoped_refptr<SessionOptions> SessionOptions::Create(
     mojom::Device device_type) {
@@ -68,13 +93,19 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
       /*config_key=*/kOrtSessionOptionsConfigStrictShapeTypeInference,
       /*config_value=*/"1"));
 
-  // TODO(crbug.com/412841630): Investigate how to apply layout optimizations
-  // (ORT_ENABLE_ALL).
-  // https://onnxruntime.ai/docs/performance/model-optimizations/graph-optimizations.html#layout-optimizations
-  // TODO(crbug.com/416543902): Add a switch to test different optimization
-  // levels at runtime.
-  CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(
-      session_options.get(), GraphOptimizationLevel::ORT_ENABLE_BASIC));
+  // Only set graph optimization level if user provides a valid input.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNOrtGraphOptimizationLevel)) {
+    std::string user_graph_optimization_level =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            switches::kWebNNOrtGraphOptimizationLevel);
+    std::optional<GraphOptimizationLevel> ort_graph_optimization_level =
+        StringToOrtGraphOptimizationLevel(user_graph_optimization_level);
+    if (ort_graph_optimization_level) {
+      CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(
+          session_options.get(), ort_graph_optimization_level.value()));
+    }
+  }
 
   return base::MakeRefCounted<SessionOptions>(base::PassKey<SessionOptions>(),
                                               std::move(session_options));

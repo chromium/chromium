@@ -50,6 +50,12 @@ inline constexpr char kWebNNOrtLibraryPathForTesting[] =
 // Files\ONNXRuntime-EP" --allow-third-party-modules
 inline constexpr char kWebNNOrtEpLibraryPathForTesting[] =
     "webnn-ort-ep-library-path-for-testing";
+
+// Configure the graph optimization level of ONNX Runtime.
+// Usage: --webnn-ort-graph-optimization-level=DISABLE_ALL
+// Other levels could be "BASIC", "EXTENDED" and "ALL".
+inline constexpr char kWebNNOrtGraphOptimizationLevel[] =
+    "webnn-ort-graph-optimization-level";
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace switches
