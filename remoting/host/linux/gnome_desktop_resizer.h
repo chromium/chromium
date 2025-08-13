@@ -6,15 +6,17 @@
 #define REMOTING_HOST_LINUX_GNOME_DESKTOP_RESIZER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "remoting/host/desktop_resizer.h"
+#include "remoting/host/linux/pipewire_capture_stream_manager.h"
 
 namespace remoting {
 
-class GnomeInteractionStrategy;
-
 class GnomeDesktopResizer : public DesktopResizer {
  public:
-  explicit GnomeDesktopResizer(base::WeakPtr<GnomeInteractionStrategy> session);
+  explicit GnomeDesktopResizer(
+      base::WeakPtr<PipewireCaptureStreamManager> stream_manager);
   GnomeDesktopResizer(const GnomeDesktopResizer&) = delete;
   GnomeDesktopResizer& operator=(const GnomeDesktopResizer&) = delete;
   ~GnomeDesktopResizer() override;
@@ -30,7 +32,13 @@ class GnomeDesktopResizer : public DesktopResizer {
   void SetVideoLayout(const protocol::VideoLayout& layout) override;
 
  private:
-  base::WeakPtr<GnomeInteractionStrategy> session_;
+  void OnAddStreamResult(PipewireCaptureStreamManager::AddStreamResult result);
+
+  base::WeakPtr<PipewireCaptureStreamManager> stream_manager_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<GnomeDesktopResizer> weak_ptr_factory_{this};
 };
 
 }  // namespace remoting

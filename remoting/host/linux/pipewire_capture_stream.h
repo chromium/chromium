@@ -17,6 +17,7 @@
 #include "base/thread_annotations.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -92,6 +93,16 @@ class PipewireCaptureStream {
     return resolution_;
   }
 
+  void set_screen_id(webrtc::ScreenId screen_id) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    screen_id_ = screen_id;
+  }
+
+  webrtc::ScreenId screen_id() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return screen_id_;
+  }
+
   // Obtains a weak pointer to this.
   base::WeakPtr<PipewireCaptureStream> GetWeakPtr();
 
@@ -129,6 +140,7 @@ class PipewireCaptureStream {
 
   ScreenResolution resolution_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::string mapping_id_ GUARDED_BY_CONTEXT(sequence_checker_);
+  webrtc::ScreenId screen_id_ GUARDED_BY_CONTEXT(sequence_checker_);
   webrtc::scoped_refptr<webrtc::SharedScreenCastStream> stream_
       GUARDED_BY_CONTEXT(sequence_checker_) =
           webrtc::SharedScreenCastStream::CreateDefault();

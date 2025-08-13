@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -25,12 +26,28 @@ using gvariant::Boxed;
 
 constexpr char kScreenCastBusName[] = "org.gnome.Mutter.ScreenCast";
 
-const ScreenResolution kInitialResolution{{1280, 960}, {96, 96}};
-
 }  // namespace
+
+PipewireCaptureStreamManager::AddStreamRequest::AddStreamRequest() = default;
+PipewireCaptureStreamManager::AddStreamRequest::AddStreamRequest(
+    AddStreamRequest&&) = default;
+PipewireCaptureStreamManager::AddStreamRequest::AddStreamRequest(
+    const ScreenResolution& initial_resolution,
+    AddStreamCallback callback)
+    : initial_resolution(initial_resolution), callback(std::move(callback)) {}
+PipewireCaptureStreamManager::AddStreamRequest::~AddStreamRequest() = default;
 
 PipewireCaptureStreamManager::PipewireCaptureStreamManager() = default;
 PipewireCaptureStreamManager::~PipewireCaptureStreamManager() = default;
+
+PipewireCaptureStreamManager::Observer::Subscription
+PipewireCaptureStreamManager::AddObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  observers_.AddObserver(observer);
+  return Observer::Subscription(base::BindOnce(
+      &PipewireCaptureStreamManager::RemoveObserver, GetWeakPtr(), observer));
+}
 
 void PipewireCaptureStreamManager::Init(
     GDBusConnectionRef* connection,
@@ -62,10 +79,12 @@ base::WeakPtr<PipewireCaptureStream> PipewireCaptureStreamManager::GetStream(
   return it->second->GetWeakPtr();
 }
 
-void PipewireCaptureStreamManager::AddStream(AddStreamCallback callback) {
+void PipewireCaptureStreamManager::AddStream(
+    const ScreenResolution& initial_resolution,
+    AddStreamCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  pending_add_stream_requests_.push(std::move(callback));
+  pending_add_stream_requests_.emplace(initial_resolution, std::move(callback));
 
   if (!last_seen_display_config_.has_value()) {
     // We can't safely start adding the stream if we haven't received the
@@ -81,7 +100,9 @@ void PipewireCaptureStreamManager::AddStream(AddStreamCallback callback) {
 
 void PipewireCaptureStreamManager::RemoveStream(webrtc::ScreenId screen_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  streams_.erase(screen_id);
+  if (streams_.erase(screen_id) > 0) {
+    observers_.Notify(&Observer::OnPipewireCaptureStreamRemoved, screen_id);
+  }
 }
 
 base::flat_map<webrtc::ScreenId, base::WeakPtr<PipewireCaptureStream>>
@@ -98,6 +119,12 @@ PipewireCaptureStreamManager::GetActiveStreams() const {
 base::WeakPtr<PipewireCaptureStreamManager>
 PipewireCaptureStreamManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void PipewireCaptureStreamManager::RemoveObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  observers_.RemoveObserver(observer);
 }
 
 template <typename SuccessType, typename String>
@@ -146,14 +173,18 @@ void PipewireCaptureStreamManager::MaybeAddStreamForCurrentRequest() {
 }
 
 void PipewireCaptureStreamManager::RunCurrentAddStreamCallback(
-    base::expected<webrtc::ScreenId, std::string>&& result) {
+    AddStreamResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!pending_add_stream_requests_.empty());
 
   pending_stream_.reset();
-  auto callback = std::move(pending_add_stream_requests_.front());
+  auto callback = std::move(pending_add_stream_requests_.front().callback);
   pending_add_stream_requests_.pop();
-  std::move(callback).Run(result);
+  auto stream = result.value_or(nullptr);
+  std::move(callback).Run(std::move(result));
+  if (stream) {
+    observers_.Notify(&Observer::OnPipewireCaptureStreamAdded, stream);
+  }
   MaybeAddStreamForCurrentRequest();
 }
 
@@ -226,12 +257,14 @@ void PipewireCaptureStreamManager::OnPipeWireStreamAdded(
     std::tuple<std::uint32_t> args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_stream_);
+  DCHECK(!pending_add_stream_requests_.empty());
 
   // Ensure method is only run this once per stream.
   pending_stream_added_signal_.reset();
 
-  pending_stream_->SetPipeWireStream(get<0>(args), kInitialResolution,
-                                     mapping_id, webrtc::kInvalidPipeWireFd);
+  pending_stream_->SetPipeWireStream(
+      get<0>(args), pending_add_stream_requests_.front().initial_resolution,
+      mapping_id, webrtc::kInvalidPipeWireFd);
   // Start capturing now, which creates the virtual monitor and allows the
   // video capturer to be created.
   pending_stream_->StartVideoCapture();
@@ -300,10 +333,11 @@ void PipewireCaptureStreamManager::AssociatePendingStream(
     return;
   }
   HOST_LOG << "Associating pending stream with screen ID " << screen_id;
+  pending_stream_->set_screen_id(screen_id);
   auto weak_ptr = pending_stream_->GetWeakPtr();
   streams_[screen_id] = std::move(pending_stream_);
 
-  RunCurrentAddStreamCallback(base::ok(screen_id));
+  RunCurrentAddStreamCallback(base::ok(weak_ptr));
 }
 
 }  // namespace remoting

@@ -13,9 +13,13 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/types/expected.h"
+#include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/linux/gdbus_connection_ref.h"
 #include "remoting/host/linux/gnome_display_config_dbus_client.h"
 #include "remoting/host/linux/gvariant_ref.h"
@@ -41,14 +45,32 @@ namespace remoting {
 // added during stream creation.
 class PipewireCaptureStreamManager final {
  public:
-  using AddStreamCallback =
-      base::OnceCallback<void(base::expected<webrtc::ScreenId, std::string>)>;
+  using AddStreamResult =
+      base::expected<base::WeakPtr<PipewireCaptureStream>, std::string>;
+  using AddStreamCallback = base::OnceCallback<void(AddStreamResult)>;
 
-  explicit PipewireCaptureStreamManager();
+  // An interface for observing stream additions and removals.
+  class Observer : public base::CheckedObserver {
+   public:
+    using Subscription = base::ScopedClosureRunner;
+
+    virtual void OnPipewireCaptureStreamAdded(
+        base::WeakPtr<PipewireCaptureStream> stream) {}
+    virtual void OnPipewireCaptureStreamRemoved(webrtc::ScreenId screen_id) {}
+
+   protected:
+    Observer() = default;
+  };
+
+  PipewireCaptureStreamManager();
   PipewireCaptureStreamManager(const PipewireCaptureStreamManager&) = delete;
   PipewireCaptureStreamManager& operator=(const PipewireCaptureStreamManager&) =
       delete;
   ~PipewireCaptureStreamManager();
+
+  // Adds an observer. Discarding the returned subscription will result in the
+  // removal of the observer.
+  [[nodiscard]] Observer::Subscription AddObserver(Observer* observer);
 
   // Initializes the stream manager. Must be call once before calling other
   // methods of this class. `connection` must outlive `this`.
@@ -63,9 +85,10 @@ class PipewireCaptureStreamManager final {
       webrtc::ScreenId screen_id) const;
 
   // Adds a new PipewireCaptureStream and creates the corresponding virtual
-  // display. `callback` is called once the stream is successfully added or
-  // failed to be added.
-  void AddStream(AddStreamCallback callback);
+  // display with the specified initial resolution. `callback` is called once
+  // the stream is successfully added or failed to be added.
+  void AddStream(const ScreenResolution& initial_resolution,
+                 AddStreamCallback callback);
 
   // Removes a stream and destroys the corresponding virtual display.
   void RemoveStream(webrtc::ScreenId screen_id);
@@ -78,10 +101,23 @@ class PipewireCaptureStreamManager final {
   base::WeakPtr<PipewireCaptureStreamManager> GetWeakPtr();
 
  private:
+  struct AddStreamRequest {
+    AddStreamRequest();
+    AddStreamRequest(AddStreamRequest&&);
+    AddStreamRequest(const ScreenResolution& initial_resolution,
+                     AddStreamCallback callback);
+    ~AddStreamRequest();
+
+    ScreenResolution initial_resolution;
+    AddStreamCallback callback;
+  };
+
   template <typename SuccessType, typename String>
   GDBusConnectionRef::CallCallback<SuccessType> CheckAddStreamResultAndContinue(
       void (PipewireCaptureStreamManager::*success_method)(SuccessType),
       String&& error_context);
+
+  void RemoveObserver(Observer* observer);
 
   // Adds a new stream if `pending_add_stream_requests_` is non-empty, otherwise
   // do nothing. Must be called when there is no pending stream.
@@ -90,8 +126,7 @@ class PipewireCaptureStreamManager final {
   // Runs the current AddStreamCallback, removes it from
   // `pending_add_stream_requests_`, then adds another stream if
   // `pending_add_stream_requests_` is still not empty.
-  void RunCurrentAddStreamCallback(
-      base::expected<webrtc::ScreenId, std::string>&& result);
+  void RunCurrentAddStreamCallback(AddStreamResult result);
 
   void OnAddStreamError(std::string_view what, Loggable why);
   void OnStreamCreated(std::tuple<gvariant::ObjectPath> args);
@@ -121,7 +156,7 @@ class PipewireCaptureStreamManager final {
 
   // Queue to allow streams to be added one at a time, which is crucial to
   // ensure the stream is associated with the correct screen ID.
-  base::queue<AddStreamCallback> pending_add_stream_requests_
+  base::queue<AddStreamRequest> pending_add_stream_requests_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The stream that is being created. It is only non-null during stream
@@ -133,6 +168,8 @@ class PipewireCaptureStreamManager final {
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<GDBusConnectionRef::SignalSubscription>
       pending_stream_added_signal_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::ObserverList<Observer> observers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<PipewireCaptureStreamManager> weak_ptr_factory_{this};

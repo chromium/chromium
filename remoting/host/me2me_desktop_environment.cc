@@ -60,6 +60,12 @@ bool UsingVideoDummyDriver() {
   return is_using_dummy_driver;
 }
 
+bool RunningUnderWayland() {
+  static bool is_running_under_wayland =
+      webrtc::DesktopCapturer::IsRunningUnderWayland();
+  return is_running_under_wayland;
+}
+
 #endif  // defined(REMOTING_USE_X11)
 
 }  // namespace
@@ -119,8 +125,13 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
   capabilities += " ";
   capabilities += protocol::kDefaultResizeCapability;
 
-  // Client-controlled layout is only supported with Xorg+video-dummy.
-  if (UsingVideoDummyDriver()) {
+  if (RunningUnderWayland()) {
+    // Client-controlled layout for wayland is still WIP and has some bugs.
+#if !defined(NDEBUG)
+    capabilities += " ";
+    capabilities += protocol::kClientControlledLayoutCapability;
+#endif
+  } else if (UsingVideoDummyDriver()) {
     capabilities += " ";
     capabilities += protocol::kClientControlledLayoutCapability;
 

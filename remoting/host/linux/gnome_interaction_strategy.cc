@@ -126,26 +126,27 @@ std::unique_ptr<InputInjector> GnomeInteractionStrategy::CreateInputInjector() {
 
 std::unique_ptr<DesktopResizer>
 GnomeInteractionStrategy::CreateDesktopResizer() {
-  return std::make_unique<GnomeDesktopResizer>(weak_ptr_factory_.GetWeakPtr());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return std::make_unique<GnomeDesktopResizer>(
+      capture_stream_manager_.GetWeakPtr());
 }
 
 std::unique_ptr<DesktopCapturer> GnomeInteractionStrategy::CreateVideoCapturer(
     webrtc::ScreenId id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // `stream` will only be non-null after the AddStreamCallback of a newly added
-  // stream is called. This is currently not a problem for the initial stream,
-  // since `init_callback_` is called after the AddStreamCallback of the initial
-  // stream is called. However, this may be racy when additional streams are
-  // being added.
-  // TODO(crbug.com/432217140): Refactor PipewireDesktopCapturer so that
-  // PipewireCaptureStream can be provided after it is constructed.
+  auto capturer = std::make_unique<PipewireDesktopCapturer>();
   base::WeakPtr<PipewireCaptureStream> stream =
       capture_stream_manager_.GetStream(id);
-  if (!stream) {
-    LOG(ERROR) << "Cannot find pipewire stream for screen ID: " << id;
-    return nullptr;
+  auto init_cb = capturer->GetInitCallback();
+  if (stream) {
+    std::move(init_cb).Run(stream);
+  } else {
+    HOST_LOG << "Video capturer for screen ID " << id
+             << " will be initialized after the stream is ready.";
+    pending_desktop_capturer_inits_[id] = std::move(init_cb);
   }
-  return std::make_unique<PipewireDesktopCapturer>(std::move(stream));
+  return capturer;
 }
 
 std::unique_ptr<webrtc::MouseCursorMonitor>
@@ -187,7 +188,10 @@ std::unique_ptr<CurtainMode> GnomeInteractionStrategy::CreateCurtainMode(
 
 GnomeInteractionStrategy::GnomeInteractionStrategy(
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
-    : ui_task_runner_(std::move(ui_task_runner)), weak_ptr_factory_(this) {}
+    : ui_task_runner_(std::move(ui_task_runner)), weak_ptr_factory_(this) {
+  capture_stream_manager_subscription_ =
+      capture_stream_manager_.AddObserver(this);
+}
 
 template <typename SuccessType, typename String>
 GDBusConnectionRef::CallCallback<SuccessType>
@@ -344,10 +348,28 @@ void GnomeInteractionStrategy::OnEiSession(
                                display_config_client_.GetWeakPtr(),
                                screencast_session_path_);
   capture_stream_manager_.AddStream(
-      base::BindOnce([](base::expected<webrtc::ScreenId, std::string> result) {
+      kInitialResolution,
+      base::BindOnce([](base::expected<base::WeakPtr<PipewireCaptureStream>,
+                                       std::string> result) {
         // Transform the value to void, while keeping the error unchanged.
-        return result.transform([](webrtc::ScreenId screen_id) { return; });
+        return result.transform(
+            [](base::WeakPtr<PipewireCaptureStream>) { return; });
       }).Then(std::move(init_callback_)));
+}
+
+void GnomeInteractionStrategy::OnPipewireCaptureStreamAdded(
+    base::WeakPtr<PipewireCaptureStream> stream) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!stream) {
+    return;
+  }
+  auto it = pending_desktop_capturer_inits_.find(stream->screen_id());
+  if (it == pending_desktop_capturer_inits_.end()) {
+    return;
+  }
+  std::move(it->second).Run(stream);
+  pending_desktop_capturer_inits_.erase(it);
 }
 
 GnomeInteractionStrategyFactory::GnomeInteractionStrategyFactory(
