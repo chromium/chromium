@@ -5,8 +5,11 @@
 #include "net/dns/host_resolver_nat64_task.h"
 
 #include <algorithm>
+#include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -16,10 +19,13 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "net/base/address_list.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/public/dns_query_type.h"
 
@@ -41,24 +47,22 @@ HostResolverNat64Task::~HostResolverNat64Task() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void HostResolverNat64Task::Start(base::OnceClosure completion_closure) {
+void HostResolverNat64Task::Start(CallbackType completion_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!completion_closure_);
+  CHECK(!completion_callback_);
+  CHECK(!result_);
+  CHECK(completion_callback);
 
-  completion_closure_ = std::move(completion_closure);
+  completion_callback_ = std::move(completion_callback);
 
   next_state_ = State::kResolve;
   int rv = DoLoop(OK);
   if (rv != ERR_IO_PENDING) {
+    CHECK(result_);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(completion_closure_));
+        FROM_HERE,
+        base::BindOnce(std::move(completion_callback_), std::move(result_)));
   }
-}
-
-HostCache::Entry HostResolverNat64Task::GetResults() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!completion_closure_);
-  return results_;
 }
 
 int HostResolverNat64Task::DoLoop(int result) {
@@ -110,10 +114,20 @@ int HostResolverNat64Task::DoResolveComplete(int result) {
     IPAddress ipv4_address;
     bool is_ip = ipv4_address.AssignFromIPLiteral(hostname_);
     DCHECK(is_ip);
-    std::set<std::string> aliases;
-    results_ =
-        HostCache::Entry(OK, {IPEndPoint(ipv4_address, 0)}, std::move(aliases),
-                         HostCache::Entry::SOURCE_UNKNOWN);
+
+    // Use Now() for expiration times. HostResolverManager is not expected to
+    // try to cache Nat64 results, and there isn't a known TTL to use. From a
+    // practical perspective, because subsequent transformation is static, the
+    // important thing to cache is the "ipv4only.arpa" resolution that the
+    // resolver should already be caching if possible.
+    result_ = std::make_unique<HostResolverInternalDataResult>(
+        hostname_, DnsQueryType::UNSPECIFIED,
+        /*expiration=*/base::TimeTicks::Now(),
+        /*timed_expiration=*/base::Time::Now(),
+        HostResolverInternalResult::Source::kUnknown,
+        std::vector<IPEndPoint>{IPEndPoint(ipv4_address, 0)},
+        /*strings=*/std::vector<std::string>{},
+        /*hosts=*/std::vector<HostPortPair>{});
     return OK;
   }
 
@@ -147,22 +161,32 @@ int HostResolverNat64Task::DoSynthesizeToIpv6() {
     }
   }
 
-  std::set<std::string> aliases;
-
   if (converted_addresses.empty()) {
     converted_addresses = {IPEndPoint(ipv4_address, 0)};
   }
 
-  results_ =
-      HostCache::Entry(OK, std::move(converted_addresses), std::move(aliases),
-                       HostCache::Entry::SOURCE_UNKNOWN);
+  // Use Now() for expiration times. HostResolverManager is not expected to
+  // try to cache Nat64 results, and there isn't a known TTL to use. From a
+  // practical perspective, because subsequent transformation is static, the
+  // important thing to cache is the "ipv4only.arpa" resolution that the
+  // resolver should already be caching if possible.
+  result_ = std::make_unique<HostResolverInternalDataResult>(
+      hostname_, DnsQueryType::UNSPECIFIED,
+      /*expiration=*/base::TimeTicks::Now(),
+      /*timed_expiration=*/base::Time::Now(),
+      HostResolverInternalResult::Source::kUnknown,
+      std::move(converted_addresses),
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
   return OK;
 }
 
 void HostResolverNat64Task::OnIOComplete(int result) {
   result = DoLoop(result);
-  if (result != ERR_IO_PENDING)
-    std::move(completion_closure_).Run();
+  if (result != ERR_IO_PENDING) {
+    CHECK(result_);
+    std::move(completion_callback_).Run(std::move(result_));
+  }
 }
 
 }  // namespace net

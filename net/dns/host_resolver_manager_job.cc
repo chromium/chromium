@@ -952,10 +952,18 @@ void HostResolverManager::Job::StartNat64Task() {
                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void HostResolverManager::Job::OnNat64TaskComplete() {
-  DCHECK(nat64_task_);
-  HostCache::Entry results = nat64_task_->GetResults();
-  CompleteRequestsWithoutCache(results, std::nullopt /* stale_info */,
+void HostResolverManager::Job::OnNat64TaskComplete(
+    std::unique_ptr<HostResolverInternalResult> result) {
+  CHECK(nat64_task_);
+  CHECK(result);
+
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  results.insert(std::move(result));
+  HostCache::Entry legacy_results(results, base::Time::Now(),
+                                  tick_clock_->NowTicks(),
+                                  HostCache::Entry::SOURCE_UNKNOWN);
+
+  CompleteRequestsWithoutCache(legacy_results, /*stale_info=*/std::nullopt,
                                TaskType::NAT64);
 }
 

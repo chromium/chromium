@@ -33,6 +33,7 @@
 namespace net {
 
 class ResolveContext;
+class HostResolverInternalResult;
 class HostResolverMdnsTask;
 class HostResolverNat64Task;
 
@@ -256,7 +257,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   void OnMdnsImmediateFailure(int rv);
 
   void StartNat64Task();
-  void OnNat64TaskComplete();
+  void OnNat64TaskComplete(std::unique_ptr<HostResolverInternalResult> result);
 
   void RecordJobHistograms(const HostCache::Entry& results,
                            std::optional<TaskType> task_type);
