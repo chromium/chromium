@@ -2985,7 +2985,6 @@ crbug.com/431445601 [ Win11-arm64 ] external/wpt/html/webappapis/system-state-an
 [ Win11-arm64 ] external/wpt/notifications/shownotification.https.window.html [ Crash ]
 crbug.com/431708418 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Timeout ]
 crbug.com/431708418 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-optout.https.html [ Crash ]
-crbug.com/431708418 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Timeout ]
 crbug.com/431708418 [ Win11-arm64 ] external/wpt/speech-api/SpeechRecognition-onstart-onend.https.html [ Crash ]
 crbug.com/431708420 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-web-socket.sub.https.window.html [ Crash ]
 crbug.com/431708420 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess.sub.https.window.html [ Crash ]
@@ -3207,7 +3206,6 @@ crbug.com/428771902 [ Mac14 ] external/wpt/html/document-isolation-policy/isolat
 crbug.com/428771902 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/isolate-and-require-corp-load-from-cache-storage.tentative.https.html [ Crash ]
 [ Mac14 ] external/wpt/notifications/cross-origin-serviceworker.tentative.https.sub.html [ Crash ]
 [ Win11-arm64 ] external/wpt/notifications/cross-origin-serviceworker.tentative.https.sub.html [ Crash ]
-crbug.com/429011229 [ Mac14 ] external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Crash ]
 crbug.com/429011229 [ Mac14 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_parse_error-downgraded.tentative.html [ Crash ]
 crbug.com/429011229 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_parse_error-downgraded.tentative.html [ Crash ]
 crbug.com/429011229 [ Mac14 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-ok-origin-referrer.tentative.html [ Crash ]
@@ -9071,16 +9069,11 @@ crbug.com/359319433 [ Mac13-arm64 ] external/wpt/secure-payment-confirmation/aut
 crbug.com/359319433 [ Mac14-arm64 ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass Skip ]
 crbug.com/359319433 [ Mac15 ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass Skip ]
 crbug.com/359319433 [ Mac15-arm64 ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac12 ] external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac12-arm64 ] external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac13 ] external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac13-arm64 ] external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac14-arm64 ] external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac15 ] external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac15-arm64 ] external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure Pass Skip ]
 crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Pass Skip ]
 # Gardener 2025-08-06 this test is also flaky on the other bots
 crbug.com/359319433 external/wpt/secure-payment-confirmation/enrollment.https.html [ Failure Pass Skip ]
+# Gardener 2025-08-13 this test produces output that changes with each Chrome version
+crbug.com/359319433 external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure Pass ]
 
 # Gardener 2024-08-13
 crbug.com/358437652 [ Linux ] external/wpt/dom/events/scrolling/wheel-event-transactions-multiple-action-chains.html [ Failure ]
