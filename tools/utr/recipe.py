@@ -108,7 +108,8 @@ class LegacyRunner:
                reuse_task=None,
                skip_coverage=False,
                no_rbe=False,
-               no_siso=False):
+               no_siso=False,
+               use_autoninja=False):
     """Constructor for LegacyRunner
 
     Args:
@@ -129,6 +130,7 @@ class LegacyRunner:
       skip_coverage: If True, skip code coverage instrumentation.
       no_rbe: If True, disables RBE during compile.
       no_siso: If True, disabled Siso during compile and isolate.
+      use_autoninja: If True, uses autoninja during compile.
     """
     self._recipes_py = recipes_py
     self._skip_coverage = skip_coverage
@@ -167,6 +169,15 @@ class LegacyRunner:
     # elsewhere
     if 'recipe' in input_props:
       input_props['builder_recipe'] = input_props['recipe']
+
+    if not skip_compile and use_autoninja:
+      # We use the autoninja in the depot_tools on PATH rather than the one in
+      # //third_party/depot_tools/ since the latter likely won't be sufficiently
+      # bootstrapped.
+      autoninja_path = shutil.which('autoninja')
+      if not autoninja_path:
+        raise FileNotFoundError('autoninja not found; is depot_tools on PATH?')
+      input_props['autoninja_path'] = autoninja_path
 
     mode = 'RUN_TYPE_COMPILE_AND_RUN'
     assert not (skip_compile and skip_test)
@@ -208,6 +219,9 @@ class LegacyRunner:
     input_props['$build/reclient']['instance'] = self._get_reclient_instance()
     if not '$build/siso' in input_props:
       input_props['$build/siso'] = {}
+    # Builders often have a lower build parallelization than what most devs
+    # expect. So uncap the amount of siso jobs.
+    input_props['$build/siso']['remote_jobs'] = -1
     input_props['$build/siso']['project'] = self._get_siso_project()
     if no_rbe:
       input_props['no_rbe'] = True
