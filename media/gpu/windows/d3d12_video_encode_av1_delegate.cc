@@ -623,8 +623,12 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
             " Failed to initialize D3D12VideoEncoderWrapper."};
   }
 
-  if (!dpb_.InitializeTextureArray(device_.Get(), config.input_visible_size,
-                                   input_format_, max_num_ref_frames_)) {
+  bool use_texture_array =
+      support.SupportFlags &
+      D3D12_VIDEO_ENCODER_SUPPORT_FLAG_RECONSTRUCTED_FRAMES_REQUIRE_TEXTURE_ARRAYS;
+  if (!dpb_.InitializeTextureResources(device_.Get(), config.input_visible_size,
+                                       input_format_, max_num_ref_frames_,
+                                       use_texture_array)) {
     return {EncoderStatus::Codes::kEncoderInitializationError,
             "Failed to initialize DPB."};
   }

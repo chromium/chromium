@@ -542,36 +542,58 @@ D3D12VideoEncodeDecodedPictureBuffers<
     maxDpbSize>::~D3D12VideoEncodeDecodedPictureBuffers() = default;
 
 template <size_t maxDpbSize>
-bool D3D12VideoEncodeDecodedPictureBuffers<maxDpbSize>::InitializeTextureArray(
-    ID3D12Device* device,
-    gfx::Size texture_size,
-    DXGI_FORMAT format,
-    size_t max_num_ref_frames) {
+bool D3D12VideoEncodeDecodedPictureBuffers<
+    maxDpbSize>::InitializeTextureResources(ID3D12Device* device,
+                                            gfx::Size texture_size,
+                                            DXGI_FORMAT format,
+                                            size_t max_num_ref_frames,
+                                            bool use_texture_array) {
   CHECK_GT(max_num_ref_frames, 0u);
   CHECK_LE(max_num_ref_frames, kMaxDpbSize);
   size_ = max_num_ref_frames;
 
   // We reserve one space in extra for the current frame.
   const size_t array_size = size_ + 1;
-  resources_.resize(array_size);
+  resources_.resize(use_texture_array ? 1 : array_size);
   raw_resources_.resize(array_size);
   subresources_.resize(array_size);
+
   D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(
-      format, texture_size.width(), texture_size.height(), 1, 1);
+      format, texture_size.width(), texture_size.height(),
+      /*arraySize=*/use_texture_array ? array_size : 1, /*mipLevels=*/1);
   desc.Flags = D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE |
                D3D12_RESOURCE_FLAG_VIDEO_ENCODE_REFERENCE_ONLY;
-  for (size_t i = 0; i < array_size; i++) {
+  if (use_texture_array) {
     HRESULT hr = device->CreateCommittedResource(
         &D3D12HeapProperties::kDefault, D3D12_HEAP_FLAG_NONE, &desc,
-        D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&resources_[i]));
+        D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&resources_[0]));
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed to CreateCommittedResource for "
                     "D3D12VideoEncodeReferenceFrameList: "
                  << PrintHr(hr);
       return false;
     }
-    raw_resources_[i] = resources_[i].Get();
-    subresources_[i] = 0;
+    for (size_t i = 0; i < array_size; i++) {
+      raw_resources_[i] = resources_[0].Get();
+      // When texture array is used, this points to the array index of the first
+      // resource plane. Refer to:
+      // https://microsoft.github.io/DirectX-Specs/d3d/D3D12VideoEncoding.html#6112-struct-d3d12_video_encode_reference_frames
+      subresources_[i] = i;
+    }
+  } else {
+    for (size_t i = 0; i < array_size; i++) {
+      HRESULT hr = device->CreateCommittedResource(
+          &D3D12HeapProperties::kDefault, D3D12_HEAP_FLAG_NONE, &desc,
+          D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&resources_[i]));
+      if (FAILED(hr)) {
+        LOG(ERROR) << "Failed to CreateCommittedResource for "
+                      "D3D12VideoEncodeReferenceFrameList: "
+                   << PrintHr(hr);
+        return false;
+      }
+      raw_resources_[i] = resources_[i].Get();
+      subresources_[i] = 0;
+    }
   }
   return true;
 }

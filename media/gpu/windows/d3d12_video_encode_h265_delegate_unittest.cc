@@ -233,7 +233,7 @@ class D3D12VideoEncodeH265DelegateTest
 TEST_F(D3D12VideoEncodeH265ReferenceFrameManagerTest,
        MarkReferenceFrameAndCheckDescriptors) {
   D3D12VideoEncodeH265ReferenceFrameManager reference_manager;
-  ASSERT_TRUE(reference_manager.InitializeTextureArray(
+  ASSERT_TRUE(reference_manager.InitializeTextureResources(
       device_.Get(), {1280, 720}, DXGI_FORMAT_NV12, 4));
   EXPECT_EQ(reference_manager.GetReferenceFrameId(0), std::nullopt);
 

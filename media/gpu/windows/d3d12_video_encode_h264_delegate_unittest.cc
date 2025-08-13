@@ -168,7 +168,8 @@ class D3D12VideoEncodeH264DelegateTest
                       support->InputFormat == DXGI_FORMAT_P010);
           support->SupportFlags =
               support->Codec == D3D12_VIDEO_ENCODER_CODEC_H264
-                  ? D3D12_VIDEO_ENCODER_SUPPORT_FLAG_GENERAL_SUPPORT_OK
+                  ? D3D12_VIDEO_ENCODER_SUPPORT_FLAG_GENERAL_SUPPORT_OK |
+                        D3D12_VIDEO_ENCODER_SUPPORT_FLAG_RECONSTRUCTED_FRAMES_REQUIRE_TEXTURE_ARRAYS
                   : D3D12_VIDEO_ENCODER_SUPPORT_FLAG_NONE;
           support->ValidationFlags =
               support->Codec != D3D12_VIDEO_ENCODER_CODEC_H264
@@ -197,8 +198,8 @@ TEST_F(D3D12VideoEncodeH264ReferenceFrameManagerTest,
        ProcessMemoryManagementControlOperation) {
   // Initialization
   D3D12VideoEncodeH264ReferenceFrameManager reference_manager;
-  ASSERT_TRUE(reference_manager.InitializeTextureArray(
-      device_.Get(), {1280, 720}, DXGI_FORMAT_NV12, 4));
+  ASSERT_TRUE(reference_manager.InitializeTextureResources(
+      device_.Get(), {1280, 720}, DXGI_FORMAT_NV12, 4, true));
   EXPECT_EQ(reference_manager.GetMaxLongTermFrameIndexPlus1(), 0u);
   EXPECT_EQ(reference_manager.GetLongTermReferenceFrameResourceId(0),
             std::nullopt);

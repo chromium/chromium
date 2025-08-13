@@ -768,9 +768,12 @@ EncoderStatus D3D12VideoEncodeH264Delegate::InitializeVideoEncoder(
         D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAG_USE_ADAPTIVE_8x8_TRANSFORM;
   }
 
-  if (!reference_frame_manager_.InitializeTextureArray(
+  bool use_texture_array =
+      encoder_support_flags_ &
+      D3D12_VIDEO_ENCODER_SUPPORT_FLAG_RECONSTRUCTED_FRAMES_REQUIRE_TEXTURE_ARRAYS;
+  if (!reference_frame_manager_.InitializeTextureResources(
           device_.Get(), config.input_visible_size, input_format_,
-          max_num_ref_frames_)) {
+          max_num_ref_frames_, use_texture_array)) {
     return {EncoderStatus::Codes::kEncoderInitializationError,
             "Failed to initialize DPB"};
   }

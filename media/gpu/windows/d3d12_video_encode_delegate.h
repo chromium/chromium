@@ -203,11 +203,15 @@ class D3D12VideoEncodeDecodedPictureBuffers {
 
   size_t size() const { return size_; }
 
-  // Initialize the texture array with the given size and format.
-  bool InitializeTextureArray(ID3D12Device* device,
-                              gfx::Size texture_size,
-                              DXGI_FORMAT format,
-                              size_t max_num_ref_frames);
+  // Initialize the texture resources with the given size and format. When
+  // `use_texture_array` is true, this will create texture array within single
+  // resource; otherwise, an array of textures in invidual resources will be
+  // created.
+  bool InitializeTextureResources(ID3D12Device* device,
+                                  gfx::Size texture_size,
+                                  DXGI_FORMAT format,
+                                  size_t max_num_ref_frames,
+                                  bool use_texture_array = false);
 
   // Get the unused buffer for current frame.
   D3D12PictureBuffer GetCurrentFrame() const;
