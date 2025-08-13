@@ -84,7 +84,6 @@ import org.chromium.url.GURL;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
@@ -128,8 +127,6 @@ class WebViewChromium
     protected WebViewChromiumFactoryProvider mFactory;
 
     protected final SharedWebViewChromium mSharedWebViewChromium;
-
-    private final boolean mShouldDisableThreadChecking;
 
     private static boolean sRecordWholeDocumentEnabledByApi;
 
@@ -674,8 +671,7 @@ class WebViewChromium
     public WebViewChromium(
             WebViewChromiumFactoryProvider factory,
             WebView webView,
-            WebView.PrivateAccess webViewPrivate,
-            boolean shouldDisableThreadChecking) {
+            WebView.PrivateAccess webViewPrivate) {
         try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("WebViewChromium.constructor")) {
             WebViewChromiumFactoryProvider.checkStorageIsNotDeviceProtected(webView.getContext());
             mWebView = webView;
@@ -684,7 +680,6 @@ class WebViewChromium
             mContext = ClassLoaderContextWrapperFactory.get(mWebView.getContext());
             mAppTargetSdkVersion = mContext.getApplicationInfo().targetSdkVersion;
             mFactory = factory;
-            mShouldDisableThreadChecking = shouldDisableThreadChecking;
             factory.addWebViewAssetPath(mWebView.getContext());
             mSharedWebViewChromium =
                     new SharedWebViewChromium(mFactory.getRunQueue(), mFactory.getAwInit());
@@ -801,8 +796,6 @@ class WebViewChromium
                 mWebSettings.getAwSettings().setScrollTopLeftInteropEnabled(true);
             }
 
-            if (mShouldDisableThreadChecking) disableThreadChecking();
-
             mSharedWebViewChromium.init(mContentsClientAdapter);
 
             // In the normal case where we are currently on the UI thread, this will run initForReal
@@ -861,26 +854,6 @@ class WebViewChromium
         } else {
             RecordHistogram.recordTimesHistogram(
                     "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Warm", elapsedTime);
-        }
-    }
-
-    // This is a workaround for https://crbug.com/622151.
-    // In HTC's email app, InputConnection.setComposingText() will call WebView.evaluateJavaScript,
-    // and thread assertion will occur. We turn off WebView thread assertion for this app.
-    // SuppressLint rationale: https://crrev.com/c/3439168/comments/d612ae09_b7bfca2b
-    @SuppressLint("SoonBlockedPrivateApi")
-    private void disableThreadChecking() {
-        try {
-            Class<?> webViewClass = Class.forName("android.webkit.WebView");
-            Field field = webViewClass.getDeclaredField("sEnforceThreadChecking");
-            field.setAccessible(true);
-            field.setBoolean(null, false);
-            field.setAccessible(false);
-        } catch (ClassNotFoundException
-                | NoSuchFieldException
-                | IllegalAccessException
-                | IllegalArgumentException e) {
-            Log.w(TAG, "Failed to disable thread checking.");
         }
     }
 
@@ -1369,30 +1342,12 @@ class WebViewChromium
     @Override
     public void evaluateJavaScript(
             final String script, final ValueCallback<String> resultCallback) {
-        if (mShouldDisableThreadChecking && checkNeedsPost()) {
-            // This is a workaround for https://crbug.com/622151.
-            mFactory.addTask(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            try (TraceEvent event =
-                                    TraceEvent.scoped(
-                                            "WebView.APICall.Framework.EVALUATE_JAVASCRIPT")) {
-                                recordWebViewApiCall(ApiCall.EVALUATE_JAVASCRIPT);
-                                mAwContents.evaluateJavaScript(
-                                        script,
-                                        CallbackConverter.fromValueCallback(resultCallback));
-                            }
-                        }
-                    });
-        } else {
-            try (TraceEvent event =
-                    TraceEvent.scoped("WebView.APICall.Framework.EVALUATE_JAVASCRIPT")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.EVALUATE_JAVASCRIPT")) {
                 recordWebViewApiCall(ApiCall.EVALUATE_JAVASCRIPT);
                 checkThread();
-                mAwContents.evaluateJavaScript(
-                        script, CallbackConverter.fromValueCallback(resultCallback));
-            }
+            mAwContents.evaluateJavaScript(
+                    script, CallbackConverter.fromValueCallback(resultCallback));
         }
     }
 
