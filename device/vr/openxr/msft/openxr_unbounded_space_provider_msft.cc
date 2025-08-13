@@ -34,9 +34,8 @@ OpenXrUnboundedSpaceProviderMsftFactory::GetRequestedExtensions() const {
 }
 
 std::set<device::mojom::XRSessionFeature>
-OpenXrUnboundedSpaceProviderMsftFactory::GetSupportedFeatures(
-    const OpenXrExtensionEnumeration* extension_enum) const {
-  if (!IsEnabled(extension_enum)) {
+OpenXrUnboundedSpaceProviderMsftFactory::GetSupportedFeatures() const {
+  if (!IsEnabled()) {
     return {};
   }
 
@@ -44,9 +43,8 @@ OpenXrUnboundedSpaceProviderMsftFactory::GetSupportedFeatures(
 }
 
 std::unique_ptr<OpenXrUnboundedSpaceProvider>
-OpenXrUnboundedSpaceProviderMsftFactory::CreateUnboundedSpaceProvider(
-    const OpenXrExtensionHelper& extension_helper) const {
-  bool is_supported = IsEnabled(extension_helper.ExtensionEnumeration());
+OpenXrUnboundedSpaceProviderMsftFactory::CreateUnboundedSpaceProvider() const {
+  bool is_supported = IsEnabled();
   DVLOG(2) << __func__ << " is_supported=" << is_supported;
   if (is_supported) {
     return std::make_unique<OpenXrUnboundedSpaceProviderMsft>();

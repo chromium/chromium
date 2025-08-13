@@ -43,8 +43,8 @@ class OpenXrHandTrackerFbFactory : public OpenXrExtensionHandlerFactory {
 
   const base::flat_set<std::string_view>& GetRequestedExtensions()
       const override;
-  std::set<device::mojom::XRSessionFeature> GetSupportedFeatures(
-      const OpenXrExtensionEnumeration* extension_enum) const override;
+  std::set<device::mojom::XRSessionFeature> GetSupportedFeatures()
+      const override;
 
   std::unique_ptr<OpenXrHandTracker> CreateHandTracker(
       const OpenXrExtensionHelper& extension_helper,

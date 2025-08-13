@@ -128,10 +128,6 @@ class OpenXrExtensionHelper {
   // abstract the *actual* extension that we need to use, since different
   // extensions will be looking for different methods.
 
-  std::unique_ptr<OpenXrAnchorManager> CreateAnchorManager(
-      XrSession session,
-      XrSpace base_space) const;
-
   std::unique_ptr<OpenXrDepthSensor> CreateDepthSensor(
       XrSession session,
       XrSpace base_space,

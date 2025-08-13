@@ -49,20 +49,28 @@ class OpenXRSceneUnderstandingManagerMSFT
 };
 
 class OpenXrSceneUnderstandingManagerMsftFactory
-    : public OpenXrSceneUnderstandingManagerFactory {
+    : public OpenXrExtensionHandlerFactory {
  public:
   OpenXrSceneUnderstandingManagerMsftFactory();
   ~OpenXrSceneUnderstandingManagerMsftFactory() override;
 
   const base::flat_set<std::string_view>& GetRequestedExtensions()
       const override;
-  std::set<device::mojom::XRSessionFeature> GetSupportedFeatures(
-      const OpenXrExtensionEnumeration* extension_enum) const override;
+  std::set<device::mojom::XRSessionFeature> GetSupportedFeatures()
+      const override;
+
+  void CheckAndUpdateEnabledState(
+      const OpenXrExtensionEnumeration* extension_enum,
+      XrInstance instance,
+      XrSystemId system) override;
 
   std::unique_ptr<OpenXRSceneUnderstandingManager>
   CreateSceneUnderstandingManager(const OpenXrExtensionHelper& extension_helper,
                                   XrSession session,
                                   XrSpace mojo_space) const override;
+
+ private:
+  std::set<device::mojom::XRSessionFeature> supported_features_;
 };
 
 }  // namespace device

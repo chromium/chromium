@@ -44,19 +44,19 @@ OpenXrStageBoundsProviderBasicFactory::GetRequestedExtensions() const {
 }
 
 std::set<device::mojom::XRSessionFeature>
-OpenXrStageBoundsProviderBasicFactory::GetSupportedFeatures(
-    const OpenXrExtensionEnumeration* extension_enum) const {
+OpenXrStageBoundsProviderBasicFactory::GetSupportedFeatures() const {
   return {device::mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR};
 }
 
-bool OpenXrStageBoundsProviderBasicFactory::IsEnabled(
-    const OpenXrExtensionEnumeration* extension_enum) const {
-  return true;
+void OpenXrStageBoundsProviderBasicFactory::CheckAndUpdateEnabledState(
+    const OpenXrExtensionEnumeration* extension_enum,
+    XrInstance instance,
+    XrSystemId system) {
+  SetEnabled(true);
 }
 
 std::unique_ptr<OpenXrStageBoundsProvider>
 OpenXrStageBoundsProviderBasicFactory::CreateStageBoundsProvider(
-    const OpenXrExtensionHelper& extension_helper,
     XrSession session) const {
   DVLOG(2) << __func__;
   return std::make_unique<OpenXrStageBoundsProviderBasic>(session);

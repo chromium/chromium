@@ -14,25 +14,15 @@ namespace device {
 OpenXrExtensionHandlerFactory::OpenXrExtensionHandlerFactory() = default;
 OpenXrExtensionHandlerFactory::~OpenXrExtensionHandlerFactory() = default;
 
-bool OpenXrExtensionHandlerFactory::IsEnabled(
-    const OpenXrExtensionEnumeration* extension_enum) const {
-  return supported_by_system_properties_ &&
-         AreAllRequestedExtensionsSupported(extension_enum);
+bool OpenXrExtensionHandlerFactory::IsEnabled() const {
+  return enabled_;
 }
 
-void OpenXrExtensionHandlerFactory::ProcessSystemProperties(
+void OpenXrExtensionHandlerFactory::CheckAndUpdateEnabledState(
     const OpenXrExtensionEnumeration* extension_enum,
     XrInstance instance,
     XrSystemId system) {
-  SetSystemPropertiesSupport(true);
-}
-
-std::unique_ptr<OpenXrAnchorManager>
-OpenXrExtensionHandlerFactory::CreateAnchorManager(
-    const OpenXrExtensionHelper& extension_helper,
-    XrSession session,
-    XrSpace mojo_space) const {
-  return nullptr;
+  SetEnabled(AreAllRequestedExtensionsSupported(extension_enum));
 }
 
 std::unique_ptr<OpenXrDepthSensor>
@@ -70,14 +60,12 @@ OpenXrExtensionHandlerFactory::CreateSceneUnderstandingManager(
 
 std::unique_ptr<OpenXrStageBoundsProvider>
 OpenXrExtensionHandlerFactory::CreateStageBoundsProvider(
-    const OpenXrExtensionHelper& extension_helper,
     XrSession session) const {
   return nullptr;
 }
 
 std::unique_ptr<OpenXrUnboundedSpaceProvider>
-OpenXrExtensionHandlerFactory::CreateUnboundedSpaceProvider(
-    const OpenXrExtensionHelper& extension_helper) const {
+OpenXrExtensionHandlerFactory::CreateUnboundedSpaceProvider() const {
   return nullptr;
 }
 
@@ -90,8 +78,8 @@ bool OpenXrExtensionHandlerFactory::AreAllRequestedExtensionsSupported(
       });
 }
 
-void OpenXrExtensionHandlerFactory::SetSystemPropertiesSupport(bool supported) {
-  supported_by_system_properties_ = supported;
+void OpenXrExtensionHandlerFactory::SetEnabled(bool enabled) {
+  enabled_ = enabled;
 }
 
 }  // namespace device

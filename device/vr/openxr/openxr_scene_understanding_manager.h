@@ -30,12 +30,5 @@ class OpenXRSceneUnderstandingManager {
   virtual OpenXrHitTestManager* GetHitTestManager() = 0;
 };
 
-class OpenXrSceneUnderstandingManagerFactory
-    : public OpenXrExtensionHandlerFactory {
- public:
-  bool IsEnabled(
-      const OpenXrExtensionEnumeration* extension_enum) const override;
-};
-
 }  // namespace device
 #endif  // DEVICE_VR_OPENXR_OPENXR_SCENE_UNDERSTANDING_MANAGER_H_

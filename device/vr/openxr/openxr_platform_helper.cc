@@ -220,8 +220,8 @@ void OpenXrPlatformHelper::UpdateExtensionFactorySupport() {
   OpenXrApiWrapper::GetSystem(xr_instance_, &system);
 
   for (auto* extension_factory : GetExtensionHandlerFactories()) {
-    extension_factory->ProcessSystemProperties(extension_enumeration,
-                                               xr_instance_, system);
+    extension_factory->CheckAndUpdateEnabledState(extension_enumeration,
+                                                  xr_instance_, system);
   }
 }
 
