@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.ContextThemeWrapper;
+import android.view.MotionEvent;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -279,5 +280,16 @@ public class OmniboxSuggestionsContainerUnitTest {
         int heightSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST);
         mContainer.measure(widthSpec, heightSpec);
         mContainer.layout(0, 0, mContainer.getMeasuredWidth(), mContainer.getMeasuredHeight());
+    }
+
+    @Test
+    public void testOnTouchEvent_returnsTrue() {
+        var event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+        assertTrue(mContainer.onTouchEvent(event));
+    }
+
+    @Test
+    public void testPerformClick_returnsFalse() {
+        assertFalse(mContainer.performClick());
     }
 }

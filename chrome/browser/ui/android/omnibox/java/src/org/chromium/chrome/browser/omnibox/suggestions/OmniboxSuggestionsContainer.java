@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
@@ -92,6 +94,18 @@ public class OmniboxSuggestionsContainer extends FrameLayout {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return mDropdown.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    @SuppressLint("ClickableViewAccessibility")
+    public boolean onTouchEvent(MotionEvent event) {
+        // Swallow all touch events, especially if these were not consumed by the Dropdown.
+        // This ensures that touching the blank areas of the container does not dismiss the
+        // Omnibox.
+        // Making the container `clickable=true` achieves similar goal, but this consumes all
+        // activators, including keyboard <Enter> key.
+        super.onTouchEvent(event);
+        return true;
     }
 
     private void maybeUpdateLayoutParams(int topMargin) {
