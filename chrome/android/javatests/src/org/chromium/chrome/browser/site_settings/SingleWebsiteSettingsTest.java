@@ -37,7 +37,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -57,7 +56,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ProviderType;
-import org.chromium.media.MediaFeatures;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -66,7 +64,6 @@ import java.util.List;
 /** Tests that exercise functionality when showing details for a single site. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@EnableFeatures(MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Batch(SingleWebsiteSettingsTest.TEST_BATCH_NAME)
 public class SingleWebsiteSettingsTest {

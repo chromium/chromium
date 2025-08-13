@@ -92,10 +92,6 @@ The order of the following items is from: http://crbug.com/610358.
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
         android:key="window_management" />
-    <!-- Auto Picture in Picture -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
-        android:key="auto_picture_in_picture" />
     <!-- Local Network Access -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"

@@ -45,8 +45,6 @@ public abstract class PermissionsAndroidFeatureList {
     public static final String APPROXIMATE_GEOLOCATION_PERMISSION =
             "ApproximateGeolocationPermission";
 
-    public static final String AUTO_PICTURE_IN_PICTURE_ANDROID = "AutoPictureInPictureAndroid";
-
     public static final BooleanCachedFeatureParam APPROXIMATE_GEOLOCATION_SAMPLE_DATA =
             PermissionsAndroidFeatureMap.newBooleanCachedFeatureParam(
                     APPROXIMATE_GEOLOCATION_PERMISSION, "sample_data", false);

@@ -84,11 +84,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     // A boolean to configure whether the sound setting should be shown. Defaults to true.
     public static final String EXTRA_SHOW_SOUND = "org.chromium.chrome.preferences.show_sound";
 
-    // A boolean to configure whether the automatic picture in picture setting should be shown.
-    // Defaults to true.
-    public static final String EXTRA_SHOW_AUTO_PIP =
-            "org.chromium.chrome.preferences.show_auto_pip";
-
     // A boolean that indicates whether these settings were opened from GroupedWebsiteSettings.
     public static final String EXTRA_FROM_GROUPED = "org.chromium.chrome.preferences.from_grouped";
 
@@ -139,8 +134,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 return "ads_permission_list";
             case ContentSettingsType.AUTO_DARK_WEB_CONTENT:
                 return "auto_dark_web_content_permission_list";
-            case ContentSettingsType.AUTO_PICTURE_IN_PICTURE:
-                return "auto_picture_in_picture_permission_list";
             case ContentSettingsType.AUTOMATIC_DOWNLOADS:
                 return "automatic_downloads_permission_list";
             case ContentSettingsType.BACKGROUND_SYNC:
@@ -610,11 +603,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 setUpLocationPreference(preference);
             } else if (type == ContentSettingsType.NOTIFICATIONS) {
                 setUpNotificationsPreference(preference, mSite.isEmbargoed(type));
-            } else if (type == ContentSettingsType.AUTO_PICTURE_IN_PICTURE) {
-                // On Android, Auto-PiP does not have a prompt, so the UI treats the ASK
-                // state as ALLOW in regular mode and BLOCK in incognito. This logic should
-                // be removed when a prompt is implemented for parity with desktop.
-                setUpAutoPictureInPicturePreference(preference);
             } else {
                 setupContentSettingsPreference(
                         preference,
@@ -1302,42 +1290,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 currentValue,
                 /* isEmbargoed= */ false,
                 isOneTime(ContentSettingsType.SOUND));
-    }
-
-    @RequiresNonNull({"mSite"})
-    private void setUpAutoPictureInPicturePreference(Preference preference) {
-        if (!PermissionsAndroidFeatureMap.isEnabled(
-                PermissionsAndroidFeatureList.AUTO_PICTURE_IN_PICTURE_ANDROID)) {
-            return;
-        }
-        if (!getArguments().getBoolean(EXTRA_SHOW_AUTO_PIP, true)) {
-            return;
-        }
-
-        BrowserContextHandle browserContextHandle =
-                getSiteSettingsDelegate().getBrowserContextHandle();
-        @ContentSettingValues
-        @Nullable Integer currentValue =
-                mSite.getContentSetting(
-                        browserContextHandle, ContentSettingsType.AUTO_PICTURE_IN_PICTURE);
-        // In order to always show the auto-pip permission, set it up with the default value if it
-        // doesn't have a current value. When the profile is incognito or the global content
-        // setting is disabled, auto-pip is blocked by default.
-        if (currentValue == null) {
-            currentValue =
-                    getSiteSettingsDelegate().isIncognito()
-                                    || !WebsitePreferenceBridge.isCategoryEnabled(
-                                            browserContextHandle,
-                                            ContentSettingsType.AUTO_PICTURE_IN_PICTURE)
-                            ? ContentSettingValues.BLOCK
-                            : ContentSettingValues.ALLOW;
-        }
-
-        setupContentSettingsPreference(
-                preference,
-                currentValue,
-                mSite.isEmbargoed(ContentSettingsType.AUTO_PICTURE_IN_PICTURE),
-                isOneTime(ContentSettingsType.AUTO_PICTURE_IN_PICTURE));
     }
 
     @RequiresNonNull({"mSite"})

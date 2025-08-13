@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
-#include "build/buildflag.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -14,7 +13,6 @@
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
-#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
@@ -45,7 +43,6 @@
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "media/base/media_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "url/origin.h"
@@ -58,6 +55,7 @@
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/lookalikes/safety_tip_ui_helper.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -391,14 +389,13 @@ bool ChromePageInfoDelegate::IsSubresourceFilterActivated(
 
 bool ChromePageInfoDelegate::HasAutoPictureInPictureBeenRegistered() {
 #if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(media::kAutoPictureInPictureAndroid)) {
-    return false;
-  }
-#endif
+  return false;
+#else
   auto* auto_pip_tab_helper =
       AutoPictureInPictureTabHelper::FromWebContents(web_contents_);
   return auto_pip_tab_helper &&
          auto_pip_tab_helper->HasAutoPictureInPictureBeenRegistered();
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool ChromePageInfoDelegate::IsContentDisplayedInVrHeadset() {

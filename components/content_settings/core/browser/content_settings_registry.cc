@@ -699,20 +699,13 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
            PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
-  // Controls automatic picture-in-picture (auto-PiP).
-  // On Desktop, this controls both video and document auto-PiP and prompts the
-  // user for permission.
-  // On Android, this is for video auto-PiP only. It defaults to ALLOW in
-  // regular profiles and BLOCK in incognito. This default is shown in the UI
-  // instead of "Ask". The setting can still be explicitly changed.
   Register(ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
            "auto-picture-in-picture", CONTENT_SETTING_ASK,
            WebsiteSettingsInfo::UNSYNCABLE, /*allowlisted_primary_schemes=*/{},
            /*valid_settings=*/
            {CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK},
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
-           WebsiteSettingsRegistry::DESKTOP |
-               WebsiteSettingsRegistry::PLATFORM_ANDROID,
+           WebsiteSettingsRegistry::DESKTOP,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
            PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 

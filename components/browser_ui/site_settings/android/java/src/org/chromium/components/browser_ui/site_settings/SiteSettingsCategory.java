@@ -80,7 +80,6 @@ public class SiteSettingsCategory {
         Type.SERIAL_PORT,
         Type.LOCAL_NETWORK_ACCESS,
         Type.WINDOW_MANAGEMENT,
-        Type.AUTO_PICTURE_IN_PICTURE,
         Type.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -124,10 +123,9 @@ public class SiteSettingsCategory {
         int SERIAL_PORT = 34;
         int LOCAL_NETWORK_ACCESS = 35;
         int WINDOW_MANAGEMENT = 36;
-        int AUTO_PICTURE_IN_PICTURE = 37;
 
         /** Number of handled categories used for calculating array sizes. */
-        int NUM_ENTRIES = 38;
+        int NUM_ENTRIES = 37;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -217,8 +215,6 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.AR;
             case Type.AUTO_DARK_WEB_CONTENT:
                 return ContentSettingsType.AUTO_DARK_WEB_CONTENT;
-            case Type.AUTO_PICTURE_IN_PICTURE:
-                return ContentSettingsType.AUTO_PICTURE_IN_PICTURE;
             case Type.AUTOMATIC_DOWNLOADS:
                 return ContentSettingsType.AUTOMATIC_DOWNLOADS;
             case Type.BACKGROUND_SYNC:
@@ -315,8 +311,6 @@ public class SiteSettingsCategory {
                 return "augmented_reality";
             case Type.AUTO_DARK_WEB_CONTENT:
                 return "auto_dark_web_content";
-            case Type.AUTO_PICTURE_IN_PICTURE:
-                return "auto_picture_in_picture";
             case Type.ALL_SITES:
                 return "all_sites";
             case Type.AUTOMATIC_DOWNLOADS:
