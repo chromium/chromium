@@ -162,3 +162,7 @@ void RecordSessionPromptCount(int prompt_count) {
 void RecordSessionFirstPrompt(bool had_first_prompt) {
   base::UmaHistogramBoolean(kSessionFirstPromptHistogram, had_first_prompt);
 }
+
+void RecordURLOpened() {
+  base::RecordAction(base::UserMetricsAction("MobileGeminiURLOpened"));
+}
