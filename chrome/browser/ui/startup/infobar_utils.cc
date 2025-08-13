@@ -90,8 +90,8 @@ bool IsGpuTest() {
 }
 #endif
 
-BASE_FEATURE(kShowThirdPartyCookiePhaseoutInfoBar,
-             "ShowThirdPartyCookiePhaseoutInfoBar",
+BASE_FEATURE(kShowTestThirdPartyCookiePhaseoutInfoBar,
+             "ShowTestThirdPartyCookiePhaseoutInfoBar",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
@@ -130,7 +130,8 @@ void AddInfoBarsIfNecessary(Browser* browser,
 
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             network::switches::kTestThirdPartyCookiePhaseout) &&
-        base::FeatureList::IsEnabled(kShowThirdPartyCookiePhaseoutInfoBar)) {
+        base::FeatureList::IsEnabled(
+            kShowTestThirdPartyCookiePhaseoutInfoBar)) {
       TestThirdPartyCookiePhaseoutInfoBarDelegate::Create(web_contents);
     }
   }
