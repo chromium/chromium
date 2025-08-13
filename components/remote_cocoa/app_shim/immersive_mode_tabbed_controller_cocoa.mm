@@ -12,7 +12,6 @@
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/browser_native_widget_window_mac.h"
 #include "components/remote_cocoa/app_shim/features.h"
-#include "components/remote_cocoa/app_shim/swizzle_ns_toolbar_view_hit_test.h"
 
 namespace {
 void SetAlwaysShowTrafficLights(NSWindow* browser_window, bool always_show) {
@@ -28,10 +27,6 @@ ImmersiveModeTabbedControllerCocoa::ImmersiveModeTabbedControllerCocoa(
     NativeWidgetMacOverlayNSWindow* overlay_window,
     NativeWidgetMacOverlayNSWindow* tab_window)
     : ImmersiveModeControllerCocoa(browser_window, overlay_window) {
-  // MacOS 26 has event routing issues with right-mouse events and needs to be
-  // worked around by swizzling internal AppKit methods.
-  SwizzleNSToolbarViewHitTest();
-
   tab_window_ = tab_window;
 #ifndef NDEBUG
   tab_window_.title = @"tab overlay";
@@ -60,7 +55,6 @@ ImmersiveModeTabbedControllerCocoa::~ImmersiveModeTabbedControllerCocoa() {
   SetAlwaysShowTrafficLights(browser_window(), false);
   StopObservingChildWindows(tab_window_);
   browser_window().toolbar = nil;
-  browser_window().toolbarStyle = NSWindowToolbarStyleAutomatic;
   BridgedContentView* tab_content_view = tab_content_view_;
   [tab_content_view removeFromSuperview];
   tab_window_.contentView = tab_content_view;
@@ -115,9 +109,6 @@ void ImmersiveModeTabbedControllerCocoa::Init() {
 
   // The presence of a visible NSToolbar causes the titlebar to be revealed.
   browser_window().toolbar = [[NSToolbar alloc] init];
-  // Since macOS 26, a titlebar accessory of type NSLayoutAttributeTrailing can
-  // only customize its height when using UnifiedCompat toolbar style.
-  browser_window().toolbarStyle = NSWindowToolbarStyleUnifiedCompact;
 
   // `UpdateToolbarVisibility()` will make the toolbar visible as necessary.
   UpdateToolbarVisibility(last_used_style());
