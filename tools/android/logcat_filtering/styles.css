@@ -173,6 +173,18 @@ body {
   background-color: var(--dropdown-header-bg-color);
 }
 
+.dropdown-search-input {
+  /* Full width minus padding */
+  width: calc(100% - 32px);
+  padding: 10px 16px;
+  margin: 0;
+  border: none;
+  border-bottom: 1px solid var(--dropdown-list-border-color);
+  background-color: var(--dropdown-header-bg-color);
+  color: var(--dropdown-item-text-color);
+  outline: none;
+}
+
 .dropdown-item {
   /* Adjust padding for checkbox and label */
   padding: 8px 16px;

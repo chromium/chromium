@@ -36,8 +36,11 @@ const nextExceptionButton = document.getElementById('next-exception-button');
 const nextTestButton = document.getElementById('next-test-button');
 const dropdownHeaderProcess = document.getElementById(
   'dropdown-header-process');
+const dropdownSearchProcess = document.getElementById(
+  'dropdown-search-process');
 const dropdownListProcess = document.getElementById('dropdown-list-process');
 const dropdownHeaderTag = document.getElementById('dropdown-header-tag');
+const dropdownSearchTag = document.getElementById('dropdown-search-tag');
 const dropdownListTag = document.getElementById('dropdown-list-tag');
 const dropdownHeaderPriority = document.getElementById(
   'dropdown-header-priority');
@@ -64,12 +67,22 @@ dropdownHeaderProcess.addEventListener('click', (event) => {
   toggleDropdown(dropdownListProcess);
 });
 
+dropdownSearchProcess.addEventListener('input', (event) => {
+  filterDropdownItems(
+    event.target.value,
+    displaySingleNamedProcess.concat(displaySingleUnnamedProcess));
+});
+
 dropdownListProcess.addEventListener('click', handleProcessFilterOptionClick);
 
 dropdownHeaderTag.addEventListener('click', (event) => {
   // Prevent this click from propagating to the document
   event.stopPropagation();
   toggleDropdown(dropdownListTag);
+});
+
+dropdownSearchTag.addEventListener('input', (event) => {
+  filterDropdownItems(event.target.value, displaySingleTag);
 });
 
 dropdownListTag.addEventListener('click', handleTagFilterOptionClick);
@@ -641,6 +654,25 @@ function updateDisplayAllPrioritySelection() {
     filterOption => filterOption.checkbox.checked);
   displayAllPriorities.li.classList.toggle('selected', allSelected);
   displayAllPriorities.checkbox.checked = allSelected;
+}
+
+/**
+ * Filters the dropdown items based on the search term.
+ * @param {string} searchTerm The text to search for.
+ * @param {Array<FilterOption>} filterOptions The array of dropdown items to
+ * filter.
+ */
+function filterDropdownItems(searchTerm, filterOptions) {
+  const lowerCaseSearchTerm = searchTerm.toLowerCase();
+  for (const filterOption of filterOptions) {
+    const labelText = filterOption.li.querySelector('label')
+      .textContent.toLowerCase();
+    if (labelText.includes(lowerCaseSearchTerm)) {
+      filterOption.li.style.display = ''; // Show the item
+    } else {
+      filterOption.li.style.display = 'none'; // Hide the item
+    }
+  }
 }
 
 /**
