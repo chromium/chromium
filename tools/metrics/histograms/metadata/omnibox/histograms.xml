@@ -607,8 +607,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.CalculateVisibleHint.Duration" units="ms"
-    expires_after="2025-09-14">
-  <owner>peilinwang@google.com</owner>
+    expires_after="2026-09-14">
+  <owner>ender@google.com</owner>
   <owner>woa-performance-bugs+jank@google.com</owner>
   <summary>
     Measures the amount of time it takes to call UrlBar.calculateVisibleHint().
@@ -2039,8 +2039,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.NumberOfVisibleCharacters" units="characters"
-    expires_after="2025-09-07">
-  <owner>peilinwang@google.com</owner>
+    expires_after="2026-09-07">
+  <owner>ender@google.com</owner>
   <owner>woa-performance-bugs+jank@google.com</owner>
   <summary>
     Records the number of characters visible in the omnibox. Recorded once per
@@ -2306,8 +2306,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.ScrollToTLD.Duration" units="ms"
-    expires_after="2025-03-09">
-  <owner>peilinwang@google.com</owner>
+    expires_after="2026-03-09">
+  <owner>ender@google.com</owner>
   <owner>woa-performance-bugs+jank@google.com</owner>
   <summary>
     Measures the amount of time it takes to call UrlBar.scrollToTLD(). Logged
