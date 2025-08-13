@@ -8,7 +8,7 @@ import type {TabStrip} from './tab_strip.js';
 import type {TabStripApiProxy} from './tab_strip_api.js';
 import {TabStripApiProxyImpl} from './tab_strip_api.js';
 import type {TabsSnapshot} from './tab_strip_api.mojom-webui.js';
-import type {Container, Tab, TabCollectionContainer, TabCreatedContainer} from './tab_strip_api_data_model.mojom-webui.js';
+import type {Container, Tab, TabCreatedContainer} from './tab_strip_api_data_model.mojom-webui.js';
 import type {OnTabGroupVisualsChangedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from './tab_strip_api_events.mojom-webui.js';
 import type {NodeId} from './tab_strip_api_types.mojom-webui.js';
 
@@ -110,15 +110,15 @@ export class TabStripController {
   private async loadTabStripModel_() {
     const tabSnapshot = await this.tabsApi_.getTabs();
     const tabStrip = tabSnapshot.tabStrip;
-    const processContainer = (container: TabCollectionContainer) => {
-      if (!container || !container.elements) {
+    const processContainer = (container: Container) => {
+      if (!container || !container.children) {
         return;
       }
-      container.elements.forEach((containerElement: Container, _: number) => {
-        if (containerElement.tabContainer) {
-          this.addTab_(containerElement.tabContainer.tab);
-        } else if (containerElement.tabCollectionContainer) {
-          processContainer(containerElement.tabCollectionContainer);
+      container.children.forEach((containerElement: Container, _: number) => {
+        if (containerElement.data.tab) {
+          this.addTab_(containerElement.data.tab);
+        } else {
+          processContainer(containerElement);
         }
       });
     };
@@ -156,7 +156,7 @@ export class TabStripController {
   */
 
   private onTabGroupVisualsChanged_(event: OnTabGroupVisualsChangedEvent) {
-    const {tabGroup} = event.tabCollection;
+    const {tabGroup} = event.data;
     if (tabGroup) {
       this.tabStrip_.setTabGroupVisualData(tabGroup.id, tabGroup.data);
     }

@@ -15,7 +15,7 @@ class TabWalker {
  public:
   TabWalker(const TabStripModel* model, const tabs::TabInterface* tab);
 
-  mojom::TabContainerPtr Walk();
+  mojom::ContainerPtr Walk();
 
  private:
   raw_ptr<const TabStripModel> model_;

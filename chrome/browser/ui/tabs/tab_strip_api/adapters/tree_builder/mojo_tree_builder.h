@@ -19,7 +19,7 @@ class MojoTreeBuilder {
   MojoTreeBuilder& operator=(const MojoTreeBuilder&) = delete;
   ~MojoTreeBuilder() = default;
 
-  tabs_api::mojom::TabCollectionContainerPtr Build() const;
+  mojom::ContainerPtr Build() const;
 
  private:
   const raw_ptr<const TabStripModel> model_;

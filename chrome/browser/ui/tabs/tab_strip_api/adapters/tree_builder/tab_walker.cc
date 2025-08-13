@@ -13,8 +13,7 @@ namespace tabs_api {
 TabWalker::TabWalker(const TabStripModel* model, const tabs::TabInterface* tab)
     : model_(model), target_(tab) {}
 
-mojom::TabContainerPtr TabWalker::Walk() {
-  auto mojo_tab_container = tabs_api::mojom::TabContainer::New();
+mojom::ContainerPtr TabWalker::Walk() {
   auto idx = model_->GetIndexOfTab(target_);
   CHECK(idx != TabStripModel::kNoTab)
       << "tab disappeared while walking through the model";
@@ -22,13 +21,12 @@ mojom::TabContainerPtr TabWalker::Walk() {
   content::WebContents* contents = model_->GetWebContentsAt(idx);
   CHECK(contents);
   const ui::ColorProvider& provider = contents->GetColorProvider();
-
-  auto mojo_tab = tabs_api::converters::BuildMojoTab(
+  mojom::TabPtr mojo_tab = converters::BuildMojoTab(
       target_->GetHandle(), TabRendererData::FromTabInModel(model_, idx),
       provider);
-
-  mojo_tab_container->tab = std::move(mojo_tab);
-  return mojo_tab_container;
+  auto node = tabs_api::mojom::Container::New();
+  node->data = mojom::Data::NewTab(std::move(mojo_tab));
+  return node;
 }
 
 }  // namespace tabs_api

@@ -38,7 +38,7 @@ tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabHandle handle,
   return result;
 }
 
-tabs_api::mojom::TabCollectionPtr BuildMojoTabCollection(
+tabs_api::mojom::DataPtr BuildMojoTabCollectionData(
     tabs::TabCollectionHandle handle) {
   const tabs::TabCollection* collection = handle.Get();
   CHECK(collection);
@@ -49,19 +49,17 @@ tabs_api::mojom::TabCollectionPtr BuildMojoTabCollection(
     case tabs::TabCollection::Type::TABSTRIP: {
       auto mojo_tab_strip = tabs_api::mojom::TabStrip::New();
       mojo_tab_strip->id = node_id;
-      return tabs_api::mojom::TabCollection::NewTabStrip(
-          std::move(mojo_tab_strip));
+      return tabs_api::mojom::Data::NewTabStrip(std::move(mojo_tab_strip));
     }
     case tabs::TabCollection::Type::PINNED: {
       auto mojo_pinned_tabs = tabs_api::mojom::PinnedTabs::New();
       mojo_pinned_tabs->id = node_id;
-      return tabs_api::mojom::TabCollection::NewPinnedTabs(
-          std::move(mojo_pinned_tabs));
+      return tabs_api::mojom::Data::NewPinnedTabs(std::move(mojo_pinned_tabs));
     }
     case tabs::TabCollection::Type::UNPINNED: {
       auto mojo_unpinned_tabs = tabs_api::mojom::UnpinnedTabs::New();
       mojo_unpinned_tabs->id = node_id;
-      return tabs_api::mojom::TabCollection::NewUnpinnedTabs(
+      return tabs_api::mojom::Data::NewUnpinnedTabs(
           std::move(mojo_unpinned_tabs));
     }
     case tabs::TabCollection::Type::GROUP: {
@@ -72,8 +70,7 @@ tabs_api::mojom::TabCollectionPtr BuildMojoTabCollection(
       const TabGroup* tab_group = group_collection->GetTabGroup();
       CHECK(tab_group);
       mojo_tab_group->data = *tab_group->visual_data();
-      return tabs_api::mojom::TabCollection::NewTabGroup(
-          std::move(mojo_tab_group));
+      return tabs_api::mojom::Data::NewTabGroup(std::move(mojo_tab_group));
     }
     case tabs::TabCollection::Type::SPLIT: {
       auto mojo_split_tab = tabs_api::mojom::SplitTab::New();
@@ -85,8 +82,7 @@ tabs_api::mojom::TabCollectionPtr BuildMojoTabCollection(
       split_tabs::SplitTabVisualData* visual_data = split_data->visual_data();
       CHECK(visual_data);
       mojo_split_tab->data = *visual_data;
-      return tabs_api::mojom::TabCollection::NewSplitTab(
-          std::move(mojo_split_tab));
+      return tabs_api::mojom::Data::NewSplitTab(std::move(mojo_split_tab));
     }
   }
   NOTREACHED();
