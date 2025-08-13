@@ -6,8 +6,13 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_A11Y_SETTINGS_WITH_TTS_PREVIEW_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "content/public/browser/tts_controller.h"
+
+namespace content {
+class TtsController;
+}  // namespace content
 
 namespace ash::settings {
 
@@ -37,7 +42,10 @@ class SettingsWithTtsPreviewHandler : public ::settings::SettingsPageUIHandler,
 
  private:
   void RefreshTtsVoices(const base::Value::List& args);
-  void RemoveTtsControllerDelegates();
+
+  base::ScopedObservation<content::TtsController,
+                          content::VoicesChangedDelegate>
+      tts_observation_{this};
 
   base::WeakPtrFactory<SettingsWithTtsPreviewHandler> weak_factory_{this};
 };
