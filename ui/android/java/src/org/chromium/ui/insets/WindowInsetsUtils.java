@@ -230,6 +230,16 @@ public final class WindowInsetsUtils {
                 || (insets.bottom == 0 && insets.left == 0 && insets.right > 0);
     }
 
+    /** Returns a copy of given rectangle that has been inset with given insets. */
+    public static Rect insetRectangle(Rect rectangle, Insets insets) {
+        final Rect output = new Rect(rectangle);
+        output.left += insets.left;
+        output.top += insets.top;
+        output.right -= insets.right;
+        output.bottom -= insets.bottom;
+        return output;
+    }
+
     private static void forEachRect(Region region, Callback<Rect> rectConsumer) {
         final RegionIterator it = new RegionIterator(region);
         final Rect rect = new Rect();
