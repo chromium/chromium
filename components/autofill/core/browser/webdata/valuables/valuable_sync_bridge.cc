@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
@@ -162,6 +163,13 @@ bool ValuableSyncBridge::IsEntityDataValid(
   switch (autofill_valuable.valuable_data_case()) {
     case sync_pb::AutofillValuableSpecifics::kLoyaltyCard:
       return AreAutofillLoyaltyCardSpecificsValid(autofill_valuable);
+    case sync_pb::AutofillValuableSpecifics::kVehicleRegistration:
+      // TODO(crbug.com/436547381): Add stronger vehicle registration.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+      return base::FeatureList::IsEnabled(syncer::kSyncWalletPublicPasses);
+#else
+      return false;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
       // Ignore new entry types that the client doesn't know about.
       return false;
@@ -271,6 +279,9 @@ std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
                 CreateAutofillLoyaltyCardFromSpecifics(autofill_valuable));
             break;
           }
+          case sync_pb::AutofillValuableSpecifics::kVehicleRegistration:
+            // TODO(crbug.com/436547381): Handle vehicle registration.
+            break;
           case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
             // Ignore new entry types that the client doesn't know about.
             break;

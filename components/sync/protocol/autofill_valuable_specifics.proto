@@ -32,6 +32,38 @@ message LoyaltyCard {
   repeated string merchant_domains = 5;
 }
 
+// Represents a vehicle registration from Google Wallet.
+message VehicleRegistration {
+  // The vehicle make e.g. "Ford".
+  optional string vehicle_make = 1;
+
+  // The vehicle model e.g. "Fiesta".
+  optional string vehicle_model = 2;
+
+  // The year when model was first made e.g. "2018".
+  optional string vehicle_year = 3;
+
+  // The Vehicle Identification Number (VIN).
+  optional string vehicle_identification_number = 4;
+
+  // The license plate number.
+  optional string vehicle_license_plate = 5;
+
+  // The region that issued the license plate.
+  optional string license_plate_region = 6;
+
+  // The country that issued the license plate, normalized to ISO 3166-1
+  // alpha-2.
+  optional string license_plate_country = 7;
+
+  // The owner of the vehicle as it appears on their vehicle registration
+  // documents.
+  optional string owner_name = 8;
+
+  // The owner's address as it appears on their vehicle registration documents.
+  optional string owner_address = 9;
+}
+
 // Valuables coming from Google Wallet.
 message AutofillValuableSpecifics {
   // The valuable id.
@@ -39,6 +71,7 @@ message AutofillValuableSpecifics {
 
   oneof valuable_data {
     LoyaltyCard loyalty_card = 2;
+    VehicleRegistration vehicle_registration = 3;
     // add other valuable types here.
   }
 }

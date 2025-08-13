@@ -2017,6 +2017,7 @@ VISIT_PROTO_FIELDS(
 VISIT_PROTO_FIELDS(const sync_pb::AutofillValuableSpecifics& proto) {
   VISIT(id);
   VISIT(loyalty_card);
+  VISIT(vehicle_registration);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::LoyaltyCard& proto) {
@@ -2025,6 +2026,18 @@ VISIT_PROTO_FIELDS(const sync_pb::LoyaltyCard& proto) {
   VISIT(program_logo);
   VISIT(loyalty_card_number);
   VISIT_REP(merchant_domains);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::VehicleRegistration& proto) {
+  VISIT(vehicle_make);
+  VISIT(vehicle_model);
+  VISIT(vehicle_year);
+  VISIT(vehicle_identification_number);
+  VISIT(vehicle_license_plate);
+  VISIT(license_plate_region);
+  VISIT(license_plate_country);
+  VISIT(owner_name);
+  VISIT(owner_address);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SharedTabDetails& proto) {
