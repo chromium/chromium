@@ -307,12 +307,63 @@ TEST(ReportingUtilsTest, GetDlpSensitiveDataEvent) {
   ASSERT_FALSE(event.content_size());
   ASSERT_EQ(event.event_result(),
             chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+  ASSERT_FALSE(event.clicked_through());
 
   ASSERT_EQ(event.triggered_rule_info_size(), 1);
   auto triggered_rule = event.triggered_rule_info()[0];
   ASSERT_EQ(triggered_rule.rule_id(), 12345);
   ASSERT_EQ(triggered_rule.url_category(), "test rule category");
   ASSERT_EQ(triggered_rule.rule_name(), "fake rule");
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    ASSERT_EQ(event.referrers_size(), 1);
+    auto referrer = event.referrers()[0];
+    ASSERT_EQ(referrer.url(), "https://referrer.com");
+    ASSERT_EQ(referrer.ip(), "1.2.3.4");
+  } else {
+    ASSERT_EQ(event.referrers_size(), 0);
+  }
+}
+
+TEST(ReportingUtilsTest, GetDangerousDownloadEvent) {
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
+
+  auto event = GetDangerousDownloadEvent(
+      /*url=*/GURL("https://google.com/"), /*tab_url=*/GURL("about:blank"),
+      /*source=*/"source", /*destination=*/"destination",
+      /*file_name=*/"encrypted.zip",
+      /*download_digest_sha256=*/"sha256_of_data",
+      /*threat_type=*/"DANGEROUS_ACCOUNT_COMPROMISE",
+      /*mime_type=*/"application/zip", /*trigger=*/"FILE_DOWNLOAD",
+      /*scan_id=*/"123",
+      /*content_transfer_method=*/"",
+      /*profile_identifier=*/"identifier",
+      /*profile_username=*/"profile_username", /*content_size=*/-1,
+      /*referrer_chain=*/referrer_chain,
+      /*event_result=*/EventResult::BLOCKED);
+
+  ASSERT_EQ(event.url(), "https://google.com/");
+  ASSERT_EQ(event.tab_url(), "about:blank");
+  ASSERT_EQ(event.source(), "source");
+  ASSERT_EQ(event.destination(), "destination");
+  ASSERT_EQ(event.file_name(), "encrypted.zip");
+  ASSERT_EQ(event.download_digest_sha256(), "sha256_of_data");
+  ASSERT_EQ(event.content_type(), "application/zip");
+  ASSERT_EQ(
+      event.trigger(),
+      chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD);
+  ASSERT_EQ(event.scan_id(), "123");
+  ASSERT_EQ(
+      event.threat_type(),
+      chrome::cros::reporting::proto ::SafeBrowsingDangerousDownloadEvent::
+          DANGEROUS_ACCOUNT_COMPROMISE);
+  ASSERT_EQ(event.profile_identifier(), "identifier");
+  ASSERT_EQ(event.profile_user_name(), "profile_username");
+  ASSERT_FALSE(event.content_size());
+  ASSERT_EQ(event.event_result(),
+            chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+  ASSERT_FALSE(event.clicked_through());
 
   if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
     ASSERT_EQ(event.referrers_size(), 1);

@@ -544,6 +544,30 @@ void EventReportValidator::
 }
 
 void EventReportValidator::ExpectDangerousDownloadEvent(
+    chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
+        expected_dangerous_download_event) {
+  EXPECT_CALL(*client_, UploadSecurityEvent)
+      .WillOnce(
+          [this, expected_dangerous_download_event](
+              bool include_device_info,
+              ::chrome::cros::reporting::proto::UploadEventsRequest request,
+              base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                  callback) {
+            // There should only be 1 event per test.
+            ASSERT_EQ(1, request.events_size());
+            ASSERT_TRUE(request.events().Get(0).has_dangerous_download_event());
+            auto dangerous_download_event =
+                request.events().Get(0).dangerous_download_event();
+            EXPECT_THAT(dangerous_download_event,
+                        EqualsProto(expected_dangerous_download_event));
+
+            if (!done_closure_.is_null()) {
+              done_closure_.Run();
+            }
+          });
+}
+
+void EventReportValidator::ExpectDangerousDownloadEvent(
     const std::string& expected_url,
     const std::string& expected_tab_url,
     const std::string& expected_filename,

@@ -603,41 +603,57 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
 
   std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
-  base::Value::Dict event;
-  event.Set(kKeyUrl, url.spec());
-  event.Set(kKeyTabUrl, tab_url.spec());
-  event.Set(kKeySource, source);
-  event.Set(kKeyDestination, destination);
-  event.Set(kKeyFileName,
-            GetFileName(file_name, reporting_client_->ShouldIncludeDeviceInfo(
-                                       settings->per_profile)));
-  event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
-  event.Set(kKeyThreatType, threat_type);
-  event.Set(kKeyContentType, mime_type);
-  // |content_size| can be set to -1 to indicate an unknown size, in
-  // which case the field is not set.
-  if (content_size >= 0) {
-    event.Set(kKeyContentSize, base::Int64ToValue(content_size));
-  }
-  event.Set(kKeyTrigger, trigger);
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-    AddReferrerChainToEvent(referrer_chain, event);
-  }
-  event.Set(kKeyEventResult, EventResultToString(event_result));
-  event.Set(kKeyClickedThrough, event_result == EventResult::BYPASSED);
-  // The scan ID can be empty when the reported dangerous download is from a
-  // Safe Browsing verdict.
-  if (!scan_id.empty()) {
-    event.Set(kKeyScanId, scan_id);
-  }
-  if (!content_transfer_method.empty()) {
-    event.Set(kKeyContentTransferMethod, content_transfer_method);
-  }
+  std::string final_file_name = GetFileName(
+      file_name,
+      reporting_client_->ShouldIncludeDeviceInfo(settings->per_profile));
 
-  reporting_client_->ReportEventWithTimestampDeprecated(
-      kKeyDangerousDownloadEvent, std::move(settings.value()), std::move(event),
-      base::Time::Now(),
-      /*include_profile_user_name=*/true);
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    chrome::cros::reporting::proto::Event event;
+    *event.mutable_dangerous_download_event() = GetDangerousDownloadEvent(
+        url, tab_url, source, destination, final_file_name,
+        download_digest_sha256, threat_type, mime_type, trigger, scan_id,
+        content_transfer_method, reporting_client_->GetProfileIdentifier(),
+        reporting_client_->GetProfileUserName(), content_size, referrer_chain,
+        event_result);
+    *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
+
+    reporting_client_->ReportEvent(std::move(event), settings.value());
+  } else {
+    base::Value::Dict event;
+    event.Set(kKeyUrl, url.spec());
+    event.Set(kKeyTabUrl, tab_url.spec());
+    event.Set(kKeySource, source);
+    event.Set(kKeyDestination, destination);
+    event.Set(kKeyFileName, final_file_name);
+    event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
+    event.Set(kKeyThreatType, threat_type);
+    event.Set(kKeyContentType, mime_type);
+    // |content_size| can be set to -1 to indicate an unknown size, in
+    // which case the field is not set.
+    if (content_size >= 0) {
+      event.Set(kKeyContentSize, base::Int64ToValue(content_size));
+    }
+    event.Set(kKeyTrigger, trigger);
+    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+      AddReferrerChainToEvent(referrer_chain, event);
+    }
+    event.Set(kKeyEventResult, EventResultToString(event_result));
+    event.Set(kKeyClickedThrough, event_result == EventResult::BYPASSED);
+    // The scan ID can be empty when the reported dangerous download is from a
+    // Safe Browsing verdict.
+    if (!scan_id.empty()) {
+      event.Set(kKeyScanId, scan_id);
+    }
+    if (!content_transfer_method.empty()) {
+      event.Set(kKeyContentTransferMethod, content_transfer_method);
+    }
+
+    reporting_client_->ReportEventWithTimestampDeprecated(
+        kKeyDangerousDownloadEvent, std::move(settings.value()),
+        std::move(event), base::Time::Now(),
+        /*include_profile_user_name=*/true);
+  }
 }
 
 void ReportingEventRouter::OnAnalysisConnectorResult(

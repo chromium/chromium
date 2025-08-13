@@ -1089,9 +1089,6 @@ TEST_P(ReportingEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
 
 TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Warned) {
   EnableEnhancedFieldsForSecOps();
-  if (use_proto_format()) {
-    return;
-  }
 
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
@@ -1101,22 +1098,51 @@ TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Warned) {
   test::EventReportValidator validator(client_.get());
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
+  chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
+      expected_event;
 
-  validator.ExpectDangerousDeepScanningResult(
-      /*url*/ "https://example.com/download.exe",
-      /*tab_url*/ "https://example.com/",
-      /*source*/ "exampleSource",
-      /*destination*/ "exampleDestination",
-      /*filename*/ "encrypted.zip",
-      /*sha256*/ "sha256_of_data",
-      /*threat_type*/ "POTENTIALLY_UNWANTED",
-      /*trigger*/ "FILE_DOWNLOAD",
-      /*mimetypes*/ ZipMimeType(),
-      /*size*/ 12345,
-      /*result*/ "EVENT_RESULT_WARNED",
-      /*username*/ profile_->GetProfileUserName(),
-      /*profile_identifier*/ GetProfileIdentifier(),
-      /*scan_id*/ "123");
+  if (use_proto_format()) {
+    expected_event.set_url("https://example.com/download.exe");
+    expected_event.set_tab_url("https://example.com/");
+    expected_event.set_source("exampleSource");
+    expected_event.set_destination("exampleDestination");
+    expected_event.set_download_digest_sha256("sha256_of_data");
+    expected_event.set_threat_type(
+        chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent::
+            POTENTIALLY_UNWANTED);
+    expected_event.set_file_name("encrypted.zip");
+    expected_event.set_content_type("application/zip");
+    expected_event.set_content_size(12345);
+    expected_event.set_scan_id("123");
+    expected_event.set_trigger(chrome::cros::reporting::proto::
+                                   DataTransferEventTrigger::FILE_DOWNLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+    expected_event.set_clicked_through(false);
+
+    *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+    expected_event.set_profile_user_name(profile_->GetProfileUserName());
+
+    validator.ExpectDangerousDownloadEvent(std::move(expected_event));
+  } else {
+    validator.ExpectDangerousDeepScanningResult(
+        /*url*/ "https://example.com/download.exe",
+        /*tab_url*/ "https://example.com/",
+        /*source*/ "exampleSource",
+        /*destination*/ "exampleDestination",
+        /*filename*/ "encrypted.zip",
+        /*sha256*/ "sha256_of_data",
+        /*threat_type*/ "POTENTIALLY_UNWANTED",
+        /*trigger*/ "FILE_DOWNLOAD",
+        /*mimetypes*/ ZipMimeType(),
+        /*size*/ 12345,
+        /*result*/ "EVENT_RESULT_WARNED",
+        /*username*/ profile_->GetProfileUserName(),
+        /*profile_identifier*/ GetProfileIdentifier(),
+        /*scan_id*/ "123");
+  }
 
   ReferrerChain referrer_chain;
   referrer_chain.Add(test::MakeReferrerChainEntry());
@@ -1131,9 +1157,6 @@ TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Warned) {
 
 TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Blocked) {
   EnableEnhancedFieldsForSecOps();
-  if (use_proto_format()) {
-    return;
-  }
 
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
@@ -1143,22 +1166,51 @@ TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Blocked) {
   test::EventReportValidator validator(client_.get());
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
+  chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
+      expected_event;
 
-  validator.ExpectDangerousDeepScanningResult(
-      /*url*/ "https://example.com/download.exe",
-      /*tab_url*/ "https://example.com/",
-      /*source*/ "exampleSource",
-      /*destination*/ "exampleDestination",
-      /*filename*/ "encrypted.zip",
-      /*sha256*/ "sha256_of_data",
-      /*threat_type*/ "DANGEROUS",
-      /*trigger*/ "FILE_DOWNLOAD",
-      /*mimetypes*/ ZipMimeType(),
-      /*size*/ 12345,
-      /*result*/ "EVENT_RESULT_BLOCKED",
-      /*username*/ profile_->GetProfileUserName(),
-      /*profile_identifier*/ GetProfileIdentifier(),
-      /*scan_id*/ "123");
+  if (use_proto_format()) {
+    expected_event.set_url("https://example.com/download.exe");
+    expected_event.set_tab_url("https://example.com/");
+    expected_event.set_source("exampleSource");
+    expected_event.set_destination("exampleDestination");
+    expected_event.set_download_digest_sha256("sha256_of_data");
+    expected_event.set_threat_type(
+        chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent::
+            DANGEROUS);
+    expected_event.set_file_name("encrypted.zip");
+    expected_event.set_content_type("application/zip");
+    expected_event.set_content_size(12345);
+    expected_event.set_scan_id("123");
+    expected_event.set_trigger(chrome::cros::reporting::proto::
+                                   DataTransferEventTrigger::FILE_DOWNLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+    expected_event.set_clicked_through(false);
+
+    *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+    expected_event.set_profile_user_name(profile_->GetProfileUserName());
+
+    validator.ExpectDangerousDownloadEvent(std::move(expected_event));
+  } else {
+    validator.ExpectDangerousDeepScanningResult(
+        /*url*/ "https://example.com/download.exe",
+        /*tab_url*/ "https://example.com/",
+        /*source*/ "exampleSource",
+        /*destination*/ "exampleDestination",
+        /*filename*/ "encrypted.zip",
+        /*sha256*/ "sha256_of_data",
+        /*threat_type*/ "DANGEROUS",
+        /*trigger*/ "FILE_DOWNLOAD",
+        /*mimetypes*/ ZipMimeType(),
+        /*size*/ 12345,
+        /*result*/ "EVENT_RESULT_BLOCKED",
+        /*username*/ profile_->GetProfileUserName(),
+        /*profile_identifier*/ GetProfileIdentifier(),
+        /*scan_id*/ "123");
+  }
 
   ReferrerChain referrer_chain;
   referrer_chain.Add(test::MakeReferrerChainEntry());
@@ -1173,9 +1225,6 @@ TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Blocked) {
 
 TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Bypassed) {
   EnableEnhancedFieldsForSecOps();
-  if (use_proto_format()) {
-    return;
-  }
 
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
@@ -1185,22 +1234,51 @@ TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Bypassed) {
   test::EventReportValidator validator(client_.get());
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
+  chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
+      expected_event;
 
-  validator.ExpectDangerousDeepScanningResult(
-      /*url*/ "https://example.com/download.exe",
-      /*tab_url*/ "https://example.com/",
-      /*source*/ "",
-      /*destination*/ "",
-      /*filename*/ "encrypted.zip",
-      /*sha256*/ "sha256_of_data",
-      /*threat_type*/ "DANGEROUS",
-      /*trigger*/ "FILE_DOWNLOAD",
-      /*mimetypes*/ ZipMimeType(),
-      /*size*/ 12345,
-      /*result*/ "EVENT_RESULT_BYPASSED",
-      /*username*/ profile_->GetProfileUserName(),
-      /*profile_identifier*/ GetProfileIdentifier(),
-      /*scan_id*/ "123");
+  if (use_proto_format()) {
+    expected_event.set_url("https://example.com/download.exe");
+    expected_event.set_tab_url("https://example.com/");
+    expected_event.set_source("");
+    expected_event.set_destination("");
+    expected_event.set_download_digest_sha256("sha256_of_data");
+    expected_event.set_threat_type(
+        chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent::
+            DANGEROUS);
+    expected_event.set_file_name("encrypted.zip");
+    expected_event.set_content_type("application/zip");
+    expected_event.set_content_size(12345);
+    expected_event.set_scan_id("123");
+    expected_event.set_trigger(chrome::cros::reporting::proto::
+                                   DataTransferEventTrigger::FILE_DOWNLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED);
+    expected_event.set_clicked_through(true);
+
+    *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+    expected_event.set_profile_user_name(profile_->GetProfileUserName());
+
+    validator.ExpectDangerousDownloadEvent(std::move(expected_event));
+  } else {
+    validator.ExpectDangerousDeepScanningResult(
+        /*url*/ "https://example.com/download.exe",
+        /*tab_url*/ "https://example.com/",
+        /*source*/ "",
+        /*destination*/ "",
+        /*filename*/ "encrypted.zip",
+        /*sha256*/ "sha256_of_data",
+        /*threat_type*/ "DANGEROUS",
+        /*trigger*/ "FILE_DOWNLOAD",
+        /*mimetypes*/ ZipMimeType(),
+        /*size*/ 12345,
+        /*result*/ "EVENT_RESULT_BYPASSED",
+        /*username*/ profile_->GetProfileUserName(),
+        /*profile_identifier*/ GetProfileIdentifier(),
+        /*scan_id*/ "123");
+  }
 
   ReferrerChain referrer_chain;
   referrer_chain.Add(test::MakeReferrerChainEntry());
@@ -1216,9 +1294,6 @@ TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Bypassed) {
 TEST_P(ReportingEventRouterTest,
        TestOnDangerousDownloadEvent_WarnedFromSafeBrowsing) {
   EnableEnhancedFieldsForSecOps();
-  if (use_proto_format()) {
-    return;
-  }
 
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
@@ -1228,22 +1303,50 @@ TEST_P(ReportingEventRouterTest,
   test::EventReportValidator validator(client_.get());
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
+  chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
+      expected_event;
 
-  validator.ExpectDangerousDeepScanningResult(
-      /*url*/ "https://example.com/download.exe",
-      /*tab_url*/ "https://example.com/",
-      /*source*/ "",
-      /*destination*/ "",
-      /*filename*/ "encrypted.zip",
-      /*sha256*/ "sha256_of_data",
-      /*threat_type*/ "DANGEROUS",
-      /*trigger*/ "FILE_DOWNLOAD",
-      /*mimetypes*/ ZipMimeType(),
-      /*size*/ 12345,
-      /*result*/ "EVENT_RESULT_WARNED",
-      /*username*/ profile_->GetProfileUserName(),
-      /*profile_identifier*/ GetProfileIdentifier(),
-      /*scan_id*/ std::nullopt);
+  if (use_proto_format()) {
+    expected_event.set_url("https://example.com/download.exe");
+    expected_event.set_tab_url("https://example.com/");
+    expected_event.set_source("");
+    expected_event.set_destination("");
+    expected_event.set_download_digest_sha256("sha256_of_data");
+    expected_event.set_threat_type(
+        chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent::
+            DANGEROUS);
+    expected_event.set_file_name("encrypted.zip");
+    expected_event.set_content_type("application/zip");
+    expected_event.set_content_size(12345);
+    expected_event.set_trigger(chrome::cros::reporting::proto::
+                                   DataTransferEventTrigger::FILE_DOWNLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+    expected_event.set_clicked_through(false);
+
+    *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+    expected_event.set_profile_user_name(profile_->GetProfileUserName());
+
+    validator.ExpectDangerousDownloadEvent(std::move(expected_event));
+  } else {
+    validator.ExpectDangerousDeepScanningResult(
+        /*url*/ "https://example.com/download.exe",
+        /*tab_url*/ "https://example.com/",
+        /*source*/ "",
+        /*destination*/ "",
+        /*filename*/ "encrypted.zip",
+        /*sha256*/ "sha256_of_data",
+        /*threat_type*/ "DANGEROUS",
+        /*trigger*/ "FILE_DOWNLOAD",
+        /*mimetypes*/ ZipMimeType(),
+        /*size*/ 12345,
+        /*result*/ "EVENT_RESULT_WARNED",
+        /*username*/ profile_->GetProfileUserName(),
+        /*profile_identifier*/ GetProfileIdentifier(),
+        /*scan_id*/ std::nullopt);
+  }
 
   ReferrerChain referrer_chain;
   referrer_chain.Add(test::MakeReferrerChainEntry());

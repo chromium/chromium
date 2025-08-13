@@ -214,6 +214,10 @@ class EventReportValidator : public EventReportValidatorBase {
       const std::optional<std::string>& expected_content_transfer_method);
 
   void ExpectDangerousDownloadEvent(
+      chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
+          expected_dangerous_download_event);
+
+  void ExpectDangerousDownloadEvent(
       const std::string& expected_url,
       const std::string& expected_tab_url,
       const std::string& expected_filename,
