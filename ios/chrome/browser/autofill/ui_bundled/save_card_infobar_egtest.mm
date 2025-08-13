@@ -1178,11 +1178,6 @@ void FillAndSubmitXframeCreditCardForm() {
 // Test local save bottomsheet is shown and directly shows confirmation state on
 // being accepted.
 - (void)testLocalSaveBottomSheet {
-  // TODO(crbug.com/437271524): Re-enable the test on iOS26.
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   [self fillAndSubmitFormWithID:kFillFullFormId
                paymentsResponse:kResponseGetUploadDetailsFailure
                       errorCode:net::HTTP_OK
@@ -1214,33 +1209,40 @@ void FillAndSubmitXframeCreditCardForm() {
   [[EarlGrey selectElementWithMatcher:LocalBottomSheetCancelButtonMatcher()]
       assertWithMatcher:grey_userInteractionEnabled()];
 
-  // Push the accept button on the save card bottomsheet.
-  [[EarlGrey selectElementWithMatcher:BottomSheetAcceptButtonMatcher()]
-      performAction:grey_tap()];
+  {
+    // Disable the synchronization, otherwise the test runner waits for the
+    // animation for the accept button and the following assertions will fail on
+    // iOS 26.
+    ScopedSynchronizationDisabler disabler;
 
-  // Assert the accept button is disabled and has accessibility label for
-  // confirmation state.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
-      assertWithMatcher:
-          grey_allOf(
-              grey_not(grey_enabled()),
-              grey_accessibilityLabel(l10n_util::GetNSString(
-                  IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_ACCESSIBLE_NAME)),
-              nil)];
+    // Push the accept button on the save card bottomsheet.
+    [[EarlGrey selectElementWithMatcher:BottomSheetAcceptButtonMatcher()]
+        performAction:grey_tap()];
 
-  // Assert a checkmark symbol is being shown in the confirmation state.
-  [[[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kConfirmationAlertCheckmarkSymbolIdentifier)]
-      inRoot:grey_accessibilityID(
-                 kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+    // Assert the accept button is disabled and has accessibility label for
+    // confirmation state.
+    [[EarlGrey selectElementWithMatcher:
+                   grey_accessibilityID(
+                       kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+        assertWithMatcher:
+            grey_allOf(
+                grey_not(grey_enabled()),
+                grey_accessibilityLabel(l10n_util::GetNSString(
+                    IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_ACCESSIBLE_NAME)),
+                nil)];
 
-  // Assert the cancel button is disabled.
-  [[EarlGrey selectElementWithMatcher:LocalBottomSheetCancelButtonMatcher()]
-      assertWithMatcher:grey_not(grey_enabled())];
+    // Assert a checkmark symbol is being shown in the confirmation state.
+    [[[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID(kConfirmationAlertCheckmarkSymbolIdentifier)]
+        inRoot:grey_accessibilityID(
+                   kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+
+    // Assert the cancel button is disabled.
+    [[EarlGrey selectElementWithMatcher:LocalBottomSheetCancelButtonMatcher()]
+        assertWithMatcher:grey_not(grey_enabled())];
+  }
 
   // Wait for bottomsheet to auto-dismiss.
   GREYAssertTrue(
