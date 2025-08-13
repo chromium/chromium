@@ -56,7 +56,8 @@ class PageContentMetadataObserver
                               const std::vector<std::string>& names);
 
   void OnMetaTagsChangedForFrame(content::RenderFrameHost* render_frame_host,
-                                 blink::mojom::PageMetadataPtr metadata);
+                                 std::vector<blink::mojom::MetaTagPtr>
+                                     meta_tags);
 
   // The implementation of MetaTagsObserver that will be registered with each
   // frame.
@@ -69,7 +70,8 @@ class PageContentMetadataObserver
     ~FrameMetaTagsObserver() override;
 
     // blink::mojom::MetaTagsObserver:
-    void OnMetaTagsChanged(blink::mojom::PageMetadataPtr metadata) override;
+    void OnMetaTagsChanged(
+        std::vector<blink::mojom::MetaTagPtr> meta_tags) override;
     raw_ptr<PageContentMetadataObserver> owner_;
     raw_ptr<content::RenderFrameHost> render_frame_host_;
     mojo::Receiver<blink::mojom::MetaTagsObserver> receiver_;
@@ -81,7 +83,7 @@ class PageContentMetadataObserver
                  std::unique_ptr<FrameMetaTagsObserver>>
       frame_meta_tags_observers_;
 
-  std::map<content::RenderFrameHost*, blink::mojom::PageMetadataPtr>
+  std::map<content::RenderFrameHost*, blink::mojom::FrameMetadataPtr>
       frame_metadata_cache_;
 
   OnMetaTagsChangedCallback on_meta_tags_changed_callback_;

@@ -135,27 +135,27 @@ class FrameMetadataObserverBrowserTest
   }
 
   // Invoked when the frame metadata changes.
-  void OnMetaTagsChanged(blink::mojom::PageMetadataPtr page_metadata) override {
+  void OnMetaTagsChanged(
+      std::vector<blink::mojom::MetaTagPtr> meta_tags) override {
     on_meta_tags_changed_called_ = true;
-    page_metadata_ = std::move(page_metadata);
+    frame_metadata_->meta_tags = std::move(meta_tags);
     metadata_callback_waiter_.SetValue(true);
   }
 
   bool was_meta_tags_changed_called() { return on_meta_tags_changed_called_; }
 
   void ClearMetaTagsChanged() { on_meta_tags_changed_called_ = false; }
-  blink::mojom::PageMetadataPtr& page_metadata() { return page_metadata_; }
+  blink::mojom::FrameMetadataPtr& frame_metadata() { return frame_metadata_; }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
   void VerifyAuthorMetaTag() {
     EXPECT_TRUE(was_meta_tags_changed_called());
 
-    blink::mojom::PageMetadataPtr& metadata = page_metadata();
-    EXPECT_EQ(metadata->frame_metadata.size(), 1u);
-    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags.size(), 1u);
-    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->name, "author");
-    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->content, "Gary");
+    blink::mojom::FrameMetadataPtr& metadata = frame_metadata();
+    EXPECT_EQ(metadata->meta_tags.size(), 1u);
+    EXPECT_EQ(metadata->meta_tags[0]->name, "author");
+    EXPECT_EQ(metadata->meta_tags[0]->content, "Gary");
   }
 
  protected:
@@ -172,7 +172,7 @@ class FrameMetadataObserverBrowserTest
   mojo::Receiver<blink::mojom::MetaTagsObserver> meta_tags_observer_receiver_{
       this};
 
-  blink::mojom::PageMetadataPtr page_metadata_;
+  blink::mojom::FrameMetadataPtr frame_metadata_ = blink::mojom::FrameMetadata::New();
 };
 
 IN_PROC_BROWSER_TEST_F(FrameMetadataObserverBrowserTest, PaidContent) {
@@ -269,11 +269,10 @@ IN_PROC_BROWSER_TEST_F(FrameMetadataObserverBrowserTest, MetaTagsUpdated) {
   ASSERT_TRUE(metadata_callback_waiter_.Wait());
   {
     EXPECT_TRUE(was_meta_tags_changed_called());
-    blink::mojom::PageMetadataPtr& metadata = page_metadata();
-    EXPECT_EQ(metadata->frame_metadata.size(), 1u);
-    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags.size(), 1u);
-    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->name, "author");
-    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->content, "Val");
+    blink::mojom::FrameMetadataPtr& metadata = frame_metadata();
+    EXPECT_EQ(metadata->meta_tags.size(), 1u);
+    EXPECT_EQ(metadata->meta_tags[0]->name, "author");
+    EXPECT_EQ(metadata->meta_tags[0]->content, "Val");
   }
 
   // Add a new tag.
@@ -285,12 +284,11 @@ IN_PROC_BROWSER_TEST_F(FrameMetadataObserverBrowserTest, MetaTagsUpdated) {
   ASSERT_TRUE(metadata_callback_waiter_.Wait());
   {
     EXPECT_TRUE(was_meta_tags_changed_called());
-    blink::mojom::PageMetadataPtr& metadata = page_metadata();
-    EXPECT_EQ(metadata->frame_metadata.size(), 1u);
-    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags.size(), 2u);
+    blink::mojom::FrameMetadataPtr& metadata = frame_metadata();
+    EXPECT_EQ(metadata->meta_tags.size(), 2u);
     bool author_found = false;
     bool subject_found = false;
-    for (const auto& tag : metadata->frame_metadata[0]->meta_tags) {
+    for (const auto& tag : metadata->meta_tags) {
       if (tag->name == "author") {
         author_found = true;
         EXPECT_EQ(tag->content, "Val");
@@ -311,11 +309,10 @@ IN_PROC_BROWSER_TEST_F(FrameMetadataObserverBrowserTest, MetaTagsUpdated) {
   ASSERT_TRUE(metadata_callback_waiter_.Wait());
   {
     EXPECT_TRUE(was_meta_tags_changed_called());
-    blink::mojom::PageMetadataPtr& metadata = page_metadata();
-    EXPECT_EQ(metadata->frame_metadata.size(), 1u);
-    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags.size(), 1u);
-    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->name, "subject");
-    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->content, "testing");
+    blink::mojom::FrameMetadataPtr& metadata = frame_metadata();
+    EXPECT_EQ(metadata->meta_tags.size(), 1u);
+    EXPECT_EQ(metadata->meta_tags[0]->name, "subject");
+    EXPECT_EQ(metadata->meta_tags[0]->content, "testing");
   }
 }
 

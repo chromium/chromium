@@ -19,8 +19,9 @@ interface PaidContentMetadataObserver {
 
 // An observer to be notified when meta tags change.
 interface MetaTagsObserver {
-  // Called when meta tags change.
-  OnMetaTagsChanged(PageMetadata page_metadata);
+  // Called when meta tags change.  This is based solely on this frame's
+  // document.
+  OnMetaTagsChanged(array<MetaTag> meta_tags);
 };
 
 // Allows observers in the browser to register to be notified whenever metadata

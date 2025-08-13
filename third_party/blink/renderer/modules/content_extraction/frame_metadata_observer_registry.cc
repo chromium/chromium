@@ -26,17 +26,16 @@ namespace blink {
 
 namespace {
 
-void CollectMetaTagsFromFrame(LocalFrame* frame,
-                              const HeapVector<String>& names_to_find,
-                              mojom::blink::PageMetadata& page_metadata) {
+Vector<mojom::blink::MetaTagPtr> CollectMetaTags(
+    LocalFrame* frame,
+    const HeapVector<String>& names_to_find) {
+  Vector<mojom::blink::MetaTagPtr> found_tags;
   if (!frame) {
-    return;
+    return found_tags;
   }
 
-  auto* local_frame = To<LocalFrame>(frame);
-  Document* document = local_frame->GetDocument();
+  Document* document = frame->GetDocument();
   if (document && document->head()) {
-    Vector<mojom::blink::MetaTagPtr> found_tags;
     for (HTMLMetaElement& meta :
          Traversal<HTMLMetaElement>::ChildrenOf(*document->head())) {
       const String& name = meta.GetName();
@@ -47,13 +46,8 @@ void CollectMetaTagsFromFrame(LocalFrame* frame,
         found_tags.push_back(std::move(meta_tag));
       }
     }
-    if (!found_tags.empty()) {
-      auto frame_metadata = mojom::blink::FrameMetadata::New();
-      frame_metadata->url = document->Url();
-      frame_metadata->meta_tags = std::move(found_tags);
-      page_metadata.frame_metadata.push_back(std::move(frame_metadata));
-    }
   }
+  return found_tags;
 }
 
 }  // namespace
@@ -264,17 +258,19 @@ void FrameMetadataObserverRegistry::OnMetaTagsChanged() {
 
   for (auto& it : metatags_observer_names_) {
     const mojo::RemoteSetElementId remote_id(it.key);
-    auto page_metadata = mojom::blink::PageMetadata::New();
-    CollectMetaTagsFromFrame(current_frame, it.value, *page_metadata);
+    auto meta_tags = CollectMetaTags(current_frame, it.value);
 
-    const bool has_metatags = !page_metadata->frame_metadata.empty();
+    const bool has_metatags = !meta_tags.empty();
     DCHECK(has_sent_metatags_.Contains(remote_id.value()));
     const bool has_sent_metatags_before =
         has_sent_metatags_.at(remote_id.value());
 
+    // Only send the meta tags if matching names were found, or if we have
+    // already sent meta tags for this observer and they have since been
+    // removed.
     if (has_metatags || has_sent_metatags_before) {
       metatags_observers_.Get(remote_id)->OnMetaTagsChanged(
-          std::move(page_metadata));
+          std::move(meta_tags));
       has_sent_metatags_.Set(remote_id.value(), has_metatags);
     }
   }
