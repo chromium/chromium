@@ -14,7 +14,8 @@ class WebContents;
 
 class DevToolsSelectFileDialog : public ui::SelectFileDialog::Listener {
  public:
-  using SelectedCallback = base::OnceCallback<void(const base::FilePath&)>;
+  using SelectedCallback =
+      base::OnceCallback<void(const ui::SelectedFileInfo&)>;
   using CanceledCallback = base::OnceClosure;
 
   DevToolsSelectFileDialog(const DevToolsSelectFileDialog&) = delete;

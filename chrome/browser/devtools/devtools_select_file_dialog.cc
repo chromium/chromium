@@ -24,7 +24,7 @@ void DevToolsSelectFileDialog::SelectFile(content::WebContents* web_contents,
 
 void DevToolsSelectFileDialog::FileSelected(const ui::SelectedFileInfo& file,
                                             int index) {
-  std::move(selected_callback_).Run(file.path());
+  std::move(selected_callback_).Run(file);
   delete this;
 }
 
