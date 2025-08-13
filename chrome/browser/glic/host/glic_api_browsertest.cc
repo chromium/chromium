@@ -148,6 +148,41 @@ class WebUIStateListener : public Host::Observer {
   std::deque<mojom::WebUiState> states_;
 };
 
+// Observes the state of the current view in the glic window.
+class CurrentViewListener : public Host::Observer {
+ public:
+  explicit CurrentViewListener(Host* host) : host_(host) {
+    host_->AddObserver(this);
+    states_.push_back(host_->GetPrimaryCurrentView());
+  }
+
+  ~CurrentViewListener() override { host_->RemoveObserver(this); }
+
+  void OnViewChanged(mojom::CurrentView state) override {
+    states_.push_back(state);
+  }
+
+  // Returns if `state` has been seen. Consumes all observed states up to the
+  // point where this state is seen.
+  void WaitForCurrentView(mojom::CurrentView state) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      while (!states_.empty()) {
+        if (states_.front() != state) {
+          states_.pop_front();
+          continue;
+        }
+        return true;
+      }
+      return false;
+    })) << "Timed out waiting for CurrentView state "
+        << state << ". State =" << host_->GetPrimaryCurrentView();
+  }
+
+ private:
+  raw_ptr<Host> host_;
+  std::deque<mojom::CurrentView> states_;
+};
+
 struct ExecuteTestOptions {
   // Test parameters passed to the JS test. See `ApiTestFixtureBase.testParams`.
   base::Value params;
@@ -302,6 +337,11 @@ class GlicApiTest : public NonInteractiveGlicTest {
   void WaitForWebUiState(mojom::WebUiState state) {
     WebUIStateListener listener(&host());
     listener.WaitForWebUiState(state);
+  }
+
+  void WaitForCurrentView(mojom::CurrentView view) {
+    CurrentViewListener listener(&host());
+    listener.WaitForCurrentView(view);
   }
 
   const std::optional<base::Value>& step_data() const { return step_data_; }
@@ -1852,6 +1892,21 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
   ContinueJsTest();
   // Opens the panel again.
   RunTestSequence(ToggleGlicWindow(GlicWindowMode::kDetached));
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       testSendsViewChangeRequestOnTaskIconOrGlicButtonToggle) {
+  WaitForCurrentView(mojom::CurrentView::kConversation);
+  StartTaskAndShowActorTaskIcon();
+  RunTestSequence(ToggleGlicWindowFromSource(
+      GlicWindowMode::kDetached, kGlicActorTaskIconElementId,
+      mojom::InvocationSource::kActorTaskIcon));
+  ExecuteJsTest();
+  WaitForCurrentView(mojom::CurrentView::kActuation);
+  RunTestSequence(ToggleGlicWindowFromSource(
+      GlicWindowMode::kDetached, kGlicButtonElementId,
+      mojom::InvocationSource::kTopChromeButton));
   ContinueJsTest();
 }
 
