@@ -335,15 +335,7 @@ public class TabContextMenuCoordinatorUnitTest {
         verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE);
 
         // List item 2
-        assertEquals(
-                mWeakReferenceActivity
-                        .get()
-                        .getResources()
-                        .getQuantityString(R.plurals.move_tab_to_another_window, 1),
-                modelList.get(1).model.get(ListMenuItemProperties.TITLE));
-        assertEquals(
-                R.id.move_to_other_window_menu_id,
-                modelList.get(1).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        verifyAddToWindowSubmenu(modelList, List.of());
 
         // List item 3
         assertEquals(DIVIDER, modelList.get(2).type);
@@ -391,35 +383,7 @@ public class TabContextMenuCoordinatorUnitTest {
         verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE);
 
         // List item 2
-        var moveToOtherWindowItem = modelList.get(1);
-        var subMenu = moveToOtherWindowItem.model.get(SUBMENU_ITEMS);
-        assertNotNull("Submenu should be present", subMenu);
-        assertEquals("Submenu should have 1 item", 1, subMenu.size());
-        moveToOtherWindowItem.model.get(CLICK_LISTENER).onClick(mView);
-        assertEquals(2, modelList.size());
-        ListItem headerItem = modelList.get(0);
-        assertEquals(
-                "Expected first item to have SUBMENU_HEADER type", SUBMENU_HEADER, headerItem.type);
-        assertEquals(
-                "Expected submenu back header to have the same text as submenu parent item",
-                mWeakReferenceActivity
-                        .get()
-                        .getResources()
-                        .getQuantityString(
-                                R.plurals.move_tab_to_another_window,
-                                MultiWindowUtils.getInstanceCount()),
-                headerItem.model.get(TITLE));
-        assertEquals(
-                "Expected submenu to have 2 items, but was " + getDebugString(modelList),
-                2,
-                modelList.size());
-        assertEquals(
-                "Expected submenu child to have MENU_ITEM type", MENU_ITEM, modelList.get(1).type);
-        assertEquals(
-                "Expected submenu child to have text WINDOW_TITLE_2",
-                WINDOW_TITLE_2,
-                modelList.get(1).model.get(TITLE));
-        headerItem.model.get(CLICK_LISTENER).onClick(mView);
+        verifyAddToWindowSubmenu(modelList, List.of(WINDOW_TITLE_2));
 
         // List item 3
         assertEquals(DIVIDER, modelList.get(2).type);
@@ -476,15 +440,7 @@ public class TabContextMenuCoordinatorUnitTest {
         verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE);
 
         // List item 2
-        assertEquals(
-                mWeakReferenceActivity
-                        .get()
-                        .getResources()
-                        .getQuantityString(R.plurals.move_tab_to_another_window, 1),
-                modelList.get(1).model.get(ListMenuItemProperties.TITLE));
-        assertEquals(
-                R.id.move_to_other_window_menu_id,
-                modelList.get(1).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        verifyAddToWindowSubmenu(modelList, List.of());
 
         // List item 3
         assertEquals(DIVIDER, modelList.get(2).type);
@@ -613,6 +569,55 @@ public class TabContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveToNewWindow() {
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, TAB_OUTSIDE_OF_GROUP_ID);
+
+        var moveToOtherWindowItem = modelList.get(1);
+        moveToOtherWindowItem.model.get(CLICK_LISTENER).onClick(mView);
+        assertEquals("Expected model list to have 2 items", 2, modelList.size());
+        ListItem newWindowItem = modelList.get(1);
+        assertEquals("Expected 2nd item to have MENU_ITEM type", MENU_ITEM, newWindowItem.type);
+        assertEquals(
+                "Expected 2nd item to be 'New window' row",
+                R.string.menu_new_window,
+                newWindowItem.model.get(TITLE_ID));
+
+        newWindowItem.model.get(CLICK_LISTENER).onClick(mView);
+
+        verify(mMultiInstanceManager, times(1)).moveTabsToOtherWindow(List.of(mTabOutsideOfGroup));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveToOtherWindow() {
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, TAB_OUTSIDE_OF_GROUP_ID);
+
+        var moveToOtherWindowItem = modelList.get(1);
+        moveToOtherWindowItem.model.get(CLICK_LISTENER).onClick(mView);
+        assertEquals("Expected model list to have 4 items", 4, modelList.size());
+        ListItem windowRowItem = modelList.get(3);
+        assertEquals("Expected 4th item to be a menu item", MENU_ITEM, windowRowItem.type);
+        assertEquals(
+                "Expected 4th item to display the name of the other window",
+                WINDOW_TITLE_2,
+                windowRowItem.model.get(TITLE));
+
+        windowRowItem.model.get(CLICK_LISTENER).onClick(mView);
+
+        verify(mMultiInstanceManager, times(1))
+                .moveTabsToWindow(
+                        INSTANCE_INFO_2, List.of(mTabOutsideOfGroup), TabList.INVALID_TAB_INDEX);
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testAnchorWidth() {
         StripLayoutContextMenuCoordinatorTestUtils.testAnchorWidth(
@@ -686,6 +691,74 @@ public class TabContextMenuCoordinatorUnitTest {
                 TAB_GROUP_INDICATOR_COLOR,
                 drawable.getColor().getDefaultColor());
         assertTrue("Expected tab group row to be enabled", tabGroupRowModel.get(ENABLED));
+        headerItem.model.get(CLICK_LISTENER).onClick(mView);
+        assertEquals(
+                "Expected to navigate back to parent menu",
+                modelListSizeBeforeNav,
+                modelList.size());
+    }
+
+    private void verifyAddToWindowSubmenu(ModelList modelList, List<String> otherWindowTitles) {
+        int modelListSizeBeforeNav = modelList.size();
+        var moveToOtherWindowItem = modelList.get(1);
+        var subMenu = moveToOtherWindowItem.model.get(SUBMENU_ITEMS);
+        int expectedNumberOfItems =
+                1 + (otherWindowTitles.isEmpty() ? 0 : 1 + otherWindowTitles.size());
+        assertEquals(
+                "Submenu should have "
+                        + expectedNumberOfItems
+                        + " item(s), but was "
+                        + getDebugString(subMenu),
+                expectedNumberOfItems,
+                subMenu.size());
+        moveToOtherWindowItem.model.get(CLICK_LISTENER).onClick(mView);
+        assertNotNull("Submenu should be present", subMenu);
+        assertEquals(
+                "Expected to display "
+                        + expectedNumberOfItems
+                        + 1 // Back header added
+                        + " item(s) after entering submenu, but was "
+                        + getDebugString(modelList),
+                expectedNumberOfItems + 1,
+                modelList.size());
+        ListItem headerItem = modelList.get(0);
+        assertEquals(
+                "Expected first item to have SUBMENU_HEADER type", SUBMENU_HEADER, headerItem.type);
+        assertEquals(
+                "Expected submenu back header to have the same text as submenu parent item",
+                mWeakReferenceActivity
+                        .get()
+                        .getResources()
+                        .getQuantityString(R.plurals.move_tab_to_another_window, 2),
+                headerItem.model.get(TITLE));
+        assertTrue("Expected submenu header to be enabled", headerItem.model.get(ENABLED));
+        assertEquals("Expected 2nd item to have MENU_ITEM type", MENU_ITEM, modelList.get(1).type);
+        assertEquals(
+                "Expected 2nd item to be 'New window' row",
+                R.string.menu_new_window,
+                modelList.get(1).model.get(TITLE_ID));
+        if (!otherWindowTitles.isEmpty()) {
+            assertEquals(
+                    "Expected 3rd item to be divider, but was " + getDebugString(modelList),
+                    DIVIDER,
+                    modelList.get(2).type);
+            for (int i = 0; i < otherWindowTitles.size(); i++) {
+                assertEquals(
+                        "Expected window row at position " + (i + 3) + " to have MENU_ITEM type",
+                        MENU_ITEM,
+                        modelList.get(1).type);
+                assertEquals(
+                        "Expected window row at position "
+                                + (i + 2)
+                                + " to have text "
+                                + otherWindowTitles.get(i),
+                        otherWindowTitles.get(i),
+                        modelList.get(i + 3).model.get(TITLE));
+                assertTrue(
+                        "Expected window row at position " + (i + 3) + " to be enabled",
+                        modelList.get(i + 3).model.get(ENABLED));
+            }
+        }
         headerItem.model.get(CLICK_LISTENER).onClick(mView);
         assertEquals(
                 "Expected to navigate back to parent menu",

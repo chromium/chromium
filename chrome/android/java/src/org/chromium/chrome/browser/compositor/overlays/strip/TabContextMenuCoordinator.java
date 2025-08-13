@@ -445,27 +445,43 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
     }
 
     private ListItem createMoveToWindowItem(Tab tab, boolean isIncognito) {
-        String title =
-                mContext.getResources()
-                        .getQuantityString(
-                                R.plurals.move_tab_to_another_window,
-                                MultiWindowUtils.getInstanceCount());
-        if (ChromeFeatureList.isEnabled(
+        // TODO(crbug.com/437418051): Clean up move_tab_to_another_window strings.
+        if (!ChromeFeatureList.isEnabled(
                 ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)) {
-            List<InstanceInfo> activeInstances = mMultiInstanceManager.getInstanceInfo(ACTIVE);
-            if (activeInstances.size() == 1) {
-                return new ListItemBuilder()
-                        .withTitle(title)
-                        .withMenuId(R.id.move_to_other_window_menu_id)
-                        .withIsIncognito(isIncognito)
-                        .build();
-            }
-            List<ListItem> windowChoices = new ArrayList<>();
+            return new ListItemBuilder()
+                    .withTitle(
+                            mContext.getResources()
+                                    .getQuantityString(
+                                            R.plurals.move_tab_to_another_window,
+                                            MultiWindowUtils.getInstanceCount()))
+                    .withMenuId(R.id.move_to_other_window_menu_id)
+                    .withIsIncognito(isIncognito)
+                    .build();
+        }
+        List<ListItem> submenuItems = new ArrayList<>();
+        submenuItems.add(
+                new ListItem(
+                        MENU_ITEM,
+                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                .with(TITLE_ID, R.string.menu_new_window)
+                                .with(ENABLED, true)
+                                .with(
+                                        CLICK_LISTENER,
+                                        v -> {
+                                            RecordUserAction.record(
+                                                    "MobileToolbarTabMenu.MoveTabToNewWindow");
+                                            mMultiInstanceManager.moveTabsToOtherWindow(
+                                                    Collections.singletonList(tab));
+                                        })
+                                .build()));
+        List<InstanceInfo> activeInstances = mMultiInstanceManager.getInstanceInfo(ACTIVE);
+        if (activeInstances.size() > 1) {
+            submenuItems.add(buildMenuDivider(isIncognito));
             for (InstanceInfo instanceInfo : activeInstances) {
                 if (mMultiInstanceManager.getCurrentInstanceId() == instanceInfo.instanceId) {
                     continue;
                 }
-                windowChoices.add(
+                submenuItems.add(
                         new ListItem(
                                 MENU_ITEM,
                                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
@@ -473,6 +489,8 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                                         .with(
                                                 CLICK_LISTENER,
                                                 (v) -> {
+                                                    RecordUserAction.record(
+                                                            "MobileToolbarTabMenu.MoveTabToOtherWindow");
                                                     mMultiInstanceManager.moveTabsToWindow(
                                                             instanceInfo,
                                                             Collections.singletonList(tab),
@@ -481,19 +499,18 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                                         .with(ENABLED, true)
                                         .build()));
             }
-            return new ListItem(
-                    MENU_ITEM_WITH_SUBMENU,
-                    new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
-                            .with(TITLE, title)
-                            .with(SUBMENU_ITEMS, windowChoices)
-                            .with(ENABLED, true)
-                            .build());
-        } else {
-            return new ListItemBuilder()
-                    .withTitle(title)
-                    .withMenuId(R.id.move_to_other_window_menu_id)
-                    .withIsIncognito(isIncognito)
-                    .build();
         }
+        return new ListItem(
+                MENU_ITEM_WITH_SUBMENU,
+                new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
+                        .with(
+                                TITLE,
+                                mContext.getResources()
+                                        .getQuantityString(
+                                                R.plurals.move_tab_to_another_window,
+                                                2)) // Choose any # > 1
+                        .with(SUBMENU_ITEMS, submenuItems)
+                        .with(ENABLED, true)
+                        .build());
     }
 }
