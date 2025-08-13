@@ -5272,11 +5272,6 @@
       name: "VisibilityCollapseColumn",
     },
     {
-      // When enabled, makes links `:visited` even when the visit results in an
-      // HTTP error response code of 404.
-      name: "VisitedLinksOnErrorNavigation",
-    },
-    {
       name: "VisualViewportOnScrollEnd",
       status: "stable",
     },

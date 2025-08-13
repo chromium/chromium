@@ -5,6 +5,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_helper.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
@@ -21,9 +22,9 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/history/core/browser/features.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace contextual_cueing {
 namespace {
@@ -110,11 +111,9 @@ class ContextualCueingHelperResponseCodeTest
 
     const bool are_404_navigations_saved_to_history = GetParam();
     if (are_404_navigations_saved_to_history) {
-      enabled_features.push_back(
-          blink::features::kVisitedLinksOnErrorNavigation);
+      enabled_features.push_back(history::kVisitedLinksOn404);
     } else {
-      disabled_features.push_back(
-          blink::features::kVisitedLinksOnErrorNavigation);
+      disabled_features.push_back(history::kVisitedLinksOn404);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);

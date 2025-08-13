@@ -18,6 +18,7 @@
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/history/content/browser/history_context_helper.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -307,13 +308,12 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
                                       .has_value()
                                 : false;
 
-  // If `blink::features::kVisitedLinksOnErrorNavigation` is enabled, visits to
-  // reachable URLs that result in a 404 response will be saved to history. We
-  // don't want to count 404 navigations as visits when calculating the Most
-  // Visited, so we filter them out here.
+  // If `history::kVisitedLinksOn404` is enabled, visits to reachable URLs that
+  // result in a 404 response will be saved to history. We don't want to count
+  // 404 navigations as visits when calculating the Most Visited, so we filter
+  // them out here.
   const bool status_code_qualifies_for_ntp_most_visited =
-      !(base::FeatureList::IsEnabled(
-            blink::features::kVisitedLinksOnErrorNavigation) &&
+      !(base::FeatureList::IsEnabled(history::kVisitedLinksOn404) &&
         http_response_code == 404);
   const bool should_consider_for_ntp_most_visited =
       status_code_qualifies_for_ntp_most_visited &&

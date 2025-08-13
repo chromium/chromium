@@ -61,6 +61,7 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "components/history/core/browser/features.h"
 #include "components/input/input_router.h"
 #include "components/input/timeout_monitor.h"
 #include "components/input/utils.h"
@@ -17375,8 +17376,7 @@ void RenderFrameHostImpl::
   // TODO(crbug.com/40161149): Reconsider how we calculate
   // should_update_history.
   bool does_status_code_qualify_for_history =
-      base::FeatureList::IsEnabled(
-          blink::features::kVisitedLinksOnErrorNavigation) ||
+      base::FeatureList::IsEnabled(history::kVisitedLinksOn404) ||
       browser_http_status_code != 404;
   const bool browser_should_update_history =
       !browser_url_is_unreachable && does_status_code_qualify_for_history;

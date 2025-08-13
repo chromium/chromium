@@ -25,6 +25,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/history/core/browser/top_sites_backend.h"
+#include "components/history/core/browser/top_sites_constants.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -38,9 +39,6 @@ namespace history {
 
 class TopSitesImplTest;
 struct SitesAndQueriesRequest;
-
-// How many top sites to store in the cache.
-static constexpr size_t kTopSitesNumber = 10;
 
 // This class allows requests for most visited urls on any thread. All other
 // methods must be invoked on the UI thread. All mutations to internal state

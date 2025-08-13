@@ -28,6 +28,7 @@ include_rules = [
   "+components/attribution_reporting",
   "+components/browsing_topics/common",
   "+components/content_settings/core/common",
+  "+components/history/core/browser/features.h",
   "+components/input",
   "+components/memory_pressure",
   "+components/optimization_guide/public/mojom",

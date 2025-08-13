@@ -1,12 +1,12 @@
 include_rules = [
   "+components/grit",
+  "+components/history/core/browser/features.h",
   "+components/optimization_guide",
   "+components/prefs",
   "+content/public",
   "+mojo/public/cpp/bindings",
   "+net/http",
   "+services/service_manager/public/cpp",
-  "+third_party/blink/public/common",
   "+ui/base",
   "+ui/webui",
 ]

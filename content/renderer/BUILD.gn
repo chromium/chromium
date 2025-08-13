@@ -234,6 +234,7 @@ target(link_target_type, "renderer") {
     "//cc/mojom",
     "//cc/paint",
     "//components/discardable_memory/client",
+    "//components/history/core/browser:features",
     "//components/input",
     "//components/metrics",
     "//components/metrics:single_sample_metrics",

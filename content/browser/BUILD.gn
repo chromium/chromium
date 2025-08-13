@@ -118,6 +118,7 @@ source_set("browser") {
     "//components/file_access",
     "//components/filename_generation",
     "//components/fingerprinting_protection_filter/interventions/common:features",
+    "//components/history/core/browser:features",
     "//components/input",
     "//components/language/core/common",
     "//components/language_detection/content/common",

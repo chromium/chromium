@@ -19,6 +19,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -176,14 +177,8 @@ class HistoryTabHelperVisitedFilteringTest
       public testing::WithParamInterface<bool> {
  public:
   HistoryTabHelperVisitedFilteringTest() {
-    bool are_error_navigations_recorded_in_history = GetParam();
-    if (are_error_navigations_recorded_in_history) {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kVisitedLinksOnErrorNavigation);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          blink::features::kVisitedLinksOnErrorNavigation);
-    }
+    scoped_feature_list_.InitWithFeatureState(history::kVisitedLinksOn404,
+                                              GetParam());
   }
 
  private:
@@ -191,8 +186,8 @@ class HistoryTabHelperVisitedFilteringTest
 };
 
 TEST_P(HistoryTabHelperVisitedFilteringTest, ShouldConsiderForNtpMostVisited) {
-  bool are_error_navigations_recorded_in_history = base::FeatureList::IsEnabled(
-      blink::features::kVisitedLinksOnErrorNavigation);
+  bool are_404s_eligible_for_history =
+      base::FeatureList::IsEnabled(history::kVisitedLinksOn404);
   NiceMock<content::MockNavigationHandle> navigation_handle(web_contents());
   const GURL some_url = GURL("https://someurl.com");
   navigation_handle.set_redirect_chain({some_url});
@@ -224,8 +219,7 @@ TEST_P(HistoryTabHelperVisitedFilteringTest, ShouldConsiderForNtpMostVisited) {
 
   // If 404 error navigations are recorded in history, we should filter them out
   // when determining NTP most visited.
-  EXPECT_EQ(args.consider_for_ntp_most_visited,
-            !are_error_navigations_recorded_in_history);
+  EXPECT_EQ(args.consider_for_ntp_most_visited, !are_404s_eligible_for_history);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

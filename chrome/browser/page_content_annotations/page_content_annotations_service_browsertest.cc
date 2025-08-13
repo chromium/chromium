@@ -26,6 +26,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
@@ -1449,11 +1450,9 @@ class PageContentAnnotationsServiceContentExtractionResponseCodeTest
 
     bool are_404_navigations_saved_to_history = GetParam();
     if (are_404_navigations_saved_to_history) {
-      enabled_features_with_params.push_back(
-          {blink::features::kVisitedLinksOnErrorNavigation, {}});
+      enabled_features_with_params.push_back({history::kVisitedLinksOn404, {}});
     } else {
-      disabled_features.push_back(
-          blink::features::kVisitedLinksOnErrorNavigation);
+      disabled_features.push_back(history::kVisitedLinksOn404);
     }
 
     scoped_feature_list_.InitWithFeaturesAndParameters(

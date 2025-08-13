@@ -1806,18 +1806,25 @@ const FeatureEntry::FeatureVariation kMlUrlSearchBlendingVariations[] = {
      std::size(kMlUrlSearchBlendingMappedAggressiveUrls), nullptr},
 };
 
-constexpr FeatureEntry::FeatureParam
-    kMostVitedTilesNewScoring_DecayStaircaseCap10[] = {
-        {history::kMvtScoringParamRecencyFactor.name,
-         history::kMvtScoringParamRecencyFactor_DecayStaircase},
-        {history::kMvtScoringParamDailyVisitCountCap.name, "10"},
+const FeatureEntry::FeatureParam kMostVitedTilesNewScoring_DecayStaircaseCap10[] = {
+    {
+        "recency_factor",  // history::kMvtScoringParamRecencyFactor.name
+        "decay_staircase"  // history::kMvtScoringParamRecencyFactor_DecayStaircase
+    },
+    {"daily_visit_count_cap",  // history::kMvtScoringParamDailyVisitCountCap.name
+     "10"},
 };
-constexpr FeatureEntry::FeatureParam kMostVitedTilesNewScoring_DecayCap1[] = {
-    {history::kMvtScoringParamRecencyFactor.name,
-     history::kMvtScoringParamRecencyFactor_Decay},
-    // exp(-1.0 / 11).
-    {history::kMvtScoringParamDecayPerDay.name, "0.9131007162822623"},
-    {history::kMvtScoringParamDailyVisitCountCap.name, "1"},
+const FeatureEntry::FeatureParam kMostVitedTilesNewScoring_DecayCap1[] = {
+    {
+        "recency_factor",  // history::kMvtScoringParamRecencyFactor.name
+        "decay"            // history::kMvtScoringParamRecencyFactor_Decay
+    },
+    {
+        "decay_per_day",      // history::kMvtScoringParamDecayPerDay.name
+        "0.9131007162822623"  // exp(-1.0 / 11).
+    },
+    {"daily_visit_count_cap",  // history::kMvtScoringParamDailyVisitCountCap.name
+     "1"},
 };
 constexpr FeatureEntry::FeatureVariation
     kMostVisitedTilesNewScoringVariations[] = {

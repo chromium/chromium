@@ -410,11 +410,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // happens with 'history.replaceState()'), or navigations in non-primary frame
   // trees that should not appear in history.
   //
-  // NOTE: When `blink::features::kVisitedLinksOnErrorNavigations` is enabled,
-  // this method will return true for 404s from reachable URLs. When
-  // `blink::features::kVisitedLinksOnErrorNavigations` is disabled, this method
-  // will return false for 404s. If callers wish to filter out 404s, they must
-  // perform an explicit response code check.
+  // NOTE: When `history::kVisitedLinksOn404` is enabled, this method will
+  // return true for 404s from reachable URLs. When
+  // `history::kVisitedLinksOn404` is disabled, this method will return false
+  // for 404s. If callers wish to filter out 404s, they must perform an explicit
+  // response code check.
   virtual bool ShouldUpdateHistory() = 0;
 
   // The previous main frame URL that the user was on. This may be empty if
