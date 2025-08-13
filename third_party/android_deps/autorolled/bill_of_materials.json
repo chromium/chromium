@@ -2,7 +2,7 @@
     {
         "name": "activity",
         "group": "androidx.activity",
-        "version": "1.12.0-alpha05"
+        "version": "1.12.0-alpha06"
     },
     {
         "name": "activity-compose",
@@ -347,7 +347,7 @@
     {
         "name": "core",
         "group": "androidx.core",
-        "version": "1.17.0-rc01"
+        "version": "1.17.0"
     },
     {
         "name": "core-animation",
@@ -362,7 +362,7 @@
     {
         "name": "core-ktx",
         "group": "androidx.core",
-        "version": "1.17.0-rc01"
+        "version": "1.17.0"
     },
     {
         "name": "core-viewtree",
@@ -382,7 +382,7 @@
     {
         "name": "credentials",
         "group": "androidx.credentials",
-        "version": "1.6.0-alpha04"
+        "version": "1.6.0-alpha05"
     },
     {
         "name": "credentials-play-services-auth",
@@ -482,12 +482,12 @@
     {
         "name": "emoji2",
         "group": "androidx.emoji2",
-        "version": "1.6.0-alpha01"
+        "version": "1.6.0-rc01"
     },
     {
         "name": "emoji2-views-helper",
         "group": "androidx.emoji2",
-        "version": "1.6.0-alpha01"
+        "version": "1.6.0-rc01"
     },
     {
         "name": "emoji",
@@ -582,17 +582,17 @@
     {
         "name": "lifecycle-common",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha01"
+        "version": "2.10.0-alpha02"
     },
     {
         "name": "lifecycle-common-java8",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha01"
+        "version": "2.10.0-alpha02"
     },
     {
         "name": "lifecycle-common-jvm",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha01"
+        "version": "2.10.0-alpha02"
     },
     {
         "name": "lifecycle-livedata",
@@ -602,7 +602,7 @@
     {
         "name": "lifecycle-livedata-core",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha01"
+        "version": "2.10.0-alpha02"
     },
     {
         "name": "lifecycle-livedata-core-ktx",
@@ -617,17 +617,17 @@
     {
         "name": "lifecycle-process",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha01"
+        "version": "2.10.0-alpha02"
     },
     {
         "name": "lifecycle-runtime",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha01"
+        "version": "2.10.0-alpha02"
     },
     {
         "name": "lifecycle-runtime-android",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha01"
+        "version": "2.10.0-alpha02"
     },
     {
         "name": "lifecycle-runtime-compose",
@@ -657,12 +657,12 @@
     {
         "name": "lifecycle-viewmodel",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha01"
+        "version": "2.10.0-alpha02"
     },
     {
         "name": "lifecycle-viewmodel-android",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha01"
+        "version": "2.10.0-alpha02"
     },
     {
         "name": "lifecycle-viewmodel-compose",
@@ -682,12 +682,12 @@
     {
         "name": "lifecycle-viewmodel-savedstate",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha01"
+        "version": "2.10.0-alpha02"
     },
     {
         "name": "lifecycle-viewmodel-savedstate-android",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha01"
+        "version": "2.10.0-alpha02"
     },
     {
         "name": "loader",
@@ -792,12 +792,12 @@
     {
         "name": "navigationevent",
         "group": "androidx.navigationevent",
-        "version": "1.0.0-alpha05"
+        "version": "1.0.0-alpha06"
     },
     {
         "name": "navigationevent-android",
         "group": "androidx.navigationevent",
-        "version": "1.0.0-alpha05"
+        "version": "1.0.0-alpha06"
     },
     {
         "name": "navigationevent-compose",
@@ -917,12 +917,12 @@
     {
         "name": "savedstate",
         "group": "androidx.savedstate",
-        "version": "1.4.0-alpha01"
+        "version": "1.4.0-alpha02"
     },
     {
         "name": "savedstate-android",
         "group": "androidx.savedstate",
-        "version": "1.4.0-alpha01"
+        "version": "1.4.0-alpha02"
     },
     {
         "name": "savedstate-compose",
