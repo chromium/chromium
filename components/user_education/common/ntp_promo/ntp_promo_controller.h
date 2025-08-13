@@ -151,7 +151,8 @@ class NtpPromoController {
       const std::vector<NtpPromoIdentifier>& ids);
 
   // Determines whether an individual promo should be shown.
-  bool ShouldShowPromo(const NtpPromoData& prefs,
+  bool ShouldShowPromo(const NtpPromoIdentifier& id,
+                       const NtpPromoData& prefs,
                        NtpPromoSpecification::Eligibility eligibility,
                        const base::Time& now);
 

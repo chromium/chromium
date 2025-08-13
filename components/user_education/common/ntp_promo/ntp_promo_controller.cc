@@ -4,6 +4,7 @@
 
 #include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -150,7 +151,7 @@ NtpShowablePromos NtpPromoController::GenerateShowablePromos(
       LogPromoCompleted(id);
     }
 
-    if (!ShouldShowPromo(prefs, eligibility, now)) {
+    if (!ShouldShowPromo(id, prefs, eligibility, now)) {
       continue;
     }
 
@@ -266,7 +267,8 @@ bool NtpPromoController::ArePromosBlocked() const {
 // Decides whether a promo should be shown or not, based on the supplied
 // data. If this logic becomes more complex, consider pulling it out to a
 // separate file (crbug.com/435159508).
-bool NtpPromoController::ShouldShowPromo(const NtpPromoData& prefs,
+bool NtpPromoController::ShouldShowPromo(const NtpPromoIdentifier& id,
+                                         const NtpPromoData& prefs,
                                          Eligibility eligibility,
                                          const base::Time& now) {
   // If an eligible promo has been clicked recently, don't show it again for
@@ -287,6 +289,11 @@ bool NtpPromoController::ShouldShowPromo(const NtpPromoData& prefs,
   if (!prefs.completed.is_null() &&
       ((now - prefs.completed >= params_.completed_show_duration) ||
        (now < prefs.completed))) {
+    return false;
+  }
+
+  // If the promo is suppressed via Finch, don't show it (ie. a kill switch).
+  if (base::Contains(params_.suppress_list, id)) {
     return false;
   }
 

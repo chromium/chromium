@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"
@@ -23,10 +24,12 @@ namespace user_education {
 namespace {
 
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::Return;
 
 constexpr char kPromoId[] = "TestPromo";
 constexpr char kPromo2Id[] = "TestPromo2";
+constexpr char kPromo3Id[] = "TestPromo3";
 
 constexpr int kSessionNumber = 10;
 
@@ -93,6 +96,15 @@ class NtpPromoControllerTest : public testing::Test {
   NtpPromoRegistry registry_;
   std::unique_ptr<NtpPromoController> controller_;
 };
+
+std::vector<NtpPromoIdentifier> IdsFromShowablePromos(
+    const std::vector<NtpShowablePromo>& promos) {
+  std::vector<NtpPromoIdentifier> ids;
+  ids.reserve(promos.size());
+  std::transform(promos.begin(), promos.end(), std::back_inserter(ids),
+                 [](const NtpShowablePromo& promo) { return promo.id; });
+  return ids;
+}
 
 }  // namespace
 
@@ -442,6 +454,32 @@ TEST_F(NtpPromoControllerTest, UndisableRestoresPromos) {
   const auto promos = controller().GenerateShowablePromos(nullptr);
   EXPECT_EQ(1U, promos.pending.size());
   EXPECT_EQ(1U, promos.completed.size());
+}
+
+TEST_F(NtpPromoControllerTest, SuppessedSinglePromo) {
+  RegisterPromo(kPromoId, kEligible);
+  RegisterPromo(kPromo2Id, kEligible);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      user_education::features::kEnableNtpBrowserPromos,
+      {{"suppress-list", kPromoId}});
+  CreateController();
+  auto promos = controller().GenerateShowablePromos(nullptr);
+  EXPECT_THAT(IdsFromShowablePromos(promos.pending), ElementsAre(kPromo2Id));
+}
+
+// This exercises the parsing of a comma-separated list in the feature param.
+TEST_F(NtpPromoControllerTest, SuppessedMultiplePromos) {
+  RegisterPromo(kPromoId, kEligible);
+  RegisterPromo(kPromo2Id, kEligible);
+  RegisterPromo(kPromo3Id, kEligible);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      user_education::features::kEnableNtpBrowserPromos,
+      {{"suppress-list", base::StrCat({kPromoId, ",", kPromo2Id})}});
+  CreateController();
+  auto promos = controller().GenerateShowablePromos(nullptr);
+  EXPECT_THAT(IdsFromShowablePromos(promos.pending), ElementsAre(kPromo3Id));
 }
 
 }  // namespace user_education
