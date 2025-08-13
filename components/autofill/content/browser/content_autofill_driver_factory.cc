@@ -253,4 +253,10 @@ ContentAutofillDriverFactory::GetExistingDrivers(
   return drivers;
 }
 
+void ContentAutofillDriverFactory::ReparseKnownForms() {
+  for (const auto& [rfh, driver] : driver_map_) {
+    driver->GetAutofillManager().ReparseKnownForms();
+  }
+}
+
 }  // namespace autofill

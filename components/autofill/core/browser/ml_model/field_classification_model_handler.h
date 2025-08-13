@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/containers/lru_cache.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -28,12 +29,17 @@ namespace autofill {
 // `FieldClassificationModelExecutor`. It retrieves the model from the server,
 // load it into memory, execute it with FormStructure as input and associate the
 // model FieldType predictions with the FormStructure.
+//
+// Users of this class should register to asynchronous model change events via
+// RegisterModelChangeCallback().
 class FieldClassificationModelHandler
     : public optimization_guide::ModelHandler<
           FieldClassificationModelEncoder::ModelOutput,
           const FieldClassificationModelEncoder::ModelInput&>,
       public KeyedService {
  public:
+  using ModelChangeCallbackList = base::RepeatingCallbackList<void()>;
+
   using ModelInputHash = size_t;
 
   // The version of the input, based on which the relevant model
@@ -75,6 +81,10 @@ class FieldClassificationModelHandler
       override;
 
   bool ShouldApplySmallFormRules() const;
+
+  // Registers a callback that is invoked when a new model is loaded.
+  [[nodiscard]] base::CallbackListSubscription RegisterModelChangeCallback(
+      ModelChangeCallbackList::CallbackType callback);
 
 #if defined(UNIT_TEST)
   const FieldTypeSet& get_supported_types() const { return supported_types_; }
@@ -118,6 +128,9 @@ class FieldClassificationModelHandler
   ModelInputHash CalculateModelInputHash(
       const FieldClassificationModelEncoder::ModelInput& input);
 
+  autofill_ml_internals::mojom::MLPredictionLogPtr CreateMLPredictionLog(
+      const FormStructure& form_structure) const;
+
   struct ModelState {
     optimization_guide::proto::AutofillFieldClassificationModelMetadata
         metadata;
@@ -136,10 +149,9 @@ class FieldClassificationModelHandler
   // Cached model classifications.
   base::LRUCache<ModelInputHash, std::vector<FieldType>> predictions_cache_;
 
-  raw_ptr<autofill::MLLogRouter> log_router_ = nullptr;
+  ModelChangeCallbackList model_change_callback_list_;
 
-  autofill_ml_internals::mojom::MLPredictionLogPtr CreateMLPredictionLog(
-      const FormStructure& form_structure) const;
+  raw_ptr<autofill::MLLogRouter> log_router_ = nullptr;
 
   base::WeakPtrFactory<FieldClassificationModelHandler> weak_ptr_factory_{this};
 };

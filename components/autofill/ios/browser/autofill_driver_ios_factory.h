@@ -73,6 +73,10 @@ class AutofillDriverIOSFactory final
 
   AutofillDriverRouter& router() { return router_; }
 
+  // Triggers a new parsing of forms. Called if the TF model is loaded so local
+  // heuristics can produce new results.
+  void ReparseKnownForms();
+
  private:
   friend class AutofillDriverIOSFactoryTestApi;
 

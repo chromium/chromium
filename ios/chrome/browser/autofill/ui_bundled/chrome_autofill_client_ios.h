@@ -10,6 +10,7 @@
 #import <string>
 #import <vector>
 
+#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/country_type.h"
@@ -170,6 +171,8 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   // signed-in user.
   std::optional<std::u16string> GetUserEmail();
 
+  void OnFieldClassificationModelChanged();
+
   raw_ptr<PrefService> pref_service_;
   raw_ptr<syncer::SyncService> sync_service_;
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
@@ -201,6 +204,9 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   __weak UIViewController* base_view_controller_;
 
   __weak id<AutofillCommands> commands_handler_;
+
+  base::CallbackListSubscription autofill_model_change_subscription_;
+  base::CallbackListSubscription password_manager_model_change_subscription_;
 
   base::WeakPtrFactory<ChromeAutofillClientIOS> weak_ptr_factory_{this};
 };

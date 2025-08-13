@@ -223,6 +223,10 @@ class ChromeAutofillClient : public ContentAutofillClient,
       EntitySaveOrUpdatePromptResultCallback save_prompt_acceptance_callback)
       override;
 
+  // Called if the field classification model has been loaded asynchronously. In
+  // this case the forms should be reparsed.
+  void OnFieldClassificationModelChanged();
+
   // TODO(crbug.com/407666146): Create a test API.
   base::WeakPtr<AutofillSuggestionController>
   suggestion_controller_for_testing() {
@@ -315,6 +319,10 @@ class ChromeAutofillClient : public ContentAutofillClient,
   const AutofillAblationStudy ablation_study_;
 
   ContentIdentityCredentialDelegate identity_credential_delegate_;
+
+  base::CallbackListSubscription autofill_model_change_subscription_;
+  base::CallbackListSubscription password_manager_model_change_subscription_;
+
   base::WeakPtrFactory<ChromeAutofillClient> weak_ptr_factory_{this};
 };
 

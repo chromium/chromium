@@ -77,6 +77,7 @@
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#import "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_field_classification_model_handler_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_password_field_classification_model_handler_factory.h"
 #endif
@@ -165,8 +166,16 @@ FieldClassificationModelHandler*
 ChromeAutofillClientIOS::GetAutofillFieldClassificationModelHandler() {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions)) {
-    return IOSAutofillFieldClassificationModelHandlerFactory::GetForProfile(
-        profile_);
+    FieldClassificationModelHandler* handler =
+        IOSAutofillFieldClassificationModelHandlerFactory::GetForProfile(
+            profile_);
+    if (handler && !autofill_model_change_subscription_) {
+      autofill_model_change_subscription_ =
+          handler->RegisterModelChangeCallback(base::BindRepeating(
+              &ChromeAutofillClientIOS::OnFieldClassificationModelChanged,
+              base::Unretained(this)));
+    }
+    return handler;
   }
 #endif
   return nullptr;
@@ -175,8 +184,16 @@ ChromeAutofillClientIOS::GetAutofillFieldClassificationModelHandler() {
 FieldClassificationModelHandler*
 ChromeAutofillClientIOS::GetPasswordManagerFieldClassificationModelHandler() {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  return IOSPasswordFieldClassificationModelHandlerFactory::GetForProfile(
-      profile_);
+  FieldClassificationModelHandler* handler =
+      IOSPasswordFieldClassificationModelHandlerFactory::GetForProfile(
+          profile_);
+  if (handler && !password_manager_model_change_subscription_) {
+    password_manager_model_change_subscription_ =
+        handler->RegisterModelChangeCallback(base::BindRepeating(
+            &ChromeAutofillClientIOS::OnFieldClassificationModelChanged,
+            base::Unretained(this)));
+  }
+  return handler;
 #else
   return nullptr;
 #endif
@@ -531,6 +548,10 @@ void ChromeAutofillClientIOS::RemoveAutofillSaveCardInfoBar() {
   if (save_card_infobar != infobar_manager_->infobars().cend()) {
     infobar_manager_->RemoveInfoBar(*save_card_infobar);
   }
+}
+
+void ChromeAutofillClientIOS::OnFieldClassificationModelChanged() {
+  GetAutofillDriverFactory().ReparseKnownForms();
 }
 
 }  // namespace autofill
