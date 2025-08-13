@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import android.app.Activity;
-import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -30,7 +29,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.ui.base.TestActivity;
@@ -56,14 +54,11 @@ public class BookmarkBarMediatorTest {
     @Mock private PropertyModel mPropertyModel;
     @Mock private ModelList mItemsModel;
     @Mock private PropertyModel mAllBookmarksButtonModel;
-    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private ObservableSupplierImpl<Boolean> mItemsOverflowSupplier;
     @Mock private Profile mProfile;
     @Mock private BookmarkOpener mBookmarkOpener;
     @Mock private RecyclerView mItemsRecyclerView;
     @Mock private BookmarkBar mBookmarkBarView;
-    @Mock private View mAnchorView;
-    @Mock private RecyclerView.ViewHolder mViewHolder;
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
 
     private Activity mActivity;
@@ -83,8 +78,6 @@ public class BookmarkBarMediatorTest {
                 new BookmarkBarMediator(
                         mActivity,
                         mAllBookmarksButtonModel,
-                        mBrowserControlsStateProvider,
-                        () -> 0, // heightSupplier
                         mItemsModel,
                         mItemsOverflowSupplier,
                         mPropertyModel,

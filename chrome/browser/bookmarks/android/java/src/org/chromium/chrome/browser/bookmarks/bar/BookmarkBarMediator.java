@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
@@ -64,8 +63,6 @@ class BookmarkBarMediator
     @VisibleForTesting static @Nullable Bitmap sFolderIconBitmap;
     private final Activity mActivity;
     private final PropertyModel mAllBookmarksButtonModel;
-    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private final Supplier<Integer> mHeightSupplier;
     private final ModelList mItemsModel;
     private final ObservableSupplier<Boolean> mItemsOverflowSupplier;
     private final Callback<Boolean> mItemsOverflowSupplierObserver;
@@ -89,8 +86,6 @@ class BookmarkBarMediator
      *
      * @param activity The activity which is hosting the bookmark bar.
      * @param allBookmarksButtonModel The model for the 'All Bookmarks' button.
-     * @param browserControlsStateProvider The state provider for browser controls.
-     * @param heightSupplier A Supplier to fetch the height of the bookmark bar view.
      * @param itemsModel The model for the items which are rendered within the bookmark bar.
      * @param itemsOverflowSupplier The supplier for the current state of items overflow.
      * @param model The model used to read/write bookmark bar properties.
@@ -105,8 +100,6 @@ class BookmarkBarMediator
     public BookmarkBarMediator(
             Activity activity,
             PropertyModel allBookmarksButtonModel,
-            BrowserControlsStateProvider browserControlsStateProvider,
-            Supplier<Integer> heightSupplier,
             ModelList itemsModel,
             ObservableSupplier<Boolean> itemsOverflowSupplier,
             PropertyModel model,
@@ -133,11 +126,6 @@ class BookmarkBarMediator
                 BookmarkBarButtonProperties.TITLE,
                 mActivity.getString(R.string.bookmark_bar_all_bookmarks_button_title));
 
-        mBrowserControlsStateProvider = browserControlsStateProvider;
-        mBrowserControlsStateProvider.addObserver(this);
-
-        mHeightSupplier = heightSupplier;
-
         mItemsModel = itemsModel;
 
         mItemsOverflowSupplier = itemsOverflowSupplier;
@@ -158,15 +146,11 @@ class BookmarkBarMediator
         mBookmarkManagerOpenerSupplier = bookmarkManagerOpenerSupplier;
         mItemsRecyclerView = itemsRecyclerView;
         mBookmarkBarView = bookmarkBarView;
-
-        updateTopMargin();
-        updateVisibility();
     }
 
     /** Destroys the bookmark bar mediator. */
     public void destroy() {
         mAllBookmarksButtonModel.set(BookmarkBarButtonProperties.CLICK_CALLBACK, null);
-        mBrowserControlsStateProvider.removeObserver(this);
         mItemsOverflowSupplier.removeObserver(mItemsOverflowSupplierObserver);
 
         // TODO(crbug.com/430044890): Change it to a member variable.
@@ -243,26 +227,6 @@ class BookmarkBarMediator
     public void onBookmarkItemsRemoved(
             @BookmarkBarItemsProvider.ObservationId int observationId, int index, int count) {
         mItemsModel.removeRange(index, count);
-    }
-
-    // BrowserControlsStateProvider.Observer implementation.
-
-    @Override
-    public void onControlsOffsetChanged(
-            int topOffset,
-            int topControlsMinHeightOffset,
-            boolean topControlsMinHeightChanged,
-            int bottomOffset,
-            int bottomControlsMinHeightOffset,
-            boolean bottomControlsMinHeightChanged,
-            boolean requestNewFrame,
-            boolean isVisibilityForced) {
-        updateVisibility();
-    }
-
-    @Override
-    public void onTopControlsHeightChanged(int topControlsHeight, int topControlsMinHeight) {
-        updateTopMargin();
     }
 
     // Private methods.
@@ -386,27 +350,6 @@ class BookmarkBarMediator
                     // running the callback for the wrong profile/model.
                     callback.accept(profileAfterLoading, modelAfterLoading);
                 });
-    }
-
-    // TODO(crbug.com/430058918): Replace w/ positioning construct akin to `BottomControlsStacker`.
-    private void updateTopMargin() {
-        // NOTE: Top controls height is the sum of all top browser control heights which includes
-        // that of the bookmark bar. Subtract the bookmark bar's height from the top controls height
-        // when calculating top margin in order to bottom align the bookmark bar relative to other
-        // top browser controls.
-        mModel.set(
-                BookmarkBarProperties.TOP_MARGIN,
-                mBrowserControlsStateProvider.getTopControlsHeight() - mHeightSupplier.get());
-    }
-
-    // TODO(crbug.com/430058918): Mediator should not internally determine visibility by offsets.
-    @Deprecated
-    private void updateVisibility() {
-        mModel.set(
-                BookmarkBarProperties.VISIBILITY,
-                mBrowserControlsStateProvider.getTopControlOffset() == 0
-                        ? View.VISIBLE
-                        : View.GONE);
     }
 
     public void setVisibility(boolean isVisible) {

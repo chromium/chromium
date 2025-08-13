@@ -45,6 +45,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -188,12 +189,14 @@ public class BookmarkBarCoordinatorTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/430058443")
     public void testConstructorWhenTopControlOffsetIsNonZero() {
         testConstructor(/* topControlOffset= */ -1);
     }
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/430058443")
     public void testConstructorWhenTopControlOffsetIsZero() {
         testConstructor(/* topControlOffset= */ 0);
     }
