@@ -741,7 +741,10 @@ inline constexpr char kRulesetCountExceeded[] =
 inline constexpr char16_t kSandboxPagesCSPKeyNotAllowed[] =
     u"The Content Security Policy for sandboxed pages should be specified in "
     "'content_security_policy.sandbox'.";
-inline constexpr char kSidePanelManifestDefaultPathError[] =
+inline constexpr char16_t kSidePanelManifestDefaultPathInvalid[] =
+    u"Side panel file path must be a relative URL to a valid extension "
+    u"resource.";
+inline constexpr char kSidePanelManifestDefaultPathDoesNotExist[] =
     "Side panel file path must exist.";
 inline constexpr char16_t
     kTransientBackgroundConflictsWithPersistentBackground[] =

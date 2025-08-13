@@ -49,8 +49,7 @@ GURL GetSidePanelURL(const Extension& extension,
   // A side panel URL can be either an external HTTP/HTTPS URL or an extension
   // URL.
   GURL absolute_url = GURL(*options.path);
-  if (absolute_url.SchemeIs(url::kHttpScheme) ||
-      absolute_url.SchemeIs(url::kHttpsScheme)) {
+  if (absolute_url.SchemeIsHTTPOrHTTPS()) {
     return absolute_url;
   }
   return extension.ResolveExtensionURL(*options.path);

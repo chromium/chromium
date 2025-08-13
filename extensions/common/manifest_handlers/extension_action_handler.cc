@@ -28,13 +28,9 @@ void SetWarningsForNonExistentDefaultPopup(
     return;
   }
 
-  GURL extension_base_url =
-      extension->GetBaseURLFromExtensionId(extension->id());
-  base::FilePath relative_path =
-      extensions::file_util::ExtensionURLToRelativeFilePath(default_popup_url);
   base::FilePath resource_path =
-      extension->GetResource(relative_path).GetFilePath();
-
+      extensions::file_util::ExtensionURLToAbsoluteFilePath(*extension,
+                                                            default_popup_url);
   if (resource_path.empty() || !base::PathExists(resource_path)) {
     warnings->emplace_back(
         extensions::manifest_errors::kNonexistentDefaultPopup, manifest_key,

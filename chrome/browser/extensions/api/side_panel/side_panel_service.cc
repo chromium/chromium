@@ -33,10 +33,10 @@ constexpr PrefMap kOpenSidePanelOnIconClickPref = {
 
 api::side_panel::PanelOptions GetPanelOptionsFromManifest(
     const Extension& extension) {
-  auto path = SidePanelInfo::GetDefaultPath(&extension);
+  std::string path = SidePanelInfo::GetDefaultPath(&extension);
   api::side_panel::PanelOptions options;
   if (!path.empty()) {
-    options.path = std::string(path);
+    options.path = std::move(path);
     options.enabled = true;
   }
   return options;

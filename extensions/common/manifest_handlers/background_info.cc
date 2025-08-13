@@ -387,7 +387,8 @@ bool BackgroundManifestHandler::Validate(
   const std::vector<ExtensionResource>& background_scripts =
       BackgroundInfo::GetBackgroundScripts(&extension);
   for (const auto& background_script : background_scripts) {
-    if (!base::PathExists(background_script.GetFilePath())) {
+    base::FilePath path = background_script.GetFilePath();
+    if (path.empty() || !base::PathExists(path)) {
       *error = l10n_util::GetStringFUTF8(
           IDS_EXTENSION_LOAD_BACKGROUND_SCRIPT_FAILED,
           background_script.relative_path().AsUTF16Unsafe());
