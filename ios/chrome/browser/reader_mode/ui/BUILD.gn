@@ -13,6 +13,7 @@ source_set("ui") {
     ":constants",
     "//components/dom_distiller/core/mojom",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/overscroll_actions/ui_bundled",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:tabs_closure_animation",
     "//ios/chrome/common/ui/util",
@@ -75,7 +76,6 @@ source_set("eg2_tests") {
   sources = [ "reader_mode_egtest.mm" ]
   deps = [
     ":constants",
-    ":ui",
     "//components/dom_distiller/core",
     "//components/dom_distiller/core/mojom",
     "//components/signin/internal/identity_manager:capabilities",

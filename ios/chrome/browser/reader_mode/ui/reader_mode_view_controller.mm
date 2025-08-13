@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_view_controller.h"
 
 #import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
+#import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_mutator.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
@@ -18,6 +19,7 @@
 @implementation ReaderModeViewController {
   UIView* _contentView;
   TabsClosureAnimation* _tabsClosureAnimation;
+  OverscrollActionsController* _overscrollActionsController;
 }
 
 #pragma mark - UIViewController
@@ -72,6 +74,8 @@
 
 - (void)removeFromParentViewControllerAnimated:(BOOL)animated {
   [self willMoveToParentViewController:nil];
+  [_overscrollActionsController invalidate];
+  _overscrollActionsController = nil;
   if (animated) {
     _tabsClosureAnimation =
         [[TabsClosureAnimation alloc] initWithWindow:self.view
@@ -104,18 +108,31 @@
 
 #pragma mark - ReaderModeConsumer
 
-- (void)setContentView:(UIView*)contentView {
+- (void)removeContentView {
   if (_contentView) {
+    [_overscrollActionsController invalidate];
+    _overscrollActionsController = nil;
     _contentView.hidden = YES;
     [_contentView removeFromSuperview];
   }
+}
+
+- (void)setContentView:(UIView*)contentView
+          webViewProxy:(id<CRWWebViewProxy>)webViewProxy
+       overscrollStyle:(OverscrollStyle)overscrollStyle {
+  CHECK(contentView);
+  // Removes the current content view if necessary.
+  [self removeContentView];
+  // Adds the new content view.
   _contentView = contentView;
-  if (_contentView) {
-    _contentView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:_contentView];
-    _contentView.hidden = NO;
-    AddSameConstraints(self.view, _contentView);
-  }
+  _contentView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_contentView];
+  _contentView.hidden = NO;
+  AddSameConstraints(self.view, _contentView);
+  _overscrollActionsController =
+      [[OverscrollActionsController alloc] initWithWebViewProxy:webViewProxy];
+  _overscrollActionsController.delegate = self.overscrollDelegate;
+  [_overscrollActionsController setStyle:overscrollStyle];
 }
 
 #pragma mark - Private

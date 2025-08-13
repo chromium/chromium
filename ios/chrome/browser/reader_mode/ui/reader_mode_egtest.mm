@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -1094,6 +1095,40 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kBadgeButtonIncognitoAccessibilityIdentifier)];
+}
+
+// Tests that overscroll actions can be used to refresh dismisses Reader mode.
+- (void)testOverscrollToRefresh {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Overscroll Actions are only on iPhone.");
+  }
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Open Reader Mode UI.
+  [ChromeEarlGrey showReaderMode];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
+
+  // Pull down to reload.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::OverscrollSwipe(kGREYDirectionDown)];
+
+  // Wait for the page to reload.
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // The Reader Mode UI is not visible.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReaderModeChipViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_hidden(YES)];
 }
 
 @end

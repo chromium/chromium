@@ -13,8 +13,9 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 
-@interface ReaderModeMediator () <WebStateListObserving>
+@interface ReaderModeMediator () <WebStateListObserving, CRWWebStateObserver>
 @end
 
 @implementation ReaderModeMediator {
@@ -22,6 +23,11 @@
   raw_ptr<BwgService> _BWGService;
   raw_ptr<dom_distiller::DistilledPagePrefs> _distilledPagePrefs;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
+  // WebState whose view is currently being shown in the consumer. It is
+  // necessary to keep track of it so `WasHidden()` can be called when another
+  // WebState is about to be shown instead.
+  raw_ptr<web::WebState> _contentWebState;
+  std::unique_ptr<web::WebStateObserverBridge> _contentWebStateObserverBridge;
 }
 
 #pragma mark - Initialization
@@ -86,6 +92,11 @@
 }
 
 - (void)disconnect {
+  if (_contentWebState) {
+    _contentWebState->RemoveObserver(_contentWebStateObserverBridge.get());
+    _contentWebStateObserverBridge.reset();
+    _contentWebState = nullptr;
+  }
   if (_webStateList) {
     _webStateList->RemoveObserver(_webStateListObserverBridge.get());
     _webStateListObserverBridge.reset();
@@ -94,14 +105,27 @@
   _BWGService = nullptr;
 }
 
+#pragma mark - CRWWebStateObserver
+
+- (void)webStateDestroyed:(web::WebState*)webState {
+  DCHECK_EQ(_contentWebState, webState);
+  [self updateContentWithNewActiveWebState:nullptr];
+}
+
 #pragma mark - Private
 
 // If `activeWebState` is not null, feed the Reader mode content view of
 // `activeWebState` to `consumer`. Otherwise, give `nil` content view to
 // consumer.
 - (void)updateContentWithNewActiveWebState:(web::WebState*)activeWebState {
-  // Remove the old content view.
-  [self.consumer setContentView:nil];
+  if (_contentWebState) {
+    _contentWebState->RemoveObserver(_contentWebStateObserverBridge.get());
+    _contentWebStateObserverBridge.reset();
+    [self.consumer removeContentView];
+    _contentWebState->WasHidden();
+    _contentWebState = nullptr;
+  }
+
   // If there is a new content view, feed it to consumer.
   if (!activeWebState) {
     return;
@@ -110,9 +134,22 @@
       ReaderModeTabHelper::FromWebState(activeWebState);
   web::WebState* readerModeWebState =
       readerModeTabHelper->GetReaderModeWebState();
-  if (readerModeWebState) {
-    [self.consumer setContentView:readerModeWebState->GetView()];
+  if (!readerModeWebState) {
+    return;
   }
+
+  _contentWebState = readerModeWebState;
+  const OverscrollStyle overscrollStyle =
+      _contentWebState->GetBrowserState()->IsOffTheRecord()
+          ? OverscrollStyle::REGULAR_PAGE_INCOGNITO
+          : OverscrollStyle::REGULAR_PAGE_NON_INCOGNITO;
+  [self.consumer setContentView:_contentWebState->GetView()
+                   webViewProxy:_contentWebState->GetWebViewProxy()
+                overscrollStyle:overscrollStyle];
+  _contentWebState->WasShown();
+  _contentWebStateObserverBridge =
+      std::make_unique<web::WebStateObserverBridge>(self);
+  _contentWebState->AddObserver(_contentWebStateObserverBridge.get());
 }
 
 @end

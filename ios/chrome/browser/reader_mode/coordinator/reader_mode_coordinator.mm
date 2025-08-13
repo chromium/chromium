@@ -36,6 +36,7 @@
 
 - (void)startAnimated:(BOOL)animated {
   _viewController = [[ReaderModeViewController alloc] init];
+  _viewController.overscrollDelegate = self.overscrollDelegate;
   ProfileIOS* profile = self.browser->GetProfile();
   BwgService* BWGService = BwgServiceFactory::GetForProfile(profile);
   DistillerService* distiller_service =

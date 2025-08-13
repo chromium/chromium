@@ -740,6 +740,7 @@ enum class ToolbarKind {
   _readerModeCoordinator = [[ReaderModeCoordinator alloc]
       initWithBaseViewController:self.browserContainerCoordinator.viewController
                          browser:self.browser];
+  [_readerModeCoordinator setOverscrollDelegate:self];
   [_readerModeCoordinator startAnimated:animated];
 }
 
