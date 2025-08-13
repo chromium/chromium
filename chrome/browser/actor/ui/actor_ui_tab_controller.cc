@@ -120,8 +120,7 @@ void ActorUiTabController::OnTabWillDetach(TabInterface* tab,
 
 void ActorUiTabController::OnTabDidInsert(TabInterface* tab) {
   if (features::kGlicActorUiOverlay.Get()) {
-    actor_overlay_view_controller_->SetWindowController(
-        ActorOverlayWindowController::From(tab->GetBrowserWindowInterface()));
+    actor_overlay_view_controller_->AttachManagedWebViewToWindowController();
   }
 }
 

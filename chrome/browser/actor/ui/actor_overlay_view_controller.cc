@@ -57,36 +57,44 @@ void ActorOverlayViewController::UpdateState(const ActorOverlayState& state,
 // the null checks on if the window controller / web_views in this file can be
 // removed and we can assume they should be available with a CHECK again.
 void ActorOverlayViewController::AttachManagedWebViewToWindowController() {
-  // No webview to attach or window controller to use.
-  if (!managed_overlay_web_view_ || !actor_overlay_window_controller_) {
+  // No webview to attach
+  if (!managed_overlay_web_view_) {
+    return;
+  }
+
+  ActorOverlayWindowController* window_controller =
+      ActorOverlayWindowController::From(
+          tab_interface_->GetBrowserWindowInterface());
+  // No window controller to use.
+  if (!window_controller) {
     return;
   }
   // Transfer ownership from `managed_overlay_web_view_` to the window
   // controller's container.
-  overlay_web_view_ = actor_overlay_window_controller_->AddChildWebView(
-      std::move(managed_overlay_web_view_));
+  overlay_web_view_ =
+      window_controller->AddChildWebView(std::move(managed_overlay_web_view_));
   // Ensure the newly attached WebView is initially hidden.
   overlay_web_view_->SetVisible(false);
   // Clear the unique_ptr as ownership has been transferred.
   managed_overlay_web_view_ = nullptr;
 }
 
-void ActorOverlayViewController::SetWindowController(
-    ActorOverlayWindowController* controller) {
-  actor_overlay_window_controller_ = controller;
-  // If a WebView was previously detached, re-attach it to the new window
-  // controller.
-  AttachManagedWebViewToWindowController();
-}
-
 void ActorOverlayViewController::NullifyWebView() {
-  // No webview to remove or window controller to use.
-  if (!overlay_web_view_ || !actor_overlay_window_controller_) {
+  // No webview to remove.
+  if (!overlay_web_view_) {
+    return;
+  }
+  ActorOverlayWindowController* window_controller =
+      ActorOverlayWindowController::From(
+          tab_interface_->GetBrowserWindowInterface());
+
+  // No window controller to use.
+  if (!window_controller) {
     return;
   }
   // Reclaim ownership of the WebView from the window controller's container.
   managed_overlay_web_view_ =
-      actor_overlay_window_controller_->RemoveChildWebView(overlay_web_view_);
+      window_controller->RemoveChildWebView(overlay_web_view_);
   // Clear the raw pointer since the WebView is no longer attached.
   overlay_web_view_ = nullptr;
 }
@@ -127,8 +135,9 @@ void ActorOverlayViewController::ShowWebView() {
   scoped_ignore_input_events_ =
       tab_interface_->GetContents()->IgnoreInputEvents(std::nullopt);
   overlay_web_view_->SetVisible(true);
-  if (actor_overlay_window_controller_) {
-    actor_overlay_window_controller_->MaybeUpdateContainerVisibility();
+  if (auto* window_controller = ActorOverlayWindowController::From(
+          tab_interface_->GetBrowserWindowInterface())) {
+    window_controller->MaybeUpdateContainerVisibility();
   }
 }
 
@@ -140,8 +149,9 @@ void ActorOverlayViewController::HideWebView() {
     return;
   }
   overlay_web_view_->SetVisible(false);
-  if (actor_overlay_window_controller_) {
-    actor_overlay_window_controller_->MaybeUpdateContainerVisibility();
+  if (auto* window_controller = ActorOverlayWindowController::From(
+          tab_interface_->GetBrowserWindowInterface())) {
+    window_controller->MaybeUpdateContainerVisibility();
   }
   // Re-enable mouse and keyboard events to the underlying web contents by
   // resetting the ScopedIgnoreInputEvents object.

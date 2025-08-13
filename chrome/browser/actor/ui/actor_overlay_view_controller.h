@@ -45,11 +45,12 @@ class ActorOverlayViewController : public mojom::ActorOverlayPageHandler {
   // WebView.
   virtual void UpdateState(const ActorOverlayState& state, bool is_visible);
 
-  // Updates the associated window controller for this tab's overlay. Called by
-  // ActorUiTabController when the tab is inserted into a window. Re-attaches a
-  // previously detached WebView if one exists. This is important when tab's
-  // that are being actuated, move between different windows.
-  virtual void SetWindowController(ActorOverlayWindowController* controller);
+  // Attaches a WebView (either newly created or previously detached) to the
+  // current ActorOverlayWindowController. Called by ActorUiTabController when
+  // the tab is inserted into a window. Re-attaches a previously detached
+  // WebView if one exists. This is important when tab's that are being
+  // actuated, move between different windows.
+  virtual void AttachManagedWebViewToWindowController();
 
   // Detaches the overlay's WebView from its current window controller and
   // reclaims its ownership. Called by ActorUiTabController when the tab is
@@ -67,11 +68,6 @@ class ActorOverlayViewController : public mojom::ActorOverlayPageHandler {
   // the overlay needs to be shown for the first time for this tab. It also
   // attaches the WebView to the window controller.
   void CreateWebView();
-
-  // Attaches a WebView (either newly created or previously detached) to the
-  // current ActorOverlayWindowController. Called by CreateWebView and
-  // SetWindowController.
-  void AttachManagedWebViewToWindowController();
 
   // Makes the overlay WebView visible and disables input to the underlying web
   // contents. Called by UpdateState.
@@ -101,8 +97,6 @@ class ActorOverlayViewController : public mojom::ActorOverlayPageHandler {
 
   mojo::Receiver<mojom::ActorOverlayPageHandler> receiver_{this};
   const raw_ref<tabs::TabInterface> tab_interface_;
-  raw_ptr<ActorOverlayWindowController> actor_overlay_window_controller_ =
-      nullptr;
 };
 
 }  // namespace actor::ui

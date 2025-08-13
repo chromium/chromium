@@ -25,10 +25,7 @@ class MockActorOverlayViewController : public ActorOverlayViewController {
               UpdateState,
               (const ActorOverlayState& state, bool is_visible),
               (override));
-  MOCK_METHOD(void,
-              SetWindowController,
-              (ActorOverlayWindowController * controller),
-              (override));
+  MOCK_METHOD(void, AttachManagedWebViewToWindowController, (), (override));
   MOCK_METHOD(void, NullifyWebView, (), (override));
   MOCK_METHOD(void, OnHoverStatusChanged, (bool is_hovering), (override));
 };
