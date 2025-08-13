@@ -1749,7 +1749,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.ClientEnqueueResult"
     enum="EnterpriseCloudReportingStatusCode" expires_after="2026-01-18">
-  <owner>lbaraz@chromium.org</owner>
+  <owner>djzhang@google.com</owner>
+  <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     Recorded when missive clientlib calls ReportQueue::Enqueue to post an event
@@ -1760,7 +1761,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.ConfigFileRecordBlocked"
     enum="EnterpriseCloudReportingDestination" expires_after="2025-01-01">
-  <owner>albertojuarez@google.com</owner>
+  <owner>djzhang@google.com</owner>
+  <owner>jdudder@google.com</owner>
   <owner>cros-reporting-eng@google.com</owner>
   <summary>
     Recorded when missive blocks a record being processed and sent to the
@@ -1772,7 +1774,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.CpuUsage" units="%"
     expires_after="2025-10-20">
-  <owner>lbaraz@chromium.org</owner>
+  <owner>djzhang@google.com</owner>
+  <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     The percentage of CPU time that the Missive daemon has been using. The CPU
@@ -1784,7 +1787,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.DataLossErrorReason"
     enum="DataLossErrorReason" expires_after="2025-10-05">
-  <owner>lbaraz@chromium.org</owner>
+  <owner>djzhang@google.com</owner>
+  <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     Recorded once each time reporting::error::DATA_LOSS is returned in
@@ -1796,7 +1800,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.DeleteEmptyMultigenerationQueueDirectories"
     enum="Boolean" expires_after="2025-12-07">
-  <owner>lbaraz@chromium.org</owner>
+  <owner>djzhang@google.com</owner>
+  <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     Recorded when the Missive daemon attempts to delete empty multigeneration
@@ -1810,7 +1815,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.KeyDeliveryResult"
     enum="EnterpriseCloudReportingStatusCode" expires_after="2025-12-14">
-  <owner>lbaraz@chromium.org</owner>
+  <owner>djzhang@google.com</owner>
+  <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     Recorded when missive recieves a response to its request for an encryption
@@ -1820,7 +1826,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.MemoryUsage" units="0.1MiB"
     expires_after="2025-10-12">
-  <owner>lbaraz@chromium.org</owner>
+  <owner>djzhang@google.com</owner>
+  <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     The amount of memory that the Missive daemon has been using. This is
@@ -1830,7 +1837,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.MigrationStatus"
     enum="MissiveMigrationStatus" expires_after="2025-10-24">
-  <owner>lbaraz@chromium.org</owner>
+  <owner>djzhang@google.com</owner>
+  <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     Recorded when Missive runs the storage directory migration function (called
@@ -1840,7 +1848,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.ResourceExhaustedCase"
     enum="ResourceExhaustedCase" expires_after="2026-02-01">
-  <owner>lbaraz@chromium.org</owner>
+  <owner>djzhang@google.com</owner>
+  <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     Counter of each case RESOURCE_EXHAUSTED error was returned by missive
@@ -1851,7 +1860,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.StartStatus"
     enum="EnterpriseCloudReportingStatusCode" expires_after="2026-02-01">
-  <owner>lbaraz@chromium.org</owner>
+  <owner>djzhang@google.com</owner>
+  <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     Recorded status of every instance missive starts (usually once per device
@@ -1870,7 +1880,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.StorageUsage" units="MiB"
     expires_after="2025-12-21">
-  <owner>lbaraz@chromium.org</owner>
+  <owner>djzhang@google.com</owner>
+  <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     The amount of disk storage that the Missive daemon has been using for
@@ -1881,7 +1892,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.StorageUsageNonUploading" units="MiB"
     expires_after="2026-03-13">
-  <owner>lbaraz@chromium.org</owner>
+  <owner>djzhang@google.com</owner>
+  <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     The amount of disk storage that the Missive daemon has been using for
@@ -1893,7 +1905,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.UnavailableErrorReason"
     enum="UnavailableErrorReason" expires_after="2025-12-07">
-  <owner>lbaraz@chromium.org</owner>
+  <owner>djzhang@google.com</owner>
+  <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     Recorded once each time reporting::error::UNAVAILABLE is returned in
@@ -1905,7 +1918,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.UnusualEnqueueTimestamp" enum="Boolean"
     expires_after="2025-10-26">
-  <owner>lbaraz@chromium.org</owner>
+  <owner>djzhang@google.com</owner>
+  <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     Would only be true. Recorded whenever an unusual timestamp is encountered
