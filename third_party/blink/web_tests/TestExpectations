@@ -6600,7 +6600,6 @@ crbug.com/1304956 storage/indexeddb/dont-wedge.html [ Failure Pass ]
 
 # Sheriff 2022-03-15
 crbug.com/1295980 virtual/fenced-frame-mparch/external/wpt/fenced-frame/user-activation.https.html [ Failure Pass Timeout ]
-crbug.com/1298633 http/tests/inspector-protocol/network/cross-origin-isolation/coep-load-error-reporting-worker.js [ Pass Timeout ]
 
 # WebAudio flaky timeout (crbug.com/1307741)
 crbug.com/1307741 webaudio/AudioParam/audioparam-k-rate.html [ Timeout ]
