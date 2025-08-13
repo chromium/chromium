@@ -65,18 +65,11 @@ void GlicActorTaskIcon::SetIsShowingNudge(bool is_showing) {
   PreferredSizeChanged();
 }
 
-void GlicActorTaskIcon::SetFloatyOpenTooltipText() {
+void GlicActorTaskIcon::SetDefaultTooltipText() {
   // TODO(crbug.com/431015299): Replace with finalized strings when ready.
-  const std::u16string glic_actor_task_icon_floaty_open_tooltip_text =
-      u"Close Gemini in Chrome";
-  SetTooltipText(glic_actor_task_icon_floaty_open_tooltip_text);
-}
-
-void GlicActorTaskIcon::SetFloatyClosedTooltipText() {
-  // TODO(crbug.com/431015299): Replace with finalized strings when ready.
-  const std::u16string glic_actor_task_icon_floaty_closed_tooltip_text =
-      u"Open Gemini in Chrome";
-  SetTooltipText(glic_actor_task_icon_floaty_closed_tooltip_text);
+  const std::u16string glic_actor_task_icon_default_tooltip_text =
+      u"Your task is running";
+  SetTooltipText(glic_actor_task_icon_default_tooltip_text);
 }
 
 void GlicActorTaskIcon::SetDefaultColors() {
@@ -96,7 +89,7 @@ void GlicActorTaskIcon::HighlightTaskIcon() {
 void GlicActorTaskIcon::SetTaskIconToDefault() {
   SetText(std::u16string());
   SetDefaultColors();
-  SetFloatyClosedTooltipText();
+  SetDefaultTooltipText();
 }
 
 void GlicActorTaskIcon::ShowCheckTasksLabel() {
