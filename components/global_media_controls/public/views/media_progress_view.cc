@@ -285,6 +285,18 @@ void MediaProgressView::OnBlur() {
   SchedulePaint();
 }
 
+void MediaProgressView::OnMouseEntered(const ui::MouseEvent& event) {
+  straight_progress_stroke_width_ = kLargeStrokeWidth;
+  SchedulePaint();
+}
+
+void MediaProgressView::OnMouseExited(const ui::MouseEvent& event) {
+  if (!is_dragging_) {
+    straight_progress_stroke_width_ = kStrokeWidth;
+    SchedulePaint();
+  }
+}
+
 ui::Cursor MediaProgressView::GetCursor(const ui::MouseEvent& event) {
   return ui::mojom::CursorType::kHand;
 }
@@ -491,8 +503,11 @@ void MediaProgressView::OnProgressDragEnded() {
       paused_for_dragging_ = false;
       UpdateProgressColors(paused_for_dragging_);
     }
-    // Reset the straight progress line stroke width.
-    straight_progress_stroke_width_ = kStrokeWidth;
+    // Reset the straight progress line stroke width if the mouse is not
+    // hovering over the view.
+    if (!IsMouseHovered()) {
+      straight_progress_stroke_width_ = kStrokeWidth;
+    }
     drag_state_change_callback_.Run(DragState::kDragEnded);
   }
 }
