@@ -407,13 +407,6 @@ bool HTMLScriptElement::IsPotentiallyRenderBlocking() const {
 
   if (loader_->IsParserInserted() &&
       loader_->GetScriptType() == ScriptLoader::ScriptTypeAtPrepare::kClassic) {
-    // If ForceInOrderScript is enabled, treat the script having src attribute
-    // as non-render blocking even if it has neither async nor defer attribute.
-    // Because the script is force-in-order'ed, which behaves like the scripts
-    // categorized ScriptSchedulingType::kInOrder. Those're not render blocking.
-    if (base::FeatureList::IsEnabled(features::kForceInOrderScript) &&
-        HasSourceAttribute())
-      return false;
     return !AsyncAttributeValue() && !DeferAttributeValue();
   }
 

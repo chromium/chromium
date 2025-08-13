@@ -342,7 +342,6 @@ bool PendingScript::IsControlledByScriptRunner() const {
 
     case ScriptSchedulingType::kInOrder:
     case ScriptSchedulingType::kAsync:
-    case ScriptSchedulingType::kForceInOrder:
       return true;
   }
 }

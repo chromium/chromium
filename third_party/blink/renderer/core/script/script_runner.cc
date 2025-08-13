@@ -36,7 +36,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -150,11 +149,6 @@ void ScriptRunner::QueueScriptForExecution(PendingScript* pending_script,
       pending_in_order_scripts_.push_back(pending_script);
       break;
 
-    case ScriptSchedulingType::kForceInOrder:
-      pending_force_in_order_scripts_.push_back(pending_script);
-      pending_force_in_order_scripts_count_ += 1;
-      break;
-
     default:
       NOTREACHED();
   }
@@ -243,20 +237,6 @@ void ScriptRunner::ExecuteAsyncPendingScript(
   ExecutePendingScript(pending_script);
 }
 
-void ScriptRunner::ExecuteForceInOrderPendingScript(
-    PendingScript* pending_script) {
-  DCHECK_GT(pending_force_in_order_scripts_count_, 0u);
-  ExecutePendingScript(pending_script);
-  pending_force_in_order_scripts_count_ -= 1;
-}
-
-void ScriptRunner::ExecuteParserBlockingScriptsBlockedByForceInOrder() {
-  ScriptableDocumentParser* parser = document_->GetScriptableDocumentParser();
-  if (parser && document_->IsScriptExecutionReady()) {
-    parser->ExecuteScriptsWaitingForResources();
-  }
-}
-
 void ScriptRunner::PendingScriptFinished(PendingScript* pending_script) {
   pending_script->StopWatchingForLoad();
 
@@ -274,26 +254,6 @@ void ScriptRunner::PendingScriptFinished(PendingScript* pending_script) {
             FROM_HERE, WTF::BindOnce(&ScriptRunner::ExecutePendingScript,
                                      WrapWeakPersistent(this),
                                      WrapPersistent(pending_in_order)));
-      }
-      break;
-
-    case ScriptSchedulingType::kForceInOrder:
-      while (!pending_force_in_order_scripts_.empty() &&
-             pending_force_in_order_scripts_.front()->IsReady()) {
-        PendingScript* pending_in_order =
-            pending_force_in_order_scripts_.TakeFirst();
-        task_runner_->PostTask(
-            FROM_HERE,
-            WTF::BindOnce(&ScriptRunner::ExecuteForceInOrderPendingScript,
-                          WrapWeakPersistent(this),
-                          WrapPersistent(pending_in_order)));
-      }
-      if (pending_force_in_order_scripts_.empty()) {
-        task_runner_->PostTask(
-            FROM_HERE,
-            WTF::BindOnce(&ScriptRunner::
-                              ExecuteParserBlockingScriptsBlockedByForceInOrder,
-                          WrapWeakPersistent(this)));
       }
       break;
 
@@ -317,7 +277,6 @@ void ScriptRunner::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(pending_in_order_scripts_);
   visitor->Trace(pending_async_scripts_);
-  visitor->Trace(pending_force_in_order_scripts_);
   PendingScriptClient::Trace(visitor);
 }
 

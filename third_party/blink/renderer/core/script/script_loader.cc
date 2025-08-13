@@ -327,12 +327,6 @@ bool IsEligibleCommon(const Document& element_document) {
   return true;
 }
 
-// [Intervention, ForceInOrderScript, crbug.com/1344772]
-bool IsEligibleForForceInOrder(const Document& element_document) {
-  return base::FeatureList::IsEnabled(features::kForceInOrderScript) &&
-         IsEligibleCommon(element_document);
-}
-
 // [Intervention, DelayAsyncScriptExecution, crbug.com/1340837]
 bool IsEligibleForDelay(const Resource& resource,
                         const Document& element_document,
@@ -1087,38 +1081,6 @@ PendingScript* ScriptLoader::PrepareScript(
   ScriptSchedulingType script_scheduling_type = GetScriptSchedulingTypePerSpec(
       element_document, parser_blocking_inline_option);
 
-  // [Intervention, ForceInOrderScript, crbug.com/1344772]
-  // Check for external script that
-  // should be force in-order. Not only the pending scripts that would be marked
-  // (without the intervention) as ScriptSchedulingType::kParserBlocking or
-  // kInOrder, but also the scripts that would be marked as kAsync are put into
-  // the force in-order queue in ScriptRunner because we have to guarantee the
-  // execution order of the scripts.
-  if (IsEligibleForForceInOrder(element_document)) {
-    switch (script_scheduling_type) {
-      case ScriptSchedulingType::kAsync:
-      case ScriptSchedulingType::kInOrder:
-      case ScriptSchedulingType::kParserBlocking:
-        script_scheduling_type = ScriptSchedulingType::kForceInOrder;
-        break;
-      default:
-        break;
-    }
-  }
-
-  // [Intervention, ForceInOrderScript, crbug.com/1344772]
-  // If ScriptRunner still has
-  // ForceInOrder scripts not executed yet, attempt to mark the inline script as
-  // parser blocking so that the inline script is evaluated after the
-  // ForceInOrder scripts are evaluated.
-  if (script_scheduling_type == ScriptSchedulingType::kImmediate &&
-      parser_inserted_ &&
-      parser_blocking_inline_option == ParserBlockingInlineOption::kAllow &&
-      context_window->document()->GetScriptRunner()->HasForceInOrderScripts()) {
-    DCHECK(base::FeatureList::IsEnabled(features::kForceInOrderScript));
-    script_scheduling_type = ScriptSchedulingType::kParserBlockingInline;
-  }
-
   // <spec step="31">If el's type is "classic" and el has a src attribute, or
   // el's type is "module":</spec>
   switch (script_scheduling_type) {
@@ -1132,9 +1094,6 @@ PendingScript* ScriptLoader::PrepareScript(
       // list of scripts that will execute in order as soon as possible.</spec>
       //
       // <spec step="31.3.2">Append el to scripts.</spec>
-    case ScriptSchedulingType::kForceInOrder:
-      // [intervention, https://crbug.com/1344772] Append el to el's
-      // preparation-time document's list of force-in-order scripts.
 
       {
         // [Intervention, DelayAsyncScriptExecution, crbug.com/1340837]

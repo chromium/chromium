@@ -1014,10 +1014,6 @@ BASE_FEATURE(kForceHighPerformanceGPUForWebGL,
              "ForceHighPerformanceGPUForWebGL",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kForceInOrderScript,
-             "ForceInOrderScript",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Text autosizing uses heuristics to inflate text sizes on devices with
 // small screens. This feature is for disabling these heuristics.
 BASE_FEATURE(kForceOffTextAutosizing,

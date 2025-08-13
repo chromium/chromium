@@ -645,10 +645,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(ForceDarkImageClassifier,
 // WebGL contexts.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceHighPerformanceGPUForWebGL);
 
-// If enabled, parser-blocking scripts are loaded asynchronously but the
-// execution order is respected. See https://crbug.com/1344772
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceInOrderScript);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceOffTextAutosizing);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFrameMetadataObserver);
