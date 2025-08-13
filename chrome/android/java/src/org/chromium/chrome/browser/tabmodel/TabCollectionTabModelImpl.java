@@ -637,6 +637,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             // layer.
             createDetachedTabGroup(tabGroupId);
         }
+        // When migrating to tab collections we cease the use of root id. After reading any
+        // necessary data to restore a tab group's metadata we no longer need the root id and can
+        // reset it to the tab's id. If tab collections is turned off TabGroupModelFilterImpl has a
+        // back-migration pathway that rebuilds the correct root id structure from tab group id.
+        tab.setRootId(tab.getId());
 
         TabCollectionTabModelImplJni.get()
                 .addTabRecursive(

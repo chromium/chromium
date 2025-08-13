@@ -68,7 +68,8 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
      */
     @Initializer
     @Override
-    public void onNativeLibraryReady(TabContentManager tabContentProvider) {
+    public void onNativeLibraryReady(
+            TabContentManager tabContentProvider, boolean wasTabCollectionsActive) {
         assert mTabContentManager == null : "onNativeLibraryReady called twice!";
 
         TabCreator tabCreator = getTabCreatorManager().getTabCreator(false);
@@ -98,7 +99,8 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
                         tabRemover,
                         /* supportUndo= */ true,
                         /* isArchivedTabModel= */ true,
-                        ArchivedTabModelSelectorImpl::createTabUngrouper);
+                        ArchivedTabModelSelectorImpl::createTabUngrouper,
+                        wasTabCollectionsActive);
         if (tabCreator instanceof NeedsTabModel needsTabModel) {
             needsTabModel.setTabModel(normalModelHolder.tabModel);
         }

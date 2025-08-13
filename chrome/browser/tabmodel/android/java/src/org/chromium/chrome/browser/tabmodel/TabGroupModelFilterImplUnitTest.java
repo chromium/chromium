@@ -293,7 +293,9 @@ public class TabGroupModelFilterImplUnitTest {
     private void setupTabGroupModelFilter(boolean isTabRestoreCompleted, boolean isIncognito) {
         mTabs.clear();
         doReturn(isIncognito).when(mTabModel).isIncognito();
-        mTabGroupModelFilter = new TabGroupModelFilterImpl(mTabModel, mTabUngrouper);
+        mTabGroupModelFilter =
+                new TabGroupModelFilterImpl(
+                        mTabModel, mTabUngrouper, /* wasTabCollectionsActive= */ false);
         mTabGroupModelFilter.addTabGroupObserver(mTabGroupModelFilterObserver);
 
         doReturn(isIncognito).when(mTab1).isIncognito();

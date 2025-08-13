@@ -135,6 +135,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     private final Map<Token, Integer> mGroupIdToRootIdMap = new HashMap<>();
     private final TabModelInternal mTabModel;
     private final TabUngrouper mTabUngrouper;
+    private final boolean mWasTabCollectionsActive;
 
     /**
      * The set of tab group IDs that are currently hiding. This cannot be stored on {@link TabGroup}
@@ -152,10 +153,14 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     /**
      * @param tabModel The tab model to filter.
      * @param tabUngrouper To manage ungrouping tabs.
+     * @param wasTabCollectionsActive Whether TabCollection was active on last startup and back
+     *     migration is required.
      */
-    TabGroupModelFilterImpl(TabModelInternal tabModel, TabUngrouper tabUngrouper) {
+    TabGroupModelFilterImpl(
+            TabModelInternal tabModel, TabUngrouper tabUngrouper, boolean wasTabCollectionsActive) {
         mTabModel = tabModel;
         mTabUngrouper = tabUngrouper;
+        mWasTabCollectionsActive = wasTabCollectionsActive;
         mTabModel.addObserver(this);
     }
 
@@ -943,6 +948,19 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             }
         }
 
+        // Back migration logic from TabCollectionAndroid. When tabs are loaded into
+        // TabCollectionTabModelImpl each tab's root id is reset to its tab id which breaks the
+        // underlying data model of TabGroupModelFilterImpl. However, we can trust the tab group ids
+        // are correct and use these tab group ids to rebuild groups to have the correct root ids.
+        Token tabGroupId = tab.getTabGroupId();
+        if (mWasTabCollectionsActive && tabGroupId != null) {
+            int migratationRootId =
+                    mGroupIdToRootIdMap.getOrDefault(tabGroupId, Tab.INVALID_TAB_ID);
+            if (migratationRootId != Tab.INVALID_TAB_ID) {
+                tab.setRootId(migratationRootId);
+            }
+        }
+
         int rootId = tab.getRootId();
         if (mRootIdToGroupMap.containsKey(rootId)) {
             mRootIdToGroupMap.get(rootId).addTab(tab.getId(), getTabModel());
@@ -964,7 +982,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             TabGroup tabGroup = new TabGroup();
             tabGroup.addTab(tab.getId(), getTabModel());
             mRootIdToGroupMap.put(rootId, tabGroup);
-            @Nullable Token tabGroupId = tab.getTabGroupId();
             if (tabGroupId != null) {
                 mGroupIdToRootIdMap.put(tabGroupId, rootId);
             }

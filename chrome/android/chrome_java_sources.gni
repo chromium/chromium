@@ -105,6 +105,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/app/tabmodel/HeadlessTabCreator.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/HeadlessTabDelegateFactory.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/HeadlessTabModelOrchestrator.java",
+  "java/src/org/chromium/chrome/browser/app/tabmodel/TabCollectionMigrationUtil.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/TabGroupSyncDepsProvider.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/TabModelOrchestrator.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/TabStateStore.java",
