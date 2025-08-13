@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -27,7 +28,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -35,29 +35,23 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.collaboration.messaging.MessageAttribution;
-import org.chromium.components.collaboration.messaging.MessagingBackendService;
-import org.chromium.components.collaboration.messaging.PersistentMessage;
-import org.chromium.components.collaboration.messaging.TabGroupMessageMetadata;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.MessageType;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.VersioningMessageController;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 
 /** Unit tests for {@link VersionUpdateIphHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class VersionUpdateIphHandlerUnitTest {
     private static final String FAKE_GROUP_TITLE = "FAKE_GROUP_TITLE";
     private static final Token FAKE_TOKEN = new Token(1L, 2L);
-    private static final TabModelDotInfo DOT_INFO =
-            new TabModelDotInfo(/* showDot= */ true, FAKE_GROUP_TITLE);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -67,27 +61,26 @@ public class VersionUpdateIphHandlerUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private VersioningMessageController mVersioningMessageController;
-    @Mock private MessagingBackendService mMessagingBackendService;
     @Mock private PrefService mPrefService;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
 
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
+    private Context mContext;
     private View mAnchorView;
 
     @Before
     public void setUp() {
-        Context context =
+        mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        mAnchorView = new View(context);
+        mAnchorView = new View(mContext);
 
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         when(mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)).thenReturn(true);
 
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
-        MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
 
         when(mProfile.isOffTheRecord()).thenReturn(false);
@@ -97,94 +90,129 @@ public class VersionUpdateIphHandlerUnitTest {
         when(mVersioningMessageController.shouldShowMessageUi(MessageType.VERSION_UPDATED_MESSAGE))
                 .thenReturn(true);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.getTabGroupTitle(any(Token.class))).thenReturn(FAKE_GROUP_TITLE);
+        when(mTabGroupModelFilter.tabGroupExists(FAKE_TOKEN)).thenReturn(true);
+        when(mTabGroupModelFilter.getTabGroupTitle(FAKE_TOKEN)).thenReturn(FAKE_GROUP_TITLE);
         when(mTabModel.getProfile()).thenReturn(mProfile);
+
+        SavedTabGroup group = new SavedTabGroup();
+        group.collaborationId = "COLLABORATION_ID";
+        group.title = FAKE_GROUP_TITLE;
+        when(mTabGroupModelFilter.getAllTabGroupIds()).thenReturn(Set.of(FAKE_TOKEN));
+        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(FAKE_TOKEN))).thenReturn(group);
     }
 
     @Test
-    public void testTabSwitcherButtonIph_isShown() {
-        VersionUpdateIphHandler.maybeShowTabSwitcherButtonIph(
-                mUserEducationHelper, mAnchorView, mProfile, DOT_INFO);
+    public void testIph_autoOpenEnabled() {
+        VersionUpdateIphHandler.maybeShowVersioningIph(
+                mUserEducationHelper,
+                mAnchorView,
+                mTabGroupModelFilter,
+                /* expectsAutoOpen= */ true);
 
-        verify(mUserEducationHelper).requestShowIph(any());
-        verify(mVersioningMessageController).onMessageUiShown(MessageType.VERSION_UPDATED_MESSAGE);
-    }
-
-    @Test
-    public void testTabSwitcherButtonIph_notShown_offTheRecord() {
-        when(mProfile.isOffTheRecord()).thenReturn(true);
-        VersionUpdateIphHandler.maybeShowTabSwitcherButtonIph(
-                mUserEducationHelper, mAnchorView, mProfile, DOT_INFO);
-        verify(mUserEducationHelper, never()).requestShowIph(any());
-    }
-
-    @Test
-    public void testTabSwitcherButtonIph_notShown_autoOpenEnabled() {
-        when(mVersioningMessageController.isInitialized()).thenReturn(false);
-        VersionUpdateIphHandler.maybeShowTabSwitcherButtonIph(
-                mUserEducationHelper, mAnchorView, mProfile, DOT_INFO);
-        verify(mUserEducationHelper, never()).requestShowIph(any());
-    }
-
-    @Test
-    public void testTabSwitcherButtonIph_notShown_controllerShouldNotShow() {
-        when(mVersioningMessageController.shouldShowMessageUi(MessageType.VERSION_UPDATED_MESSAGE))
-                .thenReturn(false);
-        VersionUpdateIphHandler.maybeShowTabSwitcherButtonIph(
-                mUserEducationHelper, mAnchorView, mProfile, DOT_INFO);
-        verify(mUserEducationHelper, never()).requestShowIph(any());
-    }
-
-    @Test
-    public void testTabGroupPaneButtonIph_isShown() {
-        when(mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)).thenReturn(false);
-        PersistentMessage message = createMessage(FAKE_TOKEN);
-        when(mMessagingBackendService.getMessages(Optional.of(MessageType.VERSION_UPDATED_MESSAGE)))
-                .thenReturn(List.of(message));
-
-        VersionUpdateIphHandler.maybeShowTabGroupPaneButtonIph(
-                mUserEducationHelper, mTabGroupModelFilter, mAnchorView);
         verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
+
+        IphCommand command = mIphCommandCaptor.getValue();
+        String expectedText =
+                mContext.getString(R.string.tab_group_update_iph_text, FAKE_GROUP_TITLE);
+        assertEquals(expectedText, command.contentString);
+        command.onShowCallback.run();
+
         verify(mVersioningMessageController).onMessageUiShown(MessageType.VERSION_UPDATED_MESSAGE);
     }
 
     @Test
-    public void testTabGroupPaneButtonIph_notShown_autoOpenEnabled() {
+    public void testIph_autoOpenDisabled() {
+        when(mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)).thenReturn(false);
+        VersionUpdateIphHandler.maybeShowVersioningIph(
+                mUserEducationHelper,
+                mAnchorView,
+                mTabGroupModelFilter,
+                /* expectsAutoOpen= */ false);
+
+        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
+
+        IphCommand command = mIphCommandCaptor.getValue();
+        command.onShowCallback.run();
+
+        verify(mVersioningMessageController).onMessageUiShown(MessageType.VERSION_UPDATED_MESSAGE);
+    }
+
+    @Test
+    public void testIph_notShown() {
+        when(mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)).thenReturn(false);
+        VersionUpdateIphHandler.maybeShowVersioningIph(
+                mUserEducationHelper,
+                mAnchorView,
+                mTabGroupModelFilter,
+                /* expectsAutoOpen= */ true);
+        verify(mUserEducationHelper, never()).requestShowIph(any());
+
+        when(mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)).thenReturn(true);
+        VersionUpdateIphHandler.maybeShowVersioningIph(
+                mUserEducationHelper,
+                mAnchorView,
+                mTabGroupModelFilter,
+                /* expectsAutoOpen= */ false);
+        verify(mUserEducationHelper, never()).requestShowIph(any());
+    }
+
+    @Test
+    public void testIph_profileOffTheRecord() {
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        VersionUpdateIphHandler.maybeShowVersioningIph(
+                mUserEducationHelper,
+                mAnchorView,
+                mTabGroupModelFilter,
+                /* expectsAutoOpen= */ true);
+        verify(mUserEducationHelper, never()).requestShowIph(any());
+    }
+
+    @Test
+    public void testIph_controllerNotInitialized() {
+        when(mVersioningMessageController.isInitialized()).thenReturn(false);
+        VersionUpdateIphHandler.maybeShowVersioningIph(
+                mUserEducationHelper,
+                mAnchorView,
+                mTabGroupModelFilter,
+                /* expectsAutoOpen= */ true);
+        verify(mUserEducationHelper, never()).requestShowIph(any());
+    }
+
+    @Test
+    public void testIph_controllerShouldNotShow() {
         when(mVersioningMessageController.shouldShowMessageUi(MessageType.VERSION_UPDATED_MESSAGE))
                 .thenReturn(false);
-        VersionUpdateIphHandler.maybeShowTabGroupPaneButtonIph(
-                mUserEducationHelper, mTabGroupModelFilter, mAnchorView);
+        VersionUpdateIphHandler.maybeShowVersioningIph(
+                mUserEducationHelper,
+                mAnchorView,
+                mTabGroupModelFilter,
+                /* expectsAutoOpen= */ true);
         verify(mUserEducationHelper, never()).requestShowIph(any());
     }
 
     @Test
-    public void testTabGroupPaneButtonIph_notShown_noMessages() {
-        when(mMessagingBackendService.getMessages(Optional.of(MessageType.VERSION_UPDATED_MESSAGE)))
-                .thenReturn(Collections.emptyList());
-        VersionUpdateIphHandler.maybeShowTabGroupPaneButtonIph(
-                mUserEducationHelper, mTabGroupModelFilter, mAnchorView);
+    public void testIph_noTabGroups() {
+        when(mTabGroupModelFilter.getAllTabGroupIds()).thenReturn(Collections.emptySet());
+        VersionUpdateIphHandler.maybeShowVersioningIph(
+                mUserEducationHelper,
+                mAnchorView,
+                mTabGroupModelFilter,
+                /* expectsAutoOpen= */ true);
         verify(mUserEducationHelper, never()).requestShowIph(any());
     }
 
     @Test
-    public void testTabGroupPaneButtonIph_notShown_noTitle() {
-        PersistentMessage message = createMessage(FAKE_TOKEN);
-        when(mMessagingBackendService.getMessages(Optional.of(MessageType.VERSION_UPDATED_MESSAGE)))
-                .thenReturn(List.of(message));
-        VersionUpdateIphHandler.maybeShowTabGroupPaneButtonIph(
-                mUserEducationHelper, mTabGroupModelFilter, mAnchorView);
+    public void testIph_noSharedTabGroups() {
+        SavedTabGroup group = new SavedTabGroup();
+        group.collaborationId = null;
+        group.title = FAKE_GROUP_TITLE;
+        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(FAKE_TOKEN))).thenReturn(group);
+
+        VersionUpdateIphHandler.maybeShowVersioningIph(
+                mUserEducationHelper,
+                mAnchorView,
+                mTabGroupModelFilter,
+                /* expectsAutoOpen= */ true);
         verify(mUserEducationHelper, never()).requestShowIph(any());
-    }
-
-    private PersistentMessage createMessage(Token tabGroupId) {
-        TabGroupMessageMetadata metadata = new TabGroupMessageMetadata();
-        metadata.localTabGroupId = new LocalTabGroupId(tabGroupId);
-
-        MessageAttribution attribution = new MessageAttribution();
-        attribution.tabGroupMetadata = metadata;
-
-        PersistentMessage message = new PersistentMessage();
-        message.attribution = attribution;
-        return message;
     }
 }

@@ -333,5 +333,5 @@ public interface TabGroupSyncService {
      * @return The {@link VersioningMessageController} which is responsible for business logic
      *     related to shared tab groups versioning related messages.
      */
-    VersioningMessageController getVersioningMessageController();
+    @Nullable VersioningMessageController getVersioningMessageController();
 }

@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
+import static android.text.TextUtils.isEmpty;
+
 import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.getDisplayableTitle;
-import static org.chromium.components.collaboration.messaging.MessageUtils.extractTabGroupId;
 
 import android.content.Context;
 import android.view.View;
@@ -13,7 +14,6 @@ import android.view.View;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -22,17 +22,18 @@ import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
-import org.chromium.components.collaboration.messaging.MessagingBackendService;
-import org.chromium.components.collaboration.messaging.PersistentMessage;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.MessageType;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.VersioningMessageController;
 import org.chromium.components.user_prefs.UserPrefs;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 
 /** Handles showing IPH when a user updates Chrome and regains access to a shared tab group. */
 @NullMarked
@@ -42,109 +43,87 @@ public class VersionUpdateIphHandler {
     private VersionUpdateIphHandler() {}
 
     /**
-     * Attempts to show IPH on the tab switcher button if conditions for a version update message
-     * are met.
+     * Attempts to show IPH on the anchor view if conditions for a version update message are met.
      *
      * @param userEducationHelper Helper for showing IPHs.
-     * @param tabSwitcherButton The view to anchor the IPH to.
-     * @param profile The current user profile.
-     * @param info Information about the tab model dot (containing the group title).
+     * @param anchorView The view to anchor the IPH to.
+     * @param filter The current tab group model filter.
+     * @param expectsAutoOpen The expected value of the "auto-open tab groups" setting. The IPH will
+     *     only be shown if the setting's actual value matches this expected value.
      */
-    public static void maybeShowTabSwitcherButtonIph(
+    public static void maybeShowVersioningIph(
             UserEducationHelper userEducationHelper,
-            View tabSwitcherButton,
-            Profile profile,
-            TabModelDotInfo info) {
-        if (wontShowIphForProfile(profile)) return;
-
-        assert profile != null;
-        if (!isAutoOpenEnabled(profile)) return;
-
-        VersioningMessageController versioningMessageController =
-                getVersioningMessageController(profile);
-        if (shouldNotShowIph(versioningMessageController)) return;
-
-        Context context = tabSwitcherButton.getContext();
-        String contentString =
-                context.getString(R.string.tab_group_update_iph_text, info.tabGroupTitle);
-        showIph(userEducationHelper, tabSwitcherButton, contentString, versioningMessageController);
+            View anchorView,
+            TabGroupModelFilter filter,
+            boolean expectsAutoOpen) {
+        Profile profile = getProfile(filter);
+        if (profile == null || expectsAutoOpen != isAutoOpenEnabled(profile)) return;
+        showIph(userEducationHelper, anchorView, profile, filter);
     }
 
-    /**
-     * Attempts to show IPH on the tab group pane button if conditions for a version update message
-     * are met.
-     *
-     * @param userEducationHelper Helper for showing IPHs.
-     * @param filter The current tab group model filter.
-     * @param anchorView The view to anchor the IPH to within the tab group pane.
-     */
-    public static void maybeShowTabGroupPaneButtonIph(
-            UserEducationHelper userEducationHelper, TabGroupModelFilter filter, View anchorView) {
-        Profile profile = filter.getTabModel().getProfile();
-        if (wontShowIphForProfile(profile)) return;
-
-        assert profile != null;
-        if (isAutoOpenEnabled(profile)) return;
-
+    private static void showIph(
+            UserEducationHelper userEducationHelper,
+            View anchorView,
+            Profile profile,
+            TabGroupModelFilter filter) {
         VersioningMessageController versioningMessageController =
                 getVersioningMessageController(profile);
-        if (shouldNotShowIph(versioningMessageController)) return;
-
-        MessagingBackendService messagingBackendService =
-                MessagingBackendServiceFactory.getForProfile(profile);
-        assert messagingBackendService != null;
-
-        List<PersistentMessage> messages =
-                messagingBackendService.getMessages(
-                        Optional.of(MessageType.VERSION_UPDATED_MESSAGE));
-        if (messages.isEmpty()) return;
+        if (versioningMessageController == null || shouldNotShowIph(versioningMessageController)) {
+            return;
+        }
 
         Context context = anchorView.getContext();
-        String tabGroupTitle = getTabGroupTitleFromMessages(context, filter, messages);
-        if (tabGroupTitle == null) return;
+        List<String> sharedGroupTitles = new ArrayList<>();
 
-        String iphText = context.getString(R.string.tab_group_update_iph_text, tabGroupTitle);
-        showIph(userEducationHelper, anchorView, iphText, versioningMessageController);
+        TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
+        if (tabGroupSyncService == null) return;
+
+        Set<Token> allTabGroupIds = filter.getAllTabGroupIds();
+        if (allTabGroupIds.isEmpty()) return;
+
+        for (Token groupId : allTabGroupIds) {
+            SavedTabGroup group = tabGroupSyncService.getGroup(new LocalTabGroupId(groupId));
+            if (group == null || isEmpty(group.collaborationId)) continue;
+            sharedGroupTitles.add(getDisplayableTitle(context, filter, groupId));
+            break;
+        }
+
+        if (sharedGroupTitles.isEmpty()) return;
+        sharedGroupTitles.size();
+        String iphText =
+                context.getString(R.string.tab_group_update_iph_text, sharedGroupTitles.get(0));
+
+        userEducationHelper.requestShowIph(
+                new IphCommandBuilder(
+                                anchorView.getResources(),
+                                FeatureConstants.TAB_GROUP_SHARE_VERSION_UPDATE_FEATURE,
+                                iphText,
+                                iphText)
+                        .setAnchorView(anchorView)
+                        .setHighlightParams(new HighlightParams(HighlightShape.CIRCLE))
+                        .setOnShowCallback(
+                                () ->
+                                        versioningMessageController.onMessageUiShown(
+                                                MessageType.VERSION_UPDATED_MESSAGE))
+                        .build());
     }
 
     private static boolean wontShowIphForProfile(@Nullable Profile profile) {
         return profile == null || profile.isOffTheRecord();
     }
 
-    private static VersioningMessageController getVersioningMessageController(Profile profile) {
+    @Nullable
+    private static Profile getProfile(TabGroupModelFilter filter) {
+        Profile profile = filter.getTabModel().getProfile();
+        if (wontShowIphForProfile(profile)) return null;
+        return profile;
+    }
+
+    private static @Nullable VersioningMessageController getVersioningMessageController(
+            Profile profile) {
         TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
         assert tabGroupSyncService != null;
         return tabGroupSyncService.getVersioningMessageController();
-    }
-
-    private static @Nullable String getTabGroupTitleFromMessages(
-            Context context, TabGroupModelFilter filter, List<PersistentMessage> messages) {
-        for (PersistentMessage message : messages) {
-            Token tabGroupId = extractTabGroupId(message);
-            if (tabGroupId != null) {
-                String title = getDisplayableTitle(context, filter, tabGroupId);
-                if (title != null) return title;
-            }
-        }
-        return null;
-    }
-
-    private static void showIph(
-            UserEducationHelper userEducationHelper,
-            View anchorView,
-            String contentString,
-            VersioningMessageController versioningMessageController) {
-        userEducationHelper.requestShowIph(
-                new IphCommandBuilder(
-                                anchorView.getResources(),
-                                FeatureConstants.TAB_GROUP_SHARE_VERSION_UPDATE_FEATURE,
-                                contentString,
-                                contentString)
-                        .setAnchorView(anchorView)
-                        .setHighlightParams(new HighlightParams(HighlightShape.CIRCLE))
-                        .build());
-
-        versioningMessageController.onMessageUiShown(MessageType.VERSION_UPDATED_MESSAGE);
     }
 
     private static boolean shouldNotShowIph(VersioningMessageController controller) {
