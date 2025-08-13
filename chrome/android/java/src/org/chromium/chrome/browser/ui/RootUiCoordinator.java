@@ -2225,6 +2225,10 @@ public class RootUiCoordinator
         return mBottomControlsStacker;
     }
 
+    public @Nullable AdaptiveToolbarUiCoordinator getAdaptiveToolbarUiCoordinatorForTesting() {
+        return mAdaptiveToolbarUiCoordinator;
+    }
+
     public DataSharingTabManager getDataSharingTabManager() {
         // This should only be called on an instance of TabbedRootUiCoordinator.
         return null;

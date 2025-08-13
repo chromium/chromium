@@ -13,8 +13,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.ai.AiAssistantService;
-import org.chromium.chrome.browser.ai.PageSummaryButtonController;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentController;
@@ -95,6 +93,11 @@ public class AdaptiveToolbarUiCoordinator {
         mButtonDataProviders = List.of();
     }
 
+    /**
+     * Note: {@link ButtonDataProvider} objects added here will be used for all surfaces. Consider
+     * adding a new one in {@link TabbedAdaptiveToolbarBehavior#registerPerSurfaceButtons()} if the
+     * button is only for BrApp, not for CustomTab.
+     */
     void initialize(
             AdaptiveToolbarBehavior toolbarBehavior,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
@@ -182,13 +185,6 @@ public class AdaptiveToolbarUiCoordinator {
                         new AdaptiveButtonActionMenuCoordinator(toolbarBehavior.canShowSettings()),
                         toolbarBehavior,
                         windowAndroid);
-        PageSummaryButtonController pageSummaryButtonController =
-                new PageSummaryButtonController(
-                        mContext,
-                        mModalDialogManagerSupplier.get(),
-                        mActivityTabProvider,
-                        AiAssistantService.getInstance(),
-                        trackerSupplier);
 
         if (ChromeFeatureList.sEnableDiscountInfoApi.isEnabled()) {
             DiscountsButtonController discountsButtonController =
@@ -214,8 +210,6 @@ public class AdaptiveToolbarUiCoordinator {
                 AdaptiveToolbarButtonVariant.READER_MODE, readerModeToolbarButtonController);
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.READ_ALOUD, readAloudButtonController);
-        adaptiveToolbarButtonController.addButtonVariant(
-                AdaptiveToolbarButtonVariant.PAGE_SUMMARY, pageSummaryButtonController);
         mContextualPageActionController =
                 new ContextualPageActionController(
                         profileSupplier,
@@ -349,5 +343,9 @@ public class AdaptiveToolbarUiCoordinator {
         }
 
         return mCommerceBottomSheetContentCoordinator;
+    }
+
+    public AdaptiveToolbarButtonController getAdaptiveToolbarButtonControllerForTesting() {
+        return mAdaptiveToolbarButtonController;
     }
 }
