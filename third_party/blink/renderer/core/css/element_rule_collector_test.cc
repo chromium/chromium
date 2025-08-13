@@ -42,9 +42,10 @@ static RuleSet* RuleSetFromSingleRule(Document& document, const String& text) {
   RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
   MediaQueryEvaluator* medium =
       MakeGarbageCollected<MediaQueryEvaluator>(document.GetFrame());
+  RuleSet::ApplyMixinsStack apply_mixins_stack;
   rule_set->AddStyleRule(style_rule, /*parent_rule=*/nullptr, *medium,
                          /*mixins=*/{}, kRuleHasNoSpecialState,
-                         /*within_mixin=*/nullptr);
+                         apply_mixins_stack);
   rule_set->CompactRulesIfNeeded();
   return rule_set;
 }
@@ -359,8 +360,9 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
     auto* rule = To<StyleRule>(CSSParser::ParseRule(
         sheet->ParserContext(), sheet, CSSNestingType::kNone,
         /*parent_rule_for_nesting=*/nullptr, selector + " { color: green }"));
+    RuleSet::ApplyMixinsStack apply_mixins_stack;
     rules.AddStyleRule(rule, /*parent_rule=*/nullptr, *medium, /*mixins=*/{},
-                       kRuleHasNoSpecialState, /*within_mixin=*/nullptr);
+                       kRuleHasNoSpecialState, apply_mixins_stack);
 
     MatchResult result;
     ElementResolveContext context{element};
