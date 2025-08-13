@@ -653,4 +653,23 @@ HEADLESS_PROTOCOL_TEST(WindowScreenScaleFactor,
 HEADLESS_PROTOCOL_TEST(WindowScreenSizeOrientation,
                        "shared/window-screen-size-orientation.js")
 
+HEADLESS_PROTOCOL_TEST(GetScreenInfos, "shared/get-screen-infos.js")
+
+HEADLESS_PROTOCOL_TEST(AddScreen, "shared/add-screen.js")
+
+HEADLESS_PROTOCOL_TEST(AddScreenScaleFactor,
+                       "shared/add-screen-scale-factor.js")
+
+HEADLESS_PROTOCOL_TEST(AddScreenWorkArea, "shared/add-screen-work-area.js")
+
+HEADLESS_PROTOCOL_TEST(AddScreenGetScreenDetails,
+                       "shared/add-screen-get-screen-details.js")
+
+HEADLESS_PROTOCOL_TEST(RemoveScreen, "shared/remove-screen.js")
+
+HEADLESS_PROTOCOL_TEST(RemoveScreenGetScreenDetails,
+                       "shared/remove-screen-get-screen-details.js")
+
+HEADLESS_PROTOCOL_TEST(AddRemoveScreen, "shared/add-remove-screen.js")
+
 }  // namespace headless

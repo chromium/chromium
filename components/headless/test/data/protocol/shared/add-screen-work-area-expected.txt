@@ -1,0 +1,47 @@
+Tests CDP Emulation.addScreen() API with work area.
+{
+    screenInfos : [
+        [0] : {
+            availHeight : 600
+            availLeft : 0
+            availTop : 0
+            availWidth : 800
+            colorDepth : 24
+            devicePixelRatio : 1
+            height : 600
+            id : <string>
+            isExtended : true
+            isInternal : false
+            isPrimary : true
+            label : 1st
+            left : 0
+            orientation : {
+                angle : 0
+                type : landscapePrimary
+            }
+            top : 0
+            width : 800
+        }
+        [1] : {
+            availHeight : 500
+            availLeft : 811
+            availTop : 10
+            availWidth : 700
+            colorDepth : 24
+            devicePixelRatio : 1
+            height : 600
+            id : <string>
+            isExtended : true
+            isInternal : false
+            isPrimary : false
+            label : 2nd
+            left : 800
+            orientation : {
+                angle : 0
+                type : landscapePrimary
+            }
+            top : 0
+            width : 800
+        }
+    ]
+}

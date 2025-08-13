@@ -31,6 +31,13 @@ class HeadlessScreen : public display::ScreenBase {
       int64_t display_id,
       display::mojom::ScreenOrientation screen_orientation);
 
+  // Adds a new display. Returns newly added display id.
+  static int64_t AddDisplay(const display::Display& display);
+
+  // Removes the specified display. This will crash if |display_id| refers to
+  // the primary display which is not the only display in the system.
+  static void RemoveDisplay(int64_t display_id);
+
   // display::Screen overrides:
   gfx::Point GetCursorScreenPoint() override;
   bool IsWindowUnderCursor(gfx::NativeWindow window) override;
@@ -40,6 +47,7 @@ class HeadlessScreen : public display::ScreenBase {
       const std::set<gfx::NativeWindow>& ignore) override;
   display::Display GetDisplayNearestWindow(
       gfx::NativeWindow window) const override;
+  bool IsHeadless() const override;
 
   bool IsNaturalPortrait(int64_t display_id) const;
   bool IsNaturalLandscape(int64_t display_id) const;

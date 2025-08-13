@@ -207,6 +207,8 @@ inspector_protocol_generate("protocol_sources") {
   outputs = [
     "lib/browser/protocol/browser.cc",
     "lib/browser/protocol/browser.h",
+    "lib/browser/protocol/emulation.cc",
+    "lib/browser/protocol/emulation.h",
     "lib/browser/protocol/headless_experimental.cc",
     "lib/browser/protocol/headless_experimental.h",
     "lib/browser/protocol/page.cc",
@@ -277,6 +279,8 @@ component("headless_non_renderer") {
     "lib/browser/protocol/browser_handler.cc",
     "lib/browser/protocol/browser_handler.h",
     "lib/browser/protocol/domain_handler.h",
+    "lib/browser/protocol/emulation_handler.cc",
+    "lib/browser/protocol/emulation_handler.h",
     "lib/browser/protocol/headless_devtools_session.cc",
     "lib/browser/protocol/headless_devtools_session.h",
     "lib/browser/protocol/headless_handler.cc",

@@ -160,6 +160,56 @@ domain Emulation
     properties
       optional boolean available
 
+  experimental type WorkAreaInsets extends object
+    properties
+      # Work area top inset in pixels. Default is 0;
+      optional integer top
+      # Work area left inset in pixels. Default is 0;
+      optional integer left
+      # Work area bottom inset in pixels. Default is 0;
+      optional integer bottom
+      # Work area right inset in pixels. Default is 0;
+      optional integer right
+
+  experimental type ScreenId extends string
+
+  # Screen information similar to the one returned by window.getScreenDetails() method,
+  # see https://w3c.github.io/window-management/#screendetailed.
+  experimental type ScreenInfo extends object
+    properties
+      # Offset of the left edge of the screen.
+      integer left
+      # Offset of the top edge of the screen.
+      integer top
+      # Width of the screen.
+      integer width
+      # Height of the screen.
+      integer height
+      # Offset of the left edge of the available screen area.
+      integer availLeft
+      # Offset of the top edge of the available screen area.
+      integer availTop
+      # Width of the available screen area.
+      integer availWidth
+      # Height of the available screen area.
+      integer availHeight
+      # Specifies the screen's device pixel ratio.
+      number devicePixelRatio
+      # Specifies the screen's orientation.
+      ScreenOrientation orientation
+      # Specifies the screen's color depth in bits.
+      integer colorDepth
+      # Indicates whether the device has multiple screens.
+      boolean isExtended
+      # Indicates whether the screen is internal to the device or external, attached to the device.
+      boolean isInternal
+      # Indicates whether the screen is set as the the operating system primary screen.
+      boolean isPrimary
+      # Specifies the descriptive label for the screen.
+      string label
+      # Specifies the unique identifier of the screen.
+      ScreenId id
+
   # Tells whether emulation is supported.
   deprecated command canEmulate
     returns
@@ -520,3 +570,39 @@ domain Emulation
       # This will cause an element of size 100svh to be `difference` pixels smaller than an element
       # of size 100lvh.
       integer difference
+
+  # Returns device's screen configuration.
+  experimental command getScreenInfos
+    returns
+      array of ScreenInfo screenInfos
+
+  # Add a new screen to the device. Only supported in headless mode.
+  experimental command addScreen
+    parameters
+      # Offset of the left edge of the screen in pixels.
+      integer left
+      # Offset of the top edge of the screen in pixels.
+      integer top
+      # The width of the screen in pixels.
+      integer width
+      # The height of the screen in pixels.
+      integer height
+      # Specifies the screen's work area. Default is entire screen.
+      optional WorkAreaInsets workAreaInsets
+      # Specifies the screen's device pixel ratio. Default is 1.
+      optional number devicePixelRatio
+      # Specifies the screen's rotation angle. Available values are 0, 90, 180 and 270. Default is 0.
+      optional integer rotation
+      # Specifies the screen's color depth in bits. Default is 24.
+      optional integer colorDepth
+      # Specifies the descriptive label for the screen. Default is none.
+      optional string label
+      # Indicates whether the screen is internal to the device or external, attached to the device. Default is false.
+      optional boolean isInternal
+    returns
+      ScreenInfo screenInfo
+
+  # Remove screen from the device. Only supported in headless mode.
+  experimental command removeScreen
+    parameters
+      ScreenId screenId

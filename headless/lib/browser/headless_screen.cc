@@ -21,6 +21,15 @@
 
 namespace headless {
 
+namespace {
+
+int64_t GetNewDisplayId() {
+  static int64_t synthesized_display_id = 2000;
+  return synthesized_display_id++;
+}
+
+}  // namespace
+
 // static
 HeadlessScreen* HeadlessScreen::Create(const gfx::Size& window_size,
                                        std::string_view screen_info_spec) {
@@ -67,6 +76,10 @@ display::Display HeadlessScreen::GetDisplayNearestWindow(
   return GetPrimaryDisplay();
 }
 
+bool HeadlessScreen::IsHeadless() const {
+  return true;
+}
+
 HeadlessScreen::HeadlessScreen(const gfx::Size& window_size,
                                std::string_view screen_info_spec) {
   std::vector<HeadlessScreenInfo> screen_info;
@@ -81,8 +94,7 @@ HeadlessScreen::HeadlessScreen(const gfx::Size& window_size,
   bool is_primary = true;
   base::flat_set<int64_t> internal_display_ids;
   for (const auto& it : screen_info) {
-    static int64_t synthesized_display_id = 2000;
-    display::Display display(synthesized_display_id++);
+    display::Display display(GetNewDisplayId());
     display.set_label(it.label);
     display.set_color_depth(it.color_depth);
     display.SetScaleAndBounds(it.device_pixel_ratio, it.bounds);
@@ -174,6 +186,30 @@ void HeadlessScreen::UpdateScreenSizeForScreenOrientationImpl(
   // Update display even if there was no swap.
   bool is_primary = display.id() == GetPrimaryDisplay().id();
   ProcessDisplayChanged(display, is_primary);
+}
+
+// static
+int64_t HeadlessScreen::AddDisplay(const display::Display& display) {
+  auto& headless_screen =
+      CHECK_DEREF(static_cast<HeadlessScreen*>(GetScreen()));
+
+  display::Display new_display(display);
+  new_display.set_id(GetNewDisplayId());
+
+  bool is_primary = headless_screen.display_list().displays().empty();
+
+  headless_screen.display_list().AddDisplay(
+      new_display, is_primary ? display::DisplayList::Type::PRIMARY
+                              : display::DisplayList::Type::NOT_PRIMARY);
+  return new_display.id();
+}
+
+// static
+void HeadlessScreen::RemoveDisplay(int64_t display_id) {
+  auto& headless_screen =
+      CHECK_DEREF(static_cast<HeadlessScreen*>(GetScreen()));
+  headless_screen.display_list().RemoveDisplay(display_id);
+  display::RemoveInternalDisplayId(display_id);
 }
 
 display::Display HeadlessScreen::GetDisplayById(int64_t display_id) {
