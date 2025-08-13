@@ -1432,6 +1432,52 @@ ci.builder(
     execution_timeout = 24 * time.hour,
 )
 
+# Temporary builder for testing changes to resultdb with structured test
+# id uploads.
+ci.builder(
+    name = "linux-structured-test-ids-rel-fyi",
+    description_html = (
+        "Run tests for checking changes to resultdb structured " +
+        "test id uploads."
+    ),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "remoteexec",
+            "minimal_symbols",
+            "linux",
+            "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_gtests",
+        ],
+        mixins = [
+            "linux-jammy",
+        ],
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+        short_name = "lnx_RDB",
+    ),
+    contact_team_email = "chrome-browser-infra-team@google.com",
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
+)
+
 ci.builder(
     name = "linux-upload-perfetto",
     builder_spec = builder_config.builder_spec(
