@@ -5156,7 +5156,7 @@
   {
     "name": "fill-recovery-password",
     "owners": [ "ioanap@chromium.org", "vsemeniuk@google.com" ],
-    "expiry_milestone": 141
+    "expiry_milestone": 142
   },
   {
     "name": "firmware-update-ui-v2",
@@ -5800,7 +5800,7 @@
       "atsvirchkova@google.com",
       "vsemeniuk@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 142
   },
   {
     "name": "in-product-help-demo-mode-choice",
@@ -6601,7 +6601,7 @@
       "atsvirchkova@google.com",
       "vsemeniuk@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 142
   },
   {
     "name": "maylaunchurl-uses-separate-storage-partition",
