@@ -17,7 +17,6 @@
 namespace blink {
 
 class BoxFragmentBuilder;
-class InlineBreakToken;
 
 // Represents a break token for a block node.
 class CORE_EXPORT BlockBreakToken final : public BreakToken {
@@ -194,10 +193,6 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
 #endif
     return ChildBreakTokensInternal();
   }
-
-  // Find the child InlineBreakToken for the specified node.
-  const InlineBreakToken* InlineBreakTokenFor(const LayoutInputNode&) const;
-  const InlineBreakToken* InlineBreakTokenFor(const LayoutBox&) const;
 
   // When merging out-of-flow children from a new placeholder fragmentainer into
   // an existing one, some new break token data may also have to be copied over.

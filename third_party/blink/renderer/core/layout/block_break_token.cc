@@ -82,31 +82,6 @@ BlockBreakToken::BlockBreakToken(PassKey key, LayoutInputNode node)
       data_(MakeGarbageCollected<BlockBreakTokenData>()),
       const_num_children_(0) {}
 
-const InlineBreakToken* BlockBreakToken::InlineBreakTokenFor(
-    const LayoutInputNode& node) const {
-  DCHECK(node.GetLayoutBox());
-  return InlineBreakTokenFor(*node.GetLayoutBox());
-}
-
-const InlineBreakToken* BlockBreakToken::InlineBreakTokenFor(
-    const LayoutBox& layout_object) const {
-  DCHECK(&layout_object);
-  for (const BreakToken* child : ChildBreakTokens()) {
-    switch (child->Type()) {
-      case kBlockBreakToken:
-        // Currently there are no cases where InlineBreakToken is stored in
-        // non-direct child descendants.
-        DCHECK(!To<BlockBreakToken>(child)->InlineBreakTokenFor(layout_object));
-        break;
-      case kInlineBreakToken:
-        if (child->InputNode().GetLayoutBox() == &layout_object)
-          return To<InlineBreakToken>(child);
-        break;
-    }
-  }
-  return nullptr;
-}
-
 void BlockBreakToken::MutableForOofFragmentation::Merge(
     const BlockBreakToken& new_break_token) {
   if (LayoutUnit monolithic_overflow = new_break_token.MonolithicOverflow()) {
