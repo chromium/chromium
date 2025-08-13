@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -269,8 +270,17 @@ void SaveAndFillManagerImpl::SendCreateCardRequest() {
 void SaveAndFillManagerImpl::OnDidCreateCard(
     PaymentsAutofillClient::PaymentsRpcResult result,
     const std::string& instrument_id) {
-  // TODO(crbug.com/378164165): Implement logic to locally save the card if
-  // result is not success.
+  if (result != PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
+    // If card creation fails, save the card locally instead. All card
+    // information should exist, except for the optional CVC.
+    // TODO(crbug.com/378164165): Add CVC pref check in SaveCardLocallyIfNew so
+    // we don't need to strip the CVC from upload_details_.card. The missing
+    // check may be causing issue for CVC saving flows.
+    autofill_metrics::LogCreditCardUploadRanLocalSaveFallbackMetric(
+        /*new_local_card_added=*/payments_autofill_client()
+            ->GetPaymentsDataManager()
+            .SaveCardLocallyIfNew(upload_details_.card));
+  }
 
   // Invoke feedback bubble. No callback needed (virtual card enrollment is not
   // eligible for card saved via the Save and Fill flow).

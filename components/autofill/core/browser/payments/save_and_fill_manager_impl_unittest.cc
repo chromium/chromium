@@ -688,6 +688,11 @@ TEST_F(SaveAndFillManagerImplTest, CardUploadFeedback_UploadFailed) {
 
   save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
       fill_card_callback_.Get());
+
+  std::vector<const CreditCard*> cards =
+      payments_autofill_client_->GetPaymentsDataManager().GetLocalCreditCards();
+  ASSERT_EQ(cards.size(), 1U);
+  EXPECT_EQ(cards[0]->number(), u"1111222233334444");
 }
 
 }  // namespace autofill::payments

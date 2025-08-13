@@ -101,6 +101,22 @@ void TestPaymentsDataManager::RemoveByGUID(const std::string& guid) {
   }
 }
 
+bool TestPaymentsDataManager::SaveCardLocallyIfNew(
+    const CreditCard& imported_credit_card) {
+  CHECK(!imported_credit_card.number().empty());
+
+  for (auto& card : local_credit_cards_) {
+    if (card->MatchingCardDetails(imported_credit_card)) {
+      return false;
+    }
+  }
+  local_credit_cards_.push_back(
+      std::make_unique<CreditCard>(imported_credit_card));
+
+  NotifyObservers();
+  return true;
+}
+
 void TestPaymentsDataManager::RecordUseOfCard(const CreditCard& card) {
   if (CreditCard* credit_card = GetMutableCreditCardByGUID(card.guid())) {
     credit_card->RecordAndLogUse();
