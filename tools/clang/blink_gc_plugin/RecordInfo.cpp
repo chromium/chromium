@@ -162,7 +162,12 @@ void RecordInfo::walkBases() {
       if (!type)
         base = GetDependentTemplatedDecl(*it.getType());
       else {
+#ifdef LLVM_FORCE_HEAD_REVISION
+        base = cast_or_null<CXXRecordDecl>(
+            type->getOriginalDecl()->getDefinition());
+#else
         base = cast_or_null<CXXRecordDecl>(type->getDecl()->getDefinition());
+#endif
         if (base)
           queue.push_back(base);
       }
@@ -581,6 +586,27 @@ Edge* RecordInfo::CreateEdgeFromOriginalType(const Type* type) {
     return nullptr;
 
   // look for "typedef ... iterator;"
+#ifdef LLVM_FORCE_HEAD_REVISION
+  const TypedefType* typedefType = dyn_cast<TypedefType>(type);
+  if (!typedefType) {
+    return nullptr;
+  }
+
+  std::string typeName = typedefType->getDecl()->getNameAsString();
+  if (!Config::IsIterator(typeName)) {
+    return nullptr;
+  }
+
+  NestedNameSpecifier qualifier = typedefType->getQualifier();
+  if (!qualifier) {
+    return nullptr;
+  }
+
+  RecordInfo* info = cache_->Lookup(qualifier.getAsType());
+  if (!info) {
+    return nullptr;
+  }
+#else
   if (!isa<ElaboratedType>(type))
     return nullptr;
   const ElaboratedType* elaboratedType = cast<ElaboratedType>(type);
@@ -598,6 +624,7 @@ Edge* RecordInfo::CreateEdgeFromOriginalType(const Type* type) {
   if (!info) {
     return nullptr;
   }
+#endif
 
   return new Iterator(info);
 }
