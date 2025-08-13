@@ -899,6 +899,10 @@ class PermissionUmaUtil {
   // Records the status of language detection during the Aiv4 workflow.
   static void RecordLanguageDetectionStatus(LanguageDetectionStatus status);
 
+  // Records whether the passage embeddings calculation ran into a timeout
+  // during the Aiv4 workflow.
+  static void RecordPassageEmbeddingsCalculationTimeout(bool timeout);
+
   // Records if the browser was active at the time the prompt started displaying
   static void RecordPromptShownInActiveBrowser(
       RequestTypeForUma request_type,

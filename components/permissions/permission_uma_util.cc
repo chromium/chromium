@@ -2170,4 +2170,10 @@ void PermissionUmaUtil::RecordLanguageDetectionStatus(
                                 status);
 }
 
+// static
+void PermissionUmaUtil::RecordPassageEmbeddingsCalculationTimeout(
+    bool timeout) {
+  base::UmaHistogramBoolean(
+      "Permissions.AIv4.PassageEmbeddingsComputationTimeout", timeout);
+}
 }  // namespace permissions

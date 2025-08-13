@@ -538,6 +538,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.AIv4.PassageEmbeddingsComputationTimeout"
+    enum="Boolean" expires_after="2026-02-01">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether a passage embeddings computation task ran into the timeout.
+    Recorded for pages in English on which rendered text could be acquired with
+    success and the text is considered suitable as input for the AIv4 model
+    (i.e. it's long enough).
+  </summary>
+</histogram>
+
 <histogram name="Permissions.AIv4.TryCancelPreviousEmbeddingsModelExecution"
     enum="BooleanSuccess" expires_after="2026-02-01">
   <owner>elklm@chromium.org</owner>

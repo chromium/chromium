@@ -36,6 +36,7 @@ class Profile;
 namespace permissions {
 struct PredictionRequestFeatures;
 class GeneratePredictionsResponse;
+class PassageEmbedderDelegate;
 }  // namespace permissions
 
 // Each instance of this class is long-lived and can support multiple requests,
@@ -234,36 +235,23 @@ class PredictionBasedPermissionUiSelector
   void TakeSnapshot(content::RenderWidgetHostView* host_view,
                     ModelExecutionData model_data);
 
+  // Part of the AivX model workflow.
   // Extracts inner text asynchronously and runs the provided model execution
   // callback, which is meant to be a wrapper around ExecuteOnDeviceAivXModel.
-  // Part of the AivX model workflow.
+  // If rendered_text is an empty string, on-device model execution is not
+  // attempted and instead it proceeds with the basic CPSSv3 workflow without
+  // the output of the on-device model.
   void GetInnerText(content::RenderFrameHost* render_frame_host,
                     ModelExecutionData model_data,
                     ModelExecutionCallback model_execution_callback);
 
-  // Part of Aiv4 workflow; to use the inner text as input to the tflite model,
-  // we need to preprocess it with the passage embeddings model. If
-  // rendered_text is an empty string, on-device model execution is not
-  // attempted and instead it proceeds with the basic CPSSv3 workflow without
-  // the output of the on-device model.
-  void CreatePassageEmbeddingFromRenderedText(
-      std::string rendered_text,
-      passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback callback);
-
-  // Callback for the passage embeddings model. Sets the
-  // |passage_embeddings_task_id_| if the passage_embedder model is available.
-  // Still running embedder tasks will get canceled upon calling this function.
-  // Fills in the inner_text_embeddings field of the model_metadata on success
-  // and calls the model_execution_callback in any case. Failures will get
-  // propagated and should be handled by the model_execution_callback callback.
+  // Callback for the passage embeddings delegate. Will get called if embeddings
+  // were computed with success. (Otherwise, server side CPSSv3 model will get
+  // inquired instead of Aiv4.)
   void OnPassageEmbeddingsComputed(
-      base::TimeTicks model_inquire_start_time,
       ModelExecutionData model_data,
       ModelExecutionCallback model_execution_callback,
-      std::vector<std::string> passages,
-      std::vector<passage_embeddings::Embedding> embeddings,
-      passage_embeddings::Embedder::TaskId task_id,
-      passage_embeddings::ComputeEmbeddingsStatus status);
+      passage_embeddings::Embedding embedding);
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   raw_ptr<Profile> profile_;
@@ -282,17 +270,17 @@ class PredictionBasedPermissionUiSelector
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::optional<SkBitmap> snapshot_for_testing_;
 
-  // Used to cancel a still running embedding task for the previous stale query
-  // to the passage embedder model that we use to prepare the text input for
-  // AIv4.
-  std::optional<passage_embeddings::Embedder::TaskId>
-      passage_embeddings_task_id_;
+  //  Handles calls to the passage embedder, a tflite model that is used to
+  //  compute the embeddings used as input for the AIv4 model.
+  std::unique_ptr<permissions::PassageEmbedderDelegate>
+      passage_embedder_delegate_;
 
   // For the Aiv4 execution flow we use a text embeddings model that only works
   // for the English language. Therefore we use an observer to wait for language
   // detection to finish (in case its not already done when we need this).
   std::unique_ptr<permissions::LanguageDetectionObserver>
       language_detection_observer_;
+
 #endif
 
   // Used to asynchronously call the callback during on device model execution.
