@@ -138,10 +138,25 @@ SoftwareImageDecodeCacheUtils::GenerateCacheEntryFromCandidate(
     const DecodedDrawImage& candidate_image,
     bool needs_extract_subset,
     SkColorType color_type) {
+  TRACE_EVENT0(
+      TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+      "SoftwareImageDecodeCacheUtils::GenerateCacheEntryFromCandidate");
+
   // Let `decoded_pixmap` be the candidate image's pixels that we will be
   // copying and potentially scaling.
   SkPixmap decoded_pixmap;
   bool result = candidate_image.image()->peekPixels(&decoded_pixmap);
+  DCHECK(result) << key.ToString();
+
+  // Compute the actual source rect of `decoded_pixmap` that will be used,
+  // and let `decoded_pixmap_sub_rect` an SkPixmap with just that rect.
+  SkIRect src_rect = SkIRect::MakeSize(decoded_pixmap.dimensions());
+  if (needs_extract_subset) {
+    result = src_rect.intersect(gfx::RectToSkIRect(key.src_rect()));
+    DCHECK(result) << key.ToString();
+  }
+  SkPixmap decoded_pixmap_sub_rect;
+  result = decoded_pixmap.extractSubset(&decoded_pixmap_sub_rect, src_rect);
   DCHECK(result) << key.ToString();
 
   SkImageInfo target_info =
@@ -156,49 +171,16 @@ SoftwareImageDecodeCacheUtils::GenerateCacheEntryFromCandidate(
   if (!target_image) {
     return nullptr;
   }
-  TRACE_EVENT0(
-      TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-      "SoftwareImageDecodeCacheUtils::GenerateCacheEntryFromCandidate - "
-      "scale");
 
-  // Populate the pixels of `target_pixmap` from `decoded_pixmap`.
+  // Populate the pixels of `target_pixmap` from `decoded_pixmap_sub_rect`
+  // by `scalePixels`. The implementation will optimize this to `readPixels` if
+  // possible.
   SkPixmap target_pixmap;
   target_image->peekPixels(&target_pixmap);
-  // Setting the pixmap to have a nullptr color space shouldn't affect the below
-  // operations, but is being done to preserve existing behavior.
-  target_pixmap.setColorSpace(nullptr);
-  if (key.type() == CacheKey::kSubrectOriginal) {
-    DCHECK(needs_extract_subset);
-    TRACE_EVENT0(
-        TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-        "SoftwareImageDecodeCacheUtils::GenerateCacheEntryFromCandidate - "
-        "subrect");
-    result = decoded_pixmap.readPixels(target_pixmap, key.src_rect().x(),
-                                       key.src_rect().y());
-    // We have a decoded image, and we're reading into already allocated memory.
-    // This should never fail.
-    DCHECK(result) << key.ToString();
-  } else {
-    DCHECK_EQ(key.type(), CacheKey::kSubrectAndScale);
-    TRACE_EVENT0(
-        TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-        "SoftwareImageDecodeCacheUtils::GenerateCacheEntryFromCandidate - "
-        "scale");
-    if (needs_extract_subset) {
-      result = decoded_pixmap.extractSubset(&decoded_pixmap,
-                                            gfx::RectToSkIRect(key.src_rect()));
-      DCHECK(result) << key.ToString();
-    }
-
-    // Nearest neighbor would only be set in the unscaled case.
-    DCHECK(!key.is_nearest_neighbor());
-    PaintFlags::FilterQuality filter_quality =
-        PaintFlags::FilterQuality::kMedium;
-    result = decoded_pixmap.scalePixels(
-        target_pixmap,
-        PaintFlags::FilterQualityToSkSamplingOptions(filter_quality));
-    DCHECK(result) << key.ToString();
-  }
+  result = decoded_pixmap_sub_rect.scalePixels(
+      target_pixmap, PaintFlags::FilterQualityToSkSamplingOptions(
+                         PaintFlags::FilterQuality::kMedium));
+  DCHECK(result) << key.ToString();
 
   return std::make_unique<CacheEntry>(
       target_image, std::move(target_pixels),
