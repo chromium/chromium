@@ -11,6 +11,9 @@
     "run_shell_command(grep -R)",
     "run_shell_command(git grep)",
     "run_shell_command(gn ls)",
-    "run_shell_command(gn clean)"
+    "run_shell_command(gn clean)",
+    "run_shell_command(rm)",
+    "run_shell_command(brew)",
+    "run_shell_command(apt-get)"
   ]
 }
