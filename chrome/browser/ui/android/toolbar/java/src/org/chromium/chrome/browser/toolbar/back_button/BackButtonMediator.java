@@ -93,7 +93,6 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
                 });
 
         updateBackground(mThemeColorProvider.getBrandedColorScheme());
-        mThemeColorProvider.addTintObserver(this);
 
         mEnabledSupplier = enabledSupplier;
         mEnabledObserver = (isEnabled) -> updateButtonEnabledState();
@@ -235,7 +234,6 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
     public void destroy() {
         mModel.set(BackButtonProperties.CLICK_LISTENER, null);
         mModel.set(BackButtonProperties.LONG_CLICK_LISTENER, null);
-        mThemeColorProvider.removeTintObserver(this);
         mTabObserver.destroy();
         mEnabledSupplier.removeObserver(mEnabledObserver);
     }

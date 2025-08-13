@@ -24,6 +24,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
@@ -65,6 +66,7 @@ public class WebAppHeaderLayoutCoordinator
     private final ObservableSupplier<@Nullable Tab> mTabSupplier;
     private final ScrimManager mScrimManager;
     private final ThemeColorProvider mThemeColorProvider;
+    private final IncognitoStateProvider mIncognitoStateProvider;
     private final @DisplayMode.EnumType int mDisplayMode;
     private final NavigationPopup.HistoryDelegate mHistoryDelegate;
     private int mMinUIControlsMinWidthPx;
@@ -106,6 +108,7 @@ public class WebAppHeaderLayoutCoordinator
 
         mTabSupplier = tabSupplier;
         mThemeColorProvider = themeColorProvider;
+        mIncognitoStateProvider = new IncognitoStateProvider();
 
         mOnUnoccludedWidthCallback = this::onUnoccludedWidthChanged;
         mMinUIControlsMinWidthPx = 0;
@@ -181,6 +184,7 @@ public class WebAppHeaderLayoutCoordinator
                             if (mMediator != null) mMediator.goBack();
                         },
                         mThemeColorProvider,
+                        mIncognitoStateProvider,
                         mTabSupplier,
                         mControlsEnabledSupplier,
                         () -> {

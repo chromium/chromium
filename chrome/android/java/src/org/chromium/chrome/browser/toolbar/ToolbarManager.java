@@ -1052,6 +1052,7 @@ public class ToolbarManager
                             backButton,
                             this::back,
                             browsingModeThemeColorProvider,
+                            mIncognitoStateProvider,
                             mActivityTabProvider,
                             mToolbarNavControlsEnabledSupplier,
                             /* onNavigationPopupShown= */ () -> {},

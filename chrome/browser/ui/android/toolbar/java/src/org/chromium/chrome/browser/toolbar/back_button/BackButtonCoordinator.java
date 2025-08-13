@@ -16,8 +16,10 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
+import org.chromium.chrome.browser.toolbar.top.ToolbarChild;
 import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -29,7 +31,7 @@ import org.chromium.ui.widget.ChromeImageButton;
  * the button and affect its state.
  */
 @NullMarked
-public class BackButtonCoordinator {
+public class BackButtonCoordinator extends ToolbarChild {
     private final BackButtonMediator mMediator;
     private final NavigationPopup.HistoryDelegate mHistoryDelegate;
     private final Supplier<@Nullable Tab> mTabSupplier;
@@ -44,6 +46,7 @@ public class BackButtonCoordinator {
      *     state) that is invoked on back button click event. Allows parent components to intercept
      *     click and navigate back in the history or hide custom UI components.
      * @param themeColorProvider a provider that notifies about theme changes.
+     * @param incognitoStateProvider a provider that notifies about incognito state changes.
      * @param tabSupplier a supplier that provides current active tab.
      * @param historyDelegate a delegate that allows parent components to decide how to display
      *     browser history.
@@ -52,11 +55,13 @@ public class BackButtonCoordinator {
             ChromeImageButton view,
             ClickWithMetaStateCallback onBackPressed,
             ThemeColorProvider themeColorProvider,
+            IncognitoStateProvider incognitoStateProvider,
             ObservableSupplier<@Nullable Tab> tabSupplier,
             ObservableSupplier<Boolean> enabledSupplier,
             Runnable onNavigationPopupShown,
             NavigationPopup.HistoryDelegate historyDelegate,
             boolean isWebApp) {
+        super(themeColorProvider, incognitoStateProvider);
         mView = view;
         mTabSupplier = tabSupplier;
         mHistoryDelegate = historyDelegate;
@@ -84,6 +89,15 @@ public class BackButtonCoordinator {
                         mView.getContext(),
                         isWebApp);
         PropertyModelChangeProcessor.create(model, view, BackButtonViewBinder::bind);
+    }
+
+    @Override
+    public void onTintChanged(
+            @Nullable ColorStateList tint,
+            @Nullable ColorStateList activityFocusTint,
+            int brandedColorScheme) {
+        super.onTintChanged(tint, activityFocusTint, brandedColorScheme);
+        mMediator.onTintChanged(tint, activityFocusTint, brandedColorScheme);
     }
 
     private void showNavigationPopup(Tab tab) {
@@ -178,7 +192,9 @@ public class BackButtonCoordinator {
      * Cleans up coordinator resources and unsubscribes from external events. An instance can't be
      * used after this method is called.
      */
+    @Override
     public void destroy() {
+        super.destroy();
         mMediator.destroy();
     }
 }

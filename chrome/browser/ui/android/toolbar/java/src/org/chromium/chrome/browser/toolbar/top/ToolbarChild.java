@@ -60,5 +60,7 @@ public abstract class ToolbarChild implements Destroyable, TintObserver, Incogni
      * @param root Root view for this view; used to position the canvas that's drawn on.
      * @param canvas Canvas to draw to.
      */
-    public abstract void draw(View root, Canvas canvas);
+    public void draw(View root, Canvas canvas) {
+        throw new UnsupportedOperationException("This method call is not implemented.");
+    }
 }
