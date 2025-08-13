@@ -100,11 +100,36 @@ bool MultiContentsDropTargetView::IsClosing() const {
   return animation_.IsClosing();
 }
 
-int MultiContentsDropTargetView::GetMaxWidth(int web_contents_width) const {
-  const int min_width = features::kSideBySideDropTargetMinWidth.Get();
-  const int max_width = features::kSideBySideDropTargetMaxWidth.Get();
-  const int percentage =
-      features::kSideBySideDropTargetTargetWidthPercentage.Get();
+// static
+int MultiContentsDropTargetView::GetMaxWidth(int web_contents_width,
+                                             DropTargetState state) {
+  int min_width = 0;
+  int max_width = 0;
+  int percentage = 0;
+
+  switch (state) {
+    case DropTargetState::kNudge:
+      CHECK(base::FeatureList::IsEnabled(features::kSideBySideDropTargetNudge));
+      min_width = features::kSideBySideDropTargetNudgeMinWidth.Get();
+      max_width = features::kSideBySideDropTargetNudgeMaxWidth.Get();
+      percentage =
+          features::kSideBySideDropTargetNudgeTargetWidthPercentage.Get();
+      break;
+    case DropTargetState::kNudgeToFull:
+      CHECK(base::FeatureList::IsEnabled(features::kSideBySideDropTargetNudge));
+      min_width = features::kSideBySideDropTargetNudgeToFullMinWidth.Get();
+      max_width = features::kSideBySideDropTargetNudgeToFullMaxWidth.Get();
+      percentage =
+          features::kSideBySideDropTargetNudgeToFullTargetWidthPercentage.Get();
+      break;
+    case DropTargetState::kFull:
+      min_width = features::kSideBySideDropTargetMinWidth.Get();
+      max_width = features::kSideBySideDropTargetMaxWidth.Get();
+      percentage = features::kSideBySideDropTargetTargetWidthPercentage.Get();
+      break;
+    default:
+      NOTREACHED();
+  }
 
   // Calculate the target width based on the web contents width and the target
   // percentage.
@@ -120,7 +145,8 @@ int MultiContentsDropTargetView::GetPreferredWidth(
     return 0;
   }
 
-  return GetAnimationValue() * GetMaxWidth(web_contents_width);
+  CHECK(state_.has_value());
+  return GetAnimationValue() * GetMaxWidth(web_contents_width, *state_);
 }
 
 void MultiContentsDropTargetView::AnimationProgressed(
@@ -136,8 +162,13 @@ void MultiContentsDropTargetView::AnimationEnded(
   InvalidateLayout();
 }
 
-void MultiContentsDropTargetView::Show(DropSide side) {
+void MultiContentsDropTargetView::Show(DropSide side, DropTargetState state) {
+  if (state == DropTargetState::kNudge ||
+      state == DropTargetState::kNudgeToFull) {
+    CHECK(base::FeatureList::IsEnabled(features::kSideBySideDropTargetNudge));
+  }
   side_ = side;
+  state_ = state;
   UpdateVisibility(true);
 }
 

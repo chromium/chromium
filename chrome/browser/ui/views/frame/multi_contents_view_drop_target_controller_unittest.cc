@@ -511,21 +511,24 @@ TEST_F(MultiContentsViewDropTargetControllerTest, DragDelegateMethods) {
 
   // OnDragExited
   drop_target_view().animation_for_testing().SetSlideDuration(base::Seconds(0));
-  drop_target_view().Show(MultiContentsDropTargetView::DropSide::START);
+  drop_target_view().Show(MultiContentsDropTargetView::DropSide::START,
+                          MultiContentsDropTargetView::DropTargetState::kFull);
   ASSERT_TRUE(drop_target_view().GetVisible());
   controller().OnDragExited();
   EXPECT_FALSE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().animation_for_testing().GetCurrentValue(), 0);
 
   // OnDragDone
-  drop_target_view().Show(MultiContentsDropTargetView::DropSide::START);
+  drop_target_view().Show(MultiContentsDropTargetView::DropSide::START,
+                          MultiContentsDropTargetView::DropTargetState::kFull);
   ASSERT_TRUE(drop_target_view().GetVisible());
   controller().OnDragDone();
   EXPECT_FALSE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().animation_for_testing().GetCurrentValue(), 0);
 
   // GetDropCallback and DoDrop
-  drop_target_view().Show(MultiContentsDropTargetView::DropSide::START);
+  drop_target_view().Show(MultiContentsDropTargetView::DropSide::START,
+                          MultiContentsDropTargetView::DropTargetState::kFull);
   ASSERT_TRUE(drop_target_view().GetVisible());
   const GURL url("https://www.google.com");
   ui::OSExchangeData drop_data;

@@ -175,8 +175,9 @@ void MultiContentsViewDropTargetController::HandleDragUpdate(
     const gfx::PointF& point_in_view) {
   CHECK_LE(0, point_in_view.x());
   CHECK_LE(point_in_view.x(), drop_target_parent_view_->width());
-  const int drop_entry_point_width =
-      drop_target_view_->GetMaxWidth(drop_target_parent_view_->width());
+  const int drop_entry_point_width = MultiContentsDropTargetView::GetMaxWidth(
+      drop_target_parent_view_->width(),
+      MultiContentsDropTargetView::DropTargetState::kFull);
   const bool is_rtl = base::i18n::IsRTL();
   if (point_in_view.x() >=
       drop_target_parent_view_->width() - drop_entry_point_width) {
@@ -221,6 +222,7 @@ void MultiContentsViewDropTargetController::ResetDropTargetTimer() {
 void MultiContentsViewDropTargetController::ShowTimerDelayedDropTarget() {
   CHECK(show_drop_target_timer_.has_value());
   CHECK(!drop_target_view_->GetVisible());
-  drop_target_view_->Show(show_drop_target_timer_->drop_side);
+  drop_target_view_->Show(show_drop_target_timer_->drop_side,
+                          MultiContentsDropTargetView::DropTargetState::kFull);
   show_drop_target_timer_.reset();
 }

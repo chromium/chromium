@@ -128,7 +128,8 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
   gfx::PointF point = {10, 10};
   ui::DropTargetEvent event(data, point, point, ui::DragDropTypes::DRAG_LINK);
 
-  drop_target_view().Show(MultiContentsDropTargetView::DropSide::END);
+  drop_target_view().Show(MultiContentsDropTargetView::DropSide::END,
+                          MultiContentsDropTargetView::DropTargetState::kFull);
   auto drop_cb = drop_target_view().GetDropCallback(event);
   EXPECT_FALSE(multi_contents_view().IsInSplitView());
 
@@ -163,7 +164,8 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
   gfx::PointF point = {10, 10};
   ui::DropTargetEvent event(data, point, point, ui::DragDropTypes::DRAG_LINK);
 
-  drop_target_view().Show(MultiContentsDropTargetView::DropSide::START);
+  drop_target_view().Show(MultiContentsDropTargetView::DropSide::START,
+                          MultiContentsDropTargetView::DropTargetState::kFull);
   auto drop_cb = drop_target_view().GetDropCallback(event);
   EXPECT_FALSE(multi_contents_view().IsInSplitView());
 
@@ -198,7 +200,8 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
   EXPECT_FALSE(multi_contents_view().IsInSplitView());
 
   // Show the drop target on the end side.
-  drop_target_view().Show(MultiContentsDropTargetView::DropSide::END);
+  drop_target_view().Show(MultiContentsDropTargetView::DropSide::END,
+                          MultiContentsDropTargetView::DropTargetState::kFull);
 
   // Create a second browser with a tab to be dragged.
   Browser* browser2 = CreateBrowser(browser()->profile());
@@ -242,7 +245,8 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
   EXPECT_FALSE(multi_contents_view().IsInSplitView());
 
   // Show the drop target on the start side.
-  drop_target_view().Show(MultiContentsDropTargetView::DropSide::START);
+  drop_target_view().Show(MultiContentsDropTargetView::DropSide::START,
+                          MultiContentsDropTargetView::DropTargetState::kFull);
 
   // Create a second browser with a tab to be dragged.
   Browser* browser2 = CreateBrowser(browser()->profile());

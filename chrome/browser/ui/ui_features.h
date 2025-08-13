@@ -147,9 +147,23 @@ BASE_DECLARE_FEATURE(kSideBySide);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSideBySideShowDropTargetDelay);
 
 // Feature params for the width of the multi-contents drop target.
+// If the `kSideBySideDropTargetNudge` feature is enabled, then these only
+// apply for tab dragging.
 BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetMinWidth);
 BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetMaxWidth);
 BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetTargetWidthPercentage);
+
+// Feature and params to control the "nudge" behavior of drop targets.
+BASE_DECLARE_FEATURE(kSideBySideDropTargetNudge);
+BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeMinWidth);
+BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeMaxWidth);
+BASE_DECLARE_FEATURE_PARAM(int,
+                           kSideBySideDropTargetNudgeTargetWidthPercentage);
+BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeToFullMinWidth);
+BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeToFullMaxWidth);
+BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kSideBySideDropTargetNudgeToFullTargetWidthPercentage);
 
 enum class MiniToolbarActiveConfiguration {
   // Hides the toolbar in the active view.

@@ -32,6 +32,16 @@ class MultiContentsDropTargetView : public views::View,
     END = 1,
   };
 
+  // Represents the state of the drop target which determines its size.
+  enum class DropTargetState {
+    // A small target that is just a sliver on the side of the screen.
+    kNudge,
+    // A medium-sized target that is between the nudge and full states.
+    kNudgeToFull,
+    // A large target that takes up a significant portion of the screen.
+    kFull,
+  };
+
   // Delegate for handling drag events that are routed to this view.
   class DragDelegate {
    public:
@@ -58,7 +68,7 @@ class MultiContentsDropTargetView : public views::View,
 
   void SetDragDelegate(DragDelegate* drag_delegate);
 
-  void Show(DropSide side);
+  void Show(DropSide side, DropTargetState state);
   void Hide();
 
   bool IsClosing() const;
@@ -66,9 +76,9 @@ class MultiContentsDropTargetView : public views::View,
   // Returns the preferred width of this view for the given web contents width,
   // considering animation progress.
   int GetPreferredWidth(int web_contents_width) const;
-  // Returns the maximum width that this view should be for the given web
+  // Returns the maximum width that a view should be for the given web
   // contents width.
-  int GetMaxWidth(int web_contents_width) const;
+  static int GetMaxWidth(int web_contents_width, DropTargetState state);
 
   // views::View
   void SetVisible(bool visible) override;
@@ -89,6 +99,7 @@ class MultiContentsDropTargetView : public views::View,
   void HandleTabDrop(TabDragDelegate::DragController& controller);
 
   std::optional<DropSide> side() const { return side_; }
+  std::optional<DropTargetState> state() const { return state_; }
 
   raw_ptr<views::ImageView> icon_view_for_testing() { return icon_view_; }
   gfx::SlideAnimation& animation_for_testing() { return animation_; }
@@ -104,6 +115,9 @@ class MultiContentsDropTargetView : public views::View,
 
   // The side that this view is showing on.
   std::optional<DropSide> side_ = std::nullopt;
+
+  // The state that this view is in, if showing.
+  std::optional<DropTargetState> state_ = std::nullopt;
 
   raw_ptr<DragDelegate> drag_delegate_ = nullptr;
 

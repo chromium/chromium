@@ -147,6 +147,41 @@ BASE_FEATURE_PARAM(int,
                    "drop_target_width_percentage",
                    30);
 
+BASE_FEATURE(kSideBySideDropTargetNudge,
+             "SideBySideDropTargetNudge",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(int,
+                   kSideBySideDropTargetNudgeMinWidth,
+                   &kSideBySideDropTargetNudge,
+                   "drop_target_nudge_min_width",
+                   80);
+BASE_FEATURE_PARAM(int,
+                   kSideBySideDropTargetNudgeMaxWidth,
+                   &kSideBySideDropTargetNudge,
+                   "drop_target_nudge_max_width",
+                   200);
+BASE_FEATURE_PARAM(int,
+                   kSideBySideDropTargetNudgeTargetWidthPercentage,
+                   &kSideBySideDropTargetNudge,
+                   "drop_target_nudge_width_percentage",
+                   5);
+BASE_FEATURE_PARAM(int,
+                   kSideBySideDropTargetNudgeToFullMinWidth,
+                   &kSideBySideDropTargetNudge,
+                   "drop_target_nudge_to_full_min_width",
+                   80);
+BASE_FEATURE_PARAM(int,
+                   kSideBySideDropTargetNudgeToFullMaxWidth,
+                   &kSideBySideDropTargetNudge,
+                   "drop_target_nudge_to_full_max_width",
+                   600);
+BASE_FEATURE_PARAM(int,
+                   kSideBySideDropTargetNudgeToFullTargetWidthPercentage,
+                   &kSideBySideDropTargetNudge,
+                   "drop_target_nudge_to_full_width_percentage",
+                   20);
+
 constexpr base::FeatureParam<MiniToolbarActiveConfiguration>::Option
     kMiniToolbarActiveConfigurationOptions[] = {
         {MiniToolbarActiveConfiguration::Hide, "hide"},

@@ -63,7 +63,8 @@ TEST_F(DropTargetViewTest, ViewIsOpened) {
 
   EXPECT_EQ(0, view->animation_for_testing().GetCurrentValue());
 
-  view->Show(MultiContentsDropTargetView::DropSide::START);
+  view->Show(MultiContentsDropTargetView::DropSide::START,
+             MultiContentsDropTargetView::DropTargetState::kFull);
 
   EXPECT_TRUE(view->GetVisible());
   EXPECT_TRUE(view->icon_view_for_testing()->GetVisible());
@@ -71,7 +72,8 @@ TEST_F(DropTargetViewTest, ViewIsOpened) {
 
 TEST_F(DropTargetViewTest, ViewIsClosed) {
   MultiContentsDropTargetView* view = drop_target_view();
-  view->Show(MultiContentsDropTargetView::DropSide::START);
+  view->Show(MultiContentsDropTargetView::DropSide::START,
+             MultiContentsDropTargetView::DropTargetState::kFull);
 
   EXPECT_TRUE(view->animation_for_testing().GetCurrentValue() == 1);
 
@@ -91,7 +93,8 @@ TEST_F(DropTargetViewTest, ViewIsClosedAfterDelay) {
   view->animation_for_testing().SetSlideDuration(
       base::Seconds(kDelayedAnimationDuration));
 
-  view->Show(MultiContentsDropTargetView::DropSide::START);
+  view->Show(MultiContentsDropTargetView::DropSide::START,
+             MultiContentsDropTargetView::DropTargetState::kFull);
 
   animation.SetStartTime(now);
   animation.Step(now + base::Seconds(15));
@@ -116,7 +119,8 @@ TEST_F(DropTargetViewTest, ViewIsOpenedAfterDelay) {
   auto scoped_mode = animation.SetRichAnimationRenderMode(
       gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
 
-  view->Show(MultiContentsDropTargetView::DropSide::START);
+  view->Show(MultiContentsDropTargetView::DropSide::START,
+             MultiContentsDropTargetView::DropTargetState::kFull);
 
   view->animation_for_testing().SetSlideDuration(
       base::Seconds(kDelayedAnimationDuration));
@@ -130,7 +134,8 @@ TEST_F(DropTargetViewTest, ViewIsOpenedAfterDelay) {
   EXPECT_TRUE(view->animation_for_testing().GetCurrentValue() < 1);
   EXPECT_TRUE(view->GetVisible());
 
-  view->Show(MultiContentsDropTargetView::DropSide::START);
+  view->Show(MultiContentsDropTargetView::DropSide::START,
+             MultiContentsDropTargetView::DropTargetState::kFull);
 
   animation.Step(now + base::Seconds(kDelayedAnimationDuration + 1));
 
@@ -199,7 +204,8 @@ TEST_F(DropTargetViewTest, OnDragDone) {
 
 TEST_F(DropTargetViewTest, DropCallback) {
   MultiContentsDropTargetView* view = drop_target_view();
-  view->Show(MultiContentsDropTargetView::DropSide::START);
+  view->Show(MultiContentsDropTargetView::DropSide::START,
+             MultiContentsDropTargetView::DropTargetState::kFull);
   ASSERT_TRUE(view->GetVisible());
 
   const GURL url("https://chromium.org");
@@ -223,7 +229,8 @@ TEST_F(DropTargetViewTest, GetPreferredWidth) {
        {features::kSideBySideDropTargetTargetWidthPercentage.name, "20"}});
 
   MultiContentsDropTargetView* view = drop_target_view();
-  view->Show(MultiContentsDropTargetView::DropSide::START);
+  view->Show(MultiContentsDropTargetView::DropSide::START,
+             MultiContentsDropTargetView::DropTargetState::kFull);
   EXPECT_TRUE(view->GetVisible());
 
   // Width is clamped to the minimum.
@@ -259,7 +266,8 @@ TEST_F(DropTargetViewTest, GetPreferredWidthWithAnimation) {
   view->animation_for_testing().SetSlideDuration(
       base::Seconds(kDelayedAnimationDuration));
 
-  view->Show(MultiContentsDropTargetView::DropSide::START);
+  view->Show(MultiContentsDropTargetView::DropSide::START,
+             MultiContentsDropTargetView::DropTargetState::kFull);
 
   animation.SetStartTime(now);
   animation.Step(now + base::Seconds(15));
@@ -278,6 +286,50 @@ TEST_F(DropTargetViewTest, GetPreferredWidthWithAnimation) {
   animation.Step(now + base::Seconds(kDelayedAnimationDuration + 1));
   EXPECT_EQ(view->animation_for_testing().GetCurrentValue(), 1);
   EXPECT_EQ(view->GetPreferredWidth(1000), final_width);
+}
+
+TEST_F(DropTargetViewTest, GetPreferredWidthWithStates) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kSideBySide,
+        {{features::kSideBySideDropTargetMinWidth.name, "100"},
+         {features::kSideBySideDropTargetMaxWidth.name, "400"},
+         {features::kSideBySideDropTargetTargetWidthPercentage.name, "20"}}},
+       {features::kSideBySideDropTargetNudge,
+        {{features::kSideBySideDropTargetNudgeMinWidth.name, "50"},
+         {features::kSideBySideDropTargetNudgeMaxWidth.name, "100"},
+         {features::kSideBySideDropTargetNudgeTargetWidthPercentage.name, "5"},
+         {features::kSideBySideDropTargetNudgeToFullMinWidth.name, "80"},
+         {features::kSideBySideDropTargetNudgeToFullMaxWidth.name, "200"},
+         {features::kSideBySideDropTargetNudgeToFullTargetWidthPercentage.name,
+          "10"}}}},
+      {});
+
+  MultiContentsDropTargetView* view = drop_target_view();
+
+  // Test nudge state.
+  view->Show(MultiContentsDropTargetView::DropSide::START,
+             MultiContentsDropTargetView::DropTargetState::kNudge);
+  EXPECT_TRUE(view->GetVisible());
+  EXPECT_EQ(50, view->GetPreferredWidth(800));
+  EXPECT_EQ(100, view->GetPreferredWidth(3000));
+  EXPECT_EQ(60, view->GetPreferredWidth(1200));
+
+  // Test nudge to full state.
+  view->Show(MultiContentsDropTargetView::DropSide::START,
+             MultiContentsDropTargetView::DropTargetState::kNudgeToFull);
+  EXPECT_TRUE(view->GetVisible());
+  EXPECT_EQ(80, view->GetPreferredWidth(400));
+  EXPECT_EQ(200, view->GetPreferredWidth(3000));
+  EXPECT_EQ(100, view->GetPreferredWidth(1000));
+
+  // Test full state.
+  view->Show(MultiContentsDropTargetView::DropSide::START,
+             MultiContentsDropTargetView::DropTargetState::kFull);
+  EXPECT_TRUE(view->GetVisible());
+  EXPECT_EQ(100, view->GetPreferredWidth(400));
+  EXPECT_EQ(400, view->GetPreferredWidth(3000));
+  EXPECT_EQ(200, view->GetPreferredWidth(1000));
 }
 
 }  // namespace
