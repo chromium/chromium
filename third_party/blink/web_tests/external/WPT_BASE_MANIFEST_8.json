@@ -450509,6 +450509,87 @@
       }
      ]
     ],
+    "crashtests": {
+     "create-index.any.js": [
+      "32d7871936dd0698f7e2e7a24cc508778651d9a8",
+      [
+       "IndexedDB/crashtests/create-index.any.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "IndexedDB: assure no crash when populating index"
+         ],
+         [
+          "script",
+          "../resources/support.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "IndexedDB/crashtests/create-index.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "IndexedDB: assure no crash when populating index"
+         ],
+         [
+          "script",
+          "../resources/support.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "IndexedDB/crashtests/create-index.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "IndexedDB: assure no crash when populating index"
+         ],
+         [
+          "script",
+          "../resources/support.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "IndexedDB/crashtests/create-index.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "IndexedDB: assure no crash when populating index"
+         ],
+         [
+          "script",
+          "../resources/support.js"
+         ]
+        ]
+       }
+      ]
+     ]
+    },
     "cursor-overloads.any.js": [
      "83a8b9bde2c04aa21e13128fe10698ba36717404",
      [
@@ -541311,6 +541392,13 @@
        {}
       ]
      ],
+     "caretPositionFromPoint-audioVideo.html": [
+      "b0471532a90c4b0a641a5994cad7a7d4a6a1cc46",
+      [
+       null,
+       {}
+      ]
+     ],
      "caretPositionFromPoint-with-transformation.html": [
       "f6ed98f3f2e29379dcb4cf0d149596152af0fcf0",
       [
@@ -541319,7 +541407,7 @@
       ]
      ],
      "caretPositionFromPoint.html": [
-      "ec1e66f195e5ad88238bed24bfe89b4b06d3ffd0",
+      "ad13eccc6d5cd9d0ef56b3d8e72254a90d5f4261",
       [
        null,
        {}
@@ -662199,7 +662287,7 @@
         ]
        ],
        "menuitem-activate.html": [
-        "2c403420772491c8bbe20a710975ee4f25315569",
+        "1abc658d55d61d029ffd6ac8e3a228592f86498b",
         [
          null,
          {
@@ -667600,6 +667688,16 @@
          null,
          {
           "testdriver": true
+         }
+        ]
+       ],
+       "interestfor-command-invoker.tentative.html": [
+        "e8fa02f4e2770320a78312544a60d1eb28687b2d",
+        [
+         null,
+         {
+          "testdriver": true,
+          "timeout": "long"
          }
         ]
        ],
