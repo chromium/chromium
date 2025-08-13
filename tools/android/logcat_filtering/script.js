@@ -299,28 +299,33 @@ function processCurrentFileLines(currentFileLines) {
  */
 function parseOneLine(line) {
   const tokens = splitString(line, 7);
-  if (tokens.length < 7) {
+  if (tokens.length !== 13) {
     return { isLogcat: false, originalLine: line };
   }
 
   const date = tokens[0];
-  const time = tokens[1];
-  const pid = parseInt(tokens[2], 10);
+  const time = tokens[2];
+  const pid = parseInt(tokens[4], 10);
   if (isNaN(pid)) {
     return { isLogcat: false, originalLine: line };
   }
-  const tid = parseInt(tokens[3], 10);
+  const tid = parseInt(tokens[6], 10);
   if (isNaN(tid)) {
     return { isLogcat: false, originalLine: line };
   }
-  const priority = tokens[4];
-  let tag = tokens[5];
+  const priority = tokens[8];
+  let tag = tokens[10];
   if (tag.endsWith(':')) {
     tag = tag.slice(0, -1);
   }
-  let message = tokens[6];
+  let message = tokens[12];
   if (message.startsWith(': ')) {
     message = message.slice(2);
+  } else {
+    const whitespaceBeforeMessage = tokens[11];
+    if (whitespaceBeforeMessage.length > 1) {
+      message = whitespaceBeforeMessage.slice(1) + message;
+    }
   }
 
   return { isLogcat: true, date, time, pid, tid, priority, tag, message };
@@ -330,6 +335,10 @@ function parseOneLine(line) {
  * Split the input string into at most |maxParts| parts by whitespace.
  * If there are more than |maxParts| parts, the last part will contain all the
  * rest of the string so that the return value has exactly |maxParts| parts.
+ * In addition to the parts that are not whitespace, the return value also
+ * contains the whitespaces in between each part. For example, if the input
+ * string is "abc def  ghi jk" and maxParts is 3, then the return value is
+ * ["abc", " ", "def", "  ", "ghi jk"].
  * @param {string} inputString
  * @param {number} maxParts
  * @return {Array<string>}
@@ -339,12 +348,15 @@ function splitString(inputString, maxParts) {
   const whitespaceRegex = /\s+/g;
   let previousIndex = 0;
 
-  while (parts.length < maxParts - 1) {
+  // Each part except the last one corresponds to two entries in the parts array
+  // so this loop keeps iterating while parts.length < (maxParts - 1) * 2
+  while (parts.length < maxParts * 2 - 2) {
     const match = whitespaceRegex.exec(inputString);
     if (!match) {
       break;
     }
     parts.push(inputString.substring(previousIndex, match.index));
+    parts.push(match[0]);
     previousIndex = whitespaceRegex.lastIndex;
   }
 
