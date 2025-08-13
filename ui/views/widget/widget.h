@@ -932,6 +932,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Returns the reason the widget was closed, if it was specified.
   ClosedReason closed_reason() const { return closed_reason_; }
 
+  // True if the Widget is being destroyed and running its destructor.
+  bool is_destroying() const { return is_destroying_; }
+
   // Shows the widget. The widget is activated if during initialization the
   // can_activate flag in the InitParams structure is set to true.
   void Show();
@@ -1487,6 +1490,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Set the native theme from which this widget gets color from.
   void SetNativeTheme(ui::NativeTheme* native_theme);
 
+  // Invokes SaveWindowPlacement() if the native widget has been initialized.
+  // This is called at times when the native widget may not have been
+  // initialized.
+  void SaveWindowPlacementIfNeeded();
+
   // The following methods are used by the property access system described in
   // the comments on views::View. They follow the required naming convention in
   // order to allow them to be visible via the metadata.
@@ -1538,11 +1546,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Persists the window's restored position and "show" state using the
   // window delegate.
   void SaveWindowPlacement();
-
-  // Invokes SaveWindowPlacement() if the native widget has been initialized.
-  // This is called at times when the native widget may not have been
-  // initialized.
-  void SaveWindowPlacementIfNeeded();
 
   // Sizes and positions the window just after it is created.
   void SetInitialBounds(const gfx::Rect& bounds);
@@ -1678,6 +1681,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Set to true if the widget is in the process of closing.
   bool widget_closed_ = false;
+
+  // Set to true if the widget is in the process of being destroyed.
+  bool is_destroying_ = false;
 
   // Set to true after OnWidgetDestroyed called.
   bool native_widget_destroyed_ = false;

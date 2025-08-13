@@ -254,6 +254,7 @@ Widget::Widget(InitParams params) {
 Widget::~Widget() {
   // DestroyRootView() will cause InvalidateLayout() to ScheduleLayout() which
   // is unnecessary.
+  is_destroying_ = true;
   widget_closed_ = true;
   autosize_task_factory_.InvalidateWeakPtrs();
 
@@ -2516,6 +2517,12 @@ const ui::NativeTheme* Widget::GetNativeTheme() const {
   return ui::NativeTheme::GetInstanceForNativeUi();
 }
 
+void Widget::SaveWindowPlacementIfNeeded() {
+  if (native_widget_initialized_ && save_window_placement_allowed_) {
+    SaveWindowPlacement();
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Widget, private:
 
@@ -2524,20 +2531,14 @@ void Widget::SaveWindowPlacement() {
   // by go/crash) that in some circumstances we can end up here after
   // WM_DESTROY, at which point the window delegate is likely gone. So just
   // bail.
-  if (!widget_delegate_ || !widget_delegate_->ShouldSaveWindowPlacement() ||
-      !native_widget_) {
+  if (is_destroying_ || !widget_delegate_ ||
+      !widget_delegate_->ShouldSaveWindowPlacement() || !native_widget_) {
     return;
   }
   ui::mojom::WindowShowState show_state = ui::mojom::WindowShowState::kNormal;
   gfx::Rect bounds;
   native_widget_->GetWindowPlacement(&bounds, &show_state);
   widget_delegate_->SaveWindowPlacement(bounds, show_state);
-}
-
-void Widget::SaveWindowPlacementIfNeeded() {
-  if (native_widget_initialized_ && save_window_placement_allowed_) {
-    SaveWindowPlacement();
-  }
 }
 
 void Widget::SetInitialBounds(const gfx::Rect& bounds) {

@@ -134,7 +134,14 @@ BrowserFrame::BrowserFrame(BrowserView* browser_view)
   set_focus_on_creation(false);
 }
 
-BrowserFrame::~BrowserFrame() = default;
+BrowserFrame::~BrowserFrame() {
+  // Window placement is expected to be saved when the window closes. Under the
+  // CLIENT_OWNS_WIDGET ownership scheme this signal is received in the
+  // Widget destructor. `SaveWindowPlacement()` must be called here as this
+  // depends on state in BrowserFrame, which will have been torn down by the
+  // time the Widget destructor runs.
+  SaveWindowPlacementIfNeeded();
+}
 
 void BrowserFrame::InitBrowserFrame() {
   native_browser_frame_ =
