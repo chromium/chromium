@@ -955,28 +955,38 @@ ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {
   WindowController* window = nullptr;
   int tab_index = -1;
   std::string error;
+  content::WebContents* web_contents = nullptr;
   if (!tabs_internal::GetTabById(tab_id, browser_context(),
                                  include_incognito_information(), &window,
-                                 nullptr, &tab_index, &error)) {
+                                 &web_contents, &tab_index, &error)) {
     return RespondNow(Error(std::move(error)));
   }
   if (!window) {
     return RespondNow(Error(tabs_constants::kInvalidWindowStateError));
   }
-  Browser* browser = window->GetBrowser();
+  BrowserWindowInterface* browser = window->GetBrowserWindowInterface();
 
   if (!browser || !ExtensionTabUtil::IsTabStripEditable()) {
     return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
   }
 
-  if (!chrome::CanDuplicateTabAt(browser, tab_index)) {
+  TabListInterface* tab_list = TabListInterface::From(browser);
+  if (!tab_list) {
+    return RespondNow(Error(tabs_constants::kCannotDuplicateTab,
+                            base::NumberToString(tab_id)));
+  }
+  ::tabs::TabInterface* tab_interface =
+      ::tabs::TabInterface::MaybeGetFromContents(web_contents);
+  // We found the tab above, so we should always, always have a TabInterface
+  // for it.
+  CHECK(tab_interface);
+
+  ::tabs::TabInterface* new_tab =
+      tab_list->DuplicateTab(tab_interface->GetHandle());
+
+  if (!new_tab) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
         tabs_constants::kCannotDuplicateTab, base::NumberToString(tab_id))));
-  }
-
-  WebContents* new_contents = chrome::DuplicateTabAt(browser, tab_index);
-  if (!new_contents) {
-    return RespondNow(Error(kUnknownErrorDoNotUse));
   }
 
   if (!has_callback()) {
@@ -987,6 +997,7 @@ ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {
   // the new window.
   TabListInterface* new_tab_list = nullptr;
   int new_tab_index = -1;
+  content::WebContents* new_contents = new_tab->GetContents();
   if (!ExtensionTabUtil::GetTabListInterface(*new_contents, &new_tab_list,
                                              &new_tab_index)) {
     return RespondNow(Error(kUnknownErrorDoNotUse));
