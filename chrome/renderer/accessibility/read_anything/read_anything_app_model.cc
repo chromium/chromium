@@ -582,6 +582,7 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
       // If read aloud is searching for a child tree to distill and this tree id
       // matches one of the possible child ids, set the active tree to this tree
       // so that it can be distilled.
+      VLOG(1) << "Using child to set active tree id to " << tree_id;
       SetActiveTreeId(tree_id);
 
       // Ensure that requires_distillation_ is set to true whenever there's a
@@ -1157,12 +1158,18 @@ void ReadAnythingAppModel::AllowChildTreeForActiveTree(bool use_child_tree) {
 
   ui::AXSerializableTree* active_tree = GetTreeFromId(active_tree_id_);
   if (!active_tree) {
+    VLOG(1) << "Not allowing child tree for active tree because active tree is "
+               "null";
     return;
   }
   std::set<ui::AXTreeID> child_ids = active_tree->GetAllChildTreeIds();
   if (!child_ids.size()) {
+    VLOG(1) << "Not allowing child tree for active tree because active tree "
+               "has no child trees";
     return;
   }
+
+  VLOG(1) << "Allow child tree for active tree";
 
   // Store all the possible child tree ids that could be used as the active
   // tree if they have distillable content.
