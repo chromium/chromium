@@ -91,7 +91,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     /** Scroll manager that propagates scroll event notification to registered observers. */
     @VisibleForTesting
     /* package */ static class SuggestionLayoutScrollListener extends LinearLayoutManager {
-        private boolean mLastKeyboardShownState;
+        private boolean mIsScrolledToTop;
         private boolean mCurrentGestureAffectedKeyboardState;
         private @Nullable Runnable mSuggestionDropdownScrollListener;
         private @Nullable Runnable mSuggestionDropdownOverscrolledToTopListener;
@@ -99,7 +99,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
         public SuggestionLayoutScrollListener(Context context) {
             super(context);
-            mLastKeyboardShownState = true;
+            mIsScrolledToTop = true;
         }
 
         void setToolbarPosition(boolean isToolbarOnTop) {
@@ -149,9 +149,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             // keyboard show/hide events.
             if (mCurrentGestureAffectedKeyboardState) return resultingDeltaY;
 
-            // Do not handle bottom omnibox yet (lots of corner cases).
-            if (!mToolbarOnTop) return resultingDeltaY;
-
             // If the effective scroll distance is:
             // - same as the desired one, we have enough content to scroll in a given direction
             //   (negative values = up, positive values = down).
@@ -181,13 +178,19 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             // - resultingDeltaY <= 0
             // - requestedDeltaY <= 0
             // - Math.abs(resultingDeltaY) < Math.abs(requestedDeltaY)
-            boolean keyboardShouldShow = (resultingDeltaY > requestedDeltaY);
+            boolean newIsScrolledToTop =
+                    mToolbarOnTop
+                            ? (resultingDeltaY > requestedDeltaY)
+                            : (resultingDeltaY < requestedDeltaY);
 
-            if (mLastKeyboardShownState == keyboardShouldShow) return resultingDeltaY;
-            mLastKeyboardShownState = keyboardShouldShow;
+            // Do not handle bottom omnibox yet (lots of corner cases).
+            if (!mToolbarOnTop) return resultingDeltaY;
+
+            if (mIsScrolledToTop == newIsScrolledToTop) return resultingDeltaY;
+            mIsScrolledToTop = newIsScrolledToTop;
             mCurrentGestureAffectedKeyboardState = true;
 
-            if (keyboardShouldShow) {
+            if (mIsScrolledToTop) {
                 if (mSuggestionDropdownOverscrolledToTopListener != null) {
                     mSuggestionDropdownOverscrolledToTopListener.run();
                 }
@@ -208,14 +211,20 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         }
 
         /**
-         * Reset the internal keyboard state. This needs to be called either when the
+         * Reset the internal scroll tracker. This needs to be called either when the
          * SuggestionsDropdown is hidden or shown again to reflect either the end of the current or
          * beginning of the next interaction session.
          */
         @VisibleForTesting
-        /* package */ void resetKeyboardShownState() {
-            mLastKeyboardShownState = true;
+        /* package */ void resetScrollState() {
+            mIsScrolledToTop = true;
             mCurrentGestureAffectedKeyboardState = false;
+            updateVisualScrollState();
+        }
+
+        /* package */ void updateVisualScrollState() {
+            if (!mIsScrolledToTop) return;
+            postOnAnimation(() -> scrollToPositionWithOffset(0, 0));
         }
 
         /**
@@ -247,6 +256,14 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      * @param context Context used for contained views.
      */
     public OmniboxSuggestionsDropdown(Context context, AttributeSet attrs) {
+        this(context, attrs, new SuggestionLayoutScrollListener(context));
+    }
+
+    @VisibleForTesting
+    OmniboxSuggestionsDropdown(
+            Context context,
+            AttributeSet attrs,
+            SuggestionLayoutScrollListener suggestionLayoutScrollListener) {
         super(context, attrs, android.R.attr.dropDownListViewStyle);
 
         mHandler = new Handler(Looper.getMainLooper());
@@ -259,7 +276,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         setItemAnimator(null);
         addItemDecoration(new SuggestionHorizontalDivider(context));
 
-        mLayoutScrollListener = new SuggestionLayoutScrollListener(context);
+        mLayoutScrollListener = suggestionLayoutScrollListener;
         setLayoutManager(mLayoutScrollListener);
         mSelectionController =
                 new RecyclerViewSelectionController(
@@ -276,6 +293,11 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
             setRecycledViewPool(new PreWarmingRecycledViewPool(mAdapter, context));
         }
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldW, int oldH) {
+        mLayoutScrollListener.updateVisualScrollState();
     }
 
     /**
@@ -365,8 +387,8 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     /** Resests the tracked keyboard shown state to properly respond to scroll events. */
-    void resetKeyboardShownState() {
-        mLayoutScrollListener.resetKeyboardShownState();
+    void resetScrollState() {
+        mLayoutScrollListener.resetScrollState();
     }
 
     /**

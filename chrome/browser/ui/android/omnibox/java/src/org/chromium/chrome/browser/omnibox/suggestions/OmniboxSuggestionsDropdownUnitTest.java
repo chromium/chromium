@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -52,15 +53,17 @@ public class OmniboxSuggestionsDropdownUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        mDropdown = new OmniboxSuggestionsDropdown(mContext, null);
+        mListener =
+                Mockito.spy(
+                        new OmniboxSuggestionsDropdown.SuggestionLayoutScrollListener(mContext));
+        mDropdown = new OmniboxSuggestionsDropdown(mContext, null, mListener);
         mDropdown.setId(R.id.omnibox_suggestions_dropdown);
         mDropdown.setAdapter(mAdapter);
-        mListener = mDropdown.getLayoutScrollListener();
     }
 
     @After
     public void tearDown() {
-        mListener.resetKeyboardShownState();
+        mListener.resetScrollState();
     }
 
     @Test
@@ -182,7 +185,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
         verifyNoMoreInteractions(mDropdownScrollListener);
 
         // Simulate lists being shown again.
-        mListener.resetKeyboardShownState();
+        mListener.resetScrollState();
 
         // Scroll attempt should suppress the scroll and emit keyboard dismiss.
         // Condition: the list is long enough that the scroll distance equals to delta.
@@ -244,5 +247,27 @@ public class OmniboxSuggestionsDropdownUnitTest {
         dropdown.setShouldClipToOutline(false);
         assertFalse(dropdown.getClipToOutline());
         assertNull(dropdown.getOutlineProvider());
+    }
+
+    @Test
+    public void onSizeChanged_callsUpdateVisualScrollState() {
+        mDropdown.onSizeChanged(1, 2, 3, 4);
+        verify(mListener).updateVisualScrollState();
+    }
+
+    @Test
+    public void updateVisualScrollState_atTop_scrolls() {
+        mListener.updateVisualScrollState();
+        verify(mListener).postOnAnimation(any());
+    }
+
+    @Test
+    public void updateVisualScrollState_notAtTop_doesNotScroll() {
+        // Scroll down to move away from the top.
+        mListener.updateKeyboardVisibilityAndScroll(10, 10);
+        Mockito.clearInvocations(mListener);
+
+        mListener.updateVisualScrollState();
+        verify(mListener, times(0)).postOnAnimation(any());
     }
 }
