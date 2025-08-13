@@ -360,11 +360,11 @@ class StyleCascadeTest : public PageTestBase {
         tree_scope.EnsureScopedStyleResolver();
     ActiveStyleSheetVector active_sheets{std::make_pair(sheet, nullptr)};
     scoped_resolver.AppendActiveStyleSheets(0, active_sheets);
-    GetDocument()
-        .GetStyleEngine()
-        .GetDocumentStyleSheetCollection()
-        .ReplaceActiveStyleSheets(MediaQueryEvaluator(GetDocument().GetFrame()),
-                                  active_sheets);
+    StyleSheetCollection& collection =
+        GetDocument().GetStyleEngine().GetDocumentStyleSheetCollection();
+    collection.AddPendingActiveStyleSheetForTest(sheet);
+    collection.FinishUpdateActiveStyleSheets(
+        MediaQueryEvaluator(GetDocument().GetFrame()), /*effective_mixins=*/{});
   }
 
   Element* DocumentElement() const { return GetDocument().documentElement(); }

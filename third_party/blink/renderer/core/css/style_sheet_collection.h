@@ -45,7 +45,6 @@ namespace blink {
 class MediaQueryEvaluator;
 class Node;
 class StyleSheet;
-class StyleEngine;
 
 // StyleSheetCollection is responsible for keeping track of which style sheets
 // are relevant for a given tree scope. Style sheets may be relevant for either
@@ -104,16 +103,21 @@ class CORE_EXPORT StyleSheetCollection
 
   bool IsShadowTreeStyleSheetCollection() const { return is_shadow_tree_; }
   void UpdateStyleSheetList();
-  void UpdateActiveStyleSheets(const StyleEngine&, const MediaQueryEvaluator&);
+
+  const MixinMap& Mixins() const { return mixins_; }
+
+  // Updates mixins_ but not active_style_sheets_.
+  void PrepareUpdateActiveStyleSheets(const MediaQueryEvaluator&);
+
+  // Must be called once, after all PrepareUpdateActiveStyleSheets().
+  void FinishUpdateActiveStyleSheets(const MediaQueryEvaluator&,
+                                     const MixinMap& effective_mixins);
 
  private:
-  friend class StyleCascadeTest;  // For ReplaceActiveStyleSheets().
-
-  // Called after collecting a new set of active style sheets.
-  // Creates RuleSets, notifies the StyleEngine and moves the new values into
-  // place.
-  void ReplaceActiveStyleSheets(const MediaQueryEvaluator& medium,
-                                ActiveStyleSheetVector new_active_style_sheets);
+  friend class StyleCascadeTest;
+  void AddPendingActiveStyleSheetForTest(CSSStyleSheet* sheet) {
+    pending_active_style_sheets_.push_back(std::pair(sheet, nullptr));
+  }
 
   Document& GetDocument() const { return tree_scope_->GetDocument(); }
 
@@ -121,6 +125,8 @@ class CORE_EXPORT StyleSheetCollection
   HeapVector<Member<StyleSheet>> style_sheets_for_style_sheet_list_;
   TreeOrderedList<Node> style_sheet_candidate_nodes_;
   ActiveStyleSheetVector active_style_sheets_;
+  ActiveStyleSheetVector pending_active_style_sheets_;
+  MixinMap mixins_;
   bool sheet_list_dirty_ = true;
   const bool is_shadow_tree_;
 };

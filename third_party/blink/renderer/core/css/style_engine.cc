@@ -634,20 +634,14 @@ void StyleEngine::MediaQueryAffectingValueChanged(MediaValueChange change) {
   }
 }
 
-void StyleEngine::UpdateActiveStyleSheetsInShadow(
+void StyleEngine::PrepareUpdateActiveStyleSheetsInShadow(
     TreeScope* tree_scope,
-    UnorderedTreeScopeSet& tree_scopes_removed) {
+    UnorderedTreeScopeSet& tree_scopes_removed,
+    const MediaQueryEvaluator& medium) {
   DCHECK_NE(tree_scope, document_);
   auto* collection = StyleSheetCollectionFor(*tree_scope);
   DCHECK(collection);
-  collection->UpdateActiveStyleSheets(*this, EnsureMediaQueryEvaluator());
-  if (!collection->HasStyleSheetCandidateNodes() &&
-      !tree_scope->HasAdoptedStyleSheets()) {
-    tree_scopes_removed.insert(tree_scope);
-    // When removing TreeScope from ActiveTreeScopes,
-    // its resolver should be destroyed by invoking resetAuthorStyle.
-    DCHECK(!tree_scope->GetScopedStyleResolver());
-  }
+  collection->PrepareUpdateActiveStyleSheets(medium);
 }
 
 void StyleEngine::UpdateActiveUserStyleSheets() {
@@ -679,18 +673,45 @@ void StyleEngine::UpdateActiveStyleSheets() {
     UpdateActiveUserStyleSheets();
   }
 
-  if (ShouldUpdateDocumentStyleSheetCollection()) {
-    GetDocumentStyleSheetCollection().UpdateActiveStyleSheets(
-        *this, EnsureMediaQueryEvaluator());
-  }
+  const MediaQueryEvaluator& medium = EnsureMediaQueryEvaluator();
 
+  // Prepare the stylesheet collections for update. This collects all the
+  // stylesheets from the nodes in question and extracts mixins.
+  //
+  // Note that if mixins in a parent changes, we should invalidate all children
+  // (in addition to the parent itself), or at least all mixin-using children,
+  // but we do not do invalidation of mixins in general yet.
+  if (ShouldUpdateDocumentStyleSheetCollection()) {
+    document_style_sheet_collection_->PrepareUpdateActiveStyleSheets(medium);
+  }
   if (ShouldUpdateShadowTreeStyleSheetCollection()) {
     UnorderedTreeScopeSet tree_scopes_removed;
     for (TreeScope* tree_scope : dirty_tree_scopes_) {
-      UpdateActiveStyleSheetsInShadow(tree_scope, tree_scopes_removed);
+      PrepareUpdateActiveStyleSheetsInShadow(tree_scope, tree_scopes_removed,
+                                             medium);
     }
-    for (TreeScope* tree_scope : tree_scopes_removed) {
-      active_tree_scopes_.erase(tree_scope);
+  }
+
+  // Now create the actual RuleSets.
+  if (ShouldUpdateDocumentStyleSheetCollection()) {
+    document_style_sheet_collection_->FinishUpdateActiveStyleSheets(
+        medium, document_style_sheet_collection_->Mixins());
+  }
+  if (ShouldUpdateShadowTreeStyleSheetCollection()) {
+    for (TreeScope* tree_scope : dirty_tree_scopes_) {
+      StyleSheetCollection& collection = *StyleSheetCollectionFor(*tree_scope);
+      collection.FinishUpdateActiveStyleSheets(
+          EnsureMediaQueryEvaluator(),
+          EffectiveMixinsForTreeScope(*tree_scope));
+      if (!collection.HasStyleSheetCandidateNodes() &&
+          !tree_scope->HasAdoptedStyleSheets()) {
+        active_tree_scopes_.erase(tree_scope);
+        // When removing TreeScope from ActiveTreeScopes,
+        // its resolver should have been destroyed by
+        // invoking ResetAuthorStyle() (in particular,
+        // ShadowRootRemovedFromDocument() does this).
+        DCHECK(!tree_scope->GetScopedStyleResolver());
+      }
     }
   }
 
@@ -700,6 +721,34 @@ void StyleEngine::UpdateActiveStyleSheets() {
   document_scope_dirty_ = false;
   tree_scopes_removed_ = false;
   user_style_dirty_ = false;
+}
+
+MixinMap StyleEngine::EffectiveMixinsForTreeScope(TreeScope& tree_scope) {
+  TreeScope* parent_scope = tree_scope.ParentTreeScope();
+
+  StyleSheetCollection* collection = StyleSheetCollectionFor(tree_scope);
+  if (!collection) {
+    // If there's no collection, there are also no style sheets.
+    if (parent_scope) {
+      return EffectiveMixinsForTreeScope(*parent_scope);
+    } else {
+      return {};
+    }
+  }
+
+  if (!parent_scope) {
+    return collection->Mixins();
+  }
+
+  MixinMap inherited_mixins = EffectiveMixinsForTreeScope(*parent_scope);
+  if (inherited_mixins.empty()) {
+    return collection->Mixins();
+  }
+
+  for (const auto& [name, value] : collection->Mixins()) {
+    inherited_mixins.insert(name, value);
+  }
+  return inherited_mixins;
 }
 
 void StyleEngine::UpdateCounterStyles() {

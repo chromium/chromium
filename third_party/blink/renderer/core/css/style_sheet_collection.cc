@@ -42,21 +42,23 @@ namespace blink {
 
 static void CreateRuleSets(const StyleEngine& engine,
                            const MediaQueryEvaluator& medium,
+                           const MixinMap& effective_mixins,
                            ActiveStyleSheetVector& active_style_sheets,
                            HeapVector<Member<RuleSetDiff>>& rule_set_diffs);
 
-void StyleSheetCollection::ReplaceActiveStyleSheets(
+void StyleSheetCollection::FinishUpdateActiveStyleSheets(
     const MediaQueryEvaluator& medium,
-    ActiveStyleSheetVector new_active_style_sheets) {
+    const MixinMap& effective_mixins) {
   HeapVector<Member<RuleSetDiff>> rule_set_diffs;
-  CreateRuleSets(GetDocument().GetStyleEngine(), medium,
-                 new_active_style_sheets, rule_set_diffs);
+  CreateRuleSets(GetDocument().GetStyleEngine(), medium, effective_mixins,
+                 pending_active_style_sheets_, rule_set_diffs);
 
   GetDocument().GetStyleEngine().ApplyRuleSetChanges(
-      *tree_scope_, active_style_sheets_, new_active_style_sheets,
+      *tree_scope_, active_style_sheets_, pending_active_style_sheets_,
       rule_set_diffs);
 
-  active_style_sheets_ = std::move(new_active_style_sheets);
+  active_style_sheets_ = std::move(pending_active_style_sheets_);
+  pending_active_style_sheets_.clear();
 }
 
 // FIXME(sesse): Store this somewhere (including the two-level Eval() form),
@@ -98,13 +100,9 @@ static void ExtractMixinsFromRules(
 // Can only be called once.
 static void CreateRuleSets(const StyleEngine& engine,
                            const MediaQueryEvaluator& medium,
+                           const MixinMap& effective_mixins,
                            ActiveStyleSheetVector& active_style_sheets,
                            HeapVector<Member<RuleSetDiff>>& rule_set_diffs) {
-  MixinMap mixins;
-  for (auto& [css_sheet, rule_set] : active_style_sheets) {
-    ExtractMixinsFromRules(css_sheet->Contents()->ChildRules(), medium, mixins);
-  }
-
   // Keep track of ensured RuleSets with @layer rules to detect
   // StyleSheetContents sharing; RuleSets should not be shared
   // between two equal sheets with @layer rules, since anonymous
@@ -113,7 +111,7 @@ static void CreateRuleSets(const StyleEngine& engine,
 
   for (auto& [css_sheet, rule_set] : active_style_sheets) {
     CHECK_EQ(rule_set, nullptr);
-    rule_set = engine.RuleSetForSheet(*css_sheet, mixins);
+    rule_set = engine.RuleSetForSheet(*css_sheet, effective_mixins);
 
     // NOTE: If the user has specified the same CSSStyleSheet object multiple
     // times (which is only possible for constructible stylesheets, in
@@ -138,7 +136,7 @@ static void CreateRuleSets(const StyleEngine& engine,
       //
       // TODO(sesse): Can we detect this before creating the RuleSet?
       css_sheet->WillMutateRules();
-      rule_set = engine.RuleSetForSheet(*css_sheet, mixins);
+      rule_set = engine.RuleSetForSheet(*css_sheet, effective_mixins);
     }
 
     if (css_sheet->Contents()->GetRuleSetDiff()) {
@@ -150,9 +148,11 @@ static void CreateRuleSets(const StyleEngine& engine,
 
 void StyleSheetCollection::Trace(Visitor* visitor) const {
   visitor->Trace(active_style_sheets_);
+  visitor->Trace(pending_active_style_sheets_);
   visitor->Trace(style_sheets_for_style_sheet_list_);
   visitor->Trace(tree_scope_);
   visitor->Trace(style_sheet_candidate_nodes_);
+  visitor->Trace(mixins_);
 }
 
 StyleSheetCollection::StyleSheetCollection(TreeScope& tree_scope)
@@ -191,8 +191,7 @@ void StyleSheetCollection::UpdateStyleSheetList() {
   sheet_list_dirty_ = false;
 }
 
-void StyleSheetCollection::UpdateActiveStyleSheets(
-    const StyleEngine& engine,
+void StyleSheetCollection::PrepareUpdateActiveStyleSheets(
     const MediaQueryEvaluator& medium) {
   ActiveStyleSheetVector new_active_style_sheets;
   const String& preferred_name =
@@ -238,7 +237,14 @@ void StyleSheetCollection::UpdateActiveStyleSheets(
     }
   }
 
-  ReplaceActiveStyleSheets(medium, std::move(new_active_style_sheets));
+  mixins_.clear();
+  for (auto& [css_sheet, rule_set] : new_active_style_sheets) {
+    ExtractMixinsFromRules(css_sheet->Contents()->ChildRules(), medium,
+                           mixins_);
+  }
+
+  DCHECK(pending_active_style_sheets_.empty());
+  pending_active_style_sheets_ = std::move(new_active_style_sheets);
 }
 
 }  // namespace blink

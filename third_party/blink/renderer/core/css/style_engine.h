@@ -830,9 +830,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     return *document_style_sheet_collection_;
   }
 
-  void UpdateActiveStyleSheetsInShadow(
+  void PrepareUpdateActiveStyleSheetsInShadow(
       TreeScope*,
-      UnorderedTreeScopeSet& tree_scopes_removed);
+      UnorderedTreeScopeSet& tree_scopes_removed,
+      const MediaQueryEvaluator& medium);
 
   bool ShouldSkipInvalidationFor(const Element&) const;
   bool IsSubtreeAndSiblingsStyleDirty(const Element&) const;
@@ -955,6 +956,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   // See EvaluateFunctionalMediaQuery
   void InvalidateFunctionalMediaDependentStylesIfNeeded();
+
+  MixinMap EffectiveMixinsForTreeScope(TreeScope& tree_scope);
 
   Member<Document> document_;
 
