@@ -160,4 +160,10 @@ public class GroupSuggestionsButtonControllerImpl implements GroupSuggestionsBut
 
         return null;
     }
+
+    @Override
+    public void destroy() {
+        if (mCachedSuggestions == null) return;
+        mCachedSuggestions.userResponseMetadataCallback.destroy();
+    }
 }

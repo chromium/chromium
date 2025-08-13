@@ -161,24 +161,30 @@ public class ContextualPageActionController {
         if (AdaptiveToolbarFeatures.isTabGroupingPageActionEnabled()) {
             Supplier<@Nullable GroupSuggestionsButtonController>
                     groupSuggestionButtonControllerSupplier =
-                            () -> {
-                                if (!mProfileSupplier.hasValue()
-                                        || mProfileSupplier.get().isOffTheRecord()) {
-                                    return null;
-                                }
-                                return GroupSuggestionsButtonControllerFactory.getForProfile(
-                                        mProfileSupplier.get());
-                            };
+                            this::getGroupSuggestionsButtonController;
             mActionProviders.put(
                     AdaptiveToolbarButtonVariant.TAB_GROUPING,
                     new TabGroupingActionProvider(groupSuggestionButtonControllerSupplier));
         }
     }
 
+    @Nullable
+    private GroupSuggestionsButtonController getGroupSuggestionsButtonController() {
+        if (!mProfileSupplier.hasValue() || mProfileSupplier.get().isOffTheRecord()) {
+            return null;
+        }
+        return GroupSuggestionsButtonControllerFactory.getForProfile(mProfileSupplier.get());
+    }
+
     /** Called on destroy. */
     public void destroy() {
         if (mCurrentTabObserver != null) {
             mCurrentTabObserver.destroy();
+        }
+        GroupSuggestionsButtonController groupSuggestionsButtonController =
+                getGroupSuggestionsButtonController();
+        if (groupSuggestionsButtonController != null) {
+            groupSuggestionsButtonController.destroy();
         }
         removeProviders();
     }

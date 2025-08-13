@@ -23,7 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -71,7 +71,7 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
 
     @Test
     public void shouldShowButtonCallsService() {
-        var suggestionCallback = mock(Callback.class);
+        JniOnceCallback<UserResponseMetadata> suggestionCallback = mock();
         var mockCachedSuggestion =
                 createCachedSuggestions(
                         /* suggestionId= */ 0, /* tabId= */ TAB_ID, suggestionCallback);
@@ -88,7 +88,7 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
 
     @Test
     public void shouldShowButtonReturnsFalseWhenSuggestionIsForOtherTab() {
-        var suggestionCallback = mock(Callback.class);
+        JniOnceCallback<UserResponseMetadata> suggestionCallback = mock();
         var resultCallbackArgumentCaptor = ArgumentCaptor.forClass(UserResponseMetadata.class);
         var mockCachedSuggestion =
                 createCachedSuggestions(
@@ -112,11 +112,11 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
 
     @Test
     public void callingShouldShowButtonAgainClearsPreviousSuggestion() {
-        var firstSuggestionCallback = mock(Callback.class);
+        JniOnceCallback<UserResponseMetadata> firstSuggestionCallback = mock();
         var firstResultCallbackArgumentCaptor = ArgumentCaptor.forClass(UserResponseMetadata.class);
         var firstCachedSuggestion =
                 createCachedSuggestions(SUGGESTION_ID, TAB_ID, firstSuggestionCallback);
-        var secondSuggestionCallback = mock(Callback.class);
+        JniOnceCallback<UserResponseMetadata> secondSuggestionCallback = mock();
         var secondCachedSuggestion =
                 createCachedSuggestions(SECOND_SUGGESTION_ID, TAB_ID, secondSuggestionCallback);
 
@@ -140,7 +140,7 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
 
     @Test
     public void showingButtonForOtherTabShouldClearSuggestion() {
-        var suggestionCallback = mock(Callback.class);
+        JniOnceCallback<UserResponseMetadata> suggestionCallback = mock();
         var suggestionCallbackArgumentCaptor = ArgumentCaptor.forClass(UserResponseMetadata.class);
         var suggestion = createCachedSuggestions(SUGGESTION_ID, TAB_ID, suggestionCallback);
         when(mMockGroupSuggestionService.getCachedSuggestions(WINDOW_ID)).thenReturn(suggestion);
@@ -160,7 +160,7 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
 
     @Test
     public void ignoringButtonShouldProvideCallback() {
-        var suggestionCallback = mock(Callback.class);
+        JniOnceCallback<UserResponseMetadata> suggestionCallback = mock();
         var suggestionCallbackArgumentCaptor = ArgumentCaptor.forClass(UserResponseMetadata.class);
         var suggestion = createCachedSuggestions(SUGGESTION_ID, TAB_ID, suggestionCallback);
         when(mMockGroupSuggestionService.getCachedSuggestions(WINDOW_ID)).thenReturn(suggestion);
@@ -180,7 +180,7 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
 
     @Test
     public void hidingWithoutShowingShouldProvideCallback() {
-        var suggestionCallback = mock(Callback.class);
+        JniOnceCallback<UserResponseMetadata> suggestionCallback = mock();
         var suggestionCallbackArgumentCaptor = ArgumentCaptor.forClass(UserResponseMetadata.class);
         var suggestion = createCachedSuggestions(SUGGESTION_ID, TAB_ID, suggestionCallback);
         when(mMockGroupSuggestionService.getCachedSuggestions(WINDOW_ID)).thenReturn(suggestion);
@@ -199,7 +199,7 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
 
     @Test
     public void clickingWithAnotherTabDoesNothing() {
-        var suggestionCallback = mock(Callback.class);
+        JniOnceCallback<UserResponseMetadata> suggestionCallback = mock();
         var suggestionCallbackArgumentCaptor = ArgumentCaptor.forClass(UserResponseMetadata.class);
         var suggestion = createCachedSuggestions(SUGGESTION_ID, TAB_ID, suggestionCallback);
         when(mMockGroupSuggestionService.getCachedSuggestions(WINDOW_ID)).thenReturn(suggestion);
@@ -217,7 +217,7 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
 
     @Test
     public void clickingShouldGroupTabs() {
-        var suggestionCallback = mock(Callback.class);
+        JniOnceCallback<UserResponseMetadata> suggestionCallback = mock();
         var suggestionCallbackArgumentCaptor = ArgumentCaptor.forClass(UserResponseMetadata.class);
         var suggestion =
                 createCachedSuggestions(
@@ -239,15 +239,38 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
         assertEquals(UserResponse.ACCEPTED, responseMetadata.getUserResponse());
     }
 
+    @Test
+    public void testDestroy() {
+        JniOnceCallback<UserResponseMetadata> suggestionCallback = mock();
+        var suggestion = createCachedSuggestions(SUGGESTION_ID, TAB_ID, suggestionCallback);
+        when(mMockGroupSuggestionService.getCachedSuggestions(WINDOW_ID)).thenReturn(suggestion);
+
+        var controller = new GroupSuggestionsButtonControllerImpl(mMockGroupSuggestionService);
+
+        controller.shouldShowButton(mMockTab, WINDOW_ID);
+        controller.destroy();
+
+        verify(suggestionCallback).destroy();
+    }
+
+    @Test
+    public void testDestroyWithNullSuggestions() {
+        var controller = new GroupSuggestionsButtonControllerImpl(mMockGroupSuggestionService);
+        controller.destroy();
+        // Nothing should happen, and no exception should be thrown.
+    }
+
     private CachedSuggestions createCachedSuggestions(
-            int suggestionId, int tabId, Callback<UserResponseMetadata> suggestionResultCallback) {
+            int suggestionId,
+            int tabId,
+            JniOnceCallback<UserResponseMetadata> suggestionResultCallback) {
         return createCachedSuggestions(suggestionId, new int[] {tabId}, suggestionResultCallback);
     }
 
     private CachedSuggestions createCachedSuggestions(
             int suggestionId,
             int[] tabIds,
-            Callback<UserResponseMetadata> suggestionResultCallback) {
+            JniOnceCallback<UserResponseMetadata> suggestionResultCallback) {
         List<GroupSuggestion> suggestionList =
                 List.of(
                         new GroupSuggestion(

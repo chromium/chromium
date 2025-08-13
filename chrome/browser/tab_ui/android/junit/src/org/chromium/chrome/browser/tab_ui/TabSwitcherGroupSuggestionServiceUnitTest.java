@@ -24,7 +24,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.Callback;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -60,7 +60,7 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
     @Mock private Profile mProfile;
     @Mock private GroupSuggestionsService mGroupSuggestionsService;
     @Mock private SuggestionLifecycleObserverHandler mSuggestionLifecycleObserverHandler;
-    @Mock private Callback<UserResponseMetadata> mUserResponseCallback;
+    @Mock private JniOnceCallback<UserResponseMetadata> mUserResponseCallback;
 
     @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;

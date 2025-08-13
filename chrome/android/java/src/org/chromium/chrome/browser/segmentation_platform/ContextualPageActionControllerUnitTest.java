@@ -169,4 +169,24 @@ public class ContextualPageActionControllerUnitTest {
         assertNotNull(
                 cpaController.mActionProviders.get(AdaptiveToolbarButtonVariant.TAB_GROUPING));
     }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_TAB_GROUPING})
+    public void testDestroy() {
+        var groupSuggestionButtonController = mock(GroupSuggestionsButtonController.class);
+        GroupSuggestionsButtonControllerFactory.setControllerForTesting(
+                groupSuggestionButtonController);
+
+        var cpaController =
+                new ContextualPageActionController(
+                        mProfileSupplier,
+                        mTabSupplier,
+                        mMockAdaptiveToolbarController,
+                        /* shoppingServiceSupplier= */ null,
+                        /* bookmarkModelSupplier= */ null);
+
+        mProfileSupplier.set(mMockProfile);
+        cpaController.destroy();
+        verify(groupSuggestionButtonController).destroy();
+    }
 }
