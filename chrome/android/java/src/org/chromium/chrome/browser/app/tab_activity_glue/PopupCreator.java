@@ -19,6 +19,7 @@ import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -118,8 +119,36 @@ public class PopupCreator {
             final int widthDiffDp = requestedWindowFeaturesDp.width - realViewportWidthDp;
             final int heightDiffDp = requestedWindowFeaturesDp.height - realViewportHeightDp;
 
-            targetWindowBoundsPx.right += DisplayUtil.dpToPx(display, widthDiffDp);
-            targetWindowBoundsPx.bottom += DisplayUtil.dpToPx(display, heightDiffDp);
+            final int widthDiffPx = DisplayUtil.dpToPx(display, widthDiffDp);
+            final int heightDiffPx = DisplayUtil.dpToPx(display, heightDiffDp);
+
+            targetWindowBoundsPx.right += widthDiffPx;
+            targetWindowBoundsPx.bottom += heightDiffPx;
+
+            // TODO(https://crbug.com/411002260): detect if the popup has been opened cross-display
+            // when Android display topology API is available in Chrome
+
+            // If the display's dipScale is less than 1 it may happen that the difference in dps is
+            // non-zero while the same difference in px is zero. In such case we consider it a
+            // success as we could not have done anything better than being pixel perfect.
+
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.MultiWindowMode.PopupBoundsAdjustment.DeltaWidth.Outcome.InDisplay",
+                    widthDiffPx != 0);
+            if (widthDiffPx != 0) {
+                RecordHistogram.recordCount1000Histogram(
+                        "Android.MultiWindowMode.PopupBoundsAdjustment.DeltaWidth.Positive.InDisplay",
+                        Math.abs(widthDiffDp));
+            }
+
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.MultiWindowMode.PopupBoundsAdjustment.DeltaHeight.Outcome.InDisplay",
+                    heightDiffPx != 0);
+            if (heightDiffPx != 0) {
+                RecordHistogram.recordCount1000Histogram(
+                        "Android.MultiWindowMode.PopupBoundsAdjustment.DeltaHeight.Positive.InDisplay",
+                        Math.abs(heightDiffDp));
+            }
         }
 
         if (realWindowBoundsPx.equals(targetWindowBoundsPx)) {

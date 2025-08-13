@@ -3445,6 +3445,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.MultiWindowMode.PopupBoundsAdjustment.Delta{Axis}.Outcome.{CrossDisplay}"
+    enum="Boolean" expires_after="M148">
+  <owner>chominskib@google.com</owner>
+  <owner>lt-web-apps-team@google.com</owner>
+  <summary>
+    After a contextual popup is spawned we may adjust its bounds so that size of
+    the website viewport is as requested by the caller in the |window.open()|
+    Javascript call. This records whether the absolute difference in {Axis}
+    between initial popup bounds and adjusted popup bounds was zero pixels. The
+    popup was opened on {CrossDisplay} its originating window.
+  </summary>
+  <token key="Axis">
+    <variant name="Height" summary="height"/>
+    <variant name="Width" summary="width"/>
+  </token>
+  <token key="CrossDisplay">
+    <variant name="CrossDisplay" summary="a different display than"/>
+    <variant name="InDisplay" summary="the same display as"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Android.MultiWindowMode.PopupBoundsAdjustment.Delta{Axis}.Positive.{CrossDisplay}"
+    units="dips" expires_after="M148">
+  <owner>chominskib@google.com</owner>
+  <owner>lt-web-apps-team@google.com</owner>
+  <summary>
+    After a contextual popup is spawned we may adjust its bounds so that size of
+    the website viewport is as requested by the caller in the |window.open()|
+    Javascript call. This records the absolute difference in {Axis} between
+    initial popup bounds and adjusted popup bounds. Records only positive
+    differences. The popup was opened on {CrossDisplay} its originating window.
+  </summary>
+  <token key="Axis">
+    <variant name="Height" summary="height"/>
+    <variant name="Width" summary="width"/>
+  </token>
+  <token key="CrossDisplay">
+    <variant name="CrossDisplay" summary="a different display than"/>
+    <variant name="InDisplay" summary="the same display as"/>
+  </token>
+</histogram>
+
 <histogram name="Android.MultiWindowMode.PopupOpensInNewWindow" enum="Boolean"
     expires_after="M148">
   <owner>chominskib@google.com</owner>
