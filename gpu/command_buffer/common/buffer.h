@@ -11,12 +11,12 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
+#include "base/containers/span.h"
+#include "base/memory/aligned_memory.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
-
 namespace gpu {
 
 class GPU_COMMAND_BUFFER_COMMON_EXPORT BufferBacking {
@@ -52,9 +52,7 @@ class GPU_COMMAND_BUFFER_COMMON_EXPORT MemoryBufferBacking
   uint32_t GetSize() const override;
 
  private:
-  std::unique_ptr<char[]> memory_;
-  uint32_t size_;
-  uint32_t alignment_;
+  base::AlignedHeapArray<uint8_t> memory_;
 };
 
 class GPU_COMMAND_BUFFER_COMMON_EXPORT SharedMemoryBufferBacking
@@ -90,13 +88,13 @@ class GPU_COMMAND_BUFFER_COMMON_EXPORT Buffer
   Buffer& operator=(const Buffer&) = delete;
 
   BufferBacking* backing() const { return backing_.get(); }
-  void* memory() { return memory_; }
-  const void* memory() const { return memory_; }
+  void* memory() { return as_byte_span().data(); }
+  const void* memory() const { return as_byte_span().data(); }
   base::span<uint8_t> as_byte_span() { return backing_->as_byte_span(); }
   base::span<const uint8_t> as_byte_span() const {
     return backing_->as_byte_span();
   }
-  uint32_t size() const { return size_; }
+  uint32_t size() const { return backing_->GetSize(); }
 
   // Returns nullptr if the address overflows the memory.
   void* GetDataAddress(uint32_t data_offset, uint32_t data_size) const;
@@ -112,8 +110,6 @@ class GPU_COMMAND_BUFFER_COMMON_EXPORT Buffer
   ~Buffer();
 
   std::unique_ptr<BufferBacking> backing_;
-  raw_ptr<void> memory_;
-  uint32_t size_;
 };
 
 inline std::unique_ptr<BufferBacking> MakeBackingFromSharedMemory(
