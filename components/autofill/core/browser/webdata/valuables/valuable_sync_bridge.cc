@@ -307,7 +307,6 @@ std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
     return syncer::ModelError(
         FROM_HERE,
         syncer::ModelError::Type::kAutofillValuableFailedToSetLoyaltyCards);
-    ;
   }
 
   // Commits changes through CommitChanges(...) or through the scoped
