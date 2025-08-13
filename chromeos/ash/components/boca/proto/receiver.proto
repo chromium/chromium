@@ -21,6 +21,10 @@ message ReceiverConnection {
   Timestamp request_time = 5;
 }
 
+message KioskReceiver {
+  string robot_email = 1;
+}
+
 message UserDeviceInfo {
   UserIdentity user_identity = 1;
 
