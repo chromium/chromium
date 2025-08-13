@@ -71,10 +71,6 @@ constexpr uint8_t codec_private[4] = {
 
 }  // namespace av1
 
-// Force new clusters at a maximum rate of 10 Hz.
-constexpr base::TimeDelta kMinimumForcedClusterDuration =
-    base::Milliseconds(100);
-
 void WriteOpusHeader(const AudioParameters& params,
                      base::span<uint8_t> header) {
   // See https://wiki.xiph.org/OggOpus#ID_Header.
@@ -240,7 +236,6 @@ mkvmuxer::int32 WebmMuxer::Delegate::Write(const void* buf,
   DVLOG(2) << __func__ << " len " << len;
   DCHECK(buf);
 
-  last_data_output_timestamp_ = base::TimeTicks::Now();
   const auto result = DoWrite(
       // SAFETY: Caller is explicitly calling us with a `buf` of size `len` from
       // a 3rd party library that we can't change to use spans.
@@ -262,7 +257,7 @@ WebmMuxer::WebmMuxer(AudioCodec audio_codec,
       has_audio_(has_audio),
       max_data_output_interval_(
           std::max(max_data_output_interval.value_or(base::TimeDelta()),
-                   kMinimumForcedClusterDuration)),
+                   kMinimumForcedOutputDuration)),
       delegate_(std::move(delegate)) {
   DCHECK(has_video_ || has_audio_);
   DCHECK(delegate_);
@@ -394,7 +389,7 @@ bool WebmMuxer::PutFrame(EncodedFrame frame,
   DVLOG(2) << __func__ << " - " << (audio_params ? "A " : "V ")
            << frame.data->size() << "B ts " << relative_timestamp;
   if (audio_params) {
-    MaybeForceNewCluster();
+    MaybeForceNewCluster(relative_timestamp);
     if (!audio_track_index_) {
       AddAudioTrack(*audio_params);
     }
@@ -480,20 +475,21 @@ bool WebmMuxer::WriteWebmFrame(EncodedFrame frame,
                                  frame.data->is_key_frame());
 }
 
-void WebmMuxer::MaybeForceNewCluster() {
+void WebmMuxer::MaybeForceNewCluster(base::TimeDelta media_relative_timestamp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!has_video_ || max_data_output_interval_.is_zero() ||
-      delegate_->last_data_output_timestamp().is_null()) {
-    return;
-  }
-
-  // TODO(crbug.com/40876732): consider if cluster output should be based on
-  // media timestamps
-  if (base::TimeTicks::Now() - delegate_->last_data_output_timestamp() >=
-      max_data_output_interval_) {
-    TRACE_EVENT0("media", "ForceNewClusterOnNextFrame");
-    segment_.ForceNewClusterOnNextFrame();
+  // Forces a new cluster on the next frame if the time since the last flush
+  // exceeds the max data output interval. This ensures that data is output
+  // periodically.
+  if (cluster_origin_.has_value()) {
+    if (media_relative_timestamp - *cluster_origin_ >=
+        max_data_output_interval_) {
+      TRACE_EVENT0("media", "ForceNewClusterOnNextFrame");
+      segment_.ForceNewClusterOnNextFrame();
+      cluster_origin_ = media_relative_timestamp;
+    }
+  } else {
+    cluster_origin_ = media_relative_timestamp;
   }
 }
 

@@ -1140,12 +1140,29 @@ void MediaRecorderHandler::UpdateTrackLiveAndEnabled(
 }
 
 void MediaRecorderHandler::OnSourceReadyStateChanged() {
-  MediaStream* stream = ToMediaStream(media_stream_);
-  for (const auto& track : stream->getTracks()) {
-    if (track->readyState() != V8MediaStreamTrackState::Enum::kEnded) {
-      return;
+  for (const auto& track : video_tracks_) {
+    if (track->GetReadyState() == MediaStreamSource::kReadyStateEnded) {
+      muxer_adapter_->SetLiveAndEnabled(false, /*is_video=*/true);
+      muxer_adapter_->OnVideoEnded();
+      DVLOG(2) << __func__ << " ended video";
     }
   }
+
+  for (const auto& track : audio_tracks_) {
+    if (track->GetReadyState() == MediaStreamSource::kReadyStateEnded) {
+      muxer_adapter_->SetLiveAndEnabled(false, /*is_video=*/false);
+      DVLOG(2) << __func__ << " ended audio";
+    }
+  }
+
+  if (MediaStream* stream = ToMediaStream(media_stream_)) {
+    for (const auto& track : stream->getTracks()) {
+      if (track->readyState() != V8MediaStreamTrackState::Enum::kEnded) {
+        return;
+      }
+    }
+  }
+
   // All tracks are ended, so stop the recorder in accordance with
   // https://www.w3.org/TR/mediastream-recording/#mediarecorder-methods.
   recorder_->OnAllTracksEnded();

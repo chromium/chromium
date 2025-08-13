@@ -1235,10 +1235,9 @@ TEST_F(MediaRecorderHandlerIsSupportedTypeTestForMp4,
 }
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-class MediaRecorderHandlerAudioVideoTest : public testing::Test,
-                                           public MediaRecorderHandlerFixture {
+class MediaRecorderHandlerAudioVideoBase : public MediaRecorderHandlerFixture {
  public:
-  MediaRecorderHandlerAudioVideoTest()
+  MediaRecorderHandlerAudioVideoBase()
       : MediaRecorderHandlerFixture(/*has_video=*/true,
                                     /*has_audio=*/true) {}
 
@@ -1267,6 +1266,68 @@ class MediaRecorderHandlerAudioVideoTest : public testing::Test,
 
   base::TimeTicks timestamp_ = base::TimeTicks::Now();
 };
+
+class MediaRecorderHandlerAudioVideoMuxerTest
+    : public testing::TestWithParam<const char*>,
+      public MediaRecorderHandlerAudioVideoBase {};
+
+TEST_P(MediaRecorderHandlerAudioVideoMuxerTest, EmitsDataOnVideoEnded) {
+  AddTracks();
+  V8TestingScope scope;
+  auto* recorder = MakeGarbageCollected<MockMediaRecorder>(scope);
+  media_recorder_handler_->Initialize(
+      recorder, registry_.test_stream(), GetParam(), "vp9,opus",
+      AudioTrackRecorder::BitrateMode::kVariable);
+  media_recorder_handler_->Start(0, GetParam(), 0, 0);
+  FeedAudio();
+  FeedVideo();
+  FeedAudio();
+  registry_.test_stream()->VideoComponents()[0]->GetPlatformTrack()->Stop();
+  media_recorder_handler_->MaybeFlush();
+  platform_->RunUntilIdle();
+  EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
+  // There are muxer limits in place of minimum time delay before emitting new
+  // chunks - ensure these are defeated.
+  timestamp_ += media::Muxer::kMinimumForcedOutputDuration;
+  FeedAudio();
+  Mock::VerifyAndClearExpectations(recorder);
+  media_recorder_handler_->Stop();
+  media_recorder_handler_ = nullptr;
+}
+
+TEST_P(MediaRecorderHandlerAudioVideoMuxerTest, EmitsDataOnAudioEnded) {
+  AddTracks();
+  V8TestingScope scope;
+  auto* recorder = MakeGarbageCollected<MockMediaRecorder>(scope);
+  media_recorder_handler_->Initialize(
+      recorder, registry_.test_stream(), GetParam(), "vp9,opus",
+      AudioTrackRecorder::BitrateMode::kVariable);
+  media_recorder_handler_->Start(0, GetParam(), 0, 0);
+  FeedVideo();
+  FeedAudio();
+  FeedVideo();
+  registry_.test_stream()->AudioComponents()[0]->GetPlatformTrack()->Stop();
+  media_recorder_handler_->MaybeFlush();
+  platform_->RunUntilIdle();
+  EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
+  // There are muxer limits in place of minimum time delay before emitting new
+  // chunks - ensure these are defeated.
+  timestamp_ += media::Muxer::kMinimumForcedOutputDuration;
+  FeedVideo();
+  Mock::VerifyAndClearExpectations(recorder);
+  media_recorder_handler_->Stop();
+  media_recorder_handler_ = nullptr;
+}
+
+static constexpr const char* kMuxers[] = {"video/webm", "video/mp4"};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         MediaRecorderHandlerAudioVideoMuxerTest,
+                         ValuesIn(kMuxers));
+
+class MediaRecorderHandlerAudioVideoTest
+    : public testing::Test,
+      public MediaRecorderHandlerAudioVideoBase {};
 
 TEST_F(MediaRecorderHandlerAudioVideoTest, IgnoresStaleEncodedMediaOnRestart) {
   AddTracks();

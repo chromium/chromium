@@ -29,6 +29,10 @@ class AudioParameters;
 // is how the output is delivered.
 class MEDIA_EXPORT Muxer {
  public:
+  // Force callback data output at a maximum rate of 10 Hz.
+  static constexpr base::TimeDelta kMinimumForcedOutputDuration =
+      base::Milliseconds(100);
+
   // Defines the type of a callback to be called when a derived muxer (e.g.
   // WebmMuxer or Mp4Muxer) is ready to write a chunk of data.
   using WriteDataCB = base::RepeatingCallback<void(base::span<const uint8_t>)>;
@@ -88,6 +92,10 @@ class MEDIA_EXPORT Muxer {
   // The held variant in params indicates audio or video.
   virtual bool PutFrame(EncodedFrame frame,
                         base::TimeDelta relative_timestamp) = 0;
+
+  // Signals that the video track has ended. This is expected to unblock data
+  // output by not waiting for more data on the relevant track.
+  virtual void OnVideoEnded() {}
 };
 
 static_assert(std::is_same<media::AudioEncoder::CodecDescription,

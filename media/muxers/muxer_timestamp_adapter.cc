@@ -89,6 +89,10 @@ void MuxerTimestampAdapter::SetLiveAndEnabled(bool track_live_and_enabled,
   written_track_live_and_enabled = track_live_and_enabled;
 }
 
+void MuxerTimestampAdapter::OnVideoEnded() {
+  muxer_->OnVideoEnded();
+}
+
 void MuxerTimestampAdapter::Pause() {
   DVLOG(1) << __func__;
   if (!elapsed_time_in_pause_) {
@@ -138,6 +142,7 @@ bool MuxerTimestampAdapter::FlushNextFrame() {
                     (audio_frames_.empty() ||
                      video_frames_.front().timestamp_minus_paused <=
                          audio_frames_.front().timestamp_minus_paused);
+  DVLOG(2) << __func__ << " video " << take_video;
   auto& queue = take_video ? video_frames_ : audio_frames_;
   EncodedFrame frame = std::move(queue.front());
   queue.pop_front();

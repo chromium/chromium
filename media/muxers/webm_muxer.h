@@ -38,11 +38,6 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
     Delegate();
     ~Delegate() override;
 
-    base::TimeTicks last_data_output_timestamp() const {
-      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-      return last_data_output_timestamp_;
-    }
-
     // Initializes the given |segment| according to the mode desired by the
     // concrete implementation of this delegate.
     virtual void InitSegment(mkvmuxer::Segment* segment) = 0;
@@ -61,10 +56,6 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
     // The current writing position as set by libwebm.
     base::CheckedNumeric<mkvmuxer::int64> position_
         GUARDED_BY_CONTEXT(sequence_checker_) = 0;
-
-    // Last time data was written via Write().
-    base::TimeTicks last_data_output_timestamp_
-        GUARDED_BY_CONTEXT(sequence_checker_);
   };
 
   // `audio_codec` should coincide with whatever is sent in OnEncodedAudio(),
@@ -107,7 +98,7 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
   // Forces data output from |segment_| on the next frame if recording video,
   // and |min_data_output_interval_| was configured and has passed since the
   // last received video frame.
-  void MaybeForceNewCluster();
+  void MaybeForceNewCluster(base::TimeDelta media_relative_timestamp);
 
   // Audio codec configured on construction. Video codec is taken from first
   // received frame.
@@ -131,12 +122,11 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
   // |duration| after the last write.
   // The maximum duration between forced clusters is internally limited to not
   // go below 100 ms.
-  // TODO(crbug.com/40876732): consider if cluster output should be based on
-  // media timestamps.
-  base::TimeDelta max_data_output_interval_;
+  const base::TimeDelta max_data_output_interval_;
 
-  // Last timestamp written into the segment.
-  base::TimeDelta last_timestamp_written_;
+  // Tracks the start time of the current fragment to enforce periodic cluster
+  // output. It's updated after each forced flush or on the first frame.
+  std::optional<base::TimeDelta> cluster_origin_;
 
   std::unique_ptr<Delegate> delegate_;
 
