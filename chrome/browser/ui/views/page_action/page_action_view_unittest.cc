@@ -451,32 +451,6 @@ TEST_F(PageActionViewTest, UpdateIconImageHandlesDifferentImageTypes) {
                    ->IsVectorIcon());
 }
 
-// Test that UpdateBorder() applies correct padding to image that is not a
-// vector icon.
-TEST_F(PageActionViewTest, UpdateBorderUsesChipPaddingForBitmapIcon) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(kDefaultIconSize, kDefaultIconSize);
-  const ui::ImageModel bitmap_image =
-      ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(bitmap));
-  EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(bitmap_image));
-  ASSERT_FALSE(bitmap_image.IsVectorIcon());
-
-  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
-
-  page_action_view()->OnPageActionModelChanged(*model());
-  page_action_view()->UpdateBorder();
-
-  const gfx::Insets expected_insets =
-      gfx::Insets::VH(GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
-                      GetLayoutConstant(LOCATION_BAR_CHIP_PADDING));
-  EXPECT_EQ(page_action_view()->GetInsets(), expected_insets);
-  EXPECT_EQ(page_action_view()->GetMinimumSize(),
-            page_action_view()->GetImageContainerView()->GetPreferredSize() +
-                expected_insets.size());
-}
-
 // Test that the corner radii are consistent for chips, regardless of whether
 // the icon is a vector or bitmap.
 TEST_F(PageActionViewTest, ChipCornerRadiiConsistentForVectorAndBitmapIcons) {
@@ -864,6 +838,71 @@ TEST_F(PageActionViewAnimationTest, ChipExpandedCallbackAnimateOut) {
   FastForwardAnimation();
   run_loop.Run();
 }
+
+struct PageActionViewNonVectorImagePaddingTestParams {
+  int image_size_delta;
+};
+
+class PageActionViewNonVectorImagePaddingTest
+    : public PageActionViewTest,
+      public ::testing::WithParamInterface<
+          PageActionViewNonVectorImagePaddingTestParams> {};
+
+// Test that UpdateBorder() applies correct padding to image against different
+// sizes.
+TEST_P(PageActionViewNonVectorImagePaddingTest,
+       UpdateBorderUsesChipPaddingForBitmapIcon) {
+  const int image_size = kDefaultIconSize - GetParam().image_size_delta;
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(image_size, image_size);
+  const ui::ImageModel bitmap_image =
+      ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(bitmap));
+  EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(bitmap_image));
+  ASSERT_FALSE(bitmap_image.IsVectorIcon());
+
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+
+  page_action_view()->OnPageActionModelChanged(*model());
+  page_action_view()->UpdateBorder();
+
+  const int padding = (kDefaultIconSize - image_size) / 2;
+  const gfx::Insets expected_insets = gfx::Insets(padding);
+
+  EXPECT_EQ(page_action_view()->GetInsets(), expected_insets);
+  EXPECT_EQ(page_action_view()->GetMinimumSize(),
+            page_action_view()->GetImageContainerView()->GetPreferredSize() +
+                expected_insets.size());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PageActionViewNonVectorImagePaddingTest,
+    ::testing::Values(
+        PageActionViewNonVectorImagePaddingTestParams{
+            .image_size_delta = 4,
+        },
+        PageActionViewNonVectorImagePaddingTestParams{
+            .image_size_delta = 2,
+        },
+        PageActionViewNonVectorImagePaddingTestParams{
+            .image_size_delta = 0,
+        }),
+    [](const ::testing::TestParamInfo<
+        PageActionViewNonVectorImagePaddingTest::ParamType>& info) {
+      switch (info.param.image_size_delta) {
+        case 4:
+          return "VerySmallImage";
+        case 2:
+          return "SmallImage";
+        case 0:
+          return "SimilarImage";
+        default:
+          NOTREACHED();
+      }
+    });
 
 }  // namespace
 }  // namespace page_actions

@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -25,16 +27,6 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/view_class_properties.h"
-
-namespace {
-
-// Icon images that aren't vector icons use special padding.
-gfx::Insets InsetsForNonVectorIcon() {
-  return gfx::Insets::VH(GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
-                         GetLayoutConstant(LOCATION_BAR_CHIP_PADDING));
-}
-
-}  // namespace
 
 namespace page_actions {
 
@@ -176,7 +168,7 @@ void PageActionView::UpdateBorder() {
   gfx::Insets border_insets = icon_insets_;
   if (observation_.IsObserving() &&
       !observation_.GetSource()->GetImage().IsVectorIcon()) {
-    border_insets = InsetsForNonVectorIcon();
+    border_insets = GetInsetsForNonVectorIcon();
   }
   SetBorder(views::CreateEmptyBorder(border_insets));
 }
@@ -248,6 +240,23 @@ void PageActionView::UpdateIconImage() {
   }
 }
 
+const gfx::Insets PageActionView::GetInsetsForNonVectorIcon() const {
+  const gfx::Size image_size = observation_.GetSource()->GetImage().Size();
+
+  const int horizontal_padding =
+      (icon_size_ + icon_insets_.width() - image_size.width()) / 2;
+  const int vertical_padding =
+      (icon_size_ + icon_insets_.height() - image_size.height()) / 2;
+
+  // TODO(crbug.com/437929704): Remove the DUMP_WILL_BE_CHECK with CHECK once
+  // sure about codepaths that might lead to negative paddings.
+  DUMP_WILL_BE_CHECK(horizontal_padding >= 0);
+  DUMP_WILL_BE_CHECK(vertical_padding >= 0);
+
+  return gfx::Insets::VH(std::max(vertical_padding, 0),
+                         std::max(horizontal_padding, 0));
+}
+
 void PageActionView::SetModel(PageActionModelInterface* model) {
   observation_.Reset();
   observation_.Observe(model);
@@ -257,7 +266,7 @@ gfx::Size PageActionView::GetMinimumSize() const {
   gfx::Size icon_preferred_size = image_container_view()->GetPreferredSize();
   if (observation_.IsObserving() &&
       !observation_.GetSource()->GetImage().IsVectorIcon()) {
-    auto insets = InsetsForNonVectorIcon();
+    const gfx::Insets insets = GetInsetsForNonVectorIcon();
     icon_preferred_size.Enlarge(insets.width(), insets.height());
   } else {
     icon_preferred_size.Enlarge(icon_insets_.width(), icon_insets_.height());

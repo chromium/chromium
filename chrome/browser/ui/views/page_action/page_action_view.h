@@ -102,6 +102,8 @@ class PageActionView : public IconLabelBubbleView,
   // update the image size if needed.
   void UpdateIconImage();
 
+  const gfx::Insets GetInsetsForNonVectorIcon() const;
+
   // Changes to label visibility indicate that the chip state of this page
   // action changed. This handler ensures the view is updated accordingly.
   void OnLabelVisibilityChanged();
