@@ -258,6 +258,11 @@ pub struct ParserLimits {
     /// the time it takes to construct the lexer.
     /// Default: true
     pub precompute_large_lexemes: bool,
+
+    /// If true, include parser state (including tokens so far) and grammar in
+    /// errors.
+    /// Default: true
+    pub verbose_errors: bool,
 }
 
 impl Default for ParserLimits {
@@ -270,6 +275,7 @@ impl Default for ParserLimits {
             max_grammar_size: 500_000,     // fhir schema => 200k
             step_max_items: 50_000,        //
             precompute_large_lexemes: true,
+            verbose_errors: true,
         }
     }
 }

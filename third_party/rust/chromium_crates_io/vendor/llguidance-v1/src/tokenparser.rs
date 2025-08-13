@@ -280,11 +280,15 @@ impl TokenParser {
     }
 
     pub fn augment_err(&self, e: impl Display) -> String {
-        format!(
-            "{e}\n<state>\n{}\n</state><grammar>\n{}\n</grammar>",
-            self.dump_state(),
-            self.dbg_grammar
-        )
+        if self.limits.verbose_errors {
+            format!(
+                "{e}\n<state>\n{}\n</state><grammar>\n{}\n</grammar>",
+                self.dump_state(),
+                self.dbg_grammar
+            )
+        } else {
+            format!("{e}\n<non-verbose/>")
+        }
     }
 
     pub fn dump_state(&self) -> String {
