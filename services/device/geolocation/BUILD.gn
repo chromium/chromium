@@ -110,7 +110,10 @@ source_set("geolocation") {
       "wifi_data_provider_linux.cc",
       "wifi_data_provider_linux.h",
     ]
-    deps += [ "//dbus" ]
+    deps += [
+      "//components/dbus",
+      "//dbus",
+    ]
   } else if (is_mac) {
     frameworks += [
       "CoreWLAN.framework",

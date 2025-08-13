@@ -31,14 +31,20 @@ namespace device {
 class MockWlanApi : public WifiDataProviderCommon::WlanApiInterface {
  public:
   MockWlanApi() {
-    ON_CALL(*this, GetAccessPointData(_))
-        .WillByDefault(DoAll(SetArgPointee<0>(data_out_), Return(true)));
+    ON_CALL(*this, GetAccessPointData)
+        .WillByDefault(WithArgs<0>(Invoke(
+            [](base::OnceCallback<void(
+                   std::unique_ptr<WifiData::AccessPointDataSet>)> callback) {
+              std::move(callback).Run(
+                  std::make_unique<WifiData::AccessPointDataSet>());
+            })));
   }
 
-  MOCK_METHOD1(GetAccessPointData, bool(WifiData::AccessPointDataSet* data));
-
- private:
-  WifiData::AccessPointDataSet data_out_;
+  MOCK_METHOD(
+      void,
+      GetAccessPointData,
+      (base::OnceCallback<void(std::unique_ptr<WifiData::AccessPointDataSet>)>),
+      (override));
 };
 
 class MockPollingPolicy : public WifiPollingPolicy {
@@ -150,11 +156,14 @@ TEST_F(GeolocationWifiDataProviderCommonTest, NoWifi) {
   base::RunLoop run_loop;
   EXPECT_CALL(*polling_policy_, InitialInterval()).Times(1);
   EXPECT_CALL(*polling_policy_, NoWifiInterval()).Times(AtLeast(1));
-  EXPECT_CALL(*wlan_api_, GetAccessPointData(_))
-      .WillOnce(InvokeWithoutArgs([&run_loop]() {
-        run_loop.Quit();
-        return false;
-      }));
+  EXPECT_CALL(*wlan_api_, GetAccessPointData)
+      .WillOnce(WithArgs<0>(Invoke(
+          [&run_loop](
+              base::OnceCallback<void(
+                  std::unique_ptr<WifiData::AccessPointDataSet>)> callback) {
+            std::move(callback).Run(nullptr);
+            run_loop.Quit();
+          })));
 
   provider_->StartDataProvider();
   run_loop.Run();
@@ -165,12 +174,20 @@ TEST_F(GeolocationWifiDataProviderCommonTest, IntermittentWifi) {
   EXPECT_CALL(*polling_policy_, InitialInterval()).Times(1);
   EXPECT_CALL(*polling_policy_, PollingInterval()).Times(AtLeast(1));
   EXPECT_CALL(*polling_policy_, NoWifiInterval()).Times(1);
-  EXPECT_CALL(*wlan_api_, GetAccessPointData(_))
-      .WillOnce(Return(true))
-      .WillOnce(InvokeWithoutArgs([&run_loop]() {
-        run_loop.Quit();
-        return false;
-      }));
+  EXPECT_CALL(*wlan_api_, GetAccessPointData)
+      .WillOnce(WithArgs<0>(Invoke(
+          [](base::OnceCallback<void(
+                 std::unique_ptr<WifiData::AccessPointDataSet>)> callback) {
+            std::move(callback).Run(
+                std::make_unique<WifiData::AccessPointDataSet>());
+          })))
+      .WillOnce(WithArgs<0>(Invoke(
+          [&run_loop](
+              base::OnceCallback<void(
+                  std::unique_ptr<WifiData::AccessPointDataSet>)> callback) {
+            std::move(callback).Run(nullptr);
+            run_loop.Quit();
+          })));
 
   provider_->StartDataProvider();
   run_loop.Run();
@@ -183,11 +200,15 @@ TEST_F(GeolocationWifiDataProviderCommonTest, DoAnEmptyScan) {
 
   EXPECT_CALL(*polling_policy_, InitialInterval()).Times(1);
   EXPECT_CALL(*polling_policy_, PollingInterval()).Times(AtLeast(1));
-  EXPECT_CALL(*wlan_api_, GetAccessPointData(_))
-      .WillOnce(InvokeWithoutArgs([&run_loop]() {
-        run_loop.Quit();
-        return true;
-      }));
+  EXPECT_CALL(*wlan_api_, GetAccessPointData)
+      .WillOnce(WithArgs<0>(Invoke(
+          [&run_loop](
+              base::OnceCallback<void(
+                  std::unique_ptr<WifiData::AccessPointDataSet>)> callback) {
+            std::move(callback).Run(
+                std::make_unique<WifiData::AccessPointDataSet>());
+            run_loop.Quit();
+          })));
 
   provider_->StartDataProvider();
   run_loop.Run();
@@ -212,12 +233,15 @@ TEST_F(GeolocationWifiDataProviderCommonTest, DoScanWithResults) {
 
   WifiData::AccessPointDataSet data_out({single_access_point});
 
-  EXPECT_CALL(*wlan_api_, GetAccessPointData(_))
-      .WillOnce(WithArgs<0>(
-          Invoke([&data_out, &run_loop](WifiData::AccessPointDataSet* data) {
-            *data = data_out;
+  EXPECT_CALL(*wlan_api_, GetAccessPointData)
+      .WillOnce(WithArgs<0>(Invoke(
+          [&data_out, &run_loop](
+              base::OnceCallback<void(
+                  std::unique_ptr<WifiData::AccessPointDataSet>)> callback) {
+            auto new_data = std::make_unique<WifiData::AccessPointDataSet>();
+            *new_data = data_out;
+            std::move(callback).Run(std::move(new_data));
             run_loop.Quit();
-            return true;
           })));
 
   provider_->StartDataProvider();
@@ -244,11 +268,15 @@ TEST_F(GeolocationWifiDataProviderCommonTest, DelayedByPolicy) {
       .WillOnce(Return(kPollingIntervalMillis));
 
   // Simulate a successful scan that found no wifi APs.
-  EXPECT_CALL(*wlan_api_, GetAccessPointData(_))
-      .WillOnce(InvokeWithoutArgs([&run_loop]() {
-        run_loop.Quit();
-        return true;
-      }));
+  EXPECT_CALL(*wlan_api_, GetAccessPointData)
+      .WillOnce(WithArgs<0>(Invoke(
+          [&run_loop](
+              base::OnceCallback<void(
+                  std::unique_ptr<WifiData::AccessPointDataSet>)> callback) {
+            std::move(callback).Run(
+                std::make_unique<WifiData::AccessPointDataSet>());
+            run_loop.Quit();
+          })));
 
   // The initial scan is scheduled with InitialInterval and should not be
   // delayed.

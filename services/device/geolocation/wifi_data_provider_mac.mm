@@ -25,14 +25,19 @@ class CoreWlanApi : public WifiDataProviderCommon::WlanApiInterface {
   CoreWlanApi& operator=(const CoreWlanApi&) = delete;
 
   // WlanApiInterface:
-  bool GetAccessPointData(WifiData::AccessPointDataSet* data) override;
+  void GetAccessPointData(
+      base::OnceCallback<void(std::unique_ptr<WifiData::AccessPointDataSet>)>
+          callback) override;
 
  private:
   CWWiFiClient* __strong wifi_client_ = [CWWiFiClient sharedWiFiClient];
 };
 
-bool CoreWlanApi::GetAccessPointData(WifiData::AccessPointDataSet* data) {
+void CoreWlanApi::GetAccessPointData(
+    base::OnceCallback<void(std::unique_ptr<WifiData::AccessPointDataSet>)>
+        callback) {
   @autoreleasepool {
+    auto data = std::make_unique<WifiData::AccessPointDataSet>();
     NSArray<CWInterface*>* interfaces = wifi_client_.interfaces;
     NSUInteger interface_error_count = 0;
     for (CWInterface* interface in interfaces) {
@@ -70,8 +75,12 @@ bool CoreWlanApi::GetAccessPointData(WifiData::AccessPointDataSet* data) {
 
     // Return true even if some interfaces failed to scan, so long as at least
     // one interface did not fail.
-    return interface_error_count == 0 ||
-           interfaces.count > interface_error_count;
+    if (interface_error_count > 0 &&
+        interfaces.count <= interface_error_count) {
+      std::move(callback).Run(nullptr);
+    } else {
+      std::move(callback).Run(std::move(data));
+    }
   }
 }
 

@@ -87,7 +87,9 @@ class WindowsWlanApi : public WifiDataProviderCommon::WlanApiInterface {
   ~WindowsWlanApi() override;
 
   // WlanApiInterface implementation
-  bool GetAccessPointData(WifiData::AccessPointDataSet* data) override;
+  void GetAccessPointData(
+      base::OnceCallback<void(std::unique_ptr<WifiData::AccessPointDataSet>)>
+          callback) override;
 
  private:
   bool GetInterfaceDataWLAN(HANDLE wlan_handle,
@@ -146,9 +148,10 @@ WindowsWlanApi::~WindowsWlanApi() {
   FreeLibrary(library_);
 }
 
-bool WindowsWlanApi::GetAccessPointData(WifiData::AccessPointDataSet* data) {
-  DCHECK(data);
-
+void WindowsWlanApi::GetAccessPointData(
+    base::OnceCallback<void(std::unique_ptr<WifiData::AccessPointDataSet>)>
+        callback) {
+  auto data = std::make_unique<WifiData::AccessPointDataSet>();
   DWORD negotiated_version;
   HANDLE wlan_handle = nullptr;
   // Highest WLAN API version supported by the client; pass the lowest. It seems
@@ -158,7 +161,8 @@ bool WindowsWlanApi::GetAccessPointData(WifiData::AccessPointDataSet* data) {
   if ((*WlanOpenHandle_function_)(kXpWlanClientVersion, NULL,
                                   &negotiated_version,
                                   &wlan_handle) != ERROR_SUCCESS) {
-    return false;
+    std::move(callback).Run(nullptr);
+    return;
   }
   DCHECK(wlan_handle);
 
@@ -166,7 +170,9 @@ bool WindowsWlanApi::GetAccessPointData(WifiData::AccessPointDataSet* data) {
   WLAN_INTERFACE_INFO_LIST* interface_list = nullptr;
   if ((*WlanEnumInterfaces_function_)(wlan_handle, NULL, &interface_list) !=
       ERROR_SUCCESS) {
-    return false;
+    (*WlanCloseHandle_function_)(wlan_handle, NULL);
+    std::move(callback).Run(nullptr);
+    return;
   }
   DCHECK(interface_list);
 
@@ -184,12 +190,13 @@ bool WindowsWlanApi::GetAccessPointData(WifiData::AccessPointDataSet* data) {
                        "indicates a non-responding adapter.";
       continue;
     }
-    GetInterfaceDataWLAN(wlan_handle, interface_info.InterfaceGuid, data);
+    GetInterfaceDataWLAN(wlan_handle, interface_info.InterfaceGuid, data.get());
   }
 
   (*WlanFreeMemory_function_)(interface_list);
 
-  return (*WlanCloseHandle_function_)(wlan_handle, NULL) == ERROR_SUCCESS;
+  (*WlanCloseHandle_function_)(wlan_handle, NULL);
+  std::move(callback).Run(std::move(data));
 }
 
 // Appends the data for a single interface to |data|. Returns false for error.

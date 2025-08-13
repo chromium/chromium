@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 // Provides wifi scan API binding for suitable for typical linux distributions.
-// Currently, only the NetworkManager API is used, accessed via D-Bus (in turn
-// accessed via the GLib wrapper).
+// Currently, only the NetworkManager API is used, accessed via D-Bus.
 
 #include "services/device/geolocation/wifi_data_provider_linux.h"
 
@@ -12,19 +11,30 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
+#include "services/device/geolocation/wifi_data.h"
 #include "services/device/geolocation/wifi_data_provider_handle.h"
 #include "services/device/public/mojom/geolocation_internals.mojom.h"
 
@@ -43,290 +53,352 @@ const char kNetworkManagerInterface[] = "org.freedesktop.NetworkManager";
 // From http://projects.gnome.org/NetworkManager/developers/spec.html
 enum { NM_DEVICE_TYPE_WIFI = 2 };
 
-// Wifi API binding to NetworkManager, to allow reuse of the polling behavior
-// defined in WifiDataProviderCommon.
-// TODO(joth): NetworkManager also allows for notification based handling,
-// however this will require reworking of the threading code to run a GLib
-// event loop (GMainLoop).
-class NetworkManagerWlanApi : public WifiDataProviderCommon::WlanApiInterface {
- public:
-  NetworkManagerWlanApi();
-
-  NetworkManagerWlanApi(const NetworkManagerWlanApi&) = delete;
-  NetworkManagerWlanApi& operator=(const NetworkManagerWlanApi&) = delete;
-
-  ~NetworkManagerWlanApi() override;
-
-  // Must be called before any other interface method. Will return false if the
-  // NetworkManager session cannot be created (e.g. not present on this distro),
-  // in which case no other method may be called.
-  bool Init();
-
-  // Similar to Init() but can inject the bus object. Used for testing.
-  bool InitWithBus(scoped_refptr<dbus::Bus> bus);
-
-  // WifiDataProviderCommon::WlanApiInterface
-  //
-  // This function makes blocking D-Bus calls, but it's totally fine as
-  // the code runs in "Geolocation" thread, not the browser's UI thread.
-  bool GetAccessPointData(WifiData::AccessPointDataSet* data) override;
-
- private:
-  // Enumerates the list of available network adapter devices known to
-  // NetworkManager. Return true on success.
-  bool GetAdapterDeviceList(std::vector<dbus::ObjectPath>* device_paths);
-
-  // Given the NetworkManager path to a wireless adapater, dumps the wifi scan
-  // results and appends them to |data|. Returns false if a fatal error is
-  // encountered such that the data set could not be populated.
-  bool GetAccessPointsForAdapter(const dbus::ObjectPath& adapter_path,
-                                 WifiData::AccessPointDataSet* data);
-
-  // Internal method used by GetAccessPointsForAdapter(), given a wifi access
-  // point proxy retrieves the named property and returns it. Returns nullptr if
-  // the property could not be read.
-  std::unique_ptr<dbus::Response> GetAccessPointProperty(
-      dbus::ObjectProxy* proxy,
-      const std::string& property_name);
-
-  scoped_refptr<dbus::Bus> system_bus_;
-  raw_ptr<dbus::ObjectProxy> network_manager_proxy_ = nullptr;
-};
-
 // Convert a wifi frequency to the corresponding channel. Adapted from
 // geolocation/wifilib.cc in googleclient (internal to google).
-int frquency_in_khz_to_channel(int frequency_khz) {
-  if (frequency_khz >= 2412000 && frequency_khz <= 2472000)  // Channels 1-13.
+int FrequencyInKhzToChannel(int frequency_khz) {
+  if (frequency_khz >= 2412000 && frequency_khz <= 2472000) {  // Channels 1-13.
     return (frequency_khz - 2407000) / 5000;
-  if (frequency_khz == 2484000)
+  }
+  if (frequency_khz == 2484000) {
     return 14;
-  if (frequency_khz > 5000000 && frequency_khz < 6000000)  // .11a bands.
+  }
+  if (frequency_khz > 5000000 && frequency_khz < 6000000) {  // .11a bands.
     return (frequency_khz - 5000000) / 5000;
+  }
   // Ignore everything else.
   return mojom::kInvalidChannel;
 }
 
-NetworkManagerWlanApi::NetworkManagerWlanApi() {}
+// State for an asynchronous GetAccessPointData call. This is ref-counted
+// to allow it to be safely passed through the asynchronous call chain.
+class GetAccessPointDataState
+    : public base::RefCounted<GetAccessPointDataState> {
+ public:
+  explicit GetAccessPointDataState(
+      base::OnceCallback<void(std::unique_ptr<WifiData::AccessPointDataSet>)>
+          final_callback)
+      : data_(std::make_unique<WifiData::AccessPointDataSet>()),
+        callback_(std::move(final_callback)) {}
 
-NetworkManagerWlanApi::~NetworkManagerWlanApi() {
-  // Close the connection.
-  // This is owned by the system bus, so we need to make sure we're clearing
-  // the pointer before its shutdown.
-  network_manager_proxy_ = nullptr;
-  system_bus_->ShutdownAndBlock();
-}
-
-bool NetworkManagerWlanApi::Init() {
-  dbus::Bus::Options options;
-  options.bus_type = dbus::Bus::SYSTEM;
-  options.connection_type = dbus::Bus::PRIVATE;
-  return InitWithBus(base::MakeRefCounted<dbus::Bus>(options));
-}
-
-bool NetworkManagerWlanApi::InitWithBus(scoped_refptr<dbus::Bus> bus) {
-  system_bus_ = bus;
-  // system_bus_ will own all object proxies created from the bus.
-  network_manager_proxy_ = system_bus_->GetObjectProxy(
-      kNetworkManagerServiceName, dbus::ObjectPath(kNetworkManagerPath));
-  // Validate the proxy object by checking we can enumerate devices.
-  std::vector<dbus::ObjectPath> adapter_paths;
-  const bool success = GetAdapterDeviceList(&adapter_paths);
-  VLOG(1) << "Init() result:  " << success;
-  return success;
-}
-
-bool NetworkManagerWlanApi::GetAccessPointData(
-    WifiData::AccessPointDataSet* data) {
-  std::vector<dbus::ObjectPath> device_paths;
-  if (!GetAdapterDeviceList(&device_paths)) {
-    LOG(WARNING) << "Could not enumerate access points";
-    return false;
+  // Called when processing for an adapter is finished.
+  void OnAdapterFinished(bool success) {
+    if (success) {
+      success_count_++;
+    } else {
+      fail_count_++;
+    }
   }
-  int success_count = 0;
-  int fail_count = 0;
 
-  // Iterate the devices, getting APs for each wireless adapter found
-  for (const dbus::ObjectPath& device_path : device_paths) {
-    VLOG(1) << "Checking device: " << device_path.value();
+  WifiData::AccessPointDataSet* data() { return data_.get(); }
 
-    dbus::ObjectProxy* device_proxy =
-        system_bus_->GetObjectProxy(kNetworkManagerServiceName, device_path);
+ private:
+  friend class base::RefCounted<GetAccessPointDataState>;
 
-    dbus::MethodCall method_call(DBUS_INTERFACE_PROPERTIES, "Get");
-    dbus::MessageWriter builder(&method_call);
-    builder.AppendString("org.freedesktop.NetworkManager.Device");
-    builder.AppendString("DeviceType");
-    std::unique_ptr<dbus::Response> response(
-        device_proxy
-            ->CallMethodAndBlock(&method_call,
-                                 dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-            .value_or(nullptr));
+  ~GetAccessPointDataState() {
+    if (callback_) {
+      if (success_count_ > 0 || fail_count_ == 0) {
+        std::move(callback_).Run(std::move(data_));
+      } else {
+        std::move(callback_).Run(nullptr);
+      }
+    }
+  }
+
+  std::unique_ptr<WifiData::AccessPointDataSet> data_;
+  base::OnceCallback<void(std::unique_ptr<WifiData::AccessPointDataSet>)>
+      callback_;
+  int success_count_ = 0;
+  int fail_count_ = 0;
+};
+
+// State for fetching info for a single access point.
+struct AccessPointInfoState {
+  AccessPointInfoState(scoped_refptr<GetAccessPointDataState> parent_state,
+                       base::OnceClosure finished_closure,
+                       const dbus::ObjectPath& path,
+                       dbus::ObjectProxy* proxy)
+      : state(std::move(parent_state)),
+        closure(std::move(finished_closure)),
+        access_point_path(path),
+        access_point_proxy(proxy) {}
+
+  ~AccessPointInfoState() { std::move(closure).Run(); }
+
+  // Adds the completed `access_point_data` to the main dataset.
+  void AddDataToParent() { state->data()->insert(access_point_data); }
+
+  scoped_refptr<GetAccessPointDataState> state;
+  base::OnceClosure closure;
+  const dbus::ObjectPath access_point_path;
+  raw_ptr<dbus::ObjectProxy> access_point_proxy = nullptr;
+  mojom::AccessPointData access_point_data;
+};
+
+// Wifi API binding to NetworkManager, to allow reuse of the polling behavior
+// defined in WifiDataProviderCommon.
+class NetworkManagerWlanApiImpl {
+ public:
+  explicit NetworkManagerWlanApiImpl(scoped_refptr<dbus::Bus> bus)
+      : system_bus_(std::move(bus)) {
+    CHECK(system_bus_);
+    network_manager_proxy_ = system_bus_->GetObjectProxy(
+        kNetworkManagerServiceName, dbus::ObjectPath(kNetworkManagerPath));
+  }
+
+  NetworkManagerWlanApiImpl(const NetworkManagerWlanApiImpl&) = delete;
+  NetworkManagerWlanApiImpl& operator=(const NetworkManagerWlanApiImpl&) =
+      delete;
+
+  ~NetworkManagerWlanApiImpl() = default;
+
+  void GetAccessPointData(
+      base::OnceCallback<void(std::unique_ptr<WifiData::AccessPointDataSet>)>
+          callback) {
+    auto state =
+        base::MakeRefCounted<GetAccessPointDataState>(std::move(callback));
+
+    dbus::MethodCall method_call(kNetworkManagerInterface, "GetDevices");
+    network_manager_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&NetworkManagerWlanApiImpl::OnGetDevicesResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(state)));
+  }
+
+ private:
+  void OnGetDevicesResponse(scoped_refptr<GetAccessPointDataState> state,
+                            dbus::Response* response) {
+    if (!response) {
+      LOG(WARNING) << "Failed to get the device list";
+      state->OnAdapterFinished(false);
+      return;
+    }
+
+    dbus::MessageReader reader(response);
+    std::vector<dbus::ObjectPath> device_paths;
+    if (!reader.PopArrayOfObjectPaths(&device_paths)) {
+      LOG(WARNING) << "Unexpected response: " << response->ToString();
+      state->OnAdapterFinished(false);
+      return;
+    }
+
+    for (const dbus::ObjectPath& device_path : device_paths) {
+      VLOG(1) << "Checking device: " << device_path.value();
+      dbus::ObjectProxy* device_proxy =
+          system_bus_->GetObjectProxy(kNetworkManagerServiceName, device_path);
+      dbus::MethodCall method_call(DBUS_INTERFACE_PROPERTIES, "Get");
+      dbus::MessageWriter writer(&method_call);
+      writer.AppendString("org.freedesktop.NetworkManager.Device");
+      writer.AppendString("DeviceType");
+
+      device_proxy->CallMethod(
+          &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+          base::BindOnce(&NetworkManagerWlanApiImpl::OnGetDeviceTypeResponse,
+                         weak_ptr_factory_.GetWeakPtr(), state, device_path));
+    }
+  }
+
+  void OnGetDeviceTypeResponse(scoped_refptr<GetAccessPointDataState> state,
+                               const dbus::ObjectPath& device_path,
+                               dbus::Response* response) {
     if (!response) {
       LOG(WARNING) << "Failed to get the device type for "
                    << device_path.value();
-      continue;  // Check the next device.
+      return;
     }
-    dbus::MessageReader reader(response.get());
+    dbus::MessageReader reader(response);
     uint32_t device_type = 0;
     if (!reader.PopVariantOfUint32(&device_type)) {
-      LOG(WARNING) << "Unexpected response for " << device_type << ": "
+      LOG(WARNING) << "Unexpected response for device type: "
                    << response->ToString();
-      continue;  // Check the next device.
-    }
-    VLOG(1) << "Device type: " << device_type;
-
-    if (device_type == NM_DEVICE_TYPE_WIFI) {  // Found a wlan adapter
-      if (GetAccessPointsForAdapter(device_path, data))
-        ++success_count;
-      else
-        ++fail_count;
-    }
-  }
-  // At least one successful scan overrides any other adapter reporting error.
-  return success_count || fail_count == 0;
-}
-
-bool NetworkManagerWlanApi::GetAdapterDeviceList(
-    std::vector<dbus::ObjectPath>* device_paths) {
-  dbus::MethodCall method_call(kNetworkManagerInterface, "GetDevices");
-  std::unique_ptr<dbus::Response> response(
-      network_manager_proxy_
-          ->CallMethodAndBlock(&method_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr));
-  if (!response) {
-    LOG(WARNING) << "Failed to get the device list";
-    return false;
-  }
-
-  dbus::MessageReader reader(response.get());
-  if (!reader.PopArrayOfObjectPaths(device_paths)) {
-    LOG(WARNING) << "Unexpected response: " << response->ToString();
-    return false;
-  }
-  return true;
-}
-
-bool NetworkManagerWlanApi::GetAccessPointsForAdapter(
-    const dbus::ObjectPath& adapter_path,
-    WifiData::AccessPointDataSet* data) {
-  // Create a proxy object for this wifi adapter, and ask it to do a scan
-  // (or at least, dump its scan results).
-  dbus::ObjectProxy* device_proxy =
-      system_bus_->GetObjectProxy(kNetworkManagerServiceName, adapter_path);
-  dbus::MethodCall method_call("org.freedesktop.NetworkManager.Device.Wireless",
-                               "GetAccessPoints");
-  std::unique_ptr<dbus::Response> response(
-      device_proxy
-          ->CallMethodAndBlock(&method_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr));
-  if (!response) {
-    LOG(WARNING) << "Failed to get access points data for "
-                 << adapter_path.value();
-    return false;
-  }
-  dbus::MessageReader reader(response.get());
-  std::vector<dbus::ObjectPath> access_point_paths;
-  if (!reader.PopArrayOfObjectPaths(&access_point_paths)) {
-    LOG(WARNING) << "Unexpected response for " << adapter_path.value() << ": "
-                 << response->ToString();
-    return false;
-  }
-
-  VLOG(1) << "Wireless adapter " << adapter_path.value() << " found "
-          << access_point_paths.size() << " access points.";
-
-  for (const dbus::ObjectPath& access_point_path : access_point_paths) {
-    VLOG(1) << "Checking access point: " << access_point_path.value();
-
-    dbus::ObjectProxy* access_point_proxy = system_bus_->GetObjectProxy(
-        kNetworkManagerServiceName, access_point_path);
-
-    mojom::AccessPointData access_point_data;
-    {  // Read the mac address
-      std::unique_ptr<dbus::Response> mac_response(
-          GetAccessPointProperty(access_point_proxy, "HwAddress"));
-      if (!mac_response)
-        continue;
-      dbus::MessageReader mac_reader(mac_response.get());
-      std::string mac;
-      if (!mac_reader.PopVariantOfString(&mac)) {
-        LOG(WARNING) << "Unexpected response for " << access_point_path.value()
-                     << ": " << mac_response->ToString();
-        continue;
-      }
-
-      base::ReplaceSubstringsAfterOffset(&mac, 0U, ":", std::string_view());
-      std::vector<uint8_t> mac_bytes;
-      if (!base::HexStringToBytes(mac, &mac_bytes) || mac_bytes.size() != 6) {
-        LOG(WARNING) << "Can't parse mac address (found " << mac_bytes.size()
-                     << " bytes) so using raw string: " << mac;
-        access_point_data.mac_address = mac;
-      } else {
-        access_point_data.mac_address = MacAddressAsString(&mac_bytes[0]);
-      }
+      return;
     }
 
-    {  // Read signal strength.
-      std::unique_ptr<dbus::Response> strength_response(
-          GetAccessPointProperty(access_point_proxy, "Strength"));
-      if (!strength_response)
-        continue;
-      dbus::MessageReader strength_reader(strength_response.get());
-      uint8_t strength = 0;
-      if (!strength_reader.PopVariantOfByte(&strength)) {
-        LOG(WARNING) << "Unexpected response for " << access_point_path.value()
-                     << ": " << strength_response->ToString();
-        continue;
-      }
-      // Convert strength as a percentage into dBs.
-      access_point_data.radio_signal_strength = -100 + strength / 2;
+    if (device_type == NM_DEVICE_TYPE_WIFI) {
+      GetAccessPointsForAdapter(state, device_path);
+    }
+  }
+
+  void GetAccessPointsForAdapter(scoped_refptr<GetAccessPointDataState> state,
+                                 const dbus::ObjectPath& adapter_path) {
+    dbus::ObjectProxy* device_proxy =
+        system_bus_->GetObjectProxy(kNetworkManagerServiceName, adapter_path);
+    dbus::MethodCall method_call(
+        "org.freedesktop.NetworkManager.Device.Wireless", "GetAccessPoints");
+    device_proxy->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&NetworkManagerWlanApiImpl::OnGetAccessPointsForAdapter,
+                       weak_ptr_factory_.GetWeakPtr(), state, adapter_path));
+  }
+
+  void OnGetAccessPointsForAdapter(scoped_refptr<GetAccessPointDataState> state,
+                                   const dbus::ObjectPath& adapter_path,
+                                   dbus::Response* response) {
+    if (!response) {
+      LOG(WARNING) << "Failed to get access points data for "
+                   << adapter_path.value();
+      state->OnAdapterFinished(false);
+      return;
+    }
+    dbus::MessageReader reader(response);
+    std::vector<dbus::ObjectPath> access_point_paths;
+    if (!reader.PopArrayOfObjectPaths(&access_point_paths)) {
+      LOG(WARNING) << "Unexpected response for " << adapter_path.value() << ": "
+                   << response->ToString();
+      state->OnAdapterFinished(false);
+      return;
     }
 
-    {  // Read the channel
-      std::unique_ptr<dbus::Response> frequency_response(
-          GetAccessPointProperty(access_point_proxy, "Frequency"));
-      if (!frequency_response)
-        continue;
-      dbus::MessageReader frequency_reader(frequency_response.get());
-      uint32_t frequency = 0;
-      if (!frequency_reader.PopVariantOfUint32(&frequency)) {
-        LOG(WARNING) << "Unexpected response for " << access_point_path.value()
-                     << ": " << frequency_response->ToString();
-        continue;
-      }
+    VLOG(1) << "Wireless adapter " << adapter_path.value() << " found "
+            << access_point_paths.size() << " access points.";
 
-      // NetworkManager returns frequency in MHz.
-      access_point_data.channel = frquency_in_khz_to_channel(frequency * 1000);
+    if (access_point_paths.empty()) {
+      state->OnAdapterFinished(true);
+      return;
     }
-    VLOG(1) << "Access point data of " << access_point_path.value() << ": "
-            << "MAC: " << access_point_data.mac_address << ", "
-            << "Strength: " << access_point_data.radio_signal_strength << ", "
-            << "Channel: " << access_point_data.channel;
 
-    data->insert(access_point_data);
-  }
-  return true;
-}
+    base::RepeatingClosure barrier = base::BarrierClosure(
+        access_point_paths.size(),
+        base::BindOnce(&GetAccessPointDataState::OnAdapterFinished, state,
+                       true));
 
-std::unique_ptr<dbus::Response> NetworkManagerWlanApi::GetAccessPointProperty(
-    dbus::ObjectProxy* access_point_proxy,
-    const std::string& property_name) {
-  dbus::MethodCall method_call(DBUS_INTERFACE_PROPERTIES, "Get");
-  dbus::MessageWriter builder(&method_call);
-  builder.AppendString("org.freedesktop.NetworkManager.AccessPoint");
-  builder.AppendString(property_name);
-  std::unique_ptr<dbus::Response> response =
-      access_point_proxy
-          ->CallMethodAndBlock(&method_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr);
-  if (!response) {
-    LOG(WARNING) << "Failed to get property for " << property_name;
+    for (const dbus::ObjectPath& access_point_path : access_point_paths) {
+      VLOG(1) << "Checking access point: " << access_point_path.value();
+      dbus::ObjectProxy* access_point_proxy = system_bus_->GetObjectProxy(
+          kNetworkManagerServiceName, access_point_path);
+
+      auto ap_state = std::make_unique<AccessPointInfoState>(
+          state, barrier, access_point_path, access_point_proxy);
+
+      GetAccessPointProperty(
+          access_point_proxy, "HwAddress",
+          base::BindOnce(&NetworkManagerWlanApiImpl::OnGetHwAddress,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(ap_state)));
+    }
   }
-  return response;
-}
+
+  void GetAccessPointProperty(
+      dbus::ObjectProxy* access_point_proxy,
+      const std::string& property_name,
+      base::OnceCallback<void(dbus::Response*)> callback) {
+    dbus::MethodCall method_call(DBUS_INTERFACE_PROPERTIES, "Get");
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString("org.freedesktop.NetworkManager.AccessPoint");
+    writer.AppendString(property_name);
+    access_point_proxy->CallMethod(&method_call,
+                                   dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                   std::move(callback));
+  }
+
+  void OnGetHwAddress(std::unique_ptr<AccessPointInfoState> ap_state,
+                      dbus::Response* response) {
+    if (!response) {
+      LOG(WARNING) << "Failed to get HwAddress for "
+                   << ap_state->access_point_path.value();
+      // State destructor will run the closure.
+      return;
+    }
+
+    dbus::MessageReader reader(response);
+    std::string mac;
+    if (!reader.PopVariantOfString(&mac)) {
+      return;
+    }
+
+    base::ReplaceSubstringsAfterOffset(&mac, 0U, ":", std::string_view());
+    std::vector<uint8_t> mac_bytes;
+    if (!base::HexStringToBytes(mac, &mac_bytes) || mac_bytes.size() != 6) {
+      LOG(WARNING) << "Can't parse mac address (found " << mac_bytes.size()
+                   << " bytes) so using raw string: " << mac;
+      ap_state->access_point_data.mac_address = mac;
+    } else {
+      ap_state->access_point_data.mac_address =
+          MacAddressAsString(base::span<const uint8_t, 6>(mac_bytes));
+    }
+
+    auto* access_point_proxy = ap_state->access_point_proxy.get();
+    GetAccessPointProperty(
+        access_point_proxy, "Strength",
+        base::BindOnce(&NetworkManagerWlanApiImpl::OnGetStrength,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(ap_state)));
+  }
+
+  void OnGetStrength(std::unique_ptr<AccessPointInfoState> ap_state,
+                     dbus::Response* response) {
+    if (!response) {
+      LOG(WARNING) << "Failed to get Strength for "
+                   << ap_state->access_point_path.value();
+      return;
+    }
+
+    dbus::MessageReader reader(response);
+    uint8_t strength = 0;
+    if (!reader.PopVariantOfByte(&strength)) {
+      return;
+    }
+
+    // Convert strength as a percentage into dBs.
+    ap_state->access_point_data.radio_signal_strength = -100 + strength / 2;
+
+    auto* access_point_proxy = ap_state->access_point_proxy.get();
+    GetAccessPointProperty(
+        access_point_proxy, "Frequency",
+        base::BindOnce(&NetworkManagerWlanApiImpl::OnGetFrequency,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(ap_state)));
+  }
+
+  void OnGetFrequency(std::unique_ptr<AccessPointInfoState> ap_state,
+                      dbus::Response* response) {
+    if (!response) {
+      LOG(WARNING) << "Failed to get Frequency for "
+                   << ap_state->access_point_path.value();
+      return;
+    }
+
+    dbus::MessageReader reader(response);
+    uint32_t frequency = 0;
+    if (!reader.PopVariantOfUint32(&frequency)) {
+      return;
+    }
+
+    // NetworkManager returns frequency in MHz.
+    ap_state->access_point_data.channel =
+        FrequencyInKhzToChannel(frequency * 1000);
+    VLOG(1) << "Access point data of " << ap_state->access_point_path.value()
+            << ": "
+            << "MAC: " << ap_state->access_point_data.mac_address << ", "
+            << "Strength: " << ap_state->access_point_data.radio_signal_strength
+            << ", "
+            << "Channel: " << ap_state->access_point_data.channel;
+
+    ap_state->AddDataToParent();
+  }
+
+  scoped_refptr<dbus::Bus> system_bus_;
+  raw_ptr<dbus::ObjectProxy> network_manager_proxy_ = nullptr;
+  base::WeakPtrFactory<NetworkManagerWlanApiImpl> weak_ptr_factory_{this};
+};
+
+class NetworkManagerWlanApi : public WifiDataProviderCommon::WlanApiInterface {
+ public:
+  explicit NetworkManagerWlanApi(scoped_refptr<dbus::Bus> bus)
+      : impl_(bus->GetOriginTaskRunner(), bus) {}
+
+  NetworkManagerWlanApi(const NetworkManagerWlanApi&) = delete;
+  NetworkManagerWlanApi& operator=(const NetworkManagerWlanApi&) = delete;
+
+  ~NetworkManagerWlanApi() override = default;
+
+  // WifiDataProviderCommon::WlanApiInterface
+  void GetAccessPointData(
+      base::OnceCallback<void(std::unique_ptr<WifiData::AccessPointDataSet>)>
+          callback) override {
+    impl_.AsyncCall(&NetworkManagerWlanApiImpl::GetAccessPointData)
+        .WithArgs(base::BindPostTaskToCurrentDefault(std::move(callback)));
+  }
+
+ private:
+  base::SequenceBound<NetworkManagerWlanApiImpl> impl_;
+};
 
 }  // namespace
 
@@ -335,16 +407,14 @@ WifiDataProvider* WifiDataProviderHandle::DefaultFactoryFunction() {
   return new WifiDataProviderLinux();
 }
 
-WifiDataProviderLinux::WifiDataProviderLinux() {}
+WifiDataProviderLinux::WifiDataProviderLinux() = default;
 
-WifiDataProviderLinux::~WifiDataProviderLinux() {}
+WifiDataProviderLinux::~WifiDataProviderLinux() = default;
 
 std::unique_ptr<WifiDataProviderCommon::WlanApiInterface>
 WifiDataProviderLinux::CreateWlanApi() {
-  auto wlan_api = std::make_unique<NetworkManagerWlanApi>();
-  if (wlan_api->Init())
-    return std::move(wlan_api);
-  return nullptr;
+  return std::make_unique<NetworkManagerWlanApi>(
+      dbus_thread_linux::GetSharedSystemBus());
 }
 
 std::unique_ptr<WifiPollingPolicy>
@@ -357,10 +427,7 @@ WifiDataProviderLinux::CreatePollingPolicy() {
 
 std::unique_ptr<WifiDataProviderCommon::WlanApiInterface>
 WifiDataProviderLinux::CreateWlanApiForTesting(scoped_refptr<dbus::Bus> bus) {
-  auto wlan_api = std::make_unique<NetworkManagerWlanApi>();
-  if (wlan_api->InitWithBus(bus))
-    return std::move(wlan_api);
-  return nullptr;
+  return std::make_unique<NetworkManagerWlanApi>(bus);
 }
 
 }  // namespace device
