@@ -483,6 +483,9 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputComponents) {
       {"signature=(\"@path\";req \"unencoded-digest\")",
        mojom::SRIMessageSignatureError::
            kSignatureInputHeaderInvalidHeaderComponentParameter},
+      {"signature=(\"@path\";req \"not-unencoded-digest\")",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderValueMissingComponents},
       {"signature=(\"@path\";req \"not-unencoded-digest\";sf)",
        mojom::SRIMessageSignatureError::
            kSignatureInputHeaderInvalidHeaderComponentParameter},

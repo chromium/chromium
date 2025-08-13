@@ -562,7 +562,11 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
           std::move(parsed_component.value()));
     }
 
-    if (!message_signature || message_signature->components.empty()) {
+    // The signature's component list must include `unencoded-digest`.
+    if (!message_signature || message_signature->components.empty() ||
+        std::ranges::none_of(message_signature->components, [](const auto& c) {
+          return c->name == "unencoded-digest";
+        })) {
       AddIssueFromErrorEnum(mojom::SRIMessageSignatureError::
                                 kSignatureInputHeaderValueMissingComponents,
                             parsed_headers->issues);
