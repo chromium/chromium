@@ -10,7 +10,7 @@ system_cxx_toolchain(
     cxx_flags = select({
         "config//os:linux": ["-std=c++17"],
         "config//os:macos": ["-std=c++17"],
-        "config//os:windows": [],
+        "config//os:windows": ["/EHsc"],
     }),
     link_flags = select({
         "config//os:linux": ["-lstdc++"],

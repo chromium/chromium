@@ -32,7 +32,6 @@ public:
 
   T *data() const noexcept;
   size_t size() const noexcept;
-  size_t length() const noexcept;
   bool empty() const noexcept;
 
   T &operator[](size_t n) const noexcept;

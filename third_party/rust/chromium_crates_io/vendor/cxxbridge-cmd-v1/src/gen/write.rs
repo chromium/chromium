@@ -11,7 +11,7 @@ use crate::syntax::set::UnorderedSet;
 use crate::syntax::symbol::{self, Symbol};
 use crate::syntax::trivial::{self, TrivialReason};
 use crate::syntax::{
-    derive, mangle, Api, Doc, Enum, EnumRepr, ExternFn, ExternType, Lang, Pair, Signature, Struct,
+    derive, mangle, Api, Doc, Enum, ExternFn, ExternType, FnKind, Lang, Pair, Signature, Struct,
     Trait, Type, TypeAlias, Types, Var,
 };
 use proc_macro2::Ident;
@@ -96,9 +96,9 @@ fn write_data_structures<'a>(out: &mut OutFile<'a>, apis: &'a [Api]) {
     let mut methods_for_type = Map::new();
     for api in apis {
         if let Api::CxxFunction(efn) | Api::RustFunction(efn) = api {
-            if let Some(receiver) = &efn.receiver {
+            if let Some(self_type) = efn.self_type() {
                 methods_for_type
-                    .entry(&receiver.ty.rust)
+                    .entry(self_type)
                     .or_insert_with(Vec::new)
                     .push(efn);
             }
@@ -127,10 +127,10 @@ fn write_data_structures<'a>(out: &mut OutFile<'a>, apis: &'a [Api]) {
             }
             Api::Enum(enm) => {
                 out.next_section();
-                if !out.types.cxx.contains(&enm.name.rust) {
-                    write_enum(out, enm);
-                } else if !enm.variants_from_header {
+                if out.types.cxx.contains(&enm.name.rust) {
                     check_enum(out, enm);
+                } else {
+                    write_enum(out, enm);
                 }
             }
             Api::RustType(ety) => {
@@ -280,7 +280,23 @@ fn write_struct<'a>(out: &mut OutFile<'a>, strct: &'a Struct, methods: &[&Extern
     writeln!(out, "#ifndef {}", guard);
     writeln!(out, "#define {}", guard);
     write_doc(out, "", &strct.doc);
-    writeln!(out, "struct {} final {{", strct.name.cxx);
+    write!(out, "struct");
+    if let Some(align) = &strct.align {
+        out.builtin.alignmax = true;
+        writeln!(out, " alignas(::rust::repr::alignmax<");
+        writeln!(out, "  {},", align.base10_parse::<u32>().unwrap());
+        for (i, field) in strct.fields.iter().enumerate() {
+            write!(out, "  alignof(");
+            write_type(out, &field.ty);
+            write!(out, ")");
+            if i + 1 != strct.fields.len() {
+                write!(out, ",");
+            }
+            writeln!(out);
+        }
+        write!(out, ">)");
+    }
+    writeln!(out, " {} final {{", strct.name.cxx);
 
     for field in &strct.fields {
         write_doc(out, "  ", &field.doc);
@@ -306,11 +322,12 @@ fn write_struct<'a>(out: &mut OutFile<'a>, strct: &'a Struct, methods: &[&Extern
         }
         write_doc(out, "  ", &method.doc);
         write!(out, "  ");
-        let sig = &method.sig;
         let local_name = method.name.cxx.to_string();
+        let sig = &method.sig;
+        let in_class = true;
         let indirect_call = false;
         let main = false;
-        write_rust_function_shim_decl(out, &local_name, sig, indirect_call, main);
+        write_rust_function_shim_decl(out, &local_name, sig, in_class, indirect_call, main);
         writeln!(out, ";");
         if !method.doc.is_empty() {
             out.next_section();
@@ -365,13 +382,8 @@ fn write_struct_decl(out: &mut OutFile, ident: &Pair) {
 }
 
 fn write_enum_decl(out: &mut OutFile, enm: &Enum) {
-    let repr = match &enm.repr {
-        #[cfg(feature = "experimental-enum-variants-from-header")]
-        EnumRepr::Foreign { .. } => return,
-        EnumRepr::Native { atom, .. } => *atom,
-    };
     write!(out, "enum class {} : ", enm.name.cxx);
-    write_atom(out, repr);
+    write_atom(out, enm.repr.atom);
     writeln!(out, ";");
 }
 
@@ -399,11 +411,12 @@ fn write_opaque_type<'a>(out: &mut OutFile<'a>, ety: &'a ExternType, methods: &[
         }
         write_doc(out, "  ", &method.doc);
         write!(out, "  ");
-        let sig = &method.sig;
         let local_name = method.name.cxx.to_string();
+        let sig = &method.sig;
+        let in_class = true;
         let indirect_call = false;
         let main = false;
-        write_rust_function_shim_decl(out, &local_name, sig, indirect_call, main);
+        write_rust_function_shim_decl(out, &local_name, sig, in_class, indirect_call, main);
         writeln!(out, ";");
         if !method.doc.is_empty() {
             out.next_section();
@@ -426,18 +439,13 @@ fn write_opaque_type<'a>(out: &mut OutFile<'a>, ety: &'a ExternType, methods: &[
 }
 
 fn write_enum<'a>(out: &mut OutFile<'a>, enm: &'a Enum) {
-    let repr = match &enm.repr {
-        #[cfg(feature = "experimental-enum-variants-from-header")]
-        EnumRepr::Foreign { .. } => return,
-        EnumRepr::Native { atom, .. } => *atom,
-    };
     out.set_namespace(&enm.name.namespace);
     let guard = format!("CXXBRIDGE1_ENUM_{}", enm.name.to_symbol());
     writeln!(out, "#ifndef {}", guard);
     writeln!(out, "#define {}", guard);
     write_doc(out, "", &enm.doc);
     write!(out, "enum class {} : ", enm.name.cxx);
-    write_atom(out, repr);
+    write_atom(out, enm.repr.atom);
     writeln!(out, " {{");
     for variant in &enm.variants {
         write_doc(out, "  ", &variant.doc);
@@ -448,11 +456,6 @@ fn write_enum<'a>(out: &mut OutFile<'a>, enm: &'a Enum) {
 }
 
 fn check_enum<'a>(out: &mut OutFile<'a>, enm: &'a Enum) {
-    let repr = match &enm.repr {
-        #[cfg(feature = "experimental-enum-variants-from-header")]
-        EnumRepr::Foreign { .. } => return,
-        EnumRepr::Native { atom, .. } => *atom,
-    };
     out.set_namespace(&enm.name.namespace);
     out.include.type_traits = true;
     writeln!(
@@ -461,11 +464,11 @@ fn check_enum<'a>(out: &mut OutFile<'a>, enm: &'a Enum) {
         enm.name.cxx,
     );
     write!(out, "static_assert(sizeof({}) == sizeof(", enm.name.cxx);
-    write_atom(out, repr);
+    write_atom(out, enm.repr.atom);
     writeln!(out, "), \"incorrect size\");");
     for variant in &enm.variants {
         write!(out, "static_assert(static_cast<");
-        write_atom(out, repr);
+        write_atom(out, enm.repr.atom);
         writeln!(
             out,
             ">({}::{}) == {}, \"disagrees with the value in #[cxx::bridge]\");",
@@ -749,7 +752,7 @@ fn write_cxx_function_shim<'a>(out: &mut OutFile<'a>, efn: &'a ExternFn) {
     }
     let mangled = mangle::extern_fn(efn, out.types);
     write!(out, "{}(", mangled);
-    if let Some(receiver) = &efn.receiver {
+    if let FnKind::Method(receiver) = &efn.kind {
         write!(
             out,
             "{}",
@@ -761,7 +764,7 @@ fn write_cxx_function_shim<'a>(out: &mut OutFile<'a>, efn: &'a ExternFn) {
         write!(out, " &self");
     }
     for (i, arg) in efn.args.iter().enumerate() {
-        if i > 0 || efn.receiver.is_some() {
+        if i > 0 || matches!(efn.kind, FnKind::Method(_)) {
             write!(out, ", ");
         }
         if arg.ty == RustString {
@@ -776,7 +779,7 @@ fn write_cxx_function_shim<'a>(out: &mut OutFile<'a>, efn: &'a ExternFn) {
     }
     let indirect_return = indirect_return(efn, out.types);
     if indirect_return {
-        if !efn.args.is_empty() || efn.receiver.is_some() {
+        if !efn.args.is_empty() || matches!(efn.kind, FnKind::Method(_)) {
             write!(out, ", ");
         }
         write_indirect_return_type_space(out, efn.ret.as_ref().unwrap());
@@ -791,7 +794,7 @@ fn write_cxx_function_shim<'a>(out: &mut OutFile<'a>, efn: &'a ExternFn) {
     writeln!(out, " {{");
     write!(out, "  ");
     write_return_type(out, &efn.ret);
-    match &efn.receiver {
+    match efn.receiver() {
         None => write!(out, "(*{}$)(", efn.name.rust),
         Some(receiver) => write!(
             out,
@@ -807,18 +810,18 @@ fn write_cxx_function_shim<'a>(out: &mut OutFile<'a>, efn: &'a ExternFn) {
         write_type(out, &arg.ty);
     }
     write!(out, ")");
-    if let Some(receiver) = &efn.receiver {
+    if let Some(receiver) = efn.receiver() {
         if !receiver.mutable {
             write!(out, " const");
         }
     }
     write!(out, " = ");
-    match &efn.receiver {
+    match efn.self_type() {
         None => write!(out, "{}", efn.name.to_fully_qualified()),
-        Some(receiver) => write!(
+        Some(self_type) => write!(
             out,
             "&{}::{}",
-            out.types.resolve(&receiver.ty).name.to_fully_qualified(),
+            out.types.resolve(self_type).name.to_fully_qualified(),
             efn.name.cxx,
         ),
     }
@@ -854,7 +857,7 @@ fn write_cxx_function_shim<'a>(out: &mut OutFile<'a>, efn: &'a ExternFn) {
         }
         _ => {}
     }
-    match &efn.receiver {
+    match efn.receiver() {
         None => write!(out, "{}$(", efn.name.rust),
         Some(_) => write!(out, "(self.*{}$)(", efn.name.rust),
     }
@@ -957,7 +960,7 @@ fn write_rust_function_decl_impl(
     }
     write!(out, "{}(", link_name);
     let mut needs_comma = false;
-    if let Some(receiver) = &sig.receiver {
+    if let FnKind::Method(receiver) = &sig.kind {
         write!(
             out,
             "{}",
@@ -1004,11 +1007,11 @@ fn write_rust_function_decl_impl(
 
 fn write_rust_function_shim<'a>(out: &mut OutFile<'a>, efn: &'a ExternFn) {
     out.set_namespace(&efn.name.namespace);
-    let local_name = match &efn.receiver {
+    let local_name = match efn.self_type() {
         None => efn.name.cxx.to_string(),
-        Some(receiver) => format!(
+        Some(self_type) => format!(
             "{}::{}",
-            out.types.resolve(&receiver.ty).name.cxx,
+            out.types.resolve(self_type).name.cxx,
             efn.name.cxx,
         ),
     };
@@ -1018,7 +1021,7 @@ fn write_rust_function_shim<'a>(out: &mut OutFile<'a>, efn: &'a ExternFn) {
     let main = efn.name.cxx == *"main"
         && efn.name.namespace == Namespace::ROOT
         && efn.sig.asyncness.is_none()
-        && efn.sig.receiver.is_none()
+        && matches!(efn.kind, FnKind::Free)
         && efn.sig.args.is_empty()
         && efn.sig.ret.is_none()
         && !efn.sig.throws;
@@ -1029,10 +1032,14 @@ fn write_rust_function_shim_decl(
     out: &mut OutFile,
     local_name: &str,
     sig: &Signature,
+    in_class: bool,
     indirect_call: bool,
     main: bool,
 ) {
     begin_function_definition(out);
+    if matches!(sig.kind, FnKind::Assoc(_)) && in_class {
+        write!(out, "static ");
+    }
     if main {
         write!(out, "int ");
     } else {
@@ -1053,7 +1060,7 @@ fn write_rust_function_shim_decl(
         write!(out, "void *extern$");
     }
     write!(out, ")");
-    if let Some(receiver) = &sig.receiver {
+    if let FnKind::Method(receiver) = &sig.kind {
         if !receiver.mutable {
             write!(out, " const");
         }
@@ -1072,15 +1079,19 @@ fn write_rust_function_shim_impl(
     indirect_call: bool,
     main: bool,
 ) {
-    if out.header && sig.receiver.is_some() {
+    if match sig.kind {
+        FnKind::Free => false,
+        FnKind::Method(_) | FnKind::Assoc(_) => out.header,
+    } {
         // We've already defined this inside the struct.
         return;
     }
-    if sig.receiver.is_none() {
+    if matches!(sig.kind, FnKind::Free) {
         // Member functions already documented at their declaration.
         write_doc(out, "", doc);
     }
-    write_rust_function_shim_decl(out, local_name, sig, indirect_call, main);
+    let in_class = false;
+    write_rust_function_shim_decl(out, local_name, sig, in_class, indirect_call, main);
     if out.header {
         writeln!(out, ";");
         return;
@@ -1143,7 +1154,7 @@ fn write_rust_function_shim_impl(
     }
     write!(out, "{}(", invoke);
     let mut needs_comma = false;
-    if sig.receiver.is_some() {
+    if matches!(sig.kind, FnKind::Method(_)) {
         write!(out, "*this");
         needs_comma = true;
     }
@@ -1707,25 +1718,12 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
         UniquePtr::CxxVector(_) => false,
     };
 
-    let conditional_delete = match ty {
-        UniquePtr::Ident(ident) => {
-            !out.types.structs.contains_key(ident) && !out.types.enums.contains_key(ident)
-        }
-        UniquePtr::CxxVector(_) => false,
-    };
-
-    if conditional_delete {
-        out.builtin.is_complete = true;
-        let definition = match ty {
-            UniquePtr::Ident(ty) => &out.types.resolve(ty).name.cxx,
-            UniquePtr::CxxVector(_) => unreachable!(),
-        };
-        writeln!(
-            out,
-            "static_assert(::rust::detail::is_complete<{}>::value, \"definition of {} is required\");",
-            inner, definition,
-        );
-    }
+    out.builtin.is_complete = true;
+    writeln!(
+        out,
+        "static_assert(::rust::detail::is_complete<{}>::value, \"definition of `{}` is required\");",
+        inner, inner,
+    );
     writeln!(
         out,
         "static_assert(sizeof(::std::unique_ptr<{}>) == sizeof(void *), \"\");",
@@ -1797,16 +1795,12 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
         "void cxxbridge1$unique_ptr${}$drop(::std::unique_ptr<{}> *ptr) noexcept {{",
         instance, inner,
     );
-    if conditional_delete {
-        out.builtin.deleter_if = true;
-        writeln!(
-            out,
-            "  ::rust::deleter_if<::rust::detail::is_complete<{}>::value>{{}}(ptr);",
-            inner,
-        );
-    } else {
-        writeln!(out, "  ptr->~unique_ptr();");
-    }
+    out.builtin.deleter_if = true;
+    writeln!(
+        out,
+        "  ::rust::deleter_if<::rust::detail::is_complete<{}>::value>{{}}(ptr);",
+        inner,
+    );
     writeln!(out, "}}");
 }
 
@@ -1862,6 +1856,15 @@ fn write_shared_ptr(out: &mut OutFile, key: &NamedImplKey) {
         writeln!(out, "  return uninit;");
         writeln!(out, "}}");
     }
+
+    begin_function_definition(out);
+    writeln!(
+        out,
+        "void cxxbridge1$shared_ptr${}$raw(::std::shared_ptr<{}> *ptr, {} *raw) noexcept {{",
+        instance, inner, inner,
+    );
+    writeln!(out, "  ::new (ptr) ::std::shared_ptr<{}>(raw);", inner);
+    writeln!(out, "}}");
 
     begin_function_definition(out);
     writeln!(
@@ -1990,10 +1993,28 @@ fn write_cxx_vector(out: &mut OutFile, key: &NamedImplKey) {
     begin_function_definition(out);
     writeln!(
         out,
+        "::std::size_t cxxbridge1$std$vector${}$capacity(::std::vector<{}> const &s) noexcept {{",
+        instance, inner,
+    );
+    writeln!(out, "  return s.capacity();");
+    writeln!(out, "}}");
+
+    begin_function_definition(out);
+    writeln!(
+        out,
         "{} *cxxbridge1$std$vector${}$get_unchecked(::std::vector<{}> *s, ::std::size_t pos) noexcept {{",
         inner, instance, inner,
     );
     writeln!(out, "  return &(*s)[pos];");
+    writeln!(out, "}}");
+
+    begin_function_definition(out);
+    writeln!(
+        out,
+        "void cxxbridge1$std$vector${}$reserve(::std::vector<{}> *s, ::std::size_t new_cap) noexcept {{",
+        instance, inner,
+    );
+    writeln!(out, "  s->reserve(new_cap);");
     writeln!(out, "}}");
 
     if out.types.is_maybe_trivial(element) {

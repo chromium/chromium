@@ -47,7 +47,7 @@ pub(crate) fn required_trivial_reasons<'a>(
                 }
             }
             Api::CxxFunction(efn) | Api::RustFunction(efn) => {
-                if let Some(receiver) = &efn.receiver {
+                if let Some(receiver) = &efn.receiver() {
                     if receiver.mutable && !receiver.pinned {
                         let reason = TrivialReason::UnpinnedMut(efn);
                         insist_extern_types_are_trivial(&receiver.ty, reason);

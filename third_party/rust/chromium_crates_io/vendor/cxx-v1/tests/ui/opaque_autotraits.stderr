@@ -14,12 +14,12 @@ note: required because it appears within the type `cxx::private::Opaque`
 note: required because it appears within the type `ffi::Opaque`
   --> tests/ui/opaque_autotraits.rs:4:14
    |
-4  |         type Opaque;
+ 4 |         type Opaque;
    |              ^^^^^^
 note: required by a bound in `assert_send`
   --> tests/ui/opaque_autotraits.rs:8:19
    |
-8  | fn assert_send<T: Send>() {}
+ 8 | fn assert_send<T: Send>() {}
    |                   ^^^^ required by this bound in `assert_send`
 
 error[E0277]: `*const cxx::void` cannot be shared between threads safely
@@ -38,12 +38,12 @@ note: required because it appears within the type `cxx::private::Opaque`
 note: required because it appears within the type `ffi::Opaque`
   --> tests/ui/opaque_autotraits.rs:4:14
    |
-4  |         type Opaque;
+ 4 |         type Opaque;
    |              ^^^^^^
 note: required by a bound in `assert_sync`
   --> tests/ui/opaque_autotraits.rs:9:19
    |
-9  | fn assert_sync<T: Sync>() {}
+ 9 | fn assert_sync<T: Sync>() {}
    |                   ^^^^ required by this bound in `assert_sync`
 
 error[E0277]: `PhantomPinned` cannot be unpinned
@@ -67,7 +67,7 @@ note: required because it appears within the type `cxx::private::Opaque`
 note: required because it appears within the type `ffi::Opaque`
   --> tests/ui/opaque_autotraits.rs:4:14
    |
-4  |         type Opaque;
+ 4 |         type Opaque;
    |              ^^^^^^
 note: required by a bound in `assert_unpin`
   --> tests/ui/opaque_autotraits.rs:10:20

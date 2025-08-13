@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.73"
 name = "cxxbridge-macro"
-version = "1.0.161"
+version = "1.0.168"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 exclude = [
@@ -41,17 +41,6 @@ rustdoc-args = [
     "--extern-html-root-url=alloc=https://doc.rust-lang.org",
     "--extern-html-root-url=std=https://doc.rust-lang.org",
     "--extern-html-root-url=proc_macro=https://doc.rust-lang.org",
-]
-
-[features]
-experimental-async-fn = []
-experimental-enum-variants-from-header = [
-    "clang-ast",
-    "flate2",
-    "memmap",
-    "serde",
-    "serde_derive",
-    "serde_json",
 ]
 
 [lib]

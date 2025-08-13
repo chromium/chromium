@@ -143,6 +143,37 @@ multiple extern blocks.
 # }
 ```
 
+## Associated functions
+
+A function with a `Self` attribute is interpreted as a Rust associated function
+and exposed to C++ as a static member function. These must not have a `self`
+argument.
+
+In the following example, the `builder` associated function is callable as
+`MyType::builder()` from both Rust and C++.
+
+```rust,noplayground
+#[cxx::bridge]
+mod ffi {
+    extern "Rust" {
+        type MyType;
+        type MyTypeBuilder;
+
+        #[Self = "MyType"]
+        fn builder() -> Box<MyTypeBuilder>;
+    }
+}
+
+pub struct MyType;
+pub struct MyTypeBuilder;
+
+impl MyType {
+    pub fn builder() -> Box<MyTypeBuilder> {
+        ...
+    }
+}
+```
+
 ## Functions with explicit lifetimes
 
 An extern Rust function signature is allowed to contain explicit lifetimes but

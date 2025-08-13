@@ -28,7 +28,7 @@ For now the recommended approach is to handle the return codepath over a oneshot
 channel (such as [`futures::channel::oneshot`]) represented in an opaque Rust
 type on the FFI.
 
-[`futures::channel::oneshot`]: https://docs.rs/futures/0.3.8/futures/channel/oneshot/index.html
+[`futures::channel::oneshot`]: https://docs.rs/futures/0.3.31/futures/channel/oneshot/index.html
 
 ```rust,noplayground
 // bridge.rs
@@ -84,3 +84,14 @@ void shim_doThing(
       });
 }
 ```
+
+## Streams
+
+Through a multishot channel such as [`futures::channel::mpsc::unbounded`] in
+place of the `futures::channel::oneshot` from above, C++ can send a stream of
+values that become a `futures::Stream` in Rust.
+
+[`futures::channel::mpsc::unbounded`]: https://docs.rs/futures/0.3.31/futures/channel/mpsc/fn.unbounded.html
+
+In this case the callback function will take the channel sender by reference,
+not as a Box. `rust::Fn<void(const StreamThingsContext &ctx, Item item)>`

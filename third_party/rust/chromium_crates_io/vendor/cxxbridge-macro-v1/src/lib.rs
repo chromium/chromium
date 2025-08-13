@@ -28,11 +28,6 @@ mod syntax;
 mod tokens;
 mod type_id;
 
-#[cfg(feature = "experimental-enum-variants-from-header")]
-mod clang;
-#[cfg(feature = "experimental-enum-variants-from-header")]
-mod load;
-
 use crate::syntax::file::Module;
 use crate::syntax::namespace::Namespace;
 use crate::syntax::qualified::QualifiedName;

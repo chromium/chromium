@@ -1,6 +1,6 @@
 [package]
 name = "cxxbridge-cmd"
-version = "1.0.161"
+version = "1.0.168"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["development-tools::build-utils", "development-tools::ffi"]
 description = "C++ code generator for integrating `cxx` crate into a non-Cargo build."
@@ -15,10 +15,6 @@ rust-version = "1.73"
 [[bin]]
 name = "cxxbridge"
 path = "src/main.rs"
-
-[features]
-# incomplete features that are not covered by a compatibility guarantee:
-experimental-async-fn = []
 
 [dependencies]
 clap = { version = "4.3.11", default-features = false, features = ["error-context", "help", "std", "suggestions", "usage"] }

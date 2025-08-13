@@ -7,7 +7,7 @@ error: hidden lifetime parameters in types are deprecated
 note: the lint level is defined here
   --> tests/ui/deny_elided_lifetimes.rs:1:9
    |
-1  | #![deny(elided_lifetimes_in_paths, mismatched_lifetime_syntaxes)]
+ 1 | #![deny(elided_lifetimes_in_paths, mismatched_lifetime_syntaxes)]
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^
 help: indicate the anonymous lifetime
    |
@@ -26,7 +26,7 @@ error: hiding a lifetime that's elided elsewhere is confusing
 note: the lint level is defined here
   --> tests/ui/deny_elided_lifetimes.rs:1:36
    |
-1  | #![deny(elided_lifetimes_in_paths, mismatched_lifetime_syntaxes)]
+ 1 | #![deny(elided_lifetimes_in_paths, mismatched_lifetime_syntaxes)]
    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 help: use `'_` for type paths
    |

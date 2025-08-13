@@ -22,8 +22,10 @@ mod pod;
 pub(crate) mod primitive;
 pub(crate) mod qualified;
 pub(crate) mod report;
+pub(crate) mod repr;
 pub(crate) mod resolve;
 pub(crate) mod set;
+mod signature;
 pub(crate) mod symbol;
 mod tokens;
 mod toposort;
@@ -39,7 +41,7 @@ use self::symbol::Symbol;
 use proc_macro2::{Ident, Span};
 use syn::punctuated::Punctuated;
 use syn::token::{Brace, Bracket, Paren};
-use syn::{Attribute, Expr, Generics, Lifetime, LitInt, Token, Type as RustType};
+use syn::{Expr, Generics, Lifetime, LitInt, Token, Type as RustType};
 
 pub(crate) use self::atom::Atom;
 pub(crate) use self::derive::{Derive, Trait};
@@ -107,6 +109,7 @@ pub(crate) struct Struct {
     pub cfg: CfgExpr,
     pub doc: Doc,
     pub derives: Vec<Derive>,
+    pub align: Option<LitInt>,
     #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub attrs: OtherAttrs,
     #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
@@ -132,22 +135,13 @@ pub(crate) struct Enum {
     pub generics: Lifetimes,
     pub brace_token: Brace,
     pub variants: Vec<Variant>,
-    pub variants_from_header: bool,
-    #[allow(dead_code)]
-    pub variants_from_header_attr: Option<Attribute>,
     pub repr: EnumRepr,
     pub explicit_repr: bool,
 }
 
-pub(crate) enum EnumRepr {
-    Native {
-        atom: Atom,
-        repr_type: Type,
-    },
-    #[cfg(feature = "experimental-enum-variants-from-header")]
-    Foreign {
-        rust_type: syn::Path,
-    },
+pub(crate) struct EnumRepr {
+    pub atom: Atom,
+    pub repr_type: Type,
 }
 
 pub(crate) struct ExternFn {
@@ -212,12 +206,22 @@ pub(crate) struct Signature {
     pub unsafety: Option<Token![unsafe]>,
     pub fn_token: Token![fn],
     pub generics: Generics,
-    pub receiver: Option<Receiver>,
+    pub kind: FnKind,
     pub args: Punctuated<Var, Token![,]>,
     pub ret: Option<Type>,
     pub throws: bool,
     pub paren_token: Paren,
     pub throws_tokens: Option<(kw::Result, Token![<], Token![>])>,
+}
+
+#[derive(PartialEq, Hash)]
+pub(crate) enum FnKind {
+    /// Rust method or C++ non-static member function.
+    Method(Receiver),
+    /// Rust associated function or C++ static member function.
+    Assoc(Ident),
+    /// Non-member function.
+    Free,
 }
 
 pub(crate) struct Var {

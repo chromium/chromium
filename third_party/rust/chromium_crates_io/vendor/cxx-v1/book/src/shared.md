@@ -244,3 +244,23 @@ C++ data type:
 - `PartialOrd` produces `operator<`, `operator<=`, `operator>`, `operator>=`
 
 [hash]: https://en.cppreference.com/w/cpp/utility/hash
+
+## Alignment
+
+The attribute `repr(align(…))` sets a minimum required alignment for a shared
+struct. The alignment value must be a power of two in the range 2<sup>0</sup> to
+2<sup>13</sup>.
+
+This turns into an [`alignas`] specifier in C++.
+
+[`alignas`]: https://en.cppreference.com/w/cpp/language/alignas.html
+
+```rust,noplayground
+#[cxx::bridge]
+mod ffi {
+    #[repr(align(4))]
+    struct ExampleStruct {
+        b: [u8; 4],
+    }
+}
+```

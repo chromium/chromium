@@ -1,8 +1,8 @@
 use crate::cxx_vector::{CxxVector, VectorElement};
+use crate::extern_type::ExternType;
 use crate::fmt::display;
 use crate::kind::Trivial;
 use crate::string::CxxString;
-use crate::ExternType;
 #[cfg(feature = "std")]
 use alloc::string::String;
 #[cfg(feature = "std")]
@@ -305,7 +305,7 @@ where
         self.pin_mut().stream_position()
     }
 
-    #[cfg(seek_relative)]
+    #[cfg(not(no_seek_relative))]
     #[allow(clippy::incompatible_msrv)]
     #[inline]
     fn seek_relative(&mut self, offset: i64) -> io::Result<()> {

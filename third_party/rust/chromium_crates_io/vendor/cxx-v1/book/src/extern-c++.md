@@ -81,7 +81,9 @@ member function trigger a data race on the `blobs` map.
 This largely follows the same principles as ***[extern
 "Rust"](extern-rust.md)*** functions and methods. In particular, any signature
 with a `self` parameter is interpreted as a C++ non-static member function and
-exposed to Rust as a method.
+exposed to Rust as a method; any signature with a `#[Self = "…"]` attribute is
+interpreted as a C++ static member function and exposed to Rust as an associated
+function.
 
 The programmer **does not** need to promise that the signatures they have typed
 in are accurate; that would be unreasonable. CXX performs static assertions that

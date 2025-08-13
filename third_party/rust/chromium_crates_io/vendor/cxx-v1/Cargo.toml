@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.73"
 name = "cxx"
-version = "1.0.161"
+version = "1.0.168"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = "build.rs"
 links = "cxxbridge1"
@@ -96,6 +96,10 @@ name = "compiletest"
 path = "tests/compiletest.rs"
 
 [[test]]
+name = "cpp_ui_tests"
+path = "tests/cpp_ui_tests.rs"
+
+[[test]]
 name = "cxx_gen"
 path = "tests/cxx_gen.rs"
 
@@ -116,7 +120,7 @@ name = "unique_ptr"
 path = "tests/unique_ptr.rs"
 
 [dependencies.cxxbridge-macro]
-version = "=1.0.161"
+version = "=1.0.168"
 
 [dependencies.foldhash]
 version = "0.1"
@@ -125,8 +129,11 @@ default-features = false
 [dependencies.link-cplusplus]
 version = "1.0.9"
 
+[dev-dependencies.cc]
+version = "1.0.83"
+
 [dev-dependencies.cxx-build]
-version = "=1.0.161"
+version = "=1.0.168"
 
 [dev-dependencies.cxx-gen]
 version = "0.7"
@@ -134,8 +141,26 @@ version = "0.7"
 [dev-dependencies.cxx-test-suite]
 version = "0"
 
+[dev-dependencies.indoc]
+version = "2"
+
+[dev-dependencies.proc-macro2]
+version = "1.0.95"
+
+[dev-dependencies.quote]
+version = "1.0.40"
+
 [dev-dependencies.rustversion]
 version = "1.0.13"
+
+[dev-dependencies.scratch]
+version = "1"
+
+[dev-dependencies.target-triple]
+version = "0.1"
+
+[dev-dependencies.tempfile]
+version = "3"
 
 [dev-dependencies.trybuild]
 version = "1.0.81"
@@ -145,8 +170,8 @@ features = ["diff"]
 version = "1.0.83"
 
 [build-dependencies.cxxbridge-flags]
-version = "=1.0.161"
+version = "=1.0.168"
 default-features = false
 
 [target."cfg(any())".build-dependencies.cxxbridge-cmd]
-version = "=1.0.161"
+version = "=1.0.168"

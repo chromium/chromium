@@ -1,6 +1,6 @@
 [package]
 name = "cxx"
-version = "1.0.161"
+version = "1.0.168"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["development-tools::ffi", "api-bindings", "no-std"]
 description = "Safe interop between Rust and C++"
@@ -23,24 +23,31 @@ alloc = []
 std = ["alloc", "foldhash/std"]
 
 [dependencies]
-cxxbridge-macro = { version = "=1.0.161", path = "macro" }
+cxxbridge-macro = { version = "=1.0.168", path = "macro" }
 foldhash = { version = "0.1", default-features = false }
 link-cplusplus = "1.0.9"
 
 [build-dependencies]
 cc = "1.0.83"
-cxxbridge-flags = { version = "=1.0.161", path = "flags", default-features = false }
+cxxbridge-flags = { version = "=1.0.168", path = "flags", default-features = false }
 
 [dev-dependencies]
-cxx-build = { version = "=1.0.161", path = "gen/build" }
+cc = "1.0.83"
+cxx-build = { version = "=1.0.168", path = "gen/build" }
 cxx-gen = { version = "0.7", path = "gen/lib" }
 cxx-test-suite = { version = "0", path = "tests/ffi" }
+indoc = "2"
+proc-macro2 = "1.0.95"
+quote = "1.0.40"
 rustversion = "1.0.13"
+scratch = "1"
+target-triple = "0.1"
+tempfile = "3"
 trybuild = { version = "1.0.81", features = ["diff"] }
 
 # Disallow incompatible cxxbridge-cmd version appearing in the same lockfile.
 [target.'cfg(any())'.build-dependencies]
-cxxbridge-cmd = { version = "=1.0.161", path = "gen/cmd" }
+cxxbridge-cmd = { version = "=1.0.168", path = "gen/cmd" }
 
 [workspace]
 members = ["demo", "flags", "gen/build", "gen/cmd", "gen/lib", "macro", "tests/ffi"]

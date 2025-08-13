@@ -1,8 +1,9 @@
+use crate::extern_type::ExternType;
 use crate::fmt::display;
 use crate::kind::Trivial;
 use crate::string::CxxString;
+use crate::unique_ptr::{UniquePtr, UniquePtrTarget};
 use crate::weak_ptr::{WeakPtr, WeakPtrTarget};
-use crate::ExternType;
 use core::cmp::Ordering;
 use core::ffi::c_void;
 use core::fmt::{self, Debug, Display};
@@ -10,8 +11,36 @@ use core::hash::{Hash, Hasher};
 use core::marker::PhantomData;
 use core::mem::MaybeUninit;
 use core::ops::Deref;
+use core::pin::Pin;
 
 /// Binding to C++ `std::shared_ptr<T>`.
+///
+/// <div class="warning">
+///
+/// **WARNING:** Unlike Rust's `Arc<T>`, a C++ shared pointer manipulates
+/// pointers to 2 separate objects in general.
+///
+/// 1. One is the **managed** pointer, and its identity is associated with
+///    shared ownership of a strong and weak count shared by other SharedPtr and
+///    WeakPtr instances having the same managed pointer.
+///
+/// 2. The other is the **stored** pointer, which is commonly either the same as
+///    the managed pointer, or is a pointer into some member of the managed
+///    object, but can be any unrelated pointer in general.
+///
+/// The managed pointer is the one passed to a deleter upon the strong count
+/// reaching zero, but the stored pointer is the one accessed by deref
+/// operations and methods such as `is_null`.
+///
+/// A shared pointer is considered **empty** if the strong count is zero,
+/// meaning the managed pointer has been deleted or is about to be deleted. A
+/// shared pointer is considered **null** if the stored pointer is the null
+/// pointer. All combinations are possible. To be explicit, a shared pointer can
+/// be nonempty and nonnull, or nonempty and null, or empty and nonnull, or
+/// empty and null. In general all of these cases need to be considered when
+/// handling a SharedPtr.
+///
+/// </div>
 #[repr(C)]
 pub struct SharedPtr<T>
 where
@@ -25,7 +54,7 @@ impl<T> SharedPtr<T>
 where
     T: SharedPtrTarget,
 {
-    /// Makes a new SharedPtr wrapping a null pointer.
+    /// Makes a new SharedPtr that is both **empty** and **null**.
     ///
     /// Matches the behavior of default-constructing a std::shared\_ptr.
     pub fn null() -> Self {
@@ -38,6 +67,8 @@ where
     }
 
     /// Allocates memory on the heap and makes a SharedPtr owner for it.
+    ///
+    /// The shared pointer will be **nonempty** and **nonnull**.
     pub fn new(value: T) -> Self
     where
         T: ExternType<Kind = Trivial>,
@@ -50,20 +81,122 @@ where
         }
     }
 
-    /// Checks whether the SharedPtr does not own an object.
+    /// Creates a shared pointer from a C++ heap-allocated pointer.
+    ///
+    /// Matches the behavior of std::shared\_ptr's constructor `explicit shared_ptr(T*)`.
+    ///
+    /// The SharedPtr gains ownership of the pointer and will call
+    /// `std::default_delete` on it when the refcount goes to zero.
+    ///
+    /// The object pointed to by the input pointer is not relocated by this
+    /// operation, so any pointers into this data structure elsewhere in the
+    /// program continue to be valid.
+    ///
+    /// The resulting shared pointer is **nonempty** regardless of whether the
+    /// input pointer is null, but may be either **null** or **nonnull**.
+    ///
+    /// # Safety
+    ///
+    /// Pointer must either be null or point to a valid instance of T
+    /// heap-allocated in C++ by `new`.
+    pub unsafe fn from_raw(raw: *mut T) -> Self {
+        let mut shared_ptr = MaybeUninit::<SharedPtr<T>>::uninit();
+        let new = shared_ptr.as_mut_ptr().cast();
+        unsafe {
+            T::__raw(new, raw);
+            shared_ptr.assume_init()
+        }
+    }
+
+    /// Checks whether the SharedPtr holds a null stored pointer.
     ///
     /// This is the opposite of [std::shared_ptr\<T\>::operator bool](https://en.cppreference.com/w/cpp/memory/shared_ptr/operator_bool).
+    ///
+    /// <div class="warning">
+    ///
+    /// This method is unrelated to the state of the reference count. It is
+    /// possible to have a SharedPtr that is nonnull but empty (has a refcount
+    /// of 0), typically from having been constructed using the alias
+    /// constructors in C++. Inversely, it is also possible to be null and
+    /// nonempty.
+    ///
+    /// </div>
     pub fn is_null(&self) -> bool {
         let this = self as *const Self as *const c_void;
         let ptr = unsafe { T::__get(this) };
         ptr.is_null()
     }
 
-    /// Returns a reference to the object owned by this SharedPtr if any,
-    /// otherwise None.
+    /// Returns a reference to the object pointed to by the stored pointer if
+    /// nonnull, otherwise None.
+    ///
+    /// <div class="warning">
+    ///
+    /// The shared pointer's managed object may or may not already have been
+    /// destroyed.
+    ///
+    /// </div>
     pub fn as_ref(&self) -> Option<&T> {
+        let ptr = self.as_ptr();
+        unsafe { ptr.as_ref() }
+    }
+
+    /// Returns a mutable pinned reference to the object pointed to by the
+    /// stored pointer.
+    ///
+    /// <div class="warning">
+    ///
+    /// The shared pointer's managed object may or may not already have been
+    /// destroyed.
+    ///
+    /// </div>
+    ///
+    /// # Panics
+    ///
+    /// Panics if the SharedPtr holds a null stored pointer.
+    ///
+    /// # Safety
+    ///
+    /// This method makes no attempt to ascertain the state of the reference
+    /// count. In particular, unlike `Arc::get_mut`, we do not enforce absence
+    /// of other SharedPtr and WeakPtr referring to the same data as this one.
+    /// As always, it is Undefined Behavior to have simultaneous references to
+    /// the same value while a Rust exclusive reference to it exists anywhere in
+    /// the program.
+    ///
+    /// For the special case of CXX [opaque C++ types], this method can be used
+    /// to safely call thread-safe non-const member functions on a C++ object
+    /// without regard for whether the reference is exclusive. This capability
+    /// applies only to opaque types `extern "C++" { type T; }`. It does not
+    /// apply to extern types defined with a non-opaque Rust representation
+    /// `extern "C++" { type T = ...; }`.
+    ///
+    /// [opaque C++ types]: https://cxx.rs/extern-c++.html#opaque-c-types
+    pub unsafe fn pin_mut_unchecked(&mut self) -> Pin<&mut T> {
+        let ptr = self.as_mut_ptr();
+        match unsafe { ptr.as_mut() } {
+            Some(target) => unsafe { Pin::new_unchecked(target) },
+            None => panic!(
+                "called pin_mut_unchecked on a null SharedPtr<{}>",
+                display(T::__typename),
+            ),
+        }
+    }
+
+    /// Returns the SharedPtr's stored pointer as a raw const pointer.
+    pub fn as_ptr(&self) -> *const T {
         let this = self as *const Self as *const c_void;
-        unsafe { T::__get(this).as_ref() }
+        unsafe { T::__get(this) }
+    }
+
+    /// Returns the SharedPtr's stored pointer as a raw mutable pointer.
+    ///
+    /// As with [std::shared_ptr\<T\>::get](https://en.cppreference.com/w/cpp/memory/shared_ptr/get),
+    /// this doesn't require that you hold an exclusive reference to the
+    /// SharedPtr. This differs from Rust norms, so extra care should be taken
+    /// in the way the pointer is used.
+    pub fn as_mut_ptr(&self) -> *mut T {
+        self.as_ptr() as *mut T
     }
 
     /// Constructs new WeakPtr as a non-owning reference to the object managed
@@ -71,7 +204,7 @@ where
     /// too.
     ///
     /// Matches the behavior of [std::weak_ptr\<T\>::weak_ptr(const std::shared_ptr\<T\> \&)](https://en.cppreference.com/w/cpp/memory/weak_ptr/weak_ptr).
-    pub fn downgrade(self: &SharedPtr<T>) -> WeakPtr<T>
+    pub fn downgrade(&self) -> WeakPtr<T>
     where
         T: WeakPtrTarget,
     {
@@ -199,6 +332,15 @@ where
     }
 }
 
+impl<T> From<UniquePtr<T>> for SharedPtr<T>
+where
+    T: UniquePtrTarget + SharedPtrTarget,
+{
+    fn from(unique: UniquePtr<T>) -> Self {
+        unsafe { SharedPtr::from_raw(UniquePtr::into_raw(unique)) }
+    }
+}
+
 /// Trait bound for types which may be used as the `T` inside of a
 /// `SharedPtr<T>` in generic code.
 ///
@@ -241,6 +383,8 @@ pub unsafe trait SharedPtrTarget {
         unreachable!()
     }
     #[doc(hidden)]
+    unsafe fn __raw(new: *mut c_void, raw: *mut Self);
+    #[doc(hidden)]
     unsafe fn __clone(this: *const c_void, new: *mut c_void);
     #[doc(hidden)]
     unsafe fn __get(this: *const c_void) -> *const Self;
@@ -267,6 +411,13 @@ macro_rules! impl_shared_ptr_target {
                     fn __uninit(new: *mut c_void) -> *mut c_void;
                 }
                 unsafe { __uninit(new).cast::<$ty>().write(value) }
+            }
+            unsafe fn __raw(new: *mut c_void, raw: *mut Self) {
+                extern "C" {
+                    #[link_name = concat!("cxxbridge1$std$shared_ptr$", $segment, "$raw")]
+                    fn __raw(new: *mut c_void, raw: *mut c_void);
+                }
+                unsafe { __raw(new, raw as *mut c_void) }
             }
             unsafe fn __clone(this: *const c_void, new: *mut c_void) {
                 extern "C" {

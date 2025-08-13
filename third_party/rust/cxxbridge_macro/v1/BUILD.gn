@@ -14,12 +14,10 @@ cargo_crate("lib") {
   crate_type = "proc-macro"
   crate_root = "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/clang.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/derive.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/expand.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/generics.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/load.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/atom.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/attrs.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/cfg.rs",
@@ -43,8 +41,10 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/primitive.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/qualified.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/report.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/repr.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/resolve.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/set.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/signature.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/symbol.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/tokens.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/syntax/toposort.rs",
@@ -62,7 +62,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "cxxbridge-macro"
   cargo_pkg_description = "Implementation detail of the `cxx` crate."
   cargo_pkg_repository = "https://github.com/dtolnay/cxx"
-  cargo_pkg_version = "1.0.161"
+  cargo_pkg_version = "1.0.168"
 
   allow_unsafe = false
 

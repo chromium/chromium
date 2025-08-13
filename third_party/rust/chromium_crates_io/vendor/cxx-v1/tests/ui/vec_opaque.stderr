@@ -19,7 +19,7 @@ error[E0271]: type mismatch resolving `<Job as ExternType>::Kind == Trivial`
 note: expected this to be `Trivial`
   --> tests/ui/vec_opaque.rs:1:1
    |
-1  | #[cxx::bridge]
+ 1 | #[cxx::bridge]
    | ^^^^^^^^^^^^^^
 note: required by a bound in `verify_extern_kind`
   --> src/extern_type.rs

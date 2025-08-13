@@ -32,8 +32,8 @@ fn main() {
             println!("cargo:rustc-check-cfg=cfg(compile_error_if_alloc)");
             println!("cargo:rustc-check-cfg=cfg(compile_error_if_std)");
             println!("cargo:rustc-check-cfg=cfg(cxx_experimental_no_alloc)");
-            println!("cargo:rustc-check-cfg=cfg(error_in_core)");
-            println!("cargo:rustc-check-cfg=cfg(seek_relative)");
+            println!("cargo:rustc-check-cfg=cfg(no_error_in_core)");
+            println!("cargo:rustc-check-cfg=cfg(no_seek_relative)");
             println!("cargo:rustc-check-cfg=cfg(skip_ui_tests)");
         }
 
@@ -45,14 +45,14 @@ fn main() {
             );
         }
 
-        if rustc.minor >= 80 {
+        if rustc.minor < 80 {
             // std::io::Seek::seek_relative
-            println!("cargo:rustc-cfg=seek_relative");
+            println!("cargo:rustc-cfg=no_seek_relative");
         }
 
-        if rustc.minor >= 81 {
+        if rustc.minor < 81 {
             // core::error::Error
-            println!("cargo:rustc-cfg=error_in_core");
+            println!("cargo:rustc-cfg=no_error_in_core");
         }
     }
 }

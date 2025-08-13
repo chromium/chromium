@@ -53,6 +53,15 @@ where
         T::__vector_size(self)
     }
 
+    /// Returns the capacity of the vector.
+    ///
+    /// Matches the behavior of C++ [std::vector\<T\>::capacity][capacity].
+    ///
+    /// [capacity]: https://en.cppreference.com/w/cpp/container/vector/capacity
+    pub fn capacity(&self) -> usize {
+        T::__vector_capacity(self)
+    }
+
     /// Returns true if the vector contains no elements.
     ///
     /// Matches the behavior of C++ [std::vector\<T\>::empty][empty].
@@ -202,6 +211,50 @@ where
                 T::__pop_back(self, &mut value);
                 value.assume_init()
             })
+        }
+    }
+
+    /// Ensures that this vector's capacity is at least `additional` elements
+    /// larger than its length.
+    ///
+    /// The capacity may be increased by more than `additional` elements if the
+    /// implementation chooses, to amortize the cost of frequent reallocations.
+    ///
+    /// **The meaning of the argument is not the same as
+    /// [std::vector\<T\>::reserve][reserve] in C++.** The C++ standard library
+    /// and Rust standard library both have a `reserve` method on vectors, but
+    /// in C++ code the argument always refers to total capacity, whereas in
+    /// Rust code it always refers to additional capacity. This API on
+    /// `CxxVector` follows the Rust convention, the same way that for the
+    /// length accessor we use the Rust conventional `len()` naming and not C++
+    /// `size()`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the new capacity overflows usize.
+    ///
+    /// [reserve]: https://en.cppreference.com/w/cpp/container/vector/reserve.html
+    pub fn reserve(self: Pin<&mut Self>, additional: usize) {
+        let new_cap = self
+            .len()
+            .checked_add(additional)
+            .expect("CxxVector capacity overflow");
+        unsafe { T::__reserve(self, new_cap) }
+    }
+}
+
+impl<T> Extend<T> for Pin<&mut CxxVector<T>>
+where
+    T: ExternType<Kind = Trivial> + VectorElement,
+{
+    fn extend<I>(&mut self, iter: I)
+    where
+        I: IntoIterator<Item = T>,
+    {
+        let iter = iter.into_iter();
+        self.as_mut().reserve(iter.size_hint().0);
+        for element in iter {
+            self.as_mut().push(element);
         }
     }
 }
@@ -358,7 +411,11 @@ pub unsafe trait VectorElement: Sized {
     #[doc(hidden)]
     fn __vector_size(v: &CxxVector<Self>) -> usize;
     #[doc(hidden)]
+    fn __vector_capacity(v: &CxxVector<Self>) -> usize;
+    #[doc(hidden)]
     unsafe fn __get_unchecked(v: *mut CxxVector<Self>, pos: usize) -> *mut Self;
+    #[doc(hidden)]
+    unsafe fn __reserve(v: Pin<&mut CxxVector<Self>>, new_cap: usize);
     #[doc(hidden)]
     unsafe fn __push_back(v: Pin<&mut CxxVector<Self>>, value: &mut ManuallyDrop<Self>) {
         // Opaque C type vector elements do not get this method because they can
@@ -430,12 +487,26 @@ macro_rules! impl_vector_element {
                 }
                 unsafe { __vector_size(v) }
             }
+            fn __vector_capacity(v: &CxxVector<$ty>) -> usize {
+                extern "C" {
+                    #[link_name = concat!("cxxbridge1$std$vector$", $segment, "$capacity")]
+                    fn __vector_capacity(_: &CxxVector<$ty>) -> usize;
+                }
+                unsafe { __vector_capacity(v) }
+            }
             unsafe fn __get_unchecked(v: *mut CxxVector<$ty>, pos: usize) -> *mut $ty {
                 extern "C" {
                     #[link_name = concat!("cxxbridge1$std$vector$", $segment, "$get_unchecked")]
                     fn __get_unchecked(_: *mut CxxVector<$ty>, _: usize) -> *mut $ty;
                 }
                 unsafe { __get_unchecked(v, pos) }
+            }
+            unsafe fn __reserve(v: Pin<&mut CxxVector<$ty>>, new_cap: usize) {
+                extern "C" {
+                    #[link_name = concat!("cxxbridge1$std$vector$", $segment, "$reserve")]
+                    fn __reserve(_: Pin<&mut CxxVector<$ty>>, _: usize);
+                }
+                unsafe { __reserve(v, new_cap) }
             }
             vector_element_by_value_methods!($kind, $segment, $ty);
             fn __unique_ptr_null() -> MaybeUninit<*mut c_void> {

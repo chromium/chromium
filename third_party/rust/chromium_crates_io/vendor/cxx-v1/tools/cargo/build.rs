@@ -51,8 +51,6 @@ fn main() {
     println!("cargo:rerun-if-changed=build.rs");
     println!("cargo:rustc-cfg=check_cfg");
     println!("cargo:rustc-check-cfg=cfg(check_cfg)");
-    println!("cargo:rustc-check-cfg=cfg(feature, values(\"experimental-async-fn\"))");
-    println!("cargo:rustc-check-cfg=cfg(feature, values(\"experimental-enum-variants-from-header\"))");
 
     if Path::new("src/syntax/mod.rs").exists() {
         return;
