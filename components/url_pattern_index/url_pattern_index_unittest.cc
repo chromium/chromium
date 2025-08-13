@@ -168,8 +168,7 @@ class UrlPatternIndexTest : public ::testing::Test {
       return false;
     const auto* data = reinterpret_cast<const uint8_t*>(rule);
     return data < flat_builder_->GetBufferPointer() ||
-           data >= UNSAFE_TODO(flat_builder_->GetBufferPointer() +
-                               flat_builder_->GetSize());
+           data >= base::to_address(flat_builder_->GetBufferSpan().end());
   }
 
   void Reset() {
