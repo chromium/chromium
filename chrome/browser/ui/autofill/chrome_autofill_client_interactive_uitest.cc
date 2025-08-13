@@ -98,7 +98,7 @@ class ChromeAutofillClientBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL("http://test.com")));
+        ui_test_utils::NavigateToURL(browser(), GURL("https://test.com")));
 
     test_api(browser_autofill_manager())
         .SetExternalDelegate(std::make_unique<TestAutofillExternalDelegate>(
