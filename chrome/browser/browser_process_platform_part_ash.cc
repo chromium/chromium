@@ -122,7 +122,7 @@ void BrowserProcessPlatformPart::InitializeAutomaticRebootManager() {
 
   automatic_reboot_manager_ =
       std::make_unique<ash::system::AutomaticRebootManager>(
-          base::DefaultClock::GetInstance(),
+          g_browser_process->local_state(), base::DefaultClock::GetInstance(),
           base::DefaultTickClock::GetInstance());
 }
 

@@ -475,6 +475,7 @@ void AutomaticRebootManagerBasicTest::ExpectNoRebootRequest() {
 void AutomaticRebootManagerBasicTest::CreateAutomaticRebootManager(
     bool expect_reboot) {
   automatic_reboot_manager_ = std::make_unique<AutomaticRebootManager>(
+      TestingBrowserProcess::GetGlobal()->local_state(),
       task_runner_->GetMockClock(), task_runner_->GetMockTickClock());
   automatic_reboot_manager_observer_.Init(automatic_reboot_manager_.get());
   task_runner_->RunUntilIdle();
