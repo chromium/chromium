@@ -107,10 +107,8 @@ class TestBounceDetectorDelegate : public BtmBounceDetectorDelegate {
       DCHECK(redirect->access_type != BtmDataAccessType::kUnknown);
       AppendRedirect(&redirects_, *redirect, *chain);
 
-      BtmServiceImpl::HandleRedirectForTesting(
-          *redirect, *chain,
-          base::BindRepeating(&TestBounceDetectorDelegate::RecordBounce,
-                              base::Unretained(this)));
+      BtmServiceImpl::RecordRedirectMetricsForTesting(*redirect, *chain);
+      RecordBounce(*redirect, *chain);
 
       redirect_index++;
     }

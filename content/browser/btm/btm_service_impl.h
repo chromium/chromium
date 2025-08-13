@@ -73,13 +73,11 @@ class CONTENT_EXPORT BtmServiceImpl : public BtmService {
       base::Time bound,
       CheckUserActivationCallback callback) const override;
 
-  // This allows unit-testing the metrics emitted by HandleRedirect() without
-  // instantiating BtmService.
-  static void HandleRedirectForTesting(const BtmRedirectInfo& redirect,
-                                       const BtmRedirectChainInfo& chain,
-                                       RecordBounceCallback callback) {
-    HandleRedirect(redirect, chain, callback);
-  }
+  // This allows unit-testing the metrics recording without instantiating
+  // BtmService. Just calls the internal RecordRedirectMetrics function.
+  static void RecordRedirectMetricsForTesting(
+      const BtmRedirectInfo& redirect,
+      const BtmRedirectChainInfo& chain);
 
   void SetStorageClockForTesting(base::Clock* clock) {
     DCHECK(storage_);
@@ -127,9 +125,6 @@ class CONTENT_EXPORT BtmServiceImpl : public BtmService {
   void RecordBounce(StatefulBounceCallback stateful_bounce_callback,
                     const BtmRedirectInfo& redirect,
                     const BtmRedirectChainInfo& chain);
-  static void HandleRedirect(const BtmRedirectInfo& redirect,
-                             const BtmRedirectChainInfo& chain,
-                             RecordBounceCallback callback);
 
   scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner();
   scoped_refptr<base::SequencedTaskRunner> CreateTaskRunnerForResource(
