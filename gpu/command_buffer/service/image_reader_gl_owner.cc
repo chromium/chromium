@@ -38,6 +38,10 @@ BASE_FEATURE(kDiscardDroppedEarlyRenderedFrames,
              "DiscardDroppedEarlyRenderedFrames",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAlwaysRequestSampledImageFromImageReader,
+             "AlwaysRequestSampledImageFromImageReader",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsSurfaceControl(TextureOwner::Mode mode) {
   switch (mode) {
     case TextureOwner::Mode::kAImageReaderInsecureSurfaceControl:
@@ -152,6 +156,11 @@ ImageReaderGLOwner::ImageReaderGLOwner(
   uint64_t usage = mode == Mode::kAImageReaderSecureSurfaceControl
                        ? AHARDWAREBUFFER_USAGE_PROTECTED_CONTENT
                        : AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE;
+
+  if (base::FeatureList::IsEnabled(kAlwaysRequestSampledImageFromImageReader)) {
+    usage |= AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE;
+  }
+
   if (IsSurfaceControl(mode))
     usage |= AHARDWAREBUFFER_USAGE_COMPOSER_OVERLAY;
 
