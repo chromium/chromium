@@ -24,13 +24,13 @@ namespace tracing {
 
 namespace {
 
-ULONG EtwSystemFlagsFromEnum(
-    perfetto::protos::gen::EtwConfig::KernelFlag flag) {
-  switch (flag) {
-    case perfetto::protos::gen::EtwConfig::CSWITCH:
-      return EVENT_TRACE_FLAG_CSWITCH;
-    case perfetto::protos::gen::EtwConfig::DISPATCHER:
-      return EVENT_TRACE_FLAG_DISPATCHER;
+ULONG EtwSystemFlagsFromSchedulerProvider(const std::string& keyword) {
+  if (keyword == "CONTEXT_SWITCH") {
+    return EVENT_TRACE_FLAG_CSWITCH;
+  } else if (keyword == "DISPATCHER") {
+    return EVENT_TRACE_FLAG_DISPATCHER;
+  } else {
+    return 0;
   }
 }
 
@@ -111,8 +111,8 @@ void EtwSystemDataSource::OnStart(const StartArgs&) {
   // Enable process and thread events for categorization and filtering.
   p.EnableFlags = EVENT_TRACE_FLAG_PROCESS | EVENT_TRACE_FLAG_THREAD;
 
-  for (auto flag : etw_config.kernel_flags()) {
-    p.EnableFlags |= EtwSystemFlagsFromEnum(flag);
+  for (const auto& keyword : etw_config.scheduler_provider_events()) {
+    p.EnableFlags |= EtwSystemFlagsFromSchedulerProvider(keyword);
   }
 
   hr = etw_controller_.Start(kEtwSystemSessionName, &prop);

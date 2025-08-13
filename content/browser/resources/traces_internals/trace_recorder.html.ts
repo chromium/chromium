@@ -86,16 +86,17 @@ function getEtwConfigurationCardHtml(this: TraceRecorderElement) {
             <div>Flag</div>
             <div>Description</div>
           </div>
-          ${this.etwProducers.map(producer => html`
+          ${this.etwEvents.map(event => html`
             <div class="row">
               <cr-toggle
                 class="config-toggle"
-                ?checked="${this.isEtwProducerEnabled(producer.flag)}"
+                ?checked="${
+                    this.isEtwEventEnabled(event.provider, event.keyword)}"
                 @change="${(e: CustomEvent<boolean>) =>
-                    this.onEtwProducerChange_(e, producer.flag)}">
+                    this.onEtwEVentChange_(e, event.provider, event.keyword)}">
               </cr-toggle>
-              <div>${producer.name}</div>
-              <div>${producer.description}</div>
+              <div>${event.name}</div>
+              <div>${event.description}</div>
             </div>
           `)}
         </div>
