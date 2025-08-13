@@ -85,6 +85,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Instrumentation tests for ChromeTabbedActivity. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -505,22 +506,25 @@ public class ChromeTabbedActivityTest {
                                     param, TabLaunchType.FROM_CHROME_UI, null);
                         });
         Assert.assertNotNull(tab);
-        Assert.assertEquals(
-                2,
-                mActivity
-                        .getTabModelSelector()
-                        .getModel(false)
-                        .getTabCountSupplier()
-                        .get()
-                        .intValue());
-        Assert.assertEquals(
-                0,
-                mActivity
-                        .getTabModelSelector()
-                        .getModel(true)
-                        .getTabCountSupplier()
-                        .get()
-                        .intValue());
+        AtomicInteger regularTabCount = new AtomicInteger();
+        AtomicInteger incognitoTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    regularTabCount.set(
+                            mActivity
+                                    .getTabModelSelector()
+                                    .getModel(false)
+                                    .getTabCountSupplier()
+                                    .get());
+                    incognitoTabCount.set(
+                            mActivity
+                                    .getTabModelSelector()
+                                    .getModel(true)
+                                    .getTabCountSupplier()
+                                    .get());
+                });
+        Assert.assertEquals(2, regularTabCount.get());
+        Assert.assertEquals(0, incognitoTabCount.get());
     }
 
     @Test
@@ -541,22 +545,25 @@ public class ChromeTabbedActivityTest {
                                     param, TabLaunchType.FROM_CHROME_UI, null);
                         });
         Assert.assertNull(tab);
-        Assert.assertEquals(
-                1,
-                mActivity
-                        .getTabModelSelector()
-                        .getModel(false)
-                        .getTabCountSupplier()
-                        .get()
-                        .intValue());
-        Assert.assertEquals(
-                0,
-                mActivity
-                        .getTabModelSelector()
-                        .getModel(true)
-                        .getTabCountSupplier()
-                        .get()
-                        .intValue());
+        AtomicInteger regularTabCount = new AtomicInteger();
+        AtomicInteger incognitoTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    regularTabCount.set(
+                            mActivity
+                                    .getTabModelSelector()
+                                    .getModel(false)
+                                    .getTabCountSupplier()
+                                    .get());
+                    incognitoTabCount.set(
+                            mActivity
+                                    .getTabModelSelector()
+                                    .getModel(true)
+                                    .getTabCountSupplier()
+                                    .get());
+                });
+        Assert.assertEquals(1, regularTabCount.get());
+        Assert.assertEquals(0, incognitoTabCount.get());
     }
 
     @Test
@@ -577,22 +584,25 @@ public class ChromeTabbedActivityTest {
                                     param, TabLaunchType.FROM_CHROME_UI, null);
                         });
         Assert.assertNotNull(tab);
-        Assert.assertEquals(
-                1,
-                mActivity
-                        .getTabModelSelector()
-                        .getModel(false)
-                        .getTabCountSupplier()
-                        .get()
-                        .intValue());
-        Assert.assertEquals(
-                1,
-                mActivity
-                        .getTabModelSelector()
-                        .getModel(true)
-                        .getTabCountSupplier()
-                        .get()
-                        .intValue());
+        AtomicInteger regularTabCount = new AtomicInteger();
+        AtomicInteger incognitoTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    regularTabCount.set(
+                            mActivity
+                                    .getTabModelSelector()
+                                    .getModel(false)
+                                    .getTabCountSupplier()
+                                    .get());
+                    incognitoTabCount.set(
+                            mActivity
+                                    .getTabModelSelector()
+                                    .getModel(true)
+                                    .getTabCountSupplier()
+                                    .get());
+                });
+        Assert.assertEquals(1, regularTabCount.get());
+        Assert.assertEquals(1, incognitoTabCount.get());
     }
 
     @Test
@@ -766,7 +776,9 @@ public class ChromeTabbedActivityTest {
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testMultiUrlReparentingIntent() {
-        int initialTabCount = mActivity.getCurrentTabModel().getCount();
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
 
         Intent reparentingIntent = new Intent(Intent.ACTION_VIEW);
         reparentingIntent.setClass(mActivity, ChromeTabbedActivity.class);
@@ -788,13 +800,13 @@ public class ChromeTabbedActivityTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     TabModel tabModel = mActivity.getCurrentTabModel();
-                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount + 2));
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount.get() + 2));
                     // Tabs are added at the end of the tab model.
                     Criteria.checkThat(
-                            tabModel.getTabAt(initialTabCount).getUrl(),
+                            tabModel.getTabAt(initialTabCount.get()).getUrl(),
                             Matchers.is(JUnitTestGURLs.URL_1));
                     Criteria.checkThat(
-                            tabModel.getTabAt(initialTabCount + 1).getUrl(),
+                            tabModel.getTabAt(initialTabCount.get() + 1).getUrl(),
                             Matchers.is(JUnitTestGURLs.URL_2));
                 });
     }
@@ -803,7 +815,9 @@ public class ChromeTabbedActivityTest {
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testMultiUrlReparentingIntent_EmptyList() {
-        int initialTabCount = mActivity.getCurrentTabModel().getCount();
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
 
         Intent reparentingIntent = new Intent(Intent.ACTION_VIEW);
         reparentingIntent.setClass(mActivity, ChromeTabbedActivity.class);
@@ -824,7 +838,7 @@ public class ChromeTabbedActivityTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     TabModel tabModel = mActivity.getCurrentTabModel();
-                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount));
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount.get()));
                 });
     }
 
@@ -832,7 +846,9 @@ public class ChromeTabbedActivityTest {
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testMultiUrlReparentingIntent_mismatchedLists() {
-        int initialTabCount = mActivity.getCurrentTabModel().getCount();
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
 
         Intent reparentingIntent = new Intent(Intent.ACTION_VIEW);
         reparentingIntent.setClass(mActivity, ChromeTabbedActivity.class);
@@ -860,7 +876,7 @@ public class ChromeTabbedActivityTest {
                     Criteria.checkThat(
                             "Tab count should not change for mismatched lists",
                             tabModel.getCount(),
-                            Matchers.is(initialTabCount));
+                            Matchers.is(initialTabCount.get()));
                 });
     }
 
@@ -882,7 +898,9 @@ public class ChromeTabbedActivityTest {
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testMaybeLaunchDraggedMultiTabInWindow() {
-        int initialTabCount = mActivity.getCurrentTabModel().getCount();
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
 
         Intent dragIntent = new Intent(Intent.ACTION_VIEW);
         dragIntent.setClass(mActivity, ChromeTabbedActivity.class);
@@ -903,13 +921,13 @@ public class ChromeTabbedActivityTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     TabModel tabModel = mActivity.getCurrentTabModel();
-                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount + 2));
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount.get() + 2));
                     // Tabs are added at the end of the tab model.
                     Criteria.checkThat(
-                            tabModel.getTabAt(initialTabCount).getUrl(),
+                            tabModel.getTabAt(initialTabCount.get()).getUrl(),
                             Matchers.is(JUnitTestGURLs.URL_1));
                     Criteria.checkThat(
-                            tabModel.getTabAt(initialTabCount + 1).getUrl(),
+                            tabModel.getTabAt(initialTabCount.get() + 1).getUrl(),
                             Matchers.is(JUnitTestGURLs.URL_2));
                 });
     }
@@ -918,7 +936,9 @@ public class ChromeTabbedActivityTest {
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testMaybeLaunchDraggedMultiTabInWindow_EmptyList() {
-        int initialTabCount = mActivity.getCurrentTabModel().getCount();
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
 
         Intent dragIntent = new Intent(Intent.ACTION_VIEW);
         dragIntent.setClass(mActivity, ChromeTabbedActivity.class);
@@ -938,7 +958,7 @@ public class ChromeTabbedActivityTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     TabModel tabModel = mActivity.getCurrentTabModel();
-                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount));
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount.get()));
                 });
     }
 
@@ -946,7 +966,9 @@ public class ChromeTabbedActivityTest {
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testMaybeLaunchDraggedMultiTabInWindow_mismatchedLists() {
-        int initialTabCount = mActivity.getCurrentTabModel().getCount();
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
 
         Intent dragIntent = new Intent(Intent.ACTION_VIEW);
         dragIntent.setClass(mActivity, ChromeTabbedActivity.class);
@@ -973,7 +995,7 @@ public class ChromeTabbedActivityTest {
                     Criteria.checkThat(
                             "Tab count should not change for mismatched lists",
                             tabModel.getCount(),
-                            Matchers.is(initialTabCount));
+                            Matchers.is(initialTabCount.get()));
                 });
     }
 }
