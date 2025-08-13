@@ -4829,11 +4829,7 @@ hooks = [
                '--input-public',
                'src/chromeos/tast_control_disabled_tests_public_builders.txt'],
   },
-  {
-    'name': 'generate_libcxx_headers',
-    'pattern': '.',
-    'action': ['python3', 'src/buildtools/third_party/libc++/generate_libcxx_headers.py'],
-  }
+
 ]
 
 # Add any corresponding DEPS files from this list to chromium.exclusions in
