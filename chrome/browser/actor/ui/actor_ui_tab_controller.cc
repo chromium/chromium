@@ -16,6 +16,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+DEFINE_USER_DATA(actor::ui::ActorUiTabController);
 
 namespace actor::ui {
 namespace {
@@ -48,7 +51,8 @@ ActorUiTabController::ActorUiTabController(
     std::unique_ptr<ActorUiTabControllerFactoryInterface> controller_factory)
     : tab_(tab),
       actor_keyed_service_(actor_service),
-      controller_factory_(std::move(controller_factory)) {
+      controller_factory_(std::move(controller_factory)),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   CHECK(actor_keyed_service_);
   actor_overlay_view_controller_ =
       controller_factory_->CreateActorOverlayViewController(tab);
@@ -72,6 +76,10 @@ void ActorUiTabController::RegisterTabSubscriptions() {
   tab_subscriptions_.push_back(tab_->RegisterWillDeactivate(
       base::BindRepeating(&ActorUiTabController::OnTabActiveStatusChanged,
                           weak_factory_.GetWeakPtr(), /*is_activated=*/false)));
+}
+
+ActorUiTabController* ActorUiTabController::From(tabs::TabInterface* tab) {
+  return Get(tab->GetUnownedUserDataHost());
 }
 
 void ActorUiTabController::OnUiTabStateChange(const UiTabState& ui_tab_state,

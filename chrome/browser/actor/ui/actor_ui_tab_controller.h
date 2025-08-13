@@ -13,11 +13,11 @@
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace actor {
 class ActorKeyedService;
 }
-
 namespace actor::ui {
 
 class ActorUiTabControllerFactory
@@ -36,6 +36,8 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
       ActorKeyedService* actor_service,
       std::unique_ptr<ActorUiTabControllerFactoryInterface> controller_factory);
   ~ActorUiTabController() override;
+  DECLARE_USER_DATA(ActorUiTabController);
+  static ActorUiTabController* From(tabs::TabInterface* tab);
 
   // ActorUiTabControllerInterface:
   void OnUiTabStateChange(const UiTabState& ui_tab_state,
@@ -134,6 +136,8 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   std::unique_ptr<ActorUiTabControllerFactoryInterface> controller_factory_;
 
   bool should_show_actor_tab_indicator_ = false;
+
+  ::ui::ScopedUnownedUserData<ActorUiTabController> scoped_unowned_user_data_;
 
   base::WeakPtrFactory<ActorUiTabController> weak_factory_{this};
 };

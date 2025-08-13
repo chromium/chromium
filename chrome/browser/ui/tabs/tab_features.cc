@@ -273,9 +273,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     // TODO(crbug.com/433973411): Move this logic to a helper function.
     if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
         profile->IsRegularProfile()) {
+      // The associated tab is passed to CreateInstance twice: for dependency
+      // injection callbacks and as a direct constructor argument.
       actor_ui_tab_controller_ =
-          std::make_unique<actor::ui::ActorUiTabController>(
-              tab, actor::ActorKeyedService::Get(profile),
+          GetUserDataFactory().CreateInstance<actor::ui::ActorUiTabController>(
+              tab, tab, actor::ActorKeyedService::Get(profile),
               std::make_unique<actor::ui::ActorUiTabControllerFactory>());
     }
     actor_tab_data_ =
