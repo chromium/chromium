@@ -114,8 +114,8 @@ class ZeroStateSuggestionsPageData
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
-  // Give up on extracting page content. To be called after a delay.
-  void OnTimeout();
+  // Give up on extracting page content and signal no result.
+  void GiveUp();
 
   // Notifies all page context callbacks that page context has been collected
   // for the page.

@@ -134,6 +134,9 @@ ZeroStateSuggestionsPageData::~ZeroStateSuggestionsPageData() {
       base::StringPrintf(
           "ZeroStateSuggestionsPageData: Destructing page data for %s.",
           GetUrl().spec()));
+  if (!work_done()) {
+    GiveUp();
+  }
 }
 
 void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
@@ -153,7 +156,7 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
   if (!timeout_scheduled_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&ZeroStateSuggestionsPageData::OnTimeout, AsWeakPtr()),
+        base::BindOnce(&ZeroStateSuggestionsPageData::GiveUp, AsWeakPtr()),
         kZSSPageContextTimeout.Get());
     timeout_scheduled_ = true;
   }
@@ -334,7 +337,7 @@ void ZeroStateSuggestionsPageData::OnReceivedOptimizationMetadata(
   InvokePageContextCallbacksIfComplete();
 }
 
-void ZeroStateSuggestionsPageData::OnTimeout() {
+void ZeroStateSuggestionsPageData::GiveUp() {
   OPTIMIZATION_GUIDE_LOG(
       optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
       optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
