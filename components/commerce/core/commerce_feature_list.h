@@ -95,9 +95,6 @@ extern const char kRetailCouponsWithCodeParam[];
 // Feature flag for Discount user consent v2.
 BASE_DECLARE_FEATURE(kDiscountConsentV2);
 
-// Feature flag for Code-based RBD.
-BASE_DECLARE_FEATURE(kCodeBasedRBD);
-
 // Shopping list update interval.
 constexpr base::FeatureParam<base::TimeDelta>
     kShoppingListBookmarkpdateIntervalParam(
