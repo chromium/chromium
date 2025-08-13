@@ -35,11 +35,13 @@ import org.chromium.android_webview.AwDevToolsServer;
 import org.chromium.android_webview.AwGeolocationPermissions;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.JsResultReceiver;
+import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.test.AwTestContainerView;
 import org.chromium.android_webview.test.NullContentsClient;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -142,6 +144,7 @@ public class AwShellActivity extends Activity {
         };
         boolean useVulkan = Arrays.asList(supportedModels).contains(Build.MODEL);
         AwTestContainerView.installDrawFnFunctionTable(useVulkan);
+        WebViewCachedFlags.init(new InMemorySharedPreferences());
         AwBrowserProcess.startForTesting();
         AwTestContainerView testContainerView = new AwTestContainerView(this, true);
         AwContentsClient awContentsClient =

@@ -54,6 +54,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewQuicConnectionTimeout,
     &features::kWebViewRecordAppCacheHistograms,
     &features::kWebViewReduceUAAndroidVersionDeviceModel,
+    &features::kWebViewReducedSeedExpiration,
+    &features::kWebViewReducedSeedRequestPeriod,
     &features::kWebViewReportImeInsets,
     &features::kWebViewSafeAreaIncludesSystemBars,
     &features::kWebViewShortCircuitShouldInterceptRequest,

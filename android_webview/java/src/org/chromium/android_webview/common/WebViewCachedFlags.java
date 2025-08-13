@@ -11,6 +11,9 @@ import android.content.SharedPreferences;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -83,6 +86,10 @@ public class WebViewCachedFlags {
                                     AwFeatures.WEBVIEW_STARTUP_TASKS_YIELD_TO_NATIVE,
                                     DefaultState.DISABLED,
                                     AwFeatures.WEBVIEW_USE_BACKGROUND_THREAD_FOR_GMS,
+                                    DefaultState.DISABLED,
+                                    AwFeatures.WEBVIEW_REDUCED_SEED_EXPIRATION,
+                                    DefaultState.DISABLED,
+                                    AwFeatures.WEBVIEW_REDUCED_SEED_REQUEST_PERIOD,
                                     DefaultState.DISABLED));
         }
     }
@@ -154,6 +161,12 @@ public class WebViewCachedFlags {
         cleanUpOldManualExperiments(prefs, editor);
         editor.remove(CACHED_ENABLED_FLAGS_PREF).remove(CACHED_DISABLED_FLAGS_PREF).apply();
         mDefaults = defaults;
+    }
+
+    /** Helper method to be called by native to check feature values without the instance. */
+    @CalledByNative
+    private static boolean isFeatureEnabled(@JniType("std::string") String feature) {
+        return get().isCachedFeatureEnabled(feature);
     }
 
     /**

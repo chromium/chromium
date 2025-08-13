@@ -1192,6 +1192,7 @@ generate_jni("common_jni") {
     "java/src/org/chromium/android_webview/common/AwFeatureMap.java",
     "java/src/org/chromium/android_webview/common/AwGrContextOptionsProvider.java",
     "java/src/org/chromium/android_webview/common/AwResource.java",
+    "java/src/org/chromium/android_webview/common/WebViewCachedFlags.java",
     "java/src/org/chromium/android_webview/common/origin_trial/DisableOriginTrialsSafeModeUtils.java",
   ]
 }

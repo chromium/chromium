@@ -18,6 +18,7 @@
 #include "android_webview/browser/metrics/memory_metrics_logger.h"
 #include "android_webview/browser/metrics/system_state_util.h"
 #include "android_webview/browser/network_service/aw_network_change_notifier_factory.h"
+#include "android_webview/common/aw_cached_flags.h"
 #include "android_webview/common/aw_descriptors.h"
 #include "android_webview/common/aw_paths.h"
 #include "android_webview/common/aw_resource.h"
@@ -330,6 +331,33 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       metrics, "WebViewStartupTasksMetrics",
       webview_startup_tasks_experiment_enabled ? "Enabled" : "Control",
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
+
+  bool in_seed_experiment = base::FeatureList::GetStateIfOverridden(
+                                features::kWebViewReducedSeedExpiration)
+                                .has_value() ||
+                            base::FeatureList::GetStateIfOverridden(
+                                features::kWebViewReducedSeedRequestPeriod)
+                                .has_value();
+  bool reduced_seed_expiration = android_webview::CachedFlags::IsEnabled(
+      features::kWebViewReducedSeedExpiration);
+  bool reduced_seed_request_period = android_webview::CachedFlags::IsEnabled(
+      features::kWebViewReducedSeedRequestPeriod);
+
+  std::string group = "Default";
+  if (in_seed_experiment) {
+    if (reduced_seed_expiration && reduced_seed_request_period) {
+      group = "BothEnabled";
+    } else if (reduced_seed_expiration) {
+      group = "ReducedSeedExpiration";
+    } else if (reduced_seed_request_period) {
+      group = "ReducedSeedRequestPeriod";
+    } else {
+      group = "Control";
+    }
+  }
+  AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      metrics, "WebViewFasterFinchSeed", group,
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
