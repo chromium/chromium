@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.extensions.windowing;
 
+import android.graphics.Rect;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
@@ -40,6 +42,11 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
             ExtensionWindowControllerBridgeImplJni.get()
                     .destroy(mNativeExtensionWindowControllerBridge);
         }
+    }
+
+    @Override
+    public void onTaskBoundsChanged(Rect newBounds) {
+        // TODO(crbug.com/424857039): relay the "bounds changed" event to extension internals.
     }
 
     long getNativePtrForTesting() {

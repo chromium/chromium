@@ -9,6 +9,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.graphics.Rect;
@@ -19,6 +23,8 @@ import androidx.test.filters.MediumTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -43,6 +49,8 @@ public class ChromeAndroidTaskIntegrationTest {
     @Rule
     public FreshCtaTransitTestRule mFreshCtaTransitTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Test
     @MediumTest
@@ -99,6 +107,38 @@ public class ChromeAndroidTaskIntegrationTest {
         assertTrue(
                 secondChromeAndroidTask.getLastActivatedTimeMillis()
                         > firstChromeAndroidTask.getLastActivatedTimeMillis());
+
+        // Cleanup.
+        ntpStation.getActivity().finish();
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
+    @Restriction(
+            // Test needs "new window" in app menu and the tablet behavior to enter split screen
+            // mode to trigger onConfigurationChanged().
+            DeviceFormFactor.ONLY_TABLET)
+    public void onConfigurationChanged_invokesOnTaskBoundsChangedForFeature() {
+        // Arrange:
+        // Launch ChromeTabbedActivity;
+        // Find its ChromeAndroidTask;
+        // Add a mock ChromeAndroidTaskFeature.
+        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+        int taskId = mFreshCtaTransitTestRule.getActivity().getTaskId();
+        var chromeAndroidTask = getChromeAndroidTask(taskId);
+        assertNotNull(chromeAndroidTask);
+        var mockFeature = mock(ChromeAndroidTaskFeature.class);
+        chromeAndroidTask.addFeature(mockFeature);
+
+        // Act:
+        // Open a new window, which on tablet will enter split screen mode and trigger a
+        // configuration change on the first window.
+        RegularNewTabPageStation ntpStation =
+                webPageStation.openRegularTabAppMenu().openNewWindow();
+
+        // Assert.
+        verify(mockFeature, times(1)).onTaskBoundsChanged(any());
 
         // Cleanup.
         ntpStation.getActivity().finish();

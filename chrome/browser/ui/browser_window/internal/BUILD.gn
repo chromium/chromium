@@ -140,6 +140,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerImpl.java",
     ]
     deps = [
+      "//base:log_java",
       "//base:time_utils_java",
       "//build/android:build_java",
       "//chrome/browser/android/lifecycle:java",
@@ -194,6 +195,7 @@ if (is_android) {
       "//chrome/test/android:chrome_java_transit",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit",
+      "//third_party/mockito:mockito_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
   }

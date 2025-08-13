@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
 import android.app.Activity;
+import android.view.WindowManager;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -58,13 +59,18 @@ public final class ChromeAndroidTaskUnitTestSupport {
         public final Activity mMockActivity;
         public final ActivityLifecycleDispatcher mMockActivityLifecycleDispatcher;
 
+        /** Mock {@link WindowManager} for {@link #mMockActivity}. */
+        public final WindowManager mMockWindowManager;
+
         public ActivityWindowAndroidMocks(
                 ActivityWindowAndroid mockActivityWindowAndroid,
                 Activity mockActivity,
-                ActivityLifecycleDispatcher mockActivityLifecycleDispatcher) {
+                ActivityLifecycleDispatcher mockActivityLifecycleDispatcher,
+                WindowManager mockWindowManager) {
             mMockActivityWindowAndroid = mockActivityWindowAndroid;
             mMockActivity = mockActivity;
             mMockActivityLifecycleDispatcher = mockActivityLifecycleDispatcher;
+            mMockWindowManager = mockWindowManager;
         }
     }
 
@@ -115,14 +121,19 @@ public final class ChromeAndroidTaskUnitTestSupport {
                         Activity.class,
                         withSettings().extraInterfaces(ActivityLifecycleDispatcherProvider.class));
         var mockActivityLifecycleDispatcher = mock(ActivityLifecycleDispatcher.class);
+        var mockWindowManager = mock(WindowManager.class);
 
         when(mockActivity.getTaskId()).thenReturn(taskId);
+        when(mockActivity.getWindowManager()).thenReturn(mockWindowManager);
         when(((ActivityLifecycleDispatcherProvider) mockActivity).getLifecycleDispatcher())
                 .thenReturn(mockActivityLifecycleDispatcher);
         when(mockActivityWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mockActivity));
 
         return new ActivityWindowAndroidMocks(
-                mockActivityWindowAndroid, mockActivity, mockActivityLifecycleDispatcher);
+                mockActivityWindowAndroid,
+                mockActivity,
+                mockActivityLifecycleDispatcher,
+                mockWindowManager);
     }
 
     /**

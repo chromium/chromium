@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
+import android.graphics.Rect;
+
 import org.chromium.build.annotations.NullMarked;
 
 /** Represents a Chrome feature whose lifecycle should be in sync with {@link ChromeAndroidTask}. */
@@ -30,4 +32,11 @@ public interface ChromeAndroidTaskFeature {
      * @see ChromeAndroidTaskTracker#remove(int)
      */
     void onTaskRemoved();
+
+    /**
+     * Called by a {@link ChromeAndroidTask} when the Task (window) bounds are changed.
+     *
+     * @param newBounds The new Task bounds.
+     */
+    void onTaskBoundsChanged(Rect newBounds);
 }

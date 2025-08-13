@@ -14,18 +14,28 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.build.NullUtil.assertNonNull;
+
+import android.annotation.SuppressLint;
+import android.content.res.Configuration;
+import android.graphics.Rect;
+import android.os.Build;
+import android.view.WindowMetrics;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
 
 import java.util.Arrays;
@@ -75,7 +85,8 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert.
         verify(mockActivityLifecycleDispatcher, times(1))
                 .register(isA(TopResumedActivityChangedWithNativeObserver.class));
-        // TODO(crbug.com/424857039): verify ConfigurationChangedObserver.
+        verify(mockActivityLifecycleDispatcher, times(1))
+                .register(isA(ConfigurationChangedObserver.class));
     }
 
     @Test
@@ -134,7 +145,8 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert.
         verify(newActivityWindowAndroidMocks.mMockActivityLifecycleDispatcher, times(1))
                 .register(isA(TopResumedActivityChangedWithNativeObserver.class));
-        // TODO(crbug.com/424857039): verify ConfigurationChangedObserver.
+        verify(newActivityWindowAndroidMocks.mMockActivityLifecycleDispatcher, times(1))
+                .register(isA(ConfigurationChangedObserver.class));
     }
 
     @Test
@@ -196,7 +208,8 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert.
         verify(mockActivityLifecycleDispatcher, times(1))
                 .unregister(isA(TopResumedActivityChangedWithNativeObserver.class));
-        // TODO(crbug.com/424857039): verify ConfigurationChangedObserver.
+        verify(mockActivityLifecycleDispatcher, times(1))
+                .unregister(isA(ConfigurationChangedObserver.class));
     }
 
     @Test
@@ -351,6 +364,70 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act & Assert.
         assertThrows(AssertionError.class, () -> chromeAndroidTask.destroy());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
+    public void onConfigurationChanged_windowBoundsChanged_invokesOnTaskBoundsChangedForFeature() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+
+        var mockFeature = mock(ChromeAndroidTaskFeature.class);
+        chromeAndroidTask.addFeature(mockFeature);
+
+        var mockWindowManager =
+                chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockWindowManager;
+        var mockWindowMetrics = mock(WindowMetrics.class);
+        var taskBounds1 = new Rect(0, 0, 800, 600);
+        var taskBounds2 = new Rect(0, 0, 1920, 1080);
+        when(mockWindowMetrics.getBounds()).thenReturn(taskBounds1, taskBounds2);
+        when(mockWindowManager.getCurrentWindowMetrics()).thenReturn(mockWindowMetrics);
+
+        // Act.
+        chromeAndroidTask.onConfigurationChanged(new Configuration());
+        chromeAndroidTask.onConfigurationChanged(new Configuration());
+
+        // Assert.
+        var inOrder = Mockito.inOrder(mockFeature);
+        inOrder.verify(mockFeature).onTaskBoundsChanged(taskBounds1);
+        inOrder.verify(mockFeature).onTaskBoundsChanged(taskBounds2);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
+    public void
+            onConfigurationChanged_windowBoundsDoesNotChange_doesNotInvokeOnTaskBoundsChangedForFeature() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+
+        var mockFeature = mock(ChromeAndroidTaskFeature.class);
+        chromeAndroidTask.addFeature(mockFeature);
+
+        var mockWindowManager =
+                chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockWindowManager;
+        var mockWindowMetrics = mock(WindowMetrics.class);
+        var taskBounds = new Rect(0, 0, 800, 600);
+        when(mockWindowMetrics.getBounds()).thenReturn(taskBounds);
+        when(mockWindowManager.getCurrentWindowMetrics()).thenReturn(mockWindowMetrics);
+
+        // Act.
+        chromeAndroidTask.onConfigurationChanged(new Configuration());
+        chromeAndroidTask.onConfigurationChanged(new Configuration());
+
+        // Assert:
+        // Only the first onConfigurationChanged() should trigger onTaskBoundsChanged() as the
+        // second onConfigurationChanged() doesn't include a change in window bounds.
+        verify(mockFeature, times(1)).onTaskBoundsChanged(taskBounds);
     }
 
     @Test

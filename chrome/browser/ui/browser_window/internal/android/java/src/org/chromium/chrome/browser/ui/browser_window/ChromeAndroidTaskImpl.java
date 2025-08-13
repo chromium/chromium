@@ -5,17 +5,19 @@
 package org.chromium.chrome.browser.ui.browser_window;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
 
 import androidx.annotation.GuardedBy;
-import androidx.annotation.RequiresApi;
 
+import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
+import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
@@ -25,14 +27,14 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Implements {@link ChromeAndroidTask}.
- *
- * <p>TODO(crbug.com/424857039): Implement a ConfigurationChangedObserver.
- */
+/** Implements {@link ChromeAndroidTask}. */
 @NullMarked
 final class ChromeAndroidTaskImpl
-        implements ChromeAndroidTask, TopResumedActivityChangedWithNativeObserver {
+        implements ChromeAndroidTask,
+                ConfigurationChangedObserver,
+                TopResumedActivityChangedWithNativeObserver {
+
+    private static final String TAG = "ChromeAndroidTask";
 
     /** States of this {@link ChromeAndroidTask}. */
     private enum State {
@@ -78,6 +80,9 @@ final class ChromeAndroidTaskImpl
      */
     @GuardedBy("mActivityWindowAndroidLock")
     private WeakReference<ActivityWindowAndroid> mActivityWindowAndroid = new WeakReference<>(null);
+
+    /** Last Task (window) bounds updated by {@link #onConfigurationChanged(Configuration)}. */
+    private @Nullable Rect mLastBoundsOnConfigChanged;
 
     private static Activity getActivity(ActivityWindowAndroid activityWindowAndroid) {
         Activity activity = activityWindowAndroid.getActivity().get();
@@ -185,15 +190,31 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
-    @RequiresApi(Build.VERSION_CODES.R)
     public Rect getBounds() {
-        synchronized (mActivityWindowAndroidLock) {
-            var activityWindowAndroid =
-                    getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
-            if (activityWindowAndroid == null) return new Rect();
-            Activity activity = activityWindowAndroid.getActivity().get();
-            if (activity == null) return new Rect();
-            return activity.getWindowManager().getCurrentWindowMetrics().getBounds();
+        return getBoundsInternal();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        // Note:
+        //
+        // (1) Not all Configuration changes include a window bounds change, so we need to check
+        // whether the bounds have changed.
+        //
+        // (2) As of Aug 12, 2025, Configuration doesn't provide a public API to get the window
+        // bounds. Its "windowConfiguration" field is marked as @TestApi:
+        // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/content/res/Configuration.java;l=417-418;drc=64130047e019cee612a85dde07755efd8f356f12
+        // Therefore, we obtain the new bounds using an Activity API (see getBoundsInternal()).
+        var newBounds = getBoundsInternal();
+        if (newBounds.equals(mLastBoundsOnConfigChanged)) {
+            return;
+        }
+
+        mLastBoundsOnConfigChanged = newBounds;
+        synchronized (mFeaturesLock) {
+            for (var feature : mFeatures) {
+                feature.onTaskBoundsChanged(newBounds);
+            }
         }
     }
 
@@ -266,6 +287,24 @@ final class ChromeAndroidTaskImpl
                 feature.onTaskRemoved();
             }
             mFeatures.clear();
+        }
+    }
+
+    private Rect getBoundsInternal() {
+        synchronized (mActivityWindowAndroidLock) {
+            // TODO(crbug.com/438268202): Change the if statement to an assert.
+            // We don't expect ChromeAndroidTask to work for R and below.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                Log.w(TAG, "getBoundsInternal() requires Android R+; returning an empty Rect()");
+                return new Rect();
+            }
+
+            var activityWindowAndroid =
+                    getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
+            if (activityWindowAndroid == null) return new Rect();
+            Activity activity = activityWindowAndroid.getActivity().get();
+            if (activity == null) return new Rect();
+            return activity.getWindowManager().getCurrentWindowMetrics().getBounds();
         }
     }
 
