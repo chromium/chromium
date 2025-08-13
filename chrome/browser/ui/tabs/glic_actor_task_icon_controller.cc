@@ -21,64 +21,65 @@ GlicActorTaskIconController::GlicActorTaskIconController(
     : profile_(profile),
       tab_strip_action_container_(tab_strip_action_container) {
   if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
-    RegisterFloatyTaskStateCallback();
-    UpdateCurrentUiState();
+    RegisterTaskIconStateCallback();
+    UpdateCurrentTaskIconUiState();
   }
 }
 
 GlicActorTaskIconController::~GlicActorTaskIconController() = default;
 
-void GlicActorTaskIconController::RegisterFloatyTaskStateCallback() {
+void GlicActorTaskIconController::RegisterTaskIconStateCallback() {
 #if BUILDFLAG(ENABLE_GLIC)
-  floaty_task_state_change_callback_subscription_.push_back(
+  task_icon_state_change_callback_subscription_.push_back(
       actor::ActorKeyedService::Get(profile_)
           ->GetActorUiStateManager()
-          ->RegisterFloatyTaskStateChange(
+          ->RegisterTaskIconStateChange(
               base::BindRepeating(&GlicActorTaskIconController::OnStateUpdate,
                                   base::Unretained(this))));
 #endif
 }
 
-void GlicActorTaskIconController::UpdateCurrentUiState() {
+void GlicActorTaskIconController::UpdateCurrentTaskIconUiState() {
 #if BUILDFLAG(ENABLE_GLIC)
-  actor::ui::ActorUiStateManagerInterface::UiState ui_state =
+  actor::ui::ActorUiStateManagerInterface::TaskIconUiState task_icon_state =
       actor::ActorKeyedService::Get(profile_)
           ->GetActorUiStateManager()
-          ->GetUiState();
+          ->GetTaskIconUiState();
   auto* glic_keyed_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
-  OnStateUpdate(ui_state, glic_keyed_service->window_controller().state(),
+  OnStateUpdate(task_icon_state,
+                glic_keyed_service->window_controller().state(),
                 glic_keyed_service->host().GetPrimaryCurrentView());
 #endif
 }
 
 #if BUILDFLAG(ENABLE_GLIC)
 void GlicActorTaskIconController::OnStateUpdate(
-    actor::ui::ActorUiStateManagerInterface::UiState task_state,
+    actor::ui::ActorUiStateManagerInterface::TaskIconUiState task_icon_state,
     glic::GlicWindowController::State floaty_state,
     glic::mojom::CurrentView floaty_view) {
-  switch (task_state) {
-    case actor::ui::ActorUiStateManagerInterface::UiState::kActive:
+  switch (task_icon_state) {
+    case actor::ui::ActorUiStateManagerInterface::TaskIconUiState::kShown:
       tab_strip_action_container_->ShowGlicActorTaskIcon();
       break;
-    case actor::ui::ActorUiStateManagerInterface::UiState::kCheckTasks:
+    case actor::ui::ActorUiStateManagerInterface::TaskIconUiState::
+        kNeedsAttention:
       tab_strip_action_container_->TriggerGlicActorTaskIconCheckTasksNudge();
       break;
-    case actor::ui::ActorUiStateManagerInterface::UiState::kCompleteTasks:
+    case actor::ui::ActorUiStateManagerInterface::TaskIconUiState::
+        kCompleteTasks:
       tab_strip_action_container_->TriggerGlicActorTaskIconCompleteTasksNudge();
       break;
-    case actor::ui::ActorUiStateManagerInterface::UiState::kInactive:
+    case actor::ui::ActorUiStateManagerInterface::TaskIconUiState::kHidden:
       tab_strip_action_container_->HideGlicActorTaskIcon();
       break;
   }
 
-  if (task_state !=
-      actor::ui::ActorUiStateManagerInterface::UiState::kInactive) {
+  if (task_icon_state !=
+      actor::ui::ActorUiStateManagerInterface::TaskIconUiState::kHidden) {
     switch (floaty_state) {
       case glic::GlicWindowController::State::kOpen:
-        if (floaty_view == glic::mojom::CurrentView::kConversation &&
-            task_state !=
-                actor::ui::ActorUiStateManagerInterface::UiState::kInactive) {
+        if (floaty_view == glic::mojom::CurrentView::kConversation) {
           tab_strip_action_container_->UnhighlightGlicActorTaskIcon();
           tab_strip_action_container_->HighlightGlicButton();
         } else if (floaty_view == glic::mojom::CurrentView::kActuation) {

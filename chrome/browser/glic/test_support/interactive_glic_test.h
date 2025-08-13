@@ -432,7 +432,7 @@ class InteractiveGlicTestT : public T {
     auto* task_icon_controller =
         browser()->browser_window_features()->glic_actor_task_icon_controller();
     task_icon_controller->OnStateUpdate(
-        actor::ui::ActorUiStateManagerInterface::UiState::kActive,
+        actor::ui::ActorUiStateManagerInterface::TaskIconUiState::kShown,
         glic::GlicWindowController::State::kClosed,
         mojom::CurrentView::kConversation);
   }

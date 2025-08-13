@@ -150,8 +150,9 @@ void ActorUiStateManager::OnActorTaskStateChange(
           FROM_HERE,
           base::Seconds(
               features::kGlicActorUiCompletedTaskExpiryDelaySeconds.Get()),
-          base::BindOnce(&ActorUiStateManager::MaybeUpdateProfileScopedUiState,
-                         weak_factory_.GetWeakPtr()));
+          base::BindOnce(
+              &ActorUiStateManager::MaybeNotifyProfileScopedUiComponents,
+              weak_factory_.GetWeakPtr()));
       break;
   }
   for (const auto& tab : GetTabs(task_id)) {
@@ -164,7 +165,7 @@ void ActorUiStateManager::OnActorTaskStateChange(
   // Update profile scoped state change.
   update_profile_scoped_ui_debounce_timer_.Start(
       FROM_HERE, kProfileScopedUiUpdateDebounceDelay,
-      base::BindOnce(&ActorUiStateManager::MaybeUpdateProfileScopedUiState,
+      base::BindOnce(&ActorUiStateManager::MaybeNotifyProfileScopedUiComponents,
                      weak_factory_.GetWeakPtr()));
 }
 
@@ -225,7 +226,7 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
   }
   std::visit(
       absl::Overload{[this](const StartTask& e) {
-                       this->MaybeUpdateProfileScopedUiState();
+                       this->MaybeNotifyProfileScopedUiComponents();
                      },
                      [this](const TaskStateChanged& e) {
                        this->OnActorTaskStateChange(e.task_id, e.state);
@@ -246,16 +247,37 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
 void ActorUiStateManager::OnGlicUpdateFloatyState(
     glic::GlicWindowController::State floaty_state,
     glic::mojom::CurrentView current_view) {
-  if (state_ != UiState::kInactive) {
-    floaty_task_state_change_callback_list_.Notify(state_, floaty_state,
-                                                   current_view);
+  UpdateTaskIconSuppressionOnFloatyStateChange(floaty_state, current_view);
+
+  if (task_icon_state_ != TaskIconUiState::kHidden) {
+    if (suppress_task_icon_text_) {
+      task_icon_state_ = TaskIconUiState::kShown;
+    }
+
+    task_icon_change_callback_list_.Notify(task_icon_state_, floaty_state,
+                                           current_view);
   }
 }
 
-base::CallbackListSubscription
-ActorUiStateManager::RegisterFloatyTaskStateChange(
-    FloatyTaskStateChangeCallback callback) {
-  return floaty_task_state_change_callback_list_.Add(std::move(callback));
+void ActorUiStateManager::UpdateTaskIconSuppressionOnFloatyStateChange(
+    glic::GlicWindowController::State floaty_state,
+    glic::mojom::CurrentView current_view) {
+  if (!suppress_task_icon_text_ &&
+      ShouldSuppressTaskIconText(floaty_state, current_view)) {
+    suppress_task_icon_text_ = true;
+  }
+}
+
+bool ActorUiStateManager::ShouldSuppressTaskIconText(
+    glic::GlicWindowController::State floaty_state,
+    glic::mojom::CurrentView view) {
+  return floaty_state == glic::GlicWindowController::State::kOpen &&
+         view == glic::mojom::CurrentView::kActuation;
+}
+
+base::CallbackListSubscription ActorUiStateManager::RegisterTaskIconStateChange(
+    TaskIconStateChangeCallback callback) {
+  return task_icon_change_callback_list_.Add(std::move(callback));
 }
 #endif
 
@@ -282,35 +304,48 @@ void ActorUiStateManager::MaybeShowToast(BrowserWindowInterface* bwi) {
   }
 }
 
-void ActorUiStateManager::MaybeUpdateProfileScopedUiState() {
+void ActorUiStateManager::MaybeNotifyProfileScopedUiComponents() {
   const auto& active_tasks = actor_service_->GetActiveTasks();
   const bool has_actor_paused_task = std::any_of(
       active_tasks.begin(), active_tasks.end(), [](const auto& task_pair) {
         return task_pair.second->GetState() == ActorTask::State::kPausedByActor;
       });
 
-  UiState new_state;
+  // TODO(crbug.com/437161973): Port this over to the dedicated TaskIcon keyed
+  // service class.
+  TaskIconUiState new_task_icon_state;
   if (has_actor_paused_task) {
-    new_state = ActorUiStateManager::UiState::kCheckTasks;
+    new_task_icon_state = ActorUiStateManager::TaskIconUiState::kNeedsAttention;
   } else if (!GetCompletedTasks(base::Time::Now()).empty()) {
-    new_state = ActorUiStateManager::UiState::kCompleteTasks;
+    new_task_icon_state = ActorUiStateManager::TaskIconUiState::kCompleteTasks;
   } else if (!active_tasks.empty()) {
-    new_state = ActorUiStateManager::UiState::kActive;
+    new_task_icon_state = ActorUiStateManager::TaskIconUiState::kShown;
   } else {
-    new_state = ActorUiStateManager::UiState::kInactive;
+    new_task_icon_state = ActorUiStateManager::TaskIconUiState::kHidden;
   }
 
-  if (state_ != new_state) {
-    state_ = new_state;
+  if (task_icon_state_ != new_task_icon_state) {
+    task_icon_state_ = new_task_icon_state;
 
-// TODO(crbug.com/424495020): Refactor to remove this dependency post-m3 &
-// post-task icon refactor.
+// TODO(crbug.com/437161973): Refactor to remove this dependency post-m3 &
+// post-task icon refactor, improve unit tests by injecting window_controller +
+// host
 #if BUILDFLAG(ENABLE_GLIC)
     if (auto* glic_keyed_service =
             glic::GlicKeyedServiceFactory::GetGlicKeyedService(
                 actor_service_->GetProfile())) {
-      floaty_task_state_change_callback_list_.Notify(
-          state_, glic_keyed_service->window_controller().state(),
+      if (!ShouldSuppressTaskIconText(
+              glic_keyed_service->window_controller().state(),
+              glic_keyed_service->host().GetPrimaryCurrentView())) {
+        suppress_task_icon_text_ = false;
+      } else if (task_icon_state_ !=
+                 ActorUiStateManager::TaskIconUiState::kHidden) {
+        // If the task icon text should be suppressed and isn't already hidden,
+        // we should reset the task icon state.
+        task_icon_state_ = ActorUiStateManager::TaskIconUiState::kShown;
+      }
+      task_icon_change_callback_list_.Notify(
+          task_icon_state_, glic_keyed_service->window_controller().state(),
           glic_keyed_service->host().GetPrimaryCurrentView());
     }
 #endif
@@ -331,8 +366,9 @@ std::vector<TaskId> ActorUiStateManager::GetCompletedTasks(
   return completed_tasks;
 }
 
-ActorUiStateManager::UiState ActorUiStateManager::GetUiState() const {
-  return state_;
+ActorUiStateManager::TaskIconUiState ActorUiStateManager::GetTaskIconUiState()
+    const {
+  return task_icon_state_;
 }
 
 }  // namespace actor::ui

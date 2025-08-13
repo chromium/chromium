@@ -521,14 +521,14 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
-                       ShowAndHideGlicActorTaskIconBasedOnTaskState) {
+                       ShowAndHideGlicActorTaskIcon) {
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
   ASSERT_THAT(GlicActorButtonContainer()->children(), SizeIs(1));
 
   auto* task_icon_controller =
       browser()->browser_window_features()->glic_actor_task_icon_controller();
   task_icon_controller->OnStateUpdate(
-      actor::ui::ActorUiStateManagerInterface::UiState::kActive,
+      actor::ui::ActorUiStateManagerInterface::TaskIconUiState::kShown,
       glic::GlicWindowController::State::kClosed,
       glic::mojom::CurrentView::kConversation);
 
@@ -540,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
             GlicActorButtonContainer()->children()[1]);
 
   task_icon_controller->OnStateUpdate(
-      actor::ui::ActorUiStateManagerInterface::UiState::kInactive,
+      actor::ui::ActorUiStateManagerInterface::TaskIconUiState::kHidden,
       glic::GlicWindowController::State::kClosed,
       glic::mojom::CurrentView::kConversation);
 
@@ -558,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
       browser()->browser_window_features()->glic_actor_task_icon_controller();
 
   task_icon_controller->OnStateUpdate(
-      actor::ui::ActorUiStateManagerInterface::UiState::kCheckTasks,
+      actor::ui::ActorUiStateManagerInterface::TaskIconUiState::kNeedsAttention,
       glic::GlicWindowController::State::kClosed,
       glic::mojom::CurrentView::kConversation);
 
@@ -576,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   ResetAnimation(1);
 
   task_icon_controller->OnStateUpdate(
-      actor::ui::ActorUiStateManagerInterface::UiState::kInactive,
+      actor::ui::ActorUiStateManagerInterface::TaskIconUiState::kHidden,
       glic::GlicWindowController::State::kClosed,
       glic::mojom::CurrentView::kConversation);
 
@@ -591,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
       browser()->browser_window_features()->glic_actor_task_icon_controller();
 
   task_icon_controller->OnStateUpdate(
-      actor::ui::ActorUiStateManagerInterface::UiState::kCheckTasks,
+      actor::ui::ActorUiStateManagerInterface::TaskIconUiState::kNeedsAttention,
       glic::GlicWindowController::State::kClosed,
       glic::mojom::CurrentView::kConversation);
 
@@ -609,7 +609,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   ResetAnimation(1);
 
   task_icon_controller->OnStateUpdate(
-      actor::ui::ActorUiStateManagerInterface::UiState::kActive,
+      actor::ui::ActorUiStateManagerInterface::TaskIconUiState::kShown,
       glic::GlicWindowController::State::kClosed,
       glic::mojom::CurrentView::kConversation);
 

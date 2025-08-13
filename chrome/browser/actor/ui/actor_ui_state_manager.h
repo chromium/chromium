@@ -37,21 +37,21 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   void OnGlicUpdateFloatyState(glic::GlicWindowController::State floaty_state,
                                glic::mojom::CurrentView current_view) override;
 
-  base::CallbackListSubscription RegisterFloatyTaskStateChange(
-      FloatyTaskStateChangeCallback callback) override;
+  base::CallbackListSubscription RegisterTaskIconStateChange(
+      TaskIconStateChangeCallback callback) override;
 #endif
 
   // Returns the tabs associated with a given task id.
   std::vector<tabs::TabInterface*> GetTabs(TaskId id);
 
-  // Returns the current profile scoped ui state.
-  UiState GetUiState() const override;
+  // Returns the current task icon ui state.
+  TaskIconUiState GetTaskIconUiState() const override;
 
  protected:
-  UiState state_ = UiState::kInactive;
+  TaskIconUiState task_icon_state_ = TaskIconUiState::kHidden;
 
  private:
-  void MaybeUpdateProfileScopedUiState();
+  void MaybeNotifyProfileScopedUiComponents();
   void OnActorTaskStateChange(TaskId task_id, ActorTask::State new_task_state);
 
   // Returns completed tasks within the Completed Task Expiry Delay of the
@@ -64,12 +64,27 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
 
   const raw_ref<ActorKeyedService> actor_service_;
 
+// TODO(crbug.com/437161973): Refactor this repeating callback into 2 separate
+// callbacks within the standalone task icon controller.
 #if BUILDFLAG(ENABLE_GLIC)
-  using FloatyTaskStateChangeCallbackList =
-      base::RepeatingCallbackList<void(ActorUiStateManagerInterface::UiState,
-                                       glic::GlicWindowController::State,
-                                       glic::mojom::CurrentView)>;
-  FloatyTaskStateChangeCallbackList floaty_task_state_change_callback_list_;
+  // Determines whether `suppress_task_icon_text_` is updated based on passed in
+  // parameters.
+  void UpdateTaskIconSuppressionOnFloatyStateChange(
+      glic::GlicWindowController::State floaty_state,
+      glic::mojom::CurrentView current_view);
+
+  base::RepeatingCallbackList<void(
+      ActorUiStateManagerInterface::TaskIconUiState,
+      glic::GlicWindowController::State,
+      glic::mojom::CurrentView)>
+      task_icon_change_callback_list_;
+  // Determines whether or not to suppress the task icon text.
+  bool ShouldSuppressTaskIconText(
+      glic::GlicWindowController::State floaty_state,
+      glic::mojom::CurrentView view);
+
+  // Cached value whether the task icon should be suppressed or not.
+  bool suppress_task_icon_text_ = false;
 #endif
 
   base::WeakPtrFactory<ActorUiStateManager> weak_factory_{this};

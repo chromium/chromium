@@ -24,22 +24,23 @@ static constexpr base::TimeDelta kProfileScopedUiUpdateDebounceDelay =
 
 class ActorUiStateManagerInterface {
  public:
-  // TODO(crbug.com/424495020): This behavior will need to be revisited once
-  // multiple tasks come into play. If there are multiple tasks where some tasks
-  // are complete but some tasks are paused, the current behavior is that
-  // kCheckTasks takes precedence over kCompleteTasks. For M3 this is not an
-  // issue since there are not multiple tasks.
-  enum class UiState {
-    // There are no active Actor tasks on this profile.
-    kInactive,
-    // There are active Actor tasks on this profile.
-    kActive,
-    // There are Actor tasks that need attention, this includes Actor paused.
-    kCheckTasks,
-    // There are Actor tasks that are complete within the
-    // kCompletedTaskExpiryDelay.
+  // TODO(crbug.com/437161973): Port this over to the dedicated TaskIcon keyed
+  // service class and add active/inactive (highlight status) states once the
+  // TaskIcon is refactored. We will revisit introducing the old ActorTaskState
+  // in the refactor.
+  enum class TaskIconUiState {
+    // The task icon is not visible.
+    kHidden,
+    // The task icon is visible with default text.
+    kShown,
+    // The task icon shows `needs attention` text, if this is set the task
+    // icon is expected to be visible.
+    kNeedsAttention,
+    // The task icon shows `complete tasks` text, if this is set the task
+    // icon is expected to be visible.
     kCompleteTasks,
   };
+
   virtual ~ActorUiStateManagerInterface() = default;
 
   // Handles a UiEvent that may be processed asynchronously.
@@ -57,7 +58,7 @@ class ActorUiStateManagerInterface {
   virtual void MaybeShowToast(BrowserWindowInterface* bwi) = 0;
 
   // Returns the current UI state.
-  virtual UiState GetUiState() const = 0;
+  virtual TaskIconUiState GetTaskIconUiState() const = 0;
 
 #if BUILDFLAG(ENABLE_GLIC)
   // Called on glic window (floaty) state change OR view change.
@@ -66,13 +67,13 @@ class ActorUiStateManagerInterface {
       glic::mojom::CurrentView current_view) = 0;
 
   // Register for this callback to detect changes to the glic floaty status and
-  // UiState.
-  using FloatyTaskStateChangeCallback =
-      base::RepeatingCallback<void(ActorUiStateManagerInterface::UiState,
-                                   glic::GlicWindowController::State,
-                                   glic::mojom::CurrentView)>;
-  virtual base::CallbackListSubscription RegisterFloatyTaskStateChange(
-      FloatyTaskStateChangeCallback callback) = 0;
+  // TaskIconUiState.
+  using TaskIconStateChangeCallback = base::RepeatingCallback<void(
+      ActorUiStateManagerInterface::TaskIconUiState,
+      glic::GlicWindowController::State,
+      glic::mojom::CurrentView)>;
+  virtual base::CallbackListSubscription RegisterTaskIconStateChange(
+      TaskIconStateChangeCallback callback) = 0;
 #endif
 };
 

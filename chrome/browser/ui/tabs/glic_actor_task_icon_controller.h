@@ -27,9 +27,10 @@ class GlicActorTaskIconController {
   virtual ~GlicActorTaskIconController();
 
 #if BUILDFLAG(ENABLE_GLIC)
-  void OnStateUpdate(actor::ui::ActorUiStateManagerInterface::UiState,
-                     glic::GlicWindowController::State floaty_state,
-                     glic::mojom::CurrentView floaty_view);
+  void OnStateUpdate(
+      actor::ui::ActorUiStateManagerInterface::TaskIconUiState task_icon_state,
+      glic::GlicWindowController::State floaty_state,
+      glic::mojom::CurrentView floaty_view);
 #endif
 
  private:
@@ -37,14 +38,14 @@ class GlicActorTaskIconController {
   const raw_ptr<TabStripActionContainer> tab_strip_action_container_;
 
   // Subscribe to updates from the ActorUiStateManager.
-  void RegisterFloatyTaskStateCallback();
+  void RegisterTaskIconStateCallback();
 
-  // Get the current task and floaty state and update the UI. Called on window
-  // creation to maintain state across multiple windows.
-  void UpdateCurrentUiState();
+  // Get the current task icon and floaty state and update the UI. Called on
+  // window creation to maintain state across multiple windows.
+  void UpdateCurrentTaskIconUiState();
 
   std::vector<base::CallbackListSubscription>
-      floaty_task_state_change_callback_subscription_;
+      task_icon_state_change_callback_subscription_;
 };
 }  // namespace tabs
 
