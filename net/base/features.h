@@ -341,6 +341,8 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableGetNetworkConnectivityHintAPI);
 // Whether or not to enable TCP port randomization via SO_RANDOMIZE_PORT on
 // Windows for versions >= kTcpPortRandomizationWinVersionMinimum.
 // See crbug.com/40744069 for more details.
+// This was launched in M141, but the finch flag was kept around in case it
+// ever causes issues (as some may take time to detect due to rarity).
 NET_EXPORT BASE_DECLARE_FEATURE(kTcpPortRandomizationWin);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                       kTcpPortRandomizationWinVersionMinimum);

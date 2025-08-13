@@ -316,7 +316,7 @@ BASE_FEATURE(kEnableGetNetworkConnectivityHintAPI,
 
 BASE_FEATURE(kTcpPortRandomizationWin,
              "TcpPortRandomizationWin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,
                    kTcpPortRandomizationWinVersionMinimum,

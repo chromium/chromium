@@ -24910,24 +24910,6 @@
             ]
         }
     ],
-    "TcpPortRandomizationWin": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "TcpPortRandomizationWinVersionMinimum": "23"
-                    },
-                    "enable_features": [
-                        "TcpPortRandomizationWin"
-                    ]
-                }
-            ]
-        }
-    ],
     "TerminateRendererOnBrowserCommitExhaustion": [
         {
             "platforms": [
