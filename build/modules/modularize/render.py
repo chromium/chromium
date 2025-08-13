@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import collections
 import contextlib
 import io
 import pathlib
@@ -103,11 +104,14 @@ def render_build_gn(out_dir: pathlib.Path, targets: list[Target],
     }[target.include_dir]
     f.write(f'{rule}("{target.name}") {{\n')
     _render_string_list(f, 2, 'public_deps', public_deps)
-    configs = sorted([
-        c for header in target.headers for single in header.group
-        for c in single.public_configs
-    ])
-    _render_string_list(f, 2, 'public_configs', sorted(configs))
+    kwargs = collections.defaultdict(set)
+    for header in target.headers:
+      for single in header.group:
+        for dep in {single} | single.required_textual_deps:
+          for k, v in dep.kwargs.items():
+            kwargs[k].update(v)
+    for k, v in sorted(kwargs.items()):
+      _render_string_list(f, 2, k, sorted(v))
     f.write('}\n\n')
 
   f.write('group("all_modules") {\n')

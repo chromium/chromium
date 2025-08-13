@@ -48,6 +48,16 @@ def fix_graph(graph: dict[str, Header], compiler: Compiler):
   # This does not hold true for stddef.h because of __need_size_t
   add_dep(graph['stddef.h'].next, graph['__stddef_size_t.h'])
 
+  if compiler.os == 'android':
+    # include_next behaves differently in module builds and non-module builds.
+    # Because of this, module builds include libcxx's wchar.h instead of
+    # the sysroot's wchar.h
+    add_dep(graph['__mbstate_t.h'], graph['wchar.h'])
+    # This makes the libcxx/wchar.h included by mbstate_t.h act more like
+    # sysroot/wchar.h by preventing it from defining functions.
+    graph['__mbstate_t.h'].kwargs['defines'].append(
+        '_LIBCPP_WCHAR_H_HAS_CONST_OVERLOADS')
+
   rdeps = calculate_rdeps(all_headers(graph))
 
   sysroot = graph['assert.h'].abs.parent
@@ -82,15 +92,7 @@ def fix_graph(graph: dict[str, Header], compiler: Compiler):
   # Assert is inherently textual.
   graph['assert.h'].textual = True
 
-  # This is included from the std_wchar_h module, but that module is marked as
-  # textual. Normally that would mean we would mark this as non-textual, but
-  # wchar.h doesn't play nice being non-textual.
-  graph['wchar.h'].next.textual = True
-
   if compiler.os == 'android':
-    graph['wchar.h'].public_configs.append(
-        '//buildtools/third_party/libc++:wchar_android_fix')
-
     graph['android/legacy_threads_inlines.h'].textual = True
     graph['bits/threads_inlines.h'].textual = True
 
@@ -100,4 +102,3 @@ def fix_graph(graph: dict[str, Header], compiler: Compiler):
     # Thus, limits.h exports an undef.
     # if it's textual, limits.h undefs something it defined itself.
     graph['linux/limits.h'].textual = True
-

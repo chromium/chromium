@@ -112,6 +112,10 @@ module sys_stage1 [system] [extern_c] {
     header "../../linux/debian_bullseye_amd64-sysroot/usr/include/unistd.h"
     export *
   }
+  module sysroot_wchar_h {
+    header "../../linux/debian_bullseye_amd64-sysroot/usr/include/wchar.h"
+    export *
+  }
 }
 
 module sys_stage2 [system] [extern_c] {

@@ -28,12 +28,7 @@ configs_to_remove = [
 if (use_clang_modules) {
   template("clang_module") {
     source_set(target_name) {
-      forward_variables_from(invoker,
-                             [
-                               "deps",
-                               "public_configs",
-                               "public_deps",
-                             ])
+      forward_variables_from(invoker, "*", [ "modulemap" ])
       use_libcxx_modules = false
       sources = [ invoker.modulemap ]
       if (!defined(public_deps)) {

@@ -310,4 +310,8 @@ module sys_stage2 [system] [extern_c] {
     header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/unistd.h"
     export *
   }
+  module sysroot_wchar_h {
+    header "../../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/wchar.h"
+    export *
+  }
 }

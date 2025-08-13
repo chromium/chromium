@@ -56,8 +56,9 @@ class Header:
   # We default to exporting all to preserve the behaviour of includes.
   exports: None | list[str] = dataclasses.field(default_factory=list)
 
-  # Any configs required to build this file.
-  public_configs: list[str] = dataclasses.field(default_factory=list)
+  # Kwargs that will end up on the BUILD.gn targets.
+  kwargs: dict[str, list[str]] = dataclasses.field(
+      default_factory=lambda: collections.defaultdict(list))
 
   def __hash__(self):
     return hash((self.include_dir, self.rel))
@@ -98,10 +99,11 @@ class Header:
       header = None
       first = includes.get(include, None)
       if first is not None:
-        if not is_next:
+        # When modules are enabled, #include_next<foo.h> from any file other
+        # than foo.h is treated the same as #include <foo.h>.
+        if not is_next or (is_next and self.rel != include):
           header = first
         elif self.next is not None:
-          assert include == self.rel
           header = self.next
 
         # It might have been conditionally included.
@@ -145,7 +147,7 @@ class Header:
     """The textual header files we directly include.
 
     This includes textual headers included via other textual headers"""
-    return self._required_deps()[0]
+    return self._required_deps()[1]
 
   def find_loop(self) -> list[Header] | None:
     """Finds a loop of #includes, if it exists."""
