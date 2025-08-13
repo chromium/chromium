@@ -550,7 +550,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.AutocompletionTime.UpdateResult{Slice}"
-    units="microseconds" expires_after="2025-12-07">
+    units="microseconds" expires_after="2026-02-09">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -1084,7 +1084,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.DsePreload.SignalResult{DsePreloadTriggerType}{PreloadType}"
-    enum="SearchPreloadSignalResult" expires_after="2025-12-01">
+    enum="SearchPreloadSignalResult" expires_after="2026-02-09">
   <owner>khalidpeer@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <owner>kenoss@chromium.org</owner>
@@ -1283,7 +1283,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.FocusToOpenTimeAnyPopupState3.ByPageContext.{OmniboxPageContext}"
-    units="ms" expires_after="2025-12-07">
+    units="ms" expires_after="2026-02-09">
   <owner>khalidpeer@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -1705,7 +1705,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.LoadingPredictor.MatchType.{PreconnectableType}"
-    enum="OmniboxResultType" expires_after="2025-12-06">
+    enum="OmniboxResultType" expires_after="2026-02-09">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2367,7 +2367,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.SearchEngineType{Population}"
-    enum="OmniboxSearchEngineType" expires_after="2025-12-04">
+    enum="OmniboxSearchEngineType" expires_after="2026-02-09">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -2489,7 +2489,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.SearchPrefetch.Within1sDuplicateSearchTermsRelationship"
-    enum="DuplicateNavigationServingResult" expires_after="2025-12-07">
+    enum="DuplicateNavigationServingResult" expires_after="2026-02-09">
   <owner>lingqi@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>

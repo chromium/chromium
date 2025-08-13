@@ -1238,7 +1238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.SourceRegistrationTimeConfig"
-    enum="SourceRegistrationTimeConfig" expires_after="2025-12-07">
+    enum="SourceRegistrationTimeConfig" expires_after="2026-02-09">
   <owner>csharrison@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1442,7 +1442,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.TriggerDataMatchingModulusSameInputOutput"
-    units="bool" expires_after="2025-12-07">
+    units="bool" expires_after="2026-02-09">
   <owner>tquintanilla@chromium.org</owner>
   <owner>apaseltiner@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -1454,7 +1454,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.TriggerDataMatchingRegistration"
-    enum="ConversionTriggerDataMatching" expires_after="2025-12-07">
+    enum="ConversionTriggerDataMatching" expires_after="2026-02-09">
   <owner>tquintanilla@chromium.org</owner>
   <owner>apaseltiner@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>

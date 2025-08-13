@@ -1625,7 +1625,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.GetAccountsBackoffSuccess"
-    enum="BooleanGetAccountsSucceeded" expires_after="2025-12-07">
+    enum="BooleanGetAccountsSucceeded" expires_after="2026-02-09">
   <owner>samarchehade@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1805,7 +1805,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Intercept.FRE.Event"
-    enum="SigninInterceptFREDialogEvent" expires_after="2025-12-09">
+    enum="SigninInterceptFREDialogEvent" expires_after="2026-02-09">
   <owner>alexilin@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -2338,7 +2338,7 @@ the browser and content area. -->
 </histogram>
 
 <histogram name="Signin.NumberOfActiveAccounts.{TimeRange}" units="accounts"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>bsazonov@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -2952,7 +2952,7 @@ OAuth Multilogin call. -->
 <!-- LINT.ThenChange(//chrome/browser/signin/services/android/java/src/org/chromium/chrome/browser/signin/services/SigninFlowTimestampsLogger.java:SigninFlowTimestamps) -->
 
 <histogram name="Signin.SigninAbortedAccessPoint" enum="SigninAccessPoint"
-    expires_after="2025-11-26">
+    expires_after="2026-02-09">
   <owner>bsazonov@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -3548,7 +3548,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.Timestamps.Android.Fullscreen.{Event}" units="ms"
-    expires_after="2025-12-11">
+    expires_after="2026-02-09">
   <owner>samarchehade@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

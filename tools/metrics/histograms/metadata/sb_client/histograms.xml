@@ -175,7 +175,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestDuration{Analysis}" units="ms"
-    expires_after="2025-12-10">
+    expires_after="2026-02-09">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -913,7 +913,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.OnDeviceModelSessionCreationSuccess"
-    enum="BooleanSuccess" expires_after="2025-12-11">
+    enum="BooleanSuccess" expires_after="2026-02-09">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

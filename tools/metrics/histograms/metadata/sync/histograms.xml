@@ -506,7 +506,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.CommitResponse{SyncDataType}" enum="SyncerErrorValues"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -696,7 +696,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.CryptographerPendingKeys"
-    enum="SyncCryptographerPendingKeysState" expires_after="2025-12-07">
+    enum="SyncCryptographerPendingKeysState" expires_after="2026-02-09">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -747,7 +747,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeActiveForSyncToSigninMigration{SyncDataType}"
-    enum="BooleanActive" expires_after="2025-12-05">
+    enum="BooleanActive" expires_after="2026-02-09">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -1194,7 +1194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.FeatureStatusForSyncToSigninMigration"
-    enum="SyncFeatureStatusForSyncToSigninMigration" expires_after="2025-12-05">
+    enum="SyncFeatureStatusForSyncToSigninMigration" expires_after="2026-02-09">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -1322,7 +1322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.Local.Enabled2" enum="BooleanEnabled"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>igorruvinov@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -1440,7 +1440,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.NudgedUpdateResult{SyncDataType}"
-    enum="NudgedUpdateResult" expires_after="2025-12-07">
+    enum="NudgedUpdateResult" expires_after="2026-02-09">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -1543,7 +1543,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.PasswordsBatchUpload.Count" units="passwords"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
@@ -2097,7 +2097,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncToSigninMigration.ReadingListMigrationStep"
-    enum="SyncToSigninMigrationReadingListStep" expires_after="2025-12-05">
+    enum="SyncToSigninMigrationReadingListStep" expires_after="2026-02-09">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <owner>src/components/sync/OWNERS</owner>
@@ -2127,7 +2127,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Sync.SyncToSigninMigrationDecision{SyncToSigninMigrationMode}{SyncDataTypeForSyncToSigninMigration}"
-    enum="SyncToSigninMigrationDataTypeDecision" expires_after="2025-12-05">
+    enum="SyncToSigninMigrationDataTypeDecision" expires_after="2026-02-09">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <owner>src/components/sync/OWNERS</owner>
@@ -2143,7 +2143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncToSigninMigrationOutcome" enum="BooleanSuccess"
-    expires_after="2025-12-05">
+    expires_after="2026-02-09">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <owner>src/components/sync/OWNERS</owner>
@@ -2183,7 +2183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncToSigninMigrationTime" units="ms"
-    expires_after="2025-12-05">
+    expires_after="2026-02-09">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <owner>src/components/sync/OWNERS</owner>

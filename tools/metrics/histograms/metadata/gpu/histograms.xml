@@ -590,7 +590,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.Dawn.AdapterFeatureLevel" enum="DawnAdapterFeatureLevel"
-    expires_after="2025-12-06">
+    expires_after="2026-02-09">
   <owner>kylechar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -610,7 +610,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.CommitAndClearPendingOverlaysDuration"
-    units="microseconds" expires_after="2025-12-09">
+    units="microseconds" expires_after="2026-02-09">
   <owner>vasilyt@chromium.org</owner>
   <owner>tangm@microsoft.com</owner>
   <summary>
@@ -1224,7 +1224,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.OutputSurface.InsertRenderPassRecording" enum="Boolean"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>kylechar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1873,7 +1873,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.CreateFallbackImageResult"
-    enum="CreateFallbackImageResult" expires_after="2025-12-07">
+    enum="CreateFallbackImageResult" expires_after="2026-02-09">
   <owner>kylechar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>

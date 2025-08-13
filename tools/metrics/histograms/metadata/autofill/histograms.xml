@@ -1478,7 +1478,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.AndroidAutofillManagerErrors"
-    enum="AutofillManagerMethod" expires_after="2025-12-07">
+    enum="AutofillManagerMethod" expires_after="2026-02-09">
   <owner>friedrichh@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1493,7 +1493,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.Autocomplete.NotOff.EditedAutofilledFieldAtSubmission2{AutofillFormType}"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2025-12-08">
+    enum="AutofilledFieldUserEditingStatus" expires_after="2026-02-09">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1507,7 +1507,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Autocomplete.NotOff.FillingAcceptance.{FormType}"
-    enum="BooleanAutofillFillingAcceptance" expires_after="2025-12-08">
+    enum="BooleanAutofillFillingAcceptance" expires_after="2026-02-09">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1522,7 +1522,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.Autocomplete.Off.EditedAutofilledFieldAtSubmission2{AutofillFormType}"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2025-12-08">
+    enum="AutofilledFieldUserEditingStatus" expires_after="2026-02-09">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1536,7 +1536,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Autocomplete.Off.FillingAcceptance.{FormType}"
-    enum="BooleanAutofillFillingAcceptance" expires_after="2025-12-08">
+    enum="BooleanAutofillFillingAcceptance" expires_after="2026-02-09">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4344,7 +4344,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.LocalHeuristics.MatchedAttribute"
-    enum="AutofillMatchAttribute" expires_after="2025-12-07">
+    enum="AutofillMatchAttribute" expires_after="2026-02-09">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -5068,7 +5068,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.PaymentMethodsSettingsPage.ScanCardResult"
-    enum="AutofillScanCreditCardResult" expires_after="2025-12-07">
+    enum="AutofillScanCreditCardResult" expires_after="2026-02-09">
   <owner>darwinyang@google.com</owner>
   <owner>chrome-payments-team@google.com</owner>
   <summary>
@@ -5081,7 +5081,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.PaymentsDataManager.LocalCardAdded" enum="Boolean"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>npnavarro@google.com</owner>
   <owner>darwinyang@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
@@ -5574,7 +5574,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.ProfileTokenQuality.ObservationCountBeforeSubmission.{Type}"
-    units="Observations" expires_after="2025-12-06">
+    units="Observations" expires_after="2026-02-09">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -7008,7 +7008,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.ThirdPartyModeDisabled.Provider"
-    enum="AutofillProviderPackageName" expires_after="2025-12-07">
+    enum="AutofillProviderPackageName" expires_after="2026-02-09">
   <owner>friedrichh@chromium.org</owner>
   <owner>izuzic@google.com</owner>
   <summary>

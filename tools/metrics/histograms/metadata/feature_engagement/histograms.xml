@@ -882,7 +882,7 @@ In the future, Desktop IPH may be completely moved to the user_education folder.
 </histogram>
 
 <histogram name="UserEducation.MessageNotShown.TimeInQueue.{IPHFeature}"
-    units="ms" expires_after="2025-11-02">
+    units="ms" expires_after="2026-02-09">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>

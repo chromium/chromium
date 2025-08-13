@@ -501,7 +501,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.SwatchActivated" enum="DevToolsSwatchActivated"
-    expires_after="2025-11-16">
+    expires_after="2026-02-09">
   <owner>ergunsh@google.com</owner>
   <owner>changhaohan@google.com</owner>
   <owner>bmeurer@google.com</owner>

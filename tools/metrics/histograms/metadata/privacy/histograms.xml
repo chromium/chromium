@@ -254,7 +254,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.CookieControlsActivated.PageRefreshCount"
-    units="count" expires_after="2025-12-10">
+    units="count" expires_after="2026-02-09">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -274,7 +274,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.CookieControlsActivated.SiteDataAccessType"
-    enum="ThirdPartySiteDataAccessType" expires_after="2025-12-10">
+    enum="ThirdPartySiteDataAccessType" expires_after="2026-02-09">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -456,7 +456,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseEntryCount" units="entries"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
@@ -860,7 +860,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.ReportSender{DelayType}.HttpResponseOrNetErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-10-26">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-02-09">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1516,7 +1516,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.PrivacyPolicy.LoadingTime" units="ms"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>

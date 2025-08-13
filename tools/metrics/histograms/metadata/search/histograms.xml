@@ -861,7 +861,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.ContextualSearchQuickActions.Category"
-    enum="ContextualSearchQuickActionCategory" expires_after="2025-11-01">
+    enum="ContextualSearchQuickActionCategory" expires_after="2026-02-09">
   <owner>gangwu@chromium.org</owner>
   <owner>contextual-search-eng@chromium.org</owner>
   <summary>

@@ -1078,7 +1078,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.RefreshRate.{CapturerType}" units="fps"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>

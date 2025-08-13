@@ -144,7 +144,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Accessibility.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2025-12-08">
+    units="microseconds" expires_after="2026-02-09">
   <owner>ikilpatrick@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -225,7 +225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Animate.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2025-12-08">
+    units="microseconds" expires_after="2026-02-09">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -695,7 +695,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.CommitDocumentLoaderTime" units="ms"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -705,7 +705,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.CompositingCommit.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2025-12-08">
+    units="microseconds" expires_after="2026-02-09">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -726,7 +726,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.CompositingInputs.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2025-12-08">
+    units="microseconds" expires_after="2026-02-09">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -1210,7 +1210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Experimental.Cookies.FirstCookieRequest"
-    enum="FirstCookieRequest" expires_after="2025-10-26">
+    enum="FirstCookieRequest" expires_after="2026-02-09">
   <owner>aattar@google.com</owner>
   <owner>chrome-catan@google</owner>
   <summary>
@@ -2595,7 +2595,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HandleInputEvents.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2025-12-08">
+    units="microseconds" expires_after="2026-02-09">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -2639,7 +2639,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.HitTestDocumentUpdate.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2025-12-08">
+    units="microseconds" expires_after="2026-02-09">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -3075,7 +3075,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.ImplCompositorCommit.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2025-12-08">
+    units="microseconds" expires_after="2026-02-09">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -4270,7 +4270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.PrePaint.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2025-12-08">
+    units="microseconds" expires_after="2026-02-09">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -4322,7 +4322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ResourceRequest.CodeFetchLatency" units="ms"
-    expires_after="2025-12-06">
+    expires_after="2026-02-09">
   <owner>olivierli@chromium.org</owner>
   <owner>leszeks@chromium.org</owner>
   <summary>
@@ -4368,7 +4368,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ResourceRequest.ResponseDelay2" units="ms"
-    expires_after="2025-11-16">
+    expires_after="2026-02-09">
   <owner>horo@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -5087,7 +5087,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Style.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2025-12-08">
+    units="microseconds" expires_after="2026-02-09">
   <owner>pdr@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -5184,7 +5184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.AboutBlankOrSrcdoc.Features"
-    enum="FeatureObserver" expires_after="2025-12-07">
+    enum="FeatureObserver" expires_after="2026-02-09">
   <owner>wjmaclean@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>
@@ -5521,7 +5521,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.VisualUpdateDelay.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2025-12-08">
+    units="microseconds" expires_after="2026-02-09">
   <owner>szager@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -5536,7 +5536,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.WaitForCommit.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2025-12-08">
+    units="microseconds" expires_after="2026-02-09">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -5646,7 +5646,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.{Host}.RenderTaskDuration.{Context}.{Filter}"
-    units="microseconds" expires_after="2025-12-07">
+    units="microseconds" expires_after="2026-02-09">
   <owner>junov@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>

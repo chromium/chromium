@@ -2428,7 +2428,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.SharedDictionary.EncodingType"
-    enum="SharedDictionaryEncodingType" expires_after="2025-12-07">
+    enum="SharedDictionaryEncodingType" expires_after="2026-02-09">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -5751,7 +5751,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NetworkService.Requests.{Multiplexed}.{RequestType}.{Method}.{Result}.TotalHeadersSize"
-    units="bytes" expires_after="2025-12-07">
+    units="bytes" expires_after="2026-02-09">
   <owner>ortuno@chromium.org</owner>
   <owner>navtracking-team@google.com</owner>
   <summary>
@@ -5768,7 +5768,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NetworkService.Requests.{Multiplexed}.{RequestType}.{Method}.{Result}.TotalRequestSize"
-    units="bytes" expires_after="2025-12-07">
+    units="bytes" expires_after="2026-02-09">
   <owner>ortuno@chromium.org</owner>
   <owner>navtracking-team@google.com</owner>
   <summary>
@@ -5785,7 +5785,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NetworkService.Requests.{Multiplexed}.{RequestType}.{Method}.{Result}.TotalUrlSize"
-    units="bytes" expires_after="2025-12-07">
+    units="bytes" expires_after="2026-02-09">
   <owner>ortuno@chromium.org</owner>
   <owner>navtracking-team@google.com</owner>
   <summary>

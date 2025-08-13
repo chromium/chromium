@@ -260,7 +260,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.DomainSet.Subsampled" enum="Boolean"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>miketaylr@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -316,7 +316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.Experimental.CookiesAllowedForUrlsUsage"
-    enum="CookiesAllowedForUrlsUsage" expires_after="2025-12-07">
+    enum="CookiesAllowedForUrlsUsage" expires_after="2026-02-09">
   <owner>dylancutler@google.com</owner>
   <owner>sandormajor@chromium.org</owner>
   <summary>
@@ -483,7 +483,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.FirstPartySets.{Context}.MostDelayedQueryDelta"
-    units="ms" expires_after="2025-12-07">
+    units="ms" expires_after="2026-02-09">
   <owner>cfredric@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -550,7 +550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.IncludedRequestEffectiveSameSite.Subsampled"
-    enum="CookieEffectiveSameSite" expires_after="2025-12-07">
+    enum="CookieEffectiveSameSite" expires_after="2026-02-09">
   <owner>miketaylr@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -1161,7 +1161,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.TimeDatabaseMigrationToV24" units="ms"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>wfh@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>

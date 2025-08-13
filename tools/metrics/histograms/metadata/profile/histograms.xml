@@ -587,7 +587,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.PercentageOfManagedProfiles" units="units"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>longbowei@google.com</owner>
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-families-eng@google.com</owner>

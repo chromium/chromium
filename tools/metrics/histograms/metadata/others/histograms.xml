@@ -938,7 +938,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ads.InterestGroup.Auction.HttpCachedTrustedBiddingSignalsAge2"
-    units="ms" expires_after="2025-12-07">
+    units="ms" expires_after="2026-02-09">
   <owner>abigailkatcoff@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -3306,7 +3306,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.AcceptCHFrame" enum="AcceptCHFrameRestart"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>victortan@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <owner>katabolism-finch@google.com</owner>
@@ -3319,7 +3319,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.CriticalCHRestart" enum="CriticalCHRestart"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>victortan@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <owner>katabolism-finch@google.com</owner>
@@ -3329,7 +3329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.FetchLatency{OperationType}" units="microseconds"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>victortan@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <owner>katabolism-finch@google.com</owner>
@@ -3370,7 +3370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.UpdateSize" units="count"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>victortan@chromium.org</owner>
   <owner>katabolism-finch@google.com</owner>
   <summary>
@@ -3993,7 +3993,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DirectSockets.TCPNetworkFailures" enum="NetErrorCodes"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>greengrape@google.com</owner>
   <owner>iwa-team@google.com</owner>
   <summary>
@@ -4002,7 +4002,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DirectSockets.TCPReadableStreamError" enum="NetErrorCodes"
-    expires_after="2025-12-07">
+    expires_after="2026-02-09">
   <owner>greengrape@google.com</owner>
   <owner>iwa-team@google.com</owner>
   <summary>How often tcp socket readable stream is errored.</summary>
