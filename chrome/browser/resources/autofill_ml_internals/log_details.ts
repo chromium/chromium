@@ -8,7 +8,6 @@ import {type MLPredictionLog, OptimizationTarget} from './autofill_ml_internals.
 import {getCss} from './log_details.css.js';
 import {getHtml} from './log_details.html.js';
 
-
 export class LogDetailsElement extends CrLitElement {
   static get is() {
     return 'log-details';
@@ -38,6 +37,37 @@ export class LogDetailsElement extends CrLitElement {
     duration: {microseconds: 0n},
     optimizationTarget: OptimizationTarget.kUnknown,
   };
+
+  protected getOptimizationTargetText_(target: OptimizationTarget): string {
+    switch (target) {
+      case OptimizationTarget.kAutofill:
+        return 'Autofill';
+      case OptimizationTarget.kPassword:
+        return 'Password Manager';
+      default:
+        return 'Unknown';
+    }
+  }
+
+  private static readonly TOP_PREDICTIONS_COUNT = 5;
+
+  protected getTopPredictions_(probabilities: number[]|null):
+      Array<{type: string, probability: number, percentage: string}> {
+    if (!probabilities) {
+      return [];
+    }
+    return probabilities
+        .map((probability, typeIndex) => {
+          const type = this.log.modelOutputTypes[typeIndex];
+          return {
+            type: type ?? '[ERROR]',
+            probability,
+            percentage: `${(probability * 100).toFixed(2)}%`,
+          };
+        })
+        .sort((a, b) => b.probability - a.probability)
+        .slice(0, LogDetailsElement.TOP_PREDICTIONS_COUNT);
+  }
 }
 
 declare global {

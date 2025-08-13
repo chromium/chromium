@@ -19,3 +19,8 @@
   margin: auto;
   text-align: center;
 }
+
+log-details {
+  flex: 1;
+  overflow-y: auto;
+}
