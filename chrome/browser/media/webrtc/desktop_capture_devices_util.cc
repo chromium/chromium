@@ -257,6 +257,10 @@ blink::MediaStreamDevice DesktopMediaIDToAudioMediaStreamDevice(
     return blink::MediaStreamDevice(media_stream_type, device_id, "Tab audio");
   } else if (desktop_media_id_type == content::DesktopMediaID::TYPE_WINDOW &&
              media::IsApplicationAudioCaptureSupported()) {
+    // TODO(crbug.com/40947205): Refactor the logic that assumes application
+    // audio is shared for all window captures (desktop_media_id.type ==
+    // content::DesktopMediaID::TYPE_WINDOW). The user should be given the
+    // option to choose whether system audio or window audio is shared.
     return blink::MediaStreamDevice(media_stream_type, device_id,
                                     "Application Audio");
   } else {
@@ -389,13 +393,16 @@ void GetAudioDeviceId(content::DesktopMediaID desktop_media_id,
     web_id.disable_local_echo =
         disable_local_echo || suppress_local_audio_playback;
     device_id = web_id.ToString();
-  } else if (desktop_media_id.type == content::DesktopMediaID::TYPE_WINDOW) {
-    if (media::IsApplicationAudioCaptureSupported()) {
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE, base::BindOnce(&GetApplicationId, desktop_media_id.id),
-          std::move(audio_device_id_obtained_callback));
-      return;
-    }
+  } else if (desktop_media_id.type == content::DesktopMediaID::TYPE_WINDOW &&
+             media::IsApplicationAudioCaptureSupported()) {
+    // TODO(crbug.com/40947205): Refactor the logic that assumes application
+    // audio is shared for all window captures (desktop_media_id.type ==
+    // content::DesktopMediaID::TYPE_WINDOW). The user should be given the
+    // option to choose whether system audio or window audio is shared.
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&GetApplicationId, desktop_media_id.id),
+        std::move(audio_device_id_obtained_callback));
+    return;
   } else {
     // Use the special loopback device ID for system audio capture.
     if (restrict_own_audio) {
