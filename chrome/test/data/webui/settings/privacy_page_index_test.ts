@@ -6,24 +6,37 @@ import 'chrome://settings/settings.js';
 import 'chrome://settings/lazy_load.js';
 
 import type {Route, SettingsPrivacyPageIndexElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, Router, routes} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, resetPageVisibilityForTesting, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('PrivacyPageIndex', function() {
   let index: SettingsPrivacyPageIndexElement;
 
-  setup(async function() {
+  async function createPrivacyPageIndex(overrides?: {[key: string]: any}) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues(Object.assign(
+        {
+          isGuest: false,
+        },
+        overrides || {}));
+    resetPageVisibilityForTesting();
+    resetRouterForTesting();
 
     const settingsPrefs = document.createElement('settings-prefs');
     document.body.appendChild(settingsPrefs);
     await CrSettingsPrefs.initialized;
+
     index = document.createElement('settings-privacy-page-index');
     index.prefs = settingsPrefs.prefs!;
     Router.getInstance().navigateTo(routes.BASIC);
     document.body.appendChild(index);
     return flushTasks();
+  }
+
+  setup(function() {
+    return createPrivacyPageIndex();
   });
 
   test('Routing', async function() {
@@ -79,6 +92,15 @@ suite('PrivacyPageIndex', function() {
     await waitBeforeNextRender(index);
     assertTrue(!!index.$.viewManager.querySelector('#old.active'));
   });
+
+  // <if expr="is_chromeos">
+  test('RoutingGuestMode', async function() {
+    assertFalse(loadTimeData.getBoolean('isGuest'));
+    assertEquals(routes.BASIC, Router.getInstance().getCurrentRoute());
+    await createPrivacyPageIndex({isGuest: true});
+    assertTrue(!!index.$.viewManager.querySelector('#old.active[slot=view]'));
+  });
+  // </if>
 
   // Minimal (non-exhaustive) tests to ensure SearchableViewContainerMixin is
   // inherited correctly.

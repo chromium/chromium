@@ -29,6 +29,12 @@ import type {PrivacyGuideBrowserProxy} from './privacy_guide/privacy_guide_brows
 import {MAX_PRIVACY_GUIDE_PROMO_IMPRESSION, PrivacyGuideBrowserProxyImpl} from './privacy_guide/privacy_guide_browser_proxy.js';
 import {getTemplate} from './privacy_page_index.html.js';
 
+// clang-format off
+// <if expr="is_chromeos">
+import {getTopLevelRoute} from '../route.js';
+// </if>
+// clang-format on
+
 
 export interface SettingsPrivacyPageIndexElement {
   $: {
@@ -118,6 +124,14 @@ export class SettingsPrivacyPageIndexElement extends
       case routes.PRIVACY:
         return this.getDefaultViews_();
       case routes.BASIC:
+        // <if expr="is_chromeos">
+        if (getTopLevelRoute() === routes.PRIVACY) {
+          // On CrOS guest mode the "Privacy" section should be displayed when
+          // on chrome://settings/.
+          return this.getDefaultViews_();
+        }
+        // </if>
+
         // Display the default views if in search mode, since they could be part
         // of search results.
         return this.inSearchMode ? this.getDefaultViews_() : [];
@@ -194,6 +208,15 @@ export class SettingsPrivacyPageIndexElement extends
   }
 
   private renderOldView_(): boolean {
+    // <if expr="is_chromeos">
+    if (getTopLevelRoute() === routes.PRIVACY &&
+        this.currentRoute === routes.BASIC) {
+      // On CrOS guest mode the "Privacy" section should be displayed when
+      // on chrome://settings/.
+      return true;
+    }
+    // </if>
+
     return this.inSearchMode ||
         (!!this.currentRoute &&
          this.isNonMigratedPrivacyRoute_(this.currentRoute));

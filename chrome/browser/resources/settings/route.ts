@@ -377,3 +377,17 @@ window.addEventListener('popstate', function() {
 });
 
 export let routes: SettingsRoutes = Router.getInstance().getRoutes();
+
+// Returns the "effective" route when at chrome://settings/.
+export function getTopLevelRoute(): Route {
+  if (!loadTimeData.getBoolean('isGuest')) {
+    return routes.PEOPLE;
+  }
+
+  let guestTopLevelRoute = routes.SEARCH;
+  // <if expr="is_chromeos">
+  guestTopLevelRoute = routes.PRIVACY;
+  // </if>
+
+  return guestTopLevelRoute;
+}

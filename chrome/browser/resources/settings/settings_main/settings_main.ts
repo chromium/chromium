@@ -38,7 +38,7 @@ import type {LanguagesModel} from '../languages_page/languages_types.js';
 // </if>
 import {pageVisibility} from '../page_visibility.js';
 import type {PageVisibility} from '../page_visibility.js';
-import {routes} from '../route.js';
+import {getTopLevelRoute, routes} from '../route.js';
 import {RouteObserverMixin} from '../router.js';
 import type {Route, SettingsRoutes} from '../router.js';
 import {combineSearchResults} from '../search_settings.js';
@@ -46,19 +46,6 @@ import {combineSearchResults} from '../search_settings.js';
 import {getTemplate} from './settings_main.html.js';
 import type {SettingsPlugin} from './settings_plugin.js';
 
-
-function getTopLevelRoute() {
-  if (!loadTimeData.getBoolean('isGuest')) {
-    return routes.PEOPLE;
-  }
-
-  let guestTopLevelRoute = routes.SEARCH;
-  // <if expr="is_chromeos">
-  guestTopLevelRoute = routes.PRIVACY;
-  // </if>
-
-  return guestTopLevelRoute;
-}
 
 export interface SettingsMainElement {
   $: {
