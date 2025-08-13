@@ -176,4 +176,9 @@ BASE_FEATURE(kDevToolsAiSubmenuPrompts,
              "DevToolsAiSubmenuPrompts",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether DevTools shows 'Debug with AI' and new badges.
+BASE_FEATURE(kDevToolsAiDebugWithAi,
+             "DevToolsAiDebugWithAi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

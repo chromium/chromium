@@ -221,6 +221,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void RecordFunctionCall(const FunctionCallEvent& event) override;
   void RegisterPreference(const std::string& name,
                           const RegisterOptions& options) override;
+  void RecordNewBadgeUsage(const std::string& feature_name) override;
   void GetPreferences(DispatchCallback callback) override;
   void GetPreference(DispatchCallback callback,
                      const std::string& name) override;

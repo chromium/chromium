@@ -39,6 +39,10 @@ chromium-metrics-reviews@google.com.
       summary="Promotion for DevTools AI Assistance Network Agent."/>
   <variant name="DevToolsAiAssistancePerformanceAgent"
       summary="Promotion for DevTools AI Assistance Performance Agent."/>
+  <variant name="DevToolsAiDebugWithAi"
+      summary="Promotion for DevTools AI Debug with AI menu item."/>
+  <variant name="DevToolsAiSubmenuPrompts"
+      summary="Promotion for DevTools AI submenu prompts."/>
   <variant name="DevToolsFreestyler"
       summary="Promotion for DevTools AI Assistance Freestyler Agent."/>
   <variant name="Glic" summary="Glic toggle on settings page."/>

@@ -100,6 +100,7 @@ BASE_DECLARE_FEATURE(kDevToolsPwaHandler);
 #endif  // BUILDFLAG(ENABLE_PWA_INSTALL_ON_CROS_TEST)
 
 BASE_DECLARE_FEATURE(kDevToolsAiSubmenuPrompts);
+BASE_DECLARE_FEATURE(kDevToolsAiDebugWithAi);
 
 }  // namespace features
 

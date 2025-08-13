@@ -51,6 +51,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/common/channel_info.h"
@@ -120,6 +121,9 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1929,6 +1933,11 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   response_dict.Set("devToolsAiSubmenuPrompts",
                     std::move(ai_submenu_prompts_dict));
 
+  base::Value::Dict ai_debug_with_ai_dict;
+  ai_debug_with_ai_dict.Set("enabled", base::FeatureList::IsEnabled(
+                                           ::features::kDevToolsAiDebugWithAi));
+  response_dict.Set("devToolsAiDebugWithAi", std::move(ai_debug_with_ai_dict));
+
   base::Value response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }
@@ -2047,6 +2056,33 @@ void DevToolsUIBindings::RecordUserMetricsAction(const std::string& name) {
   // Use RecordComputedAction instead of RecordAction as the name comes from
   // DevTools frontend javascript and so will always have the same call site.
   base::RecordComputedAction(name);
+}
+
+void DevToolsUIBindings::RecordNewBadgeUsage(const std::string& feature_name) {
+#if BUILDFLAG(IS_ANDROID)
+  NOTIMPLEMENTED();
+#else
+
+  auto* user_education_service =
+      UserEducationServiceFactory::GetForBrowserContext(profile_);
+  if (!user_education_service) {
+    return;
+  }
+
+  const base::Feature* feature_to_register = nullptr;
+  for (const auto& [feature, spec] :
+       user_education_service->new_badge_registry()->feature_data()) {
+    if (feature_name == feature->name) {
+      feature_to_register = feature;
+      break;
+    }
+  }
+
+  if (feature_to_register) {
+    UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
+        web_contents()->GetBrowserContext(), *feature_to_register);
+  }
+#endif
 }
 
 void DevToolsUIBindings::MaybeStartLogging() {
