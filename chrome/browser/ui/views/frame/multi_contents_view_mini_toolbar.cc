@@ -11,6 +11,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_icon.h"
@@ -22,9 +23,11 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -63,6 +66,12 @@ constexpr gfx::Insets kDefaultInteriorMargins = gfx::Insets::TLBR(
 tabs::TabInterface* GetTabInterface(content::WebContents* web_contents) {
   return web_contents ? tabs::TabInterface::GetFromContents(web_contents)
                       : nullptr;
+}
+
+bool IsNTP(const GURL& url) {
+  return (url.SchemeIs(content::kChromeUIScheme) &&
+          url.host() == chrome::kChromeUINewTabHost) ||
+         search::IsNTPURL(url) || search::IsSplitViewNewTabPage(url);
 }
 }  // namespace
 
@@ -323,7 +332,9 @@ void MultiContentsViewMiniToolbar::UpdateContents(TabRendererData tab_data) {
   }
   // Create the formatted domain, this will match the hover card domain.
   std::u16string domain;
-  if (domain_url.SchemeIsFile()) {
+  if (IsNTP(domain_url)) {
+    domain = u"";
+  } else if (domain_url.SchemeIsFile()) {
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_FILE_URL_SOURCE);
   } else if (domain_url.SchemeIsBlob()) {
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_BLOB_URL_SOURCE);

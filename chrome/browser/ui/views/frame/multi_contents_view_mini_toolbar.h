@@ -45,6 +45,8 @@ class MultiContentsViewMiniToolbar : public views::View,
 
   void UpdateState(bool is_active);
 
+  views::Label* domain_label_for_testing() { return domain_label_; }
+
  private:
   // TabStripModelObserver:
   void TabChangedAt(content::WebContents* contents,

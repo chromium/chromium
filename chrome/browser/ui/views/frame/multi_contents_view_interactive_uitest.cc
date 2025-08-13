@@ -697,6 +697,29 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
+                       MiniToolbarHidesNewTabPageDomain) {
+  RunTestSequence(
+      // Open split view and navigate the first tab to the NTP.
+      CreateTabsAndEnterSplitView(), WaitForActiveTabChange(0),
+      NavigateWebContents(kNewTab, GURL("chrome://newtab")),
+      // Focus inactive contents and verify inactive tab doesn't show the
+      // domain.
+      FocusInactiveTabInSplit(), WaitForActiveTabChange(1),
+      // Verify the mini toolbar visibility on inactive contents.
+      Check([&]() {
+        return multi_contents_view()->mini_toolbar_for_testing(0)->GetVisible();
+      }),
+      CheckResult(
+          [&]() {
+            return multi_contents_view()
+                ->mini_toolbar_for_testing(0)
+                ->domain_label_for_testing()
+                ->GetText();
+          },
+          u""));
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
                        ShowScrimOnOmniboxDropDownOpen) {
   RunTestSequence(
       InstrumentTab(kNewTab), AddInstrumentedTab(kSecondTab, GetTestUrl()),
