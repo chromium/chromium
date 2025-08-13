@@ -51,8 +51,6 @@ namespace syncer {
 
 namespace {
 
-const char kBlockedByUndecryptableUpdateHistogramName[] =
-    "Sync.DataTypeBlockedDueToUndecryptableUpdate";
 const char kPasswordNotesStateHistogramName[] =
     "Sync.PasswordNotesStateInUpdate";
 constexpr char kEntityEncryptionResultHistogramName[] =
@@ -613,12 +611,6 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
   // Some updates pending decryption might have been overwritten by decryptable
   // ones. So some encryption keys may no longer fit the definition of unknown.
   RemoveKeysNoLongerUnknown();
-
-  if (!entries_pending_decryption_.empty() &&
-      (!encryption_enabled_ || cryptographer_->CanEncrypt())) {
-    base::UmaHistogramEnumeration(kBlockedByUndecryptableUpdateHistogramName,
-                                  DataTypeHistogramValue(type_));
-  }
 
   // Usually, updates must only be applied at the end of a sync cycle, once all
   // updates have been downloaded. This is mostly important during initial sync,
