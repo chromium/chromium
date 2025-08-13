@@ -9398,6 +9398,8 @@ from previous Chrome versions.
   <int value="-1731997767" label="SharingHubDesktopAppMenu:enabled"/>
   <int value="-1731267886" label="AutofillEnableStickyPaymentsBubble:enabled"/>
   <int value="-1731149013" label="AndroidMessagesIntegration:enabled"/>
+  <int value="-1730315292"
+      label="AndroidWindowPopupPredictFinalBounds:enabled"/>
   <int value="-1729926412" label="enable-webusb-notifications"/>
   <int value="-1729822987" label="PasswordsInCredMan:disabled"/>
   <int value="-1729808721" label="SubresourceRedirect:enabled"/>
@@ -14245,6 +14247,7 @@ from previous Chrome versions.
       label="AutofillSaveCardDialogUnlabeledExpirationDate:enabled"/>
   <int value="36536806"
       label="FilterWebsitesForSupervisedUsersOnDesktopAndIOS:disabled"/>
+  <int value="36585844" label="AndroidWindowPopupPredictFinalBounds:disabled"/>
   <int value="37024318" label="disable-affiliation-based-matching"/>
   <int value="38213894" label="PrivacySettingsRedesign:enabled"/>
   <int value="38904620" label="TabSwitcherLongpressMenu:enabled"/>

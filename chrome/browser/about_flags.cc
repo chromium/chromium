@@ -12207,6 +12207,15 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+    {"enable-android-window-popup-predict-final-bounds",
+     flag_descriptions::kAndroidWindowPopupPredictFinalBoundsName,
+     flag_descriptions::kAndroidWindowPopupPredictFinalBoundsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kAndroidWindowPopupPredictFinalBounds)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
     {"enable-android-window-popup-resize-after-spawn",
      flag_descriptions::kAndroidWindowPopupResizeAfterSpawnName,
      flag_descriptions::kAndroidWindowPopupResizeAfterSpawnDescription,

@@ -220,6 +220,8 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_USE_ADMINS_FOR_ENTERPRISE_INFO =
             "AndroidUseAdminsForEnterpriseInfo";
     public static final String ANDROID_WINDOW_POPUP_LARGE_SCREEN = "AndroidWindowPopupLargeScreen";
+    public static final String ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS =
+            "AndroidWindowPopupPredictFinalBounds";
     public static final String ANDROID_WINDOW_POPUP_RESIZE_AFTER_SPAWN =
             "AndroidWindowPopupResizeAfterSpawn";
     public static final String ANDROID_XR_USES_SURFACE_CONTROL =
@@ -767,6 +769,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_WEB_APP_LAUNCH_HANDLER, false, true);
     public static final CachedFlag sAndroidWindowPopupLargeScreen =
             newCachedFlag(ANDROID_WINDOW_POPUP_LARGE_SCREEN, false, true);
+    public static final CachedFlag sAndroidWindowPopupPredictFinalBounds =
+            newCachedFlag(ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS, false);
     public static final CachedFlag sAndroidWindowPopupResizeAfterSpawn =
             newCachedFlag(ANDROID_WINDOW_POPUP_RESIZE_AFTER_SPAWN, false);
     public static final CachedFlag sAppSpecificHistory = newCachedFlag(APP_SPECIFIC_HISTORY, true);
@@ -1102,6 +1106,7 @@ public abstract class ChromeFeatureList {
                     sAndroidUseAdminsForEnterpriseInfo,
                     sAndroidWebAppLaunchHandler,
                     sAndroidWindowPopupLargeScreen,
+                    sAndroidWindowPopupPredictFinalBounds,
                     sAndroidWindowPopupResizeAfterSpawn,
                     sAppSpecificHistory,
                     sAppSpecificHistoryViewIntent,

@@ -3549,6 +3549,9 @@ extern const char kAndroidWindowOcclusionDescription[];
 extern const char kAndroidWindowPopupLargeScreenName[];
 extern const char kAndroidWindowPopupLargeScreenDescription[];
 
+extern const char kAndroidWindowPopupPredictFinalBoundsName[];
+extern const char kAndroidWindowPopupPredictFinalBoundsDescription[];
+
 extern const char kAndroidWindowPopupResizeAfterSpawnName[];
 extern const char kAndroidWindowPopupResizeAfterSpawnDescription[];
 

@@ -6150,6 +6150,17 @@ const char kAndroidWindowPopupLargeScreenDescription[] =
     "call and make moving windows with window.{move|resize}{By|To}() "
     "possible.";
 
+const char kAndroidWindowPopupPredictFinalBoundsName[] =
+    "Try to predict the displacement between top-level window and website "
+    "viewport before creating a popup.";
+const char kAndroidWindowPopupPredictFinalBoundsDescription[] =
+    "Size of the website viewport of a new contextual popup may be requested "
+    "as a parameter in a window.open() Javascript call. If this flag is "
+    "enabled, then the final bounds of the popup will be predicted before its "
+    "creation in hope the resizing action won't be needed. See also the "
+    "enable-android-window-popup-resize-after-spawn flag that regulates "
+    "post-creation bounds adjustments.";
+
 const char kAndroidWindowPopupResizeAfterSpawnName[] =
     "Resize a contextual popup after spawning it to compensate for UI elements "
     "so that its website viewport dimensions match requested ones.";
@@ -6157,7 +6168,9 @@ const char kAndroidWindowPopupResizeAfterSpawnDescription[] =
     "Size of the website viewport of a new contextual popup may be requested "
     "as a parameter in a window.open() Javascript call. If this flag is "
     "enabled, then the popup will be resized after its creation to ensure that "
-    "this web API contract is satisfied.";
+    "this web API contract is satisfied. See also the "
+    "enable-android-window-popup-predict-final-bounds flag that regulates "
+    "pre-creation bounds adjustments.";
 
 const char kUseAngleDescriptionAndroid[] =
     "Choose the graphics backend for ANGLE. The Vulkan backend is still "

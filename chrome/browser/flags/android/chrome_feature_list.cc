@@ -241,6 +241,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidToolbarScrollAblation,
     &kAndroidUseAdminsForEnterpriseInfo,
     &kAndroidWindowPopupLargeScreen,
+    &kAndroidWindowPopupPredictFinalBounds,
     &kAndroidWindowPopupResizeAfterSpawn,
     &kAndroidXRUsesSurfaceControl,
     &kAnimatedGifRefactor,
@@ -696,6 +697,10 @@ BASE_FEATURE(kAndroidUseAdminsForEnterpriseInfo,
 
 BASE_FEATURE(kAndroidWindowPopupLargeScreen,
              "AndroidWindowPopupLargeScreen",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidWindowPopupPredictFinalBounds,
+             "AndroidWindowPopupPredictFinalBounds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidWindowPopupResizeAfterSpawn,
