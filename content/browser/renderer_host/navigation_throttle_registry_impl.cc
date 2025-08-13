@@ -177,6 +177,12 @@ void NavigationThrottleRegistryImpl::
 
   RendererCancellationThrottle::MaybeCreateAndAdd(*this);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Prevent cross-document navigations from document picture-in-picture
+  // windows.
+  DocumentPictureInPictureNavigationThrottle::MaybeCreateAndAdd(*this);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   // Insert all testing NavigationThrottles last.
   throttles_.insert(throttles_.end(),
                     std::make_move_iterator(testing_throttles.begin()),
