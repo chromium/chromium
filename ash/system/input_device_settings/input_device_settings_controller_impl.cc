@@ -825,8 +825,10 @@ void InputDeviceSettingsControllerImpl::
             GetBluetoothDevice(bluetooth_adapter_.get(), keyboard->device_key);
         device != nullptr) {
       auto updated_battery_info = GetBatteryInfo(*device);
-      if (keyboard->battery_info.is_null() ||
-          BatteryInfoChanged(*keyboard->battery_info, *updated_battery_info)) {
+      if (!updated_battery_info.is_null() &&
+          (keyboard->battery_info.is_null() ||
+           BatteryInfoChanged(*keyboard->battery_info,
+                              *updated_battery_info))) {
         keyboard->battery_info = std::move(updated_battery_info);
         DispatchKeyboardBatteryInfoChanged(id);
       }
@@ -838,8 +840,10 @@ void InputDeviceSettingsControllerImpl::
             GetBluetoothDevice(bluetooth_adapter_.get(), touchpad->device_key);
         device != nullptr) {
       auto updated_battery_info = GetBatteryInfo(*device);
-      if (touchpad->battery_info.is_null() ||
-          BatteryInfoChanged(*touchpad->battery_info, *updated_battery_info)) {
+      if (!updated_battery_info.is_null() &&
+          (touchpad->battery_info.is_null() ||
+           BatteryInfoChanged(*touchpad->battery_info,
+                              *updated_battery_info))) {
         touchpad->battery_info = std::move(updated_battery_info);
         DispatchTouchpadBatteryInfoChanged(id);
       }
@@ -851,8 +855,9 @@ void InputDeviceSettingsControllerImpl::
             GetBluetoothDevice(bluetooth_adapter_.get(), mouse->device_key);
         device != nullptr) {
       auto updated_battery_info = GetBatteryInfo(*device);
-      if (mouse->battery_info.is_null() ||
-          BatteryInfoChanged(*mouse->battery_info, *updated_battery_info)) {
+      if (!updated_battery_info.is_null() &&
+          (mouse->battery_info.is_null() ||
+           BatteryInfoChanged(*mouse->battery_info, *updated_battery_info))) {
         mouse->battery_info = std::move(updated_battery_info);
         DispatchMouseBatteryInfoChanged(id);
       }
@@ -864,9 +869,10 @@ void InputDeviceSettingsControllerImpl::
                                           graphics_tablet->device_key);
         device != nullptr) {
       auto updated_battery_info = GetBatteryInfo(*device);
-      if (graphics_tablet->battery_info.is_null() ||
-          BatteryInfoChanged(*graphics_tablet->battery_info,
-                             *updated_battery_info)) {
+      if (!updated_battery_info.is_null() &&
+          (graphics_tablet->battery_info.is_null() ||
+           BatteryInfoChanged(*graphics_tablet->battery_info,
+                              *updated_battery_info))) {
         graphics_tablet->battery_info = std::move(updated_battery_info);
         DispatchGraphicsTabletBatteryInfoChanged(id);
       }
