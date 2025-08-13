@@ -7,13 +7,11 @@
 
 #include <iosfwd>
 #include <memory>
-#include <optional>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -142,11 +140,6 @@ class ActorTask {
   std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher_;
 
   TaskId id_;
-
-  // A timer for the current state that is not paused.
-  std::optional<base::ElapsedTimer> current_timer_ = base::ElapsedTimer();
-  // An accumulation of elapsed times for previous "active" states.
-  base::TimeDelta total_active_time_;
 
   // The set of all tabs this task has acted upon.
   absl::flat_hash_set<tabs::TabHandle> tab_handles_;

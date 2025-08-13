@@ -10,7 +10,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -51,10 +50,6 @@ namespace {
 constexpr int kFakeContentNodeId = 123;
 constexpr char kActionResultHistogram[] =
     "Actor.ExecutionEngine.Action.ResultCode";
-constexpr char kActorTaskDurationCompletedHistogram[] =
-    "Actor.Task.Duration.Completed";
-constexpr char kActorTaskDurationCancelledHistogram[] =
-    "Actor.Task.Duration.Cancelled";
 
 class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
  public:
@@ -381,65 +376,6 @@ TEST_F(ExecutionEngineTest, CrossOriginNavigationBeforeAction) {
   histograms_.ExpectUniqueSample(
       kActionResultHistogram, mojom::ActionResultCode::kCrossOriginNavigation,
       1);
-}
-
-TEST_F(ExecutionEngineTest, CompletedHistogram) {
-  base::ScopedMockElapsedTimersForTest mock_elapsed_timer;
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://localhost/"));
-
-  ActResultFuture result;
-
-  FakeChromeRenderFrame fake_chrome_render_frame;
-  fake_chrome_render_frame.OverrideBinder(main_rfh());
-
-  std::unique_ptr<ToolRequest> action =
-      MakeClickCallback(kFakeContentNodeId).Run();
-  task_->Act(ToRequestList(action), result.GetCallback());
-  task_->Stop(/*success=*/true);
-  histograms_.ExpectTimeBucketCount(
-      kActorTaskDurationCompletedHistogram,
-      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
-}
-
-TEST_F(ExecutionEngineTest, CompletedWithPauseHistogram) {
-  base::ScopedMockElapsedTimersForTest mock_elapsed_timer;
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://localhost/"));
-
-  ActResultFuture result;
-
-  FakeChromeRenderFrame fake_chrome_render_frame;
-  fake_chrome_render_frame.OverrideBinder(main_rfh());
-
-  std::unique_ptr<ToolRequest> action =
-      MakeClickCallback(kFakeContentNodeId).Run();
-  task_->Act(ToRequestList(action), result.GetCallback());
-  task_->Pause(/*from_actor=*/true);
-  task_->Resume();
-  task_->Stop(/*success=*/true);
-  histograms_.ExpectTimeBucketCount(
-      kActorTaskDurationCompletedHistogram,
-      base::ScopedMockElapsedTimersForTest::kMockElapsedTime * 2, 1);
-}
-
-TEST_F(ExecutionEngineTest, CancelledHistogram) {
-  base::ScopedMockElapsedTimersForTest mock_elapsed_timer;
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://localhost/"));
-
-  ActResultFuture result;
-
-  FakeChromeRenderFrame fake_chrome_render_frame;
-  fake_chrome_render_frame.OverrideBinder(main_rfh());
-
-  std::unique_ptr<ToolRequest> action =
-      MakeClickCallback(kFakeContentNodeId).Run();
-  task_->Act(ToRequestList(action), result.GetCallback());
-  task_->Stop(/*success=*/false);
-  histograms_.ExpectTimeBucketCount(
-      kActorTaskDurationCancelledHistogram,
-      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
 }  // namespace

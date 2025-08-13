@@ -7,7 +7,6 @@
 #include <memory>
 #include <ostream>
 
-#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -74,34 +73,11 @@ void ActorTask::SetState(State state) {
   }
 #endif  // DCHECK_IS_ON()
 
-  if ((state_ == kPausedByActor || state_ == kPausedByUser) &&
-      state != kCancelled && state != kFinished) {
-    current_timer_.emplace();
-  }
-
   ui_event_dispatcher_->OnActorTaskSyncChange(
       ui::UiEventDispatcher::ChangeTaskState{
           .task_id = id_, .old_state = state_, .new_state = state});
   state_ = state;
   actor::ActorKeyedService::Get(profile_)->NotifyTaskStateChanged(*this);
-
-  if (state_ == kPausedByActor || state_ == kPausedByUser ||
-      state_ == kFinished || state_ == kCancelled) {
-    // If new state is to be paused or done, add the current time.
-    if (current_timer_) {
-      total_active_time_ += current_timer_->Elapsed();
-    }
-    current_timer_ = std::nullopt;
-  }
-
-  // If the state is to be finished/cancelled record a histogram.
-  if (state_ == kFinished) {
-    base::UmaHistogramLongTimes100("Actor.Task.Duration.Completed",
-                                   total_active_time_);
-  } else if (state_ == kCancelled) {
-    base::UmaHistogramLongTimes100("Actor.Task.Duration.Cancelled",
-                                   total_active_time_);
-  }
 }
 
 void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
