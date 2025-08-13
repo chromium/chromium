@@ -235,7 +235,6 @@ static_library("browser") {
     deps += [
       ":password_manager_buildflags",
       "//components/webauthn/android",
-      "//components/webauthn/android",
       "//services/metrics/public/cpp:ukm_builders",
     ]
   }
@@ -443,6 +442,7 @@ static_library("test_support") {
     ":password_hash_data",
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
+    "//components/device_reauth",
     "//components/device_reauth:test_support",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser:password_switches",

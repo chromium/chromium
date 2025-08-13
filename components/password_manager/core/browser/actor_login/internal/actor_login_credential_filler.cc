@@ -138,6 +138,14 @@ void ActorLoginCredentialFiller::AttemptLogin(
     return;
   }
 
+  device_authenticator_ = client->GetDeviceAuthenticator();
+
+  if (client->IsReauthBeforeFillingRequired(device_authenticator_.get())) {
+    // TODO(crbug.com/427171273): Prompt to reauthenticate.
+    std::move(callback_).Run(LoginStatusResult::kErrorFillingNotAllowed);
+    return;
+  }
+
   FillForm(*signin_form_manager, *stored_credential);
 }
 

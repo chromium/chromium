@@ -4,6 +4,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_CREDENTIAL_FILLER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_CREDENTIAL_FILLER_H_
 
+#include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -64,6 +65,10 @@ class ActorLoginCredentialFiller {
 
   // The callback to call with the result of the login attempt.
   LoginStatusResultOrErrorReply callback_;
+
+  // Used to reauthenticate the user before filling
+  // the credential.
+  std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator_;
 
   // Member variables should appear before the WeakPtrFactory, to ensure
   // that any WeakPtrs to `ActorLoginCredentialFiller` are invalidated before

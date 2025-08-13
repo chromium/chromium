@@ -48,6 +48,11 @@ bool StubPasswordManagerClient::PromptUserToChooseCredentials(
   return false;
 }
 
+bool StubPasswordManagerClient::IsReauthBeforeFillingRequired(
+    device_reauth::DeviceAuthenticator* authenticator) {
+  return false;
+}
+
 void StubPasswordManagerClient::NotifyUserAutoSignin(
     std::vector<std::unique_ptr<PasswordForm>> local_forms,
     const url::Origin& origin) {}
