@@ -42,7 +42,7 @@ class HttpStreamPool::TcpBasedAttempt : public TlsStreamAttempt::Delegate {
 
   base::TimeTicks start_time() const { return start_time_; }
   base::TimeTicks ssl_config_wait_start_time() const {
-    return ssl_config_wait_start_time_;
+    return service_endpoint_wait_start_time_;
   }
 
   const IPEndPoint& ip_endpoint() const { return attempt_->ip_endpoint(); }
@@ -55,12 +55,12 @@ class HttpStreamPool::TcpBasedAttempt : public TlsStreamAttempt::Delegate {
 
   // TlsStreamAttempt::Delegate implementation:
   void OnTcpHandshakeComplete() override;
-  int WaitForSSLConfigReady(CompletionOnceCallback callback) override;
-  base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> GetSSLConfig()
-      override;
+  int WaitForServiceEndpointReady(CompletionOnceCallback callback) override;
+  base::expected<ServiceEndpoint, TlsStreamAttempt::GetServiceEndpointError>
+  GetServiceEndpoint() override;
 
-  bool IsWaitingSSLConfig() const {
-    return !ssl_config_waiting_callback_.is_null();
+  bool IsWaitingForServiceEndpointReady() const {
+    return !service_endpoint_waiting_callback_.is_null();
   }
 
   // Transfers `ssl_config_waiting_callback_` when `this` is waiting for
@@ -88,8 +88,8 @@ class HttpStreamPool::TcpBasedAttempt : public TlsStreamAttempt::Delegate {
   // Set to true when `this` and `attempt_` should abort. Currently used to
   // handle ECH failure.
   bool is_aborted_ = false;
-  base::TimeTicks ssl_config_wait_start_time_;
-  CompletionOnceCallback ssl_config_waiting_callback_;
+  base::TimeTicks service_endpoint_wait_start_time_;
+  CompletionOnceCallback service_endpoint_waiting_callback_;
 
   base::WeakPtrFactory<TcpBasedAttempt> weak_ptr_factory_{this};
 };

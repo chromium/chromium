@@ -90,6 +90,7 @@ HttpStreamPool::TcpBasedAttempt::TcpBasedAttempt(AttemptManager* manager,
         manager_->pool()->stream_attempt_params(), std::move(ip_endpoint),
         track_,
         HostPortPair::FromSchemeHostPort(manager_->stream_key().destination()),
+        manager_->GetBaseSSLConfig(),
         /*delegate=*/this);
   } else {
     attempt_ = std::make_unique<TcpStreamAttempt>(
@@ -172,21 +173,20 @@ void HttpStreamPool::TcpBasedAttempt::SetCancelReason(
   }
 }
 
-int HttpStreamPool::TcpBasedAttempt::WaitForSSLConfigReady(
+int HttpStreamPool::TcpBasedAttempt::WaitForServiceEndpointReady(
     CompletionOnceCallback callback) {
   if (manager_->service_endpoint_request()->EndpointsCryptoReady()) {
     return OK;
   }
 
-  ssl_config_wait_start_time_ = base::TimeTicks::Now();
-  ssl_config_waiting_callback_ = std::move(callback);
+  service_endpoint_wait_start_time_ = base::TimeTicks::Now();
+  service_endpoint_waiting_callback_ = std::move(callback);
   return ERR_IO_PENDING;
 }
 
-base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError>
-HttpStreamPool::TcpBasedAttempt::GetSSLConfig() {
-  base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> result =
-      manager_->GetSSLConfig(ip_endpoint());
+base::expected<ServiceEndpoint, TlsStreamAttempt::GetServiceEndpointError>
+HttpStreamPool::TcpBasedAttempt::GetServiceEndpoint() {
+  auto result = manager_->GetServiceEndpoint(ip_endpoint());
   if (!result.has_value()) {
     is_aborted_ = true;
   }
@@ -196,14 +196,14 @@ HttpStreamPool::TcpBasedAttempt::GetSSLConfig() {
 
 std::optional<CompletionOnceCallback>
 HttpStreamPool::TcpBasedAttempt::MaybeTakeSSLConfigWaitingCallback() {
-  if (ssl_config_waiting_callback_.is_null()) {
+  if (service_endpoint_waiting_callback_.is_null()) {
     return std::nullopt;
   }
 
-  CHECK(!ssl_config_wait_start_time_.is_null());
+  CHECK(!service_endpoint_wait_start_time_.is_null());
   base::UmaHistogramMediumTimes(
       "Net.HttpStreamPool.TcpBasedAttemptSSLConfigWaitTime2",
-      base::TimeTicks::Now() - ssl_config_wait_start_time_);
+      base::TimeTicks::Now() - service_endpoint_wait_start_time_);
 
   if (!is_slow_ && !slow_timer_.IsRunning()) {
     // Resume the slow timer as `attempt_` will start a TLS handshake.
@@ -215,7 +215,7 @@ HttpStreamPool::TcpBasedAttempt::MaybeTakeSSLConfigWaitingCallback() {
                                      base::Unretained(this)));
   }
 
-  return std::move(ssl_config_waiting_callback_);
+  return std::move(service_endpoint_waiting_callback_);
 }
 
 base::Value::Dict HttpStreamPool::TcpBasedAttempt::GetInfoAsValue() const {

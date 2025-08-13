@@ -423,14 +423,21 @@ void HttpStreamPool::AttemptManager::SetInitialAttemptState() {
                                 *initial_attempt_state_);
 }
 
-base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError>
-HttpStreamPool::AttemptManager::GetSSLConfig(const IPEndPoint& ip_endpoint) {
+SSLConfig HttpStreamPool::AttemptManager::GetBaseSSLConfig() {
+  CHECK(UsingTls());
+  SSLConfig config = *base_ssl_config_;
+  // `enable_early_data` may change over the course of the HttpNetworkSession's
+  // lifetime, so we sample it for each TlsStreamAttempt.
+  config.early_data_enabled =
+      http_network_session()->params().enable_early_data;
+  return config;
+}
+
+base::expected<ServiceEndpoint, TlsStreamAttempt::GetServiceEndpointError>
+HttpStreamPool::AttemptManager::GetServiceEndpoint(
+    const IPEndPoint& ip_endpoint) {
   CHECK(service_endpoint_request_);
   CHECK(service_endpoint_request_->EndpointsCryptoReady());
-
-  SSLConfig ssl_config = *base_ssl_config_;
-  ssl_config.early_data_enabled =
-      http_network_session()->params().enable_early_data;
 
   const bool svcb_optional = IsSvcbOptional();
   for (auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
@@ -440,23 +447,13 @@ HttpStreamPool::AttemptManager::GetSSLConfig(const IPEndPoint& ip_endpoint) {
     const std::vector<IPEndPoint>& ip_endpoints = ip_endpoint.address().IsIPv4()
                                                       ? endpoint.ipv4_endpoints
                                                       : endpoint.ipv6_endpoints;
-    if (base::Contains(ip_endpoints, ip_endpoint)) {
-      if (IsEchEnabled()) {
-        ssl_config.ech_config_list = endpoint.metadata.ech_config_list;
-      }
-      if (!endpoint.metadata.trust_anchor_ids.empty()) {
-        ssl_config.trust_anchor_ids =
-            SSLConfig::SelectTrustAnchorIDs(endpoint.metadata.trust_anchor_ids,
-                                            pool()
-                                                ->stream_attempt_params()
-                                                ->ssl_client_context->config()
-                                                .trust_anchor_ids);
-      }
-      return ssl_config;
+    if (!base::Contains(ip_endpoints, ip_endpoint)) {
+      continue;
     }
+    return endpoint;
   }
 
-  return base::unexpected(TlsStreamAttempt::GetSSLConfigError::kAbort);
+  return base::unexpected(TlsStreamAttempt::GetServiceEndpointError::kAbort);
 }
 
 void HttpStreamPool::AttemptManager::ProcessPendingJob() {
@@ -932,19 +929,19 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() const {
            static_cast<int>(tcp_based_attempt_delay_.InMilliseconds()));
   dict.Set("should_block_tcp_based_attempt", should_block_tcp_based_attempt_);
 
-  int ssl_config_num_waiting_callbacks = 0;
+  int service_endpoint_num_waiting_callbacks = 0;
   if (!tcp_based_attempts_.empty()) {
     base::Value::List tcp_based_attempts;
     for (const auto& entry : tcp_based_attempts_) {
-      if (entry->IsWaitingSSLConfig()) {
-        ++ssl_config_num_waiting_callbacks;
+      if (entry->IsWaitingForServiceEndpointReady()) {
+        ++service_endpoint_num_waiting_callbacks;
       }
       tcp_based_attempts.Append(entry->GetInfoAsValue());
     }
     dict.Set("tcp_based_attempts", std::move(tcp_based_attempts));
   }
-  dict.Set("ssl_config_num_waiting_callbacks",
-           ssl_config_num_waiting_callbacks);
+  dict.Set("service_endpoint_num_waiting_callbacks",
+           service_endpoint_num_waiting_callbacks);
 
   base::Value::List ip_endpoint_states =
       ip_endpoint_state_tracker_.GetInfoAsValue();

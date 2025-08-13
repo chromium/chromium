@@ -216,8 +216,12 @@ class HttpStreamPool::AttemptManager
   // Returns true when `this` is blocked by the pool's stream limit.
   bool IsStalledByPoolLimit();
 
-  base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> GetSSLConfig(
-      const IPEndPoint& endpoint);
+  // Returns the SSLConfig to use for TLS connections, not incorporating any
+  // configuration based on the service endpoint.
+  SSLConfig GetBaseSSLConfig();
+
+  base::expected<ServiceEndpoint, TlsStreamAttempt::GetServiceEndpointError>
+  GetServiceEndpoint(const IPEndPoint& endpoint);
 
   void OnTcpBasedAttemptComplete(TcpBasedAttempt* raw_attempt, int rv);
   void OnTcpBasedAttemptSlow(TcpBasedAttempt* raw_attempt);

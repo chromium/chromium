@@ -15,6 +15,7 @@
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -41,6 +42,7 @@ TlsStreamAttempt::TlsStreamAttempt(const StreamAttemptParams* params,
                                    IPEndPoint ip_endpoint,
                                    perfetto::Track track,
                                    HostPortPair host_port_pair,
+                                   SSLConfig base_ssl_config,
                                    Delegate* delegate)
     : StreamAttempt(params,
                     ip_endpoint,
@@ -48,7 +50,12 @@ TlsStreamAttempt::TlsStreamAttempt(const StreamAttemptParams* params,
                     NetLogSourceType::TLS_STREAM_ATTEMPT,
                     NetLogEventType::TLS_STREAM_ATTEMPT_ALIVE),
       host_port_pair_(std::move(host_port_pair)),
-      delegate_(delegate) {}
+      base_ssl_config_(std::move(base_ssl_config)),
+      delegate_(delegate) {
+  // ECH and trust anchor IDs are configured via DNS after GetServiceEndpoint().
+  DCHECK(base_ssl_config_.ech_config_list.empty());
+  DCHECK(base_ssl_config_.trust_anchor_ids.empty());
+}
 
 TlsStreamAttempt::~TlsStreamAttempt() {
   MaybeRecordTlsHandshakeEnd(ERR_ABORTED);
@@ -151,7 +158,8 @@ int TlsStreamAttempt::DoTcpAttemptComplete(int rv) {
     return rv;
   }
 
-  net_log().BeginEvent(NetLogEventType::TLS_STREAM_ATTEMPT_WAIT_FOR_SSL_CONFIG);
+  net_log().BeginEvent(
+      NetLogEventType::TLS_STREAM_ATTEMPT_WAIT_FOR_SERVICE_ENDPOINT);
 
   next_state_ = State::kTlsAttempt;
 
@@ -161,40 +169,46 @@ int TlsStreamAttempt::DoTcpAttemptComplete(int rv) {
     return OK;
   }
 
-  int ssl_config_ready_result = delegate_->WaitForSSLConfigReady(base::BindOnce(
+  int wait_result = delegate_->WaitForServiceEndpointReady(base::BindOnce(
       &TlsStreamAttempt::OnIOComplete, weak_ptr_factory_.GetWeakPtr()));
-  if (ssl_config_ready_result == ERR_IO_PENDING) {
-    TRACE_EVENT_INSTANT("net.stream", "WaitForSSLConfig", track());
+  if (wait_result == ERR_IO_PENDING) {
+    TRACE_EVENT_INSTANT("net.stream", "WaitForServiceEndpointReady", track());
   }
-  return ssl_config_ready_result;
+  return wait_result;
 }
 
 int TlsStreamAttempt::DoTlsAttempt(int rv) {
   CHECK_EQ(rv, OK);
 
-  net_log().EndEvent(NetLogEventType::TLS_STREAM_ATTEMPT_WAIT_FOR_SSL_CONFIG);
+  net_log().EndEvent(
+      NetLogEventType::TLS_STREAM_ATTEMPT_WAIT_FOR_SERVICE_ENDPOINT);
 
   next_state_ = State::kTlsAttemptComplete;
 
   std::unique_ptr<StreamSocket> nested_socket =
       nested_attempt_->ReleaseStreamSocket();
   if (!ssl_config_) {
-    auto get_config_result = delegate_->GetSSLConfig();
-
-    if (get_config_result.has_value()) {
-      ssl_config_ = *get_config_result;
-      // For metrics, we want to know whether the server advertised Trust Anchor
-      // IDs in DNS (i.e., whether the client could use Trust Anchor IDs with
-      // this server, regardless of whether the feature was enabled). But we
-      // don't want to actually configure the Trust Anchor IDs on the connection
-      // if the feature flag isn't enabled.
-      trust_anchor_ids_from_dns_ = !ssl_config_->trust_anchor_ids.empty();
-      if (!base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
-        ssl_config_->trust_anchor_ids.clear();
-      }
-    } else {
-      CHECK_EQ(get_config_result.error(), GetSSLConfigError::kAbort);
+    auto endpoint = delegate_->GetServiceEndpoint();
+    if (!endpoint.has_value()) {
+      CHECK_EQ(endpoint.error(), GetServiceEndpointError::kAbort);
       return ERR_ABORTED;
+    }
+
+    is_ech_capable_ = !endpoint->metadata.ech_config_list.empty();
+    trust_anchor_ids_from_dns_ = !endpoint->metadata.trust_anchor_ids.empty();
+
+    // Configure ServiceEndpoint-specific TLS settings.
+    const SSLContextConfig& ssl_context_config =
+        params().ssl_client_context->config();
+    ssl_config_ = base_ssl_config_;
+    if (!endpoint->metadata.trust_anchor_ids.empty() &&
+        base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
+      ssl_config_->trust_anchor_ids =
+          SSLConfig::SelectTrustAnchorIDs(endpoint->metadata.trust_anchor_ids,
+                                          ssl_context_config.trust_anchor_ids);
+    }
+    if (ssl_context_config.ech_enabled) {
+      ssl_config_->ech_config_list = endpoint->metadata.ech_config_list;
     }
   }
 
@@ -281,10 +295,8 @@ int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
     }
   }
 
-  const bool is_ech_capable =
-      ssl_config_ && !ssl_config_->ech_config_list.empty();
   SSLClientSocket::RecordSSLConnectResult(
-      ssl_socket_.get(), rv, is_ech_capable, ech_enabled, ech_retry_configs_,
+      ssl_socket_.get(), rv, is_ech_capable_, ech_enabled, ech_retry_configs_,
       trust_anchor_ids_from_dns_, retried_for_trust_anchor_ids_,
       connect_timing());
 

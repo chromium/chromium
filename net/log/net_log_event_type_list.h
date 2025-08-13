@@ -1030,8 +1030,9 @@ EVENT_TYPE(TCP_STREAM_ATTEMPT_CONNECT)
 //   }
 EVENT_TYPE(TLS_STREAM_ATTEMPT_ALIVE)
 
-// Measures the time TlsStreamAttempt was waiting SSLConfig to be ready.
-EVENT_TYPE(TLS_STREAM_ATTEMPT_WAIT_FOR_SSL_CONFIG)
+// Measures the time TlsStreamAttempt was waiting for the ServiceEndpoint to be
+// ready.
+EVENT_TYPE(TLS_STREAM_ATTEMPT_WAIT_FOR_SERVICE_ENDPOINT)
 
 // Measures the time TlsStreamAttempt took to connect (TLS handshake).
 // For the END phase, if there was an error, the following parameters are

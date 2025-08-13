@@ -39,10 +39,12 @@ NET_EXPORT extern const uint16_t kDefaultSSLVersionMax;
 struct NET_EXPORT SSLConfig {
   using ApplicationSettings = base::flat_map<NextProto, std::vector<uint8_t>>;
 
-  // Default to revocation checking.
   SSLConfig();
   SSLConfig(const SSLConfig& other);
+  SSLConfig(SSLConfig&& other);
   ~SSLConfig();
+  SSLConfig& operator=(const SSLConfig&);
+  SSLConfig& operator=(SSLConfig&&);
 
   // Returns true if |cert| is one of the certs in |allowed_bad_certs|.
   // The expected cert status is written to |cert_status|. |*cert_status| can

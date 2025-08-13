@@ -21,10 +21,11 @@ SSLConfig::CertAndStatus::CertAndStatus(const CertAndStatus& other) = default;
 SSLConfig::CertAndStatus::~CertAndStatus() = default;
 
 SSLConfig::SSLConfig() = default;
-
 SSLConfig::SSLConfig(const SSLConfig& other) = default;
-
+SSLConfig::SSLConfig(SSLConfig&& other) = default;
 SSLConfig::~SSLConfig() = default;
+SSLConfig& SSLConfig::operator=(const SSLConfig&) = default;
+SSLConfig& SSLConfig::operator=(SSLConfig&&) = default;
 
 bool SSLConfig::IsAllowedBadCert(X509Certificate* cert,
                                  CertStatus* cert_status) const {

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/extend.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
@@ -18,6 +19,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/cert/mock_cert_verifier.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/http/http_network_session.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log.h"
@@ -56,18 +58,24 @@ void ValidateConnectTiming(
 
 class TlsStreamAttemptHelper : public TlsStreamAttempt::Delegate {
  public:
-  // Pass std::nullopt to `ssl_config` to make SSLConfig not immediately
-  // available.
+  using ServiceEndpointResult =
+      base::expected<ServiceEndpoint,
+                     TlsStreamAttempt::GetServiceEndpointError>;
+
+  // Pass std::nullopt to `service_endpoint` to make the ServiceEndpoint not
+  // immediately available.
   explicit TlsStreamAttemptHelper(
       const StreamAttemptParams* params,
-      std::optional<SSLConfig> ssl_config = SSLConfig())
+      SSLConfig base_ssl_config = SSLConfig(),
+      std::optional<ServiceEndpoint> service_endpoint = ServiceEndpoint())
       : attempt_(std::make_unique<TlsStreamAttempt>(
             params,
             IPEndPoint(IPAddress(192, 0, 2, 1), 443),
             perfetto::Track(),
             HostPortPair("a.test", 443),
+            std::move(base_ssl_config),
             this)),
-        ssl_config_(std::move(ssl_config)) {}
+        service_endpoint_result_(std::move(service_endpoint)) {}
 
   ~TlsStreamAttemptHelper() override = default;
 
@@ -86,21 +94,12 @@ class TlsStreamAttemptHelper : public TlsStreamAttempt::Delegate {
     return *result_;
   }
 
-  void SetSSLConfig(SSLConfig ssl_config) {
-    CHECK(!ssl_config_.has_value());
-    ssl_config_ = std::move(ssl_config);
+  void SetServiceEndpoint(ServiceEndpointResult result) {
+    CHECK(!service_endpoint_result_.has_value());
+    service_endpoint_result_ = std::move(result);
 
-    if (request_ssl_config_callback_) {
-      std::move(request_ssl_config_callback_).Run(OK);
-    }
-  }
-
-  void SetGetSSLConfigError(TlsStreamAttempt::GetSSLConfigError error) {
-    CHECK(!get_ssl_config_error_.has_value());
-    get_ssl_config_error_ = error;
-
-    if (request_ssl_config_callback_) {
-      std::move(request_ssl_config_callback_).Run(OK);
+    if (request_service_endpoint_callback_) {
+      std::move(request_service_endpoint_callback_).Run(OK);
     }
   }
 
@@ -114,28 +113,23 @@ class TlsStreamAttemptHelper : public TlsStreamAttempt::Delegate {
 
   void OnTcpHandshakeComplete() override {}
 
-  int WaitForSSLConfigReady(CompletionOnceCallback callback) override {
-    if (ssl_config_.has_value()) {
+  int WaitForServiceEndpointReady(CompletionOnceCallback callback) override {
+    if (service_endpoint_result_.has_value()) {
       return OK;
     }
 
-    CHECK(request_ssl_config_callback_.is_null());
-    request_ssl_config_callback_ = std::move(callback);
+    CHECK(request_service_endpoint_callback_.is_null());
+    request_service_endpoint_callback_ = std::move(callback);
     return ERR_IO_PENDING;
   }
 
-  base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> GetSSLConfig()
-      override {
-    if (get_ssl_config_error_.has_value()) {
-      return base::unexpected(*get_ssl_config_error_);
-    }
-
-    return *ssl_config_;
+  ServiceEndpointResult GetServiceEndpoint() override {
+    return *service_endpoint_result_;
   }
 
-  CompletionOnceCallback TakeSSLConfigWaitingCallback() {
-    CHECK(request_ssl_config_callback_);
-    return std::move(request_ssl_config_callback_);
+  CompletionOnceCallback TakeServiceEndpointWaitingCallback() {
+    CHECK(request_service_endpoint_callback_);
+    return std::move(request_service_endpoint_callback_);
   }
 
  private:
@@ -148,13 +142,24 @@ class TlsStreamAttemptHelper : public TlsStreamAttempt::Delegate {
 
   std::unique_ptr<TlsStreamAttempt> attempt_;
 
-  CompletionOnceCallback request_ssl_config_callback_;
-  std::optional<SSLConfig> ssl_config_;
-  std::optional<TlsStreamAttempt::GetSSLConfigError> get_ssl_config_error_;
+  CompletionOnceCallback request_service_endpoint_callback_;
+  std::optional<ServiceEndpointResult> service_endpoint_result_;
 
   base::OnceClosure completion_closure_;
   std::optional<int> result_;
 };
+
+// TODO(crbug.com/432044228): Make SSLConfig take a more convenient
+// representation for a trust anchor ID list.
+std::vector<uint8_t> EncodeTrustAnchorIDs(
+    const std::vector<std::vector<uint8_t>>& ids) {
+  std::vector<uint8_t> ret;
+  for (const auto& id : ids) {
+    ret.push_back(id.size());
+    base::Extend(ret, id);
+  }
+  return ret;
+}
 
 }  // namespace
 
@@ -276,56 +281,60 @@ TEST_F(TlsStreamAttemptTest, ConnectAndConfirmDelayed) {
   ValidateConnectTiming(helper.attempt()->connect_timing());
 }
 
-TEST_F(TlsStreamAttemptTest, SSLConfigDelayed) {
+TEST_F(TlsStreamAttemptTest, ServiceEndpointDelayed) {
   StaticSocketDataProvider data;
   data.set_connect_data(MockConnect(ASYNC, OK));
   socket_factory().AddSocketDataProvider(&data);
   SSLSocketDataProvider ssl(ASYNC, OK);
   socket_factory().AddSSLSocketDataProvider(&ssl);
 
-  TlsStreamAttemptHelper helper(params(), /*ssl_config=*/std::nullopt);
+  TlsStreamAttemptHelper helper(params(), SSLConfig(),
+                                /*service_endpoint=*/std::nullopt);
   int rv = helper.Start();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_CONNECTING);
 
-  // We don't provide SSLConfig yet so the attempt should not complete.
+  // We don't provide ServiceEndpoint yet so the attempt should not complete.
   RunUntilIdle();
   ASSERT_FALSE(helper.result().has_value());
   ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_SSL_HANDSHAKE);
 
-  helper.SetSSLConfig(SSLConfig());
+  helper.SetServiceEndpoint(ServiceEndpoint());
   rv = helper.WaitForCompletion();
   EXPECT_THAT(rv, IsOk());
   ValidateConnectTiming(helper.attempt()->connect_timing());
 }
 
-TEST_F(TlsStreamAttemptTest, GetSSLConfigAborted) {
+TEST_F(TlsStreamAttemptTest, GetServiceEndpointAborted) {
   StaticSocketDataProvider data;
   data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
   socket_factory().AddSocketDataProvider(&data);
   SSLSocketDataProvider ssl(SYNCHRONOUS, OK);
   socket_factory().AddSSLSocketDataProvider(&ssl);
 
-  TlsStreamAttemptHelper helper(params(), /*ssl_config=*/std::nullopt);
+  TlsStreamAttemptHelper helper(params(), SSLConfig(),
+                                /*service_endpoint=*/std::nullopt);
   int rv = helper.Start();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_SSL_HANDSHAKE);
 
-  helper.SetGetSSLConfigError(TlsStreamAttempt::GetSSLConfigError::kAbort);
+  helper.SetServiceEndpoint(
+      base::unexpected(TlsStreamAttempt::GetServiceEndpointError::kAbort));
   rv = helper.WaitForCompletion();
   EXPECT_THAT(rv, IsError(ERR_ABORTED));
 }
 
 // Regression test for crbug.com/402288759. Callback passed to
-// SSLConfigProvider::WaitForSSLConfigReady() could be moved and invoked later.
-TEST_F(TlsStreamAttemptTest, SSLConfigWaitingCallbackInvokedAfterReset) {
+// WaitForServiceEndpointReady() could be moved and invoked later.
+TEST_F(TlsStreamAttemptTest, ServiceEndpointWaitingCallbackInvokedAfterReset) {
   StaticSocketDataProvider data;
   data.set_connect_data(MockConnect(ASYNC, OK));
   socket_factory().AddSocketDataProvider(&data);
   SSLSocketDataProvider ssl(ASYNC, OK);
   socket_factory().AddSSLSocketDataProvider(&ssl);
 
-  TlsStreamAttemptHelper helper(params(), /*ssl_config=*/std::nullopt);
+  TlsStreamAttemptHelper helper(params(), SSLConfig(),
+                                /*service_endpoint=*/std::nullopt);
   int rv = helper.Start();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_CONNECTING);
@@ -335,7 +344,7 @@ TEST_F(TlsStreamAttemptTest, SSLConfigWaitingCallbackInvokedAfterReset) {
   ASSERT_FALSE(helper.result().has_value());
   ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_SSL_HANDSHAKE);
 
-  CompletionOnceCallback callback = helper.TakeSSLConfigWaitingCallback();
+  CompletionOnceCallback callback = helper.TakeServiceEndpointWaitingCallback();
   helper.ResetAttempt();
 
   // Invoking `callback` should do nothing.
@@ -520,10 +529,11 @@ TEST_F(TlsStreamAttemptTest, EchOk) {
   ssl.expected_ech_config_list = ech_config_list;
   socket_factory().AddSSLSocketDataProvider(&ssl);
 
-  SSLConfig ssl_config;
-  ssl_config.ech_config_list = ech_config_list;
+  ServiceEndpoint service_endpoint;
+  service_endpoint.metadata.ech_config_list = ech_config_list;
 
-  TlsStreamAttemptHelper helper(params(), std::move(ssl_config));
+  TlsStreamAttemptHelper helper(params(), SSLConfig(),
+                                std::move(service_endpoint));
   int rv = helper.Start();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
@@ -555,10 +565,11 @@ TEST_F(TlsStreamAttemptTest, EchRetryOk) {
   retry_ssl.expected_ech_config_list = ech_retry_config_list;
   socket_factory().AddSSLSocketDataProvider(&retry_ssl);
 
-  SSLConfig ssl_config;
-  ssl_config.ech_config_list = ech_config_list;
+  ServiceEndpoint service_endpoint;
+  service_endpoint.metadata.ech_config_list = ech_config_list;
 
-  TlsStreamAttemptHelper helper(params(), std::move(ssl_config));
+  TlsStreamAttemptHelper helper(params(), SSLConfig(),
+                                std::move(service_endpoint));
   int rv = helper.Start();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
@@ -590,10 +601,11 @@ TEST_F(TlsStreamAttemptTest, EchRetryFail) {
   retry_ssl.expected_ech_config_list = ech_retry_config_list;
   socket_factory().AddSSLSocketDataProvider(&retry_ssl);
 
-  SSLConfig ssl_config;
-  ssl_config.ech_config_list = ech_config_list;
+  ServiceEndpoint service_endpoint;
+  service_endpoint.metadata.ech_config_list = ech_config_list;
 
-  TlsStreamAttemptHelper helper(params(), std::move(ssl_config));
+  TlsStreamAttemptHelper helper(params(), SSLConfig(),
+                                std::move(service_endpoint));
   int rv = helper.Start();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
@@ -607,36 +619,43 @@ TEST_F(TlsStreamAttemptTest, TrustAnchorIDsRetry) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kTLSTrustAnchorIDs);
 
-  SetTrustedTrustAnchorIDs({{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}});
+  const std::vector<uint8_t> id1 = {0x01, 0x02, 0x03};
+  const std::vector<uint8_t> id2 = {0x02, 0x02};
+  const std::vector<uint8_t> id3 = {0x03, 0x03};
+  const std::vector<uint8_t> id4 = {0x04, 0x04};
+
+  SetTrustedTrustAnchorIDs({id1, id2, id3});
+  ServiceEndpoint service_endpoint;
+  service_endpoint.metadata.trust_anchor_ids = {id1, id3, id4};
 
   StaticSocketDataProvider data;
   socket_factory().AddSocketDataProvider(&data);
-  // The first connection attempt will fail with a certificate error (simulating
-  // the server providing a certificate that the client does not trust, because,
-  // for example, the server's Trust Anchor IDs advertised in DNS were stale and
-  // it does not actually have a certificate for the trust anchor that the
-  // client selected).
+  // The first connection attempt should send the intersection between the
+  // trusted set and the service endpoint. Configure it to fail with a
+  // certificate error (simulating the server providing a certificate that the
+  // client does not trust, because, for example, the server's Trust Anchor IDs
+  // advertised in DNS were stale and it does not actually have a certificate
+  // for the trust anchor that the client selected).
   SSLSocketDataProvider ssl_fail(ASYNC, ERR_CERT_AUTHORITY_INVALID);
-  ssl_fail.expected_trust_anchor_ids = {0x03, 0x01, 0x02, 0x03,
-                                        0x02, 0x04, 0x04};
+  ssl_fail.expected_trust_anchor_ids = EncodeTrustAnchorIDs({id1, id3});
   // The server provides a different set of Trust Anchor IDs in the handshake
   // than were present in the DNS record. This simulates the situation in which
   // the server can't provide a certificate chaining to a trust anchor that the
   // client signalled in the handshake, so it made its best guess, but it has
   // another certificate available that the client does actually trust.
-  ssl_fail.server_trust_anchor_ids_for_retry = {{0x02, 0x02}, {0x05, 0x06}};
+  ssl_fail.server_trust_anchor_ids_for_retry = {id2, id4};
   socket_factory().AddSSLSocketDataProvider(&ssl_fail);
 
-  // The second connection attempt and handshake succeed.
+  // The second connection attempt should send a new intersection. Configure it
+  // to now succeed.
   StaticSocketDataProvider retry_data;
   socket_factory().AddSocketDataProvider(&retry_data);
   SSLSocketDataProvider retry_ssl(ASYNC, OK);
-  retry_ssl.expected_trust_anchor_ids = {0x02, 0x02, 0x02};
+  retry_ssl.expected_trust_anchor_ids = EncodeTrustAnchorIDs({id2});
   socket_factory().AddSSLSocketDataProvider(&retry_ssl);
 
-  SSLConfig ssl_config;
-  ssl_config.trust_anchor_ids = {0x03, 0x01, 0x02, 0x03, 0x02, 0x04, 0x04};
-  TlsStreamAttemptHelper helper(params(), std::move(ssl_config));
+  TlsStreamAttemptHelper helper(params(), SSLConfig(),
+                                std::move(service_endpoint));
   int rv = helper.Start();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
@@ -659,26 +678,32 @@ TEST_F(TlsStreamAttemptTest, NoRetryIfNoServerTrustAnchorIDs) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kTLSTrustAnchorIDs);
 
-  SetTrustedTrustAnchorIDs({{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}});
+  const std::vector<uint8_t> id1 = {0x01, 0x02, 0x03};
+  const std::vector<uint8_t> id2 = {0x02, 0x02};
+  const std::vector<uint8_t> id3 = {0x03, 0x03};
+  const std::vector<uint8_t> id4 = {0x04, 0x04};
+
+  SetTrustedTrustAnchorIDs({id1, id2, id3});
+  ServiceEndpoint service_endpoint;
+  service_endpoint.metadata.trust_anchor_ids = {id1, id3, id4};
 
   StaticSocketDataProvider data;
   socket_factory().AddSocketDataProvider(&data);
-  // The first connection attempt will fail with a certificate error (simulating
-  // the server providing a certificate that the client does not trust, because,
-  // for example, the server's Trust Anchor IDs advertised in DNS were stale and
-  // it does not actually have a certificate for the trust anchor that the
-  // client selected).
+  // The first connection attempt should send the intersection between the
+  // trusted set and the service endpoint. Configure it to fail with a
+  // certificate error (simulating the server providing a certificate that the
+  // client does not trust, because, for example, the server's Trust Anchor IDs
+  // advertised in DNS were stale and it does not actually have a certificate
+  // for the trust anchor that the client selected).
   SSLSocketDataProvider ssl_fail(ASYNC, ERR_CERT_AUTHORITY_INVALID);
-  ssl_fail.expected_trust_anchor_ids = {0x03, 0x01, 0x02, 0x03,
-                                        0x02, 0x04, 0x04};
+  ssl_fail.expected_trust_anchor_ids = EncodeTrustAnchorIDs({id1, id3});
   // The server does not provide any Trust Anchor IDs in the handshake, so there
   // should be no retry.
   socket_factory().AddSSLSocketDataProvider(&ssl_fail);
 
   base::HistogramTester histogram_tester;
-  SSLConfig ssl_config;
-  ssl_config.trust_anchor_ids = {0x03, 0x01, 0x02, 0x03, 0x02, 0x04, 0x04};
-  TlsStreamAttemptHelper helper(params(), std::move(ssl_config));
+  TlsStreamAttemptHelper helper(params(), SSLConfig(),
+                                std::move(service_endpoint));
   int rv = helper.Start();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
@@ -698,28 +723,34 @@ TEST_F(TlsStreamAttemptTest, NoRetryIfNoIntersectionWithServerTrustAnchorIDs) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kTLSTrustAnchorIDs);
 
-  SetTrustedTrustAnchorIDs({{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}});
+  const std::vector<uint8_t> id1 = {0x01, 0x02, 0x03};
+  const std::vector<uint8_t> id2 = {0x02, 0x02};
+  const std::vector<uint8_t> id3 = {0x03, 0x03};
+  const std::vector<uint8_t> id4 = {0x04, 0x04};
+  const std::vector<uint8_t> id5 = {0x05, 0x05};
+
+  SetTrustedTrustAnchorIDs({id1, id2, id3});
+  ServiceEndpoint service_endpoint;
+  service_endpoint.metadata.trust_anchor_ids = {id1, id3, id4};
 
   StaticSocketDataProvider data;
   socket_factory().AddSocketDataProvider(&data);
-  // The first connection attempt will fail with a certificate error (simulating
-  // the server providing a certificate that the client does not trust, because,
-  // for example, the server's Trust Anchor IDs advertised in DNS were stale and
-  // it does not actually have a certificate for the trust anchor that the
-  // client selected).
+  // The first connection attempt should send the intersection between the
+  // trusted set and the service endpoint. Configure it to fail with a
+  // certificate error (simulating the server providing a certificate that the
+  // client does not trust, because, for example, the server's Trust Anchor IDs
+  // advertised in DNS were stale and it does not actually have a certificate
+  // for the trust anchor that the client selected).
   SSLSocketDataProvider ssl_fail(ASYNC, ERR_CERT_AUTHORITY_INVALID);
-  ssl_fail.expected_trust_anchor_ids = {0x03, 0x01, 0x02, 0x03,
-                                        0x02, 0x04, 0x04};
+  ssl_fail.expected_trust_anchor_ids = EncodeTrustAnchorIDs({id1, id3});
   // The server does not provide any Trust Anchor IDs in the handshake that the
   // client trusts, so there should be no retry.
-  ssl_fail.server_trust_anchor_ids_for_retry =
-      std::vector<std::vector<uint8_t>>({{0x06, 0x06}, {0x07, 0x7}});
+  ssl_fail.server_trust_anchor_ids_for_retry = {id4, id5};
   socket_factory().AddSSLSocketDataProvider(&ssl_fail);
 
   base::HistogramTester histogram_tester;
-  SSLConfig ssl_config;
-  ssl_config.trust_anchor_ids = {0x03, 0x01, 0x02, 0x03, 0x02, 0x04, 0x04};
-  TlsStreamAttemptHelper helper(params(), std::move(ssl_config));
+  TlsStreamAttemptHelper helper(params(), SSLConfig(),
+                                std::move(service_endpoint));
   int rv = helper.Start();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
@@ -738,23 +769,28 @@ TEST_F(TlsStreamAttemptTest, NoTrustAnchorIDsRetryIfNotCertificateError) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kTLSTrustAnchorIDs);
 
-  SetTrustedTrustAnchorIDs({{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}});
+  const std::vector<uint8_t> id1 = {0x01, 0x02, 0x03};
+  const std::vector<uint8_t> id2 = {0x02, 0x02};
+  const std::vector<uint8_t> id3 = {0x03, 0x03};
+  const std::vector<uint8_t> id4 = {0x04, 0x04};
+
+  SetTrustedTrustAnchorIDs({id1, id2, id3});
+  ServiceEndpoint service_endpoint;
+  service_endpoint.metadata.trust_anchor_ids = {id1, id3, id4};
 
   StaticSocketDataProvider data;
   socket_factory().AddSocketDataProvider(&data);
-  // The first connection attempt will fail with a non-certificate error.
+  // Configure first connection attempt to provide alternate trust anchor IDs,
+  // but fail with a non-certificate error.
   SSLSocketDataProvider ssl_fail(ASYNC, ERR_SSL_KEY_USAGE_INCOMPATIBLE);
-  ssl_fail.expected_trust_anchor_ids = {0x03, 0x01, 0x02, 0x03,
-                                        0x02, 0x04, 0x04};
-  ssl_fail.server_trust_anchor_ids_for_retry =
-      std::vector<std::vector<uint8_t>>({{0x02, 0x02}});
+  ssl_fail.expected_trust_anchor_ids = EncodeTrustAnchorIDs({id1, id3});
+  ssl_fail.server_trust_anchor_ids_for_retry = {id2};
   socket_factory().AddSSLSocketDataProvider(&ssl_fail);
   // There should be no retry because the error was not certificate-related.
 
   base::HistogramTester histogram_tester;
-  SSLConfig ssl_config;
-  ssl_config.trust_anchor_ids = {0x03, 0x01, 0x02, 0x03, 0x02, 0x04, 0x04};
-  TlsStreamAttemptHelper helper(params(), std::move(ssl_config));
+  TlsStreamAttemptHelper helper(params(), SSLConfig(),
+                                std::move(service_endpoint));
   int rv = helper.Start();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
@@ -774,41 +810,46 @@ TEST_F(TlsStreamAttemptTest, TrustAnchorIDsRetryOnlyOnce) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kTLSTrustAnchorIDs);
 
-  SetTrustedTrustAnchorIDs({{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}});
+  const std::vector<uint8_t> id1 = {0x01, 0x02, 0x03};
+  const std::vector<uint8_t> id2 = {0x02, 0x02};
+  const std::vector<uint8_t> id3 = {0x03, 0x03};
+  const std::vector<uint8_t> id4 = {0x04, 0x04};
+
+  SetTrustedTrustAnchorIDs({id1, id2, id3});
+  ServiceEndpoint service_endpoint;
+  service_endpoint.metadata.trust_anchor_ids = {id1, id3, id4};
 
   StaticSocketDataProvider data;
   socket_factory().AddSocketDataProvider(&data);
-  // The first connection attempt will fail with a certificate error (simulating
-  // the server providing a certificate that the client does not trust, because,
-  // for example, the server's Trust Anchor IDs advertised in DNS were stale and
-  // it does not actually have a certificate for the trust anchor that the
-  // client selected).
+  // The first connection attempt should send the intersection between the
+  // trusted set and the service endpoint. Configure it to fail with a
+  // certificate error (simulating the server providing a certificate that the
+  // client does not trust, because, for example, the server's Trust Anchor IDs
+  // advertised in DNS were stale and it does not actually have a certificate
+  // for the trust anchor that the client selected).
   SSLSocketDataProvider ssl_fail(ASYNC, ERR_CERT_INVALID);
-  ssl_fail.expected_trust_anchor_ids = {0x03, 0x01, 0x02, 0x03,
-                                        0x02, 0x04, 0x04};
+  ssl_fail.expected_trust_anchor_ids = EncodeTrustAnchorIDs({id1, id3});
   // The server provides a different set of Trust Anchor IDs in the handshake
   // than were present in the DNS record. This simulates the situation in which
   // the server can't provide a certificate chaining to a trust anchor that the
   // client signalled in the handshake, so it made its best guess, but it has
   // another certificate available that the client does actually trust.
-  ssl_fail.server_trust_anchor_ids_for_retry = {{0x02, 0x02}, {0x05, 0x06}};
+  ssl_fail.server_trust_anchor_ids_for_retry = {id2, id4};
   socket_factory().AddSSLSocketDataProvider(&ssl_fail);
 
-  // The second connection attempt and handshake again fail with a certificate
-  // error.
+  // The second connection attempt should a new intersection. Configure it to
+  // fail with another certificate error and more alternate IDs.
   StaticSocketDataProvider retry_data;
   socket_factory().AddSocketDataProvider(&retry_data);
   SSLSocketDataProvider retry_ssl(ASYNC, ERR_CERT_AUTHORITY_INVALID);
-  retry_ssl.expected_trust_anchor_ids = {0x02, 0x02, 0x02};
-  retry_ssl.server_trust_anchor_ids_for_retry =
-      std::vector<std::vector<uint8_t>>({{0x04, 0x04}, {0x05, 0x6}});
+  retry_ssl.expected_trust_anchor_ids = EncodeTrustAnchorIDs({id2});
+  retry_ssl.server_trust_anchor_ids_for_retry = {id1, id2, id3};
   socket_factory().AddSSLSocketDataProvider(&retry_ssl);
   // There should be no third attempt.
 
   base::HistogramTester histogram_tester;
-  SSLConfig ssl_config;
-  ssl_config.trust_anchor_ids = {0x03, 0x01, 0x02, 0x03, 0x02, 0x04, 0x04};
-  TlsStreamAttemptHelper helper(params(), std::move(ssl_config));
+  TlsStreamAttemptHelper helper(params(), SSLConfig(),
+                                std::move(service_endpoint));
   int rv = helper.Start();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 

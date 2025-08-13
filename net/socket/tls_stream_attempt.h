@@ -26,8 +26,9 @@
 
 namespace net {
 
-class TcpStreamAttempt;
+struct ServiceEndpoint;
 class SSLClientSocket;
+class TcpStreamAttempt;
 
 // Represents a single TLS connection attempt.
 class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
@@ -36,7 +37,7 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
   static constexpr base::TimeDelta kTlsHandshakeTimeout = base::Seconds(30);
 
   // Represents an error of getting a SSLConfig for an attempt.
-  enum class GetSSLConfigError {
+  enum class GetServiceEndpointError {
     // The attempt should abort. Currently this happens when we start an attempt
     // without waiting for HTTPS RR and the DNS resolution resulted in making
     // the attempt SVCB-reliant.
@@ -55,21 +56,27 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
     // Called when TCP handshake completes.
     virtual void OnTcpHandshakeComplete() = 0;
 
-    // Returns OK when a SSLConfig is immediately available. `callback` is never
-    // invoked. Otherwise, returns ERR_IO_PENDING when `this` can't provide a
-    // SSLConfig immediately. `callback` is invoked when a SSLConfig is ready.
-    virtual int WaitForSSLConfigReady(CompletionOnceCallback callback) = 0;
+    // Returns `OK` and ignores `callback` when a ServiceEndpoint is immediately
+    // available. Otherwise, returns `ERR_IO_PENDING` when `this` can't provide
+    // a ServiceEndpoint immediately. `callback` is invoked when a SSLConfig is
+    // ready.
+    virtual int WaitForServiceEndpointReady(
+        CompletionOnceCallback callback) = 0;
 
-    // Returns a SSLConfig. Should be called only after WaitForSSLConfigReady()
-    // returns OK or the callback is invoked.
-    virtual base::expected<SSLConfig, GetSSLConfigError> GetSSLConfig() = 0;
+    // Returns a ServiceEndpoint. Should be called only after
+    // WaitForServiceEndpointReady() returns `OK` or the callback is invoked.
+    virtual base::expected<ServiceEndpoint, GetServiceEndpointError>
+    GetServiceEndpoint() = 0;
   };
 
-  // `params` and `ssl_config_provider` must outlive `this`.
+  // `params` must outlive `this`. `base_ssl_config` contains the base SSL
+  // configuration. Some additional configuration (things that depend on
+  // ServiceEndpoint) is applied within TlsStreamAttempt.
   TlsStreamAttempt(const StreamAttemptParams* params,
                    IPEndPoint ip_endpoint,
                    perfetto::Track track,
                    HostPortPair host_port_pair,
+                   SSLConfig base_ssl_config,
                    Delegate* delegate);
 
   TlsStreamAttempt(const TlsStreamAttempt&) = delete;
@@ -117,6 +124,7 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
 
   State next_state_ = State::kNone;
   const HostPortPair host_port_pair_;
+  const SSLConfig base_ssl_config_;
   const raw_ptr<Delegate> delegate_;
 
   std::unique_ptr<TcpStreamAttempt> nested_attempt_;
@@ -134,8 +142,10 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
   // only retry once per connection attempt.
   bool retried_for_trust_anchor_ids_ = false;
   // Used for metrics. Set to true when the initial connection attempt used a
-  // DNS endpoint that advertised TLS Trust Anchor IDs.
+  // service endpoint that advertised trust anchor IDs and ECH, respectively,
+  // whether or not sufficient features were enabled to use them.
   bool trust_anchor_ids_from_dns_ = false;
+  bool is_ech_capable_ = false;
 
   base::WeakPtrFactory<TlsStreamAttempt> weak_ptr_factory_{this};
 };
