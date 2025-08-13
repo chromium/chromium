@@ -1564,7 +1564,7 @@ source_set("unit_tests") {
     sources += [ "scroll/scrollbar_theme_aura_test.cc" ]
   }
 
-  if (media_use_ffmpeg || !is_android) {
+  if (media_use_ffmpeg) {
     sources += [ "exported/web_media_player_impl_unittest.cc" ]
     data = [ "//media/test/data/" ]
     deps += [
