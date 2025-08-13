@@ -14,7 +14,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/persistent_pref_store.h"
@@ -39,8 +38,7 @@ base::OnceClosure& GetLogOutOverrideCallbackForTest() {
 
 }  // namespace
 
-bool RemoveUsersIfNeeded() {
-  PrefService* local_state = g_browser_process->local_state();
+bool RemoveUsersIfNeeded(PrefService* local_state) {
   const PrefService::Preference* pref =
       local_state->FindPreference(prefs::kRemoveUsersRemoteCommand);
 
@@ -91,8 +89,8 @@ void OverrideLogOutForTesting(base::OnceClosure callback) {
   log_out_override_callback = std::move(callback);
 }
 
-void InitiateUserRemoval(base::OnceClosure on_pref_persisted_callback) {
-  PrefService* local_state = g_browser_process->local_state();
+void InitiateUserRemoval(PrefService* local_state,
+                         base::OnceClosure on_pref_persisted_callback) {
   local_state->SetBoolean(prefs::kRemoveUsersRemoteCommand, true);
 
   local_state->CommitPendingWrite(base::BindOnce(

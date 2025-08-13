@@ -1306,7 +1306,7 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
         chromeos::PowerManagerClient::Get());
 
     g_browser_process->platform_part()->InitializeAutomaticRebootManager();
-    user_removal_manager::RemoveUsersIfNeeded();
+    user_removal_manager::RemoveUsersIfNeeded(g_browser_process->local_state());
 
     // This observer cannot be created earlier because it requires the shell to
     // be available.
