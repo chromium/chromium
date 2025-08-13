@@ -35,6 +35,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -262,6 +263,43 @@ class PLATFORM_EXPORT JSONArray : public JSONValue {
 
   JSONValue* at(wtf_size_t index) const;
   wtf_size_t size() const { return data_.size(); }
+
+  class ConstIterator {
+    STACK_ALLOCATED();
+
+   public:
+    ConstIterator(const JSONArray* value) : value_(value) {}
+    static ConstIterator End() {
+      ConstIterator it(nullptr);
+      it.index_ = kNotFound;
+      return it;
+    }
+
+    bool operator==(const ConstIterator& other) const {
+      DCHECK(!value_ || !other.value_ || value_ == other.value_);
+      return index_ == other.index_;
+    }
+
+    ConstIterator& operator++() {
+      if (index_ == kNotFound || !value_) {
+        return *this;
+      }
+      index_++;
+      if (index_ >= value_->size()) {
+        index_ = kNotFound;
+      }
+      return *this;
+    }
+
+    const JSONValue& operator*() const { return *value_->at(index_); }
+
+   private:
+    const JSONArray* value_;
+    wtf_size_t index_ = 0;
+  };
+
+  ConstIterator begin() const { return ConstIterator(this); }
+  ConstIterator end() const { return ConstIterator::End(); }
 
  protected:
   void PrettyWriteJSONInternal(StringBuilder* output, int depth) const override;

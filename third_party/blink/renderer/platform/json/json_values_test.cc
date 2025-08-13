@@ -40,4 +40,20 @@ TEST(JSONValuesTest, ObjectCastDoesNotLeak) {
   EXPECT_EQ(1, deletion_count);
 }
 
+TEST(JSONValuesTest, ArrayIterator) {
+  JSONArray array;
+  array.PushString("P");
+  array.PushString("A");
+  array.PushString("S");
+  array.PushString("S");
+
+  StringBuilder result;
+  for (const JSONValue& entry : array) {
+    String str;
+    ASSERT_TRUE(entry.AsString(&str));
+    result.Append(str);
+  }
+  EXPECT_EQ(result.ToString(), "PASS");
+}
+
 }  // namespace blink
