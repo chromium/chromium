@@ -11,7 +11,6 @@
     "symbol_level": 1,
     "target_cpu": "arm",
     "target_os": "android",
-    "use_clang_modules": false,
     "use_reclient": false,
     "use_remoteexec": true,
     "use_siso": true

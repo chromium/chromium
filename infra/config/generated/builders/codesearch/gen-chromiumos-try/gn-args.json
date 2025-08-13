@@ -9,7 +9,6 @@
     "symbol_level": 1,
     "target_cpu": "x64",
     "target_os": "chromeos",
-    "use_clang_modules": false,
     "use_cups": true,
     "use_reclient": false,
     "use_remoteexec": true,

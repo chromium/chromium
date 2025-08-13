@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/cast.gni")
+import("//build/toolchain/kythe.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/siso.gni")
 import("//build/toolchain/toolchain.gni")
@@ -56,8 +57,11 @@ declare_args() {
   # Currently we enables this only on non-official Linux x64 build on Linux x64
   # machine.
   use_clang_modules =
-      !is_official_build && is_clang && host_os == "linux" &&
-      host_cpu == "x64" && target_os == "linux" && target_cpu == "x64" &&
+      # Clang modules doesn't work with translation_unit used in codesearch
+      # pipeline http://b/436082487.
+      !enable_kythe_annotations && !is_official_build && is_clang &&
+      host_os == "linux" && host_cpu == "x64" && target_os == "linux" &&
+      target_cpu == "x64" &&
       # reclient doesn't handle headers in modulemap config.
       !use_reclient
 }

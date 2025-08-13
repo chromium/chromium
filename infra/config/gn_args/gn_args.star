@@ -423,9 +423,6 @@ gn_args.config(
     args = {
         "clang_use_chrome_plugins": False,
         "enable_kythe_annotations": True,
-        # Clang modules doens't work with translation_unit used in codesearch
-        # pipeline http://b/436082487.
-        "use_clang_modules": False,
     },
     configs = [
         "blink_enable_generated_code_formatting",
