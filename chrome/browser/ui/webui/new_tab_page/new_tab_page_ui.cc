@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/aim_entrypoint_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
@@ -551,11 +552,11 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddInteger("composeboxFileMaxCount",
                      composebox_config.max_num_files());
 
-  source->AddBoolean("searchboxShowComposeEntrypoint",
-                     (ntp_composebox::IsNtpSearchboxComposeEntrypointEnabled(
-                          g_browser_process) ||
-                      ntp_composebox::FeatureConfig::Get().enabled) &&
-                         omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
+  source->AddBoolean(
+      "searchboxShowComposeEntrypoint",
+      (ntp_composebox::IsNtpSearchboxComposeEntrypointEnabled(profile) ||
+       ntp_composebox::FeatureConfig::Get().enabled) &&
+          omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
   source->AddBoolean("searchboxShowComposebox",
                      ntp_composebox::FeatureConfig::Get().enabled &&
                          omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
