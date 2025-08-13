@@ -44,8 +44,8 @@ std::string GetAltText(const ui::AXNode* ax_node);
 // instead of getting text from the node directly because the text content
 // is different if in Google Docs or pdfs.
 std::u16string GetTextContent(const ui::AXNode* ax_node,
-                              bool is_docs,
-                              bool is_pdf);
+                              bool is_pdf,
+                              bool is_docs);
 
 std::u16string GetNameAttributeText(const ui::AXNode* ax_node);
 }  // namespace a11y
