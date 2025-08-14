@@ -183,9 +183,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                             ? (resultingDeltaY > requestedDeltaY)
                             : (resultingDeltaY < requestedDeltaY);
 
-            // Do not handle bottom omnibox yet (lots of corner cases).
-            if (!mToolbarOnTop) return resultingDeltaY;
-
             if (mIsScrolledToTop == newIsScrolledToTop) return resultingDeltaY;
             mIsScrolledToTop = newIsScrolledToTop;
             mCurrentGestureAffectedKeyboardState = true;
