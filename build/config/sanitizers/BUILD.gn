@@ -426,12 +426,16 @@ config("coverage_flags") {
         # well with `pc-table` instrumentation enabled by `fuzzer-no-link`.
         cflags += [ "-fno-sanitize-coverage=pc-table" ]
       }
+      if (is_android) {
+        cflags += [ "-fno-sanitize-coverage=stack-depth" ]
+      }
     } else {
       cflags += [
         "-fsanitize-coverage=$sanitizer_coverage_flags",
         "-mllvm",
         "-sanitizer-coverage-prune-blocks=1",
       ]
+
       if (current_cpu == "arm") {
         # http://crbug.com/517105
         cflags += [
