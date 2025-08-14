@@ -800,12 +800,23 @@
   "chromeos/ash/resources/internal/ash_internal_strings.grd": {
     "messages": [5820],
   },
+  # Both boca_receiver_app_bundle_resources.grd and
+  # boca_receiver_app_bundle_mock_resources.grd start with the same id because
+  # only one of them is built depending on if actual app is available.
+  "ash/webui/boca_receiver_app_ui/resources/prod/boca_receiver_app_bundle_resources.grd": {
+    "META": {"sizes": {"includes": [100],}},
+    "includes": [5822],
+  },
+  "ash/webui/boca_receiver_app_ui/resources/mock/boca_receiver_app_bundle_mock_resources.grd": {
+    "META": {"sizes": {"includes": [100],}},
+    "includes": [5822],
+  },
   "ash/webui/boca_receiver_app_ui/resources/trusted/boca_receiver_trusted_resources.grd": {
-    "META": {"sizes": {"includes": [120],}},
+    "META": {"sizes": {"includes": [10],}},
     "includes": [5825],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/boca_receiver_app_ui/resources/untrusted/resources.grd": {
-    "META": {"sizes": {"includes": [120],}},
+    "META": {"sizes": {"includes": [40],}},
     "includes": [5830],
   },
   # Both boca_app_bundle_resources.grd and boca_app_bundle_mock_resources.grd

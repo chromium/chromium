@@ -1,4 +1,4 @@
-# Copyright 2024 The Chromium Authors
+# Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
@@ -19,6 +19,7 @@ static_library("boca_receiver_app_ui") {
     "//ash/constants",
     "//ash/webui/boca_receiver_app_ui/resources/trusted:resources",
     "//ash/webui/boca_receiver_app_ui/resources/untrusted:resources",
+    "//ash/webui/resources:boca_receiver_app_bundle_resources",
     "//base",
     "//content/public/browser",
     "//content/public/common",

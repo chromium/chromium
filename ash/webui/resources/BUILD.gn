@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ash/webui/boca_receiver_app_ui/boca_receiver_app.gni")
 import("//ash/webui/boca_ui/boca_app.gni")
 import("//ash/webui/eche_app_ui/eche_app_ui.gni")
 import("//ash/webui/help_app_ui/help_app_ui.gni")
@@ -21,6 +22,7 @@ template("ash_generated_grit") {
                            [
                              "deps",
                              "source",
+                             "use_brotli",
                            ])
 
     # These arguments are needed since the grd is generated at build time.
@@ -57,6 +59,16 @@ grit("boca_app_bundle_resources") {
     "chromeos_boca_app_bundle_resources.pak",
   ]
   output_dir = "$root_gen_dir/chromeos"
+}
+
+ash_generated_grit("boca_receiver_app_bundle_resources") {
+  if (enable_cros_boca_receiver_app) {
+    source = "//ash/webui/boca_receiver_app_ui/resources/prod/boca_receiver_app_bundle_resources.grd"
+  } else {
+    source = "//ash/webui/boca_receiver_app_ui/resources/mock/boca_receiver_app_bundle_mock_resources.grd"
+    deps = [ "//ash/webui/boca_receiver_app_ui/resources/mock:build_ts" ]
+  }
+  use_brotli = true
 }
 
 # Resources used by chrome://camera-app.

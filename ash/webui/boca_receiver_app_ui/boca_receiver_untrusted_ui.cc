@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/boca_receiver_app_ui/url_constants.h"
+#include "ash/webui/grit/ash_boca_receiver_app_bundle_resources_map.h"
 #include "ash/webui/grit/ash_boca_receiver_untrusted_ui_resources.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -37,7 +38,16 @@ BocaReceiverUntrustedUI::BocaReceiverUntrustedUI(content::WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       kChromeUntrustedBocaReceiverURL);
   source->AddResourcePath("", IDR_ASH_BOCA_RECEIVER_UNTRUSTED_UI_INDEX_HTML);
+  source->AddResourcePaths(kAshBocaReceiverAppBundleResources);
   source->AddFrameAncestor(GURL(kChromeBocaReceiverURL));
+
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::StyleSrc,
+      "style-src 'self' 'unsafe-inline' chrome-untrusted://theme;");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types polymer_resin lit-html goog#html polymer-html-literal "
+      "polymer-template-event-attribute-policy;");
 }
 
 BocaReceiverUntrustedUI::~BocaReceiverUntrustedUI() = default;
