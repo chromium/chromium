@@ -209,11 +209,10 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   void ListboxSelectedChildrenChanged(HTMLSelectElement*) override;
   void ListboxActiveIndexChanged(HTMLSelectElement*) override;
   void SetMenuListOptionsBounds(HTMLSelectElement*,
-                                const WTF::Vector<gfx::Rect>&) override;
+                                const Vector<gfx::Rect>&) override;
   // Return the bounds for <option>s in an open <select>, or nullptr if they
   // are not available.
-  const WTF::Vector<gfx::Rect>* GetOptionsBounds(
-      const AXObject& ax_menu_list) const;
+  const Vector<gfx::Rect>* GetOptionsBounds(const AXObject& ax_menu_list) const;
 
   // Return true if the node has previously had aria-hidden="true" that was used
   // illegally, e.g. focus went inside of it.
@@ -660,7 +659,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
 
   // Returns the `TextChangedOperation` associated with the `id` from the
   // `text_operation_in_node_ids_` map, if `id` is in the map.
-  WTF::Vector<TextChangedOperation>* GetFromTextOperationInNodeIdMap(AXID id);
+  Vector<TextChangedOperation>* GetFromTextOperationInNodeIdMap(AXID id);
 
   // Clears the map after each call, should be called after each serialization.
   void ClearTextOperationInNodeIdMap();
@@ -1016,7 +1015,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
 
   // When the AXMode filter flag kOnScreenOnly is set, this set holds the IDs of
   // nodes that are not on-screen, but are still serialized.
-  WTF::HashSet<AXID> extra_off_screen_nodes_to_serialize_;
+  HashSet<AXID> extra_off_screen_nodes_to_serialize_;
 #if AX_FAIL_FAST_BUILD()
   size_t included_node_count_ = 0;
   size_t plugin_included_node_count_ = 0;
@@ -1252,7 +1251,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // bounding boxes for the options, which are rendered in a special popup
   // document that is not in the AX tree that duplicates the option elements
   // from the main document.
-  WTF::Vector<gfx::Rect> options_bounds_;
+  Vector<gfx::Rect> options_bounds_;
   // AXID for the <select> containing tracked options bounds.
   AXID current_menu_list_axid_ = 0;
 
@@ -1271,7 +1270,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Map of node IDs where there was an operation done, could be deletion or
   // insertion. The items in the vector are in the order that the operations
   // were made in.
-  HashMap<AXID, WTF::Vector<TextChangedOperation>> text_operation_in_node_ids_;
+  HashMap<AXID, Vector<TextChangedOperation>> text_operation_in_node_ids_;
 
   // A set of ARIA notifications that have yet to be added to `ax_tree_data`.
   HashMap<AXID, AriaNotifications> aria_notifications_;

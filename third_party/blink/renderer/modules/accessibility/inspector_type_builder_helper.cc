@@ -662,17 +662,16 @@ void FillSparseAttributes(AXObject& ax_object,
         node_data.GetStringAttribute(ax::mojom::blink::StringAttribute::kUrl);
     properties.emplace_back(CreateProperty(
         AXPropertyNameEnum::Url,
-        CreateValue(WTF::String(url.c_str()), AXValueTypeEnum::String)));
+        CreateValue(String(url.c_str()), AXValueTypeEnum::String)));
   }
 
   if (node_data.HasStringAttribute(
           ax::mojom::blink::StringAttribute::kKeyShortcuts)) {
     const auto key_shortcuts = node_data.GetStringAttribute(
         ax::mojom::blink::StringAttribute::kKeyShortcuts);
-    properties.emplace_back(
-        CreateProperty(AXPropertyNameEnum::Keyshortcuts,
-                       CreateValue(WTF::String(key_shortcuts.c_str()),
-                                   AXValueTypeEnum::String)));
+    properties.emplace_back(CreateProperty(
+        AXPropertyNameEnum::Keyshortcuts,
+        CreateValue(String(key_shortcuts.c_str()), AXValueTypeEnum::String)));
   }
 
   if (node_data.HasStringAttribute(
@@ -681,7 +680,7 @@ void FillSparseAttributes(AXObject& ax_object,
         ax::mojom::blink::StringAttribute::kRoleDescription);
     properties.emplace_back(
         CreateProperty(AXPropertyNameEnum::Roledescription,
-                       CreateValue(WTF::String(role_description.c_str()),
+                       CreateValue(String(role_description.c_str()),
                                    AXValueTypeEnum::String)));
   }
 

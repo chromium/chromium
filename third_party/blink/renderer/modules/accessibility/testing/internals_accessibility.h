@@ -39,8 +39,8 @@ class InternalsAccessibility {
  public:
   static unsigned numberOfLiveAXObjects(Internals&);
 
-  static WTF::String getComputedLabel(Internals&, const Element* element);
-  static WTF::String getComputedRole(Internals&, const Element* element);
+  static String getComputedLabel(Internals&, const Element* element);
+  static String getComputedRole(Internals&, const Element* element);
 };
 
 }  // namespace blink

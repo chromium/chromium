@@ -130,7 +130,7 @@ class AXBlockFlowData : public GarbageCollected<AXBlockFlowData> {
 
   const HeapVector<Line>& GetLines() const { return lines_; }
 
-  WTF::String GetText(wtf_size_t index) const;
+  String GetText(wtf_size_t index) const;
 
   std::optional<Line> GetLine(wtf_size_t index) const;
 
@@ -184,7 +184,7 @@ class MODULES_EXPORT AXBlockFlowIterator {
   // if successful, and false if already at the trailing fragment item.
   bool Next();
 
-  const WTF::String& GetText();
+  const String& GetText();
 
   // Returns the offset of each character in the text, may be used to compute
   // bounding boxes of arbitrary text selections. Note: multiple characters may
@@ -215,7 +215,7 @@ class MODULES_EXPORT AXBlockFlowIterator {
 
   // This version returns the text associated with the fragment without checking
   // if trailing whitespace is needed for serialization.
-  static WTF::String GetTextForTesting(MapKey map_key);
+  static String GetTextForTesting(MapKey map_key);
 
  private:
   const AXBlockFlowData* block_flow_data_ = nullptr;
@@ -224,7 +224,7 @@ class MODULES_EXPORT AXBlockFlowIterator {
   std::optional<wtf_size_t> start_index_;
   std::optional<wtf_size_t> current_index_;
 
-  std::optional<WTF::String> text_;
+  std::optional<String> text_;
 };
 
 }  // namespace blink

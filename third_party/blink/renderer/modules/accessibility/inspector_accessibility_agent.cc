@@ -405,7 +405,7 @@ void InspectorAccessibilityAgent::queryAXTree(
 
   // ScheduleAXUpdateWithCallback() ensures the lifecycle doesn't get stalled,
   // and therefore ensures we get the callback as soon as a11y is clean again.
-  cache.ScheduleAXUpdateWithCallback(WTF::BindOnce(
+  cache.ScheduleAXUpdateWithCallback(BindOnce(
       &InspectorAccessibilityAgent::CompleteQuery, WrapWeakPersistent(this),
       WrapWeakPersistent(root_dom_node), std::move(accessible_name),
       std::move(role), std::move(callback)));

@@ -212,7 +212,7 @@ void DumpBlockFragmentationData(const FragmentItems* fragment_items,
     return;
   }
 
-  WTF::String indent_str = WTF::String(std::string(indent, '+'));
+  String indent_str = String(std::string(indent, '+'));
   for (wtf_size_t index = 0; index < fragment_items->Size(); index++) {
     const FragmentItem& item = fragment_items->Items()[index];
     StringBuilder sb;

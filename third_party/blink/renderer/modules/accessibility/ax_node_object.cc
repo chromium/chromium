@@ -741,7 +741,7 @@ void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
       ->GetTaskRunner(TaskType::kUserInteraction)
       ->PostDelayedTask(
           FROM_HERE,
-          WTF::BindOnce(
+          BindOnce(
               [](Node* node, KeyboardEvent* evt) {
                 if (node) {
                   node->DispatchEvent(*evt);

@@ -848,7 +848,7 @@ TEST_F(AccessibilityTest, AxNodeObjectInPageLinkTargetNonAscii) {
   //
   // This file is forced to be UTF-8 by the build system,
   // the uR"" will create char16_t[] of UTF-16,
-  // WTF::String will wrap the char16_t* as UTF-16.
+  // String will wrap the char16_t* as UTF-16.
   // All this is checked by ensuring a match against u"\u00F6".
   //
   // TODO(1117212): The escaped version currently takes precedence.
