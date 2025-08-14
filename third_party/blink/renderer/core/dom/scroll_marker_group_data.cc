@@ -303,7 +303,7 @@ void ScrollMarkerGroupData::RemoveFromFocusGroup(Element& scroll_marker) {
 }
 
 void ScrollMarkerGroupData::ClearFocusGroup() {
-  SetPendingSelectedMarker(nullptr, /*apply_snap_alignment=*/true);
+  MaybeSetPendingSelectedMarker(nullptr, /*apply_snap_alignment=*/true);
   focus_group_.clear();
 }
 
@@ -346,7 +346,7 @@ void ScrollMarkerGroupData::ApplyPendingScrollMarker() {
   pending_selected_marker_.Clear();
 }
 
-void ScrollMarkerGroupData::SetPendingSelectedMarker(
+void ScrollMarkerGroupData::MaybeSetPendingSelectedMarker(
     Element* scroll_marker,
     bool apply_snap_alignment) {
   // Don't invalidate currently selected marker if it is pinned.
@@ -354,9 +354,14 @@ void ScrollMarkerGroupData::SetPendingSelectedMarker(
   // we should update make pending scroll marker the selected one,
   // as it means that we just received a targeted scroll, that got
   // us pinned and is setting the pending scroll marker.
-  if (selected_marker_is_pinned_) {
-    return;
+  if (!selected_marker_is_pinned_) {
+    SetPendingSelectedMarker(scroll_marker, apply_snap_alignment);
   }
+}
+
+void ScrollMarkerGroupData::SetPendingSelectedMarker(
+    Element* scroll_marker,
+    bool apply_snap_alignment) {
   selected_marker_is_invalid_ = true;
   pending_selected_marker_ = scroll_marker;
   apply_snap_alignment_ = apply_snap_alignment;
@@ -532,7 +537,7 @@ void ScrollMarkerGroupData::UpdateSelectedScrollMarker() {
     // We avoid calling ScrollMarkerPseudoElement::SetSelected here so as not to
     // cause style to be dirty right after layout, which might violate lifecycle
     // expectations.
-    SetPendingSelectedMarker(selected, /*apply_snap_alignment=*/true);
+    MaybeSetPendingSelectedMarker(selected, /*apply_snap_alignment=*/true);
   }
 }
 
