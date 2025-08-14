@@ -167,24 +167,6 @@ constexpr char kWindowCreateCannotUseTabIdWithIwaError[] =
 constexpr char kWindowCreateCannotMoveIwaTabError[] =
     "The tab of an Isolated Web App cannot be moved to a new window.";
 
-ui::mojom::WindowShowState ConvertToWindowShowState(
-    windows::WindowState state) {
-  switch (state) {
-    case windows::WindowState::kNormal:
-      return ui::mojom::WindowShowState::kNormal;
-    case windows::WindowState::kMinimized:
-      return ui::mojom::WindowShowState::kMinimized;
-    case windows::WindowState::kMaximized:
-      return ui::mojom::WindowShowState::kMaximized;
-    case windows::WindowState::kFullscreen:
-    case windows::WindowState::kLockedFullscreen:
-      return ui::mojom::WindowShowState::kFullscreen;
-    case windows::WindowState::kNone:
-      return ui::mojom::WindowShowState::kDefault;
-  }
-  NOTREACHED();
-}
-
 bool IsValidStateForWindowsCreateFunction(
     const windows::Create::Params::CreateData* create_data) {
   if (!create_data) {
@@ -288,54 +270,6 @@ int MoveTabToWindow(ExtensionFunction* function,
 
   return target_tab_strip->InsertDetachedTabAt(
       target_index, std::move(detached_tab), AddTabTypes::ADD_NONE);
-}
-
-// This function sets the state of the browser window to a "locked"
-// fullscreen state (where the user can't exit fullscreen) in response to a
-// call to either chrome.windows.create or chrome.windows.update when the
-// screen is set locked. This is only necessary for ChromeOS and is
-// restricted to allowlisted extensions.
-void SetLockedFullscreenState(Browser* browser, bool pinned) {
-#if BUILDFLAG(IS_CHROMEOS)
-  aura::Window* window = browser->window()->GetNativeWindow();
-  DCHECK(window);
-
-  CHECK_NE(GetWindowPinType(window), chromeos::WindowPinType::kPinned)
-      << "Extensions only set Trusted Pinned";
-
-  // As this gets triggered from extensions, we might encounter this case.
-  if (IsWindowPinned(window) == pinned) {
-    return;
-  }
-
-  if (pinned) {
-    // Pins from extension are always trusted.
-    PinWindow(window, /*trusted=*/true);
-  } else {
-    UnpinWindow(window);
-  }
-
-  // Update the set of available browser commands.
-  browser->command_controller()->LockedFullscreenStateChanged();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
-// Returns whether the given `bounds` intersect with at least 50% of all the
-// displays.
-bool WindowBoundsIntersectDisplays(const gfx::Rect& bounds) {
-  // Bail if `bounds` has an overflown area.
-  auto checked_area = bounds.size().GetCheckedArea();
-  if (!checked_area.IsValid()) {
-    return false;
-  }
-
-  int intersect_area = 0;
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
-    gfx::Rect display_bounds = display.bounds();
-    display_bounds.Intersect(bounds);
-    intersect_area += display_bounds.size().GetArea();
-  }
-  return intersect_area >= (bounds.size().GetArea() / 2);
 }
 
 class ScopedPinBrowserAtFront {
@@ -544,7 +478,7 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
 
     // Immediately fail if the window bounds don't intersect the displays.
     if ((set_window_position || set_window_size) &&
-        !WindowBoundsIntersectDisplays(window_bounds)) {
+        !tabs_internal::WindowBoundsIntersectDisplays(window_bounds)) {
       return RespondNow(Error(tabs_constants::kInvalidWindowBoundsError));
     }
 
@@ -593,7 +527,7 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
           Error(tabs_internal::kMissingLockWindowFullscreenPrivatePermission));
     }
     create_params.initial_show_state =
-        ConvertToWindowShowState(create_data->state);
+        tabs_internal::ConvertToWindowShowState(create_data->state);
   }
 
   Browser* new_window = Browser::Create(create_params);
@@ -740,7 +674,9 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   // (otherwise that resets the locked mode for devices in tablet mode).
   if (create_data &&
       create_data->state == windows::WindowState::kLockedFullscreen) {
-    SetLockedFullscreenState(new_window, /*pinned=*/true);
+#if BUILDFLAG(IS_CHROMEOS)
+    tabs_internal::SetLockedFullscreenState(new_window, /*pinned=*/true);
+#endif
   }
 
   if (new_window->profile()->IsOffTheRecord() &&
@@ -754,155 +690,6 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   return RespondNow(
       WithArguments(ExtensionTabUtil::CreateWindowValueForExtension(
           *new_window, extension(), WindowController::kPopulateTabs,
-          source_context_type())));
-}
-
-ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
-  std::optional<windows::Update::Params> params =
-      windows::Update::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  WindowController* window_controller = nullptr;
-  std::string error;
-  if (!windows_util::GetControllerFromWindowID(
-          this, params->window_id, WindowController::GetAllWindowFilter(),
-          &window_controller, &error)) {
-    return RespondNow(Error(std::move(error)));
-  }
-
-  BrowserWindowInterface* browser =
-      window_controller->GetBrowserWindowInterface();
-  if (!browser) {
-    return RespondNow(Error(ExtensionTabUtil::kNoCrashBrowserError));
-  }
-  ui::BaseWindow* browser_window = browser->GetWindow();
-
-  // Don't allow locked fullscreen operations on a window without the proper
-  // permission (also don't allow any operations on a locked window if the
-  // extension doesn't have the permission).
-  const bool is_locked_fullscreen = platform_util::IsBrowserLockedFullscreen(
-      browser->GetBrowserForMigrationOnly());
-  if ((params->update_info.state == windows::WindowState::kLockedFullscreen ||
-       is_locked_fullscreen) &&
-      !tabs_internal::ExtensionHasLockedFullscreenPermission(extension())) {
-    return RespondNow(
-        Error(tabs_internal::kMissingLockWindowFullscreenPrivatePermission));
-  }
-
-  // Before changing any of a window's state, validate the update parameters.
-  // This prevents Chrome from performing "half" an update.
-
-  // Update the window bounds if the bounds from the update parameters intersect
-  // the displays.
-  gfx::Rect window_bounds = browser_window->IsMinimized()
-                                ? browser_window->GetRestoredBounds()
-                                : browser_window->GetBounds();
-  bool set_window_bounds = false;
-  if (params->update_info.left) {
-    window_bounds.set_x(*params->update_info.left);
-    set_window_bounds = true;
-  }
-  if (params->update_info.top) {
-    window_bounds.set_y(*params->update_info.top);
-    set_window_bounds = true;
-  }
-  if (params->update_info.width) {
-    window_bounds.set_width(*params->update_info.width);
-    set_window_bounds = true;
-  }
-  if (params->update_info.height) {
-    window_bounds.set_height(*params->update_info.height);
-    set_window_bounds = true;
-  }
-
-  if (set_window_bounds && !WindowBoundsIntersectDisplays(window_bounds)) {
-    return RespondNow(Error(tabs_constants::kInvalidWindowBoundsError));
-  }
-
-  ui::mojom::WindowShowState show_state =
-      ConvertToWindowShowState(params->update_info.state);
-  if (set_window_bounds &&
-      (show_state == ui::mojom::WindowShowState::kMinimized ||
-       show_state == ui::mojom::WindowShowState::kMaximized ||
-       show_state == ui::mojom::WindowShowState::kFullscreen)) {
-    return RespondNow(Error(tabs_constants::kInvalidWindowStateError));
-  }
-
-  if (params->update_info.focused) {
-    bool focused = *params->update_info.focused;
-    // A window cannot be focused and minimized, or not focused and maximized
-    // or fullscreened.
-    if (focused && show_state == ui::mojom::WindowShowState::kMinimized) {
-      return RespondNow(Error(tabs_constants::kInvalidWindowStateError));
-    }
-    if (!focused && (show_state == ui::mojom::WindowShowState::kMaximized ||
-                     show_state == ui::mojom::WindowShowState::kFullscreen)) {
-      return RespondNow(Error(tabs_constants::kInvalidWindowStateError));
-    }
-  }
-
-  // Parameters are valid. Now to perform the actual updates.
-
-  // state will be WINDOW_STATE_NONE if the state parameter wasn't passed from
-  // the JS side, and in that case we don't want to change the locked state.
-  if (is_locked_fullscreen &&
-      params->update_info.state != windows::WindowState::kLockedFullscreen &&
-      params->update_info.state != windows::WindowState::kNone) {
-    SetLockedFullscreenState(browser->GetBrowserForMigrationOnly(),
-                             /*pinned=*/false);
-  } else if (!is_locked_fullscreen &&
-             params->update_info.state ==
-                 windows::WindowState::kLockedFullscreen) {
-    SetLockedFullscreenState(browser->GetBrowserForMigrationOnly(),
-                             /*pinned=*/true);
-  }
-
-  if (show_state != ui::mojom::WindowShowState::kFullscreen &&
-      show_state != ui::mojom::WindowShowState::kDefault) {
-    window_controller->SetFullscreenMode(false, extension()->url());
-  }
-
-  switch (show_state) {
-    case ui::mojom::WindowShowState::kMinimized:
-      browser_window->Minimize();
-      break;
-    case ui::mojom::WindowShowState::kMaximized:
-      browser_window->Maximize();
-      break;
-    case ui::mojom::WindowShowState::kFullscreen:
-      if (browser_window->IsMinimized() || browser_window->IsMaximized()) {
-        browser_window->Restore();
-      }
-      window_controller->SetFullscreenMode(true, extension()->url());
-      break;
-    case ui::mojom::WindowShowState::kNormal:
-      browser_window->Restore();
-      break;
-    default:
-      break;
-  }
-
-  if (set_window_bounds) {
-    // TODO(varkha): Updating bounds during a drag can cause problems and a more
-    // general solution is needed. See http://crbug.com/251813 .
-    browser_window->SetBounds(window_bounds);
-  }
-
-  if (params->update_info.focused) {
-    if (*params->update_info.focused) {
-      browser_window->Activate();
-    } else {
-      browser_window->Deactivate();
-    }
-  }
-
-  if (params->update_info.draw_attention) {
-    browser_window->FlashFrame(*params->update_info.draw_attention);
-  }
-
-  return RespondNow(
-      WithArguments(window_controller->CreateWindowValueForExtension(
-          extension(), WindowController::kDontPopulateTabs,
           source_context_type())));
 }
 

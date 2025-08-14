@@ -25,6 +25,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/user_script.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -35,6 +36,10 @@ class BrowserWindowInterface;
 class GURL;
 class SkBitmap;
 class TabStripModel;
+
+#if BUILDFLAG(IS_CHROMEOS)
+class Browser;
+#endif
 
 namespace base {
 class TaskRunner;
@@ -53,6 +58,10 @@ class PrefRegistrySyncable;
 }
 
 namespace extensions {
+
+namespace api::windows {
+enum class WindowState;
+}
 
 // This namespace includes a collection of conceptually-internal helper methods
 // and constants that are currently here because they are used by both
@@ -133,6 +142,23 @@ void NotifyExtensionTelemetry(Profile* profile,
 content::WebContents* GetTabsAPIDefaultWebContents(ExtensionFunction* function,
                                                    int tab_id,
                                                    std::string* error);
+
+// Converts the given `state` to the mojom::WindowShowState equivalent.
+ui::mojom::WindowShowState ConvertToWindowShowState(
+    api::windows::WindowState state);
+
+// Returns whether the given `bounds` intersect with at least 50% of all the
+// displays.
+bool WindowBoundsIntersectDisplays(const gfx::Rect& bounds);
+
+#if BUILDFLAG(IS_CHROMEOS)
+// This function sets the state of the browser window to a "locked"
+// fullscreen state (where the user can't exit fullscreen) in response to a
+// call to either chrome.windows.create or chrome.windows.update when the
+// screen is set locked. This is only necessary for ChromeOS and is
+// restricted to allowlisted extensions.
+void SetLockedFullscreenState(Browser* browser, bool pinned);
+#endif
 
 }  // namespace tabs_internal
 

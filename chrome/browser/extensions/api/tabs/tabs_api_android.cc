@@ -60,13 +60,6 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   return RespondNow(Error(kWindowsNotImplemented));
 }
 
-ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
-  std::optional<windows::Update::Params> params =
-      windows::Update::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kWindowsNotImplemented));
-}
-
 // Tabs ------------------------------------------------------------------------
 
 ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
