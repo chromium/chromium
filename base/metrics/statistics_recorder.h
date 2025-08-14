@@ -28,6 +28,7 @@
 #include "base/metrics/ranges_manager.h"
 #include "base/metrics/record_histogram_checker.h"
 #include "base/observer_list_threadsafe.h"
+#include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
@@ -116,6 +117,27 @@ class BASE_EXPORT StatisticsRecorder {
     // The client supplied callback that is invoked when the histogram sample is
     // collected.
     const OnSampleWithEventCallback callback_;
+  };
+
+  // A convenience wrapper around ScopedHistogramSampleObserver. Listens for
+  // changes to the histogram provided at construction. This class only allows
+  // `Wait()` to be called once. If you need to call `Wait()` multiple
+  // times, create multiple instances of this class.
+  class BASE_EXPORT HistogramWaiter {
+   public:
+    explicit HistogramWaiter(std::string_view histogram_name);
+
+    ~HistogramWaiter();
+    HistogramWaiter(const HistogramWaiter&) = delete;
+    HistogramWaiter& operator=(const HistogramWaiter&) = delete;
+
+    // Waits for the next update to the observed histogram.
+    void Wait();
+
+  private:
+    base::RunLoop run_loop_;
+    std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>
+        histogram_observer_;
   };
 
   typedef std::vector<HistogramBase*> Histograms;

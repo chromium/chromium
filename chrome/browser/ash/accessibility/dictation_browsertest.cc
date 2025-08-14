@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, Metrics) {
       speech_recognition_type() == speech::SpeechRecognitionType::kOnDevice;
   const char* metric_name = on_device ? kOnDeviceListeningDurationMetric
                                       : kNetworkListeningDurationMetric;
-  HistogramWaiter waiter(metric_name);
+  base::StatisticsRecorder::HistogramWaiter waiter(metric_name);
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   ToggleDictationWithKeystroke();
@@ -1459,7 +1459,7 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest,
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, Metrics) {
   base::HistogramTester histogram_tester_;
-  HistogramWaiter waiter(kPumpkinUsedMetric);
+  base::StatisticsRecorder::HistogramWaiter waiter(kPumpkinUsedMetric);
   SendFinalResultAndWait("Undo");
   waiter.Wait();
   content::FetchHistogramsFromChildProcesses();
@@ -1946,8 +1946,9 @@ IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, Repeat) {
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, Metrics) {
   base::HistogramTester histogram_tester_;
-  HistogramWaiter used_waiter(kPumpkinUsedMetric);
-  HistogramWaiter succeeded_waiter(kPumpkinSucceededMetric);
+  base::StatisticsRecorder::HistogramWaiter used_waiter(kPumpkinUsedMetric);
+  base::StatisticsRecorder::HistogramWaiter succeeded_waiter(
+      kPumpkinSucceededMetric);
   SendFinalResultAndWaitForEditableValue("dictate hello", "Hello");
   used_waiter.Wait();
   succeeded_waiter.Wait();

@@ -35,6 +35,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -333,7 +334,8 @@ IN_PROC_BROWSER_TEST_P(LoggedInSpokenFeedbackTest, ChromeVoxSpeaksIntro) {
   if (histogram_tester
           .GetAllSamples("Accessibility.ChromeVox.StartUpSpeechDelay")
           .size() == 0) {
-    HistogramWaiter("Accessibility.ChromeVox.StartUpSpeechDelay").Wait();
+    base::StatisticsRecorder::HistogramWaiter(
+        "Accessibility.ChromeVox.StartUpSpeechDelay").Wait();
   }
 }
 

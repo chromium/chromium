@@ -37,6 +37,9 @@ class HistogramSamples;
 // content browser test, then content::FetchHistogramsFromChildProcesses()
 // should be used to achieve that.
 // To test histograms in Java tests, use HistogramWatcher.
+// To wait for a histogram to be recorded in C++ tests, use
+// StatisticsRecorder::ScopedHistogramSampleObserver or
+// StatisticsRecorder::HistogramWaiter.
 class HistogramTester {
  public:
   using CountsMap = std::map<std::string, HistogramBase::Count32, std::less<>>;

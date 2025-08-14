@@ -106,28 +106,6 @@ class ExtensionConsoleErrorObserver : public ErrorConsole::Observer {
   std::set<std::u16string> allowed_errors_;
 };
 
-// Listens for changes to the histogram provided at construction. This class
-// only allows `Wait()` to be called once. If you need to call `Wait()` multiple
-// times, create multiple instances of this class.
-class HistogramWaiter {
- public:
-  explicit HistogramWaiter(std::string_view metric_name);
-  ~HistogramWaiter();
-  HistogramWaiter(const HistogramWaiter&) = delete;
-  HistogramWaiter& operator=(const HistogramWaiter&) = delete;
-
-  // Waits for the next update to the observed histogram.
-  void Wait();
-  void OnHistogramCallback(std::string_view metric_name,
-                           uint64_t name_hash,
-                           base::HistogramBase::Sample32 sample);
-
- private:
-  std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>
-      histogram_observer_;
-  base::RunLoop run_loop_;
-};
-
 // FullscreenMagnifierController moves the magnifier window with animation
 // when the magnifier is set to be enabled. This waiter class lets a consumer
 // wait until the animation completes, i.e. after a mouse move.

@@ -89,6 +89,19 @@ void StatisticsRecorder::ScopedHistogramSampleObserver::RunCallback(
   callback_.Run(event_id, histogram_name, name_hash, sample);
 }
 
+StatisticsRecorder::HistogramWaiter::HistogramWaiter(std::string_view metric_name) {
+  histogram_observer_ =
+      std::make_unique<base::StatisticsRecorder::ScopedHistogramSampleObserver>(
+          metric_name,
+          run_loop_.QuitClosure());
+}
+
+StatisticsRecorder::HistogramWaiter::~HistogramWaiter() = default;
+
+void StatisticsRecorder::HistogramWaiter::Wait() {
+  run_loop_.Run();
+}
+
 StatisticsRecorder::~StatisticsRecorder() {
   const AutoLock auto_lock(GetLock());
   DCHECK_EQ(this, top_);
