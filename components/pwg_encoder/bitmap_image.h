@@ -33,7 +33,6 @@ class BitmapImage {
   const gfx::Size& size() const { return size_; }
   Colorspace colorspace() const { return colorspace_; }
 
-  uint8_t* pixel_data();
   base::span<uint32_t> pixels();
 
   base::span<const uint32_t> GetRow(size_t row, bool flip_y) const;

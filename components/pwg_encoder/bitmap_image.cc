@@ -15,10 +15,6 @@ BitmapImage::BitmapImage(const gfx::Size& size, Colorspace colorspace)
 
 BitmapImage::~BitmapImage() = default;
 
-uint8_t* BitmapImage::pixel_data() {
-  return base::as_writable_bytes(data_.as_span()).data();
-}
-
 base::span<uint32_t> BitmapImage::pixels() {
   return data_;
 }
