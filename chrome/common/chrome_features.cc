@@ -371,7 +371,7 @@ const base::FeatureParam<bool> kGlicActorUiTaskIcon{
     &kGlicActorUi, kGlicActorUiTaskIconName, true};
 // Controls whether the Actor Overlay in the actor ui is enabled.
 const base::FeatureParam<bool> kGlicActorUiOverlay{
-    &kGlicActorUi, kGlicActorUiOverlayName, false};
+    &kGlicActorUi, kGlicActorUiOverlayName, true};
 // Controls whether the Magic Cursor in the Actor Overlay is enabled.
 const base::FeatureParam<bool> kGlicActorUiOverlayMagicCursor{
     &kGlicActorUi, kGlicActorUiOverlayMagicCursorName, false};
@@ -380,7 +380,7 @@ const base::FeatureParam<bool> kGlicActorUiToast{&kGlicActorUi,
                                                  kGlicActorUiToastName, true};
 // Controls whether the handoff button in the actor ui is enabled.
 const base::FeatureParam<bool> kGlicActorUiHandoffButton{
-    &kGlicActorUi, kGlicActorUiHandoffButtonName, false};
+    &kGlicActorUi, kGlicActorUiHandoffButtonName, true};
 // Controls whether the tab indicator in the actor ui is enabled.
 const base::FeatureParam<bool> kGlicActorUiTabIndicator{
     &kGlicActorUi, kGlicActorUiTabIndicatorName, true};

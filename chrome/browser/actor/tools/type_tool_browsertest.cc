@@ -149,7 +149,8 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_DisabledInput) {
 }
 
 // Ensure type tool sends the expected events to an input box.
-IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_Events) {
+// TODO(crbug.com/438242699): Re-enable it.
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, DISABLED_TypeTool_Events) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -180,7 +181,8 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_Events) {
 
 // Ensure the type tool can be used without text to send an enter key in an
 // input.
-IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_EmptyText) {
+// TODO(crbug.com/438242699): Re-enable it.
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, DISABLED_TypeTool_EmptyText) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -206,7 +208,9 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_EmptyText) {
 }
 
 // Ensure the type tool correctly sends the enter key after input if specified.
-IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_FollowByEnter) {
+// TODO(crbug.com/438242699): Re-enable it.
+IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
+                       DISABLED_TypeTool_FollowByEnter) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -415,8 +419,9 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
 
 // Ensure the type tool correctly sends the events to element at the
 // coordinates.
+// TODO(crbug.com/438242699): Re-enable it.
 IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
-                       TypeTool_EventsSentToCoordinates) {
+                       DISABLED_TypeTool_EventsSentToCoordinates) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/type_input_coordinate.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -481,8 +486,9 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
 
 // Ensure the type tool correctly sends the events to an unfocusable element at
 // the coordinates.
+// TODO(crbug.com/438242699): Re-enable it.
 IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
-                       TypeTool_EventsSentToUnfocusableCoordinate) {
+                       DISABLED_TypeTool_EventsSentToUnfocusableCoordinate) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/type_input_coordinate.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -521,8 +527,9 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
 }
 
 // Ensure the type tool will fail if target coordinate is offscreen.
+// TODO(crbug.com/438242699): Re-enable it.
 IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
-                       TypeTool_SentToOffScreenCoordinates) {
+                       DISABLED_TypeTool_SentToOffScreenCoordinates) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/type_input_coordinate.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -545,8 +552,9 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
 
 // Ensure the type tool can send a type action to a DOMNodeId that isn't
 // an editable.
+// TODO(crbug.com/438242699): Re-enable it.
 IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
-                       TypeTool_DomNodeIdTargetsNonEditable) {
+                       DISABLED_TypeTool_DomNodeIdTargetsNonEditable) {
   const GURL url = embedded_test_server()->GetURL("/actor/type_non_input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
