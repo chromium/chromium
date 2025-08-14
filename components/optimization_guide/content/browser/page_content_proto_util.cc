@@ -624,10 +624,9 @@ void ConvertFrameData(
     optimization_guide::proto::FrameData* proto_frame_data,
     blink::mojom::PageMetadata& metadata,
     FrameTokenSet& frame_token_set) {
-  ConvertFrameMetadata(
-      render_frame_info.source_origin.GetTupleOrPrecursorTupleIfOpaque()
-          .GetURL(),
-      mojom_frame_data, metadata);
+  ConvertFrameMetadata(GetURLForFrameMetadata(render_frame_info.url,
+                                              render_frame_info.source_origin),
+                       mojom_frame_data, metadata);
   SecurityOriginSerializer::Serialize(
       render_frame_info.source_origin,
       proto_frame_data->mutable_security_origin());
@@ -993,5 +992,15 @@ std::optional<TargetNodeInfo> FindNodeWithID(
 RenderFrameInfo::RenderFrameInfo() = default;
 RenderFrameInfo::RenderFrameInfo(const RenderFrameInfo& other) = default;
 RenderFrameInfo::~RenderFrameInfo() = default;
+
+GURL GetURLForFrameMetadata(const GURL& committed_url,
+                            const url::Origin& committed_origin) {
+  // We could always rely on the origin but the full path of the URL is
+  // important if it's not an opaque origin.
+  if (committed_origin.opaque()) {
+    return committed_origin.GetTupleOrPrecursorTupleIfOpaque().GetURL();
+  }
+  return committed_url;
+}
 
 }  // namespace optimization_guide

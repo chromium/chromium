@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/content/browser/page_content_metadata_observer.h"
 
+#include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -75,7 +76,9 @@ void PageContentMetadataObserver::OnMetaTagsChangedForFrame(
     frame_metadata_cache_.erase(render_frame_host);
   } else {
     auto frame_metadata = blink::mojom::FrameMetadata::New();
-    frame_metadata->url = render_frame_host->GetLastCommittedURL();
+    frame_metadata->url = GetURLForFrameMetadata(
+        render_frame_host->GetLastCommittedURL(),
+        render_frame_host->GetLastCommittedOrigin());
     frame_metadata->meta_tags = std::move(meta_tags);
     frame_metadata_cache_[render_frame_host] = std::move(frame_metadata);
   }
