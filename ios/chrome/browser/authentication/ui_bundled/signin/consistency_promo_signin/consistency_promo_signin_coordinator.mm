@@ -235,11 +235,14 @@
                     completionIdentity:completionIdentity];
 }
 
-- (BOOL)isAtRiskOfASWViewBug {
+#pragma mark - BuggyAuthenticationViewOwner
+
+- (BOOL)viewWillPersist {
   // This coordinator has no view of its own. So we only need to check whether
   // the coordinator currently started’s view may have disappeared silently.
-  return self.addAccountCoordinator.isAtRiskOfASWViewBug ||
-         self.reauthCoordinator.isAtRiskOfASWViewBug;
+  return (!self.addAccountCoordinator ||
+          self.addAccountCoordinator.viewWillPersist) &&
+         (!self.reauthCoordinator || self.reauthCoordinator.viewWillPersist);
 }
 
 #pragma mark - AnimatedCoordinator

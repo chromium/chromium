@@ -181,13 +181,14 @@
   [super stopAnimated:animated];
 }
 
-#pragma mark - SigninCoordinator
+#pragma mark - BuggyAuthenticationViewOwner
 
-- (BOOL)isAtRiskOfASWViewBug {
+- (BOOL)viewWillPersist {
   // This coordinator has no view of its own. The view may only have disappeared
   // if it owns a started coordinator whose view silently disappeared. The only
   // coordinator for which this is possible is the add account one.
-  return _addAccountSigninCoordinator.isAtRiskOfASWViewBug;
+  return !_addAccountSigninCoordinator ||
+         _addAccountSigninCoordinator.viewWillPersist;
 }
 
 #pragma mark - IdentityChooserCoordinatorDelegate

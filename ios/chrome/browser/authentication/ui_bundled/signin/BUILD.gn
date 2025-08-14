@@ -13,6 +13,7 @@ group("signin") {
 # Contains public headers.
 source_set("signin_headers") {
   sources = [
+    "buggy_authentication_view_owner.h",
     "signin_coordinator.h",
     "signin_utils.h",
   ]

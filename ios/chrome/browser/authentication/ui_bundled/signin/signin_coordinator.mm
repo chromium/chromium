@@ -374,9 +374,9 @@ using signin_metrics::PromoAction;
   signinCompletion(signinResult, completionIdentity);
 }
 
-#pragma mark - Property
+#pragma mark - BuggyAuthenticationViewOwner
 
-- (BOOL)isAtRiskOfASWViewBug {
+- (BOOL)viewWillPersist {
   // Subclasses must implement this property. See the description in the header
   // file for its implementation.
   NOTREACHED();

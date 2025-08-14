@@ -70,10 +70,10 @@
   [_syncPopupCoordinator start];
 }
 
-#pragma mark - SigninCoordinator
+#pragma mark - BuggyAuthenticationViewOwner
 
-- (BOOL)isAtRiskOfASWViewBug {
-  return NO;
+- (BOOL)viewWillPersist {
+  return YES;
 }
 
 #pragma mark - AnimatedCoordinator

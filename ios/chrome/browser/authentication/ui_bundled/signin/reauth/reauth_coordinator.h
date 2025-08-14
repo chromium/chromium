@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_REAUTH_REAUTH_COORDINATOR_H_
 
 #import "components/signin/public/identity_manager/account_info.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/buggy_authentication_view_owner.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 namespace signin_metrics {
@@ -26,7 +27,7 @@ enum class ReauthResult : int {
 };
 
 // The delegate for the reauth flow.
-@protocol ReauthCoordinatorDelegate
+@protocol ReauthCoordinatorDelegate <BuggyAuthenticationViewOwner>
 
 // The reauth flow has completed with `result`.
 - (void)reauthFinishedWithResult:(ReauthResult)result;
@@ -36,7 +37,7 @@ enum class ReauthResult : int {
 // Implements a reauthentication flow that asks the user to resolve a persistent
 // auth error by entering their credentials again.
 // Once started and up to iOS 18, the view may be removed by UIKit without the
-// signoutCompletion being called. Use `isAtRiskOfASWViewBug` to
+// signoutCompletion being called. Use `viewWillPersist` to
 // check whether it currently is possible. See crbug.com/395959814.
 @interface ReauthCoordinator : ChromeCoordinator
 
@@ -45,7 +46,7 @@ enum class ReauthResult : int {
 
 // Whether crbug.com/395959814 may affects the view. So we expect authentication
 // to be shown to users but can’t be certain.
-@property(nonatomic, readonly) BOOL isAtRiskOfASWViewBug;
+@property(nonatomic, readonly) BOOL viewWillPersist;
 
 // Designated initializer for ReauthCoordinator started from an explicit
 // reauthentication UI.

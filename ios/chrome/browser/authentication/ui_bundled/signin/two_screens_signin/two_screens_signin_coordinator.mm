@@ -94,10 +94,10 @@ using base::UserMetricsAction;
   CHECK(!_upgradeSigninLogger, base::NotFatalUntil::M146);
 }
 
-#pragma mark - SigninCoordinator
+#pragma mark - BuggyAuthenticationViewOwner
 
-- (BOOL)isAtRiskOfASWViewBug {
-  return NO;
+- (BOOL)viewWillPersist {
+  return YES;
 }
 
 #pragma mark - ChromeCoordinator
