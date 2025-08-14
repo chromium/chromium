@@ -96,6 +96,13 @@ bool IsStaticRouterRaceRequestFixEnabled() {
       features::kServiceWorkerStaticRouterRaceRequestFix);
 }
 
+void MaybeSetHeaderReceivedTiming(net::LoadTimingInfo& timing) {
+  if (timing.receive_headers_start.is_null()) {
+    timing.receive_headers_start = base::TimeTicks::Now();
+    timing.receive_headers_end = timing.receive_headers_start;
+  }
+}
+
 constexpr char kHistogramSyntheticResponseEligibility[] =
     "ServiceWorker.SyntheticResponse.Eligibility";
 
@@ -1100,6 +1107,7 @@ void ServiceWorkerMainResourceLoader::
   // yet. Return the response from the network to the client here.
   CHECK_EQ(synthetic_response_manager_->Status(),
            SyntheticResponseStatus::kNotReady);
+  MaybeSetHeaderReceivedTiming(response_head->load_timing);
   SetCommitResponsibility(FetchResponseFrom::kWithoutServiceWorker);
   CHECK(url_loader_client_.is_bound());
   CommitResponseBody(response_head, std::move(body), std::nullopt);
@@ -1127,11 +1135,7 @@ void ServiceWorkerMainResourceLoader::StartResponse(
 
   response_head_->did_service_worker_navigation_preload =
       dispatched_preload_type() == DispatchedPreloadType::kNavigationPreload;
-  if (response_head_->load_timing.receive_headers_start.is_null()) {
-    response_head_->load_timing.receive_headers_start = base::TimeTicks::Now();
-    response_head_->load_timing.receive_headers_end =
-        response_head_->load_timing.receive_headers_start;
-  }
+  MaybeSetHeaderReceivedTiming(response_head_->load_timing);
   response_source_ = response->response_source;
   if (ShouldRecordServiceWorkerFetchStart()) {
     response_head_->load_timing.service_worker_fetch_start =
