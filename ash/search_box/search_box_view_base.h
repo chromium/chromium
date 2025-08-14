@@ -37,7 +37,6 @@ class Textfield;
 
 namespace ash {
 
-class LauncherSearchIphView;
 class SearchBoxImageButton;
 class SearchIconImageView;
 
@@ -114,10 +113,6 @@ class SearchBoxViewBase : public views::View,
   views::View* filter_and_close_button_container();
   views::ImageView* search_icon();
   views::Textfield* search_box() { return search_box_; }
-
-  void SetIphView(std::unique_ptr<LauncherSearchIphView> iph_view);
-  LauncherSearchIphView* GetIphView();
-  void DeleteIphView();
 
   // Called when the query in the search box textfield changes. The search box
   // implementation is expected to handle the new query.

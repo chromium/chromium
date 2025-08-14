@@ -61,8 +61,6 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
-#include "chromeos/ash/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app.h"
@@ -309,7 +307,6 @@ class SearchBoxViewTest : public views::test::WidgetTest,
                     bool initiated_by_user) override {
     search_view_->UpdateForNewSearch(!trimmed_query.empty());
   }
-  void AssistantButtonPressed() override {}
   void CloseButtonPressed() override {}
   void ActiveChanged(SearchBoxViewBase* sender) override {}
   void OnSearchBoxKeyEvent(ui::KeyEvent* event) override {}
@@ -1349,11 +1346,6 @@ TEST_P(GeminiButtonTest, Visibility) {
       GetAppListTestHelper()->GetSearchBoxView()->gemini_button();
   ASSERT_TRUE(gemini_button);
   EXPECT_TRUE(gemini_button->GetVisible());
-
-  views::ImageButton* assistant_button =
-      GetAppListTestHelper()->GetSearchBoxView()->assistant_button();
-  ASSERT_TRUE(assistant_button);
-  EXPECT_FALSE(assistant_button->GetVisible());
 }
 
 TEST_P(GeminiButtonTest, Activation) {

@@ -31,11 +31,6 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/assistant/assistant_controller_impl.h"
-#include "ash/assistant/model/assistant_ui_model.h"
-#include "ash/assistant/ui/assistant_view_delegate.h"
-#include "ash/assistant/util/assistant_util.h"
-#include "ash/assistant/util/deep_link_util.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/sunfish_scanner_feature_watcher.h"
 #include "ash/constants/ash_features.h"
@@ -48,8 +43,6 @@
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/assistant/controller/assistant_controller.h"
-#include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/feature_discovery_duration_reporter.h"
 #include "ash/public/cpp/feature_discovery_metric_util.h"
@@ -112,9 +105,6 @@
 #include "ui/wm/core/window_animations.h"
 
 namespace ash {
-
-using assistant::AssistantEntryPoint;
-using assistant::AssistantExitPoint;
 
 namespace {
 
@@ -289,17 +279,6 @@ void MaybeLogWelcomeTourInteraction(AppListShowSource show_source) {
   }
 }
 
-bool IsAssistantExitPointScreenshot(
-    std::optional<assistant::AssistantExitPoint> exit_point) {
-  return exit_point == AssistantExitPoint::kScreenshot;
-}
-
-bool IsAssistantExitPointInsideLauncher(
-    std::optional<assistant::AssistantExitPoint> exit_point) {
-  return exit_point == AssistantExitPoint::kBackInLauncher ||
-         exit_point == AssistantExitPoint::kLauncherSearchIphChip;
-}
-
 SearchBoxModel::SunfishButtonVisibility GetSunfishButtonVisibility(
     const SunfishScannerFeatureWatcher& feature_watcher) {
   if (feature_watcher.CanShowSunfishUi()) {
@@ -342,10 +321,7 @@ AppListControllerImpl::AppListControllerImpl()
   shell->overview_controller()->AddObserver(this);
   display::Screen::GetScreen()->AddObserver(this);
   keyboard::KeyboardUIController::Get()->AddObserver(this);
-  AssistantState::Get()->AddObserver(this);
   shell->display_manager()->AddDisplayManagerObserver(this);
-  AssistantController::Get()->AddObserver(this);
-  AssistantUiController::Get()->GetModel()->AddObserver(this);
   FeatureDiscoveryDurationReporter::GetInstance()->AddObserver(this);
 }
 
@@ -681,14 +657,6 @@ bool AppListControllerImpl::GoHome(int64_t display_id) {
 
   DCHECK(IsInTabletMode());
 
-  if (fullscreen_presenter_->IsShowingEmbeddedAssistantUI()) {
-    // OnHomeLauncherAnimationComplete() may not be called if the
-    // `foreground_windows` is empty. Call AssistantUiController::CloseUi() here
-    // directly.
-    AssistantUiController::Get()->CloseUi(AssistantExitPoint::kLauncherClose);
-    fullscreen_presenter_->ShowEmbeddedAssistantUI(false);
-  }
-
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   const bool split_view_active = split_view_controller->InSplitViewMode();
@@ -1007,20 +975,6 @@ void AppListControllerImpl::OnKeyboardVisibilityChanged(const bool is_visible) {
     app_list_view->OnScreenKeyboardShown(is_visible);
 }
 
-void AppListControllerImpl::OnAssistantStatusChanged(
-    assistant::AssistantStatus status) {
-  UpdateSearchBoxUiVisibilities();
-}
-
-void AppListControllerImpl::OnAssistantSettingsEnabled(bool enabled) {
-  UpdateSearchBoxUiVisibilities();
-}
-
-void AppListControllerImpl::OnAssistantFeatureAllowedChanged(
-    assistant::AssistantAllowedState state) {
-  UpdateSearchBoxUiVisibilities();
-}
-
 void AppListControllerImpl::OnDidApplyDisplayChanges() {
   // Entering tablet mode triggers a display configuration change when we
   // automatically switch to mirror mode. Switching to mirror mode happens
@@ -1044,107 +998,10 @@ void AppListControllerImpl::OnDidApplyDisplayChanges() {
   ShowHomeScreen(AppListShowSource::kTabletMode);
 }
 
-void AppListControllerImpl::OnAssistantReady() {
-  UpdateSearchBoxUiVisibilities();
-}
-
-void AppListControllerImpl::OnUiVisibilityChanged(
-    AssistantVisibility new_visibility,
-    AssistantVisibility old_visibility,
-    std::optional<AssistantEntryPoint> entry_point,
-    std::optional<AssistantExitPoint> exit_point) {
-  const bool is_old_visibility_closing =
-      (old_visibility == AssistantVisibility::kClosing);
-
-  switch (new_visibility) {
-    case AssistantVisibility::kVisible:
-      DVLOG(1) << "Assistant becoming visible";
-      if (!IsVisible() || is_old_visibility_closing) {
-        std::optional<AppListView::ScopedContentsResetDisabler> disabler;
-        if (is_old_visibility_closing) {
-          // Avoid resetting the contents view when the transition to close the
-          // Assistant ui is going to be reversed.
-          if (fullscreen_presenter_->GetView())
-            disabler.emplace(fullscreen_presenter_->GetView());
-
-          // Reset `close_assistant_ui_runner_` because the Assistant ui is
-          // going to show.
-          DCHECK(close_assistant_ui_runner_);
-          IgnoreResult(close_assistant_ui_runner_.Release());
-        }
-
-        Show(GetDisplayIdToShowAppListOn(),
-             AppListShowSource::kAssistantEntryPoint, base::TimeTicks(),
-             /*should_record_metrics=*/true);
-      }
-      if (!IsInTabletMode()) {
-        bubble_presenter_->ShowEmbeddedAssistantUI();
-      } else {
-        if (!fullscreen_presenter_->IsShowingEmbeddedAssistantUI() ||
-            is_old_visibility_closing) {
-          fullscreen_presenter_->ShowEmbeddedAssistantUI(true);
-        }
-
-        // Make sure that app list views are visible - they might get hidden
-        // during session startup, and the app list visibility might not have
-        // yet changed to visible by this point. https://crbug.com/1040751
-        fullscreen_presenter_->SetViewVisibility(true);
-      }
-      break;
-    case AssistantVisibility::kClosed:
-      if (!IsShowingEmbeddedAssistantUI())
-        break;
-
-      // When Launcher is closing, we do not want to call
-      // |ShowEmbeddedAssistantUI(false)|, which will show previous state page
-      // in Launcher and make the UI flash.
-      if (IsInTabletMode()) {
-        std::optional<ContentsView::ScopedSetActiveStateAnimationDisabler>
-            set_active_state_animation_disabler;
-        // When taking a screenshot by Assistant, we do not want to animate to
-        // the final state. Otherwise the screenshot may have transient state
-        // during the animation. In tablet mode, we want to go back to
-        // kStateApps immediately, i.e. skipping the animation in
-        // |SetActiveStateInternal|, which are called from
-        // |ShowEmbeddedAssistantUI(false)| and
-        // |ClearSearchAndDeactivateSearchBox()|.
-        if (IsAssistantExitPointScreenshot(exit_point)) {
-          set_active_state_animation_disabler.emplace(
-              fullscreen_presenter_->GetView()
-                  ->app_list_main_view()
-                  ->contents_view());
-        }
-
-        fullscreen_presenter_->ShowEmbeddedAssistantUI(false);
-
-        if (!IsAssistantExitPointInsideLauncher(exit_point)) {
-          fullscreen_presenter_->GetView()
-              ->search_box_view()
-              ->ClearSearchAndDeactivateSearchBox();
-        }
-      } else if (!IsAssistantExitPointInsideLauncher(exit_point)) {
-        // Similarly, when taking a screenshot by Assistant in clamshell mode,
-        // we do not want to dismiss launcher with animation. Otherwise the
-        // screenshot may have transient state during the animation.
-        base::AutoReset<bool> auto_reset(
-            &should_dismiss_immediately_,
-            IsAssistantExitPointScreenshot(exit_point));
-        DismissAppList();
-      }
-      break;
-    case AssistantVisibility::kClosing:
-      break;
-  }
-}
-
 void AppListControllerImpl::OnHomeLauncherAnimationComplete(
     bool shown,
     int64_t display_id) {
   home_launcher_transition_state_ = HomeLauncherTransitionState::kFinished;
-
-  AssistantUiController::Get()->CloseUi(
-      shown ? AssistantExitPoint::kLauncherOpen
-            : AssistantExitPoint::kLauncherClose);
 
   // Animations can be reversed (e.g. in a drag). Let's ensure the target
   // visibility is correct first.
@@ -1186,7 +1043,6 @@ void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
     return;
 
   keyboard_traversal_engaged_ = engaged;
-  AssistantUiController::Get()->SetKeyboardTraversalMode(engaged);
 
   // No need to schedule paint for bubble presenter.
   if (bubble_presenter_->IsShowing())
@@ -1224,11 +1080,6 @@ void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
   }
 }
 
-bool AppListControllerImpl::IsShowingEmbeddedAssistantUI() const {
-  return bubble_presenter_->IsShowingEmbeddedAssistantUI() ||
-         fullscreen_presenter_->IsShowingEmbeddedAssistantUI();
-}
-
 void AppListControllerImpl::SetStateTransitionAnimationCallbackForTesting(
     StateTransitionAnimationCallback callback) {
   state_transition_animation_callback_ = std::move(callback);
@@ -1250,17 +1101,6 @@ void AppListControllerImpl::RecordShelfAppLaunched() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Methods of |client_|:
-
-void AppListControllerImpl::StartAssistant(
-    assistant::AssistantEntryPoint entry_point) {
-  AssistantUiController::Get()->ShowUi(entry_point);
-  UpdateSearchBoxUiVisibilities();
-}
-
-void AppListControllerImpl::EndAssistant(
-    assistant::AssistantExitPoint exit_point) {
-  AssistantUiController::Get()->CloseUi(exit_point);
-}
 
 std::vector<AppListSearchControlCategory>
 AppListControllerImpl::GetToggleableCategories() const {
@@ -1463,25 +1303,11 @@ bool AppListControllerImpl::ShouldDismissImmediately() {
   return should_dismiss_immediately_;
 }
 
-AssistantViewDelegate* AppListControllerImpl::GetAssistantViewDelegate() {
-  return Shell::Get()->assistant_controller()->view_delegate();
-}
-
 void AppListControllerImpl::OnSearchResultVisibilityChanged(
     const std::string& id,
     bool visibility) {
   if (client_)
     client_->OnSearchResultVisibilityChanged(id, visibility);
-}
-
-bool AppListControllerImpl::IsAssistantAllowedAndEnabled() const {
-  if (!Shell::Get()->assistant_controller()->IsAssistantReady())
-    return false;
-
-  auto* state = AssistantState::Get();
-  return state->settings_enabled().value_or(false) &&
-         state->allowed_state() == assistant::AssistantAllowedState::ALLOWED &&
-         state->assistant_status() != assistant::AssistantStatus::NOT_READY;
 }
 
 void AppListControllerImpl::OnStateTransitionAnimationCompleted(
@@ -1491,13 +1317,6 @@ void AppListControllerImpl::OnStateTransitionAnimationCompleted(
       !state_transition_animation_callback_.is_null()) {
     state_transition_animation_callback_.Run(state);
   }
-
-  MaybeCloseAssistant();
-}
-
-void AppListControllerImpl::MaybeCloseAssistant() {
-  if (close_assistant_ui_runner_)
-    close_assistant_ui_runner_.RunAndReset();
 }
 
 AppListViewState AppListControllerImpl::GetAppListViewState() const {
@@ -1510,28 +1329,6 @@ void AppListControllerImpl::OnViewStateChanged(AppListViewState state) {
 
   for (auto& observer : observers_)
     observer.OnViewStateChanged(state);
-
-  if (state == AppListViewState::kClosed)
-    ScheduleCloseAssistant();
-}
-
-void AppListControllerImpl::ScheduleCloseAssistant() {
-  DVLOG(1) << __PRETTY_FUNCTION__;
-  // Close the Assistant in asynchronous way if the app list is going to be
-  // closed while the Assistant is visible. If the app list close animation is
-  // not reversed, `close_assistant_ui_runner_` runs at the end of the animation
-  // to actually close the Assistant.
-  const bool is_assistant_ui_visible =
-      (AssistantUiController::Get()->GetModel()->visibility() ==
-       AssistantVisibility::kVisible);
-  if (is_assistant_ui_visible) {
-    std::optional<base::ScopedClosureRunner> runner =
-        AssistantUiController::Get()->CloseUi(
-            AssistantExitPoint::kLauncherClose);
-    DCHECK(runner);
-    DCHECK(!close_assistant_ui_runner_);
-    close_assistant_ui_runner_.ReplaceClosure(runner->Release());
-  }
 }
 
 void AppListControllerImpl::LoadIcon(const std::string& app_id) {
@@ -1618,17 +1415,6 @@ void AppListControllerImpl::OnAppListPageChanged(AppListState page) {
     return;
 
   UpdateFullscreenLauncherContainer();
-
-  if (page == AppListState::kStateEmbeddedAssistant) {
-    // ShowUi() will be no-op if the Assistant UI is already visible.
-    AssistantUiController::Get()->ShowUi(AssistantEntryPoint::kUnspecified);
-    return;
-  }
-
-  if (old_page == AppListState::kStateEmbeddedAssistant) {
-    // CloseUi() will be no-op if the Assistant UI is already closed.
-    AssistantUiController::Get()->CloseUi(AssistantExitPoint::kBackInLauncher);
-  }
 }
 
 int AppListControllerImpl::GetShelfSize() {
@@ -2039,19 +1825,11 @@ void AppListControllerImpl::Shutdown() {
   DCHECK(!is_shutdown_);
   is_shutdown_ = true;
 
-  // Cancel any pending assistant UI close requests to avoid attempts to update
-  // assistant UI state mid shutdown (possibly after assistant has started
-  // shutting down).
-  IgnoreResult(close_assistant_ui_runner_.Release());
-
   // Always shutdown the bubble presenter.
   bubble_presenter_->Shutdown();
 
   Shell* shell = Shell::Get();
-  AssistantController::Get()->RemoveObserver(this);
-  AssistantUiController::Get()->GetModel()->RemoveObserver(this);
   shell->display_manager()->RemoveDisplayManagerObserver(this);
-  AssistantState::Get()->RemoveObserver(this);
   keyboard::KeyboardUIController::Get()->RemoveObserver(this);
   display::Screen::GetScreen()->RemoveObserver(this);
   shell->overview_controller()->RemoveObserver(this);
@@ -2070,10 +1848,6 @@ bool AppListControllerImpl::IsHomeScreenVisible() {
 void AppListControllerImpl::OnWindowDragStarted() {
   in_window_dragging_ = true;
   UpdateHomeScreenVisibility();
-
-  // Dismiss Assistant if it's running when a window drag starts.
-  if (fullscreen_presenter_->IsShowingEmbeddedAssistantUI())
-    fullscreen_presenter_->ShowEmbeddedAssistantUI(false);
 }
 
 void AppListControllerImpl::OnWindowDragEnded(bool animate) {

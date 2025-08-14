@@ -159,11 +159,6 @@ bool AppListMainView::CanSelectSearchResults() {
   return !!contents_view_->search_result_page_view()->CanSelectSearchResults();
 }
 
-void AppListMainView::AssistantButtonPressed() {
-  delegate_->StartAssistant(
-      assistant::AssistantEntryPoint::kLauncherSearchBoxIcon);
-}
-
 void AppListMainView::CloseButtonPressed() {
   // Deactivate the search box.
   search_box_view_->SetSearchBoxActive(false, ui::EventType::kUnknown);

@@ -21,7 +21,6 @@
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_search_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
-#include "ash/app_list/views/assistant/app_list_bubble_assistant_page.h"
 #include "ash/app_list/views/button_focus_skipper.h"
 #include "ash/app_list/views/folder_background_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
@@ -191,12 +190,6 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate)
       AddChildView(std::make_unique<views::View>()));
   InitContentsView();
 
-  // Add assistant page as a top-level child so it will fill the bubble and
-  // suggestion chips will appear at the bottom of the bubble view.
-  assistant_page_ = AddChildView(std::make_unique<AppListBubbleAssistantPage>(
-      view_delegate_->GetAssistantViewDelegate()));
-  assistant_page_->SetVisible(false);
-
   InitFolderView();
   // Folder view is laid out manually based on its contents.
   folder_view_->SetProperty(views::kViewIgnoredByLayoutKey, true);
@@ -235,10 +228,9 @@ void AppListBubbleView::InitContentsView() {
       /*delegate=*/this, view_delegate_, /*is_app_list_bubble=*/true));
   search_box_view_->InitializeForBubbleLauncher();
 
-  // Skip the Sunfish and assistant button on arrow up/down in app list.
+  // Skip the Sunfish and Gemini button on arrow up/down in app list.
   button_focus_skipper_ = std::make_unique<ButtonFocusSkipper>(this);
   button_focus_skipper_->AddButton(search_box_view_->sunfish_button());
-  button_focus_skipper_->AddButton(search_box_view_->assistant_button());
   button_focus_skipper_->AddButton(search_box_view_->gemini_button());
 
   // The main view has a solid color layer, so the separator needs its own
@@ -477,17 +469,6 @@ bool AppListBubbleView::Back() {
     return true;
   }
   if (search_box_view_->HasSearch()) {
-    // When showing the `AppListBubblePage::kAssistant`, it will not change the
-    // search box text. Therefore, if the `AppListBubblePage::kAssistant` is
-    // from search result, the search query is not empty, Back() here will clear
-    // the search, QueryChanged() will set the page to
-    // `AppListBubblePage::kApps`. If the `AppListBubblePage::kAssistant` is
-    // from other `AssistantVisibilityEntryPoint`, the search box is empty,
-    // Back() will return false and then the AppList will be closed.
-    if (IsShowingEmbeddedAssistantUI()) {
-      view_delegate_->EndAssistant(
-          assistant::AssistantExitPoint::kBackInLauncher);
-    }
     search_box_view_->ClearSearch();
     return true;
   }
@@ -504,9 +485,8 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
   const AppListBubblePage previous_page = current_page_;
   current_page_ = page;
 
-  // The assistant has its own text input field.
-  search_box_view_->SetVisible(page != AppListBubblePage::kAssistant);
-  separator_->SetVisible(page != AppListBubblePage::kAssistant);
+  search_box_view_->SetVisible(true);
+  separator_->SetVisible(true);
 
   const bool supports_anchored_dialogs =
       page == AppListBubblePage::kApps ||
@@ -514,9 +494,9 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
       page == AppListBubblePage::kSearch;
 
   search_page_dialog_controller_->Reset(/*enabled=*/supports_anchored_dialogs);
-  assistant_page_->SetVisible(page == AppListBubblePage::kAssistant);
   switch (current_page_) {
     case AppListBubblePage::kNone:
+    case AppListBubblePage::kAssistant:
       NOTREACHED();
     case AppListBubblePage::kApps:
       apps_page_->ResetScrollPosition();
@@ -564,35 +544,7 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
       }
       MaybeFocusAndActivateSearchBox();
       break;
-    case AppListBubblePage::kAssistant:
-      if (showing_folder_)
-        HideFolderView(/*animate=*/false, /*hide_for_reparent=*/false);
-      if (previous_page == AppListBubblePage::kApps)
-        apps_page_->AnimateHidePage();
-      else
-        apps_page_->SetVisible(false);
-      search_page_->SetVisible(false);
-      apps_collections_page_->SetVisible(false);
-      // Explicitly set search box inactive so the next attempt to activate it
-      // will succeed.
-      search_box_view_->SetSearchBoxActive(
-          false,
-          /*event_type=*/ui::EventType::kUnknown);
-      assistant_page_->RequestFocus();
-      break;
   }
-}
-
-bool AppListBubbleView::IsShowingEmbeddedAssistantUI() const {
-  return current_page_ == AppListBubblePage::kAssistant;
-}
-
-void AppListBubbleView::ShowEmbeddedAssistantUI() {
-  DVLOG(1) << __PRETTY_FUNCTION__;
-  if (IsShowingEmbeddedAssistantUI()) {
-    return;
-  }
-  ShowPage(AppListBubblePage::kAssistant);
 }
 
 int AppListBubbleView::GetHeightToFitAllApps() const {
@@ -693,13 +645,6 @@ void AppListBubbleView::QueryChanged(const std::u16string& trimmed_query,
   SchedulePaint();
 }
 
-void AppListBubbleView::AssistantButtonPressed() {
-  // Showing the assistant via the delegate triggers the assistant's visibility
-  // change notification and ensures its initial visual state is correct.
-  view_delegate_->StartAssistant(
-      assistant::AssistantEntryPoint::kLauncherSearchBoxIcon);
-}
-
 void AppListBubbleView::CloseButtonPressed() {
   // Activate and focus the search box.
   search_box_view_->SetSearchBoxActive(true,
@@ -784,10 +729,6 @@ void AppListBubbleView::ReparentDragEnded() {
   // Nothing to do.
 }
 
-void AppListBubbleView::InitializeUIForBubbleView() {
-  assistant_page_->InitializeUIForBubbleView();
-}
-
 void AppListBubbleView::DisableFocusForShowingActiveFolder(bool disabled) {
   search_box_view_->SetEnabled(!disabled);
   SetViewIgnoredForAccessibility(search_box_view_, disabled);
@@ -823,7 +764,6 @@ void AppListBubbleView::OnHideAnimationEnded(const gfx::Rect& layer_bounds) {
   current_page_ = AppListBubblePage::kNone;
   apps_page_->SetVisible(true);
   search_page_->SetVisible(false);
-  assistant_page_->SetVisible(false);
 
   is_hiding_ = false;
   if (on_hide_animation_ended_) {

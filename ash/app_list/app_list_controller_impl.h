@@ -18,12 +18,10 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/quick_app_access_model.h"
 #include "ash/ash_export.h"
-#include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/capture_mode/sunfish_scanner_feature_watcher.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
-#include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "ash/public/cpp/feature_discovery_duration_reporter.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -42,7 +40,6 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "components/prefs/pref_member.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
@@ -83,11 +80,8 @@ class ASH_EXPORT AppListControllerImpl
       public display::DisplayObserver,
       public KeyboardControllerObserver,
       public WallpaperControllerObserver,
-      public AssistantStateObserver,
       public display::DisplayManagerObserver,
       public aura::WindowObserver,
-      public AssistantControllerObserver,
-      public AssistantUiModelObserver,
       public FeatureDiscoveryDurationReporter::ReporterObserver,
       public SunfishScannerFeatureWatcher::Observer {
  public:
@@ -173,8 +167,6 @@ class ASH_EXPORT AppListControllerImpl
   AppListNotifier* GetNotifier() override;
   std::unique_ptr<ash::ScopedIphSession> CreateLauncherSearchIphSession()
       override;
-  void StartAssistant(assistant::AssistantEntryPoint entry_point) override;
-  void EndAssistant(assistant::AssistantExitPoint exit_point) override;
   std::vector<AppListSearchControlCategory> GetToggleableCategories()
       const override;
   void StartSearch(const std::u16string& raw_query) override;
@@ -205,10 +197,8 @@ class ASH_EXPORT AppListControllerImpl
   bool KeyboardTraversalEngaged() override;
   bool CanProcessEventsOnApplistViews() override;
   bool ShouldDismissImmediately() override;
-  AssistantViewDelegate* GetAssistantViewDelegate() override;
   void OnSearchResultVisibilityChanged(const std::string& id,
                                        bool visibility) override;
-  bool IsAssistantAllowedAndEnabled() const override;
   void OnStateTransitionAnimationCompleted(
       AppListViewState state,
       bool was_animation_interrupted) override;
@@ -265,28 +255,12 @@ class ASH_EXPORT AppListControllerImpl
   void OnWallpaperPreviewStarted() override;
   void OnWallpaperPreviewEnded() override;
 
-  // AssistantStateObserver:
-  void OnAssistantStatusChanged(assistant::AssistantStatus status) override;
-  void OnAssistantSettingsEnabled(bool enabled) override;
-  void OnAssistantFeatureAllowedChanged(
-      assistant::AssistantAllowedState state) override;
-
   // display::DisplayManagerObserver:
   void OnDidApplyDisplayChanges() override;
 
   // aura::WindowObserver:
   void OnWindowVisibilityChanging(aura::Window* window, bool visible) override;
   void OnWindowDestroyed(aura::Window* window) override;
-
-  // AssistantControllerObserver:
-  void OnAssistantReady() override;
-
-  // AssistantUiModelObserver:
-  void OnUiVisibilityChanged(
-      AssistantVisibility new_visibility,
-      AssistantVisibility old_visibility,
-      std::optional<AssistantEntryPoint> entry_point,
-      std::optional<AssistantExitPoint> exit_point) override;
 
   // Gets the home screen window, if available, or null if the home screen
   // window is being hidden for effects (e.g. when dragging windows or
@@ -331,16 +305,6 @@ class ASH_EXPORT AppListControllerImpl
   void Back();
 
   void SetKeyboardTraversalMode(bool engaged);
-
-  // Returns whether the assistant page is showing (either in bubble app list or
-  // fullscreen app list).
-  bool IsShowingEmbeddedAssistantUI() const;
-
-  // Sets up `close_assistant_ui_runner_` to close the assistant.
-  void ScheduleCloseAssistant();
-
-  // Runs `close_assistant_ui_runner_` when it is non-null.
-  void MaybeCloseAssistant();
 
   using StateTransitionAnimationCallback =
       base::RepeatingCallback<void(AppListViewState)>;
@@ -476,12 +440,9 @@ class ASH_EXPORT AppListControllerImpl
   // transition animation to finish.
   StateTransitionAnimationCallback state_transition_animation_callback_;
 
-  // Used for closing the Assistant ui in the asynchronous way.
-  base::ScopedClosureRunner close_assistant_ui_runner_;
-
   // Manages the tablet mode home launcher. Destroying `AppListPresenterImpl`
   // can reentrantly call back into `this` and use `model_provider_`,
-  // `state_transition_animation_callback_`, and `close_assistant_ui_runner_`,
+  // `state_transition_animation_callback_`,
   // so `fullscreen_presenter_` must be ordered after all those fields.
   std::unique_ptr<AppListPresenterImpl> fullscreen_presenter_;
 

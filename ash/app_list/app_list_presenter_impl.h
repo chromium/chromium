@@ -134,13 +134,6 @@ class ASH_EXPORT AppListPresenterImpl
       std::optional<TabletModeAnimationTransition> transition,
       UpdateHomeLauncherAnimationSettingsCallback callback);
 
-  // Shows or hides the Assistant page.
-  // |show| is true to show and false to hide.
-  void ShowEmbeddedAssistantUI(bool show);
-
-  // Returns current visibility of the Assistant page.
-  bool IsShowingEmbeddedAssistantUI() const;
-
  private:
   // Sets the app list view and attempts to show it.
   void SetView(AppListView* view);

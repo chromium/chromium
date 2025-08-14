@@ -51,8 +51,6 @@
 namespace ash {
 namespace {
 
-using assistant::AssistantExitPoint;
-
 // Maximum amount of time to spend refreshing zero state search results before
 // opening the launcher.
 constexpr base::TimeDelta kZeroStateSearchTimeout = base::Milliseconds(16);
@@ -236,9 +234,6 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
         std::make_unique<AppListEventTargeter>(controller_));
     bubble_view_ = bubble_widget_->SetContentsView(
         std::make_unique<AppListBubbleView>(controller_));
-    // Some of Assistant UIs have to be initialized explicitly. See details in
-    // the comment of AppListBubbleView::InitializeUIForBubbleView.
-    bubble_view_->InitializeUIForBubbleView();
     // Arrow left/right and up/down triggers the same focus movement as
     // tab/shift+tab.
     bubble_widget_->widget_delegate()->SetEnableArrowKeyTraversal(true);
@@ -331,9 +326,6 @@ void AppListBubblePresenter::Dismiss() {
                        weak_factory_.GetWeakPtr()));
   }
   controller_->OnVisibilityChanged(/*visible=*/false, display_id);
-
-  // Clean up assistant if it is showing.
-  controller_->ScheduleCloseAssistant();
 }
 
 aura::Window* AppListBubblePresenter::GetWindow() const {
@@ -344,19 +336,6 @@ aura::Window* AppListBubblePresenter::GetWindow() const {
 
 bool AppListBubblePresenter::IsShowing() const {
   return is_target_visibility_show_;
-}
-
-bool AppListBubblePresenter::IsShowingEmbeddedAssistantUI() const {
-  if (!is_target_visibility_show_)
-    return false;
-
-  // Bubble view is null while the bubble widget is being initialized for show.
-  // In this case, return true iff the app list will show the assistant page
-  // when initialized.
-  if (!bubble_view_)
-    return target_page_ == AppListBubblePage::kAssistant;
-
-  return bubble_view_->IsShowingEmbeddedAssistantUI();
 }
 
 void AppListBubblePresenter::UpdateContinueSectionVisibility() {
@@ -379,17 +358,6 @@ void AppListBubblePresenter::UpdateForNewSortingOrder(
 
   bubble_view_->UpdateForNewSortingOrder(new_order, animate,
                                          std::move(update_position_closure));
-}
-
-void AppListBubblePresenter::ShowEmbeddedAssistantUI() {
-  DVLOG(1) << __PRETTY_FUNCTION__;
-  target_page_ = AppListBubblePage::kAssistant;
-  // `bubble_view_` does not exist while waiting for zero-state results.
-  // OnZeroStateSearchDone() sets the page in that case.
-  if (bubble_view_) {
-    DCHECK(bubble_widget_);
-    bubble_view_->ShowEmbeddedAssistantUI();
-  }
 }
 
 void AppListBubblePresenter::OnWidgetDestroying(views::Widget* widget) {
@@ -486,8 +454,6 @@ void AppListBubblePresenter::OnHideAnimationEnded() {
   // close the bubble in response.
   auto lock = TrayBackgroundView::DisableCloseBubbleOnWindowActivated();
   bubble_widget_->Hide();
-
-  controller_->MaybeCloseAssistant();
 }
 
 int AppListBubblePresenter::GetPreferredBubbleWidth(

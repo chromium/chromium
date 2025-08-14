@@ -88,10 +88,8 @@ void AppListPresenterEventFilter::OnKeyEvent(ui::KeyEvent* event) {
 
   // Arrow keys or Tab will engage the traversal mode.
   if ((IsUnhandledArrowKeyEvent(*event) || event->key_code() == ui::VKEY_TAB)) {
-    // Handle the first arrow key event to just show the focus rings (if not
-    // showing Assistant). Don't absorb the first event when showing Assistant.
-    if (!view_->IsShowingEmbeddedAssistantUI())
-      event->SetHandled();
+    // Handle the first arrow key event to just show the focus rings
+    event->SetHandled();
     controller_->SetKeyboardTraversalMode(true);
   }
 }

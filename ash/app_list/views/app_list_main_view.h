@@ -56,7 +56,6 @@ class ASH_EXPORT AppListMainView : public views::View,
   // Overridden from SearchBoxViewDelegate:
   void QueryChanged(const std::u16string& trimmed_query,
                     bool initiated_by_user) override;
-  void AssistantButtonPressed() override;
   void CloseButtonPressed() override;
   void ActiveChanged(SearchBoxViewBase* sender) override;
   void OnSearchBoxKeyEvent(ui::KeyEvent* event) override;

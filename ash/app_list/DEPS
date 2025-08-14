@@ -1,6 +1,5 @@
 include_rules = [
   "+ash/assistant/model",
-  "+ash/assistant/ui",
   "+ash/assistant/util",
   "+ash/resources/vector_icons",
   "+ash/strings",
