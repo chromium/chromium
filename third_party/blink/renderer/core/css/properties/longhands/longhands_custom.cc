@@ -995,13 +995,8 @@ const CSSValue* BackgroundClip::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext&,
     const CSSParserLocalContext& local_context) const {
-  if (RuntimeEnabledFeatures::CSSBackgroundClipUnprefixEnabled()) {
-    return css_parsing_utils::ConsumeCommaSeparatedList(
-        css_parsing_utils::ConsumeBackgroundBoxOrText, stream);
-  } else {
-    return css_parsing_utils::ParseBackgroundBox(
-        stream, local_context, css_parsing_utils::AllowTextValue::kAllow);
-  }
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeBackgroundBoxOrText, stream);
 }
 
 const CSSValue* BackgroundClip::CSSValueFromComputedStyleInternal(

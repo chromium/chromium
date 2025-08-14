@@ -1187,11 +1187,6 @@
       name: "CSSAtRuleCounterStyleSpeakAsDescriptor",
       status: "test",
     },
-    {
-      // https://chromestatus.com/feature/5125388091260928
-      name: "CSSBackgroundClipUnprefix",
-      status: "stable",
-    },
     // https://chromestatus.com/feature/5459864205393920
     {
       // https://chromestatus.com/feature/5125388091260928

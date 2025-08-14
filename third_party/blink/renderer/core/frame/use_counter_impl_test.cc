@@ -690,11 +690,7 @@ TEST_F(UseCounterImplTest, BackgroundClip) {
   document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<style>html{-webkit-background-clip: border;}</style>");
   UpdateAllLifecyclePhases(document);
-  if (RuntimeEnabledFeatures::CSSBackgroundClipUnprefixEnabled()) {
-    EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
-  } else {
-    EXPECT_TRUE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
-  }
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
 
@@ -703,11 +699,7 @@ TEST_F(UseCounterImplTest, BackgroundClip) {
       "<style>html{-webkit-background-clip: content;}</style>");
   UpdateAllLifecyclePhases(document);
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
-  if (RuntimeEnabledFeatures::CSSBackgroundClipUnprefixEnabled()) {
-    EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
-  } else {
-    EXPECT_TRUE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
-  }
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
 
   document.ClearUseCounterForTesting(WebFeature::kCSSBackgroundClipContent);
@@ -716,11 +708,7 @@ TEST_F(UseCounterImplTest, BackgroundClip) {
   UpdateAllLifecyclePhases(document);
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
-  if (RuntimeEnabledFeatures::CSSBackgroundClipUnprefixEnabled()) {
-    EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
-  } else {
-    EXPECT_TRUE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
-  }
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
 }
 
 }  // namespace blink

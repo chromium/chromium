@@ -4901,11 +4901,7 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
                                      bool use_alias_parsing) {
   switch (resolved_property) {
     case CSSPropertyID::kBackgroundClip:
-      if (RuntimeEnabledFeatures::CSSBackgroundClipUnprefixEnabled()) {
-        return ConsumeBackgroundBoxOrText(stream);
-      } else {
-        return ConsumeBackgroundBox(stream);
-      }
+      return ConsumeBackgroundBoxOrText(stream);
     case CSSPropertyID::kBackgroundAttachment:
       return ConsumeBackgroundAttachment(stream);
     case CSSPropertyID::kBackgroundOrigin:
