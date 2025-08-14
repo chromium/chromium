@@ -1070,6 +1070,7 @@ void PaintCanvasVideoRenderer::Paint(
   cc::PaintFlags video_flags;
   video_flags.setAlphaf(flags.getAlphaf());
   video_flags.setBlendMode(flags.getBlendMode());
+  video_flags.setTargetedHdrHeadroom(flags.getTargetedHdrHeadroom());
 
   const bool need_rotation = params.transformation.rotation != VIDEO_ROTATION_0;
   const bool need_scaling =
