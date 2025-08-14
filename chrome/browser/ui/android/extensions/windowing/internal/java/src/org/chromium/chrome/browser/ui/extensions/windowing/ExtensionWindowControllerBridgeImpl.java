@@ -46,7 +46,10 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
 
     @Override
     public void onTaskBoundsChanged(Rect newBounds) {
-        // TODO(crbug.com/424857039): relay the "bounds changed" event to extension internals.
+        if (mNativeExtensionWindowControllerBridge != 0) {
+            ExtensionWindowControllerBridgeImplJni.get()
+                    .onTaskBoundsChanged(mNativeExtensionWindowControllerBridge);
+        }
     }
 
     long getNativePtrForTesting() {
@@ -71,5 +74,8 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
         long create(ExtensionWindowControllerBridgeImpl caller, long nativeBrowserWindowPtr);
 
         void destroy(long nativeExtensionWindowControllerBridge);
+
+        /** Called when the window (Task) bounds have changed. */
+        void onTaskBoundsChanged(long nativeExtensionWindowControllerBridge);
     }
 }

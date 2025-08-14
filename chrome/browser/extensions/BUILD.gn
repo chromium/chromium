@@ -1588,6 +1588,8 @@ static_library("test_support") {
     "load_error_waiter.h",
     "mock_extension_special_storage_policy.cc",
     "mock_extension_special_storage_policy.h",
+    "mock_window_controller_list_observer.cc",
+    "mock_window_controller_list_observer.h",
     "scoped_database_manager_for_test.cc",
     "scoped_database_manager_for_test.h",
     "scoped_test_mv2_enabler.cc",

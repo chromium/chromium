@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.extensions.windowing;
 
+import android.graphics.Rect;
+
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
@@ -56,6 +58,13 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
     @CalledByNative
     private void invokeOnTaskRemoved() {
         mExtensionWindowControllerBridge.onTaskRemoved();
+    }
+
+    @CalledByNative
+    private void invokeOnTaskBoundsChanged() {
+        mExtensionWindowControllerBridge.onTaskBoundsChanged(
+                // Native code doesn't need the new bounds, so what we pass here doesn't matter.
+                new Rect());
     }
 
     @CalledByNative

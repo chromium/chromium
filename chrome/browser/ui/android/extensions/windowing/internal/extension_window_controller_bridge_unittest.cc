@@ -8,6 +8,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
+#include "chrome/browser/extensions/mock_window_controller_list_observer.h"
+#include "chrome/browser/extensions/window_controller.h"
+#include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/ui/android/extensions/windowing/test/native_unit_test_support_jni/ExtensionWindowControllerBridgeNativeUnitTestSupport_jni.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,6 +18,7 @@
 namespace {
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaGlobalRef;
+using testing::Return;
 }  // namespace
 
 class ExtensionWindowControllerBridgeUnitTest : public testing::Test {
@@ -40,6 +44,11 @@ class ExtensionWindowControllerBridgeUnitTest : public testing::Test {
 
   void InvokeJavaOnTaskRemoved() const {
     Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_invokeOnTaskRemoved(
+        AttachCurrentThread(), java_test_support_);
+  }
+
+  void InvokeJavaOnTaskBoundsChanged() const {
+    Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_invokeOnTaskBoundsChanged(
         AttachCurrentThread(), java_test_support_);
   }
 
@@ -103,4 +112,39 @@ TEST_F(ExtensionWindowControllerBridgeUnitTest,
 
   // Assert.
   EXPECT_EQ(nullptr, InvokeJavaGetNativePtrForTesting());
+}
+
+TEST_F(ExtensionWindowControllerBridgeUnitTest,
+       JavaOnTaskBoundsChangedNotifiesExtensionWindowController) {
+  // Arrange: add a mock WindowControllerListObserver for setting up
+  // expectations.
+  auto mock_window_list_observer =
+      extensions::MockWindowControllerListObserver();
+  extensions::WindowControllerList::GetInstance()->AddObserver(
+      &mock_window_list_observer);
+
+  // Arrange: create ExtensionWindowControllerBridge (Java + native).
+  InvokeJavaOnAddedToTask();
+  ExtensionWindowControllerBridge* extension_window_controller_bridge =
+      InvokeJavaGetNativePtrForTesting();
+  const extensions::BrowserExtensionWindowController&
+      browser_extension_window_controller =
+          extension_window_controller_bridge
+              ->GetExtensionWindowControllerForTesting();
+
+  // Arrange: set up expectations.
+  extensions::WindowController& window_controller =
+      const_cast<extensions::BrowserExtensionWindowController&>(
+          browser_extension_window_controller);
+  EXPECT_CALL(mock_window_list_observer,
+              OnWindowBoundsChanged(&window_controller))
+      .Times(1)
+      .WillRepeatedly(Return());
+
+  // Act.
+  InvokeJavaOnTaskBoundsChanged();
+
+  // Cleanup
+  extensions::WindowControllerList::GetInstance()->RemoveObserver(
+      &mock_window_list_observer);
 }

@@ -32,6 +32,10 @@ class ExtensionWindowControllerBridge final {
   // Implements Java |ExtensionWindowControllerBridgeImpl.Natives#destroy|.
   void Destroy(JNIEnv* env);
 
+  // Implements Java
+  // |ExtensionWindowControllerBridgeImpl.Natives#onTaskBoundsChanged|.
+  void OnTaskBoundsChanged(JNIEnv* env);
+
   const extensions::BrowserExtensionWindowController&
   GetExtensionWindowControllerForTesting();
 

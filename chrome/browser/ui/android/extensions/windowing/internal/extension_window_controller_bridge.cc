@@ -50,6 +50,10 @@ void ExtensionWindowControllerBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
+void ExtensionWindowControllerBridge::OnTaskBoundsChanged(JNIEnv* env) {
+  extension_window_controller_.NotifyWindowBoundsChanged();
+}
+
 const extensions::BrowserExtensionWindowController&
 ExtensionWindowControllerBridge::GetExtensionWindowControllerForTesting() {
   return extension_window_controller_;
