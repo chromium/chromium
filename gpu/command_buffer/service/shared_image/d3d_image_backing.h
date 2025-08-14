@@ -67,7 +67,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       size_t array_slice,
       bool use_update_subresource1 = false,
       bool want_dcomp_texture = false,
-      bool is_thread_safe = false);
+      bool is_thread_safe = false,
+      bool share_dxgi_handle_with_other_backings = true);
 
   // Creation method meant for buffer resources originating as ID3D12Resources.
   static std::unique_ptr<D3DImageBacking> CreateFromD3D12Resource(
@@ -269,7 +270,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                   size_t array_slice = 0u,
                   bool use_update_subresource1 = false,
                   bool want_dcomp_texture = false,
-                  bool is_thread_safe = false);
+                  bool is_thread_safe = false,
+                  bool share_dxgi_handle_with_other_backings = true);
 
   D3DImageBacking(const Mailbox& mailbox,
                   const gfx::Size& size,
@@ -408,6 +410,11 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   // True if using UpdateSubresource1() in UploadFromMemory() is allowed.
   const bool use_update_subresource1_;
+
+  // Set in ctor to indicate whether DXGISharedHandle is shared with other
+  // backings. If this flag is false, the DXGISharedHandle will be exclusively
+  // owned by this backing, and certain optimizations could be enabled.
+  const bool share_dxgi_handle_with_other_backings_ = true;
 
   // Staging texture used for copy to/from shared memory GMB.
   Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture_ GUARDED_BY(lock_);

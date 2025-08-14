@@ -660,7 +660,9 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(debug_label), std::move(d3d11_texture),
       std::move(dxgi_shared_handle_state), gl_format_caps_, texture_target,
-      /*array_slice=*/0u, use_update_subresource1_, want_dcomp_texture);
+      /*array_slice=*/0u, use_update_subresource1_, want_dcomp_texture,
+      /*is_thread_safe=*/false,
+      /*share_dxgi_handle_with_other_backings=*/false);
   if (backing && !pixel_data.empty()) {
     backing->SetCleared();
   }

@@ -507,7 +507,8 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
     size_t array_slice,
     bool use_update_subresource1,
     bool want_dcomp_texture,
-    bool is_thread_safe) {
+    bool is_thread_safe,
+    bool share_dxgi_handle_with_other_backings) {
   const bool has_webgpu_usage = usage.HasAny(SHARED_IMAGE_USAGE_WEBGPU_READ |
                                              SHARED_IMAGE_USAGE_WEBGPU_WRITE);
   // DXGI shared handle is required for WebGPU/Dawn/D3D12 interop.
@@ -516,8 +517,8 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(debug_label), std::move(d3d11_texture),
       std::move(dxgi_shared_handle_state), gl_format_caps, texture_target,
-      array_slice, use_update_subresource1, want_dcomp_texture,
-      is_thread_safe));
+      array_slice, use_update_subresource1, want_dcomp_texture, is_thread_safe,
+      share_dxgi_handle_with_other_backings));
   return backing;
 }
 
@@ -537,7 +538,8 @@ D3DImageBacking::D3DImageBacking(
     size_t array_slice,
     bool use_update_subresource1,
     bool want_dcomp_texture,
-    bool is_thread_safe)
+    bool is_thread_safe,
+    bool share_dxgi_handle_with_other_backings)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
                                       size,
@@ -559,6 +561,8 @@ D3DImageBacking::D3DImageBacking(
       texture_target_(texture_target),
       array_slice_(array_slice),
       use_update_subresource1_(use_update_subresource1),
+      share_dxgi_handle_with_other_backings_(
+          dxgi_shared_handle_state_ && share_dxgi_handle_with_other_backings),
       angle_d3d11_device_(gl::QueryD3D11DeviceObjectFromANGLE()),
       dawn_shared_texture_cache_(
           base::MakeRefCounted<DawnSharedTextureCache>()) {
@@ -872,12 +876,23 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
       // If this is graphite device, open Dawn's persistent access initially so
       // that we can defer submits. The persistent access will be disabled once
       // a different device accesses this backing.
-      // TODO(40239870): We don't support deferred submits if multithread
-      // support is enabled yet.
+      //
+      // Persistent access is currently ony enabled if:
+      // - Graphite dawn's backend is D3D11.
+      // - Multhreaded access is disabled. TODO(40239870): Make it work with
+      // multithreaded accesses. Typically used by DrDC or video decoding on
+      // another thread.
+      // - The shared handle must be exclusively owned by this backing.
+      // TODO(403773961): We currently disable persistent access if the dxgi
+      // handle could be shared with other backings. This is because the
+      // persistent access managed by this backing would mess up the other
+      // backings' access. It's possible to move the persistent access to be
+      // managed by DXGISharedHandleState. However, to make it simple for now,
+      // just disable the persistent access in this case.
       const bool already_accessed_by_other_device =
           d3d11_signaled_fence_map_[texture_d3d11_device_] != nullptr;
-      if (is_graphite_device && !is_thread_safe() &&
-          context_state->IsGraphiteDawnD3D11() &&
+      if (is_graphite_device && context_state->IsGraphiteDawnD3D11() &&
+          !is_thread_safe() && !share_dxgi_handle_with_other_backings_ &&
           !already_accessed_by_other_device) {
         InitPersistentGraphiteDawnAccess(context_state, device,
                                          shared_texture_memory, view_formats);
