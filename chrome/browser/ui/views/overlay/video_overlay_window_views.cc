@@ -1208,9 +1208,9 @@ void VideoOverlayWindowViews::SetUpViews() {
     progress_view = std::make_unique<global_media_controls::MediaProgressView>(
         /*use_squiggly_line=*/false,
         /*playing_foreground_color_id=*/ui::kColorSysPrimary,
-        /*playing_background_color_id=*/ui::kColorSysStateDisabledContainer,
-        /*paused_foreground_color_id=*/ui::kColorSysStateDisabledContainer,
-        /*paused_background_color_id=*/ui::kColorSysStateDisabledContainer,
+        /*playing_background_color_id=*/ui::kColorSysStateDisabled,
+        /*paused_foreground_color_id=*/ui::kColorSysStateDisabled,
+        /*paused_background_color_id=*/ui::kColorSysStateDisabled,
         /*focus_ring_color_id=*/ui::kColorSysStateFocusRing,
         /*drag_state_change_callback=*/
         base::BindRepeating(
