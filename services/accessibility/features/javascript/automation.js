@@ -2187,6 +2187,7 @@ class AutomationUtil {
     actionData.horizontalScrollAlignment = ax.mojom.ScrollAlignment.kNone;
     actionData.verticalScrollAlignment = ax.mojom.ScrollAlignment.kNone;
     actionData.scrollBehavior = ax.mojom.ScrollBehavior.kNone;
+    actionData.childTreeId = treeID;
 
     return actionData;
   }

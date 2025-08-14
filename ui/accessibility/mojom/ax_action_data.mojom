@@ -31,8 +31,7 @@ struct AXActionData {
   ScrollAlignment horizontal_scroll_alignment;
   ScrollAlignment vertical_scroll_alignment;
   ScrollBehavior scroll_behavior;
-  // TODO(436483211): Make this non-optional if possible.
-  ax.mojom.AXTreeID? child_tree_id;
+  ax.mojom.AXTreeID child_tree_id;
   // Note that `target_role` should not be set if `target_node_id` is set, or
   // vice versa.
   ax.mojom.Role target_role = ax.mojom.Role.kUnknown;
