@@ -83,6 +83,7 @@ def parse(data, file_name, map_binary_to_string=False):
     if match:
       domain = createItem({'domain' : match.group(3)}, match.group(1),
                           match.group(2))
+      domain['source'] = file_name
       protocol['domains'].append(domain)
       continue
 

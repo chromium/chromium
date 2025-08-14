@@ -61,6 +61,8 @@ template("inspector_protocol_generate") {
       ]
     }
 
+    depfile = "${invoker.out_dir}/${target_name}.d"
+
     args = [
       "--jinja_dir",
       rebase_path(jinja_dir, root_build_dir),
@@ -70,6 +72,8 @@ template("inspector_protocol_generate") {
       rebase_path(invoker.config_file, root_build_dir),
       "--inspector_protocol_dir",
       "$inspector_protocol_dir",
+      "--depfile",
+      rebase_path(depfile, root_build_dir),
     ]
     if (use_embedder_types) {
       args += [
