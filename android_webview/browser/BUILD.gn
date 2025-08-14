@@ -324,6 +324,7 @@ source_set("browser") {
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:safebrowsing_proto",
+    "//components/safe_browsing/core/browser/web_ui:local_state_delegate",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/security_interstitials/content:security_interstitial_page",

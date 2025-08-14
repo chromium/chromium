@@ -15,7 +15,6 @@ static_library("web_ui") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
-    ":local_state_delegate",
     ":util",
     "//base",
     "//components/enterprise/common/proto:connectors_proto",
@@ -32,6 +31,7 @@ static_library("web_ui") {
     "//components/safe_browsing/core/browser/db:v4_local_database_manager",
     "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
+    "//components/safe_browsing/core/browser/web_ui:local_state_delegate",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/proto:csd_proto",
@@ -50,10 +50,6 @@ static_library("web_ui") {
   ]
 
   public_deps = [ "//components/safe_browsing/core/common/proto:webui_proto" ]
-}
-
-source_set("local_state_delegate") {
-  sources = [ "safe_browsing_local_state_delegate.h" ]
 }
 
 source_set("util") {

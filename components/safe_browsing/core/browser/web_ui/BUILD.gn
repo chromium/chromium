@@ -1,0 +1,7 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("local_state_delegate") {
+  sources = [ "safe_browsing_local_state_delegate.h" ]
+}
