@@ -298,6 +298,12 @@ void X11EventSource::OnEvent(const x11::Event& x11_event) {
     return;
   }
   if (translated_event && translated_event->type() != EventType::kUnknown) {
+#if BUILDFLAG(IS_CHROMEOS)
+    if (translated_event->IsLocatedEvent()) {
+      ui::CursorController::GetInstance()->SetCursorLocation(
+          translated_event->AsLocatedEvent()->location_f());
+    }
+#endif
     DispatchEvent(translated_event.get());
   }
 }

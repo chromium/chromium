@@ -38,10 +38,22 @@ namespace ui {
 // TODO(spang): Don't worry, we have a plan to remove this.
 class COMPONENT_EXPORT(EVENTS_OZONE) CursorController {
  public:
+  class CursorObserver {
+   public:
+    // Called when cursor location changed.
+    virtual void OnCursorLocationChanged(const gfx::PointF& location) = 0;
+
+   protected:
+    virtual ~CursorObserver() {}
+  };
+
   static CursorController* GetInstance();
 
   CursorController(const CursorController&) = delete;
   CursorController& operator=(const CursorController&) = delete;
+
+  void AddCursorObserver(CursorObserver* observer);
+  void RemoveCursorObserver(CursorObserver* observer);
 
   // Changes the rotation & scale applied for a window.
   void SetCursorConfigForWindow(gfx::AcceleratedWidget widget,
@@ -64,6 +76,9 @@ class COMPONENT_EXPORT(EVENTS_OZONE) CursorController {
   void ApplyCursorConfigForWindow(gfx::AcceleratedWidget widget,
                                   gfx::Vector2dF* delta) const;
 
+  // Notifies controller of new cursor location.
+  void SetCursorLocation(const gfx::PointF& location);
+
  private:
   CursorController();
   ~CursorController();
@@ -80,6 +95,10 @@ class COMPONENT_EXPORT(EVENTS_OZONE) CursorController {
   mutable base::Lock window_to_cursor_configuration_map_lock_;
   WindowToCursorConfigurationMap window_to_cursor_configuration_map_
       GUARDED_BY(window_to_cursor_configuration_map_lock_);
+
+  mutable base::Lock cursor_observers_lock_;
+  std::vector<CursorObserver*> cursor_observers_
+      GUARDED_BY(cursor_observers_lock_);
 };
 
 }  // namespace ui
