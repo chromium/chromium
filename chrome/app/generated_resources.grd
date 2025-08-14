@@ -8893,6 +8893,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_TAB_GROUPS_TITLE" desc="Title for Tab Groups NTP module on the new tab page.">
         Your tab groups
       </message>
+      <message name="IDS_NTP_MODULES_TAB_GROUPS_TIME_DELTA" desc="Text on a tab group that indicates the time duration that has passed since the interaction.">
+        {TIME_DIMENSION, plural,
+          =0 {Used <ph name="TIME_COUNT">$1<ex>2</ex></ph> day ago}
+          =1 {Used <ph name="TIME_COUNT">$1<ex>2</ex></ph> days ago}
+          =2 {Used <ph name="TIME_COUNT">$1<ex>2</ex></ph> week ago}
+          other {Used <ph name="TIME_COUNT">$1<ex>2</ex></ph> weeks ago}
+        }
+      </message>
+      <message name="IDS_NTP_MODULES_TAB_GROUPS_RECENTLY_USED" desc="The timestamp text on a tab group when the last interaction is less than 1 day ago.">
+        Recently used
+      </message>
       <message name="IDS_NTP_MODULES_TAB_GROUPS_ZERO_STATE_TITLE" desc="Title shown in the zero state tab groups module.">
         Stay organized with tab groups
       </message>

@@ -38,6 +38,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     const tabGroups: TabGroup[] = [
       {
         title: 'Tab Group 1',
+        updateTime: 'Recently used',
         faviconUrls: [
           {url: 'https://www.google.com'},
           {url: 'https://www.youtube.com'},
@@ -48,6 +49,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
       },
       {
         title: 'Tab Group 2',
+        updateTime: 'Recently used',
         faviconUrls: [
           {url: 'https://www.google.com'},
           {url: 'https://www.youtube.com'},
@@ -58,6 +60,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
       },
       {
         title: 'Tab Group 3',
+        updateTime: 'Recently used',
         faviconUrls: [
           {url: 'https://www.google.com'},
           {url: 'https://www.youtube.com'},
@@ -86,6 +89,9 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
       assertEquals(
           `Tab Group ${i + 1}`,
           groups[i]!.querySelector('.tab-group-title')!.textContent);
+      assertEquals(
+          'Recently used',
+          groups[i]!.querySelector('.tab-group-description')!.textContent);
       const iconContainer =
           groups[i]!.querySelector<IconContainerElement>('ntp-icon-container')!;
       assertTrue(!!iconContainer);
@@ -112,6 +118,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     // Arrange.
     const module = await createModule([{
       title: 'Tab Group',
+      updateTime: 'Recently used',
       faviconUrls: [{url: 'https://www.google.com'}],
       totalTabCount: 1,
     }]);
@@ -134,6 +141,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     // Arrange.
     const module = await createModule([{
       title: 'Tab Group',
+      updateTime: 'Recently used',
       faviconUrls: [
         {url: 'https://www.google.com'},
         {url: 'https://www.youtube.com'},
@@ -159,6 +167,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     // Arrange.
     const module = await createModule([{
       title: 'Tab Group',
+      updateTime: 'Recently used',
       faviconUrls: [
         {url: 'https://www.google.com'},
         {url: 'https://www.youtube.com'},
@@ -187,6 +196,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     // Arrange.
     const module = await createModule([{
       title: 'Tab Group',
+      updateTime: 'Recently used',
       faviconUrls: [
         {url: 'https://www.google.com'},
         {url: 'https://www.youtube.com'},
@@ -247,6 +257,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     // Arrange.
     const module = await createModule([{
       title: 'Tab Group',
+      updateTime: 'Recently used',
       faviconUrls: [{url: 'https://www.google.com'}],
       totalTabCount: 1,
     }]);
@@ -283,6 +294,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     // Arrange.
     const module = await createModule([{
       title: 'Tab Group',
+      updateTime: 'Recently used',
       faviconUrls: [{url: 'https://www.google.com'}],
       totalTabCount: 1,
     }]);
@@ -306,6 +318,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     // Arrange.
     const module = await createModule([{
       title: 'Tab Group',
+      updateTime: 'Recently used',
       faviconUrls: [{url: 'https://www.google.com'}],
       totalTabCount: 1,
     }]);

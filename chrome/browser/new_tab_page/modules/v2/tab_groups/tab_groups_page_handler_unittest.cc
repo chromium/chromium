@@ -236,18 +236,20 @@ class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
     std::vector<tab_groups::SavedTabGroupTab> tabs1;
     tabs1.emplace_back(GURL("https://a.com/"), u"Title A",
                        base::Uuid::GenerateRandomV4(), 0);
-    groups.emplace_back(u"Old Group", tab_groups::TabGroupColorId::kGrey,
+    groups.emplace_back(u"Third Group", tab_groups::TabGroupColorId::kGrey,
                         std::move(tabs1), 0);
-    groups.back().SetUpdateTime(base::Time::Now() - base::Hours(3));
+    groups.back().SetUpdateTime(base::Time::Now() -
+                                base::Days(8));  // Used 1 week ago
 
     std::vector<tab_groups::SavedTabGroupTab> tabs2;
     tabs2.emplace_back(GURL("https://b.com/"), u"Title B",
                        base::Uuid::GenerateRandomV4(), 0);
     tabs2.emplace_back(GURL("https://c.com/"), u"Title C",
                        base::Uuid::GenerateRandomV4(), 0);
-    groups.emplace_back(u"Middle Group", tab_groups::TabGroupColorId::kGreen,
+    groups.emplace_back(u"Second Group", tab_groups::TabGroupColorId::kGreen,
                         std::move(tabs2), 1);
-    groups.back().SetUpdateTime(base::Time::Now() - base::Hours(2));
+    groups.back().SetUpdateTime(base::Time::Now() -
+                                base::Hours(25));  // Used 1 day ago
 
     std::vector<tab_groups::SavedTabGroupTab> tabs3;
     tabs3.emplace_back(GURL("https://d.com/"), u"Title D",
@@ -260,9 +262,26 @@ class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
                        base::Uuid::GenerateRandomV4(), 0);
     tabs3.emplace_back(GURL("https://h.com/"), u"Title H",
                        base::Uuid::GenerateRandomV4(), 0);
-    groups.emplace_back(u"New Group", tab_groups::TabGroupColorId::kBlue,
+    groups.emplace_back(u"Newest Group", tab_groups::TabGroupColorId::kBlue,
                         std::move(tabs3), 2);
-    groups.back().SetUpdateTime(base::Time::Now() - base::Hours(1));
+    groups.back().SetUpdateTime(base::Time::Now() -
+                                base::Hours(1));  // Recently used
+
+    std::vector<tab_groups::SavedTabGroupTab> tabs4;
+    tabs4.emplace_back(GURL("https://i.com/"), u"Title I",
+                       base::Uuid::GenerateRandomV4(), 0);
+    groups.emplace_back(u"Fourth Group", tab_groups::TabGroupColorId::kBlue,
+                        std::move(tabs4), 3);
+    groups.back().SetUpdateTime(base::Time::Now() -
+                                base::Days(20));  // Used 2 weeks ago
+
+    std::vector<tab_groups::SavedTabGroupTab> tabs5;
+    tabs5.emplace_back(GURL("https://j.com/"), u"Title J",
+                       base::Uuid::GenerateRandomV4(), 0);
+    groups.emplace_back(u"Fifth Group", tab_groups::TabGroupColorId::kBlue,
+                        std::move(tabs5), 4);
+    groups.back().SetUpdateTime(base::Time::Now() -
+                                base::Days(99));  // Used 14 weeks ago
 
     return groups;
   }
@@ -300,7 +319,7 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       ntp_features::kNtpTabGroupsModule,
-      {{ntp_features::kNtpTabGroupsModuleMaxGroupCountParam.name, "2"}});
+      {{ntp_features::kNtpTabGroupsModuleMaxGroupCountParam.name, "4"}});
 
   EXPECT_CALL(*service(), ReadAllGroups())
       .WillOnce(testing::Return(saved_tab_groups()));
@@ -309,10 +328,11 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups) {
   ASSERT_TRUE(groups.has_value());
 
   const auto& group = groups.value();
-  ASSERT_EQ(2u, group.size());
+  ASSERT_EQ(4u, group.size());
 
   const auto& group1 = group[0];
-  EXPECT_EQ("New Group", group1->title);
+  EXPECT_EQ("Newest Group", group1->title);
+  EXPECT_EQ("Recently used", group1->update_time);
   EXPECT_EQ(5, group1->total_tab_count);
   ASSERT_EQ(4u, group1->favicon_urls.size());
   EXPECT_EQ(GURL("https://d.com/"), group1->favicon_urls[0]);
@@ -321,11 +341,20 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups) {
   EXPECT_EQ(GURL("https://g.com/"), group1->favicon_urls[3]);
 
   const auto& group2 = group[1];
-  EXPECT_EQ("Middle Group", group2->title);
+  EXPECT_EQ("Second Group", group2->title);
+  EXPECT_EQ("Used 1 day ago", group2->update_time);
   EXPECT_EQ(2, group2->total_tab_count);
   ASSERT_EQ(2u, group2->favicon_urls.size());
   EXPECT_EQ(GURL("https://b.com/"), group2->favicon_urls[0]);
   EXPECT_EQ(GURL("https://c.com/"), group2->favicon_urls[1]);
+
+  const auto& group3 = group[2];
+  EXPECT_EQ("Third Group", group3->title);
+  EXPECT_EQ("Used 1 week ago", group3->update_time);
+
+  const auto& group4 = group[3];
+  EXPECT_EQ("Fourth Group", group4->title);
+  EXPECT_EQ("Used 2 weeks ago", group4->update_time);
 }
 
 TEST_F(TabGroupsPageHandlerTest, GetFakeTabGroups) {

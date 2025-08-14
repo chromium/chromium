@@ -18,6 +18,7 @@ class WebContents;
 }  // namespace content
 
 namespace tab_groups {
+class TabGroupId;
 class TabGroupSyncService;
 }  // namespace tab_groups
 
@@ -41,6 +42,8 @@ class TabGroupsPageHandler : public ntp::tab_groups::mojom::PageHandler {
 
  private:
   std::vector<ntp::tab_groups::mojom::TabGroupPtr> GetSavedTabGroups();
+  void GetLastInteractedTimeForGroup(
+      const std::optional<tab_groups::TabGroupId> group_id);
 
   raw_ptr<Profile> profile_;
   raw_ptr<PrefService> pref_service_;
