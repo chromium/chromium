@@ -7,6 +7,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -372,4 +373,52 @@ TEST_F(ChangePasswordFormFinderTest, ButtonClickRequestedAndSucceeded) {
       logs_uploader.GetFinalLog(),
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+  // Form finder holds a pointer to `form_manager`
+  form_finder.reset();
+}
+
+TEST_F(ChangePasswordFormFinderTest,
+       ButtonClickRequested_FormFound_ButtonClickSucceeded) {
+  base::test::TestFuture<password_manager::PasswordFormManager*>
+      completion_callback;
+  base::MockCallback<
+      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
+      capture_annotated_page_content;
+  ModelQualityLogsUploader logs_uploader(web_contents());
+  auto form_finder = std::make_unique<ChangePasswordFormFinder>(
+      pass_key(), web_contents(), client(), &logs_uploader,
+      completion_callback.GetCallback(), capture_annotated_page_content.Get());
+  auto form_manager = CreateFormManager();
+
+  ASSERT_TRUE(form_finder->form_waiter());
+  static_cast<content::WebContentsObserver*>(form_finder->form_waiter())
+      ->DidStopLoading();
+  ASSERT_FALSE(form_finder->click_helper());
+
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(WithArg<3>(Invoke(&PostResponse<true>)));
+  EXPECT_CALL(capture_annotated_page_content, Run)
+      .WillOnce(base::test::RunOnceCallback<0>(
+          optimization_guide::AIPageContentResult()));
+  task_environment()->FastForwardBy(
+      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+
+  // Since ExecuteModel() call was successful, `form_finder` is now attempting
+  // to click an underlying button.
+  EXPECT_TRUE(form_finder->click_helper());
+  static_cast<password_manager::PasswordFormManagerObserver*>(
+      form_finder->form_waiter())
+      ->OnPasswordFormParsed(form_manager.get());
+  // Still waiting for the click helper to respond.
+  EXPECT_FALSE(completion_callback.IsReady());
+  form_finder->click_helper()->SimulateClickResult(/*result=*/true);
+  EXPECT_FALSE(form_finder->click_helper());
+  EXPECT_TRUE(completion_callback.IsReady());
+  EXPECT_EQ(completion_callback.Get(), form_manager.get());
+  CheckOpenFormStatus(
+      logs_uploader.GetFinalLog(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+  // Form finder holds a pointer to `form_manager`
+  form_finder.reset();
 }

@@ -79,6 +79,7 @@ class ChangePasswordFormFinder {
   void OnSubsequentFormWaitingResult(
       password_manager::PasswordFormManager* form_manager);
   void OnFormNotFound();
+  void OnButtonClickedAndSubsequentFormFound();
 
   const raw_ptr<content::WebContents> web_contents_ = nullptr;
   const raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
@@ -94,6 +95,8 @@ class ChangePasswordFormFinder {
   std::unique_ptr<ButtonClickHelper> click_helper_;
 
   base::OneShotTimer timeout_timer_;
+
+  raw_ptr<password_manager::PasswordFormManager> change_password_form_manager_;
 
   base::WeakPtrFactory<ChangePasswordFormFinder> weak_ptr_factory_{this};
 };

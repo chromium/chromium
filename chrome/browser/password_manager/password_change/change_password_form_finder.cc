@@ -4,7 +4,10 @@
 
 #include "chrome/browser/password_manager/password_change/change_password_form_finder.h"
 
+#include "base/barrier_closure.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -194,14 +197,21 @@ void ChangePasswordFormFinder::OnExecutionResponseCallback(
     return;
   }
 
+  const auto button_clicked_or_form_found_cb = base::BarrierClosure(
+      /*num_closures=*/2,
+      base::BindOnce(
+          &ChangePasswordFormFinder::OnButtonClickedAndSubsequentFormFound,
+          weak_ptr_factory_.GetWeakPtr()));
   click_helper_ = std::make_unique<ButtonClickHelper>(
       web_contents_, dom_node_id,
       base::BindOnce(&ChangePasswordFormFinder::OnButtonClicked,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr())
+          .Then(button_clicked_or_form_found_cb));
   form_waiter_ = std::make_unique<ChangePasswordFormWaiter>(
       web_contents_, client_,
       base::BindOnce(&ChangePasswordFormFinder::OnSubsequentFormWaitingResult,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr())
+          .Then(button_clicked_or_form_found_cb),
       base::TimeDelta::Max());
 }
 
@@ -225,6 +235,7 @@ void ChangePasswordFormFinder::OnButtonClicked(bool result) {
 
 void ChangePasswordFormFinder::OnSubsequentFormWaitingResult(
     password_manager::PasswordFormManager* form_manager) {
+  form_waiter_.reset();
   if (auto logger = GetLoggerIfAvailable(client_)) {
     logger->LogBoolean(
         Logger::STRING_PASSWORD_CHANGE_SUBSEQUENT_FORM_WAITING_RESULT,
@@ -232,9 +243,10 @@ void ChangePasswordFormFinder::OnSubsequentFormWaitingResult(
   }
   if (!form_manager) {
     logs_uploader_->FormNotDetectedAfterOpening();
+    std::move(callback_).Run(nullptr);
+    return;
   }
-  CHECK(callback_);
-  std::move(callback_).Run(form_manager);
+  change_password_form_manager_ = form_manager;
 }
 
 void ChangePasswordFormFinder::OnFormNotFound() {
@@ -243,4 +255,9 @@ void ChangePasswordFormFinder::OnFormNotFound() {
   }
   CHECK(callback_);
   std::move(callback_).Run(nullptr);
+}
+
+void ChangePasswordFormFinder::OnButtonClickedAndSubsequentFormFound() {
+  CHECK(callback_);
+  std::move(callback_).Run(change_password_form_manager_);
 }
