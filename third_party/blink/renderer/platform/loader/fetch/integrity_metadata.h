@@ -26,8 +26,8 @@ using IntegrityMetadata = network::IntegrityMetadata;
 struct PLATFORM_EXPORT IntegrityMetadataSet {
   IntegrityMetadataSet() = default;
   bool empty() const { return hashes.empty() && public_keys.empty(); }
-  WTF::Vector<IntegrityMetadata> hashes;
-  WTF::Vector<IntegrityMetadata> public_keys;
+  Vector<IntegrityMetadata> hashes;
+  Vector<IntegrityMetadata> public_keys;
 
   void Insert(IntegrityMetadata pair);
 

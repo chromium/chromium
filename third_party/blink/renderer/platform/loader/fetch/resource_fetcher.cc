@@ -2236,8 +2236,8 @@ void ResourceFetcher::ClearContext() {
     // complete or the timer fires.
     keepalive_loaders_task_handle_ = PostDelayedCancellableTask(
         *freezable_task_runner_, FROM_HERE,
-        WTF::BindOnce(&ResourceFetcher::StopFetchingIncludingKeepaliveLoaders,
-                      WrapPersistent(this)),
+        BindOnce(&ResourceFetcher::StopFetchingIncludingKeepaliveLoaders,
+                 WrapPersistent(this)),
         kKeepaliveLoadersTimeout);
   }
 }
@@ -2295,8 +2295,8 @@ void ResourceFetcher::ScheduleWarnUnusedPreloads(
   }
   unused_preloads_timer_ = PostDelayedCancellableTask(
       *freezable_task_runner_, FROM_HERE,
-      WTF::BindOnce(&ResourceFetcher::WarnUnusedPreloads,
-                    WrapWeakPersistent(this), std::move(callback)),
+      blink::BindOnce(&ResourceFetcher::WarnUnusedPreloads,
+                      WrapWeakPersistent(this), std::move(callback)),
       kUnusedPreloadTimeout);
 }
 
@@ -2644,16 +2644,16 @@ void ResourceFetcher::ScheduleLoadingPotentiallyUnusedPreload(
       break;
     case features::LcppDeferUnusedPreloadTiming::kLcpTimingPredictor:
       context_->AddLcpPredictedCallback(
-          WTF::BindOnce(&ResourceFetcher::StartLoadAndFinishIfFailed,
-                        WrapWeakPersistent(this), WrapWeakPersistent(resource),
-                        /*is_potentially_unused_preload=*/true));
+          BindOnce(&ResourceFetcher::StartLoadAndFinishIfFailed,
+                   WrapWeakPersistent(this), WrapWeakPersistent(resource),
+                   /*is_potentially_unused_preload=*/true));
       break;
     case features::LcppDeferUnusedPreloadTiming::
         kLcpTimingPredictorWithPostTask:
       context_->AddLcpPredictedCallback(
-          WTF::BindOnce(&ResourceFetcher::ScheduleStartLoadAndFinishIfFailed,
-                        WrapWeakPersistent(this), WrapWeakPersistent(resource),
-                        /*is_potentially_unused_preload=*/true));
+          BindOnce(&ResourceFetcher::ScheduleStartLoadAndFinishIfFailed,
+                   WrapWeakPersistent(this), WrapWeakPersistent(resource),
+                   /*is_potentially_unused_preload=*/true));
       break;
   }
 }
@@ -2685,9 +2685,9 @@ void ResourceFetcher::ScheduleStartLoadAndFinishIfFailed(
     bool is_potentially_unused_preload) {
   freezable_task_runner_->PostTask(
       FROM_HERE,
-      WTF::BindOnce(&ResourceFetcher::StartLoadAndFinishIfFailed,
-                    WrapWeakPersistent(this), WrapWeakPersistent(resource),
-                    is_potentially_unused_preload));
+      BindOnce(&ResourceFetcher::StartLoadAndFinishIfFailed,
+               WrapWeakPersistent(this), WrapWeakPersistent(resource),
+               is_potentially_unused_preload));
 }
 
 void ResourceFetcher::RemoveResourceLoader(ResourceLoader* loader) {
@@ -2972,8 +2972,8 @@ void ResourceFetcher::ScheduleStaleRevalidate(Resource* stale_resource) {
   stale_resource->SetStaleRevalidationStarted();
   freezable_task_runner_->PostTask(
       FROM_HERE,
-      WTF::BindOnce(&ResourceFetcher::RevalidateStaleResource,
-                    WrapWeakPersistent(this), WrapPersistent(stale_resource)));
+      BindOnce(&ResourceFetcher::RevalidateStaleResource,
+               WrapWeakPersistent(this), WrapPersistent(stale_resource)));
 }
 
 void ResourceFetcher::RevalidateStaleResource(Resource* stale_resource) {
@@ -3112,8 +3112,8 @@ void ResourceFetcher::MaybeSaveResourceToStrongReference(Resource* resource) {
     document_resource_strong_refs_total_size_ += resource_size;
     freezable_task_runner_->PostDelayedTask(
         FROM_HERE,
-        WTF::BindOnce(&ResourceFetcher::RemoveResourceStrongReference,
-                      WrapWeakPersistent(this), WrapWeakPersistent(resource)),
+        BindOnce(&ResourceFetcher::RemoveResourceStrongReference,
+                 WrapWeakPersistent(this), WrapWeakPersistent(resource)),
         GetResourceStrongReferenceTimeout(resource, *use_counter_));
   } else {
     MemoryCache::Get()->SaveStrongReference(resource);
@@ -3137,8 +3137,8 @@ void ResourceFetcher::MaybeStartSpeculativeImageDecode() {
     }
     if (Context().StartSpeculativeImageDecode(
             image_to_decode,
-            WTF::BindOnce(&ResourceFetcher::SpeculativeImageDecodeFinished,
-                          WrapWeakPersistent(this)))) {
+            BindOnce(&ResourceFetcher::SpeculativeImageDecodeFinished,
+                     WrapWeakPersistent(this)))) {
       break;
     }
   }

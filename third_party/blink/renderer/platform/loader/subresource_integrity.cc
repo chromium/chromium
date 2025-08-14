@@ -256,7 +256,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
 }
 
 bool SubresourceIntegrity::CheckHashesImpl(
-    const WTF::Vector<IntegrityMetadata>& hashes,
+    const Vector<IntegrityMetadata>& hashes,
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
     const FeatureContext* feature_context,
@@ -335,7 +335,7 @@ bool SubresourceIntegrity::CheckHashesImpl(
 }
 
 bool SubresourceIntegrity::CheckSignaturesImpl(
-    const WTF::Vector<IntegrityMetadata>& integrity_list,
+    const Vector<IntegrityMetadata>& integrity_list,
     const KURL& resource_url,
     const String& raw_headers,
     IntegrityReport& integrity_report) {
@@ -396,7 +396,7 @@ bool SubresourceIntegrity::CheckSignaturesImpl(
 }
 
 IntegrityAlgorithm SubresourceIntegrity::FindBestAlgorithm(
-    const WTF::Vector<IntegrityMetadata>& metadata_list) {
+    const Vector<IntegrityMetadata>& metadata_list) {
   // Find the "strongest" algorithm in the set. (This relies on
   // IntegrityAlgorithm declaration order matching the "strongest" order, so
   // make the compiler check this assumption first.)
@@ -466,7 +466,7 @@ bool SubresourceIntegrity::ParseDigest(std::string_view maybe_digest,
 }
 
 void SubresourceIntegrity::ParseIntegrityAttribute(
-    const WTF::String& attribute,
+    const String& attribute,
     IntegrityMetadataSet& metadata_set,
     const FeatureContext* feature_context) {
   return ParseIntegrityAttribute(attribute, metadata_set, feature_context,
@@ -474,7 +474,7 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
 }
 
 void SubresourceIntegrity::ParseIntegrityAttribute(
-    const WTF::String& attribute,
+    const String& attribute,
     IntegrityMetadataSet& metadata_set,
     const FeatureContext* feature_context,
     IntegrityReport* integrity_report) {

@@ -336,9 +336,8 @@ void Resource::TriggerNotificationForFinishObservers(
           std::move(finish_observers_));
   finish_observers_.clear();
 
-  task_runner->PostTask(
-      FROM_HERE,
-      WTF::BindOnce(&NotifyFinishObservers, WrapPersistent(new_collections)));
+  task_runner->PostTask(FROM_HERE, BindOnce(&NotifyFinishObservers,
+                                            WrapPersistent(new_collections)));
 
   DidRemoveClientOrObserver();
 }
@@ -402,8 +401,8 @@ void Resource::FinishAsError(const ResourceError& error,
   // So if this is an immediate failure (i.e., before NotifyStartLoad()),
   // post a task if the Resource::Type supports it.
   if (failed_during_start && !NeedsSynchronousCacheHit(GetType(), options_)) {
-    task_runner->PostTask(FROM_HERE, WTF::BindOnce(&Resource::NotifyFinished,
-                                                   WrapWeakPersistent(this)));
+    task_runner->PostTask(FROM_HERE, BindOnce(&Resource::NotifyFinished,
+                                              WrapWeakPersistent(this)));
   } else {
     NotifyFinished();
   }
@@ -664,10 +663,9 @@ void Resource::AddClient(ResourceClient* client,
       !NeedsSynchronousCacheHit(GetType(), options_)) {
     clients_awaiting_callback_.insert(client);
     if (!async_finish_pending_clients_task_.IsActive()) {
-      async_finish_pending_clients_task_ =
-          PostCancellableTask(*task_runner, FROM_HERE,
-                              WTF::BindOnce(&Resource::FinishPendingClients,
-                                            WrapWeakPersistent(this)));
+      async_finish_pending_clients_task_ = PostCancellableTask(
+          *task_runner, FROM_HERE,
+          BindOnce(&Resource::FinishPendingClients, WrapWeakPersistent(this)));
     }
     return;
   }
@@ -940,7 +938,7 @@ void Resource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
     while (ResourceClient* client = walker3.Next())
       client_names.push_back(StrCat({"(finished) ", client->DebugName()}));
     std::sort(client_names.begin(), client_names.end(),
-              WTF::CodeUnitCompareLessThan);
+              CodeUnitCompareLessThan);
 
     StringBuilder builder;
     for (wtf_size_t i = 0;

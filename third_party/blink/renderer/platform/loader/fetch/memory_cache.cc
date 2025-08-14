@@ -531,16 +531,15 @@ void MemoryCache::PruneTieredStrongReferences() {
   const base::TimeTicks now = base::TimeTicks::Now();
   const base::TimeDelta max_lifetime = strong_references_prune_duration_;
 
-  WTF::EraseIf(tiered_strong_references_,
-               [&](const Member<Resource>& resource) {
-                 if (now - resource->MemoryCacheLastAccessed() > max_lifetime) {
-                   // This resource IS expired. Update the size and return true
-                   // to erase it.
-                   current_total_size -= resource->size();
-                   return true;
-                 }
-                 return false;
-               });
+  EraseIf(tiered_strong_references_, [&](const Member<Resource>& resource) {
+    if (now - resource->MemoryCacheLastAccessed() > max_lifetime) {
+      // This resource IS expired. Update the size and return true
+      // to erase it.
+      current_total_size -= resource->size();
+      return true;
+    }
+    return false;
+  });
 
   //  Early exit if already under budget
   if (current_total_size <= max_threshold) {

@@ -358,12 +358,12 @@ class URLLoaderTest : public testing::Test {
     resource_request_client()->OnReceivedRedirect(
         redirect_info, network::mojom::URLResponseHead::New(),
         /*follow_redirect_callback=*/
-        WTF::BindOnce(
+        BindOnce(
             [](bool* callback_called, std::vector<std::string> removed_headers,
                net::HttpRequestHeaders modified_headers) {
               *callback_called = true;
             },
-            WTF::Unretained(&callback_called)));
+            Unretained(&callback_called)));
     DCHECK(callback_called);
     EXPECT_TRUE(client()->did_receive_redirect());
   }

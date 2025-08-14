@@ -75,10 +75,10 @@ void WebUIBundledCodeCacheFetcher::Start() {
       Platform::Current()->GetDataResourceBytes(resource_id_);
   host_task_runner_->PostTask(
       FROM_HERE,
-      WTF::BindOnce(&WebUIBundledCodeCacheFetcher::DidReceiveCachedCode,
-                    weak_factory_.GetWeakPtr(),
-                    buffer_data ? mojo_base::BigBuffer(*buffer_data)
-                                : mojo_base::BigBuffer()));
+      blink::BindOnce(&WebUIBundledCodeCacheFetcher::DidReceiveCachedCode,
+                      weak_factory_.GetWeakPtr(),
+                      buffer_data ? mojo_base::BigBuffer(*buffer_data)
+                                  : mojo_base::BigBuffer()));
 }
 
 void WebUIBundledCodeCacheFetcher::DidReceiveCachedCode(

@@ -297,7 +297,7 @@ class DummyCodeCacheHost final : public mojom::blink::CodeCacheHost {
       const KURL& url,
       base::Time expected_response_time,
       mojo_base::BigBuffer data,
-      const WTF::String& cache_storage_cache_name) override {}
+      const String& cache_storage_cache_name) override {}
 
   blink::CodeCacheHost* GetCodeCacheHost() { return host_.get(); }
   bool did_clear_code_cache_entry() const {

@@ -121,8 +121,8 @@ ResourceLoadScheduler::ResourceLoadScheduler(
 
   scheduler_observer_handle_ = frame_or_worker_scheduler->AddLifecycleObserver(
       FrameScheduler::ObserverType::kLoader,
-      WTF::BindRepeating(&ResourceLoadScheduler::OnLifecycleStateChanged,
-                         WrapWeakPersistent(this)));
+      BindRepeating(&ResourceLoadScheduler::OnLifecycleStateChanged,
+                    WrapWeakPersistent(this)));
 }
 
 ResourceLoadScheduler::~ResourceLoadScheduler() = default;

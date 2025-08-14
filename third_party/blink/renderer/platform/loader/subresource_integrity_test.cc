@@ -587,7 +587,7 @@ TEST_F(SubresourceIntegrityTest, FindBestAlgorithm) {
       IntegrityAlgorithm::kEd25519,
   };
 
-  WTF::Vector<IntegrityMetadata> alg_set;
+  Vector<IntegrityMetadata> alg_set;
   for (IntegrityAlgorithm alg : algs) {
     SCOPED_TRACE(alg);
 

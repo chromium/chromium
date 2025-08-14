@@ -50,7 +50,7 @@ DataPipeBytesConsumer::DataPipeBytesConsumer(
   watcher_.Watch(
       data_pipe_.get(),
       MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      WTF::BindRepeating(&DataPipeBytesConsumer::Notify, WrapPersistent(this)));
+      BindRepeating(&DataPipeBytesConsumer::Notify, WrapPersistent(this)));
 }
 
 DataPipeBytesConsumer::~DataPipeBytesConsumer() {}
@@ -128,8 +128,8 @@ BytesConsumer::Result DataPipeBytesConsumer::EndRead(size_t read) {
   if (has_pending_notification_) {
     has_pending_notification_ = false;
     task_runner_->PostTask(FROM_HERE,
-                           WTF::BindOnce(&DataPipeBytesConsumer::Notify,
-                                         WrapPersistent(this), MOJO_RESULT_OK));
+                           BindOnce(&DataPipeBytesConsumer::Notify,
+                                    WrapPersistent(this), MOJO_RESULT_OK));
   }
   return Result::kOk;
 }
