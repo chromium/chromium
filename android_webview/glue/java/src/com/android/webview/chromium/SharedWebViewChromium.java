@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.webkit.WebChromeClient;
 import android.webkit.WebViewClient;
 
+import com.android.webview.chromium.WebViewChromiumAwInit.CallSite;
+
 import org.chromium.android_webview.AwBrowserContextStore;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
@@ -63,7 +65,7 @@ public class SharedWebViewChromium {
     }
 
     public AwRenderProcess getRenderProcess() {
-        mAwInit.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         if (checkNeedsPost()) {
             return mRunQueue.runOnUiThreadBlocking(() -> getRenderProcess());
         }
@@ -99,7 +101,7 @@ public class SharedWebViewChromium {
     }
 
     public MessagePort[] createWebMessageChannel() {
-        mAwInit.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         if (checkNeedsPost()) {
             MessagePort[] ret =
                     mRunQueue.runOnUiThreadBlocking(
@@ -176,7 +178,7 @@ public class SharedWebViewChromium {
     }
 
     public SharedWebViewRendererClientAdapter getWebViewRendererClientAdapter() {
-        mAwInit.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         if (checkNeedsPost()) {
             return mRunQueue.runOnUiThreadBlocking(
                     new Callable<SharedWebViewRendererClientAdapter>() {

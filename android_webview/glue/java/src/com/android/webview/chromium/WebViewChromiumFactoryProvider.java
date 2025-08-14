@@ -871,20 +871,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         }
     }
 
-    void startYourEngines(boolean onMainThread) {
-        if (isChromiumInitialized()) {
-            return;
-        }
-        try (ScopedSysTraceEvent e1 =
-                ScopedSysTraceEvent.scoped("WebViewChromiumFactoryProvider.startYourEngines")) {
-            mAwInit.startYourEngines(onMainThread);
-        }
-    }
-
-    boolean isChromiumInitialized() {
-        return mAwInit.isChromiumInitialized();
-    }
-
     WebViewChromiumAwInit getAwInit() {
         return mAwInit;
     }
@@ -892,7 +878,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     @Override
     public TracingController getTracingController() {
         mAwInit.triggerAndWaitForChromiumStarted(
-                true, WebViewChromiumAwInit.CallSite.GET_TRACING_CONTROLLER);
+                WebViewChromiumAwInit.CallSite.GET_TRACING_CONTROLLER);
         synchronized (mAwInit.getLazyInitLock()) {
             if (mTracingController == null) {
                 mTracingController =

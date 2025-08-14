@@ -302,12 +302,12 @@ public class WebViewChromiumAwInit {
     }
 
     public AwTracingController getAwTracingController() {
-        triggerAndWaitForChromiumStarted(true, CallSite.GET_AW_TRACING_CONTROLLER);
+        triggerAndWaitForChromiumStarted(CallSite.GET_AW_TRACING_CONTROLLER);
         return mChromiumStartedGlobals.mAwTracingController;
     }
 
     public AwProxyController getAwProxyController() {
-        triggerAndWaitForChromiumStarted(true, CallSite.GET_AW_PROXY_CONTROLLER);
+        triggerAndWaitForChromiumStarted(CallSite.GET_AW_PROXY_CONTROLLER);
         return mChromiumStartedGlobals.mAwProxyController;
     }
 
@@ -804,21 +804,15 @@ public class WebViewChromiumAwInit {
         return mInitState.get() == INIT_FINISHED;
     }
 
-    void startYourEngines(boolean fromThreadSafeFunction) {
-        // TODO(crbug.com/389871700): Consider inlining this method call. See
-        // crrev.com/c/6081452/comment/96be8119_fedb4983 for reasoning.
-        triggerAndWaitForChromiumStarted(fromThreadSafeFunction, CallSite.WEBVIEW_INSTANCE);
-    }
-
-    // This method is not private only because the downstream subclass needs to access it,
-    // it shouldn't be accessed from anywhere else.
-    // Postcondition: Chromium startup is finished when this method returns.
-    void triggerAndWaitForChromiumStarted(boolean fromThreadSafeFunction, @CallSite int callSite) {
-        if (triggerChromiumStartupAndReturnTrueIfStartupIsFinished(
-                fromThreadSafeFunction, callSite)) {
+    /**
+     * If UI thread is not set, Android main looper will be set as the UI thread.
+     *
+     * <p>Postcondition: Chromium startup is finished when this method returns.
+     */
+    void triggerAndWaitForChromiumStarted(@CallSite int callSite) {
+        if (triggerChromiumStartupAndReturnTrueIfStartupIsFinished(callSite)) {
             return;
         }
-
         // For threadSafe WebView APIs that can trigger startup, holding a lock while waiting for
         // the startup to complete can lead to a deadlock. This would happen when:
         // - A background thread B call threadsafe funcA and acquires mLazyInitLock.
@@ -852,65 +846,58 @@ public class WebViewChromiumAwInit {
      * Triggers Chromium startup. Directly runs startup if called from the UI thread, else, posts
      * startup to the UI thread to be completed in the near future.
      *
+     * <p>If UI thread is not set, Android main looper will be set as the UI thread.
+     *
      * @returns true if Chromium startup if finished, false if startup will be finished in the near
      *     future. If false, caller may choose to wait on the {@code mStartupFinished} latch, or
      *     {@link WebViewStartUpCallback}.
      */
-    private boolean triggerChromiumStartupAndReturnTrueIfStartupIsFinished(
-            boolean fromThreadSafeFunction, @CallSite int callSite) {
+    private boolean triggerChromiumStartupAndReturnTrueIfStartupIsFinished(@CallSite int callSite) {
         if (mInitState.get() == INIT_FINISHED) { // Early-out for the common case.
             return true;
         }
-
-        maybeSetChromiumUiThread(fromThreadSafeFunction);
-
-        mChromiumFirstStartupRequestMode.compareAndSet(
-                StartupTasksRunner.UNSET,
-                ThreadUtils.runningOnUiThread()
-                        ? StartupTasksRunner.SYNC
-                        : StartupTasksRunner.ASYNC);
-        if (ThreadUtils.runningOnUiThread()) {
-            mWebViewStartUpDiagnostics.setSynchronousChromiumInitLocation(
-                    new Throwable(
-                            "Location where Chromium init was started synchronously on the UI"
-                                    + " thread"));
-            // If we are currently running on the UI thread then we must do init now. If there was
-            // already a task posted to the UI thread from another thread to do it, it will just
-            // no-op when it runs.
-            startChromium(callSite, /* triggeredFromUIThread= */ true);
-            return true;
-        }
-
-        if (mInitState.getAndSet(INIT_POSTED) == INIT_NOT_STARTED) {
-            if (callSite != CallSite.ASYNC_WEBVIEW_STARTUP) {
-                mWebViewStartUpDiagnostics.setAsynchronousChromiumInitLocation(
+        try (ScopedSysTraceEvent e1 =
+                ScopedSysTraceEvent.scoped(
+                        "WebViewChromiumFactoryProvider.triggerChromiumStartupAndReturnTrueIfStartupIsFinished")) {
+            maybeSetChromiumUiThread(Looper.getMainLooper());
+            mChromiumFirstStartupRequestMode.compareAndSet(
+                    StartupTasksRunner.UNSET,
+                    ThreadUtils.runningOnUiThread()
+                            ? StartupTasksRunner.SYNC
+                            : StartupTasksRunner.ASYNC);
+            if (ThreadUtils.runningOnUiThread()) {
+                mWebViewStartUpDiagnostics.setSynchronousChromiumInitLocation(
                         new Throwable(
-                                "Location where Chromium init was started asynchronously on a"
-                                        + " non-UI thread"));
+                                "Location where Chromium init was started synchronously on the UI"
+                                        + " thread"));
+                // If we are currently running on the UI thread then we must do init now. If there
+                // was already a task posted to the UI thread from another thread to do it, it will
+                // just no-op when it runs.
+                startChromium(callSite, /* triggeredFromUIThread= */ true);
+                return true;
             }
-            // If we're not running on the UI thread (because init was triggered by a thread-safe
-            // function), post init to the UI thread, since init is *not* thread-safe.
-            AwThreadUtils.postToUiThreadLooper(
-                    () -> startChromium(callSite, /* triggeredFromUIThread= */ false));
+            if (mInitState.getAndSet(INIT_POSTED) == INIT_NOT_STARTED) {
+                if (callSite != CallSite.ASYNC_WEBVIEW_STARTUP) {
+                    mWebViewStartUpDiagnostics.setAsynchronousChromiumInitLocation(
+                            new Throwable(
+                                    "Location where Chromium init was started asynchronously on a"
+                                            + " non-UI thread"));
+                }
+                // If we're not running on the UI thread (because init was triggered by a
+                // thread-safe
+                // function), post init to the UI thread, since init is *not* thread-safe.
+                AwThreadUtils.postToUiThreadLooper(
+                        () -> startChromium(callSite, /* triggeredFromUIThread= */ false));
+            }
+            return false;
         }
-        return false;
     }
 
-    private void maybeSetChromiumUiThread(boolean fromThreadSafeFunction) {
+    void maybeSetChromiumUiThread(Looper looper) {
         synchronized (mThreadSettingLock) {
             if (mThreadIsSet) {
                 return;
             }
-
-            // If we're being started from a function that's allowed to be called on any thread,
-            // then we can't just assume the current thread is the UI thread; instead we assume
-            // the process's main looper will be the UI thread, because that's the case for
-            // almost all Android apps.
-            //
-            // If we're being started from a function that must be called from the UI
-            // thread, then by definition the current thread is the UI thread whether it's the
-            // main looper or not.
-            Looper looper = fromThreadSafeFunction ? Looper.getMainLooper() : Looper.myLooper();
             boolean isUiThreadMainLooper = Looper.getMainLooper().equals(looper);
             Log.v(
                     TAG,
@@ -954,7 +941,7 @@ public class WebViewChromiumAwInit {
     public SharedStatics getStatics() {
         // TODO: Optimization potential: most of the static methods only need the native
         // library loaded and initialized, not the entire browser process started.
-        triggerAndWaitForChromiumStarted(true, CallSite.GET_STATICS);
+        triggerAndWaitForChromiumStarted(CallSite.GET_STATICS);
         return mChromiumStartedGlobals.mSharedStatics;
     }
 
@@ -969,7 +956,7 @@ public class WebViewChromiumAwInit {
     }
 
     public android.webkit.WebIconDatabase getWebIconDatabase() {
-        triggerAndWaitForChromiumStarted(true, CallSite.GET_WEB_ICON_DATABASE);
+        triggerAndWaitForChromiumStarted(CallSite.GET_WEB_ICON_DATABASE);
         WebViewChromium.recordWebViewApiCall(ApiCall.WEB_ICON_DATABASE_GET_INSTANCE);
         synchronized (mLazyInitLock) {
             if (mWebIconDatabase == null) {
@@ -980,7 +967,7 @@ public class WebViewChromiumAwInit {
     }
 
     public WebViewDatabase getDefaultWebViewDatabase(final Context context) {
-        triggerAndWaitForChromiumStarted(true, CallSite.GET_DEFAULT_WEBVIEW_DATABASE);
+        triggerAndWaitForChromiumStarted(CallSite.GET_DEFAULT_WEBVIEW_DATABASE);
         synchronized (mLazyInitLock) {
             if (mDefaultWebViewDatabase == null) {
                 mDefaultWebViewDatabase =
@@ -1080,8 +1067,7 @@ public class WebViewChromiumAwInit {
                     }
                     callback.onSuccess(mWebViewStartUpDiagnostics);
                 });
-        triggerChromiumStartupAndReturnTrueIfStartupIsFinished(
-                true, CallSite.ASYNC_WEBVIEW_STARTUP);
+        triggerChromiumStartupAndReturnTrueIfStartupIsFinished(CallSite.ASYNC_WEBVIEW_STARTUP);
     }
 
     @Retention(RetentionPolicy.SOURCE)
@@ -1177,7 +1163,7 @@ public class WebViewChromiumAwInit {
          * default profile is ready the first time a thread-safe framework API is called.
          */
         private void ensureInitializationIsDone(@CallSite int callSite) {
-            triggerAndWaitForChromiumStarted(true, callSite);
+            triggerAndWaitForChromiumStarted(callSite);
             if (mDefaultProfile != null) {
                 return;
             }
