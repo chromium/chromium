@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
@@ -1407,7 +1408,7 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
     int index,
     std::string custom_last_active_text) const {
   auto tab_data = tab_search::mojom::Tab::New();
-  const tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(index);
+  tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(index);
 
   tab_data->active = tab->IsActivated();
   tab_data->visible = tab->IsVisible();
@@ -1467,7 +1468,8 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
           ? custom_last_active_text
           : GetLastActiveElapsedText(last_active_time_ticks);
 
-  std::vector<tabs::TabAlert> alert_states = GetTabAlertStatesForTab(tab);
+  std::vector<tabs::TabAlert> alert_states =
+      tabs::TabAlertController::From(tab)->GetAllActiveAlerts();
   // Currently, we only report media alert states.
   std::ranges::copy_if(alert_states.begin(), alert_states.end(),
                        std::back_inserter(tab_data->alert_states),

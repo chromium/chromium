@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -125,7 +126,7 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
       data.pinned || model->delegate()->ShouldDisplayFavicon(contents);
   data.blocked = model->IsTabBlocked(index);
   data.should_hide_throbber = tab_ui_helper->ShouldHideThrobber();
-  data.alert_state = GetTabAlertStatesForTab(tab);
+  data.alert_state = tabs::TabAlertController::From(tab)->GetAllActiveAlerts();
 
   content::NavigationEntry* entry =
       contents->GetController().GetLastCommittedEntry();

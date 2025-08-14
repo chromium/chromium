@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/split_tab_collection.h"
@@ -15,6 +16,7 @@
 #include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace tabs_api::converters {
 
@@ -31,9 +33,8 @@ tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabHandle handle,
   result->url = data.visible_url;
   result->network_state = data.network_state;
   if (handle.Get() != nullptr) {
-    for (const auto alert_state : GetTabAlertStatesForTab(handle.Get())) {
-      result->alert_states.push_back(alert_state);
-    }
+    result->alert_states =
+        tabs::TabAlertController::From(handle.Get())->GetAllActiveAlerts();
   }
 
   result->is_active = states.is_active;

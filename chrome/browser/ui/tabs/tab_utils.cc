@@ -9,136 +9,18 @@
 #include "base/feature_list.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
-#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#endif
-
-std::vector<tabs::TabAlert> GetTabAlertStatesForTab(
-    const tabs::TabInterface* tab) {
-  std::vector<tabs::TabAlert> states;
-  if (!tab) {
-    return states;
-  }
-  content::WebContents* contents = tab->GetContents();
-  if (!contents) {
-    return states;
-  }
-
-  scoped_refptr<MediaStreamCaptureIndicator> indicator =
-      MediaCaptureDevicesDispatcher::GetInstance()
-          ->GetMediaStreamCaptureIndicator();
-  if (indicator.get()) {
-    // Currently we only show the icon and tooltip of the highest-priority
-    // alert on a tab.
-    // TODO(crbug.com/40584226): To show the icon of the highest-priority alert
-    // with tooltip that notes all the states in play.
-    if (indicator->IsCapturingWindow(contents) ||
-        indicator->IsCapturingDisplay(contents)) {
-      states.push_back(tabs::TabAlert::DESKTOP_CAPTURING);
-    }
-    if (indicator->IsBeingMirrored(contents)) {
-      states.push_back(tabs::TabAlert::TAB_CAPTURING);
-    }
-
-    if (indicator->IsCapturingAudio(contents) &&
-        indicator->IsCapturingVideo(contents)) {
-      states.push_back(tabs::TabAlert::MEDIA_RECORDING);
-    } else if (indicator->IsCapturingAudio(contents)) {
-      states.push_back(tabs::TabAlert::AUDIO_RECORDING);
-    } else if (indicator->IsCapturingVideo(contents)) {
-      states.push_back(tabs::TabAlert::VIDEO_RECORDING);
-    }
-  }
-
-  if (contents->IsCapabilityActive(
-          content::WebContentsCapabilityType::kBluetoothConnected)) {
-    states.push_back(tabs::TabAlert::BLUETOOTH_CONNECTED);
-  }
-
-  if (contents->IsCapabilityActive(
-          content::WebContentsCapabilityType::kBluetoothScanning)) {
-    states.push_back(tabs::TabAlert::BLUETOOTH_SCAN_ACTIVE);
-  }
-
-  if (contents->IsCapabilityActive(content::WebContentsCapabilityType::kUSB)) {
-    states.push_back(tabs::TabAlert::USB_CONNECTED);
-  }
-
-  if (contents->IsCapabilityActive(content::WebContentsCapabilityType::kHID)) {
-    states.push_back(tabs::TabAlert::HID_CONNECTED);
-  }
-
-  if (contents->IsCapabilityActive(
-          content::WebContentsCapabilityType::kSerial)) {
-    states.push_back(tabs::TabAlert::SERIAL_CONNECTED);
-  }
-
-  if (auto* actor_controller = tab->GetTabFeatures()->actor_ui_tab_controller();
-      actor_controller && actor_controller->ShouldShowActorTabIndicator()) {
-    states.push_back(tabs::TabAlert::ACTOR_ACCESSING);
-  }
-
-#if BUILDFLAG(ENABLE_GLIC)
-  glic::GlicKeyedService* glic_service = glic::GlicKeyedService::Get(
-      Profile::FromBrowserContext(contents->GetBrowserContext()));
-  if (glic_service) {
-    if (glic_service->sharing_manager().IsTabPinned(tab->GetHandle())) {
-      states.push_back(tabs::TabAlert::GLIC_SHARING);
-    } else if (glic_service->IsContextAccessIndicatorShown(contents)) {
-      states.push_back(tabs::TabAlert::GLIC_ACCESSING);
-    }
-  }
-#endif
-
-  // Check if VR content is being presented in a headset.
-  // NOTE: This icon must take priority over the audio alert ones
-  // because most VR content has audio and its usage is implied by the VR
-  // icon.
-  if (vr::VrTabHelper::IsContentDisplayedInHeadset(contents)) {
-    states.push_back(tabs::TabAlert::VR_PRESENTING_IN_HEADSET);
-  }
-
-  if (contents->HasPictureInPictureVideo() ||
-      contents->HasPictureInPictureDocument()) {
-    states.push_back(tabs::TabAlert::PIP_PLAYING);
-  }
-
-  // Only tabs have a RecentlyAudibleHelper, but this function is abused for
-  // some non-tab WebContents. In that case fall back to using the realtime
-  // notion of audibility.
-  bool audible = contents->IsCurrentlyAudible();
-  auto* audible_helper = RecentlyAudibleHelper::FromWebContents(contents);
-  if (audible_helper) {
-    audible = audible_helper->WasRecentlyAudible();
-  }
-  if (audible) {
-    if (contents->IsAudioMuted()) {
-      states.push_back(tabs::TabAlert::AUDIO_MUTING);
-    }
-    states.push_back(tabs::TabAlert::AUDIO_PLAYING);
-  }
-
-  return states;
-}
 
 std::u16string GetTabAlertStateText(const tabs::TabAlert alert_state) {
   switch (alert_state) {

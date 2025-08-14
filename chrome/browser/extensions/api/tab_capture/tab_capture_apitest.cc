@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
@@ -69,8 +70,9 @@ class TabCaptureApiTest : public ExtensionApiTest {
  protected:
   std::vector<tabs::TabAlert> GetTabAlertStatesForContents(
       content::WebContents* web_contents) {
-    return GetTabAlertStatesForTab(
-        tabs::TabInterface::GetFromContents(web_contents));
+    return tabs::TabAlertController::From(
+               tabs::TabInterface::GetFromContents(web_contents))
+        ->GetAllActiveAlerts();
   }
 
   void SimulateMouseClickInCurrentTab() {

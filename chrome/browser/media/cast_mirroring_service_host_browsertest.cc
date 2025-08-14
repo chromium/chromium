@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -353,8 +354,9 @@ class CastMirroringServiceHostBrowserTest
 
   std::vector<tabs::TabAlert> GetTabAlertStatesForContents(
       content::WebContents* web_contents) {
-    return GetTabAlertStatesForTab(
-        tabs::TabInterface::GetFromContents(web_contents));
+    return tabs::TabAlertController::From(
+               tabs::TabInterface::GetFromContents(web_contents))
+        ->GetAllActiveAlerts();
   }
 
  private:

@@ -754,6 +754,7 @@ if (!is_android) {
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/startup:startup_tab",
       "//chrome/browser/ui/tab_contents",
+      "//chrome/browser/ui/tabs/alert:tab_alert",
       "//chrome/browser/ui/thumbnails",
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",
