@@ -150,8 +150,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher,
  public:
   // URLRequest::Delegate
 
-  // TODO(kristianm): Look into if OnAuthRequired might need to be customize
-  // for DBSC
+  // TODO(crbug.com/438783632): Look into if OnAuthRequired might need to be
+  // customized for DBSC
 
   // TODO(kristianm): Think about what to do for DBSC with
   // OnCertificateRequested, leaning towards not supporting it but not sure.
