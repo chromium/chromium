@@ -13,3 +13,8 @@ NSString* const kMovePasswordToAccountButtonID =
 NSString* const kCompromisedWarningID = @"CompromisedWarningID";
 
 NSString* const kPasswordShareButtonID = @"PasswordShareButtonID";
+
+NSString* const kHiddenPasskeyInfoButtonID = @"HiddenPasskeyInfoButtonID";
+
+NSString* const kHiddenPasskeyInfoPopoverViewID =
+    @"HiddenPasskeyInfoPopoverViewID";

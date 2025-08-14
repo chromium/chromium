@@ -22,6 +22,12 @@ extern NSString* const kCompromisedWarningID;
 // The accessibility identifier of the password sharing button.
 extern NSString* const kPasswordShareButtonID;
 
+// The accessibility identifier of the hidden passkey info button.
+extern NSString* const kHiddenPasskeyInfoButtonID;
+
+// The accessibility identifier of the hidden passkey info popover view.
+extern NSString* const kHiddenPasskeyInfoPopoverViewID;
+
 // UI items for password details
 typedef NS_ENUM(NSInteger, PasswordDetailsItemType) {
   PasswordDetailsItemTypeWebsite = kItemTypeEnumZero,
@@ -37,6 +43,7 @@ typedef NS_ENUM(NSInteger, PasswordDetailsItemType) {
   PasswordDetailsItemTypeDeleteButton,
   PasswordDetailsItemTypeMoveToAccountButton,
   PasswordDetailsItemTypeMoveToAccountRecommendation,
+  PasswordDetailsItemTypeCreationDate,
 };
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_TABLE_VIEW_CONSTANTS_H_

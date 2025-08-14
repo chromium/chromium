@@ -151,6 +151,11 @@ struct CredentialUIEntry {
   // site. Defaults to |date_created|.
   base::Time last_used_time;
 
+  // Indicates that the credential was marked for deletion (e.g. by a website)
+  // and should be marked as such in management surfaces. Used for passkeys
+  // only.
+  bool hidden = false;
+
   // Information about password insecurities.
   bool IsLeaked() const;
   bool IsPhished() const;

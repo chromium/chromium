@@ -143,6 +143,13 @@ void SaveExamplePasskeyToStore(
     NSString* username = kDefaultUsername,
     NSString* userDisplayName = kDefaultUserDisplayName);
 
+// Saves a hidden passkey to the store.
+void SaveHiddenPasskeyToStore(
+    NSString* rpId = kDefaultRpId,
+    NSString* userId = kDefaultUserId,
+    NSString* username = kDefaultUsername,
+    NSString* userDisplayName = kDefaultUserDisplayName);
+
 // Opens the Password Manager page from the NTP.
 void OpenPasswordManager();
 

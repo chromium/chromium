@@ -246,6 +246,16 @@ void SaveExamplePasskeyToStore(NSString* rpId,
                                           userDisplayName:userDisplayName];
 }
 
+void SaveHiddenPasskeyToStore(NSString* rpId,
+                              NSString* userId,
+                              NSString* username,
+                              NSString* userDisplayName) {
+  [PasswordSettingsAppInterface saveHiddenPasskeyToStore:rpId
+                                                  userId:userId
+                                                username:username
+                                         userDisplayName:userDisplayName];
+}
+
 #pragma mark - Helpers
 
 void OpenPasswordManager() {

@@ -53,7 +53,8 @@ std::vector<PasskeyCredential> PasskeyCredential::FromCredentialSpecifics(
             ? std::optional<base::Time>(
                   base::Time::FromMillisecondsSinceUnixEpoch(
                       passkey.creation_time()))
-            : std::nullopt);
+            : std::nullopt,
+        passkey.hidden());
   }
   return ret;
 }
@@ -78,14 +79,16 @@ PasskeyCredential::PasskeyCredential(Source source,
                                      UserId user_id,
                                      Username username,
                                      DisplayName display_name,
-                                     std::optional<base::Time> creation_time)
+                                     std::optional<base::Time> creation_time,
+                                     bool hidden)
     : source_(source),
       rp_id_(std::move(rp_id)),
       credential_id_(std::move(credential_id)),
       user_id_(std::move(user_id)),
       username_(std::move(username)),
       display_name_(std::move(display_name)),
-      creation_time_(std::move(creation_time)) {}
+      creation_time_(std::move(creation_time)),
+      hidden_(hidden) {}
 
 PasskeyCredential::~PasskeyCredential() = default;
 

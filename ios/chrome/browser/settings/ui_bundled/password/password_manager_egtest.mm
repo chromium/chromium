@@ -91,6 +91,7 @@ using password_manager_test_utils::PasswordSettingsTableView;
 using password_manager_test_utils::PasswordTextfieldForUsernameAndSites;
 using password_manager_test_utils::ReauthenticationController;
 using password_manager_test_utils::SaveExamplePasskeyToStore;
+using password_manager_test_utils::SaveHiddenPasskeyToStore;
 using password_manager_test_utils::SavePasswordFormToProfileStore;
 using password_manager_test_utils::TapNavigationBarEditButton;
 using password_manager_test_utils::UsernameTextfieldForUsernameAndSites;
@@ -743,6 +744,10 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   if ([self isRunningTest:@selector(testAutomaticPasskeyUpgradesPrefToggle)]) {
     config.features_enabled.push_back(
         kCredentialProviderAutomaticPasskeyUpgrade);
+  }
+
+  if ([self isRunningTest:@selector(testTappingInfoButtonForHiddenPasskey)]) {
+    config.features_enabled.push_back(kCredentialProviderSignalAPI);
   }
 
   return config;
@@ -2361,6 +2366,33 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // Verify that the passkey no longer exists.
   [[EarlGrey selectElementWithMatcher:userDisplayName]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+}
+
+// Checks interaction with an info button for a hidden passkey.
+- (void)testTappingInfoButtonForHiddenPasskey {
+  SaveHiddenPasskeyToStore();
+
+  OpenPasswordManager();
+
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
+      performAction:grey_tap()];
+
+  // Check that the information about passkey not working is visible.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_PASSKEY_DOES_NOT_WORK))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Click on the info button.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kHiddenPasskeyInfoButtonID),
+                                          grey_kindOfClass([UIButton class]),
+                                          nil)] performAction:grey_tap()];
+
+  // Check the the info popup is visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kHiddenPasskeyInfoPopoverViewID)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Checks that attempts to edit a username provide appropriate feedback.

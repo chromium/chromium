@@ -20,6 +20,8 @@ namespace password_manager {
 
 namespace {
 
+using ::testing::UnorderedElementsAre;
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 constexpr char kRpId[] = "gensokyo.com";
@@ -69,6 +71,7 @@ TEST_F(PasskeyCredentialTest, FromCredentialSpecifics) {
   credential2.set_user_name(kUserName2);
   credential2.set_user_display_name(kUserDisplayName2);
   credential2.set_creation_time(kCreationEpochSecs2 * 1000);
+  credential2.set_hidden(true);
 
   // Shadow the first credential.
   sync_pb::WebauthnCredentialSpecifics credential1_shadow;
@@ -90,9 +93,9 @@ TEST_F(PasskeyCredentialTest, FromCredentialSpecifics) {
           credential1_shadow,
       });
 
-  ASSERT_THAT(
+  EXPECT_THAT(
       credentials,
-      testing::UnorderedElementsAre(
+      UnorderedElementsAre(
           PasskeyCredential(PasskeyCredential::Source::kAndroidPhone,
                             PasskeyCredential::RpId(kRpId),
                             PasskeyCredential::CredentialId(
@@ -100,7 +103,8 @@ TEST_F(PasskeyCredentialTest, FromCredentialSpecifics) {
                             PasskeyCredential::UserId(ToUint8Vector(kUserId1)),
                             PasskeyCredential::Username(kUserName1),
                             PasskeyCredential::DisplayName(kUserDisplayName1),
-                            base::Time::FromTimeT(kCreationEpochSecs1)),
+                            base::Time::FromTimeT(kCreationEpochSecs1),
+                            /*hidden=*/false),
           PasskeyCredential(
               PasskeyCredential::Source::kAndroidPhone,
               PasskeyCredential::RpId(kRpId),
@@ -108,7 +112,8 @@ TEST_F(PasskeyCredentialTest, FromCredentialSpecifics) {
               PasskeyCredential::UserId(ToUint8Vector(kUserId2)),
               PasskeyCredential::Username(kUserName2),
               PasskeyCredential::DisplayName(kUserDisplayName2),
-              base::Time::FromTimeT(kCreationEpochSecs2))));
+              base::Time::FromTimeT(kCreationEpochSecs2),
+              /*hidden=*/true)));
 }
 
 // Regression test for crbug.com/1447116.
@@ -177,9 +182,9 @@ TEST_F(PasskeyCredentialTest, FromCredentialSpecifics_EmptyOptionalFields) {
   credential.set_rp_id(kRpId);
   credential.set_user_id(kUserId1.data(), kUserId1.size());
 
-  ASSERT_THAT(
+  EXPECT_THAT(
       PasskeyCredential::FromCredentialSpecifics(std::vector{credential}),
-      testing::UnorderedElementsAre(PasskeyCredential(
+      UnorderedElementsAre(PasskeyCredential(
           PasskeyCredential::Source::kAndroidPhone,
           PasskeyCredential::RpId(kRpId),
           PasskeyCredential::CredentialId(ToUint8Vector(kCredentialId1)),
