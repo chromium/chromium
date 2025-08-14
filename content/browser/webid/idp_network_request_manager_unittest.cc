@@ -460,6 +460,9 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountOptionalFields) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
+  base::test::ScopedFeatureList list;
+  list.InitAndDisableFeature(features::kFedCmAlternativeIdentifiers);
+
   {
     base::HistogramTester histogram_tester;
     std::string test_account_missing_account_id_json =
@@ -515,6 +518,9 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFieldNonEmpty) {
+  base::test::ScopedFeatureList list;
+  list.InitAndDisableFeature(features::kFedCmAlternativeIdentifiers);
+
   {
     base::HistogramTester histogram_tester;
     const auto* test_accounts_json = R"({

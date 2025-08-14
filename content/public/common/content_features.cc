@@ -433,7 +433,7 @@ BASE_FEATURE(kFedCm, "FedCm", base::FEATURE_ENABLED_BY_DEFAULT);
 // (or in addition to) names and emails.
 BASE_FEATURE(kFedCmAlternativeIdentifiers,
              "FedCmAlternativeIdentifiers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables RPs to enhance autofill with federated accounts fetched by the FedCM
 // API.

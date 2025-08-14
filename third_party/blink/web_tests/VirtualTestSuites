@@ -1056,26 +1056,6 @@
     "expires": "Aug 1, 2026"
   },
   {
-    "prefix": "fedcm-alternative-identifiers",
-    "owners": [
-      "cbiesinger@chromium.org",
-      "web-identity-eng@google.com"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/fedcm/alternative-identifiers/"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=FedCmAlternativeIdentifiers"
-    ],
-    "expires": "Aug 1, 2026"
-  },
-  {
     "prefix": "fedcm-register",
     "platforms": [
       "Linux",
