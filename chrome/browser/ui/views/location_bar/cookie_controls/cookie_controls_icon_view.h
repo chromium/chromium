@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"

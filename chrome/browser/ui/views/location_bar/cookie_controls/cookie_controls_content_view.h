@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_CONTENT_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -13,7 +14,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 
-class RichHoverButton;
 class RichControlsContainerView;
 namespace views {
 class Label;
