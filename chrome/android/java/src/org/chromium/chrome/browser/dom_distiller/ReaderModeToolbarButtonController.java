@@ -128,6 +128,7 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
 
     @Override
     public void onClick(View view) {
+        ReaderModeActionRateLimiter.getInstance().onActionClicked();
         Tab currentTab = mActiveTabSupplier.get();
         if (currentTab == null) return;
 

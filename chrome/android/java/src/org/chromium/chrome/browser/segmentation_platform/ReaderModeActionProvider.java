@@ -15,6 +15,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeActionRateLimiter;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationStatus;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
@@ -179,6 +180,7 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
 
     @Override
     public void onActionShown(@Nullable Tab tab, @AdaptiveToolbarButtonVariant int action) {
+        ReaderModeActionRateLimiter.getInstance().onActionShown();
         if (tab == null || tab.isLoading()) return;
 
         // When on a distilled page, return immediately and don't set reader mode as shown
@@ -213,6 +215,7 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
 
     private void notifyActionAvailable(
             Tab tab, boolean isDistillable, SignalAccumulator signalAccumulator) {
+        if (ReaderModeActionRateLimiter.getInstance().isActionSuppressed()) return;
         signalAccumulator.setSignal(AdaptiveToolbarButtonVariant.READER_MODE, isDistillable);
 
         long latency = System.currentTimeMillis() - signalAccumulator.getSignalStartTimeMs();

@@ -40,6 +40,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.dom_distiller.DistillerHeuristicsType;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtilsJni;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeActionRateLimiter;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -84,11 +85,12 @@ public class ReaderModeActionProviderTest {
     @Mock private DomDistillerTabUtilsJni mDomDistillerTabUtilsJni;
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
     @Mock private OneshotSupplier<Boolean> mButtonVisibilitySupplier;
+    @Mock private ReaderModeActionRateLimiter mReaderModeActionRateLimiter;
 
     @Before
     public void setUp() {
         initializeReaderModeBackend();
-        UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
+        ReaderModeActionRateLimiter.setInstanceForTesting(mReaderModeActionRateLimiter);
 
         mMockTab.getUserDataHost()
                 .setUserData(ReaderModeManager.USER_DATA_KEY, mMockReaderModeManager);
@@ -96,6 +98,7 @@ public class ReaderModeActionProviderTest {
         when(mMockTab.getUrl()).thenReturn(TEST_URL);
         when(mMockWebContents.getNavigationController()).thenReturn(mMockNavigationController);
 
+        UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
         DomDistillerTabUtilsJni.setInstanceForTesting(mDomDistillerTabUtilsJni);
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
     }
@@ -283,6 +286,41 @@ public class ReaderModeActionProviderTest {
                 .setSignal(AdaptiveToolbarButtonVariant.READER_MODE, true);
         readabilityHeuristicCallbackCaptor.getValue().onResult(true);
         verify(mMockSignalAccumulator).setSignal(AdaptiveToolbarButtonVariant.READER_MODE, true);
+    }
+
+    @Test
+    @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
+    public void testDistillableButSupressed() {
+        when(mReaderModeActionRateLimiter.isActionSuppressed()).thenReturn(true);
+        var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
+        // Get action before distillability is determined.
+        provider.getAction(mMockTab, mMockSignalAccumulator);
+        ShadowLooper.idleMainLooper();
+        setReaderModeBackendSignal(true);
+        verify(mMockSignalAccumulator, Mockito.times(0))
+                .setSignal(AdaptiveToolbarButtonVariant.READER_MODE, true);
+    }
+
+    @Test
+    @EnableFeatures({
+        DomDistillerFeatures.READER_MODE_DISTILL_IN_APP,
+        DomDistillerFeatures.READER_MODE_USE_READABILITY + ":use_heuristic/true"
+    })
+    public void testDistillableButSupressed_ReadabiltyHeuristicUsed() throws TimeoutException {
+        when(mReaderModeActionRateLimiter.isActionSuppressed()).thenReturn(true);
+        ArgumentCaptor<Callback<Boolean>> readabilityHeuristicCallbackCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+
+        var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
+        provider.getAction(mMockTab, mMockSignalAccumulator);
+        ShadowLooper.idleMainLooper();
+        verify(mDomDistillerTabUtilsJni)
+                .runReadabilityHeuristicsOnWebContents(
+                        any(), readabilityHeuristicCallbackCaptor.capture());
+        Assert.assertNotNull(readabilityHeuristicCallbackCaptor.getValue());
+        readabilityHeuristicCallbackCaptor.getValue().onResult(true);
+        verify(mMockSignalAccumulator, Mockito.times(0))
+                .setSignal(AdaptiveToolbarButtonVariant.READER_MODE, true);
     }
 
     @Test

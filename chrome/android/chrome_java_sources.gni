@@ -549,6 +549,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/dom_distiller/DomDistillerServiceFactory.java",
   "java/src/org/chromium/chrome/browser/dom_distiller/DomDistillerTabUtils.java",
   "java/src/org/chromium/chrome/browser/dom_distiller/DomDistillerUiUtils.java",
+  "java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeActionRateLimiter.java",
   "java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeBottomSheetCoordinator.java",
   "java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeBottomSheetProperties.java",
   "java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeBottomSheetView.java",

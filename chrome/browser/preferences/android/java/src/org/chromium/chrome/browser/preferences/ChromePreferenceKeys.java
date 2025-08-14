@@ -715,6 +715,23 @@ public final class ChromePreferenceKeys {
      */
     public static final String PWA_RESTORE_PROMO_STAGE = "Chrome.PwaRestore.PromoStage";
 
+    /**
+     * The number of times the reader mode contextual page action has been shown in the current
+     * tracking window.
+     */
+    public static final String READER_MODE_ACTION_SHOW_COUNT = "Chrome.ReaderMode.ActionShowCount";
+
+    /**
+     * The timestamp of the first time the reader mode contextual page action was shown in the
+     * current tracking window.
+     */
+    public static final String READER_MODE_ACTION_FIRST_SHOWN_TIMESTAMP =
+            "Chrome.ReaderMode.ActionFirstShownTimestamp";
+
+    /** The timestamp until which the reader mode contextual page action should be suppressed. */
+    public static final String READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP =
+            "Chrome.ReaderMode.ActionSuppressionEndTimestamp";
+
     public static final String IS_MVT_VISIBLE = "Chrome.NtpCustomization.IsMvtVisible";
 
     public static final String IS_LAST_VISITED_TAB_SRP = "Chrome.StartSurface.IsLastVisitedTabSRP";
@@ -1132,6 +1149,9 @@ public final class ChromePreferenceKeys {
                 PROMO_TIMES_SEEN.pattern(),
                 PWA_RESTORE_APPS_AVAILABLE,
                 PWA_RESTORE_PROMO_STAGE,
+                READER_MODE_ACTION_FIRST_SHOWN_TIMESTAMP,
+                READER_MODE_ACTION_SHOW_COUNT,
+                READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP,
                 SEARCH_ENGINE_CHOICE_OS_CHOICE_APPLIED_TIMESTAMP,
                 SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS,
                 SEGMENTATION_FEED_ACTIVE_USER,

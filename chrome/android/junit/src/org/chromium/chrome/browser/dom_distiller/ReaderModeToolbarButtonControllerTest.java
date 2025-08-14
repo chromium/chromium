@@ -61,6 +61,7 @@ public class ReaderModeToolbarButtonControllerTest {
     @Mock private DomDistillerServiceFactoryJni mDomDistillerServiceFactoryJni;
     @Mock private DistilledPagePrefs mDistilledPagePrefs;
     @Mock private ManagedBottomSheetController mBottomSheetController;
+    @Mock private ReaderModeActionRateLimiter mReaderModeActionRateLimiter;
 
     private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
     private UserDataHost mUserDataHost;
@@ -75,6 +76,7 @@ public class ReaderModeToolbarButtonControllerTest {
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
+        ReaderModeActionRateLimiter.setInstanceForTesting(mReaderModeActionRateLimiter);
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUnownedUserDataHost);
         BottomSheetControllerFactory.attach(mWindowAndroid, mBottomSheetController);
         when(mMockTab.getWindowAndroid()).thenReturn(mWindowAndroid);
@@ -108,7 +110,7 @@ public class ReaderModeToolbarButtonControllerTest {
 
         ButtonData readerModeButton = controller.get(mMockTab);
         readerModeButton.getButtonSpec().getOnClickListener().onClick(null);
-
+        verify(mReaderModeActionRateLimiter).onActionClicked();
         verify(mMockReaderModeManager).activateReaderMode();
     }
 
