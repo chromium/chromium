@@ -60,7 +60,10 @@ class TabStripEventRecorder : public TabStripModelObserver {
                               int index) override;
 
  protected:
+  // Consumes the event.
   void Handle(Event event);
+  // Consumes the events.
+  void Handle(std::vector<Event> event);
   void Notify(Event& event);
 
  private:

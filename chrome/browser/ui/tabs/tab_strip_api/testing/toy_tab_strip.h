@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TESTING_TOY_TAB_STRIP_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TESTING_TOY_TAB_STRIP_H_
 
+#include <set>
+
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_collection.h"
@@ -16,6 +18,7 @@ struct ToyTab {
   tabs::TabHandle tab_handle;
   GURL gurl;
   bool active = false;
+  bool selected = false;
 };
 
 struct ToyTabCollection {
@@ -38,6 +41,8 @@ class ToyTabStrip {
   ToyTabStrip& operator=(const ToyTabStrip&) = delete;
   ~ToyTabStrip() = default;
 
+  ToyTab GetToyTabFor(tabs::TabHandle handle) const;
+
   void AddTab(ToyTab tab);
   std::vector<tabs::TabHandle> GetTabs();
   void CloseTab(size_t index);
@@ -55,6 +60,9 @@ class ToyTabStrip {
       const tabs::TabCollectionHandle& handle) const;
   void UpdateGroupVisuals(const tab_groups::TabGroupId& group_id,
                           const tab_groups::TabGroupVisualData& new_visuals);
+
+  void SetActiveTab(tabs::TabHandle handle);
+  void SetTabSelection(std::set<tabs::TabHandle> selection);
 
  protected:
   // An ever incrementing id.

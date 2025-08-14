@@ -23,7 +23,13 @@ mojom::ContainerPtr TabWalker::Walk() {
   const ui::ColorProvider& provider = contents->GetColorProvider();
   mojom::TabPtr mojo_tab = converters::BuildMojoTab(
       target_->GetHandle(), TabRendererData::FromTabInModel(model_, idx),
-      provider);
+      // TODO(crbug.com/438632110): this is dup code with the adapter. See if
+      // we can combine state computation.
+      provider,
+      {
+          .is_active = target_->IsActivated(),
+          .is_selected = target_->IsSelected(),
+      });
   auto node = tabs_api::mojom::Container::New();
   node->data = mojom::Data::NewTab(std::move(mojo_tab));
   return node;

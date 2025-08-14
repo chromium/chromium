@@ -8,6 +8,7 @@
 
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/converters/tab_converters.h"
 
 namespace tabs_api::testing {
 
@@ -25,6 +26,14 @@ TabRendererData ToyTabStripModelAdapter::GetTabRendererData(int index) const {
   return TabRendererData();
 }
 
+tabs_api::converters::TabStates ToyTabStripModelAdapter::GetTabStates(
+    tabs::TabHandle handle) const {
+  return {
+      .is_active = tab_strip_->GetToyTabFor(handle).active,
+      .is_selected = tab_strip_->GetToyTabFor(handle).selected,
+  };
+}
+
 const ui::ColorProvider& ToyTabStripModelAdapter::GetColorProvider() const {
   return color_provider_;
 }
@@ -34,7 +43,7 @@ void ToyTabStripModelAdapter::CloseTab(size_t idx) {
 }
 
 std::optional<int> ToyTabStripModelAdapter::GetIndexForHandle(
-    tabs::TabHandle tab_handle) {
+    tabs::TabHandle tab_handle) const {
   return tab_strip_->GetIndexForHandle(tab_handle);
 }
 
@@ -86,6 +95,15 @@ void ToyTabStripModelAdapter::UpdateTabGroupVisuals(
     const tab_groups::TabGroupId& group,
     const tab_groups::TabGroupVisualData& visual_data) {
   tab_strip_->UpdateGroupVisuals(group, visual_data);
+}
+
+void ToyTabStripModelAdapter::SetTabSelection(
+    const std::vector<tabs::TabHandle>& handles_to_select,
+    tabs::TabHandle to_activate) {
+  std::set<tabs::TabHandle> selection(handles_to_select.begin(),
+                                      handles_to_select.end());
+  tab_strip_->SetTabSelection(selection);
+  tab_strip_->SetActiveTab(to_activate);
 }
 
 }  // namespace tabs_api::testing

@@ -9,10 +9,17 @@ import type {TabStripApiProxy} from './tab_strip_api.js';
 import {TabStripApiProxyImpl} from './tab_strip_api.js';
 import type {TabsSnapshot} from './tab_strip_api.mojom-webui.js';
 import type {Container, Tab, TabCreatedContainer} from './tab_strip_api_data_model.mojom-webui.js';
-import type {OnTabActiveChangedEvent, OnTabDataChangedEvent, OnTabGroupVisualsChangedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from './tab_strip_api_events.mojom-webui.js';
+import type {OnTabDataChangedEvent, OnTabGroupVisualsChangedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from './tab_strip_api_events.mojom-webui.js';
 import type {NodeId} from './tab_strip_api_types.mojom-webui.js';
 
+export interface LayoutManager {
+  // Notifies the layout manager to recompute its layout, because the tab strip
+  // might have changed.
+  refreshLayout: () => void;
+}
+
 export class TabStripController {
+  private readonly layoutManager_: LayoutManager;
   private tabsApi_: TabStripApiProxy;
 
   // @ts-expect-error: initialized in init_().
@@ -21,7 +28,8 @@ export class TabStripController {
   // // @ts-ignore: initialized in init_().
   // private contentRegion_: ContentRegion;
 
-  constructor() {
+  constructor(layoutManager: LayoutManager) {
+    this.layoutManager_ = layoutManager;
     this.tabsApi_ = TabStripApiProxyImpl.getInstance();
   }
 
@@ -87,6 +95,8 @@ export class TabStripController {
     callbackRouter.onTabsCreated.addListener(this.onTabsCreated_.bind(this));
     // callbackRouter.tabMoved.addListener(this.onTabMoved_.bind(this));
     callbackRouter.onTabsClosed.addListener(this.onTabsClosed_.bind(this));
+    callbackRouter.onTabDataChanged.addListener(
+        this.onTabDataChanged_.bind(this));
     // callbackRouter.tabReplaced.addListener(this.onTabReplaced_.bind(this));
     // callbackRouter.tabCloseCancelled.addListener(
     //     this.onTabCloseCancelled_.bind(this));
@@ -120,6 +130,10 @@ export class TabStripController {
 
   private addTab_(tab: Tab) {
     this.tabStrip_.addTab(tab);
+    if (tab.isActive) {
+      this.tabStrip_.activateTab(tab.id);
+    }
+    this.layoutManager_.refreshLayout();
     // TODO(webium): Once ContentRegion is implemented:
     // this.contentRegion_.createWebView_(tab.id, tab.active);
   }
@@ -132,21 +146,18 @@ export class TabStripController {
     });
   }
 
-  onTabActiveChanged(event: OnTabActiveChangedEvent) {
-    const tabId = event.tab.id;
-    this.tabStrip_.activateTab(tabId);
-    // TODO(webium): Once ContentRegion is implemented:
-    // this.contentRegion_.activateTab_(tabId);
-  }
-
   /* TODO(webium): get this working.
   private onTabGroupStateChanged_(tabId: NodeId, _: number, groupId?: NodeId) {
     this.tabStrip_.setTabGroupForTab_(tabId, groupId);
   }
   */
 
-  onTabDataChanged(onTabDataChangedEvent: OnTabDataChangedEvent) {
+  private onTabDataChanged_(onTabDataChangedEvent: OnTabDataChangedEvent) {
     this.tabStrip_.updateTab(onTabDataChangedEvent.tab);
+    if (onTabDataChangedEvent.tab.isActive) {
+      this.tabStrip_.activateTab(onTabDataChangedEvent.tab.id);
+    }
+    this.layoutManager_.refreshLayout();
   }
 
   private onTabGroupVisualsChanged_(event: OnTabGroupVisualsChangedEvent) {

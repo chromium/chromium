@@ -17,6 +17,7 @@ source_set("testing") {
   deps = [
     "//base",
     "//chrome/browser/ui/tabs/tab_strip_api/adapters",
+    "//chrome/browser/ui/tabs/tab_strip_api/converters",
     "//url",
   ]
 }

@@ -23,6 +23,11 @@ struct Tab {
 
   array<tabs.mojom.TabAlertState> alert_states;
   tabs.mojom.TabNetworkState network_state;
+
+  // The current tab is active.
+  bool is_active;
+  // The current tab is selected.
+  bool is_selected;
 };
 
 // Tabstrip is a TabCollection that represents the top-level collection of

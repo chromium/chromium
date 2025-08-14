@@ -56,6 +56,9 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
                  CloseTabsCallback callback) override;
   void ActivateTab(const tabs_api::NodeId& id,
                    ActivateTabCallback callback) override;
+  void SetSelectedTabs(const std::vector<tabs_api::NodeId>& selection,
+                       const tabs_api::NodeId& tab_to_activate,
+                       SetSelectedTabsCallback callback) override;
   void MoveTab(const tabs_api::NodeId& id,
                const tabs_api::Position& position,
                MoveTabCallback callback) override;

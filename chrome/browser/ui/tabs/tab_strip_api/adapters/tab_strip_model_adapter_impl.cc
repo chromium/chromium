@@ -7,6 +7,7 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tree_builder/mojo_tree_builder.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/converters/tab_converters.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group.h"
@@ -35,6 +36,15 @@ TabRendererData TabStripModelAdapterImpl::GetTabRendererData(int index) const {
   return TabRendererData::FromTabInModel(tab_strip_model_, index);
 }
 
+converters::TabStates TabStripModelAdapterImpl::GetTabStates(
+    tabs::TabHandle handle) const {
+  CHECK(handle.Get() != nullptr);
+  return {
+      .is_active = handle.Get()->IsActivated(),
+      .is_selected = handle.Get()->IsSelected(),
+  };
+}
+
 const ui::ColorProvider& TabStripModelAdapterImpl::GetColorProvider() const {
   content::WebContents* active_contents =
       tab_strip_model_->GetActiveWebContents();
@@ -47,7 +57,7 @@ void TabStripModelAdapterImpl::CloseTab(size_t tab_index) {
 }
 
 std::optional<int> TabStripModelAdapterImpl::GetIndexForHandle(
-    tabs::TabHandle tab_handle) {
+    tabs::TabHandle tab_handle) const {
   auto idx = tab_strip_model_->GetIndexOfTab(tab_handle.Get());
   return idx != TabStripModel::kNoTab ? std::make_optional(idx) : std::nullopt;
 }
@@ -164,6 +174,30 @@ void TabStripModelAdapterImpl::UpdateTabGroupVisuals(
     const tab_groups::TabGroupVisualData& visual_data) {
   tab_strip_model_->ChangeTabGroupVisuals(group, visual_data,
                                           false /*is_customized*/);
+}
+
+void TabStripModelAdapterImpl::SetTabSelection(
+    const std::vector<tabs::TabHandle>& handles_to_select,
+    tabs::TabHandle to_activate) {
+  // TODO: we should have input validation to ensure that all handles can be
+  // exchanged to indices.
+  auto active_index = GetIndexForHandle(to_activate);
+  CHECK(active_index.has_value());
+
+  std::vector<size_t> tab_indices;
+  for (auto& handle : handles_to_select) {
+    auto index = GetIndexForHandle(handle);
+    CHECK(index.has_value());
+    tab_indices.push_back(index.value());
+  }
+
+  ui::ListSelectionModel selection;
+  for (auto& tab_index : tab_indices) {
+    selection.AddIndexToSelection(tab_index);
+  }
+  selection.set_active(active_index.value());
+
+  tab_strip_model_->SetSelectionFromModel(selection);
 }
 
 }  // namespace tabs_api

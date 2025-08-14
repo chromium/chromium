@@ -62,6 +62,13 @@ interface TabStripService {
   ActivateTab(NodeId id)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
+  // Selects a list of tabs. The only accepted id type for this method are
+  // |kContent| ids. The selection must also pass in a tab to activate. This
+  // tab must be part of the tab selection.
+  [Sync]
+  SetSelectedTabs(array<NodeId> selection, NodeId tab_to_activate)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
   // Moves a tab or a tab collection identified by id to a specified position.
   [Sync]
   MoveTab(NodeId id, Position position)
@@ -88,7 +95,4 @@ interface TabsObserver {
 
   // When a tab group's visuals have been changed.
   OnTabGroupVisualsChanged(OnTabGroupVisualsChangedEvent event);
-
-  // When the active tab has changed
-  OnTabActiveChanged(OnTabActiveChangedEvent tab);
 };

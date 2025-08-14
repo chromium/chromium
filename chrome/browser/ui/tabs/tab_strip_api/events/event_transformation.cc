@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_api/events/event_transformation.h"
 
+#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
@@ -25,8 +26,9 @@ mojom::OnTabsCreatedEventPtr ToEvent(
     tab_created->position = std::move(pos);
     auto renderer_data = adapter->GetTabRendererData(content.index);
     const ui::ColorProvider& provider = adapter->GetColorProvider();
-    auto mojo_tab = tabs_api::converters::BuildMojoTab(content.tab->GetHandle(),
-                                                       renderer_data, provider);
+    auto mojo_tab = tabs_api::converters::BuildMojoTab(
+        content.tab->GetHandle(), renderer_data, provider,
+        adapter->GetTabStates(content.tab->GetHandle()));
 
     tab_created->tab = std::move(mojo_tab);
     event->tabs.emplace_back(std::move(tab_created));
@@ -72,33 +74,61 @@ mojom::OnTabDataChangedEventPtr ToEvent(
     auto& handle = tabs.at(index);
     auto renderer_data = adapter->GetTabRendererData(index);
     const ui::ColorProvider& color_provider = adapter->GetColorProvider();
-    event->tab = tabs_api::converters::BuildMojoTab(handle, renderer_data,
-                                                    color_provider);
+    event->tab = tabs_api::converters::BuildMojoTab(
+        handle, renderer_data, color_provider, adapter->GetTabStates(handle));
   }
 
   return event;
 }
 
-mojom::OnTabActiveChangedEventPtr ToEvent(
-    const TabStripSelectionChange& selection,
-    const tabs_api::TabStripModelAdapter* adapter) {
-  auto event = mojom::OnTabActiveChangedEvent::New();
+std::vector<Event> ToEvent(const TabStripSelectionChange& selection,
+                           const tabs_api::TabStripModelAdapter* adapter) {
+  std::set<tabs::TabHandle> affected_tabs;
 
-  const std::optional<size_t> index_optional = selection.new_model.active();
-  if (!index_optional.has_value()) {
-    return event;
+  if (selection.active_tab_changed()) {
+    if (selection.old_tab) {
+      affected_tabs.insert(selection.old_tab->GetHandle());
+    }
+    if (selection.new_tab) {
+      affected_tabs.insert(selection.new_tab->GetHandle());
+    }
   }
 
-  const size_t index = index_optional.value();
-  auto tabs = adapter->GetTabs();
-  if (index < tabs.size()) {
-    auto& handle = tabs.at(index);
-    auto renderer_data = adapter->GetTabRendererData(index);
+  if (selection.selection_changed()) {
+    auto old_selected = selection.old_model.selected_indices();
+    auto new_selected = selection.new_model.selected_indices();
+    auto selected_diff =
+        base::STLSetDifference<std::set<size_t>>(old_selected, new_selected);
+
+    auto tabs = adapter->GetTabs();
+    // TODO(crbug.com/412738255): There is a bug here where a selected state
+    // might not be correctly cleared due to index shift. This is very
+    // difficult to solve at this point, so we should probably change the
+    // selection change event to use handles instead of indices to fix this
+    // issue.
+    for (auto& diff_tab_idx : selected_diff) {
+      if (diff_tab_idx >= tabs.size()) {
+        continue;
+      }
+      affected_tabs.insert(tabs.at(diff_tab_idx));
+    }
+  }
+
+  std::vector<Event> events;
+  for (auto& affected_tab : affected_tabs) {
+    if (!adapter->GetIndexForHandle(affected_tab).has_value()) {
+      continue;
+    }
+    auto event = mojom::OnTabDataChangedEvent::New();
+    auto renderer_data = adapter->GetTabRendererData(
+        adapter->GetIndexForHandle(affected_tab).value());
     const ui::ColorProvider& color_provider = adapter->GetColorProvider();
-    event->tab = tabs_api::converters::BuildMojoTab(handle, renderer_data,
-                                                    color_provider);
+    event->tab = tabs_api::converters::BuildMojoTab(
+        affected_tab, renderer_data, color_provider,
+        adapter->GetTabStates(affected_tab));
+    events.push_back(std::move(event));
   }
-  return event;
+  return events;
 }
 
 mojom::OnTabGroupCreatedEventPtr ToTabGroupCreatedEvent(

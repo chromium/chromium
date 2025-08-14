@@ -116,8 +116,9 @@ void TabStripServiceImpl::GetTab(const tabs_api::NodeId& tab_mojom_id,
       auto renderer_data = tab_strip_model_adapter_->GetTabRendererData(i);
       const ui::ColorProvider& color_provider =
           tab_strip_model_adapter_->GetColorProvider();
-      tab_result = tabs_api::converters::BuildMojoTab(handle, renderer_data,
-                                                      color_provider);
+      tab_result = tabs_api::converters::BuildMojoTab(
+          handle, renderer_data, color_provider,
+          tab_strip_model_adapter_->GetTabStates(handle));
     }
   }
 
@@ -169,8 +170,9 @@ void TabStripServiceImpl::CreateTabAt(
       tab_strip_model_adapter_->GetTabRendererData(tab_index.value());
   const ui::ColorProvider& color_provider =
       tab_strip_model_adapter_->GetColorProvider();
-  auto mojo_tab = tabs_api::converters::BuildMojoTab(tab_handle, renderer_data,
-                                                     color_provider);
+  auto mojo_tab = tabs_api::converters::BuildMojoTab(
+      tab_handle, renderer_data, color_provider,
+      tab_strip_model_adapter_->GetTabStates(tab_handle));
   std::move(callback).Run(base::ok(std::move(mojo_tab)));
 }
 
@@ -246,6 +248,55 @@ void TabStripServiceImpl::ActivateTab(const tabs_api::NodeId& id,
   }
 
   tab_strip_model_adapter_->ActivateTab(maybe_idx.value());
+  std::move(callback).Run(std::monostate());
+}
+
+void TabStripServiceImpl::SetSelectedTabs(
+    const std::vector<tabs_api::NodeId>& selection,
+    const tabs_api::NodeId& tab_to_activate,
+    SetSelectedTabsCallback callback) {
+  MutationSession recorder_session(recorder_.get());
+
+  if (std::find(selection.begin(), selection.end(), tab_to_activate) ==
+      selection.end()) {
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument,
+        "the selection must include the tab_to_activate")));
+    return;
+  }
+
+  auto is_not_content_id = [](tabs_api::NodeId id) {
+    return id.Type() != tabs_api::NodeId::Type::kContent;
+  };
+  if (std::find_if(selection.begin(), selection.end(), is_not_content_id) !=
+      selection.end()) {
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument,
+        "the selection can only include content IDs")));
+    return;
+  }
+
+  std::vector<tabs::TabHandle> selection_handles;
+  for (auto& id : selection) {
+    int32_t handle_id;
+    if (!base::StringToInt(id.Id(), &handle_id)) {
+      std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+          mojo_base::mojom::Code::kInvalidArgument, "id is malformed")));
+      return;
+    }
+    selection_handles.push_back(tabs::TabHandle(handle_id));
+  }
+
+  int32_t activate_handle_id;
+  if (!base::StringToInt(tab_to_activate.Id(), &activate_handle_id)) {
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument, "activate id is malformed")));
+    return;
+  }
+
+  tab_strip_model_adapter_->SetTabSelection(
+      selection_handles, tabs::TabHandle(activate_handle_id));
+
   std::move(callback).Run(std::monostate());
 }
 

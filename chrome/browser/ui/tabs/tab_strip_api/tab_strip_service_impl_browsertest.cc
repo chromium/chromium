@@ -36,21 +36,13 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
     for (auto& tab_created_container : event->tabs) {
       auto& tab = tab_created_container->tab;
       auto tab_id = tab->id;
-      tabs.push_back({tab_id, tab->url.spec()});
+      tabs.emplace(std::string(tab_id.Id()), std::move(tab));
     }
   }
 
   void OnTabsClosed(tabs_api::mojom::OnTabsClosedEventPtr event) override {
     for (auto& id : event->tabs) {
-      auto found = std::find_if(
-          tabs.begin(), tabs.end(),
-          [&](const std::pair<tabs_api::NodeId, std::string>& element) {
-            return element.first == id;
-          });
-
-      if (found != tabs.end()) {
-        tabs.erase(found);
-      }
+      tabs.erase(std::string(id.Id()));
     }
   }
 
@@ -61,15 +53,13 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
   void OnTabDataChanged(
       tabs_api::mojom::OnTabDataChangedEventPtr event) override {
     auto& id = event->tab->id;
-    auto found = std::find_if(
-        tabs.begin(), tabs.end(),
-        [&](const std::pair<tabs_api::NodeId, std::string>& element) {
-          return element.first == id;
-        });
-
-    if (found != tabs.end()) {
-      *found = {id, event->tab->url.spec()};
+    // TODO(crbug.com/412738255): this is a hack, because we are not correctly
+    // adding the initial tab that is created by the tab strip. We should have
+    // a test for GetTabSnapshot and properly populate the initial tab.
+    if (!tabs.contains(std::string(id.Id()))) {
+      return;
     }
+    tabs.at(std::string(id.Id())) = std::move(event->tab);
   }
 
   void OnTabGroupCreated(
@@ -83,17 +73,10 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
     // TODO(crbug.com/412955607): implement this.
   }
 
-  void OnTabActiveChanged(
-      tabs_api::mojom::OnTabActiveChangedEventPtr event) override {
-    active_tab_changed_events.push_back(std::move(event));
-  }
-
   std::vector<tabs_api::mojom::OnTabMovedEventPtr> move_events;
   std::vector<tabs_api::mojom::OnTabGroupCreatedEventPtr> group_events;
-  std::vector<tabs_api::mojom::OnTabActiveChangedEventPtr>
-      active_tab_changed_events;
-  // Tabs is a vector containing a tab id and a url in the form of a string.
-  std::vector<std::pair<tabs_api::NodeId, std::string>> tabs;
+
+  std::map<std::string, tabs_api::mojom::TabPtr> tabs;
 };
 
 class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
@@ -215,18 +198,14 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, Observation) {
   auto created_tab = std::move(result.value());
 
   ASSERT_EQ(1ul, client.tabs.size());
-  ASSERT_EQ(created_tab->id, client.tabs.at(0).first);
-
-  ASSERT_EQ(1ul, client.active_tab_changed_events.size());
-  ASSERT_EQ(created_tab->id, client.active_tab_changed_events.at(0)->tab->id);
+  ASSERT_TRUE(client.tabs.contains(std::string(created_tab->id.Id())));
 
   // Navigate to a new url which will modify the tab state.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com/")));
   receiver.FlushForTesting();
-  ASSERT_EQ(client.tabs[0].second, "https://www.google.com/");
-
-  client.active_tab_changed_events.clear();
+  ASSERT_EQ("https://www.google.com/",
+            client.tabs.find(std::string(created_tab->id.Id()))->second->url);
 
   TabStripService::CloseTabsResult close_result;
   base::RunLoop close_tab_loop;
@@ -244,9 +223,6 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, Observation) {
   ASSERT_TRUE(close_result.has_value());
   // Observation should have caused the tab to be removed.
   ASSERT_EQ(0ul, client.tabs.size());
-
-  ASSERT_EQ(1ul, client.active_tab_changed_events.size());
-  ASSERT_EQ(original_tab_id, client.active_tab_changed_events.at(0)->tab->id);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CloseTabs) {
@@ -320,6 +296,76 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ActivateTab) {
   ASSERT_EQ(GetTabStripModel()->GetActiveTab()->GetHandle(), old_tab_handle);
 }
 
+// Create 5 tabs and select 3 random ones.
+IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, SetSelectedTabs) {
+  mojo::Remote<TabStripService> remote;
+  tab_strip_service_impl_->Accept(remote.BindNewPipeAndPassReceiver());
+
+  auto observation = SetUpObservation();
+
+  // Created 5 tabs.
+  for (int i = 0; i < 5; ++i) {
+    base::RunLoop create_loop;
+    remote->CreateTabAt(std::nullopt,
+                        std::make_optional(GURL("http://some.where/nowhere")),
+                        base::BindLambdaForTesting(
+                            [&](TabStripService::CreateTabAtResult result) {
+                              ASSERT_TRUE(result.has_value());
+                              create_loop.Quit();
+                            }));
+    create_loop.Run();
+  }
+  observation->receiver.FlushForTesting();
+
+  // TODO(crbug.com/412738255): need to account for the initial tab.
+  ASSERT_EQ(6, GetTabStripModel()->count());
+
+  // Now select 3 of the tabs.
+  std::vector<tabs_api::NodeId> selection;
+  do {
+    auto tab_handle =
+        GetTabStripModel()->GetTabAtIndex(selection.size())->GetHandle();
+    selection.push_back(tabs_api::NodeId::FromTabHandle(tab_handle));
+  } while (selection.size() < 3);
+
+  base::RunLoop select_loop;
+  remote->SetSelectedTabs(
+      selection, selection.at(0),
+      base::BindLambdaForTesting(
+          [&](TabStripService::SetSelectedTabsResult result) {
+            ASSERT_TRUE(result.has_value());
+            select_loop.Quit();
+          }));
+  select_loop.Run();
+
+  observation->receiver.FlushForTesting();
+
+  ASSERT_EQ(5ul, observation->client.tabs.size());
+
+  // Now check that the underlying model is correct and matches with the
+  // observation.
+  for (auto* tab : *GetTabStripModel()) {
+    auto tab_id = base::NumberToString(tab->GetHandle().raw_value());
+    if (!observation->client.tabs.contains(tab_id)) {
+      continue;
+    }
+    auto node_id = tabs_api::NodeId::FromTabHandle(tab->GetHandle());
+
+    bool should_be_active = node_id == selection.at(0);
+    bool should_be_selected = std::find(selection.begin(), selection.end(),
+                                        node_id) != selection.end();
+
+    ASSERT_EQ(should_be_active, tab->IsActivated());
+    ASSERT_EQ(should_be_selected, tab->IsSelected());
+
+    auto& observation_tab = observation->client.tabs.at(tab_id);
+    ASSERT_EQ(should_be_active, observation_tab->is_active)
+        << "bad id was: " << tab_id;
+    // TODO(crbug.com/412738255): there is a race that is preventing this from
+    // reliably completing. Fix then retest.
+  }
+}
+
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTab) {
   mojo::Remote<TabStripService> remote;
   tab_strip_service_impl_->Accept(remote.BindNewPipeAndPassReceiver());
@@ -359,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTab) {
 
   ASSERT_EQ(1ul, observation->client.move_events.size());
 
-  auto event = observation->client.move_events.at(0).Clone();
+  auto& event = observation->client.move_events.at(0);
   ASSERT_EQ(to_move_id, event->id);
   ASSERT_EQ(0u, event->from.index());
   ASSERT_EQ(1u, event->to.index());

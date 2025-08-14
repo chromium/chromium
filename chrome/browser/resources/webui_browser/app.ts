@@ -17,15 +17,15 @@ import {getHtml} from './app.html.js';
 import type {BookmarkBar} from './bookmark_bar.js';
 import {BookmarkBarController} from './bookmark_bar_controller.js';
 import {BrowserProxy} from './browser_proxy.js';
-import {TabStripApiProxyImpl} from './tab_strip_api.js';
-import type {OnTabActiveChangedEvent, OnTabDataChangedEvent} from './tab_strip_api_events.mojom-webui.js';
+import type {LayoutManager} from './tab_strip_controller.js';
 import {TabStripController} from './tab_strip_controller.js';
 
 export interface WebuiBrowserAppElement {
   $: {bookmarkBar: BookmarkBar};
 }
 
-export class WebuiBrowserAppElement extends CrLitElement {
+export class WebuiBrowserAppElement extends CrLitElement implements
+    LayoutManager {
   static get is() {
     return 'webui-browser-app';
   }
@@ -45,21 +45,15 @@ export class WebuiBrowserAppElement extends CrLitElement {
 
   constructor() {
     super();
+
     this.bookmarkBarController_ = new BookmarkBarController();
-    this.tabStripController_ = new TabStripController();
+    this.tabStripController_ = new TabStripController(this);
   }
 
   override connectedCallback() {
     // Important. Properties are not reactive without calling
     // super.connectedCallback().
     super.connectedCallback();
-
-    const tabsApiCallbackRouter =
-        TabStripApiProxyImpl.getInstance().getCallbackRouter();
-    tabsApiCallbackRouter.onTabDataChanged.addListener(
-        this.onTabDataChanged_.bind(this));
-    tabsApiCallbackRouter.onTabActiveChanged.addListener(
-        this.onTabActiveChanged_.bind(this));
   }
 
   static override get properties() {
@@ -68,6 +62,11 @@ export class WebuiBrowserAppElement extends CrLitElement {
       backButtonDisabled_: {state: true, type: Boolean},
       forwardButtonDisabled_: {state: true, type: Boolean},
     };
+  }
+
+  // LayoutManager:
+  refreshLayout() {
+    this.updateToolbarButtons_();
   }
 
   protected accessor guestId_: number = loadTimeData.getInteger('testGuestId');
@@ -122,20 +121,6 @@ export class WebuiBrowserAppElement extends CrLitElement {
       this.backButtonDisabled_ = true;
       this.forwardButtonDisabled_ = true;
     }*/
-  }
-
-  private onTabActiveChanged_(e: OnTabActiveChangedEvent) {
-    // Update the tab strip *before* the toolbar buttons, as the tab strip
-    // update may affect how the toolbar buttons are updated.
-    this.tabStripController_.onTabActiveChanged(e);
-    this.updateToolbarButtons_();
-  }
-
-  private onTabDataChanged_(e: OnTabDataChangedEvent) {
-    // Update the tab strip *before* the toolbar buttons, as the tab strip
-    // update may affect how the toolbar buttons are updated.
-    this.tabStripController_.onTabDataChanged(e);
-    this.updateToolbarButtons_();
   }
 
   protected onTabstripAdded_(e: CustomEvent) {

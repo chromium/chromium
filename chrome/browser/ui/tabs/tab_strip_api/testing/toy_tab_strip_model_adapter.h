@@ -23,9 +23,12 @@ class ToyTabStripModelAdapter : public TabStripModelAdapter {
   void RemoveObserver(TabStripModelObserver* observer) override;
   std::vector<tabs::TabHandle> GetTabs() const override;
   TabRendererData GetTabRendererData(int index) const override;
+  tabs_api::converters::TabStates GetTabStates(
+      tabs::TabHandle handle) const override;
   const ui::ColorProvider& GetColorProvider() const override;
   void CloseTab(size_t tab_index) override;
-  std::optional<int> GetIndexForHandle(tabs::TabHandle tab_handle) override;
+  std::optional<int> GetIndexForHandle(
+      tabs::TabHandle tab_handle) const override;
   void ActivateTab(size_t index) override;
   void MoveTab(tabs::TabHandle handle, const Position& position) override;
   void MoveCollection(const NodeId& id, const Position& position) override;
@@ -35,6 +38,8 @@ class ToyTabStripModelAdapter : public TabStripModelAdapter {
   void UpdateTabGroupVisuals(
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData& visual_data) override;
+  void SetTabSelection(const std::vector<tabs::TabHandle>& handles_to_select,
+                       tabs::TabHandle to_activate) override;
 
  private:
   raw_ptr<ToyTabStrip> tab_strip_;

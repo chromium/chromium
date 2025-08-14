@@ -20,7 +20,8 @@ namespace tabs_api::converters {
 
 tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabHandle handle,
                                      const TabRendererData& data,
-                                     const ui::ColorProvider& color_provider) {
+                                     const ui::ColorProvider& color_provider,
+                                     const TabStates& states) {
   auto result = tabs_api::mojom::Tab::New();
 
   result->id = tabs_api::NodeId(tabs_api::NodeId::Type::kContent,
@@ -34,6 +35,9 @@ tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabHandle handle,
       result->alert_states.push_back(alert_state);
     }
   }
+
+  result->is_active = states.is_active;
+  result->is_selected = states.is_selected;
 
   return result;
 }

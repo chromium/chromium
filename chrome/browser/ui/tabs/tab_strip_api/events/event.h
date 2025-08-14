@@ -16,8 +16,7 @@ using Event = std::variant<mojom::OnTabsCreatedEventPtr,
                            mojom::OnTabMovedEventPtr,
                            mojom::OnTabDataChangedEventPtr,
                            mojom::OnTabGroupCreatedEventPtr,
-                           mojom::OnTabGroupVisualsChangedEventPtr,
-                           mojom::OnTabActiveChangedEventPtr>;
+                           mojom::OnTabGroupVisualsChangedEventPtr>;
 }
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_API_EVENTS_EVENT_H_
