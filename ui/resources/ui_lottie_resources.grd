@@ -25,6 +25,7 @@
         <structure type="lottie" name="IDR_AURA_CURSOR_THROBBER_LOTTIE" file="vector/common/pointers/throbber.json" compress="gzip" />
         <structure type="lottie" name="IDR_AURA_CURSOR_XTERM_HORIZ_LOTTIE" file="vector/common/pointers/xterm_horiz.json" compress="gzip" />
         <structure type="lottie" name="IDR_AURA_CURSOR_ZOOM_IN_LOTTIE" file="vector/common/pointers/zoom_in.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_ZOOM_OUT_LOTTIE" file="vector/common/pointers/zoom_out.json" compress="gzip" />
       </if>
     </structures>
   </release>
