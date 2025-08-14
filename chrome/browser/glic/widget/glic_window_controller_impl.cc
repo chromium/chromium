@@ -645,7 +645,7 @@ void GlicWindowControllerImpl::Show(Browser* browser,
 
   glic_service_->metrics()->set_show_start_time(base::TimeTicks::Now());
 
-  host().CreateContents();
+  host().CreateContents(/*initially_hidden=*/false);
   host().NotifyWindowIntentToShow();
 
   SetupGlicWidget(browser);
@@ -1406,7 +1406,7 @@ GlicWindowControllerImpl::AddWindowActivationChangedCallback(
 
 void GlicWindowControllerImpl::Preload() {
   if (!host().contents_container()) {
-    host().CreateContents();
+    host().CreateContents(/*initially_hidden=*/true);
     host().webui_contents()->Resize(GetInitialBounds(nullptr));
   }
 }

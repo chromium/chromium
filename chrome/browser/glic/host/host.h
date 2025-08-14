@@ -72,7 +72,7 @@ class Host {
   void Shutdown();
 
   // Creates the web contents that will own the Glic WebUI.
-  void CreateContents();
+  void CreateContents(bool initially_hidden);
 
   // Called when a `GlicPageHandler` is created.
   void WebUIPageHandlerAdded(GlicPageHandler* page_handler);

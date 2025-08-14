@@ -43,10 +43,10 @@ void Host::Shutdown() {
   contents_.reset();
 }
 
-void Host::CreateContents() {
+void Host::CreateContents(bool initially_hidden) {
   if (!contents_) {
     contents_ = std::make_unique<WebUIContentsContainer>(
-        profile_, &glic_service().window_controller());
+        profile_, &glic_service().window_controller(), initially_hidden);
     glic::GlicProfileManager::GetInstance()->OnLoadingClientForService(
         &glic_service());
   }

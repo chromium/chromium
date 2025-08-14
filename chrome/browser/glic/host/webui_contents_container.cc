@@ -21,12 +21,23 @@
 
 namespace glic {
 
+namespace {
+content::WebContents::CreateParams MakeCreateParams(Profile* profile,
+                                                    bool initially_hidden) {
+  auto params = content::WebContents::CreateParams(profile);
+  params.initially_hidden = initially_hidden;
+  return params;
+}
+
+}  // namespace
+
 WebUIContentsContainer::WebUIContentsContainer(
     Profile* profile,
-    GlicWindowController* glic_window_controller)
+    GlicWindowController* glic_window_controller,
+    bool initially_hidden)
     : profile_keep_alive_(profile, ProfileKeepAliveOrigin::kGlicView),
       web_contents_(content::WebContents::Create(
-          content::WebContents::CreateParams(profile))),
+          MakeCreateParams(profile, initially_hidden))),
       glic_window_controller_(glic_window_controller) {
   CHECK(web_contents_);
   Observe(web_contents_.get());

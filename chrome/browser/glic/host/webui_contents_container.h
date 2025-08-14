@@ -21,7 +21,8 @@ class WebUIContentsContainer : public content::WebContentsDelegate,
                                public content::WebContentsObserver {
  public:
   WebUIContentsContainer(Profile* profile,
-                         GlicWindowController* glic_window_controller);
+                         GlicWindowController* glic_window_controller,
+                         bool initially_hidden);
   ~WebUIContentsContainer() override;
 
   WebUIContentsContainer(const WebUIContentsContainer&) = delete;
