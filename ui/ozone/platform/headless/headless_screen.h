@@ -40,6 +40,7 @@ class HeadlessScreen : public PlatformScreen {
       const gfx::Rect& match_rect) const override;
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
+  bool IsHeadless() const override;
 
  private:
   void CreateDisplayList();

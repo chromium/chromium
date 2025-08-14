@@ -137,6 +137,9 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
   virtual std::optional<float> GetPreferredScaleFactorForAcceleratedWidget(
       gfx::AcceleratedWidget widget) const;
 
+  // Returns true when running in headless mode.
+  virtual bool IsHeadless() const;
+
  protected:
   void StorePlatformNameIntoListOfValues(base::Value::List& values,
                                          const std::string& platform_name);

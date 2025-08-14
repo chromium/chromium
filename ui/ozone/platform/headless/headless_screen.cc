@@ -200,4 +200,8 @@ void HeadlessScreen::RemoveObserver(display::DisplayObserver* observer) {
   display_list_.RemoveObserver(observer);
 }
 
+bool HeadlessScreen::IsHeadless() const {
+  return true;
+}
+
 }  // namespace ui

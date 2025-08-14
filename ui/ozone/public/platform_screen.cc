@@ -62,6 +62,10 @@ PlatformScreen::GetPreferredScaleFactorForAcceleratedWidget(
   return std::nullopt;
 }
 
+bool PlatformScreen::IsHeadless() const {
+  return false;
+}
+
 void PlatformScreen::StorePlatformNameIntoListOfValues(
     base::Value::List& values,
     const std::string& platform_name) {
