@@ -3995,6 +3995,12 @@ const char kTabGroupParityBottomSheetAndroidName[] =
 const char kTabGroupParityBottomSheetAndroidDescription[] =
     "Enables adding Tabs to Tab Groups via the Tab Group Parity Bottom Sheet";
 
+const char kTabGroupAndroidVisualDataCleanupName[] =
+    "Tab Group Visual Data Cleanup";
+const char kTabGroupAndroidVisualDataCleanupDescription[] =
+    "Cleanup tab group visual data that is no longer associated with an "
+    "existing tab group.";
+
 const char kTabModelInitFixesName[] = "Tab Model Init Fixes";
 const char kTabModelInitFixesDescription[] =
     "A grab bag of simple and miscellaneous improvements for tab model "

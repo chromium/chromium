@@ -411,6 +411,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabClosureMethodRefactor,
     &kTabCollectionAndroid,
     &kTabFreezeOnUndoableClosureKillSwitch,
+    &kTabGroupAndroidVisualDataCleanup,
     &kTabGroupEntryPointsAndroid,
     &kTabGroupParityBottomSheetAndroid,
     &kTabModelInitFixes,
@@ -1358,6 +1359,10 @@ BASE_FEATURE(kTabCollectionAndroid,
 BASE_FEATURE(kTabFreezeOnUndoableClosureKillSwitch,
              "TabFreezeOnUndoableClosureKillSwitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabGroupAndroidVisualDataCleanup,
+             "TabGroupAndroidVisualDataCleanup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabGroupEntryPointsAndroid,
              "TabGroupEntryPointsAndroid",

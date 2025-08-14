@@ -10195,6 +10195,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabGroupParityBottomSheetAndroid)},
 
+    {"tab-group-android-visual-data-cleanup",
+     flag_descriptions::kTabGroupAndroidVisualDataCleanupName,
+     flag_descriptions::kTabGroupAndroidVisualDataCleanupDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabGroupAndroidVisualDataCleanup)},
+
     {"tab-strip-density-change-android",
      flag_descriptions::kTabStripDensityChangeAndroidName,
      flag_descriptions::kTabStripDensityChangeAndroidDescription, kOsAndroid,
@@ -12327,9 +12333,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-theme-resource-provider",
      flag_descriptions::kAndroidThemeResourceProviderName,
      flag_descriptions::kAndroidThemeResourceProviderDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidThemeResourceProvider,
-                                    kAndroidThemeResourceProviderVariations,
-                                    "AndroidThemeResourceProvider")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kAndroidThemeResourceProvider,
+         kAndroidThemeResourceProviderVariations,
+         "AndroidThemeResourceProvider")},
     {"display-edge-to-edge-fullscreen",
      flag_descriptions::kDisplayEdgeToEdgeFullscreenName,
      flag_descriptions::kDisplayEdgeToEdgeFullscreenDescription, kOsAndroid,
@@ -13121,7 +13128,8 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"autofill-enable-support-for-name-and-email-profile",
      flag_descriptions::kAutofillEnableSupportForNameAndEmailName,
-     flag_descriptions::kAutofillEnableSupportForNameAndEmailDescription, kOsAll,
+     flag_descriptions::kAutofillEnableSupportForNameAndEmailDescription,
+     kOsAll,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableSupportForNameAndEmail)}
 

@@ -2271,6 +2271,9 @@ extern const char kTabGroupEntryPointsAndroidDescription[];
 extern const char kTabGroupParityBottomSheetAndroidName[];
 extern const char kTabGroupParityBottomSheetAndroidDescription[];
 
+extern const char kTabGroupAndroidVisualDataCleanupName[];
+extern const char kTabGroupAndroidVisualDataCleanupDescription[];
+
 extern const char kTabModelInitFixesName[];
 extern const char kTabModelInitFixesDescription[];
 

@@ -637,6 +637,8 @@ public abstract class ChromeFeatureList {
     public static final String TAB_COLLECTION_ANDROID = "TabCollectionAndroid";
     public static final String TAB_FREEZE_ON_UNDOABLE_CLOSURE_KILL_SWITCH =
             "TabFreezeOnUndoableClosureKillSwitch";
+    public static final String TAB_GROUP_ANDROID_VISUAL_DATA_CLEANUP =
+            "TabGroupAndroidVisualDataCleanup";
     public static final String TAB_GROUP_ENTRY_POINTS_ANDROID = "TabGroupEntryPointsAndroid";
     public static final String TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID =
             "TabGroupParityBottomSheetAndroid";
@@ -1332,6 +1334,8 @@ public abstract class ChromeFeatureList {
     // Default value will only ever be reached in tests.
     public static final MutableFlagWithSafeDefault sTabFreezeOnUndoableClosureKillSwitch =
             newMutableFlagWithSafeDefault(TAB_FREEZE_ON_UNDOABLE_CLOSURE_KILL_SWITCH, true);
+    public static final MutableFlagWithSafeDefault sTabGroupAndroidVisualDataCleanup =
+            newMutableFlagWithSafeDefault(TAB_GROUP_ANDROID_VISUAL_DATA_CLEANUP, false);
     public static final MutableFlagWithSafeDefault sTabGroupEntryPointsAndroid =
             newMutableFlagWithSafeDefault(TAB_GROUP_ENTRY_POINTS_ANDROID, true);
     public static final MutableFlagWithSafeDefault sTabGroupParityBottomSheetAndroid =

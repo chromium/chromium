@@ -9563,6 +9563,7 @@ from previous Chrome versions.
   <int value="-1669727073"
       label="HandwritingLegacyRecognitionAllLang:disabled"/>
   <int value="-1669486359" label="ImportantSitesInCBD:enabled"/>
+  <int value="-1669315560" label="TabGroupAndroidVisualDataCleanup:enabled"/>
   <int value="-1669172326"
       label="AutofillEnableDependentLocalityParsing:disabled"/>
   <int value="-1668306615" label="CrostiniUseDlc:enabled"/>
@@ -16672,6 +16673,7 @@ from previous Chrome versions.
   <int value="917561046" label="ConversionMeasurement:disabled"/>
   <int value="917941036" label="SystemEmojiPickerJellySupport:enabled"/>
   <int value="918046854" label="NtlmV2Enabled:disabled"/>
+  <int value="918584870" label="TabGroupAndroidVisualDataCleanup:disabled"/>
   <int value="918608729" label="finch-seed-min-download-period"/>
   <int value="919493441" label="RenderPassDrawnRect:enabled"/>
   <int value="919605713"
