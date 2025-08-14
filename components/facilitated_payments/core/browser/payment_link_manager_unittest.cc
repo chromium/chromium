@@ -1784,6 +1784,9 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, OnPaymentAppSelected_InvokesApp) {
   EXPECT_CALL(
       *mock_device_delegate_,
       InvokePaymentApp(package_name, activity_name, GURL(payment_link)));
+  // `DismissPrompt` is called once when a payment app is selected, and again
+  // when the test fixture destroys the `manager_`.
+  EXPECT_CALL(client_, DismissPrompt).Times(2);
 
   // Trigger the call.
   test_api(*payment_link_manager_)

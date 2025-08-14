@@ -252,6 +252,8 @@ void PaymentLinkManager::OnPaymentAppSelected(std::string_view package_name,
   client_->GetDeviceDelegate()->InvokePaymentApp(
       package_name, activity_name,
       GURL(initiate_payment_request_details_->payment_link_));
+
+  DismissPrompt();
 }
 
 void PaymentLinkManager::OnRiskDataLoaded(base::TimeTicks start_time,
