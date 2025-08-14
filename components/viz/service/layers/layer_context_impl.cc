@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -53,6 +52,21 @@
 namespace viz {
 
 namespace {
+
+std::string SubmitResultToString(SubmitResult result) {
+  switch (result) {
+    case SubmitResult::COPY_OUTPUT_REQUESTS_NOT_ALLOWED:
+      return "COPY_OUTPUT_REQUESTS_NOT_ALLOWED";
+    case SubmitResult::SIZE_MISMATCH:
+      return "SIZE_MISMATCH";
+    case SubmitResult::SURFACE_ID_DECREASED:
+      return "SURFACE_ID_DECREASED";
+    case SubmitResult::SURFACE_OWNED_BY_ANOTHER_CLIENT:
+      return "SURFACE_OWNED_BY_ANOTHER_CLIENT";
+    default:
+      NOTREACHED();
+  }
+}
 
 #define RETURN_IF_FALSE(expr, error)  \
   do {                                \
@@ -1449,6 +1463,11 @@ void LayerContextImpl::DoReturnResources() {
   }
 }
 
+void LayerContextImpl::HandleBadMojoMessage(const std::string& function,
+                                            const std::string& error) {
+  receiver_->ReportBadMessage(function + "() : " + error);
+}
+
 void LayerContextImpl::DidLoseLayerTreeFrameSinkOnImplThread() {
   NOTREACHED();
 }
@@ -1606,10 +1625,9 @@ void LayerContextImpl::SubmitCompositorFrame(CompositorFrame frame,
       host_impl_->GetCurrentLocalSurfaceId(), std::move(frame),
       std::move(hit_test_region_list), 0);
   if (result != SubmitResult::ACCEPTED) {
-    // TODO(crbug.com/425975534): Remove DumpWithoutCrashing() once TreesInViz
-    // is stable.
-    base::debug::Alias(&result);
-    base::debug::DumpWithoutCrashing();
+    HandleBadMojoMessage("MaybeSubmitCompositorFrame",
+                         SubmitResultToString(result));
+    return;
   }
 
   if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
@@ -1638,11 +1656,7 @@ void LayerContextImpl::UpdateDisplayTree(mojom::LayerTreeUpdatePtr update) {
   auto start_update_display_tree = base::TimeTicks::Now();
   auto result = DoUpdateDisplayTree(std::move(update));
   if (!result.has_value()) {
-    receiver_->ReportBadMessage(result.error());
-    // TODO(crbug.com/425975534): Remove DumpWithoutCrashing() once TreesInViz
-    // is stable.
-    DEBUG_ALIAS_FOR_CSTR(error_msg, result.error().c_str(), 256);
-    base::debug::DumpWithoutCrashing();
+    HandleBadMojoMessage("UpdateDisplayTree", result.error());
     return;
   }
 
@@ -1947,7 +1961,7 @@ void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling,
   CHECK(receiver_);
   auto result = DoUpdateDisplayTiling(std::move(tiling), update_damage);
   if (!result.has_value()) {
-    receiver_->ReportBadMessage(result.error());
+    HandleBadMojoMessage("UpdateDisplayTiling", result.error());
   }
 }
 

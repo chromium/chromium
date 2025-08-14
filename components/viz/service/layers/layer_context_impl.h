@@ -154,6 +154,9 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
   // client, via the frame sink.
   void DoReturnResources();
 
+  void HandleBadMojoMessage(const std::string& function,
+                            const std::string& error);
+
   const raw_ptr<CompositorFrameSinkSupport> compositor_sink_;
   const std::unique_ptr<cc::AnimationHost> animation_host_{
       cc::AnimationHost::CreateMainInstance()};
