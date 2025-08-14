@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "components/permissions/permission_decision.h"
+#include "content/public/browser/permission_result.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -28,10 +29,11 @@ namespace {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 void CallbackPermissionStatusWrapper(
-    base::OnceCallback<void(PermissionStatus)> callback,
+    base::OnceCallback<void(content::PermissionResult)> callback,
     bool allowed) {
-  std::move(callback).Run(allowed ? PermissionStatus::GRANTED
-                                  : PermissionStatus::DENIED);
+  std::move(callback).Run(content::PermissionResult(
+      allowed ? PermissionStatus::GRANTED : PermissionStatus::DENIED,
+      content::PermissionStatusSource::UNSPECIFIED));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -52,7 +54,7 @@ bool GeolocationPermissionContextExtensions::DecidePermission(
     const permissions::PermissionRequestID& request_id,
     const GURL& requesting_frame,
     bool user_gesture,
-    base::OnceCallback<void(PermissionStatus)>* callback,
+    base::OnceCallback<void(content::PermissionResult)>* callback,
     bool* permission_set,
     bool* new_permission) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)

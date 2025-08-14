@@ -31,4 +31,6 @@ PermissionResult& PermissionResult::operator=(PermissionResult&&) = default;
 
 PermissionResult::~PermissionResult() = default;
 
+bool PermissionResult::operator==(const PermissionResult& rhs) const = default;
+
 }  // namespace content

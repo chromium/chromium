@@ -570,7 +570,7 @@ void VRServiceImpl::RequestSession(
 
 void VRServiceImpl::DoRequestPermissions(
     const std::vector<blink::PermissionType> request_permissions,
-    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+    base::OnceCallback<void(const std::vector<PermissionResult>&)>
         result_callback) {
   PermissionController* permission_controller =
       GetWebContents()->GetBrowserContext()->GetPermissionController();
@@ -614,9 +614,9 @@ void VRServiceImpl::GetPermissionStatus(SessionRequestData request,
 void VRServiceImpl::OnPermissionResultsForMode(
     SessionRequestData request,
     const std::vector<blink::PermissionType>& permissions,
-    const std::vector<blink::mojom::PermissionStatus>& permission_statuses) {
+    const std::vector<PermissionResult>& results) {
   DVLOG(2) << __func__ << ": permissions.size()=" << permissions.size();
-  DCHECK_EQ(permissions.size(), permission_statuses.size());
+  DCHECK_EQ(permissions.size(), results.size());
 
   // Prolong the user activation since the user may have taken long enough to
   // answer the permission prompts that the transient user activation expired.
@@ -627,8 +627,7 @@ void VRServiceImpl::OnPermissionResultsForMode(
   render_frame_host_->NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kInteraction);
 
-  const XrPermissionResults permission_results(permissions,
-                                               permission_statuses);
+  const XrPermissionResults permission_results(permissions, results);
 
   bool is_consent_granted =
       permission_results.HasPermissionsFor(request.options->mode);
@@ -660,9 +659,8 @@ void VRServiceImpl::OnPermissionResultsForMode(
 void VRServiceImpl::OnPermissionResultsForFeatures(
     SessionRequestData request,
     const std::vector<blink::PermissionType>& permissions,
-    const std::vector<blink::mojom::PermissionStatus>& permission_statuses) {
-  const XrPermissionResults permission_results(permissions,
-                                               permission_statuses);
+    const std::vector<PermissionResult>& results) {
+  const XrPermissionResults permission_results(permissions, results);
 
   std::unordered_set<device::mojom::XRSessionFeature> rejected_features;
   for (auto& required_feature : request.required_features) {

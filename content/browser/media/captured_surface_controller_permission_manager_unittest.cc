@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/media/captured_surface_control_permission_manager.h"
-
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "content/browser/media/captured_surface_control_permission_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/permission_request_description.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/mock_permission_controller.h"
 #include "content/test/test_render_frame_host.h"
@@ -23,7 +23,7 @@ namespace {
 
 using ::blink::mojom::PermissionStatus;
 using PermissionManager = ::content::CapturedSurfaceControlPermissionManager;
-using CallbackType = ::base::OnceCallback<void(PermissionStatus)>;
+using CallbackType = ::base::OnceCallback<void(PermissionResult)>;
 using CallbackActionType = ::base::OnceCallback<void(CallbackType)>;
 
 // Extends MockPermissionController and allows test suites to conveniently
@@ -42,7 +42,7 @@ class CscMockPermissionController : public MockPermissionController {
   void RequestPermissionFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       PermissionRequestDescription request_description,
-      base::OnceCallback<void(PermissionStatus)> callback) override {
+      base::OnceCallback<void(PermissionResult)> callback) override {
     CHECK(callback_action_);
     std::move(callback_action_).Run(std::move(callback));
   }
@@ -75,10 +75,12 @@ class PermissionCheckState final {
   void SimulateUserPromptResponse(bool allow) {
     CHECK(callback_for_pending_prompt_);
     std::move(callback_for_pending_prompt_)
-        .Run(allow ? PermissionStatus::GRANTED : PermissionStatus::DENIED);
+        .Run(PermissionResult(
+            allow ? PermissionStatus::GRANTED : PermissionStatus::DENIED,
+            PermissionStatusSource::UNSPECIFIED));
   }
 
-  void SetUserPrompted(base::OnceCallback<void(PermissionStatus)> callback) {
+  void SetUserPrompted(base::OnceCallback<void(PermissionResult)> callback) {
     CHECK(!user_prompted_);
     CHECK(!callback_for_pending_prompt_);
 
@@ -90,13 +92,16 @@ class PermissionCheckState final {
 
   bool user_prompted() const { return user_prompted_; }
 
-  void SetResult(PermissionManager::PermissionResult result) {
+  void SetResult(CapturedSurfaceControlPermissionManager::
+                     CapturedSurfaceControlPermissionStatus result) {
     CHECK(!result_.has_value());
     result_ = result;
     check_permission_run_loop.Quit();
   }
 
-  std::optional<PermissionManager::PermissionResult> result() const {
+  std::optional<CapturedSurfaceControlPermissionManager::
+                    CapturedSurfaceControlPermissionStatus>
+  result() const {
     return result_;
   }
 
@@ -104,10 +109,12 @@ class PermissionCheckState final {
   bool user_prompted_ = false;
   base::RunLoop user_prompt_shown_run_loop;
 
-  std::optional<PermissionManager::PermissionResult> result_;
+  std::optional<CapturedSurfaceControlPermissionManager::
+                    CapturedSurfaceControlPermissionStatus>
+      result_;
   base::RunLoop check_permission_run_loop;
 
-  base::OnceCallback<void(PermissionStatus)> callback_for_pending_prompt_;
+  base::OnceCallback<void(PermissionResult)> callback_for_pending_prompt_;
 };
 
 class CapturedSurfaceControlPermissionManagerTest
@@ -169,7 +176,7 @@ class CapturedSurfaceControlPermissionManagerTest
 
     mock_permission_controller_->SetCallbackAction(base::BindOnce(
         [](PermissionCheckState* state,
-           base::OnceCallback<void(PermissionStatus)> callback) {
+           base::OnceCallback<void(PermissionResult)> callback) {
           state->SetUserPrompted(std::move(callback));
         },
         base::Unretained(state.get())));
@@ -177,12 +184,14 @@ class CapturedSurfaceControlPermissionManagerTest
     permission_manager_->CheckPermission(base::BindOnce(
         [](PermissionCheckState* state,
            CscMockPermissionController* mock_permission_controller,
-           PermissionManager::PermissionResult result) {
+           CapturedSurfaceControlPermissionManager::
+               CapturedSurfaceControlPermissionStatus status) {
           mock_permission_controller->SetPermissionStatus(
-              result == PermissionManager::PermissionResult::kGranted
+              status == CapturedSurfaceControlPermissionManager::
+                            CapturedSurfaceControlPermissionStatus::kGranted
                   ? PermissionStatus::GRANTED
                   : PermissionStatus::DENIED);
-          state->SetResult(result);
+          state->SetResult(status);
         },
         base::Unretained(state.get()),
         base::Unretained(mock_permission_controller_.get())));
@@ -216,7 +225,9 @@ TEST_F(CapturedSurfaceControlPermissionManagerTest,
   state->WaitForCheckPermissionCallbackResult();
 
   EXPECT_FALSE(state->user_prompted());
-  EXPECT_EQ(state->result(), PermissionManager::PermissionResult::kDenied);
+  EXPECT_EQ(state->result(),
+            CapturedSurfaceControlPermissionManager::
+                CapturedSurfaceControlPermissionStatus::kDenied);
 }
 
 TEST_F(CapturedSurfaceControlPermissionManagerTest,
@@ -239,7 +250,9 @@ TEST_F(CapturedSurfaceControlPermissionManagerTest,
   state->WaitForCheckPermissionCallbackResult();
 
   EXPECT_TRUE(state->user_prompted());
-  EXPECT_EQ(state->result(), PermissionManager::PermissionResult::kDenied);
+  EXPECT_EQ(state->result(),
+            CapturedSurfaceControlPermissionManager::
+                CapturedSurfaceControlPermissionStatus::kDenied);
 }
 
 TEST_F(CapturedSurfaceControlPermissionManagerTest,
@@ -252,7 +265,9 @@ TEST_F(CapturedSurfaceControlPermissionManagerTest,
   state->WaitForCheckPermissionCallbackResult();
 
   EXPECT_TRUE(state->user_prompted());
-  EXPECT_EQ(state->result(), PermissionManager::PermissionResult::kGranted);
+  EXPECT_EQ(state->result(),
+            CapturedSurfaceControlPermissionManager::
+                CapturedSurfaceControlPermissionStatus::kGranted);
 }
 
 TEST_F(CapturedSurfaceControlPermissionManagerTest,
@@ -268,7 +283,8 @@ TEST_F(CapturedSurfaceControlPermissionManagerTest,
 
     ASSERT_TRUE(init_state->user_prompted());
     ASSERT_EQ(init_state->result(),
-              PermissionManager::PermissionResult::kGranted);
+              CapturedSurfaceControlPermissionManager::
+                  CapturedSurfaceControlPermissionStatus::kGranted);
   }
 
   SetTransientActivation(false);
@@ -276,7 +292,9 @@ TEST_F(CapturedSurfaceControlPermissionManagerTest,
   state->WaitForCheckPermissionCallbackResult();
 
   EXPECT_FALSE(state->user_prompted());
-  EXPECT_EQ(state->result(), PermissionManager::PermissionResult::kGranted);
+  EXPECT_EQ(state->result(),
+            CapturedSurfaceControlPermissionManager::
+                CapturedSurfaceControlPermissionStatus::kGranted);
 }
 
 }  // namespace

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -91,7 +92,7 @@ class ExclusiveAccessPermissionManager : public content::WebContentsObserver {
       base::WeakPtr<content::WebContents> web_contents,
       base::OnceClosure granted_callback,
       base::OnceClosure denied_callback,
-      const std::vector<blink::mojom::PermissionStatus>& status);
+      const std::vector<content::PermissionResult>& permission_result);
 
   content::PermissionController* GetPermissionController(
       content::WebContents* web_contents);

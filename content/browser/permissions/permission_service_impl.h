@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/permissions/permission_service_context.h"
 #include "content/public/browser/permission_request_description.h"
+#include "content/public/browser/permission_result.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "url/origin.h"
@@ -86,7 +87,7 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
 
   void OnRequestPermissionsResponse(
       int pending_request_id,
-      const std::vector<blink::mojom::PermissionStatus>& result);
+      const std::vector<PermissionResult>& result);
 
   void OnPageEmbeddedPermissionControlRegistered(
       std::vector<blink::mojom::PermissionDescriptorPtr> permissions,

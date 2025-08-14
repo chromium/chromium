@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "content/public/browser/permission_result.h"
 #include "device/vr/public/mojom/vr_service.mojom-shared.h"
 #include "device/vr/public/mojom/xr_session.mojom-shared.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -22,7 +23,7 @@ class XrPermissionResults {
  public:
   XrPermissionResults(
       const std::vector<blink::PermissionType>& permission_types,
-      const std::vector<blink::mojom::PermissionStatus>& permission_statuses);
+      const std::vector<PermissionResult>& permission_results);
   ~XrPermissionResults();
 
   // Checks if |permission_type_to_status| contains permissions necessary to
@@ -40,7 +41,7 @@ class XrPermissionResults {
       device::mojom::XRSessionFeature feature);
 
  private:
-  const base::flat_map<blink::PermissionType, blink::mojom::PermissionStatus>
+  const base::flat_map<blink::PermissionType, PermissionResult>
       permission_type_to_status_;
 
   bool HasPermissionsFor(blink::PermissionType permission_type) const;

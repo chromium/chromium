@@ -100,7 +100,7 @@ class CONTENT_EXPORT PermissionController
   virtual void RequestPermissionFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       PermissionRequestDescription request_description,
-      base::OnceCallback<void(PermissionStatus)> callback) = 0;
+      base::OnceCallback<void(PermissionResult)> callback) = 0;
 
   // RenderFrameHost. This API takes into account the lifecycle state of a given
   // document (i.e. whether it's in back-forward cache or being prerendered) in
@@ -110,7 +110,7 @@ class CONTENT_EXPORT PermissionController
   virtual void RequestPermissionsFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       PermissionRequestDescription request_description,
-      base::OnceCallback<void(const std::vector<PermissionStatus>&)>
+      base::OnceCallback<void(const std::vector<PermissionResult>&)>
           callback) = 0;
 
   // Sets the permission back to its default for the `origin`.

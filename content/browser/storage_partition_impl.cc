@@ -2283,8 +2283,8 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
                       blink::PermissionType::LOCAL_NETWORK_ACCESS)),
           base::BindOnce(
               [](OnLocalNetworkAccessPermissionRequiredCallback cb,
-                 PermissionStatus status) {
-                std::move(cb).Run(status ==
+                 PermissionResult permission_result) {
+                std::move(cb).Run(permission_result.status ==
                                   blink::mojom::PermissionStatus::GRANTED);
               },
               std::move(callback)));
@@ -3884,8 +3884,7 @@ StoragePartitionImpl::URLLoaderNetworkContext::~URLLoaderNetworkContext() =
 StoragePartitionImpl::URLLoaderNetworkContext
 StoragePartitionImpl::URLLoaderNetworkContext::CreateForRenderFrameHost(
     GlobalRenderFrameHostId render_frame_host_id) {
-  return StoragePartitionImpl::URLLoaderNetworkContext(
-      render_frame_host_id);
+  return StoragePartitionImpl::URLLoaderNetworkContext(render_frame_host_id);
 }
 
 StoragePartitionImpl::URLLoaderNetworkContext

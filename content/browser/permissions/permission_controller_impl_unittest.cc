@@ -13,6 +13,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/navigation_simulator.h"
@@ -35,7 +36,7 @@ namespace {
 using ::testing::Unused;
 using OverrideStatus = PermissionControllerImpl::OverrideStatus;
 using RequestsCallback =
-    base::OnceCallback<void(const std::vector<PermissionStatus>&)>;
+    base::OnceCallback<void(const std::vector<PermissionResult>&)>;
 
 constexpr char kTestUrl[] = "https://google.com";
 
@@ -52,7 +53,7 @@ class MockManagerWithRequests : public MockPermissionManager {
       RequestPermissionsFromCurrentDocument,
       (RenderFrameHost * render_frame_host,
        const PermissionRequestDescription& request_description,
-       const base::OnceCallback<void(const std::vector<PermissionStatus>&)>
+       const base::OnceCallback<void(const std::vector<PermissionResult>&)>
            callback),
       (override));
   MOCK_METHOD(
@@ -60,7 +61,7 @@ class MockManagerWithRequests : public MockPermissionManager {
       RequestPermissions,
       (RenderFrameHost * render_frame_host,
        const PermissionRequestDescription& request_description,
-       const base::OnceCallback<void(const std::vector<PermissionStatus>&)>
+       const base::OnceCallback<void(const std::vector<PermissionResult>&)>
            callback),
       (override));
   MOCK_METHOD(bool,
@@ -110,19 +111,27 @@ const struct {
   std::map<PermissionType, PermissionStatus> overrides;
 
   std::vector<PermissionType> delegated_permissions;
-  std::vector<PermissionStatus> delegated_statuses;
+  std::vector<PermissionResult> delegated_results;
 
-  std::vector<PermissionStatus> expected_results;
+  std::vector<PermissionResult> expected_results;
   bool expect_death;
 } kTestPermissionRequestCases[] = {
     // No overrides present - all delegated.
     {{},
      {PermissionType::GEOLOCATION, PermissionType::BACKGROUND_SYNC,
       PermissionType::MIDI_SYSEX},
-     {PermissionStatus::DENIED, PermissionStatus::GRANTED,
-      PermissionStatus::GRANTED},
-     {PermissionStatus::DENIED, PermissionStatus::GRANTED,
-      PermissionStatus::GRANTED},
+     {PermissionResult(PermissionStatus::DENIED,
+                       PermissionStatusSource::UNSPECIFIED),
+      PermissionResult(PermissionStatus::GRANTED,
+                       PermissionStatusSource::UNSPECIFIED),
+      PermissionResult(PermissionStatus::GRANTED,
+                       PermissionStatusSource::UNSPECIFIED)},
+     {PermissionResult(PermissionStatus::DENIED,
+                       PermissionStatusSource::UNSPECIFIED),
+      PermissionResult(PermissionStatus::GRANTED,
+                       PermissionStatusSource::UNSPECIFIED),
+      PermissionResult(PermissionStatus::GRANTED,
+                       PermissionStatusSource::UNSPECIFIED)},
      /*expect_death=*/false},
 
     // No delegates needed - all overridden.
@@ -131,32 +140,53 @@ const struct {
       {PermissionType::MIDI_SYSEX, PermissionStatus::ASK}},
      {},
      {},
-     {PermissionStatus::GRANTED, PermissionStatus::GRANTED,
-      PermissionStatus::ASK},
+     {PermissionResult(PermissionStatus::GRANTED,
+                       PermissionStatusSource::UNSPECIFIED),
+      PermissionResult(PermissionStatus::GRANTED,
+                       PermissionStatusSource::UNSPECIFIED),
+      PermissionResult(PermissionStatus::ASK,
+                       PermissionStatusSource::UNSPECIFIED)},
      /*expect_death=*/false},
 
     // Some overridden, some delegated.
     {{{PermissionType::BACKGROUND_SYNC, PermissionStatus::DENIED}},
      {PermissionType::GEOLOCATION, PermissionType::MIDI_SYSEX},
-     {PermissionStatus::GRANTED, PermissionStatus::ASK},
-     {PermissionStatus::GRANTED, PermissionStatus::DENIED,
-      PermissionStatus::ASK},
+     {
+         PermissionResult(PermissionStatus::GRANTED,
+                          PermissionStatusSource::UNSPECIFIED),
+         PermissionResult(PermissionStatus::ASK,
+                          PermissionStatusSource::UNSPECIFIED),
+     },
+     {PermissionResult(PermissionStatus::GRANTED,
+                       PermissionStatusSource::UNSPECIFIED),
+      PermissionResult(PermissionStatus::DENIED,
+                       PermissionStatusSource::UNSPECIFIED),
+      PermissionResult(PermissionStatus::ASK,
+                       PermissionStatusSource::UNSPECIFIED)},
      /*expect_death=*/false},
 
     // Some overridden, some delegated.
     {{{PermissionType::GEOLOCATION, PermissionStatus::GRANTED},
       {PermissionType::BACKGROUND_SYNC, PermissionStatus::DENIED}},
      {PermissionType::MIDI_SYSEX},
-     {PermissionStatus::ASK},
-     {PermissionStatus::GRANTED, PermissionStatus::DENIED,
-      PermissionStatus::ASK},
+     {PermissionResult(PermissionStatus::ASK,
+                       PermissionStatusSource::UNSPECIFIED)},
+     {PermissionResult(PermissionStatus::GRANTED,
+                       PermissionStatusSource::UNSPECIFIED),
+      PermissionResult(PermissionStatus::DENIED,
+                       PermissionStatusSource::UNSPECIFIED),
+      PermissionResult(PermissionStatus::ASK,
+                       PermissionStatusSource::UNSPECIFIED)},
      /*expect_death=*/false},
 
     // Too many delegates (causes death).
     {{{PermissionType::GEOLOCATION, PermissionStatus::GRANTED},
       {PermissionType::MIDI_SYSEX, PermissionStatus::ASK}},
      {PermissionType::BACKGROUND_SYNC},
-     {PermissionStatus::DENIED, PermissionStatus::GRANTED},
+     {PermissionResult(PermissionStatus::DENIED,
+                       PermissionStatusSource::UNSPECIFIED),
+      PermissionResult(PermissionStatus::GRANTED,
+                       PermissionStatusSource::UNSPECIFIED)},
      // Results don't matter because will die.
      {},
      /*expect_death=*/true},
@@ -165,7 +195,10 @@ const struct {
     {{},
      {PermissionType::GEOLOCATION, PermissionType::BACKGROUND_SYNC,
       PermissionType::MIDI_SYSEX},
-     {PermissionStatus::GRANTED, PermissionStatus::GRANTED},
+     {PermissionResult(PermissionStatus::GRANTED,
+                       PermissionStatusSource::UNSPECIFIED),
+      PermissionResult(PermissionStatus::GRANTED,
+                       PermissionStatusSource::UNSPECIFIED)},
      // Results don't matter because will die.
      {},
      /*expect_death=*/true}};
@@ -201,7 +234,7 @@ class PermissionControllerImplTest : public ::testing::Test {
   void PermissionControllerRequestPermissionsFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       PermissionRequestDescription request_description,
-      base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
+      base::OnceCallback<void(const std::vector<PermissionResult>&)> callback) {
     permission_controller()->RequestPermissionsFromCurrentDocument(
         render_frame_host, std::move(request_description), std::move(callback));
   }
@@ -209,7 +242,7 @@ class PermissionControllerImplTest : public ::testing::Test {
   void PermissionControllerRequestPermissions(
       RenderFrameHost* render_frame_host,
       PermissionRequestDescription request_description,
-      base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
+      base::OnceCallback<void(const std::vector<PermissionResult>&)> callback) {
     permission_controller()->RequestPermissions(
         render_frame_host, std::move(request_description), std::move(callback));
   }
@@ -278,9 +311,9 @@ TEST_F(PermissionControllerImplTest,
     if (!test_case.delegated_permissions.empty()) {
       auto forward_callbacks = testing::WithArg<2>(
           [&test_case](
-              base::OnceCallback<void(const std::vector<PermissionStatus>&)>
+              base::OnceCallback<void(const std::vector<PermissionResult>&)>
                   callback) {
-            std::move(callback).Run(test_case.delegated_statuses);
+            std::move(callback).Run(test_case.delegated_results);
             return 0;
           });
       // Regular tests can set expectations.
@@ -376,9 +409,9 @@ TEST_F(PermissionControllerImplTest,
     if (!test_case.delegated_permissions.empty()) {
       auto forward_callbacks = testing::WithArg<2>(
           [&test_case](
-              base::OnceCallback<void(const std::vector<PermissionStatus>&)>
+              base::OnceCallback<void(const std::vector<PermissionResult>&)>
                   callback) {
-            std::move(callback).Run(test_case.delegated_statuses);
+            std::move(callback).Run(test_case.delegated_results);
             return 0;
           });
       // Regular tests can set expectations.

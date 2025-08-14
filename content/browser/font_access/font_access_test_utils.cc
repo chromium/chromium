@@ -5,6 +5,7 @@
 #include "content/browser/font_access/font_access_test_utils.h"
 
 #include "content/public/browser/permission_request_description.h"
+#include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace content {
@@ -15,8 +16,7 @@ TestFontAccessPermissionManager::~TestFontAccessPermissionManager() = default;
 void TestFontAccessPermissionManager::RequestPermissionsFromCurrentDocument(
     RenderFrameHost* render_frame_host,
     const PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
-        callback) {
+    base::OnceCallback<void(const std::vector<PermissionResult>&)> callback) {
   EXPECT_EQ(blink::PermissionDescriptorToPermissionType(
                 request_description.permissions[0]),
             blink::PermissionType::LOCAL_FONTS);

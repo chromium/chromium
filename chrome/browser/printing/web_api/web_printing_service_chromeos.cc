@@ -21,6 +21,7 @@
 #include "components/permissions/permission_request_data.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "printing/backend/cups_ipp_constants.h"
 #include "printing/backend/print_backend.h"
@@ -265,8 +266,8 @@ void WebPrintingServiceChromeOS::Print(
 
 void WebPrintingServiceChromeOS::OnPermissionDecidedForGetPrinters(
     GetPrintersCallback callback,
-    blink::mojom::PermissionStatus permission_status) {
-  if (permission_status != blink::mojom::PermissionStatus::GRANTED) {
+    content::PermissionResult permission_result) {
+  if (permission_result.status != blink::mojom::PermissionStatus::GRANTED) {
     std::move(callback).Run(blink::mojom::GetPrintersResult::NewError(
         blink::mojom::GetPrintersError::kUserPermissionDenied));
     return;
