@@ -1,5 +1,6 @@
 include_rules = [
   # Do not add chrome/ as an allowed include.
+  "-chrome",
 
   # Individual components must explicitly declare their dependencies
   # on other components. Cycles in the dependency graph within
