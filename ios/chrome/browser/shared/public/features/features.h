@@ -1091,4 +1091,9 @@ BASE_DECLARE_FEATURE(kIOSDefaultBrowserOffCyclePromo);
 
 bool IsDefaultBrowserOffCyclePromoEnabled();
 
+// Feature flag for logging the app install attribution.
+BASE_DECLARE_FEATURE(kIOSLogInstallAttribution);
+
+bool IsInstallAttributionLoggingEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

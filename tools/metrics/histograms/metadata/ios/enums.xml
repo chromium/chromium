@@ -631,6 +631,15 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Disabled by enterprise policies"/>
 </enum>
 
+<!-- LINT.IfChange(IOSInstallAttributionType) -->
+
+<enum name="IOSInstallAttributionType">
+  <int value="0" label="Within 24 hours"/>
+  <int value="1" label="Within 15 days"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/default_browser/model/install_attribution/install_attribution_helper.h:InstallAttributionType) -->
+
 <enum name="IOSJavascriptContentBlockType">
   <int value="0" label="Cookie"/>
   <int value="1" label="Local Storage"/>
