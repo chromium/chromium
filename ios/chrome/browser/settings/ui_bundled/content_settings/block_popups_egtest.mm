@@ -81,7 +81,15 @@ class ScopedBlockPopupsException {
 
 // Opens the block popups settings page and verifies that accessibility is set
 // up properly.
-- (void)testAccessibilityOfBlockPopupSettings {
+// TODO(crbug.com/438657821): Flaky on device.
+#if TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR
+#define MAYBE_testAccessibilityOfBlockPopupSettings \
+  FLAKY_testAccessibilityOfBlockPopupSettings
+#else
+#define MAYBE_testAccessibilityOfBlockPopupSettings \
+  testAccessibilityOfBlockPopupSettings
+#endif
+- (void)MAYBE_testAccessibilityOfBlockPopupSettings {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:ContentSettingsButton()];
   [[EarlGrey selectElementWithMatcher:BlockPopupsSettingsButton()]
