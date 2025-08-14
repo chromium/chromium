@@ -3810,10 +3810,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Net.NetworkTransaction.Create{StreamType}Time{HostType}.{Protocol}"
+    name="Net.NetworkTransaction.Create{StreamType}Time{HostType}.{Protocol}{AddressFamily}"
     units="ms" expires_after="2026-01-18">
   <owner>bashi@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
+  <owner>blink-network-stack@google.com</owner>
   <summary>
     The time taken for creating a(n) {StreamType}. Recorded in
     HttpNetworkTransaction::DoCreateStreamComplete when the stream creation
@@ -3828,6 +3828,12 @@ chromium-metrics-reviews@google.com.
     <variant name=".GoogleHost"/>
   </token>
   <token key="Protocol" variants="NetworkTransactionBlockedProtocol"/>
+  <token key="AddressFamily">
+    <variant name=""/>
+    <variant name=".IPv4"/>
+    <variant name=".IPv6"/>
+    <variant name=".Unspecified"/>
+  </token>
 </histogram>
 
 <histogram
