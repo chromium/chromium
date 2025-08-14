@@ -112,6 +112,8 @@ if (is_win || is_mac || is_linux) {
       "app/app_uninstall.h",
       "app/app_uninstall_self.cc",
       "app/app_uninstall_self.h",
+      "app/app_unzip_worker.cc",
+      "app/app_unzip_worker.h",
       "app/app_update.cc",
       "app/app_update.h",
       "app/app_utils.cc",
@@ -147,6 +149,8 @@ if (is_win || is_mac || is_linux) {
       "net/fallback_net_fetcher.cc",
       "net/fallback_net_fetcher.h",
       "net/network.h",
+      "out_of_process_unzipper.cc",
+      "out_of_process_unzipper.h",
       "persisted_data.cc",
       "persisted_data.h",
       "ping_configurator.cc",
@@ -214,6 +218,8 @@ if (is_win || is_mac || is_linux) {
       "//components/policy/core/common:util",
       "//components/policy/proto",
       "//components/prefs",
+      "//components/services/unzip:lib",
+      "//components/services/unzip/public/mojom",
       "//components/update_client",
       "//components/update_client:in_process_patcher",
       "//components/update_client:in_process_unzipper",
@@ -223,6 +229,7 @@ if (is_win || is_mac || is_linux) {
       "//third_party/boringssl",
       "//third_party/crashpad/crashpad/client",
       "//third_party/crashpad/crashpad/handler",
+      "//third_party/zlib/google:compression_utils",
       "//url",
     ]
 
@@ -262,6 +269,7 @@ if (is_win || is_mac || is_linux) {
       deps += [
         ":ks_ticket",
         "//chrome/updater/net/mac/mojom",
+        "//components/services/unzip/public/mojom",
         "//mojo/public/cpp/platform",
         "//net",
       ]
@@ -1013,6 +1021,7 @@ if (is_win || is_mac || is_linux) {
         "test/data/ProcmonConfiguration.pmc",
         "//chrome/test/data/updater/OfflineManifest.gup",
         "//chrome/test/data/updater/updater_qualification_app_exe.crx",
+        "//chrome/test/data/updater/updater_qualification_app_exe.crx.xz",
       ]
 
       if (target_cpu == "arm64") {
@@ -1111,6 +1120,7 @@ if (is_win || is_mac || is_linux) {
         "//chrome/test/data/updater/setup_test_envcheck/.install",
         "//chrome/test/data/updater/setup_test_envcheck/marker.app",
         "//chrome/test/data/updater/updater_qualification_app_dmg.crx",
+        "//chrome/test/data/updater/updater_qualification_app_dmg.crx.xz",
         "//third_party/updater/chrome_mac_universal/cipd/GoogleUpdater_test.app/Contents/MacOS/GoogleUpdater_test",
         "//third_party/updater/chrome_mac_universal/cipd/GoogleUpdater_test.app/Contents/Info.plist",
         "//third_party/updater/chrome_mac_universal/cipd/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/MacOS/GoogleSoftwareUpdate",
@@ -1172,7 +1182,10 @@ if (is_win || is_mac || is_linux) {
     if (is_linux) {
       sources += [ "test/integration_tests_linux.cc" ]
 
-      data += [ "//chrome/test/data/updater/updater_qualification_app.crx" ]
+      data += [
+        "//chrome/test/data/updater/updater_qualification_app.crx",
+        "//chrome/test/data/updater/updater_qualification_app.crx.xz",
+      ]
       data_deps += [
         "//chrome/enterprise_companion:enterprise_companion_test",
         "//chrome/updater/linux:updater_test",

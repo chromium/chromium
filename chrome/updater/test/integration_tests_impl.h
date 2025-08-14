@@ -447,7 +447,8 @@ void ExpectUpdateSequence(
     bool do_fault_injection,
     bool skip_download,
     const base::Version& updater_version = base::Version(kUpdaterVersion),
-    const std::string& event_regex = ".*");
+    const std::string& event_regex = ".*",
+    bool use_xz = false);
 
 void ExpectUpdateSequenceBadHash(UpdaterScope scope,
                                  ScopedServer* test_server,

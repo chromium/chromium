@@ -90,6 +90,9 @@ inline constexpr char kCrashHandlerSwitch[] = "crash-handler";
 // Updates the updater.
 inline constexpr char kUpdateSwitch[] = "update";
 
+// Run as an unzip worker.
+inline constexpr char kUnzipWorkerSwitch[] = "unzip-worker";
+
 // Run as a network worker.
 inline constexpr char kNetWorkerSwitch[] = "net-worker";
 

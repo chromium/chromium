@@ -28,6 +28,7 @@
 #include "chrome/updater/crx_downloader_factory.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/net/network.h"
+#include "chrome/updater/out_of_process_unzipper.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
@@ -42,7 +43,6 @@
 #include "components/update_client/patch/in_process_patcher.h"
 #include "components/update_client/patcher.h"
 #include "components/update_client/protocol_handler.h"
-#include "components/update_client/unzip/in_process_unzipper.h"
 #include "components/update_client/unzipper.h"
 #include "components/version_info/version_info.h"
 #include "url/gurl.h"
@@ -52,19 +52,6 @@
 #endif
 
 namespace updater {
-
-namespace {
-
-// Allow internal symbolic links in zip files on macOS.
-#if BUILDFLAG(IS_POSIX)
-update_client::InProcessUnzipperFactory::SymlinkOption unzipper_symlink_option =
-    update_client::InProcessUnzipperFactory::SymlinkOption::PRESERVE;
-#else
-update_client::InProcessUnzipperFactory::SymlinkOption unzipper_symlink_option =
-    update_client::InProcessUnzipperFactory::SymlinkOption::DONT_PRESERVE;
-#endif
-
-}  // namespace
 
 Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
                            scoped_refptr<ExternalConstants> external_constants,
@@ -77,9 +64,7 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
           std::make_unique<ActivityDataService>(scope))),
       policy_service_(base::MakeRefCounted<PolicyService>(external_constants,
                                                           persisted_data_)),
-      unzip_factory_(
-          base::MakeRefCounted<update_client::InProcessUnzipperFactory>(
-              unzipper_symlink_option)),
+      unzip_factory_(base::MakeRefCounted<OutOfProcessUnzipperFactory>()),
       patch_factory_(
           base::MakeRefCounted<update_client::InProcessPatcherFactory>()),
       crx_cache_(base::MakeRefCounted<update_client::CrxCache>(

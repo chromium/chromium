@@ -684,11 +684,12 @@ class IntegrationTest : public ::testing::Test {
       bool do_fault_injection = false,
       bool skip_download = false,
       const base::Version& updater_version = base::Version(kUpdaterVersion),
-      const std::string& event_regex = ".*") {
+      const std::string& event_regex = ".*",
+      bool use_xz = false) {
     test_commands_->ExpectUpdateSequence(
         test_server, app_id, install_data_index, priority, from_version,
         to_version, do_fault_injection, skip_download, updater_version,
-        event_regex);
+        event_regex, use_xz);
   }
 
   void ExpectUpdateSequenceBadHash(ScopedServer* test_server,
@@ -1533,6 +1534,25 @@ TEST_F(IntegrationTest, UpdateApp) {
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v2));
   ASSERT_NO_FATAL_FAILURE(ExpectLastChecked());
   ASSERT_NO_FATAL_FAILURE(ExpectLastStarted());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, UpdateAppXZ) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+
+  const std::string kAppId("test");
+  ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
+  base::Version v1("1");
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
+      &test_server, kAppId, "", UpdateService::Priority::kBackground,
+      base::Version("0.1"), v1, false, false, base::Version(kUpdaterVersion),
+      ".*", true));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());

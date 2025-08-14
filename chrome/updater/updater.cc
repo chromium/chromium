@@ -29,6 +29,7 @@
 #include "chrome/updater/app/app_server.h"
 #include "chrome/updater/app/app_uninstall.h"
 #include "chrome/updater/app/app_uninstall_self.h"
+#include "chrome/updater/app/app_unzip_worker.h"
 #include "chrome/updater/app/app_update.h"
 #include "chrome/updater/app/app_wake.h"
 #include "chrome/updater/app/app_wakeall.h"
@@ -67,6 +68,7 @@
 //    --enable-logging --vmodule=*/chrome/updater/*=2,*/components/winhttp/*=2.
 
 namespace updater {
+
 namespace {
 
 void ReinitializeLoggingAfterCrashHandler(UpdaterScope updater_scope) {
@@ -207,6 +209,10 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
     return MakeAppWakeAll()->Run();
   }
 
+  if (command_line->HasSwitch(kUnzipWorkerSwitch)) {
+    return MakeAppUnzipWorker()->Run();
+  }
+
 #if BUILDFLAG(IS_MAC)
   if (command_line->HasSwitch(kNetWorkerSwitch)) {
     return MakeAppNetWorker()->Run();
@@ -238,6 +244,7 @@ const char* GetUpdaterCommand(const base::CommandLine* command_line) {
       kHealthCheckSwitch,
       kHandoffSwitch,
       kNetWorkerSwitch,
+      kUnzipWorkerSwitch,
   };
   const auto it = std::ranges::find_if(commands, [command_line](auto cmd) {
     return command_line->HasSwitch(cmd);

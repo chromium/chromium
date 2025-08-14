@@ -97,7 +97,8 @@ class IntegrationTestCommands
                                     bool do_fault_injection,
                                     bool skip_download,
                                     const base::Version& updater_version,
-                                    const std::string& event_regex) const = 0;
+                                    const std::string& event_regex,
+                                    bool use_xz) const = 0;
   virtual void ExpectUpdateSequenceBadHash(
       ScopedServer* test_server,
       const std::string& app_id,
