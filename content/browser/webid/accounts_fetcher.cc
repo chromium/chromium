@@ -107,7 +107,7 @@ void AccountsFetcher::FetchEndpointsForIdps(
 void AccountsFetcher::SendAllFailedTokenRequestMetrics(
     blink::mojom::FederatedAuthRequestResult result,
     bool did_show_ui) {
-  DCHECK(IsFedCmMetricsEndpointEnabled());
+  DCHECK(IsMetricsEndpointEnabled());
   for (const auto& metrics_endpoint_kv : metrics_endpoints_) {
     SendFailedTokenRequestMetrics(metrics_endpoint_kv.second, result,
                                   did_show_ui);
@@ -121,7 +121,7 @@ void AccountsFetcher::SendSuccessfulTokenRequestMetrics(
     base::TimeDelta account_selected_to_token_response_time,
     base::TimeDelta api_call_to_token_response_time,
     bool did_show_ui) {
-  DCHECK(IsFedCmMetricsEndpointEnabled());
+  DCHECK(IsMetricsEndpointEnabled());
 
   for (const auto& metrics_endpoint_kv : metrics_endpoints_) {
     const GURL& metrics_endpoint = metrics_endpoint_kv.second;
@@ -187,7 +187,7 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
       continue;
     }
 
-    if (IsFedCmIdPRegistrationEnabled()) {
+    if (IsIdPRegistrationEnabled()) {
       if (get_info_it->second.provider->config->type) {
         if (!base::Contains(fetch_result.metadata->types,
                             get_info_it->second.provider->config->type)) {
@@ -203,7 +203,7 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
     if (get_info_it->second.provider->format) {
       // If a token format was specified, make sure that the configURL
       // supports it as well as the feature is enabled.
-      if (!IsFedCmDelegationEnabled() ||
+      if (!IsDelegationEnabled() ||
           !base::Contains(fetch_result.metadata->formats, kVcSdJwt)) {
         federated_auth_request_impl_->OnFetchDataForIdpFailed(
             std::move(idp_info),
@@ -336,7 +336,7 @@ void AccountsFetcher::OnAccountsFetchSucceeded(
     IdpNetworkRequestManager::FetchStatus status,
     std::vector<IdentityRequestAccountPtr> accounts) {
   bool need_client_metadata = false;
-  if (IsFedCmIframeOriginEnabled()) {
+  if (IsIframeOriginEnabled()) {
     // For cross-site iframes, we need to fetch client metadata in case the
     // IDP sends `client_matches_top_frame_origin: false`.
     url::Origin embedding_origin =
@@ -620,7 +620,7 @@ void AccountsFetcher::SendFailedTokenRequestMetrics(
     const GURL& metrics_endpoint,
     blink::mojom::FederatedAuthRequestResult result,
     bool did_show_ui) {
-  DCHECK(IsFedCmMetricsEndpointEnabled());
+  DCHECK(IsMetricsEndpointEnabled());
   if (!metrics_endpoint.is_valid()) {
     return;
   }

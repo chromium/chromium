@@ -293,7 +293,7 @@ void InMemoryFederatedPermissionContext::SetIdpSigninStatus(
     observer.OnIdpSigninStatusReceived(idp_origin, idp_signin_status);
   }
 
-  if (options && IsFedCmLightweightModeEnabled()) {
+  if (options && webid::IsLightweightModeEnabled()) {
     if (idp_signin_status) {
       idp_login_status_options_[idp_origin.Serialize()] = options.value();
     } else {

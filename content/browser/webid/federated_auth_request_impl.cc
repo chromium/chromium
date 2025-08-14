@@ -137,7 +137,7 @@ bool CanBypassPermissionStatusCheck(
   // conditional flow isn't intrusive which was the main reason we added such
   // controls, we can bypass the check for it as well.
   return rp_mode == RpMode::kActive ||
-         (IsFedCmAutofillEnabled() &&
+         (webid::IsAutofillEnabled() &&
           mediation_requirement == MediationRequirement::kConditional);
 }
 
@@ -288,7 +288,7 @@ void FederatedAuthRequestImpl::RequestToken(
       api_permission_delegate_->ShouldCompleteRequestImmediately();
 
   // Expand the providers list with registered providers.
-  if (IsFedCmIdPRegistrationEnabled()) {
+  if (webid::IsIdPRegistrationEnabled()) {
     for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
       std::vector<IdentityProviderRequestOptionsPtr> providers =
           MaybeAddRegisteredProviders(idp_get_params_ptr->providers);
@@ -472,7 +472,7 @@ void FederatedAuthRequestImpl::RequestToken(
       blink::mojom::RpMode rp_mode = idp_get_params_ptr->mode;
       const GURL& idp_config_url = idp_ptr->config->config_url;
       std::optional<blink::mojom::Format> format =
-          IsFedCmDelegationEnabled() ? idp_ptr->format : std::nullopt;
+          webid::IsDelegationEnabled() ? idp_ptr->format : std::nullopt;
       token_request_get_infos_.emplace(
           idp_config_url, IdentityProviderGetInfo(std::move(idp_ptr),
                                                   rp_context, rp_mode, format));
@@ -608,7 +608,7 @@ void FederatedAuthRequestImpl::SetIdpSigninStatus(
     return;
   }
 
-  if (!IsFedCmLightweightModeEnabled()) {
+  if (!webid::IsLightweightModeEnabled()) {
     permission_delegate_->SetIdpSigninStatus(
         idp_origin, status == blink::mojom::IdpSigninStatus::kSignedIn,
         std::nullopt);
@@ -634,7 +634,7 @@ void FederatedAuthRequestImpl::SetIdpSigninStatus(
 
 void FederatedAuthRequestImpl::RegisterIdP(const GURL& idp,
                                            RegisterIdPCallback callback) {
-  if (!IsFedCmIdPRegistrationEnabled()) {
+  if (!webid::IsIdPRegistrationEnabled()) {
     std::move(callback).Run(RegisterIdpStatus::kErrorFeatureDisabled);
     return;
   }
@@ -695,7 +695,7 @@ void FederatedAuthRequestImpl::OnRegisterIdPPermissionResponse(
 
 void FederatedAuthRequestImpl::UnregisterIdP(const GURL& idp,
                                              UnregisterIdPCallback callback) {
-  if (!IsFedCmIdPRegistrationEnabled()) {
+  if (!webid::IsIdPRegistrationEnabled()) {
     std::move(callback).Run(false);
     return;
   }
@@ -867,7 +867,7 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpFailed(
 const std::optional<std::vector<IdentityRequestAccountPtr>>
 FederatedAuthRequestImpl::GetAutofillSuggestions() const {
   // Requires conditional FedCM to be enabled.
-  if (!IsFedCmAutofillEnabled()) {
+  if (!webid::IsAutofillEnabled()) {
     return std::nullopt;
   }
 
@@ -1437,7 +1437,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
   std::string query;
   if (idp_blindness) {
     // Checked previously.
-    DCHECK(IsFedCmDelegationEnabled());
+    DCHECK(webid::IsDelegationEnabled());
 
     endpoint = idp_info.endpoints.issuance;
     federated_sdjwt_handler_ = std::make_unique<FederatedSdJwtHandler>(
@@ -1824,7 +1824,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
   DCHECK(result == FederatedAuthRequestResult::kSuccess || id_token.empty());
 
   bool should_trigger_cooldown_on_ignore =
-      IsFedCmCooldownOnIgnoreEnabled() &&
+      webid::IsCooldownOnIgnoreEnabled() &&
       token_status == TokenStatus::kUnhandledRequest &&
       rp_mode_ == RpMode::kPassive;
   if (accounts_dialog_shown_time_.has_value()) {
@@ -1898,7 +1898,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
   if (result == FederatedAuthRequestResult::kSuccess) {
     CHECK(selected_idp_config_url);
     CHECK(fedcm_accounts_fetcher_);
-    if (IsFedCmMetricsEndpointEnabled()) {
+    if (webid::IsMetricsEndpointEnabled()) {
       fedcm_accounts_fetcher_->SendSuccessfulTokenRequestMetrics(
           *selected_idp_config_url,
           ready_to_display_accounts_dialog_time_ - start_time_,
@@ -1917,7 +1917,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
 
     // fedcm_accounts_fetcher_ could be null if configs were not fetched, e.g.
     // because of cooldown.
-    if (IsFedCmMetricsEndpointEnabled() && fedcm_accounts_fetcher_) {
+    if (webid::IsMetricsEndpointEnabled() && fedcm_accounts_fetcher_) {
       fedcm_accounts_fetcher_->SendAllFailedTokenRequestMetrics(
           result, request_dialog_controller_->DidShowUi());
     }
@@ -2617,7 +2617,7 @@ bool FederatedAuthRequestImpl::ShouldTerminateRequest(
   }
 
   if (requirement == MediationRequirement::kConditional &&
-      !IsFedCmAutofillEnabled()) {
+      !webid::IsAutofillEnabled()) {
     // The conditional mediation parameter can only be used when delegation
     // is enabled while it is under development.
     //

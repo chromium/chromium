@@ -259,7 +259,7 @@ void ConfigFetcher::ValidateAndMaybeSetError(FetchResult& result) {
   bool is_accounts_valid =
       webid::IsEndpointSameOrigin(result.identity_provider_config_url,
                                   result.endpoints.accounts) ||
-      (IsFedCmLightweightModeEnabled() && result.endpoints.accounts.is_empty());
+      (IsLightweightModeEnabled() && result.endpoints.accounts.is_empty());
 
   bool is_login_url_valid =
       result.metadata &&
@@ -302,7 +302,7 @@ void ConfigFetcher::ValidateAndMaybeSetError(FetchResult& result) {
   // (b)
   bool is_wellknown_accounts_valid =
       result.wellknown.accounts.is_valid() ||
-      (IsFedCmLightweightModeEnabled() && result.wellknown.accounts.is_empty());
+      (IsLightweightModeEnabled() && result.wellknown.accounts.is_empty());
 
   if (is_wellknown_accounts_valid && result.wellknown.login_url.is_valid() &&
       result.metadata && result.metadata->idp_login_url.is_valid()) {
@@ -375,7 +375,7 @@ void ConfigFetcher::RunCallbackIfDone() {
 
 bool ConfigFetcher::ShouldSkipWellKnownEnforcementForIdp(
     const FetchResult& fetch_result) {
-  if (IsFedCmWithoutWellKnownEnforcementEnabled()) {
+  if (IsWithoutWellKnownEnforcementEnabled()) {
     return true;
   }
   if (fetch_result.force_skip_well_known_enforcement) {

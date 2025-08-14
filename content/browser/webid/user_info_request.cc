@@ -168,7 +168,7 @@ void UserInfoRequest::SetCallbackAndStart(
   // registration API is not enabled since we only really need this for that
   // case.
   config_fetcher_->Start(
-      {{idp_config_url_, IsFedCmIdPRegistrationEnabled()}},
+      {{idp_config_url_, webid::IsIdPRegistrationEnabled()}},
       blink::mojom::RpMode::kPassive, /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindOnce(&UserInfoRequest::OnAllConfigAndWellKnownFetched,

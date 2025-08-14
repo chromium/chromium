@@ -112,7 +112,7 @@ std::string ComputeUrlEncodedTokenPostData(
     query +=
         "&params=" + base::EscapeUrlEncodedData(params_json, /*use_plus=*/true);
   }
-  if (IsFedCmIdPRegistrationEnabled() && type) {
+  if (IsIdPRegistrationEnabled() && type) {
     query += "&type=" + base::EscapeUrlEncodedData(*type, /*use_plus=*/true);
   }
   return query;

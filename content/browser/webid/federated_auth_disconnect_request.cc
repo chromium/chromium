@@ -119,7 +119,7 @@ void FederatedAuthDisconnectRequest::SetCallbackAndStart(
   // registration API is not enabled since we only really need this for that
   // case.
   config_fetcher_->Start(
-      {{config_url, IsFedCmIdPRegistrationEnabled()}},
+      {{config_url, webid::IsIdPRegistrationEnabled()}},
       blink::mojom::RpMode::kPassive, /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindOnce(

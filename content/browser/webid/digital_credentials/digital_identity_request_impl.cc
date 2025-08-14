@@ -443,7 +443,7 @@ void DigitalIdentityRequestImpl::Get(
     std::vector<blink::mojom::DigitalCredentialGetRequestPtr>
         digital_credential_requests,
     GetCallback callback) {
-  if (!IsWebIdentityDigitalCredentialsEnabled()) {
+  if (!webid::IsDigitalCredentialsEnabled()) {
     std::move(callback).Run(RequestDigitalIdentityStatus::kError,
                             /*protocol=*/std::nullopt, /*token=*/std::nullopt);
     return;
@@ -541,7 +541,7 @@ void DigitalIdentityRequestImpl::Create(
     std::vector<blink::mojom::DigitalCredentialCreateRequestPtr>
         digital_credential_requests,
     CreateCallback callback) {
-  if (!IsWebIdentityDigitalCredentialsCreationEnabled()) {
+  if (!webid::IsDigitalCredentialsCreationEnabled()) {
     std::move(callback).Run(RequestDigitalIdentityStatus::kError,
                             /*protocol=*/std::nullopt, /*token=*/std::nullopt);
     return;

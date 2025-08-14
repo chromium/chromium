@@ -319,7 +319,7 @@ std::vector<IdentityRequestDialogDisclosureField> GetDisclosureFields(
       list.push_back(IdentityRequestDialogDisclosureField::kEmail);
     } else if (field == kFedCmDefaultFieldPicture) {
       list.push_back(IdentityRequestDialogDisclosureField::kPicture);
-    } else if (IsFedCmAlternativeIdentifiersEnabled()) {
+    } else if (webid::IsAlternativeIdentifiersEnabled()) {
       if (field == kFedCmFieldPhoneNumber) {
         list.push_back(IdentityRequestDialogDisclosureField::kPhoneNumber);
       } else if (field == kFedCmFieldUsername) {

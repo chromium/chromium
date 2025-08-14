@@ -9,48 +9,48 @@
 
 // Flags to control WebID for testing/debugging.
 
-namespace content {
+namespace content::webid {
 
 // Whether metrics endpoint is enabled.
-bool IsFedCmMetricsEndpointEnabled();
+bool IsMetricsEndpointEnabled();
 
 // Whether the Delegation API is enabled.
-bool IsFedCmDelegationEnabled();
+bool IsDelegationEnabled();
 
 // Whether the IdP Registration API is enabled.
-bool IsFedCmIdPRegistrationEnabled();
+bool IsIdPRegistrationEnabled();
 
 // Whether the well-known enforcement is bypassed.
-bool IsFedCmWithoutWellKnownEnforcementEnabled();
+bool IsWithoutWellKnownEnforcementEnabled();
 
 // Whether the Web Identity Digital Credentials API is enabled.
-bool IsWebIdentityDigitalCredentialsEnabled();
+bool IsDigitalCredentialsEnabled();
 
 // Whether the Web Identity Digital Credentials Creation API is enabled.
-bool IsWebIdentityDigitalCredentialsCreationEnabled();
+bool IsDigitalCredentialsCreationEnabled();
 
 // Whether sending of SameSite=Lax cookies is enabled.
-bool IsFedCmSameSiteLaxEnabled();
+bool IsSameSiteLaxEnabled();
 
 // Whether lightweight FedCM credentials are enabled.
-bool IsFedCmLightweightModeEnabled();
+bool IsLightweightModeEnabled();
 
 // Whether phone/username is supported and name/email are optional.
-bool IsFedCmAlternativeIdentifiersEnabled();
+bool IsAlternativeIdentifiersEnabled();
 
 // Whether cooldown on ignore is enabled.
-bool IsFedCmCooldownOnIgnoreEnabled();
+bool IsCooldownOnIgnoreEnabled();
 
 // Whether to support the newer syntax for the "Use Other Account"
 // and account labels features.
-bool IsFedCmUseOtherAccountAndLabelsNewSyntaxEnabled();
+bool IsUseOtherAccountAndLabelsNewSyntaxEnabled();
 
 // Whether autofill enhancement with FedCM is enabled.
-bool IsFedCmAutofillEnabled();
+bool IsAutofillEnabled();
 
 // Whether showing the iframe origin is enabled.
-bool IsFedCmIframeOriginEnabled();
+bool IsIframeOriginEnabled();
 
-}  // namespace content
+}  // namespace content::webid
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_
