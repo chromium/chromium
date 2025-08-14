@@ -21,6 +21,8 @@ class PermissionSet;
 struct InstallPromptPermissions {
   InstallPromptPermissions();
   ~InstallPromptPermissions();
+  InstallPromptPermissions(const InstallPromptPermissions&);
+  InstallPromptPermissions& operator=(const InstallPromptPermissions&);
 
   void LoadFromPermissionSet(const extensions::PermissionSet* permissions_set,
                              extensions::Manifest::Type type);

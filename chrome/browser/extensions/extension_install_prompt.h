@@ -149,8 +149,8 @@ class ExtensionInstallPrompt {
     std::u16string GetRatingCount() const;
     std::u16string GetUserCount() const;
     size_t GetPermissionCount() const;
+    extensions::InstallPromptPermissions GetPermissions() const;
     std::u16string GetPermission(size_t index) const;
-    std::u16string GetPermissionsDetails(size_t index) const;
 
     const extensions::Extension* extension() const { return extension_; }
     void set_extension(const extensions::Extension* extension) {

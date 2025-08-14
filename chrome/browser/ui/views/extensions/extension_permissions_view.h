@@ -21,20 +21,16 @@ class ExtensionPermissionsView : public views::View {
   METADATA_HEADER(ExtensionPermissionsView, views::View)
 
  public:
-  ExtensionPermissionsView();
+  explicit ExtensionPermissionsView(
+      const extensions::InstallPromptPermissions& permissions);
   ExtensionPermissionsView(const ExtensionPermissionsView&) = delete;
   ExtensionPermissionsView& operator=(const ExtensionPermissionsView&) = delete;
 
-  // Adds a single pair of |permission_text| and |permission_details| to
+ private:
+  // Adds a single pair of `permission_text` and `permission_details` to
   // be rendered in the view.
   void AddItem(const std::u16string& permission_text,
                const std::u16string& permission_details);
-
-  // Adds the set of |permissions| to be rendered in the view.
-  void AddPermissions(const extensions::InstallPromptPermissions& permissions);
-
-  // views::View:
-  void ChildPreferredSizeChanged(views::View* child) override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_PERMISSIONS_VIEW_H_

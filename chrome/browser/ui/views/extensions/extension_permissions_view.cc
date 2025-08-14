@@ -12,11 +12,16 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
-ExtensionPermissionsView::ExtensionPermissionsView() {
+ExtensionPermissionsView::ExtensionPermissionsView(
+    const extensions::InstallPromptPermissions& permissions) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+
+  for (size_t i = 0; i < permissions.permissions.size(); ++i) {
+    AddItem(permissions.permissions.at(i), permissions.details.at(i));
+  }
 }
 
 void ExtensionPermissionsView::AddItem(
@@ -34,17 +39,6 @@ void ExtensionPermissionsView::AddItem(
     details_container.push_back(permission_details);
     AddChildView(std::make_unique<ExpandableContainerView>(details_container));
   }
-}
-
-void ExtensionPermissionsView::AddPermissions(
-    const extensions::InstallPromptPermissions& permissions) {
-  for (size_t i = 0; i < permissions.permissions.size(); ++i) {
-    AddItem(permissions.permissions[i], permissions.details[i]);
-  }
-}
-
-void ExtensionPermissionsView::ChildPreferredSizeChanged(views::View* child) {
-  PreferredSizeChanged();
 }
 
 BEGIN_METADATA(ExtensionPermissionsView)

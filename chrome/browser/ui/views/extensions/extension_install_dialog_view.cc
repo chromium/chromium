@@ -241,13 +241,8 @@ void AddPermissions(ExtensionInstallPrompt::Prompt* prompt,
                     std::vector<ExtensionInfoSection>& sections) {
   DCHECK_GT(prompt->GetPermissionCount(), 0u);
 
-  auto permissions_view = std::make_unique<ExtensionPermissionsView>();
-
-  for (size_t i = 0; i < prompt->GetPermissionCount(); ++i) {
-    permissions_view->AddItem(prompt->GetPermission(i),
-                              prompt->GetPermissionsDetails(i));
-  }
-
+  auto permissions_view =
+      std::make_unique<ExtensionPermissionsView>(prompt->GetPermissions());
   sections.push_back(
       {prompt->GetPermissionsHeading(), std::move(permissions_view)});
 }

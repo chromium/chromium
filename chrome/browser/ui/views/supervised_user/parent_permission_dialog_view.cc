@@ -550,8 +550,8 @@ void ParentPermissionDialogView::CreateContents() {
     AddChildViewRaw(permissions_header);
 
     // Create permissions view.
-    auto permissions_view = std::make_unique<ExtensionPermissionsView>();
-    permissions_view->AddPermissions(prompt_permissions_);
+    auto permissions_view =
+        std::make_unique<ExtensionPermissionsView>(prompt_permissions_);
 
     // Add to the section container, so the permissions can scroll, since they
     // can be arbitrarily long.

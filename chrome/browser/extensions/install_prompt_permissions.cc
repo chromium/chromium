@@ -19,6 +19,12 @@ InstallPromptPermissions::InstallPromptPermissions() = default;
 
 InstallPromptPermissions::~InstallPromptPermissions() = default;
 
+InstallPromptPermissions::InstallPromptPermissions(
+    const InstallPromptPermissions& other) = default;
+
+InstallPromptPermissions& InstallPromptPermissions::operator=(
+    const InstallPromptPermissions& other) = default;
+
 void InstallPromptPermissions::LoadFromPermissionSet(
     const PermissionSet* permissions_set,
     const Manifest::Type type) {

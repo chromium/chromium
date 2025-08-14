@@ -328,16 +328,15 @@ size_t ExtensionInstallPrompt::Prompt::GetPermissionCount() const {
   return prompt_permissions_.permissions.size();
 }
 
+extensions::InstallPromptPermissions
+ExtensionInstallPrompt::Prompt::GetPermissions() const {
+  return prompt_permissions_;
+}
+
 std::u16string ExtensionInstallPrompt::Prompt::GetPermission(
     size_t index) const {
   CHECK_LT(index, prompt_permissions_.permissions.size());
   return prompt_permissions_.permissions[index];
-}
-
-std::u16string ExtensionInstallPrompt::Prompt::GetPermissionsDetails(
-    size_t index) const {
-  CHECK_LT(index, prompt_permissions_.details.size());
-  return prompt_permissions_.details[index];
 }
 
 void ExtensionInstallPrompt::Prompt::AddObserver(Observer* observer) {
