@@ -866,7 +866,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardSystemWebAppTest,
   RunTestSequenceInContext(
       BrowserElements::From(app_browser)->GetContext(),
       WithView(kTabStripElementId,
-               [](TabStrip* tab_strip) { tab_strip->StopAnimating(true); }),
+               [](TabStrip* tab_strip) { tab_strip->StopAnimating(); }),
       NameDescendantViewByType<Tab>(kBrowserViewElementId, kTabToHover, 0),
       MoveMouseTo(kTabToHover),
       WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId),

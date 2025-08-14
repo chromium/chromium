@@ -234,9 +234,8 @@ class TabStrip : public views::View,
 
   TabDragContext* GetDragContext();
 
-  // Stops any ongoing animations. If `layout` is true and an animation is
-  // ongoing this does a layout.
-  void StopAnimating(bool layout);
+  // Stops any ongoing animations and lays out the tabstrip.
+  void StopAnimating();
 
   // Returns a view for anchoring an in-product help promo. `index_hint`
   // indicates at which tab the promo should be displayed, but is not

@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
@@ -1083,8 +1084,9 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                                                     AddTabTypes::ADD_NONE);
   const tab_groups::TabGroupId group_id_2 =
       browser()->tab_strip_model()->AddToNewGroup({1});
-  BrowserView::GetBrowserViewForBrowser(browser())->tabstrip()->StopAnimating(
-      true);
+  BrowserView::GetBrowserViewForBrowser(browser())
+      ->tab_strip_view()
+      ->StopAnimating();
 
   const char kSavedTabGroupButton1[] = "SavedTabGroupButton1";
   const char kSavedTabGroupButton2[] = "SavedTabGroupButton2";

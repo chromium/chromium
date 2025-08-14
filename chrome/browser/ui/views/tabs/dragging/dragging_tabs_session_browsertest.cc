@@ -38,12 +38,9 @@ class DraggingTabsSessionBrowserTest : public InProcessBrowserTest {
  protected:
   std::tuple<tabs::TabInterface*, Tab*> AddTab(int index, bool foreground) {
     chrome::AddTabAt(browser(), GURL("about:blank"), index, foreground);
-    BrowserView& browser_view = browser()->GetBrowserView();
-    browser_view.tabstrip()->StopAnimating(true);
-
-    return std::make_tuple(
-        browser()->GetTabStripModel()->GetTabAtIndex(index),
-        browser_view.tab_strip_view()->GetTabAnchorViewAt(index));
+    view_->StopAnimating();
+    return std::make_tuple(model_->GetTabAtIndex(index),
+                           view_->GetTabAnchorViewAt(index));
   }
 
   // Sets up model and view state, and populates a DragSessionData, to drag the

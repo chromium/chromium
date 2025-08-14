@@ -535,7 +535,7 @@ TabDragControllerTest::TabDragControllerTest()
 TabDragControllerTest::~TabDragControllerTest() = default;
 
 void TabDragControllerTest::StopAnimating(TabStrip* tab_strip) {
-  tab_strip->StopAnimating(true);
+  tab_strip->StopAnimating();
 }
 
 void TabDragControllerTest::AddTabsAndResetBrowser(Browser* browser,

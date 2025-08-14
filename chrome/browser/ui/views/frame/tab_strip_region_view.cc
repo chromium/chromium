@@ -523,6 +523,10 @@ bool TabStripRegionView::IsAnimating() const {
   return tab_strip_->IsAnimatingInTabStrip();
 }
 
+void TabStripRegionView::StopAnimating() {
+  return tab_strip_->StopAnimating();
+}
+
 std::optional<int> TabStripRegionView::GetFocusedTabIndex() const {
   for (int i = 0; i < tab_strip_->GetTabCount(); ++i) {
     if (tab_strip_->tab_at(i)->HasFocus()) {

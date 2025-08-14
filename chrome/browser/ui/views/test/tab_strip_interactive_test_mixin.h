@@ -35,7 +35,7 @@ class TabStripInteractiveTestMixin : public T {
   auto FinishTabstripAnimations() {
     return T::Steps(T::WaitForShow(kTabStripElementId),
                     T::WithView(kTabStripElementId, [](TabStrip* tab_strip) {
-                      tab_strip->StopAnimating(true);
+                      tab_strip->StopAnimating();
                     }));
   }
 

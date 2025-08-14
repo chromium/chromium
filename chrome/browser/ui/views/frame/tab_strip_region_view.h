@@ -114,6 +114,7 @@ class TabStripRegionView final : public views::AccessiblePaneView,
   ProductSpecificationsButton* GetProductSpecificationsButton() const override;
   glic::GlicButton* GetGlicButton() const override;
   bool IsAnimating() const override;
+  void StopAnimating() override;
   std::optional<int> GetFocusedTabIndex() const override;
   Tab* GetTabAnchorViewAt(int tab_index) override;
   views::View* GetTabGroupAnchorView(

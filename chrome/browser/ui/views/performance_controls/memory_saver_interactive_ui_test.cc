@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
@@ -798,12 +799,14 @@ class MemorySaverImprovedFaviconTreatmentTest
     MemorySaverInteractiveTestMixin::SetUpOnMainThread();
     SetMemorySaverModeEnabled(true);
   }
-  TabStrip* GetTabStrip() {
-    return BrowserView::GetBrowserViewForBrowser(browser())->tabstrip();
+  TabStripViewInterface* GetTabStripView() {
+    return BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view();
   }
 
   TabIcon* GetTabIcon(int tab_index) {
-    return GetTabStrip()->tab_at(tab_index)->GetTabIconForTesting();
+    return GetTabStripView()
+        ->GetTabAnchorViewAt(tab_index)
+        ->GetTabIconForTesting();
   }
 
  private:
@@ -821,7 +824,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverImprovedFaviconTreatmentTest,
       NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage)),
       Do(base::BindLambdaForTesting(
-          [=, this]() { GetTabStrip()->StopAnimating(true); })),
+          [=, this]() { GetTabStripView()->StopAnimating(); })),
       TryDiscardTab(0), CheckTabIsDiscarded(0, true),
       NameView(kFirstTabFavicon, base::BindLambdaForTesting([&]() {
                  return views::AsViewClass<views::View>(GetTabIcon(0));
@@ -853,7 +856,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverImprovedFaviconTreatmentTest,
           kPerformanceSettingsTab,
           GURL(chrome::GetSettingsUrl(chrome::kPerformanceSubPage))),
       Do(base::BindLambdaForTesting(
-          [=, this]() { GetTabStrip()->StopAnimating(true); })),
+          [=, this]() { GetTabStripView()->StopAnimating(); })),
       TryDiscardTab(0), CheckTabIsDiscarded(0, true),
       NameView(kFirstTabFavicon, base::BindLambdaForTesting([&]() {
                  return views::AsViewClass<views::View>(GetTabIcon(0));

@@ -1010,7 +1010,7 @@ void BrowserTabStripController::OnSplitTabChanged(
     // Stop animating if we are updating an active split.
     if (change.GetAddedChange()->reason() !=
         SplitTabChange::SplitTabAddReason::kNewSplitTabAdded) {
-      tabstrip_->StopAnimating(true);
+      tabstrip_->StopAnimating();
     }
   } else if (change.type == SplitTabChange::Type::kRemoved) {
     std::vector<int> split_indices;
@@ -1025,7 +1025,7 @@ void BrowserTabStripController::OnSplitTabChanged(
     // Stop animating if we are updating an active split.
     if (change.GetRemovedChange()->reason() !=
         SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved) {
-      tabstrip_->StopAnimating(true);
+      tabstrip_->StopAnimating();
     }
   } else if (change.type == SplitTabChange::Type::kContentsChanged) {
     std::vector<int> split_indices;
@@ -1035,7 +1035,7 @@ void BrowserTabStripController::OnSplitTabChanged(
         std::back_inserter(split_indices),
         [](const std::pair<tabs::TabInterface*, int>& p) { return p.second; });
     tabstrip_->OnSplitContentsChanged(split_indices);
-    tabstrip_->StopAnimating(true);
+    tabstrip_->StopAnimating();
   }
 }
 

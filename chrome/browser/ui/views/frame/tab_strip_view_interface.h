@@ -45,6 +45,7 @@ class TabStripViewInterface {
 
   // -- View State Queries --
   virtual bool IsAnimating() const = 0;
+  virtual void StopAnimating() = 0;
   virtual std::optional<int> GetFocusedTabIndex() const = 0;
 
   // -- UI anchoring --

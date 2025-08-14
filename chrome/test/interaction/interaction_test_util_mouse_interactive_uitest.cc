@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_P(InteractionTestUtilMouseUiTest, Drag) {
                             el->AsA<views::TrackedElementViews>()->view());
                         // The second tab might still be animating in, which
                         // could cause weirdness if we try to drag.
-                        tab_strip->StopAnimating(/* layout =*/true);
+                        tab_strip->StopAnimating();
 
                         const gfx::Point start = tab_strip->tab_at(0)
                                                      ->GetBoundsInScreen()
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_P(InteractionTestUtilMouseUiTest, Drag) {
                         // tab was moved.
                         auto* const tab_strip = views::AsViewClass<TabStrip>(
                             el->AsA<views::TrackedElementViews>()->view());
-                        tab_strip->StopAnimating(/* layout =*/true);
+                        tab_strip->StopAnimating();
 
                         EXPECT_EQ(kSecondUrl, browser()
                                                   ->tab_strip_model()
