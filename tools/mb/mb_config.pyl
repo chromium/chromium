@@ -1036,7 +1036,6 @@
     },
 
     'pgo_phase_0': {
-      'mixins': ['strip_absolute_paths_from_debug_symbols'],
       'gn_args': 'chrome_pgo_phase=0'
     },
 
@@ -1119,10 +1118,6 @@
 
     'static_angle': {
       'gn_args': 'use_static_angle=true',
-    },
-
-    'strip_absolute_paths_from_debug_symbols': {
-      'gn_args': 'strip_absolute_paths_from_debug_symbols=true'
     },
 
     'strip_debug_info': {

@@ -93,7 +93,6 @@
     "gn_args": {
       "chrome_pgo_phase": 0,
       "dcheck_always_on": false,
-      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "target_cpu": "x64",
       "target_os": "linux",
@@ -107,7 +106,6 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "reclient_cfg_dir": "//buildtools/reclient_cfgs/win-cross",
-      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
       "use_reclient": false,

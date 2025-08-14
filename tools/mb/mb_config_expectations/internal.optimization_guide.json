@@ -244,7 +244,6 @@
       "is_chrome_branded": true,
       "is_debug": false,
       "is_official_build": true,
-      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "use_reclient": false,
       "use_remoteexec": true
@@ -260,7 +259,6 @@
       "is_chrome_branded": true,
       "is_debug": false,
       "is_official_build": true,
-      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "use_reclient": false,
       "use_remoteexec": true
