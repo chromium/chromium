@@ -915,7 +915,7 @@ class ApiTests extends ApiTestFixtureBase {
     // Unpin and verify the pinned tab list is updated.
     const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
     const tabId = checkDefined((await pinnedTabsUpdates.next())[0]?.tabId);
-    assertEquals(true, await this.host.unpinTabs([tabId]));
+    assertTrue(await this.host.unpinTabs([tabId]));
     await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 0);
   }
 
@@ -951,7 +951,51 @@ class ApiTests extends ApiTestFixtureBase {
     const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
     await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 2);
 
-    assertEquals(true, await this.host.unpinTabs([tabId, tabId2]));
+    assertTrue(await this.host.unpinTabs([tabId, tabId2]));
+    await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 0);
+  }
+
+  async testPinTabsFailsWhenDoesnotExist() {
+    assertDefined(this.host.pinTabs);
+    assertDefined(this.host.getPinnedTabs);
+    assertDefined(this.host.unpinTabs);
+    assertDefined(this.host.getFocusedTabStateV2);
+
+    const focus = this.host.getFocusedTabStateV2?.().getCurrentValue();
+    const tabId = checkDefined(focus?.hasFocus?.tabData.tabId);
+    const nonExistTabId = 'not-exist';
+    // Pinning a non existing tab id should fail.
+    assertFalse(await this.host.pinTabs([tabId, nonExistTabId]));
+
+    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
+    await pinnedTabsUpdates.waitFor(
+        (tabs) => tabs.length === 1 && tabs.some(t => t.tabId === tabId));
+
+    // Un-pinning a non existing tab id should fail.
+    assertFalse(await this.host.unpinTabs([tabId, nonExistTabId]));
+    await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 0);
+  }
+
+  async testUnpinTabsFailsWhenNotPinned() {
+    assertDefined(this.host.pinTabs);
+    assertDefined(this.host.getPinnedTabs);
+    assertDefined(this.host.unpinTabs);
+
+    const tabId = this.testParams.tabId;
+    const focus = this.host.getFocusedTabStateV2?.().getCurrentValue();
+    const tabId2 = checkDefined(focus?.hasFocus?.tabData.tabId);
+    // Pin both tabs.
+    assertTrue(await this.host.pinTabs([tabId2, tabId]));
+
+    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
+    await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 2);
+
+    // Unpin tabId.
+    assertTrue(await this.host.unpinTabs([tabId]));
+    await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 1);
+
+    // Unpinning a tab that is not pinned should fail.
+    assertFalse(await this.host.unpinTabs([tabId, tabId2]));
     await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 0);
   }
 

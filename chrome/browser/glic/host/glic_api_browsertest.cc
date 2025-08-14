@@ -40,6 +40,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
@@ -1368,6 +1369,22 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testPinTabsWithTwoTabs) {
   ExecuteJsTest();
   browser()->tab_strip_model()->SelectPreviousTab();
   ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       testPinTabsFailsWhenDoesnotExist) {
+  // Pinning a non existing tab id should fail.
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testUnpinTabsFailsWhenNotPinned) {
+  // Unpinning a tab that is not pinned should fail.
+  const int tab_id =
+      GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
+  RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
+
+  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+                     "tabId", base::NumberToString(tab_id)))});
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testUnpinTabsThatNavigateInBackground) {
