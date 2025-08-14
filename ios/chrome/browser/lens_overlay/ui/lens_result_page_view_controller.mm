@@ -8,12 +8,12 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_constants.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_progress_bar.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_mutator.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_mutator.h"
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/toolbar_progress_bar.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -94,7 +94,7 @@ const CGFloat kGrabberTopPadding = 5;
   /// Button to focus the omnibox.
   UIButton* _omniboxTapTarget;
   /// Loading progress bar.
-  LensOverlayProgressBar* _progressBar;
+  ToolbarProgressBar* _progressBar;
   /// Whether the web view should be hidden.
   BOOL _webViewHidden;
   NSLayoutConstraint* _omniboxLeadingConstraint;
@@ -117,7 +117,7 @@ const CGFloat kGrabberTopPadding = 5;
     // `viewDidLoad`.
     _omniboxContainer = [[UIView alloc] init];
     _omniboxTapTarget = [[UIButton alloc] init];
-    _progressBar = [[LensOverlayProgressBar alloc] init];
+    _progressBar = [[ToolbarProgressBar alloc] init];
     [_omniboxContainer addSubview:_omniboxTapTarget];
   }
   return self;
