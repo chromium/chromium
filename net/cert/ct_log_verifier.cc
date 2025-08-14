@@ -13,9 +13,10 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/string_view_util.h"
 #include "crypto/evp.h"
+#include "crypto/hash.h"
 #include "crypto/openssl_util.h"
-#include "crypto/sha2.h"
 #include "net/cert/ct_log_verifier_util.h"
 #include "net/cert/ct_serialization.h"
 #include "net/cert/merkle_audit_proof.h"
@@ -273,7 +274,7 @@ bool CTLogVerifier::Init(std::string_view public_key) {
     return false;
   }
 
-  key_id_ = crypto::SHA256HashString(public_key);
+  key_id_ = base::as_string_view(crypto::hash::Sha256(public_key));
 
   // Right now, only RSASSA-PKCS1v15 with SHA-256 and ECDSA with SHA-256 are
   // supported.
