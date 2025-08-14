@@ -520,6 +520,9 @@ crbug.com/437973213 [ android android-brya ] Pixel_Video_MP4_FourColors_Rot_270 
 crbug.com/437973213 [ android android-brya ] Pixel_Video_MP4_FourColors_Rot_90 [ Failure ]
 crbug.com/437973213 [ android android-brya ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
 
+# Win11/RTX 4070 Super failures after upgrading to driver 580.88
+crbug.com/438515327 [ win11 nvidia-0x2783 ] Pixel_Canvas2DRedBoxScrgbLinear [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
