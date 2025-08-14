@@ -720,6 +720,7 @@ IN_PROC_BROWSER_TEST_P(PersistedPermissionsFileSystemAccessBrowserTest,
                       "  })})();"));
 
   // Top-level page in first window picks files and sends it to iframe.
+  first_party_web_contents->WasShown();
   EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
             content::EvalJs(first_party_web_contents,
                             "(async () => {"
@@ -885,6 +886,7 @@ IN_PROC_BROWSER_TEST_P(PersistedPermissionsFileSystemAccessBrowserTest,
                       "  })})();"));
 
   // Top-level page in first window picks files and sends it to iframe.
+  first_party_web_contents->WasShown();
   EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
             content::EvalJs(first_party_web_contents,
                             "(async () => {"
@@ -1289,6 +1291,37 @@ IN_PROC_BROWSER_TEST_P(FencedFrameFileSystemAccessBrowserTest,
   EXPECT_EQ(future.Get<>(), content::FileSystemAccessPermissionGrant::
                                 PermissionRequestOutcome::kInvalidFrame);
 }
+
+// https://crbug.com/419721056
+IN_PROC_BROWSER_TEST_P(FileSystemAccessBrowserTest,
+                       ShowOpenFilePickerInBackgroundTab) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  content::WebContents* first_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Create a second tab
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/title2.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  content::WebContents* second_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_NE(first_tab, second_tab);
+
+  // Switch back to the first tab, making the second tab a background tab.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_EQ(first_tab, browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_NE(second_tab, browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Try to show a file picker in the background tab.
+  // This should be blocked.
+  EXPECT_EQ("NotAllowedError",
+            content::EvalJs(second_tab,
+                            "self.showOpenFilePicker().catch(e => e.name)"));
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          FencedFrameFileSystemAccessBrowserTest,
                          testing::Bool(),

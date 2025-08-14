@@ -2115,6 +2115,61 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_InvalidStartInID) {
             bad_message_observer.WaitForBadMessage());
 }
 
+TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_HiddenTab) {
+  base::FilePath test_file = dir_.GetPath().AppendASCII("asdf");
+  ASSERT_TRUE(base::CreateTemporaryFile(&test_file));
+  PathInfo test_file_info(test_file);
+
+  manager_->SetFilePickerResultForTesting(test_file_info);
+
+  static_cast<TestRenderFrameHost*>(web_contents_->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
+  FileSystemAccessManagerImpl::BindingContext binding_context = {
+      kTestStorageKey, kTestURL,
+      web_contents_->GetPrimaryMainFrame()->GetGlobalId()};
+  manager_->BindReceiver(binding_context,
+                         manager_remote.BindNewPipeAndPassReceiver());
+
+  EXPECT_CALL(permission_context_,
+              CanObtainReadPermission(kTestStorageKey.origin()))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(permission_context_,
+              CanObtainWritePermission(kTestStorageKey.origin()))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(permission_context_, CheckPathsAgainstEnterprisePolicy(
+                                       testing::_, testing::_, testing::_))
+      .Times(0);
+
+  // Hiding the web contents should make ChooseEntries return an error.
+  web_contents_->WasHidden();
+
+  auto save_file_picker_options = blink::mojom::SaveFilePickerOptions::New(
+      blink::mojom::AcceptsTypesInfo::New(
+          std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr>(),
+          /*include_accepts_all=*/true),
+      /*suggested_name=*/std::string());
+  auto picker_options = blink::mojom::FilePickerOptions::New(
+      blink::mojom::TypeSpecificFilePickerOptionsUnion::
+          NewSaveFilePickerOptions(std::move(save_file_picker_options)),
+      /*starting_directory_id=*/std::string(),
+      blink::mojom::FilePickerStartInOptionsUnionPtr());
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         std::vector<blink::mojom::FileSystemAccessEntryPtr>>
+      future;
+  manager_remote->ChooseEntries(std::move(picker_options),
+                                future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_EQ(future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kPermissionDenied);
+  EXPECT_EQ(future.Get<0>()->message,
+            "Tab must be visible in order to show a file picker.");
+  EXPECT_EQ(future.Get<1>().size(), 0);
+}
+
 TEST_F(FileSystemAccessManagerImplTest, GetUniqueId) {
   const PathInfo kTestPathInfo(dir_.GetPath().AppendASCII("foo"));
   ASSERT_OK_AND_ASSIGN(auto default_bucket,

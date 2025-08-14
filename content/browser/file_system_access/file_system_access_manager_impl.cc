@@ -581,6 +581,15 @@ void FileSystemAccessManagerImpl::ChooseEntries(
     return;
   }
 
+  if (web_contents->GetVisibility() != Visibility::VISIBLE) {
+    std::move(callback).Run(
+        file_system_access_error::FromStatus(
+            FileSystemAccessStatus::kPermissionDenied,
+            "Tab must be visible in order to show a file picker."),
+        std::vector<blink::mojom::FileSystemAccessEntryPtr>());
+    return;
+  }
+
   // Consume user activation to address this issue: crbug.com/40059071
   // TODO(crbug.com/411125804): Consider moving this user activation check to
   // the renderer process or informing the renderer that it lost user
