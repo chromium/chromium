@@ -298,9 +298,7 @@ class CdmWrapperImpl : public CdmWrapper {
     void operator()(CdmInterface* cdm) const { cdm->Destroy(); }
   };
 
-  explicit CdmWrapperImpl(CdmInterface* cdm) : cdm_(cdm) {
-    CHECK(cdm_, base::NotFatalUntil::M140);
-  }
+  explicit CdmWrapperImpl(CdmInterface* cdm) : cdm_(cdm) { CHECK(cdm_); }
 
   std::unique_ptr<CdmInterface, CdmDeleter> cdm_;
 };

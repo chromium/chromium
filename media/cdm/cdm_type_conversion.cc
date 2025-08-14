@@ -593,7 +593,7 @@ void ToCdmInputBuffer(const DecoderBuffer& encrypted_buffer,
                       std::vector<cdm::SubsampleEntry>* subsamples,
                       cdm::InputBuffer_2* input_buffer) {
   // End of stream buffers are represented as empty resources.
-  CHECK(!input_buffer->data, base::NotFatalUntil::M140);
+  CHECK(!input_buffer->data);
   if (encrypted_buffer.end_of_stream())
     return;
 
@@ -615,7 +615,7 @@ void ToCdmInputBuffer(const DecoderBuffer& encrypted_buffer,
       reinterpret_cast<const uint8_t*>(decrypt_config->iv().data());
   input_buffer->iv_size = decrypt_config->iv().size();
 
-  CHECK(subsamples->empty(), base::NotFatalUntil::M140);
+  CHECK(subsamples->empty());
   size_t num_subsamples = decrypt_config->subsamples().size();
   if (num_subsamples > 0) {
     subsamples->reserve(num_subsamples);

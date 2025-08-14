@@ -14,7 +14,7 @@ namespace media {
 
 // static
 SimpleCdmBuffer* SimpleCdmBuffer::Create(size_t capacity) {
-  CHECK(capacity, base::NotFatalUntil::M140);
+  CHECK(capacity);
 
   // cdm::Buffer interface limits capacity to uint32.
   DCHECK_LE(capacity, std::numeric_limits<uint32_t>::max());
@@ -39,7 +39,7 @@ uint8_t* SimpleCdmBuffer::Data() {
 }
 
 void SimpleCdmBuffer::SetSize(uint32_t size) {
-  CHECK(size <= Capacity(), base::NotFatalUntil::M140);
+  CHECK(size <= Capacity());
   size_ = size > Capacity() ? 0 : size;
 }
 

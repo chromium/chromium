@@ -132,8 +132,7 @@ void* GetCdmHost(int host_interface_version, void* user_data) {
                                     cdm::Host_12::kVersion),
       "Mismatch between GetCdmHost() and IsSupportedCdmHostVersion()");
 
-  CHECK(IsSupportedCdmHostVersion(host_interface_version),
-        base::NotFatalUntil::M140);
+  CHECK(IsSupportedCdmHostVersion(host_interface_version));
 
   CdmAdapter* cdm_adapter = static_cast<CdmAdapter*>(user_data);
   DVLOG(1) << "Create CDM Host with version " << host_interface_version;
@@ -217,11 +216,11 @@ void CdmAdapter::Create(
     const SessionExpirationUpdateCB& session_expiration_update_cb,
     CdmCreatedCB cdm_created_cb,
     bool is_debugger_attached) {
-  CHECK(!cdm_config.key_system.empty(), base::NotFatalUntil::M140);
-  CHECK(session_message_cb, base::NotFatalUntil::M140);
-  CHECK(session_closed_cb, base::NotFatalUntil::M140);
-  CHECK(session_keys_change_cb, base::NotFatalUntil::M140);
-  CHECK(session_expiration_update_cb, base::NotFatalUntil::M140);
+  CHECK(!cdm_config.key_system.empty());
+  CHECK(session_message_cb);
+  CHECK(session_closed_cb);
+  CHECK(session_keys_change_cb);
+  CHECK(session_expiration_update_cb);
 
   auto cdm = base::MakeRefCounted<CdmAdapter>(
       base::PassKey<CdmAdapter>(), cdm_config, create_cdm_func,
@@ -260,13 +259,13 @@ CdmAdapter::CdmAdapter(
       pool_(base::MakeRefCounted<AudioBufferMemoryPool>()) {
   DVLOG(1) << __func__;
 
-  CHECK(!cdm_config.key_system.empty(), base::NotFatalUntil::M140);
-  CHECK(create_cdm_func_, base::NotFatalUntil::M140);
-  CHECK(helper_, base::NotFatalUntil::M140);
-  CHECK(session_message_cb_, base::NotFatalUntil::M140);
-  CHECK(session_closed_cb_, base::NotFatalUntil::M140);
-  CHECK(session_keys_change_cb_, base::NotFatalUntil::M140);
-  CHECK(session_expiration_update_cb_, base::NotFatalUntil::M140);
+  CHECK(!cdm_config.key_system.empty());
+  CHECK(create_cdm_func_);
+  CHECK(helper_);
+  CHECK(session_message_cb_);
+  CHECK(session_closed_cb_);
+  CHECK(session_keys_change_cb_);
+  CHECK(session_expiration_update_cb_);
 
   cdm_metrics_data_.cdm_origin = cdm_origin_;
 
@@ -295,7 +294,7 @@ CdmAdapter::~CdmAdapter() {
 }
 
 CdmWrapper* CdmAdapter::CreateCdmInstance(const std::string& key_system) {
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("media", "CdmAdapter::CreateCdmInstance");
 
   CdmWrapper* cdm = CdmWrapper::Create(create_cdm_func_, key_system.data(),
@@ -306,7 +305,7 @@ CdmWrapper* CdmAdapter::CreateCdmInstance(const std::string& key_system) {
   if (cdm) {
     // The interface version is relatively small. So using normal histogram
     // instead of a sparse histogram is okay. The following CHECK asserts this.
-    CHECK(cdm->GetInterfaceVersion() <= 30, base::NotFatalUntil::M140);
+    CHECK(cdm->GetInterfaceVersion() <= 30);
     UMA_HISTOGRAM_ENUMERATION("Media.EME.CdmInterfaceVersion",
                               cdm->GetInterfaceVersion(), 30);
   }
@@ -348,7 +347,7 @@ void CdmAdapter::SetServerCertificate(
     const std::vector<uint8_t>& certificate,
     std::unique_ptr<SimpleCdmPromise> promise) {
   DVLOG(2) << __func__;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("media", "CdmAdapter::SetServerCertificate");
 
   if (certificate.size() < limits::kMinCertificateLength ||
@@ -367,7 +366,7 @@ void CdmAdapter::SetServerCertificate(
 void CdmAdapter::GetStatusForPolicy(
     HdcpVersion min_hdcp_version,
     std::unique_ptr<KeyStatusCdmPromise> promise) {
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("media", "CdmAdapter::GetStatusForPolicy");
 
   uint32_t promise_id =
@@ -387,7 +386,7 @@ void CdmAdapter::CreateSessionAndGenerateRequest(
     EmeInitDataType init_data_type,
     const std::vector<uint8_t>& init_data,
     std::unique_ptr<NewSessionCdmPromise> promise) {
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("media", "CdmAdapter::CreateSessionAndGenerateRequest");
 
   uint32_t promise_id =
@@ -402,7 +401,7 @@ void CdmAdapter::CreateSessionAndGenerateRequest(
 void CdmAdapter::LoadSession(CdmSessionType session_type,
                              const std::string& session_id,
                              std::unique_ptr<NewSessionCdmPromise> promise) {
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT1("media", "CdmAdapter::LoadSession", "session_id", session_id);
 
   uint32_t promise_id =
@@ -417,9 +416,9 @@ void CdmAdapter::LoadSession(CdmSessionType session_type,
 void CdmAdapter::UpdateSession(const std::string& session_id,
                                const std::vector<uint8_t>& response,
                                std::unique_ptr<SimpleCdmPromise> promise) {
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
-  CHECK(!session_id.empty(), base::NotFatalUntil::M140);
-  CHECK(!response.empty(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(!session_id.empty());
+  CHECK(!response.empty());
   TRACE_EVENT1("media", "CdmAdapter::UpdateSession", "session_id", session_id);
 
   cdm_metrics_data_.number_of_update_calls++;
@@ -435,8 +434,8 @@ void CdmAdapter::UpdateSession(const std::string& session_id,
 
 void CdmAdapter::CloseSession(const std::string& session_id,
                               std::unique_ptr<SimpleCdmPromise> promise) {
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
-  CHECK(!session_id.empty(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(!session_id.empty());
   TRACE_EVENT1("media", "CdmAdapter::CloseSession", "session_id", session_id);
 
   uint32_t promise_id =
@@ -449,8 +448,8 @@ void CdmAdapter::CloseSession(const std::string& session_id,
 
 void CdmAdapter::RemoveSession(const std::string& session_id,
                                std::unique_ptr<SimpleCdmPromise> promise) {
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
-  CHECK(!session_id.empty(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(!session_id.empty());
   TRACE_EVENT1("media", "CdmAdapter::RemoveSession", "session_id", session_id);
 
   uint32_t promise_id =
@@ -462,7 +461,7 @@ void CdmAdapter::RemoveSession(const std::string& session_id,
 }
 
 CdmContext* CdmAdapter::GetCdmContext() {
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   return this;
 }
 
@@ -472,12 +471,12 @@ std::unique_ptr<CallbackRegistration> CdmAdapter::RegisterEventCB(
 }
 
 Decryptor* CdmAdapter::GetDecryptor() {
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   return this;
 }
 
 std::optional<base::UnguessableToken> CdmAdapter::GetCdmId() const {
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   return std::nullopt;
 }
 
@@ -486,7 +485,7 @@ void CdmAdapter::Decrypt(StreamType stream_type,
                          DecryptCB decrypt_cb) {
   DVLOG(3) << __func__ << ": "
            << encrypted->AsHumanReadableString(/*verbose=*/true);
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
 
   cdm::InputBuffer_2 input_buffer = {};
   std::vector<cdm::SubsampleEntry> subsamples;
@@ -517,14 +516,14 @@ void CdmAdapter::Decrypt(StreamType stream_type,
 
 void CdmAdapter::CancelDecrypt(StreamType stream_type) {
   // As the Decrypt methods are synchronous, nothing can be done here.
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
 }
 
 void CdmAdapter::InitializeAudioDecoder(const AudioDecoderConfig& config,
                                         DecoderInitCB init_cb) {
   DVLOG(2) << __func__ << ": " << config.AsHumanReadableString();
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
-  CHECK(!audio_init_cb_, base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(!audio_init_cb_);
   TRACE_EVENT0("media", "CdmAdapter::InitializeAudioDecode");
 
   auto cdm_config = ToCdmAudioDecoderConfig(config);
@@ -537,7 +536,7 @@ void CdmAdapter::InitializeAudioDecoder(const AudioDecoderConfig& config,
 
   cdm::Status status = cdm_->InitializeAudioDecoder(cdm_config);
   if (status != cdm::kSuccess && status != cdm::kDeferredInitialization) {
-    CHECK(status == cdm::kInitializationError, base::NotFatalUntil::M140);
+    CHECK(status == cdm::kInitializationError);
     DVLOG(1) << __func__ << ": status = " << status;
     std::move(init_cb).Run(false);
     return;
@@ -558,8 +557,9 @@ void CdmAdapter::InitializeAudioDecoder(const AudioDecoderConfig& config,
 void CdmAdapter::InitializeVideoDecoder(const VideoDecoderConfig& config,
                                         DecoderInitCB init_cb) {
   DVLOG(2) << __func__ << ": " << config.AsHumanReadableString();
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
-  CHECK(!video_init_cb_, base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
+  // TODO(crbug.com/412213310): This is currently crashing on ChromeOS.
+  CHECK(!video_init_cb_, base::NotFatalUntil::M145);
   TRACE_EVENT0("media", "CdmAdapter::InitializeVideoDecoder");
 
   // Alpha decoding is not supported by the CDM.
@@ -583,7 +583,7 @@ void CdmAdapter::InitializeVideoDecoder(const VideoDecoderConfig& config,
 
   cdm::Status status = cdm_->InitializeVideoDecoder(cdm_config);
   if (status != cdm::kSuccess && status != cdm::kDeferredInitialization) {
-    CHECK(status == cdm::kInitializationError, base::NotFatalUntil::M140);
+    CHECK(status == cdm::kInitializationError);
     DVLOG(1) << __func__ << ": status = " << status;
     std::move(init_cb).Run(false);
     return;
@@ -606,7 +606,7 @@ void CdmAdapter::DecryptAndDecodeAudio(scoped_refptr<DecoderBuffer> encrypted,
                                        AudioDecodeCB audio_decode_cb) {
   DVLOG(3) << __func__ << ": "
            << encrypted->AsHumanReadableString(/*verbose=*/true);
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
 
   cdm::InputBuffer_2 input_buffer = {};
   std::vector<cdm::SubsampleEntry> subsamples;
@@ -629,7 +629,7 @@ void CdmAdapter::DecryptAndDecodeAudio(scoped_refptr<DecoderBuffer> encrypted,
   }
 
   Decryptor::AudioFrames audio_frame_list;
-  CHECK(audio_frames->FrameBuffer(), base::NotFatalUntil::M140);
+  CHECK(audio_frames->FrameBuffer());
   if (!AudioFramesDataToAudioFrames(std::move(audio_frames),
                                     &audio_frame_list)) {
     DVLOG(1) << __func__ << " unable to convert Audio Frames";
@@ -644,7 +644,7 @@ void CdmAdapter::DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
                                        VideoDecodeCB video_decode_cb) {
   DVLOG(3) << __func__ << ": "
            << encrypted->AsHumanReadableString(/*verbose=*/true);
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
 
   cdm::InputBuffer_2 input_buffer = {};
   std::vector<cdm::SubsampleEntry> subsamples;
@@ -687,7 +687,7 @@ void CdmAdapter::DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
 
 void CdmAdapter::ResetDecoder(StreamType stream_type) {
   DVLOG(2) << __func__ << ": stream_type = " << stream_type;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT1("media", "CdmAdapter::ResetDecoder", "stream_type", stream_type);
 
   cdm_->ResetDecoder(ToCdmStreamType(stream_type));
@@ -695,7 +695,7 @@ void CdmAdapter::ResetDecoder(StreamType stream_type) {
 
 void CdmAdapter::DeinitializeDecoder(StreamType stream_type) {
   DVLOG(2) << __func__ << ": stream_type = " << stream_type;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT1("media", "CdmAdapter::DeinitializeDecoder", "stream_type",
                stream_type);
 
@@ -717,7 +717,7 @@ void CdmAdapter::OnResolveKeyStatusPromise(uint32_t promise_id,
                                            cdm::KeyStatus_2 key_status) {
   DVLOG(2) << __func__ << ": promise_id = " << promise_id
            << ", key_status = " << static_cast<uint32_t>(key_status);
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   cdm_promise_adapter_.ResolvePromise(promise_id, ToMediaKeyStatus(key_status));
 }
 
@@ -728,7 +728,7 @@ void CdmAdapter::OnSessionKeysChange(const char* session_id,
                                      uint32_t keys_info_count) {
   std::string session_id_str(session_id, session_id_size);
   DVLOG(2) << __func__ << ": session_id = " << session_id_str;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
 
   TRACE_EVENT2("media", "CdmAdapter::OnSessionKeysChange", "session_id",
                session_id_str, "has_additional_usable_key",
@@ -755,7 +755,7 @@ void CdmAdapter::OnResolveKeyStatusPromise(uint32_t promise_id,
                                            cdm::KeyStatus key_status) {
   DVLOG(2) << __func__ << ": promise_id = " << promise_id
            << ", key_status = " << key_status;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   cdm_promise_adapter_.ResolvePromise(promise_id, ToMediaKeyStatus(key_status));
 }
 
@@ -766,7 +766,7 @@ void CdmAdapter::OnSessionKeysChange(const char* session_id,
                                      uint32_t keys_info_count) {
   std::string session_id_str(session_id, session_id_size);
   DVLOG(2) << __func__ << ": session_id = " << session_id_str;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
 
   TRACE_EVENT2("media", "CdmAdapter::OnSessionKeysChange", "session_id",
                session_id_str, "has_additional_usable_key",
@@ -791,14 +791,14 @@ void CdmAdapter::OnSessionKeysChange(const char* session_id,
 
 cdm::Buffer* CdmAdapter::Allocate(uint32_t capacity) {
   DVLOG(3) << __func__ << ": capacity = " << capacity;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT1("media", "CdmAdapter::Allocate", "capacity", capacity);
 
   return helper_->CreateCdmBuffer(capacity);
 }
 
 void CdmAdapter::SetTimer(int64_t delay_ms, void* context) {
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
 
   auto delay = base::Milliseconds(delay_ms);
   DVLOG(3) << __func__ << ": delay = " << delay << ", context = " << context;
@@ -814,20 +814,20 @@ void CdmAdapter::SetTimer(int64_t delay_ms, void* context) {
 
 void CdmAdapter::TimerExpired(void* context) {
   DVLOG(3) << __func__ << ": context = " << context;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT1("media", "CdmAdapter::TimerExpired", "context", context);
 
   cdm_->TimerExpired(context);
 }
 
 cdm::Time CdmAdapter::GetCurrentWallTime() {
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   return base::Time::Now().InSecondsFSinceUnixEpoch();
 }
 
 void CdmAdapter::OnInitialized(bool success) {
   DVLOG(3) << __func__ << ": success = " << success;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   DCHECK_NE(init_promise_id_, CdmPromiseAdapter::kInvalidPromiseId);
 
   if (!success) {
@@ -843,7 +843,7 @@ void CdmAdapter::OnInitialized(bool success) {
 
 void CdmAdapter::OnResolvePromise(uint32_t promise_id) {
   DVLOG(2) << __func__ << ": promise_id = " << promise_id;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   cdm_promise_adapter_.ResolvePromise(promise_id);
 }
 
@@ -851,7 +851,7 @@ void CdmAdapter::OnResolveNewSessionPromise(uint32_t promise_id,
                                             const char* session_id,
                                             uint32_t session_id_size) {
   DVLOG(2) << __func__ << ": promise_id = " << promise_id;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   cdm_promise_adapter_.ResolvePromise(promise_id,
                                       std::string(session_id, session_id_size));
 }
@@ -878,7 +878,7 @@ void CdmAdapter::OnRejectPromise(uint32_t promise_id,
                                 kSizeKBBuckets);
   }
 
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   cdm_promise_adapter_.RejectPromise(promise_id,
                                      ToMediaCdmPromiseException(exception),
                                      system_code, error_message_str);
@@ -891,7 +891,7 @@ void CdmAdapter::OnSessionMessage(const char* session_id,
                                   uint32_t message_size) {
   std::string session_id_str(session_id, session_id_size);
   DVLOG(2) << __func__ << ": session_id = " << session_id_str;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
 
   cdm_metrics_data_.number_of_on_message_events++;
 
@@ -911,7 +911,7 @@ void CdmAdapter::OnExpirationChange(const char* session_id,
   std::string session_id_str(session_id, session_id_size);
   DVLOG(2) << __func__ << ": session_id = " << session_id_str
            << ", new_expiry_time = " << new_expiry_time;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
 
   base::Time expiration =
       base::Time::FromSecondsSinceUnixEpoch(new_expiry_time);
@@ -922,7 +922,7 @@ void CdmAdapter::OnExpirationChange(const char* session_id,
 
 void CdmAdapter::OnSessionClosed(const char* session_id,
                                  uint32_t session_id_size) {
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
 
   std::string session_id_str(session_id, session_id_size);
   TRACE_EVENT1("media", "CdmAdapter::OnSessionClosed", "session_id",
@@ -935,7 +935,7 @@ void CdmAdapter::SendPlatformChallenge(const char* service_id,
                                        uint32_t service_id_size,
                                        const char* challenge,
                                        uint32_t challenge_size) {
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
 
   if (!cdm_config_.allow_distinctive_identifier) {
     task_runner_->PostTask(
@@ -981,7 +981,7 @@ void CdmAdapter::OnChallengePlatformDone(
 
 void CdmAdapter::EnableOutputProtection(uint32_t desired_protection_mask) {
   DVLOG(1) << __func__;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT1("media", "CdmAdapter::EnableOutputProtection",
                "desired_protection_mask", GetHexMask(desired_protection_mask));
 
@@ -1000,7 +1000,7 @@ void CdmAdapter::OnEnableOutputProtectionDone(bool success) {
 }
 
 void CdmAdapter::QueryOutputProtectionStatus() {
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("media", "CdmAdapter::QueryOutputProtectionStatus");
 
   ReportOutputProtectionQuery();
@@ -1045,7 +1045,7 @@ void CdmAdapter::ReportOutputProtectionQuery() {
 
 void CdmAdapter::ReportOutputProtectionQueryResult(uint32_t link_mask,
                                                    uint32_t protection_mask) {
-  CHECK(uma_for_output_protection_query_reported_, base::NotFatalUntil::M140);
+  CHECK(uma_for_output_protection_query_reported_);
 
   if (uma_for_output_protection_positive_result_reported_)
     return;
@@ -1084,7 +1084,7 @@ void CdmAdapter::OnDeferredInitializationDone(cdm::StreamType stream_type,
                                               cdm::Status decoder_status) {
   DVLOG(1) << __func__ << ": stream_type = " << stream_type
            << ", decoder_status = " << decoder_status;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
 
   switch (stream_type) {
     case cdm::kStreamTypeAudio:
@@ -1100,7 +1100,7 @@ void CdmAdapter::OnDeferredInitializationDone(cdm::StreamType stream_type,
 
 cdm::FileIO* CdmAdapter::CreateFileIO(cdm::FileIOClient* client) {
   DVLOG(3) << __func__;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
 
   if (!cdm_config_.allow_persistent_state) {
     DVLOG(1) << __func__ << ": Persistent state not allowed.";
@@ -1112,7 +1112,7 @@ cdm::FileIO* CdmAdapter::CreateFileIO(cdm::FileIOClient* client) {
 
 void CdmAdapter::RequestStorageId(uint32_t version) {
   DVLOG(2) << __func__ << ": version = " << version;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
 
   if (!cdm_config_.allow_persistent_state ||
       !(version == kCurrentStorageIdVersion ||
@@ -1151,7 +1151,7 @@ void CdmAdapter::ReportMetrics(cdm::MetricName metric_name, uint64_t value) {
 void CdmAdapter::OnStorageIdObtained(uint32_t version,
                                      const std::vector<uint8_t>& storage_id) {
   DVLOG(2) << __func__ << ": version = " << version;
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M140);
+  CHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT1("media", "CdmAdapter::OnStorageIdObtained", "version", version);
 
   cdm_->OnStorageId(version, storage_id.data(), storage_id.size());

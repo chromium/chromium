@@ -18,7 +18,7 @@ namespace media {
 
 FuchsiaDecryptor::FuchsiaDecryptor(FuchsiaCdmContext* cdm_context)
     : cdm_context_(cdm_context) {
-  CHECK(cdm_context_, base::NotFatalUntil::M140);
+  CHECK(cdm_context_);
 }
 
 FuchsiaDecryptor::~FuchsiaDecryptor() {}

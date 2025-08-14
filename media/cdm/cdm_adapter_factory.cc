@@ -16,7 +16,7 @@ namespace media {
 
 CdmAdapterFactory::CdmAdapterFactory(HelperCreationCB helper_creation_cb)
     : helper_creation_cb_(std::move(helper_creation_cb)) {
-  CHECK(helper_creation_cb_, base::NotFatalUntil::M140);
+  CHECK(helper_creation_cb_);
 }
 
 CdmAdapterFactory::~CdmAdapterFactory() = default;

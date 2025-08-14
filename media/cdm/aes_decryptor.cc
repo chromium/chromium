@@ -153,7 +153,7 @@ AesDecryptor::SessionIdDecryptionKeyMap::Find(const std::string& session_id) {
 
 void AesDecryptor::SessionIdDecryptionKeyMap::Erase(
     KeyList::iterator position) {
-  CHECK(!position->second.empty(), base::NotFatalUntil::M140);
+  CHECK(!position->second.empty());
   key_list_.erase(position);
 }
 
@@ -183,9 +183,9 @@ AesDecryptor::AesDecryptor(
       session_closed_cb_(session_closed_cb),
       session_keys_change_cb_(session_keys_change_cb) {
   DVLOG(1) << __func__;
-  CHECK(session_message_cb_, base::NotFatalUntil::M140);
-  CHECK(session_closed_cb_, base::NotFatalUntil::M140);
-  CHECK(session_keys_change_cb_, base::NotFatalUntil::M140);
+  CHECK(session_message_cb_);
+  CHECK(session_closed_cb_);
+  CHECK(session_keys_change_cb_);
 }
 
 AesDecryptor::~AesDecryptor() {
@@ -214,8 +214,7 @@ void AesDecryptor::CreateSessionAndGenerateRequest(
     std::unique_ptr<NewSessionCdmPromise> promise) {
   std::string session_id = GenerateSessionId();
   bool session_added = CreateSession(session_id, session_type);
-  CHECK(session_added, base::NotFatalUntil::M140)
-      << "Failed to add new session " << session_id;
+  CHECK(session_added) << "Failed to add new session " << session_id;
 
   std::vector<uint8_t> message;
   std::vector<std::vector<uint8_t>> keys;

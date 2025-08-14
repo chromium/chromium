@@ -55,7 +55,7 @@ void CdmHostFiles::Initialize(
 CdmHostFiles::Status CdmHostFiles::InitVerification(
     base::NativeLibrary cdm_library) {
   DVLOG(1) << __func__;
-  CHECK(cdm_library, base::NotFatalUntil::M140);
+  CHECK(cdm_library);
 
   // Get function pointer exported by the CDM.
   // See media/cdm/api/content_decryption_module_ext.h.
@@ -110,7 +110,7 @@ void CdmHostFiles::CloseAllFiles() {
 
 void CdmHostFiles::OpenCommonFiles(
     const std::vector<CdmHostFilePath>& cdm_host_file_paths) {
-  CHECK(common_files_.empty(), base::NotFatalUntil::M140);
+  CHECK(common_files_.empty());
 
   for (const auto& value : cdm_host_file_paths) {
     common_files_.push_back(
@@ -119,14 +119,14 @@ void CdmHostFiles::OpenCommonFiles(
 }
 
 void CdmHostFiles::OpenCdmFile(const base::FilePath& cdm_path) {
-  CHECK(!cdm_path.empty(), base::NotFatalUntil::M140);
+  CHECK(!cdm_path.empty());
   cdm_specific_files_.push_back(
       CdmHostFile::Create(cdm_path, GetSigFilePath(cdm_path)));
 }
 
 void CdmHostFiles::TakePlatformFiles(
     std::vector<cdm::HostFile>* cdm_host_files) {
-  CHECK(cdm_host_files->empty(), base::NotFatalUntil::M140);
+  CHECK(cdm_host_files->empty());
 
   // Populate an array of cdm::HostFile.
   for (const auto& file : common_files_)

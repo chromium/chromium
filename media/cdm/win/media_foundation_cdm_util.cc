@@ -111,7 +111,7 @@ HRESULT BuildCdmAccessConfigurations(const CdmConfig& cdm_config,
                                                  video_capabilities.get()));
 
   // Add persistent state.
-  CHECK(cdm_config.allow_persistent_state, base::NotFatalUntil::M140);
+  CHECK(cdm_config.allow_persistent_state);
   base::win::ScopedPropVariant persisted_state;
   RETURN_IF_FAILED(InitPropVariantFromUInt32(MF_MEDIAKEYS_REQUIREMENT_REQUIRED,
                                              persisted_state.Receive()));
@@ -119,7 +119,7 @@ HRESULT BuildCdmAccessConfigurations(const CdmConfig& cdm_config,
                                                  persisted_state.get()));
 
   // Add distinctive identifier.
-  CHECK(cdm_config.allow_distinctive_identifier, base::NotFatalUntil::M140);
+  CHECK(cdm_config.allow_distinctive_identifier);
   base::win::ScopedPropVariant distinctive_identifier;
   RETURN_IF_FAILED(InitPropVariantFromUInt32(MF_MEDIAKEYS_REQUIREMENT_REQUIRED,
                                              distinctive_identifier.Receive()));
@@ -135,7 +135,7 @@ HRESULT BuildCdmProperties(
     const std::optional<std::vector<uint8_t>>& client_token,
     const base::FilePath& store_path,
     ComPtr<IPropertyStore>& properties) {
-  CHECK(!origin_id.is_empty(), base::NotFatalUntil::M140);
+  CHECK(!origin_id.is_empty());
 
   ComPtr<IPropertyStore> temp_properties;
   RETURN_IF_FAILED(PSCreateMemoryPropertyStore(IID_PPV_ARGS(&temp_properties)));
@@ -183,7 +183,7 @@ HRESULT CreateMediaFoundationCdm(
            << ", cdm_origin_id=" << cdm_origin_id.ToString()
            << ", cdm_store_path_root=" << cdm_store_path_root;
 
-  CHECK(!cdm_origin_id.is_empty(), base::NotFatalUntil::M140);
+  CHECK(!cdm_origin_id.is_empty());
 
   const auto key_system = cdm_config.key_system;
   auto key_system_str = base::UTF8ToWide(key_system);

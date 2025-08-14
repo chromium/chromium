@@ -88,8 +88,8 @@ void MediaFoundationCdmFactory::Create(
   // IMFContentDecryptionModule CDMs typically require persistent storage and
   // distinctive identifier and this should be guaranteed by key system support
   // code. Update this if there are new CDMs that doesn't require these.
-  CHECK(cdm_config.allow_persistent_state, base::NotFatalUntil::M140);
-  CHECK(cdm_config.allow_distinctive_identifier, base::NotFatalUntil::M140);
+  CHECK(cdm_config.allow_persistent_state);
+  CHECK(cdm_config.allow_distinctive_identifier);
 
   // Don't cache `cdm_origin_id` in this class since user can clear it any time.
   helper_->GetMediaFoundationCdmData(
@@ -171,7 +171,7 @@ HRESULT MediaFoundationCdmFactory::GetCdmFactory(
   auto itr = create_cdm_factory_cbs_for_testing_.find(key_system);
   if (itr != create_cdm_factory_cbs_for_testing_.end()) {
     auto& create_cdm_factory_cb = itr->second;
-    CHECK(create_cdm_factory_cb, base::NotFatalUntil::M140);
+    CHECK(create_cdm_factory_cb);
     RETURN_IF_FAILED(create_cdm_factory_cb.Run(cdm_factory));
     return S_OK;
   }

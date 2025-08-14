@@ -202,7 +202,7 @@ HRESULT MediaFoundationCdmSession::GenerateRequest(
     const std::vector<uint8_t>& init_data,
     SessionIdCB session_id_cb) {
   DVLOG_FUNC(1);
-  CHECK((session_id_.empty() && !session_id_cb_), base::NotFatalUntil::M140);
+  CHECK((session_id_.empty() && !session_id_cb_));
 
   session_id_cb_ = std::move(session_id_cb);
 
@@ -264,7 +264,7 @@ void MediaFoundationCdmSession::OnSessionMessage(
   if (session_id_.empty() && !SetSessionId())
     return;
 
-  CHECK(!session_id_.empty(), base::NotFatalUntil::M140);
+  CHECK(!session_id_.empty());
   session_message_cb_.Run(session_id_, message_type, message);
 }
 
@@ -298,22 +298,20 @@ void MediaFoundationCdmSession::OnSessionKeysChange() {
 }
 
 bool MediaFoundationCdmSession::SetSessionId() {
-  CHECK((session_id_.empty() && session_id_cb_), base::NotFatalUntil::M140);
+  CHECK((session_id_.empty() && session_id_cb_));
 
   base::win::ScopedCoMem<wchar_t> session_id;
   HRESULT hr = mf_cdm_session_->GetSessionId(&session_id);
   if (FAILED(hr) || !session_id) {
     bool success = std::move(session_id_cb_).Run("");
-    CHECK(!success, base::NotFatalUntil::M140)
-        << "Empty session ID should not be accepted";
+    CHECK(!success) << "Empty session ID should not be accepted";
     return false;
   }
 
   auto session_id_str = base::WideToUTF8(session_id.get());
   if (session_id_str.empty()) {
     bool success = std::move(session_id_cb_).Run("");
-    CHECK(!success, base::NotFatalUntil::M140)
-        << "Empty session ID should not be accepted";
+    CHECK(!success) << "Empty session ID should not be accepted";
     return false;
   }
 
@@ -329,7 +327,7 @@ bool MediaFoundationCdmSession::SetSessionId() {
 }
 
 HRESULT MediaFoundationCdmSession::UpdateExpirationIfNeeded() {
-  CHECK(!session_id_.empty(), base::NotFatalUntil::M140);
+  CHECK(!session_id_.empty());
 
   // Media Foundation CDM follows the EME spec where Time generally represents
   // an instant in time with millisecond accuracy.
