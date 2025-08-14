@@ -829,6 +829,9 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
   // generated. The consumer should not process the same event here and for
   // generated events.
   for (auto& event : events) {
+#if BUILDFLAG(IS_MAC)
+    VLOG(2) << "Non-generated event type: " << event.event_type;
+#endif
     switch (event.event_type) {
       case ax::mojom::Event::kLoadComplete:
         requires_distillation_ = true;
@@ -908,11 +911,26 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       case ax::mojom::Event::kTreeChanged:
           break;
       case ax::mojom::Event::kValueChanged:
+#if BUILDFLAG(IS_MAC)
+        // VLOG to assess if this is a reliable location to detect text field
+        // changes on Mac to avoid introducing unnecessary redraws.
+        if (ui::AXNode* node = GetAXNode(event.id);
+            node && ui::IsTextField(node->GetRole())) {
+          VLOG(1) << "kValueChanged on a text field";
+        }
+#endif
         // After the user finishes typing something we wait for a timer and
         // redraw to capture the input.
         if (event.event_from == ax::mojom::EventFrom::kUser &&
             event.event_intents.size() > 0) {
           reset_draw_timer_ = true;
+#if BUILDFLAG(IS_MAC)
+          VLOG(1) << "kValueChanged on a user event triggering redraw timer";
+#endif
+        } else {
+#if BUILDFLAG(IS_MAC)
+          VLOG(1) << "kValueChanged without a redraw timer trigger";
+#endif
         }
         break;
       case ax::mojom::Event::kAriaAttributeChangedDeprecated:
@@ -945,6 +963,9 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
   // Note that this list of events may overlap with non-generated events in the
   // It's up to the consumer to pick but its generally good to prefer generated.
   for (const auto& event : event_generator) {
+#if BUILDFLAG(IS_MAC)
+    VLOG(2) << "Generated event type: " << event.event_params->event;
+#endif
     switch (event.event_params->event) {
       case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
         requires_post_process_selection_ = true;
