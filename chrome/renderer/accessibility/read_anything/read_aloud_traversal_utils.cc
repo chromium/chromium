@@ -142,6 +142,12 @@ bool ArePositionsEqual(const ui::AXNodePosition::AXPositionInstance& position,
 // if it's a leaf.
 ui::AXNode* GetAnchorNode(
     const ui::AXNodePosition::AXPositionInstance& position) {
+  // For editable text fields, we want to read the text inside, even if it's
+  // technically a child of a leaf.
+  if (position->GetAnchor()->HasState(ax::mojom::State::kEditable) &&
+      position->GetAnchor()->IsText()) {
+    return position->GetAnchor();
+  }
   bool is_leaf = position->GetAnchor()->IsChildOfLeaf();
   // If the node is a leaf, use the parent node instead.
   return is_leaf ? position->GetAnchor()->GetLowestPlatformAncestor()
