@@ -137,10 +137,12 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "bwg_service_unittest.mm",
+    "bwg_session_handler_unittest.mm",
     "bwg_tab_helper_unittest.mm",
   ]
   deps = [
     ":bwg_service",
+    ":model",
     ":tab_helper",
     "//base/test:test_support",
     "//components/prefs:test_support",
@@ -152,10 +154,12 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:test_support",
