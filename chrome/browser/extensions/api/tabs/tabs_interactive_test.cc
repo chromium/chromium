@@ -422,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(TabsApiInteractiveTest,
 
   // Navigate to `url1` and ensure the browser is active.
   {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url1));
     ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
     browser()->window()->Activate();
     activation_waiter.WaitForActivation();

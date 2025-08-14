@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -523,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(ImageContentSettingApiTest, OriginBlocking) {
 
   GURL example1_index =
       embedded_test_server()->GetURL("example1.com", "/index.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), example1_index));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), example1_index));
 
   // The onload event will fire when there are no more pending image loads. We
   // should then have one messages -- one for the onload event. Neither "example

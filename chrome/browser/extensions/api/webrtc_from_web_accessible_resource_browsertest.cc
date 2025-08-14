@@ -5,7 +5,6 @@
 #include "base/command_line.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/test/browser_test.h"
@@ -66,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcFromWebAccessibleResourceTest,
   permissions::PermissionRequestObserver permission_request_observer(
       web_contents);
   extensions::ResultCatcher catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
 
   ASSERT_TRUE(catcher.GetNextResult());
   EXPECT_TRUE(permission_request_observer.request_shown());
@@ -89,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcFromWebAccessibleResourceTest,
   permissions::PermissionRequestObserver permission_request_observer(
       web_contents);
   extensions::ResultCatcher catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
 
   ASSERT_TRUE(catcher.GetNextResult());
   EXPECT_TRUE(permission_request_observer.request_shown());

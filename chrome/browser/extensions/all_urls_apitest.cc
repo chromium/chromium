@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
@@ -60,7 +59,7 @@ class AllUrlsApiTest : public ExtensionApiTest {
     ExtensionTestMessageListener listener_a("content script: " + expected_url);
     ExtensionTestMessageListener listener_b("execute: " + expected_url);
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), GURL(url)));
     ASSERT_TRUE(listener_a.WaitUntilSatisfied());
     ASSERT_TRUE(listener_b.WaitUntilSatisfied());
   }

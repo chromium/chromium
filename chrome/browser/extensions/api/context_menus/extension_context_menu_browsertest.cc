@@ -832,7 +832,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, ClickInFrame) {
   ExtensionTestMessageListener listener("created items");
   ASSERT_TRUE(LoadContextMenuExtension("frames"));
   GURL url_with_frame("data:text/html,<iframe name='child'>");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_with_frame));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url_with_frame));
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
   // Click on a menu item in the main frame.

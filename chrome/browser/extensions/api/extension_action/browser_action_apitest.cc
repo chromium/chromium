@@ -550,7 +550,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   EXPECT_EQ("Showing icon 2", extension_action->GetTitle(first_tab_id));
 
   // Reload that tab, default title should come back.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), GURL("about:blank")));
   EXPECT_EQ("hi!", extension_action->GetTitle(first_tab_id));
 }
 

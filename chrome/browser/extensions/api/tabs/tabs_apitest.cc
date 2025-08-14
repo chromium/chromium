@@ -17,7 +17,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -516,7 +515,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType,
 
   // Now open a tab and ensure the extension in |ext_dir2| does not see any info
   // that is guarded by "tabs" permission.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 

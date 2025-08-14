@@ -2597,8 +2597,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_WithOpener) {
 
   // Navigate a tab to an extension page.
   GURL extension_url = extension->GetResourceURL("file.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
   content::WebContents* old_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(old_contents, extension_url));
 
   // Execute chrome.windows.create and store the new tab in |new_contents|.
   content::WebContents* new_contents = nullptr;
@@ -2668,8 +2668,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_NoOpener) {
 
   // Navigate a tab to an extension page.
   GURL extension_url = extension->GetResourceURL("file.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
   content::WebContents* old_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(old_contents, extension_url));
 
   // Execute chrome.windows.create and store the new tab in |new_contents|.
   content::WebContents* new_contents = nullptr;
@@ -2707,8 +2707,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_OpenerAndOrigin) {
 
   // Navigate a tab to an extension page.
   GURL extension_url = extension->GetResourceURL("file.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
   content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, extension_url));
 
   const std::string extension_origin_str =
       url::Origin::Create(extension->url()).Serialize();
@@ -2793,8 +2793,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToAboutBlank) {
   GURL about_blank_url = GURL(url::kAboutBlankURL);
 
   // Navigate a tab to an extension page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
   content::WebContents* extension_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(extension_contents, extension_url));
   EXPECT_EQ(
       extension_origin,
       extension_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
@@ -2858,8 +2858,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToAboutNewTab) {
   GURL chrome_newtab_url = GURL("chrome://new-tab-page/");
 
   // Navigate a tab to an extension page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
   content::WebContents* extension_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(extension_contents, extension_url));
   EXPECT_EQ(
       extension_origin,
       extension_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
@@ -2911,8 +2911,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToNonWAR) {
   GURL non_war_url = extension_url;
 
   // Navigate a tab to an extension page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
   content::WebContents* extension_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(extension_contents, extension_url));
   EXPECT_EQ(
       extension_origin,
       extension_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());

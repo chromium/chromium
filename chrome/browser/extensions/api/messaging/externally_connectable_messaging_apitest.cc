@@ -938,7 +938,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, FromPopup) {
   ui_test_utils::UrlLoadObserver url_observer(chromium_org_url());
 
   // The page at popup_opener_url() should open chromium_org_url() as a popup.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), popup_opener_url()));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), popup_opener_url()));
   url_observer.Wait();
 
   content::WebContents* popup_contents = url_observer.web_contents();
@@ -1006,7 +1006,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, HostedAppOnWebsite) {
   scoped_refptr<const Extension> app = LoadChromiumHostedApp();
 
   // The presence of the hosted app shouldn't give the ability to send messages.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), chromium_org_url()));
   EXPECT_EQ(NAMESPACE_NOT_DEFINED,
             CanConnectAndSendMessagesToMainFrame(app.get()));
   EXPECT_FALSE(AreAnyNonWebApisDefinedForMainFrame());
@@ -1037,7 +1037,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                            .Set("manifest_version", 2))
           .Build();
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), chromium_org_url()));
   EXPECT_EQ(COULD_NOT_ESTABLISH_CONNECTION_ERROR,
             CanConnectAndSendMessagesToMainFrame(invalid.get()));
 }

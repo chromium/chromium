@@ -11,7 +11,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/common/extension_features.h"
@@ -393,9 +392,9 @@ IN_PROC_BROWSER_TEST_P(
 
     // Load the extension tab (and it's script).
     GURL ext_url = extension->GetResourceURL("test_ext_tab.html");
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(ext_url)));
     content::WebContents* new_ext_tab_web_contents = GetActiveWebContents();
     ASSERT_TRUE(new_ext_tab_web_contents);
+    ASSERT_TRUE(NavigateToURL(new_ext_tab_web_contents, GURL(ext_url)));
 
     // Must load the tab content script second since it's loading sends a
     // message to the extension tab.

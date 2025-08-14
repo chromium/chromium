@@ -23,7 +23,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -329,7 +328,7 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
                        TestRendererAccessibilityEnabled) {
   StartEmbeddedTestServer();
   const GURL url = GetURLForPath(kDomain, "/index.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
 
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
   content::WebContents* const tab =
@@ -350,7 +349,7 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, ServiceWorker) {
   StartEmbeddedTestServer();
   const GURL url = GetURLForPath(kDomain, "/index.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
 
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
   content::WebContents* const tab =
@@ -376,7 +375,7 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, SanityCheck) {
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, ImageLabels) {
   StartEmbeddedTestServer();
   const GURL url = GetURLForPath(kDomain, "/index.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
 
   // Enable image labels.
   profile()->GetPrefs()->SetBoolean(prefs::kAccessibilityImageLabelsEnabled,

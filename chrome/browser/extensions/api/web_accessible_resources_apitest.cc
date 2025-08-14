@@ -24,7 +24,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
 #endif
 
 namespace extensions {
@@ -197,8 +196,8 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesApiTest,
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_page);
   test_page = test_page.AppendASCII("simple.html");
   GURL gurl = net::FilePathToFileURL(test_page);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, gurl));
   const int tab_id = ExtensionTabUtil::GetTabId(web_contents);
   static constexpr char kScript[] =
       R"((async () => {
@@ -355,8 +354,8 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesDynamicUrlScriptingApiTest,
   // Navigate to a non extension page and test.
   ResultCatcher catcher;
   GURL gurl = embedded_test_server()->GetURL("example.com", "/empty.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, gurl));
   const int tab_id = ExtensionTabUtil::GetTabId(web_contents);
   static constexpr char kScript[] =
       R"((async () => {

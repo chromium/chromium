@@ -19,7 +19,6 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -328,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_GetTargetTabUrl) {
   for (const auto& test_case : test_cases) {
     GURL expected_url = GURL(test_case.second);
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(test_case.first)));
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), GURL(test_case.first)));
 
     // Sanity check that we always have one tab in the browser.
     ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
