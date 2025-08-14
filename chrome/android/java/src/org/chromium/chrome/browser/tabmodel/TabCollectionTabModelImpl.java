@@ -19,6 +19,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -517,9 +518,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
         if (newSelectedTab != null) {
             Token tabGroupId = newSelectedTab.getTabGroupId();
-            if (tabGroupId != null) {
+            boolean isInGroup = tabGroupId != null;
+            if (isInGroup) {
+                assumeNonNull(tabGroupId);
                 setLastShownTabForGroup(tabGroupId, newSelectedTab);
             }
+            RecordHistogram.recordBooleanHistogram("TabGroups.SelectedTabInTabGroup", isInGroup);
 
             for (TabModelObserver obs : mTabModelObservers) {
                 obs.didSelectTab(newSelectedTab, type, lastId);
@@ -624,6 +628,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             assumeNonNull(parentTab);
             if (parentTab.getTabGroupId() == null) {
                 createSingleTabGroup(parentTab);
+                RecordUserAction.record("TabGroup.Created.OpenInNewTab");
             }
             tab.setTabGroupId(parentTab.getTabGroupId());
         }
