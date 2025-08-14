@@ -6720,12 +6720,10 @@ static_library("browser") {
 
   if (enterprise_data_controls) {
     sources += [
+      "//chrome/browser/enterprise/data_controls/chrome_clipboard_context.cc",
+      "//chrome/browser/enterprise/data_controls/chrome_clipboard_context.h",
       "//chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.cc",
       "//chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h",
-
-      # TODO(crbug.com/435459809): Move back reporting_service files
-      "//chrome/browser/enterprise/data_controls/reporting_service.cc",
-      "//chrome/browser/enterprise/data_controls/reporting_service.h",
     ]
 
     # TODO(b/352728209): Update the logic for which file compiles on Android

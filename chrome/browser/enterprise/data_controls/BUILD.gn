@@ -149,7 +149,7 @@ source_set("unit_tests") {
     "//components/enterprise/data_controls/core/browser:unit_tests",
   ]
   if (!is_android) {
-    sources += [ "reporting_service_unittest.cc" ]
+    sources += [ "reporting_unittest.cc" ]
     deps += [ "//chrome/browser/enterprise/connectors/test:test_support" ]
   }
 

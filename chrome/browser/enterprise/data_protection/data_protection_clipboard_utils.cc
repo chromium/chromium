@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
+#include "chrome/browser/enterprise/data_controls/chrome_clipboard_context.h"
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
 #include "chrome/browser/enterprise/data_protection/content_area_user_provider.h"
 #include "chrome/browser/enterprise/data_protection/paste_allowed_request.h"
@@ -51,7 +52,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/enterprise/data_controls/reporting_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 namespace enterprise_data_protection {
@@ -188,7 +189,7 @@ void PasteIfAllowedByContentAnalysis(
   dialog_data.reason =
       enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE;
   dialog_data.clipboard_source =
-      data_controls::ReportingService::GetClipboardSource(
+      data_controls::ChromeClipboardContext::GetClipboardSource(
           source, destination,
           enterprise_connectors::kOnBulkDataEntryScopePref);
   dialog_data.source_content_area_email =
@@ -221,21 +222,22 @@ void MaybeReportDataControlsPaste(const content::ClipboardEndpoint& source,
                                   const data_controls::Verdict& verdict,
                                   bool bypassed = false) {
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  auto* reporting_service =
-      data_controls::ReportingServiceFactory::GetInstance()
-          ->GetForBrowserContext(destination.browser_context());
+  auto* router =
+      enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
+          destination.browser_context());
 
-  // `reporting_service` can be null for incognito browser contexts, so since
-  // there's no reporting in that case we just return early.
-  if (!reporting_service) {
+  // `router` can be null for incognito browser contexts, so since there's no
+  // reporting in that case we just return early.
+  if (!router) {
     return;
   }
 
+  data_controls::ChromeClipboardContext context(source, destination, metadata);
+
   if (bypassed) {
-    reporting_service->ReportPasteWarningBypassed(source, destination, metadata,
-                                                  verdict);
+    router->ReportPasteWarningBypassed(context, verdict);
   } else {
-    reporting_service->ReportPaste(source, destination, metadata, verdict);
+    router->ReportPaste(context, verdict);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
@@ -245,20 +247,22 @@ void MaybeReportDataControlsCopy(const content::ClipboardEndpoint& source,
                                  const data_controls::Verdict& verdict,
                                  bool bypassed = false) {
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  auto* reporting_service =
-      data_controls::ReportingServiceFactory::GetInstance()
-          ->GetForBrowserContext(source.browser_context());
+  auto* router =
+      enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
+          source.browser_context());
 
-  // `reporting_service` can be null for incognito browser contexts, so since
-  // there's no reporting in that case we just return early.
-  if (!reporting_service) {
+  // `router` can be null for incognito browser contexts, so since there's no
+  // reporting in that case we just return early.
+  if (!router) {
     return;
   }
 
+  data_controls::ChromeClipboardContext context(source, metadata);
+
   if (bypassed) {
-    reporting_service->ReportCopyWarningBypassed(source, metadata, verdict);
+    router->ReportCopyWarningBypassed(context, verdict);
   } else {
-    reporting_service->ReportCopy(source, metadata, verdict);
+    router->ReportCopy(context, verdict);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }

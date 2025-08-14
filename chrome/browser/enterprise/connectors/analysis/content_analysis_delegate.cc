@@ -33,7 +33,6 @@
 #include "chrome/browser/enterprise/connectors/analysis/page_print_request_handler.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/enterprise/data_controls/reporting_service.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/file_util_service.h"
 #include "chrome/browser/policy/dm_token_utils.h"

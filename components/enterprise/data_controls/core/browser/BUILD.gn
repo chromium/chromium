@@ -23,6 +23,7 @@ source_set("browser") {
   sources = [
     "action_context.cc",
     "action_context.h",
+    "clipboard_context.h",
     "conditions/and_condition.cc",
     "conditions/and_condition.h",
     "conditions/attributes_condition.cc",
@@ -58,12 +59,15 @@ source_set("browser") {
     ":features",
     "//base",
     "//components/enterprise/buildflags",
+    "//components/enterprise/common/proto:connectors_proto",
     "//components/keyed_service/core",
     "//components/policy/core/browser",
     "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/strings",
     "//components/url_matcher",
+    "//ui/base/clipboard",
+    "//ui/base/clipboard:clipboard_types",
     "//url",
   ]
 

@@ -72,6 +72,7 @@ source_set("core") {
     "//components/strings:components_strings_grit",
     "//components/url_matcher",
     "//ui/base",
+    "//ui/base/clipboard:clipboard_types",
     "//ui/gfx/range",
   ]
 

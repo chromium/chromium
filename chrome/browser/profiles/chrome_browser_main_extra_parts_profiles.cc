@@ -554,10 +554,6 @@
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/enterprise/data_controls/reporting_service.h"
-#endif
 #endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -837,13 +833,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   CookieControlsServiceFactory::GetInstance();
   CookieSettingsFactory::GetInstance();
   DataTypeStoreServiceFactory::GetInstance();
-
-// TODO(b/352728209): Add back this service when reporting is supported on
-// Android.
-#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID) && \
-    BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  data_controls::ReportingServiceFactory::GetInstance();
-#endif
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   data_controls::ChromeRulesServiceFactory::GetInstance();
 #endif

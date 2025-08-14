@@ -21,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/url_matcher/url_matcher.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 
 namespace enterprise_connectors {
 
@@ -90,6 +91,42 @@ std::string DangerTypeToThreatType(download::DownloadDangerType danger_type) {
       return kUnknownDownloadThreatType;
   }
 }
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+// TODO(crbug.com/311679168): Move this to share logic with
+// ContentAnalysisDelegate.
+std::string GetMimeType(const ui::ClipboardFormatType& clipboard_format) {
+  if (clipboard_format == ui::ClipboardFormatType::PlainTextType()) {
+    return ui::kMimeTypePlainText;
+  } else if (clipboard_format == ui::ClipboardFormatType::HtmlType()) {
+    return ui::kMimeTypeHtml;
+  } else if (clipboard_format == ui::ClipboardFormatType::SvgType()) {
+    return ui::kMimeTypeSvg;
+  } else if (clipboard_format == ui::ClipboardFormatType::RtfType()) {
+    return ui::kMimeTypeRtf;
+  } else if (clipboard_format == ui::ClipboardFormatType::PngType()) {
+    return ui::kMimeTypePng;
+  } else if (clipboard_format == ui::ClipboardFormatType::FilenamesType()) {
+    return ui::kMimeTypeUriList;
+  }
+  return "";
+}
+
+enterprise_connectors::EventResult GetEventResult(
+    data_controls::Rule::Level level) {
+  switch (level) {
+    case data_controls::Rule::Level::kNotSet:
+    case data_controls::Rule::Level::kAllow:
+    case data_controls::Rule::Level::kReport:
+      return enterprise_connectors::EventResult::ALLOWED;
+    case data_controls::Rule::Level::kBlock:
+      return enterprise_connectors::EventResult::BLOCKED;
+    case data_controls::Rule::Level::kWarn:
+      return enterprise_connectors::EventResult::WARNED;
+  }
+}
+
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 }  // namespace
 
@@ -694,6 +731,106 @@ void ReportingEventRouter::OnAnalysisConnectorResult(
 }
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+
+// static
+std::string ReportingEventRouter::GetClipboardSourceString(
+    const enterprise_connectors::ContentMetaData::CopiedTextSource& source) {
+  if (!source.url().empty()) {
+    return source.url();
+  }
+
+  switch (source.context()) {
+    case enterprise_connectors::ContentMetaData::CopiedTextSource::UNSPECIFIED:
+    case enterprise_connectors::ContentMetaData::CopiedTextSource::SAME_PROFILE:
+      return "";
+    case enterprise_connectors::ContentMetaData::CopiedTextSource::INCOGNITO:
+      return "INCOGNITO";
+    case enterprise_connectors::ContentMetaData::CopiedTextSource::CLIPBOARD:
+      return "CLIPBOARD";
+    case enterprise_connectors::ContentMetaData::CopiedTextSource::
+        OTHER_PROFILE:
+      return "OTHER_PROFILE";
+  }
+}
+
+void ReportingEventRouter::ReportCopy(
+    const data_controls::ClipboardContext& context,
+    const data_controls::Verdict& verdict) {
+  ReportCopyOrPaste(
+      context, verdict,
+      enterprise_connectors::kClipboardCopyDataTransferEventTrigger,
+      GetEventResult(verdict.level()));
+}
+
+void ReportingEventRouter::ReportCopyWarningBypassed(
+    const data_controls::ClipboardContext& context,
+    const data_controls::Verdict& verdict) {
+  ReportCopyOrPaste(
+      context, verdict,
+      enterprise_connectors::kClipboardCopyDataTransferEventTrigger,
+      enterprise_connectors::EventResult::BYPASSED);
+}
+
+void ReportingEventRouter::ReportPaste(
+    const data_controls::ClipboardContext& context,
+    const data_controls::Verdict& verdict) {
+  ReportCopyOrPaste(
+      context, verdict,
+      enterprise_connectors::kWebContentUploadDataTransferEventTrigger,
+      GetEventResult(verdict.level()));
+}
+
+void ReportingEventRouter::ReportPasteWarningBypassed(
+    const data_controls::ClipboardContext& context,
+    const data_controls::Verdict& verdict) {
+  ReportCopyOrPaste(
+      context, verdict,
+      enterprise_connectors::kWebContentUploadDataTransferEventTrigger,
+      enterprise_connectors::EventResult::BYPASSED);
+}
+
+void ReportingEventRouter::ReportCopyOrPaste(
+    const data_controls::ClipboardContext& context,
+    const data_controls::Verdict& verdict,
+    const std::string& trigger,
+    enterprise_connectors::EventResult result) {
+  if (verdict.triggered_rules().empty()) {
+    return;
+  }
+
+  GURL url;
+  std::string destination_string;
+  std::string source_string;
+  std::string content_area_account_email;
+  if (trigger ==
+      enterprise_connectors::kWebContentUploadDataTransferEventTrigger) {
+    url = context.destination_url();
+    destination_string = url.spec();
+    source_string =
+        GetClipboardSourceString(context.data_controls_copied_text_source());
+    content_area_account_email = context.destination_active_user();
+  } else {
+    DCHECK_EQ(trigger,
+              enterprise_connectors::kClipboardCopyDataTransferEventTrigger);
+    url = context.source_url();
+    source_string = context.source_url().spec();
+    content_area_account_email = context.source_active_user();
+  }
+
+  OnDataControlsSensitiveDataEvent(
+      /*url=*/url,
+      /*tab_url=*/url,
+      /*source=*/source_string,
+      /*destination=*/destination_string,
+      /*mime_type=*/GetMimeType(context.format_type()),
+      /*trigger=*/trigger,
+      /*source_active_user_email=*/context.source_active_user(),
+      /*content_area_account_email=*/content_area_account_email,
+      /*triggered_rules=*/verdict.triggered_rules(),
+      /*event_result=*/result,
+      /*content_size=*/context.size().value_or(-1));
+}
+
 void ReportingEventRouter::OnDataControlsSensitiveDataEvent(
     const GURL& url,
     const GURL& tab_url,

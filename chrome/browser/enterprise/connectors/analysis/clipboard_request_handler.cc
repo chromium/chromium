@@ -5,10 +5,10 @@
 #include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
-#include "chrome/browser/enterprise/data_controls/reporting_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/enterprise/connectors/core/reporting_event_router.h"
 
 namespace enterprise_connectors {
 
@@ -91,8 +91,7 @@ void ClipboardRequestHandler::ReportWarningBypass(
   ReportAnalysisConnectorWarningBypass(
       profile_, *content_analysis_info_,
       /*source*/
-      data_controls::ReportingService::GetClipboardSourceString(
-          clipboard_source_),
+      ReportingEventRouter::GetClipboardSourceString(clipboard_source_),
       /*destination*/ url_.spec(),
       type_ == Type::kText ? "Text data" : "Image data",
       /*download_digest_sha256*/ "", type_ == Type::kText ? "text/plain" : "",
@@ -121,8 +120,7 @@ bool ClipboardRequestHandler::UploadDataImpl() {
   if (type_ == Type::kText) {
     request->set_destination(url_.spec());
     std::string source_string =
-        data_controls::ReportingService::GetClipboardSourceString(
-            clipboard_source_);
+        ReportingEventRouter::GetClipboardSourceString(clipboard_source_);
     if (!source_string.empty()) {
       request->set_source(source_string);
     }
@@ -166,8 +164,7 @@ void ClipboardRequestHandler::OnContentAnalysisResponse(
   MaybeReportDeepScanningVerdict(
       profile_, content_analysis_info_.get(),
       /*source*/
-      data_controls::ReportingService::GetClipboardSourceString(
-          clipboard_source_),
+      ReportingEventRouter::GetClipboardSourceString(clipboard_source_),
       /*destination*/ url_.spec(),
       type_ == Type::kText ? "Text data" : "Image data",
       /*download_digest_sha256*/ "", type_ == Type::kText ? "text/plain" : "",
