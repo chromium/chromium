@@ -168,6 +168,7 @@
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
 #else
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -1796,6 +1797,20 @@ password_manager::UndoPasswordChangeController*
 ChromePasswordManagerClient::GetUndoPasswordChangeController() {
   return &undo_password_change_controller_;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+bool ChromePasswordManagerClient::IsActorTaskActive() {
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile_);
+  if (!actor_service) {
+    return false;
+  }
+
+  const tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  return tab_interface && actor_service->IsAnyTaskActingOnTab(*tab_interface);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 ChromePasswordManagerClient::ChromePasswordManagerClient(
     content::WebContents* web_contents)

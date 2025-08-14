@@ -190,8 +190,7 @@ class PasswordFormMetricsRecorder
   // to be filled. This decision is only recorded for the first time, the
   // browser informs the renderer about credentials for a given form.
   //
-  // Needs to stay in sync with PasswordManagerFirstWaitForUsernameReason in
-  // enums.xml.
+  // LINT.IfChange(WaitForUsernameReason)
   enum class WaitForUsernameReason {
     // Credentials may be filled on page load.
     kDontWait = 0,
@@ -225,8 +224,11 @@ class PasswordFormMetricsRecorder
     kGroupedMatch = 13,
     // A form on a page is a single username form.
     kSingleUsernameForm = 14,
-    kMaxValue = kSingleUsernameForm,
+    // An actor task is ongoing on the page.
+    kActorTaskOngoing = 15,
+    kMaxValue = kActorTaskOngoing,
   };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordManagerFirstWaitForUsernameReason)
 
   // Used in UMA histogram, please do NOT reorder.
   // Metric: "PasswordManager.MatchedFormType"

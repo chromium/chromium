@@ -569,6 +569,10 @@ class PasswordManagerClient {
   virtual password_manager::LeakDetectionInitiator GetLeakDetectionInitiator();
 
   virtual UndoPasswordChangeController* GetUndoPasswordChangeController();
+
+#if !BUILDFLAG(IS_ANDROID)
+  virtual bool IsActorTaskActive();
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace password_manager

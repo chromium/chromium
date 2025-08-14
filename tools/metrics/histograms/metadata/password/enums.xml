@@ -1267,6 +1267,8 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(PasswordManagerFirstWaitForUsernameReason) -->
+
 <enum name="PasswordManagerFirstWaitForUsernameReason">
   <int value="0" label="Don't wait"/>
   <int value="1" label="Incognito mode">
@@ -1308,10 +1310,18 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Cross origin iframe">
     The form is in a cross origin iframe.
   </int>
-  <int value="13" label="Single username form">
+  <int value="13" label="Grouped match">
+    The only available credential is weakly affiliated.
+  </int>
+  <int value="14" label="Single username form">
     The form is a single username form.
   </int>
+  <int value="15" label="Actor task ongoing">
+    An actor task is ongoing on the page.
+  </int>
 </enum>
+
+<!-- LINT.ThenChange(/components/password_manager/core/browser/password_form_metrics_recorder.h:WaitForUsernameReason) -->
 
 <enum name="PasswordManagerHttpCredentialType">
   <summary>

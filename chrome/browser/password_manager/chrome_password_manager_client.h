@@ -409,6 +409,10 @@ class ChromePasswordManagerClient
   password_manager::UndoPasswordChangeController*
   GetUndoPasswordChangeController() override;
 
+#if !BUILDFLAG(IS_ANDROID)
+  bool IsActorTaskActive() override;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
  protected:
   // Callable for tests.
   explicit ChromePasswordManagerClient(content::WebContents* web_contents);
