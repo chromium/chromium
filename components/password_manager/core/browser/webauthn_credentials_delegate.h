@@ -12,9 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/passkey_credential.h"
 
 namespace password_manager {
+
+class PasskeyCredential;
 
 // Delegate facilitating communication between the password manager and
 // WebAuthn. It is associated with a single frame.
