@@ -45,6 +45,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
+#include "third_party/blink/public/web/web_content_extraction.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -94,6 +95,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/test_report_body.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/geometry/dom_point.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_list.h"
@@ -2581,6 +2583,25 @@ String Internals::layerTreeAsText(Document* document,
   document->View()->UpdateAllLifecyclePhasesForTest();
 
   return document->GetFrame()->GetLayerTreeAsTextForTesting(flags);
+}
+
+String Internals::dumpContentNodeTree(Document* document,
+                                      ExceptionState& exception_state) const {
+  DCHECK(document);
+  if (!document->GetFrame()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The document provided is invalid.");
+    return String();
+  }
+
+  LocalFrame* frame = DynamicTo<LocalFrame>(document->GetFrame());
+  if (!frame) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The document must be in a local frame.");
+    return String();
+  }
+
+  return DumpContentNodeTreeForTest(WebLocalFrameImpl::FromFrame(frame));
 }
 
 String Internals::mainThreadScrollingReasons(

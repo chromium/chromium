@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/script_tools/automation_delegate_supplement.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
+#include "third_party/blink/renderer/modules/content_extraction/ai_page_content_debug_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -610,10 +611,12 @@ void AIPageContentAgent::BindReceiver(
   agent->Bind(std::move(receiver));
 }
 
+// static
 AIPageContentAgent* AIPageContentAgent::GetOrCreateForTesting(
     Document& document) {
   auto* agent = AIPageContentAgent::From(document);
   if (!agent) {
+    DCHECK(document.GetFrame());
     agent = MakeGarbageCollected<AIPageContentAgent>(
         base::PassKey<AIPageContentAgent>(), *document.GetFrame());
     Supplement<Document>::ProvideTo(document, agent);
@@ -624,7 +627,9 @@ AIPageContentAgent* AIPageContentAgent::GetOrCreateForTesting(
 AIPageContentAgent::AIPageContentAgent(base::PassKey<AIPageContentAgent>,
                                        LocalFrame& frame)
     : Supplement<Document>(*frame.GetDocument()),
-      receiver_set_(this, frame.DomWindow()) {}
+      receiver_set_(this, frame.DomWindow()) {
+  DCHECK(frame.GetDocument());
+}
 
 AIPageContentAgent::~AIPageContentAgent() = default;
 
@@ -692,6 +697,17 @@ void AIPageContentAgent::GetAIPageContentSync(
                        GetSupplementable()->GetFrame()->IsOutermostMainFrame(),
                        *options);
   std::move(callback).Run(std::move(content));
+}
+
+String AIPageContentAgent::DumpContentNodeTreeForTest() {
+  mojom::blink::AIPageContentOptions options;
+  options.on_critical_path = true;
+  options.mode = mojom::blink::AIPageContentMode::kActionableElements;
+  auto content = GetAIPageContentInternal(options);
+  CHECK(content);
+  CHECK(content->root_node);
+
+  return ContentNodeTreeToString(content->root_node.get());
 }
 
 mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentInternal(

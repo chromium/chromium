@@ -1387,6 +1387,7 @@ if (use_blink && !is_cronet_build) {
       "//third_party/blink/web_tests/bindings/",
       "//third_party/blink/web_tests/clipboard/",
       "//third_party/blink/web_tests/compositing/",
+      "//third_party/blink/web_tests/content_extraction/",
       "//third_party/blink/web_tests/crypto/",
       "//third_party/blink/web_tests/css-parser/",
       "//third_party/blink/web_tests/css1/",

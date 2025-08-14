@@ -363,6 +363,8 @@ class Internals final : public ScriptWrappable {
   String layerTreeAsText(Document*, unsigned flags, ExceptionState&) const;
   String layerTreeAsText(Document*, ExceptionState&) const;
 
+  String dumpContentNodeTree(Document*, ExceptionState&) const;
+
   String mainThreadScrollingReasons(Document*, ExceptionState&) const;
 
   void evictAllResources() const;

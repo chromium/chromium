@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,6 +58,8 @@ class MODULES_EXPORT AIPageContentAgent final
       const mojom::blink::AIPageContentOptions& options) const;
   // LocalFrameView::LifecycleNotificationObserver overrides.
   void DidFinishPostLifecycleSteps(const LocalFrameView&) override;
+
+  String DumpContentNodeTreeForTest();
 
  private:
   void GetAIPageContentSync(mojom::blink::AIPageContentOptionsPtr options,

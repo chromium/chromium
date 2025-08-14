@@ -8,6 +8,8 @@ blink_modules_sources("content_extraction") {
   sources = [
     "ai_page_content_agent.cc",
     "ai_page_content_agent.h",
+    "ai_page_content_debug_utils.cc",
+    "ai_page_content_debug_utils.h",
     "document_chunker.cc",
     "document_chunker.h",
     "frame_metadata_observer_registry.cc",

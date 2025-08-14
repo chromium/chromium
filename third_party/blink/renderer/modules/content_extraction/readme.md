@@ -132,3 +132,30 @@ protection and access control rules.
 * **Guidelines for Storing APC Data:** Due to the potential for private
 information, APC data or its derivatives should not be persisted beyond the
 scope of a user's immediate task without explicit user consent.
+
+## 6. Testing
+
+### Unit Tests
+
+To run the unit tests for content extraction, use the following command:
+
+```bash
+autoninja -C out/Default blink_unittests && out/Default/blink_unittests --gtest_filter=AIPageContentAgentTest.*
+```
+
+### Web Tests
+
+The web tests for content extraction are located in
+`third_party/blink/web_tests/content_extraction/`.
+
+To run the web tests:
+
+```bash
+third_party/blink/tools/run_web_tests.py -C out/Default content_extraction
+```
+
+To update the web test expectations:
+
+```bash
+third_party/blink/tools/run_web_tests.py -C out/Default content_extraction --reset-results
+```
