@@ -1129,12 +1129,6 @@ public class CustomTabsConnection {
                     bundleToJson(intent.getExtras()));
         }
 
-        if (ChromeBrowserInitializer.getInstance().isFullBrowserInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_FIX_WARMUP)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EARLY_NAV)) {
-            CustomTabsConnectionJni.get().emitIntentHandledTrigger();
-        }
-
         // If we still have pending warmup tasks, don't continue as they would only delay intent
         // processing from now on.
         if (mWarmupTasks != null) mWarmupTasks.cancel();
@@ -2255,7 +2249,5 @@ public class CustomTabsConnection {
                 SessionHolder<?> session,
                 WebContents webContents,
                 @JniType("std::string") String textFragment);
-
-        void emitIntentHandledTrigger();
     }
 }
