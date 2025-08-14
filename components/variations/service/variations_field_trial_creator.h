@@ -43,7 +43,7 @@ class EntropyProviders;
 // longer transmitted with VariationIDs.
 struct CreateTrialsResult {
   bool applied_seed = false;
-  std::optional<bool> seed_has_limited_layer;
+  std::optional<bool> seed_has_active_limited_layer;
 };
 
 // Just maps one set of enum values to another. Nothing to see here.

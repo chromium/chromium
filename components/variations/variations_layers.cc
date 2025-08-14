@@ -175,9 +175,6 @@ VariationsLayers::VariationsLayers(const VariationsSeed& seed,
   std::map<uint32_t, int> counts_by_id;
   for (const Layer& layer_proto : seed.layers()) {
     ++counts_by_id[layer_proto.id()];
-    if (layer_proto.entropy_mode() == Layer::LIMITED) {
-      seed_has_limited_layer_ = true;
-    }
     // Avoid multiple logs if one ID is used multiple times.
     if (counts_by_id[layer_proto.id()] == 2) {
       LogInvalidLayerReason(InvalidLayerReason::LayerIDNotUnique);

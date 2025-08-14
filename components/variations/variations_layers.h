@@ -102,10 +102,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
       const ProcessedStudy& processed_study,
       const EntropyProviders& entropy_providers) const;
 
-  // Returns true if there is a limited-entropy-mode layer among the layers in
-  // the VariationsSeed passed to this object's ctor.
-  bool seed_has_limited_layer() const { return seed_has_limited_layer_; }
-
  private:
   struct LayerInfo {
     // Which layer member is active in the layer.
@@ -138,7 +134,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
 
   NormalizedMurmurHashEntropyProvider nil_entropy_;
   std::map<uint32_t, LayerInfo> active_member_for_layer_;
-  bool seed_has_limited_layer_ = false;
 };
 
 }  // namespace variations

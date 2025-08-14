@@ -317,6 +317,8 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
 
   CreateTrialsResult create_trials_result = {.applied_seed = false};
   if (!used_testing_config && client_filterable_state) {
+    // TODO(crbug.com/410008879): Make use of the result's
+    // seed_has_active_limited_layer field.
     create_trials_result = CreateTrialsFromSeed(
         entropy_providers, feature_list.get(), safe_seed_manager,
         std::move(client_filterable_state));
@@ -721,11 +723,13 @@ CreateTrialsResult VariationsFieldTrialCreator::CreateTrialsFromSeed(
   // is the case for clients on platforms, like Android WebView, that do not
   // support limited entropy randomization. For such clients,
   // `SeedHasMisconfiguredEntropy()`is always false.
-  if (SeedHasMisconfiguredEntropy(*client_state, seed)) {
+  const MisconfiguredEntropyResult result =
+      SeedHasMisconfiguredEntropy(*client_state, seed);
+  if (result.is_misconfigured) {
     base::debug::DumpWithoutCrashing();
     return CreateTrialsResult{
         .applied_seed = false,
-        .seed_has_limited_layer = layers.seed_has_limited_layer()};
+        .seed_has_active_limited_layer = result.seed_has_active_limited_layer};
   }
 
   // Note that passing base::Unretained(this) below is safe because the callback
@@ -764,7 +768,7 @@ CreateTrialsResult VariationsFieldTrialCreator::CreateTrialsFromSeed(
                           base::TimeTicks::Now() - start_time);
   return CreateTrialsResult{
       .applied_seed = true,
-      .seed_has_limited_layer = layers.seed_has_limited_layer()};
+      .seed_has_active_limited_layer = result.seed_has_active_limited_layer};
 }
 
 void VariationsFieldTrialCreator::LoadSeedFromJsonFile(

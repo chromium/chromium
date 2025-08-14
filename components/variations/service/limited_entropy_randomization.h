@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VARIATIONS_SERVICE_LIMITED_ENTROPY_RANDOMIZATION_H_
 #define COMPONENTS_VARIATIONS_SERVICE_LIMITED_ENTROPY_RANDOMIZATION_H_
 
+#include <optional>
 #include <string_view>
 
 // Provides functions to validate that the variations seed is
@@ -58,6 +59,13 @@ enum class SeedRejectionReason {
 inline constexpr std::string_view kSeedRejectionReasonHistogram =
     "Variations.LimitedEntropy.SeedRejectionReason";
 
+// TODO(crbug.com/424154785): Clean this up if low entropy source values are no
+// longer transmitted with VariationIDs.
+struct MisconfiguredEntropyResult {
+  bool is_misconfigured;
+  std::optional<bool> seed_has_active_limited_layer;
+};
+
 // The maximum amount of total entropy, in bits, for field trials with Google
 // web experiment ids.
 //
@@ -65,15 +73,20 @@ inline constexpr std::string_view kSeedRejectionReasonHistogram =
 // on the client must be at least 1 / (2 ^ GetGoogleWebEntropyLimitInBits()).
 double GetGoogleWebEntropyLimitInBits();
 
-// Returns true if the entropy from the variations seed is misconfigured, or
-// entropy cannot be computed. If this returns true, the caller is expected to
-// reject the seed.
+// Returns an object whose is_misconfigured field is true if the entropy from
+// the variations seed is misconfigured or if the entropy cannot be computed. If
+// the seed has misconfigured entropy, the caller is expected to reject the
+// seed.
+//
+// The returned object's seed_has_active_limited_layer field is true if the seed
+// contains any studies (A) that apply to the client's platform, channel, and
+// version and (B) that are constrained to a limited-entropy-mode layer.
 //
 // * client_state: The client state to use for filtering studies.
 // * seed: The seed to check for misconfigured entropy.
 // * entropy_limit_in_bits: The entropy limit to use for checking. Exposed for
 //     testing. Should be set to GetGoogleWebEntropyLimitInBits() in production.
-bool SeedHasMisconfiguredEntropy(
+MisconfiguredEntropyResult SeedHasMisconfiguredEntropy(
     const ClientFilterableState& client_state,
     const VariationsSeed& seed,
     double entropy_limit_in_bits = GetGoogleWebEntropyLimitInBits());
