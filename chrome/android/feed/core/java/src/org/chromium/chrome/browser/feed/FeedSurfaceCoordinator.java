@@ -527,7 +527,8 @@ public class FeedSurfaceCoordinator
             mHomepageStateListener =
                     new NtpCustomizationConfigManager.HomepageStateListener() {
                         @Override
-                        public void onBackgroundChanged(@Nullable Drawable backgroundDrawable) {
+                        public void onBackgroundChanged(
+                                @Nullable Drawable backgroundDrawable, boolean fromInitialization) {
                             setBackground(backgroundDrawable);
                         }
                     };

@@ -38,8 +38,16 @@ public class NtpCustomizationConfigManager {
         /** Called when the state of the toggle for the Most Visited Tiles section changes. */
         default void onMvtToggleChanged() {}
 
-        /** Called when the homepage background is changed. */
-        default void onBackgroundChanged(@Nullable Drawable backgroundDrawable) {}
+        /**
+         * Called when the homepage background is changed.
+         *
+         * @param backgroundDrawable The new background image drawable.
+         * @param fromInitialization Whether the update of the background comes from the
+         *     initialization of the {@link NtpCustomizationConfigManager}, i.e, loading the image
+         *     from the device.
+         */
+        default void onBackgroundChanged(
+                @Nullable Drawable backgroundDrawable, boolean fromInitialization) {}
     }
 
     private static @Nullable NtpCustomizationConfigManager sInstanceForTesting;
@@ -72,21 +80,13 @@ public class NtpCustomizationConfigManager {
         mBackgroundImageType = NtpCustomizationUtils.getNtpBackgroundImageType();
         if (mBackgroundImageType == NtpBackgroundImageType.IMAGE_FROM_DISK) {
             NtpCustomizationUtils.readNtpBackgroundImage(
-                    (bitmap) -> notifyBackgroundImageChanged(bitmap), EXECUTOR);
+                    (bitmap) ->
+                            notifyBackgroundImageChanged(bitmap, /* fromInitialization= */ true),
+                    EXECUTOR);
         }
         mIsMvtToggleOn =
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(ChromePreferenceKeys.IS_MVT_VISIBLE, true);
-    }
-
-    /**
-     * Sets a NtpCustomizationConfigManager instance for testing.
-     *
-     * @param instance The instance to set.
-     */
-    public static void setInstanceForTesting(@Nullable NtpCustomizationConfigManager instance) {
-        sInstanceForTesting = instance;
-        ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 
     /**
@@ -96,7 +96,7 @@ public class NtpCustomizationConfigManager {
         mHomepageStateListeners.addObserver(listener);
 
         if (mIsInitialized) {
-            listener.onBackgroundChanged(mBackgroundImageDrawable);
+            listener.onBackgroundChanged(mBackgroundImageDrawable, /* fromInitialization= */ true);
         }
     }
 
@@ -122,7 +122,7 @@ public class NtpCustomizationConfigManager {
                         : NtpBackgroundImageType.IMAGE_FROM_DISK;
         NtpCustomizationUtils.setNtpBackgroundImageType(mBackgroundImageType);
 
-        notifyBackgroundImageChanged(bitmap);
+        notifyBackgroundImageChanged(bitmap, /* fromInitialization= */ false);
 
         NtpCustomizationUtils.updateBackgroundImageFile(bitmap);
     }
@@ -131,8 +131,12 @@ public class NtpCustomizationConfigManager {
      * Notifies the NTP's background image is changed.
      *
      * @param imageBitmap The new background image.
+     * @param fromInitialization Whether the update of the background comes from the initialization
+     *     of the {@link NtpCustomizationConfigManager}, i.e, loading the image from the device.
      */
-    private void notifyBackgroundImageChanged(@Nullable Bitmap imageBitmap) {
+    @VisibleForTesting
+    public void notifyBackgroundImageChanged(
+            @Nullable Bitmap imageBitmap, boolean fromInitialization) {
         if (imageBitmap != null) {
             mBackgroundImageDrawable =
                     new BitmapDrawable(
@@ -142,7 +146,7 @@ public class NtpCustomizationConfigManager {
         }
 
         for (HomepageStateListener listener : mHomepageStateListeners) {
-            listener.onBackgroundChanged(mBackgroundImageDrawable);
+            listener.onBackgroundChanged(mBackgroundImageDrawable, fromInitialization);
         }
     }
 
@@ -177,7 +181,25 @@ public class NtpCustomizationConfigManager {
         return mBackgroundImageType;
     }
 
+    /**
+     * Sets a NtpCustomizationConfigManager instance for testing.
+     *
+     * @param instance The instance to set.
+     */
+    public static void setInstanceForTesting(@Nullable NtpCustomizationConfigManager instance) {
+        sInstanceForTesting = instance;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
+    }
+
     public void setBackgroundImageDrawableForTesting(@Nullable BitmapDrawable bitmapDrawable) {
         mBackgroundImageDrawable = bitmapDrawable;
+    }
+
+    public void resetForTesting() {
+        mHomepageStateListeners.clear();
+        mIsInitialized = false;
+        mBackgroundImageType = NtpBackgroundImageType.DEFAULT;
+        mBackgroundImageDrawable = null;
+        mIsMvtToggleOn = false;
     }
 }

@@ -65,7 +65,7 @@ public class NtpCustomizationConfigManagerUnitTest {
     @Test
     public void testOnBackgroundChanged_withBitmap() {
         mNtpCustomizationConfigManager.addListener(mListener);
-        verify(mListener).onBackgroundChanged(eq(null));
+        verify(mListener).onBackgroundChanged(eq(null), eq(true));
         clearInvocations(mListener);
 
         Bitmap bitmap = createBitmap();
@@ -75,31 +75,31 @@ public class NtpCustomizationConfigManagerUnitTest {
         assertEquals(
                 bitmap, mNtpCustomizationConfigManager.getBackgroundImageDrawable().getBitmap());
 
-        verify(mListener).onBackgroundChanged(mBitmapDrawableCaptor.capture());
+        verify(mListener).onBackgroundChanged(mBitmapDrawableCaptor.capture(), eq(false));
         assertEquals(bitmap, mBitmapDrawableCaptor.getValue().getBitmap());
     }
 
     @Test
     public void testOnBackgroundChanged_withNullBitmap() {
         mNtpCustomizationConfigManager.addListener(mListener);
-        verify(mListener).onBackgroundChanged(eq(null));
+        verify(mListener).onBackgroundChanged(eq(null), eq(true));
         clearInvocations(mListener);
 
         mNtpCustomizationConfigManager.onBackgroundChanged(null);
 
-        verify(mListener).onBackgroundChanged(eq(null));
+        verify(mListener).onBackgroundChanged(eq(null), eq(false));
     }
 
     @Test
     public void testAddAndRemoveBackgroundChangeListener() {
         // Verifies that onBackgroundChanged() is called for the listener when it is added.
         mNtpCustomizationConfigManager.addListener(mListener);
-        verify(mListener).onBackgroundChanged(eq(null));
+        verify(mListener).onBackgroundChanged(eq(null), eq(true));
         clearInvocations(mListener);
 
         Bitmap bitmap = createBitmap();
         mNtpCustomizationConfigManager.onBackgroundChanged(bitmap);
-        verify(mListener).onBackgroundChanged(mBitmapDrawableCaptor.capture());
+        verify(mListener).onBackgroundChanged(mBitmapDrawableCaptor.capture(), eq(false));
         assertEquals(bitmap, mBitmapDrawableCaptor.getValue().getBitmap());
         assertEquals(
                 NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK,
@@ -108,7 +108,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         clearInvocations(mListener);
         mNtpCustomizationConfigManager.removeListener(mListener);
         mNtpCustomizationConfigManager.onBackgroundChanged(null);
-        verify(mListener, never()).onBackgroundChanged(any());
+        verify(mListener, never()).onBackgroundChanged(any(), eq(false));
         assertEquals(
                 NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT,
                 mNtpCustomizationConfigManager.getBackgroundImageType());
