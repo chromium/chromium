@@ -1,27 +1,11 @@
 This is a testharness.js-based test.
-[FAIL] dequantizeLinear uint8 1D constant tensor with float32 1D scale, implicit block_size = 2
+[FAIL] [required] dequantizeLinear uint8 1D constant tensor with float32 1D scale, implicit block_size = 2
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': DequantizeLinear can't support block-wise."
-[FAIL] dequantizeLinear int8 2D constant tensor with float32 2D scale, block_size = [3, 2]
+[FAIL] [required] dequantizeLinear int8 2D constant tensor with float32 2D scale, block_size = [3, 2]
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': DequantizeLinear can't support block-wise."
-[FAIL] dequantizeLinear uint4 1D tensor of even size with float32 1D scale
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type uint4 for constant, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8, int4]."
-[FAIL] dequantizeLinear uint4 1D tensor of odd size with float32 1D scale
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type uint4 for constant, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8, int4]."
-[FAIL] dequantizeLinear uint4 4D constant tensor with broadcasting float32 4D scale and uint4 4D zeroPoint
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type uint4 for constant, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8, int4]."
-[FAIL] dequantizeLinear uint4 3D input with float32 3D scale, block_size = [1, 1, 2]
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type uint4 for constant, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8, int4]."
-[FAIL] dequantizeLinear uint8 1D constant tensor with float16 1D scale, implicit block_size = 2
+[FAIL] [optional] dequantizeLinear uint8 1D constant tensor with float16 1D scale, implicit block_size = 2
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': DequantizeLinear can't support block-wise."
-[FAIL] dequantizeLinear int8 2D constant tensor with float16 2D scale, block_size = [3, 2]
+[FAIL] [optional] dequantizeLinear int8 2D constant tensor with float16 2D scale, block_size = [3, 2]
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': DequantizeLinear can't support block-wise."
-[FAIL] dequantizeLinear uint4 1D tensor of even size with float16 1D scale
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type uint4 for constant, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8, int4]."
-[FAIL] dequantizeLinear uint4 1D tensor of odd size with float16 1D scale
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type uint4 for constant, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8, int4]."
-[FAIL] dequantizeLinear uint4 4D constant tensor with broadcasting float16 4D scale and uint4 4D zeroPoint
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type uint4 for constant, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8, int4]."
-[FAIL] dequantizeLinear uint4 3D input with float16 3D scale, block_size = [1, 1, 2]
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type uint4 for constant, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8, int4]."
 Harness: the test ran to completion.
 
