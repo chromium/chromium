@@ -5,14 +5,13 @@
 #include "chrome/browser/safe_browsing/client_side_detection_intelligent_scan_delegate_factory.h"
 
 #include "build/buildflag.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
-
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/android/client_side_detection_intelligent_scan_delegate_android.h"
 #else
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/safe_browsing/client_side_detection_intelligent_scan_delegate_desktop.h"
 #endif
 
@@ -43,9 +42,7 @@ ClientSideDetectionIntelligentScanDelegateFactory::
               .WithGuest(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
-#if !BUILDFLAG(IS_ANDROID)
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
-#endif
 }
 
 std::unique_ptr<KeyedService>
@@ -53,17 +50,15 @@ ClientSideDetectionIntelligentScanDelegateFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-#if BUILDFLAG(IS_ANDROID)
-
-  return std::make_unique<ClientSideDetectionIntelligentScanDelegateAndroid>(
-      *profile->GetPrefs());
-#else
   auto* opt_guide =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-
   if (!opt_guide) {
     return nullptr;
   }
+#if BUILDFLAG(IS_ANDROID)
+  return std::make_unique<ClientSideDetectionIntelligentScanDelegateAndroid>(
+      *profile->GetPrefs(), opt_guide->CreateModelBrokerClient());
+#else
   return std::make_unique<ClientSideDetectionIntelligentScanDelegateDesktop>(
       *profile->GetPrefs(), opt_guide);
 #endif

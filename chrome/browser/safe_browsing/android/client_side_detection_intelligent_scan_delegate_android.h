@@ -5,10 +5,18 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_ANDROID_CLIENT_SIDE_DETECTION_INTELLIGENT_SCAN_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_SAFE_BROWSING_ANDROID_CLIENT_SIDE_DETECTION_INTELLIGENT_SCAN_DELEGATE_ANDROID_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 
 class PrefService;
+
+namespace optimization_guide {
+class ModelBrokerClient;
+}  // namespace optimization_guide
 
 namespace safe_browsing {
 
@@ -18,8 +26,11 @@ namespace safe_browsing {
 class ClientSideDetectionIntelligentScanDelegateAndroid
     : public ClientSideDetectionHost::IntelligentScanDelegate {
  public:
-  explicit ClientSideDetectionIntelligentScanDelegateAndroid(PrefService& pref);
-  ~ClientSideDetectionIntelligentScanDelegateAndroid() override = default;
+  ClientSideDetectionIntelligentScanDelegateAndroid(
+      PrefService& pref,
+      std::unique_ptr<optimization_guide::ModelBrokerClient>
+          model_broker_client);
+  ~ClientSideDetectionIntelligentScanDelegateAndroid() override;
 
   ClientSideDetectionIntelligentScanDelegateAndroid(
       const ClientSideDetectionIntelligentScanDelegateAndroid&) = delete;
@@ -34,9 +45,22 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
   bool ResetOnDeviceSession() override;
   bool ShouldShowScamWarning(
       std::optional<IntelligentScanVerdict> verdict) override;
+  void Shutdown() override;
 
  private:
+  void OnPrefsUpdated();
+
+  // Starts on-device model download.
+  void StartModelDownload();
+
   const raw_ref<PrefService> pref_;
+  // This object is used to download the model and create sessions.
+  // It may be null after shutdown.
+  std::unique_ptr<optimization_guide::ModelBrokerClient> model_broker_client_;
+
+  // PrefChangeRegistrar used to track when the enhanced protection state
+  // changes.
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 }  // namespace safe_browsing

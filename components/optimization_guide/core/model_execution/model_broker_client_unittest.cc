@@ -40,6 +40,7 @@ TEST(ModelBrokerClientTest, PendingClient) {
   FakeModelBroker fake_broker(fake_asset);
   ModelBrokerClient client(fake_broker.BindAndPassRemote(),
                            CreateSessionArgs(nullptr, FailOnRemoteFallback()));
+  EXPECT_FALSE(client.HasSubscriber(mojom::ModelBasedCapabilityKey::kTest));
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   // Requesting test feature, but only compose has assets.
@@ -52,6 +53,7 @@ TEST(ModelBrokerClientTest, PendingClient) {
            mojom::ModelUnavailableReason::kPendingAssets;
   });
   EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(client.HasSubscriber(mojom::ModelBasedCapabilityKey::kTest));
 }
 
 TEST(ModelBrokerClientTest, ReadyWithSetupClient) {

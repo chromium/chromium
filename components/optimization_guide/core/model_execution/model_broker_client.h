@@ -143,6 +143,9 @@ class ModelBrokerClient final {
   // Get or create the subscriber for the given key.
   ModelSubscriber& GetSubscriber(mojom::ModelBasedCapabilityKey key);
 
+  // Whether the subscriber for this key already exists.
+  bool HasSubscriber(mojom::ModelBasedCapabilityKey key);
+
   // Async session creation.
   void CreateSession(mojom::ModelBasedCapabilityKey key,
                      const std::optional<SessionConfigParams>& config_params,

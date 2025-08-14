@@ -201,6 +201,10 @@ ModelSubscriber& ModelBrokerClient::GetSubscriber(
   return *ptr;
 }
 
+bool ModelBrokerClient::HasSubscriber(mojom::ModelBasedCapabilityKey key) {
+  return subscribers_.contains(key);
+}
+
 void ModelBrokerClient::CreateSession(
     mojom::ModelBasedCapabilityKey key,
     const std::optional<SessionConfigParams>& config_params,
