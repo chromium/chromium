@@ -413,8 +413,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher,
       return;
     }
 
-    // TODO(kristianm): Log if there is more than one challenge
-    // TODO(kristianm): Handle if session identifiers don't match
+    // TODO(crbug.com/438783634): Log if there is more than one challenge
+    // TODO(crbug.com/438783634): Handle if session identifiers don't match
     const std::string& challenge = (*challenge_params)[0].challenge();
     StartFetch(challenge, std::nullopt);
   }
