@@ -256,13 +256,11 @@ void LayoutBlock::AddChild(LayoutObject* new_child,
       return;
     }
 
-    if (new_child->IsInline()) {
-      // No suitable existing anonymous box - create a new one.
-      LayoutBlock* new_box = CreateAnonymousBlock();
-      LayoutBox::AddChild(new_box, before_child);
-      new_box->AddChild(new_child);
-      return;
-    }
+    // No suitable existing anonymous box - create a new one.
+    LayoutBlock* new_box = CreateAnonymousBlock();
+    LayoutBox::AddChild(new_box, before_child);
+    new_box->AddChild(new_child);
+    return;
   }
 
   LayoutBox::AddChild(new_child, before_child);
