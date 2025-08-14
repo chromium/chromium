@@ -438,6 +438,7 @@ source_set("unit_tests") {
     "canvas/offscreencanvas/offscreen_canvas_test.cc",
     "canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d_test.cc",
     "content_extraction/ai_page_content_agent_unittest.cc",
+    "content_extraction/frame_metadata_observer_registry_unittest.cc",
     "content_extraction/inner_html_builder_unittest.cc",
     "content_extraction/inner_text_builder_unittest.cc",
     "content_index/content_description_type_converter_test.cc",
