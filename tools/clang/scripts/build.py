@@ -211,7 +211,7 @@ def GitCherryPick(git_repository,
     RunCommand(git_cmd +
                ['fetch', '--recurse-submodules=no', git_remote_name, commit])
 
-  if IsGitAncestorToHead(commit):
+  if IsGitAncestorToHead(git_repository, commit):
     print('Commit already an ancestor; skipping.')
     return
 

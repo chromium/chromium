@@ -55,8 +55,8 @@ sys.path.append(
                  'scripts'))
 
 from build import (AddCMakeToPath, AddZlibToPath, CheckoutGitRepo, CopyFile,
-                   DownloadDebianSysroot, GetLibXml2Dirs, GitCherryPick,
-                   LLVM_BUILD_TOOLS_DIR, RunCommand)
+                   DownloadDebianSysroot, GetLibXml2Dirs, GitCherryPick, LLVM_DIR,
+                   IsGitAncestorToHead, LLVM_BUILD_TOOLS_DIR, RunCommand)
 from update import (CHROMIUM_DIR, DownloadAndUnpack, EnsureDirExists,
                     GetDefaultHostOs, RmTree, UpdatePackage)
 
@@ -69,14 +69,6 @@ EXCLUDED_TESTS = [
     os.path.join('tests', 'codegen-llvm', 'common_prim_int_ptr.rs'),
     # Temporarily disabled due to https://crbug.com/433249564
     os.path.join('tests', 'codegen-llvm', 'enum', 'enum-discriminant-eq.rs'),
-    # Temporarily disabled due to https://crbug.com/437926231
-    os.path.join('tests', 'codegen-llvm', 'align-byval-alignment-mismatch.rs'),
-    os.path.join('tests', 'codegen-llvm', 'call-tmps-lifetime.rs'),
-    os.path.join('tests', 'codegen-llvm', 'issues', 'issue-105386-ub-in-debuginfo.rs'),
-    os.path.join('tests', 'codegen-llvm', 'intrinsics', 'transmute-simd.rs'),
-    os.path.join('tests', 'codegen-llvm', 'intrinsics', 'transmute.rs'),
-    os.path.join('tests', 'codegen-llvm', 'lifetime_start_end.rs'),
-    os.path.join('tests', 'codegen-llvm', 'uninhabited-transparent-return-abi.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # Temporarily disabled due to https://crbug.com/379308086
@@ -796,6 +788,13 @@ def main():
         return 0
 
     BuildLLVMLibraries(args.skip_llvm_build)
+    # This cherry-pick is placed here rather than GitApplyCherryPicks() because
+    # it depends on the LLVM revision.
+    # TODO(crbug.com/437926231): Remove once we roll past this revision.
+    if IsGitAncestorToHead(LLVM_DIR,
+                           'c23b4fbdbb70f04e637b488416d8e42449bfa1fb'):
+        GitCherryPick(RUST_SRC_DIR, '258915a55539593423c3d4c30f7b741f65c56e51',
+                      'https://github.com/rust-lang/rust.git')
 
     AddCMakeToPath()
 
