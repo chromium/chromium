@@ -18,6 +18,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kGlicMicrophoneEnabled, false);
   registry->RegisterBooleanPref(kGlicGeolocationEnabled, false);
   registry->RegisterBooleanPref(kGlicTabContextEnabled, false);
+  registry->RegisterBooleanPref(kGlicDefaultTabContextEnabled, false);
   registry->RegisterBooleanPref(
       kGlicRolloutEligibility, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);

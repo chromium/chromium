@@ -64,6 +64,10 @@ inline constexpr char kGlicGeolocationEnabled[] = "glic.geolocation_enabled";
 inline constexpr char kGlicMicrophoneEnabled[] = "glic.microphone_enabled";
 // Boolean pref that enables or disables tab context for Glic.
 inline constexpr char kGlicTabContextEnabled[] = "glic.tab_context_enabled";
+// Boolean pref that enables or disables tab context for Glic by default when a
+// new Glic session starts.
+inline constexpr char kGlicDefaultTabContextEnabled[] =
+    "glic.default_tab_context_enabled";
 
 // Boolean pref that determines the rollout eligibility for the user profile.
 inline constexpr char kGlicRolloutEligibility[] =
