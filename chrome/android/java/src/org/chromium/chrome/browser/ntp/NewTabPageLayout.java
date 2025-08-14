@@ -1085,6 +1085,11 @@ public class NewTabPageLayout extends LinearLayout
             mUiConfig.removeObserver(mDisplayStyleObserver);
             mDisplayStyleObserver = null;
         }
+
+        if (mComposeplateCoordinator != null) {
+            mComposeplateCoordinator.destroy();
+            mComposeplateCoordinator = null;
+        }
     }
 
     MostVisitedTilesCoordinator getMostVisitedTilesCoordinatorForTesting() {

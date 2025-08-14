@@ -107,4 +107,14 @@ public class ComposeplateCoordinator {
             ComposeplateMetricsUtils.recordComposeplateClick(sectionType);
         };
     }
+
+    public void destroy() {
+        mModel.set(ComposeplateProperties.VOICE_SEARCH_CLICK_LISTENER, null);
+        mModel.set(ComposeplateProperties.LENS_CLICK_LISTENER, null);
+        mModel.set(ComposeplateProperties.INCOGNITO_CLICK_LISTENER, null);
+    }
+
+    public PropertyModel getModelForTesting() {
+        return mModel;
+    }
 }

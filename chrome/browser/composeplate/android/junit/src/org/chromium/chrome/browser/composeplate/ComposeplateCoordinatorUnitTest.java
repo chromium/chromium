@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.composeplate;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -30,6 +32,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link ComposeplateCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -169,6 +172,24 @@ public class ComposeplateCoordinatorUnitTest {
 
         histogramWatcher.assertExpected();
         verify(mOriginalOnClickListener).onClick(clickedView);
+    }
+
+    @Test
+    public void testDestroy() {
+        PropertyModel model = mCoordinator.getModelForTesting();
+
+        mCoordinator.setVoiceSearchClickListener(mOriginalOnClickListener);
+        mCoordinator.setLensClickListener(mOriginalOnClickListener);
+        mCoordinator.setIncognitoClickListener(mOriginalOnClickListener);
+
+        assertNotNull(model.get(ComposeplateProperties.VOICE_SEARCH_CLICK_LISTENER));
+        assertNotNull(model.get(ComposeplateProperties.LENS_CLICK_LISTENER));
+        assertNotNull(model.get(ComposeplateProperties.INCOGNITO_CLICK_LISTENER));
+
+        mCoordinator.destroy();
+        assertNull(model.get(ComposeplateProperties.VOICE_SEARCH_CLICK_LISTENER));
+        assertNull(model.get(ComposeplateProperties.LENS_CLICK_LISTENER));
+        assertNull(model.get(ComposeplateProperties.INCOGNITO_CLICK_LISTENER));
     }
 
     private View.OnClickListener getCapturedOnClickListener(ImageView button) {
