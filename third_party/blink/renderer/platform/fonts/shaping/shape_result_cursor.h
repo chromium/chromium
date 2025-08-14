@@ -37,6 +37,8 @@ class PLATFORM_EXPORT ShapeResultCursor {
     return run_->start_index_ + GlyphData().character_index;
   }
 
+  const SimpleFontData& FontData() const { return *run_->font_data_; }
+
   // Advance of the current cluster.
   TextRunLayoutUnit ClusterAdvance() const;
 
