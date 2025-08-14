@@ -93,8 +93,7 @@ const char* GetUninhibitMethodName(DBusApi api) {
 
 }  // namespace
 
-class PowerSaveBlocker::Delegate
-    : public base::RefCountedThreadSafe<PowerSaveBlocker::Delegate> {
+class PowerSaveBlocker::Delegate {
  public:
   Delegate(mojom::WakeLockType type,
            const std::string& description,
@@ -105,6 +104,8 @@ class PowerSaveBlocker::Delegate
 
   Delegate(const Delegate&) = delete;
   Delegate& operator=(const Delegate&) = delete;
+
+  ~Delegate() = default;
 
   void Init() {
     DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
@@ -127,14 +128,10 @@ class PowerSaveBlocker::Delegate
   }
 
  private:
-  friend class base::RefCountedThreadSafe<Delegate>;
-
   struct InhibitCookie {
     DBusApi api;
     uint32_t cookie;
   };
-
-  ~Delegate() = default;
 
   // Returns true if ApplyBlock() / RemoveBlock() should be called.
   bool ShouldBlock() const {
@@ -213,11 +210,11 @@ class PowerSaveBlocker::Delegate
 
     switch (api) {
       case DBusApi::kGnome:
-      // The arguments of the method are:
-      //     app_id:        The application identifier
-      //     toplevel_xid:  The toplevel X window identifier
-      //     reason:        The reason for the inhibition
-      //     flags:         Flags that specify what should be inhibited
+        // The arguments of the method are:
+        //     app_id:        The application identifier
+        //     toplevel_xid:  The toplevel X window identifier
+        //     reason:        The reason for the inhibition
+        //     flags:         Flags that specify what should be inhibited
         writer.AppendString(
             base::CommandLine::ForCurrentProcess()->GetProgram().value());
         writer.AppendUint32(0);  // toplevel_xid
@@ -242,9 +239,9 @@ class PowerSaveBlocker::Delegate
         break;
       case DBusApi::kFreedesktopPower:
       case DBusApi::kFreedesktopScreensaver:
-      // The arguments of the method are:
-      //     app_id:        The application identifier
-      //     reason:        The reason for the inhibition
+        // The arguments of the method are:
+        //     app_id:        The application identifier
+        //     reason:        The reason for the inhibition
         writer.AppendString(
             base::CommandLine::ForCurrentProcess()->GetProgram().value());
         writer.AppendString(description_);
@@ -346,17 +343,12 @@ PowerSaveBlocker::PowerSaveBlocker(
     mojom::WakeLockReason reason,
     const std::string& description,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
-    : delegate_(
-          base::MakeRefCounted<Delegate>(type, description, ui_task_runner)),
-      ui_task_runner_(ui_task_runner) {
-  ui_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&PowerSaveBlocker::Delegate::Init, delegate_));
+    : delegate_(ui_task_runner, type, description, ui_task_runner) {
+  delegate_.AsyncCall(&PowerSaveBlocker::Delegate::Init);
 }
 
 PowerSaveBlocker::~PowerSaveBlocker() {
-  ui_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PowerSaveBlocker::Delegate::CleanUp, delegate_));
+  delegate_.AsyncCall(&PowerSaveBlocker::Delegate::CleanUp);
 }
 
 }  // namespace device
