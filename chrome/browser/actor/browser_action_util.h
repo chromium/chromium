@@ -93,9 +93,9 @@ BuildToolRequestResult BuildToolRequest(
 // Converts a FetchPageContext result to a TabObservation proto. Note that this
 // does not fill in the (tab) `id` field on the proto, the caller is responsible
 // for that.
-optimization_guide::proto::TabObservation ConvertToTabObservation(
-    const page_content_annotations::FetchPageContextResult&
-        page_context_result);
+void FillInTabObservation(
+    const page_content_annotations::FetchPageContextResult& page_context_result,
+    optimization_guide::proto::TabObservation& tab_observation);
 
 // Builds the BrowserActionResult proto from the output of a call to the
 // ActorKeyedService::ActInFocusedTab API.

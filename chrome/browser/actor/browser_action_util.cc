@@ -555,10 +555,9 @@ BuildToolRequest(const optimization_guide::proto::Actions& actions) {
   return requests;
 }
 
-apc::TabObservation ConvertToTabObservation(
-    const page_content_annotations::FetchPageContextResult& fetch_result) {
-  apc::TabObservation tab_observation;
-
+void FillInTabObservation(
+    const page_content_annotations::FetchPageContextResult& fetch_result,
+    apc::TabObservation& tab_observation) {
   if (fetch_result.screenshot_result) {
     auto& data = fetch_result.screenshot_result->jpeg_data;
     if (data.size() != 0) {
@@ -572,8 +571,6 @@ apc::TabObservation ConvertToTabObservation(
     *tab_observation.mutable_annotated_page_content() =
         fetch_result.annotated_page_content_result->proto;
   }
-
-  return tab_observation;
 }
 
 namespace {
@@ -583,6 +580,7 @@ void FetchCallback(base::RepeatingClosure barrier,
                    std::vector<optimization_guide::proto::ScriptToolResult>
                        script_tool_results,
                    ActorKeyedService::TabObservationResult result) {
+  CHECK(tab_observation);
   base::ScopedClosureRunner run_barrier_at_return(barrier);
 
   if (!result.has_value()) {
@@ -603,7 +601,7 @@ void FetchCallback(base::RepeatingClosure barrier,
                              .mutable_main_frame_data(),
                         script_tool_results);
 
-  *tab_observation = ConvertToTabObservation(fetch_result);
+  FillInTabObservation(fetch_result, *tab_observation);
 }
 
 }  // namespace

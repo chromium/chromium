@@ -403,7 +403,7 @@ ExperimentalActorPerformActionsFunction::Run() {
   auto* actor_service = actor::ActorKeyedService::Get(browser_context());
   actor_service->GetJournal().Log(
       GURL(), actor::TaskId(actions.task_id()),
-      actor::mojom::JournalTrack::kActor, "ExperimentalActorExecutAction",
+      actor::mojom::JournalTrack::kActor, "ExperimentalActorExecuteAction",
       absl::StrFormat("Proto: %s", actor::ToBase64(actions)));
 
   actor::TaskId task_id(actions.task_id());
@@ -533,8 +533,8 @@ void ExperimentalActorRequestTabObservationFunction::OnObservationFinished(
 
   // TODO(bokan): This doesn't set the (tab) `id` field, maybe unneeded in this
   // case but would be good for consistency.
-  optimization_guide::proto::TabObservation tab_observation =
-      actor::ConvertToTabObservation(**observation_result);
+  optimization_guide::proto::TabObservation tab_observation;
+  actor::FillInTabObservation(**observation_result, tab_observation);
   std::vector<uint8_t> data_buffer(tab_observation.ByteSizeLong());
   if (!data_buffer.empty()) {
     tab_observation.SerializeToArray(&data_buffer[0], data_buffer.size());

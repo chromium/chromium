@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -46,16 +47,18 @@ namespace glic::test {
 
 namespace {
 
+namespace apc = ::optimization_guide::proto;
+
 using ::actor::TaskId;
+using apc::Actions;
+using apc::ActionsResult;
+using apc::AnnotatedPageContent;
+using apc::ClickAction;
+using apc::ContentAttributes;
+using apc::ContentNode;
 using ::base::test::EqualsProto;
 using ::content::RenderFrameHost;
 using ::content::WebContents;
-using ::optimization_guide::proto::Actions;
-using ::optimization_guide::proto::ActionsResult;
-using ::optimization_guide::proto::AnnotatedPageContent;
-using ::optimization_guide::proto::ClickAction;
-using ::optimization_guide::proto::ContentAttributes;
-using ::optimization_guide::proto::ContentNode;
 using ::tabs::TabHandle;
 using ::tabs::TabInterface;
 
@@ -1057,7 +1060,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseAlreadyPausedActorTask) {
     ClickAction(kClickableButtonLabel),
     WaitForJsResult(kNewActorTabId, "() => button_clicked"),
 
-    // Ensur epausing twice in a row is a no-op.
+    // Ensure pausing twice in a row is a no-op.
     PauseActorTask(),
     PauseActorTask(),
     CheckIsActingOnTab(kNewActorTabId, true)
@@ -1223,6 +1226,63 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
       CheckIsActingOnTab(kOtherTabId, false),
       StopActorTask(),
       CheckIsWebContentsCaptured(kNewActorTabId, false));
+  // clang-format on
+}
+
+// Basic test to check that the ActionsResult proto returned from PerformActions
+// is filled in with the window and tab observation fields.
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
+                       PerformActionsResultObservations) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOtherTabId);
+
+  constexpr std::string_view kClickableButtonLabel = "clickable";
+
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+
+  // clang-format off
+  RunTestSequence(
+      // Add an extra tab to ensure that the window's tab list is filled in
+      // correctly.
+      AddInstrumentedTab(kOtherTabId, GURL(chrome::kChromeUISettingsURL)),
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+
+      GetPageContextFromFocusedTab(),
+      ClickAction(kClickableButtonLabel),
+
+      Do([&]() {
+        ASSERT_TRUE(last_execution_result());
+
+        // Check that the window observation is filled in correctly.
+        ASSERT_EQ(last_execution_result()->windows().size(), 1);
+        apc::WindowObservation window = last_execution_result()->windows().at(0);
+        EXPECT_EQ(window.id(), browser()->session_id().id());
+        EXPECT_EQ(window.activated_tab_id(), tab_handle_.raw_value());
+        EXPECT_TRUE(window.active());
+        ASSERT_GE(browser()->tab_strip_model()->count(), 2);
+        EXPECT_EQ(window.tab_ids().size(), browser()->tab_strip_model()->count());
+        for (tabs::TabInterface* tab : *browser()->tab_strip_model()) {
+          EXPECT_THAT(window.tab_ids(),
+                      testing::Contains(tab->GetHandle().raw_value()));
+        }
+        EXPECT_EQ(window.tab_ids().size(), browser()->tab_strip_model()->count());
+
+        // Check that the acting tab has an observation that's filled in correctly.
+        ASSERT_EQ(last_execution_result()->tabs().size(), 1);
+        apc::TabObservation tab = last_execution_result()->tabs().at(0);
+        EXPECT_TRUE(tab.has_id());
+        EXPECT_EQ(tab.id(), tab_handle_.raw_value());
+        EXPECT_TRUE(tab.has_annotated_page_content());
+        EXPECT_TRUE(tab.annotated_page_content().has_main_frame_data());
+        EXPECT_TRUE(tab.annotated_page_content().has_root_node());
+        EXPECT_TRUE(tab.has_screenshot());
+        EXPECT_GT(tab.screenshot().size(), 0u);
+        EXPECT_TRUE(tab.has_screenshot_mime_type());
+        EXPECT_EQ(tab.screenshot_mime_type(), actor::kMimeTypeJpeg);
+      })
+  );
   // clang-format on
 }
 
