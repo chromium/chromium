@@ -752,8 +752,8 @@ PendingScript* ScriptLoader::PrepareScript(
     if (GetScriptType() == ScriptTypeAtPrepare::kImportMap) {
       element_document.GetTaskRunner(TaskType::kDOMManipulation)
           ->PostTask(FROM_HERE,
-                     WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
-                                   WrapPersistent(element_.Get())));
+                     blink::BindOnce(&ScriptElementBase::DispatchErrorEvent,
+                                     WrapPersistent(element_.Get())));
       return nullptr;
     }
     // <spec step="31.2">Let src be the value of el's src attribute.</spec>
@@ -765,8 +765,8 @@ PendingScript* ScriptLoader::PrepareScript(
     if (src.empty()) {
       element_document.GetTaskRunner(TaskType::kDOMManipulation)
           ->PostTask(FROM_HERE,
-                     WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
-                                   WrapPersistent(element_.Get())));
+                     blink::BindOnce(&ScriptElementBase::DispatchErrorEvent,
+                                     WrapPersistent(element_.Get())));
       return nullptr;
     }
 
@@ -783,8 +783,8 @@ PendingScript* ScriptLoader::PrepareScript(
     if (!url.IsValid()) {
       element_document.GetTaskRunner(TaskType::kDOMManipulation)
           ->PostTask(FROM_HERE,
-                     WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
-                                   WrapPersistent(element_.Get())));
+                     blink::BindOnce(&ScriptElementBase::DispatchErrorEvent,
+                                     WrapPersistent(element_.Get())));
       return nullptr;
     }
 
@@ -828,8 +828,8 @@ PendingScript* ScriptLoader::PrepareScript(
             "External speculation rules are not yet supported."));
         element_document.GetTaskRunner(TaskType::kDOMManipulation)
             ->PostTask(FROM_HERE,
-                       WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
-                                     WrapPersistent(element_.Get())));
+                       blink::BindOnce(&ScriptElementBase::DispatchErrorEvent,
+                                       WrapPersistent(element_.Get())));
         return nullptr;
 
       case ScriptTypeAtPrepare::kWebBundle:
@@ -839,8 +839,8 @@ PendingScript* ScriptLoader::PrepareScript(
             "External webbundle is not yet supported."));
         element_document.GetTaskRunner(TaskType::kDOMManipulation)
             ->PostTask(FROM_HERE,
-                       WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
-                                     WrapPersistent(element_.Get())));
+                       blink::BindOnce(&ScriptElementBase::DispatchErrorEvent,
+                                       WrapPersistent(element_.Get())));
         return nullptr;
 
       case ScriptTypeAtPrepare::kClassic: {

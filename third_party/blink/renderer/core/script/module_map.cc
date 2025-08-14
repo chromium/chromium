@@ -66,9 +66,9 @@ void ModuleMap::Entry::DispatchFinishedNotificationAsync(
     ModuleImportPhase import_phase) {
   map_->GetModulator()->TaskRunner()->PostTask(
       FROM_HERE,
-      WTF::BindOnce(&SingleModuleClient::NotifyModuleLoadFinished,
-                    WrapPersistent(client),
-                    WrapPersistent(module_script_.Get()), import_phase));
+      blink::BindOnce(&SingleModuleClient::NotifyModuleLoadFinished,
+                      WrapPersistent(client),
+                      WrapPersistent(module_script_.Get()), import_phase));
 }
 
 void ModuleMap::Entry::AddClient(SingleModuleClient* new_client,

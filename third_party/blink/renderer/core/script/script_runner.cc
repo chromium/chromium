@@ -101,13 +101,13 @@ void PostTaskWithLowPriorityUntilTimeout(
 
   lower_priority_task_runner->PostTask(
       from_here,
-      WTF::BindOnce(run_task_once, ref_counted_task,
-                    RaceTaskPriority::kLowerPriority, post_task_time));
+      blink::BindOnce(run_task_once, ref_counted_task,
+                      RaceTaskPriority::kLowerPriority, post_task_time));
 
   normal_priority_task_runner->PostDelayedTask(
       from_here,
-      WTF::BindOnce(run_task_once, ref_counted_task,
-                    RaceTaskPriority::kNormalPriority, post_task_time),
+      blink::BindOnce(run_task_once, ref_counted_task,
+                      RaceTaskPriority::kNormalPriority, post_task_time),
       timeout);
 }
 
@@ -203,10 +203,10 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
       // following delayed task should not persist a PendingScript.
       task_runner_->PostDelayedTask(
           FROM_HERE,
-          WTF::BindOnce(&ScriptRunner::RemoveDelayReasonFromScript,
-                        WrapWeakPersistent(this),
-                        WrapWeakPersistent(pending_script),
-                        DelayReason::kMilestone),
+          blink::BindOnce(&ScriptRunner::RemoveDelayReasonFromScript,
+                          WrapWeakPersistent(this),
+                          WrapWeakPersistent(pending_script),
+                          DelayReason::kMilestone),
           delay_limit);
     }
     // Still to be delayed.
@@ -215,7 +215,7 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
 
   // Script is really ready to evaluate.
   pending_async_scripts_.erase(it);
-  base::OnceClosure task = WTF::BindOnce(
+  base::OnceClosure task = blink::BindOnce(
       &ScriptRunner::ExecuteAsyncPendingScript, WrapWeakPersistent(this),
       WrapPersistent(pending_script), base::TimeTicks::Now());
   if (pending_script->IsEligibleForLowPriorityAsyncScriptExecution()) {
@@ -251,9 +251,9 @@ void ScriptRunner::PendingScriptFinished(PendingScript* pending_script) {
              pending_in_order_scripts_.front()->IsReady()) {
         PendingScript* pending_in_order = pending_in_order_scripts_.TakeFirst();
         task_runner_->PostTask(
-            FROM_HERE, WTF::BindOnce(&ScriptRunner::ExecutePendingScript,
-                                     WrapWeakPersistent(this),
-                                     WrapPersistent(pending_in_order)));
+            FROM_HERE, blink::BindOnce(&ScriptRunner::ExecutePendingScript,
+                                       WrapWeakPersistent(this),
+                                       WrapPersistent(pending_in_order)));
       }
       break;
 
