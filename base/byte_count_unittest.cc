@@ -125,10 +125,22 @@ TEST(ByteCountDeathTest, ConstructionOtherUnitInvalid) {
   BASE_EXPECT_DEATH(GiB(std::numeric_limits<int64_t>::max()), "");
 }
 
+TEST(ByteCount, IsPositive) {
+  EXPECT_FALSE(ByteCount(-2).is_positive());
+  EXPECT_FALSE(ByteCount(0).is_positive());
+  EXPECT_TRUE(ByteCount(2).is_positive());
+}
+
 TEST(ByteCount, IsZero) {
-  EXPECT_TRUE(ByteCount(0).is_zero());
   EXPECT_FALSE(ByteCount(-2).is_zero());
+  EXPECT_TRUE(ByteCount(0).is_zero());
   EXPECT_FALSE(ByteCount(2).is_zero());
+}
+
+TEST(ByteCount, IsNegative) {
+  EXPECT_TRUE(ByteCount(-2).is_negative());
+  EXPECT_FALSE(ByteCount(0).is_negative());
+  EXPECT_FALSE(ByteCount(2).is_negative());
 }
 
 TEST(ByteCount, InFloating) {

@@ -53,7 +53,9 @@ class BASE_EXPORT ByteCount {
     return ByteCount(checked_bytes.ValueOrDie());
   }
 
+  constexpr bool is_positive() const { return bytes_ > 0; }
   constexpr bool is_zero() const { return bytes_ == 0; }
+  constexpr bool is_negative() const { return bytes_ < 0; }
 
   // A value corresponding to the "maximum" number of bytes possible. Useful as
   // a constant to mean "unlimited".
