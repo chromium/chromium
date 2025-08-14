@@ -1292,14 +1292,21 @@ public class AddressEditorTest {
 
         // Validate delete confirmation dialog strings.
         final String deleteTitle =
-                mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
+                mActivity.getString(
+                        R.string
+                                .autofill_remove_account_name_and_email_profile_suggestion_confirmation_title);
         final String deleteText =
                 mActivity
-                        .getString(R.string.autofill_delete_account_address_record_type_notice)
+                        .getString(
+                                R.string
+                                        .autofill_remove_account_name_and_email_profile_suggestion_confirmation_body)
                         .replace("$1", USER_EMAIL);
+        final String deleteTextReplaced =
+                SpanApplier.applySpans(deleteText, new SpanApplier.SpanInfo("<link>", "</link>"))
+                        .toString();
         final String deleteButtonText =
                 mActivity.getString(R.string.autofill_delete_suggestion_button);
-        checkModelHasExpectedValues(editorModel, deleteTitle, deleteText, deleteButtonText);
+        checkModelHasExpectedValues(editorModel, deleteTitle, deleteTextReplaced, deleteButtonText);
     }
 
     @Test

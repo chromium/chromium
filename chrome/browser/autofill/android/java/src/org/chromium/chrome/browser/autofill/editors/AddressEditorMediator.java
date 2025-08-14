@@ -508,6 +508,11 @@ class AddressEditorMediator {
             return mContext.getString(
                     R.string.autofill_remove_work_profile_suggestion_confirmation_title);
         }
+        if (mProfileToEdit.getRecordType() == RecordType.ACCOUNT_NAME_EMAIL) {
+            return mContext.getString(
+                    R.string
+                            .autofill_remove_account_name_and_email_profile_suggestion_confirmation_title);
+        }
         return mContext.getString(R.string.autofill_delete_address_confirmation_dialog_title);
     }
 
@@ -532,6 +537,13 @@ class AddressEditorMediator {
                         mContext.getString(
                                         R.string
                                                 .autofill_remove_work_profile_suggestion_confirmation_body)
+                                .replace("$1", email));
+            }
+            if (mProfileToEdit.getRecordType() == RecordType.ACCOUNT_NAME_EMAIL) {
+                return createMessageWithLink(
+                        mContext.getString(
+                                        R.string
+                                                .autofill_remove_account_name_and_email_profile_suggestion_confirmation_body)
                                 .replace("$1", email));
             }
             return mContext.getString(R.string.autofill_delete_account_address_record_type_notice)
