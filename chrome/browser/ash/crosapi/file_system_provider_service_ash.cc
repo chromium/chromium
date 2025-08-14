@@ -79,13 +79,11 @@ GetProvidedFileSystemRequestManager(
   return file_system->GetRequestManager();
 }
 
-// Forwards an operation response from an extension to the request manager and
-// then returns the error message. Empty string means success.
-std::string ForwardOperationResponse(mojom::FileSystemIdPtr file_system_id,
-                                     int64_t request_id,
-                                     const RequestValue& value,
-                                     bool has_more,
-                                     Profile* profile) {
+std::string ForwardOperationResponseImpl(mojom::FileSystemIdPtr file_system_id,
+                                         int64_t request_id,
+                                         const RequestValue& value,
+                                         bool has_more,
+                                         Profile* profile) {
   auto manager = GetProvidedFileSystemRequestManager(profile, file_system_id);
   if (!manager.has_value())
     return manager.error();
@@ -98,13 +96,11 @@ std::string ForwardOperationResponse(mojom::FileSystemIdPtr file_system_id,
   return "";
 }
 
-// Forwards an operation failure from an extension to the request manager and
-// then returns the error message. Empty string means success.
-std::string ForwardOperationFailure(mojom::FileSystemIdPtr file_system_id,
-                                    int64_t request_id,
-                                    const RequestValue& value,
-                                    base::File::Error error,
-                                    Profile* profile) {
+std::string ForwardOperationFailureImpl(mojom::FileSystemIdPtr file_system_id,
+                                        int64_t request_id,
+                                        const RequestValue& value,
+                                        base::File::Error error,
+                                        Profile* profile) {
   auto manager = GetProvidedFileSystemRequestManager(profile, file_system_id);
   if (!manager.has_value())
     return manager.error();
@@ -194,41 +190,6 @@ void FileSystemProviderServiceAsh::Notify(
   NotifyWithProfile(std::move(file_system_id), std::move(watcher), type,
                     std::move(changes), std::move(callback),
                     ProfileManager::GetPrimaryUserProfile());
-}
-
-void FileSystemProviderServiceAsh::DeprecatedOperationFinished(
-    mojom::FSPOperationResponse response,
-    mojom::FileSystemIdPtr file_system_id,
-    int64_t request_id,
-    std::vector<base::Value> args,
-    OperationFinishedCallback callback) {
-  base::Value::List list;
-  for (auto& value : args) {
-    list.Append(std::move(value));
-  }
-  OperationFinished(response, std::move(file_system_id), request_id,
-                    std::move(list), std::move(callback));
-}
-
-void FileSystemProviderServiceAsh::OperationFinished(
-    mojom::FSPOperationResponse response,
-    mojom::FileSystemIdPtr file_system_id,
-    int64_t request_id,
-    base::Value::List args,
-    OperationFinishedCallback callback) {
-  OperationFinishedWithProfile(response, std::move(file_system_id), request_id,
-                               std::move(args), std::move(callback),
-                               ProfileManager::GetPrimaryUserProfile());
-}
-
-void FileSystemProviderServiceAsh::OpenFileFinishedSuccessfully(
-    mojom::FileSystemIdPtr file_system_id,
-    int64_t request_id,
-    base::Value::List args,
-    OperationFinishedCallback callback) {
-  OpenFileFinishedSuccessfullyWithProfile(
-      std::move(file_system_id), request_id, std::move(args),
-      std::move(callback), ProfileManager::GetPrimaryUserProfile());
 }
 
 void FileSystemProviderServiceAsh::MountFinished(
@@ -340,153 +301,6 @@ void FileSystemProviderServiceAsh::NotifyWithProfile(
                       base::BindOnce(&RunErrorCallback, std::move(callback)));
 }
 
-void FileSystemProviderServiceAsh::OperationFinishedWithProfile(
-    mojom::FSPOperationResponse response,
-    mojom::FileSystemIdPtr file_system_id,
-    int64_t request_id,
-    base::Value::List args,
-    OperationFinishedCallback callback,
-    Profile* profile) {
-  std::string error;
-  switch (response) {
-    case mojom::FSPOperationResponse::kUnknown:
-      error = "unknown operation response";
-      break;
-    case mojom::FSPOperationResponse::kUnmountSuccess: {
-      using extensions::api::file_system_provider_internal::
-          UnmountRequestedSuccess::Params;
-      std::optional<Params> params = Params::Create(std::move(args));
-      if (!params) {
-        error = kDeserializationError;
-        break;
-      }
-      auto value = RequestValue::CreateForUnmountSuccess(std::move(*params));
-      error = ForwardOperationResponse(std::move(file_system_id), request_id,
-                                       value, /*has_more=*/false, profile);
-      break;
-    }
-    case mojom::FSPOperationResponse::kGetEntryMetadataSuccess: {
-      using extensions::api::file_system_provider_internal::
-          GetMetadataRequestedSuccess::Params;
-      std::optional<Params> params = Params::Create(std::move(args));
-      if (!params) {
-        error = kDeserializationError;
-        break;
-      }
-      auto value =
-          RequestValue::CreateForGetMetadataSuccess(std::move(*params));
-      error = ForwardOperationResponse(std::move(file_system_id), request_id,
-                                       value, /*has_more=*/false, profile);
-      break;
-    }
-    case mojom::FSPOperationResponse::kGetActionsSuccess: {
-      using extensions::api::file_system_provider_internal::
-          GetActionsRequestedSuccess::Params;
-      std::optional<Params> params = Params::Create(std::move(args));
-      if (!params) {
-        error = kDeserializationError;
-        break;
-      }
-      auto value = RequestValue::CreateForGetActionsSuccess(std::move(*params));
-      error = ForwardOperationResponse(std::move(file_system_id), request_id,
-                                       value, /*has_more=*/false, profile);
-      break;
-    }
-    case mojom::FSPOperationResponse::kReadDirectorySuccess: {
-      using extensions::api::file_system_provider_internal::
-          ReadDirectoryRequestedSuccess::Params;
-      std::optional<Params> params = Params::Create(std::move(args));
-      if (!params) {
-        error = kDeserializationError;
-        break;
-      }
-      bool has_more = params->has_more;
-      auto value =
-          RequestValue::CreateForReadDirectorySuccess(std::move(*params));
-      error = ForwardOperationResponse(std::move(file_system_id), request_id,
-                                       value, has_more, profile);
-      break;
-    }
-    case mojom::FSPOperationResponse::kReadFileSuccess: {
-      TRACE_EVENT0("file_system_provider", "ReadFileSuccessWithProfile");
-      using extensions::api::file_system_provider_internal::
-          ReadFileRequestedSuccess::Params;
-      std::optional<Params> params = Params::Create(std::move(args));
-      if (!params) {
-        error = kDeserializationError;
-        break;
-      }
-      bool has_more = params->has_more;
-      auto value = RequestValue::CreateForReadFileSuccess(std::move(*params));
-      error = ForwardOperationResponse(std::move(file_system_id), request_id,
-                                       value, has_more, profile);
-      break;
-    }
-    case mojom::FSPOperationResponse::kOpenFileSuccess: {
-      TRACE_EVENT0("file_system_provider", "OpenFileSuccessWithProfile");
-      using extensions::api::file_system_provider_internal::
-          OpenFileRequestedSuccess::Params;
-      std::optional<Params> params = Params::Create(std::move(args));
-      if (!params) {
-        error = kDeserializationError;
-        break;
-      }
-      auto value = RequestValue::CreateForOpenFileSuccess(std::move(*params));
-      error = ForwardOperationResponse(std::move(file_system_id), request_id,
-                                       value, /*has_more=*/false, profile);
-      break;
-    }
-    case mojom::FSPOperationResponse::kGenericSuccess: {
-      using extensions::api::file_system_provider_internal::
-          OperationRequestedSuccess::Params;
-      std::optional<Params> params = Params::Create(std::move(args));
-      if (!params) {
-        error = kDeserializationError;
-        break;
-      }
-      auto value = RequestValue::CreateForOperationSuccess(std::move(*params));
-      error = ForwardOperationResponse(std::move(file_system_id), request_id,
-                                       value, /*has_more=*/false, profile);
-      break;
-    }
-    case mojom::FSPOperationResponse::kGenericFailure: {
-      using extensions::api::file_system_provider_internal::
-          OperationRequestedError::Params;
-      std::optional<Params> params = Params::Create(std::move(args));
-      if (!params) {
-        error = kDeserializationError;
-        break;
-      }
-      base::File::Error operation_error =
-          extensions::ProviderErrorToFileError(params->error);
-      auto value = RequestValue::CreateForOperationError(std::move(*params));
-      error = ForwardOperationFailure(std::move(file_system_id), request_id,
-                                      value, operation_error, profile);
-      break;
-    }
-  }
-  std::move(callback).Run(std::move(error));
-}
-
-void FileSystemProviderServiceAsh::OpenFileFinishedSuccessfullyWithProfile(
-    mojom::FileSystemIdPtr file_system_id,
-    int64_t request_id,
-    base::Value::List args,
-    OperationFinishedCallback callback,
-    Profile* profile) {
-  using extensions::api::file_system_provider_internal::
-      OpenFileRequestedSuccess::Params;
-  std::optional<Params> params = Params::Create(std::move(args));
-  if (!params) {
-    std::move(callback).Run(kDeserializationError);
-  }
-  auto value = RequestValue::CreateForOpenFileSuccess(std::move(*params));
-  std::string error =
-      ForwardOperationResponse(std::move(file_system_id), request_id, value,
-                               /*has_more=*/false, profile);
-  std::move(callback).Run(std::move(error));
-}
-
 void FileSystemProviderServiceAsh::MountFinishedWithProfile(
     const std::string& extension_id,
     int64_t request_id,
@@ -520,6 +334,26 @@ void FileSystemProviderServiceAsh::MountFinishedWithProfile(
   if (result != base::File::FILE_OK)
     error_str = extensions::FileErrorToString(result);
   std::move(callback).Run(error_str);
+}
+
+std::string FileSystemProviderServiceAsh::ForwardOperationResponse(
+    mojom::FileSystemIdPtr file_system_id,
+    int64_t request_id,
+    const RequestValue& value,
+    bool has_more,
+    Profile* profile) {
+  return ForwardOperationResponseImpl(std::move(file_system_id), request_id,
+                                      value, has_more, profile);
+}
+
+std::string FileSystemProviderServiceAsh::ForwardOperationFailure(
+    mojom::FileSystemIdPtr file_system_id,
+    int64_t request_id,
+    const RequestValue& value,
+    base::File::Error error,
+    Profile* profile) {
+  return ForwardOperationFailureImpl(std::move(file_system_id), request_id,
+                                     value, error, profile);
 }
 
 }  // namespace crosapi
