@@ -448,6 +448,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/settings/ui_bundled/cells:unit_tests",
     "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data:unit_tests",
     "//ios/chrome/browser/settings/ui_bundled/content_settings:unit_tests",
+    "//ios/chrome/browser/settings/ui_bundled/credit_card_scanner:unit_tests",
     "//ios/chrome/browser/settings/ui_bundled/default_browser:unit_tests",
     "//ios/chrome/browser/settings/ui_bundled/downloads:unit_tests",
     "//ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos:unit_tests",

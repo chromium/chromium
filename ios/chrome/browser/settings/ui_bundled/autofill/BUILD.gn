@@ -57,6 +57,7 @@ source_set("autofill") {
     "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
     "//ios/chrome/browser/settings/ui_bundled/autofill/cells",
     "//ios/chrome/browser/settings/ui_bundled/cells",
+    "//ios/chrome/browser/settings/ui_bundled/credit_card_scanner",
     "//ios/chrome/browser/settings/ui_bundled/elements:enterprise_info_popover_view_controller",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

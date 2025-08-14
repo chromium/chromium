@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_mediator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -29,6 +30,9 @@
 @implementation AutofillAddCreditCardCoordinator {
   // Displays message for invalid credit card data.
   AlertCoordinator* _alertCoordinator;
+
+  // The Credit Card Scanner Coordinator.
+  CreditCardScannerCoordinator* _creditCardScannerCoordinator;
 
   // The view controller attached to this coordinator.
   AutofillAddCreditCardViewController* _addCreditCardViewController;
@@ -105,7 +109,12 @@
 
 - (void)addCreditCardViewControllerRequestedCameraScan:
     (AutofillAddCreditCardViewController*)viewController {
-  // TODO(crbug.com/435324025): Create and start credit card scanner.
+  _creditCardScannerCoordinator = [[CreditCardScannerCoordinator alloc]
+      initWithBaseViewController:_addCreditCardViewController
+                         browser:self.browser
+                        consumer:_addCreditCardViewController];
+
+  [_creditCardScannerCoordinator start];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

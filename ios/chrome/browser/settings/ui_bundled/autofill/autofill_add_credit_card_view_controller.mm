@@ -289,6 +289,30 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return cell;
 }
 
+#pragma mark - CreditCardScannerConsumer
+
+- (void)setCreditCardNumber:(NSString*)cardNumber
+            expirationMonth:(NSString*)expirationMonth
+             expirationYear:(NSString*)expirationYear {
+  if (cardNumber) {
+    [self updateCellForItemType:ItemTypeCardNumber
+            inSectionIdentifier:SectionIdentifierCreditCardDetails
+                       withText:cardNumber];
+  }
+
+  if (expirationMonth) {
+    [self updateCellForItemType:ItemTypeExpirationMonth
+            inSectionIdentifier:SectionIdentifierCreditCardDetails
+                       withText:expirationMonth];
+  }
+
+  if (expirationYear) {
+    [self updateCellForItemType:ItemTypeExpirationYear
+            inSectionIdentifier:SectionIdentifierCreditCardDetails
+                       withText:expirationYear];
+  }
+}
+
 #pragma mark - AutofillEditTableViewController
 
 - (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
@@ -374,8 +398,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   AutofillCreditCardEditItem* item =
       base::apple::ObjCCastStrict<AutofillCreditCardEditItem>(
           [self.tableViewModel itemAtIndexPath:path]);
-  item.textFieldValue = text;
-  [self reconfigureCellsForItems:@[ item ]];
+  [item updateTextFieldValue:text];
 }
 
 // Dimisses this view controller when Cancel button is tapped.
