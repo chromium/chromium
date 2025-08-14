@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_FILE_IO_HELPER_H_
 #define CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_FILE_IO_HELPER_H_
 
+#include "base/byte_count.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
@@ -76,7 +77,7 @@ class RecordingFileIoHelper {
   // Once this value becomes <= 0, we trigger a remaining disk space poll.
   // Initialized to 0, so that we poll the disk space on the very first write
   // operation.
-  int64_t num_bytes_till_next_disk_space_check_ = 0;
+  base::ByteCount data_till_next_disk_space_check_;
 
   // True when we're waiting for a reply from the remote DriveFS quota delegate.
   bool waiting_for_drive_fs_delegate_ = false;

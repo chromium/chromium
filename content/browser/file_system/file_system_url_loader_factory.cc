@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
@@ -360,8 +361,8 @@ class FileSystemDirectoryURLLoader final : public FileSystemEntryURLLoader {
     const std::u16string& name = entry.name.path().LossyDisplayName();
     data_.append(net::GetDirectoryListingEntry(
         name, std::string(),
-        entry.type == filesystem::mojom::FsFileType::DIRECTORY, file_info.size,
-        file_info.last_modified));
+        entry.type == filesystem::mojom::FsFileType::DIRECTORY,
+        base::ByteCount(file_info.size), file_info.last_modified));
 
     if (index < entries_.size() - 1)
       GetMetadata(index + 1);

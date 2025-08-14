@@ -336,37 +336,6 @@ char HexDigitToInt(char c) {
                                 : static_cast<char>(c - 'a' + 10);
 }
 
-static const auto kByteStringsUnlocalized = std::to_array<const char*>({
-    " B",
-    " kB",
-    " MB",
-    " GB",
-    " TB",
-    " PB",
-});
-
-std::u16string FormatBytesUnlocalized(int64_t bytes) {
-  double unit_amount = static_cast<double>(bytes);
-  size_t dimension = 0;
-  const int kKilo = 1024;
-  while (unit_amount >= kKilo &&
-         dimension < std::size(kByteStringsUnlocalized) - 1) {
-    unit_amount /= kKilo;
-    dimension++;
-  }
-
-  char buf[64];
-  if (bytes != 0 && dimension > 0 && unit_amount < 100) {
-    UNSAFE_TODO(base::snprintf(buf, std::size(buf), "%.1lf%s", unit_amount,
-                               kByteStringsUnlocalized[dimension]));
-  } else {
-    UNSAFE_TODO(base::snprintf(buf, std::size(buf), "%.0lf%s", unit_amount,
-                               kByteStringsUnlocalized[dimension]));
-  }
-
-  return ASCIIToUTF16(buf);
-}
-
 void ReplaceFirstSubstringAfterOffset(std::u16string* str,
                                       size_t start_offset,
                                       std::u16string_view find_this,

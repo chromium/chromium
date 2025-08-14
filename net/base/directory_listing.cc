@@ -4,11 +4,14 @@
 
 #include "net/base/directory_listing.h"
 
+#include "base/byte_count.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,6 +20,38 @@
 #include "net/grit/net_resources.h"
 
 namespace net {
+
+namespace {
+
+constexpr auto kByteStringsUnlocalized = std::to_array<const char*>({
+    " B",
+    " kB",
+    " MB",
+    " GB",
+    " TB",
+    " PB",
+});
+
+std::string GetSizeString(base::ByteCount bytes) {
+  double unit_amount = bytes.InBytesF();
+  size_t dimension = 0;
+  constexpr int kKilo = 1024;
+  while (unit_amount >= kKilo &&
+         dimension < std::size(kByteStringsUnlocalized) - 1) {
+    unit_amount /= kKilo;
+    dimension++;
+  }
+
+  if (!bytes.is_zero() && dimension > 0 && unit_amount < 100) {
+    return base::StrCat({base::NumberToStringWithFixedPrecision(unit_amount, 1),
+                         kByteStringsUnlocalized[dimension]});
+  } else {
+    return base::StrCat({base::NumberToStringWithFixedPrecision(unit_amount, 0),
+                         kByteStringsUnlocalized[dimension]});
+  }
+}
+
+}  // namespace
 
 std::string GetDirectoryListingHeader(const std::u16string& title) {
   scoped_refptr<base::RefCountedMemory> header(
@@ -39,7 +74,7 @@ std::string GetDirectoryListingHeader(const std::u16string& title) {
 std::string GetDirectoryListingEntry(const std::u16string& name,
                                      const std::string& raw_bytes,
                                      bool is_dir,
-                                     int64_t size,
+                                     base::ByteCount size,
                                      base::Time modified) {
   std::string result;
   result.append("<script>addRow(");
@@ -59,15 +94,14 @@ std::string GetDirectoryListingEntry(const std::u16string& name,
   }
 
   // Negative size means unknown or not applicable (e.g. directory).
-  std::stringstream raw_size_string_stream;
-  raw_size_string_stream << size << ",";
-  result.append(raw_size_string_stream.str());
+  result.append(base::NumberToString(size.InBytes()));
+  result.append(",");
 
-  std::u16string size_string;
-  if (size >= 0)
-    size_string = base::FormatBytesUnlocalized(size);
-  base::EscapeJSONString(size_string, true, &result);
-
+  std::string size_string;
+  if (size >= base::ByteCount(0)) {
+    size_string = GetSizeString(size);
+  }
+  base::EscapeJSONString(size_string, /*put_in_quotes=*/true, &result);
   result.append(",");
 
   // |modified| can be NULL in FTP listings.
@@ -78,15 +112,14 @@ std::string GetDirectoryListingEntry(const std::u16string& name,
     std::stringstream raw_time_string_stream;
     // Certain access paths can only get up to seconds resolution, so here we
     // output the raw time value in seconds for consistency.
-    raw_time_string_stream << modified.InMillisecondsSinceUnixEpoch() /
-                                  base::Time::kMillisecondsPerSecond
-                           << ",";
-    result.append(raw_time_string_stream.str());
+    result.append(base::NumberToString(modified.InMillisecondsSinceUnixEpoch() /
+                                       base::Time::kMillisecondsPerSecond));
+    result.append(",");
 
     modified_str = base::TimeFormatShortDateAndTime(modified);
   }
 
-  base::EscapeJSONString(modified_str, true, &result);
+  base::EscapeJSONString(modified_str, /*put_in_quotes=*/true, &result);
   result.append(");</script>\n");
 
   return result;
@@ -94,6 +127,10 @@ std::string GetDirectoryListingEntry(const std::u16string& name,
 
 std::string GetParentDirectoryLink() {
   return std::string("<script>onHasParentDirectory();</script>\n");
+}
+
+std::string GetSizeStringForTesting(base::ByteCount size) {
+  return GetSizeString(size);
 }
 
 }  // namespace net
