@@ -310,7 +310,7 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   //
   // Note that currently, States returned here have is_overridden=false, but we
   // are in the process of migrating to marking field trials set manually by
-  // command line as overridden. See b/284986126.
+  // command line as overridden. See crbug.com/438734773.
   static bool ParseFieldTrialsString(std::string_view field_trials_string,
                                      bool override_trials,
                                      std::vector<State>& entries);
