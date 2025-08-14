@@ -356,6 +356,11 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
     return search_engines_test_environment_.search_engine_choice_service();
   }
 
+  regional_capabilities::RegionalCapabilitiesService&
+  regional_capabilities_service() {
+    return search_engines_test_environment_.regional_capabilities_service();
+  }
+
  private:
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
@@ -364,7 +369,7 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
 
 TEST_F(TemplateURLServiceUtilLoadTest,
        GetSearchProvidersUsingLoadedEngines_OutOfEea) {
-  search_engine_choice_service().ClearCountryIdCacheForTesting();
+  regional_capabilities_service().ClearCacheForTesting();
   prefs().SetInteger(regional_capabilities::prefs::kCountryIDAtInstall,
                      kNonEeaCountryId.GetForTesting().Serialize());
 
@@ -408,7 +413,7 @@ TEST_F(TemplateURLServiceUtilLoadTest,
 
 TEST_F(TemplateURLServiceUtilLoadTest,
        GetSearchProvidersUsingLoadedEngines_InEea) {
-  search_engine_choice_service().ClearCountryIdCacheForTesting();
+  regional_capabilities_service().ClearCacheForTesting();
   prefs().SetInteger(regional_capabilities::prefs::kCountryIDAtInstall,
                      kEeaCountryId.GetForTesting().Serialize());
   const size_t kEeaKeywordEnginesCount =

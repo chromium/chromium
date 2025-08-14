@@ -155,11 +155,6 @@ class SearchEngineChoiceService : public KeyedService {
   // Clear state e.g. when a guest session is closed.
   void ResetState();
 
-  // Clears the country id cache to be able to change countries multiple times
-  // in tests.
-  // TODO(crbug.com/328040066): Move to `//components/regional_capabilities`.
-  void ClearCountryIdCacheForTesting();
-
   // Returns a reference to the `SearchEngineChoiceService::Client` owned and
   // used by this service.
   Client& GetClientForTesting();

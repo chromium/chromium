@@ -114,9 +114,9 @@ class RegionalCapabilitiesService : public KeyedService {
   // more details.
   CountryIdHolder GetCountryId();
 
-  // Clears the country id cache to be able to change countries multiple times
+  // Clears the caches to be able to change countries multiple times
   // in tests.
-  void ClearCountryIdCacheForTesting();
+  void ClearCacheForTesting();
 
   Program GetActiveProgramForTesting();
 

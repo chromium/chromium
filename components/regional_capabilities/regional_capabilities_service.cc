@@ -367,9 +367,10 @@ void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
   RecordLoadedCountrySource(selected_country_and_source.second);
 }
 
-void RegionalCapabilitiesService::ClearCountryIdCacheForTesting() {
+void RegionalCapabilitiesService::ClearCacheForTesting() {
   CHECK_IS_TEST();
   country_id_cache_.reset();
+  program_settings_cache_.reset();
 }
 
 Program RegionalCapabilitiesService::GetActiveProgramForTesting() {
