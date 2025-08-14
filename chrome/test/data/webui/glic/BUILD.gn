@@ -22,7 +22,8 @@ group("generate_test_files") {
 ts_library("build_extra_ts") {
   out_dir = out_dir
   in_files = [
-    "api_test.ts",
+    "browser_tests/browser_test_base.ts",
+    "browser_tests/glic_api_browsertest.ts",
     "api_boot.ts",
     "test_client/client.ts",
     "test_client/test_client.ts",
@@ -58,7 +59,7 @@ ts_library("build_extra_ts") {
 # Copy deps of the test client over to out_dir.
 preprocess_if_expr("move_html") {
   in_files = [
-    "test.html",
+    "browser_tests/test.html",
     "test_client/fre.html",
     "test_client/index.html",
   ]
@@ -87,7 +88,7 @@ build_webui_tests("build") {
   files = [
     "unit_tests/webview_test.ts",
     "unit_tests/observable_test.ts",
-     ]
+  ]
 
   ts_path_mappings = [ "chrome://glic/*|" + rebase_path(
                            "$root_gen_dir/chrome/browser/resources/glic/tsc/*",

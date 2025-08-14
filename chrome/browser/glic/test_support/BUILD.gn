@@ -9,6 +9,8 @@ assert(enable_glic)
 source_set("test_support") {
   testonly = true
   sources = [
+    "glic_api_test.cc",
+    "glic_api_test.h",
     "glic_test_environment.cc",
     "glic_test_environment.h",
     "glic_test_util.cc",
