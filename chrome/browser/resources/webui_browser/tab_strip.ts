@@ -55,8 +55,9 @@ export class TabStrip extends CrLitElement {
   addTab(tab: TabData) {
     const tabElement = new TabElement(tab);
     this.tabs_ = [...this.tabs_, tabElement];
-    /* TODO(webium): no longer has tab.active */
-    if (true) {
+    // Need to manually activate first tab.
+    // TODO(webium): The tab strip API should sent an activation event.
+    if (this.tabs_.length === 1) {
       this.activateTab(tab.id);
     }
     this.requestUpdate();

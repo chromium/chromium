@@ -52,9 +52,6 @@ export class TabElement extends CrLitElement {
   }
 
   updateData(tab: TabData) {
-    /* TODO(webium): tab.active is not present anymore
-    this.active = tab.active;
-    */
     /* TODO(webium): tab.favicon is an Image now, not a URL
     if (this.active && tab.activeFaviconUrl) {
       this.faviconUrl = tab.activeFaviconUrl.url;
