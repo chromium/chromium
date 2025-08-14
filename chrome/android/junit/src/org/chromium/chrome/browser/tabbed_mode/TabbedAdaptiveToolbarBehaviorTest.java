@@ -29,7 +29,7 @@ public class TabbedAdaptiveToolbarBehaviorTest {
         Activity activity = Robolectric.setupActivity(Activity.class);
         mBehavior =
                 new TabbedAdaptiveToolbarBehavior(
-                        activity, null, null, null, null, null, null, null, null, null);
+                        activity, null, null, null, null, null, null, null, null);
     }
 
     @Test

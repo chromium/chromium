@@ -14,8 +14,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.ai.AiAssistantService;
-import org.chromium.chrome.browser.ai.PageSummaryButtonController;
 import org.chromium.chrome.browser.bookmarks.AddToBookmarksToolbarButtonController;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
@@ -31,7 +29,6 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.OptionalNewTabButtonController;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
 
@@ -48,7 +45,6 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
     private final Supplier<GroupSuggestionsButtonController>
             mGroupSuggestionsButtonControllerSupplier;
     private final TabGroupModelFilterProvider mTabGroupModelFilterProvider;
-    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     public TabbedAdaptiveToolbarBehavior(
             Context context,
@@ -59,8 +55,7 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
             ActivityTabProvider activityTabProvider,
             Runnable registerVoiceSearchRunnable,
             Supplier<GroupSuggestionsButtonController> groupSuggestionsButtonController,
-            TabGroupModelFilterProvider tabGroupModelFilterProvider,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            TabGroupModelFilterProvider tabGroupModelFilterProvider) {
         mContext = context;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mTabCreatorManagerSupplier = tabCreatorManagerSupplier;
@@ -70,7 +65,6 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
         mRegisterVoiceSearchRunnable = registerVoiceSearchRunnable;
         mGroupSuggestionsButtonControllerSupplier = groupSuggestionsButtonController;
         mTabGroupModelFilterProvider = tabGroupModelFilterProvider;
-        mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
     @Override
@@ -94,14 +88,6 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
                         trackerSupplier,
                         mBookmarkModelSupplier);
         controller.addButtonVariant(AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS, addToBookmarks);
-        var pageSummary =
-                new PageSummaryButtonController(
-                        mContext,
-                        mModalDialogManagerSupplier.get(),
-                        mActivityTabProvider,
-                        AiAssistantService.getInstance(),
-                        trackerSupplier);
-        controller.addButtonVariant(AdaptiveToolbarButtonVariant.PAGE_SUMMARY, pageSummary);
         if (AdaptiveToolbarFeatures.isTabGroupingPageActionEnabled()) {
             var tabGrouping =
                     new GroupSuggestionsButtonDataProvider(
