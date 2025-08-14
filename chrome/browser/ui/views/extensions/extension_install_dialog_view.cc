@@ -58,6 +58,7 @@
 #include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/widget/widget.h"
@@ -227,32 +228,6 @@ void ShowExtensionInstallDialogImpl(
   constrained_window::CreateBrowserModalDialogViews(dialog, parent_window)
       ->Show();
 }
-
-// A custom scrollable view implementation for the dialog.
-class CustomScrollableView : public views::View {
-  METADATA_HEADER(CustomScrollableView, views::View)
-
- public:
-  explicit CustomScrollableView(ExtensionInstallDialogView* parent)
-      : parent_(parent) {}
-  CustomScrollableView(const CustomScrollableView&) = delete;
-  CustomScrollableView& operator=(const CustomScrollableView&) = delete;
-  ~CustomScrollableView() override = default;
-
-  // views::View:
-  void ChildPreferredSizeChanged(views::View* child) override {
-    PreferredSizeChanged();
-    parent_->ResizeWidget();
-  }
-
- private:
-  // This view is an child of the dialog view (via |scroll_view_|) and thus will
-  // not outlive it.
-  raw_ptr<ExtensionInstallDialogView> parent_;
-};
-
-BEGIN_METADATA(CustomScrollableView)
-END_METADATA
 
 // Represents one section in the scrollable info area, which could be a block of
 // permissions, a list of retained files, or a list of retained devices.
@@ -731,15 +706,11 @@ void ExtensionInstallDialogView::CreateContents() {
       gfx::Insets::TLBR(content_insets.top(), 0, content_insets.bottom(), 0));
 
   auto extension_info_and_justification_container =
-      std::make_unique<CustomScrollableView>(this);
-  extension_info_and_justification_container->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::TLBR(0, content_insets.left(), 0,
-                                                 content_insets.right())));
-  extension_info_and_justification_container->SetLayoutManager(
-      std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-          provider->GetDistanceMetric(
-              views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kVertical)
+          .SetInteriorMargin(gfx::Insets::TLBR(0, content_insets.left(), 0,
+                                               content_insets.right()))
+          .Build();
 
   auto extension_info_container =
       views::Builder<views::View>()
