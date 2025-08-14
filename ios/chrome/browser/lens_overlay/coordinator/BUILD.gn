@@ -70,7 +70,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/omnibox/ui/popup",
     "//ios/chrome/browser/orchestrator/ui_bundled",
     "//ios/chrome/browser/overlays/model",
-    "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/search_engines/model:search_engines_util",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",

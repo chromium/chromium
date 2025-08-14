@@ -208,7 +208,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/prerender/model",
-    "//ios/chrome/browser/prerender/model:test_support",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/sync/model",
