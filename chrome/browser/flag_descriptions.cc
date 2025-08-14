@@ -5189,6 +5189,12 @@ const char kPaymentLinkDetectionName[] = "Enable payment link detection";
 const char kPaymentLinkDetectionDescription[] =
     "Enables payment link detection in the DOM.";
 
+const char kPCCTMinimumHeightName[] =
+    "Change the minimum height of pCCT to 30%.";
+const char kPCCTMinimumHeightDescription[] =
+    "When enabled, this sets the minimum "
+    "height to 30% or 220dp, whichever is greater, for ephemeral pCCTs.";
+
 const char kProcessRankPolicyAndroidName[] =
     "Enable performance manager rank policy for Android";
 const char kProcessRankPolicyAndroidDescription[] =

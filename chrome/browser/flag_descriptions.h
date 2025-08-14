@@ -3013,6 +3013,9 @@ extern const char kOmniboxShortcutsAndroidDescription[];
 extern const char kPaymentLinkDetectionName[];
 extern const char kPaymentLinkDetectionDescription[];
 
+extern const char kPCCTMinimumHeightName[];
+extern const char kPCCTMinimumHeightDescription[];
+
 extern const char kProcessRankPolicyAndroidName[];
 extern const char kProcessRankPolicyAndroidDescription[];
 

@@ -47,6 +47,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.ContentGestureListener.GestureState;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsCoordinator;
@@ -83,6 +84,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     /** Minimal height the bottom sheet CCT should show is half of the display height. */
     private static final float MINIMAL_HEIGHT_RATIO = 0.5f;
 
+    private static final int MINIMAL_ALLOWED_HEIGHT_DP = 220;
     private static final int SPINNER_FADEIN_DURATION_MS = 100;
     private static final int SPINNER_FADEOUT_DURATION_MS = 400;
     private static final int NAVBAR_BUTTON_HIDE_SHOW_DELAY_MS = 150;
@@ -121,6 +123,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     private boolean mStopShowingSpinner;
     private boolean mRestoreAfterFindPage;
     private final boolean mContentScrollMayResizeTab;
+    private final boolean mIsEphemeral;
 
     // Y offset when a dragging gesture/animation starts.
     private int mMoveStartY;
@@ -158,6 +161,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         mTabAnimator = new TabAnimator(this, animTime, this::onMoveEnd);
         lifecycleDispatcher.register(this);
         if (startMaximized) mStatus = HeightStatus.TOP;
+        mIsEphemeral = intentData.getCustomTabMode() == CustomTabProfileType.EPHEMERAL;
 
         mSpinnerFadeoutAnimatorListener =
                 new AnimatorListener() {
@@ -328,10 +332,18 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
     private int initialHeightInPortraitMode() {
         assert !isFullHeight() : "initialHeightInPortraitMode() is used in portrait mode only";
+        int minInitialHeight = (int) (mDisplayHeight * MINIMAL_HEIGHT_RATIO);
+
+        if (ChromeFeatureList.sPCctMinimumHeight.isEnabled() && mIsEphemeral) {
+            minInitialHeight =
+                    (int) (mDisplayHeight * ChromeFeatureList.sPCctMinimumHeightRatio.getValue());
+            float density = mActivity.getResources().getDisplayMetrics().density;
+            int minAllowedHeightPx = (int) (MINIMAL_ALLOWED_HEIGHT_DP * density);
+            minInitialHeight = Math.max(minAllowedHeightPx, minInitialHeight);
+        }
+
         return MathUtils.clamp(
-                mUnclampedInitialHeight,
-                mDisplayHeight - mStatusBarHeight,
-                (int) (mDisplayHeight * MINIMAL_HEIGHT_RATIO));
+                mUnclampedInitialHeight, mDisplayHeight - mStatusBarHeight, minInitialHeight);
     }
 
     @Override

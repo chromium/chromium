@@ -363,6 +363,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTinkerTankBottomSheet,
     &kPageAnnotationsService,
     &kPageContentProvider,
+    &kPCCTMinimumHeight,
     &kPowerSavingModeBroadcastReceiverInBackground,
     &kPreconnectOnTabCreation,
     &kPriceChangeModule,
@@ -1183,6 +1184,10 @@ BASE_FEATURE(kPageAnnotationsService,
 
 BASE_FEATURE(kPageContentProvider,
              "PageContentProvider",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPCCTMinimumHeight,
+             "PCCTMinimumHeight",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPowerSavingModeBroadcastReceiverInBackground,
