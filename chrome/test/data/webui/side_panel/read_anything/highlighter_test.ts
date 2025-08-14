@@ -22,7 +22,9 @@ suite('Highlighter', () => {
   }
 
   function assertHtml(html: string, id: number) {
-    assertEquals(html, (nodeStore.getDomNode(id) as Element).innerHTML);
+    assertEquals(
+        html, (nodeStore.getDomNode(id) as Element).innerHTML,
+        (nodeStore.getDomNode(id) as Element).innerHTML);
   }
 
   function assertHtmlContains(partialHtml: string, id: number) {
@@ -191,6 +193,38 @@ suite('Highlighter', () => {
     // after "I'm" remains unhighlighted.
     assertHtml('<span class="current-read-highlight">I\'m</span>', id1);
     assertHtml(' slipping into the lava.', id2);
+  });
+
+  test('word highlight on punctuation only applies previous highlight', () => {
+    chrome.readingMode.onHighlightGranularityChanged(
+        chrome.readingMode.wordHighlighting);
+    wordBoundaries.updateBoundary(0);
+    const id = 10;
+    const sentenceText = 'And I can\'t sweep you off of your feet';
+    const punctuation = '.';
+
+    // Mock the backend to return a segment for just the punctuation.
+    chrome.readingMode.getHighlightForCurrentSegmentIndex = () => [{
+      nodeId: id,
+      start: sentenceText.length,
+      length: 1,
+    }];
+
+    const sentence = document.createElement('p');
+    sentence.appendChild(document.createTextNode(sentenceText + punctuation));
+    nodeStore.setDomNode(sentence, id);
+
+    highlighter.highlightCurrentGranularity(
+        [id], /*scrollIntoView=*/ false,
+        /*shouldUpdateSentenceHighlight=*/ true);
+
+    // There should be no "current" highlight on the page.
+    assertFalse(highlighter.hasCurrentHighlights());
+    assertHtml(
+        '<span class="previous-read-highlight">' + sentenceText +
+            '</span><span class="previous-read-highlight">' + punctuation +
+            '</span>',
+        id);
   });
 
   test('phrase highlight', () => {

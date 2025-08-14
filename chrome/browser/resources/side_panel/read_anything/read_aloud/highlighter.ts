@@ -257,13 +257,13 @@ export class ReadAloudHighlighter {
 
       const endIndex = start + highlightLength;
       const textContent = node.textContent?.substring(start, endIndex).trim();
-      if (this.isInvalidHighlightForWordHighlighting(textContent)) {
-        continue;
-      }
-
+      // If the remaining text is just punctuation, don't show it as a current
+      // highlight, but do fade it out as 'before the current highlight.'
+      const previousHighlightOnly =
+          this.isInvalidHighlightForWordHighlighting(textContent);
       const element = node as HTMLElement;
-      const highlightedNode =
-          this.highlightCurrentText_(start, endIndex, element);
+      const highlightedNode = this.highlightCurrentText_(
+          start, endIndex, element, previousHighlightOnly);
       this.nodeStore_.replaceDomNode(element, highlightedNode);
 
       // Keep track of the highlight length that's been spoken so that
@@ -318,8 +318,8 @@ export class ReadAloudHighlighter {
   //   suffix text
   // </span>
   private highlightCurrentText_(
-      highlightStart: number, highlightEnd: number,
-      currentNode: HTMLElement): HTMLElement {
+      highlightStart: number, highlightEnd: number, currentNode: HTMLElement,
+      previousHighlightOnly: boolean = false): HTMLElement {
     const parentOfHighlight = document.createElement('span');
     parentOfHighlight.classList.add(PARENT_OF_HIGHLIGHT_CLASS);
 
@@ -338,7 +338,14 @@ export class ReadAloudHighlighter {
     // Then get the section of text to highlight and mark it for
     // highlighting.
     const readingHighlight = document.createElement('span');
-    readingHighlight.classList.add(currentReadHighlightClass);
+    // In the case where we don't actually want to show the current highlight,
+    // but the text should still be included in 'previously read', add the
+    // previous formatting instead of the current formatting.
+    if (previousHighlightOnly) {
+      readingHighlight.classList.add(previousReadHighlightClass);
+    } else {
+      readingHighlight.classList.add(currentReadHighlightClass);
+    }
     const textNode = document.createTextNode(
         currentNode.textContent!.substring(highlightStart, highlightEnd));
     readingHighlight.appendChild(textNode);
