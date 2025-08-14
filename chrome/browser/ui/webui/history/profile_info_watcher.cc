@@ -12,7 +12,9 @@
 
 ProfileInfoWatcher::ProfileInfoWatcher(Profile* profile,
                                        base::RepeatingClosure callback)
-    : profile_(profile), callback_(std::move(callback)) {
+    : profile_(profile),
+      callback_(std::move(callback)),
+      cached_signin_state_(GetSignInState()) {
   DCHECK(profile_);
   DCHECK(!callback_.is_null());
 
@@ -26,6 +28,12 @@ ProfileInfoWatcher::ProfileInfoWatcher(Profile* profile,
 ProfileInfoWatcher::~ProfileInfoWatcher() = default;
 
 void ProfileInfoWatcher::OnStateChanged(syncer::SyncService* sync) {
+  HistorySignInState signin_state = GetSignInState();
+  if (signin_state == cached_signin_state_) {
+    return;
+  }
+
+  cached_signin_state_ = signin_state;
   RunCallback();
 }
 

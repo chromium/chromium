@@ -44,6 +44,8 @@ class ProfileInfoWatcher : public syncer::SyncServiceObserver {
   // Called when the history sync state changes.
   base::RepeatingClosure callback_;
 
+  HistorySignInState cached_signin_state_;
+
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_observation_{this};
 };
