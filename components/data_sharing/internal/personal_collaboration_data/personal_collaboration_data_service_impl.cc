@@ -61,8 +61,19 @@ void PersonalCollaborationDataServiceImpl::CreateOrUpdateSpecifics(
     SpecificsType specifics_type,
     const std::string& storage_key,
     const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
-  // TODO(haileywang): Implement actual logic.
-  NOTREACHED();
+  switch (specifics_type) {
+    case SpecificsType::kSharedTabSpecifics:
+      CHECK(specifics.has_shared_tab_details());
+      break;
+    case SpecificsType::kSharedTabGroupSpecifics:
+      CHECK(specifics.has_shared_tab_group_details());
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  bridge_->CreateOrUpdateSpecifics(
+      CreateStorageKeyWithType(specifics_type, storage_key), specifics);
 }
 
 void PersonalCollaborationDataServiceImpl::DeleteSpecifics(

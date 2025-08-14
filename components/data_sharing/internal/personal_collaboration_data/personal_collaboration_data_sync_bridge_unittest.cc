@@ -40,6 +40,8 @@ using testing::ReturnRef;
 const char kTestCollaborationId[] = "collaboration_id";
 const char kTestTabGuid[] = "00000000-0000-0000-0000-000000000001";
 const char kTestGroupGuid[] = "00000000-0000-0000-0000-000000000002";
+const char kTestStorageKey[] =
+    "00000000-0000-0000-0000-000000000001|collaboration_id";
 
 class FakeWriteBatch : public syncer::DataTypeStore::WriteBatch {
  public:
@@ -57,11 +59,6 @@ class FakeWriteBatch : public syncer::DataTypeStore::WriteBatch {
  private:
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list_;
 };
-
-std::string GetClientTagFromSpecifics(
-    const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
-  return specifics.guid() + "|" + specifics.collaboration_id();
-}
 
 syncer::EntityData CreateEntityData(
     const sync_pb::SharedTabGroupAccountDataSpecifics& specifics,
@@ -107,9 +104,8 @@ CreateTabGroupAccountSpecificsForGroup(const CollaborationId& collaboration_id,
 std::unique_ptr<syncer::EntityChange> CreateAddEntityChange(
     const sync_pb::SharedTabGroupAccountDataSpecifics& specifics,
     base::Time creation_time = base::Time::Now()) {
-  const std::string& storage_key = GetClientTagFromSpecifics(specifics);
   return syncer::EntityChange::CreateAdd(
-      storage_key, CreateEntityData(specifics, creation_time));
+      kTestStorageKey, CreateEntityData(specifics, creation_time));
 }
 
 class PersonalCollaborationDataSyncBridgeTest : public testing::Test {
@@ -279,7 +275,7 @@ TEST_F(PersonalCollaborationDataSyncBridgeTest, ShouldResolveConflicts) {
                                        std::move(change_list1));
 
   EXPECT_EQ(syncer::ConflictResolution::kUseLocal,
-            bridge().ResolveConflict(GetClientTagFromSpecifics(local_newer),
+            bridge().ResolveConflict(kTestStorageKey,
                                      CreateEntityData(remote_older)));
 
   // Test kUseRemote: remote data is newer.
@@ -297,7 +293,7 @@ TEST_F(PersonalCollaborationDataSyncBridgeTest, ShouldResolveConflicts) {
                                        std::move(change_list2));
 
   EXPECT_EQ(syncer::ConflictResolution::kUseRemote,
-            bridge().ResolveConflict(GetClientTagFromSpecifics(local_older),
+            bridge().ResolveConflict(kTestStorageKey,
                                      CreateEntityData(remote_newer)));
 
   // Test kChangesMatch: timestamps are the same.
@@ -315,7 +311,7 @@ TEST_F(PersonalCollaborationDataSyncBridgeTest, ShouldResolveConflicts) {
                                        std::move(change_list3));
 
   EXPECT_EQ(syncer::ConflictResolution::kChangesMatch,
-            bridge().ResolveConflict(GetClientTagFromSpecifics(local_same_time),
+            bridge().ResolveConflict(kTestStorageKey,
                                      CreateEntityData(remote_same_time)));
 }
 
@@ -328,10 +324,9 @@ TEST_F(PersonalCollaborationDataSyncBridgeTest,
   sync_pb::SharedTabGroupAccountDataSpecifics untracked_remote =
       CreateTabGroupAccountSpecifics(kCollaborationId, kTestTabGuid,
                                      kTestGroupGuid, base::Time::Now());
-  EXPECT_EQ(
-      syncer::ConflictResolution::kUseRemote,
-      bridge().ResolveConflict(GetClientTagFromSpecifics(untracked_remote),
-                               CreateEntityData(untracked_remote)));
+  EXPECT_EQ(syncer::ConflictResolution::kUseRemote,
+            bridge().ResolveConflict(kTestStorageKey,
+                                     CreateEntityData(untracked_remote)));
 
   // Test conflict between tab details and group details. Remote should be used.
   sync_pb::SharedTabGroupAccountDataSpecifics local_tab_details =
@@ -345,10 +340,9 @@ TEST_F(PersonalCollaborationDataSyncBridgeTest,
   bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
                                        std::move(change_list));
 
-  EXPECT_EQ(
-      syncer::ConflictResolution::kUseRemote,
-      bridge().ResolveConflict(GetClientTagFromSpecifics(local_tab_details),
-                               CreateEntityData(remote_group_details)));
+  EXPECT_EQ(syncer::ConflictResolution::kUseRemote,
+            bridge().ResolveConflict(kTestStorageKey,
+                                     CreateEntityData(remote_group_details)));
 }
 
 TEST_F(PersonalCollaborationDataSyncBridgeTest,
@@ -542,7 +536,7 @@ TEST_F(PersonalCollaborationDataSyncBridgeTest,
                                        std::move(change_list));
 
   std::optional<sync_pb::SharedTabGroupAccountDataSpecifics> result =
-      bridge().GetSpecificsForStorageKey(GetClientTagFromSpecifics(specifics));
+      bridge().GetSpecificsForStorageKey(kTestStorageKey);
   EXPECT_TRUE(result.has_value());
   EXPECT_THAT(*result, EqualsProto(specifics));
 }
@@ -551,6 +545,36 @@ TEST_F(PersonalCollaborationDataSyncBridgeTest,
        ShouldReturnNulloptForNonexistentStorageKey) {
   InitializeBridge();
   EXPECT_FALSE(bridge().GetSpecificsForStorageKey("nonexistent_key"));
+}
+
+TEST_F(PersonalCollaborationDataSyncBridgeTest, ShouldCreateAndGetSpecifics) {
+  const CollaborationId kCollaborationId(kTestCollaborationId);
+  InitializeBridge();
+
+  // Create and add specifics.
+  sync_pb::SharedTabGroupAccountDataSpecifics specifics =
+      CreateTabGroupAccountSpecifics(kCollaborationId, kTestTabGuid,
+                                     kTestGroupGuid, base::Time::Now());
+  bridge().CreateOrUpdateSpecifics(kTestStorageKey, specifics);
+
+  // Get the specifics and verify.
+  std::optional<sync_pb::SharedTabGroupAccountDataSpecifics> result =
+      bridge().GetSpecificsForStorageKey(kTestStorageKey);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_THAT(*result, EqualsProto(specifics));
+
+  // Update the specifics.
+  sync_pb::SharedTabGroupAccountDataSpecifics updated_specifics =
+      CreateTabGroupAccountSpecifics(kCollaborationId, kTestTabGuid,
+                                     kTestGroupGuid,
+                                     base::Time::Now() + base::Seconds(10));
+  bridge().CreateOrUpdateSpecifics(kTestStorageKey, updated_specifics);
+
+  // Get the updated specifics and verify.
+  std::optional<sync_pb::SharedTabGroupAccountDataSpecifics> updated_result =
+      bridge().GetSpecificsForStorageKey(kTestStorageKey);
+  EXPECT_TRUE(updated_result.has_value());
+  EXPECT_THAT(*updated_result, EqualsProto(updated_specifics));
 }
 
 TEST_F(PersonalCollaborationDataSyncBridgeTest, ShouldHandleNoData) {

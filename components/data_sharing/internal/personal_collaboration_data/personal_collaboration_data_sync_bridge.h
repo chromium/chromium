@@ -85,6 +85,11 @@ class PersonalCollaborationDataSyncBridge : public syncer::DataTypeSyncBridge {
   std::optional<sync_pb::SharedTabGroupAccountDataSpecifics>
   GetSpecificsForStorageKey(const std::string& storage_key) const;
 
+  // Update the local copy and sync with the new data.
+  void CreateOrUpdateSpecifics(
+      const std::string& storage_key,
+      const sync_pb::SharedTabGroupAccountDataSpecifics& specifics);
+
  private:
   // Loads the data already stored in the DataTypeStore.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
@@ -101,7 +106,8 @@ class PersonalCollaborationDataSyncBridge : public syncer::DataTypeSyncBridge {
 
   // Write a new entity to sync. This is used when the model is updated
   // with a new value and sync needs to be triggered.
-  void WriteEntityToSync(std::unique_ptr<syncer::EntityData> entity);
+  void WriteEntityToSync(const std::string& storage_key,
+                         std::unique_ptr<syncer::EntityData> entity);
 
   // Delete an entity from sync. Also deletes from local storage and in-memory
   // cache.

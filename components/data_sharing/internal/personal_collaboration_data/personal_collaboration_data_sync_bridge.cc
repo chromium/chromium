@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/uuid.h"
 #include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/deletion_origin.h"
@@ -320,6 +321,17 @@ PersonalCollaborationDataSyncBridge::GetSpecificsForStorageKey(
              : std::nullopt;
 }
 
+void PersonalCollaborationDataSyncBridge::CreateOrUpdateSpecifics(
+    const std::string& storage_key,
+    const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
+  if (!is_initialized_ || !change_processor()->IsTrackingMetadata()) {
+    // Ignore any changes before the model is successfully initialized.
+    return;
+  }
+
+  WriteEntityToSync(storage_key, CreateEntityDataFromSpecifics(specifics));
+}
+
 void PersonalCollaborationDataSyncBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::DataTypeStore> store) {
@@ -371,13 +383,13 @@ void PersonalCollaborationDataSyncBridge::OnDataTypeStoreCommit(
 }
 
 void PersonalCollaborationDataSyncBridge::WriteEntityToSync(
+    const std::string& storage_key,
     std::unique_ptr<syncer::EntityData> entity) {
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
 
   const sync_pb::SharedTabGroupAccountDataSpecifics& specifics =
       entity->specifics.shared_tab_group_account_data();
-  const std::string storage_key = GetStorageKey(*entity);
 
   specifics_[storage_key] = specifics;
   batch->WriteData(storage_key, specifics.SerializeAsString());
