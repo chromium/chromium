@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -169,13 +170,9 @@ void ExpectInt32AndArrayOfDoublesArguments(
   int32_t value;
   ASSERT_TRUE(reader->PopInt32(&value));
   EXPECT_EQ(expected_value, value);
-  const double* doubles = nullptr;
-  size_t size = 0;
-  ASSERT_TRUE(reader->PopArrayOfDoubles(&doubles, &size));
-  EXPECT_EQ(expected_doubles.size(), size);
-  for (size_t i = 0; i < size; ++i) {
-    UNSAFE_TODO(EXPECT_EQ(expected_doubles[i], doubles[i]));
-  }
+  base::span<const double> doubles;
+  ASSERT_TRUE(reader->PopArrayOfDoubles(&doubles));
+  EXPECT_EQ(base::span(expected_doubles), doubles);
   EXPECT_FALSE(reader->HasMoreData());
 }
 

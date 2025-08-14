@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -181,17 +182,14 @@ class FlossAdminClientTest : public testing::Test,
                      ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
           dbus::MessageReader reader(method_call);
           dbus::MessageReader array_reader(nullptr);
-          const uint8_t* buf;
-          size_t sz;
+          base::span<const uint8_t> buf;
 
           EXPECT_TRUE(reader.PopArray(&array_reader));
 
-          for (auto* uuid_in_bytes : kTestUuidInBytes) {
-            EXPECT_TRUE(array_reader.PopArrayOfBytes(&buf, &sz));
-            EXPECT_EQ(sz, kUUIDSize);
-            UNSAFE_TODO(EXPECT_EQ(
-                std::vector<uint8_t>(uuid_in_bytes, uuid_in_bytes + sz),
-                std::vector<uint8_t>(buf, buf + sz)));
+          for (const auto& uuid_in_bytes : kTestUuidInBytes) {
+            EXPECT_TRUE(array_reader.PopArrayOfBytes(&buf));
+            EXPECT_EQ(buf.size(), kUUIDSize);
+            EXPECT_EQ(buf, uuid_in_bytes);
           }
           EXPECT_FALSE(reader.HasMoreData());
           EXPECT_FALSE(array_reader.HasMoreData());

@@ -12,10 +12,12 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "dbus/message.h"
@@ -212,13 +214,9 @@ void ShillClientUnittestBase::ExpectIntArgument(
 void ShillClientUnittestBase::ExpectArrayOfBytesArgument(
     const std::string& expected_bytes,
     dbus::MessageReader* reader) {
-  const uint8_t* bytes = nullptr;
-  size_t size = 0;
-  ASSERT_TRUE(reader->PopArrayOfBytes(&bytes, &size));
-  EXPECT_EQ(expected_bytes.size(), size);
-  for (size_t i = 0; i < size; ++i) {
-    UNSAFE_TODO(EXPECT_EQ(expected_bytes[i], bytes[i]));
-  }
+  base::span<const uint8_t> bytes;
+  ASSERT_TRUE(reader->PopArrayOfBytes(&bytes));
+  EXPECT_EQ(base::as_string_view(bytes), expected_bytes);
   EXPECT_FALSE(reader->HasMoreData());
 }
 

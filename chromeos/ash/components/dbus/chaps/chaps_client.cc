@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -240,20 +241,16 @@ void ChapsClientImpl::ReceiveData(DataCallback callback,
 
   dbus::MessageReader reader(response);
   uint64_t actual_out_length = 0;
-  const uint8_t* data_bytes = nullptr;
-  size_t data_length = 0;
+  base::span<const uint8_t> data_bytes;
   uint32_t result_code = chromeos::PKCS11_CKR_GENERAL_ERROR;
   // Pop order matters.
   if (!reader.PopUint64(&actual_out_length) ||
-      !reader.PopArrayOfBytes(&data_bytes, &data_length) ||
-      !reader.PopUint32(&result_code)) {
+      !reader.PopArrayOfBytes(&data_bytes) || !reader.PopUint32(&result_code)) {
     return std::move(callback).Run(0, {}, chaps::CKR_DBUS_DECODING_ERROR);
   };
 
-  return std::move(callback).Run(
-      actual_out_length,
-      std::vector<uint8_t>(data_bytes, UNSAFE_TODO(data_bytes + data_length)),
-      result_code);
+  return std::move(callback).Run(actual_out_length, base::ToVector(data_bytes),
+                                 result_code);
 }
 
 void ChapsClientImpl::GetSlotList(bool token_present,
@@ -389,19 +386,15 @@ void ChapsClientImpl::DidGetAttributeValue(GetAttributeValueCallback callback,
 
   dbus::MessageReader reader(response);
 
-  const uint8_t* attributes_bytes = nullptr;
-  size_t attributes_length = 0;
+  base::span<const uint8_t> attributes_bytes;
   uint32_t result_code = chromeos::PKCS11_CKR_GENERAL_ERROR;
   // Pop order matters.
-  if (!reader.PopArrayOfBytes(&attributes_bytes, &attributes_length) ||
+  if (!reader.PopArrayOfBytes(&attributes_bytes) ||
       !reader.PopUint32(&result_code)) {
     return std::move(callback).Run({}, chaps::CKR_DBUS_DECODING_ERROR);
   }
 
-  return std::move(callback).Run(
-      std::vector<uint8_t>(attributes_bytes,
-                           UNSAFE_TODO(attributes_bytes + attributes_length)),
-      result_code);
+  return std::move(callback).Run(base::ToVector(attributes_bytes), result_code);
 }
 
 void ChapsClientImpl::SetAttributeValue(uint64_t session_id,

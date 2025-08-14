@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -278,11 +279,10 @@ void ShillThirdPartyVpnDriverClientImpl::OnPacketReceived(
     return;
 
   dbus::MessageReader reader(signal);
-  const uint8_t* data = nullptr;
-  size_t length = 0;
-  if (reader.PopArrayOfBytes(&data, &length)) {
+  base::span<const uint8_t> data;
+  if (reader.PopArrayOfBytes(&data)) {
     helper_info->observer()->OnPacketReceived(
-        std::vector<char>(data, UNSAFE_TODO(data + length)));
+        base::ToVector(data, [](uint8_t byte) -> char { return byte; }));
   }
 }
 

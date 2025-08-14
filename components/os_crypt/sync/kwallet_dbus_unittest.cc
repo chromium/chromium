@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "components/os_crypt/sync/kwallet_dbus.h"
 
 #include <memory>
 #include <string>
 
+#include "base/containers/to_vector.h"
 #include "base/nix/xdg_util.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
@@ -172,29 +172,31 @@ MATCHER_P5(ArgumentsAreIntStringStringBytesString,
 
   int i;
   EXPECT_TRUE(reader.PopInt32(&i));
-  if (int_1 != i)
+  if (int_1 != i) {
     return false;
+  }
 
   std::string str;
   EXPECT_TRUE(reader.PopString(&str));
-  if (str_2 != str)
+  if (str_2 != str) {
     return false;
+  }
 
   EXPECT_TRUE(reader.PopString(&str));
-  if (str_3 != str)
+  if (str_3 != str) {
     return false;
+  }
 
-  const uint8_t* bytes = nullptr;
-  size_t length = 0;
-  EXPECT_TRUE(reader.PopArrayOfBytes(&bytes, &length));
-  std::vector<uint8_t> vec;
-  vec.assign(bytes, bytes + length);
-  if (vec_4 != vec)
+  base::span<const uint8_t> bytes;
+  EXPECT_TRUE(reader.PopArrayOfBytes(&bytes));
+  if (vec_4 != bytes) {
     return false;
+  }
 
   EXPECT_TRUE(reader.PopString(&str));
-  if (str_5 != str)
+  if (str_5 != str) {
     return false;
+  }
 
   return true;
 }

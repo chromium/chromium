@@ -371,27 +371,18 @@ bool FlossDBusClient::ReadDBusParam(
 template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     device::BluetoothUUID* uuid) {
-  const uint8_t* bytes = nullptr;
-  size_t length = 0;
-
-  if (reader->PopArrayOfBytes(&bytes, &length)) {
-    if (length == 16U) {
-      device::BluetoothUUID found_uuid(base::StringPrintf(
-          "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%"
-          "02x",
-          bytes[0], UNSAFE_TODO(bytes[1]), UNSAFE_TODO(bytes[2]),
-          UNSAFE_TODO(bytes[3]), UNSAFE_TODO(bytes[4]), UNSAFE_TODO(bytes[5]),
-          UNSAFE_TODO(bytes[6]), UNSAFE_TODO(bytes[7]), UNSAFE_TODO(bytes[8]),
-          UNSAFE_TODO(bytes[9]), UNSAFE_TODO(bytes[10]), UNSAFE_TODO(bytes[11]),
-          UNSAFE_TODO(bytes[12]), UNSAFE_TODO(bytes[13]),
-          UNSAFE_TODO(bytes[14]), UNSAFE_TODO(bytes[15])));
-      DCHECK(found_uuid.IsValid());
-      *uuid = found_uuid;
-      return true;
-    }
+  base::span<const uint8_t> bytes;
+  if (!reader->PopArrayOfBytes(&bytes)) {
+    return false;
   }
 
-  return false;
+  if (bytes.size() != 16U) {
+    return false;
+  }
+
+  *uuid = device::BluetoothUUID(bytes);
+  DCHECK(uuid->IsValid());
+  return true;
 }
 
 // static

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -127,14 +128,14 @@ class HammerdClientImpl : public HammerdClient {
 
     dbus::MessageReader reader(signal);
 
-    const uint8_t* data = nullptr;
-    size_t length = 0;
-    if (!reader.PopArrayOfBytes(&data, &length))
+    base::span<const uint8_t> data;
+    if (!reader.PopArrayOfBytes(&data)) {
       return;
+    }
 
+    std::vector<uint8_t> data_vector = base::ToVector(data);
     for (auto& observer : observers_) {
-      observer.PairChallengeSucceeded(
-          std::vector<uint8_t>(data, UNSAFE_TODO(data + length)));
+      observer.PairChallengeSucceeded(data_vector);
     }
   }
 

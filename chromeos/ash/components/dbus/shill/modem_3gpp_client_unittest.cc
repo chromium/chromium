@@ -10,9 +10,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -91,20 +93,14 @@ class Modem3gppClientTest : public testing::Test {
   void OnSetCarrierLock(dbus::MethodCall* method_call,
                         int timeout_ms,
                         dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
-    const uint8_t* configuration;
-    size_t conf_len;
-
     EXPECT_EQ(modemmanager::kModemManager13gppInterface,
               method_call->GetInterface());
     EXPECT_EQ(modemmanager::kModem3gppSetCarrierLock, method_call->GetMember());
 
     dbus::MessageReader reader(method_call);
-    EXPECT_TRUE(reader.PopArrayOfBytes(&configuration, &conf_len));
-    EXPECT_EQ(conf_len, expected_configuration_.size());
-    for (size_t i = 0; i < conf_len; i++) {
-      UNSAFE_TODO(EXPECT_EQ(expected_configuration_.c_str()[i],
-                            (char)configuration[i]));
-    }
+    base::span<const uint8_t> configuration;
+    EXPECT_TRUE(reader.PopArrayOfBytes(&configuration));
+    EXPECT_EQ(base::as_string_view(configuration), expected_configuration_);
     EXPECT_FALSE(reader.HasMoreData());
 
     task_environment_.GetMainThreadTaskRunner()->PostTask(

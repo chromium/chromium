@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -220,19 +221,13 @@ class BluetoothGattDescriptorClientImpl
     }
 
     dbus::MessageReader reader(response);
+    base::span<const uint8_t> bytes;
 
-    const uint8_t* bytes = NULL;
-    size_t length = 0;
-
-    if (!reader.PopArrayOfBytes(&bytes, &length))
+    if (!reader.PopArrayOfBytes(&bytes)) {
       DVLOG(2) << "Error reading array of bytes in ValueCallback";
+    }
 
-    std::vector<uint8_t> value;
-
-    if (bytes)
-      value.assign(bytes, UNSAFE_TODO(bytes + length));
-
-    std::move(callback).Run(/*error_code=*/std::nullopt, value);
+    std::move(callback).Run(/*error_code=*/std::nullopt, base::ToVector(bytes));
   }
 
   // Called when a response for a failed method call is received.

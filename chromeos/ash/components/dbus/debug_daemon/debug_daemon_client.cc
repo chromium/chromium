@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -984,19 +985,16 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   void OnRetrievedPrinterPpd(CupsRetrievePrinterPpdCallback callback,
                              base::OnceClosure error_callback,
                              dbus::Response* response) {
-    size_t length = 0;
-    const uint8_t* bytes = nullptr;
+    base::span<const uint8_t> bytes;
 
-    if (!(response &&
-          dbus::MessageReader(response).PopArrayOfBytes(&bytes, &length)) ||
-        length == 0 || bytes == nullptr) {
+    if (!(response && dbus::MessageReader(response).PopArrayOfBytes(&bytes)) ||
+        bytes.empty()) {
       LOG(ERROR) << "Failed to retrieve printer PPD";
       std::move(error_callback).Run();
       return;
     }
 
-    std::vector<uint8_t> data(bytes, UNSAFE_TODO(bytes + length));
-    std::move(callback).Run(data);
+    std::move(callback).Run(base::ToVector(bytes));
   }
 
   void OnStartPluginVmDispatcher(PluginVmDispatcherCallback callback,

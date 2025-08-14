@@ -293,15 +293,11 @@ void DbusByteArray::Write(dbus::MessageWriter* writer) const {
 }
 
 bool DbusByteArray::Read(dbus::MessageReader* reader) {
-  const uint8_t* bytes = nullptr;
-  size_t length = 0;
-  if (!reader->PopArrayOfBytes(&bytes, &length)) {
+  base::span<const uint8_t> bytes;
+  if (!reader->PopArrayOfBytes(&bytes)) {
     return false;
   }
-  // SAFETY: the span adapts the pointer-length return value of
-  // PopArrayOfBytes() without any pointer arithmetic.
-  auto data = UNSAFE_BUFFERS(base::span(bytes, length));
-  value_ = base::MakeRefCounted<base::RefCountedBytes>(data);
+  value_ = base::MakeRefCounted<base::RefCountedBytes>(bytes);
   return true;
 }
 

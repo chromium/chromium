@@ -196,11 +196,8 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
   }
 
   dbus::MessageReader reader(method_call);
-  const char* serialized_request_buf = nullptr;
-  size_t serialized_request_buf_size = 0;
-  if (!reader.PopArrayOfBytes(
-          reinterpret_cast<const uint8_t**>(&serialized_request_buf),
-          &serialized_request_buf_size)) {
+  base::span<const uint8_t> serialized_request_buf;
+  if (!reader.PopArrayOfBytes(&serialized_request_buf)) {
     ::reporting::Status status{
         ::reporting::error::INVALID_ARGUMENT,
         "Error reading UploadEncryptedRecordRequest as array of bytes"};
@@ -211,8 +208,8 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     return;
   }
 
-  ::reporting::ScopedReservation scoped_reservation(serialized_request_buf_size,
-                                                    memory_resource_);
+  ::reporting::ScopedReservation scoped_reservation(
+      serialized_request_buf.size(), memory_resource_);
 
   // Update UMA on actual memory usage.
   base::UmaHistogramPercentage(
@@ -232,8 +229,8 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
   }
 
   ::reporting::UploadEncryptedRecordRequest request;
-  if (!request.ParseFromArray(serialized_request_buf,
-                              serialized_request_buf_size)) {
+  if (!request.ParseFromArray(serialized_request_buf.data(),
+                              serialized_request_buf.size())) {
     ::reporting::Status status{
         ::reporting::error::INVALID_ARGUMENT,
         "Failed to parse UploadEncryptedRecordRequest from array of "

@@ -2,20 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "dbus/property.h"
 
 #include <stddef.h>
 
 #include <memory>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
@@ -540,11 +535,11 @@ bool Property<std::vector<uint8_t>>::PopValueFromReader(MessageReader* reader) {
     return false;
 
   value_.clear();
-  const uint8_t* bytes = nullptr;
-  size_t length = 0;
-  if (!variant_reader.PopArrayOfBytes(&bytes, &length))
+  base::span<const uint8_t> bytes;
+  if (!variant_reader.PopArrayOfBytes(&bytes)) {
     return false;
-  value_.assign(bytes, bytes + length);
+  }
+  value_ = base::ToVector(bytes);
   return true;
 }
 
@@ -623,14 +618,14 @@ bool Property<std::vector<std::pair<std::vector<uint8_t>, uint16_t>>>::
       return false;
 
     std::pair<std::vector<uint8_t>, uint16_t> entry;
-    const uint8_t* bytes = nullptr;
-    size_t length = 0;
-    if (!struct_reader.PopArrayOfBytes(&bytes, &length))
+    base::span<const uint8_t> bytes;
+    if (!struct_reader.PopArrayOfBytes(&bytes)) {
       return false;
-    entry.first.assign(bytes, bytes + length);
+    }
+    entry.first = base::ToVector(bytes);
     if (!struct_reader.PopUint16(&entry.second))
       return false;
-    value_.push_back(entry);
+    value_.push_back(std::move(entry));
   }
   return true;
 }
@@ -677,22 +672,22 @@ bool Property<std::map<std::string, std::vector<uint8_t>>>::PopValueFromReader(
     if (!entry_reader.PopString(&key))
       return false;
 
-    const uint8_t* bytes = nullptr;
-    size_t length = 0;
-
+    base::span<const uint8_t> bytes;
     if (entry_reader.GetDataType() == Message::VARIANT) {
       // Make BlueZ happy since it wraps the array of bytes with a variant.
       MessageReader value_variant_reader(nullptr);
       if (!entry_reader.PopVariant(&value_variant_reader))
         return false;
-      if (!value_variant_reader.PopArrayOfBytes(&bytes, &length))
+      if (!value_variant_reader.PopArrayOfBytes(&bytes)) {
         return false;
+      }
     } else {
-      if (!entry_reader.PopArrayOfBytes(&bytes, &length))
+      if (!entry_reader.PopArrayOfBytes(&bytes)) {
         return false;
+      }
     }
 
-    value_[key].assign(bytes, bytes + length);
+    value_[key] = base::ToVector(bytes);
   }
   return true;
 }
@@ -748,22 +743,22 @@ bool Property<std::map<uint16_t, std::vector<uint8_t>>>::PopValueFromReader(
     if (!entry_reader.PopUint16(&key))
       return false;
 
-    const uint8_t* bytes = nullptr;
-    size_t length = 0;
-
+    base::span<const uint8_t> bytes;
     if (entry_reader.GetDataType() == Message::VARIANT) {
       // Make BlueZ happy since it wraps the array of bytes with a variant.
       MessageReader value_variant_reader(nullptr);
       if (!entry_reader.PopVariant(&value_variant_reader))
         return false;
-      if (!value_variant_reader.PopArrayOfBytes(&bytes, &length))
+      if (!value_variant_reader.PopArrayOfBytes(&bytes)) {
         return false;
+      }
     } else {
-      if (!entry_reader.PopArrayOfBytes(&bytes, &length))
+      if (!entry_reader.PopArrayOfBytes(&bytes)) {
         return false;
+      }
     }
 
-    value_[key].assign(bytes, bytes + length);
+    value_[key] = base::ToVector(bytes);
   }
   return true;
 }
