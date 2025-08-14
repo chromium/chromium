@@ -5737,62 +5737,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
             web_contents_observer.last_value());
 }
 
-// Verifies assertions for SetRendererInitiatedUserAgentOverrideOption().
-IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
-                       RendererInitiatedUserAgentOverride) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  WebContents* web_contents = shell()->web_contents();
-
-  // This url triggers a renderer initiated navigation (redirect).
-  NavigationController::LoadURLParams load_params(
-      embedded_test_server()->GetURL("a.co", "/client_redirect.html"));
-  load_params.override_user_agent = NavigationController::UA_OVERRIDE_TRUE;
-
-  const GURL resulting_url =
-      embedded_test_server()->GetURL("a.co", "/title1.html");
-
-  // Assertions for the default SetRendererInitiatedUserAgentOverrideOption(),
-  // which is UA_OVERRIDE_INHERIT.
-  {
-    // The 2 is because the url redirects.
-    TestNavigationObserver observer(shell()->web_contents(), 2);
-    web_contents->GetController().LoadURLWithParams(load_params);
-    observer.Wait();
-
-    NavigationEntry* resulting_entry =
-        web_contents->GetController().GetLastCommittedEntry();
-    ASSERT_TRUE(resulting_entry);
-    EXPECT_EQ(resulting_url, resulting_entry->GetURL());
-    // The resulting entry should override the user-agent as the previous
-    // entry (as created by |load_params|) was configured to override the
-    // user-agent, and the WebContents was configured with
-    // SetRendererInitiatedUserAgentOverrideOption() of
-    // UA_OVERRIDE_INHERIT.
-    EXPECT_TRUE(resulting_entry->GetIsOverridingUserAgent());
-  }
-
-  // Repeat the above, but with UA_OVERRIDE_FALSE.
-  web_contents->SetRendererInitiatedUserAgentOverrideOption(
-      NavigationController::UA_OVERRIDE_FALSE);
-  {
-    // The 2 is because the url redirects.
-    TestNavigationObserver observer(shell()->web_contents(), 2);
-    web_contents->GetController().LoadURLWithParams(load_params);
-    observer.Wait();
-
-    EXPECT_EQ(2, web_contents->GetController().GetEntryCount());
-    NavigationEntry* resulting_entry =
-        web_contents->GetController().GetLastCommittedEntry();
-    ASSERT_TRUE(resulting_entry);
-    EXPECT_EQ(resulting_url, resulting_entry->GetURL());
-    // Even though |load_params| was configured to override the user-agent, the
-    // NavigationEntry for the redirect gets an override user-agent value of
-    // false because
-    // of SetRendererInitiatedUserAgentOverrideOption(UA_OVERRIDE_FALSE).
-    EXPECT_FALSE(resulting_entry->GetIsOverridingUserAgent());
-  }
-}
-
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        IgnoreUnresponsiveRendererDuringPaste) {
   WebContentsImpl* web_contents =

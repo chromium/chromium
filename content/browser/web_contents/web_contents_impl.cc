@@ -2505,14 +2505,6 @@ void WebContentsImpl::SetUserAgentOverride(
                              ua_override);
 }
 
-void WebContentsImpl::SetRendererInitiatedUserAgentOverrideOption(
-    NavigationController::UserAgentOverrideOption option) {
-  OPTIONAL_TRACE_EVENT0(
-      "content",
-      "WebContentsImpl::SetRendererInitiatedUserAgentOverrideOption");
-  renderer_initiated_user_agent_override_option_ = option;
-}
-
 const blink::UserAgentOverride& WebContentsImpl::GetUserAgentOverride() {
   return renderer_preferences_.user_agent_override;
 }
@@ -2527,22 +2519,14 @@ const blink::UserAgentOverride& WebContentsImpl::GetUserAgentOverride(
 }
 
 bool WebContentsImpl::ShouldOverrideUserAgentForRendererInitiatedNavigation() {
+  // Inherits the current entry setting if it exists and not initial.
   NavigationEntryImpl* current_entry = GetController().GetLastCommittedEntry();
-  if (!current_entry || current_entry->IsInitialEntry()) {
-    return should_override_user_agent_in_new_tabs_;
+  if (current_entry && !current_entry->IsInitialEntry()) {
+    return current_entry->GetIsOverridingUserAgent();
   }
-
-  switch (renderer_initiated_user_agent_override_option_) {
-    case NavigationController::UA_OVERRIDE_INHERIT:
-      return current_entry->GetIsOverridingUserAgent();
-    case NavigationController::UA_OVERRIDE_TRUE:
-      return true;
-    case NavigationController::UA_OVERRIDE_FALSE:
-      return false;
-    default:
-      break;
-  }
-  return false;
+  // Otherwise, follows the setting from the last user-agent override. See
+  // `override_in_new_tabs` in `SetUserAgentOverride()`.
+  return should_override_user_agent_in_new_tabs_;
 }
 
 bool WebContentsImpl::IsWebContentsOnlyAccessibilityModeForTesting() {

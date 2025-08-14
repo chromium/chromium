@@ -643,13 +643,6 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   virtual void SetUserAgentOverride(const blink::UserAgentOverride& ua_override,
                                     bool override_in_new_tabs) = 0;
 
-  // Configures the value of is-overriding-user-agent for renderer initiated
-  // navigations. The default is UA_OVERRIDE_INHERIT. This value does not apply
-  // to the first renderer initiated navigation if the tab has no navigations.
-  // See SetUserAgentOverride() for details on that.
-  virtual void SetRendererInitiatedUserAgentOverrideOption(
-      NavigationController::UserAgentOverrideOption option) = 0;
-
   virtual const blink::UserAgentOverride& GetUserAgentOverride() = 0;
 
   // Updates all renderers to start sending subresource notifications since a
