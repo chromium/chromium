@@ -2664,7 +2664,7 @@ static_library("browser") {
     # gets componentized.
     "//chrome/browser/ui/profiles:impl",
 
-    # TODO(crbug.com/)369883710: Remove this dependency when profiles/profile_manager.h
+    # TODO(crbug.com/369883710): Remove this dependency when profiles/profile_manager.h
     # gets componentized.
     "//chrome/browser/ui/startup/default_browser_prompt:impl",
 
