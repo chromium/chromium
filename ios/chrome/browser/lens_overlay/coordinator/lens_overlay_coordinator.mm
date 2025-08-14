@@ -303,6 +303,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   [browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(LensOverlayCommands)];
+
+  _runOnDestroy = [[NSMutableArray alloc] init];
 }
 
 - (void)stop {
@@ -535,6 +537,13 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     [_runOnDestroy addObject:completion];
   }
 
+  // If there is nothing to be destroyed, immediatelly complete and exit.
+  if (!self.isUICreated) {
+    [self cleanupAssociatedTabHelper];
+    [self completeLensOverlayDestroy];
+    return;
+  }
+
   [self prepareForLensOverlayDestroyWithReason:dismissalSource];
 
   // If the destroy command is invoked on the stopped coordinator, immediately
@@ -675,9 +684,13 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   LensOverlayDismissalCause dismissalCause =
       [self dismissalCauseForSource:dismissalSource];
   [weakCommands lensOverlayWillDismissWithCause:dismissalCause];
-  [_runOnDestroy addObject:^{
-    [weakCommands lensOverlayDidDismissWithCause:dismissalCause];
-  }];
+  // The dismiss confirmation event should be the first to be called when
+  // destroyed.
+  [_runOnDestroy
+      insertObject:^{
+        [weakCommands lensOverlayDidDismissWithCause:dismissalCause];
+      }
+           atIndex:0];
 }
 
 // Called before a destroy flow is finalized.
@@ -1135,7 +1148,6 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     return NO;
   }
 
-  _runOnDestroy = [[NSMutableArray alloc] init];
   if (self.isUICreated) {
     // The UI is probably associated with the non-active tab. Destroy it with no
     // animation.
