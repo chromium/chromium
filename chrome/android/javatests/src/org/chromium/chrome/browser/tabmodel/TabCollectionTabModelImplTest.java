@@ -1307,6 +1307,10 @@ public class TabCollectionTabModelImplTest {
         Token tabGroupId = tab0.getTabGroupId();
         assertNotNull(tabGroupId);
 
+        // Verify that a suggested color is saved when a group is created.
+        int storedColor = TabGroupVisualDataStore.getTabGroupColor(tabGroupId);
+        assertNotEquals(TabGroupColorUtils.INVALID_COLOR_ID, storedColor);
+
         final String testTitle = "Test Title";
         CallbackHelper titleChangedHelper = new CallbackHelper();
         TabGroupModelFilterObserver titleObserver =

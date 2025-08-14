@@ -1999,12 +1999,13 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         String title = (storedTitle != null) ? storedTitle : "";
 
         int storedColorId = TabGroupVisualDataStore.getTabGroupColor(tabGroupId);
-        @TabGroupColorId
-        int colorId =
-                (storedColorId != TabGroupColorUtils.INVALID_COLOR_ID)
-                        ? storedColorId
-                        : TabGroupColorUtils.getNextSuggestedColorId(this);
-
+        @TabGroupColorId int colorId;
+        if (storedColorId != TabGroupColorUtils.INVALID_COLOR_ID) {
+            colorId = storedColorId;
+        } else {
+            colorId = TabGroupColorUtils.getNextSuggestedColorId(this);
+            TabGroupVisualDataStore.storeTabGroupColor(tabGroupId, colorId);
+        }
         boolean isCollapsed = TabGroupVisualDataStore.getTabGroupCollapsed(tabGroupId);
 
         TabCollectionTabModelImplJni.get()
