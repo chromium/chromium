@@ -10,7 +10,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_unit_tests",
+        "name": "blink_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -77,7 +77,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_unit_tests",
+        "name": "blink_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
