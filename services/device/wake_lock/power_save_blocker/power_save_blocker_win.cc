@@ -49,8 +49,7 @@ void DeletePowerRequest(POWER_REQUEST_TYPE type, HANDLE handle) {
 
 }  // namespace
 
-class PowerSaveBlocker::Delegate
-    : public base::RefCountedThreadSafe<PowerSaveBlocker::Delegate> {
+class PowerSaveBlocker::Delegate {
  public:
   Delegate(mojom::WakeLockType type,
            const std::string& description,
@@ -62,6 +61,8 @@ class PowerSaveBlocker::Delegate
   Delegate(const Delegate&) = delete;
   Delegate& operator=(const Delegate&) = delete;
 
+  ~Delegate() = default;
+
   // Does the actual work to apply or remove the desired power save block.
   void ApplyBlock();
   void RemoveBlock();
@@ -70,9 +71,6 @@ class PowerSaveBlocker::Delegate
   POWER_REQUEST_TYPE RequestType();
 
  private:
-  friend class base::RefCountedThreadSafe<Delegate>;
-  ~Delegate() {}
-
   mojom::WakeLockType type_;
   const std::string description_;
   base::win::ScopedHandle handle_;
@@ -118,15 +116,12 @@ PowerSaveBlocker::PowerSaveBlocker(
     mojom::WakeLockReason reason,
     const std::string& description,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
-    : delegate_(new Delegate(type, description, ui_task_runner)),
-      ui_task_runner_(ui_task_runner) {
-  ui_task_runner_->PostTask(FROM_HERE,
-                            base::BindOnce(&Delegate::ApplyBlock, delegate_));
+    : delegate_(ui_task_runner, type, description, ui_task_runner) {
+  delegate_.AsyncCall(&Delegate::ApplyBlock);
 }
 
 PowerSaveBlocker::~PowerSaveBlocker() {
-  ui_task_runner_->PostTask(FROM_HERE,
-                            base::BindOnce(&Delegate::RemoveBlock, delegate_));
+  delegate_.AsyncCall(&Delegate::RemoveBlock);
 }
 
 }  // namespace device
