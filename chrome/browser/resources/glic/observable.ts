@@ -80,14 +80,22 @@ class ObservableBase<T> {
       case 'error':
         throw new Error('Observable is not active');
     }
+    let loggedWarning = false;
     const hadSubscribers = this.hasActiveSubscription();
     this.subscribers.forEach((sub) => {
       // Ignore if removed since forEach was called.
       if (this.subscribers.has(sub)) {
-        try {
-          sub.observer.error?.(e);
-        } catch (e) {
-          console.warn(e);
+        if (sub.observer.error) {
+          try {
+            sub.observer.error(e);
+          } catch (e) {
+            console.warn(e);
+          }
+        } else {
+          if (!loggedWarning) {
+            console.warn('unhandled error: ', e);
+            loggedWarning = true;
+          }
         }
       }
     });
