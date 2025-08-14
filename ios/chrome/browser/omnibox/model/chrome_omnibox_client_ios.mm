@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -44,10 +45,11 @@
 
 ChromeOmniboxClientIOS::ChromeOmniboxClientIOS(
     WebLocationBar* location_bar,
-    ProfileIOS* profile,
+    Browser* browser,
     feature_engagement::Tracker* tracker)
     : location_bar_(location_bar),
-      profile_(profile),
+      browser_(browser),
+      profile_(browser->GetProfile()),
       engagement_tracker_(tracker),
       web_state_tracker_() {
   CHECK(engagement_tracker_);

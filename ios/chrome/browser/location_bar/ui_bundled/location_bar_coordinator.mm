@@ -234,7 +234,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       initWithBaseViewController:nil
                          browser:self.browser
                    omniboxClient:std::make_unique<ChromeOmniboxClientIOS>(
-                                     _locationBar.get(), self.profile,
+                                     _locationBar.get(), self.browser,
                                      feature_engagement::TrackerFactory::
                                          GetForProfile(self.profile))
                    isLensOverlay:NO];

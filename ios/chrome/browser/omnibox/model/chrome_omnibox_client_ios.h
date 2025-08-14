@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #import "ios/web/public/web_state_observer.h"
 
+class Browser;
 class ProfileIOS;
 
 class WebLocationBar;
@@ -32,7 +33,7 @@ class ChromeOmniboxClientIOS final : public OmniboxClient,
                                      public web::WebStateObserver {
  public:
   ChromeOmniboxClientIOS(WebLocationBar* location_bar,
-                         ProfileIOS* profile,
+                         Browser* browser,
                          feature_engagement::Tracker* tracker);
 
   ChromeOmniboxClientIOS(const ChromeOmniboxClientIOS&) = delete;
@@ -110,6 +111,7 @@ class ChromeOmniboxClientIOS final : public OmniboxClient,
     AutocompleteMatch match;
   };
   raw_ptr<WebLocationBar> location_bar_;
+  raw_ptr<Browser> browser_;
   raw_ptr<ProfileIOS> profile_;
   AutocompleteSchemeClassifierImpl scheme_classifier_;
   raw_ptr<feature_engagement::Tracker> engagement_tracker_;

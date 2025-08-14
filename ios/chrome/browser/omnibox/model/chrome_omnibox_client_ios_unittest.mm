@@ -12,6 +12,7 @@
 #import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
 #import "ios/chrome/browser/location_bar/model/test_web_location_bar.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/testing/nserror_util.h"
@@ -61,6 +62,7 @@ class ChromeOmniboxClientIOSTest
 
   std::unique_ptr<TestWebLocationBar> web_location_bar_;
   std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<feature_engagement::Tracker> tracker_;
   std::unique_ptr<ChromeOmniboxClientIOS> chrome_omnibox_client_ios_;
 
@@ -83,9 +85,10 @@ void ChromeOmniboxClientIOSTest::SetUp() {
                             ios::ShortcutsBackendFactory::GetDefaultFactory());
   profile_ = std::move(builder).Build();
   web_location_bar_ = std::make_unique<TestWebLocationBar>();
+  browser_ = std::make_unique<TestBrowser>(profile_.get());
   tracker_ = feature_engagement::CreateTestTracker();
   chrome_omnibox_client_ios_ = std::make_unique<ChromeOmniboxClientIOS>(
-      web_location_bar_.get(), profile_.get(), tracker_.get());
+      web_location_bar_.get(), browser_.get(), tracker_.get());
 
   web_state_ = std::make_unique<web::FakeWebState>();
   web_location_bar_->SetWebState(web_state_.get());
