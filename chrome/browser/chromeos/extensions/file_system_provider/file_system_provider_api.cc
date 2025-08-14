@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
+#include "chrome/browser/ash/file_system_provider/operation_request_manager.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/request_value.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
@@ -34,6 +35,15 @@ namespace extensions {
 namespace {
 
 constexpr const char kInterfaceUnavailable[] = "interface unavailable";
+
+ash::file_system_provider::ProvidedFileSystemInterface* GetProvidedFileSystem(
+    content::BrowserContext* browser_context,
+    const ash::file_system_provider::ProviderId& provider_id,
+    const std::string& file_system_id) {
+  auto& service =
+      CHECK_DEREF(ash::file_system_provider::Service::Get(browser_context));
+  return service.GetProvidedFileSystem(provider_id, file_system_id);
+}
 
 api::file_system_provider::FileSystemInfo ConvertFileSystemToExtension(
     ash::file_system_provider::ProvidedFileSystemInterface& file_system) {
@@ -232,14 +242,11 @@ ExtensionFunction::ResponseAction FileSystemProviderGetFunction::Run() {
   std::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  auto& service =
-      CHECK_DEREF(ash::file_system_provider::Service::Get(browser_context()));
-  auto provider_id =
+  auto* file_system = GetProvidedFileSystem(
+      browser_context(),
       ash::file_system_provider::ProviderId::CreateFromExtensionId(
-          GetProviderId());
-
-  ash::file_system_provider::ProvidedFileSystemInterface* file_system =
-      service.GetProvidedFileSystem(provider_id, params->file_system_id);
+          GetProviderId()),
+      params->file_system_id);
   if (!file_system) {
     return RespondNow(
         Error(FileErrorToString(base::File::FILE_ERROR_NOT_FOUND)));
@@ -330,58 +337,31 @@ FileSystemProviderInternal::ForwardOperationResult(
     const std::string& file_system_id,
     int64_t request_id,
     const ash::file_system_provider::RequestValue& value,
-    bool has_more) {
+    std::variant<bool /*has_more*/, base::File::Error /*error*/> arg) {
   auto* profile = Profile::FromBrowserContext(browser_context());
   auto* sw_lifetime_manager =
       ash::file_system_provider::ServiceWorkerLifetimeManager::Get(profile);
   auto provider_id = GetProviderId();
   sw_lifetime_manager->FinishRequest({provider_id, file_system_id, request_id});
 
-  auto mojom_file_system_id = crosapi::mojom::FileSystemId::New();
-  mojom_file_system_id->provider = provider_id;
-  mojom_file_system_id->id = file_system_id;
+  auto* file_system = GetProvidedFileSystem(
+      browser_context(),
+      ash::file_system_provider::ProviderId::CreateFromExtensionId(provider_id),
+      file_system_id);
+  if (!file_system) {
+    return RespondNow(
+        Error(FileErrorToString(base::File::FILE_ERROR_NOT_FOUND)));
+  }
 
-  std::string error =
-      crosapi::CrosapiManager::Get()
-          ->crosapi_ash()
-          ->file_system_provider_service_ash()
-          ->ForwardOperationResponse(std::move(mojom_file_system_id),
-                                     request_id, value, has_more, profile);
+  std::string error = crosapi::CrosapiManager::Get()
+                          ->crosapi_ash()
+                          ->file_system_provider_service_ash()
+                          ->ForwardOperationResponse(
+                              CHECK_DEREF(file_system->GetRequestManager()),
+                              request_id, value, arg);
   if (!error.empty()) {
     return RespondNow(Error(error));
   }
-
-  return RespondNow(NoArguments());
-}
-
-ExtensionFunction::ResponseAction
-FileSystemProviderInternal::ForwardOperationFailure(
-    const std::string& file_system_id,
-    int64_t request_id,
-    const ash::file_system_provider::RequestValue& value,
-    base::File::Error operation_error) {
-  // TODO(crbug.com/354842935): Reduce the dup with ForwardOperationResult
-  // on crosapi removal.
-  auto* profile = Profile::FromBrowserContext(browser_context());
-  auto* sw_lifetime_manager =
-      ash::file_system_provider::ServiceWorkerLifetimeManager::Get(profile);
-  auto provider_id = GetProviderId();
-  sw_lifetime_manager->FinishRequest({provider_id, file_system_id, request_id});
-
-  auto mojom_file_system_id = crosapi::mojom::FileSystemId::New();
-  mojom_file_system_id->provider = provider_id;
-  mojom_file_system_id->id = file_system_id;
-
-  std::string error =
-      crosapi::CrosapiManager::Get()
-          ->crosapi_ash()
-          ->file_system_provider_service_ash()
-          ->ForwardOperationFailure(std::move(mojom_file_system_id), request_id,
-                                    value, operation_error, profile);
-  if (!error.empty()) {
-    return RespondNow(Error(error));
-  }
-
   return RespondNow(NoArguments());
 }
 
@@ -512,7 +492,7 @@ FileSystemProviderInternalOperationRequestedErrorFunction::Run() {
   int request_id = params->request_id;
   base::File::Error operation_error =
       extensions::ProviderErrorToFileError(params->error);
-  return ForwardOperationFailure(
+  return ForwardOperationResult(
       file_system_id, request_id,
       ash::file_system_provider::RequestValue::CreateForOperationError(
           std::move(*params)),

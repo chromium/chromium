@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_SYSTEM_PROVIDER_FILE_SYSTEM_PROVIDER_API_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_SYSTEM_PROVIDER_FILE_SYSTEM_PROVIDER_API_H_
 
+#include <variant>
+
 #include "base/files/file.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
@@ -89,14 +91,7 @@ class FileSystemProviderInternal : public FileSystemProviderBase {
       const std::string& file_system_id,
       int64_t request_id,
       const ash::file_system_provider::RequestValue& value,
-      bool has_more);
-
-  // Forwards the result of the operation to the file system provider service.
-  ResponseAction ForwardOperationFailure(
-      const std::string& file_system_id,
-      int64_t request_id,
-      const ash::file_system_provider::RequestValue& value,
-      base::File::Error operation_error);
+      std::variant<bool /*has_more*/, base::File::Error /*error*/> arg);
 };
 
 class FileSystemProviderInternalRespondToMountRequestFunction

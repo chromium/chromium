@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_FILE_SYSTEM_PROVIDER_SERVICE_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_FILE_SYSTEM_PROVIDER_SERVICE_ASH_H_
 
+#include <variant>
+
 #include "base/files/file.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
@@ -12,6 +14,7 @@
 class Profile;
 
 namespace ash::file_system_provider {
+class RequestManager;
 class RequestValue;
 }  // namespace ash::file_system_provider
 
@@ -70,20 +73,10 @@ class FileSystemProviderServiceAsh : public mojom::FileSystemProviderService {
   // Forwards an operation response from an extension to the request manager and
   // then returns the error message. Empty string means success.
   std::string ForwardOperationResponse(
-      mojom::FileSystemIdPtr file_system_id,
+      ash::file_system_provider::RequestManager& manager,
       int64_t request_id,
       const ash::file_system_provider::RequestValue& value,
-      bool has_more,
-      Profile* profile);
-
-  // Forwards an operation failure from an extension to the request manager and
-  // then returns the error message. Empty string means success.
-  std::string ForwardOperationFailure(
-      mojom::FileSystemIdPtr file_system_id,
-      int64_t request_id,
-      const ash::file_system_provider::RequestValue& value,
-      base::File::Error error,
-      Profile* profile);
+      std::variant<bool /*has_more*/, base::File::Error /*error*/> arg);
 };
 
 }  // namespace crosapi
