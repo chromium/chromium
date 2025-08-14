@@ -555,7 +555,7 @@ def main():
 
     # Run the shortest benchmarks first to fail early if anything is wrong.
     benchmarks: list[Benchmark] = [
-        Benchmark('speedometer3', ['speedometer3', "--iterations=20"]),
+        Benchmark('speedometer3', ['speedometer3']),
         Benchmark('jetstream2', ['jetstream2']),
     ]
 
