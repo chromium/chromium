@@ -8799,14 +8799,19 @@ ChromeContentBrowserClient::MaybeOverrideLocalURLCrossOriginEmbedderPolicy(
     return std::nullopt;
   }
 
+  // `pdf_extension` could be nullptr, possibly due to a race condition where
+  // the extension frame is deleted as the PDF content navigation is requested.
+  content::RenderFrameHost* pdf_extension = navigation_handle->GetParentFrame();
+  if (!pdf_extension) {
+    return std::nullopt;
+  }
+
   // TODO(crbug.com/40053796): Local URLs inherit their policy container from
   // the navigation initiator instead of the document creating the navigation
   // request, so local PDF URL navigations in the PDF renderer inherit policies
   // from the PDF extension frame (the parent frame) and might have the
   // incorrect COEP. Until this is fixed, just copy the COEP directly from the
   // PDF embedder.
-  content::RenderFrameHost* pdf_extension = navigation_handle->GetParentFrame();
-  CHECK(pdf_extension);
   content::RenderFrameHost* pdf_embedder = pdf_extension->GetParent();
   CHECK(pdf_embedder);
   return pdf_embedder->GetCrossOriginEmbedderPolicy();

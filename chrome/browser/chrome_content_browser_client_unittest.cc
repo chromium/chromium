@@ -72,6 +72,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
@@ -91,6 +92,7 @@
 #include "net/ssl/ssl_info.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "pdf/buildflags.h"
 #include "services/network/test/test_network_context.h"
 #include "services/video_effects/public/cpp/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -169,11 +171,22 @@
 #include "third_party/blink/public/common/features.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if BUILDFLAG(ENABLE_PDF)
+#include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/test_renderer_host.h"
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
+
 using ::content::BrowsingDataFilterBuilder;
 using ::testing::_;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
 using ::testing::NotNull;
+
+#if BUILDFLAG(ENABLE_PDF)
+using ::testing::NiceMock;
+using ::testing::Return;
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 class ChromeContentBrowserClientTest : public testing::Test {
  public:
@@ -2179,3 +2192,50 @@ TEST_P(GrantCookieAccessDueToHeuristicTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          GrantCookieAccessDueToHeuristicTest,
                          testing::Bool());
+
+#if BUILDFLAG(ENABLE_PDF)
+class ChromeContentBrowserClientOopifPdfTest
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  ChromeContentBrowserClientOopifPdfTest() = default;
+  ~ChromeContentBrowserClientOopifPdfTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_{chrome_pdf::features::kPdfOopif};
+};
+
+TEST_F(ChromeContentBrowserClientOopifPdfTest,
+       OverrideLocalURLCrossOriginEmbedderPolicy) {
+  NiceMock<content::MockNavigationHandle> navigation_handle;
+  navigation_handle.set_render_frame_host(main_rfh());
+  ON_CALL(navigation_handle, IsPdf).WillByDefault(Return(false));
+
+  TestChromeContentBrowserClient browser_client;
+  EXPECT_FALSE(
+      browser_client
+          .MaybeOverrideLocalURLCrossOriginEmbedderPolicy(&navigation_handle)
+          .has_value());
+
+  ON_CALL(navigation_handle, IsPdf).WillByDefault(Return(true));
+
+  // The RFH is missing a parent, i.e. the PDF extension host.
+  EXPECT_FALSE(
+      browser_client
+          .MaybeOverrideLocalURLCrossOriginEmbedderPolicy(&navigation_handle)
+          .has_value());
+
+  auto* pdf_embedder_tester = content::RenderFrameHostTester::For(main_rfh());
+  pdf_embedder_tester->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* pdf_extension =
+      pdf_embedder_tester->AppendChild("extension host");
+  content::RenderFrameHost* pdf_content =
+      content::RenderFrameHostTester::For(pdf_extension)
+          ->AppendChild("content host");
+  navigation_handle.set_render_frame_host(pdf_content);
+
+  EXPECT_TRUE(
+      browser_client
+          .MaybeOverrideLocalURLCrossOriginEmbedderPolicy(&navigation_handle)
+          .has_value());
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
