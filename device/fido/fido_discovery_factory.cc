@@ -76,9 +76,7 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
       {
         device::WinWebAuthnApi* const webauthn_api =
             device::WinWebAuthnApi::GetDefault();
-        if (webauthn_api && webauthn_api->SupportsHybrid() &&
-            base::FeatureList::IsEnabled(
-                device::kWebAuthnSkipHybridConfigIfSystemSupported)) {
+        if (webauthn_api && webauthn_api->SupportsHybrid()) {
           FIDO_LOG(EVENT) << "Not starting hybrid because Windows handles it.";
           return {};
         }

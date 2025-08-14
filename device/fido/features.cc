@@ -109,11 +109,6 @@ BASE_FEATURE(kWebAuthnHelloSignal,
              "WebAuthenticationHelloSignal",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Default enabled in M132. Remove in or after M135.
-BASE_FEATURE(kWebAuthnSkipHybridConfigIfSystemSupported,
-             "WebAuthenticationSkipHybridConfigIfSystemSupported",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Disabled by default.
 BASE_FEATURE(kDigitalCredentialsHybridLinking,
              "DigitalCredentialsHybridLinking",

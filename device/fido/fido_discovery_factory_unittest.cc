@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/test/scoped_feature_list.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/features.h"
@@ -24,8 +23,6 @@ namespace device {
 #if BUILDFLAG(IS_WIN)
 // Tests that a hybrid discovery is not created if Windows handles hybrid.
 TEST(FidoDiscoveryFactoryTest, CreateWindowsHybridDiscovery) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      device::kWebAuthnSkipHybridConfigIfSystemSupported};
   std::unique_ptr<BluetoothAdapterFactory::GlobalOverrideValues>
       override_values =
           BluetoothAdapterFactory::Get()->InitGlobalOverrideValues();
