@@ -30,7 +30,6 @@ bool PasswordChangeBackupPasswordCleaner::NeedsCleaning() {
 }
 
 void PasswordChangeBackupPasswordCleaner::StartCleaning(Observer* observer) {
-  CHECK(NeedsCleaning());
   CHECK(observer);
   CHECK(!observer_);
   observer_ = observer;
