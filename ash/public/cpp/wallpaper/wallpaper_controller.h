@@ -64,12 +64,6 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   virtual void SetDriveFsDelegate(
       std::unique_ptr<WallpaperDriveFsDelegate> drivefs_delegate) = 0;
 
-  // Sets paths for wallpaper directories and the device policy wallpaper path.
-  // |wallpapers|: Directory where downloaded chromeos wallpapers reside.
-  // |custom_wallpapers|: Directory where custom wallpapers reside.
-  virtual void Init(const base::FilePath& wallpapers,
-                    const base::FilePath& custom_wallpapers) = 0;
-
   // Whether the user with `account_id` can set wallpaper. Users may be
   // disallowed from setting wallpaper based on enterprise policy or if the
   // device is running in kiosk mode.

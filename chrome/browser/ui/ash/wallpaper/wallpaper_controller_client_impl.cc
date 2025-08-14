@@ -453,12 +453,6 @@ void WallpaperControllerClientImpl::InitController() {
   wallpaper_controller_->SetClient(this);
   wallpaper_controller_->SetDriveFsDelegate(
       std::make_unique<ash::WallpaperDriveFsDelegateImpl>());
-
-  base::FilePath wallpapers;
-  CHECK(base::PathService::Get(ash::DIR_WALLPAPERS, &wallpapers));
-  base::FilePath custom_wallpapers;
-  CHECK(base::PathService::Get(ash::DIR_CUSTOM_WALLPAPERS, &custom_wallpapers));
-  wallpaper_controller_->Init(wallpapers, custom_wallpapers);
 }
 
 void WallpaperControllerClientImpl::ShowWallpaperOnLoginScreen() {

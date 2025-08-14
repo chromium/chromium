@@ -76,13 +76,8 @@ class DemoModeIdleHandlerTestBase : public ChromeAshTestBase {
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile(kUser);
     fake_user_manager_->AddUser(kAccountId);
-    ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
 
     wallpaper_controller_ = Shell::Get()->wallpaper_controller();
-    wallpaper_controller_->Init(
-        /*online_wallpaper_dir=*/base::FilePath(),
-        /* custom_wallpaper_dir=*/user_data_dir_.GetPath());
-
     wallpaper_controller_->SetClient(&client_);
     client_.set_fake_files_id_for_account_id(kAccountId, "wallpaper_files_id");
     client_.set_wallpaper_sync_enabled(false);
@@ -157,7 +152,6 @@ class DemoModeIdleHandlerTestBase : public ChromeAshTestBase {
   // Disable the dangling detection since we don't own `wallpaper_controller_`.
   raw_ptr<WallpaperControllerImpl, DisableDanglingPtrDetection>
       wallpaper_controller_ = nullptr;
-  base::ScopedTempDir user_data_dir_;
   std::unique_ptr<DemoSessionMetricsRecorder> metrics_recorder_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

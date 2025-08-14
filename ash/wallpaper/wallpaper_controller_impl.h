@@ -238,8 +238,6 @@ class ASH_EXPORT WallpaperControllerImpl
   void SetClient(WallpaperControllerClient* client) override;
   void SetDriveFsDelegate(
       std::unique_ptr<WallpaperDriveFsDelegate> drivefs_delegate) override;
-  void Init(const base::FilePath& wallpapers,
-            const base::FilePath& custom_wallpapers) override;
   bool CanSetUserWallpaper(const AccountId& account_id) const override;
   void SetCustomWallpaper(const AccountId& account_id,
                           const base::FilePath& file_path,

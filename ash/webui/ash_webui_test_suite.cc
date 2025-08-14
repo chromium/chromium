@@ -4,6 +4,7 @@
 
 #include "ash/webui/ash_webui_test_suite.h"
 
+#include "ash/constants/ash_paths.h"
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
@@ -48,6 +49,12 @@ void AshWebUITestSuite::Initialize() {
   gl::GLSurfaceTestSupport::InitializeOneOff();
 
   InitI18n();
+
+  ash::RegisterPathProvider();
+  CHECK(user_data_dir_.CreateUniqueTempDir());
+  CHECK(base::PathService::OverrideAndCreateIfNeeded(
+      ash::DIR_USER_DATA, user_data_dir_.GetPath(),
+      /*is_absolute=*/true, /*create=*/false));
 
   base::DiscardableMemoryAllocator::SetInstance(&discardable_memory_allocator_);
 }

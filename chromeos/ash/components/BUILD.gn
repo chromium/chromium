@@ -89,6 +89,7 @@ static_library("test_support") {
     "test/ash_test_suite.h",
   ]
   deps = [
+    "//ash/constants",
     "//base",
     "//base:i18n",
     "//base/test:test_support",

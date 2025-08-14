@@ -343,13 +343,9 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
 
   // The maximized window manager (if enabled).
   std::unique_ptr<TabletModeWindowManager> tablet_mode_window_manager_;
-
-  base::ScopedTempDir user_data_dir_;
 };
 
 void MultiProfileSupportTest::SetUp() {
-  ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
-
   ash::DeviceSettingsService::Initialize();
   cros_settings_holder_ = std::make_unique<ash::CrosSettingsHolder>(
       ash::DeviceSettingsService::Get(),
@@ -364,10 +360,6 @@ void MultiProfileSupportTest::SetUp() {
   set_shell_delegate(std::make_unique<TestShellDelegateChromeOS>());
 
   ChromeAshTestBase::SetUp();
-  auto* wallpaper_controller = Shell::Get()->wallpaper_controller();
-  wallpaper_controller->Init(/*online_wallpaper_dir=*/base::FilePath(),
-                             /*custom_wallpaper_dir=*/user_data_dir_.GetPath());
-
   GetSessionControllerClient()->set_pref_service_must_exist(true);
 
   profile_manager_ = std::make_unique<TestingProfileManager>(

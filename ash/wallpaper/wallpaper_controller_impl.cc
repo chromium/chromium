@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/login/login_screen_controller.h"
@@ -65,6 +66,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -281,6 +283,13 @@ WallpaperControllerImpl::WallpaperControllerImpl(
   Shell::Get()->login_screen_controller()->data_dispatcher()->AddObserver(this);
   theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
   wallpaper_metrics_manager_ = std::make_unique<WallpaperMetricsManager>();
+
+  CHECK(base::PathService::Get(ash::DIR_WALLPAPERS, &wallpapers_dir_));
+  CHECK(base::PathService::Get(ash::DIR_CUSTOM_WALLPAPERS,
+                               &custom_wallpapers_dir_));
+  google_photos_wallpapers_dir_ = wallpapers_dir_.Append("google_photos/");
+  sea_pen_wallpaper_dir_ =
+      wallpapers_dir_.Append(wallpaper_constants::kSeaPenWallpaperDirName);
 
   pref_manager_observation_.Observe(pref_manager_.get());
   SetDevicePolicyWallpaperPath(
@@ -557,17 +566,6 @@ void WallpaperControllerImpl::SetDriveFsDelegate(
     std::unique_ptr<WallpaperDriveFsDelegate> drivefs_delegate) {
   DCHECK(!drivefs_delegate_);
   drivefs_delegate_ = std::move(drivefs_delegate);
-}
-
-void WallpaperControllerImpl::Init(
-    const base::FilePath& chromeos_wallpapers_path,
-    const base::FilePath& chromeos_custom_wallpapers_path) {
-  wallpapers_dir_ = chromeos_wallpapers_path;
-  custom_wallpapers_dir_ = chromeos_custom_wallpapers_path;
-  google_photos_wallpapers_dir_ =
-      chromeos_wallpapers_path.Append("google_photos/");
-  sea_pen_wallpaper_dir_ = chromeos_wallpapers_path.Append(
-      wallpaper_constants::kSeaPenWallpaperDirName);
 }
 
 bool WallpaperControllerImpl::CanSetUserWallpaper(
