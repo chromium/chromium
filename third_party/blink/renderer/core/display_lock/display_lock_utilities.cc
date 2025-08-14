@@ -853,7 +853,7 @@ bool LegacyExpandDetailsAncestors(const Node& node) {
       // shouldn't expand the <details> because the active match is already
       // visible.
       bool inside_summary = false;
-      Element& summary = *details->FindMainSummary();
+      Element& summary = details->MainSummary();
       for (Node& ancestor : FlatTreeTraversal::AncestorsOf(node)) {
         if (&ancestor == &summary) {
           inside_summary = true;

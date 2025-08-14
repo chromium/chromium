@@ -168,7 +168,7 @@ HTMLDetailsElement* HTMLSummaryElement::DetailsElement() const {
 
 bool HTMLSummaryElement::IsMainSummary() const {
   if (HTMLDetailsElement* details = DetailsElement())
-    return details->FindMainSummary() == this;
+    return &details->MainSummary() == this;
 
   return false;
 }

@@ -115,14 +115,14 @@ void HTMLDetailsElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   root.AppendChild(default_summary_style);
 }
 
-Element* HTMLDetailsElement::FindMainSummary() const {
+Element& HTMLDetailsElement::MainSummary() const {
   if (HTMLSummaryElement* summary =
           Traversal<HTMLSummaryElement>::FirstChild(*this))
-    return summary;
+    return *summary;
   HTMLSlotElement& slot =
       To<HTMLSlotElement>(*UserAgentShadowRoot()->firstChild());
   CHECK(IsA<HTMLSummaryElement>(*slot.firstChild()));
-  return To<Element>(slot.firstChild());
+  return *To<Element>(slot.firstChild());
 }
 
 void HTMLDetailsElement::ManuallyAssignSlots() {

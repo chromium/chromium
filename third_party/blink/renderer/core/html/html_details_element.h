@@ -36,7 +36,7 @@ class HTMLDetailsElement final : public HTMLElement {
   explicit HTMLDetailsElement(Document&);
   ~HTMLDetailsElement() override;
 
-  Element* FindMainSummary() const;
+  Element& MainSummary() const;
 
   void ManuallyAssignSlots() override;
 
