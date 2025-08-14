@@ -419,7 +419,7 @@ public class ChromeTabCreator extends TabCreator
                                         mNativeWindow,
                                         createDefaultTabDelegateFactory()),
                                 null);
-                RedirectHandlerTabHelper.updateIntentInTab(tab, intent);
+                RedirectHandlerTabHelper.updateIntentInTab(tab, intent, tab.isCustomTab());
                 // Makes WebContents visible before loading the URL to record metrics for SpareTab
                 // (Ref: https://crbug.com/40266649).
                 assumeNonNull(tab.getWebContents()).updateWebContentsVisibility(Visibility.VISIBLE);
@@ -445,7 +445,7 @@ public class ChromeTabCreator extends TabCreator
                             .getNavigationController()
                             .copyStateFrom(parentNavigationController);
                 }
-                RedirectHandlerTabHelper.updateIntentInTab(tab, intent);
+                RedirectHandlerTabHelper.updateIntentInTab(tab, intent, tab.isCustomTab());
                 tab.loadUrl(loadUrlParams);
                 TraceEvent.end("ChromeTabCreator.loadUrl");
             }

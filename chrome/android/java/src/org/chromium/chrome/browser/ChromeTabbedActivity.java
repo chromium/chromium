@@ -2490,7 +2490,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 // can be handled by other applications (e.g. www.youtube.com links).
                 Tab currentTab = getActivityTab();
                 if (currentTab != null) {
-                    RedirectHandlerTabHelper.updateIntentInTab(currentTab, intent);
+                    RedirectHandlerTabHelper.updateIntentInTab(
+                            currentTab, intent, /* isCustomTab= */ false);
                     currentTab.loadUrl(loadUrlParams);
                     resultTab = currentTab;
                 } else {

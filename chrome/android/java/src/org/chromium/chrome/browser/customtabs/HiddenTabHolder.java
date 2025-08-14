@@ -393,7 +393,7 @@ public class HiddenTabHolder {
                         : PageTransition.LINK | PageTransition.FROM_API;
         params.setTransitionType(IntentHandler.getTransitionTypeFromIntent(intent, transitionType));
         params.setInitiatorOrigin(Origin.createOpaqueOrigin());
-        RedirectHandlerTabHelper.updateIntentInTab(tab, intent);
+        RedirectHandlerTabHelper.updateIntentInTab(tab, intent, /* isCustomTab= */ true);
 
         String referrer = IntentHandler.getReferrerUrlIncludingExtraHeaders(intent);
         if (referrer == null) referrer = "";
