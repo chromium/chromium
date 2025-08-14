@@ -60,7 +60,6 @@ static_library("system_web_apps") {
     "//chrome/browser/chromeos/app_mode",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views/borealis",
-    "//chrome/browser/ui/web_applications:launch_utils",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/browser/ui/webui/ash/settings/pages/files",
   ]

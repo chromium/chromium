@@ -94,7 +94,6 @@ static_library("app_mode") {
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/tabs:tab_strip",
-    "//chrome/browser/ui/web_applications:launch_utils",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//components/pref_registry",

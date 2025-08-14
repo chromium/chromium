@@ -2,209 +2,34 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ui.gni")
 import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
 
 source_set("web_applications") {
   sources = []
   public_deps = []
 
-  if (!is_android) {
-    sources += [ "web_app_dialog_utils.h" ]
+  if (enable_extensions) {
+    sources += [ "app_browser_controller.h" ]
     public_deps += [
       "//base",
-      "//chrome/browser/web_applications",
-      "//components/webapps/common",
-    ]
-  }
-
-  if (is_chromeos) {
-    sources += [
-      "web_app_relaunch_notification.h",
-      "web_app_run_on_os_login_notification.h",
-    ]
-  }
-
-  if (toolkit_views) {
-    sources += [ "pwa_install_page_action.h" ]
-    public_deps += [ "//chrome/browser/ui/views/page_action" ]
-  }
-
-  if (enable_extensions) {
-    sources += [
-      "app_browser_controller.h",
-      "diagnostics/app_type_initialized_event.h",
-      "diagnostics/web_app_icon_health_checks.h",
-      "navigation_capturing_process.h",
-      "navigation_capturing_redirection_throttle.h",
-      "navigation_handle_user_data_forwarder.h",
-      "share_target_utils.h",
-      "sub_apps_install_dialog_controller.h",
-      "sub_apps_service_impl.h",
-      "tabbed_web_app_navigation_throttle.h",
-      "web_app_browser_controller.h",
-      "web_app_dialogs.h",
-      "web_app_info_image_source.h",
-      "web_app_launch_navigation_handle_user_data.h",
-      "web_app_launch_process.h",
-      "web_app_menu_model.h",
-      "web_app_metrics.h",
-      "web_app_metrics_factory.h",
-      "web_app_tabbed_utils.h",
-      "web_app_ui_manager_impl.h",
-      "web_app_ui_utils.h",
-      "webui_web_app_navigation_throttle.h",
-    ]
-    public_deps += [
       "//chrome/browser/themes",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
-      "//components/keyed_service/content",
-      "//components/keyed_service/core",
-      "//components/site_engagement/content",
+      "//chrome/browser/web_applications",
       "//components/url_formatter",
-      "//components/user_education/common",
-      "//components/webapps/common",
       "//components/webapps/browser",
+      "//components/webapps/common",
       "//content/public/browser",
       "//skia:skia_core_public_headers",
       "//ui/actions:actions_headers",
-      "//ui/base",
       "//ui/color:color_headers",
       "//ui/color:color_provider_key",
-      "//ui/gfx",
-      "//ui/views",
       "//url",
     ]
   }
-}
-
-# TODO(crbug.com/438226511): web_app_launch_utils.h includes browser.h, and makes
-# use of Browser::CreateParams inner struct, which can not be easily worked around.
-# For this reason, it causes a circular dependency against //c/b/ui:ui from a header.
-# This target confines it, in order to unblock the componentization of the rest of
-# the directory.
-source_set("launch_utils") {
-  sources = []
-  public_deps = []
-
-  if (enable_extensions) {
-    sources += [ "web_app_launch_utils.h" ]
-    public_deps += [
-      "//base",
-      "//chrome/browser/web_applications",
-      "//components/services/app_service/public/cpp:app_types",
-      "//components/webapps/common",
-      "//content/public/browser",
-      "//third_party/blink/public/common",
-      "//ui/gfx/geometry",
-    ]
-  }
-  public_deps += [ "//chrome/browser:browser_public_dependencies" ]
-}
-
-source_set("impl") {
-  sources = []
-  deps = []
-
-  if (!is_android) {
-    sources += [ "web_app_dialog_utils.cc" ]
-    deps += [
-      ":web_applications",
-      "//base",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/tabs:tab_strip",
-      "//chrome/browser/ui/tabs:tabs_public",
-      "//chrome/browser/ui/user_education",
-      "//chrome/browser/web_applications",
-      "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
-      "//chrome/common:chrome_features",
-      "//components/feature_engagement/public:feature_constants",
-      "//components/webapps/browser",
-      "//content/public/browser",
-    ]
-  }
-
-  if (is_chromeos) {
-    sources += [
-      "web_app_relaunch_notification.cc",
-      "web_app_run_on_os_login_notification.cc",
-    ]
-    deps += [ "//chromeos/strings:strings_grit" ]
-  }
-
-  if (toolkit_views) {
-    sources += [ "pwa_install_page_action.cc" ]
-  }
-
-  if (enable_extensions) {
-    sources += [
-      "app_browser_controller.cc",
-      "diagnostics/app_type_initialized_event.cc",
-      "diagnostics/web_app_icon_health_checks.cc",
-      "navigation_capturing_process.cc",
-      "navigation_capturing_redirection_throttle.cc",
-      "share_target_utils.cc",
-      "sub_apps_install_dialog_controller.cc",
-      "sub_apps_service_impl.cc",
-      "tabbed_web_app_navigation_throttle.cc",
-      "web_app_browser_controller.cc",
-      "web_app_info_image_source.cc",
-      "web_app_launch_navigation_handle_user_data.cc",
-      "web_app_launch_process.cc",
-      "web_app_launch_utils.cc",
-      "web_app_menu_model.cc",
-      "web_app_metrics.cc",
-      "web_app_metrics_factory.cc",
-      "web_app_tabbed_utils.cc",
-      "web_app_ui_manager_impl.cc",
-      "web_app_ui_utils.cc",
-      "webui_web_app_navigation_throttle.cc",
-    ]
-
-    deps += [
-      ":launch_utils",
-      "//chrome/browser:browser_process",
-      "//chrome/browser/apps:icon_standardizer",
-      "//chrome/browser/apps/app_service",
-      "//chrome/browser/apps/app_service:constants",
-      "//chrome/browser/apps/link_capturing",
-      "//chrome/browser/infobars",
-      "//chrome/browser/media/router:media_router_feature",
-      "//chrome/browser/permissions",
-      "//chrome/browser/policy:policy_util",
-      "//chrome/browser/ui:ui_features",
-      "//chrome/browser/ui/extensions",
-      "//chrome/browser/ui/tabs:tab_menu",
-      "//chrome/browser/web_applications:features",
-      "//chrome/browser/web_applications/app_service",
-      "//chrome/browser/web_share_target",
-      "//components/infobars/content",
-      "//components/keep_alive_registry",
-      "//components/omnibox/browser:vector_icons",
-      "//components/security_state/content",
-      "//ui/native_window_tracker",
-    ]
-    if (is_chromeos) {
-      deps += [
-        "//chrome/browser/ash/app_list",
-        "//chrome/browser/ash/apps",
-        "//chrome/browser/ash/browser_delegate",
-        "//chrome/browser/ash/file_manager",
-        "//chrome/browser/ash/system_web_apps",
-        "//chrome/browser/chromeos/app_mode",
-        "//chrome/browser/ui/ash/shelf",
-        "//chrome/browser/ui/ash/system_web_apps",
-        "//chromeos/ash/components/nonclosable_app_ui",
-        "//chromeos/ash/experiences/system_web_apps/types",
-        "//chromeos/components/kiosk",
-        "//chromeos/ui/frame",
-      ]
-    }
-  }
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {
@@ -217,9 +42,9 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":launch_utils",
     ":web_applications",
     "//chrome/browser",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/ui",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_app_test",
@@ -274,7 +99,6 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps += [
-    ":launch_utils",
     ":web_applications",
     "//base",
     "//chrome/app:command_ids",

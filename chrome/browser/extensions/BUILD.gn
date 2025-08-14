@@ -642,10 +642,7 @@ source_set("extensions") {
       "chrome_extension_host_delegate_non_android.cc",
     ]
     public_deps += [ "//components/app_icon_loader" ]
-    deps += [
-      "//chrome/browser/ui/user_education",
-      "//chrome/browser/ui/web_applications:launch_utils",
-    ]
+    deps += [ "//chrome/browser/ui/user_education" ]
   }
 
   if (!is_chromeos) {
