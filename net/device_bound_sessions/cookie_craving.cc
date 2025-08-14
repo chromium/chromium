@@ -185,7 +185,7 @@ std::optional<CookieCraving> CookieCraving::Create(
   return cookie_craving;
 }
 
-// TODO(chlily): Much of this function is copied directly from CanonicalCookie.
+// TODO(crbug.com/438792839): Much of this function is copied directly from CanonicalCookie.
 // Try to deduplicate it.
 bool CookieCraving::IsValid() const {
   if (ParsedCookie::ParseTokenString(Name()) != Name() ||
