@@ -26,6 +26,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -878,7 +879,12 @@ void NetworkService::SetEncryptionKey(const std::string& encryption_key) {
 
 void NetworkService::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  base::MemoryPressureListener::NotifyMemoryPressure(memory_pressure_level);
+  // Forward the notification to the registry of MemoryPressureListeners.
+  base::SingleThreadTaskRunner::GetMainThreadDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &base::MemoryPressureListenerRegistry::NotifyMemoryPressure,
+          memory_pressure_level));
 }
 
 void NetworkService::OnPeerToPeerConnectionsCountChange(uint32_t count) {

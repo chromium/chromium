@@ -38,6 +38,8 @@ class BASE_EXPORT MemoryPressureListenerRegistry {
   static void SetNotificationsSuppressed(bool suppressed);
   static void SimulatePressureNotification(
       MemoryPressureLevel memory_pressure_level);
+  static void SimulatePressureNotificationAsync(
+      MemoryPressureLevel memory_pressure_level);
 
  private:
   void DoNotifyMemoryPressure(MemoryPressureLevel memory_pressure_level);

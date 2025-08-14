@@ -849,12 +849,12 @@ TEST_F(DiskCacheBackendTest, MemoryListensToMemoryPressure) {
   EXPECT_GT(CalculateSizeOfAllEntries(), 0.8 * kLimit);
 
   // Signal low-memory of various sorts, and see how small it gets.
-  base::MemoryPressureListener::NotifyMemoryPressure(
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
   base::RunLoop().RunUntilIdle();
   EXPECT_LT(CalculateSizeOfAllEntries(), 0.5 * kLimit);
 
-  base::MemoryPressureListener::NotifyMemoryPressure(
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
   base::RunLoop().RunUntilIdle();
   EXPECT_LT(CalculateSizeOfAllEntries(), 0.1 * kLimit);

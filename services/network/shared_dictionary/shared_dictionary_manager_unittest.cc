@@ -390,7 +390,7 @@ TEST_P(SharedDictionaryManagerTest,
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
 
-  base::MemoryPressureListener::SimulatePressureNotification(
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
       base::MemoryPressureListener::MemoryPressureLevel::
           MEMORY_PRESSURE_LEVEL_MODERATE);
   task_environment_.RunUntilIdle();
@@ -423,7 +423,7 @@ TEST_P(SharedDictionaryManagerTest,
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
 
-  base::MemoryPressureListener::SimulatePressureNotification(
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
       base::MemoryPressureListener::MemoryPressureLevel::
           MEMORY_PRESSURE_LEVEL_CRITICAL);
   task_environment_.RunUntilIdle();
@@ -470,7 +470,7 @@ TEST_P(SharedDictionaryManagerTest,
 
   storage.reset();
 
-  base::MemoryPressureListener::SimulatePressureNotification(
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
       base::MemoryPressureListener::MemoryPressureLevel::
           MEMORY_PRESSURE_LEVEL_MODERATE);
   task_environment_.RunUntilIdle();
@@ -503,7 +503,7 @@ TEST_P(SharedDictionaryManagerTest,
 
   storage.reset();
 
-  base::MemoryPressureListener::SimulatePressureNotification(
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
       base::MemoryPressureListener::MemoryPressureLevel::
           MEMORY_PRESSURE_LEVEL_CRITICAL);
   task_environment_.RunUntilIdle();

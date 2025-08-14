@@ -101,4 +101,14 @@ void MemoryPressureListenerRegistry::SimulatePressureNotification(
   Get().DoNotifyMemoryPressure(memory_pressure_level);
 }
 
+// static
+void MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
+    MemoryPressureLevel memory_pressure_level) {
+  CHECK(base::SingleThreadTaskRunner::GetMainThreadDefault()
+            ->BelongsToCurrentThread());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SimulatePressureNotification, memory_pressure_level));
+}
+
 }  // namespace base

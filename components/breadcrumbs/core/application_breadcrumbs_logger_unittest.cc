@@ -103,10 +103,10 @@ TEST_F(ApplicationBreadcrumbsLoggerTest, SkipInProductHelpUserActions) {
 TEST_F(ApplicationBreadcrumbsLoggerTest, MemoryPressure) {
   ASSERT_TRUE(OnlyStartupEventLogged());
 
-  base::MemoryPressureListener::SimulatePressureNotification(
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
       base::MemoryPressureListener::MemoryPressureLevel::
           MEMORY_PRESSURE_LEVEL_MODERATE);
-  base::MemoryPressureListener::SimulatePressureNotification(
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
       base::MemoryPressureListener::MemoryPressureLevel::
           MEMORY_PRESSURE_LEVEL_CRITICAL);
   base::RunLoop().RunUntilIdle();

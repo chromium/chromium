@@ -417,7 +417,7 @@ TEST_F(HttpStreamPoolGroupTest, FlushIdleStreamsOnMemoryPressure) {
 
     // Idle sockets should be flushed on moderate memory pressure and `group`
     // should be destroyed.
-    base::MemoryPressureListener::NotifyMemoryPressure(
+    base::MemoryPressureListener::SimulatePressureNotificationAsync(
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
     FastForwardUntilNoTasksRemain();
     ASSERT_FALSE(GetTestGroup());
@@ -430,7 +430,7 @@ TEST_F(HttpStreamPoolGroupTest, FlushIdleStreamsOnMemoryPressure) {
 
     // Idle sockets should be flushed on critical memory pressure and `group`
     // should be destroyed.
-    base::MemoryPressureListener::NotifyMemoryPressure(
+    base::MemoryPressureListener::SimulatePressureNotificationAsync(
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
     FastForwardUntilNoTasksRemain();
     ASSERT_FALSE(GetTestGroup());
@@ -448,13 +448,13 @@ TEST_F(HttpStreamPoolGroupTest, MemoryPressureDisabled) {
   ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
 
   // Idle sockets should be not flushed on moderate memory pressure.
-  base::MemoryPressureListener::NotifyMemoryPressure(
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
 
   // Idle sockets should be not flushed on critical memory pressure.
-  base::MemoryPressureListener::NotifyMemoryPressure(
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(group.IdleStreamSocketCount(), 1u);

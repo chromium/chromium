@@ -15,6 +15,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -1187,7 +1188,10 @@ void GpuServiceImpl::OnForegroundedOnMainThread() {
 void GpuServiceImpl::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
   // Forward the notification to the registry of MemoryPressureListeners.
-  base::MemoryPressureListener::NotifyMemoryPressure(level);
+  base::SingleThreadTaskRunner::GetMainThreadDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &base::MemoryPressureListenerRegistry::NotifyMemoryPressure, level));
 }
 #endif
 

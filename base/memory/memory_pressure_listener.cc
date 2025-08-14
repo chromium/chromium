@@ -82,6 +82,13 @@ void MemoryPressureListener::SimulatePressureNotification(
       memory_pressure_level);
 }
 
+// static
+void MemoryPressureListener::SimulatePressureNotificationAsync(
+    MemoryPressureLevel memory_pressure_level) {
+  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
+      memory_pressure_level);
+}
+
 // SyncMemoryPressureListener --------------------------------------------------
 
 SyncMemoryPressureListener::SyncMemoryPressureListener(

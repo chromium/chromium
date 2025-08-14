@@ -88,6 +88,11 @@ class BASE_EXPORT MemoryPressureListener {
   static void SetNotificationsSuppressed(bool suppressed);
   static void SimulatePressureNotification(
       MemoryPressureLevel memory_pressure_level);
+  // Invokes `SimulatePressureNotification` asynchronously on the main thread,
+  // ensuring that any pending registration tasks have completed by the time it
+  // runs.
+  static void SimulatePressureNotificationAsync(
+      MemoryPressureLevel memory_pressure_level);
 
   bool has_sync_callback() const {
     return !sync_memory_pressure_callback_.is_null();

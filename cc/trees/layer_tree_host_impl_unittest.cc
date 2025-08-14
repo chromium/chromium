@@ -13192,7 +13192,7 @@ TEST_P(LayerTreeHostImplTest, OnMemoryPressure) {
   current_memory_usage =
       host_impl_->resource_pool()->GetTotalMemoryUsageForTesting();
 
-  base::MemoryPressureListener::SimulatePressureNotification(
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
   base::RunLoop().RunUntilIdle();
 
