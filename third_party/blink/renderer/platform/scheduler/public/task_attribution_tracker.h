@@ -16,9 +16,9 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
-class SchedulerTaskContext;
 class SoftNavigationContext;
 class TaskAttributionTaskState;
+class WebSchedulingTaskState;
 }  // namespace blink
 
 namespace v8 {
@@ -106,13 +106,15 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   // initiating propagation for the context.
   virtual TaskScope CreateTaskScope(SoftNavigationContext*) = 0;
 
-  // Creates a new `TaskScope` with web scheduling context. `task_state` will be
-  // propagated to descendant tasks and continuations; `continuation_context`
-  // will only be propagated to continuations.
-  virtual TaskScope CreateTaskScope(
-      TaskAttributionInfo* task_state,
-      TaskScopeType type,
-      SchedulerTaskContext* continuation_context) = 0;
+  // Initiates propagation of the given `WebSchedulingTaskState`, making it the
+  // current task state as long as the `TaskScope` it returns is the topmost on
+  // the stack.
+  //
+  // This should only be used for prioritized tasks associated with web
+  // scheduling APIs (scheduler.postTask() and requestIdleCallback()), and this
+  // is not allowed to be called with JavaScript on the stack.
+  virtual TaskScope CreateTaskScope(WebSchedulingTaskState*,
+                                    TaskScopeType type) = 0;
 
   // Conditionally create a `TaskScope` for a generic v8 callback. A `TaskScope`
   // is always created if `task_state` is non-null, and one is additionally
@@ -142,5 +144,9 @@ class PLATFORM_EXPORT TaskAttributionTracker {
 };
 
 }  // namespace blink::scheduler
+
+namespace blink {
+using TaskScopeType = scheduler::TaskAttributionTracker::TaskScopeType;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_TASK_ATTRIBUTION_TRACKER_H_

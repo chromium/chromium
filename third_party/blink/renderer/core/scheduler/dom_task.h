@@ -16,13 +16,9 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 
 namespace blink {
-class SchedulerTaskContext;
 class ScriptState;
+class WebSchedulingTaskState;
 class V8SchedulerPostTaskCallback;
-
-namespace scheduler {
-class TaskAttributionInfo;
-}
 
 // DOMTask represents a task scheduled via the web scheduling API. It will
 // keep itself alive until DOMTask::Invoke is called, which may be after the
@@ -60,7 +56,7 @@ class DOMTask final : public GarbageCollected<DOMTask> {
   Member<V8SchedulerPostTaskCallback> callback_;
   Member<ScriptPromiseResolver<IDLAny>> resolver_;
   probe::AsyncTaskContext async_task_context_;
-  Member<SchedulerTaskContext> scheduler_task_context_;
+  Member<WebSchedulingTaskState> web_scheduling_task_state_;
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
   // Do not remove. For dynamic priority task queues, |task_queue_| ensures that
   // the associated WebSchedulingTaskQueue stays alive until after this task
@@ -69,7 +65,6 @@ class DOMTask final : public GarbageCollected<DOMTask> {
   const base::TimeDelta delay_;
   const uint64_t task_id_for_tracing_;
   ExecutionState execution_state_ = ExecutionState::kNotStarted;
-  Member<scheduler::TaskAttributionInfo> task_state_;
 };
 
 }  // namespace blink

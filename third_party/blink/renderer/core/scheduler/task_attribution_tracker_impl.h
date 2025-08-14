@@ -18,8 +18,8 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
-class SchedulerTaskContext;
 class SoftNavigationContext;
+class WebSchedulingTaskState;
 }  // namespace blink
 
 namespace v8 {
@@ -46,10 +46,8 @@ class CORE_EXPORT TaskAttributionTrackerImpl : public TaskAttributionTracker {
 
   TaskScope CreateTaskScope(SoftNavigationContext*) override;
 
-  TaskScope CreateTaskScope(
-      TaskAttributionInfo* task_state,
-      TaskScopeType type,
-      SchedulerTaskContext* continuation_context) override;
+  TaskScope CreateTaskScope(WebSchedulingTaskState* task_state,
+                            TaskScopeType type) override;
 
   std::optional<TaskScope> MaybeCreateTaskScopeForCallback(
       TaskAttributionInfo* task_state) override;
@@ -62,6 +60,8 @@ class CORE_EXPORT TaskAttributionTrackerImpl : public TaskAttributionTracker {
  private:
   explicit TaskAttributionTrackerImpl(v8::Isolate*);
 
+  TaskScope CreateTaskScopeImpl(TaskAttributionTaskState* task_state,
+                                TaskScopeType type);
   void OnTaskScopeDestroyed(const TaskScope&) override;
 
   TaskAttributionId next_task_id_;

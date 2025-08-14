@@ -53,6 +53,11 @@ perfetto::protos::pbzero::BlinkTaskScope::TaskScopeType ToProtoEnum(
   }
 }
 
+int64_t TaskStateIdForTracing(TaskAttributionTaskState* state) {
+  TaskAttributionInfo* info = state ? state->GetTaskAttributionInfo() : nullptr;
+  return info ? info->Id().value() : 0;
+}
+
 }  // namespace
 
 // static
@@ -80,8 +85,8 @@ scheduler::TaskAttributionInfo* TaskAttributionTrackerImpl::CurrentTaskState()
 TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
     TaskAttributionInfo* task_state,
     TaskScopeType type) {
-  return CreateTaskScope(task_state, type,
-                         /*continuation_context=*/nullptr);
+  return CreateTaskScopeImpl(UnsafeTo<TaskAttributionInfoImpl>(task_state),
+                             type);
 }
 
 TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
@@ -89,45 +94,37 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
   next_task_id_ = next_task_id_.NextId();
   auto* task_state = MakeGarbageCollected<TaskAttributionInfoImpl>(
       next_task_id_, soft_navigation_context);
-  return CreateTaskScope(task_state, TaskScopeType::kSoftNavigation,
-                         /*continuation_context=*/nullptr);
+  return CreateTaskScopeImpl(task_state, TaskScopeType::kSoftNavigation);
 }
 
 TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
-    TaskAttributionInfo* task_state,
-    TaskScopeType type,
-    SchedulerTaskContext* continuation_context) {
+    WebSchedulingTaskState* task_state,
+    TaskScopeType type) {
+  CHECK(task_state);
+  // Web scheduling tasks are top-level entry points that should not run in
+  // nested event loops, so there should be no current task state.
+  DCHECK(!TaskAttributionTaskState::GetCurrent(isolate_));
+  return CreateTaskScopeImpl(task_state, type);
+}
+
+TaskAttributionTracker::TaskScope
+TaskAttributionTrackerImpl::CreateTaskScopeImpl(
+    TaskAttributionTaskState* task_state,
+    TaskScopeType type) {
   TaskAttributionTaskState* previous_task_state =
       TaskAttributionTaskState::GetCurrent(isolate_);
-  TaskAttributionTaskState* running_task_state = nullptr;
-  if (continuation_context) {
-    running_task_state = MakeGarbageCollected<WebSchedulingTaskState>(
-        task_state, continuation_context);
-  } else {
-    // If there's no scheduling state to propagate, we can just propagate the
-    // same object.
-    running_task_state = To<TaskAttributionInfoImpl>(task_state);
+  if (task_state != previous_task_state) {
+    TaskAttributionTaskState::SetCurrent(isolate_, task_state);
   }
-
-  if (running_task_state != previous_task_state) {
-    TaskAttributionTaskState::SetCurrent(isolate_, running_task_state);
-  }
-
-  TaskAttributionInfo* current =
-      running_task_state ? running_task_state->GetTaskAttributionInfo()
-                         : nullptr;
-  TaskAttributionInfo* previous =
-      previous_task_state ? previous_task_state->GetTaskAttributionInfo()
-                          : nullptr;
 
   TRACE_EVENT_BEGIN(
       "scheduler", "BlinkTaskScope", [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_blink_task_scope();
         data->set_type(ToProtoEnum(type));
-        data->set_scope_task_id(current ? current->Id().value() : 0);
+        data->set_scope_task_id(TaskStateIdForTracing(task_state));
         data->set_running_task_id_to_be_restored(
-            previous ? previous->Id().value() : 0);
+            TaskStateIdForTracing(previous_task_state));
       });
 
   return TaskScope(this, previous_task_state);
