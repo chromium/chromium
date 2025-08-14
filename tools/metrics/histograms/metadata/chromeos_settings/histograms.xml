@@ -34,7 +34,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Accessibility.AccessibilityMagnifierFollowsSts"
-    enum="BooleanToggled" expires_after="2025-09-23">
+    enum="BooleanToggled" expires_after="2026-09-23">
   <owner>lkupo@chromium.org</owner>
   <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
@@ -56,7 +56,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Accessibility.ColorCorrection.FilterAmount"
-    units="%" expires_after="2025-09-23">
+    units="%" expires_after="2026-09-23">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -66,7 +66,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Accessibility.ColorCorrection.FilterType"
-    enum="ColorCorrectionFilterTypes" expires_after="2025-09-23">
+    enum="ColorCorrectionFilterTypes" expires_after="2026-09-23">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -88,7 +88,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Accessibility.CursorColor.Enabled"
-    enum="BooleanToggled" expires_after="2025-09-23">
+    enum="BooleanToggled" expires_after="2026-09-23">
 <!-- Kept separate from the generic accessibility settings metric because this
  is not a simple toggle on/off presented to the user, but is a dropdown list
  of color choices. -->
@@ -103,7 +103,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Accessibility.FullscreenMagnifierFocusFollowing"
-    enum="BooleanToggled" expires_after="2025-09-23">
+    enum="BooleanToggled" expires_after="2026-09-23">
   <owner>katie@chromium.org</owner>
   <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
@@ -114,7 +114,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Accessibility.FullscreenMagnifierMouseFollowingMode"
-    enum="MagnifierMouseFollowingMode" expires_after="2025-09-23">
+    enum="MagnifierMouseFollowingMode" expires_after="2026-09-23">
   <owner>katie@chromium.org</owner>
   <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
