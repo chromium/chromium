@@ -757,9 +757,8 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
       space.ShouldTextBoxTrimFragmentainerEnd() ||
       space.ShouldTextBoxTrimInsideWhenLineClamp()) [[unlikely]] {
     LineClampData line_clamp_data = space.GetLineClampData();
-    bool is_truncated =
-        line_clamp_data.IsAtClampPoint() ||
-        line_clamp_data.state == LineClampData::kMeasureLinesUntilBfcOffset;
+    bool is_truncated = line_clamp_data.IsAtClampPoint() ||
+                        line_clamp_data.IsMeasureUntilBfcOffset();
     ApplyTextBoxTrim(*line_info, is_truncated);
   }
 
@@ -1686,12 +1685,11 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
         end_margin_strut_ = MarginStrut();
 
         if (lines_until_clamp_) {
-          if (constraint_space.GetLineClampData().state ==
-              LineClampData::kClampByLines) {
+          if (constraint_space.GetLineClampData().IsClampByLines()) {
             *lines_until_clamp_ = *lines_until_clamp_ - 1;
           } else {
-            DCHECK_EQ(constraint_space.GetLineClampData().state,
-                      LineClampData::kMeasureLinesUntilBfcOffset);
+            DCHECK(
+                constraint_space.GetLineClampData().IsMeasureUntilBfcOffset());
             *lines_until_clamp_ = *lines_until_clamp_ + 1;
           }
         }

@@ -66,7 +66,7 @@ struct BlockLineClampData {
  public:
   explicit BlockLineClampData(LineClampData line_clamp_data)
       : data(line_clamp_data) {
-    if (data.state == LineClampData::kClampByLines) {
+    if (data.IsClampByLines()) {
       initial_lines_until_clamp = data.lines_until_clamp;
     }
   }
@@ -83,126 +83,17 @@ struct BlockLineClampData {
     if (!previous_inflow_position_when_clamped.has_value()) {
       return false;
     }
-    DCHECK_EQ(data.state, LineClampData::kClampByLines);
+    DCHECK(data.IsClampByLines());
     return data.lines_until_clamp == 0;
   }
 
-  void UpdateClampOffsetFromStyle(LayoutUnit clamp_bfc_offset) {
-    if (ignore_line_clamp) {
-      DCHECK_EQ(data.state, LineClampData::kDisabled);
-      return;
-    }
-
-    DCHECK_EQ(data.state, LineClampData::kDisabled);
-    if (clamp_bfc_offset == kIndefiniteSize) {
-      data.state = LineClampData::kDisabled;
-    } else {
-      data.state = LineClampData::kMeasureLinesUntilBfcOffset;
-      data.lines_until_clamp = 0;
-      data.clamp_bfc_offset = clamp_bfc_offset;
-    }
-  }
-
-  void UpdateLinesFromStyle(int lines_until_clamp) {
-    if (ignore_line_clamp) {
-      DCHECK_EQ(data.state, LineClampData::kDisabled);
-      return;
-    }
-
-    DCHECK_EQ(data.state, LineClampData::kDisabled);
-    data.state = LineClampData::kClampByLines;
-    data.lines_until_clamp = lines_until_clamp;
-  }
+  void UpdateFromStyle(int lines_until_clamp, LayoutUnit clamp_bfc_offset);
 
   // Returns false if we need to relayout with a different clamp BFC offset.
   bool UpdateAfterLayout(const LayoutResult* layout_result,
                          LayoutUnit bfc_block_offset,
                          const PreviousInflowPosition& previous_inflow_position,
-                         LayoutUnit block_end_padding) {
-    const PhysicalFragment& fragment = layout_result->GetPhysicalFragment();
-
-    if (data.state == LineClampData::kClampByLines) {
-      if (!fragment.IsFormattingContextRoot() && !ignore_further_lines) {
-        data.lines_until_clamp = layout_result->LinesUntilClamp();
-
-        if (layout_result->WouldBeLastLineIfNotForEllipsis()) {
-          DCHECK(fragment.IsLineBox());
-          DCHECK_EQ(data.lines_until_clamp, 0);
-          ignore_further_lines = true;
-        }
-      }
-
-      if (IsPastClampPoint() &&
-          !previous_inflow_position_when_clamped.has_value()) {
-        previous_inflow_position_when_clamped = previous_inflow_position;
-      }
-    }
-
-    // With kClampAfterLayoutObject, if we've found the layout object, then we
-    // switch states to kClampByLines with negative lines. If the child layout
-    // result has negative lines, then the layout object was found there.
-    if (data.state == LineClampData::kClampAfterLayoutObject &&
-        (layout_result->LinesUntilClamp() < 0 ||
-         data.clamp_after_layout_object == fragment.GetLayoutObject())) {
-      DCHECK(!previous_inflow_position_when_clamped);
-      data.state = LineClampData::kClampByLines;
-      data.lines_until_clamp = -1;
-      previous_inflow_position_when_clamped = previous_inflow_position;
-    }
-
-    if (data.state == LineClampData::kMeasureLinesUntilBfcOffset) {
-      // We compute the margin strut we'd have after this block if we were to
-      // clamp here.
-      MarginStrut collapsed_strut = previous_inflow_position.margin_strut;
-      collapsed_strut.positive_margin = std::max(
-          collapsed_strut.positive_margin, end_margin_strut.positive_margin);
-      collapsed_strut.quirky_positive_margin =
-          std::max(collapsed_strut.quirky_positive_margin,
-                   end_margin_strut.quirky_positive_margin);
-      collapsed_strut.negative_margin = std::max(
-          collapsed_strut.negative_margin, end_margin_strut.negative_margin);
-
-      // The extra space after the current box that would be added by ruby
-      // annotations, considering that the annotations eat into the following
-      // padding if it exists, and that we have already subtracted the block end
-      // padding from the clamp BFC offset.
-      LayoutUnit padding_annotation_overflow;
-      if (previous_inflow_position.block_end_annotation_space < LayoutUnit()) {
-        padding_annotation_overflow =
-            std::max(previous_inflow_position.block_end_annotation_space,
-                     -block_end_padding);
-      }
-
-      LayoutUnit bfc_offset = bfc_block_offset +
-                              previous_inflow_position.logical_block_offset +
-                              padding_annotation_overflow +
-                              (collapsed_strut.Sum() - end_margin_strut.Sum());
-
-      if (bfc_offset > data.clamp_bfc_offset) {
-        return false;
-      }
-
-      int old_lines_until_clamp = data.lines_until_clamp;
-      if (!fragment.IsFormattingContextRoot()) {
-        data.lines_until_clamp = layout_result->LinesUntilClamp();
-      }
-
-      if (old_lines_until_clamp == data.lines_until_clamp ||
-          layout_result->LineClampAfterLayoutObject()) {
-        // Empty line boxes should be ignored, they shouldn't even set
-        // last_layout_object to null. Other fragments shouldn't have a null
-        // layout object.
-        if (!fragment.IsLineBox()) {
-          last_layout_object = fragment.GetLayoutObject();
-          DCHECK(last_layout_object);
-        }
-      } else {
-        last_layout_object = nullptr;
-      }
-    }
-
-    return true;
-  }
+                         LayoutUnit block_end_padding);
 
   // If a child box's layout fails because it overflows, and we're propagating
   // that failure up until the line-clamp container, this method returns the
