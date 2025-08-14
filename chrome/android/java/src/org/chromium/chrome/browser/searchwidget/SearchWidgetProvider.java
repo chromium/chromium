@@ -22,7 +22,7 @@ import androidx.core.app.ActivityOptionsCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.Log;
+import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
@@ -94,9 +94,6 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     public static final String EXTRA_FROM_SEARCH_WIDGET =
             "org.chromium.chrome.browser.searchwidget.FROM_SEARCH_WIDGET";
 
-    /** Number of consecutive crashes this widget will absorb before giving up. */
-    private static final int CRASH_LIMIT = 3;
-
     private static final Object DELEGATE_LOCK = new Object();
 
     @SuppressLint("StaticFieldLeak")
@@ -104,6 +101,9 @@ public class SearchWidgetProvider extends AppWidgetProvider {
 
     public static void initialize() {
         SearchActivityPreferencesManager.addObserver(getDelegate());
+        // This is a one-time operation to remove the obsolete key.
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.SEARCH_WIDGET_NUM_CONSECUTIVE_CRASHES);
     }
 
     @Override
@@ -179,21 +179,6 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         return views;
     }
 
-    /** Updates the number of consecutive crashes this widget has absorbed. */
-    @SuppressLint({"ApplySharedPref", "CommitPrefEdits"})
-    static void updateNumConsecutiveCrashes(int newValue) {
-        SharedPreferencesManager prefs = getDelegate().getChromeSharedPreferences();
-        if (getNumConsecutiveCrashes(prefs) == newValue) return;
-
-        // This metric is committed synchronously because it relates to crashes.
-        prefs.writeIntSync(ChromePreferenceKeys.SEARCH_WIDGET_NUM_CONSECUTIVE_CRASHES, newValue);
-    }
-
-    @VisibleForTesting
-    static int getNumConsecutiveCrashes(SharedPreferencesManager prefs) {
-        return prefs.readInt(ChromePreferenceKeys.SEARCH_WIDGET_NUM_CONSECUTIVE_CRASHES);
-    }
-
     private static SearchWidgetProviderDelegate getDelegate() {
         synchronized (DELEGATE_LOCK) {
             if (sDelegate == null) {
@@ -207,22 +192,9 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     static void run(Runnable runnable) {
         try {
             runnable.run();
-            updateNumConsecutiveCrashes(0);
         } catch (Exception e) {
-            int numCrashes =
-                    getNumConsecutiveCrashes(getDelegate().getChromeSharedPreferences()) + 1;
-            updateNumConsecutiveCrashes(numCrashes);
-
-            if (numCrashes < CRASH_LIMIT) {
-                // Absorb the crash.
-                Log.e(
-                        SearchActivity.TAG,
-                        "Absorbing exception caught when attempting to launch widget.",
-                        e);
-            } else {
-                // Too many crashes have happened consecutively.  Let Android handle it.
-                throw e;
-            }
+            // Report the exception instead of crashing.
+            JavaExceptionReporter.reportException(e);
         }
     }
 
