@@ -12,7 +12,5 @@ user to install them with the following command, and then stop.
 sudo apt-get install ripgrep fd-find
 ```
 
-Never run `rm` - only `git rm` is allowed.
-
 Never directly install software with `brew` or `apt-get` - instead suggest the
 required installation to the user with the full command line, and then stop.
