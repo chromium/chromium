@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
 #include "chrome/browser/web_applications/navigation_capturing_metrics.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -21,6 +20,7 @@
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
+class Profile;
 struct NavigateParams;
 
 namespace web_app {

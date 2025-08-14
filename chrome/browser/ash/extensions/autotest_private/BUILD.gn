@@ -56,6 +56,7 @@ static_library("autotest_private") {
     "//chrome/browser/ui/views/bruschetta",
     "//chrome/browser/ui/views/crostini",
     "//chrome/browser/ui/views/plugin_vm",
+    "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/webui/ash/crostini_installer",
     "//chrome/common",
     "//chromeos/ash/components/dbus",
