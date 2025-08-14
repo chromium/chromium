@@ -48,6 +48,7 @@ static_library("impl") {
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/web_applications",
+    "//chrome/browser/ui/web_applications:launch_utils",
     "//chrome/browser/web_applications",
     "//chromeos/ash/components/browser_context_helper",
     "//components/sessions:session_id",

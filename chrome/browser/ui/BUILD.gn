@@ -1054,8 +1054,6 @@ static_library("ui") {
       "views/file_system_access/file_system_access_scroll_panel.h",
       "views/search_engine_choice/search_engine_choice_dialog_view.cc",
       "views/search_engine_choice/search_engine_choice_dialog_view.h",
-      "web_applications/web_app_dialog_utils.cc",
-      "web_applications/web_app_dialog_utils.h",
       "webui/bookmarks/bookmark_prefs.cc",
       "webui/bookmarks/bookmark_prefs.h",
       "webui/bookmarks/bookmarks_message_handler.cc",
@@ -1391,6 +1389,9 @@ static_library("ui") {
       "//chrome/browser/ui/task_manager",
       "//chrome/browser/ui/thumbnails",
       "//chrome/browser/ui/translate:impl",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/ui/web_applications:impl",
+      "//chrome/browser/ui/web_applications:launch_utils",
       "//chrome/browser/ui/webui/access_code_cast",
       "//chrome/browser/ui/webui/access_code_cast:impl",
 
@@ -1713,9 +1714,20 @@ static_library("ui") {
       # or get componentized: c/b/ui/browser_dialogs.h, browser_navigation.h, browser.h.
       "//chrome/browser/ui/sync:impl",
 
-      # TODO(crbug.com/): Remove this circular dependency when
+      # TODO(crbug.com/364501603): Remove this circular dependency when
       # c/b/ui/views/tabs/tab_strip_action_container.h gets componentized.
       "//chrome/browser/ui/tabs:glic_impl",
+
+      # TODO(crbug.com/438226511): Remove this circular dependency when the following headers
+      # get componentized:
+      # - c/b/ui/browser.h, browser_finder.h, browser_window.h, browser_window_state.h,
+      #   browser_commands.h, chrome_pages.h, browser_navigator.h, intent_picker_tab_helper.h,
+      #   browser_tabstrip.h, intent_picker_tab_helper.h.
+      "//chrome/browser/ui/web_applications:impl",
+
+      # TODO(crbug.com/438226511): Remove this circular dependency when c/b/ui/browser.h gets
+      # componentized.
+      "//chrome/browser/ui/web_applications:launch_utils",
     ]
 
     if (is_mac) {
@@ -1855,10 +1867,6 @@ static_library("ui") {
       "views/relaunch_notification/relaunch_notification_controller_platform_impl_chromeos.cc",
       "views/relaunch_notification/relaunch_notification_controller_platform_impl_chromeos.h",
       "views/web_apps/isolated_web_apps/pref_observer_ash.cc",
-      "web_applications/web_app_relaunch_notification.cc",
-      "web_applications/web_app_relaunch_notification.h",
-      "web_applications/web_app_run_on_os_login_notification.cc",
-      "web_applications/web_app_run_on_os_login_notification.h",
       "webui/ash/dlp_internals/dlp_internals_page_handler.cc",
       "webui/ash/dlp_internals/dlp_internals_page_handler.h",
       "webui/ash/dlp_internals/dlp_internals_ui.cc",
@@ -4577,8 +4585,6 @@ static_library("ui") {
       "views/webid/fedcm_modal_dialog_view.h",
       "views/webid/webid_utils.cc",
       "views/webid/webid_utils.h",
-      "web_applications/pwa_install_page_action.cc",
-      "web_applications/pwa_install_page_action.h",
     ]
 
     sources += get_target_outputs(":webui_name_variants")
@@ -5004,7 +5010,6 @@ static_library("ui") {
       "//chrome/browser/profiles",
       "//chrome/browser/ui/extensions:extension_enable_flow_delegate",
       "//chrome/browser/ui/extensions:extension_popup_types",
-      "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/webui/extensions_zero_state_promo:mojo_bindings",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/app_service",
@@ -5045,49 +5050,6 @@ static_library("ui") {
       "views/extensions/media_gallery_checkbox_view.cc",
       "views/extensions/media_gallery_checkbox_view.h",
       "views/javascript_app_modal_event_blocker.h",
-      "web_applications/app_browser_controller.cc",
-      "web_applications/diagnostics/app_type_initialized_event.cc",
-      "web_applications/diagnostics/app_type_initialized_event.h",
-      "web_applications/diagnostics/web_app_icon_health_checks.cc",
-      "web_applications/diagnostics/web_app_icon_health_checks.h",
-      "web_applications/navigation_capturing_process.cc",
-      "web_applications/navigation_capturing_process.h",
-      "web_applications/navigation_capturing_redirection_throttle.cc",
-      "web_applications/navigation_capturing_redirection_throttle.h",
-      "web_applications/navigation_handle_user_data_forwarder.h",
-      "web_applications/share_target_utils.cc",
-      "web_applications/share_target_utils.h",
-      "web_applications/sub_apps_install_dialog_controller.cc",
-      "web_applications/sub_apps_install_dialog_controller.h",
-      "web_applications/sub_apps_service_impl.cc",
-      "web_applications/sub_apps_service_impl.h",
-      "web_applications/tabbed_web_app_navigation_throttle.cc",
-      "web_applications/tabbed_web_app_navigation_throttle.h",
-      "web_applications/web_app_browser_controller.cc",
-      "web_applications/web_app_browser_controller.h",
-      "web_applications/web_app_dialogs.h",
-      "web_applications/web_app_info_image_source.cc",
-      "web_applications/web_app_info_image_source.h",
-      "web_applications/web_app_launch_navigation_handle_user_data.cc",
-      "web_applications/web_app_launch_navigation_handle_user_data.h",
-      "web_applications/web_app_launch_process.cc",
-      "web_applications/web_app_launch_process.h",
-      "web_applications/web_app_launch_utils.cc",
-      "web_applications/web_app_launch_utils.h",
-      "web_applications/web_app_menu_model.cc",
-      "web_applications/web_app_menu_model.h",
-      "web_applications/web_app_metrics.cc",
-      "web_applications/web_app_metrics.h",
-      "web_applications/web_app_metrics_factory.cc",
-      "web_applications/web_app_metrics_factory.h",
-      "web_applications/web_app_tabbed_utils.cc",
-      "web_applications/web_app_tabbed_utils.h",
-      "web_applications/web_app_ui_manager_impl.cc",
-      "web_applications/web_app_ui_manager_impl.h",
-      "web_applications/web_app_ui_utils.cc",
-      "web_applications/web_app_ui_utils.h",
-      "web_applications/webui_web_app_navigation_throttle.cc",
-      "web_applications/webui_web_app_navigation_throttle.h",
       "webui/extensions/extension_basic_info.cc",
       "webui/extensions/extension_basic_info.h",
       "webui/extensions_zero_state_promo/zero_state_promo_page_handler.cc",
