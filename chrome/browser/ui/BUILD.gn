@@ -3127,7 +3127,6 @@ static_library("ui") {
       "webui/settings/mac_system_settings_handler.cc",
       "webui/settings/mac_system_settings_handler.h",
       "webui/settings/settings_utils_mac.mm",
-      "window_sizer/window_sizer_mac.mm",
     ]
 
     if (enable_updater) {
