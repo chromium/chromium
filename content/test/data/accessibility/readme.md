@@ -338,6 +338,13 @@ Example: `@EXECUTE-AND-WAIT-FOR: foo()`
 
 Invokes default action on an accessible object defined by the directive.
 
+#### @EVENTS-TREE-DUMP
+
+Enables accessibility tree dumping in `DumpAccessibilityEventsTest` tests. When
+this directive is present in an events test, the test will dump the accessibility
+tree before and after each `go()` pass, with markers(`<<<<<< CHANGED`) highlighting
+lines that changed between dumps.
+
 #### @NO_DUMP and @NO_CHILDREN_DUMP
 
 To skip dumping a particular element, add `@NO_DUMP` to a property that will
@@ -423,6 +430,11 @@ accessibility event - one you're unlikely to generate in your test. It uses
 that event to know when to "stop" dumping events. There isn't currently a
 way to test events that occur after some delay, just ones that happen as
 a direct result of calling `go()`.
+
+### Tree Dumping in Events Tests
+
+Events tests can optionally include accessibility tree dumps by adding the
+`@EVENTS-TREE-DUMP` directive to the HTML file.
 
 ### Duplicate Events on UIA
 Windows will "translate" some IA2 events to UIA, and it is not

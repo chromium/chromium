@@ -1,6 +1,8 @@
 <!--
 @WAIT-FOR:Ready
 @EVENTS-TREE-DUMP
+@AURALINUX-ALLOW:enabled
+@AURALINUX-ALLOW:sensitive
 @AURALINUX-DENY:CHILDREN-CHANGED*
 @AURALINUX-DENY:PARENT-CHANGED*
 @UIA-WIN-DENY:*StructureChanged*
@@ -12,25 +14,32 @@
 <!doctype html>
 <html>
 <head>
-    <title>Material Web Slider Events</title>
+    <title>Material Web FAB Events</title>
     <script type="module">
         import { injectImportMap, loadAndWaitForReady, setupEventTestRunner } from "../material-design/resources/utils.js";
         injectImportMap();
 
         const components = [
-            "md-slider"
+            "md-fab",
+            "md-icon"
         ];
 
         setupEventTestRunner();
         loadAndWaitForReady(components, () => {
             const statusDiv = document.getElementById("status");
-            const slider = document.createElement("md-slider");
-            slider.id = "test-slider";
-            slider.min = 0;
-            slider.max = 100;
-            slider.value = 0;
-            slider.setAttribute("aria-label", "Test Slider");
-            statusDiv.appendChild(slider);
+
+            const fab = document.createElement("md-fab");
+            fab.id = "test-fab";
+            fab.size = "small";
+            fab.lowered = false;
+            fab.setAttribute("aria-label", "Add");
+
+            const icon = document.createElement("md-icon");
+            icon.id = "test-icon";
+            icon.textContent = "add";
+            fab.appendChild(icon);
+
+            statusDiv.appendChild(fab);
             statusDiv.setAttribute("aria-label", "Ready");
         });
     </script>
@@ -42,29 +51,31 @@
 <script>
     window.go_passes = [
         async () => {
-            const slider = document.getElementById("test-slider");
-            if (slider) {
-                await slider.updateComplete;
-                slider.value = 25;
-                await slider.updateComplete;
+            const fab = document.getElementById("test-fab");
+            if (fab) {
+                await fab.updateComplete;
+                fab.lowered = true;
+                await fab.updateComplete;
                 await new Promise(resolve => setTimeout(resolve, 150));
             }
         },
+
         async () => {
-            const slider = document.getElementById("test-slider");
-            if (slider) {
-                await slider.updateComplete;
-                slider.value = 75;
-                await slider.updateComplete;
+            const fab = document.getElementById("test-fab");
+            if (fab) {
+                await fab.updateComplete;
+                fab.lowered = false;
+                await fab.updateComplete;
                 await new Promise(resolve => setTimeout(resolve, 150));
             }
         },
+
         async () => {
-            const slider = document.getElementById("test-slider");
-            if (slider) {
-                await slider.updateComplete;
-                slider.value = 50;
-                await slider.updateComplete;
+            const fab = document.getElementById("test-fab");
+            if (fab) {
+                await fab.updateComplete;
+                fab.click();
+                await fab.updateComplete;
                 await new Promise(resolve => setTimeout(resolve, 150));
             }
         }

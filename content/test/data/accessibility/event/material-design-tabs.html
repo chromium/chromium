@@ -1,4 +1,6 @@
 <!--
+@WAIT-FOR:Ready
+@EVENTS-TREE-DUMP
 @AURALINUX-DENY:CHILDREN-CHANGED*
 @AURALINUX-DENY:PARENT-CHANGED*
 @UIA-WIN-DENY:*StructureChanged*
@@ -56,25 +58,27 @@
 </body>
 <script>
     window.go_passes = [
-        () => {
+        async () => {
             const tab1 = document.getElementById("test-tab1");
             if (tab1) {
                 tab1.click();
+                await tab1.updateComplete;
             }
         },
-        () => {
+        async () => {
             const tab2 = document.getElementById("test-tab2");
             if (tab2) {
                 tab2.click();
+                await tab2.updateComplete;
             }
         },
-        () => {
+        async () => {
             const tab3 = document.getElementById("test-tab3");
             if (tab3) {
                 tab3.click();
+                await tab3.updateComplete;
             }
         }
     ];
-
 </script>
 </html>

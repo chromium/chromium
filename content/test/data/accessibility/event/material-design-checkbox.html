@@ -1,4 +1,6 @@
 <!--
+@WAIT-FOR:Ready
+@EVENTS-TREE-DUMP
 @AURALINUX-DENY:CHILDREN-CHANGED*
 @UIA-WIN-DENY:*StructureChanged*
 @WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
@@ -37,22 +39,25 @@
 </body>
 <script>
     window.go_passes = [
-        () => {
+       async () => {
             const checkbox = document.getElementById("test-checkbox");
             if (checkbox) {
                 checkbox.checked = true;
+                await checkbox.updateComplete;
             }
         },
-        () => {
+        async () => {
             const checkbox = document.getElementById("test-checkbox");
             if (checkbox) {
                 checkbox.checked = false;
+                await checkbox.updateComplete;
             }
         },
-        () => {
+        async () => {
             const checkbox = document.getElementById("test-checkbox");
             if (checkbox) {
                 checkbox.indeterminate = true;
+                await checkbox.updateComplete;
             }
         }
     ];

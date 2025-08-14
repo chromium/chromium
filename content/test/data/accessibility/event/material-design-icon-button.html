@@ -1,4 +1,6 @@
 <!--
+@WAIT-FOR:Ready
+@EVENTS-TREE-DUMP
 @AURALINUX-DENY:CHILDREN-CHANGED*
 @AURALINUX-DENY:PARENT-CHANGED*
 @UIA-WIN-DENY:*StructureChanged*
@@ -42,22 +44,25 @@
 </body>
 <script>
     window.go_passes = [
-        () => {
+      async () => {
             const toggleButton = document.getElementById("test-icon-button");
             if (toggleButton) {
                 toggleButton.selected = true;
+                await toggleButton.updateComplete;
             }
         },
-        () => {
+        async () => {
             const toggleButton = document.getElementById("test-icon-button");
             if (toggleButton) {
                 toggleButton.selected = false;
+                await toggleButton.updateComplete;
             }
         },
-        () => {
+        async () => {
             const toggleButton = document.getElementById("test-icon-button");
             if (toggleButton) {
                 toggleButton.selected = true;
+                await toggleButton.updateComplete;
             }
         }
     ];

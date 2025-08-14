@@ -267,6 +267,39 @@ DumpAccessibilityTestBase::DumpUnfilteredAccessibilityTreeAsString() {
   return FormatWebContentsTree(*formatter);
 }
 
+std::vector<ui::AXPropertyFilter> DumpAccessibilityTestBase::DefaultFilters()
+    const {
+  std::vector<ui::AXPropertyFilter> property_filters;
+  if (GetParam() == ui::AXApiType::kMac) {
+    return property_filters;
+  }
+
+  property_filters.emplace_back("value='*'", ui::AXPropertyFilter::ALLOW);
+  // The value attribute on the document object contains the URL of the
+  // current page which will not be the same every time the test is run.
+  property_filters.emplace_back("value='http*'", ui::AXPropertyFilter::DENY);
+  // Object attributes.value
+  property_filters.emplace_back("layout-guess:*", ui::AXPropertyFilter::ALLOW);
+  property_filters.emplace_back("details-from:*", ui::AXPropertyFilter::ALLOW);
+
+  property_filters.emplace_back("select*", ui::AXPropertyFilter::ALLOW);
+  property_filters.emplace_back("selectedFromFocus=*",
+                                ui::AXPropertyFilter::DENY);
+  property_filters.emplace_back("descript*", ui::AXPropertyFilter::ALLOW);
+  property_filters.emplace_back("check*", ui::AXPropertyFilter::ALLOW);
+  property_filters.emplace_back("horizontal", ui::AXPropertyFilter::ALLOW);
+  property_filters.emplace_back("multiselectable", ui::AXPropertyFilter::ALLOW);
+  property_filters.emplace_back("placeholder=*", ui::AXPropertyFilter::ALLOW);
+  property_filters.emplace_back("ispopup*", ui::AXPropertyFilter::ALLOW);
+
+  // Deny most empty values.
+  property_filters.emplace_back("*=''", ui::AXPropertyFilter::DENY);
+  // After denying empty values, we need to add the following filter because we
+  // want to allow name=''.
+  property_filters.emplace_back("name=*", ui::AXPropertyFilter::ALLOW_EMPTY);
+  return property_filters;
+}
+
 std::string DumpAccessibilityTestBase::FormatWebContentsTree(
     const ui::AXTreeFormatter& formatter) const {
   std::string contents =

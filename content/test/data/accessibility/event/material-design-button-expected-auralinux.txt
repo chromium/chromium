@@ -1,0 +1,88 @@
+=== Accessibility tree before go() pass 1 ===
+[document web] name='Material Web Button Events' enabled focused sensitive
+++[section] name='Ready' enabled sensitive
+++++[section] enabled sensitive
+++++++[section] enabled sensitive
+++++++[push button] name='Filled Button' enabled sensitive
+++++[section]
+++++++[section] enabled sensitive
+++++++[section] enabled sensitive
+++++++[push button] name='Outlined Button'
+=== End accessibility tree ===
+FOCUS-EVENT:FALSE role=ROLE_DOCUMENT_WEB name='Material Web Button Events' ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE
+FOCUS-EVENT:TRUE role=ROLE_PUSH_BUTTON name='Filled Button' ENABLED,FOCUSABLE,FOCUSED,SENSITIVE,SHOWING,VISIBLE
+STATE-CHANGE:FOCUSED:FALSE role=ROLE_DOCUMENT_WEB name='Material Web Button Events' ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE
+STATE-CHANGE:FOCUSED:TRUE role=ROLE_PUSH_BUTTON name='Filled Button' ENABLED,FOCUSABLE,FOCUSED,SENSITIVE,SHOWING,VISIBLE
+=== Accessibility tree after go() pass 1 ===
+[document web] name='Material Web Button Events' enabled sensitive <<<<<< CHANGED
+++[section] name='Ready' enabled sensitive
+++++[section] enabled sensitive
+++++++[section] enabled sensitive
+++++++[push button] name='Filled Button' enabled focused sensitive <<<<<< CHANGED
+++++[section]
+++++++[section] enabled sensitive
+++++++[section] enabled sensitive
+++++++[push button] name='Outlined Button'
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+[document web] name='Material Web Button Events' enabled sensitive
+++[section] name='Ready' enabled sensitive
+++++[section] enabled sensitive
+++++++[section] enabled sensitive
+++++++[push button] name='Filled Button' enabled focused sensitive
+++++[section]
+++++++[section] enabled sensitive
+++++++[section] enabled sensitive
+++++++[push button] name='Outlined Button'
+=== End accessibility tree ===
+FOCUS-EVENT:FALSE role=ROLE_PUSH_BUTTON name='Filled Button' SHOWING,VISIBLE
+FOCUS-EVENT:TRUE role=ROLE_DOCUMENT_WEB name='Material Web Button Events' ENABLED,FOCUSABLE,FOCUSED,SENSITIVE,SHOWING,VISIBLE
+STATE-CHANGE:ENABLED:FALSE role=ROLE_PUSH_BUTTON name='Filled Button' SHOWING,VISIBLE
+STATE-CHANGE:ENABLED:FALSE role=ROLE_SECTION name='(null)' SHOWING,VISIBLE
+STATE-CHANGE:FOCUSED:FALSE role=ROLE_PUSH_BUTTON name='Filled Button' SHOWING,VISIBLE
+STATE-CHANGE:FOCUSED:TRUE role=ROLE_DOCUMENT_WEB name='Material Web Button Events' ENABLED,FOCUSABLE,FOCUSED,SENSITIVE,SHOWING,VISIBLE
+STATE-CHANGE:READ-ONLY:FALSE role=ROLE_PUSH_BUTTON name='Filled Button' SHOWING,VISIBLE
+STATE-CHANGE:READ-ONLY:FALSE role=ROLE_SECTION name='(null)' SHOWING,VISIBLE
+STATE-CHANGE:SENSITIVE:FALSE role=ROLE_PUSH_BUTTON name='Filled Button' SHOWING,VISIBLE
+STATE-CHANGE:SENSITIVE:FALSE role=ROLE_SECTION name='(null)' SHOWING,VISIBLE
+=== Accessibility tree after go() pass 2 ===
+[document web] name='Material Web Button Events' enabled focused sensitive <<<<<< CHANGED
+++[section] name='Ready' enabled sensitive
+++++[section]
+++++++[section] enabled sensitive
+++++++[push button] name='Filled Button' <<<<<< CHANGED
+++++[section]
+++++++[section] enabled sensitive
+++++++[section] enabled sensitive
+++++++[push button] name='Outlined Button'
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+[document web] name='Material Web Button Events' enabled focused sensitive
+++[section] name='Ready' enabled sensitive
+++++[section]
+++++++[section] enabled sensitive
+++++++[push button] name='Filled Button'
+++++[section]
+++++++[section] enabled sensitive
+++++++[section] enabled sensitive
+++++++[push button] name='Outlined Button'
+=== End accessibility tree ===
+STATE-CHANGE:ENABLED:TRUE role=ROLE_PUSH_BUTTON name='Outlined Button' ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE
+STATE-CHANGE:ENABLED:TRUE role=ROLE_SECTION name='(null)' ENABLED,SENSITIVE,SHOWING,VISIBLE
+STATE-CHANGE:READ-ONLY:FALSE role=ROLE_PUSH_BUTTON name='Outlined Button' ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE
+STATE-CHANGE:READ-ONLY:FALSE role=ROLE_SECTION name='(null)' ENABLED,SENSITIVE,SHOWING,VISIBLE
+STATE-CHANGE:SENSITIVE:TRUE role=ROLE_PUSH_BUTTON name='Outlined Button' ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE
+STATE-CHANGE:SENSITIVE:TRUE role=ROLE_SECTION name='(null)' ENABLED,SENSITIVE,SHOWING,VISIBLE
+=== Accessibility tree after go() pass 3 ===
+[document web] name='Material Web Button Events' enabled focused sensitive
+++[section] name='Ready' enabled sensitive
+++++[section]
+++++++[section] enabled sensitive
+++++++[push button] name='Filled Button'
+++++[section] enabled sensitive <<<<<< CHANGED
+++++++[section] enabled sensitive
+++++++[section] enabled sensitive
+++++++[push button] name='Outlined Button' enabled sensitive <<<<<< CHANGED
+=== End accessibility tree ===

@@ -48,7 +48,6 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
   DumpAccessibilityTreeTest();
   ~DumpAccessibilityTreeTest() override;
 
-  std::vector<ui::AXPropertyFilter> DefaultFilters() const override;
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
 

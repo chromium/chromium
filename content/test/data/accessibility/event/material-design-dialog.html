@@ -1,4 +1,6 @@
 <!--
+@WAIT-FOR:Ready
+@EVENTS-TREE-DUMP
 @AURALINUX-DENY:CHILDREN-CHANGED*
 @AURALINUX-DENY:PARENT-CHANGED*
 @UIA-WIN-DENY:*StructureChanged*
@@ -11,6 +13,14 @@
 <html>
 <head>
     <title>Material Web Dialog Events</title>
+    <meta name="viewport" content="width=400, height=300">
+    <style>
+        body {
+            margin: 0;
+            width: 400px;
+            height: 300px;
+        }
+    </style>
     <script type="module">
         import { injectImportMap, loadAndWaitForReady, setupEventTestRunner } from "../material-design/resources/utils.js";
         injectImportMap();
@@ -25,15 +35,35 @@
             const statusDiv = document.getElementById("status");
             const dialog = document.createElement("md-dialog");
             dialog.id = "test-dialog";
-            dialog.innerHTML = `
-                <div slot="headline">Test Dialog</div>
-                <form slot="content" method="dialog">
-                    <p>This is a test dialog.</p>
-                </form>
-                <div slot="actions">
-                    <md-text-button value="ok">OK</md-text-button>
-                </div>
-            `;
+            dialog.quick = true;
+
+            dialog.style.width = "300px";
+            dialog.style.height = "200px";
+
+            const headline = document.createElement("div");
+            headline.slot = "headline";
+            headline.style.padding = "0";
+            headline.style.margin = "0";
+            headline.textContent = "Test";
+
+            const content = document.createElement("form");
+            content.slot = "content";
+            content.method = "dialog";
+            content.style.padding = "0";
+            content.style.margin = "0";
+            content.innerHTML = "<p style='margin:0;padding:0;'>Test</p>";
+
+            const actions = document.createElement("div");
+            actions.slot = "actions";
+
+            const button = document.createElement("md-text-button");
+            button.value = "ok";
+            button.textContent = "OK";
+            actions.appendChild(button);
+
+            dialog.appendChild(headline);
+            dialog.appendChild(content);
+            dialog.appendChild(actions);
             statusDiv.appendChild(dialog);
             statusDiv.setAttribute("aria-label", "Ready");
         });
@@ -45,18 +75,15 @@
 </body>
 <script>
     window.go_passes = [
-        () => {
+        async () => {
             const dialog = document.getElementById("test-dialog");
             if (dialog) {
-                dialog.addEventListener('opened', () => {
-                    setTimeout(() => {
-                        dialog.close();
-                    }, 50);
-                }, { once: true });
+                await dialog.updateComplete;
                 dialog.show();
+                await dialog.updateComplete;
+                await new Promise(resolve => setTimeout(resolve, 200));
             }
         }
     ];
-
 </script>
 </html>

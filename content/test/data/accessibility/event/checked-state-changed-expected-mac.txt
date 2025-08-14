@@ -1,2 +1,14 @@
+=== Accessibility tree before go() pass 1 ===
+AXWebArea
+++AXCheckBox AXDescription='My Checkbox' AXValue=0
+++AXRow AXSubrole=AXOutlineRow AXTitle='Treeitem' AXValue=0
+++++AXStaticText AXValue='Treeitem'
+=== End accessibility tree ===
 AXValueChanged on AXCheckBox AXDescription='My Checkbox' AXValue=1
 AXValueChanged on AXRow AXSubrole=AXOutlineRow AXTitle='Treeitem' AXValue=1
+=== Accessibility tree after go() pass 1 ===
+AXWebArea
+++AXCheckBox AXDescription='My Checkbox' AXValue=1 <<<<<< CHANGED
+++AXRow AXSubrole=AXOutlineRow AXTitle='Treeitem' AXValue=1 <<<<<< CHANGED
+++++AXStaticText AXValue='Treeitem'
+=== End accessibility tree ===

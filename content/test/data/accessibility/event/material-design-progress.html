@@ -1,4 +1,6 @@
 <!--
+@WAIT-FOR:Ready
+@EVENTS-TREE-DUMP
 @AURALINUX-DENY:CHILDREN-CHANGED*
 @AURALINUX-DENY:PARENT-CHANGED*
 @UIA-WIN-DENY:*StructureChanged*
@@ -25,6 +27,7 @@
             const progress = document.createElement("md-linear-progress");
             progress.id = "test-progress";
             progress.setAttribute("aria-label", "Test Progress");
+            progress.value = 0.5; // Set initial value to avoid indeterminate animation
             statusDiv.appendChild(progress);
             statusDiv.setAttribute("aria-label", "Ready");
         });
@@ -36,22 +39,25 @@
 </body>
 <script>
     window.go_passes = [
-        () => {
+        async () => {
             const progress = document.getElementById("test-progress");
             if (progress) {
                 progress.value = 0;
+                await progress.updateComplete;
             }
         },
-        () => {
+        async () => {
             const progress = document.getElementById("test-progress");
             if (progress) {
                 progress.value = 0.7;
+                await progress.updateComplete;
             }
         },
-        () => {
+        async () => {
             const progress = document.getElementById("test-progress");
             if (progress) {
                 progress.value = 1.0;
+                await progress.updateComplete;
             }
         }
     ];

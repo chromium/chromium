@@ -1,4 +1,7 @@
 <!--
+@WAIT-FOR:Ready
+@EVENTS-TREE-DUMP
+@BLINK-DENY:className*
 @AURALINUX-DENY:CHILDREN-CHANGED*
 @AURALINUX-DENY:PARENT-CHANGED*
 @AURALINUX-DENY:FOCUS-EVENT*
@@ -37,6 +40,7 @@
             const menu = document.createElement("md-menu");
             menu.id = "test-menu";
             menu.anchor = "test-menu-button";
+            menu.quick = true;
 
             const menuItem1 = document.createElement("md-menu-item");
             menuItem1.headline = "Menu Item 1";
@@ -72,13 +76,21 @@
                 menu.open = true;
             }
         },
+
         () => {
             const menu = document.getElementById("test-menu");
             if (menu) {
+                // There's a race condition among three things:
+                // 1. focus being automatically restored to the anchor element
+                // 2. the menu being closed
+                // 3. the tree dump being generated
+                // The menu does correctly restore focus automatically, but
+                // the race condition makes obtaining non-flaky tree dumps hard.
+                // Therefore manually set the focus.
+                menu.anchorElement.focus({ preventScroll: true });
                 menu.open = false;
             }
         }
     ];
-
 </script>
 </html>

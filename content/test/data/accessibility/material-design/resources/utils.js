@@ -137,8 +137,9 @@ async function waitForStable(element) {
     await element.updateComplete;
   }
 
-  // Dialogs need extra time.
-  if (element.tagName === "MD-DIALOG") {
+  // Containers need extra time.
+  if (element.tagName === "MD-DIALOG" || element.tagName === "MD-FAB" ||
+      element.tagName === "MD-LIST") {
     await new Promise(resolve => setTimeout(resolve, 100));
     await element.updateComplete;
   }
@@ -247,6 +248,23 @@ export function loadAndWaitForReady(components, callback) {
             return new Promise(resolve => setTimeout(resolve, 200));
         })
         .then(() => {
+            // Show the status div only when everything is ready.
+            targetDiv.style.visibility = "visible";
+            callback();
+        })
+        .then(() => {
+            return new Promise((resolve) => {
+                const checkReady = () => {
+                    if (targetDiv.getAttribute("aria-label") === "Ready") {
+                        resolve();
+                    } else {
+                        setTimeout(checkReady, 50);
+                    }
+                };
+                checkReady();
+            });
+        })
+        .then(() => {
             const elements = targetDiv.querySelectorAll(components.join(","));
             return Promise.all(Array.from(elements).map(el =>
                 el ? waitForStable(el) : Promise.resolve()));
@@ -257,17 +275,13 @@ export function loadAndWaitForReady(components, callback) {
         .then(() => {
             return waitForStableDOMTree();
         })
-        .then(() => {
-            // Show the status div only when everything is ready.
-            targetDiv.style.visibility = "visible";
-            callback();
-        })
         .catch(error => {
             console.error("Failed to load or stabilize components:", error);
             targetDiv.style.visibility = "visible";
             callback();
         });
 }
+
 
 /**
  * Sets up the global go function that the test framework expects.

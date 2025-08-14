@@ -1,4 +1,6 @@
 <!--
+@WAIT-FOR:Ready
+@EVENTS-TREE-DUMP
 @AURALINUX-DENY:CHILDREN-CHANGED*
 @AURALINUX-DENY:PARENT-CHANGED*
 @UIA-WIN-DENY:*StructureChanged*
@@ -26,6 +28,7 @@
             const select = document.createElement("md-filled-select");
             select.id = "test-select";
             select.label = "Test Select";
+            select.quick = true;
             select.setAttribute("aria-label", "Test Select");
             select.value = "option1";
 
@@ -45,7 +48,14 @@
             select.appendChild(option3);
 
             statusDiv.appendChild(select);
-            statusDiv.setAttribute("aria-label", "Ready");
+
+            // Ensure select starts with correct value
+            select.updateComplete.then(() => {
+                select.value = "option1";
+                return select.updateComplete;
+            }).then(() => {
+                statusDiv.setAttribute("aria-label", "Ready");
+            });
         });
     </script>
 </head>
@@ -55,25 +65,33 @@
 </body>
 <script>
     window.go_passes = [
-        () => {
+        async () => {
             const select = document.getElementById("test-select");
             if (select) {
+                await select.updateComplete;
                 select.value = "option2";
+                await select.updateComplete;
+                await new Promise(resolve => setTimeout(resolve, 200));
             }
         },
-        () => {
+        async () => {
             const select = document.getElementById("test-select");
             if (select) {
+                await select.updateComplete;
                 select.value = "option3";
+                await select.updateComplete;
+                await new Promise(resolve => setTimeout(resolve, 200));
             }
         },
-        () => {
+        async () => {
             const select = document.getElementById("test-select");
             if (select) {
+                await select.updateComplete;
                 select.value = "option1";
+                await select.updateComplete;
+                await new Promise(resolve => setTimeout(resolve, 200));
             }
         }
     ];
-
 </script>
 </html>

@@ -1,4 +1,6 @@
 <!--
+@WAIT-FOR:Ready
+@EVENTS-TREE-DUMP
 @AURALINUX-DENY:CHILDREN-CHANGED*
 @AURALINUX-DENY:PARENT-CHANGED*
 @UIA-WIN-DENY:*StructureChanged*
@@ -48,22 +50,27 @@
 </body>
 <script>
     window.go_passes = [
-        () => {
+        async () => {
             const radio1 = document.getElementById("test-option1");
             if (radio1) {
+                await radio1.updateComplete;
                 radio1.checked = true;
+                await radio1.updateComplete;
+                await new Promise(resolve => setTimeout(resolve, 100));
             }
         },
-        () => {
+        async () => {
             const radio2 = document.getElementById("test-option2");
             if (radio2) {
                 radio2.checked = true;
+                await radio2.updateComplete;
             }
         },
-        () => {
+        async () => {
             const radio3 = document.getElementById("test-option3");
             if (radio3) {
                 radio3.checked = true;
+                await radio3.updateComplete;
             }
         }
     ];
