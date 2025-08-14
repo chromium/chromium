@@ -56,25 +56,34 @@ constexpr char kShowStateValueLockedFullscreen[] = "locked-fullscreen";
 #endif
 
 api::tabs::WindowType GetTabsWindowType(const BrowserWindowInterface* browser) {
-#if BUILDFLAG(IS_ANDROID)
-  return api::tabs::WindowType::kNormal;
-#else
-  using BrowserType = BrowserWindowInterface::Type;
-  const BrowserType type = browser->GetType();
-  if (type == BrowserType::TYPE_DEVTOOLS) {
-    return api::tabs::WindowType::kDevtools;
-  }
-  // Browser::TYPE_APP_POPUP is considered 'popup' rather than 'app' since
-  // chrome.windows.create({type: 'popup'}) uses
-  // Browser::CreateParams::CreateForAppPopup().
-  if (type == BrowserType::TYPE_POPUP || type == BrowserType::TYPE_APP_POPUP) {
-    return api::tabs::WindowType::kPopup;
-  }
-  if (type == BrowserType::TYPE_APP) {
-    return api::tabs::WindowType::kApp;
-  }
-  return api::tabs::WindowType::kNormal;
+  switch (browser->GetType()) {
+    case BrowserWindowInterface::TYPE_APP:
+      return api::tabs::WindowType::kApp;
+    // Browser::TYPE_APP_POPUP is considered 'popup' rather than 'app' since
+    // chrome.windows.create({type: 'popup'}) uses
+    // Browser::CreateParams::CreateForAppPopup().
+    case BrowserWindowInterface::TYPE_APP_POPUP:
+    case BrowserWindowInterface::TYPE_POPUP:
+      return api::tabs::WindowType::kPopup;
+#if !BUILDFLAG(IS_ANDROID)
+    case BrowserWindowInterface::TYPE_DEVTOOLS:
+      return api::tabs::WindowType::kDevtools;
 #endif
+
+    // All the following are considered "normal".
+    // TODO(https://crbug.com/438514981): This is almost certainly wrong, and
+    // an artifact of not updating this when new types were added. PIP is
+    // closer to a popup, and custom tabs might be app-like (if they can even
+    // reach this point).
+    case BrowserWindowInterface::TYPE_NORMAL:
+#if !BUILDFLAG(IS_ANDROID)
+    case BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE:
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+    case BrowserWindowInterface::TYPE_CUSTOM_TAB:
+#endif
+      return api::tabs::WindowType::kNormal;
+  }
 }
 
 }  // anonymous namespace
