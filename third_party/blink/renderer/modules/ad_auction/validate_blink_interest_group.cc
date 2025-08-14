@@ -354,7 +354,7 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
         error = "renderURLs must be HTTPS and have no embedded credentials.";
         return false;
       }
-      const WTF::String& ad_size_group = group.ads.value()[i]->size_group;
+      const String& ad_size_group = group.ads.value()[i]->size_group;
       if (!ad_size_group.IsNull()) {
         if (ad_size_group.empty()) {
           error_field_name = String::Format("ads[%u].sizeGroup", i);
@@ -426,7 +426,7 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
         error = "renderURLs must be HTTPS and have no embedded credentials.";
         return false;
       }
-      const WTF::String& ad_component_size_group =
+      const String& ad_component_size_group =
           group.ad_components.value()[i]->size_group;
       if (!ad_component_size_group.IsNull()) {
         if (ad_component_size_group.empty()) {

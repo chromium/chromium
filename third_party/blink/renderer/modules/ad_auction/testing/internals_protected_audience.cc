@@ -50,7 +50,7 @@ InternalsProtectedAudience::setProtectedAudienceKAnonymity(
   auto* raw_sandbox_automation = sandbox_automation.get();
   raw_sandbox_automation->SetProtectedAudienceKAnonymity(
       owner_origin, name, hashes_base64,
-      WTF::BindOnce(
+      BindOnce(
           // The remote is taken to take its ownership.
           [](ScriptPromiseResolver<IDLUndefined>* resolver,
              mojo::Remote<test::mojom::blink::WebPrivacySandboxAutomation>) {

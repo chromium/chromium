@@ -40,9 +40,9 @@ v8::Local<v8::Value> MakeV8Val(ScriptState* script_state,
   }
 }
 
-WTF::Vector<std::pair<String, FeatureVal>> MakeFeatureStatusVector(
+Vector<std::pair<String, FeatureVal>> MakeFeatureStatusVector(
     ExecutionContext* execution_context) {
-  WTF::Vector<std::pair<String, FeatureVal>> feature_status;
+  Vector<std::pair<String, FeatureVal>> feature_status;
   feature_status.emplace_back(String("adComponentsLimit"),
                               FeatureVal(MaxAdAuctionAdComponents()));
   feature_status.emplace_back(

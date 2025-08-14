@@ -913,8 +913,8 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeSizeGroups) {
     // "group ", and 100 - 6 - 5 = 89 bytes of numerical characters, where the 5
     // represents the length of the 1 size name being stored in the vector.
     String name_string = String::FromUTF8(base::StringPrintf("group %.89i", i));
-    blink_interest_group->size_groups->insert(
-        name_string, WTF::Vector<WTF::String>{"size1"});
+    blink_interest_group->size_groups->insert(name_string,
+                                              Vector<String>{"size1"});
   }
   size_t current_estimate =
       EstimateBlinkInterestGroupSize(*blink_interest_group);
@@ -946,7 +946,7 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeAds) {
   mojom::blink::InterestGroupPtr blink_interest_group =
       CreateMinimalInterestGroup();
   blink_interest_group->name =
-      WTF::String("paddingTo1048576" + std::string(12, 'P'));
+      String("paddingTo1048576" + std::string(12, 'P'));
   blink_interest_group->ad_components.emplace();
   for (int i = 0; i < 13980; ++i) {
     // Each ad component is 75 bytes.
@@ -1050,7 +1050,7 @@ TEST_F(ValidateBlinkInterestGroupTest, InvalidSizeGroups) {
     }
     blink_interest_group->size_groups.emplace();
     blink_interest_group->size_groups->insert(
-        test_case.size_group, WTF::Vector<WTF::String>(1, test_case.size_name));
+        test_case.size_group, Vector<String>(1, test_case.size_name));
     ExpectInterestGroupIsNotValid(
         blink_interest_group,
         /*expected_error_field_name=*/String::FromUTF8("sizeGroups"),
@@ -1091,8 +1091,8 @@ TEST_F(ValidateBlinkInterestGroupTest, AdSizeGroupEmptyNameOrNotInSizeGroups) {
                          300, blink::AdSize::LengthUnit::kPixels, 150,
                          blink::AdSize::LengthUnit::kPixels));
     blink_interest_group->size_groups.emplace();
-    blink_interest_group->size_groups->insert(
-        test_case.size_group, WTF::Vector<WTF::String>(1, "size_name"));
+    blink_interest_group->size_groups->insert(test_case.size_group,
+                                              Vector<String>(1, "size_name"));
     ExpectInterestGroupIsNotValid(
         blink_interest_group,
         /*expected_error_field_name=*/String::FromUTF8("ads[0].sizeGroup"),
@@ -1135,8 +1135,8 @@ TEST_F(ValidateBlinkInterestGroupTest,
                          300, blink::AdSize::LengthUnit::kPixels, 150,
                          blink::AdSize::LengthUnit::kPixels));
     blink_interest_group->size_groups.emplace();
-    blink_interest_group->size_groups->insert(
-        test_case.size_group, WTF::Vector<WTF::String>(1, "size_name"));
+    blink_interest_group->size_groups->insert(test_case.size_group,
+                                              Vector<String>(1, "size_name"));
     ExpectInterestGroupIsNotValid(blink_interest_group,
                                   /*expected_error_field_name=*/
                                   String::FromUTF8("adComponents[0].sizeGroup"),

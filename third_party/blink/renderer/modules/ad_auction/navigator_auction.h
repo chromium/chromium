@@ -267,7 +267,7 @@ class MODULES_EXPORT NavigatorAuction final
 
   // Completion callback for createAdRequest() Mojo call.
   void AdsRequested(ScriptPromiseResolver<Ads>* resolver,
-                    const WTF::String& ads_guid);
+                    const String& ads_guid);
   // Completion callback for finalizeAd() Mojo call.
   void FinalizeAdComplete(ScriptPromiseResolver<IDLString>* resolver,
                           const std::optional<KURL>& creative_url);

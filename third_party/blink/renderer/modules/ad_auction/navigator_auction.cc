@@ -732,11 +732,11 @@ bool CopyOwnerFromIdlToMojo(const ExecutionContext& execution_context,
 }
 
 // Converts a sparse vector used in `priority_vector` and
-// `priority_signals_overrides` to a WTF::HashMap, as is used in mojom structs.
+// `priority_signals_overrides` to a HashMap, as is used in mojom structs.
 // Has no failure cases.
-WTF::HashMap<WTF::String, double> ConvertSparseVectorIdlToMojo(
-    const Vector<std::pair<WTF::String, double>>& priority_signals_in) {
-  WTF::HashMap<WTF::String, double> priority_signals_out;
+HashMap<String, double> ConvertSparseVectorIdlToMojo(
+    const Vector<std::pair<String, double>>& priority_signals_in) {
+  HashMap<String, double> priority_signals_out;
   for (const auto& key_value_pair : priority_signals_in) {
     priority_signals_out.insert(key_value_pair.first, key_value_pair.second);
   }
@@ -805,7 +805,7 @@ bool CopySellerCapabilitiesFromIdlToMojo(
 bool CopyExecutionModeFromIdlToMojo(
     const ExecutionContext& execution_context,
     ExceptionState& exception_state,
-    const WTF::String& execution_mode,
+    const String& execution_mode,
     const bool check_deprecated_names,
     mojom::blink::InterestGroup::ExecutionMode& output) {
   if (check_deprecated_names) {
@@ -1224,7 +1224,7 @@ bool CopyAdditionalBidKeyFromIdlToMojo(
   if (!input.hasAdditionalBidKey()) {
     return true;
   }
-  WTF::Vector<uint8_t> decoded_key;
+  Vector<uint8_t> decoded_key;
   if (!Base64Decode(input.additionalBidKey(), decoded_key,
                     Base64DecodePolicy::kForgiving)) {
     exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
@@ -1898,10 +1898,10 @@ void CopyDirectFromSellerSignalsHeaderAdSlotFromIdlToMojo(
   output.expects_direct_from_seller_signals_header_ad_slot = true;
 }
 
-WTF::Vector<mojom::blink::AdKeywordReplacementPtr>
+Vector<mojom::blink::AdKeywordReplacementPtr>
 ConvertNonPromiseDeprecatedRenderURLReplacementsFromV8ToMojo(
     const std::optional<Vector<std::pair<String, String>>>& input) {
-  WTF::Vector<mojom::blink::AdKeywordReplacementPtr> output;
+  Vector<mojom::blink::AdKeywordReplacementPtr> output;
   if (!input.has_value()) {
     return output;
   }
@@ -2359,8 +2359,8 @@ bool CopyPerBuyerGroupLimitsFromIdlToMojo(
 bool ConvertAuctionConfigPrioritySignalsFromIdlToMojo(
     ExceptionState& exception_state,
     const AuctionAdConfig& input,
-    const Vector<std::pair<WTF::String, double>>& priority_signals_in,
-    WTF::HashMap<WTF::String, double>& priority_signals_out) {
+    const Vector<std::pair<String, double>>& priority_signals_in,
+    HashMap<String, double>& priority_signals_out) {
   for (const auto& key_value_pair : priority_signals_in) {
     if (key_value_pair.first.StartsWith("browserSignals.")) {
       exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
@@ -2385,7 +2385,7 @@ bool CopyPerBuyerPrioritySignalsFromIdlToMojo(
       .emplace();
   for (const auto& per_buyer_priority_signals :
        input.perBuyerPrioritySignals()) {
-    WTF::HashMap<WTF::String, double> signals;
+    HashMap<String, double> signals;
     if (!ConvertAuctionConfigPrioritySignalsFromIdlToMojo(
             exception_state, input, per_buyer_priority_signals.second,
             signals)) {
@@ -3369,7 +3369,7 @@ void NavigatorAuction::AuctionHandle::DeprecatedRenderURLReplacementsResolved::
   if (!script_state->ContextIsValid()) {
     return;
   }
-  WTF::Vector<mojom::blink::AdKeywordReplacementPtr>
+  Vector<mojom::blink::AdKeywordReplacementPtr>
       deprecated_render_url_replacements =
           ConvertNonPromiseDeprecatedRenderURLReplacementsFromV8ToMojo(value);
   for (const auto& replacement : deprecated_render_url_replacements) {
@@ -3580,16 +3580,14 @@ void NavigatorAuction::AuctionHandle::ResolveToConfigResolved::React(
 NavigatorAuction::NavigatorAuction(Navigator& navigator)
     : Supplement(navigator),
       queued_cross_site_joins_(kMaxActiveCrossSiteJoins,
-                               WTF::BindRepeating(&NavigatorAuction::StartJoin,
-                                                  WrapWeakPersistent(this))),
-      queued_cross_site_leaves_(
-          kMaxActiveCrossSiteLeaves,
-          WTF::BindRepeating(&NavigatorAuction::StartLeave,
-                             WrapWeakPersistent(this))),
-      queued_cross_site_clears_(
-          kMaxActiveCrossSiteClears,
-          WTF::BindRepeating(&NavigatorAuction::StartClear,
-                             WrapWeakPersistent(this))),
+                               BindRepeating(&NavigatorAuction::StartJoin,
+                                             WrapWeakPersistent(this))),
+      queued_cross_site_leaves_(kMaxActiveCrossSiteLeaves,
+                                BindRepeating(&NavigatorAuction::StartLeave,
+                                              WrapWeakPersistent(this))),
+      queued_cross_site_clears_(kMaxActiveCrossSiteClears,
+                                BindRepeating(&NavigatorAuction::StartClear,
+                                              WrapWeakPersistent(this))),
       ad_auction_service_(navigator.GetExecutionContext()),
       protected_audience_(MakeGarbageCollected<ProtectedAudience>(
           navigator.GetExecutionContext())) {
@@ -3716,8 +3714,8 @@ ScriptPromise<IDLUndefined> NavigatorAuction::joinAdInterestGroup(
   auto promise = resolver->Promise();
   mojom::blink::AdAuctionService::JoinInterestGroupCallback callback =
       resolver->WrapCallbackInScriptScope(
-          WTF::BindOnce(&NavigatorAuction::JoinComplete,
-                        WrapWeakPersistent(this), is_cross_origin));
+          BindOnce(&NavigatorAuction::JoinComplete, WrapWeakPersistent(this),
+                   is_cross_origin));
 
   PendingJoin pending_join{std::move(mojo_group), std::move(callback)};
   if (is_cross_origin) {
@@ -3780,8 +3778,8 @@ ScriptPromise<IDLUndefined> NavigatorAuction::leaveAdInterestGroup(
   auto promise = resolver->Promise();
   mojom::blink::AdAuctionService::LeaveInterestGroupCallback callback =
       resolver->WrapCallbackInScriptScope(
-          WTF::BindOnce(&NavigatorAuction::LeaveComplete,
-                        WrapWeakPersistent(this), is_cross_origin));
+          BindOnce(&NavigatorAuction::LeaveComplete, WrapWeakPersistent(this),
+                   is_cross_origin));
 
   PendingLeave pending_leave{std::move(owner), std::move(group_key->name()),
                              std::move(callback)};
@@ -3890,8 +3888,8 @@ ScriptPromise<IDLUndefined> NavigatorAuction::clearOriginJoinedAdInterestGroups(
   auto promise = resolver->Promise();
   mojom::blink::AdAuctionService::LeaveInterestGroupCallback callback =
       resolver->WrapCallbackInScriptScope(
-          WTF::BindOnce(&NavigatorAuction::ClearComplete,
-                        WrapWeakPersistent(this), is_cross_origin));
+          BindOnce(&NavigatorAuction::ClearComplete, WrapWeakPersistent(this),
+                   is_cross_origin));
 
   PendingClear pending_clear{owner, std::move(interest_groups_to_keep),
                              std::move(callback)};
@@ -4090,10 +4088,10 @@ NavigatorAuction::runAdAuction(ScriptState* script_state,
   bool is_server_auction = config->hasServerResponse();
   ad_auction_service_->RunAdAuction(
       std::move(mojo_config), std::move(abort_receiver),
-      WTF::BindOnce(&NavigatorAuction::AuctionHandle::AuctionComplete,
-                    WrapPersistent(auction_handle), WrapPersistent(resolver),
-                    std::move(scoped_abort_state), std::move(start_time),
-                    std::move(is_server_auction)));
+      blink::BindOnce(&NavigatorAuction::AuctionHandle::AuctionComplete,
+                      WrapPersistent(auction_handle), WrapPersistent(resolver),
+                      std::move(scoped_abort_state), std::move(start_time),
+                      std::move(is_server_auction)));
   return promise;
 }
 
@@ -4176,7 +4174,7 @@ ScriptPromise<IDLUSVString> NavigatorAuction::deprecatedURNToURL(
   auto promise = resolver->Promise();
   ad_auction_service_->DeprecatedGetURLFromURN(
       std::move(uuid_url), send_reports,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(BindOnce(
           &NavigatorAuction::GetURLFromURNComplete, WrapPersistent(this))));
   return promise;
 }
@@ -4241,7 +4239,7 @@ ScriptPromise<IDLUndefined> NavigatorAuction::deprecatedReplaceInURN(
   auto promise = resolver->Promise();
   ad_auction_service_->DeprecatedReplaceInURN(
       std::move(uuid_url), std::move(replacements_list),
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(BindOnce(
           &NavigatorAuction::ReplaceInURNComplete, WrapPersistent(this))));
   return promise;
 }
@@ -4319,8 +4317,8 @@ ScriptPromise<Ads> NavigatorAuction::createAdRequest(
   auto promise = resolver->Promise();
   ad_auction_service_->CreateAdRequest(
       std::move(mojo_config),
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          &NavigatorAuction::AdsRequested, WrapPersistent(this))));
+      resolver->WrapCallbackInScriptScope(
+          BindOnce(&NavigatorAuction::AdsRequested, WrapPersistent(this))));
   return promise;
 }
 
@@ -4340,7 +4338,7 @@ ScriptPromise<Ads> NavigatorAuction::createAdRequest(
 }
 
 void NavigatorAuction::AdsRequested(ScriptPromiseResolver<Ads>* resolver,
-                                    const WTF::String&) {
+                                    const String&) {
   // TODO(https://crbug.com/1249186): Add full impl of methods.
   resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
       resolver->GetScriptState()->GetIsolate(),
@@ -4386,7 +4384,7 @@ ScriptPromise<IDLString> NavigatorAuction::finalizeAd(
   auto promise = resolver->Promise();
   ad_auction_service_->FinalizeAd(
       ads->GetGuid(), std::move(mojo_config),
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(BindOnce(
           &NavigatorAuction::FinalizeAdComplete, WrapPersistent(this))));
   return promise;
 }
@@ -4686,8 +4684,8 @@ ScriptPromise<AdAuctionData> NavigatorAuction::getInterestGroupAdAuctionData(
   if (!script_state->ContextIsValid()) {
     return EmptyPromise();
   }
-  WTF::HashMap<scoped_refptr<const SecurityOrigin>,
-               scoped_refptr<const SecurityOrigin>>
+  HashMap<scoped_refptr<const SecurityOrigin>,
+          scoped_refptr<const SecurityOrigin>>
       sellers;
   bool is_single_seller = false;
   // Keep the seller being required when
@@ -4792,7 +4790,7 @@ ScriptPromise<AdAuctionData> NavigatorAuction::getInterestGroupAdAuctionData(
   auto promise = resolver->Promise();
   ad_auction_service_->GetInterestGroupAdAuctionData(
       std::move(sellers), std::move(*maybe_config_ptr),
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(blink::BindOnce(
           &NavigatorAuction::GetInterestGroupAdAuctionDataComplete,
           WrapPersistent(this), std::move(start_time), is_single_seller)));
   return promise;

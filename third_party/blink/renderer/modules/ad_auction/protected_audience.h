@@ -32,7 +32,7 @@ class ProtectedAudience : public ScriptWrappable {
  private:
   // As the number of entries grows, an actual dictionary type may become
   // appropriate.
-  WTF::Vector<std::pair<String, FeatureVal>> feature_status_;
+  Vector<std::pair<String, FeatureVal>> feature_status_;
 };
 
 }  // namespace blink
