@@ -75,6 +75,34 @@ def CreateArgumentParser():
   return parser
 
 
+def GenerateOrderfile(options, device):
+  """Generates an orderfile for a given device."""
+  host_profile_root = options.out_dir / 'profile_data'
+  profiler = android_profile_tool.AndroidProfileTool(
+      str(host_profile_root),
+      device,
+      debug=options.streamline_for_debugging,
+      verbosity=options.verbosity)
+
+  lib_chrome_so = orderfile_shared.GetLibchromeSoPath(options.out_dir,
+                                                      options.arch)
+  try:
+    files = orderfile_shared.CollectProfiles(profiler, options.profile_webview,
+                                             options.arch,
+                                             options.android_browser,
+                                             str(options.out_dir))
+    ordered_symbols, _ = orderfile_shared.ProcessProfiles(files, lib_chrome_so)
+    with open(_GetUnpatchedOrderfileFilename(options), 'w') as orderfile:
+      orderfile.write('\n'.join(ordered_symbols))
+  finally:
+    if not options.save_profile_data:
+      profiler.Cleanup()
+    logging.getLogger().setLevel(logging.INFO)
+
+  orderfile_shared.AddDummyFunctions(_GetUnpatchedOrderfileFilename(options),
+                                     _GetOrderfileFilename(options))
+
+
 def main():
   parser = CreateArgumentParser()
   options = parser.parse_args()
@@ -97,34 +125,8 @@ def main():
   assert devices, 'Expected at least one connected device'
   device = devices[0]
 
-  host_profile_root = options.out_dir / 'profile_data'
-  profiler = android_profile_tool.AndroidProfileTool(
-      str(host_profile_root),
-      device,
-      debug=options.streamline_for_debugging,
-      verbosity=options.verbosity)
-
-  files = []
   logging.getLogger().setLevel(logging.DEBUG)
-
-  lib_chrome_so = orderfile_shared.GetLibchromeSoPath(options.out_dir,
-                                                      options.arch)
-  files = orderfile_shared.CollectProfiles(profiler, options.profile_webview,
-                                           options.arch,
-                                           options.android_browser,
-                                           str(options.out_dir))
-
-  try:
-    ordered_symbols, _ = orderfile_shared.ProcessProfiles(files, lib_chrome_so)
-    with open(_GetUnpatchedOrderfileFilename(options), 'w') as orderfile:
-      orderfile.write('\n'.join(ordered_symbols))
-  finally:
-    if not options.save_profile_data:
-      profiler.Cleanup()
-    logging.getLogger().setLevel(logging.INFO)
-
-  orderfile_shared.AddDummyFunctions(_GetUnpatchedOrderfileFilename(options),
-                                     _GetOrderfileFilename(options))
+  GenerateOrderfile(options, device)
 
 
 if __name__ == '__main__':
