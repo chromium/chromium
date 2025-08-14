@@ -1947,11 +1947,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 #pragma mark - Reader mode Utilities
 
-- (void)showReaderMode {
+- (BOOL)showReaderModeAndWaitUntilReaderModeWebStateIsReady {
   [ReaderModeAppInterface showReaderMode];
-}
-
-- (BOOL)waitUntilReaderModeWebStateIsReady {
   auto verifyBlock = ^BOOL {
     return [ReaderModeAppInterface readerModeWebStateIsReady];
   };

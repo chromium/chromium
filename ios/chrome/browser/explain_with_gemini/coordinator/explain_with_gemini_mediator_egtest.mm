@@ -247,9 +247,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [self loadPage];
 
   // Open Reader Mode UI.
-  [ChromeEarlGrey showReaderMode];
-  GREYAssertTrue([ChromeEarlGrey waitUntilReaderModeWebStateIsReady],
-                 @"Reader mode content could not be loaded.");
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded.");
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];

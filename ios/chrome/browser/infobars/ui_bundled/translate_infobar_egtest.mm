@@ -1287,9 +1287,9 @@ void TestResponseProvider::GetLanguageResponse(
   [ChromeEarlGrey loadURL:URL];
 
   // Open Reader Mode.
-  [ChromeEarlGrey showReaderMode];
-  GREYAssertTrue([ChromeEarlGrey waitUntilReaderModeWebStateIsReady],
-                 @"Reader mode content could not be loaded.");
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded.");
 
   // Verify Reader Mode is active.
   [ChromeEarlGrey
@@ -1349,9 +1349,9 @@ void TestResponseProvider::GetLanguageResponse(
       performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   // Open Reader Mode.
-  [ChromeEarlGrey showReaderMode];
-  GREYAssertTrue([ChromeEarlGrey waitUntilReaderModeWebStateIsReady],
-                 @"Reader mode content could not be loaded.");
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded.");
 
   // Verify Reader Mode is active.
   [ChromeEarlGrey

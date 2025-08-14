@@ -288,7 +288,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Open Reader Mode UI.
-  [ChromeEarlGrey showReaderMode];
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
@@ -371,9 +373,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 - (void)testUpdateReaderModeTheme {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
 
-  [ChromeEarlGrey showReaderMode];
-  GREYAssertTrue([ChromeEarlGrey waitUntilReaderModeWebStateIsReady],
-                 @"Reader mode content could not be loaded");
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
 
   ExpectBodyHasThemeAndFont("light", "sans-serif");
 
@@ -388,9 +390,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 - (void)DISABLED_testUpdateReaderModeFont {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
 
-  [ChromeEarlGrey showReaderMode];
-  GREYAssertTrue([ChromeEarlGrey waitUntilReaderModeWebStateIsReady],
-                 @"Reader mode content could not be loaded");
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Tap the chip to open the options view.
@@ -436,7 +438,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Open Reader Mode UI.
-  [ChromeEarlGrey showReaderMode];
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
 
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
@@ -460,7 +464,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Open Reader Mode UI.
-  [ChromeEarlGrey showReaderMode];
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
 
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
@@ -541,7 +547,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Open Reader Mode UI.
-  [ChromeEarlGrey showReaderMode];
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
 
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
@@ -573,7 +581,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Open Reader Mode UI.
-  [ChromeEarlGrey showReaderMode];
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
 
   // Tap the chip to open the options view.
   [ChromeEarlGrey
@@ -651,7 +661,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Open Reader Mode UI.
-  [ChromeEarlGrey showReaderMode];
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
 
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
@@ -705,7 +717,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Open Reader Mode UI.
-  [ChromeEarlGrey showReaderMode];
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
 
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
@@ -741,7 +755,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Open Reader Mode UI.
-  [ChromeEarlGrey showReaderMode];
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
 
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
@@ -785,7 +801,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Open Reader Mode UI.
-  [ChromeEarlGrey showReaderMode];
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
 
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
@@ -818,7 +836,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Open Reader Mode UI.
-  [ChromeEarlGrey showReaderMode];
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
 
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
@@ -956,7 +976,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Open Reader Mode UI.
-  [ChromeEarlGrey showReaderMode];
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
@@ -1027,9 +1049,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Open Reader Mode UI.
-  [ChromeEarlGrey showReaderMode];
-  GREYAssertTrue([ChromeEarlGrey waitUntilReaderModeWebStateIsReady],
-                 @"Reader mode content could not be loaded");
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
 
   // Open the tools menu and tap the text zoom button.
   [ChromeEarlGreyUI openToolsMenu];
@@ -1114,7 +1136,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Open Reader Mode UI.
-  [ChromeEarlGrey showReaderMode];
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
