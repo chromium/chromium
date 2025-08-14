@@ -21,21 +21,13 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/host/glic_features.mojom-features.h"
-#include "chrome/browser/glic/public/context/glic_sharing_manager.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/test_support/glic_test_util.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace tabs {
 
@@ -57,47 +49,14 @@ class MockTabAlertControllerSubscriber {
                void(std::optional<TabAlert> new_alert));
 };
 
-#if BUILDFLAG(ENABLE_GLIC)
-class TestGlicKeyedService : public glic::GlicKeyedService {
- public:
-  TestGlicKeyedService(
-      content::BrowserContext* browser_context,
-      signin::IdentityManager* identity_manager,
-      ProfileManager* profile_manager,
-      glic::GlicProfileManager* glic_profile_manager,
-      contextual_cueing::ContextualCueingService* contextual_cueing_service)
-      : GlicKeyedService(Profile::FromBrowserContext(browser_context),
-                         identity_manager,
-                         profile_manager,
-                         glic_profile_manager,
-                         contextual_cueing_service) {}
-};
-#endif  // BUILDFLAG(ENABLE_GLIC)
-
 class TabAlertControllerTest : public testing::Test {
  public:
   void SetUp() override {
-#if BUILDFLAG(ENABLE_GLIC)
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton,
-         glic::mojom::features::kGlicMultiTab},
-        {});
-#endif  // BUILDFLAG(ENABLE_GLIC)
-
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
     TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
     profile_ = testing_profile_manager_->CreateTestingProfile("profile");
-
-#if BUILDFLAG(ENABLE_GLIC)
-    test_glic_keyed_service_ = std::make_unique<TestGlicKeyedService>(
-        profile_, identity_test_environment.identity_manager(),
-        testing_profile_manager_->profile_manager(), &glic_profile_manager_,
-        /*contextual_cueing_service=*/nullptr);
-    glic::ForceSigninAndModelExecutionCapability(profile_);
-#endif  // BUILDFLAG(ENABLE_GLIC)
-
     browser_window_interface_ =
         std::make_unique<FakeBrowserWindowInterface>(profile_);
     tab_strip_model_delegate_ = std::make_unique<TestTabStripModelDelegate>();
@@ -110,14 +69,8 @@ class TabAlertControllerTest : public testing::Test {
         content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
     tab_model_ = std::make_unique<TabModel>(std::move(web_contents),
                                             tab_strip_model_.get());
-
-#if BUILDFLAG(ENABLE_GLIC)
-    tab_alert_controller_ = std::make_unique<TabAlertController>(
-        *tab_model_.get(), test_glic_keyed_service_.get());
-#else
     tab_alert_controller_ =
         std::make_unique<TabAlertController>(*tab_model_.get());
-#endif  // BUILDFLAG(ENABLE_GLIC)
   }
 
   void TearDown() override {
@@ -128,9 +81,6 @@ class TabAlertControllerTest : public testing::Test {
     tab_strip_model_.reset();
     tab_strip_model_delegate_.reset();
     browser_window_interface_.reset();
-#if BUILDFLAG(ENABLE_GLIC)
-    test_glic_keyed_service_.reset();
-#endif  // BUILDFLAG(ENABLE_GLIC)
     profile_ = nullptr;
     TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
     testing_profile_manager_.reset();
@@ -151,12 +101,6 @@ class TabAlertControllerTest : public testing::Test {
     return &task_environment_;
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
-  TestGlicKeyedService* test_glic_keyed_service() {
-    return test_glic_keyed_service_.get();
-  }
-#endif  // BUILDFLAG(ENABLE_GLIC)
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_{
@@ -164,13 +108,6 @@ class TabAlertControllerTest : public testing::Test {
   content::RenderViewHostTestEnabler test_enabler_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<Profile> profile_ = nullptr;
-  signin::IdentityTestEnvironment identity_test_environment;
-
-#if BUILDFLAG(ENABLE_GLIC)
-  glic::GlicProfileManager glic_profile_manager_;
-  std::unique_ptr<TestGlicKeyedService> test_glic_keyed_service_;
-#endif  // BUILDFLAG(ENABLE_GLIC)
-
   std::unique_ptr<FakeBrowserWindowInterface> browser_window_interface_;
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
@@ -286,18 +223,4 @@ TEST_F(TabAlertControllerTest, AudioStateUpdatesAlertController) {
   task_environment()->FastForwardBy(base::Seconds(2));
   EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
 }
-
-#if BUILDFLAG(ENABLE_GLIC)
-TEST_F(TabAlertControllerTest, GlicSharingUpdatesAlertController) {
-  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
-  glic::GlicSharingManager& glic_sharing_manager =
-      test_glic_keyed_service()->sharing_manager();
-  glic_sharing_manager.PinTabs({tab_interface()->GetHandle()});
-  EXPECT_TRUE(tab_alert_controller()->GetAlertToShow().has_value());
-  EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
-            TabAlert::GLIC_SHARING);
-  glic_sharing_manager.UnpinAllTabs();
-  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
-}
-#endif  // BUILDFLAG(ENABLE_GLIC)
 }  // namespace tabs

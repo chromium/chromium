@@ -22,20 +22,10 @@
 #include "content/public/browser/web_contents_capability_type.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
-
-namespace {
-glic::GlicKeyedService* GetGlicKeyedService(
-    BrowserWindowInterface* browser_window_interface) {
-#if BUILDFLAG(ENABLE_GLIC)
-  return glic::GlicKeyedService::Get(browser_window_interface->GetProfile());
-#else
-  return nullptr;
-#endif  // BUILDFLAG(ENABLE_GLIC)
-}
-}  // namespace
 
 namespace tabs {
 
@@ -65,13 +55,6 @@ bool CompareAlerts::operator()(TabAlert first, TabAlert second) const {
 }
 
 TabAlertController::TabAlertController(TabInterface& tab)
-    : TabAlertController(tab,
-                         GetGlicKeyedService(tab.GetBrowserWindowInterface())) {
-}
-
-TabAlertController::TabAlertController(
-    TabInterface& tab,
-    glic::GlicKeyedService* glic_keyed_service)
     : tabs::ContentsObservingTabFeature(tab) {
   media_stream_capture_indicator_observation_.Observe(
       MediaCaptureDevicesDispatcher::GetInstance()
@@ -94,21 +77,16 @@ TabAlertController::TabAlertController(
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (glic_keyed_service) {
-    callback_subscriptions_.push_back(
-        glic_keyed_service->AddContextAccessIndicatorStatusChangedCallback(
-            base::BindRepeating(
-                &TabAlertController::OnGlicContextAccessIndicatorStatusChanged,
-                base::Unretained(this))));
-    glic::GlicSharingManager& glic_sharing_manager =
-        glic_keyed_service->sharing_manager();
+  glic::GlicTabIndicatorHelper* const glic_tab_indicator_helper =
+      glic::GlicTabIndicatorHelper::From(&tab);
+  if (glic_tab_indicator_helper) {
     callback_subscriptions_.emplace_back(
-        glic_sharing_manager.AddFocusedTabChangedCallback(base::BindRepeating(
-            &TabAlertController::OnGlicSharingFocusedTabChanged,
-            base::Unretained(this))));
+        glic_tab_indicator_helper->RegisterGlicSharingStateChange(
+            base::BindRepeating(&TabAlertController::OnGlicSharingStateChange,
+                                base::Unretained(this))));
     callback_subscriptions_.emplace_back(
-        glic_sharing_manager.AddTabPinningStatusChangedCallback(
-            base::BindRepeating(&TabAlertController::OnGlicTabPinningChanged,
+        glic_tab_indicator_helper->RegisterGlicAccessingStateChange(
+            base::BindRepeating(&TabAlertController::OnGlicAccessingStateChange,
                                 base::Unretained(this))));
   }
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -233,29 +211,12 @@ void TabAlertController::OnIsContentDisplayedInHeadsetChanged(bool state) {
 }
 
 #if BUILDFLAG(ENABLE_GLIC)
-void TabAlertController::OnGlicContextAccessIndicatorStatusChanged(
-    bool is_accessing) {
-  UpdateAlertState(TabAlert::GLIC_ACCESSING,
-                   GetGlicKeyedService(tab().GetBrowserWindowInterface())
-                       ->IsContextAccessIndicatorShown(tab().GetContents()));
+void TabAlertController::OnGlicSharingStateChange(bool is_sharing) {
+  UpdateAlertState(TabAlert::GLIC_SHARING, is_sharing);
 }
 
-void TabAlertController::OnGlicSharingFocusedTabChanged(
-    const glic::FocusedTabData& focused_tab_data) {
-  const bool is_alert_active =
-      focused_tab_data.focus() != &tab()
-          ? false
-          : GetGlicKeyedService(tab().GetBrowserWindowInterface())
-                ->IsContextAccessIndicatorShown(tab().GetContents());
-  UpdateAlertState(TabAlert::GLIC_ACCESSING, is_alert_active);
-}
-
-void TabAlertController::OnGlicTabPinningChanged(
-    tabs::TabInterface* tab_interface,
-    bool is_sharing) {
-  if (tab_interface->GetContents() == web_contents()) {
-    UpdateAlertState(TabAlert::GLIC_SHARING, is_sharing);
-  }
+void TabAlertController::OnGlicAccessingStateChange(bool is_accessing) {
+  UpdateAlertState(TabAlert::GLIC_ACCESSING, is_accessing);
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

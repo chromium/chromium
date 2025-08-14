@@ -22,11 +22,6 @@ enum class WebContentsCapabilityType;
 class WebContents;
 }  // namespace content
 
-namespace glic {
-class FocusedTabData;
-class GlicKeyedService;
-}  // namespace glic
-
 namespace tabs {
 class TabInterface;
 
@@ -44,9 +39,6 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
                            public vr::VrTabHelper::Observer {
  public:
   explicit TabAlertController(TabInterface& tab);
-
-  TabAlertController(TabInterface& tab,
-                     glic::GlicKeyedService* glic_keyed_service);
   TabAlertController(const TabAlertController&) = delete;
   TabAlertController& operator=(const TabAlertController&) = delete;
   ~TabAlertController() override;
@@ -92,11 +84,8 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
 
  private:
 #if BUILDFLAG(ENABLE_GLIC)
-  void OnGlicContextAccessIndicatorStatusChanged(bool is_accessing);
-  void OnGlicSharingFocusedTabChanged(
-      const glic::FocusedTabData& focused_tab_data);
-  void OnGlicTabPinningChanged(tabs::TabInterface* tab_interface,
-                               bool is_sharing);
+  void OnGlicSharingStateChange(bool is_sharing);
+  void OnGlicAccessingStateChange(bool is_accessing);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
   void OnActorTabIndicatorStateChanged(bool is_accessing);

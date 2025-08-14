@@ -78,6 +78,7 @@ source_set("glic") {
     "//components/variations",
     "//content/public/browser",
     "//google_apis/common",
+    "//ui/base/unowned_user_data",
     "//ui/views",
     "//ui/views/controls/webview",
     "//ui/webui",
