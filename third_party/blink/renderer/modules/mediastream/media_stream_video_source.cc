@@ -592,7 +592,7 @@ scoped_refptr<VideoTrackAdapter> MediaStreamVideoSource::GetTrackAdapter() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (!track_adapter_) {
     track_adapter_ = base::MakeRefCounted<VideoTrackAdapter>(
-        video_task_runner(), GetWeakPtr());
+        video_task_runner(), IsVideoDesktopCaptureMediaType(device().type));
   }
   return track_adapter_;
 }

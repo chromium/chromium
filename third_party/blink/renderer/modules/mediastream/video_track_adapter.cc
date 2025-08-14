@@ -156,7 +156,7 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
   VideoFrameResolutionAdapter(
       scoped_refptr<base::SingleThreadTaskRunner> reader_task_runner,
       const VideoTrackAdapterSettings& settings,
-      base::WeakPtr<MediaStreamVideoSource> media_stream_video_source);
+      bool is_video_desktop_capture_type);
 
   VideoFrameResolutionAdapter(const VideoFrameResolutionAdapter&) = delete;
   VideoFrameResolutionAdapter& operator=(const VideoFrameResolutionAdapter&) =
@@ -243,9 +243,7 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
   // The task runner where we will release VideoCaptureDeliverFrameCB
   // registered in AddCallbacks.
   const scoped_refptr<base::SingleThreadTaskRunner> renderer_task_runner_;
-
-  base::WeakPtr<MediaStreamVideoSource> media_stream_video_source_;
-
+  const bool is_video_desktop_capture_type_;
   const VideoTrackAdapterSettings settings_;
 
   // The target timestamp delta between video frames, corresponding to the max
@@ -275,9 +273,9 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
 VideoTrackAdapter::VideoFrameResolutionAdapter::VideoFrameResolutionAdapter(
     scoped_refptr<base::SingleThreadTaskRunner> reader_task_runner,
     const VideoTrackAdapterSettings& settings,
-    base::WeakPtr<MediaStreamVideoSource> media_stream_video_source)
+    bool is_video_desktop_capture_type)
     : renderer_task_runner_(reader_task_runner),
-      media_stream_video_source_(media_stream_video_source),
+      is_video_desktop_capture_type_(is_video_desktop_capture_type),
       settings_(ReturnSettingsMaybeOverrideMaxFps(settings)),
       target_delta_(settings_.max_frame_rate()
                         ? std::make_optional(base::Seconds(
@@ -592,9 +590,9 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::ResetFrameRate() {
 
 VideoTrackAdapter::VideoTrackAdapter(
     scoped_refptr<base::SequencedTaskRunner> video_task_runner,
-    base::WeakPtr<MediaStreamVideoSource> media_stream_video_source)
+    bool is_video_desktop_capture_type)
     : video_task_runner_(video_task_runner),
-      media_stream_video_source_(media_stream_video_source),
+      is_video_desktop_capture_type_(is_video_desktop_capture_type),
       renderer_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       muted_state_(false),
       frame_counter_(0),
@@ -654,7 +652,7 @@ void VideoTrackAdapter::AddTrackOnVideoTaskRunner(
   }
   if (!adapter.get()) {
     adapter = base::MakeRefCounted<VideoFrameResolutionAdapter>(
-        renderer_task_runner_, settings, media_stream_video_source_);
+        renderer_task_runner_, settings, is_video_desktop_capture_type_);
     adapters_.push_back(adapter);
   }
 

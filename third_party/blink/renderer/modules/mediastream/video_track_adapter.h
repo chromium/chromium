@@ -44,9 +44,8 @@ class MODULES_EXPORT VideoTrackAdapter
  public:
   using OnMutedCallback = base::RepeatingCallback<void(bool mute_state)>;
 
-  VideoTrackAdapter(
-      scoped_refptr<base::SequencedTaskRunner> video_task_runner,
-      base::WeakPtr<MediaStreamVideoSource> media_stream_video_source);
+  VideoTrackAdapter(scoped_refptr<base::SequencedTaskRunner> video_task_runner,
+                    bool is_video_desktop_capture_type);
 
   VideoTrackAdapter(const VideoTrackAdapter&) = delete;
   VideoTrackAdapter& operator=(const VideoTrackAdapter&) = delete;
@@ -175,9 +174,7 @@ class MODULES_EXPORT VideoTrackAdapter
   SEQUENCE_CHECKER(sequence_checker_);
 
   const scoped_refptr<base::SequencedTaskRunner> video_task_runner_;
-
-  base::WeakPtr<MediaStreamVideoSource> media_stream_video_source_;
-
+  const bool is_video_desktop_capture_type_;
   // |renderer_task_runner_| is used to ensure that
   // VideoCaptureDeliverFrameCB is released on the main render thread.
   const scoped_refptr<base::SingleThreadTaskRunner> renderer_task_runner_;

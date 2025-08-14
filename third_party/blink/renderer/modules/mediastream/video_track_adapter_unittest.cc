@@ -244,7 +244,6 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
     base::WaitableEvent source_deleted;
     testing_render_thread_.task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          mock_source_.reset();
           source_deleted.Signal();
         }));
     source_deleted.Wait();
@@ -259,10 +258,9 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
         base::WaitableEvent::InitialState::NOT_SIGNALED);
     testing_render_thread_.task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          mock_source_ = std::make_unique<NiceMock<MockMediaStreamVideoSource>>(
-              capture_format, false);
           adapter_ = base::MakeRefCounted<VideoTrackAdapter>(
-              platform_support_->GetIOTaskRunner(), mock_source_->GetWeakPtr());
+              platform_support_->GetIOTaskRunner(),
+              /*is_video_desktop_capture_type=*/false);
           adapter_created.Signal();
         }));
     adapter_created.Wait();
@@ -468,7 +466,6 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
       platform_support_;
   test::TaskEnvironment task_environment_;
   base::Thread testing_render_thread_;
-  std::unique_ptr<NiceMock<MockMediaStreamVideoSource>> mock_source_;
   scoped_refptr<VideoTrackAdapter> adapter_;
 
   base::WaitableEvent frame_processed_;
@@ -845,7 +842,8 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
         false /* remote */, std::move(source));
     RunSyncOnRenderThread([&] {
       adapter_ = base::MakeRefCounted<VideoTrackAdapter>(
-          platform_support_->GetIOTaskRunner(), mock_source_->GetWeakPtr());
+          platform_support_->GetIOTaskRunner(),
+          /*is_video_desktop_capture_type=*/false);
     });
   }
 
