@@ -119,6 +119,7 @@
 #include "skia/ext/image_operations.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/base_window.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ozone_buildflags.h"
@@ -769,16 +770,18 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
-  Browser* browser = window_controller->GetBrowser();
+  BrowserWindowInterface* browser =
+      window_controller->GetBrowserWindowInterface();
   if (!browser) {
     return RespondNow(Error(ExtensionTabUtil::kNoCrashBrowserError));
   }
+  ui::BaseWindow* browser_window = browser->GetWindow();
 
   // Don't allow locked fullscreen operations on a window without the proper
   // permission (also don't allow any operations on a locked window if the
   // extension doesn't have the permission).
-  const bool is_locked_fullscreen =
-      platform_util::IsBrowserLockedFullscreen(browser);
+  const bool is_locked_fullscreen = platform_util::IsBrowserLockedFullscreen(
+      browser->GetBrowserForMigrationOnly());
   if ((params->update_info.state == windows::WindowState::kLockedFullscreen ||
        is_locked_fullscreen) &&
       !tabs_internal::ExtensionHasLockedFullscreenPermission(extension())) {
@@ -791,9 +794,9 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
 
   // Update the window bounds if the bounds from the update parameters intersect
   // the displays.
-  gfx::Rect window_bounds = browser->window()->IsMinimized()
-                                ? browser->window()->GetRestoredBounds()
-                                : browser->window()->GetBounds();
+  gfx::Rect window_bounds = browser_window->IsMinimized()
+                                ? browser_window->GetRestoredBounds()
+                                : browser_window->GetBounds();
   bool set_window_bounds = false;
   if (params->update_info.left) {
     window_bounds.set_x(*params->update_info.left);
@@ -845,36 +848,35 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
   if (is_locked_fullscreen &&
       params->update_info.state != windows::WindowState::kLockedFullscreen &&
       params->update_info.state != windows::WindowState::kNone) {
-    SetLockedFullscreenState(browser, /*pinned=*/false);
+    SetLockedFullscreenState(browser->GetBrowserForMigrationOnly(),
+                             /*pinned=*/false);
   } else if (!is_locked_fullscreen &&
              params->update_info.state ==
                  windows::WindowState::kLockedFullscreen) {
-    SetLockedFullscreenState(browser, /*pinned=*/true);
+    SetLockedFullscreenState(browser->GetBrowserForMigrationOnly(),
+                             /*pinned=*/true);
   }
 
   if (show_state != ui::mojom::WindowShowState::kFullscreen &&
       show_state != ui::mojom::WindowShowState::kDefault) {
-    BrowserExtensionWindowController::From(browser)->SetFullscreenMode(
-        false, extension()->url());
+    window_controller->SetFullscreenMode(false, extension()->url());
   }
 
   switch (show_state) {
     case ui::mojom::WindowShowState::kMinimized:
-      browser->window()->Minimize();
+      browser_window->Minimize();
       break;
     case ui::mojom::WindowShowState::kMaximized:
-      browser->window()->Maximize();
+      browser_window->Maximize();
       break;
     case ui::mojom::WindowShowState::kFullscreen:
-      if (browser->window()->IsMinimized() ||
-          browser->window()->IsMaximized()) {
-        browser->window()->Restore();
+      if (browser_window->IsMinimized() || browser_window->IsMaximized()) {
+        browser_window->Restore();
       }
-      BrowserExtensionWindowController::From(browser)->SetFullscreenMode(
-          true, extension()->url());
+      window_controller->SetFullscreenMode(true, extension()->url());
       break;
     case ui::mojom::WindowShowState::kNormal:
-      browser->window()->Restore();
+      browser_window->Restore();
       break;
     default:
       break;
@@ -883,19 +885,19 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
   if (set_window_bounds) {
     // TODO(varkha): Updating bounds during a drag can cause problems and a more
     // general solution is needed. See http://crbug.com/251813 .
-    browser->window()->SetBounds(window_bounds);
+    browser_window->SetBounds(window_bounds);
   }
 
   if (params->update_info.focused) {
     if (*params->update_info.focused) {
-      browser->window()->Activate();
+      browser_window->Activate();
     } else {
-      browser->window()->Deactivate();
+      browser_window->Deactivate();
     }
   }
 
   if (params->update_info.draw_attention) {
-    browser->window()->FlashFrame(*params->update_info.draw_attention);
+    browser_window->FlashFrame(*params->update_info.draw_attention);
   }
 
   return RespondNow(
