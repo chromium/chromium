@@ -1294,7 +1294,8 @@ Node* Node::cloneNode(bool deep, ExceptionState& exception_state) const {
   if (deep) {
     data.Put(CloneOption::kIncludeDescendants);
   }
-  return Clone(GetDocument(), data, /*append_to*/ nullptr);
+  return Clone(GetDocument(), data, /*append_to*/ nullptr,
+               /*fallback_registry*/ nullptr);
 }
 
 Node* Node::cloneNode(bool deep) const {

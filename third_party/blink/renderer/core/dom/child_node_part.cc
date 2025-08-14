@@ -98,7 +98,8 @@ PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) {
   auto& fragment_part_root = fragment->getPartRoot();
   data.PushPartRoot(fragment_part_root);
   ContainerNode* new_parent = To<ContainerNode>(
-      parentNode()->Clone(document, data, fragment, exception_state));
+      parentNode()->Clone(document, data, fragment,
+                          /*fallback_registry*/ nullptr, exception_state));
   if (exception_state.HadException()) {
     return nullptr;
   }
@@ -110,7 +111,8 @@ PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) {
     if (final_node) {
       part_root = static_cast<ChildNodePart*>(&data.CurrentPartRoot());
     }
-    node->Clone(document, data, new_parent, exception_state);
+    node->Clone(document, data, new_parent, /*fallback_registry*/ nullptr,
+                exception_state);
     if (exception_state.HadException()) {
       return nullptr;
     }

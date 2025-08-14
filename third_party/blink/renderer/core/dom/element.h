@@ -656,8 +656,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   Element& CloneWithChildren(NodeCloningData& data,
                              Document*,
                              ContainerNode*,
+                             CustomElementRegistry*,
                              ExceptionState& = ASSERT_NO_EXCEPTION) const;
   Element& CloneWithoutChildren(NodeCloningData& data,
+                                CustomElementRegistry*,
                                 Document* = nullptr) const;
   Element& CloneWithoutChildren() const;
 
@@ -2228,9 +2230,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   Node* Clone(Document& factory,
               NodeCloningData& data,
               ContainerNode* append_to,
+              CustomElementRegistry* fallback_registry,
               ExceptionState& append_exception_state) const override;
 
-  virtual Element& CloneWithoutAttributesAndChildren(Document& factory) const;
+  virtual Element& CloneWithoutAttributesAndChildren(
+      Document& factory,
+      CustomElementRegistry* registry) const;
 
   void UpdateNamedItemRegistration(NamedItemType,
                                    const AtomicString& old_name,

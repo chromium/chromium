@@ -64,7 +64,8 @@ class SliderThumbElement final : public HTMLDivElement {
  private:
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   void AdjustStyle(ComputedStyleBuilder&) final;
-  Element& CloneWithoutAttributesAndChildren(Document&) const override;
+  Element& CloneWithoutAttributesAndChildren(Document&, CustomElementRegistry*)
+      const override;
   bool IsDisabledFormControl() const override;
   bool MatchesReadOnlyPseudoClass() const override;
   bool MatchesReadWritePseudoClass() const override;
@@ -75,7 +76,8 @@ class SliderThumbElement final : public HTMLDivElement {
 };
 
 inline Element& SliderThumbElement::CloneWithoutAttributesAndChildren(
-    Document& factory) const {
+    Document& factory,
+    CustomElementRegistry*) const {
   return *MakeGarbageCollected<SliderThumbElement>(factory);
 }
 

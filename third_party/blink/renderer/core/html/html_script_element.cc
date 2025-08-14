@@ -393,12 +393,12 @@ ScriptElementBase::Type HTMLScriptElement::GetScriptElementType() {
 }
 
 Element& HTMLScriptElement::CloneWithoutAttributesAndChildren(
-    Document& factory) const {
+    Document& factory,
+    CustomElementRegistry* registry) const {
   CreateElementFlags flags =
       CreateElementFlags::ByCloneNode().SetAlreadyStarted(
           loader_->AlreadyStarted());
-  return *factory.CreateElement(TagQName(), flags, IsValue(),
-                                /*registry*/ nullptr);
+  return *factory.CreateElement(TagQName(), flags, IsValue(), registry);
 }
 
 bool HTMLScriptElement::IsPotentiallyRenderBlocking() const {

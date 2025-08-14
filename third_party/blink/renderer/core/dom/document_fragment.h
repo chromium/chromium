@@ -83,6 +83,7 @@ class CORE_EXPORT DocumentFragment : public ContainerNode {
   Node* Clone(Document& factory,
               NodeCloningData& data,
               ContainerNode* append_to,
+              CustomElementRegistry* fallback_registry,
               ExceptionState& append_exception_state) const override;
   bool ChildTypeAllowed(NodeType) const override;
 

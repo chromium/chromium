@@ -44,6 +44,7 @@ String DocumentType::nodeName() const {
 Node* DocumentType::Clone(Document& factory,
                           NodeCloningData&,
                           ContainerNode* append_to,
+                          CustomElementRegistry*,
                           ExceptionState& append_exception_state) const {
   DocumentType* clone = MakeGarbageCollected<DocumentType>(
       &factory, name_, public_id_, system_id_);

@@ -70,8 +70,10 @@ void HTMLTemplateElement::CloneNonAttributePropertiesFrom(
     return;
   }
   auto& html_template_element = To<HTMLTemplateElement>(source);
-  if (html_template_element.content())
-    content()->CloneChildNodesFrom(*html_template_element.content(), data);
+  if (html_template_element.content()) {
+    content()->CloneChildNodesFrom(*html_template_element.content(), data,
+                                   /*fallback_registry*/ nullptr);
+  }
 }
 
 void HTMLTemplateElement::DidMoveToNewDocument(Document& old_document) {

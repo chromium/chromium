@@ -1454,10 +1454,11 @@ bool ContainerNode::ChildrenChangedAllChildrenRemovedNeedsList() const {
 }
 
 void ContainerNode::CloneChildNodesFrom(const ContainerNode& node,
-                                        NodeCloningData& data) {
+                                        NodeCloningData& data,
+                                        CustomElementRegistry* registry) {
   CHECK(data.Has(CloneOption::kIncludeDescendants));
   for (const Node& child : NodeTraversal::ChildrenOf(node)) {
-    child.Clone(GetDocument(), data, this);
+    child.Clone(GetDocument(), data, this, registry);
   }
 }
 

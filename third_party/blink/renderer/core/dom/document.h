@@ -494,7 +494,7 @@ class CORE_EXPORT Document : public ContainerNode,
   Element* CreateElement(const QualifiedName&,
                          const CreateElementFlags,
                          const AtomicString& is,
-                         CustomElementRegistry* custom_element_registry);
+                         CustomElementRegistry*);
 
   Element* createElementNS(const AtomicString& namespace_uri,
                            const AtomicString& qualified_name,
@@ -2436,6 +2436,7 @@ class CORE_EXPORT Document : public ContainerNode,
   Node* Clone(Document& factory,
               NodeCloningData& data,
               ContainerNode* append_to,
+              CustomElementRegistry* fallback_registry,
               ExceptionState& append_exception_state) const override;
   void CloneDataFromDocument(const Document&);
 

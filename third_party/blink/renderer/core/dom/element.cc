@@ -854,18 +854,34 @@ int Element::GetComputedHeadingOffset(int max_offset) {
 Node* Element::Clone(Document& factory,
                      NodeCloningData& data,
                      ContainerNode* append_to,
+                     CustomElementRegistry* fallback_registry,
                      ExceptionState& append_exception_state) const {
   Element* copy;
+  CustomElementRegistry* registry = nullptr;
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    // 2-1. Let registry be node's custom element registry.
+    // 2-2. If registry is null, then set registry to fallbackRegistry
+    if (auto* node_registry = customElementRegistry()) {
+      registry = node_registry;
+    } else {
+      registry = fallback_registry;
+    }
+    // 2-3. If registry is a global custom element registry, then set
+    // registry to document's effective global custom element registry.
+    if (registry && registry->IsGlobalRegistry()) {
+      registry = factory.customElementRegistry();
+    }
+  }
   if (!data.Has(CloneOption::kIncludeDescendants)) {
-    copy = &CloneWithoutChildren(data, &factory);
+    copy = &CloneWithoutChildren(data, registry, &factory);
     if (append_to) {
       append_to->AppendChild(copy, append_exception_state);
     }
   } else {
-    copy =
-        &CloneWithChildren(data, &factory, append_to, append_exception_state);
+    copy = &CloneWithChildren(data, &factory, append_to, registry,
+                              append_exception_state);
   }
-  // 7. If node is a shadow host whose shadow root’s clonable is true:
+  // 6. If node is a shadow host whose shadow root’s clonable is true:
   auto* shadow_root = GetShadowRoot();
   if (!shadow_root) {
     return copy;
@@ -873,7 +889,21 @@ Node* Element::Clone(Document& factory,
   if (shadow_root->clonable()) {
     if (shadow_root->GetMode() == ShadowRootMode::kOpen ||
         shadow_root->GetMode() == ShadowRootMode::kClosed) {
-      // 7.1 Run attach a shadow root with copy, node’s shadow root’s mode,
+      CustomElementRegistry* shadow_root_registry = nullptr;
+      if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+        // 6.2 Let shadowRootRegistry be node's shadow root's custom element
+        // registry
+        if (auto* node_registry = shadow_root->customElementRegistry()) {
+          shadow_root_registry = node_registry;
+        }
+        // 6.3 If shadowRootRegistry is a global custom element registry, then
+        // set shadowRootRegistry to document's effective global custom element
+        // registry
+        if (shadow_root_registry && shadow_root_registry->IsGlobalRegistry()) {
+          shadow_root_registry = factory.customElementRegistry();
+        }
+      }
+      // 6.4 Run attach a shadow root with copy, node's shadow root's mode,
       // true, node’s shadow root’s delegates focus, and node’s shadow root’s
       // slot assignment.
       // TODO(crbug.com/1523816): it seems like the `registry` parameter should
@@ -882,11 +912,11 @@ Node* Element::Clone(Document& factory,
           shadow_root->GetMode(),
           shadow_root->delegatesFocus() ? FocusDelegation::kDelegateFocus
                                         : FocusDelegation::kNone,
-          shadow_root->GetSlotAssignmentMode(), customElementRegistry(),
+          shadow_root->GetSlotAssignmentMode(), shadow_root_registry,
           shadow_root->serializable(),
           /*clonable*/ true, shadow_root->referenceTarget());
 
-      // 7.2 Set copy’s shadow root’s declarative to node’s shadow root’s
+      // 6.5 Set copy’s shadow root’s declarative to node’s shadow root’s
       // declarative.
       cloned_shadow_root.SetIsDeclarativeShadowRoot(
           shadow_root->IsDeclarativeShadowRoot());
@@ -895,11 +925,12 @@ Node* Element::Clone(Document& factory,
       cloned_shadow_root.SetAvailableToElementInternals(
           shadow_root->IsAvailableToElementInternals());
 
-      // 7.3 If the clone children flag is set, then for each child child of
+      // 6.6 If the clone children flag is set, then for each child child of
       // node’s shadow root, in tree order: append the result of cloning child
       // with document and the clone children flag set, to copy’s shadow root.
       NodeCloningData shadow_data{CloneOption::kIncludeDescendants};
-      cloned_shadow_root.CloneChildNodesFrom(*shadow_root, shadow_data);
+      cloned_shadow_root.CloneChildNodesFrom(*shadow_root, shadow_data,
+                                             /*fallback_registry*/ nullptr);
     }
   }
   return copy;
@@ -909,10 +940,11 @@ Element& Element::CloneWithChildren(
     NodeCloningData& data,
     Document* nullable_factory,
     ContainerNode* append_to,
+    CustomElementRegistry* registry,
     ExceptionState& append_exception_state) const {
   InvalidateNodeListCachesScope deferred_invalidation_scope(GetDocument());
   Element& clone = CloneWithoutAttributesAndChildren(
-      nullable_factory ? *nullable_factory : GetDocument());
+      nullable_factory ? *nullable_factory : GetDocument(), registry);
   // This will catch HTML elements in the wrong namespace that are not correctly
   // copied.  This is a sanity check as HTML overloads some of the DOM methods.
   DCHECK_EQ(IsHTMLElement(), clone.IsHTMLElement());
@@ -932,19 +964,20 @@ Element& Element::CloneWithChildren(
   if (append_to) {
     append_to->AppendChild(&clone, append_exception_state);
   }
-  clone.CloneChildNodesFrom(*this, data);
+  clone.CloneChildNodesFrom(*this, data, registry);
   return clone;
 }
 
 Element& Element::CloneWithoutChildren() const {
   NodeCloningData data;
-  return CloneWithoutChildren(data);
+  return CloneWithoutChildren(data, /*registry*/ nullptr);
 }
 
 Element& Element::CloneWithoutChildren(NodeCloningData& data,
+                                       CustomElementRegistry* registry,
                                        Document* nullable_factory) const {
   Element& clone = CloneWithoutAttributesAndChildren(
-      nullable_factory ? *nullable_factory : GetDocument());
+      nullable_factory ? *nullable_factory : GetDocument(), registry);
   // This will catch HTML elements in the wrong namespace that are not correctly
   // copied.  This is a sanity check as HTML overloads some of the DOM methods.
   DCHECK_EQ(IsHTMLElement(), clone.IsHTMLElement());
@@ -960,9 +993,11 @@ Element& Element::CloneWithoutChildren(NodeCloningData& data,
   return clone;
 }
 
-Element& Element::CloneWithoutAttributesAndChildren(Document& factory) const {
+Element& Element::CloneWithoutAttributesAndChildren(
+    Document& factory,
+    CustomElementRegistry* registry) const {
   return *factory.CreateElement(TagQName(), CreateElementFlags::ByCloneNode(),
-                                IsValue(), /*registry*/ nullptr);
+                                IsValue(), registry);
 }
 
 Attr* Element::DetachAttribute(wtf_size_t index) {

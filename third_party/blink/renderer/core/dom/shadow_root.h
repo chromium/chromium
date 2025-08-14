@@ -135,6 +135,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   Node* Clone(Document& factory,
               NodeCloningData& data,
               ContainerNode* append_to,
+              CustomElementRegistry* fallback_registry,
               ExceptionState& append_exception_state) const override;
 
   void SetDelegatesFocus(bool flag) { delegates_focus_ = flag; }

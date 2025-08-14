@@ -131,7 +131,8 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
 
   Type GetScriptElementType() override;
 
-  Element& CloneWithoutAttributesAndChildren(Document&) const override;
+  Element& CloneWithoutAttributesAndChildren(Document&, CustomElementRegistry*)
+      const override;
 
   // https://w3c.github.io/trusted-types/dist/spec/#script-scripttext
   ParkableString script_text_internal_slot_;

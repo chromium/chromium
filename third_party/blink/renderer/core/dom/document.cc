@@ -1434,7 +1434,7 @@ std::pair<CustomElementRegistry*, AtomicString> FlattenCreateElementOptions(
         is = AtomicString(options->is());
       // 3-3. If registry is non-null and is is non-null, then throw a
       // "notSupportedError" DOMException.
-      if (registry != nullptr && !is.IsNull()) {
+      if (registry && !is.IsNull()) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kNotSupportedError,
             "The custom element registry and is option can't be set at the "
@@ -1442,8 +1442,7 @@ std::pair<CustomElementRegistry*, AtomicString> FlattenCreateElementOptions(
       }
       // 4. If registry is null then set registry to the result of looking up a
       // custom element registry given document.
-      if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-          !registry) {
+      if (!registry) {
         registry = document->customElementRegistry();
       }
       break;
@@ -1566,7 +1565,6 @@ Element* Document::createElementNS(
   // 3. Let element be the result of creating an element.
   Element* element = CreateElement(
       q_name, CreateElementFlags::ByCreateElement(), is, registry);
-
   return element;
 }
 
@@ -1577,14 +1575,18 @@ Element* Document::CreateElement(const QualifiedName& q_name,
                                  const AtomicString& is,
                                  CustomElementRegistry* registry) {
   CustomElementDefinition* definition = nullptr;
+  // 2. If registry is "default", set registry to the result of looking
+  // up a custom element registry given document.
+  // Note that this step is currently only applicable to scenario when
+  // scoped registry is disabled as a valid registry should be assigned for
+  // default cases while flattening options. We could overload
+  // Document::CreateElement without registry argument and assign
+  // default value in implementation if the use case is ever needed.
+  if (!RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    registry = customElementRegistry();
+  }
   if (flags.IsCustomElements() &&
       q_name.NamespaceURI() == html_names::xhtmlNamespaceURI) {
-    // 2. If registry is "default", set registry to the result of looking up
-    // a custom element registry given document.
-    if (!RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() ||
-        !registry) {
-      registry = customElementRegistry();
-    }
     // 3. Let definition be the result of looking up a custom element definition
     // given registry, namespace, localName and is.
     const CustomElementDescriptor desc(is.IsNull() ? q_name.LocalName() : is,
@@ -1594,8 +1596,9 @@ Element* Document::CreateElement(const QualifiedName& q_name,
     }
   }
 
-  if (definition)
+  if (definition) {
     return definition->CreateElement(*this, q_name, flags, registry);
+  }
 
   return CustomElement::CreateUncustomizedOrUndefinedElement(
       *this, q_name, flags, is, registry);
@@ -1729,7 +1732,8 @@ Node* Document::importNode(Node* imported_node,
   if (deep) {
     data.Put(CloneOption::kIncludeDescendants);
   }
-  return imported_node->Clone(*this, data, /*append_to*/ nullptr);
+  return imported_node->Clone(*this, data, /*append_to*/ nullptr,
+                              /*fallback_registry*/ nullptr);
 }
 
 Node* Document::adoptNode(Node* source, ExceptionState& exception_state) {
@@ -5468,6 +5472,7 @@ bool Document::CanAcceptChild(const Node* new_child,
 Node* Document::Clone(Document& factory,
                       NodeCloningData& data,
                       ContainerNode* append_to,
+                      CustomElementRegistry* fallback_registry,
                       ExceptionState& append_exception_state) const {
   DCHECK_EQ(this, &factory)
       << "Document::Clone() doesn't support importNode mode.";
@@ -5486,8 +5491,15 @@ Node* Document::Clone(Document& factory,
     data.PushPartRoot(*part_root);
     PartRoot::CloneParts(*this, *clone, data);
   }
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    // 2. If node's custom element registry's is scoped is true, then
+    // set copy's custom element registry to node's custom element registry.
+    if (fallback_registry && !fallback_registry->IsGlobalRegistry()) {
+      clone->SetCustomElementRegistry(fallback_registry);
+    }
+  }
   if (data.Has(CloneOption::kIncludeDescendants)) {
-    clone->CloneChildNodesFrom(*this, data);
+    clone->CloneChildNodesFrom(*this, data, fallback_registry);
   }
   DCHECK(!part_root || &data.CurrentPartRoot() == part_root);
   return clone;

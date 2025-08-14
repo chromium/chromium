@@ -238,6 +238,7 @@ void CharacterData::DidModifyData(const String& old_data, UpdateSource source) {
 Node* CharacterData::Clone(Document& factory,
                            NodeCloningData& cloning_data,
                            ContainerNode* append_to,
+                           CustomElementRegistry*,
                            ExceptionState& append_exception_state) const {
   CharacterData* clone = CloneWithData(factory, data());
   if (cloning_data.Has(CloneOption::kPreserveDOMPartsMinimalAPI) &&

@@ -465,7 +465,8 @@ static void MoveChildrenToReplacementElement(ContainerNode& source_root,
 SVGElement* SVGUseElement::CreateInstanceTree(SVGElement& target_root) const {
   NodeCloningData data{CloneOption::kIncludeDescendants};
   SVGElement* instance_root = &To<SVGElement>(target_root.CloneWithChildren(
-      data, /*document*/ nullptr, /*append_to*/ nullptr));
+      data, /*document*/ nullptr, /*append_to*/ nullptr,
+      /*fallback_registry*/ nullptr));
   if (IsA<SVGSymbolElement>(target_root)) {
     // Spec: The referenced 'symbol' and its contents are deep-cloned into
     // the generated tree, with the exception that the 'symbol' is replaced

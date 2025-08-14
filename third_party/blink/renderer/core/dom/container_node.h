@@ -182,7 +182,9 @@ class CORE_EXPORT ContainerNode : public Node {
 
   void RemoveChildren();
 
-  void CloneChildNodesFrom(const ContainerNode&, NodeCloningData&);
+  void CloneChildNodesFrom(const ContainerNode&,
+                           NodeCloningData&,
+                           CustomElementRegistry*);
 
   using Node::DetachLayoutTree;
   void AttachLayoutTree(AttachContext&) override;

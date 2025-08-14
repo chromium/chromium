@@ -1,8 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] customElementRegistry on a clone of a declarative shadow tree with shadowrootcustomelementregistry should return null
-  assert_equals: expected null but got object "[object CustomElementRegistry]"
-[FAIL] customElementRegistry on a clone of a declarative shadow tree with shadowrootcustomelementregistry should return the global registry after getting inserted into a document
-  assert_equals: expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
 [FAIL] customElementRegistry on an element inside a declarative shadow DOM with shadowrootcustomelementregistry should return the scoped registry after calling initialize
   assert_equals: expected object "[object CustomElementRegistry]" but got null
 Harness: the test ran to completion.

@@ -73,7 +73,8 @@ VTTElement::VTTElement(VttNodeType node_type, Document* document)
       vtt_node_type_(static_cast<unsigned>(node_type)) {}
 
 Element& VTTElement::CloneWithoutAttributesAndChildren(
-    Document& factory) const {
+    Document& factory,
+    CustomElementRegistry*) const {
   auto* clone = MakeGarbageCollected<VTTElement>(
       static_cast<VttNodeType>(vtt_node_type_), &factory);
   clone->SetLanguage(language_);

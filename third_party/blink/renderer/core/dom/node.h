@@ -295,11 +295,13 @@ class CORE_EXPORT Node : public EventTarget {
   // requires each Element's children to be cloned before they are appended to
   // the Element, whereas the Chromium implementation first attaches a new
   // clone to its parent, and then clones children. This avoids an O(log-n^2)
-  // set of calls to Node::InsertedInto().
+  // set of calls to Node::InsertedInto(). Fallback registry is used for
+  // element cloning when the element's registry is not available.
   virtual Node* Clone(
       Document& factory,
       NodeCloningData& data,
       ContainerNode* append_to,
+      CustomElementRegistry* fallback_registry,
       ExceptionState& append_exception_state = ASSERT_NO_EXCEPTION) const = 0;
 
   // This is not web-exposed. We should rename it or remove it.
