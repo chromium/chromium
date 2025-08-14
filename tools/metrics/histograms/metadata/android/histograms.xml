@@ -7939,6 +7939,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.ProfileWasCreatedByAsyncStartup"
+    enum="Boolean" expires_after="2026-03-14">
+  <owner>elabadysayed@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    A profile can be created from several code paths, including the
+    AsyncStartupWebView API. This histogram specifically records when
+    ProfileStore.getOrCreateProfile() is triggered by that startup path.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.RegisterResourcePathsAvailable2"
     enum="NullableBoolean" expires_after="2025-10-22">
   <owner>alexmitra@chromium.org</owner>

@@ -1063,7 +1063,9 @@ public class WebViewChromiumAwInit {
                                     : Set.of(AwBrowserContext.getDefaultContextName());
 
                     for (String context : profilesCopy) {
-                        ProfileStore.getInstance().getOrCreateProfile(context);
+                        ProfileStore.getInstance()
+                                .getOrCreateProfile(
+                                        context, ProfileStore.CallSite.ASYNC_WEBVIEW_STARTUP);
                     }
                     callback.onSuccess(mWebViewStartUpDiagnostics);
                 });
@@ -1151,7 +1153,9 @@ public class WebViewChromiumAwInit {
             if (mDefaultProfile != null) return;
             mDefaultProfile =
                     ProfileStore.getInstance()
-                            .getOrCreateProfile(AwBrowserContext.getDefaultContextName());
+                            .getOrCreateProfile(
+                                    AwBrowserContext.getDefaultContextName(),
+                                    ProfileStore.CallSite.GET_DEFAULT_PROFILE);
             mDefaultProfileIsInitialized.countDown();
         }
 
