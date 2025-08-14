@@ -7,10 +7,11 @@
 
 namespace collaboration::messaging {
 
-// The MessagingBackendConfiguration provides details about how the
-// MessagingBackendService should behave, and provides a way to inject
-// specialized behavior, for example platform specific behavior, without
-// needing to reason about platforms in the code, only configuration.
+// Defines the configuration for the MessagingBackendService.
+// This class encapsulates various feature flags and parameters that control the
+// behavior of the messaging service, such as enabling or disabling specific
+// types of notifications. This allows for dynamic adjustment of the service's
+// functionality based on the platform or experimental settings.
 struct MessagingBackendConfiguration {
  public:
   MessagingBackendConfiguration();

@@ -23,9 +23,7 @@
 
 namespace collaboration::messaging {
 
-// The TabGroupChangeNotifier is a class that listens to changes from
-// TabGroupSyncService and passes them on to its own observers as delta updates
-// of the tab group and tabs.
+// The concrete implementation of the `TabGroupChangeNotifier`.
 class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
  public:
   explicit TabGroupChangeNotifierImpl(

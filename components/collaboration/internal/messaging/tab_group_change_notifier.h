@@ -13,9 +13,18 @@
 
 namespace collaboration::messaging {
 
-// The TabGroupChangeNotifier is a class that listens to changes from
-// TabGroupSyncService and passes them on to its own observers as delta updates
-// of the tab group and tabs.
+// The `TabGroupChangeNotifier` is an interface that observes the
+// `TabGroupSyncService` and translates its events into a simplified,
+// delta-based format for the messaging backend.
+//
+// This class is responsible for:
+// - Observing tab group and tab changes from the `TabGroupSyncService`.
+// - Maintaining the state of observed tab groups and tabs to compute deltas
+//   (e.g., added, removed, updated).
+// - Notifying its observers of these deltas asynchronously.
+//
+// The observers of this class are expected to handle the simplified change
+// events to update their own state and the UI accordingly.
 class TabGroupChangeNotifier
     : public tab_groups::TabGroupSyncService::Observer {
  public:

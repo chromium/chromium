@@ -19,6 +19,24 @@
 
 namespace collaboration::messaging {
 
+// The central service for managing and dispatching collaboration messages.
+//
+// This service acts as a bridge between various data sources (like
+// `TabGroupSyncService` and `DataSharingService`) and the UI, translating
+// backend events into user-facing messages. It is responsible for:
+// - Processing events from different collaboration-related services.
+// - Storing and managing the lifecycle of persistent and instant messages.
+// - Providing APIs for the UI to query for messages and activity logs.
+// - Notifying observers of changes in message states.
+//
+// The service distinguishes between two main types of messages:
+// - `PersistentMessage`: For ongoing UI affordances (e.g., a "dirty" state on a
+//   tab). These are managed via `PersistentMessageObserver`.
+// - `InstantMessage`: For one-off, immediate notifications (e.g., a toast when
+//   a user joins a collaboration). These are handled by the
+//   `InstantMessageDelegate`.
+//
+// This service is a `KeyedService` and is tied to a user's profile.
 class MessagingBackendService : public KeyedService,
                                 public base::SupportsUserData {
  public:

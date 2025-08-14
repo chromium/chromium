@@ -19,6 +19,7 @@
 namespace collaboration::messaging {
 using InstantMessageDelegate = MessagingBackendService::InstantMessageDelegate;
 
+// The concrete implementation of the `InstantMessageProcessor`.
 class InstantMessageProcessorImpl : public InstantMessageProcessor {
  public:
   InstantMessageProcessorImpl();
