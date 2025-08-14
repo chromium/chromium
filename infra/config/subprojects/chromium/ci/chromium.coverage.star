@@ -961,7 +961,7 @@ coverage_builder(
             "debug_static_builder",
             "remoteexec",
             "x64",
-            "ios",
+            "ios_simulator",
             "xctest",
         ],
     ),
