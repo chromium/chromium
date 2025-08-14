@@ -35,6 +35,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
+import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -240,7 +241,7 @@ public abstract class FullscreenHtmlApiHandlerBase
             implements MultiWindowModeStateDispatcher.MultiWindowModeObserver {
         @Override
         public void onMultiWindowModeChanged(boolean isInMultiWindowMode) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.DISPLAY_EDGE_TO_EDGE_FULLSCREEN)) {
+            if (isDisplayEdgeToEdgeFullscreenFeatureEnabledOn2DDevice()) {
                 // Fix for https://crbug.com/416443642 exiting from full screen mode when
                 // transition to PIP is done.
                 // When playing video in full screen mode and the home button is pushed the page
@@ -405,6 +406,13 @@ public abstract class FullscreenHtmlApiHandlerBase
         }
     }
 
+    private boolean isDisplayEdgeToEdgeFullscreenFeatureEnabledOn2DDevice() {
+        // Disable edge-to-edge fullscreen on XR devices, as immersive XR screens have no physical
+        // edges.
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.DISPLAY_EDGE_TO_EDGE_FULLSCREEN)
+                && DeviceClassManager.enableFullscreen();
+    }
+
     /**
      * @see GestureListenerManager#updateMultiTouchZoomSupport(boolean).
      */
@@ -450,7 +458,7 @@ public abstract class FullscreenHtmlApiHandlerBase
      */
     private void enterPersistentFullscreenMode(FullscreenOptions options) {
         if (!shouldSkipEnterFullscreenRequest(options)) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.DISPLAY_EDGE_TO_EDGE_FULLSCREEN)) {
+            if (isDisplayEdgeToEdgeFullscreenFeatureEnabledOn2DDevice()) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                     OutcomeReceiver<@Nullable Void, Throwable> resultCb =
                             new OutcomeReceiver<>() {
