@@ -155,6 +155,11 @@ with the code, including msysgit and python.
   may not get installed correctly.
 * If you see strange errors with the file system on the first run of gclient,
   you may want to [disable Windows Indexing](https://tortoisesvn.net/faq.html#cantmove2).
+* If you use WSL to build for Linux on the same machine, do **not** use the same
+  depot_tools directory for both. depot_tools caches platform-specific state, so
+  running `gclient sync` from inside one system will break the other. Use a
+  WSL-specific depot_tools dir inside WSL (and put it first in your PATH when you
+  log in there, e.g. via your WSL .bashrc) instead.
 
 ## Check python install
 
