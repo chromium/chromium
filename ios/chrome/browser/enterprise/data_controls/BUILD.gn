@@ -9,3 +9,16 @@ source_set("features") {
   ]
   public_deps = [ "//base" ]
 }
+
+source_set("data_control") {
+  sources = [
+    "clipboard_utils.h",
+    "clipboard_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/web/public",
+    "//ui/base/clipboard",
+  ]
+}
