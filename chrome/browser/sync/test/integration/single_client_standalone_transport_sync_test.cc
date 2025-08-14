@@ -446,8 +446,17 @@ IN_PROC_BROWSER_TEST_P(
   syncer::DataTypeSet expected_types = Difference(
       AllowedTypesInStandaloneTransportMode(), kTypesGatedBehindHistoryOptIn);
 
-  // CONTACT_INFO should be disabled by default for explicit-passphrase users.
-  expected_types.Remove(syncer::CONTACT_INFO);
+  if (GetParam()) {
+#if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+    // After SyncToSignin, CONTACT_INFO are enabled for Win/Mac/Linux, and
+    // disabled for other platforms.
+    // See `SyncServiceImpl::PassphraseTypeChanged`.
+    expected_types.Remove(syncer::CONTACT_INFO);
+#endif
+  } else {
+    // CONTACT_INFO should be disabled for sync opt-in.
+    expected_types.Remove(syncer::CONTACT_INFO);
+  }
 
   // Bookmarks and reading list require a separate opt in, unless
   // `syncer::kReplaceSyncPromosWithSignInPromos` is enabled.
@@ -477,8 +486,10 @@ IN_PROC_BROWSER_TEST_P(
     syncer::DataTypeSet expected_types_after_history_opt_in =
         AllowedTypesInStandaloneTransportMode();
 
+#if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
     // CONTACT_INFO should remain disabled since it's gated by kAutofill.
     expected_types_after_history_opt_in.Remove(syncer::CONTACT_INFO);
+#endif
 
     // With a custom passphrase, the actual HISTORY types are not supported.
     expected_types_after_history_opt_in.Remove(syncer::HISTORY);
@@ -519,7 +530,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientStandaloneTransportSyncTest,
   EXPECT_EQ(GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO),
             GetParam());
 }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 INSTANTIATE_TEST_SUITE_P(,
                          SingleClientStandaloneTransportSyncTest,

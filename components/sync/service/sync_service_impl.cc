@@ -1316,10 +1316,18 @@ void SyncServiceImpl::ReconfigureDataTypesDueToCrypto() {
 
 void SyncServiceImpl::PassphraseTypeChanged(PassphraseType passphrase_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // if kReplaceSyncPromosWithSignInPromos is enabled, new users with custom
-  // passphrases should have kAutofill disabled upon the initial sign-in. The
-  // first `PassphraseTypeChanged()` call reflects the server-side passphrase
-  // type before signing in.
+#if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+  // If kReplaceSyncPromosWithSignInPromos is enabled, new users with custom
+  // passphrase should have kAutofill disabled upon the initial sign-in. This is
+  // done to prevent confusion, as addresses are NOT encrypted by the custom
+  // passphrase
+  //
+  // This check is skipped on desktop (Windows, Mac, Linux) because the user
+  // interface on those platforms already clarifies this nuance about address
+  // encryption.
+  //
+  // The first `PassphraseTypeChanged()` call reflects the server-side
+  // passphrase type before signing in.
   if (!sync_prefs_.GetCachedPassphraseType().has_value() &&
       IsExplicitPassphrase(passphrase_type) &&
       GetSyncAccountStateForPrefs() ==
@@ -1329,6 +1337,7 @@ void SyncServiceImpl::PassphraseTypeChanged(PassphraseType passphrase_type) {
       base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
     GetUserSettings()->SetSelectedType(UserSelectableType::kAutofill, false);
   }
+#endif
   sync_prefs_.SetCachedPassphraseType(passphrase_type);
 }
 
