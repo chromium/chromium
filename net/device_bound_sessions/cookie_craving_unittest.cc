@@ -120,6 +120,11 @@ TEST_F(CookieCravingTest, CreateWithPrefix) {
   cc = CreateValidCookieCraving(GURL(kUrlString), "__Secure-blah",
                                 "Secure; Path=/foo; Domain=example.test");
   EXPECT_TRUE(cc.SecureAttribute());
+
+  // Valid __Http- cookie.
+  cc = CreateValidCookieCraving(GURL(kUrlString), "__http-blah",
+                                "secure;Path=/;httpOnly");
+  // CreateValidCookieCraving already verifies `cc` is valid.
 }
 
 // Test various strange inputs that should still be valid.
@@ -282,9 +287,6 @@ TEST_F(CookieCravingTest, CreateFailInvalidPrefix) {
   cc = CookieCraving::Create(GURL(kUrlString), "__http-blah", "secure;Path=/",
                              kCreationTime);
   EXPECT_FALSE(cc);
-  cc = CookieCraving::Create(GURL(kUrlString), "__http-blah",
-                             "secure;Path=/;httpOnly", kCreationTime);
-  EXPECT_TRUE(cc);
   cc = CookieCraving::Create(GURL(kUrlString), "__host-http-blah", "Path=/",
                              kCreationTime);
   EXPECT_FALSE(cc);
