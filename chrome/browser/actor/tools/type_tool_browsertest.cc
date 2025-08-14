@@ -249,14 +249,9 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_FollowByEnter) {
     ExpectOkResult(result);
   }
 
-  // The 'change' event at the end is expected because the Actor UI imposes a
-  // scrim which prevents focus, so injected tools first set page focus and then
-  // unset it after execution.
   EXPECT_EQ(
       // b
-      "keydown,input,keyup,"
-      // caused by page losing focus
-      "change",
+      "keydown,input,keyup",
       EvalJs(web_contents(), "input_event_log.join(',')"));
 }
 
@@ -608,29 +603,20 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
   ExpectOkResult(result);
 
   // Check that the events are what we expect.
-  // The 'change' event at the end is expected because the Actor UI imposes a
-  // scrim which prevents focus, so injected tools first set page focus and then
-  // unset it after execution.
   ASSERT_EQ(
       "keydown,input,keyup,"  // T
       "keydown,input,keyup,"  // e
       "keydown,input,keyup,"  // s
-      "keydown,input,keyup,"  // t
-      "change",               // caused by page losing focus
+      "keydown,input,keyup",  // t
       EvalJs(web_contents(), "input_event_log.join(',')"));
 
   base::Value::List timestamps =
       EvalJs(web_contents(), "input_event_log_times").TakeValue().TakeList();
 
-  // There are 3 events per character (keydown, input, keyup), plus the 'change'
-  // event at the end.
-  const size_t expected_event_count = typed_string.length() * 3 + 1;
-  ASSERT_EQ(timestamps.size(), expected_event_count);
+  // There are 3 events per character (keydown, input, keyup).
+  ASSERT_EQ(timestamps.size(), typed_string.length() * 3);
 
-  // The timing of the 'change' event is not checked within this loop because it
-  // is not part of the character-by-character typing sequence. The following
-  // checks verify the timing of the typing events, while the 'change' event is
-  // asserted for existence above.
+  // Check that the time between events is what we expect.
   for (size_t i = 0; i < typed_string.length(); ++i) {
     const double key_down_ts = timestamps[i * 3].GetDouble();
     const double key_up_ts = timestamps[i * 3 + 2].GetDouble();
