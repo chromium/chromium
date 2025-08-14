@@ -585,28 +585,29 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
-  uint64_t bytes_used = 1000;
+  base::ByteCount memory_usage = base::ByteCount(1000);
   auto* const tab_resource_usage_tab_helper = GetResourceUsageAt(1);
-  tab_resource_usage_tab_helper->SetMemoryUsageInBytes(bytes_used);
+  tab_resource_usage_tab_helper->SetMemoryUsageInBytes(memory_usage.InBytes());
 
   // Show memory usage without savings
   FadePerformanceFooterRow* const performance_row =
       GetPrimaryPerformanceRowFromHoverCard(SimulateHoverTab(browser(), 1));
   EXPECT_EQ(l10n_util::FormatString(
                 l10n_util::GetStringUTF16(IDS_HOVERCARD_TAB_MEMORY_USAGE),
-                {ui::FormatBytes(base::ByteCount(bytes_used))}, nullptr),
+                {ui::FormatBytes(base::ByteCount(memory_usage))}, nullptr),
             performance_row->footer_label()->GetText());
   EXPECT_FALSE(performance_row->icon()->GetImageModel().IsEmpty());
 
   // Hover card updates and shows high memory usage when card is still open
-  bytes_used = TabResourceUsage::kHighMemoryUsageThresholdBytes + 100;
-  tab_resource_usage_tab_helper->SetMemoryUsageInBytes(bytes_used);
+  memory_usage =
+      base::ByteCount(TabResourceUsage::kHighMemoryUsageThresholdBytes + 100);
+  tab_resource_usage_tab_helper->SetMemoryUsageInBytes(memory_usage.InBytes());
   GetTabStrip(browser())
       ->hover_card_controller_for_testing()
       ->OnTabResourceMetricsRefreshed();
   EXPECT_EQ(l10n_util::FormatString(
                 l10n_util::GetStringUTF16(IDS_HOVERCARD_TAB_HIGH_MEMORY_USAGE),
-                {ui::FormatBytes(base::ByteCount(bytes_used))}, nullptr),
+                {ui::FormatBytes(base::ByteCount(memory_usage))}, nullptr),
             performance_row->footer_label()->GetText());
 }
 
@@ -621,9 +622,9 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
-  uint64_t bytes_used = 1000;
+  base::ByteCount memory_usage = base::ByteCount(1000);
   auto* const tab_resource_usage_tab_helper = GetResourceUsageAt(1);
-  tab_resource_usage_tab_helper->SetMemoryUsageInBytes(bytes_used);
+  tab_resource_usage_tab_helper->SetMemoryUsageInBytes(memory_usage.InBytes());
 
   // Don't show memory usage
   FadePerformanceFooterRow* const performance_row =
@@ -632,21 +633,22 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
   EXPECT_TRUE(performance_row->icon()->GetImageModel().IsEmpty());
 
   // Hover card updates and shows high memory usage when card is still open
-  bytes_used = TabResourceUsage::kHighMemoryUsageThresholdBytes + 100;
-  tab_resource_usage_tab_helper->SetMemoryUsageInBytes(bytes_used);
+  memory_usage =
+      base::ByteCount(TabResourceUsage::kHighMemoryUsageThresholdBytes + 100);
+  tab_resource_usage_tab_helper->SetMemoryUsageInBytes(memory_usage.InBytes());
   GetTabStrip(browser())
       ->hover_card_controller_for_testing()
       ->OnTabResourceMetricsRefreshed();
   EXPECT_EQ(l10n_util::FormatString(
                 l10n_util::GetStringUTF16(IDS_HOVERCARD_TAB_HIGH_MEMORY_USAGE),
-                {ui::FormatBytes(base::ByteCount(bytes_used))}, nullptr),
+                {ui::FormatBytes(base::ByteCount(memory_usage))}, nullptr),
             performance_row->footer_label()->GetText());
 }
 
 IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
                        ActiveMemoryUsageHidesOnDiscard) {
-  const uint64_t bytes_used = 1;
-  GetResourceUsageAt(0)->SetMemoryUsageInBytes(bytes_used);
+  const base::ByteCount memory_usage = base::ByteCount(1);
+  GetResourceUsageAt(0)->SetMemoryUsageInBytes(memory_usage.InBytes());
 
   RunTestSequence(InstrumentTab(kFirstTabContents, 0),
                   NavigateWebContents(kFirstTabContents, GetURL("a.com")),
@@ -696,8 +698,8 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterWithDiscardInteractiveUiTest,
 // another site since the data is now out of date
 IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
                        MemoryUpdatesOnNavigation) {
-  const uint64_t bytes_used = 1;
-  GetResourceUsageAt(0)->SetMemoryUsageInBytes(bytes_used);
+  const base::ByteCount memory_usage = base::ByteCount(1);
+  GetResourceUsageAt(0)->SetMemoryUsageInBytes(memory_usage.InBytes());
 
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0), UnhoverTab(), HoverTabAt(0),
@@ -713,8 +715,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
                 GetPrimaryPerformanceRowFromHoverCard(bubble)->footer_label();
             return performance_label->GetText().find(l10n_util::GetStringFUTF16(
                        IDS_HOVERCARD_TAB_MEMORY_USAGE,
-                       ui::FormatBytes(base::ByteCount(bytes_used)))) !=
-                   std::string::npos;
+                       ui::FormatBytes(memory_usage))) != std::string::npos;
           },
           false));
 }
