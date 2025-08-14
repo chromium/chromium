@@ -28,6 +28,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
     TestRunner.addResult('Running the axe-core linter on tree element.');
     await AxeCoreTestRunner.runValidation(treeElement, NO_REQUIRED_CHILDREN_RULESET);
 
+    await widget.doUpdate();
     const toolbarElement =
         treeElement.parentElement?.querySelector('devtools-toolbar');
     TestRunner.addResult('Running the axe-core linter on toolbar.');
