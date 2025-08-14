@@ -6,8 +6,11 @@
 
 #include <optional>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/strings/strcat.h"
 #include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
@@ -165,6 +168,20 @@ std::optional<CookieCraving> CookieCraving::Create(
                                source_port};
 
   CHECK(cookie_craving.IsValid());
+
+  CookieInclusionStatus status;
+  if (!cookie_craving.CreateCanonicalCookieForRequest(url, &status)) {
+    SCOPED_CRASH_KEY_STRING256("CookieCraving", "Create",
+                               status.GetDebugString());
+    base::debug::DumpWithoutCrashing();
+    // If we're not able to create a canonical cookie here, then we likely won't
+    // be able to in `CookieCraving::ShouldIncludeForRequest` later, so there's
+    // no point in creating the craving.
+    // TODO(crbug.com/435221694): See related TODO below for plan for
+    // longer-term fix.
+    return std::nullopt;
+  }
+
   return cookie_craving;
 }
 
@@ -387,12 +404,36 @@ bool CookieCraving::ShouldIncludeForRequest(
     return false;
   }
 
+  CookieInclusionStatus status;
+  std::unique_ptr<CanonicalCookie> canonical_cookie =
+      CreateCanonicalCookieForRequest(request->url(), &status);
+
+  if (!canonical_cookie) {
+    SCOPED_CRASH_KEY_STRING256("CookieCraving", "ShouldInclude",
+                               status.GetDebugString());
+    base::debug::DumpWithoutCrashing();
+    // If we're not able to create a canonical cookie here, return false instead
+    // of crashing below.
+    // TODO(crbug.com/435221694): See related TODO below for plan for
+    // longer-term fix.
+    return false;
+  }
+
+  CookieAccessResultList included_cravings;
+  included_cravings.emplace_back(std::move(*canonical_cookie));
+  CookieAccessResultList excluded_cravings;
+  return request->network_delegate()->AnnotateAndMoveUserBlockedCookies(
+      *request, first_party_set_metadata, included_cravings, excluded_cravings);
+}
+
+std::unique_ptr<CanonicalCookie> CookieCraving::CreateCanonicalCookieForRequest(
+    const GURL& url,
+    CookieInclusionStatus* status) const {
   // The `NetworkDelegate` can also reject cookies for any reason
   // (e.g. user preferences). So we need to synthesize a
   // `CanonicalCookie` and make sure it would be included to check those
   // conditions too.
   base::Time now = base::Time::Now();
-  CookieInclusionStatus status;
   std::string domain = Domain();
   // This fix is needed because non-IP address __Host- prefix cookies are
   // considered invalid if they pass through a domain, but Domain() is defined
@@ -401,24 +442,19 @@ bool CookieCraving::ShouldIncludeForRequest(
   // TODO(crbug.com/435221694): re-implement the way we call into
   // `AnnotateAndMoveUserBlockedCookies` so that it is not possible for a
   // validation to fail in this method. Some ideas:
-  //  1) Can we create a canonical cookie in the `CookieCraving` constructor
-  //     with the original inputs?
+  //  1) Is it needed for `CookieCraving` creation validation and
+  //     `CanonicalCookie` creation validation to be different in the first
+  //     place?
   //  2) Can we refactor `AnnotateAndMoveUserBlockedCookies` to input a
   //     `CookieBase` instead?
-  if (!request->url().HostIsIPAddress() &&
+  if (!url.HostIsIPAddress() &&
       cookie_util::GetCookiePrefix(Name()) == COOKIE_PREFIX_HOST) {
     domain = "";
   }
-  std::unique_ptr<CanonicalCookie> canonical_cookie =
-      CanonicalCookie::CreateSanitizedCookie(
-          request->url(), Name(), /*value=*/"", domain, Path(), CreationDate(),
-          now + base::Days(1), now, IsSecure(), IsHttpOnly(), SameSite(),
-          COOKIE_PRIORITY_DEFAULT, PartitionKey(), &status);
-  CookieAccessResultList included_cravings;
-  included_cravings.emplace_back(std::move(*canonical_cookie));
-  CookieAccessResultList excluded_cravings;
-  return request->network_delegate()->AnnotateAndMoveUserBlockedCookies(
-      *request, first_party_set_metadata, included_cravings, excluded_cravings);
+  return CanonicalCookie::CreateSanitizedCookie(
+      url, Name(), /*value=*/"", domain, Path(), CreationDate(),
+      now + base::Days(1), now, IsSecure(), IsHttpOnly(), SameSite(),
+      COOKIE_PRIORITY_DEFAULT, PartitionKey(), status);
 }
 
 }  // namespace net::device_bound_sessions

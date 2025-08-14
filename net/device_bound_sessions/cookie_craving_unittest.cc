@@ -5,13 +5,18 @@
 #include "net/device_bound_sessions/cookie_craving.h"
 
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "net/base/features.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_params.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_partition_key.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
+#include "net/test/test_with_task_environment.h"
+#include "net/url_request/url_request_context_builder.h"
+#include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,6 +26,16 @@ namespace net::device_bound_sessions {
 constexpr char kUrlString[] = "https://www.example.test/foo";
 constexpr char kName[] = "name";
 const base::Time kCreationTime = base::Time::Now();
+constexpr net::NetworkTrafficAnnotationTag kDummyAnnotation =
+    net::DefineNetworkTrafficAnnotation("dbsc_registration", "");
+
+class CookieCravingTest : public TestWithTaskEnvironment {
+ protected:
+  CookieCravingTest()
+      : context_(CreateTestURLRequestContextBuilder()->Build()) {}
+
+  std::unique_ptr<URLRequestContext> context_;
+};
 
 // Helper to Create() and unwrap a CookieCraving, expecting it to be valid.
 CookieCraving CreateValidCookieCraving(
@@ -48,7 +63,7 @@ CanonicalCookie CreateCanonicalCookie(
   return *canonical_cookie;
 }
 
-TEST(CookieCravingTest, CreateBasic) {
+TEST_F(CookieCravingTest, CreateBasic) {
   // Default cookie.
   CookieCraving cc = CreateValidCookieCraving(GURL(kUrlString), kName, "");
   EXPECT_EQ(cc.Name(), kName);
@@ -93,7 +108,7 @@ TEST(CookieCravingTest, CreateBasic) {
   EXPECT_EQ(cc.SourcePort(), 443);
 }
 
-TEST(CookieCravingTest, CreateWithPrefix) {
+TEST_F(CookieCravingTest, CreateWithPrefix) {
   // Valid __Host- cookie.
   CookieCraving cc = CreateValidCookieCraving(GURL(kUrlString), "__Host-blah",
                                               "Secure; Path=/");
@@ -108,10 +123,8 @@ TEST(CookieCravingTest, CreateWithPrefix) {
 }
 
 // Test various strange inputs that should still be valid.
-TEST(CookieCravingTest, CreateStrange) {
+TEST_F(CookieCravingTest, CreateStrange) {
   const char* kStrangeNames[] = {
-      // Empty name is permitted.
-      "",
       // Leading and trailing whitespace should get trimmed.
       "   name     ",
       // Internal whitespace is allowed.
@@ -121,6 +134,7 @@ TEST(CookieCravingTest, CreateStrange) {
       "   n a m e   ",
   };
   for (const char* name : kStrangeNames) {
+    SCOPED_TRACE(base::StringPrintf("name: %s", name));
     CookieCraving cc = CreateValidCookieCraving(GURL(kUrlString), name, "");
     EXPECT_EQ(cc.Name(), base::TrimWhitespaceASCII(name, base::TRIM_ALL));
   }
@@ -151,7 +165,7 @@ TEST(CookieCravingTest, CreateStrange) {
 // Another strange/maybe unexpected case is that Create() does not check the
 // secureness of the URL against the cookie's Secure attribute. (This is
 // documented in the method comment.)
-TEST(CookieCravingTest, CreateSecureFromInsecureUrl) {
+TEST_F(CookieCravingTest, CreateSecureFromInsecureUrl) {
   CookieCraving cc =
       CreateValidCookieCraving(GURL("http://insecure.test"), kName, "Secure");
   EXPECT_TRUE(cc.SecureAttribute());
@@ -159,11 +173,13 @@ TEST(CookieCravingTest, CreateSecureFromInsecureUrl) {
 }
 
 // Test inputs that should result in a failure to parse the cookie line.
-TEST(CookieCravingTest, CreateFailParse) {
+TEST_F(CookieCravingTest, CreateFailParse) {
   const struct {
     const char* name;
     const char* attributes;
   } kParseFailInputs[] = {
+      // Empty name is not permitted.
+      {"", ""},
       // Invalid characters in name.
       {"blah\nsomething", "Secure; Path=/"},
       {"blah=something", "Secure; Path=/"},
@@ -179,7 +195,7 @@ TEST(CookieCravingTest, CreateFailParse) {
 }
 
 // Test cases where the Create() params are not valid.
-TEST(CookieCravingTest, CreateFailInvalidParams) {
+TEST_F(CookieCravingTest, CreateFailInvalidParams) {
   // Invalid URL.
   std::optional<CookieCraving> cc =
       CookieCraving::Create(GURL(), kName, "", kCreationTime);
@@ -190,7 +206,7 @@ TEST(CookieCravingTest, CreateFailInvalidParams) {
   EXPECT_FALSE(cc);
 }
 
-TEST(CookieCravingTest, CreateFailBadDomain) {
+TEST_F(CookieCravingTest, CreateFailBadDomain) {
   // URL does not match domain.
   std::optional<CookieCraving> cc = CookieCraving::Create(
       GURL(kUrlString), kName, "Domain=other.test", kCreationTime);
@@ -210,10 +226,9 @@ TEST(CookieCravingTest, CreateFailBadDomain) {
   cc = CookieCraving::Create(GURL(kUrlString), "partitioned", "partitioned",
                              kCreationTime);
   EXPECT_FALSE(cc);
-
 }
 
-TEST(CookieCravingTest, CreateFailInvalidPrefix) {
+TEST_F(CookieCravingTest, CreateFailInvalidPrefix) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {features::kPrefixCookieHttp, features::kPrefixCookieHostHttp}, {});
@@ -276,9 +291,12 @@ TEST(CookieCravingTest, CreateFailInvalidPrefix) {
   cc = CookieCraving::Create(GURL(kUrlString), "__host-http-blah",
                              "secure;Path=/", kCreationTime);
   EXPECT_FALSE(cc);
+  // TODO(crbug.com/435221694): This kind of cookie should actually be valid and
+  // move to CreateWithPrefix test. See other TODOs linked to this bug for plans
+  // for the fix.
   cc = CookieCraving::Create(GURL(kUrlString), "__host-http-blah",
                              "secure;Path=/;httpOnly", kCreationTime);
-  EXPECT_TRUE(cc);
+  EXPECT_FALSE(cc);
   cc = CookieCraving::Create(GURL(kUrlString), "__host-http-blah",
                              "secure;Path=/cookies/;httpOnly", kCreationTime);
   EXPECT_FALSE(cc);
@@ -290,7 +308,7 @@ TEST(CookieCravingTest, CreateFailInvalidPrefix) {
 
 // Valid cases were tested as part of the successful Create() tests above, so
 // this only tests the invalid cases.
-TEST(CookieCravingTest, IsNotValid) {
+TEST_F(CookieCravingTest, IsNotValid) {
   const struct {
     const char* name;
     const char* domain;
@@ -338,7 +356,7 @@ TEST(CookieCravingTest, IsNotValid) {
   }
 }
 
-TEST(CookieCravingTest, IsSatisfiedBy) {
+TEST_F(CookieCravingTest, IsSatisfiedBy) {
   // Default case with no attributes.
   CanonicalCookie canonical_cookie =
       CreateCanonicalCookie(GURL(kUrlString), "name=somevalue");
@@ -380,7 +398,7 @@ TEST(CookieCravingTest, IsSatisfiedBy) {
   EXPECT_TRUE(cookie_craving.IsSatisfiedBy(canonical_cookie));
 }
 
-TEST(CookieCravingTest, IsNotSatisfiedBy) {
+TEST_F(CookieCravingTest, IsNotSatisfiedBy) {
   // Name does not match.
   CanonicalCookie canonical_cookie =
       CreateCanonicalCookie(GURL(kUrlString), "realname=somevalue");
@@ -458,7 +476,7 @@ TEST(CookieCravingTest, IsNotSatisfiedBy) {
   EXPECT_FALSE(cookie_craving.IsSatisfiedBy(canonical_cookie));
 }
 
-TEST(CookieCravingTest, BasicCookieToFromProto) {
+TEST_F(CookieCravingTest, BasicCookieToFromProto) {
   // Default cookie.
   CookieCraving cc = CreateValidCookieCraving(GURL(kUrlString), kName, "");
 
@@ -502,7 +520,7 @@ TEST(CookieCravingTest, BasicCookieToFromProto) {
   EXPECT_TRUE(restored_cc->IsEqualForTesting(cc));
 }
 
-TEST(CookieCravingTest, FailCreateFromInvalidProto) {
+TEST_F(CookieCravingTest, FailCreateFromInvalidProto) {
   // Empty proto.
   proto::CookieCraving proto;
   std::optional<CookieCraving> cc = CookieCraving::CreateFromProto(proto);
@@ -568,6 +586,38 @@ TEST(CookieCravingTest, FailCreateFromInvalidProto) {
     std::optional<CookieCraving> c = CookieCraving::CreateFromProto(p);
     EXPECT_FALSE(c.has_value());
   }
+}
+
+TEST_F(CookieCravingTest, ShouldIncludeCantCreateCanonicalCookie) {
+  // Create a CookieCraving that is able to create a valid CanonicalCookie.
+  CookieCraving cc_valid = CookieCraving::CreateUnsafeForTesting(
+      /*name=*/"name", "www.example.test", "/foo", kCreationTime,
+      /*secure=*/true,
+      /*httponly=*/true, CookieSameSite::LAX_MODE,
+      /*source_scheme=*/CookieSourceScheme::kSecure, /*source_port=*/443);
+  // Create a CookieCraving that won't be able to create a CanonicalCookie
+  // (empty name).
+  CookieCraving cc_invalid = CookieCraving::CreateUnsafeForTesting(
+      /*name=*/"", "www.example.test", "/foo", kCreationTime, /*secure=*/true,
+      /*httponly=*/true, CookieSameSite::LAX_MODE,
+      /*source_scheme=*/CookieSourceScheme::kSecure, /*source_port=*/443);
+  CookieOptions options;
+  options.set_same_site_cookie_context(
+      net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+  options.set_include_httponly();
+  CookieAccessParams params{CookieAccessSemantics::NONLEGACY,
+                            CookieScopeSemantics::UNKNOWN, false};
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL(kUrlString), IDLE, &delegate, kDummyAnnotation);
+
+  // Confirm the valid craving is able to be included in the request.
+  EXPECT_TRUE(cc_valid.ShouldIncludeForRequest(
+      request.get(), FirstPartySetMetadata(), options, params));
+  // Confirm that if somehow there were an invalid craving created, it would
+  // just not be included in the request instead of causing a crash.
+  EXPECT_FALSE(cc_invalid.ShouldIncludeForRequest(
+      request.get(), FirstPartySetMetadata(), options, params));
 }
 
 }  // namespace net::device_bound_sessions

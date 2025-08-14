@@ -150,6 +150,13 @@ class NET_EXPORT CookieCraving : public CookieBase {
       const CookieAccessParams& params) const;
 
  private:
+  // Creates a CanonicalCookie for this craving in the context of a request to
+  // `url`. Fills in `status` with any exclusion reasons, which answer why this
+  // function may return null.
+  std::unique_ptr<CanonicalCookie> CreateCanonicalCookieForRequest(
+      const GURL& url,
+      CookieInclusionStatus* status) const;
+
   CookieCraving();
 
   // Prefer Create() over this constructor. This may return non-valid instances.
