@@ -347,12 +347,14 @@ public class TabCollectionTabModelImplTest {
         assertEquals(tab1, getCurrentTab());
 
         CallbackHelper willCloseTabHelper = new CallbackHelper();
+        CallbackHelper didRemoveTabForClosureHelper = new CallbackHelper();
         CallbackHelper onFinishingMultipleTabClosureHelper = new CallbackHelper();
         CallbackHelper onFinishingTabClosureHelper = new CallbackHelper();
         CallbackHelper didSelectTabHelper = new CallbackHelper();
 
         AtomicReference<Tab> tabInWillClose = new AtomicReference<>();
         AtomicReference<Boolean> isSingleInWillClose = new AtomicReference<>();
+        AtomicReference<Tab> tabInDidRemove = new AtomicReference<>();
         AtomicReference<List<Tab>> tabsInFinishingMultiple = new AtomicReference<>();
         AtomicReference<Tab> tabInFinishing = new AtomicReference<>();
         AtomicReference<Tab> tabInDidSelect = new AtomicReference<>();
@@ -364,6 +366,12 @@ public class TabCollectionTabModelImplTest {
                         tabInWillClose.set(tab);
                         isSingleInWillClose.set(isSingle);
                         willCloseTabHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void didRemoveTabForClosure(Tab tab) {
+                        tabInDidRemove.set(tab);
+                        didRemoveTabForClosureHelper.notifyCalled();
                     }
 
                     @Override
@@ -396,12 +404,14 @@ public class TabCollectionTabModelImplTest {
                 });
 
         willCloseTabHelper.waitForOnly();
+        didRemoveTabForClosureHelper.waitForOnly();
         onFinishingMultipleTabClosureHelper.waitForOnly();
         onFinishingTabClosureHelper.waitForOnly();
         didSelectTabHelper.waitForOnly();
 
         assertEquals("Incorrect tab in willCloseTab.", tab1, tabInWillClose.get());
         assertTrue("isSingle should be true.", isSingleInWillClose.get());
+        assertEquals("Incorrect tab in didRemoveTabForClosure.", tab1, tabInDidRemove.get());
         assertEquals(
                 "Incorrect tabs in onFinishingMultipleTabClosure.",
                 List.of(tab1),
@@ -430,6 +440,7 @@ public class TabCollectionTabModelImplTest {
 
         CallbackHelper willCloseMultipleTabsHelper = new CallbackHelper();
         CallbackHelper willCloseTabHelper = new CallbackHelper();
+        CallbackHelper didRemoveTabForClosureHelper = new CallbackHelper();
         CallbackHelper onFinishingMultipleTabClosureHelper = new CallbackHelper();
         CallbackHelper onFinishingTabClosureHelper = new CallbackHelper();
         CallbackHelper didSelectTabHelper = new CallbackHelper();
@@ -437,6 +448,7 @@ public class TabCollectionTabModelImplTest {
         List<Tab> tabsToClose = Arrays.asList(tab1, tab2);
         AtomicReference<List<Tab>> tabsInWillCloseMultiple = new AtomicReference<>();
         List<Tab> tabsInWillCloseTab = Collections.synchronizedList(new ArrayList<>());
+        List<Tab> tabsInDidRemove = Collections.synchronizedList(new ArrayList<>());
         AtomicReference<List<Tab>> tabsInFinishingMultiple = new AtomicReference<>();
         List<Tab> tabsInFinishing = Collections.synchronizedList(new ArrayList<>());
         AtomicReference<Tab> tabInDidSelect = new AtomicReference<>();
@@ -454,6 +466,12 @@ public class TabCollectionTabModelImplTest {
                         tabsInWillCloseTab.add(tab);
                         assertFalse("isSingle should be false.", isSingle);
                         willCloseTabHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void didRemoveTabForClosure(Tab tab) {
+                        tabsInDidRemove.add(tab);
+                        didRemoveTabForClosureHelper.notifyCalled();
                     }
 
                     @Override
@@ -487,6 +505,7 @@ public class TabCollectionTabModelImplTest {
 
         willCloseMultipleTabsHelper.waitForOnly();
         willCloseTabHelper.waitForCallback(0, 2);
+        didRemoveTabForClosureHelper.waitForCallback(0, 2);
         onFinishingMultipleTabClosureHelper.waitForOnly();
         onFinishingTabClosureHelper.waitForCallback(0, 2);
         didSelectTabHelper.waitForOnly();
@@ -497,6 +516,11 @@ public class TabCollectionTabModelImplTest {
                 tabsInWillCloseMultiple.get());
         assertEquals("Incorrect number of willCloseTab calls.", 2, tabsInWillCloseTab.size());
         assertTrue("Incorrect tabs in willCloseTab.", tabsInWillCloseTab.containsAll(tabsToClose));
+        assertEquals(
+                "Incorrect number of didRemoveTabForClosure calls.", 2, tabsInDidRemove.size());
+        assertTrue(
+                "Incorrect tabs in didRemoveTabForClosure.",
+                tabsInDidRemove.containsAll(tabsToClose));
         assertEquals(
                 "Incorrect tabs in onFinishingMultipleTabClosure.",
                 tabsToClose,
@@ -528,10 +552,12 @@ public class TabCollectionTabModelImplTest {
 
         CallbackHelper willCloseAllTabsHelper = new CallbackHelper();
         CallbackHelper willCloseTabHelper = new CallbackHelper();
+        CallbackHelper didRemoveTabForClosureHelper = new CallbackHelper();
         CallbackHelper onFinishingMultipleTabClosureHelper = new CallbackHelper();
         CallbackHelper onFinishingTabClosureHelper = new CallbackHelper();
 
         List<Tab> tabsInWillCloseTab = Collections.synchronizedList(new ArrayList<>());
+        List<Tab> tabsInDidRemove = Collections.synchronizedList(new ArrayList<>());
         AtomicReference<List<Tab>> tabsInFinishingMultiple = new AtomicReference<>();
         List<Tab> tabsInFinishing = Collections.synchronizedList(new ArrayList<>());
 
@@ -547,6 +573,12 @@ public class TabCollectionTabModelImplTest {
                         tabsInWillCloseTab.add(tab);
                         assertFalse("isSingle should be false.", isSingle);
                         willCloseTabHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void didRemoveTabForClosure(Tab tab) {
+                        tabsInDidRemove.add(tab);
+                        didRemoveTabForClosureHelper.notifyCalled();
                     }
 
                     @Override
@@ -582,11 +614,16 @@ public class TabCollectionTabModelImplTest {
 
         willCloseAllTabsHelper.waitForOnly();
         willCloseTabHelper.waitForCallback(0, 3);
+        didRemoveTabForClosureHelper.waitForCallback(0, 3);
         onFinishingMultipleTabClosureHelper.waitForOnly();
         onFinishingTabClosureHelper.waitForCallback(0, 3);
 
         assertEquals("Incorrect number of willCloseTab calls.", 3, tabsInWillCloseTab.size());
         assertTrue("Incorrect tabs in willCloseTab.", tabsInWillCloseTab.containsAll(allTabs));
+        assertEquals(
+                "Incorrect number of didRemoveTabForClosure calls.", 3, tabsInDidRemove.size());
+        assertTrue(
+                "Incorrect tabs in didRemoveTabForClosure.", tabsInDidRemove.containsAll(allTabs));
         assertEquals(
                 "Incorrect tabs in onFinishingMultipleTabClosure.",
                 allTabs,

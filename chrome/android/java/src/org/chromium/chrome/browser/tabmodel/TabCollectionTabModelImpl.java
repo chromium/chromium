@@ -820,6 +820,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 allowUndo,
                 params.tabCloseType);
 
+        for (Tab tab : tabsToClose) {
+            for (TabModelObserver obs : mTabModelObservers) {
+                obs.didRemoveTabForClosure(tab);
+            }
+        }
+
         if (allowUndo) {
             assumeNonNull(mPendingTabClosureManager);
             mPendingTabClosureManager.addTabClosureEvent(tabsToClose, params.undoRunnable);

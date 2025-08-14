@@ -1174,6 +1174,19 @@ class TabListMediator implements TabListNotificationHandler {
 
                     @Override
                     public void willCloseTab(Tab tab, boolean didCloseAlone) {
+                        if (ChromeFeatureList.sTabCollectionAndroid.isEnabled()) return;
+
+                        onTabClose(tab);
+                    }
+
+                    @Override
+                    public void didRemoveTabForClosure(Tab tab) {
+                        if (!ChromeFeatureList.sTabCollectionAndroid.isEnabled()) return;
+
+                        onTabClose(tab);
+                    }
+
+                    private void onTabClose(Tab tab) {
                         assert mShowingTabs;
 
                         tab.removeObserver(mTabObserver);

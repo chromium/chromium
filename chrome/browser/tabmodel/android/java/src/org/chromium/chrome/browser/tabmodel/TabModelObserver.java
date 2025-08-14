@@ -42,6 +42,26 @@ public interface TabModelObserver {
     default void willCloseTab(Tab tab, boolean didCloseAlone) {}
 
     /**
+     * Called after the tab has been removed from the tab model for tab closure. This is called
+     * regardless of whether the tab closure is undoable or not and will always be called before a
+     * tab closure is finalized.
+     *
+     * <p>This is only called when TAB_COLLECTION_ANDROID is enabled. There is a subtle timing
+     * difference between the the tab collection and legacy implementation. In the legacy
+     * implementation {@link willCloseTab()} is call after a tab has been removed from its tab
+     * group, but before closing. In tab collections the tab will still be in its group when {@link
+     * willCloseTab()} is invoked. The legacy implementation cannot easily implement this method as
+     * tab closures get started and commited one-by-one unlike tab collections which starts all tab
+     * closures then commits them all.
+     *
+     * <p>Note the tab will also be removed from its tab group at this point, but will still have
+     * the correct tab group id.
+     *
+     * @param tab The tab that was removed.
+     */
+    default void didRemoveTabForClosure(Tab tab) {}
+
+    /**
      * Called right before {@code tab} will be destroyed. Called for each tab.
      *
      * @param tab The {@link Tab} that was closed.
