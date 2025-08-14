@@ -3276,11 +3276,6 @@ targets.tests.script_test(
     script = "blink_lint_expectations.py",
 )
 
-targets.tests.gtest_test(
-    name = "webkit_unit_tests",
-    binary = "blink_unittests",
-)
-
 targets.tests.isolated_script_test(
     name = "android_webview_wpt_tests",
     args = [

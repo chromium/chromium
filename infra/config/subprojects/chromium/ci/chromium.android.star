@@ -3255,6 +3255,12 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.base_unittests.filter",
                 ],
             ),
+            "blink_unittests": targets.mixin(
+                args = [
+                    # https://crbug.com/352586409
+                    "--gtest_filter=-All/HTMLPreloadScannerLCPPLazyLoadImageTest.TokenStreamMatcherWithLoadingLazy/*",
+                ],
+            ),
             "chrome_public_test_apk": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.chrome_public_test_apk.filter",
@@ -3334,12 +3340,6 @@ ci.builder(
                 args = [
                     # TODO(crbug.com/338436747): Fix the failed test
                     "--gtest_filter=-SkiaOutputSurfaceImplTest.EndPaintReleaseFence",
-                ],
-            ),
-            "webkit_unit_tests": targets.mixin(
-                args = [
-                    # https://crbug.com/352586409
-                    "--gtest_filter=-All/HTMLPreloadScannerLCPPLazyLoadImageTest.TokenStreamMatcherWithLoadingLazy/*",
                 ],
             ),
             "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(

@@ -428,6 +428,11 @@ targets.legacy_basic_suite(
         "blink_common_unittests": targets.legacy_test_config(),
         "blink_heap_unittests": targets.legacy_test_config(),
         "blink_platform_unittests": targets.legacy_test_config(),
+        "blink_unittests": targets.legacy_test_config(
+            android_swarming = targets.swarming(
+                shards = 6,
+            ),
+        ),
         "boringssl_crypto_tests": targets.legacy_test_config(),
         "boringssl_ssl_tests": targets.legacy_test_config(),
         "capture_unittests": targets.legacy_test_config(
@@ -496,11 +501,6 @@ targets.legacy_basic_suite(
         "ui_base_unittests": targets.legacy_test_config(),
         "ui_touch_selection_unittests": targets.legacy_test_config(),
         "url_unittests": targets.legacy_test_config(),
-        "webkit_unit_tests": targets.legacy_test_config(
-            android_swarming = targets.swarming(
-                shards = 6,
-            ),
-        ),
         "wtf_unittests": targets.legacy_test_config(),
         "zlib_unittests": targets.legacy_test_config(),
     },

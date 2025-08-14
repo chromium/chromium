@@ -55,11 +55,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webkit_unit_tests"
+            "blink_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "webkit_unit_tests",
+        "name": "blink_unittests",
         "swarming": {
           "dimensions": {
             "cores": "8",

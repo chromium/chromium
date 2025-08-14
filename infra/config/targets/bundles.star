@@ -1558,7 +1558,7 @@ targets.bundle(
     name = "chromium_android_webkit_gtests",
     targets = [
         "blink_heap_unittests",
-        "webkit_unit_tests",
+        "blink_unittests",
     ],
 )
 

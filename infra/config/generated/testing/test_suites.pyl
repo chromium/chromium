@@ -544,6 +544,11 @@
           ],
         },
       },
+      'blink_unittests': {
+        'android_swarming': {
+          'shards': 6,
+        },
+      },
       'boringssl_crypto_tests': {},
       'boringssl_ssl_tests': {},
       'capture_unittests': {
@@ -616,12 +621,6 @@
       'ui_base_unittests': {},
       'ui_touch_selection_unittests': {},
       'url_unittests': {},
-      'webkit_unit_tests': {
-        'test': 'blink_unittests',
-        'android_swarming': {
-          'shards': 6,
-        },
-      },
       'wtf_unittests': {},
       'zlib_unittests': {},
     },

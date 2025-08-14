@@ -1587,6 +1587,11 @@ coverage_builder(
             "win10",
         ],
         per_test_modifications = {
+            "blink_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
             "browser_tests": targets.mixin(
                 swarming = targets.swarming(
                     dimensions = {
@@ -1668,11 +1673,6 @@ coverage_builder(
             ),
             "webgpu_cts_shared_worker_tests": targets.remove(
                 reason = "Dedicated worker tests are probably sufficient.",
-            ),
-            "webkit_unit_tests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 4,
-                ),
             ),
         },
     ),

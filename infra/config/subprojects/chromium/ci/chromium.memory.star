@@ -147,6 +147,13 @@ linux_memory_builder(
                     "--gtest_filter=-AXPlatformNodeAuraLinuxTest.AtkComponentScrollTo:AtkUtilAuraLinuxTest.*",
                 ],
             ),
+            "blink_unittests": targets.mixin(
+                # These are very slow on the ASAN trybot for some reason.
+                # crbug.com/1257927
+                swarming = targets.swarming(
+                    shards = 5,
+                ),
+            ),
             "browser_tests": targets.mixin(
                 ci_only = True,
                 # These are very slow on the ASAN trybot for some reason.
@@ -217,13 +224,6 @@ linux_memory_builder(
                 # crbug.com/1257927
                 swarming = targets.swarming(
                     shards = 4,
-                ),
-            ),
-            "webkit_unit_tests": targets.mixin(
-                # These are very slow on the ASAN trybot for some reason.
-                # crbug.com/1257927
-                swarming = targets.swarming(
-                    shards = 5,
                 ),
             ),
         },
@@ -786,6 +786,11 @@ linux_memory_builder(
             "linux-jammy",
         ],
         per_test_modifications = {
+            "blink_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
             "browser_tests": targets.remove(
                 reason = "https://crbug.com/368525",
             ),
@@ -848,11 +853,6 @@ linux_memory_builder(
                 ),
             ),
             "unit_tests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 2,
-                ),
-            ),
-            "webkit_unit_tests": targets.mixin(
                 swarming = targets.swarming(
                     shards = 2,
                 ),
@@ -934,6 +934,11 @@ linux_memory_builder(
             "linux-jammy",
         ],
         per_test_modifications = {
+            "blink_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
             "browser_tests": targets.mixin(
                 swarming = targets.swarming(
                     shards = 20,
@@ -950,11 +955,6 @@ linux_memory_builder(
                 ),
             ),
             "unit_tests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 2,
-                ),
-            ),
-            "webkit_unit_tests": targets.mixin(
                 swarming = targets.swarming(
                     shards = 2,
                 ),
@@ -1326,6 +1326,11 @@ ci.builder(
             "win10",
         ],
         per_test_modifications = {
+            "blink_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 6,
+                ),
+            ),
             "browser_tests": targets.mixin(
                 # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
                 args = [
@@ -1393,11 +1398,6 @@ ci.builder(
                 # crbug.com/369478225: These are slow and could timeout on the ASAN
                 swarming = targets.swarming(
                     shards = 2,
-                ),
-            ),
-            "webkit_unit_tests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 6,
                 ),
             ),
         },

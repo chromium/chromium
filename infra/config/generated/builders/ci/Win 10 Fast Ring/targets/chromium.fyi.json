@@ -61,6 +61,11 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
       },
       {
+        "name": "blink_unittests",
+        "test": "blink_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
+      },
+      {
         "name": "boringssl_crypto_tests",
         "test": "boringssl_crypto_tests",
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/"
@@ -460,11 +465,6 @@
         "name": "vr_common_unittests",
         "test": "vr_common_unittests",
         "test_id_prefix": "ninja://chrome/browser/vr:vr_common_unittests/"
-      },
-      {
-        "name": "webkit_unit_tests",
-        "test": "blink_unittests",
-        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
       },
       {
         "name": "wm_unittests",
