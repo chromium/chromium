@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './bookmark_bar.js';
+import './icons.html.js';
 import '/strings.m.js';
 import './tab_strip.js';
 import './webview.js';
@@ -12,10 +14,16 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import type {BookmarkBar} from './bookmark_bar.js';
+import {BookmarkBarController} from './bookmark_bar_controller.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {TabStripApiProxyImpl} from './tab_strip_api.js';
 import type {OnTabActiveChangedEvent, OnTabDataChangedEvent} from './tab_strip_api_events.mojom-webui.js';
 import {TabStripController} from './tab_strip_controller.js';
+
+export interface WebuiBrowserAppElement {
+  $: {bookmarkBar: BookmarkBar};
+}
 
 export class WebuiBrowserAppElement extends CrLitElement {
   static get is() {
@@ -30,13 +38,14 @@ export class WebuiBrowserAppElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  private bookmarkBarController_: BookmarkBarController;
   private tabStripController_: TabStripController;
   protected backButtonDisabled_: boolean = true;
   protected forwardButtonDisabled_: boolean = true;
 
   constructor() {
     super();
-
+    this.bookmarkBarController_ = new BookmarkBarController();
     this.tabStripController_ = new TabStripController();
   }
 
@@ -148,6 +157,23 @@ export class WebuiBrowserAppElement extends CrLitElement {
 
   protected onAddTabClick_(_: Event) {
     this.tabStripController_.addNewTab();
+  }
+
+  protected override firstUpdated() {
+    this.bookmarkBarController_.init(this.$.bookmarkBar);
+  }
+
+  protected onShowBookmarkBar_() {
+    this.$.bookmarkBar.style.display = 'flex';
+  }
+
+  protected onHideBookmarkBar_() {
+    this.$.bookmarkBar.style.display = 'none';
+  }
+
+  protected onBookmarkButtonClick_(e: CustomEvent) {
+    const bookmarkId = e.detail.bookmarkId;
+    this.bookmarkBarController_.launchBookmark(bookmarkId);
   }
 }
 

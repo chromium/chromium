@@ -20,9 +20,14 @@ if (is_chrome_branded) {
     static_files = [ "webui_browser.html" ]
 
     ts_files = [
-      "app.ts",
       "app.html.ts",
+      "app.ts",
+      "bookmark_bar.ts",
+      "bookmark_bar_controller.ts",
+      "bookmark_element.html.ts",
+      "bookmark_element.ts",
       "browser_proxy.ts",
+      "icons.html.ts",
       "tab_element.ts",
       "tab_element.html.ts",
       "tab_strip.ts",
@@ -34,6 +39,7 @@ if (is_chrome_branded) {
     ]
     css_files = [
       "app.css",
+      "bookmark_element.css",
       "tab_element.css",
       "tab_strip.css",
       "webview.css",
@@ -43,6 +49,7 @@ if (is_chrome_branded) {
       "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom-webui.ts",
       "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/node_id_converter.ts",
       "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_data_model.mojom-webui.ts",
+      "$root_gen_dir/chrome/browser/ui/webui_browser/bookmark_bar.mojom-webui.ts",
       "$root_gen_dir/chrome/browser/ui/webui_browser/browser.mojom-webui.ts",
       "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_events.mojom-webui.ts",
       "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_types.mojom-webui.ts",

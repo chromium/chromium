@@ -1448,6 +1448,7 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
   if (webui_browser::IsWebUIBrowserEnabled()) {
     registry.ForWebUI<WebUIBrowserUI>()
         .Add<webui_browser::mojom::PageHandlerFactory>()
+        .Add<bookmark_bar::mojom::PageHandlerFactory>()
         .Add<searchbox::mojom::PageHandler>()
         .Add<metrics_reporter::mojom::PageMetricsHost>()
         .Add<tabs_api::mojom::TabStripService>();

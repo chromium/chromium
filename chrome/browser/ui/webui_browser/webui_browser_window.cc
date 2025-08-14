@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_client_view.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_web_contents_delegate.h"
 #include "chrome/browser/ui/webui_browser/webui_location_bar.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
@@ -256,7 +257,7 @@ void WebUIBrowserWindow::UpdateTitleBar() {
 
 void WebUIBrowserWindow::BookmarkBarStateChanged(
     BookmarkBar::AnimateChangeType change_type) {
-  NOTIMPLEMENTED();
+  GetWebUIBrowserUI()->BookmarkBarStateChanged(change_type);
 }
 
 void WebUIBrowserWindow::TemporarilyShowBookmarkBar(base::TimeDelta duration) {
@@ -815,4 +816,11 @@ views::ClientView* WebUIBrowserWindow::WidgetDelegate::CreateClientView(
     views::Widget* widget) {
   return new WebUIBrowserClientView(web_contents_delegate_, widget,
                                     TransferOwnershipOfContentsView());
+}
+
+WebUIBrowserUI* WebUIBrowserWindow::GetWebUIBrowserUI() const {
+  return web_contents_delegate_->web_contents()
+      ->GetWebUI()
+      ->GetController()
+      ->GetAs<WebUIBrowserUI>();
 }

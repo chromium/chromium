@@ -19,9 +19,10 @@ class WebView;
 class Widget;
 }  // namespace views
 
-class WebUILocationBar;
-class WebUIBrowserWebContentsDelegate;
 class Browser;
+class WebUIBrowserUI;
+class WebUIBrowserWebContentsDelegate;
+class WebUILocationBar;
 
 // A BrowserWindow implementation that uses WebUI for its primary UI. It still
 // uses views::Widget for windowing management.
@@ -235,6 +236,7 @@ class WebUIBrowserWindow : public BrowserWindow,
   class WidgetDelegate;
 
   void OnWindowCloseRequested(views::Widget::ClosedReason close_reason);
+  WebUIBrowserUI* GetWebUIBrowserUI() const;
 
   std::unique_ptr<WebUIBrowserWebContentsDelegate> web_contents_delegate_;
   std::unique_ptr<WidgetDelegate> widget_delegate_;

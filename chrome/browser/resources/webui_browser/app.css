@@ -11,6 +11,30 @@
   height: 400px;
 }
 
+.caption-button {
+  box-shadow: none;
+  border-radius: 0;
+  --cr-button-background-color: transparent;
+  --cr-button-border-color: transparent;
+  --iron-icon-width: 16px;
+  --iron-icon-height: 16px;
+  --iron-icon-stroke-color: black;
+  --iron-icon-fill-color: transparent;
+  height: 43px;
+  min-width: 45px;
+  shape-rendering: crispEdges;
+}
+
+#bookmarkBar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 35px;
+  user-select: none;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
 cr-searchbox {
   --cr-searchbox-height: 35px;
   --cr-searchbox-shadow: 0 0 0px 1px #20212451;

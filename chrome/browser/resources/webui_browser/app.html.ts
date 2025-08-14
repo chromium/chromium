@@ -21,9 +21,18 @@ export function getHtml(this: WebuiBrowserAppElement) {
       </webui-browser-tabstrip>
     </div>
     <div class="captionButtonsDiv">
-      <cr-button type="button" @click="${this.onMinimizeClick_}">[-]</cr-button>
-      <cr-button type="button" @click="${this.onMaximizeClick_}">[+]</cr-button>
-      <cr-button type="button" @click="${this.onCloseClick_}">[X]</cr-button>
+      <cr-button type="button" class="caption-button"
+        @click="${this.onMinimizeClick_}">
+        <cr-icon icon="webui-browser:minimize"></cr-icon>
+      </cr-button>
+      <cr-button type="button" class="caption-button"
+        @click="${this.onMaximizeClick_}">
+        <cr-icon icon="webui-browser:maximize"></cr-icon>
+      </cr-button>
+      <cr-button type="button" class="caption-button"
+        @click="${this.onCloseClick_}">
+        <cr-icon icon="webui-browser:close"></cr-icon>
+        </cr-button>
     </div>
   </div>
   <div id="searchBar">
@@ -35,6 +44,12 @@ export function getHtml(this: WebuiBrowserAppElement) {
       @click="${this.onForwardClick_}"></cr-icon-button>
     <cr-searchbox id="address"></cr-searchbox>
   </div>
+  <webui-browser-bookmark-bar
+    id="bookmarkBar"
+    @show-bookmark-bar="${this.onShowBookmarkBar_}"
+    @hide-bookmark-bar="${this.onHideBookmarkBar_}"
+    @bookmark-click="${this.onBookmarkButtonClick_}">
+  </webui-browser-bookmark-bar>
   <cr-webview id="exampleWebview" guest-id="${this.guestId_}"></cr-webview>
 </div>
 <!--_html_template_end_-->`;

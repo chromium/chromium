@@ -6,10 +6,12 @@
 
 #include "base/notimplemented.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_register.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
+#include "chrome/browser/ui/webui_browser/bookmark_bar_page_handler.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -75,6 +77,12 @@ void WebUIBrowserUI::BindInterface(
 }
 
 void WebUIBrowserUI::BindInterface(
+    mojo::PendingReceiver<bookmark_bar::mojom::PageHandlerFactory> receiver) {
+  bookmark_bar_page_factory_receiver_.reset();
+  bookmark_bar_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void WebUIBrowserUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler) {
   content::WebUI* webui = web_ui();
   content::WebContents* web_contents = webui->GetWebContents();
@@ -112,6 +120,23 @@ void WebUIBrowserUI::CreatePageHandler(
   auto* render_frame_host = web_ui()->GetRenderFrameHost();
   WebUIBrowserPageHandler::CreateForRenderFrameHost(*render_frame_host,
                                                     std::move(receiver), this);
+}
+
+void WebUIBrowserUI::CreatePageHandler(
+    mojo::PendingRemote<bookmark_bar::mojom::Page> page,
+    mojo::PendingReceiver<bookmark_bar::mojom::PageHandler> receiver) {
+  bookmark_bar_page_handler_ =
+      std::make_unique<WebUIBrowserBookmarkBarPageHandler>(
+          std::move(receiver), std::move(page), web_ui(), browser_);
+}
+
+void WebUIBrowserUI::BookmarkBarStateChanged(
+    BookmarkBar::AnimateChangeType change_type) {
+  if (bookmark_bar_page_handler_) {
+    bookmark_bar_page_handler_->SetBookmarkBarState(
+        BookmarkBarController::From(browser_)->bookmark_bar_state(),
+        change_type);
+  }
 }
 
 void WebUIBrowserUI::ShowSidePanel(SidePanelEntryKey side_panel_entry_key) {

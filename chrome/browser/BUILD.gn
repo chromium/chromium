@@ -4490,6 +4490,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/ui/webui/whats_new:impl",
       "//chrome/browser/ui/webui_browser",
+      "//chrome/browser/ui/webui_browser:impl",
       "//chrome/browser/upgrade_detector",
       "//chrome/browser/upgrade_detector:build_state_observer",
       "//chrome/browser/user_education",
@@ -4654,6 +4655,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/signin:signin_impl",
       "//chrome/browser/ui/webui/signin:signin_utils_impl",
       "//chrome/browser/ui/webui/signin:login_impl",
+      "//chrome/browser/ui/webui_browser:impl",
       "//chrome/browser/ui/media_router:impl",
       "//chrome/browser/ui/tabs:impl",
       "//chrome/browser/ui/tabs:tab_menu_impl",
@@ -8762,6 +8764,7 @@ static_library("browser_generated_files") {
       "//chrome/browser/ui/webui/user_education_internals:mojo_bindings",
       "//chrome/browser/ui/webui/web_app_internals:mojo_bindings",
       "//chrome/browser/ui/webui/whats_new:mojo_bindings",
+      "//chrome/browser/ui/webui_browser:browser_mojo_bindings",
       "//chrome/browser/webauthn/proto",
       "//components/autofill/core/browser/ml_model/logging:mojo_bindings",
     ]

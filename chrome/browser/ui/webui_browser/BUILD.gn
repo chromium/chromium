@@ -33,6 +33,8 @@ source_set("webui_browser") {
 
 source_set("impl") {
   sources = [
+    "bookmark_bar_page_handler.cc",
+    "bookmark_bar_page_handler.h",
     "webui_browser.cc",
     "webui_browser_client_view.cc",
     "webui_browser_client_view.h",
@@ -49,10 +51,12 @@ source_set("impl") {
     ":browser_mojo_bindings",
     ":webui_browser",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/devtools",
     "//chrome/browser/profiles",
     "//chrome/browser/resources/webui_browser:resources",
     "//chrome/browser/themes",
+    "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/find_bar",
     "//chrome/browser/ui/location_bar",
     "//chrome/browser/ui/tabs/tab_strip_api",
@@ -72,7 +76,10 @@ source_set("impl") {
 }
 
 mojom("browser_mojo_bindings") {
-  sources = [ "browser.mojom" ]
+  sources = [
+    "bookmark_bar.mojom",
+    "browser.mojom",
+  ]
   public_deps = [
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",

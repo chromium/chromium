@@ -1,0 +1,71 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module bookmark_bar.mojom;
+
+import "url/mojom/url.mojom";
+
+// Bookmark Type
+// Copied from components/bookmarks/browser/bookmark_node.h
+enum BookmarkType {
+  URL = 0,
+  FOLDER,
+  BOOKMARK_BAR,
+  OTHER_NODE,
+  MOBILE
+};
+
+// Data of a bookmark node
+struct BookmarkData {
+  int64 id;
+  string title;
+  BookmarkType type;
+  // Set to the URL of the page when the favicon is ready.
+  url.mojom.Url? page_url_for_favicon;
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // Get all the tabs info from the current browser window.
+  GetBookmarkBar() => (array<BookmarkData> bookmarks);
+
+  // TODO(webium): Operations to alter the bookmarks will be needed. They
+  // will likely need to pass an entire array of IDs going from bookmark bar
+  // to the entry being operated on. An alternative is to use UUIDs, but
+  // the BookmarkModel docs discourage their use.
+
+  // TODO(webium): additional variations on open, such as in new window,
+  // and multiple tabs, may be desired, if available via bookmark bar.
+  OpenInNewTab(int64 node_id);
+};
+
+// WebUI-side handler for requests from the browser.
+interface Page {
+  // Bookmark model finished loading. From now on it can be used to query
+  // information about the bookmarks.
+  BookmarkLoaded();
+
+  // Bookmark model favicons finish loading.
+  FavIconChanged(BookmarkData bookmark_data);
+
+  // TODO(webium): Add additional events about changes to bookmark model.
+  // These should largely follow
+  // components/bookmarks/browser/bookmark_model_observer.h, but with int64
+  // node ids instead of pointers. They should probably be limited to the
+  // things under the bookmark bar; further it may also make sense to only
+  // care about folder contents when they're opened.
+
+  // Show Bookmark bar
+  Show();
+
+  // Hide bookmark bar
+  Hide();
+};
