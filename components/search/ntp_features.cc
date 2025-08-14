@@ -468,6 +468,11 @@ const base::FeatureParam<base::TimeDelta>
         "NtpTabGroupsModuleWindowEndDeltaParam",
         base::Hours(12));
 
+const base::FeatureParam<size_t> kNtpTabGroupsModuleMaxGroupCountParam(
+    &ntp_features::kNtpTabGroupsModule,
+    "kNtpTabGroupsModuleMaxGroupCountParam",
+    4);
+
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(
       kNtpModulesLoadTimeoutMilliseconds,

@@ -17,6 +17,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace tab_groups {
+class TabGroupSyncService;
+}  // namespace tab_groups
+
 class TabGroupsPageHandler : public ntp::tab_groups::mojom::PageHandler {
  public:
   explicit TabGroupsPageHandler(
@@ -36,9 +40,11 @@ class TabGroupsPageHandler : public ntp::tab_groups::mojom::PageHandler {
   void RestoreModule() override;
 
  private:
+  std::vector<ntp::tab_groups::mojom::TabGroupPtr> GetSavedTabGroups();
+
   raw_ptr<Profile> profile_;
   raw_ptr<PrefService> pref_service_;
-
+  raw_ptr<tab_groups::TabGroupSyncService> tab_group_service_;
   mojo::Receiver<ntp::tab_groups::mojom::PageHandler> page_handler_;
 
   base::WeakPtrFactory<TabGroupsPageHandler> weak_ptr_factory_{this};

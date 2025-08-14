@@ -232,6 +232,8 @@ extern const base::FeatureParam<bool>
 // Parameter determining the time range of events.
 extern const base::FeatureParam<base::TimeDelta>
     kNtpTabGroupsModuleWindowEndDeltaParam;
+// Parameter determing the max number of tab groups to show in the module.
+extern const base::FeatureParam<size_t> kNtpTabGroupsModuleMaxGroupCountParam;
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();
