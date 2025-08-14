@@ -15,6 +15,7 @@
 
     display: flex;
     align-items: end;
+    margin-left: 12px;
 }
 
 #tabstrip.nodrag {

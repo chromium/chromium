@@ -13,14 +13,13 @@
     flex-grow: 1;
     flex-basis: 0;
     max-width: 233px;
-    /* This ensures tabs have same size */
-    overflow: hidden;
 }
 
 .tab {
+    color: var(--color-tab-foreground-inactive-frame-active);
     background-color: var(--color-tab-background-inactive-frame-active);
-    border-radius: 8px 8px 0 0;
-    height: 35px;
+    border-radius: 12px 12px 0 0;
+    height: 36px;
     padding: 0 10px;
     display: flex;
     align-items: center;
@@ -37,6 +36,7 @@
 }
 
 .tab.active {
+    color: var(--color-tab-foreground-active-frame-active);
     background-color: var(--color-tab-background-active-frame-active);
 }
 
@@ -69,27 +69,28 @@ cr-icon {
 
 #bottomCorners {
     position: absolute;
-    width: calc(100% + 16px);
-    height: 8px;
-    left: -8px;
+    width: calc(100% + 24px);
+    height: 12px;
+    left: -12px;
     bottom: 0;
-    background-color: var(--color-tab-background-active-frame-active);
 }
 
 .corner {
-    background-color: var(--color-frame-active);
-    width: 8px;
-    height: 8px;
+    width: 12px;
+    height: 12px;
     position: absolute;
     bottom: 0;
+    z-index: 10;
 }
 
 #leftCorner {
     left: 0;
-    border-radius: 0 0 8px 0;
+    background-image: radial-gradient(circle at 0 0, transparent 0,
+        transparent 12px, var(--color-tab-background-active-frame-active) 13px);
 }
 
 #rightCorner {
     right: 0;
-    border-radius: 0 0 0 8px;
+    background-image: radial-gradient(circle at 100% 0, transparent 0,
+        transparent 12px, var(--color-tab-background-active-frame-active) 13px);
 }
