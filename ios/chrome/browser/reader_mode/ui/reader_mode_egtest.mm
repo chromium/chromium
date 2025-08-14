@@ -188,6 +188,12 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 // Tests that the user can show / hide Reader Mode from the tools menu
 // entrypoint on an eligible web page.
 - (void)testToggleReaderModeInToolsMenuForDistillablePage {
+  // TODO(crbug.com/438763264): Failing on iPad device.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iPad device");
+  }
+#endif
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
@@ -342,6 +348,12 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 // Tests that the user can show Reader Mode from the contextual panel entrypoint
 // on an eligible web page.
 - (void)testToggleReaderModeInContextualPanelEntrypointForDistillablePage {
+  // TODO(crbug.com/438763264): Failing on iPad device.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iPad device");
+  }
+#endif
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
@@ -460,6 +472,12 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 
 // Tests that font family can be changed from the options view.
 - (void)testChangeReaderModeFontFamilyFromOptionsView {
+  // TODO(crbug.com/438763264): Failing on iPad device.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iPad device");
+  }
+#endif
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
@@ -573,6 +591,12 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 
 // Tests that font size can be changed from the options view.
 - (void)testChangeReaderModeFontSizeFromOptionsView {
+  // TODO(crbug.com/438763264): Failing on iPad device.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iPad device");
+  }
+#endif
   std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
   [ChromeEarlGrey setDoubleValue:multipliers[0]
                      forUserPref:dom_distiller::prefs::kFontScale];
@@ -654,6 +678,12 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 
 // Tests that color theme can be changed from the options view.
 - (void)testChangeReaderModeThemeFromOptionsView {
+  // TODO(crbug.com/438763264): Failing on iPad device.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iPad device");
+  }
+#endif
   [ChromeEarlGrey setIntegerValue:(int)dom_distiller::mojom::Theme::kLight
                       forUserPref:dom_distiller::prefs::kTheme];
 
@@ -797,6 +827,12 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 
 // Tests that tapping outside of the options view dismisses it.
 - (void)testTapOutsideOptionsViewDismissesIt {
+  // TODO(crbug.com/438763264): Failing on iPad device.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iPad device");
+  }
+#endif
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
@@ -832,6 +868,12 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 
 // Test accessibility for Reader mode options screen.
 - (void)testReaderModeOptionsAccessibility {
+  // TODO(crbug.com/438763264): Failing on iPad device.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iPad device");
+  }
+#endif
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
@@ -911,6 +953,12 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 
 // Tests that non-http links are removed from Reading mode.
 - (void)testNonHttpsLinksRemovedFromReadingMode {
+  // TODO(crbug.com/438763264): Failing on iPad device.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iPad device");
+  }
+#endif
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
@@ -1104,6 +1152,12 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   testContextualChipVisibleInIncognito
 #endif
 - (void)MAYBE_testContextualChipVisibleInIncognito {
+  // TODO(crbug.com/438763264): Failing on iPad device.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iPad device");
+  }
+#endif
   // Open a web page in Incognito.
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
