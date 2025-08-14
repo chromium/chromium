@@ -10,7 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-class ProfileInfoWatcher;
+class HistorySignInStateWatcher;
 
 // The handler for login-related messages from chrome://history.
 class HistoryLoginHandler : public content::WebUIMessageHandler {
@@ -35,12 +35,11 @@ class HistoryLoginHandler : public content::WebUIMessageHandler {
   // Handler for the "startTurnOnSyncFlow" message. No args.
   void HandleTurnOnSyncFlow(const base::Value::List& args);
 
-  // Called by |profile_info_watcher_| when the signin state changes
+  // Called by |history_sign_in_state_watcher_| when the signin state changes
   void SigninStateChanged();
 
-  // Watches this web UI's profile for info changes (e.g. authenticated username
-  // changes).
-  std::unique_ptr<ProfileInfoWatcher> profile_info_watcher_;
+  // Watches for changes to the history-related sign-in state.
+  std::unique_ptr<HistorySignInStateWatcher> history_sign_in_state_watcher_;
 
   base::RepeatingClosure signin_state_changed_callback_;
 };

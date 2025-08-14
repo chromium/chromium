@@ -13,7 +13,7 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/webui/history/profile_info_watcher.h"
+#include "chrome/browser/ui/webui/history/history_sign_in_state_watcher.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -41,7 +41,7 @@ void HistoryLoginHandler::RegisterMessages() {
 }
 
 void HistoryLoginHandler::OnJavascriptAllowed() {
-  profile_info_watcher_ = std::make_unique<ProfileInfoWatcher>(
+  history_sign_in_state_watcher_ = std::make_unique<HistorySignInStateWatcher>(
       Profile::FromWebUI(web_ui()),
       base::BindRepeating(&HistoryLoginHandler::SigninStateChanged,
                           base::Unretained(this)));
@@ -49,7 +49,7 @@ void HistoryLoginHandler::OnJavascriptAllowed() {
 }
 
 void HistoryLoginHandler::OnJavascriptDisallowed() {
-  profile_info_watcher_ = nullptr;
+  history_sign_in_state_watcher_ = nullptr;
 }
 
 void HistoryLoginHandler::HandleOtherDevicesInitialized(
@@ -62,7 +62,8 @@ void HistoryLoginHandler::SigninStateChanged() {
     signin_state_changed_callback_.Run();
   }
 
-  HistorySignInState sign_in_state = profile_info_watcher_->GetSignInState();
+  HistorySignInState sign_in_state =
+      history_sign_in_state_watcher_->GetSignInState();
   FireWebUIListener("sign-in-state-changed", static_cast<int>(sign_in_state));
 }
 

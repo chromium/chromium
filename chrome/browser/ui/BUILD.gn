@@ -1103,12 +1103,12 @@ static_library("ui") {
       "webui/history/foreign_session_handler.h",
       "webui/history/history_login_handler.cc",
       "webui/history/history_login_handler.h",
+      "webui/history/history_sign_in_state_watcher.cc",
+      "webui/history/history_sign_in_state_watcher.h",
       "webui/history/history_ui.cc",
       "webui/history/history_ui.h",
       "webui/history/navigation_handler.cc",
       "webui/history/navigation_handler.h",
-      "webui/history/profile_info_watcher.cc",
-      "webui/history/profile_info_watcher.h",
       "webui/history_clusters/history_clusters_handler.cc",
       "webui/history_clusters/history_clusters_handler.h",
       "webui/inspect/inspect_ui.cc",
@@ -4651,6 +4651,10 @@ static_library("ui") {
       "//chrome/browser/ui/views/permissions/chip",
       "//chrome/browser/ui/views/permissions/chip:impl",
       "//chrome/browser/ui/views/user_education",
+
+      # TODO(crbug.com/432061436) Remove this dependency when the following headers get
+      # componentized:
+      # c/b/ui/browser.h, browser_finder.h, browser_window.h.
       "//chrome/browser/ui/webauthn:impl",
       "//chrome/browser/ui/webui/app_service_internals",
       "//chrome/browser/ui/webui/autofill_ml_internals",
@@ -4703,11 +4707,6 @@ static_library("ui") {
       "//ui/gfx/geometry",
       "//ui/lottie",
       "//ui/views:buildflags",
-
-      # TODO(crbug.com/432061436) Remove this dependency when the following headers get
-      # componentized:
-      # c/b/ui/browser.h, browser_finder.h, browser_window.h.
-      "//chrome/browser/ui/webauthn:impl",
     ]
 
     # This dependency is needed because translate_bubble_view.h declares free-functions in

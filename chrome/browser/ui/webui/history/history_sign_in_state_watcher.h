@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_HISTORY_PROFILE_INFO_WATCHER_H_
-#define CHROME_BROWSER_UI_WEBUI_HISTORY_PROFILE_INFO_WATCHER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_HISTORY_HISTORY_SIGN_IN_STATE_WATCHER_H_
+#define CHROME_BROWSER_UI_WEBUI_HISTORY_HISTORY_SIGN_IN_STATE_WATCHER_H_
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -19,14 +19,15 @@ class SyncService;
 
 // Watches a profile for changes in the sign-in state - see
 // HistoryUtil::GetSignInState().
-class ProfileInfoWatcher : public syncer::SyncServiceObserver {
+class HistorySignInStateWatcher : public syncer::SyncServiceObserver {
  public:
-  ProfileInfoWatcher(Profile* profile, base::RepeatingClosure callback);
+  HistorySignInStateWatcher(Profile* profile, base::RepeatingClosure callback);
 
-  ProfileInfoWatcher(const ProfileInfoWatcher&) = delete;
-  ProfileInfoWatcher& operator=(const ProfileInfoWatcher&) = delete;
+  HistorySignInStateWatcher(const HistorySignInStateWatcher&) = delete;
+  HistorySignInStateWatcher& operator=(const HistorySignInStateWatcher&) =
+      delete;
 
-  ~ProfileInfoWatcher() override;
+  ~HistorySignInStateWatcher() override;
 
   HistorySignInState GetSignInState() const;
 
@@ -50,4 +51,4 @@ class ProfileInfoWatcher : public syncer::SyncServiceObserver {
       sync_observation_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_HISTORY_PROFILE_INFO_WATCHER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_HISTORY_HISTORY_SIGN_IN_STATE_WATCHER_H_

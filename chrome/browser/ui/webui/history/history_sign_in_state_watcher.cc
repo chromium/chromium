@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/history/profile_info_watcher.h"
+#include "chrome/browser/ui/webui/history/history_sign_in_state_watcher.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -10,8 +10,9 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/sync/service/sync_service.h"
 
-ProfileInfoWatcher::ProfileInfoWatcher(Profile* profile,
-                                       base::RepeatingClosure callback)
+HistorySignInStateWatcher::HistorySignInStateWatcher(
+    Profile* profile,
+    base::RepeatingClosure callback)
     : profile_(profile),
       callback_(std::move(callback)),
       cached_signin_state_(GetSignInState()) {
@@ -25,9 +26,9 @@ ProfileInfoWatcher::ProfileInfoWatcher(Profile* profile,
   }
 }
 
-ProfileInfoWatcher::~ProfileInfoWatcher() = default;
+HistorySignInStateWatcher::~HistorySignInStateWatcher() = default;
 
-void ProfileInfoWatcher::OnStateChanged(syncer::SyncService* sync) {
+void HistorySignInStateWatcher::OnStateChanged(syncer::SyncService* sync) {
   HistorySignInState signin_state = GetSignInState();
   if (signin_state == cached_signin_state_) {
     return;
@@ -37,14 +38,14 @@ void ProfileInfoWatcher::OnStateChanged(syncer::SyncService* sync) {
   RunCallback();
 }
 
-void ProfileInfoWatcher::OnSyncShutdown(syncer::SyncService* sync) {
+void HistorySignInStateWatcher::OnSyncShutdown(syncer::SyncService* sync) {
   sync_observation_.Reset();
 }
 
-HistorySignInState ProfileInfoWatcher::GetSignInState() const {
+HistorySignInState HistorySignInStateWatcher::GetSignInState() const {
   return HistoryUtil::GetSignInState(profile_);
 }
 
-void ProfileInfoWatcher::RunCallback() {
+void HistorySignInStateWatcher::RunCallback() {
   callback_.Run();
 }
