@@ -6,8 +6,8 @@
 #define COMPONENTS_PLUS_ADDRESSES_MOCK_PLUS_ADDRESS_HTTP_CLIENT_H_
 
 #include "base/functional/callback.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/plus_address_http_client.h"
-#include "components/plus_addresses/plus_address_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/origin.h"
 

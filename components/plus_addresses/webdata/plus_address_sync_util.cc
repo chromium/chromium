@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/plus_address_specifics.pb.h"
 

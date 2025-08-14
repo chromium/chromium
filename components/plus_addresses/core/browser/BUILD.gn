@@ -1,0 +1,26 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+source_set("types") {
+  sources = [
+    "plus_address_types.cc",
+    "plus_address_types.h",
+  ]
+  deps = [ "//net" ]
+  public_deps = [
+    "//base",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/autofill/core/browser",
+  ]
+}
+
+if (is_android) {
+  java_cpp_enum("plus_address_java_enums") {
+    sources = [ "plus_address_types.h" ]
+  }
+}

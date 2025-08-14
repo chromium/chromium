@@ -12,8 +12,8 @@
 
 #include "base/functional/callback.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/plus_address_service.h"
-#include "components/plus_addresses/plus_address_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace plus_addresses {

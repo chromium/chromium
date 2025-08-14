@@ -14,8 +14,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/plus_address_http_client.h"
-#include "components/plus_addresses/plus_address_types.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "url/gurl.h"
 

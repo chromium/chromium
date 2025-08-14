@@ -18,7 +18,7 @@ source_set("webdata") {
   public_deps = [
     "//base",
     "//components/affiliations/core/browser:affiliations",
-    "//components/plus_addresses:types",
+    "//components/plus_addresses/core/browser:types",
     "//components/sync",
     "//components/webdata/common",
   ]

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PLUS_ADDRESSES_PLUS_ADDRESS_CREATION_VIEW_H_
 #define CHROME_BROWSER_UI_PLUS_ADDRESSES_PLUS_ADDRESS_CREATION_VIEW_H_
 
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace plus_addresses {

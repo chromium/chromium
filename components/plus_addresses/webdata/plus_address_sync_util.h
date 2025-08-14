@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_SYNC_UTIL_H_
 #define COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_SYNC_UTIL_H_
 
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/sync/protocol/entity_data.h"
 
 namespace plus_addresses {

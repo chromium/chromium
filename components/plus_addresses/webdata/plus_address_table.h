@@ -9,7 +9,7 @@
 #include <string_view>
 #include <vector>
 
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/sync/model/sync_metadata_store.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_table.h"

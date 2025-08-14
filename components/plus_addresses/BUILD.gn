@@ -6,29 +6,6 @@ import("//build/buildflag_header.gni")
 import("//components/plus_addresses/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-if (is_android) {
-  import("//build/config/android/rules.gni")
-}
-
-source_set("types") {
-  sources = [
-    "plus_address_types.cc",
-    "plus_address_types.h",
-  ]
-  deps = [ "//net" ]
-  public_deps = [
-    "//base",
-    "//components/affiliations/core/browser:affiliations",
-    "//components/autofill/core/browser",
-  ]
-}
-
-if (is_android) {
-  java_cpp_enum("plus_address_java_enums") {
-    sources = [ "plus_address_types.h" ]
-  }
-}
-
 source_set("parsing") {
   sources = [
     "plus_address_parsing_utils.cc",
@@ -37,8 +14,8 @@ source_set("parsing") {
 
   deps = [ "//components/plus_addresses/core/common:features" ]
   public_deps = [
-    ":types",
     "//base",
+    "//components/plus_addresses/core/browser:types",
     "//services/data_decoder/public/cpp",
   ]
 }
@@ -108,10 +85,10 @@ source_set("plus_addresses") {
     "//ui/base",
   ]
   public_deps = [
-    ":types",
     "//base",
     "//components/autofill/core/browser",
     "//components/keyed_service/core",
+    "//components/plus_addresses/core/browser:types",
 
     # While not strictly public by h file inclusion, this is a temporary move
     # of features.h out of sources. Allowing those depending on
@@ -198,8 +175,8 @@ static_library("test_support") {
   ]
   public_deps = [
     ":plus_addresses",
-    ":types",
     "//components/affiliations/core/browser:test_support",
+    "//components/plus_addresses/core/browser:types",
     "//components/plus_addresses/settings:test_support",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",

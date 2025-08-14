@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/url_formatter/elide_url.h"
 
 namespace plus_addresses {

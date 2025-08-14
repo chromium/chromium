@@ -7,7 +7,7 @@
 
 #include <jni.h>
 
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "ui/gfx/native_widget_types.h"
 
 class TabModel;

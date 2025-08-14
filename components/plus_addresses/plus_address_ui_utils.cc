@@ -8,7 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/url_formatter/elide_url.h"
 #include "url/gurl.h"
 

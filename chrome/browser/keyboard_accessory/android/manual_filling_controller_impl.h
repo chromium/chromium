@@ -18,7 +18,7 @@
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {

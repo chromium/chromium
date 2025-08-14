@@ -8,7 +8,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace plus_addresses::metrics {

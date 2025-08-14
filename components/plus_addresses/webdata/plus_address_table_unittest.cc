@@ -7,8 +7,8 @@
 #include <optional>
 
 #include "base/files/scoped_temp_dir.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
-#include "components/plus_addresses/plus_address_types.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/data_type_state.pb.h"

@@ -16,9 +16,9 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/plus_address_allocator.h"
 #include "components/plus_addresses/plus_address_http_client.h"
-#include "components/plus_addresses/plus_address_types.h"
 #include "net/base/backoff_entry.h"
 #include "url/origin.h"
 

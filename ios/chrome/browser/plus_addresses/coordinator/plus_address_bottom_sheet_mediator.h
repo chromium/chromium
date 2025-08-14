@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "components/plus_addresses/plus_address_types.h"
+#import "components/plus_addresses/core/browser/plus_address_types.h"
 #import "ios/chrome/browser/plus_addresses/coordinator/plus_address_error_alert_delegate.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_delegate.h"
 #import "url/gurl.h"

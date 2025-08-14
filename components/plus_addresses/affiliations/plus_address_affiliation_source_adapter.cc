@@ -6,8 +6,8 @@
 
 #include "base/containers/span.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/plus_address_service.h"
-#include "components/plus_addresses/plus_address_types.h"
 
 namespace plus_addresses {
 namespace {

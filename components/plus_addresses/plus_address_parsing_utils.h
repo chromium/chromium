@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/values.h"
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace plus_addresses {

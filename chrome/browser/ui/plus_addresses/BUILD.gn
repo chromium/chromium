@@ -13,7 +13,7 @@ source_set("plus_addresses") {
     "plus_address_creation_view.h",
   ]
   public_deps = [
-    "//components/plus_addresses:types",
+    "//components/plus_addresses/core/browser:types",
     "//content/public/browser",
     "//ui/base",
     "//url",
@@ -50,7 +50,7 @@ source_set("plus_addresses") {
       "//components/autofill/core/browser",
       "//components/autofill/core/common",
       "//components/plus_addresses:hats_utils",
-      "//components/plus_addresses:plus_address_java_enums",
+      "//components/plus_addresses/core/browser:plus_address_java_enums",
       "//components/plus_addresses/metrics",
       "//ui/gfx",
     ]
@@ -171,7 +171,7 @@ source_set("unit_tests") {
     deps += [
       ":impl",
       "//components/autofill/core/common",
-      "//components/plus_addresses:plus_address_java_enums",
+      "//components/plus_addresses/core/browser:plus_address_java_enums",
     ]
   } else {
     sources = [
@@ -207,8 +207,8 @@ if (is_android) {
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui_android",
       "//components/plus_addresses",
-      "//components/plus_addresses:plus_address_java_enums",
       "//components/plus_addresses:test_support",
+      "//components/plus_addresses/core/browser:plus_address_java_enums",
       "//components/plus_addresses/core/common:features",
       "//content/test:test_support",
       "//testing/gtest",

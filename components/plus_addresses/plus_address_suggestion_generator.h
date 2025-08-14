@@ -10,7 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "url/origin.h"
 
 namespace autofill {

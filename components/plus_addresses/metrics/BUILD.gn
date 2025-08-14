@@ -11,7 +11,7 @@ source_set("metrics") {
   public_deps = [
     "//base",
     "//components/autofill/core/browser",
-    "//components/plus_addresses:types",
+    "//components/plus_addresses/core/browser:types",
   ]
 }
 

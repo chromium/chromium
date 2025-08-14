@@ -21,7 +21,7 @@ static_library("public") {
     "//base",
     "//components/autofill/core/browser",
     "//components/password_manager/core/browser",
-    "//components/plus_addresses:types",
+    "//components/plus_addresses/core/browser:types",
     "//content/public/browser",
     "//url",
   ]

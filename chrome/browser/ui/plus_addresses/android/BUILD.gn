@@ -8,7 +8,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   srcjar_deps = [
     ":jni_headers",
-    "//components/plus_addresses:plus_address_java_enums",
+    "//components/plus_addresses/core/browser:plus_address_java_enums",
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetBridge.java",

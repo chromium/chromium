@@ -12,7 +12,7 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/bind_post_task.h"
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/webdata/plus_address_sync_bridge.h"
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
 #include "components/plus_addresses/webdata/plus_address_table.h"

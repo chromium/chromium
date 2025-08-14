@@ -11,7 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 
 namespace plus_addresses {
 

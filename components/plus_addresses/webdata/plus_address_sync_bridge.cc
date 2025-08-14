@@ -11,7 +11,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
 #include "components/plus_addresses/webdata/plus_address_table.h"
 #include "components/sync/base/data_type.h"

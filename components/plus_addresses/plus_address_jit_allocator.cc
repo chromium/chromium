@@ -9,8 +9,8 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/plus_address_http_client.h"
-#include "components/plus_addresses/plus_address_types.h"
 #include "net/http/http_status_code.h"
 #include "url/origin.h"
 
