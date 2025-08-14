@@ -151,7 +151,9 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 - (void)setUsesMonochromeLogo:(BOOL)usesMonochromeLogo {
   if (usesMonochromeLogo != _usesMonochromeLogo) {
     _usesMonochromeLogo = usesMonochromeLogo;
-    if (self.containerView) {
+    if (search::DefaultSearchProviderIsGoogle(_templateURLService) &&
+        self.containerView) {
+      // TODO(crbug.com/438460743): Need implementation.
       self.containerView.shrunkLogoView.image = [self offlineGoogleLogoImage];
     }
   }
