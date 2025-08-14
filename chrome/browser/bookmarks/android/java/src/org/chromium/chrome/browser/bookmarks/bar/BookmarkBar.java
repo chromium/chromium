@@ -48,7 +48,7 @@ class BookmarkBar extends LinearLayout {
 
     @Override
     public boolean onGenericMotionEvent(MotionEvent event) {
-        if (MotionEventUtils.isMouseEvent(event) || MotionEventUtils.isTrackpadEvent(event)) {
+        if (MotionEventUtils.isPointerEvent(event)) {
             int action = event.getActionMasked();
             if (action == MotionEvent.ACTION_BUTTON_PRESS
                     || action == MotionEvent.ACTION_BUTTON_RELEASE

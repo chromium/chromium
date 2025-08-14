@@ -460,10 +460,10 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         // bleed through to sibling views that are obscured by the list.  crbug.com/968414
         int action = event.getActionMasked();
         boolean shouldConsumeGenericMotionEvent =
-                (MotionEventUtils.isMouseEvent(event) || MotionEventUtils.isTrackpadEvent(event))
+                (MotionEventUtils.isPointerEvent(event)
                         && (action == MotionEvent.ACTION_BUTTON_PRESS
                                 || action == MotionEvent.ACTION_BUTTON_RELEASE
-                                || action == MotionEvent.ACTION_SCROLL);
+                                || action == MotionEvent.ACTION_SCROLL));
         return super.onGenericMotionEvent(event) || shouldConsumeGenericMotionEvent;
     }
 
