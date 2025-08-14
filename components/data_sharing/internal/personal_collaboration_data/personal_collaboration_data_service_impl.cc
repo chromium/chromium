@@ -5,8 +5,29 @@
 #include "components/data_sharing/internal/personal_collaboration_data/personal_collaboration_data_service_impl.h"
 
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 
 namespace data_sharing::personal_collaboration_data {
+
+namespace {
+
+std::string CreateStorageKeyWithType(
+    PersonalCollaborationDataService::SpecificsType specifics_type,
+    const std::string& storage_key) {
+  // Special case tab and tab group since previous data were stored without a
+  // namespace.
+  if (specifics_type == PersonalCollaborationDataService::SpecificsType::
+                            kSharedTabSpecifics ||
+      specifics_type == PersonalCollaborationDataService::SpecificsType::
+                            kSharedTabGroupSpecifics) {
+    return storage_key;
+  }
+
+  int type_as_int = static_cast<int>(specifics_type);
+  return base::NumberToString(type_as_int) + "|" + storage_key;
+}
+
+}  // namespace
 
 PersonalCollaborationDataServiceImpl::PersonalCollaborationDataServiceImpl(
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
@@ -32,8 +53,8 @@ std::optional<sync_pb::SharedTabGroupAccountDataSpecifics>
 PersonalCollaborationDataServiceImpl::GetSpecifics(
     SpecificsType specifics_type,
     const std::string& storage_key) {
-  // TODO(haileywang): Implement actual logic.
-  return sync_pb::SharedTabGroupAccountDataSpecifics();
+  return bridge_->GetSpecificsForStorageKey(
+      CreateStorageKeyWithType(specifics_type, storage_key));
 }
 
 void PersonalCollaborationDataServiceImpl::CreateOrUpdateSpecifics(

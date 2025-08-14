@@ -547,6 +547,12 @@ TEST_F(PersonalCollaborationDataSyncBridgeTest,
   EXPECT_THAT(*result, EqualsProto(specifics));
 }
 
+TEST_F(PersonalCollaborationDataSyncBridgeTest,
+       ShouldReturnNulloptForNonexistentStorageKey) {
+  InitializeBridge();
+  EXPECT_FALSE(bridge().GetSpecificsForStorageKey("nonexistent_key"));
+}
+
 TEST_F(PersonalCollaborationDataSyncBridgeTest, ShouldHandleNoData) {
   InitializeBridge();
 
