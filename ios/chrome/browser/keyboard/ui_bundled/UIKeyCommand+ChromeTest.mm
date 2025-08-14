@@ -96,8 +96,12 @@ TEST_F(UIKeyCommandChromeTest, Factories) {
   Verify(UIKeyCommand.cr_voiceSearch, @"⇧⌘.", @"keyCommand_voiceSearch",
          @"IDS_IOS_KEYBOARD_VOICE_SEARCH");
   Verify(UIKeyCommand.cr_close, @"⎋", @"keyCommand_close");
+  NSString* showSettingsString = @"IDS_IOS_KEYBOARD_SHOW_SETTINGS";
+  if (@available(iOS 26, *)) {
+    showSettingsString = @"IDS_IOS_KEYBOARD_SETTINGS";
+  }
   Verify(UIKeyCommand.cr_showSettings, @"⌘,", @"keyCommand_showSettings",
-         @"IDS_IOS_KEYBOARD_SHOW_SETTINGS");
+         showSettingsString);
   Verify(UIKeyCommand.cr_stop, @"⌘.", @"keyCommand_stop",
          @"IDS_IOS_KEYBOARD_STOP");
   Verify(UIKeyCommand.cr_showHelp, @"⌥⌘?", @"keyCommand_showHelp",
