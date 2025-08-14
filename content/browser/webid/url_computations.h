@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBID_FEDCM_URL_COMPUTATIONS_H_
-#define CONTENT_BROWSER_WEBID_FEDCM_URL_COMPUTATIONS_H_
+#ifndef CONTENT_BROWSER_WEBID_URL_COMPUTATIONS_H_
+#define CONTENT_BROWSER_WEBID_URL_COMPUTATIONS_H_
 
 #include <optional>
 #include <string>
@@ -14,6 +14,7 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 
 namespace content {
+namespace webid {
 
 // This file contains functions that compute URLs that are used in FedCM.
 
@@ -39,6 +40,7 @@ void MaybeAppendQueryParameters(
     const IdentityProviderLoginUrlInfo& idp_login_info,
     GURL* login_url);
 
+}  // namespace webid
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_WEBID_FEDCM_URL_COMPUTATIONS_H_
+#endif  // CONTENT_BROWSER_WEBID_URL_COMPUTATIONS_H_

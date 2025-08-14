@@ -31,13 +31,13 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/fedcm_mappers.h"
-#include "content/browser/webid/fedcm_url_computations.h"
 #include "content/browser/webid/federated_auth_disconnect_request.h"
 #include "content/browser/webid/federated_auth_request_page_data.h"
 #include "content/browser/webid/federated_auth_user_info_request.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/idp_network_request_manager.h"
+#include "content/browser/webid/url_computations.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -1446,7 +1446,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
         account_id);
   } else {
     endpoint = idp_info.endpoints.token;
-    query = ComputeUrlEncodedTokenPostData(
+    query = webid::ComputeUrlEncodedTokenPostData(
         render_frame_host(), idp_info.provider->config->client_id,
         idp_info.provider->nonce, account_id,
         identity_selection_type_ != kExplicit, rp_mode_,
@@ -2457,7 +2457,7 @@ void FederatedAuthRequestImpl::LoginToIdP(bool can_append_hints,
   if (can_append_hints) {
     // Before invoking UI, append the query parameters to the `idp_login_url` if
     // needed.
-    MaybeAppendQueryParameters(it->second, &login_url);
+    webid::MaybeAppendQueryParameters(it->second, &login_url);
   }
   permission_delegate_->AddIdpSigninStatusObserver(this);
 

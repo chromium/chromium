@@ -19,12 +19,12 @@
 #include "content/browser/webid/accounts_fetcher.h"
 #include "content/browser/webid/delegation/federated_sd_jwt_handler.h"
 #include "content/browser/webid/fedcm_metrics.h"
-#include "content/browser/webid/fedcm_url_computations.h"
 #include "content/browser/webid/identity_provider_info.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/identity_registry_delegate.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/browser/webid/idp_registration_handler.h"
+#include "content/browser/webid/url_computations.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/web_contents.h"
@@ -481,7 +481,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // Maps the login URL to the info that may be added as query parameters to
   // that URL. Populated by OnAllConfigAndWellKnownFetched().
-  base::flat_map<GURL, IdentityProviderLoginUrlInfo> idp_login_infos_;
+  base::flat_map<GURL, webid::IdentityProviderLoginUrlInfo> idp_login_infos_;
 
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>
       api_permission_delegate_ = nullptr;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/fedcm_url_computations.h"
+#include "content/browser/webid/url_computations.h"
 
 #include <string>
 
@@ -18,6 +18,7 @@
 using RpMode = blink::mojom::RpMode;
 
 namespace content {
+namespace webid {
 
 namespace {
 
@@ -146,4 +147,5 @@ void MaybeAppendQueryParameters(
   *login_url = login_url->ReplaceComponents(replacements);
 }
 
+}  // namespace webid
 }  // namespace content
