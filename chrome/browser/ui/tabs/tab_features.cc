@@ -359,8 +359,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   memory_saver_chip_helper_ = std::make_unique<MemorySaverChipTabHelper>(tab);
 
-  tab_alert_controller_ = std::make_unique<TabAlertController>(tab);
-
   tab_creation_metrics_controller_ =
       std::make_unique<TabCreationMetricsController>(&tab);
 
@@ -383,6 +381,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     ask_before_http_dialog_controller_ =
         std::make_unique<AskBeforeHttpDialogController>(&tab);
   }
+
+  tab_alert_controller_ =
+      GetUserDataFactory().CreateInstance<TabAlertController>(tab, tab);
 }
 
 TabResourceUsageTabHelper* TabFeatures::SetResourceUsageHelperForTesting(

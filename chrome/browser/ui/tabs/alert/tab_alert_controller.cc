@@ -20,6 +20,7 @@
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_capability_type.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
@@ -28,6 +29,8 @@
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 namespace tabs {
+
+DEFINE_USER_DATA(TabAlertController);
 
 bool CompareAlerts::operator()(TabAlert first, TabAlert second) const {
   // Alerts are ordered from highest priority to be shown to lowest priority.
@@ -55,7 +58,8 @@ bool CompareAlerts::operator()(TabAlert first, TabAlert second) const {
 }
 
 TabAlertController::TabAlertController(TabInterface& tab)
-    : tabs::ContentsObservingTabFeature(tab) {
+    : tabs::ContentsObservingTabFeature(tab),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   media_stream_capture_indicator_observation_.Observe(
       MediaCaptureDevicesDispatcher::GetInstance()
           ->GetMediaStreamCaptureIndicator()
@@ -67,6 +71,7 @@ TabAlertController::TabAlertController(TabInterface& tab)
           ->RegisterRecentlyAudibleChangedCallback(base::BindRepeating(
               &TabAlertController::OnRecentlyAudibleStateChanged,
               base::Unretained(this)));
+
   if (auto* actor_ui_tab_controller =
           tab.GetTabFeatures()->actor_ui_tab_controller()) {
     callback_subscriptions_.emplace_back(
@@ -94,6 +99,15 @@ TabAlertController::TabAlertController(TabInterface& tab)
 
 TabAlertController::~TabAlertController() = default;
 
+// static:
+const TabAlertController* TabAlertController::From(const TabInterface* tab) {
+  return Get(tab->GetUnownedUserDataHost());
+}
+
+TabAlertController* TabAlertController::From(TabInterface* tab) {
+  return Get(tab->GetUnownedUserDataHost());
+}
+
 base::CallbackListSubscription
 TabAlertController::AddAlertToShowChangedCallback(
     AlertToShowChangedCallback callback) {
@@ -108,7 +122,7 @@ std::optional<TabAlert> TabAlertController::GetAlertToShow() const {
   return *active_alerts_.begin();
 }
 
-std::vector<TabAlert> TabAlertController::GetAllActiveAlerts() {
+std::vector<TabAlert> TabAlertController::GetAllActiveAlerts() const {
   return base::ToVector(active_alerts_);
 }
 

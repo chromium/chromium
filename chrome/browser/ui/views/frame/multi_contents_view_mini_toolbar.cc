@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -246,9 +247,8 @@ void MultiContentsViewMiniToolbar::OnThemeChanged() {
     UpdateFavicon(tab_data.value());
   }
   if (auto* interface = GetTabInterface(web_contents_)) {
-    auto* tab_features = interface->GetTabFeatures();
-    if (tab_features) {
-      auto* tab_alert_controller = tab_features->tab_alert_controller();
+    auto* tab_alert_controller = tabs::TabAlertController::From(interface);
+    if (tab_alert_controller) {
       OnAlertStatusIndicatorChanged(tab_alert_controller->GetAlertToShow());
     }
   }
@@ -287,8 +287,7 @@ SkPath MultiContentsViewMiniToolbar::GetPath(bool border_stroke_only) const {
 
 void MultiContentsViewMiniToolbar::RegisterTabAlertSubscription() {
   if (auto* interface = GetTabInterface(web_contents_)) {
-    auto* tab_alert_controller =
-        interface->GetTabFeatures()->tab_alert_controller();
+    auto* tab_alert_controller = tabs::TabAlertController::From(interface);
     OnAlertStatusIndicatorChanged(tab_alert_controller->GetAlertToShow());
     tab_alert_status_subscription_ =
         tab_alert_controller->AddAlertToShowChangedCallback(base::BindRepeating(

@@ -33,10 +33,8 @@ class TabAlertControllerObserver
  public:
   TabAlertControllerObserver(Browser* browser, int tab_index) {
     callback_subscription_ =
-        browser->tab_strip_model()
-            ->GetTabAtIndex(tab_index)
-            ->GetTabFeatures()
-            ->tab_alert_controller()
+        tabs::TabAlertController::From(
+            browser->tab_strip_model()->GetTabAtIndex(tab_index))
             ->AddAlertToShowChangedCallback(base::BindRepeating(
                 &TabAlertControllerObserver::OnAlertToShowChanged,
                 base::Unretained(this)));

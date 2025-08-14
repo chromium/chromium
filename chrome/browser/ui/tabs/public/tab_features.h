@@ -265,10 +265,6 @@ class TabFeatures {
   TabUIHelper* SetTabUIHelperForTesting(
       std::unique_ptr<TabUIHelper> tab_ui_helper);
 
-  TabAlertController* tab_alert_controller() {
-    return tab_alert_controller_.get();
-  }
-
   TabCreationMetricsController* tab_creation_metrics_controller() {
     return tab_creation_metrics_controller_.get();
   }

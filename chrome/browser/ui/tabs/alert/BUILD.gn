@@ -20,6 +20,7 @@ source_set("tab_alert") {
     "//base",
     "//chrome/browser/vr",
     "//content/public/browser",
+    "//ui/base/unowned_user_data",
   ]
 
   deps = [ "//chrome/browser/media/webrtc" ]

@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -69,14 +70,13 @@ class TabAlertControllerTest : public testing::Test {
         content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
     tab_model_ = std::make_unique<TabModel>(std::move(web_contents),
                                             tab_strip_model_.get());
-    tab_alert_controller_ =
-        std::make_unique<TabAlertController>(*tab_model_.get());
+    EXPECT_CALL(*browser_window_interface_, GetTabStripModel())
+        .WillRepeatedly(testing::Return(tab_strip_model_.get()));
   }
 
   void TearDown() override {
     // Explicitly reset the pointers to prevent them from causing the
     // BrowserTaskEnvironment to time out on destruction.
-    tab_alert_controller_.reset();
     tab_model_.reset();
     tab_strip_model_.reset();
     tab_strip_model_delegate_.reset();
@@ -87,7 +87,7 @@ class TabAlertControllerTest : public testing::Test {
   }
 
   TabAlertController* tab_alert_controller() {
-    return tab_alert_controller_.get();
+    return tabs::TabAlertController::From(tab_model_.get());
   }
 
   TabInterface* tab_interface() { return tab_model_.get(); }
@@ -112,7 +112,6 @@ class TabAlertControllerTest : public testing::Test {
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<TabModel> tab_model_;
-  std::unique_ptr<TabAlertController> tab_alert_controller_;
 };
 
 TEST_F(TabAlertControllerTest, NotifiedOnAlertShouldShowChanged) {
