@@ -26,6 +26,11 @@
             (id<LensOverlayResultsPagePresenting>)presenter
                 didUpdateDimensionState:(SheetDimensionState)state;
 
+// Notifies the delegate that the side panel is shown.
+- (void)lensOverlayResultsPagePresenter:
+            (id<LensOverlayResultsPagePresenting>)presenter
+        updateHorizontalOcclusionOffset:(CGFloat)horizontalOffset;
+
 // Asks the delegate to update the vertical occlusion offset to the given value.
 - (void)lensOverlayResultsPagePresenter:
             (id<LensOverlayResultsPagePresenting>)presenter

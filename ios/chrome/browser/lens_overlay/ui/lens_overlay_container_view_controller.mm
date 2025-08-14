@@ -18,7 +18,7 @@ namespace {
 const CGFloat kSidePanelWidth = 375.0;
 
 // The ammount padding from the side panel to the selection UI.
-const CGFloat kSidePannelSelectionPadding = 20.0;
+const CGFloat kSidePanelSelectionPadding = 24.0;
 
 // The duration of the side panel appear and dissapear animations.
 const CGFloat kSidePannelAnimationDuration = 0.4;
@@ -125,9 +125,6 @@ const CGFloat kSelectionUICornerRadius = 13.0;
 
 // Whether the side panel is open.
 @property(nonatomic, getter=isSidePanelOpen) BOOL sidePanelOpen;
-
-// The selection area occlusion insets for the side panel presentation.
-@property(nonatomic, readonly) UIEdgeInsets sidePanelOcclusionInsets;
 
 @end
 
@@ -248,15 +245,6 @@ const CGFloat kSelectionUICornerRadius = 13.0;
   }
 }
 
-- (UIEdgeInsets)sidePanelOcclusionInsets {
-  CGFloat sideInset = kSidePanelWidth + kSidePannelSelectionPadding;
-  if (base::i18n::IsRTL()) {
-    return UIEdgeInsetsMake(0, sideInset, 0, 0);
-  } else {
-    return UIEdgeInsetsMake(0, 0, 0, sideInset);
-  }
-}
-
 - (void)setSelectionInteractionDisabled:(BOOL)selectionInteractionDisabled {
   if (!selectionInteractionDisabled) {
     [_selectionInteractionBlockingView removeFromSuperview];
@@ -311,9 +299,6 @@ const CGFloat kSelectionUICornerRadius = 13.0;
   self.selectionViewController.view.layer.maskedCorners =
       [self selectionUICornerMask];
 
-  [self.selectionViewController setOcclusionInsets:self.sidePanelOcclusionInsets
-                                        reposition:YES
-                                          animated:animated];
   if (!animated) {
     self.sidePanelOpen = YES;
     self.selectionViewController.view.layer.cornerRadius =
@@ -332,6 +317,9 @@ const CGFloat kSelectionUICornerRadius = 13.0;
         self.selectionViewController.view.layer.cornerRadius =
             kSelectionUICornerRadius;
         self.sidePanelOpen = YES;
+        [self.selectionViewController
+            zoomImageToCenter:UIEdgeInsetsMake(0, kSidePanelSelectionPadding, 0,
+                                               kSidePanelSelectionPadding)];
         [self.view layoutIfNeeded];
       }
       completion:^(BOOL) {

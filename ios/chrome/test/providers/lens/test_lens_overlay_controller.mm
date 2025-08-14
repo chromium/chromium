@@ -85,4 +85,8 @@
   // NO-OP
 }
 
+- (void)zoomImageToCenter:(UIEdgeInsets)insets {
+  // NO-OP
+}
+
 @end
