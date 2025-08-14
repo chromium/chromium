@@ -622,4 +622,32 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   EXPECT_EQ(GlicActorTaskIcon()->GetText(), std::u16string());
   EXPECT_FALSE(GlicActorTaskIcon()->GetIsShowingNudge());
 }
+
+IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
+                       GlicActorTaskIconTooltipAndA11yText) {
+  auto* task_icon_controller =
+      tabs::GlicActorTaskIconController::From(browser());
+  // Show the task icon.
+  task_icon_controller->OnStateUpdate(
+      actor::ui::ActorUiStateManagerInterface::TaskIconUiState::kShown,
+      glic::GlicWindowController::State::kClosed,
+      glic::mojom::CurrentView::kConversation);
+
+  // TODO(crbug.com/431015299): Replace with finalized strings when ready.
+  EXPECT_EQ(GlicActorTaskIcon()->GetTooltipText(),
+            std::u16string(u"Open Gemini in Chrome"));
+  EXPECT_EQ(GlicActorTaskIcon()->GetViewAccessibility().GetCachedName(),
+            std::u16string(u"Open Gemini in Chrome"));
+
+  task_icon_controller->OnStateUpdate(
+      actor::ui::ActorUiStateManagerInterface::TaskIconUiState::kShown,
+      glic::GlicWindowController::State::kOpen,
+      glic::mojom::CurrentView::kConversation);
+
+  // TODO(crbug.com/431015299): Replace with finalized strings when ready.
+  EXPECT_EQ(GlicActorTaskIcon()->GetTooltipText(),
+            std::u16string(u"Close Gemini in Chrome"));
+  EXPECT_EQ(GlicActorTaskIcon()->GetViewAccessibility().GetCachedName(),
+            std::u16string(u"Close Gemini in Chrome"));
+}
 #endif  // BUILDFLAG(ENABLE_GLIC)
