@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/android/android_info.h"
 #include "base/command_line.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
@@ -56,6 +57,14 @@ bool ApplyLandlock(sandbox::mojom::Sandbox sandbox_type) {
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           sandbox::policy::switches::kDisableLandlockSandbox)) {
+    return false;
+  }
+
+  // Don't try to apply Landlock if blocked by Seccomp.
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SdkVersion::SDK_VERSION_BAKLAVA) {
+    LOG(ERROR)
+        << "Landlock not allowed by Android Seccomp policy, skipping Landlock";
     return false;
   }
 
