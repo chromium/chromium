@@ -36,7 +36,8 @@ chromeos::PowerPolicyController::WakeLockReason GetWakeLockReason(
 
 }  // namespace
 
-class PowerSaveBlocker::Delegate {
+class PowerSaveBlocker::Delegate
+    : public base::RefCountedThreadSafe<PowerSaveBlocker::Delegate> {
  public:
   Delegate(mojom::WakeLockType type,
            mojom::WakeLockReason reason,
@@ -51,13 +52,10 @@ class PowerSaveBlocker::Delegate {
   Delegate(const Delegate&) = delete;
   const Delegate& operator=(const Delegate&) = delete;
 
-  ~Delegate() = default;
-
   void ApplyBlock() {
     DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-    if (!chromeos::PowerPolicyController::IsInitialized()) {
+    if (!chromeos::PowerPolicyController::IsInitialized())
       return;
-    }
 
     auto* controller = chromeos::PowerPolicyController::Get();
     switch (type_) {
@@ -80,14 +78,16 @@ class PowerSaveBlocker::Delegate {
 
   void RemoveBlock() {
     DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-    if (!chromeos::PowerPolicyController::IsInitialized()) {
+    if (!chromeos::PowerPolicyController::IsInitialized())
       return;
-    }
 
     chromeos::PowerPolicyController::Get()->RemoveWakeLock(block_id_);
   }
 
  private:
+  friend class base::RefCountedThreadSafe<Delegate>;
+  virtual ~Delegate() {}
+
   mojom::WakeLockType type_;
   mojom::WakeLockReason reason_;
   std::string description_;
@@ -103,12 +103,15 @@ PowerSaveBlocker::PowerSaveBlocker(
     mojom::WakeLockReason reason,
     const std::string& description,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
-    : delegate_(ui_task_runner, type, reason, description, ui_task_runner) {
-  delegate_.AsyncCall(&Delegate::ApplyBlock);
+    : delegate_(new Delegate(type, reason, description, ui_task_runner)),
+      ui_task_runner_(ui_task_runner) {
+  ui_task_runner_->PostTask(FROM_HERE,
+                            base::BindOnce(&Delegate::ApplyBlock, delegate_));
 }
 
 PowerSaveBlocker::~PowerSaveBlocker() {
-  delegate_.AsyncCall(&Delegate::RemoveBlock);
+  ui_task_runner_->PostTask(FROM_HERE,
+                            base::BindOnce(&Delegate::RemoveBlock, delegate_));
 }
 
 }  // namespace device
