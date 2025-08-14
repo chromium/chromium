@@ -197,9 +197,9 @@ BASE_FEATURE(kWebAuthnSendPinGeneration,
              "WebAuthenticationSendPinGeneration",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Not yet enabled by default.
+// Enabled by default in M141. Remove in or after M144.
 BASE_FEATURE(kWebAuthnWrapCohortData,
              "WebAuthenticationWrapCohortData",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace device
