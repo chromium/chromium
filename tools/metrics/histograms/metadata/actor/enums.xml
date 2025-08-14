@@ -77,6 +77,10 @@ chromium-metrics-reviews@google.com.
   <int value="803" label="HistoryNoForwardEntries"/>
   <int value="804" label="HistoryFailedBeforeCommit"/>
   <int value="805" label="HistoryErrorPage"/>
+  <int value="900" label="LoginNoCredentialsAvailable"/>
+  <int value="901" label="LoginNotLoginPage"/>
+  <int value="902" label="LoginCredentialsEnteredButAnotherActionNeeded"/>
+  <int value="903" label="LoginNoFillableFields"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/common/actor.mojom:ActionResultCode) -->

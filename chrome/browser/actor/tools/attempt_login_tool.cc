@@ -12,9 +12,6 @@
 #include "chrome/common/actor/action_result.h"
 #include "content/public/browser/web_contents.h"
 
-// TODO(crbug.com/427817201): Throughout this file replace
-// ActionResultCode::kError with new error codes.
-
 namespace actor {
 
 namespace {
@@ -45,12 +42,14 @@ mojom::ActionResultCode LoginResultToActorResult(
     case actor_login::LoginStatusResult::kSuccessUsernameFilled:
     case actor_login::LoginStatusResult::kSuccessPasswordFilled:
       return mojom::ActionResultCode::kOk;
-    // TODO(crbug.com/427817201):Define ActionResultCode errors specific to
-    // actor login errors.
     case actor_login::LoginStatusResult::kErrorNoSigninForm:
+      return mojom::ActionResultCode::kLoginNotLoginPage;
     case actor_login::LoginStatusResult::kErrorInvalidCredential:
+      return mojom::ActionResultCode::kLoginNoCredentialsAvailable;
     case actor_login::LoginStatusResult::kErrorNoFillableFields:
+      return mojom::ActionResultCode::kLoginNoFillableFields;
     case actor_login::LoginStatusResult::kErrorFillingNotAllowed:
+      // TODO(crbug.com/427817201): Replace with a specific error code.
       return mojom::ActionResultCode::kError;
   }
 }
@@ -92,8 +91,9 @@ void AttemptLoginTool::OnGetCredentials(
 
   std::vector<actor_login::Credential> creds = credentials.value();
   if (creds.empty()) {
-    PostResponseTask(std::move(invoke_callback_),
-                     MakeResult(mojom::ActionResultCode::kError));
+    PostResponseTask(
+        std::move(invoke_callback_),
+        MakeResult(mojom::ActionResultCode::kLoginNoCredentialsAvailable));
     return;
   }
 
@@ -101,8 +101,9 @@ void AttemptLoginTool::OnGetCredentials(
     return !cred.immediatelyAvailableToLogin;
   });
   if (creds.empty()) {
-    PostResponseTask(std::move(invoke_callback_),
-                     MakeResult(mojom::ActionResultCode::kError));
+    PostResponseTask(
+        std::move(invoke_callback_),
+        MakeResult(mojom::ActionResultCode::kLoginNoCredentialsAvailable));
     return;
   }
 
@@ -121,8 +122,11 @@ void AttemptLoginTool::OnGetCredentials(
 void AttemptLoginTool::OnCredentialSelected(
     const std::optional<actor_login::Credential>& selected_credential) {
   if (!selected_credential.has_value()) {
-    PostResponseTask(std::move(invoke_callback_),
-                     MakeResult(mojom::ActionResultCode::kError));
+    // We don't need to distinguish between no credentials being available and a
+    // user declining the usage of a credential.
+    PostResponseTask(
+        std::move(invoke_callback_),
+        MakeResult(mojom::ActionResultCode::kLoginNoCredentialsAvailable));
     return;
   }
 

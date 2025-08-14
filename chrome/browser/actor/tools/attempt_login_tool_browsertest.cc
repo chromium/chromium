@@ -102,7 +102,8 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoCredentials) {
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kLoginNoCredentialsAvailable);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
@@ -167,7 +168,8 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoAvailableCredentials) {
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kLoginNoCredentialsAvailable);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
@@ -240,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoSigninForm) {
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kLoginNotLoginPage);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
@@ -249,13 +251,16 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
+  mock_login_service().SetCredential(MakeTestCredential(
+      u"username", url, /*immediately_available_to_login=*/true));
   mock_login_service().SetLoginStatus(
       actor_login::LoginStatusResult::kErrorInvalidCredential);
 
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kLoginNoCredentialsAvailable);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
@@ -264,6 +269,8 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
+  mock_login_service().SetCredential(MakeTestCredential(
+      u"username", url, /*immediately_available_to_login=*/true));
   mock_login_service().SetLoginStatus(
       actor_login::LoginStatusResult::kErrorFillingNotAllowed);
 
