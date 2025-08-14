@@ -168,6 +168,7 @@ import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.test.ScreenShooter;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -210,6 +211,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -556,6 +558,39 @@ public class CustomTabActivityTest {
         assertFalse(
                 "Reader mode CCT should not support optional button",
                 dataProvider.isOptionalButtonSupported());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.CCT_ADAPTIVE_BUTTON + ":open_in_browser/true",
+        ChromeFeatureList.ENABLE_DISCOUNT_INFO_API
+    })
+    public void testOptionalButton_SupportedTypes() {
+        Intent intent = createMinimalCustomTabIntent();
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        var supportedTypes =
+                mCustomTabActivityTestRule
+                        .getActivity()
+                        .getRootUiCoordinatorForTesting()
+                        .getAdaptiveToolbarUiCoordinatorForTesting()
+                        .getAdaptiveToolbarButtonControllerForTesting()
+                        .getAllSupportedTypesForTesting();
+        var expectedTypes =
+                Set.of(
+                        AdaptiveToolbarButtonVariant.SHARE,
+                        AdaptiveToolbarButtonVariant.PRICE_TRACKING,
+                        AdaptiveToolbarButtonVariant.READER_MODE,
+                        AdaptiveToolbarButtonVariant.TRANSLATE,
+                        AdaptiveToolbarButtonVariant.READ_ALOUD,
+                        AdaptiveToolbarButtonVariant.PRICE_INSIGHTS,
+                        AdaptiveToolbarButtonVariant.DISCOUNTS,
+                        AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER);
+        assertEquals(
+                "Supported types don't match. Please check out the note in"
+                        + " AdaptiveToolbarUiCoordinator#initialize.",
+                expectedTypes,
+                supportedTypes);
     }
 
     /**
