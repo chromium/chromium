@@ -151,7 +151,7 @@ const CGFloat kMenuCornerRadius = 20;
     (PageActionMenuViewController*)viewController {
   _readerModeOptionsViewController =
       [[ReaderModeOptionsViewController alloc] init];
-  [_readerModeOptionsViewController updateHideReaderModeButtonVisibility:YES];
+  [_readerModeOptionsViewController updateHideReaderModeButtonVisibility:NO];
   _readerModeOptionsViewController.readerModeOptionsHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
                          ReaderModeOptionsCommands);
