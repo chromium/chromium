@@ -2631,12 +2631,6 @@ const char kLogJsConsoleMessagesDescription[] =
     "Enable logging JS console messages in system logs, please note that they "
     "may contain PII.";
 
-#if BUILDFLAG(IS_CHROMEOS)
-const char kMantisFeatureKeyName[] = "Secret key for Mantis feature.";
-const char kMantisFeatureKeyDescription[] =
-    "Feature key to use the Mantis feature on ChromeOS.";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 const char kMediaRouterCastAllowAllIPsName[] =
     "Connect to Cast devices on all IP addresses";
 const char kMediaRouterCastAllowAllIPsDescription[] =

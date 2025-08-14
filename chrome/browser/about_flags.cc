@@ -11909,12 +11909,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHappyEyeballsV3Description, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kHappyEyeballsV3)},
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"mantis-feature-key", flag_descriptions::kMantisFeatureKeyName,
-     flag_descriptions::kMantisFeatureKeyDescription, kOsCrOS,
-     STRING_VALUE_TYPE(ash::switches::kMantisFeatureKey, "")},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
     {"signature-based-sri", flag_descriptions::kSignatureBasedSriName,
      flag_descriptions::kSignatureBasedSriDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kSRIMessageSignatureEnforcement)},

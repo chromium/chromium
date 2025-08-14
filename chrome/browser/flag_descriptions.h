@@ -1534,11 +1534,6 @@ extern const char kLockTopControlsOnLargeTabletsDescription[];
 extern const char kLogJsConsoleMessagesName[];
 extern const char kLogJsConsoleMessagesDescription[];
 
-#if BUILDFLAG(IS_CHROMEOS)
-extern const char kMantisFeatureKeyName[];
-extern const char kMantisFeatureKeyDescription[];
-#endif  // IS_CHROMEOS
-
 extern const char kMediaRouterCastAllowAllIPsName[];
 extern const char kMediaRouterCastAllowAllIPsDescription[];
 

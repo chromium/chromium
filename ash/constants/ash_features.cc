@@ -3476,7 +3476,7 @@ bool IsCrosSeparateGeoApiKeyEnabled() {
 
 bool IsCrosSafetyServiceEnabled() {
   return base::FeatureList::IsEnabled(kCrosSafetyService) ||
-         switches::IsMantisSecretKeyMatched() || IsCoralFeatureEnabled();
+         IsCoralFeatureEnabled();
 }
 
 bool IsCrossDeviceFeatureSuiteAllowed() {

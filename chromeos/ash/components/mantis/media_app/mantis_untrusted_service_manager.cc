@@ -107,10 +107,6 @@ void MantisUntrustedServiceManager::OnQueryDone(
 void MantisUntrustedServiceManager::IsAvailable(
     PrefService* pref_service,
     base::OnceCallback<void(bool)> callback) {
-  if (switches::IsMantisSecretKeyMatched()) {
-    std::move(callback).Run(true);
-    return;
-  }
   if (!base::FeatureList::IsEnabled(ash::features::kMediaAppImageMantisModel)) {
     std::move(callback).Run(false);
     return;
