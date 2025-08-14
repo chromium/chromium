@@ -722,7 +722,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   }
 
   dropScrollToHighlight?(): void {
-    this.sender.requestWithResponse(
+    this.sender.requestNoResponse(
         'glicBrowserDropScrollToHighlight', undefined);
   }
 
