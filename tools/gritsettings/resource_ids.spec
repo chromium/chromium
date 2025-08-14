@@ -1091,9 +1091,6 @@
   "components/resources/dev_ui_components_resources.grd": {
     "includes": [7260],
   },
-  "components/search_engine_descriptions_strings.grd": {
-    "messages": [7280],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/components/autofill/core/browser/autofill_and_password_manager_internals/resources.grd": {
     "META": {"sizes": {"includes": [5]}},
     "includes": [7290],
@@ -1553,6 +1550,10 @@
 
   "third_party/search_engines_data/resources_internal/search_engines_scaled_resources.grd": {
     "structures": [10100],
+  },
+
+  "third_party/search_engines_data/resources_to_move_out/search_engine_descriptions_strings.grd": {
+    "messages": [100120],
   },
 
   # END "everything else" section.

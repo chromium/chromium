@@ -37,6 +37,13 @@ json_to_struct("regional_settings") {
 if (enable_builtin_search_provider_assets) {
   group("resources") {
     public_deps = [ ":search_engines_scaled_resources" ]
+
+    if (!is_android) {
+      public_deps += [
+        ":search_engine_descriptions_strings",
+        ":search_engines_marketing_snippets",
+      ]
+    }
   }
 
   grit("search_engines_scaled_resources") {
@@ -50,5 +57,28 @@ if (enable_builtin_search_provider_assets) {
       "search_engines_resources_300_percent.pak",
     ]
     output_dir = target_gen_dir
+  }
+
+  if (!is_android) {
+    source_set("search_engines_marketing_snippets") {
+      visibility = [
+        ":*",
+        "//components/search_engines:*",
+      ]
+      sources = [
+        "built_in_marketing_snippets.h",
+        "resources_to_move_out/built_in_marketing_snippets.cc",
+      ]
+      deps = [
+        ":prepopulated_engines",
+        ":search_engine_descriptions_strings",
+        "//base",
+      ]
+    }
+
+    grit_strings("search_engine_descriptions_strings") {
+      source = "resources_to_move_out/search_engine_descriptions_strings.grd"
+      outputs = [ "grit/search_engine_descriptions_strings.h" ]
+    }
   }
 }

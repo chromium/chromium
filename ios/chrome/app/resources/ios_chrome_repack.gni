@@ -31,7 +31,6 @@ template("ios_chrome_repack_locales") {
       "${root_gen_dir}/components/strings/components_branded_strings_",
       "${root_gen_dir}/components/strings/components_locale_settings_",
       "${root_gen_dir}/components/strings/components_strings_",
-      "${root_gen_dir}/components/strings/search_engine_descriptions_strings_",
       "${root_gen_dir}/components/omnibox/resources/omnibox_pedal_synonyms_",
       "${root_gen_dir}/components/plus_addresses/resources/strings/plus_addresses_strings_",
       "${root_gen_dir}/ios/chrome/ios_branded_strings_",
@@ -56,7 +55,6 @@ template("ios_chrome_repack_locales") {
              "//components/strings:components_branded_strings",
              "//components/strings:components_locale_settings",
              "//components/strings:components_strings",
-             "//components/strings:search_engine_descriptions_strings",
              "//ios/chrome/app/strings:ios_branded_strings",
              "//ios/chrome/app/strings:ios_strings",
              "//ios/chrome/browser/whats_new/ui/strings",
@@ -67,6 +65,13 @@ template("ios_chrome_repack_locales") {
            ] + ios_locales_pack_extra_deps
 
     copy_data_to_bundle = true
+  }
+
+  if (enable_builtin_search_provider_assets) {
+    source_patterns += [ "${root_gen_dir}/third_party/search_engines_data/search_engine_descriptions_strings_" ]
+    deps += [
+      "//third_party/search_engines_data:search_engine_descriptions_strings",
+    ]
   }
 }
 

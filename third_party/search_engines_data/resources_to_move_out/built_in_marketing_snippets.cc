@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
-#include "components/strings/grit/search_engine_descriptions_strings.h"
+#include "third_party/search_engines_data/built_in_marketing_snippets.h"
+
+#include "third_party/search_engines_data/grit/search_engine_descriptions_strings.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 // This file is generated using
 // http://go/chrome-search-engines-marketing-snippets-script.
 // Do not modify it manually.
-namespace search_engines {
-// Implements a function declared in search_engine_choice_utils.h.
+namespace search_engines_data {
+// Implements a function declared in built_in_marketing_snippets.h.
 int GetMarketingSnippetResourceId(const std::u16string& engine_keyword) {
   if (engine_keyword == TemplateURLPrepopulateData::bing.keyword) {
     return IDS_BING_SEARCH_DESCRIPTION;
@@ -143,4 +144,4 @@ int GetMarketingSnippetResourceId(const std::u16string& engine_keyword) {
   }
   return -1;
 }
-}  // namespace search_engines
+}  // namespace search_engines_data
