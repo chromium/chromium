@@ -17051,24 +17051,52 @@ be describing additional metrics about the same event.
       Whether at least one zero-prefix Contextual Search suggestion was shown in
       the Omnibox session.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ZeroPrefixLensActionShown" enum="Boolean">
     <summary>
       Whether at least one zero-prefix Lens Action suggestion was shown in the
       Omnibox session.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ZeroPrefixSearchShown" enum="Boolean">
     <summary>
       Whether at least one zero-prefix Search suggestion was shown in the
       Omnibox session.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ZeroPrefixUrlShown" enum="Boolean">
     <summary>
       Whether at least one zero-prefix URL suggestion was shown in the Omnibox
       session.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
