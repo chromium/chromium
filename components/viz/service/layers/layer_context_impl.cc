@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -1601,9 +1602,15 @@ void LayerContextImpl::SubmitCompositorFrame(CompositorFrame frame,
   // TODO(vmiura): Implement other functionality from
   // AsyncLayerTreeFrameSink::SubmitCompositorFrame()
 
-  compositor_sink_->SubmitCompositorFrame(
+  auto result = compositor_sink_->MaybeSubmitCompositorFrame(
       host_impl_->GetCurrentLocalSurfaceId(), std::move(frame),
       std::move(hit_test_region_list), 0);
+  if (result != SubmitResult::ACCEPTED) {
+    // TODO(crbug.com/425975534): Remove DumpWithoutCrashing() once TreesInViz
+    // is stable.
+    base::debug::Alias(&result);
+    base::debug::DumpWithoutCrashing();
+  }
 
   if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
     constexpr bool start_ready_animations = true;
@@ -1632,6 +1639,11 @@ void LayerContextImpl::UpdateDisplayTree(mojom::LayerTreeUpdatePtr update) {
   auto result = DoUpdateDisplayTree(std::move(update));
   if (!result.has_value()) {
     receiver_->ReportBadMessage(result.error());
+    // TODO(crbug.com/425975534): Remove DumpWithoutCrashing() once TreesInViz
+    // is stable.
+    DEBUG_ALIAS_FOR_CSTR(error_msg, result.error().c_str(), 256);
+    base::debug::DumpWithoutCrashing();
+    return;
   }
 
   // After a tree update, either Draw or schedule animations.
