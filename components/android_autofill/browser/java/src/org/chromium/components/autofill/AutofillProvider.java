@@ -709,8 +709,7 @@ public class AutofillProvider {
                                         mWebContentsAccessibility
                                                 .onAutofillPopupAccessibilityFocusCleared();
                                     }
-                                },
-                                null);
+                                });
             } catch (RuntimeException e) {
                 // Deliberately swallowing exception because bad framework implementation can
                 // throw exceptions in ListPopupWindow constructor.

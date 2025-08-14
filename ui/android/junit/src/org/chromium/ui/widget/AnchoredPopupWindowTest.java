@@ -993,6 +993,6 @@ public final class AnchoredPopupWindowTest {
         when(view.getRootView().getResources().getDisplayMetrics()).thenReturn(fakeMetrics);
         when(view.getRootView().isAttachedToWindow()).thenReturn(true);
         RectProvider provider = new RectProvider(new Rect(0, 0, 0, 0));
-        return new AnchoredPopupWindow(mActivity, view, null, mContentView, provider, null);
+        return new AnchoredPopupWindow(mActivity, view, null, mContentView, provider);
     }
 }

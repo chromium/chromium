@@ -91,8 +91,7 @@ public class HomeModulesContextMenuManager {
                         view,
                         new ColorDrawable(Color.TRANSPARENT),
                         menu.getContentView(),
-                        new RectProvider(getAnchorRectangle(view)),
-                        null);
+                        new RectProvider(getAnchorRectangle(view)));
 
         showContextMenu(menu, view);
         notifyContextMenuShown(moduleProvider);

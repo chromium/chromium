@@ -20,7 +20,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.widget.AnchoredPopupWindow;
-import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /**
@@ -43,22 +42,15 @@ class DropdownPopupWindowImpl
     private final Drawable mBackground;
     private final int mHorizontalPadding;
 
-    public DropdownPopupWindowImpl(Context context, View anchorView) {
-        this(context, anchorView, null);
-    }
-
     /**
      * Creates an DropdownPopupWindowImpl with specified parameters.
      *
      * @param context Application context.
      * @param anchorView Popup view to be anchored.
-     * @param visibleWebContentsRectProvider The {@link RectProvider} which will be used for {@link
-     *     AnchoredPopupWindow}.
      */
     public DropdownPopupWindowImpl(
             Context context,
-            View anchorView,
-            @Nullable RectProvider visibleWebContentsRectProvider) {
+            View anchorView) {
         mContext = context;
         mAnchorView = anchorView;
 
@@ -104,8 +96,7 @@ class DropdownPopupWindowImpl
                         mAnchorView,
                         mBackground,
                         mListView,
-                        rectProvider,
-                        visibleWebContentsRectProvider);
+                        rectProvider);
         mAnchoredPopupWindow.addOnDismissListener(onDismissLitener);
         mAnchoredPopupWindow.setLayoutObserver(this);
         mAnchoredPopupWindow.setElevation(

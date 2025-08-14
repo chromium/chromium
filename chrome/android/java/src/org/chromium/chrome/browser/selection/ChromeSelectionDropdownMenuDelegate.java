@@ -55,8 +55,7 @@ public class ChromeSelectionDropdownMenuDelegate implements SelectionDropdownMen
                         rootView,
                         new ColorDrawable(Color.TRANSPARENT),
                         menu.getContentView(),
-                        new RectProvider(dropdownRect),
-                        null);
+                        new RectProvider(dropdownRect));
         // Create a local alias for mPopupWindow to be used in the lambda.
         AnchoredPopupWindow popupWindow = mPopupWindow;
         AnchoredPopupWindow.LayoutObserver layoutObserver =

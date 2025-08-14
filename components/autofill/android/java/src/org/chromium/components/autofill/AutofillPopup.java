@@ -19,7 +19,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.DropdownItem;
 import org.chromium.ui.DropdownPopupWindow;
-import org.chromium.ui.widget.RectProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,14 +58,12 @@ public class AutofillPopup extends DropdownPopupWindow
      * @param context Application context.
      * @param anchorView View anchored for popup.
      * @param autofillDelegate An object that handles the calls to the native AutofillPopupView.
-     * @param visibleWebContentsRectProvider The {@link RectProvider} for popup limits.
      */
     public AutofillPopup(
             Context context,
             View anchorView,
-            AutofillDelegate autofillDelegate,
-            @Nullable RectProvider visibleWebContentsRectProvider) {
-        super(context, anchorView, visibleWebContentsRectProvider);
+            AutofillDelegate autofillDelegate) {
+        super(context, anchorView);
         mContext = context;
         mAutofillDelegate = autofillDelegate;
 
