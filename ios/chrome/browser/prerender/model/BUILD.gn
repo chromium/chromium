@@ -59,15 +59,6 @@ source_set("model") {
   ]
 }
 
-source_set("test_support") {
-  sources = [
-    "fake_prerender_service.h",
-    "fake_prerender_service.mm",
-  ]
-
-  deps = [ ":model" ]
-}
-
 source_set("unit_tests") {
   testonly = true
 
