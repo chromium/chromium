@@ -229,7 +229,8 @@ class CORE_EXPORT LineBreaker {
                            const BlockBreakToken*,
                            LineInfo*);
   void ComputeMinMaxContentSizeForBlockChild(const InlineItem&,
-                                             InlineItemResult*);
+                                             InlineItemResult*,
+                                             const LineBreaker* root_braeker);
   // Returns false if we can't handle the current InlineItem as a ruby.
   // NOINLINE prevents a compiler for Android 64bit from inlining
   // HandleRuby() twice.

@@ -1814,4 +1814,13 @@ TEST_F(InlineNodeTest, ShapeCacheSpacingRequired) {
       node.IsNGShapeCacheAllowed(text_content, nullptr, items, spacing));
 }
 
+// crbug.com/437612643
+TEST_F(InlineNodeTest, NestedRubyMinMaxCrash) {
+  SetBodyInnerHTML(R"HTML(<div style="display: inline-block;">foo
+<ruby><ruby><span style="display:inline-block">ib</span><rt>test</rt></ruby>
+<rt>test</rt></ruby>bar</div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // Pass if no crash in ComputeContentSize().
+}
+
 }  // namespace blink

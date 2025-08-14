@@ -3206,6 +3206,11 @@
       status: {"Android": "", "default": "stable"},
     },
     {
+      // crbug.com/437612643
+      name: "NestedRubyMinMaxFix",
+      status: "stable",
+    },
+    {
       name: "NestedViewTransition",
       status: "stable",
     },

@@ -3109,6 +3109,13 @@ void LineBreaker::HandleAtomicInline(const InlineItem& item,
     position_ -= RemoveHyphen(line_info->MutableResults());
   }
 
+  const LineBreaker* root_breaker = this;
+  if (RuntimeEnabledFeatures::NestedRubyMinMaxFixEnabled()) {
+    while (root_breaker->parent_breaker_) {
+      root_breaker = root_breaker->parent_breaker_;
+    }
+  }
+  const LineBreakerMode mode = root_breaker->mode_;
   const bool is_initial_letter_box =
       item.Type() == InlineItem::kInitialLetterBox;
   // When we're just computing min/max content sizes, we can skip the full
@@ -3116,7 +3123,7 @@ void LineBreaker::HandleAtomicInline(const InlineItem& item,
   // layout we need to do the full layout and get the layout result.
   // Doing a full layout for min/max content can also have undesirable
   // side effects when that falls back to legacy layout.
-  if (mode_ == LineBreakerMode::kContent || [&] {
+  if (mode == LineBreakerMode::kContent || [&] {
         if (is_initial_letter_box) [[unlikely]] {
           return true;
         }
@@ -3164,9 +3171,9 @@ void LineBreaker::HandleAtomicInline(const InlineItem& item,
 
     item_result->inline_size += inline_margins;
   } else {
-    DCHECK(mode_ == LineBreakerMode::kMaxContent ||
-           mode_ == LineBreakerMode::kMinContent);
-    ComputeMinMaxContentSizeForBlockChild(item, item_result);
+    DCHECK(mode == LineBreakerMode::kMaxContent ||
+           mode == LineBreakerMode::kMinContent);
+    ComputeMinMaxContentSizeForBlockChild(item, item_result, root_breaker);
   }
 
   item_result->should_create_line_box = true;
@@ -3180,16 +3187,20 @@ void LineBreaker::HandleAtomicInline(const InlineItem& item,
 
 void LineBreaker::ComputeMinMaxContentSizeForBlockChild(
     const InlineItem& item,
-    InlineItemResult* item_result) {
-  DCHECK(mode_ == LineBreakerMode::kMaxContent ||
-         mode_ == LineBreakerMode::kMinContent);
-  if (mode_ == LineBreakerMode::kMaxContent && max_size_cache_) {
+    InlineItemResult* item_result,
+    const LineBreaker* root_breaker) {
+  const LineBreakerMode mode = root_breaker->mode_;
+  MaxSizeCache* size_cache = root_breaker->max_size_cache_;
+
+  DCHECK(mode == LineBreakerMode::kMaxContent ||
+         mode == LineBreakerMode::kMinContent);
+  if (mode == LineBreakerMode::kMaxContent && size_cache) {
     const unsigned item_index = item.Index();
-    item_result->inline_size = (*max_size_cache_)[item_index];
+    item_result->inline_size = (*size_cache)[item_index];
     return;
   }
 
-  DCHECK(mode_ == LineBreakerMode::kMinContent || !max_size_cache_);
+  DCHECK(mode == LineBreakerMode::kMinContent || !size_cache);
   BlockNode child(To<LayoutBox>(item.GetLayoutObject()));
 
   MinMaxConstraintSpaceBuilder builder(constraint_space_, node_.Style(), child,
@@ -3206,12 +3217,24 @@ void LineBreaker::ComputeMinMaxContentSizeForBlockChild(
   // Ensure `NeedsCollectInlines` isn't set, or it may cause security risks.
   CHECK(!node_.GetLayoutBox()->NeedsCollectInlines());
   const LayoutUnit inline_margins = item_result->margins.InlineSum();
-  const LineBreaker* main_breaker = parent_breaker_ ? parent_breaker_ : this;
+  const LineBreaker* main_breaker = root_breaker;
+  if (!RuntimeEnabledFeatures::NestedRubyMinMaxFixEnabled()) {
+    main_breaker = parent_breaker_ ? parent_breaker_ : this;
+  }
   if (main_breaker->mode_ == LineBreakerMode::kMinContent) {
     item_result->inline_size = result.sizes.min_size + inline_margins;
-    if (depends_on_block_constraints_out_)
-      *depends_on_block_constraints_out_ |= result.depends_on_block_constraints;
-    if (MaxSizeCache* size_cache = main_breaker->max_size_cache_) {
+    if (RuntimeEnabledFeatures::NestedRubyMinMaxFixEnabled()) {
+      if (root_breaker->depends_on_block_constraints_out_) {
+        *root_breaker->depends_on_block_constraints_out_ |=
+            result.depends_on_block_constraints;
+      }
+    } else {
+      if (depends_on_block_constraints_out_) {
+        *depends_on_block_constraints_out_ |=
+            result.depends_on_block_constraints;
+      }
+    }
+    if ((size_cache = main_breaker->max_size_cache_)) {
       if (size_cache->empty()) {
         size_cache->resize(Items().size());
       }
@@ -3221,7 +3244,7 @@ void LineBreaker::ComputeMinMaxContentSizeForBlockChild(
     return;
   }
 
-  DCHECK(mode_ == LineBreakerMode::kMaxContent && !max_size_cache_);
+  DCHECK(mode == LineBreakerMode::kMaxContent && !size_cache);
   item_result->inline_size = result.sizes.max_size + inline_margins;
 }
 
@@ -3303,7 +3326,7 @@ void LineBreaker::HandleBlockInInline(const InlineItem& item,
   } else {
     DCHECK(mode_ == LineBreakerMode::kMaxContent ||
            mode_ == LineBreakerMode::kMinContent);
-    ComputeMinMaxContentSizeForBlockChild(item, item_result);
+    ComputeMinMaxContentSizeForBlockChild(item, item_result, this);
   }
 
   position_ += item_result->inline_size;
