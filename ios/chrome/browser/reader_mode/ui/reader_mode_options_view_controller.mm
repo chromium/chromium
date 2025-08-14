@@ -19,8 +19,8 @@ namespace {
 constexpr CGFloat kMainStackViewInset = 16.0;
 
 // Top and bottom padding.
-constexpr CGFloat kTopPadding = 8;
-constexpr CGFloat kBottomPadding = 54;
+constexpr CGFloat kTopPadding = 8.0;
+constexpr CGFloat kBottomPadding = 54.0;
 
 // The spacing between items in the main stack view.
 constexpr CGFloat kMainStackViewSpacing = 16.0;
@@ -110,8 +110,14 @@ constexpr CGFloat kBlurEffectBackgroundControlsOpacity = 0.95;
 
 - (CGFloat)resolveDetentValueForSheetPresentation:
     (id<UISheetPresentationControllerDetentResolutionContext>)context {
+  CGFloat bottomPadding = kBottomPadding;
+  if (self.view.window.traitCollection.horizontalSizeClass ==
+      UIUserInterfaceSizeClassRegular) {
+    bottomPadding = kMainStackViewInset;
+  }
+
   CGFloat bottomPaddingAboveSafeArea =
-      kBottomPadding - self.view.safeAreaInsets.bottom;
+      bottomPadding - self.view.safeAreaInsets.bottom;
   return [self.mainStackView
              systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
              .height +
