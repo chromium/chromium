@@ -295,4 +295,9 @@ int GetNtpBrowserPromoIndividualPromoLimit() {
   return kNtpBrowserPromoIndividualPromoLimit.Get();
 }
 
+std::ostream& operator<<(std::ostream& os, NtpBrowserPromoType promo_type) {
+  os << kNtpBrowserPromoType.GetName(promo_type);
+  return os;
+}
+
 }  // namespace user_education::features

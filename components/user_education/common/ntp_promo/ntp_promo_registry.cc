@@ -42,4 +42,9 @@ bool NtpPromoRegistry::AreAnyPromosRegistered() const {
   return registry_.size() > 0;
 }
 
+void NtpPromoRegistry::ClearPromosForTesting() {
+  registry_.clear();
+  identifiers_.clear();
+}
+
 }  // namespace user_education

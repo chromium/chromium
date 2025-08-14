@@ -55,7 +55,7 @@ class NtpPromoSpecification {
   // Receives the profile to be evaluated for eligibility.
   using EligibilityCallback = base::RepeatingCallback<Eligibility(Profile*)>;
 
-  using ShowCallback = base::RepeatingCallback<void()>;
+  using ShowCallback = base::RepeatingClosure;
 
   // Receives a browser in which the action can be taken, and an object
   // to be held by the invoked flow until termination.

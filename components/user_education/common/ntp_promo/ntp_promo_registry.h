@@ -30,6 +30,8 @@ class NtpPromoRegistry {
 
   bool AreAnyPromosRegistered() const;
 
+  void ClearPromosForTesting();
+
  private:
   using Registry = std::map<NtpPromoIdentifier, NtpPromoSpecification>;
 

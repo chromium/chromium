@@ -53,3 +53,17 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
   ]
 }
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "ntp_promo_handler_interactive_uitest.cc" ]
+  deps = [
+    ":ntp_promo",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/user_education",
+    "//chrome/test:test_support_ui",
+    "//ui/views:test_support",
+  ]
+}

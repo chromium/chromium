@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_FEATURES_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_FEATURES_H_
 
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -147,6 +148,9 @@ extern base::TimeDelta GetNtpBrowserPromoClickedHideDuration();
 extern base::TimeDelta GetNtpBrowserPromosSnoozedHideDuration();
 extern int GetNtpBrowserPromoSetupListPromoLimit();
 extern int GetNtpBrowserPromoIndividualPromoLimit();
+
+extern std::ostream& operator<<(std::ostream& os,
+                                NtpBrowserPromoType promo_type);
 
 }  // namespace user_education::features
 

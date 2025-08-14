@@ -11349,6 +11349,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/user_education",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/webui/access_code_cast:interactive_ui_tests",
+      "//chrome/browser/ui/webui/new_tab_page/ntp_promo:interactive_ui_tests",
       "//chrome/browser/web_applications:features",
       "//chrome/browser/web_applications:interactive_ui_tests",
       "//chrome/browser/web_applications:web_applications_test_support",
