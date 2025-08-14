@@ -149,6 +149,14 @@ const std::string kDiscontinuous =
     "data03.ts\n"
     "#EXT-X-ENDLIST\n";
 
+const std::string kSingleSegmentPlaylist =
+    "#EXTM3U\n"
+    "#EXT-X-VERSION:3\n"
+    "#EXT-X-TARGETDURATION:2\n"
+    "#EXT-X-MEDIA-SEQUENCE:14551245\n"
+    "#EXTINF:2.00000,\n"
+    "playlist_4500Kb_14551245.ts\n";
+
 }  // namespace
 
 using testing::_;
@@ -567,6 +575,7 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   // rendition impl will request a seek to 9 seconds, and return no timestamp.
   EXPECT_CALL(*mock_mdeh_, RequestSeek(base::Seconds(9)));
   task_environment_.FastForwardBy(base::Seconds(9));
+
   rendition->CheckState(base::Seconds(0), 1.0, BindCheckState(kNoTimestamp));
   task_environment_.RunUntilIdle();
 
@@ -591,37 +600,30 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   task_environment_.RunUntilIdle();
 
   // Now the user waits for 190 seconds. Media time hasn't moved, so a seek
-  // will be required. The segment queue will be reset, with a new head time
-  // of 10s (media_time) + 190s (paused duration). A seek will be requested,
-  // then a manifest fetch will happen, then a response to CheckState should
-  // come back with a 0 second delay.
-  EXPECT_CALL(*mock_mdeh_, RequestSeek(base::Seconds(202)));
-  EXPECT_CALL(*mock_hrh_, UpdateRenditionManifestUri("test", _, _))
-      .WillOnce(base::test::RunOnceCallback<2>(OkStatus()));
-  task_environment_.FastForwardBy(base::Seconds(190));
-  rendition->CheckState(base::Seconds(10), 1.0,
-                        BindCheckState(base::Seconds(0)));
-  task_environment_.RunUntilIdle();
-
-  // We have to actually do what the UpdateRenditionManifestUri method does now,
-  // which is to fetch the manifest and set it on the rendition.
-  auto parsed = hls::MediaPlaylist::Parse(
-      kSecondFetchLivePlaylist, GURL("http://example.com"), 3, nullptr);
-  CHECK(parsed.has_value());
-  rendition->UpdatePlaylist(std::move(parsed).value());
-
-  // Once again, the pipeline finishes it's seeking, and a new media CheckState
-  // event happens, this time for 200 seconds. Now the media_time is way past
-  // the end of our buffered ranges, so we need data ASAP. We're live, segments
-  // is not exhausted (it's just been updated!) and so we fetch the next one.
-  // After appending and parsing, it's brought our loaded ranges up to 202, and
-  // the response to check state is to run it again in 0 seconds.
-  RespondWithRangeTwice(base::Seconds(0), base::Seconds(32), base::Seconds(0),
-                        base::Seconds(202));
+  // will be required. The segment queue will be reset, and old data will be
+  // cleared (190 + media time (10) + segment_duration (2)). Then a new manifest
+  // will be fetched, and the first segment will be loaded. The segment data
+  // handler will check ranges to see if the time is found, and then the seek
+  // handler will check ranges to get the new seek point. Then a seek will be
+  // requested to the start of the range.
   std::string newcontent = "newcontent";
+  EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), base::Seconds(202)));
+  EXPECT_CALL(*mock_hrh_, UpdateRenditionManifestUri("test", _, _))
+      .WillOnce([&rendition](std::string role, GURL uri,
+                             HlsDemuxerStatusCallback cb) {
+        auto parsed = hls::MediaPlaylist::Parse(
+            kSecondFetchLivePlaylist, GURL("http://example.com"), 3, nullptr);
+        CHECK(parsed.has_value());
+        rendition->UpdatePlaylist(std::move(parsed).value());
+        std::move(cb).Run(OkStatus());
+      });
   RespondToUrl("http://example.com/playlist_4500Kb_14551349.ts", newcontent);
   RequireAppend(base::as_byte_span(newcontent));
-  rendition->CheckState(base::Seconds(200), 1.0,
+  RespondWithRangeTwice(base::Seconds(190), base::Seconds(202),
+                        base::Seconds(190), base::Seconds(202));
+  EXPECT_CALL(*mock_mdeh_, RequestSeek(base::Seconds(190)));
+  task_environment_.FastForwardBy(base::Seconds(190));
+  rendition->CheckState(base::Seconds(10), 1.0,
                         BindCheckState(base::Seconds(0)));
   task_environment_.RunUntilIdle();
 
@@ -679,7 +681,7 @@ TEST_F(HlsRenditionImplUnittest, TestDiscontinuity) {
                         base::Seconds(2));
   RespondToUrl("https://example.com/data00.ts", content);
 
-  EXPECT_CALL(*mock_mdeh_, ResetParserState("test", base::Seconds(8.6), _));
+  EXPECT_CALL(*mock_mdeh_, ResetParserState("test", kInfiniteDuration, _));
 
   RequireAppend(base::as_byte_span(content));
   rendition->CheckState(base::Seconds(0), 0.0, BindCheck0Sec());
@@ -972,6 +974,79 @@ TEST_F(HlsRenditionImplUnittest, TestRemoveOldDataForSkipRemovesAllBuffers) {
               Remove(_, base::Seconds(0), base::Milliseconds(130)));
   EXPECT_CALL(*mock_hrh_, Quit(_));
   rendition->CheckState(base::Milliseconds(90), 0.0, BindCheckStateNoExpect());
+}
+
+TEST_F(HlsRenditionImplUnittest, SeekWithBadContentCausesError) {
+  auto rendition =
+      MakeLiveRendition(GURL("http://example.com"), kInitialFetchPlaylist);
+  ASSERT_NE(rendition, nullptr);
+  ASSERT_EQ(rendition->GetDuration(), std::nullopt);
+
+  ON_CALL(*mock_mdeh_, OnError(_)).WillByDefault([](PipelineStatus st) {
+    LOG(ERROR) << MediaSerializeForTesting(st);
+  });
+
+  // CheckState will start with a paused player. It will query BufferedRanges
+  // for the CheckState function, then try to fetch. This will pop the first
+  // segment and try to load it. This will then get appended, and ranges will
+  // be checked again. It will report 2 seconds of content, which contains
+  // the media time (0.0), and so a response to check state again in 0 seconds
+  // will happen.
+  std::string tscontent = "tscontent";
+  RespondToUrl("http://example.com/playlist_4500Kb_14551245.ts", tscontent);
+  RequireAppend(base::as_byte_span(tscontent));
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
+                        base::Seconds(2));
+  rendition->CheckState(base::Seconds(0), 0.0,
+                        BindCheckState(base::Seconds(0)));
+  task_environment_.RunUntilIdle();
+
+  // After the init process finishes, lets pretend there are 32 seconds of data
+  // in the buffer. A user presses play after 9 second of the video being
+  // paused. Rate goes to 1, and the delta between now and the pause timestamp
+  // is 9 seconds, which is well within the duration of the manifest. The
+  // rendition impl will request a seek to 9 seconds, and return no timestamp.
+  EXPECT_CALL(*mock_mdeh_, RequestSeek(base::Seconds(9)));
+  task_environment_.FastForwardBy(base::Seconds(9));
+
+  rendition->CheckState(base::Seconds(0), 1.0, BindCheckState(kNoTimestamp));
+  task_environment_.RunUntilIdle();
+
+  // After the pipeline does it's seeking shenanigans, another check state
+  // event will be called at 9 seconds, rate 1.0. Because there are 23 seconds
+  // now left in the buffer, the response will be a requested pause of 18
+  // seconds.
+  RespondWithRange(base::Seconds(0), base::Seconds(32));
+  rendition->CheckState(base::Seconds(9), 1.0,
+                        BindCheckState(base::Seconds(18)));
+  task_environment_.RunUntilIdle();
+
+  // At 10 seconds the user will pause again, which will trigger another
+  // state check. This will update the pause timestamp to 9 seconds, and because
+  // we aren't in the initialization step, will return kNoTimestamp. Any other
+  // state checks with a rate of 0 should also return no timestamp.
+  rendition->CheckState(base::Seconds(10), 0.0, BindCheckState(kNoTimestamp));
+  task_environment_.RunUntilIdle();
+  rendition->CheckState(base::Seconds(10), 0.0, BindCheckState(kNoTimestamp));
+  task_environment_.RunUntilIdle();
+  rendition->CheckState(base::Seconds(10), 0.0, BindCheckState(kNoTimestamp));
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), base::Seconds(202)));
+  EXPECT_CALL(*mock_hrh_, UpdateRenditionManifestUri("test", _, _))
+      .WillOnce([&rendition](std::string role, GURL uri,
+                             HlsDemuxerStatusCallback cb) {
+        auto parsed = hls::MediaPlaylist::Parse(
+            kSingleSegmentPlaylist, GURL("http://example.com"), 3, nullptr);
+        CHECK(parsed.has_value());
+        rendition->UpdatePlaylist(std::move(parsed).value());
+        std::move(cb).Run(OkStatus());
+      });
+  EXPECT_CALL(*mock_hrh_, Quit(_));
+  task_environment_.FastForwardBy(base::Seconds(190));
+  rendition->CheckState(base::Seconds(10), 1.0,
+                        BindCheckState(base::Seconds(0)));
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace media

@@ -50,7 +50,13 @@ class MEDIA_EXPORT HlsRenditionImpl : public HlsRendition {
   // Clears old data and returns the amount of time taken to do so, in order to
   // aid the delay calculations.
   base::TimeDelta ClearOldSegments(base::TimeDelta media_time);
-  void FetchNext(base::OnceClosure cb, base::TimeDelta required_time);
+  void FetchNext(base::OnceClosure cb,
+                 std::optional<base::TimeDelta> required_time);
+
+  void ResumeLivePlayback(base::TimeDelta estimated_resume,
+                          base::OnceClosure done);
+  void ManifestUpdateForLiveResume(base::OnceClosure done, base::TimeDelta);
+  void FirstSegmentFetchedForLiveResume(base::OnceClosure done);
 
   // Continues loading from a stored pending network request.
   void FetchMoreDataFromPendingStream(base::OnceClosure cb,
@@ -60,7 +66,7 @@ class MEDIA_EXPORT HlsRenditionImpl : public HlsRendition {
   // request if there is more to read.
   void OnSegmentData(scoped_refptr<hls::MediaSegment> segment,
                      base::OnceClosure cb,
-                     base::TimeDelta fetch_required_time,
+                     std::optional<base::TimeDelta> fetch_required_time,
                      base::TimeDelta parse_end,
                      base::TimeTicks net_req_start,
                      bool fetched_new_key,
