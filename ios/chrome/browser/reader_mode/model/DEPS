@@ -6,6 +6,7 @@ include_rules = [
   "+ios/chrome/browser/link_to_text/model",
   "+ios/chrome/browser/overlays/model/public",
   "+ios/chrome/browser/snapshots/model",
+  "+ios/chrome/browser/translate/model",
   "+ios/chrome/browser/web/model/image_fetch",
   "+ios/chrome/browser/web_selection/model/web_selection_tab_helper.h",
   "+third_party/dom_distiller_js",

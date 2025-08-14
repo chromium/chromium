@@ -1571,7 +1571,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Returns whether translate is enabled on the current page.
 - (BOOL)isTranslateEnabled {
   return [self canManuallyTranslate:NO] && ![self isLensOverlayVisible] &&
-         ![self isReaderModeActive];
+         (![self isReaderModeActive] ||
+          base::FeatureList::IsEnabled(kEnableReaderModeTranslation));
 }
 
 - (BOOL)isLensOverlayEnabled {

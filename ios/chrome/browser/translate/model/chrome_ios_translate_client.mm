@@ -94,6 +94,12 @@ bool ChromeIOSTranslateClient::ShowTranslateUI(
     step = translate::TRANSLATE_STEP_TRANSLATE_ERROR;
   }
 
+  // If infobar management is not available from the web state, as is the case
+  // for Reader mode web state then do not show translation infobar.
+  if (!InfoBarManagerImpl::FromWebState(web_state_)) {
+    return false;
+  }
+
   // Infobar UI.
   translate::TranslateInfoBarDelegate::Create(
       step != translate::TRANSLATE_STEP_BEFORE_TRANSLATE || triggered_from_menu,

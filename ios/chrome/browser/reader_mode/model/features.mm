@@ -37,6 +37,10 @@ BASE_FEATURE(kEnableReaderMode,
              "EnableReaderMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableReaderModeTranslation,
+             "EnableReaderModeTranslation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableReadabilityHeuristic,
              "EnableReadabilityHeuristic",
              base::FEATURE_DISABLED_BY_DEFAULT);

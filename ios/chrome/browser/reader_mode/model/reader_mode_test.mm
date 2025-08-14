@@ -10,16 +10,17 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/dom_distiller/core/extraction_utils.h"
+#import "components/language/ios/browser/language_detection_java_script_feature.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
-#import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/web_state.h"
 #import "third_party/dom_distiller_js/dom_distiller.pb.h"
 #import "third_party/dom_distiller_js/dom_distiller_json_converter.h"
@@ -37,8 +38,10 @@ void ReaderModeTest::SetUp() {
       /*disabled_features=*/{});
   profile_ = TestProfileIOS::Builder().Build();
 
-  web::JavaScriptFeatureManager::FromBrowserState(profile_.get())
-      ->ConfigureFeatures({ReaderModeJavaScriptFeature::GetInstance()});
+  web::test::OverrideJavaScriptFeatures(
+      profile_.get(),
+      {ReaderModeJavaScriptFeature::GetInstance(),
+       language::LanguageDetectionJavaScriptFeature::GetInstance()});
 }
 
 std::unique_ptr<web::FakeWebState> ReaderModeTest::CreateWebState() {

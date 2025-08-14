@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
+#import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -66,6 +67,8 @@ void ReaderModeContentTabHelper::AttachSupportedTabHelpers(
     WebSelectionTabHelper::CreateForWebState(web_state());
     LinkToTextTabHelper::CreateForWebState(web_state());
   }
+
+  ChromeIOSTranslateClient::CreateForWebState(web_state());
 
   FindTabHelper::CreateForWebState(web_state());
   ImageFetchTabHelper::CreateForWebState(web_state());

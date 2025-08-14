@@ -801,6 +801,9 @@ extern const char kReaderModeReadabilityHeuristicDescription[];
 extern const char kReaderModeReadabilityDistillerName[];
 extern const char kReaderModeReadabilityDistillerDescription[];
 
+extern const char kReaderModeTranslationName[];
+extern const char kReaderModeTranslationDescription[];
+
 extern const char kReaderModeDefaultBrowserPromoName[];
 extern const char kReaderModeDefaultBrowserPromoDescription[];
 

@@ -1374,6 +1374,10 @@ const char kReaderModeReadabilityDistillerName[] =
 const char kReaderModeReadabilityDistillerDescription[] =
     "Enables Readability distiller for Reader Mode UI.";
 
+const char kReaderModeTranslationName[] = "Enables Reader Mode Translation";
+const char kReaderModeTranslationDescription[] =
+    "Enables translation of web pages in Reader Mode.";
+
 const char kReaderModeDefaultBrowserPromoName[] =
     "Enables the default browser promo with Reader Mode criteria";
 const char kReaderModeDefaultBrowserPromoDescription[] =
