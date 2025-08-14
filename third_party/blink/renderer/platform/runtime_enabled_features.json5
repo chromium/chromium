@@ -2513,6 +2513,10 @@
       status: "stable",
     },
     {
+      name: "HandleDisconnectedSelectionDuringDOMChanges",
+      status: "stable",
+    },
+    {
       name: "HandleShadowDOMInSubstringUtil",
       status: "stable",
     },
