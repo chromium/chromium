@@ -453,7 +453,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                                 referrerUrl,
                                 pageTransition,
                                 isRedirect)
-                        .setApplicationMustBeInForeground(true)
                         .setRedirectHandler(redirectHandler)
                         .setOpenInNewTab(onInitialNavigationChain)
                         .setIsBackgroundTabNavigation(!isWebContentsVisible)

@@ -1193,7 +1193,6 @@ public class ContextualSearchManager
             ExternalNavigationParams params =
                     new ExternalNavigationParams.Builder(
                                     escapedUrl, false, referrerUrl, pageTransition, isRedirect)
-                            .setApplicationMustBeInForeground(true)
                             .setRedirectHandler(mRedirectHandler)
                             .setIsMainFrame(isInPrimaryMainFrame)
                             .build();

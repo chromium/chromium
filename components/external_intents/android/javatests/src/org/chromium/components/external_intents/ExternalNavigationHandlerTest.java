@@ -618,7 +618,6 @@ public class ExternalNavigationHandlerTest {
                 .withPageTransition(transitionTypeIncomingIntent)
                 .withIsRendererInitiated(false)
                 .withIsRedirect(true)
-                .withChromeAppInForegroundRequired(true)
                 .expecting(
                         OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
                         START_OTHER_ACTIVITY);
@@ -637,7 +636,6 @@ public class ExternalNavigationHandlerTest {
                 .withPageTransition(transitionTypeIncomingIntent)
                 .withIsRendererInitiated(false)
                 .withIsRedirect(true)
-                .withChromeAppInForegroundRequired(true)
                 .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB, IGNORE);
     }
 
@@ -1902,18 +1900,6 @@ public class ExternalNavigationHandlerTest {
         mDelegate.setIsChromeAppInForeground(false);
         checkUrl(YOUTUBE_URL, redirectHandlerForLinkClick())
                 .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
-    }
-
-    @Test
-    @SmallTest
-    public void testNotChromeAppInForegroundRequired() {
-        mDelegate.add(new IntentActivity(YOUTUBE_URL, YOUTUBE_PACKAGE_NAME));
-        mDelegate.setIsChromeAppInForeground(false);
-        checkUrl(YOUTUBE_URL, redirectHandlerForLinkClick())
-                .withChromeAppInForegroundRequired(false)
-                .expecting(
-                        OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
-                        START_OTHER_ACTIVITY);
     }
 
     @Test
@@ -3576,7 +3562,6 @@ public class ExternalNavigationHandlerTest {
         private boolean mIsIncognito;
         private int mPageTransition = PageTransition.LINK;
         private boolean mIsRedirect;
-        private boolean mChromeAppInForegroundRequired = true;
         private boolean mIsBackgroundTabNavigation;
         private boolean mHasUserGesture;
         private final RedirectHandler mRedirectHandler;
@@ -3613,12 +3598,6 @@ public class ExternalNavigationHandlerTest {
 
         public ExternalNavigationTestParams withHasUserGesture(boolean hasGesture) {
             mHasUserGesture = hasGesture;
-            return this;
-        }
-
-        public ExternalNavigationTestParams withChromeAppInForegroundRequired(
-                boolean foregroundRequired) {
-            mChromeAppInForegroundRequired = foregroundRequired;
             return this;
         }
 
@@ -3687,7 +3666,6 @@ public class ExternalNavigationHandlerTest {
                                     new GURL(mReferrerUrl),
                                     mPageTransition,
                                     mIsRedirect)
-                            .setApplicationMustBeInForeground(mChromeAppInForegroundRequired)
                             .setRedirectHandler(mRedirectHandler)
                             .setIsBackgroundTabNavigation(mIsBackgroundTabNavigation)
                             .setIsMainFrame(mIsMainFrame)

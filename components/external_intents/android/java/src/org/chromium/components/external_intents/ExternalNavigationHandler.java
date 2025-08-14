@@ -715,14 +715,15 @@ public class ExternalNavigationHandler {
         return false;
     }
 
-    /** http://crbug.com/441284 : Disallow firing external intent while the app is in the background. */
-    private boolean blockExternalNavWhileBackgrounded(
-            ExternalNavigationParams params, boolean incomingIntentRedirect) {
+    /**
+     * http://crbug.com/441284 : Disallow firing external intent while the app is in the background.
+     */
+    private boolean blockExternalNavWhileBackgrounded(boolean incomingIntentRedirect) {
         // If the redirect is from an intent Chrome could still be transitioning to the foreground.
         // Alternatively, the user may have sent Chrome to the background by this point, but for
         // navigations started by another app that should still be safe.
         if (incomingIntentRedirect) return false;
-        if (params.isApplicationMustBeInForeground() && !mDelegate.isApplicationInForeground()) {
+        if (!mDelegate.isApplicationInForeground()) {
             if (debug()) Log.i(TAG, "App is not in foreground");
             return true;
         }
@@ -1553,7 +1554,7 @@ public class ExternalNavigationHandler {
     private boolean shouldBlockAllExternalAppLaunches(
             ExternalNavigationParams params, boolean incomingIntentRedirect) {
         return shouldBlockSubframeAppLaunches(params)
-                || blockExternalNavWhileBackgrounded(params, incomingIntentRedirect)
+                || blockExternalNavWhileBackgrounded(incomingIntentRedirect)
                 || blockExternalNavFromBackgroundTab(params, incomingIntentRedirect)
                 || ignoreBackForwardNav(params);
     }
