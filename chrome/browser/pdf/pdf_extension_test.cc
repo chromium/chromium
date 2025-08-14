@@ -1191,6 +1191,16 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
   EXPECT_EQ(0, CountPDFProcesses());
 }
 
+// Test that a PDF embed lower in a webpage will not trigger a page scroll to
+// it on load. Regression test for https://crbug.com/429553604.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, EmbedPdfBottomOfViewport) {
+  ASSERT_TRUE(LoadPdfInFirstChild(embedded_test_server()->GetURL(
+      "/pdf/pdf_embed_bottom_of_viewport.html")));
+
+  EXPECT_EQ(0,
+            content::EvalJs(GetActiveWebContents(), "document.body.scrollTop"));
+}
+
 // Tests that PDF MIME type is set for full-page PDF `WebContents` with MIME
 // type params.
 // NOTE: This test is not parameterized as PDF MIME type validation for OOPIF
