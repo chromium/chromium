@@ -10,7 +10,7 @@
   /// Indicates whether favicon loading is initiated.
   BOOL _faviconLoadingInitiated;
 }
-- (instancetype)initWithURL:(NSString*)url
+- (instancetype)initWithURL:(URLWithTitle*)url
                    username:(NSString*)username
                    password:(NSString*)password
                      status:(PasswordImportStatus)status {
@@ -24,13 +24,13 @@
   return self;
 }
 
-- (void)loadFaviconWithCompletionHandler:(ProceduralBlock)handler {
+- (void)loadFaviconWithUIUpdateHandler:(ProceduralBlock)handler {
   if (_faviconLoadingInitiated) {
     return;
   }
   _faviconLoadingInitiated =
       [self.faviconDataSource passwordImportItem:self
-             loadFaviconAttributesWithCompletion:handler];
+              loadFaviconAttributesWithUIHandler:handler];
 }
 
 @end

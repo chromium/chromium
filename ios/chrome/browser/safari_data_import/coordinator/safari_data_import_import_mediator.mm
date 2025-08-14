@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/service/sync_service.h"
@@ -21,6 +22,8 @@
 #import "ios/chrome/browser/safari_data_import/public/safari_data_item_consumer.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_import_stage_transition_handler.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/ui/util/url_with_title.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ui/gfx/favicon_size.h"
 #import "url/gurl.h"
 
@@ -129,14 +132,19 @@
 #pragma mark - PasswordImportItemFaviconDataSource
 
 - (BOOL)passwordImportItem:(PasswordImportItem*)item
-    loadFaviconAttributesWithCompletion:(ProceduralBlock)completion {
-  GURL url(base::SysNSStringToUTF8(item.url));
+    loadFaviconAttributesWithUIHandler:(ProceduralBlock)UIHandler {
   auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
     item.faviconAttributes = attributes;
-    completion();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(UIHandler));
   };
-  _faviconLoader->FaviconForPageUrlOrHost(url, gfx::kFaviconSize,
-                                          faviconLoadedBlock);
+  if (item.url) {
+    _faviconLoader->FaviconForPageUrlOrHost(item.url.URL, gfx::kFaviconSize,
+                                            faviconLoadedBlock);
+  } else {
+    /// If the URL does not exist, return the monogram for the username.
+    faviconLoadedBlock([FaviconAttributes attributesWithDefaultImage]);
+  }
   return YES;
 }
 

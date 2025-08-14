@@ -8,13 +8,14 @@
 #import "ios/chrome/browser/safari_data_import/public/password_import_item.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_item.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_item_consumer.h"
+#import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 namespace {
 /// Test password information.
-constexpr char kUrl[] = "chromium.org";
+constexpr char kPrettyUrl[] = "chromium.org";
 constexpr char kUsername[] = "tester";
 constexpr char kPassword[] = "te$te^";
 }  // namespace
@@ -74,7 +75,7 @@ TEST_F(IOSSafariDataImportClientTest, OnPasswordsReady) {
   password_manager::ImportResults results;
   results.number_to_import = 30;
   password_manager::ImportEntry entry;
-  entry.url = kUrl;
+  entry.url = kPrettyUrl;
   entry.username = kUsername;
   entry.password = kPassword;
   results.displayed_entries = {entry};
@@ -84,7 +85,7 @@ TEST_F(IOSSafariDataImportClientTest, OnPasswordsReady) {
   PasswordImportItem* password = client()->GetConflictingPasswords()[0];
   EXPECT_NSEQ(password.username, [NSString stringWithUTF8String:kUsername]);
   EXPECT_NSEQ(password.password, [NSString stringWithUTF8String:kPassword]);
-  EXPECT_NSEQ(password.url, [NSString stringWithUTF8String:kUrl]);
+  EXPECT_NSEQ(password.url.title, [NSString stringWithUTF8String:kPrettyUrl]);
   SafariDataItem* item = last_populated_item();
   ASSERT_TRUE(item);
   EXPECT_EQ(item.type, SafariDataItemType::kPasswords);
@@ -130,7 +131,7 @@ TEST_F(IOSSafariDataImportClientTest, OnPasswordsImported) {
   password_manager::ImportResults results;
   results.number_imported = 30;
   password_manager::ImportEntry entry;
-  entry.url = kUrl;
+  entry.url = kPrettyUrl;
   entry.username = kUsername;
   entry.password = kPassword;
   results.displayed_entries = {entry};
@@ -140,7 +141,7 @@ TEST_F(IOSSafariDataImportClientTest, OnPasswordsImported) {
   PasswordImportItem* password = client()->GetInvalidPasswords()[0];
   EXPECT_NSEQ(password.username, [NSString stringWithUTF8String:kUsername]);
   EXPECT_NSEQ(password.password, [NSString stringWithUTF8String:kPassword]);
-  EXPECT_NSEQ(password.url, [NSString stringWithUTF8String:kUrl]);
+  EXPECT_NSEQ(password.url.title, [NSString stringWithUTF8String:kPrettyUrl]);
   SafariDataItem* item = last_populated_item();
   ASSERT_TRUE(item);
   EXPECT_EQ(item.type, SafariDataItemType::kPasswords);
