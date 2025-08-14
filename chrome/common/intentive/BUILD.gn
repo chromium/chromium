@@ -1,0 +1,5 @@
+source_set("intentive_common") {
+  sources = [ "intentive_features.cc", "intentive_features.h" ]
+  deps = [ "//base" ]
+  visibility = [ "//chrome/*" ]
+}
