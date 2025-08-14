@@ -8,6 +8,7 @@ import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/sysroot.gni")
 import("//build/linux/strip_binary.gni")
+import("//build/timestamp.gni")
 import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
 import("//chrome/version.gni")
@@ -469,6 +470,8 @@ template("linux_package") {
       rebase_path("$root_out_dir/installer/debian/build.sh", root_build_dir),
       "-a",
       deb_arch,
+      "-b",
+      build_timestamp,
       "-c",
       invoker.channel,
       "-d",
