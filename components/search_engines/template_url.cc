@@ -57,11 +57,14 @@
 #include "net/base/mime_util.h"
 #include "net/base/url_util.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
-#include "third_party/search_engines_data/built_in_marketing_snippets.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "third_party/search_engines_data/built_in_marketing_snippets.h"
+#endif
 
 namespace {
 

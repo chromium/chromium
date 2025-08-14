@@ -1553,7 +1553,7 @@
   },
 
   "third_party/search_engines_data/resources_to_move_out/search_engine_descriptions_strings.grd": {
-    "messages": [100120],
+    "messages": [10120],
   },
 
   # END "everything else" section.
