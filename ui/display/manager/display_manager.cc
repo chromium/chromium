@@ -2083,23 +2083,20 @@ void DisplayManager::CreateSoftwareMirroringDisplayInfo(
           destination_ids.insert(id);
         }
       } else {
-        // Select a default source display and treat all other connected
-        // displays as destination.
-        if (HasInternalDisplay()) {
-          // Use the internal display as mirroring source.
-          source_id = Display::InternalDisplayId();
-          if (!base::Contains(*display_info_list, source_id,
-                              &ManagedDisplayInfo::id)) {
-            // It is possible that internal display is removed (e.g. Use
-            // Chromebook in Dock mode with two or more external displays). In
-            // this case, we use the first connected display as mirroring
-            // source.
-            source_id = first_display_id_;
-          }
-        } else {
-          // Use the first connected display as mirroring source
+        // Select the primary display as the source display and treat all other
+        // connected displays as destination.
+        // Get primary display from layout as primary display may be changed.
+        const display::DisplayLayout& layout =
+            layout_store()->GetRegisteredDisplayLayout(
+                CreateDisplayIdList(*display_info_list));
+        source_id = layout.primary_id;
+        if (!base::Contains(*display_info_list, source_id,
+                            &ManagedDisplayInfo::id)) {
+          // It is possible that primary display is removed in the new display
+          // configuration.
           source_id = first_display_id_;
         }
+
         DCHECK(source_id != kInvalidDisplayId);
 
         for (auto& info : *display_info_list) {

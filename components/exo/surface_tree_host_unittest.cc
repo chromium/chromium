@@ -106,50 +106,6 @@ TEST_F(SurfaceTreeHostTest, UpdatePrimaryDisplayWithSurfaceUpdateFailure) {
 }
 
 TEST_F(SurfaceTreeHostTest,
-       BuiltinDisplayMirrorModeToExtendModeWithExternalDisplayAsPrimary) {
-  UpdateDisplay("800x600,1000x800@1.2");
-
-  // Set first display as internal, so it'll be primary source in mirror mode.
-  int64_t internal_display_id =
-      display::test::DisplayManagerTestApi(display_manager())
-          .SetFirstDisplayAsInternalDisplay();
-  int64_t external_display_id = GetSecondaryDisplay().id();
-
-  ASSERT_NE(internal_display_id, external_display_id);
-
-  std::vector<std::pair<int64_t, int64_t>> leave_enter_ids;
-  shell_surface_->root_surface()->set_leave_enter_callback(
-      base::BindLambdaForTesting(
-          [&leave_enter_ids](int64_t old_display_id, int64_t new_display_id) {
-            leave_enter_ids.emplace_back(old_display_id, new_display_id);
-            return true;
-          }));
-
-  // Make external display primary.
-  display_config_controller()->SetPrimaryDisplayId(external_display_id, false);
-
-  ASSERT_EQ(leave_enter_ids.size(), 1u);
-  EXPECT_EQ(leave_enter_ids[0],
-            std::make_pair(internal_display_id, external_display_id));
-
-  // Change to mirror mode, which should make internal display primary.
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_EQ(leave_enter_ids.size(), 2u);
-  EXPECT_EQ(leave_enter_ids[1],
-            std::make_pair(external_display_id, internal_display_id));
-
-  // Switch back to extend mode, which should restore external as primary.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_EQ(leave_enter_ids.size(), 3u);
-  EXPECT_EQ(leave_enter_ids[2],
-            std::make_pair(internal_display_id, external_display_id));
-}
-
-TEST_F(SurfaceTreeHostTest,
        UpdateHostWindowBoundsOnlySetsNewBoundsIfContentSizeChanged) {
   // Create 50x50 shell surface.
   auto shell_surface = test::ShellSurfaceBuilder({50, 50}).BuildShellSurface();

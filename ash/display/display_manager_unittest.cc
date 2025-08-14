@@ -5578,4 +5578,47 @@ TEST_F(DisplayManagerTest, ExternalDisplayCount) {
   EXPECT_EQ(2u, display_manager()->GetNumExternalDisplays());
 }
 
+TEST_F(DisplayManagerTest, MirrorUsePrimaryAsSourceDisplay) {
+  const int64_t internal_display_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .SetFirstDisplayAsInternalDisplay();
+  const auto internal_info =
+      display_manager()->GetDisplayInfo(internal_display_id);
+  constexpr int64_t external_id = 210000010;
+
+  const auto external_info =
+      display::ManagedDisplayInfo::CreateFromSpecWithID("400x300", external_id);
+
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(internal_info);
+  display_info_list.push_back(external_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(2U, display_manager()->GetNumDisplays());
+  EXPECT_FALSE(display_manager()->IsInMirrorMode());
+
+  // Enter mirror mode
+  SetSoftwareMirrorMode(true);
+
+  // Confirm in mirroring and internal is used as source.
+  EXPECT_TRUE(display_manager()->IsInMirrorMode());
+  EXPECT_EQ(1u, display_manager()->GetNumDisplays());
+  EXPECT_EQ(internal_display_id, display_manager()->mirroring_source_id());
+
+  // Exit Mirror Mode
+  SetSoftwareMirrorMode(false);
+  EXPECT_FALSE(display_manager()->IsInMirrorMode());
+  EXPECT_EQ(2u, display_manager()->GetNumDisplays());
+
+  // Change primary display
+  Shell::Get()->window_tree_host_manager()->SetPrimaryDisplayId(external_id);
+
+  // Enter mirror mode
+  SetSoftwareMirrorMode(true);
+
+  // Confirm in mirroring and internal is used as source.
+  EXPECT_TRUE(display_manager()->IsInMirrorMode());
+  EXPECT_EQ(1u, display_manager()->GetNumDisplays());
+  EXPECT_EQ(external_id, display_manager()->mirroring_source_id());
+}
+
 }  // namespace ash
