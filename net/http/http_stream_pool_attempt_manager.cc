@@ -473,13 +473,6 @@ void HttpStreamPool::AttemptManager::ProcessPendingJob() {
     }
   }
 
-  const size_t pending_job_count = PendingRequestJobCount();
-  const size_t pending_preconnect_count = PendingPreconnectCount();
-
-  if (pending_job_count == 0 && pending_preconnect_count == 0) {
-    return;
-  }
-
   DCHECK(!HasAvailableSpdySession());
 
   MaybeAttemptTcpBased(/*exclude_ip_endpoint=*/std::nullopt,
