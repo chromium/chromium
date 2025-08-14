@@ -12498,18 +12498,35 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_NVS_Omnibox_Prefetch",
+                    "name": "Enabled_NVS_HttpCache_Only",
                     "enable_features": [
-                        "HttpCacheNoVarySearch",
-                        "LogDuplicateRequests",
-                        "SearchPrefetchWithNoVarySearchDiskCache"
+                        "HttpCacheNoVarySearch"
+                    ],
+                    "disable_features": [
+                        "DsePreload2",
+                        "PrefetchPrerenderIntegration"
                     ]
                 },
                 {
-                    "name": "Enabled_NVS_HttpCache_Only",
+                    "name": "Enabled_NVS_Omnibox_Prefetch",
                     "enable_features": [
                         "HttpCacheNoVarySearch",
-                        "LogDuplicateRequests"
+                        "SearchPrefetchWithNoVarySearchDiskCache"
+                    ],
+                    "disable_features": [
+                        "DsePreload2",
+                        "PrefetchPrerenderIntegration"
+                    ]
+                },
+                {
+                    "name": "Enabled_DsePreload2",
+                    "enable_features": [
+                        "DsePreload2",
+                        "HttpCacheNoVarySearch",
+                        "PrefetchPrerenderIntegration"
+                    ],
+                    "disable_features": [
+                        "SearchPrefetchWithNoVarySearchDiskCache"
                     ]
                 }
             ]
