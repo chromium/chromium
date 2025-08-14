@@ -4876,9 +4876,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithMaterialDesignTest,
   RunMaterialDesignTest(FILE_PATH_LITERAL("list.html"));
 }
 
-// TODO(crbug.com/436869739): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithMaterialDesignTest,
-                       DISABLED_MaterialDesignMenu) {
+                       MaterialDesignMenu) {
   RunMaterialDesignTest(FILE_PATH_LITERAL("menu.html"));
 }
 

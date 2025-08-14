@@ -87,12 +87,12 @@ rootWebArea htmlTag='#document' name='Material Web Menu'
 ++++++++++++++++++staticText name='Open Menu'
 ++++++++++++++++++++inlineTextBox name='Open Menu'
 ++++++++++menu htmlTag='md-menu'
-++++++++++++genericContainer className='menu open animating' htmlTag='div'
+++++++++++++genericContainer className='menu open' htmlTag='div'
 ++++++++++++++genericContainer ignored invisible
-++++++++++++++genericContainer className='items' htmlTag='div'
+++++++++++++++genericContainer ignored
 ++++++++++++++++genericContainer ignored
 ++++++++++++++++++genericContainer ignored
-++++++++++++++++++++none ignored
+++++++++++++++++++++group htmlTag='md-menu-item'
 ++++++++++++++++++++++menuItem className='list-item   ' htmlTag='li'
 ++++++++++++++++++++++++none ignored
 ++++++++++++++++++++++++++genericContainer ignored
@@ -182,7 +182,7 @@ rootWebArea htmlTag='#document' name='Material Web Menu'
 ++++++++++++++++genericContainer ignored
 ++++++++++++++++++staticText name='Open Menu'
 ++++++++++++++++++++inlineTextBox name='Open Menu'
-++++++++++menu htmlTag='md-menu'
+++++++++++menu ignored invisible
 ++++++++++++genericContainer ignored invisible
 ++++++++++++++genericContainer ignored invisible
 ++++++++++++++none ignored invisible

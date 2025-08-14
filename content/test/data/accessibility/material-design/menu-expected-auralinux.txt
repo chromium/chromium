@@ -13,15 +13,15 @@
 ++++++++[push button] name='Open Menu'
 ++++++[menu]
 ++++++++[section]
-++++++++++[section]
+++++++++++[panel]
 ++++++++++++[menu item]
 ++++++++++++++[section]
-++++++++++++[menu item]
-++++++++++++++[section]
-++++++++++++[menu item]
-++++++++++++++[section]
-++++++++++++[menu item]
-++++++++++++++[section]
+++++++++++[menu item]
+++++++++++++[section]
+++++++++++[menu item]
+++++++++++++[section]
+++++++++++[menu item]
+++++++++++++[section]
 ++++[section]
 ++++++[static] name='Menu Opened'
 === Start Continuation ===
@@ -31,7 +31,6 @@
 ++++++[section]
 ++++++++[section]
 ++++++++[push button] name='Open Menu'
-++++++[menu]
 ++++[section]
 ++++++[static] name='Menu Opened'
 ++++[section]
