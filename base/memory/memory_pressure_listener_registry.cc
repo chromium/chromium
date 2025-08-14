@@ -49,39 +49,21 @@ void MemoryPressureListenerRegistry::NotifyMemoryPressure(
 }
 
 void MemoryPressureListenerRegistry::AddObserver(
-    MemoryPressureListener* listener,
-    bool sync) {
-  // TODO(crbug.com/40123466): DCHECK instead of silently failing when a
-  // MemoryPressureListener is created in a non-sequenced context. Tests will
-  // need to be adjusted for that to work.
-  if (SequencedTaskRunner::HasCurrentDefault()) {
-    async_observers_->AddObserver(listener);
-  }
-
-  if (sync) {
-    AutoLock lock(sync_observers_lock_);
-    sync_observers_.AddObserver(listener);
-  }
+    SyncMemoryPressureListener* listener) {
+  CHECK(
+      !SingleThreadTaskRunner::HasMainThreadDefault() ||
+      SingleThreadTaskRunner::GetMainThreadDefault()->BelongsToCurrentThread());
+  listeners_.AddObserver(listener);
 }
 
 void MemoryPressureListenerRegistry::RemoveObserver(
-    MemoryPressureListener* listener) {
-  async_observers_->RemoveObserver(listener);
-  if (listener->has_sync_callback()) {
-    sync_observers_lock_.AssertNotHeld();
-    AutoLock lock(sync_observers_lock_);
-    sync_observers_.RemoveObserver(listener);
-  }
+    SyncMemoryPressureListener* listener) {
+  listeners_.RemoveObserver(listener);
 }
 
 void MemoryPressureListenerRegistry::DoNotifyMemoryPressure(
     MemoryPressureLevel memory_pressure_level) {
-  async_observers_->Notify(FROM_HERE, &MemoryPressureListener::Notify,
-                           memory_pressure_level);
-  AutoLock lock(sync_observers_lock_);
-  for (auto& observer : sync_observers_) {
-    observer.SyncNotify(memory_pressure_level);
-  }
+  listeners_.Notify(&SyncMemoryPressureListener::Notify, memory_pressure_level);
 }
 
 // static

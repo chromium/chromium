@@ -5,50 +5,38 @@
 #include "base/memory/memory_pressure_listener.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/memory/memory_pressure_listener_registry.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace base {
 
-using MemoryPressureLevel = MemoryPressureListener::MemoryPressureLevel;
-
 class MemoryPressureListenerTest : public testing::Test {
  public:
   MemoryPressureListenerTest()
-      : task_environment_(test::TaskEnvironment::MainThreadType::UI) {}
-
-  void SetUp() override {
-    listener_ = std::make_unique<MemoryPressureListener>(
-        FROM_HERE, BindRepeating(&MemoryPressureListenerTest::OnMemoryPressure,
-                                 Unretained(this)));
-  }
-
-  void TearDown() override { listener_.reset(); }
+      : listener_(BindRepeating(&MemoryPressureListenerTest::OnMemoryPressure,
+                                Unretained(this))) {}
 
  protected:
   void ExpectNotification(void (*notification_function)(MemoryPressureLevel),
                           MemoryPressureLevel level) {
     EXPECT_CALL(*this, OnMemoryPressure(level)).Times(1);
     notification_function(level);
-    RunLoop().RunUntilIdle();
   }
 
   void ExpectNoNotification(void (*notification_function)(MemoryPressureLevel),
                             MemoryPressureLevel level) {
     EXPECT_CALL(*this, OnMemoryPressure(testing::_)).Times(0);
     notification_function(level);
-    RunLoop().RunUntilIdle();
   }
 
  private:
   MOCK_METHOD1(OnMemoryPressure,
                void(MemoryPressureListener::MemoryPressureLevel));
 
-  test::TaskEnvironment task_environment_;
-  std::unique_ptr<MemoryPressureListener> listener_;
+  SyncMemoryPressureListener listener_;
 };
 
 TEST_F(MemoryPressureListenerTest, NotifyMemoryPressure) {
@@ -80,6 +68,8 @@ TEST_F(MemoryPressureListenerTest, NotifyMemoryPressure) {
 }
 
 TEST_F(MemoryPressureListenerTest, SyncCallbackDeletesListener) {
+  base::test::SingleThreadTaskEnvironment task_env;
+
   auto listener_to_be_deleted = std::make_unique<MemoryPressureListener>(
       FROM_HERE, BindRepeating([](MemoryPressureListener::MemoryPressureLevel) {
         FAIL() << "Async callback should not be called.";
