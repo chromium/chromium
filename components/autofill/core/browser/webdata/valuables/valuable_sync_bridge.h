@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
+#include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
@@ -84,6 +85,9 @@ class ValuableSyncBridge : public base::SupportsUserData::Data,
 
   // Returns the `ValuablesTable` associated with the `web_data_backend_`.
   ValuablesTable* GetValuablesTable();
+
+  // Returns the `EntityTable` associated with the `web_data_backend_`.
+  EntityTable* GetEntityTable();
 
   AutofillSyncMetadataTable* GetSyncMetadataStore();
 

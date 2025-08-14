@@ -326,4 +326,8 @@ ValuablesTable* ValuableSyncBridge::GetValuablesTable() {
   return ValuablesTable::FromWebDatabase(web_data_backend_->GetDatabase());
 }
 
+EntityTable* ValuableSyncBridge::GetEntityTable() {
+  return EntityTable::FromWebDatabase(web_data_backend_->GetDatabase());
+}
+
 }  // namespace autofill
