@@ -178,6 +178,16 @@ public class TopInsetCoordinatorUnitTest {
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
     }
 
+    @Test
+    public void testObserveNotifyRefreshWindowInsets() {
+        Mockito.clearInvocations(mInsetObserver);
+        mNtpCustomizationConfigManager.notifyRefreshWindowInsets(/* consumeTopInset= */ true);
+        verify(mInsetObserver).retriggerOnApplyWindowInsets();
+
+        mNtpCustomizationConfigManager.notifyRefreshWindowInsets(/* consumeTopInset= */ false);
+        verify(mInsetObserver, times(2)).retriggerOnApplyWindowInsets();
+    }
+
     private WindowInsetsCompat createWindowInsetsCompat(int top) {
         Insets systemInsets = Insets.of(0, top, 0, 0);
         Insets displayCutoutInsets = Insets.of(0, top, 0, 0);

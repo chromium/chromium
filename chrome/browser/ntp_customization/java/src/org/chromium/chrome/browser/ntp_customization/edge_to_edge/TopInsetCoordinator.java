@@ -103,6 +103,12 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
                             @Nullable Drawable backgroundDrawable, boolean fromInitialization) {
                         if (fromInitialization) return;
 
+                        refreshWindowInsets(backgroundDrawable != null);
+                    }
+
+                    @Override
+                    public void refreshWindowInsets(boolean consumeTopInset) {
+                        mConsumeTopInset = consumeTopInset;
                         mInsetObserver.retriggerOnApplyWindowInsets();
                     }
                 };

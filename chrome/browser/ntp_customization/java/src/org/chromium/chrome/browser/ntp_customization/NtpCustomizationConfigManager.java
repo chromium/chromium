@@ -48,6 +48,13 @@ public class NtpCustomizationConfigManager {
          */
         default void onBackgroundChanged(
                 @Nullable Drawable backgroundDrawable, boolean fromInitialization) {}
+
+        /**
+         * Called to notify observers to get refreshed system's window insets.
+         *
+         * @param consumeTopInset Whether the observer should consume the new window insets.
+         */
+        default void refreshWindowInsets(boolean consumeTopInset) {}
     }
 
     private static @Nullable NtpCustomizationConfigManager sInstanceForTesting;
@@ -147,6 +154,13 @@ public class NtpCustomizationConfigManager {
 
         for (HomepageStateListener listener : mHomepageStateListeners) {
             listener.onBackgroundChanged(mBackgroundImageDrawable, fromInitialization);
+        }
+    }
+
+    /** Notifies observers to refresh the system's WindowInsets. */
+    public void notifyRefreshWindowInsets(boolean consumeTopInset) {
+        for (HomepageStateListener listener : mHomepageStateListeners) {
+            listener.refreshWindowInsets(consumeTopInset);
         }
     }
 

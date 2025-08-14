@@ -901,19 +901,36 @@ public class NewTabPage
         return isInSingleUrlBarMode(mIsTablet, mSearchProviderHasLogo);
     }
 
-    private void updateSearchProvider() {
-        mSearchProviderHasLogo = mTemplateUrlService.doesDefaultSearchEngineHaveLogo();
-        mIsDefaultSearchEngineGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
+    /**
+     * Updates the search provider params.
+     *
+     * @return Whether any of the search provider params changed.
+     */
+    private boolean updateSearchProvider() {
+        boolean searchProviderHasLogo = mTemplateUrlService.doesDefaultSearchEngineHaveLogo();
+        boolean isDefaultSearchEngineGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
+        boolean isChanged =
+                mSearchProviderHasLogo != searchProviderHasLogo
+                        || mIsDefaultSearchEngineGoogle != isDefaultSearchEngineGoogle;
+
+        mSearchProviderHasLogo = searchProviderHasLogo;
+        mIsDefaultSearchEngineGoogle = isDefaultSearchEngineGoogle;
+        return isChanged;
     }
 
     private void onSearchEngineUpdated() {
-        updateSearchProvider();
+        boolean isChanged = updateSearchProvider();
 
         mNewTabPageLayout.setSearchProviderInfo(
                 mSearchProviderHasLogo, mIsDefaultSearchEngineGoogle);
         // TODO(crbug.com/40226731): Remove this call when the Feed position experiment is
         // cleaned up.
         updateMargins();
+
+        if (isChanged && !OmniboxFeatures.sOmniboxMobileParityUpdateV2.isEnabled()) {
+            NtpCustomizationConfigManager.getInstance()
+                    .notifyRefreshWindowInsets(isInSingleUrlBarMode());
+        }
     }
 
     /**
