@@ -107,14 +107,16 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     }
 
     @Override
+    public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
+        if (Intent.ACTION_LOCALE_CHANGED.equals(intent.getAction())) {
+            run(() -> performUpdate(null, null));
+        }
+    }
+
+    @Override
     public void onUpdate(final Context context, final AppWidgetManager manager, final int[] ids) {
-        run(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        performUpdate(ids, null);
-                    }
-                });
+        run(() -> performUpdate(ids, null));
     }
 
     @VisibleForTesting

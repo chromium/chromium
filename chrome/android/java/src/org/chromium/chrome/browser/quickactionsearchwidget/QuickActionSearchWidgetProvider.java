@@ -115,6 +115,14 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
     private static @Nullable QuickActionSearchWidgetProviderDelegate sDelegate;
 
     @Override
+    public void onReceive(@NonNull Context context, @NonNull Intent intent) {
+        super.onReceive(context, intent);
+        if (Intent.ACTION_LOCALE_CHANGED.equals(intent.getAction())) {
+            updateWidgetsWithNewLocale(context);
+        }
+    }
+
+    @Override
     public void onUpdate(
             @NonNull Context context,
             @NonNull AppWidgetManager manager,
@@ -127,6 +135,13 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
             Context context, AppWidgetManager manager, int widgetId, Bundle newOptions) {
         super.onAppWidgetOptionsChanged(context, manager, widgetId, newOptions);
         onUpdate(context, manager, new int[] {widgetId});
+    }
+
+    private void updateWidgetsWithNewLocale(@NonNull Context context) {
+        // Force delegate recreation to ensure that all intents are created with the new locale.
+        sDelegate = null;
+        AppWidgetManager manager = AppWidgetManager.getInstance(context);
+        updateWidgets(context, manager, SearchActivityPreferencesManager.getCurrent(), null);
     }
 
     /**
