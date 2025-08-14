@@ -526,15 +526,6 @@ void AutofillManager::TriggerFormExtractionInAllFrames(
       std::move(form_extraction_finished_callback));
 }
 
-void AutofillManager::ReparseKnownForms() {
-  std::vector<FormData> forms;
-  forms.reserve(form_structures_.size());
-  for (const auto& [id, form_structure] : form_structures_) {
-    forms.push_back(form_structure->ToFormData());
-  }
-  OnFormsSeen(forms, {});
-}
-
 base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
 AutofillManager::GetServerPredictionsForForm(
     FormGlobalId form_id,

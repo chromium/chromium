@@ -58,7 +58,7 @@ AutofillDriverIOSFactory::~AutofillDriverIOSFactory() {
     // unrealized web states do not have loaded frames which can heavily skew
     // the data towards 0 frames.
     base::UmaHistogramCounts1000("Autofill.NumberOfDriversPerFactory",
-                                 max_drivers_);
+                                max_drivers_);
   }
 }
 
@@ -147,12 +147,6 @@ AutofillDriverIOS* AutofillDriverIOSFactory::DriverForFrame(
   // `driver` may be null if WebFrameBecameUnavailable() has been called for its
   // `web_frame` already.
   return driver.get();
-}
-
-void AutofillDriverIOSFactory::ReparseKnownForms() {
-  for (const auto& [web_frame_id, driver] : driver_map_) {
-    driver->GetAutofillManager().ReparseKnownForms();
-  }
 }
 
 }  //  namespace autofill

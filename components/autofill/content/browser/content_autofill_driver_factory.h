@@ -95,9 +95,6 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
   std::vector<ContentAutofillDriver*> GetExistingDrivers(
       base::PassKey<ScopedAutofillManagersObservation>);
 
-  // Reparses all known forms.
-  void ReparseKnownForms();
-
   ContentAutofillDriver* DriverForFrame(
       content::RenderFrameHost* render_frame_host,
       base::PassKey<ContentAutofillDriver>) {

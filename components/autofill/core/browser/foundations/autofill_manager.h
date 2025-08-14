@@ -310,9 +310,6 @@ class AutofillManager
   virtual void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool success)> form_extraction_finished_callback);
 
-  // Reparses all known forms.
-  void ReparseKnownForms();
-
   // Returns server predictions for fields identified by `field_ids` in a form
   // identified by `form_id`. If the manager has no data about the form with
   // `form_id`, returns an empty map. If the form does not contain data about

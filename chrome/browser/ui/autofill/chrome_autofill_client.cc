@@ -419,16 +419,8 @@ FieldClassificationModelHandler*
 ChromeAutofillClient::GetAutofillFieldClassificationModelHandler() {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions)) {
-    FieldClassificationModelHandler* handler =
-        AutofillFieldClassificationModelServiceFactory::GetForBrowserContext(
-            web_contents()->GetBrowserContext());
-    if (handler && !autofill_model_change_subscription_) {
-      autofill_model_change_subscription_ =
-          handler->RegisterModelChangeCallback(base::BindRepeating(
-              &ChromeAutofillClient::OnFieldClassificationModelChanged,
-              base::Unretained(this)));
-    }
-    return handler;
+    return AutofillFieldClassificationModelServiceFactory::GetForBrowserContext(
+        web_contents()->GetBrowserContext());
   }
 #endif
   return nullptr;
@@ -437,16 +429,8 @@ ChromeAutofillClient::GetAutofillFieldClassificationModelHandler() {
 FieldClassificationModelHandler*
 ChromeAutofillClient::GetPasswordManagerFieldClassificationModelHandler() {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  FieldClassificationModelHandler* handler =
-      PasswordFieldClassificationModelHandlerFactory::GetForBrowserContext(
-          web_contents()->GetBrowserContext());
-  if (handler && !password_manager_model_change_subscription_) {
-    password_manager_model_change_subscription_ =
-        handler->RegisterModelChangeCallback(base::BindRepeating(
-            &ChromeAutofillClient::OnFieldClassificationModelChanged,
-            base::Unretained(this)));
-  }
-  return handler;
+  return PasswordFieldClassificationModelHandlerFactory::GetForBrowserContext(
+      web_contents()->GetBrowserContext());
 #else
   return nullptr;
 #endif
@@ -1250,10 +1234,6 @@ void ChromeAutofillClient::ShowEntitySaveOrUpdateBubble(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
   std::move(prompt_acceptance_callback).Run(EntitySaveOrUpdatePromptResult());
-}
-
-void ChromeAutofillClient::OnFieldClassificationModelChanged() {
-  GetAutofillDriverFactory().ReparseKnownForms();
 }
 
 }  // namespace autofill
