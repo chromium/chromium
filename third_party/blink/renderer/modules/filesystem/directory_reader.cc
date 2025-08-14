@@ -59,14 +59,19 @@ void DirectoryReader::readEntries(V8EntriesCallback* entries_callback,
   if (entries_callback_) {
     // Non-null entries_callback_ means multiple readEntries() calls are made
     // concurrently. We don't allow doing it.
-    Filesystem()->ReportError(
-        WTF::BindOnce(
-            [](V8ErrorCallback* error_callback, base::File::Error error) {
-              error_callback->InvokeAndReportException(
-                  nullptr, file_error::CreateDOMException(error));
-            },
-            WrapPersistent(error_callback)),
-        base::File::FILE_ERROR_FAILED);
+
+    // The error_callback argument is optional. If it was set, let's notify
+    // the caller with an error.
+    if (error_callback) {
+      Filesystem()->ReportError(
+          WTF::BindOnce(
+              [](V8ErrorCallback* error_callback, base::File::Error error) {
+                error_callback->InvokeAndReportException(
+                    nullptr, file_error::CreateDOMException(error));
+              },
+              WrapPersistent(error_callback)),
+          base::File::FILE_ERROR_FAILED);
+    }
     return;
   }
 
