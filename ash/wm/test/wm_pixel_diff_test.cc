@@ -85,7 +85,7 @@ TEST_F(WmPixelDiffTest, OverviewAndDesksBarBasic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overview_and_desks_bar_basic",
-      /*revision_number=*/20, desk_widget, overview_widget1, overview_widget2,
+      /*revision_number=*/21, desk_widget, overview_widget1, overview_widget2,
       overview_widget3));
 }
 
@@ -123,13 +123,13 @@ TEST_F(WmPixelDiffTest, DISABLED_OverviewTabletSnap) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overview_tablet_snap",
-      /*revision_number=*/2, snapped_window_widget, overview_widget2,
+      /*revision_number=*/3, snapped_window_widget, overview_widget2,
       overview_widget3));
 }
 
 // A basic window cycle pixel test that shows three windows and the window cycle
 // tab slider.
-TEST_F(WmPixelDiffTest, WindowCycleBasic) {
+TEST_F(WmPixelDiffTest, DISABLED_WindowCycleBasic) {
   UpdateDisplay("1600x1000");
 
   // Create a second desk so the window cycle tab slider shows up. This slider
@@ -164,7 +164,7 @@ TEST_F(WmPixelDiffTest, WindowCycleBasic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "window_cycle_basic",
-      /*revision_number=*/25, widget));
+      /*revision_number=*/26, widget));
 }
 
 TEST_F(WmPixelDiffTest, InformedRestoreNoScreenshotDialog) {

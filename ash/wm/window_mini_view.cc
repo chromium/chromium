@@ -134,10 +134,11 @@ void WindowMiniView::SetBackdropVisibility(bool visible) {
 
     ui::Layer* layer = backdrop_view_->layer();
     layer->SetName("BackdropView");
-
     layer->SetRoundedCornerRadius(gfx::RoundedCornersF(
         0.f, 0.f, kWindowMiniViewCornerRadius, kWindowMiniViewCornerRadius));
     layer->SetIsFastRoundedCorner(true);
+    layer->SetColor(GetColorProvider()->GetColor(cros_tokens::kCrosSysScrim));
+
     backdrop_view_->SetCanProcessEventsWithinSubtree(false);
     DeprecatedLayoutImmediately();
   }
