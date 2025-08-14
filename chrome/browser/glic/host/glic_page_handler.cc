@@ -1567,8 +1567,9 @@ content::RenderFrameHost* GlicPageHandler::GetGuestMainFrame() {
   return web_view_guest ? web_view_guest->GetGuestMainFrame() : nullptr;
 }
 
-void GlicPageHandler::ClosePanel() {
+void GlicPageHandler::ClosePanel(ClosePanelCallback callback) {
   GetGlicService()->ClosePanel();
+  std::move(callback).Run();
 }
 
 void GlicPageHandler::OpenProfilePickerAndClosePanel() {

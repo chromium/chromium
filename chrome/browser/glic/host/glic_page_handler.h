@@ -57,7 +57,7 @@ class GlicPageHandler : public glic::mojom::PageHandler {
   // Called whenever the webview main frame commits.
   void WebviewCommitted(const GURL& origin) override;
 
-  void ClosePanel() override;
+  void ClosePanel(ClosePanelCallback callback) override;
 
   void OpenProfilePickerAndClosePanel() override;
 

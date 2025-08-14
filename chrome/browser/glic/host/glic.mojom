@@ -110,7 +110,7 @@ interface PageHandler {
   WebviewCommitted(url.mojom.Url url);
 
   // Closes the Glic panel.
-  ClosePanel();
+  ClosePanel() => ();
 
   // Opens the profile picker, and closes the Glic panel.
   OpenProfilePickerAndClosePanel();

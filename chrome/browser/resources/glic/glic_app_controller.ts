@@ -649,8 +649,15 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
         $.guestPanel.classList.contains('debug')) {
       $.guestPanel.classList.toggle('debug', false);
       this.setState(WebUiState.kError);
-    } else {
+    } else if (this.state === WebUiState.kReady) {
       this.browserProxy.handler.closePanel();
+    } else {
+      // Reload in the background if user closes window while web client is not
+      // ready. This is an escape hatch for situation where we're stuck in a
+      // loading state caused by an error.
+      this.browserProxy.handler.closePanel().then(() => {
+        this.reload();
+      });
     }
   }
 
