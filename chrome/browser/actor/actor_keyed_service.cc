@@ -365,4 +365,26 @@ Profile* ActorKeyedService::GetProfile() {
   return profile_;
 }
 
+std::vector<TaskId> ActorKeyedService::FindTaskIdsInActive(
+    const base::RepeatingCallback<bool(const ActorTask&)>& predicate) const {
+  std::vector<TaskId> result;
+  for (const auto& [id, task] : active_tasks_) {
+    if (predicate.Run(*task)) {
+      result.push_back(id);
+    }
+  }
+  return result;
+}
+
+std::vector<TaskId> ActorKeyedService::FindTaskIdsInInactive(
+    const base::RepeatingCallback<bool(const ActorTask&)>& predicate) const {
+  std::vector<TaskId> result;
+  for (const auto& [id, task] : inactive_tasks_) {
+    if (predicate.Run(*task)) {
+      result.push_back(id);
+    }
+  }
+  return result;
+}
+
 }  // namespace actor

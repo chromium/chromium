@@ -113,6 +113,15 @@ bool MaybeShowToastViaController(BrowserWindowInterface* bwi) {
   return false;
 }
 
+bool IsRecentlyCompletedTask(const ActorTask& task) {
+  bool is_finished = (task.GetState() == actor::ActorTask::State::kFinished);
+  bool is_not_expired =
+      (base::Time::Now() - task.GetEndTime() <
+       base::Seconds(
+           features::kGlicActorUiCompletedTaskExpiryDelaySeconds.Get()));
+  return is_finished && is_not_expired;
+}
+
 }  // namespace
 
 ActorUiStateManager::ActorUiStateManager(ActorKeyedService& actor_service)
@@ -292,33 +301,34 @@ void ActorUiStateManager::MaybeShowToast(BrowserWindowInterface* bwi) {
     return;
   }
 
-  const auto& active_tasks = actor_service_->GetActiveTasks();
-  const bool has_acting_or_reflecting_task = std::any_of(
-      active_tasks.begin(), active_tasks.end(), [](const auto& task_pair) {
-        return task_pair.second->GetState() == ActorTask::State::kActing ||
-               task_pair.second->GetState() == ActorTask::State::kReflecting;
-      });
+  auto ids = actor_service_->FindTaskIdsInActive(
+      base::BindRepeating([](const ActorTask& task) {
+        return task.GetState() == ActorTask::State::kActing ||
+               task.GetState() == ActorTask::State::kReflecting;
+      }));
 
-  if (has_acting_or_reflecting_task && MaybeShowToastViaController(bwi)) {
+  if (!ids.empty() && MaybeShowToastViaController(bwi)) {
     pref_service->SetInteger(kToastShown, toast_shown_count + 1);
   }
 }
 
 void ActorUiStateManager::MaybeNotifyProfileScopedUiComponents() {
-  const auto& active_tasks = actor_service_->GetActiveTasks();
-  const bool has_actor_paused_task = std::any_of(
-      active_tasks.begin(), active_tasks.end(), [](const auto& task_pair) {
-        return task_pair.second->GetState() == ActorTask::State::kPausedByActor;
-      });
+  auto paused_ids = actor_service_->FindTaskIdsInActive(
+      base::BindRepeating([](const ActorTask& task) {
+        return task.GetState() == ActorTask::State::kPausedByActor;
+      }));
+
+  auto completed_ids = actor_service_->FindTaskIdsInInactive(
+      base::BindRepeating(&IsRecentlyCompletedTask));
 
   // TODO(crbug.com/437161973): Port this over to the dedicated TaskIcon keyed
   // service class.
   TaskIconUiState new_task_icon_state;
-  if (has_actor_paused_task) {
+  if (!paused_ids.empty()) {
     new_task_icon_state = ActorUiStateManager::TaskIconUiState::kNeedsAttention;
-  } else if (!GetCompletedTasks(base::Time::Now()).empty()) {
+  } else if (!completed_ids.empty()) {
     new_task_icon_state = ActorUiStateManager::TaskIconUiState::kCompleteTasks;
-  } else if (!active_tasks.empty()) {
+  } else if (!actor_service_->GetActiveTasks().empty()) {
     new_task_icon_state = ActorUiStateManager::TaskIconUiState::kShown;
   } else {
     new_task_icon_state = ActorUiStateManager::TaskIconUiState::kHidden;
@@ -350,20 +360,6 @@ void ActorUiStateManager::MaybeNotifyProfileScopedUiComponents() {
     }
 #endif
   }
-}
-
-std::vector<TaskId> ActorUiStateManager::GetCompletedTasks(
-    base::Time current_time) const {
-  std::vector<TaskId> completed_tasks;
-  for (const auto& [task_id, task] : actor_service_->GetInactiveTasks()) {
-    if (task->GetState() == ActorTask::State::kFinished &&
-        (current_time - task->GetEndTime() <
-         base::Seconds(
-             features::kGlicActorUiCompletedTaskExpiryDelaySeconds.Get()))) {
-      completed_tasks.push_back(task_id);
-    }
-  }
-  return completed_tasks;
 }
 
 ActorUiStateManager::TaskIconUiState ActorUiStateManager::GetTaskIconUiState()

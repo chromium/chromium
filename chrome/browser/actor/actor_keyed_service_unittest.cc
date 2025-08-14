@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace actor {
@@ -104,6 +105,37 @@ TEST_F(ActorKeyedServiceTest, StopActiveTask) {
   EXPECT_EQ(actor_service->GetInactiveTasks().begin()->second->GetEndTime(),
             base::Time::Now());
   EXPECT_FALSE(task->IsActingOnTab(tabs::TabHandle(123)));
+}
+
+TEST_F(ActorKeyedServiceTest, FindTaskIdsInActive_ReturnsSuccessfully) {
+  auto* actor_service = ActorKeyedService::Get(profile());
+  actor_service->CreateTask();
+  const TaskId id2 = actor_service->CreateTask();
+  actor_service->GetTask(id2)->Pause(/*from_actor=*/true);
+
+  // Find a single active task.
+  std::vector<TaskId> single_found = actor_service->FindTaskIdsInActive(
+      base::BindRepeating([](const ActorTask& task) {
+        return task.GetState() == ActorTask::State::kPausedByActor;
+      }));
+  ASSERT_EQ(single_found.size(), 1u);
+  EXPECT_EQ(single_found[0], id2);
+}
+
+TEST_F(ActorKeyedServiceTest, FindTaskIdsInInactive_ReturnsSuccessfully) {
+  auto* actor_service = ActorKeyedService::Get(profile());
+  const TaskId id1 = actor_service->CreateTask();
+  const TaskId id2 = actor_service->CreateTask();
+  actor_service->StopTask(id1, /*success=*/true);
+  actor_service->StopTask(id2, /*success=*/false);
+
+  // Find a single inactive task.
+  std::vector<TaskId> single_found = actor_service->FindTaskIdsInInactive(
+      base::BindRepeating([](const ActorTask& task) {
+        return task.GetState() == ActorTask::State::kCancelled;
+      }));
+  ASSERT_EQ(single_found.size(), 1u);
+  EXPECT_EQ(single_found[0], id2);
 }
 
 }  // namespace
