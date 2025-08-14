@@ -140,11 +140,6 @@ void SSLClientSocket::RecordSSLConnectResult(
         connect_timing.ssl_end - connect_timing.ssl_start;
     UMA_HISTOGRAM_CUSTOM_TIMES("Net.SSL_Connection_Latency_2", connect_duration,
                                base::Milliseconds(1), base::Minutes(1), 100);
-    if (is_ech_capable) {
-      UMA_HISTOGRAM_CUSTOM_TIMES("Net.SSL_Connection_Latency_ECH",
-                                 connect_duration, base::Milliseconds(1),
-                                 base::Minutes(1), 100);
-    }
     if (trust_anchor_ids_from_dns) {
       base::UmaHistogramCustomTimes("Net.SSL_Connection_Latency_TrustAnchorIDs",
                                     connect_duration, base::Milliseconds(1),
@@ -171,9 +166,6 @@ void SSLClientSocket::RecordSSLConnectResult(
   }
 
   base::UmaHistogramSparse("Net.SSL_Connection_Error", std::abs(result));
-  if (is_ech_capable) {
-    base::UmaHistogramSparse("Net.SSL_Connection_Error_ECH", std::abs(result));
-  }
   if (trust_anchor_ids_from_dns) {
     base::UmaHistogramSparse("Net.SSL_Connection_Error_TrustAnchorIDs",
                              std::abs(result));

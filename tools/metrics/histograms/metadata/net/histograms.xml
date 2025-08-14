@@ -7738,21 +7738,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.SSL_Connection_Error_ECH" enum="NetErrorCodes"
-    expires_after="2025-12-14">
-  <owner>davidben@chromium.org</owner>
-  <owner>trusty-transport@chromium.org</owner>
-  <summary>
-    Counts of specific error codes returned when opening an SSL connection.
-    Recorded for connections to servers that advertise support for Encrypted
-    ClientHello (ECH) in DNS. (Specifically, connections where the HTTPS record
-    used included an ECHConfigList.)
-
-    Warning: this histogram was expired from 2024-07-21 to 2024-10-03; data may
-    be missing.
-  </summary>
-</histogram>
-
 <histogram name="Net.SSL_Connection_Error_TrustAnchorIDs" enum="NetErrorCodes"
     expires_after="2026-06-01">
   <owner>davidben@chromium.org</owner>
@@ -7770,18 +7755,6 @@ chromium-metrics-reviews@google.com.
 
   <owner>agl@chromium.org</owner>
   <summary>Time from when the Connect() starts until it completes.</summary>
-</histogram>
-
-<histogram name="Net.SSL_Connection_Latency_ECH" units="ms"
-    expires_after="2025-08-24">
-  <owner>davidben@chromium.org</owner>
-  <owner>trusty-transport@chromium.org</owner>
-  <summary>
-    Time from when the Connect() starts until it completes. Recorded for
-    successful connections to servers that advertise support for Encrypted
-    ClientHello (ECH) in DNS. (Specifically, connects where the HTTPS record
-    used included an ECHConfigList.)
-  </summary>
 </histogram>
 
 <histogram name="Net.SSL_Connection_Latency_TrustAnchorIDs" units="ms"

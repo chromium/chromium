@@ -1648,10 +1648,6 @@ TEST_F(SSLConnectJobTest, EncryptedClientHello) {
     EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
     EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
 
-    // Whether or not the feature is enabled, we should record data for the
-    // ECH-capable server.
-    histogram_tester.ExpectUniqueSample("Net.SSL_Connection_Error_ECH", OK, 1);
-    histogram_tester.ExpectTotalCount("Net.SSL_Connection_Latency_ECH", 1);
     // The ECH result should only be recorded if ECH was actually enabled.
     if (ech_enabled) {
       histogram_tester.ExpectUniqueSample("Net.SSL.ECHResult",
