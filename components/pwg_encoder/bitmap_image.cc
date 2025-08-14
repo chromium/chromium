@@ -4,8 +4,6 @@
 
 #include "components/pwg_encoder/bitmap_image.h"
 
-#include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 
 namespace pwg_encoder {
@@ -21,19 +19,13 @@ uint8_t* BitmapImage::pixel_data() {
   return base::as_writable_bytes(data_.as_span()).data();
 }
 
-const uint8_t* BitmapImage::pixel_data() const {
-  return base::as_bytes(data_.as_span()).data();
-}
-
 base::span<uint32_t> BitmapImage::pixels() {
   return data_;
 }
 
-const uint8_t* BitmapImage::GetPixel(const gfx::Point& point) const {
-  DCHECK_LT(point.x(), size_.width());
-  DCHECK_LT(point.y(), size_.height());
-  return UNSAFE_TODO(pixel_data() +
-                     (point.y() * size_.width() + point.x()) * channels());
+base::span<const uint32_t> BitmapImage::GetRow(size_t row, bool flip_y) const {
+  size_t actual_row = flip_y ? size_.height() - 1 - row : row;
+  return data_.subspan(size_.width() * actual_row, size_.width());
 }
 
 static_assert(BitmapImage::channels() * sizeof(uint8_t) == sizeof(uint32_t),
