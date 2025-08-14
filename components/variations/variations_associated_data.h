@@ -106,7 +106,7 @@ enum IDCollectionKey {
 
 // Associate a variations::VariationID value with a FieldTrial group for
 // collection |key|. If an id was previously set for |trial_name| and
-// |group_name|, this does nothing. The group is denoted by |trial_name| and
+// |group_name|, it is overwritten. The group is denoted by |trial_name| and
 // |group_name|. This must be called whenever a FieldTrial is prepared (create
 // the trial and append groups) and needs to have a variations::VariationID
 // associated with it so Google servers can recognize the FieldTrial. The
@@ -116,23 +116,15 @@ COMPONENT_EXPORT(VARIATIONS)
 void AssociateGoogleVariationID(IDCollectionKey key,
                                 std::string_view trial_name,
                                 std::string_view group_name,
-                                VariationID id,
+                                VariationID variation_id,
                                 TimeWindow time_window = TimeWindow());
-
-// As above, but overwrites any previously set id. Thread safe.
-COMPONENT_EXPORT(VARIATIONS)
-void AssociateGoogleVariationIDForce(IDCollectionKey key,
-                                     std::string_view trial_name,
-                                     std::string_view group_name,
-                                     VariationID id,
-                                     TimeWindow time_window = TimeWindow());
 
 // As above, but takes an ActiveGroupId hash pair, rather than the string names.
 COMPONENT_EXPORT(VARIATIONS)
-void AssociateGoogleVariationIDForceHashes(
+void AssociateGoogleVariationID(
     IDCollectionKey key,
-    ActiveGroupId active_group,
-    VariationID id,
+    ActiveGroupId active_group_id,
+    VariationID variation_id,
     TimeWindow time_window = TimeWindow());
 
 // Retrieve the variations::VariationID associated with a FieldTrial group for
@@ -151,12 +143,12 @@ VariationID GetGoogleVariationID(
     std::string_view group_name,
     std::optional<base::Time> current_time = std::nullopt);
 
-// Same as GetGoogleVariationID(), but takes in a hashed |active_group| rather
-// than the string trial and group name.
+// Same as GetGoogleVariationID(), but takes in a hashed |active_group_id|
+// rather than the string trial and group name.
 COMPONENT_EXPORT(VARIATIONS)
-VariationID GetGoogleVariationIDFromHashes(
+VariationID GetGoogleVariationID(
     IDCollectionKey key,
-    ActiveGroupId active_group,
+    ActiveGroupId active_group_id,
     std::optional<base::Time> current_time = std::nullopt);
 
 // Given `current_time`, returns the next time that a time windows will start or

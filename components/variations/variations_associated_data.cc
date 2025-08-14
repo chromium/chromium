@@ -71,22 +71,16 @@ class GroupMapAccessor {
 #endif  // DCHECK_IS_ON()
   }
 
-  // Note that this normally only sets the ID for a group the first time, unless
-  // |force| is set to true, in which case it will always override it.
   void AssociateID(IDCollectionKey key,
                    ActiveGroupId group_identifier,
                    VariationID id,
-                   TimeWindow time_window,
-                   bool force) {
+                   TimeWindow time_window) {
     ValidateID(key, group_identifier, id);
 
     base::AutoLock scoped_lock(lock_);
 
     GroupToIDMap* group_to_id_map = GetGroupToIDMap(key);
-    if (force ||
-        group_to_id_map->find(group_identifier) == group_to_id_map->end()) {
-      (*group_to_id_map)[group_identifier] = {id, time_window};
-    }
+    (*group_to_id_map)[group_identifier] = {id, time_window};
   }
 
   VariationID GetID(IDCollectionKey key,
@@ -161,42 +155,33 @@ TimeWindow::TimeWindow(base::Time start, base::Time end)
 void AssociateGoogleVariationID(IDCollectionKey key,
                                 std::string_view trial_name,
                                 std::string_view group_name,
-                                VariationID id,
+                                VariationID variation_id,
                                 TimeWindow time_window) {
-  GroupMapAccessor::GetInstance()->AssociateID(
-      key, MakeActiveGroupId(trial_name, group_name), id, time_window, false);
+  AssociateGoogleVariationID(key, MakeActiveGroupId(trial_name, group_name),
+                             variation_id, time_window);
 }
 
-void AssociateGoogleVariationIDForce(IDCollectionKey key,
-                                     std::string_view trial_name,
-                                     std::string_view group_name,
-                                     VariationID id,
-                                     TimeWindow time_window) {
-  AssociateGoogleVariationIDForceHashes(
-      key, MakeActiveGroupId(trial_name, group_name), id, time_window);
-}
-
-void AssociateGoogleVariationIDForceHashes(IDCollectionKey key,
-                                           ActiveGroupId active_group,
-                                           VariationID id,
-                                           TimeWindow time_window) {
-  GroupMapAccessor::GetInstance()->AssociateID(key, active_group, id,
-                                               time_window, true);
+void AssociateGoogleVariationID(IDCollectionKey key,
+                                ActiveGroupId active_group_id,
+                                VariationID variation_id,
+                                TimeWindow time_window) {
+  GroupMapAccessor::GetInstance()->AssociateID(key, active_group_id,
+                                               variation_id, time_window);
 }
 
 VariationID GetGoogleVariationID(IDCollectionKey key,
                                  std::string_view trial_name,
                                  std::string_view group_name,
                                  std::optional<base::Time> current_time) {
-  return GetGoogleVariationIDFromHashes(
+  return GetGoogleVariationID(
       key, MakeActiveGroupId(trial_name, group_name), current_time);
 }
 
-VariationID GetGoogleVariationIDFromHashes(
+VariationID GetGoogleVariationID(
     IDCollectionKey key,
-    ActiveGroupId active_group,
+    ActiveGroupId active_group_id,
     std::optional<base::Time> current_time) {
-  return GroupMapAccessor::GetInstance()->GetID(key, active_group,
+  return GroupMapAccessor::GetInstance()->GetID(key, active_group_id,
                                                 current_time);
 }
 

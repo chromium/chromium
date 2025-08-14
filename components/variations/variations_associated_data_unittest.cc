@@ -116,16 +116,14 @@ TEST_F(VariationsAssociatedDataTest, NoAssociation) {
   }
 }
 
-// Ensure that the AssociateGoogleVariationIDForce works as expected.
+// Ensure that the overwrite behavior of AssociateGoogleVariationID works as
+// expected.
 TEST_F(VariationsAssociatedDataTest, ForceAssociation) {
   EXPECT_EQ(EMPTY_ID, GetGoogleVariationID(APP, TRIAL, GROUP));
 
   AssociateGoogleVariationID(APP, TRIAL, GROUP, TEST_VALUE_A);
   EXPECT_EQ(TEST_VALUE_A, GetGoogleVariationID(APP, TRIAL, GROUP));
   AssociateGoogleVariationID(APP, TRIAL, GROUP, TEST_VALUE_B);
-  EXPECT_EQ(TEST_VALUE_A, GetGoogleVariationID(APP, TRIAL, GROUP));
-
-  AssociateGoogleVariationIDForce(APP, TRIAL, GROUP, TEST_VALUE_B);
   EXPECT_EQ(TEST_VALUE_B, GetGoogleVariationID(APP, TRIAL, GROUP));
 }
 

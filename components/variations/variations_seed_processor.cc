@@ -117,7 +117,7 @@ void RegisterVariationIds(const Study::Experiment& experiment,
   if (experiment.has_google_app_experiment_id()) {
     const VariationID variation_id =
         static_cast<VariationID>(experiment.google_app_experiment_id());
-    AssociateGoogleVariationIDForce(GOOGLE_APP, trial_name, experiment.name(),
+    AssociateGoogleVariationID(GOOGLE_APP, trial_name, experiment.name(),
                                     variation_id);
   }
 
@@ -136,7 +136,7 @@ void RegisterVariationIds(const Study::Experiment& experiment,
                 experiment.google_web_trigger_experiment_id())
           : static_cast<VariationID>(experiment.google_web_experiment_id());
 
-  AssociateGoogleVariationIDForce(key.value(), trial_name, experiment.name(),
+  AssociateGoogleVariationID(key.value(), trial_name, experiment.name(),
                                   variation_id);
 }
 

@@ -256,8 +256,7 @@ void VariationsIdsProvider::ResetForTesting() {
   variations_headers_map_.clear();
 }
 
-VariationsIdsProvider::VariationsIdsProvider(Mode mode)
-    : mode_(mode) {}
+VariationsIdsProvider::VariationsIdsProvider(Mode mode) : mode_(mode) {}
 
 VariationsIdsProvider::~VariationsIdsProvider() {
   base::FieldTrialList::RemoveObserver(this);
@@ -296,8 +295,8 @@ void VariationsIdsProvider::OnSyntheticTrialsChanged(
 
   synthetic_variation_ids_set_.clear();
   for (const SyntheticTrialGroup& group : groups) {
-    VariationID id = GetGoogleVariationIDFromHashes(
-        GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, group.id());
+    VariationID id =
+        GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, group.id());
     // TODO(crbug.com/40214121): Handle duplicated IDs in such a way that is
     // visible to developers, but non-intrusive to users. See
     // crrev/c/3628020/comments/e278cd12_2bb863ef for discussions.
@@ -305,8 +304,7 @@ void VariationsIdsProvider::OnSyntheticTrialsChanged(
       synthetic_variation_ids_set_.insert(
           VariationIDEntry(id, GOOGLE_WEB_PROPERTIES_ANY_CONTEXT));
     }
-    id = GetGoogleVariationIDFromHashes(GOOGLE_WEB_PROPERTIES_SIGNED_IN,
-                                        group.id());
+    id = GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_SIGNED_IN, group.id());
     if (id != EMPTY_ID) {
       synthetic_variation_ids_set_.insert(
           VariationIDEntry(id, GOOGLE_WEB_PROPERTIES_SIGNED_IN));
@@ -569,8 +567,9 @@ std::vector<VariationID> VariationsIdsProvider::GetVariationsVectorImpl(
   std::vector<VariationID> result;
   result.reserve(all_variation_ids.size());
   for (const VariationIDEntry& entry : all_variation_ids) {
-    if (keys.find(entry.second) != keys.end())
+    if (keys.find(entry.second) != keys.end()) {
       result.push_back(entry.first);
+    }
   }
 
   // Make sure each entry is unique. As a side effect, the output is sorted.

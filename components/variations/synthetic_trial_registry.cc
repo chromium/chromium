@@ -92,7 +92,7 @@ void SyntheticTrialRegistry::RegisterExternalExperiments(
     // Since external experiments are not based on Chrome's low entropy source,
     // they are only sent to Google web properties for signed-in users to make
     // sure they couldn't be used to identify a user that's not signed-in.
-    AssociateGoogleVariationIDForceHashes(
+    AssociateGoogleVariationID(
         GOOGLE_WEB_PROPERTIES_SIGNED_IN, {trial_hash, group_hash},
         static_cast<VariationID>(experiment_id));
     SyntheticTrialGroup entry(
