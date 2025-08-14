@@ -35,6 +35,17 @@ class AndroidPaymentsWindowManagerTestApi {
     return window_manager_->flow_state_->bnpl_context;
   }
 
+  void SetAutofillPaymentsWindowBridge(
+      std::unique_ptr<AutofillPaymentsWindowBridge>
+          autofill_payments_window_bridge) {
+    window_manager_->autofill_payments_window_bridge_ =
+        std::move(autofill_payments_window_bridge);
+  }
+
+  AutofillPaymentsWindowBridge& GetAutofillPaymentsWindowBridge() {
+    return *window_manager_->autofill_payments_window_bridge_;
+  }
+
  private:
   const raw_ref<AndroidPaymentsWindowManager> window_manager_;
 };

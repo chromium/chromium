@@ -57,6 +57,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/ui/autofill/AutofillErrorDialogBridge.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AutofillProgressDialogBridge.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialogBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/ephemeraltab/PaymentsWindowBridge.java",
   ]
 }
 
