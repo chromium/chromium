@@ -24,7 +24,7 @@ Mechanism CreateEnclavePasskey(const std::u16string& user_name,
                                std::optional<base::Time> last_used_time) {
   Mechanism::Credential cred_info(
       {device::AuthenticatorType::kEnclave, kUserId, last_used_time});
-  return Mechanism(std::move(cred_info), user_name, user_name, kSmartphoneIcon,
+  return Mechanism(std::move(cred_info), user_name, kSmartphoneIcon,
                    base::DoNothing());
 }
 
@@ -33,7 +33,7 @@ Mechanism CreatePlatformPasskey(const std::u16string& user_name,
                                 std::optional<base::Time> last_used_time) {
   Mechanism::Credential cred_info(
       {device::AuthenticatorType::kICloudKeychain, kUserId, last_used_time});
-  return Mechanism(std::move(cred_info), user_name, user_name, kSmartphoneIcon,
+  return Mechanism(std::move(cred_info), user_name, kSmartphoneIcon,
                    base::DoNothing());
 }
 
@@ -42,8 +42,8 @@ Mechanism CreatePassword(const std::u16string& user_name,
                          base::Time last_used_time) {
   Mechanism::Type password_data =
       Mechanism::Password(Mechanism::PasswordInfo(last_used_time));
-  return Mechanism(std::move(password_data), user_name, user_name,
-                   kSmartphoneIcon, base::DoNothing());
+  return Mechanism(std::move(password_data), user_name, kSmartphoneIcon,
+                   base::DoNothing());
 }
 
 class MechanismSorterTest : public ::testing::Test {
@@ -66,7 +66,7 @@ class MechanismSorterTest : public ::testing::Test {
         "WebAuthentication.MechanismSorter.SelectedMechanismType",
         deduplicated_type, 1);
   }
-  
+
   MechanismSorter sorter_;
   base::HistogramTester histogram_tester_;
 };

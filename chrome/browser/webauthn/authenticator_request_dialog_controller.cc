@@ -144,30 +144,6 @@ std::u16string GetTransportDescription(AuthenticatorTransport transport) {
   return l10n_util::GetStringUTF16(msg_id);
 }
 
-constexpr int GetMessageIdForTransportShortDescription(
-    AuthenticatorTransport transport) {
-  switch (transport) {
-    case AuthenticatorTransport::kUsbHumanInterfaceDevice:
-      return IDS_WEBAUTHN_TRANSPORT_POPUP_USB;
-    case AuthenticatorTransport::kInternal:
-      return IDS_WEBAUTHN_TRANSPORT_POPUP_INTERNAL;
-    case AuthenticatorTransport::kHybrid:
-      return IDS_WEBAUTHN_TRANSPORT_POPUP_CABLE;
-    case AuthenticatorTransport::kDeprecatedAoa:
-    case AuthenticatorTransport::kBluetoothLowEnergy:
-    case AuthenticatorTransport::kNearFieldCommunication:
-      NOTREACHED();
-  }
-}
-
-std::u16string GetTransportShortDescription(AuthenticatorTransport transport) {
-  const int msg_id = GetMessageIdForTransportShortDescription(transport);
-  if (!msg_id) {
-    return std::u16string();
-  }
-  return l10n_util::GetStringUTF16(msg_id);
-}
-
 constexpr const gfx::VectorIcon& GetTransportIcon(
     AuthenticatorTransport transport) {
   switch (transport) {
@@ -2007,7 +1983,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
       Mechanism::Type mechanism_type = Mechanism::Credential(
           {cred.source, cred.user.id, cred.last_used_time});
       auto& mechanism = model_->mechanisms.emplace_back(
-          mechanism_type, name, name,
+          mechanism_type, name,
           GetMechanismIcon(mechanism_type, ui_presentation()),
           base::BindRepeating(
               base::IgnoreResult(
@@ -2091,7 +2067,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER);
     Mechanism::Type mechanism_type = Mechanism::Enclave();
     Mechanism mechanism(
-        mechanism_type, name, name,
+        mechanism_type, name,
         GetMechanismIcon(mechanism_type, ui_presentation()),
         base::BindRepeating(&AuthenticatorRequestDialogController::StartEnclave,
                             base::Unretained(this)));
@@ -2109,7 +2085,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_SIGN_IN_AGAIN_TITLE);
     Mechanism::Type mechanism_type = Mechanism::SignInAgain();
     Mechanism enclave(
-        mechanism_type, name, name,
+        mechanism_type, name,
         GetMechanismIcon(mechanism_type, ui_presentation()),
         base::BindRepeating(
             &AuthenticatorRequestDialogController::ReauthForSyncRestore,
@@ -2131,7 +2107,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRANSPORT_ICLOUD_KEYCHAIN);
     Mechanism::Type mechanism_type = Mechanism::ICloudKeychain();
     model_->mechanisms.emplace_back(
-        mechanism_type, name, name,
+        mechanism_type, name,
         GetMechanismIcon(mechanism_type, ui_presentation()),
         base::BindRepeating(
             &AuthenticatorRequestDialogController::StartICloudKeychain,
@@ -2167,7 +2143,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
         l10n_util::GetStringUTF16(GetHybridButtonLabel(merge_usb_and_hybrid));
     Mechanism::Type mechanism_type = Mechanism::AddPhone();
     model_->mechanisms.emplace_back(
-        mechanism_type, label, label,
+        mechanism_type, label,
         GetMechanismIcon(mechanism_type, ui_presentation()),
         base::BindRepeating(
             &AuthenticatorRequestDialogController::StartGuidedFlowForAddPhone,
@@ -2187,7 +2163,6 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
     Mechanism::Type mechanism_type = Mechanism::Transport(transport);
     model_->mechanisms.emplace_back(
         mechanism_type, GetTransportDescription(transport),
-        GetTransportShortDescription(transport),
         GetMechanismIcon(mechanism_type, ui_presentation()),
         base::BindRepeating(
             &AuthenticatorRequestDialogController::StartGuidedFlowForTransport,
@@ -2209,7 +2184,7 @@ void AuthenticatorRequestDialogController::AddWindowsButton(
   const std::u16string desc = l10n_util::GetStringUTF16(label);
   Mechanism::Type mechanism_type = Mechanism::WindowsAPI();
   model_->mechanisms.emplace_back(
-      mechanism_type, desc, desc,
+      mechanism_type, desc,
       GetMechanismIcon(mechanism_type, ui_presentation(), transport),
       base::BindRepeating(
           &AuthenticatorRequestDialogController::StartWinNativeApi,
@@ -2464,7 +2439,7 @@ void AuthenticatorRequestDialogController::PopulatePasswords() {
         AuthenticatorRequestDialogModel::Mechanism::PasswordInfo(
             password->date_last_used));
     Mechanism mechanism(
-        mechanism_type, password->username_value, password->username_value,
+        mechanism_type, password->username_value,
         GetMechanismIcon(mechanism_type, ui_presentation()),
         base::BindRepeating(
             &AuthenticatorRequestDialogModel::OnPasswordCredentialSelected,

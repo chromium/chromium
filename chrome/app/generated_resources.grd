@@ -17388,17 +17388,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
       </if>
 
-      <message name="IDS_WEBAUTHN_TRANSPORT_POPUP_USB" desc="Menu item text. The user selects this to verify their identity on a web site (i.e. sign in) using a security key (an external physical device for user authentication) plugged in to the USB port of the computer.">
-        Verify via USB
-      </message>
       <message name="IDS_WEBAUTHN_TRANSPORT_POPUP_PAIR_PHONE" desc="Menu item text. The user selects this to begin the process of pairing with a previously unknown smartphone.">
         Pair with new phone
-      </message>
-      <message name="IDS_WEBAUTHN_TRANSPORT_POPUP_INTERNAL" desc="Menu item text. The user selects this to verify their identity on a web site (i.e. sign in) using a hardware-based authentication mechanism that is built in to the computer, such as a fingerprint reader.">
-        Use this device
-      </message>
-      <message name="IDS_WEBAUTHN_TRANSPORT_POPUP_CABLE" desc="Menu item text. The user selects this to verify their identity on a web site (i.e. sign in) using their phone. They wirelessly connect their phone to their computer over Bluetooth Low Energy, and then use the phone to sign in to web sites on their computer.">
-        Verify via your phone
       </message>
       <message name="IDS_WEBAUTHN_CABLE_ACTIVATE_TITLE" desc="Title of the dialog shown when the user tries to sign-in using a phone as a security key.">
         Check your phone

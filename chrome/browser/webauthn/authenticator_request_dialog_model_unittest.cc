@@ -2446,7 +2446,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest, MechanismsFromUserAccounts) {
   const AuthenticatorRequestDialogModel::Mechanism& mech1 =
       model->mechanisms[0];
   EXPECT_EQ(mech1.name, base::UTF8ToUTF16(*kUser1.name));
-  EXPECT_EQ(mech1.short_name, base::UTF8ToUTF16(*kUser1.name));
   EXPECT_EQ(mech1.description,
             l10n_util::GetStringUTF16(IDS_WEBAUTHN_SOURCE_USB_SECURITY_KEY));
   EXPECT_EQ(mech1.icon, vector_icons::kPasskeyIcon);
@@ -2467,7 +2466,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest, MechanismsFromUserAccounts) {
   const AuthenticatorRequestDialogModel::Mechanism& mech2 =
       model->mechanisms[1];
   EXPECT_EQ(mech2.name, base::UTF8ToUTF16(*kUser2.name));
-  EXPECT_EQ(mech2.short_name, base::UTF8ToUTF16(*kUser2.name));
   EXPECT_EQ(mech2.description,
             l10n_util::GetStringUTF16(IDS_WEBAUTHN_SOURCE_USB_SECURITY_KEY));
   EXPECT_EQ(mech2.icon, vector_icons::kPasskeyIcon);
@@ -2600,8 +2598,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
       ASSERT_NE(win_button_it, model->mechanisms.end());
       EXPECT_EQ(win_button_it->name,
                 l10n_util::GetStringUTF16(test_case.expected_button));
-      EXPECT_EQ(win_button_it->short_name,
-                l10n_util::GetStringUTF16(test_case.expected_button));
       switch (test_case.expected_button) {
         case kHelloOrSk:
         case kHello:
@@ -2660,8 +2656,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
         });
     ASSERT_NE(win_button_it, model->mechanisms.end());
     EXPECT_EQ(win_button_it->name,
-              l10n_util::GetStringUTF16(test_case.expected_button));
-    EXPECT_EQ(win_button_it->short_name,
               l10n_util::GetStringUTF16(test_case.expected_button));
     switch (test_case.expected_button) {
       case kHelloOrSk:

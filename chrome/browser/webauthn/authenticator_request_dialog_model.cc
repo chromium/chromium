@@ -325,13 +325,11 @@ std::ostream& operator<<(std::ostream& os,
 AuthenticatorRequestDialogModel::Mechanism::Mechanism(
     AuthenticatorRequestDialogModel::Mechanism::Type in_type,
     std::u16string in_name,
-    std::u16string in_short_name,
     const gfx::VectorIcon& in_icon,
     base::RepeatingClosure in_callback,
     std::u16string in_display_name)
     : type(std::move(in_type)),
       name(std::move(in_name)),
-      short_name(std::move(in_short_name)),
       display_name(std::move(in_display_name)),
       icon(in_icon),
       callback(std::move(in_callback)) {}

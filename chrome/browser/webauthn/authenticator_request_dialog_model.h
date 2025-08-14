@@ -360,7 +360,6 @@ struct AuthenticatorRequestDialogModel
 
     Mechanism(Type type,
               std::u16string name,
-              std::u16string short_name,
               const gfx::VectorIcon& icon,
               base::RepeatingClosure callback,
               std::u16string display_name = std::u16string());
@@ -371,8 +370,6 @@ struct AuthenticatorRequestDialogModel
 
     const Type type;
     const std::u16string name;
-    // TODO(crbug.com/422394117): This is not used anywhere. Remove it.
-    const std::u16string short_name;
     const std::u16string display_name;
     std::u16string description;
     const raw_ref<const gfx::VectorIcon> icon;
