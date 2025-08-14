@@ -104,12 +104,12 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
       name.StartsWithIgnoringASCIICase("__http-");
   const bool is_host_http_prefix =
       base::FeatureList::IsEnabled(net::features::kPrefixCookieHostHttp) &&
-      name.StartsWithIgnoringASCIICase("__hosthttp-");
+      name.StartsWithIgnoringASCIICase("__host-http-");
   if (is_http_prefix || is_host_http_prefix) {
     StringBuilder builder;
     builder.AppendFormat(
         "Cookies with \"%s\" prefix cannot be set using the CookieStore API.",
-        is_http_prefix ? "__Http-" : "__HostHttp-");
+        is_http_prefix ? "__Http-" : "__Host-Http-");
     exception_state.ThrowTypeError(builder.ToString());
     return nullptr;
   }

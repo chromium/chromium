@@ -763,15 +763,11 @@ CookiePrefix GetCookiePrefix(const std::string& name) {
   constexpr std::string_view kSecurePrefix("__Secure-");
   constexpr std::string_view kHostPrefix("__Host-");
   constexpr std::string_view kHttpPrefix("__Http-");
-  constexpr std::string_view kHostHttpPrefix("__HostHttp-");
+  constexpr std::string_view kHostHttpPrefix("__Host-Http-");
 
   if (base::StartsWith(name, kSecurePrefix,
                        base::CompareCase::INSENSITIVE_ASCII)) {
     return COOKIE_PREFIX_SECURE;
-  }
-  if (base::StartsWith(name, kHostPrefix,
-                       base::CompareCase::INSENSITIVE_ASCII)) {
-    return COOKIE_PREFIX_HOST;
   }
   if (base::StartsWith(name, kHttpPrefix,
                        base::CompareCase::INSENSITIVE_ASCII) &&
@@ -782,6 +778,10 @@ CookiePrefix GetCookiePrefix(const std::string& name) {
                        base::CompareCase::INSENSITIVE_ASCII) &&
       base::FeatureList::IsEnabled(features::kPrefixCookieHostHttp)) {
     return COOKIE_PREFIX_HOSTHTTP;
+  }
+  if (base::StartsWith(name, kHostPrefix,
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+    return COOKIE_PREFIX_HOST;
   }
   return COOKIE_PREFIX_NONE;
 }

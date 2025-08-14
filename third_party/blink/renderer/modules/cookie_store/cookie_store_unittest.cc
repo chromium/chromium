@@ -272,7 +272,7 @@ TEST_F(CookieStoreTest, SetWithHostHttpPrefix) {
   EXPECT_THAT(GetAllCookies(), IsEmpty());
 
   CookieInit* set_options = CookieInit::Create();
-  set_options->setName("__HoStHtTp-name");
+  set_options->setName("__HoSt-HtTp-name");
   set_options->setValue("cookie-value");
   set_options->setDomain("ExAmPlE.CoM");
 
@@ -282,7 +282,8 @@ TEST_F(CookieStoreTest, SetWithHostHttpPrefix) {
   promise_tester.WaitUntilSettled();
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(
-      "Cookies with \"__HostHttp-\" prefix cannot be set using the CookieStore "
+      "Cookies with \"__Host-Http-\" prefix cannot be set using the "
+      "CookieStore "
       "API.",
       exception_state.Message());
   EXPECT_TRUE(promise_tester.IsRejected());

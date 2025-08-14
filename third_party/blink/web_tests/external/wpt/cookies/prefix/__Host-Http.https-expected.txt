@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] __Host-Http: Does not set via DOM 'Secure; Path=/'
-  assert_equals: `__Host-Http-prefixtestcookie=foo1` in `document.cookie` expected false but got true
-[FAIL] __Host-Http: Does not set via HTTP with 'Secure; Path=/'
-  assert_equals: expected (undefined) undefined but got (string) "bar1"
-Harness: the test ran to completion.
-

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] cookieStore.set with __Host-Http- prefix rejects
-  assert_unreached: Should have rejected: undefined Reached unreachable code
-[FAIL] cookieStore.set with __host-http- prefix rejects
-  assert_unreached: Should have rejected: undefined Reached unreachable code
-Harness: the test ran to completion.
-
