@@ -26,7 +26,6 @@ class WebAppFrameToolbarView;
 namespace views {
 class View;
 class Label;
-class Widget;
 }  // namespace views
 
 namespace web_modal {
@@ -80,22 +79,8 @@ class BrowserViewLayout : public views::LayoutManager {
   void set_bookmark_bar(BookmarkBarView* bookmark_bar) {
     bookmark_bar_ = bookmark_bar;
   }
-  void set_contents_border_widget(views::Widget* contents_border_widget) {
-    contents_border_widget_ = contents_border_widget;
-  }
-  views::Widget* contents_border_widget() { return contents_border_widget_; }
 
   void SetUseBrowserContentMinimumSize(bool use_browser_content_minimum_size);
-
-  // Sets the bounds for the contents border.
-  // * If nullopt, no specific bounds are set, and the border will be drawn
-  //   around the entire contents area.
-  // * Otherwise, the blue border will be drawn around the indicated Rect,
-  //   which is in View coordinates.
-  // Note that *whether* the border is drawn is an orthogonal issue;
-  // this function only controls where it's drawn when it is in fact drawn.
-  void SetContentBorderBounds(
-      const std::optional<gfx::Rect>& region_capture_rect);
 
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost();
 
@@ -147,9 +132,6 @@ class BrowserViewLayout : public views::LayoutManager {
   // the bookmark bar and the toolbar.
   void UpdateTopContainerBounds(const gfx::Rect& available_bounds);
 
-  // Layout the contents border, which indicates the tab is being captured.
-  void LayoutContentBorder();
-
   // Returns the minimum acceptable width for the browser web contents. If split
   // view is active, this includes the full split view.
   int GetMinWebContentsWidth() const;
@@ -187,12 +169,6 @@ class BrowserViewLayout : public views::LayoutManager {
   raw_ptr<TabStrip> tab_strip_ = nullptr;
   raw_ptr<BookmarkBarView> bookmark_bar_ = nullptr;
 
-  // The widget displaying a border on top of contents container for
-  // highlighting the content. Not created by default.
-  // TODO(crbug.com/393551539): reset the pointer at appropriate time and
-  // remove the DanglingUntriaged tag.
-  raw_ptr<views::Widget, DanglingUntriaged> contents_border_widget_ = nullptr;
-
   // The host for use in positioning the web contents modal dialog.
   std::unique_ptr<WebContentsModalDialogHostViews> dialog_host_;
 
@@ -202,9 +178,6 @@ class BrowserViewLayout : public views::LayoutManager {
   // The latest contents bounds applied during a layout pass, in screen
   // coordinates.
   gfx::Rect latest_contents_bounds_;
-
-  // Directly tied to SetContentBorderBounds() - more details there.
-  std::optional<gfx::Rect> dynamic_content_border_bounds_;
 
   // The distance the web contents modal dialog is from the top of the dialog
   // host widget.

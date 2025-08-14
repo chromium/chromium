@@ -22,83 +22,54 @@
 #include "ui/views/widget/native_widget_aura.h"
 #endif
 
-namespace {
-class BorderView : public views::View {
- public:
-  BorderView() = default;
-  BorderView(const BorderView&) = delete;
-  BorderView& operator=(const BorderView&) = delete;
-  ~BorderView() override = default;
-
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-
-    constexpr int kContentsBorderThickness = 5;
-    SetBorder(views::CreateSolidBorder(
-        kContentsBorderThickness,
-        GetColorProvider()->GetColor(kColorCapturedTabContentsBorder)));
+ContentsBorderController::ContentsBorderController(BrowserView* browser_view) {
+  for (ContentsContainerView* contents_container_view :
+       browser_view->GetContentsContainerViews()) {
+    border_controllers_.push_back(
+        std::make_unique<ContentsContainerViewBorderController>(
+            contents_container_view, browser_view));
   }
-};
-}  // namespace
-
-ContentsBorderController::ContentsBorderController(BrowserView* browser_view)
-    : browser_view_(browser_view) {
-  active_tab_change_subscription_ =
-      browser_view->browser()->RegisterActiveTabDidChange(
-          base::BindRepeating(&ContentsBorderController::OnActiveTabChanged,
-                              base::Unretained(this)));
 }
 
 ContentsBorderController::~ContentsBorderController() = default;
 
-void ContentsBorderController::AboutToBeDiscarded(
-    content::WebContents* web_contents) {
-  Observe(web_contents);
+ContentsBorderController::ContentsContainerViewBorderController::
+    ContentsContainerViewBorderController(
+        ContentsContainerView* contents_container_view,
+        BrowserView* browser_view)
+    : contents_container_view_(contents_container_view),
+      browser_view_(browser_view) {
+  web_contents_attached_subscription_ =
+      contents_container_view_->GetContentsView()
+          ->AddWebContentsAttachedCallback(base::BindRepeating(
+              &ContentsContainerViewBorderController::OnWebContentsAttached,
+              base::Unretained(this)));
+
+  web_contents_detached_subscription_ =
+      contents_container_view_->GetContentsView()
+          ->AddWebContentsDetachedCallback(base::BindRepeating(
+              &ContentsContainerViewBorderController::OnWebContentsDetached,
+              base::Unretained(this)));
 }
 
-void ContentsBorderController::InitializeBorderWidget() {
-  capture_content_border_widget_ = std::make_unique<views::Widget>();
-  views::Widget::InitParams params(
-      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
-      views::Widget::InitParams::TYPE_POPUP);
-  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  views::Widget* frame = browser_view_->contents_web_view()->GetWidget();
-  params.parent = frame->GetNativeView();
-  params.context = frame->GetNativeWindow();
-  // Make the widget non-top level.
-  params.child = true;
-  params.name = "TabSharingContentsBorder";
-  params.remove_standard_frame = true;
-  // Let events go through to underlying view.
-  params.accept_events = false;
-  params.activatable = views::Widget::InitParams::Activatable::kNo;
-#if BUILDFLAG(IS_WIN)
-  params.native_widget =
-      new views::NativeWidgetAura(capture_content_border_widget_.get());
-#endif  // BUILDFLAG(IS_WIN)
+ContentsBorderController::ContentsContainerViewBorderController::
+    ~ContentsContainerViewBorderController() = default;
 
-  capture_content_border_widget_->Init(std::move(params));
-  capture_content_border_widget_->SetContentsView(
-      std::make_unique<BorderView>());
-  capture_content_border_widget_->SetVisibilityChangedAnimationsEnabled(false);
-  capture_content_border_widget_->SetOpacity(0.50f);
-  browser_view_->set_contents_border_widget(
-      capture_content_border_widget_.get());
-}
-
-void ContentsBorderController::OnActiveTabChanged(
-    BrowserWindowInterface* browser_window_interface) {
-  tabs::TabInterface* const tab_interface =
-      browser_window_interface->GetActiveTabInterface();
+void ContentsBorderController::ContentsContainerViewBorderController::
+    OnWebContentsAttached(views::WebView* web_view) {
   TabCaptureContentsBorderHelper* const contents_border_helper =
       TabCaptureContentsBorderHelper::FromWebContents(
-          tab_interface->GetContents());
-  CHECK(contents_border_helper);
-  Observe(tab_interface->GetContents());
+          web_view->GetWebContents());
+
+  if (!contents_border_helper) {
+    return;
+  }
+
   tab_capture_change_subscription_ =
-      contents_border_helper->AddOnTabCaptureChangeCallback(
-          base::BindRepeating(&ContentsBorderController::OnTabCaptureChange,
-                              base::Unretained(this)));
+      contents_border_helper->AddOnTabCaptureChangeCallback(base::BindRepeating(
+          &ContentsContainerViewBorderController::OnTabCaptureChange,
+          base::Unretained(this)));
+
   const bool is_tab_capturing = contents_border_helper->IsTabCapturing();
   OnTabCaptureChange(is_tab_capturing,
                      is_tab_capturing
@@ -106,19 +77,18 @@ void ContentsBorderController::OnActiveTabChanged(
                          : std::nullopt);
 }
 
-void ContentsBorderController::OnTabCaptureChange(
-    bool is_capturing,
-    std::optional<gfx::Rect> border_location) {
-  if (!browser_view_->contents_border_widget()) {
-    if (is_capturing) {
-      InitializeBorderWidget();
-    } else {
-      return;
-    }
-  }
+void ContentsBorderController::ContentsContainerViewBorderController::
+    OnWebContentsDetached(views::WebView* web_view) {
+  tab_capture_change_subscription_ = base::CallbackListSubscription();
+  OnTabCaptureChange(false, std::nullopt);
+}
 
-  browser_view_->contents_border_widget()->SetVisible(is_capturing);
+void ContentsBorderController::ContentsContainerViewBorderController::
+    OnTabCaptureChange(bool is_capturing,
+                       std::optional<gfx::Rect> border_location) {
   if (is_capturing) {
-    browser_view_->SetContentBorderBounds(border_location);
+    contents_container_view_->ShowCaptureContentsBorder(border_location);
+  } else {
+    contents_container_view_->HideCaptureContentsBorder();
   }
 }

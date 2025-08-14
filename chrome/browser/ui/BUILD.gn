@@ -3751,6 +3751,8 @@ static_library("ui") {
       "views/frame/caption_button_placeholder_container.h",
       "views/frame/contents_border_controller.cc",
       "views/frame/contents_border_controller.h",
+      "views/frame/contents_capture_border_view.cc",
+      "views/frame/contents_capture_border_view.h",
       "views/frame/contents_container_view.cc",
       "views/frame/contents_container_view.h",
       "views/frame/contents_layout_manager.cc",

@@ -9,38 +9,56 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 
 class BrowserView;
-class BrowserWindowInterface;
+class ContentsContainerView;
+
+namespace content {
+class WebContents;
+}
 
 namespace gfx {
 class Rect;
 }
 
 namespace views {
-class Widget;
+class WebView;
 }
 
-// Controller that manages the contents sharing border widget visibility.
-class ContentsBorderController : public content::WebContentsObserver {
+// General controller that manages the ContentsContainerViewBorderController for
+// each ContentsContainerView.
+class ContentsBorderController {
  public:
   explicit ContentsBorderController(BrowserView* browser_view);
-  ~ContentsBorderController() override;
+  ~ContentsBorderController();
 
-  void AboutToBeDiscarded(content::WebContents* web_contents) override;
+  // Manages the border for a single contents container view
+  class ContentsContainerViewBorderController {
+   public:
+    explicit ContentsContainerViewBorderController(
+        ContentsContainerView* contents_container_view,
+        BrowserView* browser_view);
+    ~ContentsContainerViewBorderController();
+
+    void OnWebContentsAttached(views::WebView* web_view);
+    void OnWebContentsDetached(views::WebView* web_view);
+
+    void OnTabCaptureChange(bool is_capturing,
+                            std::optional<gfx::Rect> border_location);
+
+   private:
+    void UpdateWebContentsSubscription(content::WebContents* web_contents);
+
+    raw_ptr<ContentsContainerView> contents_container_view_ = nullptr;
+    raw_ptr<BrowserView> browser_view_ = nullptr;
+    base::CallbackListSubscription web_contents_attached_subscription_;
+    base::CallbackListSubscription web_contents_detached_subscription_;
+    base::CallbackListSubscription tab_capture_change_subscription_;
+  };
 
  private:
-  void InitializeBorderWidget();
-  void OnActiveTabChanged(BrowserWindowInterface* browser_window_interface);
-  void OnTabCaptureChange(bool is_capturing,
-                          std::optional<gfx::Rect> border_location);
-
-  base::CallbackListSubscription active_tab_change_subscription_;
-  base::CallbackListSubscription tab_capture_change_subscription_;
-  raw_ptr<BrowserView> browser_view_ = nullptr;
-  std::unique_ptr<views::Widget> capture_content_border_widget_;
+  std::vector<std::unique_ptr<ContentsContainerViewBorderController>>
+      border_controllers_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_CONTENTS_BORDER_CONTROLLER_H_

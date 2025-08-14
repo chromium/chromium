@@ -198,7 +198,8 @@ content::DesktopMediaID GetDesktopMediaID(Browser* browser, int tab) {
 
 views::Widget* GetContentsBorder(Browser* browser) {
   return BrowserView::GetBrowserViewForBrowser(browser)
-      ->contents_border_widget();
+      ->GetActiveContentsContainerView()
+      ->GetCaptureContentsBorderWidget();
 }
 
 scoped_refptr<MediaStreamCaptureIndicator> GetCaptureIndicator() {

@@ -204,6 +204,11 @@ class BrowserView : public BrowserWindow,
   // Returns the ContentsContainerView for the active tab.
   ContentsContainerView* GetActiveContentsContainerView();
 
+  // Returns the ContentsContainerView that corresponds to `web_contents`.
+  // Returns nullptr if there isn't a corresponding ContentsContainerView.
+  ContentsContainerView* GetContentsContainerViewFor(
+      content::WebContents* web_contents);
+
   // Container for the tabstrip, toolbar, etc.
   TopContainerView* top_container() { return top_container_; }
 
@@ -243,17 +248,6 @@ class BrowserView : public BrowserWindow,
   SidePanel* unified_side_panel() { return unified_side_panel_; }
 
   MultiContentsView* multi_contents_view() { return multi_contents_view_; }
-
-  void set_contents_border_widget(views::Widget* contents_border_widget) {
-    GetBrowserViewLayout()->set_contents_border_widget(contents_border_widget);
-  }
-  views::Widget* contents_border_widget() {
-    return GetBrowserViewLayout()->contents_border_widget();
-  }
-  void SetContentBorderBounds(
-      const std::optional<gfx::Rect>& region_capture_rect) {
-    GetBrowserViewLayout()->SetContentBorderBounds(region_capture_rect);
-  }
 
   TabStripViewInterface* tab_strip_view() const {
     return tab_strip_region_view_.get();

@@ -1238,6 +1238,20 @@ ContentsContainerView* BrowserView::GetActiveContentsContainerView() {
   return contents_container_view_;
 }
 
+ContentsContainerView* BrowserView::GetContentsContainerViewFor(
+    content::WebContents* web_contents) {
+  if (multi_contents_view_) {
+    return multi_contents_view_->GetContentsContainerViewFor(web_contents);
+  }
+
+  if (contents_container_view_->GetContentsView()->GetWebContents() ==
+      web_contents) {
+    return contents_container_view_;
+  }
+
+  return nullptr;
+}
+
 std::vector<ContentsContainerView*> BrowserView::GetContentsContainerViews() {
   return multi_contents_view_
              ? multi_contents_view_->contents_container_views()

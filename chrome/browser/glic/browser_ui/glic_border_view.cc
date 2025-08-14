@@ -21,9 +21,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/context_factory.h"
 #include "content/public/browser/gpu_data_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/color_parser.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
@@ -74,9 +76,12 @@ int64_t TimeTicksToMicroseconds(base::TimeTicks tick) {
   return (tick - base::TimeTicks()).InMicroseconds();
 }
 
-gfx::Insets GetContentsBorderInsets(BrowserView& browser_view) {
+gfx::Insets GetContentsBorderInsets(BrowserView& browser_view,
+                                    content::WebContents* web_contents) {
   gfx::Insets insets_for_contents_border;
-  auto* contents_border = browser_view.contents_border_widget();
+  auto* const contents_border =
+      browser_view.GetContentsContainerViewFor(web_contents)
+          ->GetCaptureContentsBorderWidget();
   if (contents_border && contents_border->IsVisible()) {
     auto* contents_border_view = contents_border->GetContentsView();
     if (contents_border_view && contents_border_view->GetBorder()) {
@@ -171,6 +176,8 @@ class GlicBorderView::BorderViewUpdater : public views::ViewObserver {
   BorderViewUpdater(const BorderViewUpdater&) = delete;
   BorderViewUpdater& operator=(const BorderViewUpdater&) = delete;
   ~BorderViewUpdater() override = default;
+
+  ContentsWebView* contents_web_view() { return contents_web_view_; }
 
   // Called when the focused tab changes with the focused tab data object.
   void OnFocusedTabChanged(const FocusedTabData& focused_tab_data) {
@@ -464,7 +471,8 @@ void GlicBorderView::OnPaint(gfx::Canvas* canvas) {
   // The BrowserView's contents_border_widget() is in its own Widget tree so we
   // need the special treatment.
   gfx::Insets uniform_insets =
-      GetContentsBorderInsets(browser_->GetBrowserView());
+      GetContentsBorderInsets(browser_->GetBrowserView(),
+                              updater_->contents_web_view()->web_contents());
   // Check the contents's border widget insets is uniform.
   CHECK_EQ(uniform_insets.left(), uniform_insets.top());
   CHECK_EQ(uniform_insets.left(), uniform_insets.right());

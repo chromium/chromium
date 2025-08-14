@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 
 #include <memory>
+#include <optional>
 
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
 #include "chrome/browser/enterprise/watermark/watermark_view.h"
@@ -14,10 +15,12 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_capture_border_view.h"
 #include "chrome/browser/ui/views/frame/contents_separator.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
+#include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/common/chrome_features.h"
 #include "components/search/ntp_features.h"
@@ -31,11 +34,17 @@
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/proposed_layout.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/browser_ui/glic_border_view.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "ui/views/widget/native_widget_aura.h"
 #endif
 
 namespace {
@@ -50,7 +59,8 @@ constexpr int kNewTabFooterSeparatorHeight = 1;
 constexpr int kNewTabFooterHeight = 56;
 }  // namespace
 
-ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
+ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
+    : browser_view_(browser_view) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
   SetProperty(views::kElementIdentifierKey, kContentsContainerViewElementId);
 
@@ -263,6 +273,14 @@ void ContentsContainerView::ChildVisibilityChanged(View* child) {
   }
 }
 
+void ContentsContainerView::Layout(PassKey pass_key) {
+  LayoutSuperclass<views::View>(this);
+
+  if (capture_contents_border_widget_) {
+    UpdateCaptureContentsBorderLocation();
+  }
+}
+
 void ContentsContainerView::OnViewBoundsChanged(View* observed_view) {
   if (observed_view == contents_view_) {
     UpdateDevToolsDockedPlacement();
@@ -328,6 +346,91 @@ void ContentsContainerView::UpdateDevToolsDockedPlacement() {
   if (placement != DevToolsDockedPlacement::kUnknown) {
     current_devtools_docked_placement_ = placement;
   }
+}
+
+void ContentsContainerView::ShowCaptureContentsBorder(
+    std::optional<gfx::Rect> border_location) {
+  if (!capture_contents_border_widget_) {
+    CreateCaptureContentsBorder();
+  }
+
+  dynamic_capture_content_border_bounds_ = border_location;
+  capture_contents_border_widget_->Show();
+  UpdateCaptureContentsBorderLocation();
+}
+
+void ContentsContainerView::HideCaptureContentsBorder() {
+  if (capture_contents_border_widget_) {
+    capture_contents_border_widget_->Hide();
+  }
+}
+
+void ContentsContainerView::CreateCaptureContentsBorder() {
+  capture_contents_border_widget_ = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  views::Widget* frame = GetWidget();
+  params.parent = frame->GetNativeView();
+  params.context = frame->GetNativeWindow();
+  // Make the widget non-top level.
+  params.child = true;
+  params.name = "TabSharingContentsBorder";
+  params.remove_standard_frame = true;
+  // Let events go through to underlying view.
+  params.accept_events = false;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
+#if BUILDFLAG(IS_WIN)
+  params.native_widget =
+      new views::NativeWidgetAura(capture_contents_border_widget_.get());
+#endif  // BUILDFLAG(IS_WIN)
+
+  capture_contents_border_widget_->Init(std::move(params));
+  auto contents_capture_border_view =
+      std::make_unique<ContentsCaptureBorderView>();
+  capture_contents_border_widget_->SetContentsView(
+      std::move(contents_capture_border_view));
+  capture_contents_border_widget_->SetVisibilityChangedAnimationsEnabled(false);
+  capture_contents_border_widget_->SetOpacity(0.50f);
+}
+
+void ContentsContainerView::UpdateCaptureContentsBorderLocation() {
+  gfx::Point contents_top_left;
+  views::View::ConvertPointToScreen(this, &contents_top_left);
+  gfx::Rect rect;
+  if (dynamic_capture_content_border_bounds_) {
+    rect = gfx::Rect(
+        contents_top_left.x() + dynamic_capture_content_border_bounds_->x(),
+        contents_top_left.y() + dynamic_capture_content_border_bounds_->y(),
+        dynamic_capture_content_border_bounds_->width(),
+        dynamic_capture_content_border_bounds_->height());
+  } else {
+    rect = gfx::Rect(contents_top_left.x(), contents_top_left.y(), width(),
+                     height());
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Immersive top container might overlap with the blue border in fullscreen
+  // mode - see crbug.com/1392733. By insetting the bounds rectangle we ensure
+  // that the blue border is always placed below the top container.
+  if (browser_view_->browser()->GetImmersiveModeController()->IsRevealed()) {
+    const int delta =
+        browser_view_->top_container()->bounds().bottom() - rect.y();
+    if (delta > 0) {
+      rect.Inset(gfx::Insets().set_top(delta));
+    }
+  }
+#endif
+
+#if BUILDFLAG(IS_MAC)
+  // Zero sized widgets are not supported on mac.
+  if (rect.IsEmpty()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
+  capture_contents_border_widget_->SetBounds(rect);
 }
 
 views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
