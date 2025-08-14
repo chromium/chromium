@@ -5384,7 +5384,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the elapsed time for successful requests by
     IpProtectionProbabilisticRevealTokenFetcher for a batch of probabilistic
-    reveal tokens.
+    reveal tokens. This represents the total time taken from the moment we call
+    the TokenFetcher until PRTs are available in the browser. This includes the
+    IPC between the browser and the network service, the network request itself
+    (including any scheduling/queuing delay), and the token validation checks.
   </summary>
 </histogram>
 
