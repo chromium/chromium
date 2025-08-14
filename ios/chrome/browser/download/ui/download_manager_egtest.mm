@@ -204,7 +204,13 @@ NSString* kActivityMenuIdentifier = @"ActivityListView";
 }
 
 // Tests accessibility on Download Manager UI when download is complete.
+// TODO(crbug.com/438749917): Flaky on iPhone simulators.
 - (void)testAccessibilityOnCompletedDownloadToolbar {
+#if TARGET_IPHONE_SIMULATOR
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iPhone simulator, crbug.com/438749917");
+  }
+#endif
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:"Download"];
   [ChromeEarlGrey tapWebStateElementWithID:@"download"];
@@ -220,7 +226,13 @@ NSString* kActivityMenuIdentifier = @"ActivityListView";
 }
 
 // Tests that filename label and "Open in Downloads" button are showing.
+// TODO(crbug.com/438749917): Flaky on iPhone simulators.
 - (void)testVisibleFileNameAndOpenInDownloads {
+#if TARGET_IPHONE_SIMULATOR
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iPhone simulator, crbug.com/438749917");
+  }
+#endif
   // Apple is hiding UIActivityViewController's contents from the host app on
   // iPad.
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -255,7 +267,14 @@ NSString* kActivityMenuIdentifier = @"ActivityListView";
 
 // Tests that "Open in..." works if the download ended while waiting in a
 // different tab which also contains a download task.
+// TODO(crbug.com/438749917): Flaky on iPhone simulators.
 - (void)testSwitchTabsAndOpenInDownloads {
+#if TARGET_IPHONE_SIMULATOR
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iPhone simulator, crbug.com/438749917");
+  }
+#endif
+
   // Apple is hiding UIActivityViewController's contents from the host app on
   // iPad.
   if ([ChromeEarlGrey isIPadIdiom]) {
