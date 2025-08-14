@@ -6,11 +6,14 @@
 
 #include <string>
 
-#include "base/strings/string_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "components/application_locale_storage/application_locale_storage.h"
+#include "components/prefs/pref_service.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/variations/service/variations_service.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 ChromeAimEligibilityService::ChromeAimEligibilityService(
     PrefService& pref_service,
