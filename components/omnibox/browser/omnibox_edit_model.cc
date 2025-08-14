@@ -2855,12 +2855,10 @@ void OmniboxEditModel::SetFocusState(OmniboxFocusState state,
   if (state == focus_state_)
     return;
 
-  // Update state and notify view if the omnibox has focus and the caret
-  // visibility changed.
+  // Update state and notify view if the omnibox caret visibility changed.
   const bool was_caret_visible = is_caret_visible();
   focus_state_ = state;
-  if (focus_state_ != OMNIBOX_FOCUS_NONE &&
-      is_caret_visible() != was_caret_visible && view_) {
+  if (is_caret_visible() != was_caret_visible && view_) {
     view_->ApplyCaretVisibility();
   }
 

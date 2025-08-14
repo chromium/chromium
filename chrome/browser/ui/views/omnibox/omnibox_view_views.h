@@ -325,6 +325,10 @@ class OmniboxViewViews
   // DSE placeholder.
   void UpdatePlaceholderTextColor();
 
+  // Returns true if the AIM placeholder text should be visible instead of the
+  // DSE placeholder text.
+  bool ShouldShowAimPlaceholderText() const;
+
   // When true, the location bar view is read only and also is has a slightly
   // different presentation (smaller font size). This is used for popups.
   bool popup_window_mode_;

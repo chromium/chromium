@@ -7530,6 +7530,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_OMNIBOX_PLACEHOLDER_TEXT" desc="The text displayed in the Omnibox when it is empty and unfocused.">
         Search <ph name="SEARCH_ENGINE_NAME">$1<ex>Google</ex></ph> or type a URL
       </message>
+      <message name="IDS_OMNIBOX_AIM_PLACEHOLDER_TEXT" desc="The text displayed in the Omnibox when it is focused with no input and AI Mode is enabled." translateable="false">
+        &#x21E5; Press tab then enter to ask AI Mode
+      </message>
       <if expr="not use_titlecase">
         <message name="IDS_PASTE_AND_GO" desc="The text label of the Paste And Go menu item when the clipboard contains a URL">
           Pa&amp;ste and go to <ph name="URL">$1<ex>http://www.google.com/</ex></ph>
