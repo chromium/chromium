@@ -67,7 +67,7 @@ void ConfigureResourcedPressureThreshold(bool arc_enabled) {
   // multiplication to avoid floating point arithmetic.
   int protected_threshold_limit_bps =
       static_cast<uint32_t>(kProtectedThresholdLimitMb * kRatioToBps /
-                            base::SysInfo::AmountOfPhysicalMemoryMB());
+                            base::SysInfo::AmountOfPhysicalMemory().InMiB());
   if (arc_enabled) {
     experiment_enabled =
         base::FeatureList::IsEnabled(kCrOSMemoryPressureSignalStudyArc);

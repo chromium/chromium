@@ -95,7 +95,7 @@ on_device_model::mojom::DevicePerformanceInfoPtr GetDevicePerformanceInfo(
   const float output_speed = info.output_speed;
   const bool is_integrated_gpu = info.is_integrated_gpu;
 
-  int system_ram = base::SysInfo::AmountOfPhysicalMemoryMB();
+  int system_ram = base::SysInfo::AmountOfPhysicalMemory().InMiB();
   base::UmaHistogramMemoryLargeMB(
       base::StrCat({"OnDeviceModel.SystemRAM.",
                     is_integrated_gpu ? "Integrated" : "Discrete"}),

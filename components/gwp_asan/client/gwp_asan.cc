@@ -583,8 +583,7 @@ void MaybeEnableExtremeLightweightDetector(bool boost_sampling,
   // `base::FeatureList::IsEnabled` gets called so that the finch system applies
   // the experiments to the right devices equally and collects the accurate
   // statistics from the devices.
-  if (base::SysInfo::AmountOfPhysicalMemory() <
-      8ULL * 1024 * 1024 * 1024 /* 8 Gbytes */) {
+  if (base::SysInfo::AmountOfPhysicalMemory() < base::GiB(8)) {
     return;
   }
 #endif  // PA_BUILDFLAG(IS_ANDROID)

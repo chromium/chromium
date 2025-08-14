@@ -100,14 +100,14 @@ std::string SysInfo::OperatingSystemArchitecture() {
 }
 
 // static
-uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
+ByteCount SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
   SystemMemoryInfo info;
   if (!GetSystemMemoryInfo(&info)) {
-    return 0;
+    return ByteCount(0);
   }
   // We should add inactive file-backed memory also but there is no such
   // information from Mac OS unfortunately.
-  return (info.free + info.speculative).InBytesUnsigned();
+  return info.free + info.speculative;
 }
 
 // static

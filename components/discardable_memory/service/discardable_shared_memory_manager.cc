@@ -203,8 +203,9 @@ uint64_t GetDefaultMemoryLimit() {
 #endif
 
   // Allow 25% of physical memory to be used for discardable memory.
-  return std::min(max_default_memory_limit,
-                  base::SysInfo::AmountOfPhysicalMemory() / 4);
+  return std::min(
+      max_default_memory_limit,
+      base::SysInfo::AmountOfPhysicalMemory().InBytesUnsigned() / 4);
 }
 
 const int kEnforceMemoryPolicyDelayMs = 1000;

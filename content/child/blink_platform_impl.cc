@@ -250,7 +250,7 @@ size_t BlinkPlatformImpl::MaxDecodedImageBytes() {
   // that 1.6GB of reported physical memory on a 2GB device is enough to set the
   // limit at 16M pixels, which is a desirable value since 4K*4K is a relatively
   // common texture size.
-  return base::SysInfo::AmountOfPhysicalMemory() / 25;
+  return base::SysInfo::AmountOfPhysicalMemory().InBytes() / 25;
 #else
   size_t max_decoded_image_byte_limit = kNoDecodedImageByteLimit;
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();

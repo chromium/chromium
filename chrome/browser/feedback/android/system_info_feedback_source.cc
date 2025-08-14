@@ -36,11 +36,11 @@ std::string JNI_SystemInfoFeedbackSource_GetGpuModel(JNIEnv* env) {
 
 int JNI_SystemInfoFeedbackSource_GetAvailableMemoryMB(JNIEnv* env) {
   return base::saturated_cast<int>(
-      base::SysInfo::AmountOfAvailablePhysicalMemory() / 1024 / 1024);
+      base::SysInfo::AmountOfAvailablePhysicalMemory().InMiB());
 }
 
 int JNI_SystemInfoFeedbackSource_GetTotalMemoryMB(JNIEnv* env) {
-  return base::SysInfo::AmountOfPhysicalMemoryMB();
+  return base::SysInfo::AmountOfPhysicalMemory().InMiB();
 }
 
 }  // namespace android

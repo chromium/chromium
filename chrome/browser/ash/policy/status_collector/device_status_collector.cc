@@ -2574,12 +2574,13 @@ bool DeviceStatusCollector::GetUsers(em::DeviceStatusReportRequest* status) {
 bool DeviceStatusCollector::GetMemoryInfo(
     em::DeviceStatusReportRequest* status) {
   status->clear_system_ram_free_infos();
-  status->set_system_ram_total(base::SysInfo::AmountOfPhysicalMemory());
+  status->set_system_ram_total(
+      base::SysInfo::AmountOfPhysicalMemory().InBytes());
 
   for (const MemoryUsage& usage : memory_usage_) {
     em::SystemFreeRamInfo* system_ram_free_info =
         status->add_system_ram_free_infos();
-    system_ram_free_info->set_size_in_bytes(usage.bytes_of_ram_free);
+    system_ram_free_info->set_size_in_bytes(usage.bytes_of_ram_free.InBytes());
     system_ram_free_info->set_timestamp(
         usage.timestamp.InMillisecondsSinceUnixEpoch());
   }

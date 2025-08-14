@@ -412,10 +412,8 @@ void FontCache::MaybePreloadSystemFonts() {
     return;
   }
 
-  const int kPhysicalMemoryGB =
-      base::SysInfo::AmountOfPhysicalMemoryMB() / 1024;
-
-  if (kPhysicalMemoryGB < features::kPreloadSystemFontsRequiredMemoryGB.Get()) {
+  if (base::SysInfo::AmountOfPhysicalMemory().InGiB() <
+      features::kPreloadSystemFontsRequiredMemoryGB.Get()) {
     return;
   }
 

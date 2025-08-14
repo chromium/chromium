@@ -39,7 +39,8 @@ bool DeviceHasEnoughMemoryForBackForwardCache() {
         features::kBackForwardCacheMemoryControls,
         "memory_threshold_for_back_forward_cache_in_mb",
         default_memory_threshold_mb);
-    return base::SysInfo::AmountOfPhysicalMemoryMB() > memory_threshold_mb;
+    return base::SysInfo::AmountOfPhysicalMemory().InMiB() >
+           memory_threshold_mb;
   }
 
   // If the feature kBackForwardCacheMemoryControls is not enabled, all the

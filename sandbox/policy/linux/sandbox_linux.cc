@@ -493,7 +493,8 @@ rlim_t GetProcessDataSizeLimit(sandbox::mojom::Sandbox sandbox_type) {
     // Renderer processes are allowed to access 32 GB; the GPU/ODML processes,
     // up to 64 GB.
     constexpr rlim_t GB = 1024 * 1024 * 1024;
-    const rlim_t physical_memory = base::SysInfo::AmountOfPhysicalMemory();
+    const rlim_t physical_memory =
+        base::SysInfo::AmountOfPhysicalMemory().InBytes();
     rlim_t limit;
     if ((sandbox_type == sandbox::mojom::Sandbox::kGpu ||
          sandbox_type == sandbox::mojom::Sandbox::kOnDeviceModelExecution) &&

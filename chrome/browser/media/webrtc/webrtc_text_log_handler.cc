@@ -493,7 +493,7 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
       "Cpu: " + NumberToString(cpu.family()) + "." +
       NumberToString(cpu.model()) + "." + NumberToString(cpu.stepping()) +
       ", x" + NumberToString(base::SysInfo::NumberOfProcessors()) + ", " +
-      NumberToString(base::SysInfo::AmountOfPhysicalMemoryMB()) + "MB");
+      NumberToString(base::SysInfo::AmountOfPhysicalMemory().InMiB()) + "MB");
   LogToCircularBuffer("Cpu brand: " + cpu.cpu_brand());
 
   // Computer model

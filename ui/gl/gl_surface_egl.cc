@@ -988,8 +988,9 @@ bool PbufferGLSurfaceEGL::Initialize(GLSurfaceFormat format) {
   // to use a compatible config. We expect the client to request RGB565
   // onscreen surface also for this to work (with the exception of
   // fullscreen video).
-  if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 512)
+  if (base::SysInfo::AmountOfPhysicalMemory().InMiB() <= 512) {
     format.SetRGB565();
+  }
 #endif
 
   format_ = format;

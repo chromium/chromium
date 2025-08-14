@@ -323,7 +323,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
   // early UI code can register observers, but only start them in
   // PreMainMessageLoopRun because they require other systems like the
   // HostFrameSinkManager to exist.
-  uint64_t system_memory_kb = base::SysInfo::AmountOfPhysicalMemory() / 1024;
+  int64_t system_memory_kb = base::SysInfo::AmountOfPhysicalMemory().InKiB();
   user_performance_tuning_manager_ = base::WrapUnique(
       new performance_manager::user_tuning::UserPerformanceTuningManager(
           g_browser_process->local_state(),

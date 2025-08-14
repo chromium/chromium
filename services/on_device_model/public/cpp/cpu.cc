@@ -26,7 +26,8 @@ bool IsCpuCapable() {
     return true;
   }
   return base::FeatureList::IsEnabled(features::kOnDeviceModelCpuBackend) &&
-         base::SysInfo::AmountOfPhysicalMemoryMB() >= kRAMThreshold.Get() &&
+         base::SysInfo::AmountOfPhysicalMemory().InMiB() >=
+             kRAMThreshold.Get() &&
          base::SysInfo::NumberOfProcessors() >= kProcessorThreshold.Get();
 }
 

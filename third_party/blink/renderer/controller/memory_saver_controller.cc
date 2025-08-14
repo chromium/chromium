@@ -15,12 +15,6 @@
 
 namespace blink {
 
-namespace {
-
-constexpr uint64_t kMB = 1024 * 1024;
-
-}  // namespace
-
 void MemorySaverController::Initialize() {
   DEFINE_STATIC_LOCAL(MemorySaverController, controller, ());
   (void)controller;
@@ -31,7 +25,7 @@ MemorySaverController::MemorySaverController() {
       Thread::MainThread()->Scheduler()->ToMainThreadScheduler();
   DCHECK(scheduler);
   sample_timer_.SetTaskRunner(scheduler->NonWakingTaskRunner());
-  if (base::SysInfo::AmountOfPhysicalMemory() >= 4000 * kMB) {
+  if (base::SysInfo::AmountOfPhysicalMemory() >= base::MiB(4000)) {
     return;
   }
   if (base::FeatureList::IsEnabled(features::kMemorySaverModeRenderTuning)) {
@@ -41,8 +35,10 @@ MemorySaverController::MemorySaverController() {
 }
 
 void MemorySaverController::Sample() {
-  uint64_t available_ram = base::SysInfo::AmountOfAvailablePhysicalMemory();
-  if (available_ram < features::kAvailableMemoryThresholdParamMb.Get() * kMB) {
+  base::ByteCount available_ram =
+      base::SysInfo::AmountOfAvailablePhysicalMemory();
+  if (available_ram.InMiB() <
+      features::kAvailableMemoryThresholdParamMb.Get()) {
     if (!memory_saver_enabled_) {
       SetMemorySaverModeForAllIsolates(true);
       memory_saver_enabled_ = true;

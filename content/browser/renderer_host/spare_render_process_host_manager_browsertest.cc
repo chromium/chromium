@@ -1028,7 +1028,7 @@ class ExtraSpareRenderProcessHostManagerTest
   base::test::ScopedFeatureList scoped_feature_list_;
 
   base::test::ScopedAmountOfPhysicalMemoryOverride
-      scoped_amount_of_physical_memory_override_{8 * 1024};
+      scoped_amount_of_physical_memory_override_{base::GiB(8)};
 };
 
 IN_PROC_BROWSER_TEST_F(ExtraSpareRenderProcessHostManagerTest, ExtraSpares) {
@@ -1111,7 +1111,7 @@ class LowMemoryExtraSpareRenderProcessHostManagerTest
 
  private:
   base::test::ScopedAmountOfPhysicalMemoryOverride
-      scoped_amount_of_physical_memory_override_{2 * 1024};
+      scoped_amount_of_physical_memory_override_{base::GiB(2)};
 };
 
 IN_PROC_BROWSER_TEST_F(LowMemoryExtraSpareRenderProcessHostManagerTest,

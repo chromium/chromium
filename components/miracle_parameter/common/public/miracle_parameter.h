@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_MIRACLE_PARAMETER_COMMON_PUBLIC_MIRACLE_PARAMETER_H_
 #define COMPONENTS_MIRACLE_PARAMETER_COMMON_PUBLIC_MIRACLE_PARAMETER_H_
 
+#include "base/byte_count.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -12,12 +13,12 @@
 
 namespace miracle_parameter {
 
-constexpr int kMiracleParameterMemory512MB = 512;
-constexpr int kMiracleParameterMemory1GB = 1024;
-constexpr int kMiracleParameterMemory2GB = 2 * 1024;
-constexpr int kMiracleParameterMemory4GB = 4 * 1024;
-constexpr int kMiracleParameterMemory8GB = 8 * 1024;
-constexpr int kMiracleParameterMemory16GB = 16 * 1024;
+constexpr base::ByteCount kMiracleParameterMemory512MB = base::MiB(512);
+constexpr base::ByteCount kMiracleParameterMemory1GB = base::GiB(1);
+constexpr base::ByteCount kMiracleParameterMemory2GB = base::GiB(2);
+constexpr base::ByteCount kMiracleParameterMemory4GB = base::GiB(4);
+constexpr base::ByteCount kMiracleParameterMemory8GB = base::GiB(8);
+constexpr base::ByteCount kMiracleParameterMemory16GB = base::GiB(16);
 
 // GetParamNameWithSuffix put a parameter name suffix based on
 // the amount of physical memory.

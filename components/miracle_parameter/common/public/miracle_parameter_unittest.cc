@@ -122,7 +122,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForString) {
 
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory512MB - 1);
+        kMiracleParameterMemory512MB - base::ByteCount(1));
     EXPECT_EQ(kAForLessThan512MB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -136,7 +136,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForString) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory1GB - 1);
+        kMiracleParameterMemory1GB - base::ByteCount(1));
     EXPECT_EQ(kAFor512MBTo1GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -150,7 +150,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForString) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory2GB - 1);
+        kMiracleParameterMemory2GB - base::ByteCount(1));
     EXPECT_EQ(kAFor1GBTo2GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -164,7 +164,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForString) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory4GB - 1);
+        kMiracleParameterMemory4GB - base::ByteCount(1));
     EXPECT_EQ(kAFor2GBTo4GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -178,7 +178,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForString) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory8GB - 1);
+        kMiracleParameterMemory8GB - base::ByteCount(1));
     EXPECT_EQ(kAFor4GBTo8GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -192,7 +192,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForString) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory16GB - 1);
+        kMiracleParameterMemory16GB - base::ByteCount(1));
     EXPECT_EQ(kAFor8GBTo16GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -260,7 +260,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForDouble) {
 
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory512MB - 1);
+        kMiracleParameterMemory512MB - base::ByteCount(1));
     EXPECT_EQ(kAForLessThan512MB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -274,7 +274,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForDouble) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory1GB - 1);
+        kMiracleParameterMemory1GB - base::ByteCount(1));
     EXPECT_EQ(kAFor512MBTo1GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -288,7 +288,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForDouble) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory2GB - 1);
+        kMiracleParameterMemory2GB - base::ByteCount(1));
     EXPECT_EQ(kAFor1GBTo2GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -302,7 +302,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForDouble) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory4GB - 1);
+        kMiracleParameterMemory4GB - base::ByteCount(1));
     EXPECT_EQ(kAFor2GBTo4GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -316,7 +316,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForDouble) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory8GB - 1);
+        kMiracleParameterMemory8GB - base::ByteCount(1));
     EXPECT_EQ(kAFor4GBTo8GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -330,7 +330,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForDouble) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory16GB - 1);
+        kMiracleParameterMemory16GB - base::ByteCount(1));
     EXPECT_EQ(kAFor8GBTo16GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -398,7 +398,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForInt) {
 
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory512MB - 1);
+        kMiracleParameterMemory512MB - base::ByteCount(1));
     EXPECT_EQ(kAForLessThan512MB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -412,7 +412,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForInt) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory1GB - 1);
+        kMiracleParameterMemory1GB - base::ByteCount(1));
     EXPECT_EQ(kAFor512MBTo1GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -426,7 +426,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForInt) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory2GB - 1);
+        kMiracleParameterMemory2GB - base::ByteCount(1));
     EXPECT_EQ(kAFor1GBTo2GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -440,7 +440,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForInt) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory4GB - 1);
+        kMiracleParameterMemory4GB - base::ByteCount(1));
     EXPECT_EQ(kAFor2GBTo4GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -454,7 +454,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForInt) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory8GB - 1);
+        kMiracleParameterMemory8GB - base::ByteCount(1));
     EXPECT_EQ(kAFor4GBTo8GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -468,7 +468,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForInt) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory16GB - 1);
+        kMiracleParameterMemory16GB - base::ByteCount(1));
     EXPECT_EQ(kAFor8GBTo16GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -536,7 +536,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForBool) {
 
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory512MB - 1);
+        kMiracleParameterMemory512MB - base::ByteCount(1));
     EXPECT_EQ(kAForLessThan512MB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -550,7 +550,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForBool) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory1GB - 1);
+        kMiracleParameterMemory1GB - base::ByteCount(1));
     EXPECT_EQ(kAFor512MBTo1GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -564,7 +564,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForBool) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory2GB - 1);
+        kMiracleParameterMemory2GB - base::ByteCount(1));
     EXPECT_EQ(kAFor1GBTo2GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -578,7 +578,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForBool) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory4GB - 1);
+        kMiracleParameterMemory4GB - base::ByteCount(1));
     EXPECT_EQ(kAFor2GBTo4GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -592,7 +592,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForBool) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory8GB - 1);
+        kMiracleParameterMemory8GB - base::ByteCount(1));
     EXPECT_EQ(kAFor4GBTo8GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -606,7 +606,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForBool) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory16GB - 1);
+        kMiracleParameterMemory16GB - base::ByteCount(1));
     EXPECT_EQ(kAFor8GBTo16GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -674,7 +674,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForTimeDelta) {
 
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory512MB - 1);
+        kMiracleParameterMemory512MB - base::ByteCount(1));
     EXPECT_EQ(kAForLessThan512MB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -688,7 +688,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForTimeDelta) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory1GB - 1);
+        kMiracleParameterMemory1GB - base::ByteCount(1));
     EXPECT_EQ(kAFor512MBTo1GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -702,7 +702,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForTimeDelta) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory2GB - 1);
+        kMiracleParameterMemory2GB - base::ByteCount(1));
     EXPECT_EQ(kAFor1GBTo2GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -716,7 +716,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForTimeDelta) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory4GB - 1);
+        kMiracleParameterMemory4GB - base::ByteCount(1));
     EXPECT_EQ(kAFor2GBTo4GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -730,7 +730,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForTimeDelta) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory8GB - 1);
+        kMiracleParameterMemory8GB - base::ByteCount(1));
     EXPECT_EQ(kAFor4GBTo8GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -744,7 +744,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForTimeDelta) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory16GB - 1);
+        kMiracleParameterMemory16GB - base::ByteCount(1));
     EXPECT_EQ(kAFor8GBTo16GB, GetParamA());
     EXPECT_EQ(kBDefault, GetParamB());
     EXPECT_EQ(kCParamValue, GetParamC());
@@ -832,7 +832,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForEnum) {
 
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory512MB - 1);
+        kMiracleParameterMemory512MB - base::ByteCount(1));
     EXPECT_EQ(ParamEnum::kAForLessThan512MB, GetParamA());
     EXPECT_EQ(ParamEnum::kBDefault, GetParamB());
     EXPECT_EQ(ParamEnum::kCParamValue, GetParamC());
@@ -846,7 +846,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForEnum) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory1GB - 1);
+        kMiracleParameterMemory1GB - base::ByteCount(1));
     EXPECT_EQ(ParamEnum::kAFor512MBTo1GB, GetParamA());
     EXPECT_EQ(ParamEnum::kBDefault, GetParamB());
     EXPECT_EQ(ParamEnum::kCParamValue, GetParamC());
@@ -860,7 +860,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForEnum) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory2GB - 1);
+        kMiracleParameterMemory2GB - base::ByteCount(1));
     EXPECT_EQ(ParamEnum::kAFor1GBTo2GB, GetParamA());
     EXPECT_EQ(ParamEnum::kBDefault, GetParamB());
     EXPECT_EQ(ParamEnum::kCParamValue, GetParamC());
@@ -874,7 +874,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForEnum) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory4GB - 1);
+        kMiracleParameterMemory4GB - base::ByteCount(1));
     EXPECT_EQ(ParamEnum::kAFor2GBTo4GB, GetParamA());
     EXPECT_EQ(ParamEnum::kBDefault, GetParamB());
     EXPECT_EQ(ParamEnum::kCParamValue, GetParamC());
@@ -888,7 +888,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForEnum) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory8GB - 1);
+        kMiracleParameterMemory8GB - base::ByteCount(1));
     EXPECT_EQ(ParamEnum::kAFor4GBTo8GB, GetParamA());
     EXPECT_EQ(ParamEnum::kBDefault, GetParamB());
     EXPECT_EQ(ParamEnum::kCParamValue, GetParamC());
@@ -902,7 +902,7 @@ TEST_F(MiracleParameterTest, MiracleParameterForEnum) {
   }
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        kMiracleParameterMemory16GB - 1);
+        kMiracleParameterMemory16GB - base::ByteCount(1));
     EXPECT_EQ(ParamEnum::kAFor8GBTo16GB, GetParamA());
     EXPECT_EQ(ParamEnum::kBDefault, GetParamB());
     EXPECT_EQ(ParamEnum::kCParamValue, GetParamC());

@@ -156,8 +156,9 @@ void PeriodicMetricsService::RecordPeriodicMetrics(
 }
 
 void PeriodicMetricsService::RecordRamUsage() const {
-  int64_t available_ram = base::SysInfo::AmountOfAvailablePhysicalMemory();
-  int64_t total_ram = base::SysInfo::AmountOfPhysicalMemory();
+  int64_t available_ram =
+      base::SysInfo::AmountOfAvailablePhysicalMemory().InBytes();
+  int64_t total_ram = base::SysInfo::AmountOfPhysicalMemory().InBytes();
   ReportUsedPercentage(kKioskRamUsagePercentageHistogram, available_ram,
                        total_ram);
 }
