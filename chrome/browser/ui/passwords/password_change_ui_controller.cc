@@ -423,22 +423,28 @@ void PasswordChangeUIController::ShowDialog(
     return;
   }
 
-  std::unique_ptr<views::BubbleDialogModelHost> model_host =
+  views::BubbleDialogModelHost* model_host =
       views::BubbleDialogModelHost::CreateModal(std::move(dialog_model),
-                                                ui::mojom::ModalType::kChild);
+                                                ui::mojom::ModalType::kChild)
+          .release();
   // TODO(crbug.com/338254375): Remove once it is a default state.
   model_host->SetOwnershipOfNewWidget(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
   auto tab_dialog_params = std::make_unique<tabs::TabDialogManager::Params>();
   tab_dialog_params->close_on_navigate = false;
-  dialog_widget_ = tab_interface_->GetTabFeatures()
-                       ->tab_dialog_manager()
-                       ->CreateAndShowDialog(model_host.release(),
-                                             std::move(tab_dialog_params));
+  dialog_widget_ =
+      tab_interface_->GetTabFeatures()
+          ->tab_dialog_manager()
+          ->CreateAndShowDialog(model_host, std::move(tab_dialog_params));
   dialog_widget_->MakeCloseSynchronous(
       base::BindOnce(&PasswordChangeUIController::CloseDialogWidget,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  views::View* focused_view = model_host->GetInitiallyFocusedView();
+  if (focused_view) {
+    focused_view->RequestFocus();
+  }
 }
 
 void PasswordChangeUIController::OnToastCanceled() {
