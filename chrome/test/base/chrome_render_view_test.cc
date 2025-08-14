@@ -41,6 +41,11 @@
 #include "extensions/common/extension.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/common/chrome_features.h"
+#include "chrome/renderer/process_state.h"  // nogncheck
+#endif
+
 using autofill::AutofillAgent;
 using autofill::PasswordAutofillAgent;
 using autofill::PasswordGenerationAgent;
@@ -64,6 +69,15 @@ void ChromeRenderViewTest::SetUp() {
   ChromeUnitTestSuite::InitializeResourceBundle();
 
   registry_ = std::make_unique<service_manager::BinderRegistry>();
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Initialize instant process state since tests bypass normal process setup.
+  // When kInstantUsesSpareRenderer is enabled, IsInstantProcess() requires the
+  // optional value to be initialized, otherwise it will CHECK-fail.
+  if (base::FeatureList::IsEnabled(features::kInstantUsesSpareRenderer)) {
+    process_state::SetIsInstantProcess(false);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // TODO(crbug.com/41401202): Before this SetUp, the test agents defined at the
   // end of this method should be injected into the creation of RenderViewImpl.

@@ -277,6 +277,10 @@ static_library("test_support") {
     "base/web_ui_test_data_source.h",
   ]
 
+  if (!is_android) {
+    public_deps += [ "//chrome/renderer:process_state" ]
+  }
+
   if (enable_dice_support) {
     deps += [ "//chrome/browser/profiles/batch_upload:test_support" ]
   }
@@ -9562,6 +9566,7 @@ test("unit_tests") {
       "//chrome/common/extensions:extension_features_unittest",
       "//chrome/common/extensions/api",
       "//chrome/common/safe_browsing:proto",
+      "//chrome/renderer:process_state",
       "//chrome/renderer/extensions",
       "//chrome/utility/image_writer:unit_tests",
       "//components/app_icon_loader",

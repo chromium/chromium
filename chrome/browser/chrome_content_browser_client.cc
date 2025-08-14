@@ -351,6 +351,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/google_api_keys.h"
 #include "gpu/config/gpu_switches.h"
+#include "ipc/ipc_channel_proxy.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
@@ -1000,6 +1001,17 @@ GetNoStatePrefetchCanceler(
           canceler.InitWithNewPipeAndPassReceiver());
   return canceler;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+mojo::AssociatedRemote<chrome::mojom::RendererConfiguration>
+GetRendererConfiguration(content::RenderProcessHost* render_process_host) {
+  IPC::ChannelProxy* channel = render_process_host->GetChannel();
+  mojo::AssociatedRemote<chrome::mojom::RendererConfiguration>
+      renderer_configuration;
+  channel->GetRemoteAssociatedInterface(&renderer_configuration);
+  return renderer_configuration;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 bool ShouldHonorPolicies() {
 #if BUILDFLAG(IS_WIN)
@@ -1878,6 +1890,27 @@ GURL ChromeContentBrowserClient::GetEffectiveURL(
 #endif
 }
 
+void ChromeContentBrowserClient::OnRendererProcessLockedStateUpdated(
+    content::RenderProcessHost* host,
+    const GURL& site_url) {
+#if !BUILDFLAG(IS_ANDROID)
+  // If the feature `kInstantUsesSpareRenderer` is not enabled, we continue
+  // relying on the `kInstantProcess` command line switch to handle instant
+  // process related logic.
+  if (!base::FeatureList::IsEnabled(features::kInstantUsesSpareRenderer)) {
+    return;
+  }
+  chrome::mojom::StaticParamsPtr params = chrome::mojom::StaticParams::New();
+  Profile* profile = Profile::FromBrowserContext(host->GetBrowserContext());
+  if (search::ShouldAssignURLToInstantRenderer(site_url, profile)) {
+    params->is_instant_process = true;
+  }
+  auto renderer_configuration = GetRendererConfiguration(host);
+  renderer_configuration->SetConfigurationOnProcessLockUpdate(
+      std::move(params));
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
 bool ChromeContentBrowserClient::
     ShouldCompareEffectiveURLsForSiteInstanceSelection(
         content::BrowserContext* browser_context,
@@ -1995,11 +2028,15 @@ bool ChromeContentBrowserClient::ShouldUseSpareRenderProcessHost(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Instant renderers should not use a spare process, because they require
-  // passing switches::kInstantProcess to the renderer process when it
-  // launches.  A spare process is launched earlier, before it is known which
-  // navigation will use it, so it lacks this flag.
-  if (search::ShouldAssignURLToInstantRenderer(site_url, profile)) {
+  // Instant renderers passed by command line should not use a spare process,
+  // because they require passing switches::kInstantProcess to the renderer
+  // process when it launches. A spare process is launched earlier, before
+  // it is known which navigation will use it, so it lacks this flag. But
+  // with the feature kInstantUsesSpareRenderer enabled, the instant process
+  // is passed later in ProcessLock status changed, we can pass the flag
+  // to spare process.
+  if (search::ShouldAssignURLToInstantRenderer(site_url, profile) &&
+      !base::FeatureList::IsEnabled(features::kInstantUsesSpareRenderer)) {
     // The NTP page chrome://new-tab-page and chrome://new-tab-page-third-party
     // are using WebUI and will not use instant renderer.
     // The only usecase is chrome-search:// URLs.
@@ -2295,8 +2332,18 @@ bool ChromeContentBrowserClient::IsSuitableHost(
         instant_service->IsInstantProcess(process_host->GetDeprecatedID());
     bool should_be_in_instant_process =
         search::ShouldAssignURLToInstantRenderer(site_url, profile);
-    if (is_instant_process || should_be_in_instant_process) {
-      return is_instant_process && should_be_in_instant_process;
+    if (is_instant_process) {
+      return should_be_in_instant_process;
+    }
+    if (should_be_in_instant_process) {
+      // If the host is a spare process that was used for instant URLs,
+      // `IsInstantProcess` is false as `InstantService::AddInstantProcess`
+      // hasn't been called yet. In this case, it's safe to allow the site
+      // to be in the spare process.
+      bool is_spare_taken =
+          (base::FeatureList::IsEnabled(features::kInstantUsesSpareRenderer) &&
+           process_host->HostHasNotBeenUsed());
+      return is_instant_process || is_spare_taken;
     }
   }
 #endif
@@ -2840,7 +2887,8 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       InstantService* instant_service =
           InstantServiceFactory::GetForProfile(profile);
       if (instant_service &&
-          instant_service->IsInstantProcess(process->GetDeprecatedID())) {
+          instant_service->IsInstantProcess(process->GetDeprecatedID()) &&
+          !base::FeatureList::IsEnabled(features::kInstantUsesSpareRenderer)) {
         command_line->AppendSwitch(switches::kInstantProcess);
       }
 

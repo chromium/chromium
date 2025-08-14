@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "base/synchronization/lock.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/privacy_budget/identifiability_study_configurator.mojom.h"
 #include "chrome/common/renderer_configuration.mojom.h"
@@ -87,6 +89,15 @@ class ChromeRenderThreadObserver
   };
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Returns whether the renderer process has completed security settings
+  // initialization. A process is considered "ready" when all security
+  // configurations have been applied.See
+  // ChromeContentRendererClient::WaitForProcessReady() for usage.
+  bool IsProcessReady();
+  bool WaitForProcessReady(base::TimeDelta timeout);
+#endif
+
   ChromeRenderThreadObserver();
 
   ChromeRenderThreadObserver(const ChromeRenderThreadObserver&) = delete;
@@ -137,6 +148,11 @@ class ChromeRenderThreadObserver
       mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledHandler>
           bound_session_request_throttled_handler) override;
   void SetConfiguration(chrome::mojom::DynamicParamsPtr params) override;
+#if !BUILDFLAG(IS_ANDROID)
+  void SetConfigurationOnProcessLockUpdate(
+      chrome::mojom::StaticParamsPtr params) override;
+  void OnProcessReady();
+#endif  // !BUILDFLAG(IS_ANDROID)
   void OnRendererConfigurationAssociatedRequest(
       mojo::PendingAssociatedReceiver<chrome::mojom::RendererConfiguration>
           receiver);
@@ -161,6 +177,12 @@ class ChromeRenderThreadObserver
   chrome::mojom::DynamicParamsPtr dynamic_params_
       GUARDED_BY(dynamic_params_lock_);
   mutable base::Lock dynamic_params_lock_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  bool static_renderer_params_set_ = false;
+
+  base::WaitableEvent process_ready_event_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Only set if the ChromeOS merge session was running when the renderer

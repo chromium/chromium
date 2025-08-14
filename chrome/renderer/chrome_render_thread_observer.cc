@@ -33,6 +33,7 @@
 #include "chrome/common/privacy_budget/privacy_budget_settings_provider.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/renderer/process_state.h"
 #include "components/visitedlink/renderer/visitedlink_reader.h"
 #include "content/public/child/child_thread.h"
@@ -67,6 +68,10 @@ using blink::WebCache;
 using blink::WebSecurityPolicy;
 using content::RenderThread;
 
+#if !BUILDFLAG(IS_ANDROID)
+using blink::WebString;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -79,6 +84,20 @@ scoped_refptr<base::SequencedTaskRunner> GetCallbackGroupTaskRunner() {
   return base::SequencedTaskRunner::GetCurrentDefault();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+void MaybeRegisterChromeSearchSchemeDisplayIsolated() {
+  // The Instant process can only display the content but not read it. Other
+  // processes can't display it or read it. (see http://crbug.com/40309067 for
+  // more context on why chrome-search scheme registration is skipped for the
+  // instant process).
+  if (!process_state::IsInstantProcess()) {
+    WebString chrome_search_scheme(
+        WebString::FromASCII(chrome::kChromeSearchScheme));
+    WebSecurityPolicy::RegisterURLSchemeAsDisplayIsolated(chrome_search_scheme);
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -198,7 +217,7 @@ void ChromeRenderThreadObserver::SetInitialConfiguration(
         bound_session_request_throttled_handler) {
   if (content_settings_manager)
     content_settings_manager_.Bind(std::move(content_settings_manager));
-  SetIsIncognitoProcess(is_incognito_process);
+  process_state::SetIsIncognitoProcess(is_incognito_process);
 #if BUILDFLAG(IS_CHROMEOS)
   if (chromeos_listener_receiver) {
     chromeos_listener_ =
@@ -221,6 +240,30 @@ void ChromeRenderThreadObserver::SetConfiguration(
   base::AutoLock lock(dynamic_params_lock_);
   dynamic_params_ = std::move(params);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ChromeRenderThreadObserver::SetConfigurationOnProcessLockUpdate(
+    chrome::mojom::StaticParamsPtr params) {
+  // Ensure static renderer configuration parameters are set once.
+  CHECK(!static_renderer_params_set_);
+  static_renderer_params_set_ = true;
+  process_state::SetIsInstantProcess(params->is_instant_process);
+  MaybeRegisterChromeSearchSchemeDisplayIsolated();
+  OnProcessReady();
+}
+
+void ChromeRenderThreadObserver::OnProcessReady() {
+  process_ready_event_.Signal();
+}
+
+bool ChromeRenderThreadObserver::IsProcessReady() {
+  return process_ready_event_.IsSignaled();
+}
+
+bool ChromeRenderThreadObserver::WaitForProcessReady(base::TimeDelta timeout) {
+  return process_ready_event_.TimedWait(timeout);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void ChromeRenderThreadObserver::ConfigureIdentifiabilityStudy(
     bool meta_experiment_active) {

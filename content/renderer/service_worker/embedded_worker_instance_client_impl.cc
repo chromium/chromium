@@ -18,6 +18,7 @@
 #include "content/child/scoped_child_process_reference.h"
 #include "content/common/features.h"
 #include "content/public/common/content_client.h"
+#include "content/public/renderer/content_renderer_client.h"
 #include "content/renderer/policy_container_util.h"
 #include "content/renderer/service_worker/service_worker_context_client.h"
 #include "content/renderer/worker/fetch_client_settings_object_helpers.h"
@@ -137,6 +138,9 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
             std::move(params->installed_scripts_info->manager_host_remote));
   }
 
+  // Wait for the process has processed the security settings before starting
+  // the worker thread.
+  GetContentClient()->renderer()->WaitForProcessReady();
   auto worker =
       blink::WebEmbeddedWorker::Create(service_worker_context_client_.get());
   service_worker_context_client_->StartWorkerContextOnInitiatorThread(

@@ -26,6 +26,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/startup_data.h"
+#include "chrome/common/renderer_configuration.mojom.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/safe_browsing/buildflags.h"
@@ -38,6 +39,7 @@
 #include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
 #include "media/base/picture_in_picture_events_info.h"
 #include "media/media_buildflags.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_handle.h"
@@ -195,6 +197,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool AllowGpuLaunchRetryOnIOThread() override;
   GURL GetEffectiveURL(content::BrowserContext* browser_context,
                        const GURL& url) override;
+  void OnRendererProcessLockedStateUpdated(content::RenderProcessHost* host,
+                                           const GURL& site_url) override;
   bool ShouldCompareEffectiveURLsForSiteInstanceSelection(
       content::BrowserContext* browser_context,
       content::SiteInstance* candidate_site_instance,

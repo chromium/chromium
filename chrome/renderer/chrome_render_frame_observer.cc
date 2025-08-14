@@ -31,6 +31,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
 #include "chrome/renderer/media/media_feeds.h"
+#include "chrome/renderer/process_state.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/lens/lens_metadata.mojom.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
@@ -325,10 +326,9 @@ void ChromeRenderFrameObserver::DidCommitProvisionalLoad(
 
 void ChromeRenderFrameObserver::DidClearWindowObject() {
 #if !BUILDFLAG(IS_ANDROID)
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  if (command_line.HasSwitch(switches::kInstantProcess))
+  if (process_state::IsInstantProcess()) {
     SearchBoxExtension::Install(render_frame()->GetWebFrame());
+  }
 
   // Install ReadAnythingAppController on render frames with the Read Anything
   // url, which is chrome-untrusted. ReadAnythingAppController installs v8

@@ -168,6 +168,10 @@ bool ContentBrowserClient::ShouldCompareEffectiveURLsForSiteInstanceSelection(
   return true;
 }
 
+void ContentBrowserClient::OnRendererProcessLockedStateUpdated(
+    RenderProcessHost* host,
+    const GURL& site_url) {}
+
 bool ContentBrowserClient::IsExplicitNavigation(ui::PageTransition transition) {
   return transition & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR;
 }

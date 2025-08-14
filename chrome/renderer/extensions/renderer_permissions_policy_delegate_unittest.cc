@@ -10,7 +10,10 @@
 
 #include "base/command_line.h"
 #include "base/test/task_environment.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/renderer/process_state.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/mock_render_thread.h"
 #include "extensions/common/constants.h"
@@ -69,7 +72,12 @@ TEST_F(RendererPermissionsPolicyDelegateTest, CannotScriptWebstore) {
   GURL kAnyUrl("http://example.com/");
   scoped_refptr<const Extension> extension(CreateTestExtension("a"));
   std::string error;
-
+  if (base::FeatureList::IsEnabled(features::kInstantUsesSpareRenderer)) {
+    // If the feature is enabled, we use is_instant_process flag to check.
+    // We need to set the process state to bypass the CHECK as the test code
+    // does not trigger `process_state::SetIsInstantProcess()`;
+    process_state::SetIsInstantProcess(false);
+  }
   EXPECT_TRUE(extension->permissions_data()->CanAccessPage(kAnyUrl, -1, &error))
       << error;
 
@@ -82,6 +90,33 @@ TEST_F(RendererPermissionsPolicyDelegateTest, CannotScriptWebstore) {
   EXPECT_FALSE(
       extension->permissions_data()->CanAccessPage(kAnyUrl, -1, &error))
       << error;
+}
+
+// Tests that CanAccessPage returns false for the instant process.
+TEST_F(RendererPermissionsPolicyDelegateTest, CannotScriptInInstantProcess) {
+  GURL kAnyUrl("http://example.com/");
+  scoped_refptr<const Extension> extension(CreateTestExtension("a"));
+  std::string error;
+  if (base::FeatureList::IsEnabled(features::kInstantUsesSpareRenderer)) {
+    // Pretend we are in the instant process by overriding the instant process
+    // param. We should not be able to execute script.
+    process_state::SetIsInstantProcess(true);
+    EXPECT_FALSE(
+        extension->permissions_data()->CanAccessPage(kAnyUrl, -1, &error))
+        << error;
+    process_state::SetIsInstantProcess(false);
+  } else {
+    // If the feature is not enabled, we still replying on the command line
+    // switch `kInstantProcess`. Pretend we are in the instant process by
+    // adding the command line switches. We should not be able to execute
+    // script.
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitch(switches::kInstantProcess);
+    EXPECT_FALSE(
+        extension->permissions_data()->CanAccessPage(kAnyUrl, -1, &error))
+        << error;
+    command_line->RemoveSwitch(switches::kInstantProcess);
+  }
 }
 
 }  // namespace extensions

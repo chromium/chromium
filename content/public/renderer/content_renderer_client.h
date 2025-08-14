@@ -263,6 +263,12 @@ class CONTENT_EXPORT ContentRendererClient {
                                 bool is_redirect);
 #endif
 
+  // Waits for critical security settings to be processed by the renderer.
+  // These settings (such as cross-origin isolation) are sent via
+  // `RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate()` and must be
+  // in place before the renderer can safely process web content.
+  virtual void WaitForProcessReady();
+
   // Notifies the embedder that the given frame is requesting the resource at
   // `target_url`. If the function returns a valid `new_url`, the request must
   // be updated to use it.

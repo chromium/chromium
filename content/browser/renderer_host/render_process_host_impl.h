@@ -1426,6 +1426,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // and calling through RenderProcessHostObserver::RenderProcessExited.
   bool within_process_died_observer_ = false;
 
+  // Indicates whether OnRendererProcessLockedStateUpdated() has been called for
+  // the renderer process.
+  bool did_update_renderer_locked_state_ = false;
+
   std::unique_ptr<P2PSocketDispatcherHost> p2p_socket_dispatcher_host_;
 
   // Must be accessed on UI thread.

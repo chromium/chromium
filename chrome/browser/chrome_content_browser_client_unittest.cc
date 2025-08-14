@@ -1704,11 +1704,29 @@ TEST_F(ChromeContentBrowserClientTest, ShouldUseSpareRenderProcessHost) {
   EXPECT_EQ(SpareProcessRefusedByEmbedderReason::NoProfile, refused_reason);
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Chrome-search URL
-  EXPECT_FALSE(browser_client.ShouldUseSpareRenderProcessHost(
-      &profile_, GURL("chrome-search://test"), refused_reason));
-  EXPECT_EQ(SpareProcessRefusedByEmbedderReason::InstantRendererForNewTabPage,
-            refused_reason);
+  {
+    // Disable kInstantUsesSpareRenderer flag to verify
+    // that Chrome-search URLs are not using the spare renderer.
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kInstantUsesSpareRenderer);
+    // Chrome-search URL
+    EXPECT_FALSE(browser_client.ShouldUseSpareRenderProcessHost(
+        &profile_, GURL("chrome-search://test"), refused_reason));
+    EXPECT_EQ(SpareProcessRefusedByEmbedderReason::InstantRendererForNewTabPage,
+              refused_reason);
+  }
+  {
+    // Enable kInstantUsesSpareRenderer flag to verify
+    // that Chrome-search URLs can use the spare renderer.
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        features::kInstantUsesSpareRenderer);
+    // Chrome-search URL
+    EXPECT_TRUE(browser_client.ShouldUseSpareRenderProcessHost(
+        &profile_, GURL("chrome-search://test"), refused_reason));
+    EXPECT_FALSE(refused_reason.has_value());
+  }
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

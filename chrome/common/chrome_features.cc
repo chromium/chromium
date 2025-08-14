@@ -1117,6 +1117,13 @@ BASE_FEATURE(kIncompatibleApplicationsWarning,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+// A feature that controls whether Instant uses a spare renderer.
+BASE_FEATURE(kInstantUsesSpareRenderer,
+             "InstantUsesSpareRenderer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Enables Isolated Web App Developer Mode, which allows developers to
 // install untrusted Isolated Web Apps.
 BASE_FEATURE(kIsolatedWebAppDevMode,

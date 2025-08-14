@@ -412,10 +412,17 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Notifies that a BrowserChildProcessHost has been created.
   virtual void BrowserChildProcessHostCreated(BrowserChildProcessHost* host) {}
 
-  // Get the effective URL for the given actual URL, to allow an embedder to
+  // Gets the effective URL for the given actual URL, to allow an embedder to
   // group different url schemes in the same SiteInstance.
   virtual GURL GetEffectiveURL(BrowserContext* browser_context,
                                const GURL& url);
+
+  // Invoked during renderer process lock state transitions (e.g., invalid ->
+  // allows_any_site and allows_any_site -> locked_to_site) and when renderers
+  // are respawned after crashing. Note that this method is gated to be called
+  // only once per renderer to avoid reapplying static renderer settings.
+  virtual void OnRendererProcessLockedStateUpdated(RenderProcessHost* host,
+                                                   const GURL& site_url);
 
   // Returns true if effective URLs should be compared when choosing a
   // SiteInstance for a navigation to |destination_url|.

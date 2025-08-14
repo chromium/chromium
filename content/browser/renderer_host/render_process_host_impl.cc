@@ -3277,11 +3277,20 @@ void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
     }
   }
 
-  if (!process_lock.IsASiteOrOrigin())
-    return;
+  if (process_lock.IsASiteOrOrigin()) {
+    CHECK(process_lock.is_locked_to_site());
+    GetRendererInterface()->SetIsLockedToSite();
+  }
 
-  CHECK(process_lock.is_locked_to_site());
-  GetRendererInterface()->SetIsLockedToSite();
+  // Only notify the renderer once to avoid reapplying static renderer
+  // settings that are intended to be set once.
+  // TODO(http://crbug.com/434735272): — Handle other settings that are
+  // also meant to be applied once but may currently be updated dynamically.
+  if (!did_update_renderer_locked_state_) {
+    GetContentClient()->browser()->OnRendererProcessLockedStateUpdated(
+        this, process_lock.site_url());
+    did_update_renderer_locked_state_ = true;
+  }
 }
 
 bool RenderProcessHostImpl::IsForGuestsOnly() {
@@ -5157,6 +5166,10 @@ void RenderProcessHostImpl::ProcessDied(
   // Make sure no IPCs or mojo calls from the old process get dispatched after
   // it has died.
   ResetIPC();
+
+  // Make sure we can call update the setting for the renderer process
+  // when the process is respawned after a crash.
+  did_update_renderer_locked_state_ = false;
 
   UpdateProcessPriority();
 

@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -26,6 +27,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -62,6 +64,7 @@
 #include "chrome/renderer/net_benchmarking_extension.h"
 #include "chrome/renderer/plugins/non_loadable_plugin_placeholder.h"
 #include "chrome/renderer/plugins/pdf_plugin_placeholder.h"
+#include "chrome/renderer/process_state.h"
 #include "chrome/renderer/supervised_user/supervised_user_error_page_controller_delegate_impl.h"
 #include "chrome/renderer/trusted_vault_encryption_keys_extension.h"
 #include "chrome/renderer/url_loader_throttle_provider_impl.h"
@@ -503,10 +506,27 @@ void ChromeContentRendererClient::RenderThreadStarted() {
         isolated_app_scheme);
   }
 
-  // The Instant process can only display the content but not read it.  Other
-  // processes can't display it or read it.
-  if (!command_line->HasSwitch(switches::kInstantProcess))
+  // The Instant process can only display the content but not read it. Other
+  // processes can't display it or read it. (see http://crbug.com/40309067 for
+  // more context on why chrome-search scheme registration is skipped for the
+  // instant process).
+  bool should_restrict_chrome_search_scheme =
+      !command_line->HasSwitch(switches::kInstantProcess);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // If the feature is enabled, the `kInstantProcess` command line switch is
+  // replaced by the `is_instant_process` flag, which is set later. As a result,
+  // we cannot perform chrome-search scheme registration at this stage. This
+  // registration will instead be handled in
+  // `SetConfigurationOnProcessLockUpdate()` where the instant process flag
+  // has been set.
+  if (base::FeatureList::IsEnabled(features::kInstantUsesSpareRenderer)) {
+    should_restrict_chrome_search_scheme = false;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  if (should_restrict_chrome_search_scheme) {
     WebSecurityPolicy::RegisterURLSchemeAsDisplayIsolated(chrome_search_scheme);
+  }
 
   WebString dom_distiller_scheme(
       WebString::FromASCII(dom_distiller::kDomDistillerScheme));
@@ -703,9 +723,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kInstantProcess) &&
-      render_frame->IsMainFrame()) {
+  if (process_state::IsInstantProcess() && render_frame->IsMainFrame()) {
     new SearchBox(render_frame);
   }
 #endif
@@ -1206,6 +1224,44 @@ ChromeContentRendererClient::GetProtocolHandlerSecurityLevel(
 #else
   return blink::ProtocolHandlerSecurityLevel::kStrict;
 #endif
+}
+
+void ChromeContentRendererClient::WaitForProcessReady() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(features::kInstantUsesSpareRenderer)) {
+    return;
+  }
+
+  bool process_was_ready = chrome_observer_->IsProcessReady();
+  bool is_extension = IsStandaloneContentExtensionProcess();
+  base::UmaHistogramBoolean(
+      is_extension ? "Renderer.ProcessReadyWaitRequired.ExtensionProcess"
+                   : "Renderer.ProcessReadyWaitRequired.RegularProcess",
+      !process_was_ready);
+  if (process_was_ready) {
+    return;
+  }
+
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+  bool ready_within_timeout =
+      chrome_observer_->WaitForProcessReady(base::Seconds(5));
+  // Add DumpWithoutCrashing() if the process did not become ready after 5
+  // seconds. After the timeout, the wait is skipped and execution continues.
+  // TODO(http://crbug.com/434977609): Determine whether a crash should be
+  // triggered after a timeout, as this may pose a security risk.
+  if (!ready_within_timeout) {
+    SCOPED_CRASH_KEY_BOOL("WaitForProcessReady", "IsExtensionProcess",
+                          is_extension);
+    base::debug::DumpWithoutCrashing();
+  }
+
+  base::TimeDelta wait_duration = base::TimeTicks::Now() - start_time;
+  base::UmaHistogramTimes(
+      is_extension ? "Renderer.WaitTimeForProcessReady.ExtensionProcess"
+                   : "Renderer.WaitTimeForProcessReady.RegularProcess",
+      wait_duration);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeContentRendererClient::WillSendRequest(
