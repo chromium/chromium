@@ -206,6 +206,12 @@ const char kAndroidBrowserControlsInVizDescription[] =
     "to top controls.";
 
 #if BUILDFLAG(IS_ANDROID)
+const char kAndroidDesktopDensityName[] = "Android Desktop Density";
+const char kAndroidDesktopDensityDescription[] =
+    "Enables desktop density for some surfaces on Android.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
 const char kAndroidNativePagesInNewTabName[] =
     "Open downloads, history and bookmarks in new tab";
 const char kAndroidNativePagesInNewTabDescription[] =

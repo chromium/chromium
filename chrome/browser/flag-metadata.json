@@ -263,6 +263,11 @@
     "expiry_milestone": 143
   },
   {
+    "name": "android-desktop-density",
+    "owners": [ "sinansahin@google.com", "clank-app-team@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "android-desktop-webprefs-large-display",
     "owners": [ "lokeric@google.com", "clank-large-form-factors@google.com"],
     "expiry_milestone": 145

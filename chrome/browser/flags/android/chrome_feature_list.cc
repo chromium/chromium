@@ -212,6 +212,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidBottomToolbar,
     &kAndroidBottomToolbarV2,
     &kAndroidDataImporterService,
+    &kAndroidDesktopDensity,
     &kAndroidElegantTextHeight,
     &kAndroidFirstRunLaunchBounds,
     &kAndroidNativePagesInNewTab,
@@ -586,6 +587,10 @@ BASE_FEATURE(kAndroidBottomToolbarV2,
 BASE_FEATURE(kAndroidDataImporterService,
              "AndroidDataImporterService",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidDesktopDensity,
+             "AndroidDesktopDensity",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidElegantTextHeight,
              "AndroidElegantTextHeight",

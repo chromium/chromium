@@ -11160,6 +11160,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kAndroidBcivBottomControls)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-desktop-density", flag_descriptions::kAndroidDesktopDensityName,
+     flag_descriptions::kAndroidDesktopDensityDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidDesktopDensity)},
+#endif
+
     {"optimization-guide-enable-dogfood-logging",
      flag_descriptions::kOptimizationGuideEnableDogfoodLoggingName,
      flag_descriptions::kOptimizationGuideEnableDogfoodLoggingDescription,
@@ -12321,10 +12327,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-theme-resource-provider",
      flag_descriptions::kAndroidThemeResourceProviderName,
      flag_descriptions::kAndroidThemeResourceProviderDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kAndroidThemeResourceProvider,
-         kAndroidThemeResourceProviderVariations,
-         "AndroidThemeResourceProvider")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidThemeResourceProvider,
+                                    kAndroidThemeResourceProviderVariations,
+                                    "AndroidThemeResourceProvider")},
     {"display-edge-to-edge-fullscreen",
      flag_descriptions::kDisplayEdgeToEdgeFullscreenName,
      flag_descriptions::kDisplayEdgeToEdgeFullscreenDescription, kOsAndroid,

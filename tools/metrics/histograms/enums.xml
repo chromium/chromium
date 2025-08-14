@@ -9460,6 +9460,7 @@ from previous Chrome versions.
   <int value="-1705323599"
       label="AutofillEnableSupportForNameAndEmail:enabled"/>
   <int value="-1704858964" label="DefaultSiteInstanceGroups:disabled"/>
+  <int value="-1704733015" label="AndroidDesktopDensity:enabled"/>
   <int value="-1704630681" label="MediaAppPdfA11yOcr:enabled"/>
   <int value="-1704472714" label="UseMessagesGoogleComDomain:disabled"/>
   <int value="-1704022650" label="EnableDangerousDownloadDialog:enabled"/>
@@ -10115,6 +10116,7 @@ from previous Chrome versions.
   <int value="-1473878093" label="HideArcMediaNotifications:disabled"/>
   <int value="-1473668019" label="token-binding:disabled"/>
   <int value="-1473537658" label="DeprecateLowUsageCodecs:disabled"/>
+  <int value="-1473345665" label="AndroidDesktopDensity:disabled"/>
   <int value="-1473136627" label="enable-web-payments"/>
   <int value="-1472825316" label="ContextualSearchLongpressResolve:enabled"/>
   <int value="-1472171434" label="HistoryPageHistorySyncPromo:disabled"/>

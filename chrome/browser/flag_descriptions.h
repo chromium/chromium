@@ -126,6 +126,11 @@ extern const char kAndroidBrowserControlsInVizName[];
 extern const char kAndroidBrowserControlsInVizDescription[];
 
 #if BUILDFLAG(IS_ANDROID)
+extern const char kAndroidDesktopDensityName[];
+extern const char kAndroidDesktopDensityDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
 extern const char kAndroidDesktopWebPrefsLargeDisplaysName[];
 extern const char kAndroidDesktopWebPrefsLargeDisplaysDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)

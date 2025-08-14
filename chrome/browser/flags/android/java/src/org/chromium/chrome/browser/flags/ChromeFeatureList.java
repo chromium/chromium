@@ -178,6 +178,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_BOTTOM_TOOLBAR_V2 = "AndroidBottomToolbarV2";
     public static final String ANDROID_COMPOSEPLATE = "AndroidComposeplate";
     public static final String ANDROID_DATA_IMPORTER_SERVICE = "AndroidDataImporterService";
+    public static final String ANDROID_DESKTOP_DENSITY = "AndroidDesktopDensity";
     public static final String ANDROID_ELEGANT_TEXT_HEIGHT = "AndroidElegantTextHeight";
     public static final String ANDROID_FIRST_RUN_LAUNCH_BOUNDS = "AndroidFirstRunLaunchBounds";
     public static final String ANDROID_MINIMAL_UI_LARGE_SCREEN = "AndroidMinimalUiLargeScreen";
@@ -730,6 +731,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_COMPOSEPLATE, false, true);
     public static final CachedFlag sAndroidDataImporterService =
             newCachedFlag(ANDROID_DATA_IMPORTER_SERVICE, true);
+    public static final CachedFlag sAndroidDesktopDensity =
+            newCachedFlag(ANDROID_DESKTOP_DENSITY, false);
     public static final CachedFlag sAndroidElegantTextHeight =
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, true);
     public static final CachedFlag sAndroidMinimalUiLargeScreen =
@@ -1095,6 +1098,7 @@ public abstract class ChromeFeatureList {
                     sAndroidBottomToolbarV2,
                     sAndroidComposeplate,
                     sAndroidDataImporterService,
+                    sAndroidDesktopDensity,
                     sAndroidElegantTextHeight,
                     sAndroidMinimalUiLargeScreen,
                     sAndroidOpenIncognitoAsWindow,
