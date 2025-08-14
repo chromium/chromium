@@ -4946,6 +4946,9 @@ enum WebFeature {
   kV8CookieListItem_Secure_AttributeGetter = 5635,
   kV8CookieListItem_SameSite_AttributeGetter = 5636,
   kV8CookieListItem_Partitioned_AttributeGetter = 5637,
+  kWebkitLineClampWithHeight = 5638,
+  kLineClampAuto = 5639,
+  kLineClampByLinesAndHeight = 5640,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

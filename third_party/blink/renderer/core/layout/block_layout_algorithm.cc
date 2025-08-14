@@ -760,6 +760,24 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
             (BorderScrollbarPadding().block_start + clamp_bfc_offset)
                 .ClampNegativeToZero();
       }
+
+      if (clamp_bfc_offset != kIndefiniteSize) {
+        if (!RuntimeEnabledFeatures::CSSLineClampEnabled()) {
+          clamp_bfc_offset = kIndefiniteSize;
+        }
+
+        WebFeature use_counter_feature;
+        if (Style().WebkitLineClamp() != 0 ||
+            Style().Continue() == EContinue::kWebkitLegacy) {
+          use_counter_feature = WebFeature::kWebkitLineClampWithHeight;
+        } else if (Style().LineClamp() == 0) {
+          use_counter_feature = WebFeature::kLineClampAuto;
+        } else {
+          use_counter_feature = WebFeature::kLineClampByLinesAndHeight;
+        }
+        UseCounter::Count(Node().GetDocument(), use_counter_feature);
+      }
+
       line_clamp_data_.UpdateFromStyle(Style().LineClamp(), clamp_bfc_offset);
     }
   } else {

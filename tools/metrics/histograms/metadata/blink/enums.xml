@@ -6269,6 +6269,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5635" label="V8CookieListItem_Secure_AttributeGetter"/>
   <int value="5636" label="V8CookieListItem_SameSite_AttributeGetter"/>
   <int value="5637" label="V8CookieListItem_Partitioned_AttributeGetter"/>
+  <int value="5638" label="WebkitLineClampWithHeight"/>
+  <int value="5639" label="LineClampAuto"/>
+  <int value="5640" label="LineClampByLinesAndHeight"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
