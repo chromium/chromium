@@ -60,7 +60,7 @@ class LoginStateCheckerTest : public ChromeRenderViewHostTestHarness {
 
   std::unique_ptr<LoginStateChecker> CreateChecker(
       LoginStateChecker::LoginStateResultCallback callback) {
-    return std::make_unique<LoginStateChecker>(web_contents(),
+    return std::make_unique<LoginStateChecker>(web_contents(), nullptr,
                                                std::move(callback));
   }
 

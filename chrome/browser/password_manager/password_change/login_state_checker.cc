@@ -8,9 +8,13 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/proto/features/password_change_submission.pb.h"
+#include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
@@ -19,11 +23,36 @@ blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
   return optimization_guide::DefaultAIPageContentOptions();
 }
 
+using autofill::SavePasswordProgressLogger;
+using password_manager::BrowserSavePasswordProgressLogger;
+
+void LogMessage(password_manager::PasswordManagerClient* client,
+                autofill::SavePasswordProgressLogger::StringID message_id) {
+  if (client && client->GetCurrentLogManager() &&
+      client->GetCurrentLogManager()->IsLoggingActive()) {
+    BrowserSavePasswordProgressLogger(client->GetCurrentLogManager())
+        .LogMessage(message_id);
+  }
+}
+
+void LogBoolean(password_manager::PasswordManagerClient* client,
+                autofill::SavePasswordProgressLogger::StringID message_id,
+                bool value) {
+  if (client && client->GetCurrentLogManager() &&
+      client->GetCurrentLogManager()->IsLoggingActive()) {
+    BrowserSavePasswordProgressLogger(client->GetCurrentLogManager())
+        .LogBoolean(message_id, value);
+  }
+}
+
 }  // namespace
 
-LoginStateChecker::LoginStateChecker(content::WebContents* web_contents,
-                                     LoginStateResultCallback callback)
+LoginStateChecker::LoginStateChecker(
+    content::WebContents* web_contents,
+    password_manager::PasswordManagerClient* client,
+    LoginStateResultCallback callback)
     : content::WebContentsObserver(web_contents),
+      client_(client),
       callback_(std::move(callback)) {
   CheckLoginState();
 }
@@ -38,8 +67,12 @@ void LoginStateChecker::DidFinishNavigation(
 
 void LoginStateChecker::CheckLoginState() {
   CHECK(callback_);
+  LogMessage(client_,
+             SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_STARTED);
   // Checks if the maximum number of attempts has been reached.
   if (state_checks_count_ >= LoginStateChecker::kMaxLoginChecks) {
+    LogMessage(client_, SavePasswordProgressLogger::
+                            STRING_LOGIN_STATE_CHECK_MAX_ATTEMPTS_REACHED);
     std::move(callback_).Run(false);
     return;
   }
@@ -61,6 +94,8 @@ void LoginStateChecker::OnPageContentReceived(
   // Increase the count of login checks.
   state_checks_count_++;
   if (!content) {
+    LogMessage(client_,
+               SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_NO_CONTENT);
     std::move(callback_).Run(false);
     return;
   }
@@ -71,6 +106,8 @@ void LoginStateChecker::OnPageContentReceived(
   *request.mutable_page_context()->mutable_annotated_page_content() =
       std::move(content->proto);
 
+  LogMessage(client_,
+             SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_REQUEST_SENT);
   optimization_guide::ExecuteModelWithLogging(
       GetOptimizationService(),
       optimization_guide::ModelBasedCapabilityKey::kPasswordChangeSubmission,
@@ -85,7 +122,12 @@ void LoginStateChecker::OnExecutionResponseCallback(
         optimization_guide::proto::PasswordChangeSubmissionLoggingData>
         logging_data) {
   CHECK(callback_);
+  LogMessage(
+      client_,
+      SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_RESPONSE_RECEIVED);
   if (!execution_result.response.has_value()) {
+    LogMessage(client_,
+               SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_FAILURE);
     std::move(callback_).Run(false);
     return;
   }
@@ -95,11 +137,16 @@ void LoginStateChecker::OnExecutionResponseCallback(
           optimization_guide::proto::PasswordChangeResponse>(
           execution_result.response.value());
   if (!response) {
+    LogMessage(client_,
+               SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_FAILURE);
     std::move(callback_).Run(false);
     return;
   }
 
   bool is_logged_in = response->is_logged_in_data().is_logged_in();
+  LogBoolean(client_,
+             SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_RESULT,
+             is_logged_in);
   if (is_logged_in) {
     std::move(callback_).Run(true);
   }

@@ -19,6 +19,10 @@ class NavigationHandle;
 class WebContents;
 }  // namespace content
 
+namespace password_manager {
+class PasswordManagerClient;
+}  // namespace password_manager
+
 // Helper class which checks if the user is fully signed in on the main tab
 // before starting a password change flow in a background tab.
 // If the initial check fails, it waits for a navigation to occur before
@@ -30,6 +34,7 @@ class LoginStateChecker : public content::WebContentsObserver {
   using LoginStateResultCallback = base::OnceCallback<void(bool)>;
 
   LoginStateChecker(content::WebContents* web_contents,
+                    password_manager::PasswordManagerClient* client,
                     LoginStateResultCallback callback);
 
   ~LoginStateChecker() override;
@@ -63,7 +68,9 @@ class LoginStateChecker : public content::WebContentsObserver {
           optimization_guide::proto::PasswordChangeSubmissionLoggingData>
           logging_data);
 
-  std::unique_ptr<AnnotatedPageContentCapturer> capturer_ = nullptr;
+  std::unique_ptr<AnnotatedPageContentCapturer> capturer_;
+
+  raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
 
   LoginStateResultCallback callback_;
 

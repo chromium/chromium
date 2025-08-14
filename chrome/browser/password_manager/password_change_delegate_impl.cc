@@ -301,6 +301,7 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
           password_manager::features::kCheckLoginStateBeforePasswordChange)) {
     login_state_checker_ = std::make_unique<LoginStateChecker>(
         originator_.get(),
+        ChromePasswordManagerClient::FromWebContents(originator_),
         base::BindOnce(&PasswordChangeDelegateImpl::OnLoginStateCheckResult,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
