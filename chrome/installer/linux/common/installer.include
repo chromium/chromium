@@ -279,24 +279,23 @@ stage_install_common() {
   fi
 
   # app icons
-  local icon_regex=".*product_logo_[0-9]\+\."
+  local icon_suffix=""
   if [ "$BRANDING" = "google_chrome" ]; then
     if [ "$CHANNEL" = "beta" ]; then
-      icon_regex=".*product_logo_[0-9]\+_beta\."
+      icon_suffix="_beta"
     elif [ "$CHANNEL" = "unstable" ]; then
-      icon_regex=".*product_logo_[0-9]\+_dev\."
+      icon_suffix="_dev"
     elif [ "$CHANNEL" = "canary" ]; then
-      icon_regex=".*product_logo_[0-9]\+_canary\."
+      icon_suffix="_canary"
     fi
   fi
-  LOGO_RESOURCES_PNG=$(find "${OUTPUTDIR}/installer/theme/" \
-    -regextype sed -regex "${icon_regex}png" -printf "%f ")
-  LOGO_RESOURCE_XPM=$(find "${OUTPUTDIR}/installer/theme/" \
-    -regextype sed -regex "${icon_regex}xpm" -printf "%f")
-  for logo in ${LOGO_RESOURCES_PNG} ${LOGO_RESOURCE_XPM}; do
-    install -m 644 \
-      "${OUTPUTDIR}/installer/theme/${logo}" \
-      "${STAGEDIR}/${INSTALLDIR}/"
+  local icon_sizes="16 24 32 48 64 128 256"
+  LOGO_RESOURCES_PNG=""
+  for size in ${icon_sizes}; do
+    local logo="product_logo_${size}${icon_suffix}.png"
+    LOGO_RESOURCES_PNG="${LOGO_RESOURCES_PNG} ${logo}"
+    install -m 644 "${OUTPUTDIR}/installer/theme/${logo}" \
+      "${STAGEDIR}/${INSTALLDIR}"
   done
 
   # desktop integration

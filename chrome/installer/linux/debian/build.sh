@@ -41,7 +41,6 @@ prep_staging_debian() {
   prep_staging_common
   install -m 755 -d "${STAGEDIR}/DEBIAN" \
     "${STAGEDIR}/etc/cron.daily" \
-    "${STAGEDIR}/usr/share/menu" \
     "${STAGEDIR}/usr/share/doc/${USR_BIN_SYMLINK_NAME}"
 }
 
@@ -78,9 +77,6 @@ stage_install_debian() {
   pushd "${STAGEDIR}/etc/cron.daily/" > /dev/null
   ln -snf "${INSTALLDIR}/cron/${PACKAGE}" "${PACKAGE}"
   popd > /dev/null
-  process_template "${OUTPUTDIR}/installer/debian/debian.menu" \
-    "${STAGEDIR}/usr/share/menu/${PACKAGE}.menu"
-  chmod 644 "${STAGEDIR}/usr/share/menu/${PACKAGE}.menu"
   process_template "${OUTPUTDIR}/installer/debian/postinst" \
     "${STAGEDIR}/DEBIAN/postinst"
   chmod 755 "${STAGEDIR}/DEBIAN/postinst"
