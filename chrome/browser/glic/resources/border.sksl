@@ -14,8 +14,22 @@ uniform int u_dark;
 uniform float u_emphasis;
 uniform float u_progress;
 uniform float u_insets;
-uniform float2 u_resolution;
-uniform float4 u_corner_radius;
+uniform float u_float1;
+uniform float u_float2;
+uniform float u_float3;
+uniform float u_float4;
+uniform float u_float5;
+uniform float u_float6;
+uniform float u_float7;
+uniform float u_float8;
+uniform vec2 u_resolution;
+uniform vec4 u_corner_radius;
+uniform vec4 u_color1;
+uniform vec4 u_color2;
+uniform vec4 u_color3;
+uniform vec4 u_color4;
+uniform vec4 u_color5;
+uniform vec4 u_color6;
 
 // Applies a uniform insets to coords.
 float2 InsetsCoord(float2 coord, float2 resolution, float insets) {

@@ -11262,6 +11262,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "glic-parameterized-shader-colors": "#3186FF#346BF1#4FA0FF#FF4641#FFCC00#0EBC5F",
+                        "glic-parameterized-shader-floats": "5#0.1#0.3#0.7#1.0#0.5#0.5#0.3"
+                    },
                     "enable_features": [
                         "GlicAssetsV2",
                         "GlicParameterizedShader"
