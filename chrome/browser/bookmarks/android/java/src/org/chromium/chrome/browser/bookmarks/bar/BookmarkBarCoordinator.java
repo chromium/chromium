@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopContro
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -53,6 +54,7 @@ public class BookmarkBarCoordinator
     private final TopControlsStacker mTopControlsStacker;
     private final Callback<@Nullable Void> mHeightChangeCallback;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final ViewResourceFrameLayout mViewResourceFrameLayout;
 
     /**
      * Constructs the bookmark bar coordinator.
@@ -78,6 +80,8 @@ public class BookmarkBarCoordinator
             ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier,
             TopControlsStacker topControlsStacker) {
         mView = (BookmarkBar) viewStub.inflate();
+        mViewResourceFrameLayout = mView.findViewById(R.id.bookmark_bar_view_resource_frame_layout);
+
         mHeightChangeCallback = heightChangeCallback;
         mView.addOnLayoutChangeListener(this);
 
@@ -89,7 +93,7 @@ public class BookmarkBarCoordinator
                 new PropertyModel.Builder(BookmarkBarButtonProperties.ALL_KEYS).build();
         PropertyModelChangeProcessor.create(
                 allBookmarksButtonModel,
-                mView.findViewById(R.id.bookmark_bar_all_bookmarks_button),
+                mViewResourceFrameLayout.findViewById(R.id.bookmark_bar_all_bookmarks_button),
                 BookmarkBarButtonViewBinder::bind);
 
         // Bind adapter/model and initialize view for bookmark bar items.
@@ -99,7 +103,8 @@ public class BookmarkBarCoordinator
                 BookmarkBarUtils.ViewType.ITEM,
                 this::inflateBookmarkBarButton,
                 BookmarkBarButtonViewBinder::bind);
-        final RecyclerView itemsContainer = mView.findViewById(R.id.bookmark_bar_items_container);
+        final RecyclerView itemsContainer =
+                mViewResourceFrameLayout.findViewById(R.id.bookmark_bar_items_container);
         itemsContainer.setAdapter(mItemsAdapter);
         mBookmarkBarItemsLayoutManager = new BookmarkBarItemsLayoutManager(activity);
         mBookmarkBarItemsLayoutManager.setItemMaxWidth(
@@ -151,12 +156,12 @@ public class BookmarkBarCoordinator
     /** Requests focus within the bookmark bar. */
     public void requestFocus() {
         if (setFocusOnFirstFocusableDescendant(
-                mView.findViewById(R.id.bookmark_bar_items_container))) {
+                mViewResourceFrameLayout.findViewById(R.id.bookmark_bar_items_container))) {
             // If we set focus on a bookmark in the RecyclerView of user bookmarks, we are done.
             return;
         }
         // Otherwise (there were no user bookmarks), focus on the all bookmarks button at the end.
-        setFocus(mView.findViewById(R.id.bookmark_bar_all_bookmarks_button));
+        setFocus(mViewResourceFrameLayout.findViewById(R.id.bookmark_bar_all_bookmarks_button));
     }
 
     /**

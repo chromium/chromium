@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "BookmarkBarCoordinator\.java": [
+    "+components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/ViewResourceFrameLayout.java",
+  ]
+}
