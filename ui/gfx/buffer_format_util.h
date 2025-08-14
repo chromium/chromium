@@ -27,9 +27,6 @@ base::span<const BufferFormat> GetBufferFormatsForTesting();
 COMPONENT_EXPORT(GFX)
 size_t NumberOfPlanesForLinearBufferFormat(BufferFormat format);
 
-// Returns whether |format| is multiplanar.
-COMPONENT_EXPORT(GFX) bool BufferFormatIsMultiplanar(BufferFormat format);
-
 // Returns the subsampling factor applied to the given zero-indexed |plane| of
 // |format| both horizontally and vertically.
 COMPONENT_EXPORT(GFX)

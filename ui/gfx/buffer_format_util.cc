@@ -58,10 +58,6 @@ size_t NumberOfPlanesForLinearBufferFormat(BufferFormat format) {
   NOTREACHED();
 }
 
-bool BufferFormatIsMultiplanar(BufferFormat format) {
-  return NumberOfPlanesForLinearBufferFormat(format) > 1;
-}
-
 size_t SubsamplingFactorForBufferFormat(BufferFormat format, size_t plane) {
   switch (format) {
     case BufferFormat::R_8:
