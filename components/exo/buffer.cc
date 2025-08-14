@@ -90,57 +90,6 @@ SkColorType GetColorTypeForBitmapCreation(viz::SharedImageFormat format) {
   return SkColorType::kUnknown_SkColorType;
 }
 
-// Gets the shared image format equivalent of |buffer_format| used for creating
-// shared image.
-viz::SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format) {
-  viz::SharedImageFormat format;
-  switch (buffer_format) {
-    case gfx::BufferFormat::BGRA_8888:
-      return viz::SinglePlaneFormat::kBGRA_8888;
-    case gfx::BufferFormat::R_8:
-      return viz::SinglePlaneFormat::kR_8;
-    case gfx::BufferFormat::RGBA_8888:
-      return viz::SinglePlaneFormat::kRGBA_8888;
-    case gfx::BufferFormat::RGBA_F16:
-      return viz::SinglePlaneFormat::kRGBA_F16;
-    case gfx::BufferFormat::BGR_565: {
-      UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Buffer.Used_BRG_565", true);
-    }
-      return viz::SinglePlaneFormat::kBGR_565;
-    case gfx::BufferFormat::RGBX_8888:
-      return viz::SinglePlaneFormat::kRGBX_8888;
-    case gfx::BufferFormat::BGRX_8888:
-      return viz::SinglePlaneFormat::kBGRX_8888;
-    case gfx::BufferFormat::RGBA_1010102:
-      return viz::SinglePlaneFormat::kRGBA_1010102;
-    case gfx::BufferFormat::BGRA_1010102:
-      return viz::SinglePlaneFormat::kBGRA_1010102;
-    case gfx::BufferFormat::YVU_420:
-      format = viz::MultiPlaneFormat::kYV12;
-      break;
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-      format = viz::MultiPlaneFormat::kNV12;
-      break;
-    case gfx::BufferFormat::P010:
-      format = viz::MultiPlaneFormat::kP010;
-      break;
-    case gfx::BufferFormat::R_16:
-    case gfx::BufferFormat::RG_1616:
-    case gfx::BufferFormat::RG_88:
-    case gfx::BufferFormat::RGBA_4444:
-    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
-      NOTREACHED();
-  }
-#if BUILDFLAG(IS_CHROMEOS)
-  // If format is true multiplanar format, we prefer external sampler on
-  // ChromeOS.
-  if (format.is_multi_plane()) {
-    format.SetPrefersExternalSampler();
-  }
-#endif
-  return format;
-}
-
 // Helper to create ClientSharedImage.
 gpu::SharedImageInterface* GetSharedImageInterface() {
   ui::ContextFactory* context_factory =
@@ -559,16 +508,20 @@ Buffer::~Buffer() = default;
 std::unique_ptr<Buffer> Buffer::CreateBufferFromGMBHandle(
     gfx::GpuMemoryBufferHandle buffer_handle,
     const gfx::Size& buffer_size,
-    gfx::BufferFormat buffer_format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage buffer_usage,
     unsigned query_type,
     bool use_zero_copy,
     bool is_overlay_candidate,
     bool y_invert) {
+  // If format is true multiplanar format, we prefer external sampler on
+  // ChromeOS.
+  if (format.is_multi_plane()) {
+    format.SetPrefersExternalSampler();
+  }
   return base::WrapUnique(
-      new Buffer(std::move(buffer_handle), GetSharedImageFormat(buffer_format),
-                 buffer_size, buffer_usage, query_type, use_zero_copy,
-                 is_overlay_candidate, y_invert));
+      new Buffer(std::move(buffer_handle), format, buffer_size, buffer_usage,
+                 query_type, use_zero_copy, is_overlay_candidate, y_invert));
 }
 
 // static

@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "components/exo/buffer.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -77,9 +78,9 @@ std::unique_ptr<Buffer> SharedMemory::CreateBuffer(const gfx::Size& size,
   const bool is_overlay_candidate = false;
   const bool y_invert = false;
 
-    return Buffer::CreateBufferFromGMBHandle(
-        std::move(handle), size, format, buffer_usage, query_type,
-        use_zero_copy, is_overlay_candidate, y_invert);
+  return Buffer::CreateBufferFromGMBHandle(
+      std::move(handle), size, viz::GetSharedImageFormat(format), buffer_usage,
+      query_type, use_zero_copy, is_overlay_candidate, y_invert);
 }
 
 size_t SharedMemory::GetSize() const {

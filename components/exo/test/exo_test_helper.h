@@ -120,7 +120,7 @@ class ExoTestHelper {
   static std::unique_ptr<Buffer> CreateBufferFromGMBHandle(
       gfx::GpuMemoryBufferHandle handle,
       gfx::Size buffer_size,
-      gfx::BufferFormat buffer_format);
+      viz::SharedImageFormat format);
 
   std::unique_ptr<ClientControlledShellSurface>
   CreateClientControlledShellSurface(Surface* surface,

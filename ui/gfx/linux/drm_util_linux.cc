@@ -138,6 +138,39 @@ gfx::BufferFormat GetBufferFormatFromFourCCFormat(int format) {
   }
 }
 
+viz::SharedImageFormat GetSharedImageFormatFromFourCCFormat(int format) {
+  switch (format) {
+    case DRM_FORMAT_R8:
+      return viz::SinglePlaneFormat::kR_8;
+    case DRM_FORMAT_GR88:
+      return viz::SinglePlaneFormat::kRG_88;
+    case DRM_FORMAT_ABGR8888:
+      return viz::SinglePlaneFormat::kRGBA_8888;
+    case DRM_FORMAT_XBGR8888:
+      return viz::SinglePlaneFormat::kRGBX_8888;
+    case DRM_FORMAT_ARGB8888:
+      return viz::SinglePlaneFormat::kBGRA_8888;
+    case DRM_FORMAT_XRGB8888:
+      return viz::SinglePlaneFormat::kBGRX_8888;
+    case DRM_FORMAT_ARGB2101010:
+      return viz::SinglePlaneFormat::kBGRA_1010102;
+    case DRM_FORMAT_ABGR2101010:
+      return viz::SinglePlaneFormat::kRGBA_1010102;
+    case DRM_FORMAT_RGB565:
+      return viz::SinglePlaneFormat::kBGR_565;
+    case DRM_FORMAT_NV12:
+      return viz::MultiPlaneFormat::kNV12;
+    case DRM_FORMAT_YVU420:
+      return viz::MultiPlaneFormat::kYV12;
+    case DRM_FORMAT_P010:
+      return viz::MultiPlaneFormat::kP010;
+    case DRM_FORMAT_ABGR16161616F:
+      return viz::SinglePlaneFormat::kRGBA_F16;
+    default:
+      NOTREACHED();
+  }
+}
+
 bool IsValidBufferFormat(uint32_t current_format) {
   switch (current_format) {
     case DRM_FORMAT_R8:

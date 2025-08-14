@@ -42,7 +42,7 @@
 #include "components/exo/test/test_data_source_delegate.h"
 #include "components/exo/wm_helper.h"
 #include "components/viz/common/quads/compositor_frame.h"
-#include "components/viz/common/resources/shared_image_format_utils.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/test/test_context_provider.h"
@@ -2156,14 +2156,14 @@ TEST_F(PointerTest, SetCursorBitmapFromBuffer) {
   auto test_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
   test_sii->UseTestGMBInSharedImageCreationWithBufferUsage();
   constexpr gfx::Size buffer_size(10, 10);
-  const auto buffer_format = gfx::BufferFormat::RGBA_8888;
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   // Setting some default usage in order to get a mappable shared image.
   const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
   // Create a mappable shared image.
   auto shared_image = test_sii->CreateSharedImage(
-      {viz::GetSharedImageFormat(buffer_format), buffer_size, gfx::ColorSpace(),
+      {format, buffer_size, gfx::ColorSpace(),
        gpu::SharedImageUsageSet(si_usage), "PointerTest"},
       gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ);
   ASSERT_TRUE(shared_image);
@@ -2180,14 +2180,13 @@ TEST_F(PointerTest, SetCursorBitmapFromBuffer) {
   constexpr uint8_t yellow_rgba[] = {255u, 255u, 0u, 255u};
   gl::GLTestSupport::SetBufferDataToColor(
       buffer_size.width(), buffer_size.height(), stride0, /*plane=*/0,
-      buffer_format, yellow_rgba, span0.data());
+      gfx::BufferFormat::RGBA_8888, yellow_rgba, span0.data());
   scoped_mapping.reset();
 
   std::unique_ptr<Surface> pointer_surface(new Surface);
   std::unique_ptr<Buffer> pointer_buffer =
       test::ExoTestHelper::CreateBufferFromGMBHandle(
-          shared_image->CloneGpuMemoryBufferHandle(), buffer_size,
-          buffer_format);
+          shared_image->CloneGpuMemoryBufferHandle(), buffer_size, format);
   pointer_surface->Attach(pointer_buffer.get());
   pointer_surface->Commit();
 

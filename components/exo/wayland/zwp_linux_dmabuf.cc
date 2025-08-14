@@ -14,7 +14,6 @@
 #include "components/exo/display.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_dmabuf_feedback_manager.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 
 namespace exo {
@@ -83,7 +82,6 @@ void linux_buffer_params_add(wl_client* client,
 bool ValidateLinuxBufferParams(wl_resource* resource,
                                int32_t width,
                                int32_t height,
-                               gfx::BufferFormat format,
                                uint32_t flags) {
   if (width <= 0 || height <= 0) {
     wl_resource_post_error(resource,
@@ -151,9 +149,7 @@ wl_resource* create_buffer(wl_client* client,
     return nullptr;
   }
 
-  gfx::BufferFormat buffer_format = ui::GetBufferFormatFromFourCCFormat(format);
-  if (!ValidateLinuxBufferParams(resource, width, height, buffer_format,
-                                 flags)) {
+  if (!ValidateLinuxBufferParams(resource, width, height, flags)) {
     return nullptr;
   }
 
@@ -171,8 +167,10 @@ wl_resource* create_buffer(wl_client* client,
 
   std::unique_ptr<Buffer> buffer =
       linux_buffer_params->feedback_manager->GetDisplay()
-          ->CreateLinuxDMABufBuffer(gfx::Size(width, height), buffer_format,
-                                    std::move(handle), y_invert);
+          ->CreateLinuxDMABufBuffer(
+              gfx::Size(width, height),
+              ui::GetSharedImageFormatFromFourCCFormat(format),
+              std::move(handle), y_invert);
   if (!buffer) {
     zwp_linux_buffer_params_v1_send_failed(resource);
     return nullptr;

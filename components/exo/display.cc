@@ -5,6 +5,7 @@
 #include "components/exo/display.h"
 
 #include <GLES2/gl2extchromium.h>
+
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -91,7 +92,7 @@ std::unique_ptr<SharedMemory> Display::CreateSharedMemory(
 
 std::unique_ptr<Buffer> Display::CreateLinuxDMABufBuffer(
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::NativePixmapHandle handle,
     bool y_invert) {
   TRACE_EVENT1("exo", "Display::CreateLinuxDMABufBuffer", "size",

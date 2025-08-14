@@ -17,7 +17,9 @@ namespace ui {
 
 int GetFourCCFormatFromBufferFormat(gfx::BufferFormat format);
 int GetFourCCFormatFromSharedImageFormat(const viz::SharedImageFormat& format);
+
 gfx::BufferFormat GetBufferFormatFromFourCCFormat(int format);
+viz::SharedImageFormat GetSharedImageFormatFromFourCCFormat(int format);
 
 // Returns true if the fourcc format is known.
 bool IsValidBufferFormat(uint32_t current_format);

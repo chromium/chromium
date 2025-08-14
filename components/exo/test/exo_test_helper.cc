@@ -216,9 +216,9 @@ std::unique_ptr<Buffer> ExoTestHelper::CreateBuffer(
 std::unique_ptr<Buffer> ExoTestHelper::CreateBufferFromGMBHandle(
     gfx::GpuMemoryBufferHandle handle,
     gfx::Size buffer_size,
-    gfx::BufferFormat buffer_format) {
+    viz::SharedImageFormat format) {
   return Buffer::CreateBufferFromGMBHandle(
-      std::move(handle), buffer_size, buffer_format, gfx::BufferUsage::GPU_READ,
+      std::move(handle), buffer_size, format, gfx::BufferUsage::GPU_READ,
       /*query_type=*/GL_COMMANDS_COMPLETED_CHROMIUM, /*use_zero_copy=*/true,
       /*is_overlay_candidate=*/false, /*y_invert=*/false);
 }

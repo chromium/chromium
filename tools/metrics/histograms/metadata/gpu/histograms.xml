@@ -27,10 +27,6 @@ chromium-metrics-reviews@google.com.
   <variant name="PassthroughProgramCache"/>
 </variants>
 
-<variants name="ExoBufferCodePaths">
-  <variant name="Used_BRG_565"/>
-</variants>
-
 <variants name="ExoSurfaceCodePaths">
   <variant name="AppendContentsToFrame"/>
   <variant name="ForceRGBAForOpaque"/>
@@ -1708,18 +1704,6 @@ chromium-metrics-reviews@google.com.
                  task run and the actual run of the task. Ideally this should
                  always be as close to 0 as possible"/>
   </token>
-</histogram>
-
-<histogram name="Graphics.Exo.Buffer.{ExoBufferCodePaths}" enum="Boolean"
-    expires_after="2025-10-12">
-  <owner>fangzhoug@chromium.org</owner>
-  <owner>petermcneeley@chromium.org</owner>
-  <owner>chromeos-gfx-display@google.com</owner>
-  <summary>
-    Track usage of different code paths in Exo buffer code. We should monitor
-    and remove all deprecated code path if they have never been executed.
-  </summary>
-  <token key="ExoBufferCodePaths" variants="ExoBufferCodePaths"/>
 </histogram>
 
 <histogram name="Graphics.Exo.Surface.{ExoSurfaceCodePaths}" enum="Boolean"
