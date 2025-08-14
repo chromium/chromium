@@ -283,7 +283,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="NotEligibleByNoHeaderStored"/>
 </enum>
 
-<!-- LINT.ThenChange(//content/browser/service_worker/service_worker_main_resource_loader.cc:SyntheticResponseEligibility) -->
+<!-- LINT.ThenChange(//content/browser/service_worker/service_worker_metrics.h:SyntheticResponseEligibility) -->
 
 <!-- LINT.IfChange(SyntheticResponseReloadReason) -->
 

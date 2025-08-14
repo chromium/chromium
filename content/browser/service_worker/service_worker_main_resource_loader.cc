@@ -106,18 +106,6 @@ void MaybeSetHeaderReceivedTiming(net::LoadTimingInfo& timing) {
 constexpr char kHistogramSyntheticResponseEligibility[] =
     "ServiceWorker.SyntheticResponse.Eligibility";
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(SyntheticResponseEligibility)
-enum class SyntheticResponseEligibility {
-  kEligible = 0,
-  kNotEligibleByReload = 1,
-  kNotEligibleByNoHeaderStored = 2,
-  kMaxValue = kNotEligibleByNoHeaderStored,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/service/enums.xml:SyntheticResponseEligibility)
-
 }  // namespace
 
 // This class waits for completion of a stream response from the service worker.
@@ -1037,7 +1025,8 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
     // Synthetic response is not enabled in reloading the page.
     base::UmaHistogramEnumeration(
         kHistogramSyntheticResponseEligibility,
-        SyntheticResponseEligibility::kNotEligibleByReload);
+        ServiceWorkerMetrics::SyntheticResponseEligibility::
+            kNotEligibleByReload);
     return false;
   }
 
@@ -1080,7 +1069,8 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
       // network.
       base::UmaHistogramEnumeration(
           kHistogramSyntheticResponseEligibility,
-          SyntheticResponseEligibility::kNotEligibleByNoHeaderStored);
+          ServiceWorkerMetrics::SyntheticResponseEligibility::
+              kNotEligibleByNoHeaderStored);
       break;
     case SyntheticResponseStatus::kReady:
       // When it's ready, the header which the service worker locally storead is
@@ -1090,8 +1080,9 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
       synthetic_response_manager_->StartSyntheticResponse(base::BindOnce(
           &ServiceWorkerMainResourceLoader::DidDispatchFetchEvent,
           weak_factory_.GetWeakPtr()));
-      base::UmaHistogramEnumeration(kHistogramSyntheticResponseEligibility,
-                                    SyntheticResponseEligibility::kEligible);
+      base::UmaHistogramEnumeration(
+          kHistogramSyntheticResponseEligibility,
+          ServiceWorkerMetrics::SyntheticResponseEligibility::kEligible);
       break;
   }
 
