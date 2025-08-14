@@ -438,7 +438,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling jetstream-main
   # and whatever else without interference from each other.
-  'jetstream_main_revision': '818aefa486057bf636bf4387e0e1d3eb75b783fa',
+  'jetstream_main_revision': '4de8482529ee65fc6f3514a26f5890203467edcd',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling jetstream-v2.2
   # and whatever else without interference from each other.
