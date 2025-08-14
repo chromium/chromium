@@ -5,22 +5,14 @@
 #ifndef ASH_CLIPBOARD_CLIPBOARD_HISTORY_CONTROLLER_DELEGATE_H_
 #define ASH_CLIPBOARD_CLIPBOARD_HISTORY_CONTROLLER_DELEGATE_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 
 namespace ash {
-
-class ClipboardImageModelFactory;
 
 // The browser-implemented delegate of the `ClipboardHistoryControllerImpl`.
 class ASH_EXPORT ClipboardHistoryControllerDelegate {
  public:
   virtual ~ClipboardHistoryControllerDelegate();
-
-  // Creates the browser-implemented image model factory which renders html.
-  virtual std::unique_ptr<ClipboardImageModelFactory> CreateImageModelFactory()
-      const = 0;
 
   // Performs an explicit paste, which is distinct from an implicit paste via
   // a synthetic Ctrl+V event. Returns `true` if successful, otherwise `false`.

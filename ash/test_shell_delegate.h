@@ -78,6 +78,8 @@ class TestShellDelegate : public ShellDelegate {
       PrefService* local_state) const override;
   std::unique_ptr<ClipboardHistoryControllerDelegate>
   CreateClipboardHistoryControllerDelegate() const override;
+  std::unique_ptr<ClipboardImageModelFactory> CreateClipboardImageModelFactory()
+      const override;
   std::unique_ptr<CoralDelegate> CreateCoralDelegate() const override;
   std::unique_ptr<GameDashboardDelegate> CreateGameDashboardDelegate()
       const override;

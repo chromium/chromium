@@ -421,7 +421,6 @@ class ClipboardHistoryControllerImpl::MenuDelegate
 ClipboardHistoryControllerImpl::ClipboardHistoryControllerImpl(
     std::unique_ptr<ClipboardHistoryControllerDelegate> delegate)
     : delegate_(std::move(delegate)),
-      image_model_factory_(delegate_->CreateImageModelFactory()),
       clipboard_history_(std::make_unique<ClipboardHistory>()),
       resource_manager_(std::make_unique<ClipboardHistoryResourceManager>(
           clipboard_history_.get())),
@@ -429,9 +428,6 @@ ClipboardHistoryControllerImpl::ClipboardHistoryControllerImpl(
       nudge_controller_(
           std::make_unique<ClipboardNudgeController>(clipboard_history_.get())),
       menu_delegate_(std::make_unique<MenuDelegate>(this)) {
-  if (!image_model_factory_) {
-    CHECK_IS_TEST();
-  }
   clipboard_history_->AddObserver(this);
   resource_manager_->AddObserver(this);
   SessionController::Get()->AddObserver(this);

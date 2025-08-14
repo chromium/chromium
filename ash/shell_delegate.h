@@ -47,6 +47,7 @@ class BackGestureContextualNudgeController;
 class BackGestureContextualNudgeDelegate;
 class CaptureModeDelegate;
 class ClipboardHistoryControllerDelegate;
+class ClipboardImageModelFactory;
 class CoralDelegate;
 class FocusModeDelegate;
 class GameDashboardDelegate;
@@ -83,6 +84,11 @@ class ASH_EXPORT ShellDelegate {
   // Creates and returns the delegate of the clipboard history feature.
   virtual std::unique_ptr<ClipboardHistoryControllerDelegate>
   CreateClipboardHistoryControllerDelegate() const = 0;
+
+  // Creates and returns the browser-implemented image model factory which
+  // renders html of a clipboard history item.
+  virtual std::unique_ptr<ClipboardImageModelFactory>
+  CreateClipboardImageModelFactory() const = 0;
 
   // Creates and returns the delegate of the Coral feature.
   virtual std::unique_ptr<CoralDelegate> CreateCoralDelegate() const = 0;

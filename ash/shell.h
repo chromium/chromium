@@ -266,6 +266,7 @@ class SystemTrayNotifier;
 class TabletModeController;
 class ToastManagerImpl;
 class ToplevelWindowEventHandler;
+class ClipboardImageModelFactory;
 class ClipboardHistoryControllerImpl;
 class TouchDevicesController;
 class UserEducationController;
@@ -1146,6 +1147,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<SystemSoundsDelegate> system_sounds_delegate_;
   std::unique_ptr<api::TasksController> tasks_controller_;
   std::unique_ptr<ToastManagerImpl> toast_manager_;
+  std::unique_ptr<ClipboardImageModelFactory> clipboard_image_model_factory_;
   std::unique_ptr<ClipboardHistoryControllerImpl> clipboard_history_controller_;
   std::unique_ptr<TouchDevicesController> touch_devices_controller_;
   std::unique_ptr<UserEducationController> user_education_controller_;

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "ash/shell.h"
 
 #include <algorithm>
@@ -116,6 +115,7 @@
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/accelerator_keycode_lookup_cache.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/public/cpp/coral_delegate.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/login/local_authentication_request_controller.h"
@@ -246,6 +246,7 @@
 #include "ash/wm/workspace_controller.h"
 #include "ash/wm_mode/wm_mode_controller.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
@@ -1117,6 +1118,7 @@ Shell::~Shell() {
   // Depends on shelf owned by RootWindowController so destroy this before the
   // |window_tree_host_manager_|.
   clipboard_history_controller_.reset();
+  clipboard_image_model_factory_.reset();
 
   // Should be destroyed after `clipboard_history_controller_` and
   // `autozoom_controller_` since they will destruct `SystemNudgeController`.
@@ -1508,6 +1510,11 @@ void Shell::Init(
   accelerator_controller_ = std::make_unique<AcceleratorControllerImpl>(
       ash_accelerator_configuration_.get());
 
+  clipboard_image_model_factory_ =
+      shell_delegate_->CreateClipboardImageModelFactory();
+  if (!clipboard_image_model_factory_) {
+    CHECK_IS_TEST();
+  }
   clipboard_history_controller_ =
       std::make_unique<ClipboardHistoryControllerImpl>(
           shell_delegate_->CreateClipboardHistoryControllerDelegate());

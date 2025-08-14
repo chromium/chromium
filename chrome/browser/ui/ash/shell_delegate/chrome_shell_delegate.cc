@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/ash/boca/chrome_tab_strip_delegate.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/ash/clipboard/clipboard_history_controller_delegate_impl.h"
+#include "chrome/browser/ui/ash/clipboard/clipboard_image_model_factory_impl.h"
 #include "chrome/browser/ui/ash/desks/chrome_saved_desk_delegate.h"
 #include "chrome/browser/ui/ash/focus_mode/chrome_focus_mode_delegate.h"
 #include "chrome/browser/ui/ash/game_dashboard/chrome_game_dashboard_delegate.h"
@@ -161,6 +162,11 @@ ChromeShellDelegate::CreateCaptureModeDelegate(PrefService* local_state) const {
 std::unique_ptr<ash::ClipboardHistoryControllerDelegate>
 ChromeShellDelegate::CreateClipboardHistoryControllerDelegate() const {
   return std::make_unique<ClipboardHistoryControllerDelegateImpl>();
+}
+
+std::unique_ptr<ash::ClipboardImageModelFactory>
+ChromeShellDelegate::CreateClipboardImageModelFactory() const {
+  return std::make_unique<ClipboardImageModelFactoryImpl>();
 }
 
 std::unique_ptr<ash::CoralDelegate> ChromeShellDelegate::CreateCoralDelegate()

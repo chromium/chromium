@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_HISTORY_CONTROLLER_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_HISTORY_CONTROLLER_DELEGATE_IMPL_H_
 
-#include <memory>
-
 #include "ash/clipboard/clipboard_history_controller_delegate.h"
 
 // The browser-implemented delegate of the `ClipboardHistoryControllerImpl`.
@@ -22,8 +20,6 @@ class ClipboardHistoryControllerDelegateImpl
 
  private:
   // ash::ClipboardHistoryControllerDelegate:
-  std::unique_ptr<ash::ClipboardImageModelFactory> CreateImageModelFactory()
-      const override;
   bool Paste() const override;
 };
 

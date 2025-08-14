@@ -63,11 +63,6 @@ ClipboardHistoryControllerDelegateImpl::
 ClipboardHistoryControllerDelegateImpl::
     ~ClipboardHistoryControllerDelegateImpl() = default;
 
-std::unique_ptr<ash::ClipboardImageModelFactory>
-ClipboardHistoryControllerDelegateImpl::CreateImageModelFactory() const {
-  return std::make_unique<ClipboardImageModelFactoryImpl>();
-}
-
 bool ClipboardHistoryControllerDelegateImpl::Paste() const {
   for (auto* const web_contents : GetAllWebContents()) {
     auto* const focused_web_contents = GetFocusedWebContents(web_contents);
