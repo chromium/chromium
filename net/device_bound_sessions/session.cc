@@ -385,8 +385,6 @@ bool Session::ShouldDeferRequest(
       // request is insecure, then the CookieCraving will be excluded, but the
       // CanonicalCookie will be included. DBSC only applies to secure context
       // but there might be similar cases.
-      //
-      // TODO: think about edge cases here...
       if (cookie_craving.IsSatisfiedBy(request_cookie.cookie)) {
         satisfied = true;
         break;

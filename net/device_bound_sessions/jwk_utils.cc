@@ -112,7 +112,6 @@ base::Value::Dict ConvertRS256PkeySpkiToJwk(
 base::Value::Dict ConvertPkeySpkiToJwk(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> pkey_spki) {
-  // TODO(crbug.com/360756896): Support more algorithms.
   switch (algorithm) {
     case crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
       return ConvertRS256PkeySpkiToJwk(pkey_spki);

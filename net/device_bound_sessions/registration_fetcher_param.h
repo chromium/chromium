@@ -42,7 +42,6 @@ class NET_EXPORT RegistrationFetcherParam {
   // returned these headers; it is used to resolve any relative registration
   // endpoints in the response headers and to validate that the scheme is
   // appropriate.
-  // TODO(chlily): Get IsolationInfo from the request as well
   static std::vector<RegistrationFetcherParam> CreateIfValid(
       const GURL& request_url,
       const HttpResponseHeaders* headers);
@@ -88,8 +87,6 @@ class NET_EXPORT RegistrationFetcherParam {
       const GURL& request_url,
       const structured_headers::ParameterizedMember& session_registration);
 
-  // TODO(chlily): Store last-updated time and last-updated isolationinfo as
-  // needed.
   GURL registration_endpoint_;
   std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos_;
   std::string challenge_;

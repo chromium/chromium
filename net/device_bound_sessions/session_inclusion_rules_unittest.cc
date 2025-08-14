@@ -484,8 +484,7 @@ TEST_F(SessionInclusionRulesTest, UrlRuleParsingIPv6Address) {
 
 // This test is more to document the current behavior than anything else. We may
 // discover a need for more comprehensive support for port numbers in the
-// future, in which case:
-// TODO(chlily): Support port numbers in URL rules.
+// future.
 TEST_F(SessionInclusionRulesTest, NonstandardPort) {
   url::Origin nonstandard_port_origin =
       url::Origin::Create(GURL("https://site.test:8888"));

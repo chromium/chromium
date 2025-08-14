@@ -16,8 +16,6 @@
 #include "net/http/structured_headers.h"
 
 namespace {
-// TODO(kristianm): See if these can be used with
-// services/network/sec_header_helpers.cc
 constexpr char kRegistrationHeaderName[] = "Sec-Session-Registration";
 constexpr char kChallengeParamKey[] = "challenge";
 constexpr char kPathParamKey[] = "path";
@@ -88,7 +86,6 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
       if (!value.is_string()) {
         continue;
       }
-      // TODO(kristianm): Update this as same site requirements are solidified
       std::string unescaped_path = base::UnescapeURLComponent(
           value.GetString(),
           base::UnescapeRule::PATH_SEPARATORS |
