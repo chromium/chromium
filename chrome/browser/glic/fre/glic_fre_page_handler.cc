@@ -39,12 +39,11 @@ GlicKeyedService* GlicFrePageHandler::GetGlicService() {
 
 void GlicFrePageHandler::AcceptFre() {
   GetGlicService()->metrics()->OnFreAccepted();
-  GetGlicService()->window_controller().fre_controller()->AcceptFre();
+  GetGlicService()->fre_controller().AcceptFre();
 }
 
 void GlicFrePageHandler::DismissFre(mojom::FreWebUiState panel_state) {
-  GetGlicService()->window_controller().fre_controller()->DismissFre(
-      panel_state);
+  GetGlicService()->fre_controller().DismissFre(panel_state);
 }
 
 void GlicFrePageHandler::FreReloaded() {
@@ -54,35 +53,27 @@ void GlicFrePageHandler::FreReloaded() {
 
 void GlicFrePageHandler::PrepareForClient(
     base::OnceCallback<void(bool)> callback) {
-  GetGlicService()->window_controller().fre_controller()->PrepareForClient(
-      std::move(callback));
+  GetGlicService()->fre_controller().PrepareForClient(std::move(callback));
 }
 
 void GlicFrePageHandler::ValidateAndOpenLinkInNewTab(const GURL& url) {
   if (url.DomainIs("google.com")) {
     GetGlicService()->CreateTab(url, /*open_in_background=*/true, std::nullopt,
                                 base::DoNothing());
-    GetGlicService()->window_controller().fre_controller()->OnLinkClicked(url);
+    GetGlicService()->fre_controller().OnLinkClicked(url);
   }
 }
 
 void GlicFrePageHandler::WebUiStateChanged(mojom::FreWebUiState new_state) {
-  GetGlicService()->window_controller().fre_controller()->WebUiStateChanged(
-      new_state);
+  GetGlicService()->fre_controller().WebUiStateChanged(new_state);
 }
 
 void GlicFrePageHandler::ExceededTimeoutError() {
-  GetGlicService()
-      ->window_controller()
-      .fre_controller()
-      ->ExceededTimeoutError();
+  GetGlicService()->fre_controller().ExceededTimeoutError();
 }
 
 void GlicFrePageHandler::LogWebUiLoadComplete() {
-  GetGlicService()
-      ->window_controller()
-      .fre_controller()
-      ->LogWebUiLoadComplete();
+  GetGlicService()->fre_controller().LogWebUiLoadComplete();
 }
 
 }  // namespace glic

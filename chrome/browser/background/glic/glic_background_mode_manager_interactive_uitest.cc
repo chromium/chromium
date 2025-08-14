@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, DeleteEligibleProfile) {
   GlicKeyedService* const second_keyed_service =
       GlicKeyedServiceFactory::GetGlicKeyedService(second_browser->profile());
   EXPECT_FALSE(second_keyed_service->enabling().HasConsented());
-  second_keyed_service->window_controller().fre_controller()->AcceptFre();
+  second_keyed_service->fre_controller().AcceptFre();
   EXPECT_TRUE(second_keyed_service->enabling().HasConsented());
   EXPECT_TRUE(background_mode_manager->IsInBackgroundModeForTesting());
 }

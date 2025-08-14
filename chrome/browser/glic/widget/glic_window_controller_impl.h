@@ -105,13 +105,11 @@ class GlicWindowControllerImpl
 
   bool IsActive() override;
   bool IsShowing() const override;
-  bool IsPanelOrFreShowing() const override;
   bool IsAttached() const override;
   bool IsDetached() const override;
   base::CallbackListSubscription AddWindowActivationChangedCallback(
       WindowActivationChangedCallback callback) override;
   void Preload() override;
-  void PreloadFre() override;
   void Reload() override;
   bool IsWarmed() const override;
   base::WeakPtr<GlicWindowController> GetWeakPtr() override;
@@ -119,11 +117,9 @@ class GlicWindowControllerImpl
   GlicView* GetGlicView() override;
   base::WeakPtr<views::View> GetGlicViewAsView() override;
   GlicWidget* GetGlicWidget() override;
-  content::WebContents* GetFreWebContents() override;
 
   Browser* attached_browser() override;
   State state() const override;
-  GlicFreController* fre_controller() override;
   GlicWindowAnimator* window_animator() override;
   Profile* profile() override;
   bool IsDragging() override;
@@ -363,8 +359,6 @@ class GlicWindowControllerImpl
   std::optional<gfx::Point> previous_position_ = std::nullopt;
 
   std::unique_ptr<ScopedGlicButtonIndicator> scoped_glic_button_indicator_;
-
-  std::unique_ptr<GlicFreController> fre_controller_;
 
   std::unique_ptr<WindowFinder> window_finder_;
 

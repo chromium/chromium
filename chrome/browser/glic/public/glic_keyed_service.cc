@@ -96,6 +96,8 @@ GlicKeyedService::GlicKeyedService(
           profile,
           &profile_manager->GetProfileAttributesStorage())),
       metrics_(std::make_unique<GlicMetrics>(profile, enabling_.get())),
+      fre_controller_(
+          std::make_unique<GlicFreController>(profile, identity_manager)),
       host_(std::make_unique<Host>(profile)),
       window_controller_(
           std::make_unique<GlicWindowControllerImpl>(profile,
@@ -180,6 +182,21 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
   if (glic_profile_manager) {
     glic_profile_manager->SetActiveGlic(this);
   }
+
+  // Show the FRE if not yet completed, and if we have a browser to use.
+  if (fre_controller_->ShouldShowFreDialog()) {
+    Browser* browser = bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
+    if (!fre_controller_->CanShowFreDialog(browser)) {
+      // If the FRE is blocked because it is already showing, we should instead
+      // dismiss it. This allows the glic button to be used to toggle the
+      // presence of the FRE.
+      fre_controller_->DismissFreIfOpenOnActiveTab(browser);
+      return;
+    }
+    fre_controller_->ShowFreDialog(browser, source);
+    return;
+  }
+
   window_controller_->Toggle(bwi, prevent_close, source);
 }
 
@@ -194,17 +211,18 @@ void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
   if (glic_profile_manager) {
     glic_profile_manager->SetActiveGlic(this);
   }
-  window_controller_->fre_controller()->OpenFreDialogInNewTab(bwi, source);
+  fre_controller().OpenFreDialogInNewTab(bwi, source);
 }
 
 void GlicKeyedService::CloseUI() {
   window_controller_->Shutdown();
   host().Shutdown();
+  fre_controller_->Shutdown();
   SetContextAccessIndicator(false);
 }
 
 void GlicKeyedService::PrepareForOpen() {
-  window_controller_->fre_controller()->MaybePreconnect();
+  fre_controller().MaybePreconnect();
 
   auto* active_web_contents =
       sharing_manager_->GetFocusedTabData().focus()
@@ -264,6 +282,11 @@ GlicWindowController& GlicKeyedService::window_controller() {
   return *window_controller_.get();
 }
 
+GlicFreController& GlicKeyedService::fre_controller() {
+  CHECK(fre_controller_);
+  return *fre_controller_.get();
+}
+
 GlicSharingManager& GlicKeyedService::sharing_manager() {
   return *sharing_manager_.get();
 }
@@ -281,8 +304,7 @@ bool GlicKeyedService::IsWindowDetached() const {
 }
 
 bool GlicKeyedService::IsWindowOrFreShowing() const {
-  return window_controller_->IsShowing() ||
-         window_controller_->fre_controller()->IsShowingDialog();
+  return window_controller_->IsShowing() || fre_controller_->IsShowingDialog();
 }
 
 base::CallbackListSubscription
@@ -561,7 +583,14 @@ void GlicKeyedService::TryPreloadFre(GlicPrewarmingFreSource source) {
 }
 
 void GlicKeyedService::Reload() {
-  window_controller().Reload();
+  if (fre_controller_->IsShowingDialog()) {
+    if (auto* fre_contents = fre_controller_->GetWebContents()) {
+      fre_contents->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
+                                           /*check_for_repost=*/false);
+    }
+  } else {
+    window_controller().Reload();
+  }
 }
 
 void GlicKeyedService::OnMemoryPressure(
@@ -584,7 +613,7 @@ bool GlicKeyedService::IsActiveWebContents(content::WebContents* contents) {
     return false;
   }
   return contents == host().webui_contents() ||
-         contents == window_controller().GetFreWebContents();
+         contents == fre_controller().GetWebContents();
 }
 
 void GlicKeyedService::FinishPreload(GlicPrewarmingChecksResult result) {
@@ -612,12 +641,12 @@ void GlicKeyedService::FinishPreloadFre(GlicPrewarmingFreSource source,
   base::UmaHistogramEnumeration("Glic.PrewarmingFre.ShouldPreloadFreForSource",
                                 source);
 
-  window_controller_->PreloadFre();
+  fre_controller().TryPreload();
 }
 
 bool GlicKeyedService::IsProcessHostForGlic(
     content::RenderProcessHost* process_host) {
-  auto* fre_contents = window_controller_->GetFreWebContents();
+  auto* fre_contents = fre_controller().GetWebContents();
   if (fre_contents) {
     if (fre_contents->GetPrimaryMainFrame()->GetProcess() == process_host) {
       return true;

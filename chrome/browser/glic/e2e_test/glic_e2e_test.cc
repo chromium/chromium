@@ -189,16 +189,16 @@ ui::test::InteractiveTestApi::MultiStep GlicE2ETest::WaitForAndInstrumentFre() {
   MultiStep steps(Steps(
       UninstrumentWebContents(kGlicFreContentsElementId, false),
       UninstrumentWebContents(kGlicFreHostElementId, false),
-      InAnyContext(ObserveState(kGlicFreShowingDialogState,
-                                window_controller().fre_controller()),
-                   WaitForState(kGlicFreShowingDialogState, true),
-                   Steps(InstrumentNonTabWebView(
-                             kGlicFreHostElementId,
-                             GlicFreDialogView::kWebViewElementIdForTesting),
-                         InstrumentInnerWebContents(kGlicFreContentsElementId,
-                                                    kGlicFreHostElementId, 0),
-                         WaitForWebContentsReady(kGlicFreContentsElementId)),
-                   StopObservingState(kGlicFreShowingDialogState))));
+      InAnyContext(
+          ObserveState(kGlicFreShowingDialogState, std::ref(fre_controller())),
+          WaitForState(kGlicFreShowingDialogState, true),
+          Steps(InstrumentNonTabWebView(
+                    kGlicFreHostElementId,
+                    GlicFreDialogView::kWebViewElementIdForTesting),
+                InstrumentInnerWebContents(kGlicFreContentsElementId,
+                                           kGlicFreHostElementId, 0),
+                WaitForWebContentsReady(kGlicFreContentsElementId)),
+          StopObservingState(kGlicFreShowingDialogState))));
 
   AddDescriptionPrefix(steps, "WaitForAndInstrumentFre");
   return steps;
@@ -249,6 +249,9 @@ GlicKeyedService* GlicE2ETest::glic_service() {
 }
 GlicWindowController& GlicE2ETest::window_controller() {
   return glic_service()->window_controller();
+}
+GlicFreController& GlicE2ETest::fre_controller() {
+  return glic_service()->fre_controller();
 }
 WebPageReplayServerWrapper* GlicE2ETest::web_page_replay_server_wrapper() {
   return web_page_replay_server_wrapper_.get();

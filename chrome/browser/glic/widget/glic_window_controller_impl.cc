@@ -288,8 +288,6 @@ GlicWindowControllerImpl::GlicWindowControllerImpl(
     GlicKeyedService* glic_service,
     GlicEnabling* enabling)
     : profile_(profile),
-      fre_controller_(
-          std::make_unique<GlicFreController>(profile, identity_manager)),
       window_finder_(std::make_unique<WindowFinder>()),
       glic_service_(glic_service),
       enabling_(enabling) {
@@ -422,19 +420,6 @@ void GlicWindowControllerImpl::Toggle(BrowserWindowInterface* bwi,
   // hotkey or other OS-level entrypoint.
   Browser* new_attached_browser =
       bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
-
-  // Show the FRE if not yet completed, and if we have a browser to use.
-  if (fre_controller_->ShouldShowFreDialog()) {
-    if (!fre_controller_->CanShowFreDialog(new_attached_browser)) {
-      // If the FRE is blocked because it is already showing, we should instead
-      // dismiss it. This allows the glic button to be used to toggle the
-      // presence of the FRE.
-      fre_controller_->DismissFreIfOpenOnActiveTab(new_attached_browser);
-      return;
-    }
-    fre_controller_->ShowFreDialog(new_attached_browser, source);
-    return;
-  }
 
   mojom::PanelState panel_state = ComputePanelState();
   bool is_detached = panel_state.kind == mojom::PanelState_Kind::kDetached;
@@ -916,10 +901,6 @@ base::WeakPtr<views::View> GlicWindowControllerImpl::GetGlicViewAsView() {
 
 GlicWidget* GlicWindowControllerImpl::GetGlicWidget() {
   return glic_widget_.get();
-}
-
-content::WebContents* GlicWindowControllerImpl::GetFreWebContents() {
-  return fre_controller_->GetWebContents();
 }
 
 gfx::Point GlicWindowControllerImpl::GetTopRightPositionForAttachedGlicWindow(
@@ -1409,10 +1390,6 @@ bool GlicWindowControllerImpl::IsShowing() const {
   return !(state_ == State::kClosed);
 }
 
-bool GlicWindowControllerImpl::IsPanelOrFreShowing() const {
-  return IsShowing() || fre_controller_->IsShowingDialog();
-}
-
 bool GlicWindowControllerImpl::IsAttached() const {
   return attached_browser_ != nullptr;
 }
@@ -1434,18 +1411,7 @@ void GlicWindowControllerImpl::Preload() {
   }
 }
 
-void GlicWindowControllerImpl::PreloadFre() {
-  if (fre_controller_->ShouldShowFreDialog()) {
-    fre_controller_->TryPreload();
-  }
-}
-
 void GlicWindowControllerImpl::Reload() {
-  if (GetFreWebContents()) {
-    GetFreWebContents()->GetController().Reload(
-        content::ReloadType::BYPASSING_CACHE,
-        /*check_for_repost=*/false);
-  }
   if (auto* webui_contents = host().webui_contents()) {
     webui_contents->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
                                            /*check_for_repost=*/false);
@@ -1463,7 +1429,6 @@ base::WeakPtr<GlicWindowController> GlicWindowControllerImpl::GetWeakPtr() {
 void GlicWindowControllerImpl::Shutdown() {
   // Hide first, then clean up (but do not animate).
   Close();
-  fre_controller_->Shutdown();
   window_activation_callback_list_.Notify(false);
 }
 
@@ -1549,10 +1514,6 @@ Profile* GlicWindowControllerImpl::profile() {
 
 GlicWindowAnimator* GlicWindowControllerImpl::window_animator() {
   return glic_window_animator_.get();
-}
-
-GlicFreController* GlicWindowControllerImpl::fre_controller() {
-  return fre_controller_.get();
 }
 
 // Return the Browser to which the panel is attached, or null if detached.

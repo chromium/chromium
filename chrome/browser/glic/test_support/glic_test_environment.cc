@@ -44,9 +44,8 @@ class TestCookieSynchronizer : public glic::GlicCookieSynchronizer {
         /*for_fre=*/true);
     TestCookieSynchronizer* fre_cookie_synchronizer_ptr =
         fre_cookie_synchronizer.get();
-    service->window_controller()
-        .fre_controller()
-        ->GetAuthControllerForTesting()
+    service->fre_controller()
+        .GetAuthControllerForTesting()
         .SetCookieSynchronizerForTesting(std::move(fre_cookie_synchronizer));
 
     return std::make_pair(ptr, fre_cookie_synchronizer_ptr);

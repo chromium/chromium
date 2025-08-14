@@ -17,9 +17,9 @@ namespace glic::test {
 namespace internal {
 
 GlicFreShowingDialogObserver::GlicFreShowingDialogObserver(
-    GlicFreController* controller)
+    const GlicFreController& controller)
     : PollingStateObserver(
-          [controller]() { return controller->IsShowingDialog(); }) {}
+          [&controller]() { return controller.IsShowingDialog(); }) {}
 GlicFreShowingDialogObserver::~GlicFreShowingDialogObserver() = default;
 
 DEFINE_STATE_IDENTIFIER_VALUE(GlicFreShowingDialogObserver,

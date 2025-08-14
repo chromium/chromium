@@ -276,7 +276,7 @@ bool GlicProfileManager::IsShowing() const {
   if (!last_active_glic_) {
     return false;
   }
-  return last_active_glic_->window_controller().IsPanelOrFreShowing();
+  return last_active_glic_->IsWindowOrFreShowing();
 }
 
 void GlicProfileManager::OnProfileMarkedForPermanentDeletion(Profile* profile) {

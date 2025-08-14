@@ -147,16 +147,15 @@ class GlicProfileManagerUiTest
   auto CheckWarmedAndSized(bool primary_warmed, bool secondary_warmed) {
     return Do([primary_warmed, secondary_warmed, this]() {
       auto IsWarmedAndSized = [](GlicKeyedService* service) {
-        const bool warmed =
-            service->window_controller().IsWarmed() ||
-            service->window_controller().fre_controller()->IsWarmed() ||
-            service->window_controller().IsPanelOrFreShowing();
+        const bool warmed = service->window_controller().IsWarmed() ||
+                            service->fre_controller().IsWarmed() ||
+                            service->IsWindowOrFreShowing();
         if (!warmed) {
           return false;
         }
         auto* contents = service->host().webui_contents();
         if (!contents) {
-          contents = service->window_controller().GetFreWebContents();
+          contents = service->fre_controller().GetWebContents();
         }
         return contents && !contents->GetSize().IsEmpty();
       };
@@ -178,7 +177,7 @@ class GlicProfileManagerUiTest
     return Do([this, primary_profile]() {
       auto* service = GetService(primary_profile);
       if (ShouldWarmFRE()) {
-        web_client_contents_ = service->window_controller().GetFreWebContents();
+        web_client_contents_ = service->fre_controller().GetWebContents();
       } else {
         web_client_contents_ = service->host().webui_contents();
       }
@@ -188,10 +187,10 @@ class GlicProfileManagerUiTest
   auto CheckCachedClientContents(bool primary_profile) {
     return Do([this, primary_profile]() {
       auto* service = GetService(primary_profile);
-      auto& controller = GetService(primary_profile)->window_controller();
       if (ShouldWarmFRE()) {
-        EXPECT_EQ(web_client_contents_, controller.GetFreWebContents());
-        EXPECT_NE(nullptr, controller.GetFreWebContents());
+        EXPECT_EQ(web_client_contents_,
+                  service->fre_controller().GetWebContents());
+        EXPECT_NE(nullptr, service->fre_controller().GetWebContents());
       } else {
         EXPECT_EQ(web_client_contents_, service->host().webui_contents());
         EXPECT_NE(nullptr, service->host().webui_contents());
@@ -218,7 +217,7 @@ class GlicProfileManagerUiTest
   }
 
   GlicFreController* GetFreController(bool primary_profile) {
-    return GetService(true)->window_controller().fre_controller();
+    return &GetService(true)->fre_controller();
   }
   GlicTestEnvironmentService& GetTestEnvForSecondProfile() {
     return *glic::GlicTestEnvironment::GetService(GetSecondProfile());

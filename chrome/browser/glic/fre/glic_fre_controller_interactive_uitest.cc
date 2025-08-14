@@ -46,11 +46,10 @@ const InteractiveBrowserTestApi::DeepQuery kMockFreClientContinueButton = {
 class FreWebUiStateObserver
     : public ui::test::StateObserver<mojom::FreWebUiState> {
  public:
-  explicit FreWebUiStateObserver(GlicFreController* controller)
-      : subscription_(controller->AddWebUiStateChangedCallback(
+  explicit FreWebUiStateObserver(GlicFreController& controller)
+      : subscription_(controller.AddWebUiStateChangedCallback(
             base::BindRepeating(&FreWebUiStateObserver::OnWebUiStateChanged,
-                                base::Unretained(this)))),
-        controller_(controller) {}
+                                base::Unretained(this)))) {}
 
   void OnWebUiStateChanged(mojom::FreWebUiState new_state) {
     OnStateObserverStateChanged(new_state);
@@ -58,7 +57,6 @@ class FreWebUiStateObserver
 
  private:
   base::CallbackListSubscription subscription_;
-  raw_ptr<GlicFreController> controller_;
 };
 
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(FreWebUiStateObserver, kFreWebUiState);
@@ -71,15 +69,15 @@ class GlicFreControllerUiTestBase : public test::InteractiveGlicTest {
   void SetUpOnMainThread() override {
     test::InteractiveGlicTest::SetUpOnMainThread();
     SetFRECompletion(browser()->profile(), prefs::FreStatus::kNotStarted);
-    EXPECT_TRUE(GetFreController()->ShouldShowFreDialog());
+    EXPECT_TRUE(GetFreController().ShouldShowFreDialog());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kGlicFreURL, fre_url().spec());
   }
 
-  GlicFreController* GetFreController() {
-    return glic_service()->window_controller().fre_controller();
+  GlicFreController& GetFreController() {
+    return glic_service()->fre_controller();
   }
 
   net::EmbeddedTestServer& fre_server() { return fre_server_; }
@@ -120,35 +118,35 @@ class GlicFreControllerUiTest : public GlicFreControllerUiTestBase {
   }
 
   auto WaitForAndInstrumentGlicFre() {
-    MultiStep steps =
-        Steps(UninstrumentWebContents(test::kGlicFreContentsElementId, false),
-              UninstrumentWebContents(test::kGlicFreHostElementId, false),
-              ObserveState(kGlicFreShowingDialogState, GetFreController()),
-              InAnyContext(Steps(
-                  InstrumentNonTabWebView(
+    MultiStep steps = Steps(
+        UninstrumentWebContents(test::kGlicFreContentsElementId, false),
+        UninstrumentWebContents(test::kGlicFreHostElementId, false),
+        ObserveState(kGlicFreShowingDialogState, std::ref(GetFreController())),
+        InAnyContext(
+            Steps(InstrumentNonTabWebView(
                       test::kGlicFreHostElementId,
                       GlicFreDialogView::kWebViewElementIdForTesting),
                   InstrumentInnerWebContents(test::kGlicFreContentsElementId,
                                              test::kGlicFreHostElementId, 0),
                   WaitForWebContentsReady(test::kGlicFreContentsElementId))),
-              WaitForState(kGlicFreShowingDialogState, true),
-              StopObservingState(kGlicFreShowingDialogState));
+        WaitForState(kGlicFreShowingDialogState, true),
+        StopObservingState(kGlicFreShowingDialogState));
 
     AddDescriptionPrefix(steps, "WaitForAndInstrumentGlicFre");
     return steps;
   }
 
   auto ForceInvalidateAccount() {
-    return Do([this]() { InvalidateAccount(GetFreController()->profile()); });
+    return Do([this]() { InvalidateAccount(GetFreController().profile()); });
   }
 
   auto ForceReauthAccount() {
-    return Do([this]() { ReauthAccount(GetFreController()->profile()); });
+    return Do([this]() { ReauthAccount(GetFreController().profile()); });
   }
 
   auto CheckFreDialogIsShowing(bool is_showing) {
     return CheckResult(
-        [this]() { return GetFreController()->IsShowingDialog() == true; },
+        [this]() { return GetFreController().IsShowingDialog() == true; },
         is_showing, "CheckFreDialogIsShowing");
   }
 
@@ -235,9 +233,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, DISABLED_PressNoThanksButton) {
   // Tests that pressing the "No Thanks" button in the FRE closes the FRE
   // dialog, and does not open the glic window.
   RunTestSequence(
-      ObserveState(kFreWebUiState,
-                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
-                                  base::Unretained(this))),
+      ObserveState(kFreWebUiState, std::ref(GetFreController())),
       PressButton(kGlicButtonElementId), WaitForAndInstrumentGlicFre(),
       WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
       ClickMockFreElement(kMockFreClientNoThanksButton, true),
@@ -260,9 +256,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, PressContinueButton) {
   // Tests that pressing the "Continue" button in the FRE closes the FRE
   // dialog, and opens the glic window.
   RunTestSequence(
-      ObserveState(kFreWebUiState,
-                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
-                                  base::Unretained(this))),
+      ObserveState(kFreWebUiState, std::ref(GetFreController())),
       PressButton(kGlicButtonElementId), WaitForAndInstrumentGlicFre(),
       WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
       ClickMockFreElement(kMockFreClientContinueButton, true),
@@ -282,19 +276,16 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
 
   // Tests that, when FRE is required and the glic button is pressed while
   // signed out, the FRE dialog is shown after reauthorization is completed.
-  RunTestSequence(
-      ObserveState(kFreWebUiState,
-                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
-                                  base::Unretained(this))),
-      ForceInvalidateAccount(), PressButton(kGlicButtonElementId),
-      CheckFreDialogIsShowing(false), InstrumentTab(kFirstTab),
-      WaitForWebContentsReady(kFirstTab),
-      // Without a pause here, we will 'sign-in' before the callback is
-      // registered to listen for it. This isn't a bug because it takes real
-      // users finite time to actually sign-in.
-      Wait(base::Milliseconds(500)), ForceReauthAccount(),
-      WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
-      StopObservingState(kFreWebUiState));
+  RunTestSequence(ObserveState(kFreWebUiState, std::ref(GetFreController())),
+                  ForceInvalidateAccount(), PressButton(kGlicButtonElementId),
+                  CheckFreDialogIsShowing(false), InstrumentTab(kFirstTab),
+                  WaitForWebContentsReady(kFirstTab),
+                  // Without a pause here, we will 'sign-in' before the callback
+                  // is registered to listen for it. This isn't a bug because it
+                  // takes real users finite time to actually sign-in.
+                  Wait(base::Milliseconds(500)), ForceReauthAccount(),
+                  WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
+                  StopObservingState(kFreWebUiState));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
@@ -307,9 +298,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
       ->SetResultForFutureCookieSyncInFre(false);
 
   RunTestSequence(
-      ObserveState(kFreWebUiState,
-                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
-                                  base::Unretained(this))),
+      ObserveState(kFreWebUiState, std::ref(GetFreController())),
       PressButton(kGlicButtonElementId),
       WaitForShow(GlicFreDialogView::kWebViewElementIdForTesting),
       WaitForState(kFreWebUiState, mojom::FreWebUiState::kError), Do([this]() {
@@ -327,9 +316,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, ShowsErrorPanelOnInvalidAuth) {
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
 
   RunTestSequence(
-      ObserveState(kFreWebUiState,
-                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
-                                  base::Unretained(this))),
+      ObserveState(kFreWebUiState, std::ref(GetFreController())),
       PressButton(kGlicButtonElementId), ForceInvalidateAccount(),
       WaitForShow(GlicFreDialogView::kWebViewElementIdForTesting),
       WaitForState(kFreWebUiState, mojom::FreWebUiState::kError), Do([this]() {
@@ -348,15 +335,13 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
   RunTestSequence(
-      ObserveState(kFreWebUiState,
-                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
-                                  base::Unretained(this))),
+      ObserveState(kFreWebUiState, std::ref(GetFreController())),
       PressButton(kGlicButtonElementId), WaitForAndInstrumentGlicFre(),
       WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
       // Crash the renderer process for the FRE WebUI.
       Do([this]() {
         content::WebContents* fre_web_contents =
-            GetFreController()->GetWebContents();
+            GetFreController().GetWebContents();
         ASSERT_TRUE(fre_web_contents);
         content::RenderProcessHost* rph =
             fre_web_contents->GetPrimaryMainFrame()->GetProcess();
@@ -376,9 +361,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
 
   RunTestSequence(
-      ObserveState(kFreWebUiState,
-                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
-                                  base::Unretained(this))),
+      ObserveState(kFreWebUiState, std::ref(GetFreController())),
       PressButton(kGlicButtonElementId), WaitForAndInstrumentGlicFre(),
       WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
       InAnyContext(Do([&]() {
@@ -424,10 +407,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiHttpErrorTest,
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
 
   RunTestSequence(
-      ObserveState(
-          kFreWebUiState,
-          base::BindOnce(&GlicFreControllerUiHttpErrorTest::GetFreController,
-                         base::Unretained(this))),
+      ObserveState(kFreWebUiState, std::ref(GetFreController())),
       PressButton(kGlicButtonElementId),
       WaitForShow(GlicFreDialogView::kWebViewElementIdForTesting),
       WaitForState(kFreWebUiState, mojom::FreWebUiState::kError), Do([this]() {
@@ -481,10 +461,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTimeoutTest,
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
 
   RunTestSequence(
-      ObserveState(
-          kFreWebUiState,
-          base::BindOnce(&GlicFreControllerUiTimeoutTest::GetFreController,
-                         base::Unretained(this))),
+      ObserveState(kFreWebUiState, std::ref(GetFreController())),
       PressButton(kGlicButtonElementId),
       WaitForShow(GlicFreDialogView::kWebViewElementIdForTesting),
       WaitForState(kFreWebUiState, mojom::FreWebUiState::kError),
@@ -512,9 +489,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, DISABLED_CloseWithEsc) {
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
 
   RunTestSequence(
-      ObserveState(kFreWebUiState,
-                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
-                                  base::Unretained(this))),
+      ObserveState(kFreWebUiState, std::ref(GetFreController())),
       PressButton(kGlicButtonElementId), WaitForAndInstrumentGlicFre(),
       WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
       SendKeyPress(GlicFreDialogView::kWebViewElementIdForTesting,
@@ -531,9 +506,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, CloseByClosingHostTab) {
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
 
   RunTestSequence(
-      ObserveState(kFreWebUiState,
-                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
-                                  base::Unretained(this))),
+      ObserveState(kFreWebUiState, std::ref(GetFreController())),
       // Open a new tab before showing the FRE.
       Do([this]() {
         NavigateParams params(browser(), GURL("about:blank"),
@@ -544,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, CloseByClosingHostTab) {
       PressButton(kGlicButtonElementId), WaitForAndInstrumentGlicFre(),
       WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady), Do([this]() {
         // Assert that the FRE dialog is showing before closing the tab.
-        EXPECT_TRUE(GetFreController()->IsShowingDialog());
+        EXPECT_TRUE(GetFreController().IsShowingDialog());
         EXPECT_EQ(user_action_tester().GetActionCount(
                       "Glic.Fre.CloseByClosingHostTab"),
                   0);
@@ -570,9 +543,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, CloseWithToggle) {
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
 
   RunTestSequence(
-      ObserveState(kFreWebUiState,
-                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
-                                  base::Unretained(this))),
+      ObserveState(kFreWebUiState, std::ref(GetFreController())),
       PressButton(kGlicButtonElementId), WaitForAndInstrumentGlicFre(),
       WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
       PressButton(kGlicButtonElementId),
@@ -592,9 +563,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, DISABLED_CloseWithXButton) {
       "#close"};
 
   RunTestSequence(
-      ObserveState(kFreWebUiState,
-                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
-                                  base::Unretained(this))),
+      ObserveState(kFreWebUiState, std::ref(GetFreController())),
       PressButton(kGlicButtonElementId), WaitForAndInstrumentGlicFre(),
       WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
       ClickMockFreElement(kMockFreClientCloseButton, true),

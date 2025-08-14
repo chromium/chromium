@@ -55,7 +55,6 @@ class MockGlicWindowController
   MOCK_METHOD(void, RemoveStateObserver, (StateObserver*), (override));
   MOCK_METHOD(bool, IsActive, (), (override));
   MOCK_METHOD(bool, IsShowing, (), (const, override));
-  MOCK_METHOD(bool, IsPanelOrFreShowing, (), (const, override));
   MOCK_METHOD(bool, IsAttached, (), (const, override));
   MOCK_METHOD(bool, IsDetached, (), (const, override));
   MOCK_METHOD(base::CallbackListSubscription,
@@ -63,16 +62,13 @@ class MockGlicWindowController
               (WindowActivationChangedCallback),
               (override));
   MOCK_METHOD(void, Preload, (), (override));
-  MOCK_METHOD(void, PreloadFre, (), (override));
   MOCK_METHOD(void, Reload, (), (override));
   MOCK_METHOD(bool, IsWarmed, (), (const, override));
   MOCK_METHOD(GlicView*, GetGlicView, (), (override));
   MOCK_METHOD(base::WeakPtr<views::View>, GetGlicViewAsView, (), (override));
   MOCK_METHOD(GlicWidget*, GetGlicWidget, (), (override));
-  MOCK_METHOD(content::WebContents*, GetFreWebContents, (), (override));
   MOCK_METHOD(Browser*, attached_browser, (), (override));
   MOCK_METHOD(State, state, (), (const, override));
-  MOCK_METHOD(GlicFreController*, fre_controller, (), (override));
   MOCK_METHOD(GlicWindowAnimator*, window_animator, (), (override));
   MOCK_METHOD(Profile*, profile, (), (override));
   MOCK_METHOD(bool, IsDragging, (), (override));

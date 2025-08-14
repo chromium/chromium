@@ -744,7 +744,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, PermanentlyDeleteProfile) {
   Browser* const browser1 = CreateBrowser(&profile1);
   GlicKeyedService* const service1 =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser1->profile());
-  service1->window_controller().fre_controller()->AcceptFre();
+  service1->fre_controller().AcceptFre();
   EXPECT_TRUE(service1->enabling().HasConsented());
 
   // Open glic

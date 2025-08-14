@@ -42,6 +42,7 @@ namespace glic {
 class AuthController;
 class GlicActorController;
 class GlicEnabling;
+class GlicFreController;
 class GlicMetrics;
 class GlicOcclusionNotifier;
 class GlicProfileManager;
@@ -118,6 +119,7 @@ class GlicKeyedService : public KeyedService {
   GlicEnabling& enabling() { return *enabling_.get(); }
 
   GlicMetrics* metrics() { return metrics_.get(); }
+  GlicFreController& fre_controller();
   GlicWindowController& window_controller();
   GlicSharingManager& sharing_manager();
 
@@ -258,6 +260,7 @@ class GlicKeyedService : public KeyedService {
 
   std::unique_ptr<GlicEnabling> enabling_;
   std::unique_ptr<GlicMetrics> metrics_;
+  std::unique_ptr<GlicFreController> fre_controller_;
   std::unique_ptr<Host> host_;
   std::unique_ptr<GlicWindowControllerImpl> window_controller_;
   std::unique_ptr<GlicSharingManagerImpl> sharing_manager_;

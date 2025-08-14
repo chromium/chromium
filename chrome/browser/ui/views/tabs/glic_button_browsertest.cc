@@ -60,9 +60,8 @@ class GlicButtonTest : public InProcessBrowserTest {
   void WaitForFreShownAndInitialized() {
     ASSERT_TRUE(base::test::RunUntil([&]() {
       return glic_service()
-          ->window_controller()
-          .fre_controller()
-          ->IsShowingDialogAndStateInitialized();
+          ->fre_controller()
+          .IsShowingDialogAndStateInitialized();
     })) << "FRE dialog should have been shown";
   }
 

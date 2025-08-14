@@ -88,11 +88,9 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
           base::BindRepeating(&GlicButton::PanelStateChanged,
                               base::Unretained(this)));
 
-  GlicFreController* fre_controller =
-      service->window_controller().fre_controller();
-  fre_subscription_ =
-      fre_controller->AddWebUiStateChangedCallback(base::BindRepeating(
-          &GlicButton::OnFreWebUiStateChanged, base::Unretained(this)));
+  fre_subscription_ = service->fre_controller().AddWebUiStateChangedCallback(
+      base::BindRepeating(&GlicButton::OnFreWebUiStateChanged,
+                          base::Unretained(this)));
 }
 
 GlicButton::~GlicButton() = default;

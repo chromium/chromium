@@ -37,7 +37,7 @@ namespace internal {
 class GlicFreShowingDialogObserver
     : public ui::test::PollingStateObserver<bool> {
  public:
-  explicit GlicFreShowingDialogObserver(GlicFreController* controller);
+  explicit GlicFreShowingDialogObserver(const GlicFreController& controller);
   ~GlicFreShowingDialogObserver() override;
 };
 

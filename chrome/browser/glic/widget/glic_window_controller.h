@@ -44,7 +44,6 @@ class GlicWidget;
 class GlicKeyedService;
 class GlicView;
 class GlicWindowAnimator;
-class GlicFreController;
 class Host;
 enum class AttachChangeReason;
 
@@ -159,9 +158,6 @@ class GlicWindowController : public Host::Delegate {
   // Returns true if the state is anything other than kClosed.
   virtual bool IsShowing() const = 0;
 
-  // Returns true if either the glic panel or the FRE are showing.
-  virtual bool IsPanelOrFreShowing() const = 0;
-
   // Returns whether or not the glic window is currently attached to a browser.
   // Virtual for testing.
   virtual bool IsAttached() const = 0;
@@ -178,9 +174,6 @@ class GlicWindowController : public Host::Delegate {
 
   // Warms the glic web contents.
   virtual void Preload() = 0;
-
-  // Warms the fre web contents.
-  virtual void PreloadFre() = 0;
 
   // Reloads the glic web contents or the FRE's web contents (depending on
   // which is currently visible).
@@ -201,10 +194,6 @@ class GlicWindowController : public Host::Delegate {
   // Returns the widget that backs the glic window.
   virtual GlicWidget* GetGlicWidget() = 0;
 
-  // Returns the WebContents used for the first-run experience, or nullptr if
-  // none.
-  virtual content::WebContents* GetFreWebContents() = 0;
-
   // Return the Browser to which the panel is attached, or null if detached.
   virtual Browser* attached_browser() = 0;
 
@@ -219,8 +208,6 @@ class GlicWindowController : public Host::Delegate {
     kOpen,
   };
   virtual State state() const = 0;
-
-  virtual GlicFreController* fre_controller() = 0;
 
   virtual GlicWindowAnimator* window_animator() = 0;
 
