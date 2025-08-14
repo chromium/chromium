@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/version.h"
@@ -245,6 +246,11 @@ template <typename T>
 // with the updater.
 [[nodiscard]] std::optional<base::FilePath>
 GetBundledEnterpriseCompanionExecutablePath(UpdaterScope scope);
+
+// Finds files that match `predicate` under `dir`.
+std::vector<base::FilePath> GetFilesWithPredicate(
+    const base::FilePath& dir,
+    base::FunctionRef<bool(const base::FilePath&)> predicate);
 
 }  // namespace updater
 

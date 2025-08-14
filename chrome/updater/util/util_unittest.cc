@@ -38,6 +38,25 @@
 
 namespace updater {
 
+namespace {
+
+void SetupMockDirectory(const base::FilePath& mock_dir,
+                        const base::FilePath::StringType& mock_extension) {
+  for (const base::FilePath& dir :
+       {mock_dir, mock_dir.Append(FILE_PATH_LITERAL("SubDir1")),
+        mock_dir.Append(FILE_PATH_LITERAL("SubDir2"))}) {
+    ASSERT_TRUE(base::CreateDirectory(dir));
+    base::FilePath temp_file;
+    ASSERT_TRUE(base::CreateTemporaryFileInDir(dir, &temp_file));
+    if (mock_extension[0]) {
+      ASSERT_TRUE(
+          base::CopyFile(temp_file, temp_file.AddExtension(mock_extension)));
+    }
+  }
+}
+
+}  // namespace
+
 struct UtilTagArgsTestCase {
   const std::string tag_switch;
 };
@@ -251,5 +270,25 @@ TEST_P(UtilTaskNameTest, GetTaskDisplayName) {
            base::UTF8ToWide(version().GetString())}));
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+TEST(Util, GetFilesWithPredicate) {
+  EXPECT_TRUE(GetFilesWithPredicate({}, [](const base::FilePath&) {
+                return true;
+              }).empty());
+
+  for (const auto& extension :
+       {FILE_PATH_LITERAL(".log"), FILE_PATH_LITERAL("")}) {
+    base::ScopedTempDir temp_dir;
+    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+    ASSERT_NO_FATAL_FAILURE(SetupMockDirectory(temp_dir.GetPath(), extension));
+    EXPECT_EQ(
+        GetFilesWithPredicate(temp_dir.GetPath(),
+                              [&](const base::FilePath& item) {
+                                return item.MatchesFinalExtension(extension);
+                              })
+            .size(),
+        extension[0] ? 3u : 0u);
+  }
+}
 
 }  // namespace updater

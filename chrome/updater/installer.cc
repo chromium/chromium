@@ -226,6 +226,19 @@ void Installer::InstallWithSyncPrimitives(
                                                 base::BlockingType::WILL_BLOCK);
   const auto result = InstallHelper(unpack_path, std::move(install_params),
                                     std::move(progress_callback));
+  if (result.result.category != update_client::ErrorCategory::kNone) {
+    for (const auto& log_file :
+         GetFilesWithPredicate(unpack_path, [](const base::FilePath& item) {
+           return item.MatchesFinalExtension(FILE_PATH_LITERAL(".log"));
+         })) {
+      VLOG(2) << "===== Begin log file: " << log_file;
+      std::string log;
+      if (base::ReadFileToString(log_file, &log)) {
+        VLOG(2) << log;
+      }
+      VLOG(2) << "===== End log file: " << log_file;
+    }
+  }
   std::move(callback).Run(result);
 }
 

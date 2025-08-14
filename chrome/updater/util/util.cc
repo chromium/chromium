@@ -29,6 +29,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/escape.h"
@@ -356,6 +357,22 @@ int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {
   }
   return 100 * std::clamp(static_cast<double>(downloaded_bytes) / total_bytes,
                           0.0, 1.0);
+}
+
+std::vector<base::FilePath> GetFilesWithPredicate(
+    const base::FilePath& dir,
+    base::FunctionRef<bool(const base::FilePath&)> predicate) {
+  if (dir.empty()) {
+    return {};
+  }
+  std::vector<base::FilePath> files;
+  base::FileEnumerator(dir, /*recursive=*/true, base::FileEnumerator::FILES)
+      .ForEach([&](const base::FilePath& item) {
+        if (predicate(item)) {
+          files.push_back(item);
+        }
+      });
+  return files;
 }
 
 }  // namespace updater
