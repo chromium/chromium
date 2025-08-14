@@ -1927,6 +1927,15 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                                 newTabGroupId,
                                 isPinned);
 
+        // Ensure the current tab is always the last shown tab in its group.
+        Tab currentTab = mCurrentTabSupplier.get();
+        if (currentTab != null) {
+            Token currentTabGroupId = currentTab.getTabGroupId();
+            if (currentTabGroupId != null) {
+                setLastShownTabForGroup(currentTabGroupId, currentTab);
+            }
+        }
+
         if (supportsPendingClosures()) {
             mPendingTabClosureManager.resetState();
         }

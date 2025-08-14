@@ -767,13 +767,15 @@ class TabListMediator implements TabListNotificationHandler {
                     assumeNonNull(filter);
                     Tab previousGroupTab = filter.getRepresentativeTabAt(prevFilterIndex);
                     if (mActionsOnAllRelatedTabs) {
-                        // Only add a tab to the model if it represents a new card (new group or new
-                        // singular tab). Do this first so that the indices for the filter and the
-                        // model match when doing the update afterwards. When moving a tab between
-                        // groups, the new tab being added to an existing group is handled in
-                        // didMergeTabToGroup().
-                        if (filter.getTabCountForGroup(movedTab.getTabGroupId()) <= 1
+                        Token movedTabGroupId = movedTab.getTabGroupId();
+                        if (filter.getTabCountForGroup(movedTabGroupId) <= 1
                                 && movedTab != previousGroupTab) {
+                            // Add a tab to the model if it represents a new card. This happens if
+                            // the tab is either not in a group or in a group by itself. We do this
+                            // first so that the indices for the filter and the model match when
+                            // doing the update afterwards. When moving a tab between groups, the
+                            // new tab being added to an existing group is handled in
+                            // didMergeTabToGroup().
                             int currentSelectedTabId =
                                     TabModelUtils.getCurrentTabId(filter.getTabModel());
                             int filterIndex = filter.representativeIndexOf(movedTab);
@@ -781,6 +783,18 @@ class TabListMediator implements TabListNotificationHandler {
                                     movedTab,
                                     mModelList.indexOfNthTabCard(filterIndex),
                                     currentSelectedTabId == movedTab.getId());
+                        } else if (movedTabGroupId != null
+                                && movedTabGroupId.equals(previousGroupTab.getTabGroupId())) {
+                            // Despite being ungrouped we are still in a tab group this could mean
+                            // the previous tab card this tab was associated with no longer contains
+                            // tabs. If we have the same tab group id as the previous group tab then
+                            // this was possibly the last tab in its group. Remove the tab card if
+                            // it exists.
+                            int previousIndex = mModelList.indexFromTabId(movedTab.getId());
+                            if (previousIndex != TabModel.INVALID_TAB_INDEX) {
+                                mModelList.removeAt(previousIndex);
+                                return;
+                            }
                         }
                         // Always update the previous group to clean up old state e.g. thumbnail,
                         // title, etc.
@@ -833,19 +847,25 @@ class TabListMediator implements TabListNotificationHandler {
                         int srcIndex = positions.second;
                         int desIndex = positions.first;
 
-                        // If only the desIndex is valid then just update the destination index as
-                        // this is either a group of size 1 being created or a tab is being moved
-                        // between groups. In the latter case the group moved from will be updated
-                        // by TabGroupModelFilterObserver#didMoveTabOutOfGroup(Tab, int).
+                        // If only the desIndex is valid then just update the destination index to
+                        // the last shown tab in its group.
                         if (desIndex != TabModel.INVALID_TAB_INDEX
                                 && srcIndex == TabModel.INVALID_TAB_INDEX) {
-                            Tab tab =
-                                    tabModel.getTabById(
-                                            mModelList
-                                                    .get(desIndex)
-                                                    .model
-                                                    .get(TabProperties.TAB_ID));
-                            updateTab(desIndex, tab, false, false);
+                            @TabId
+                            int desIndexTabId =
+                                    mModelList.get(desIndex).model.get(TabProperties.TAB_ID);
+                            Tab desTab = tabModel.getTabById(desIndexTabId);
+                            Token desTabGroupId = desTab.getTabGroupId();
+                            Tab lastShownTab = desTab;
+                            if (desTabGroupId != null) {
+                                @TabId
+                                int lastShownTabId = filter.getGroupLastShownTabId(desTabGroupId);
+                                if (lastShownTabId != Tab.INVALID_TAB_ID) {
+                                    lastShownTab = tabModel.getTabById(lastShownTabId);
+                                }
+                            }
+                            assert lastShownTab != null;
+                            updateTab(desIndex, lastShownTab, true, false);
                             return;
                         }
 

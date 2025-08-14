@@ -1499,14 +1499,14 @@ public class TabCollectionTabModelImplTest {
                         () -> mCollectionModel.getRepresentativeTabList());
         assertEquals(3, representativeTabs.size());
         assertEquals(tab0, representativeTabs.get(0));
-        assertEquals(tab1, representativeTabs.get(1));
+        assertEquals(tab3, representativeTabs.get(1));
         assertEquals(tab2, representativeTabs.get(2));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(3, mCollectionModel.getIndividualTabAndGroupCount());
 
                     assertEquals(tab0, mCollectionModel.getRepresentativeTabAt(0));
-                    assertEquals(tab1, mCollectionModel.getRepresentativeTabAt(1));
+                    assertEquals(tab3, mCollectionModel.getRepresentativeTabAt(1));
                     assertEquals(tab2, mCollectionModel.getRepresentativeTabAt(2));
                     assertNull(mCollectionModel.getRepresentativeTabAt(3));
                     assertNull(mCollectionModel.getRepresentativeTabAt(-1));
@@ -2376,6 +2376,31 @@ public class TabCollectionTabModelImplTest {
                 () ->
                         mCollectionModel.mergeListOfTabsToGroup(
                                 tabs, destinationTab, /* notify= */ false));
+    }
+
+    @Test
+    @MediumTest
+    public void testMergeActivatedTabToGroup_UpdatesLastShownTabId() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+        assertEquals(tab2, getCurrentTab());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab0, tab1), tab0, /* notify= */ false);
+                    Token groupId = tab0.getTabGroupId();
+                    assertNotNull(groupId);
+
+                    assertEquals(tab0.getId(), mCollectionModel.getGroupLastShownTabId(groupId));
+
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab2), tab0, /* notify= */ false);
+
+                    assertEquals(tab2.getId(), mCollectionModel.getGroupLastShownTabId(groupId));
+                });
     }
 
     private Tab createChildTab(Tab parentTab) {
