@@ -281,9 +281,14 @@ WallpaperControllerImpl::WallpaperControllerImpl(
   Shell::Get()->login_screen_controller()->data_dispatcher()->AddObserver(this);
   theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
   wallpaper_metrics_manager_ = std::make_unique<WallpaperMetricsManager>();
+
+  pref_manager_observation_.Observe(pref_manager_.get());
+  SetDevicePolicyWallpaperPath(
+      pref_manager_->GetDeviceWallpaperImageFilePath());
 }
 
 WallpaperControllerImpl::~WallpaperControllerImpl() {
+  pref_manager_observation_.Reset();
   Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
   Shell::Get()->RemoveShellObserver(this);
   // Per ash/shell.cc, wallpaper_controller_impl outlives
@@ -556,16 +561,13 @@ void WallpaperControllerImpl::SetDriveFsDelegate(
 
 void WallpaperControllerImpl::Init(
     const base::FilePath& chromeos_wallpapers_path,
-    const base::FilePath& chromeos_custom_wallpapers_path,
-    const base::FilePath& device_policy_wallpaper_path) {
+    const base::FilePath& chromeos_custom_wallpapers_path) {
   wallpapers_dir_ = chromeos_wallpapers_path;
   custom_wallpapers_dir_ = chromeos_custom_wallpapers_path;
   google_photos_wallpapers_dir_ =
       chromeos_wallpapers_path.Append("google_photos/");
   sea_pen_wallpaper_dir_ = chromeos_wallpapers_path.Append(
       wallpaper_constants::kSeaPenWallpaperDirName);
-
-  SetDevicePolicyWallpaperPath(device_policy_wallpaper_path);
 }
 
 bool WallpaperControllerImpl::CanSetUserWallpaper(
@@ -1377,6 +1379,11 @@ WallpaperControllerImpl::GetWallpaperInfoForAccountId(
     return std::nullopt;
   }
   return info;
+}
+
+void WallpaperControllerImpl::OnDeviceWallpaperImageFilePathUpdated(
+    const base::FilePath& path) {
+  SetDevicePolicyWallpaperPath(path);
 }
 
 void WallpaperControllerImpl::OnDidApplyDisplayChanges() {

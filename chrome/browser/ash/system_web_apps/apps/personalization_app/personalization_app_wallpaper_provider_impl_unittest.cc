@@ -38,7 +38,6 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/external_data/handlers/device_wallpaper_image_external_data_handler.h"
 #include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -99,8 +98,6 @@ TestingPrefServiceSimple* RegisterPrefs(TestingPrefServiceSimple* local_state) {
   ash::device_settings_cache::RegisterPrefs(local_state->registry());
   user_manager::KnownUser::RegisterPrefs(local_state->registry());
   ash::WallpaperPrefManager::RegisterLocalStatePrefs(local_state->registry());
-  policy::DeviceWallpaperImageExternalDataHandler::RegisterPrefs(
-      local_state->registry());
   ProfileAttributesStorage::RegisterPrefs(local_state->registry());
   return local_state;
 }

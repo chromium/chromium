@@ -1581,6 +1581,10 @@ inline constexpr char kWallpaperTimeOfDayStatus[] =
 inline constexpr char kWallpaperTimeOfDayScheduleType[] =
     "ash.wallpaper_time_of_day.schedule_type";
 
+// A string pref storing the path of device wallpaper image file.
+inline constexpr char kDeviceWallpaperImageFilePath[] =
+    "policy.device_wallpaper_image_file_path";
+
 // Boolean pref indicating whether a user has enabled the bluetooth adapter.
 inline constexpr char kUserBluetoothAdapterEnabled[] =
     "ash.user.bluetooth.adapter_enabled";

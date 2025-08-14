@@ -59,6 +59,15 @@ class WallpaperProfileHelper {
 // Manages wallpaper preferences and tracks the currently configured wallpaper.
 class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    // Called when kDeviceWallpaperImageFilePath in local_state is updated.
+    virtual void OnDeviceWallpaperImageFilePathUpdated(
+        const base::FilePath& path) {}
+  };
+
   // Determines whether the wallpaper info is syncable and should be stored in
   // synced prefs.
   static bool ShouldSyncOut(const WallpaperInfo& local_info);
@@ -84,6 +93,9 @@ class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   virtual void SetClient(WallpaperControllerClient* client) = 0;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Retrieve the wallpaper preference value for |account_id| and use it to
   // populate |info|. Returns true if |info| was populated successfully.
@@ -164,6 +176,9 @@ class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
   // Returns the delta for the next daily refresh update for `account_id`.
   virtual base::TimeDelta GetTimeToNextDailyRefreshUpdate(
       const AccountId& account_id) const = 0;
+
+  // Returns the kDeviceWallpaperImageFilePath.
+  virtual base::FilePath GetDeviceWallpaperImageFilePath() const = 0;
 
  protected:
   WallpaperPrefManager() = default;

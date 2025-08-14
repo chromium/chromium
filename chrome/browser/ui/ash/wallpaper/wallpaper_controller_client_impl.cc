@@ -217,12 +217,6 @@ WallpaperControllerClientImpl::~WallpaperControllerClientImpl() {
 }
 
 void WallpaperControllerClientImpl::Init() {
-  pref_registrar_.Init(&local_state_.get());
-  pref_registrar_.Add(
-      prefs::kDeviceWallpaperImageFilePath,
-      base::BindRepeating(
-          &WallpaperControllerClientImpl::DeviceWallpaperImageFilePathChanged,
-          weak_factory_.GetWeakPtr()));
   wallpaper_controller_ = ash::WallpaperController::Get();
 
   InitController();
@@ -455,11 +449,6 @@ void WallpaperControllerClientImpl::OnUserLoggedIn(
   ShowUserWallpaper(user.GetAccountId());
 }
 
-void WallpaperControllerClientImpl::DeviceWallpaperImageFilePathChanged() {
-  wallpaper_controller_->SetDevicePolicyWallpaperPath(
-      GetDeviceWallpaperImageFilePath());
-}
-
 void WallpaperControllerClientImpl::InitController() {
   wallpaper_controller_->SetClient(this);
   wallpaper_controller_->SetDriveFsDelegate(
@@ -469,9 +458,7 @@ void WallpaperControllerClientImpl::InitController() {
   CHECK(base::PathService::Get(ash::DIR_WALLPAPERS, &wallpapers));
   base::FilePath custom_wallpapers;
   CHECK(base::PathService::Get(ash::DIR_CUSTOM_WALLPAPERS, &custom_wallpapers));
-  base::FilePath device_policy_wallpaper = GetDeviceWallpaperImageFilePath();
-  wallpaper_controller_->Init(wallpapers, custom_wallpapers,
-                              device_policy_wallpaper);
+  wallpaper_controller_->Init(wallpapers, custom_wallpapers);
 }
 
 void WallpaperControllerClientImpl::ShowWallpaperOnLoginScreen() {
@@ -590,12 +577,6 @@ bool WallpaperControllerClientImpl::ShouldShowUserNamesOnLogin() const {
   ash::CrosSettings::Get()->GetBoolean(ash::kAccountsPrefShowUserNamesOnSignIn,
                                        &show_user_names);
   return show_user_names;
-}
-
-base::FilePath
-WallpaperControllerClientImpl::GetDeviceWallpaperImageFilePath() {
-  return base::FilePath(
-      local_state_->GetString(prefs::kDeviceWallpaperImageFilePath));
 }
 
 void WallpaperControllerClientImpl::OnDailyImageInfoFetched(

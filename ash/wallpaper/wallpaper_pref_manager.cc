@@ -21,9 +21,11 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_ephemeral_user.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -142,12 +144,30 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
       : local_state_(local_state), profile_helper_(std::move(profile_helper)) {
     // local_state is null for tests under AshTestHelper
     DCHECK(profile_helper_);
+    if (local_state_) {
+      local_state_change_registrar_.Init(local_state_.get());
+      local_state_change_registrar_.Add(
+          prefs::kDeviceWallpaperImageFilePath,
+          base::BindRepeating(
+              &WallpaperPrefManagerImpl::OnDeviceWallpaperImageFilePathUpdated,
+              base::Unretained(this)));
+    } else {
+      CHECK_IS_TEST();
+    }
   }
 
   ~WallpaperPrefManagerImpl() override = default;
 
   void SetClient(WallpaperControllerClient* client) override {
     profile_helper_->SetClient(client);
+  }
+
+  void AddObserver(Observer* observer) override {
+    observer_list_.AddObserver(observer);
+  }
+
+  void RemoveObserver(Observer* observer) override {
+    observer_list_.RemoveObserver(observer);
   }
 
   bool GetUserWallpaperInfo(const AccountId& account_id,
@@ -357,6 +377,14 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     return delta.is_positive() ? delta : base::TimeDelta();
   }
 
+  base::FilePath GetDeviceWallpaperImageFilePath() const override {
+    if (!local_state_) {
+      return base::FilePath();
+    }
+    return base::FilePath(
+        local_state_->GetString(prefs::kDeviceWallpaperImageFilePath));
+  }
+
  private:
   // Caches a single `color` in the dictionary for `pref_name`.
   void CacheSingleColor(const std::string& pref_name,
@@ -401,11 +429,20 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     color_dict->Remove(old_info.location);
   }
 
-  raw_ptr<PrefService> local_state_ = nullptr;
+  // Called when kDeviceWallpaperImageFilePath in local_state is updated.
+  void OnDeviceWallpaperImageFilePathUpdated() {
+    observer_list_.Notify(&Observer::OnDeviceWallpaperImageFilePathUpdated,
+                          GetDeviceWallpaperImageFilePath());
+  }
+
+  const raw_ptr<PrefService> local_state_ = nullptr;
+  PrefChangeRegistrar local_state_change_registrar_;
   std::unique_ptr<WallpaperProfileHelper> profile_helper_;
 
   // Cache of wallpapers for ephemeral users.
   base::flat_map<AccountId, WallpaperInfo> ephemeral_users_wallpaper_info_;
+
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace
@@ -472,6 +509,8 @@ std::unique_ptr<WallpaperPrefManager> WallpaperPrefManager::CreateForTesting(
 // static
 void WallpaperPrefManager::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(prefs::kDeviceWallpaperImageFilePath,
+                               std::string());
   registry->RegisterDictionaryPref(prefs::kUserWallpaperInfo);
   registry->RegisterDictionaryPref(prefs::kWallpaperColors);
   registry->RegisterDictionaryPref(prefs::kWallpaperMeanColors);

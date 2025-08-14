@@ -81,8 +81,7 @@ class DemoModeIdleHandlerTestBase : public ChromeAshTestBase {
     wallpaper_controller_ = Shell::Get()->wallpaper_controller();
     wallpaper_controller_->Init(
         /*online_wallpaper_dir=*/base::FilePath(),
-        /* custom_wallpaper_dir=*/user_data_dir_.GetPath(),
-        /* policy_wallpaper=*/base::FilePath());
+        /* custom_wallpaper_dir=*/user_data_dir_.GetPath());
 
     wallpaper_controller_->SetClient(&client_);
     client_.set_fake_files_id_for_account_id(kAccountId, "wallpaper_files_id");

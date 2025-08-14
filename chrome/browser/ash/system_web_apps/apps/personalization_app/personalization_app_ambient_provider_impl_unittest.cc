@@ -1209,7 +1209,6 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   base::ScopedTempDir user_wallpaper_dir;
   ASSERT_TRUE(user_wallpaper_dir.CreateUniqueTempDir());
   wallpaper_controller->Init(user_wallpaper_dir.GetPath(),
-                             user_wallpaper_dir.GetPath(),
                              user_wallpaper_dir.GetPath());
   TestWallpaperControllerClient client;
   wallpaper_controller->SetClient(&client);
