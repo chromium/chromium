@@ -321,12 +321,6 @@ bool IsSearchEngineChoiceInvalid(PrefService& prefs);
 // The function definition is generated in `generated_marketing_snippets.cc`.
 // `engine_keyword` is the search engine keyword.
 int GetMarketingSnippetResourceId(const std::u16string& engine_keyword);
-
-// Returns the marketing snippet string or the fallback string if the search
-// engine didn't provide its own.
-std::u16string GetMarketingSnippetString(
-    const TemplateURLData& template_url_data);
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace search_engines

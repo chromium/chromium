@@ -883,6 +883,10 @@ class TemplateURL {
   // with this template URL, or an empty string is none is associated with it.
   std::string GetBuiltinImageResourceId() const;
 
+  // Returns the marketing snippet string for the search engine, either the
+  // built-in one or a fallback variant.
+  std::u16string GetMarketingSnippet() const;
+
   // Returns the type of this search engine, or SEARCH_ENGINE_OTHER if no
   // engines match.
   SearchEngineType GetEngineType(
@@ -1028,6 +1032,11 @@ class TemplateURL {
   // Returns the resource ID base associated with this template URL, if it is
   // provided from built-in data.
   std::optional<std::string_view> GetBaseBuiltinResourceId() const;
+
+  // Returns the built-in marketing snippet string for the search engine, or
+  // `std::nullopt` if a marketing snippets are not included in this build of
+  // unavailable for this search engine.
+  std::optional<std::u16string> GetBuiltinMarketingSnippet() const;
 
   TemplateURLData& active_data();
 

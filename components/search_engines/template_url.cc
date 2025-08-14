@@ -44,12 +44,14 @@
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/regulatory_extension_type.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "components/url_formatter/url_formatter.h"
 #include "google_apis/google_api_keys.h"
@@ -58,6 +60,7 @@
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "ui/base/device_form_factor.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace {
@@ -1829,6 +1832,28 @@ std::string TemplateURL::GetBuiltinImageResourceId() const {
     return base::StrCat({base_resource_id.value(), "_IMAGE"});
   }
   return "IDR_DEFAULT_FAVICON";
+}
+
+std::optional<std::u16string> TemplateURL::GetBuiltinMarketingSnippet() const {
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/420943295): `GetMarketingSnippetResourceId()` is generated
+  // code. The flag-gating should be moved there directly.
+
+  int snippet_resource_id =
+      kEnableBuiltinSearchProviderAssets
+          ? search_engines::GetMarketingSnippetResourceId(keyword())
+          : -1;
+
+  if (snippet_resource_id != -1) {
+    return l10n_util::GetStringUTF16(snippet_resource_id);
+  }
+#endif
+  return std::nullopt;
+}
+
+std::u16string TemplateURL::GetMarketingSnippet() const {
+  return GetBuiltinMarketingSnippet().value_or(l10n_util::GetStringFUTF16(
+      IDS_SEARCH_ENGINE_FALLBACK_MARKETING_SNIPPET, short_name()));
 }
 
 SearchEngineType TemplateURL::GetEngineType(

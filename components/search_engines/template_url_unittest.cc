@@ -3056,6 +3056,16 @@ TEST_F(TemplateURLTest, GetBuiltinImageResourceId_FromCustomEngine) {
   EXPECT_EQ(t_url.GetBuiltinImageResourceId(), "IDR_DEFAULT_FAVICON");
 }
 
+TEST_F(TemplateURLTest, GetMarketingSnippet_Custom) {
+  std::u16string engine_name = u"My Custom Engine";
+  TemplateURLData custom_data;
+  custom_data.SetShortName(engine_name);
+  custom_data.SetKeyword(u"custom.com");
+  TemplateURL custom_url(custom_data);
+  EXPECT_NE(custom_url.GetMarketingSnippet().find(engine_name),
+            std::u16string::npos);
+}
+
 struct IsBetterThanEngineTestEngine {
   std::u16string keyword;
   PolicyOrigin policy_origin = PolicyOrigin::kNoPolicy;

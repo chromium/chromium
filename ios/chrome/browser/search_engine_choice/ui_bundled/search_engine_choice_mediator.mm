@@ -34,9 +34,8 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
   element = [[SnippetSearchEngineElement alloc] init];
   // Add the name and snippet to the element.
   element.name = base::SysUTF16ToNSString(template_url.short_name());
-  std::u16string string =
-      search_engines::GetMarketingSnippetString(template_url.data());
-  element.snippetDescription = base::SysUTF16ToNSString(string);
+  element.snippetDescription =
+      base::SysUTF16ToNSString(template_url.GetMarketingSnippet());
   // Add the favicon to the element.
   element.faviconImage = SearchEngineFaviconFromTemplateURL(template_url);
   // With the choice screen, all the search engines should have embedded icons,

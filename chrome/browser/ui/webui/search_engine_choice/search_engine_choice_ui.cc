@@ -46,8 +46,7 @@ std::string GetChoiceListJSON(
         "iconPath",
         base::StrCat({"chrome://theme/", choice->GetBuiltinImageResourceId()}));
     choice_value.Set("url", choice->url());
-    choice_value.Set("marketingSnippet",
-                     search_engines::GetMarketingSnippetString(choice->data()));
+    choice_value.Set("marketingSnippet", choice->GetMarketingSnippet());
     choice_value.Set("showMarketingSnippet", false);
     choice_value_list.Append(std::move(choice_value));
   }
