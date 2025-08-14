@@ -38,8 +38,11 @@
 
 namespace content {
 
+namespace webid {
+class UserInfoRequest;
+}
+
 class FederatedAuthDisconnectRequest;
-class FederatedAuthUserInfoRequest;
 class FederatedIdentityAutoReauthnPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 class RenderFrameHost;
@@ -365,7 +368,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                           const std::string& account_id);
 
   void CompleteUserInfoRequest(
-      FederatedAuthUserInfoRequest* request,
+      webid::UserInfoRequest* request,
       RequestUserInfoCallback callback,
       blink::mojom::RequestUserInfoStatus status,
       std::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info);
@@ -531,8 +534,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       fedcm_idp_registration_handler_;
 
   // Set of pending user info requests.
-  base::flat_set<std::unique_ptr<FederatedAuthUserInfoRequest>>
-      user_info_requests_;
+  base::flat_set<std::unique_ptr<webid::UserInfoRequest>> user_info_requests_;
 
   // Pending disconnect request.
   std::unique_ptr<FederatedAuthDisconnectRequest> disconnect_request_;

@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/federated_auth_user_info_request.h"
+#include "content/browser/webid/user_info_request.h"
 
 #include <memory>
 #include <optional>
@@ -42,7 +42,7 @@ using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
 
-namespace content {
+namespace content::webid {
 namespace {
 
 constexpr char kRpUrl[] = "https://rp.example";
@@ -273,9 +273,9 @@ class TestPermissionDelegate : public MockPermissionDelegate {
 
 }  // namespace
 
-class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
+class UserInfoRequestTest : public RenderViewHostImplTestHarness {
  public:
-  ~FederatedAuthUserInfoRequestTest() override = default;
+  ~UserInfoRequestTest() override = default;
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
@@ -316,7 +316,7 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
     idp_ptr->client_id = kClientId;
 
     UserInfoCallbackHelper callback_helper;
-    request_ = FederatedAuthUserInfoRequest::Create(
+    request_ = UserInfoRequest::Create(
         std::move(network_manager), permission_delegate_.get(),
         api_permission_delegate_.get(), iframe_render_frame_host_,
         std::move(idp_ptr));
@@ -353,7 +353,7 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
     EXPECT_EQ(messages[0], message);
   }
 
-  void ExpectUniqueIssue(FederatedAuthUserInfoRequestResult result) {
+  void ExpectUniqueIssue(UserInfoRequestResult result) {
     EXPECT_EQ(
         iframe_render_frame_host_->GetFederatedAuthUserInfoRequestIssueCount(
             result),
@@ -369,11 +369,11 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
   base::WeakPtr<TestIdpNetworkRequestManager> network_manager_;
   std::unique_ptr<TestApiPermissionDelegate> api_permission_delegate_;
   std::unique_ptr<TestPermissionDelegate> permission_delegate_;
-  std::unique_ptr<FederatedAuthUserInfoRequest> request_;
+  std::unique_ptr<UserInfoRequest> request_;
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(FederatedAuthUserInfoRequestTest, PreviouslySignedIn) {
+TEST_F(UserInfoRequestTest, PreviouslySignedIn) {
   const char kAccount1Id[] = "account1";
   const char kAccount2Id[] = "account2";
 
@@ -385,16 +385,15 @@ TEST_F(FederatedAuthUserInfoRequestTest, PreviouslySignedIn) {
   RunUserInfoTest(config, RequestUserInfoStatus::kSuccess,
                   {kAccount1Id, kAccount2Id});
 
-  histogram_tester_.ExpectUniqueSample(
-      "Blink.FedCm.UserInfo.Status",
-      FederatedAuthUserInfoRequestResult::kSuccess, 1);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.UserInfo.Status",
+                                       UserInfoRequestResult::kSuccess, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.UserInfo.NumAccounts",
                                        FedCmMetrics::NumAccounts::kMultiple, 1);
   histogram_tester_.ExpectTotalCount(
       "Blink.FedCm.UserInfo.TimeToRequestCompleted", 1);
 }
 
-TEST_F(FederatedAuthUserInfoRequestTest, NoSignedInAccount) {
+TEST_F(UserInfoRequestTest, NoSignedInAccount) {
   const char kAccount1Id[] = "account1";
   const char kAccount2Id[] = "account2";
 
@@ -408,18 +407,17 @@ TEST_F(FederatedAuthUserInfoRequestTest, NoSignedInAccount) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.UserInfo.Status",
-      FederatedAuthUserInfoRequestResult::kNoAccountSharingPermission, 1);
+      UserInfoRequestResult::kNoAccountSharingPermission, 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.UserInfo.NumAccounts", 0);
   histogram_tester_.ExpectTotalCount(
       "Blink.FedCm.UserInfo.TimeToRequestCompleted", 0);
   ExpectConsoleMessage(
       "getUserInfo() failed because the user has not yet used FedCM on this "
       "site with the provided IDP.");
-  ExpectUniqueIssue(
-      FederatedAuthUserInfoRequestResult::kNoAccountSharingPermission);
+  ExpectUniqueIssue(UserInfoRequestResult::kNoAccountSharingPermission);
 }
 
-TEST_F(FederatedAuthUserInfoRequestTest, NotInApprovedClientsList) {
+TEST_F(UserInfoRequestTest, NotInApprovedClientsList) {
   const char kAccount1Id[] = "account1";
   const char kAccount2Id[] = "account2";
 
@@ -433,8 +431,7 @@ TEST_F(FederatedAuthUserInfoRequestTest, NotInApprovedClientsList) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.UserInfo.Status",
-      FederatedAuthUserInfoRequestResult::kNoReturningUserFromFetchedAccounts,
-      1);
+      UserInfoRequestResult::kNoReturningUserFromFetchedAccounts, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.UserInfo.NumAccounts",
                                        FedCmMetrics::NumAccounts::kZero, 1);
   histogram_tester_.ExpectTotalCount(
@@ -442,11 +439,10 @@ TEST_F(FederatedAuthUserInfoRequestTest, NotInApprovedClientsList) {
   ExpectConsoleMessage(
       "getUserInfo() failed because no account received was a returning "
       "account.");
-  ExpectUniqueIssue(
-      FederatedAuthUserInfoRequestResult::kNoReturningUserFromFetchedAccounts);
+  ExpectUniqueIssue(UserInfoRequestResult::kNoReturningUserFromFetchedAccounts);
 }
 
-TEST_F(FederatedAuthUserInfoRequestTest, InApprovedClientsList) {
+TEST_F(UserInfoRequestTest, InApprovedClientsList) {
   const char kAccount1Id[] = "account1";
   const char kAccount2Id[] = "account2";
 
@@ -460,7 +456,7 @@ TEST_F(FederatedAuthUserInfoRequestTest, InApprovedClientsList) {
                   {kAccount1Id, kAccount2Id});
 }
 
-TEST_F(FederatedAuthUserInfoRequestTest,
+TEST_F(UserInfoRequestTest,
        NoSharingPermissionButIdpHasThirdPartyCookiesAccessAndClaimsSignin) {
   const char kAccountId[] = "account";
 
@@ -477,12 +473,11 @@ TEST_F(FederatedAuthUserInfoRequestTest,
 
   RunUserInfoTest(config, RequestUserInfoStatus::kSuccess, {kAccountId});
 
-  histogram_tester_.ExpectUniqueSample(
-      "Blink.FedCm.UserInfo.Status",
-      FederatedAuthUserInfoRequestResult::kSuccess, 1);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.UserInfo.Status",
+                                       UserInfoRequestResult::kSuccess, 1);
 }
 
-TEST_F(FederatedAuthUserInfoRequestTest,
+TEST_F(UserInfoRequestTest,
        NoSharingPermissionButIdpHasThirdPartyCookiesAccessButNotSignin) {
   const char kAccountId[] = "account";
 
@@ -500,11 +495,10 @@ TEST_F(FederatedAuthUserInfoRequestTest,
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.UserInfo.Status",
-      FederatedAuthUserInfoRequestResult::kNoReturningUserFromFetchedAccounts,
-      1);
+      UserInfoRequestResult::kNoReturningUserFromFetchedAccounts, 1);
 }
 
-TEST_F(FederatedAuthUserInfoRequestTest, ConfigFetchFailed) {
+TEST_F(UserInfoRequestTest, ConfigFetchFailed) {
   Config config = kValidConfig;
   config.config_fetch_status = {ParseStatus::kHttpNotFoundError, 404};
 
@@ -512,7 +506,7 @@ TEST_F(FederatedAuthUserInfoRequestTest, ConfigFetchFailed) {
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.UserInfo.Status",
-      FederatedAuthUserInfoRequestResult::kInvalidConfigOrWellKnown, 1);
+      UserInfoRequestResult::kInvalidConfigOrWellKnown, 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.UserInfo.NumAccounts", 0);
   histogram_tester_.ExpectTotalCount(
       "Blink.FedCm.UserInfo.TimeToRequestCompleted", 0);
@@ -520,12 +514,10 @@ TEST_F(FederatedAuthUserInfoRequestTest, ConfigFetchFailed) {
   ExpectConsoleMessage(
       "getUserInfo() failed because the config and well-known files were "
       "invalid.");
-  ExpectUniqueIssue(
-      FederatedAuthUserInfoRequestResult::kInvalidConfigOrWellKnown);
+  ExpectUniqueIssue(UserInfoRequestResult::kInvalidConfigOrWellKnown);
 }
 
-TEST_F(FederatedAuthUserInfoRequestTest,
-       IdpSigninStatusClearedWhenAccountsRequestFails) {
+TEST_F(UserInfoRequestTest, IdpSigninStatusClearedWhenAccountsRequestFails) {
   std::vector<std::optional<bool>> kTestCases = {std::nullopt, true};
 
   for (const std::optional<bool>& test_case : kTestCases) {
@@ -542,7 +534,7 @@ TEST_F(FederatedAuthUserInfoRequestTest,
 }
 
 // Tests that returning accounts are returned first in the user info response.
-TEST_F(FederatedAuthUserInfoRequestTest, ReturningAccountsFirst) {
+TEST_F(UserInfoRequestTest, ReturningAccountsFirst) {
   const char kAccount1Id[] = "account1";
   const char kAccount2Id[] = "account2";
   const char kAccount3Id[] = "account3";
@@ -562,4 +554,4 @@ TEST_F(FederatedAuthUserInfoRequestTest, ReturningAccountsFirst) {
                   {kAccount2Id, kAccount4Id, kAccount1Id, kAccount3Id});
 }
 
-}  // namespace content
+}  // namespace content::webid

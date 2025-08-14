@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBID_FEDERATED_AUTH_USER_INFO_REQUEST_H_
-#define CONTENT_BROWSER_WEBID_FEDERATED_AUTH_USER_INFO_REQUEST_H_
+#ifndef CONTENT_BROWSER_WEBID_USER_INFO_REQUEST_H_
+#define CONTENT_BROWSER_WEBID_USER_INFO_REQUEST_H_
 
 #include <memory>
 #include <optional>
@@ -26,27 +26,25 @@ class FederatedIdentityPermissionContextDelegate;
 class RenderFrameHost;
 
 namespace webid {
-class ConfigFetcher;
-}
 
-using FederatedAuthUserInfoRequestResult =
-    blink::mojom::FederatedAuthUserInfoRequestResult;
+class ConfigFetcher;
+
+using UserInfoRequestResult = blink::mojom::FederatedAuthUserInfoRequestResult;
 
 // Fetches data for user-info request.
-class CONTENT_EXPORT FederatedAuthUserInfoRequest {
+class CONTENT_EXPORT UserInfoRequest {
  public:
   // Returns an object which fetches data for user-info request.
-  static std::unique_ptr<FederatedAuthUserInfoRequest> Create(
+  static std::unique_ptr<UserInfoRequest> Create(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
       RenderFrameHost* render_frame_host,
       blink::mojom::IdentityProviderConfigPtr provider);
 
-  FederatedAuthUserInfoRequest(const FederatedAuthUserInfoRequest&) = delete;
-  FederatedAuthUserInfoRequest& operator=(const FederatedAuthUserInfoRequest&) =
-      delete;
-  ~FederatedAuthUserInfoRequest();
+  UserInfoRequest(const UserInfoRequest&) = delete;
+  UserInfoRequest& operator=(const UserInfoRequest&) = delete;
+  ~UserInfoRequest();
 
   // There is a separate method to set the callback because the callback relies
   // on having a pointer to this object, hence cannot be passed in the
@@ -55,7 +53,7 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
       blink::mojom::FederatedAuthRequest::RequestUserInfoCallback callback);
 
  private:
-  FederatedAuthUserInfoRequest(
+  UserInfoRequest(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
@@ -63,7 +61,7 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
       blink::mojom::IdentityProviderConfigPtr provider);
 
   void OnAllConfigAndWellKnownFetched(
-      std::vector<webid::ConfigFetcher::FetchResult> fetch_results);
+      std::vector<ConfigFetcher::FetchResult> fetch_results);
 
   void OnAccountsResponseReceived(
       IdpNetworkRequestManager::FetchStatus fetch_status,
@@ -77,11 +75,11 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
   void Complete(
       blink::mojom::RequestUserInfoStatus status,
       std::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info,
-      FederatedAuthUserInfoRequestResult request_status);
+      UserInfoRequestResult request_status);
 
-  void CompleteWithError(FederatedAuthUserInfoRequestResult error);
+  void CompleteWithError(UserInfoRequestResult error);
 
-  void AddDevToolsIssue(FederatedAuthUserInfoRequestResult error);
+  void AddDevToolsIssue(UserInfoRequestResult error);
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   // Owned by |BrowserContext|
@@ -91,7 +89,7 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
       api_permission_delegate_ = nullptr;
   raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
 
-  std::unique_ptr<webid::ConfigFetcher> config_fetcher_;
+  std::unique_ptr<ConfigFetcher> config_fetcher_;
   bool does_idp_have_failing_signin_status_{false};
   std::string client_id_;
   GURL idp_config_url_;
@@ -106,9 +104,10 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
 
   perfetto::NamedTrack perfetto_track_;
 
-  base::WeakPtrFactory<FederatedAuthUserInfoRequest> weak_ptr_factory_{this};
+  base::WeakPtrFactory<UserInfoRequest> weak_ptr_factory_{this};
 };
 
+}  // namespace webid
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_WEBID_FEDERATED_AUTH_USER_INFO_REQUEST_H_
+#endif  // CONTENT_BROWSER_WEBID_USER_INFO_REQUEST_H_

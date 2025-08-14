@@ -33,11 +33,11 @@
 #include "content/browser/webid/fedcm_mappers.h"
 #include "content/browser/webid/federated_auth_disconnect_request.h"
 #include "content/browser/webid/federated_auth_request_page_data.h"
-#include "content/browser/webid/federated_auth_user_info_request.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/browser/webid/url_computations.h"
+#include "content/browser/webid/user_info_request.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -169,7 +169,7 @@ FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
                              TokenStatus::kUnhandledRequest,
                              /*should_delay_callback=*/false);
   }
-  // Calls |FederatedAuthUserInfoRequest|'s destructor to complete the user
+  // Calls |UserInfoRequest|'s destructor to complete the user
   // info request. This is needed because otherwise some resources like
   // `fedcm_metrics_` may no longer be usable when the destructor get invoked
   // naturally.
@@ -544,10 +544,10 @@ void FederatedAuthRequestImpl::RequestUserInfo(
 
   auto network_manager = IdpNetworkRequestManager::Create(
       static_cast<RenderFrameHostImpl*>(&render_frame_host()));
-  auto user_info_request = FederatedAuthUserInfoRequest::Create(
+  auto user_info_request = webid::UserInfoRequest::Create(
       std::move(network_manager), permission_delegate_,
       api_permission_delegate_, &render_frame_host(), std::move(provider));
-  FederatedAuthUserInfoRequest* user_info_request_ptr = user_info_request.get();
+  webid::UserInfoRequest* user_info_request_ptr = user_info_request.get();
   user_info_requests_.insert(std::move(user_info_request));
 
   user_info_request_ptr->SetCallbackAndStart(
@@ -2044,13 +2044,13 @@ url::Origin FederatedAuthRequestImpl::GetEmbeddingOrigin() const {
 }
 
 void FederatedAuthRequestImpl::CompleteUserInfoRequest(
-    FederatedAuthUserInfoRequest* request,
+    webid::UserInfoRequest* request,
     RequestUserInfoCallback callback,
     blink::mojom::RequestUserInfoStatus status,
     std::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info) {
   auto it = std::find_if(
       user_info_requests_.begin(), user_info_requests_.end(),
-      [request](const std::unique_ptr<FederatedAuthUserInfoRequest>& ptr) {
+      [request](const std::unique_ptr<webid::UserInfoRequest>& ptr) {
         return ptr.get() == request;
       });
   // The request may not be found if the completion is invoked from
