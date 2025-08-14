@@ -7,6 +7,4 @@ This is a testharness.js-based test.
   assert_throws_dom: function "() => contentDocument.createElementNS("x", "div", { customElementRegistry: customElements })" did not throw
 [FAIL] attachShadow() should throw with global registry from another document
   assert_throws_dom: function "() => element.attachShadow({ mode: "closed", customElementRegistry: customElements })" did not throw
-[FAIL] importNode() should throw with global registry from another document
-  assert_throws_dom: function "() => contentDocument.importNode(element, { customElementRegistry: customElements })" did not throw
 Harness: the test ran to completion.
