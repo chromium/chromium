@@ -153,7 +153,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher,
   // TODO(crbug.com/438783632): Look into if OnAuthRequired might need to be
   // customized for DBSC
 
-  // TODO(kristianm): Think about what to do for DBSC with
+  // TODO(crbug.com/438783633): Think about what to do for DBSC with
   // OnCertificateRequested, leaning towards not supporting it but not sure.
 
   // Always cancel requests on SSL errors, this is the default implementation
