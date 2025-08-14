@@ -462,15 +462,27 @@ void ExperimentalActorPerformActionsFunction::OnActionsFinished(
 
 void ExperimentalActorPerformActionsFunction::OnObservationResult(
     std::unique_ptr<optimization_guide::proto::ActionsResult> response) {
+  using optimization_guide::proto::TabObservation;
+  using optimization_guide::proto::WindowObservation;
+
   CHECK(response);
 
   // Convert back from tab handle to session tab id.
-  for (optimization_guide::proto::TabObservation& observation :
-       *response->mutable_tabs()) {
+  for (TabObservation& observation : *response->mutable_tabs()) {
     // Note: session_tab_id will be -1 if the tab if couldn't be mapped.
     int32_t session_tab_id =
         ConvertTabHandleToSessionTabId(observation.id(), browser_context());
     observation.set_id(session_tab_id);
+  }
+
+  // Convert the tab_ids in the WindowObservation to session tab ids as well.
+  for (WindowObservation& observation : *response->mutable_windows()) {
+    for (int i = 0; i < observation.tab_ids().size(); ++i) {
+      // Note: session_tab_id will be -1 if the tab if couldn't be mapped.
+      int32_t session_tab_id = ConvertTabHandleToSessionTabId(
+          observation.tab_ids().at(i), browser_context());
+      observation.set_tab_ids(i, session_tab_id);
+    }
   }
 
   std::vector<uint8_t> data_buffer(response->ByteSizeLong());
