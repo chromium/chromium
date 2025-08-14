@@ -55,14 +55,12 @@ declare_args() {
   # For details on the current state of modules in Chromium see
   # https://chromium.googlesource.com/chromium/src/+/main/docs/modules.md
   # We explicitly need this flag in this file because it's read by this file.
-  # Currently we enables this only on non-official Linux x64 build on Linux x64
-  # machine.
   use_clang_modules =
       # Clang modules doesn't work with translation_unit used in codesearch
       # pipeline http://b/436082487.
       !enable_kythe_annotations && !is_official_build && is_clang &&
-      host_os == "linux" && host_cpu == "x64" && target_os == "linux" &&
-      target_cpu == "x64" &&
+      # Disable for all platforms now.
+      false &&
       # reclient doesn't handle headers in modulemap config.
       !use_reclient
 }
