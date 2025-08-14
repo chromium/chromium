@@ -4132,6 +4132,10 @@ if (!is_android) {
         }
       }
 
+      if (enable_pdf_save_to_drive) {
+        deps += [ "//chrome/browser/save_to_drive:browser_tests" ]
+      }
+
       if (enable_screen_ai_browsertests) {
         sources += [ "../browser/pdf/pdf_searchify_browsertest.cc" ]
 

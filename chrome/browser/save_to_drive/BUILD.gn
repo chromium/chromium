@@ -8,10 +8,12 @@ assert(enable_pdf_save_to_drive)
 
 source_set("save_to_drive") {
   public = [
+    "save_to_drive_event_dispatcher.h",
     "save_to_drive_flow.h",
   ]
 
   sources = [
+    "save_to_drive_event_dispatcher.cc",
     "save_to_drive_flow.cc",
   ]
 
@@ -21,6 +23,30 @@ source_set("save_to_drive") {
   ]
 
   deps = [
+    "//base",
+    "//chrome/browser/pdf",
+    "//chrome/common/extensions",
+    "//chrome/common/extensions/api",
     "//content/public/browser",
+    "//extensions/browser",
+    "//pdf:features",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "save_to_drive_event_dispatcher_browsertest.cc" ]
+  deps = [
+    ":save_to_drive",
+    "//chrome/browser/pdf:pdf_extension_test_utils",
+    "//chrome/common/extensions/api",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//extensions/browser:test_support",
+    "//pdf:features",
+    "//testing/gtest",
+    "//url",
   ]
 }
