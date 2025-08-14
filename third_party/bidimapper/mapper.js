@@ -487,6 +487,9 @@
         parseSetScreenOrientationOverrideParams(params) {
             return params;
         }
+        parseSetScriptingEnabledParams(params) {
+            return params;
+        }
         parseSetTimezoneOverrideParams(params) {
             return params;
         }
@@ -1096,6 +1099,22 @@
                 });
             }
             await Promise.all(browsingContexts.map(async (context) => await context.setLocaleOverride(locale)));
+            return {};
+        }
+        async setScriptingEnabled(params) {
+            const scriptingEnabled = params.enabled;
+            const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(params.contexts, params.userContexts);
+            for (const browsingContextId of params.contexts ?? []) {
+                this.#contextConfigStorage.updateBrowsingContextConfig(browsingContextId, {
+                    scriptingEnabled,
+                });
+            }
+            for (const userContextId of params.userContexts ?? []) {
+                this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+                    scriptingEnabled,
+                });
+            }
+            await Promise.all(browsingContexts.map(async (context) => await context.setScriptingEnabled(scriptingEnabled)));
             return {};
         }
         async setScreenOrientationOverride(params) {
@@ -4815,6 +4834,8 @@
                     return await this.#emulationProcessor.setLocaleOverride(this.#parser.parseSetLocaleOverrideParams(command.params));
                 case 'emulation.setScreenOrientationOverride':
                     return await this.#emulationProcessor.setScreenOrientationOverride(this.#parser.parseSetScreenOrientationOverrideParams(command.params));
+                case 'emulation.setScriptingEnabled':
+                    return await this.#emulationProcessor.setScriptingEnabled(this.#parser.parseSetScriptingEnabledParams(command.params));
                 case 'emulation.setTimezoneOverride':
                     return await this.#emulationProcessor.setTimezoneOverride(this.#parser.parseSetTimezoneOverrideParams(command.params));
                 case 'input.performActions':
@@ -5338,6 +5359,7 @@
         locale;
         prerenderingDisabled;
         screenOrientation;
+        scriptingEnabled;
         timezone;
         userPromptHandler;
         static merge(...configs) {
@@ -7098,7 +7120,7 @@
             await this.cdpTarget.setViewport(viewport, devicePixelRatio);
         }
         async handleUserPrompt(accept, userText) {
-            await this.#cdpTarget.cdpClient.sendCommand('Page.handleJavaScriptDialog', {
+            await this.top.#cdpTarget.cdpClient.sendCommand('Page.handleJavaScriptDialog', {
                 accept: accept ?? true,
                 promptText: userText,
             });
@@ -7605,6 +7627,9 @@
         }
         async setScreenOrientationOverride(screenOrientation) {
             await this.#cdpTarget.setScreenOrientationOverride(screenOrientation);
+        }
+        async setScriptingEnabled(scriptingEnabled) {
+            await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setScriptingEnabled(scriptingEnabled)));
         }
     }
     _a$5 = BrowsingContextImpl;
@@ -8466,6 +8491,9 @@
             if (config.extraHeaders !== undefined) {
                 promises.push(this.setExtraHeaders(config.extraHeaders));
             }
+            if (config.scriptingEnabled !== undefined) {
+                promises.push(this.setScriptingEnabled(config.scriptingEnabled));
+            }
             if (config.acceptInsecureCerts !== undefined) {
                 promises.push(this.cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
                     ignore: config.acceptInsecureCerts,
@@ -8587,6 +8615,11 @@
                     locale,
                 });
             }
+        }
+        async setScriptingEnabled(scriptingEnabled) {
+            await this.cdpClient.sendCommand('Emulation.setScriptExecutionDisabled', {
+                value: scriptingEnabled === false,
+            });
         }
         async setTimezoneOverride(timezone) {
             if (timezone === null) {
@@ -16340,6 +16373,7 @@
         Emulation$1.SetGeolocationOverrideSchema,
         Emulation$1.SetLocaleOverrideSchema,
         Emulation$1.SetScreenOrientationOverrideSchema,
+        Emulation$1.SetScriptingEnabledSchema,
         Emulation$1.SetTimezoneOverrideSchema,
     ]));
     var Emulation$1;
@@ -16451,6 +16485,22 @@
     (function (Emulation) {
         Emulation.SetScreenOrientationOverrideParametersSchema = z.lazy(() => z.object({
             screenOrientation: z.union([Emulation.ScreenOrientationSchema, z.null()]),
+            contexts: z
+                .array(BrowsingContext$1.BrowsingContextSchema)
+                .min(1)
+                .optional(),
+            userContexts: z.array(Browser$1.UserContextSchema).min(1).optional(),
+        }));
+    })(Emulation$1 || (Emulation$1 = {}));
+    (function (Emulation) {
+        Emulation.SetScriptingEnabledSchema = z.lazy(() => z.object({
+            method: z.literal('emulation.setScriptingEnabled'),
+            params: Emulation.SetScriptingEnabledParametersSchema,
+        }));
+    })(Emulation$1 || (Emulation$1 = {}));
+    (function (Emulation) {
+        Emulation.SetScriptingEnabledParametersSchema = z.lazy(() => z.object({
+            enabled: z.union([z.literal(false), z.null()]),
             contexts: z
                 .array(BrowsingContext$1.BrowsingContextSchema)
                 .min(1)
@@ -16885,7 +16935,7 @@
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
         Network.SetExtraHeadersParametersSchema = z.lazy(() => z.object({
-            headers: z.array(Network.HeaderSchema).min(1),
+            headers: z.array(Network.HeaderSchema),
             contexts: z
                 .array(BrowsingContext$1.BrowsingContextSchema)
                 .min(1)
@@ -18256,6 +18306,10 @@
             return parseObject(params, Emulation$1.SetScreenOrientationOverrideParametersSchema);
         }
         Emulation.parseSetScreenOrientationOverrideParams = parseSetScreenOrientationOverrideParams;
+        function parseSetScriptingEnabledParams(params) {
+            return parseObject(params, Emulation$1.SetScriptingEnabledParametersSchema);
+        }
+        Emulation.parseSetScriptingEnabledParams = parseSetScriptingEnabledParams;
         function parseSetTimezoneOverrideParams(params) {
             return parseObject(params, Emulation$1.SetTimezoneOverrideParametersSchema);
         }
@@ -18499,6 +18553,9 @@
         }
         parseSetScreenOrientationOverrideParams(params) {
             return Emulation.parseSetScreenOrientationOverrideParams(params);
+        }
+        parseSetScriptingEnabledParams(params) {
+            return Emulation.parseSetScriptingEnabledParams(params);
         }
         parseSetTimezoneOverrideParams(params) {
             return Emulation.parseSetTimezoneOverrideParams(params);
