@@ -268,7 +268,7 @@ class DeviceCommandFetchSupportPacketBrowserTestParameterized
     // Set up MGS auto-launch mode.
     em::ChromeDeviceSettingsProto& proto(
         policy_helper()->device_policy()->payload());
-    ash::AppendAutoLaunchManagedGuestSessionAccount(&proto);
+    ash::test::AppendAutoLaunchManagedGuestSessionAccount(&proto);
 
     policy_helper()->RefreshDevicePolicy();
     ash::SessionStateWaiter(session_manager::SessionState::ACTIVE).Wait();

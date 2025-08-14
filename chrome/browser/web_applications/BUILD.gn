@@ -1217,6 +1217,7 @@ source_set("web_applications_browser_tests") {
       "//chrome/browser/ash/app_mode/test:test_support",
       "//chrome/browser/ash/file_manager:test_support",
       "//chrome/browser/ash/login:test_support",
+      "//chrome/browser/ash/login/app_mode/test:test_support",
       "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/policy/core:test_support",
       "//chrome/browser/ash/policy/test_support",

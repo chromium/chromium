@@ -29,18 +29,16 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/app_mode/test/network_state_mixin.h"
-#include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/app_mode/test/managed_guest_session_mixin.h"
+#include "chrome/browser/ash/login/app_mode/test/managed_guest_session_test_helpers.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -49,6 +47,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
@@ -56,12 +55,9 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
-#include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/ed25519_key_pair.h"
 #include "components/webapps/isolated_web_apps/features.h"
@@ -85,6 +81,9 @@ using UpdateApplyTaskFuture = TestFuture<ApplyTask::CompletionStatus>;
 
 using ash::KioskMixin;
 using ash::LoginManagerMixin;
+using ash::ManagedGuestSessionMixin;
+using SessionMixin =
+    std::variant<ManagedGuestSessionMixin, KioskMixin, LoginManagerMixin>;
 using ash::kiosk::test::LaunchAppManually;
 using ash::kiosk::test::TheKioskApp;
 using ash::kiosk::test::WaitKioskLaunched;
@@ -97,8 +96,6 @@ using testing::Field;
 using testing::HasSubstr;
 using testing::Ne;
 
-constexpr char kEmail[] = "iwa@example.com";
-constexpr char kMgsDisplayName[] = "MGS";
 constexpr char kIwaName[] = "IsolatedWebApp";
 
 // TODO(crbug.com/428148477): rename to `kWebBundleId1` and `kPublicKeyPair1`.
@@ -241,95 +238,6 @@ class IwaServerConfig {
   const web_package::test::KeyPair public_key_pair_;
 };
 
-// This mixin helps browser tests to test Managed Guest Session(MGS) mode.
-// TODO(crbug.com/307518336): extract this class and reuse `MgsMixin` in other
-// browser tests.
-class MgsMixin {
- public:
-  explicit MgsMixin(InProcessBrowserTestMixinHost* host)
-      : policy_test_server_mixin_(host),
-        device_state_(
-            host,
-            ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED) {}
-
-  void ConfigureMgsWithIwa(const std::string& forced_installed_iwa) {
-    AddManagedGuestSessionToDevicePolicy();
-    AddDeviceLocalAccountIwaPolicy(forced_installed_iwa);
-    UploadAndInstallDeviceLocalAccountPolicy();
-  }
-
-  bool LaunchMgs() {
-    // Start login into the device-local account.
-    auto& host = CHECK_DEREF(ash::LoginDisplayHost::default_host());
-    host.StartSignInScreen();
-
-    auto& controller =
-        CHECK_DEREF(ash::ExistingUserController::current_controller());
-    ash::UserContext user_context(user_manager::UserType::kPublicAccount,
-                                  kMgsAccountId);
-    controller.Login(user_context, ash::SigninSpecifics());
-
-    // Wait for MGS start.
-    if (session_manager::SessionManager::Get()->IsSessionStarted()) {
-      return true;
-    }
-    return true;
-  }
-
-  void WaitForMgsLaunch() { ash::test::WaitForPrimaryUserSessionStart(); }
-
- private:
-  void AddManagedGuestSessionToDevicePolicy() {
-    policy::DeviceLocalAccountTestHelper::SetupDeviceLocalAccount(
-        &device_local_account_policy_, kEmail, kMgsDisplayName);
-
-    em::ChromeDeviceSettingsProto& proto(
-        policy_helper_.device_policy()->payload());
-    policy::DeviceLocalAccountTestHelper::AddPublicSession(&proto, kEmail);
-    policy_helper_.RefreshDevicePolicy();
-    policy_test_server_mixin_.UpdateDevicePolicy(proto);
-  }
-
-  // This policy is active at the moment of MGS login.
-  void AddDeviceLocalAccountIwaPolicy(const std::string& forced_installed_iwa) {
-    em::StringPolicyProto* const isolated_web_apps_proto =
-        device_local_account_policy_.payload()
-            .mutable_isolatedwebappinstallforcelist();
-    isolated_web_apps_proto->set_value(forced_installed_iwa);
-  }
-
-  void UploadAndInstallDeviceLocalAccountPolicy() {
-    // Build device local account policy.
-    device_local_account_policy_.SetDefaultSigningKey();
-    device_local_account_policy_.Build();
-
-    policy_test_server_mixin_.UpdatePolicy(
-        policy::dm_protocol::kChromePublicAccountPolicyType, kEmail,
-        device_local_account_policy_.payload().SerializeAsString());
-
-    ash::FakeSessionManagerClient::Get()->set_device_local_account_policy(
-        kEmail, device_local_account_policy_.GetBlob());
-
-    // Wait for the display name becoming available as that indicates
-    // device-local account policy is fully loaded, which is a prerequisite for
-    // successful login.
-    policy::DictionaryLocalStateValueWaiter("UserDisplayName", kMgsDisplayName,
-                                            kMgsAccountId.GetUserEmail())
-        .Wait();
-  }
-
-  const AccountId kMgsAccountId =
-      AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
-          kEmail,
-          policy::DeviceLocalAccountType::kPublicSession));
-
-  ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_;
-  // Used to enroll the device and simulate pre-cached policy state.
-  ash::DeviceStateMixin device_state_;
-  policy::DevicePolicyCrosTestHelper policy_helper_;
-  policy::UserPolicyBuilder device_local_account_policy_;
-};
-
 class IwaCacheBaseTest : public ash::LoginManagerTest {
  public:
   explicit IwaCacheBaseTest(
@@ -385,14 +293,18 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
       return;
     }
     std::visit(absl::Overload{
-                   [&](MgsMixin& mgs_mixin) {
+                   [&](ManagedGuestSessionMixin& mgs_mixin) {
                      base::Value::List config;
                      for (auto& iwa : apps_to_configure_in_session) {
                        config.Append(iwa_mixin_.CreateForceInstallPolicyEntry(
                            iwa.bundle_id(), iwa.update_channel(),
                            iwa.pinned_version()));
                      }
-                     mgs_mixin.ConfigureMgsWithIwa(WriteJson(config).value());
+                     mgs_mixin.device_local_account_policy_builder()
+                         .payload()
+                         .mutable_isolatedwebappinstallforcelist()
+                         ->set_value(WriteJson(config).value());
+                     mgs_mixin.ConfigurePolicies();
                    },
                    [&](KioskMixin& kiosk_mixin) {
                      ash::ScopedDevicePolicyUpdate scoped_update(
@@ -429,21 +341,23 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
   void LaunchSession(const std::vector<SignedWebBundleId>& expected_iwas,
                      bool should_wait_for_initial_updates = true) {
     std::visit(
-        absl::Overload([](MgsMixin& mgs_mixin) { mgs_mixin.LaunchMgs(); },
-                       [&](KioskMixin& kiosk_mixin) {
-                         ASSERT_TRUE(expected_iwas.size() == 1)
-                             << "Only one app can be launched in kiosk "
-                                "session";
+        absl::Overload(
+            [](ManagedGuestSessionMixin& mgs_mixin) {
+              ash::test::LaunchManagedGuestSession(mgs_mixin.account_id());
+            },
+            [&](KioskMixin& kiosk_mixin) {
+              ASSERT_TRUE(expected_iwas.size() == 1)
+                  << "Only one app can be launched in kiosk "
+                     "session";
 
-                         std::optional<ash::KioskApp> kiosk_app =
-                             ash::kiosk::test::GetAppByAccountId(
-                                 expected_iwas[0].id());
-                         EXPECT_THAT(kiosk_app, Ne(std::nullopt));
-                         ASSERT_TRUE(LaunchAppManually(kiosk_app.value()));
-                       },
-                       [&](LoginManagerMixin& login_manager_mixin) {
-                         LoginUser(login_manager_mixin.users()[0].account_id);
-                       }),
+              std::optional<ash::KioskApp> kiosk_app =
+                  ash::kiosk::test::GetAppByAccountId(expected_iwas[0].id());
+              EXPECT_THAT(kiosk_app, Ne(std::nullopt));
+              ASSERT_TRUE(LaunchAppManually(kiosk_app.value()));
+            },
+            [&](LoginManagerMixin& login_manager_mixin) {
+              LoginUser(login_manager_mixin.users()[0].account_id);
+            }),
         session_mixin_);
 
     if (session_type() != SessionType::kUserSession &&
@@ -653,7 +567,9 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
   void WaitForSessionLaunch() {
     std::visit(
         absl::Overload(
-            [](MgsMixin& mgs_mixin) { mgs_mixin.WaitForMgsLaunch(); },
+            [](ManagedGuestSessionMixin& mgs_mixin) {
+              ASSERT_TRUE(ash::test::WaitForManagedGuestSessionLaunch());
+            },
             [](KioskMixin& kiosk_mixin) { ASSERT_TRUE(WaitKioskLaunched()); },
             [](LoginManagerMixin& login_manager_mixin) {
               WaitForUserSessionLaunch();
@@ -682,19 +598,16 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
     return &iwa;
   }
 
-  std::variant<MgsMixin, KioskMixin, LoginManagerMixin> CreateSessionMixin(
-      SessionType session_type) {
+  SessionMixin CreateSessionMixin(SessionType session_type) {
     switch (session_type) {
       case SessionType::kManagedGuestSession:
-        return std::variant<MgsMixin, KioskMixin, LoginManagerMixin>{
-            std::in_place_type<MgsMixin>, &mixin_host_};
+        return SessionMixin{std::in_place_type<ManagedGuestSessionMixin>,
+                            &mixin_host_};
       case SessionType::kKiosk:
-        return std::variant<MgsMixin, KioskMixin, LoginManagerMixin>{
-            std::in_place_type<KioskMixin>, &mixin_host_};
+        return SessionMixin{std::in_place_type<KioskMixin>, &mixin_host_};
       case SessionType::kUserSession:
-        return std::variant<MgsMixin, KioskMixin, LoginManagerMixin>{
-            std::in_place_type<LoginManagerMixin>, &mixin_host_};
-        ;
+        return SessionMixin{std::in_place_type<LoginManagerMixin>,
+                            &mixin_host_};
     }
   }
 
@@ -721,7 +634,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
   policy::DevicePolicyCrosTestHelper policy_helper_;
   base::FilePath cache_root_dir_;
   std::unique_ptr<base::ScopedPathOverride> cache_root_dir_override_;
-  std::variant<MgsMixin, KioskMixin, LoginManagerMixin> session_mixin_;
+  SessionMixin session_mixin_;
   std::vector<UpdateDiscoveryTaskFuture> initial_discovery_update_futures_;
   std::vector<std::unique_ptr<UpdateDiscoveryTaskResultWaiter>>
       initial_discovery_update_waiters_;
