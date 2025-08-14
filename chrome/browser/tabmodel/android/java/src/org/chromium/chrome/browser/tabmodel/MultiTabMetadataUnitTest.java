@@ -33,6 +33,7 @@ public class MultiTabMetadataUnitTest {
                             "https://www.amazon.com",
                             "https://www.youtube.com",
                             "https://www.facebook.com"));
+    private static final boolean[] IS_PINNED = new boolean[] {true, false, true};
     private static final boolean IS_INCOGNITO = false;
 
     private final Intent mIntent = new Intent();
@@ -40,7 +41,8 @@ public class MultiTabMetadataUnitTest {
 
     @Before
     public void setup() {
-        mMultiTabMetadata = MultiTabMetadata.createForTesting(TAB_IDS, URLS, IS_INCOGNITO);
+        mMultiTabMetadata =
+                MultiTabMetadata.createForTesting(TAB_IDS, URLS, IS_PINNED, IS_INCOGNITO);
     }
 
     @Test
@@ -85,6 +87,15 @@ public class MultiTabMetadataUnitTest {
     }
 
     @Test
+    public void testMaybeCreateFromBundle_MissingIsPinned() {
+        Bundle bundle = mMultiTabMetadata.toBundle();
+        bundle.remove(MultiTabMetadata.getIsPinnedKeyForTesting());
+        assertNull(
+                "maybeCreateFromBundle should return null for a bundle with missing isPinned.",
+                MultiTabMetadata.maybeCreateFromBundle(bundle));
+    }
+
+    @Test
     public void testMaybeCreateFromBundle_MissingIsIncognito() {
         Bundle bundle = mMultiTabMetadata.toBundle();
         bundle.remove(MultiTabMetadata.getIsIncognitoKeyForTesting());
@@ -102,8 +113,9 @@ public class MultiTabMetadataUnitTest {
                                 "https://www.amazon.com",
                                 "https://www.youtube.com",
                                 "https://www.facebook.com"));
+        boolean[] isPinned = new boolean[] {true, false};
         MultiTabMetadata multiTabMetadata =
-                MultiTabMetadata.createForTesting(tabIds, urls, IS_INCOGNITO);
+                MultiTabMetadata.createForTesting(tabIds, urls, isPinned, IS_INCOGNITO);
         Bundle bundle = multiTabMetadata.toBundle();
         assertNull(
                 "maybeCreateFromBundle should return null for a bundle with mismatched sizes.",

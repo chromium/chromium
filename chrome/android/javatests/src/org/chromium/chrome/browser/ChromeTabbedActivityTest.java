@@ -795,6 +795,7 @@ public class ChromeTabbedActivityTest {
                                 List.of(
                                         JUnitTestGURLs.URL_1.getSpec(),
                                         JUnitTestGURLs.URL_2.getSpec())),
+                        /* isPinned= */ new boolean[] {false, false},
                         /* isIncognito= */ false));
 
         ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(reparentingIntent));
@@ -830,6 +831,7 @@ public class ChromeTabbedActivityTest {
                 MultiTabMetadata.createForTesting(
                         /* tabIds= */ new ArrayList<>(),
                         /* urls= */ new ArrayList<>(),
+                        /* isPinned= */ new boolean[0],
                         /* isIncognito= */ false));
 
         ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(reparentingIntent));
@@ -862,6 +864,7 @@ public class ChromeTabbedActivityTest {
                 MultiTabMetadata.createForTesting(
                         /* tabIds= */ new ArrayList<>(List.of(101, 102)),
                         /* urls= */ new ArrayList<>(List.of(JUnitTestGURLs.URL_1.getSpec())),
+                        /* isPinned= */ new boolean[] {false, false},
                         /* isIncognito= */ false));
 
         ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(reparentingIntent));
@@ -897,6 +900,46 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testMultiUrlReparentingIntent_PinnedTabs() {
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
+
+        Intent reparentingIntent = new Intent(Intent.ACTION_VIEW);
+        reparentingIntent.setClass(mActivity, ChromeTabbedActivity.class);
+        reparentingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        IntentHandler.setMultiTabMetadata(
+                reparentingIntent,
+                MultiTabMetadata.createForTesting(
+                        /* tabIds= */ new ArrayList<>(List.of(101, 102)),
+                        /* urls= */ new ArrayList<>(
+                                List.of(
+                                        JUnitTestGURLs.URL_1.getSpec(),
+                                        JUnitTestGURLs.URL_2.getSpec())),
+                        /* isPinned= */ new boolean[] {true, false},
+                        /* isIncognito= */ false));
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(reparentingIntent));
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount.get() + 2));
+                    // Tabs are added at the end of the tab model.
+                    // Pinned tab is added to the start.
+                    Tab firstTab = tabModel.getTabAt(initialTabCount.get() - 1);
+                    Tab secondTab = tabModel.getTabAt(initialTabCount.get() + 1);
+                    Criteria.checkThat(firstTab.getUrl(), Matchers.is(JUnitTestGURLs.URL_1));
+                    Criteria.checkThat(secondTab.getUrl(), Matchers.is(JUnitTestGURLs.URL_2));
+                    Criteria.checkThat(firstTab.getIsPinned(), Matchers.is(true));
+                    Criteria.checkThat(secondTab.getIsPinned(), Matchers.is(false));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testMaybeLaunchDraggedMultiTabInWindow() {
         AtomicInteger initialTabCount = new AtomicInteger();
         ThreadUtils.runOnUiThreadBlocking(
@@ -914,6 +957,7 @@ public class ChromeTabbedActivityTest {
                                 List.of(
                                         JUnitTestGURLs.URL_1.getSpec(),
                                         JUnitTestGURLs.URL_2.getSpec())),
+                        /* isPinned= */ new boolean[] {false, false},
                         /* isIncognito= */ false));
 
         ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(dragIntent));
@@ -935,6 +979,46 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testMaybeLaunchDraggedMultiTabInWindow_PinnedTabs() {
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
+
+        Intent dragIntent = new Intent(Intent.ACTION_VIEW);
+        dragIntent.setClass(mActivity, ChromeTabbedActivity.class);
+        dragIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        IntentHandler.setMultiTabMetadata(
+                dragIntent,
+                MultiTabMetadata.createForTesting(
+                        /* tabIds= */ new ArrayList<>(List.of(201, 202)),
+                        /* urls= */ new ArrayList<>(
+                                List.of(
+                                        JUnitTestGURLs.URL_1.getSpec(),
+                                        JUnitTestGURLs.URL_2.getSpec())),
+                        /* isPinned= */ new boolean[] {true, false},
+                        /* isIncognito= */ false));
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(dragIntent));
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount.get() + 2));
+                    // Tabs are added at the end of the tab model.
+                    // Pinned tab is added to the start.
+                    Tab firstTab = tabModel.getTabAt(initialTabCount.get() - 1);
+                    Tab secondTab = tabModel.getTabAt(initialTabCount.get() + 1);
+                    Criteria.checkThat(firstTab.getUrl(), Matchers.is(JUnitTestGURLs.URL_1));
+                    Criteria.checkThat(secondTab.getUrl(), Matchers.is(JUnitTestGURLs.URL_2));
+                    Criteria.checkThat(firstTab.getIsPinned(), Matchers.is(true));
+                    Criteria.checkThat(secondTab.getIsPinned(), Matchers.is(false));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testMaybeLaunchDraggedMultiTabInWindow_EmptyList() {
         AtomicInteger initialTabCount = new AtomicInteger();
         ThreadUtils.runOnUiThreadBlocking(
@@ -949,6 +1033,7 @@ public class ChromeTabbedActivityTest {
                 MultiTabMetadata.createForTesting(
                         /* tabIds= */ new ArrayList<>(),
                         /* urls= */ new ArrayList<>(),
+                        /* isPinned= */ new boolean[0],
                         /* isIncognito= */ false));
 
         ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(dragIntent));
@@ -980,6 +1065,7 @@ public class ChromeTabbedActivityTest {
                 MultiTabMetadata.createForTesting(
                         /* tabIds= */ new ArrayList<>(List.of(201, 202)),
                         /* urls= */ new ArrayList<>(List.of(JUnitTestGURLs.URL_1.getSpec())),
+                        /* isPinned= */ new boolean[] {false, false},
                         /* isIncognito= */ false));
 
         ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(dragIntent));

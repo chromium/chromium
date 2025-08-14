@@ -271,6 +271,7 @@ public class DragAndDropLauncherActivity extends Activity {
         ResettersForTesting.register(() -> sDropTimeoutForTesting = null);
     }
 
+    // TODO(crbug.com/432760135): Add metrics for multi-tab drag/drop.
     private static void recordLaunchMetrics(Intent intent) {
         @UrlIntentSource
         int intentSource =

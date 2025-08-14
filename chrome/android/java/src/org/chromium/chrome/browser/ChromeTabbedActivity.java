@@ -255,6 +255,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
@@ -1840,6 +1841,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
         if (multiTabMetadata == null) return false;
         ArrayList<Integer> tabIds = multiTabMetadata.tabIds;
         ArrayList<String> urls = multiTabMetadata.urls;
+        boolean[] isPinned = multiTabMetadata.isPinned;
+        TabModel tabModel = getCurrentTabModel();
 
         for (int i = 0; i < urls.size(); i++) {
             int tabId = tabIds.get(i);
@@ -1848,7 +1851,10 @@ public class ChromeTabbedActivity extends ChromeActivity {
             assert url != null : "URL is null";
             assert !url.isEmpty() : "URL is empty";
 
-            processTabIntentAndLoadTab(intent, tabId, url, tabOpenType);
+            Tab tab = processTabIntentAndLoadTab(intent, tabId, url, tabOpenType);
+            if (isPinned[i]) {
+                tabModel.pinTab(tab.getId());
+            }
         }
         IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA);
         return true;
@@ -2725,8 +2731,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 IntentUtils.safeGetIntExtra(
                         intent, IntentHandler.EXTRA_DRAGDROP_TAB_WINDOW_ID, INVALID_WINDOW_ID);
         List<Tab> tabs = new ArrayList<>();
+        TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
         for (int draggedTabId : draggedTabIds) {
-            Tab tab = TabWindowManagerSingleton.getInstance().getTabById(draggedTabId, windowId);
+            Tab tab = tabWindowManager.getTabById(draggedTabId, windowId);
             tabs.add(tab);
         }
 

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.dragdrop;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -238,13 +239,17 @@ public class DragAndDropLauncherActivityUnitTest {
                     intent.getIntExtra(
                             IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.UNKNOWN));
             assertEquals(
-                    "The intent data value should match.",
+                    "The intent data value should match - Urls.",
                     Collections.singletonList(tab.getUrl().getSpec()),
                     multiTabMetadata.urls);
             assertEquals(
-                    "The intent data value should match.",
+                    "The intent data value should match - Tab Ids.",
                     Collections.singletonList(tab.getId()),
                     multiTabMetadata.tabIds);
+            assertArrayEquals(
+                    "The intent data value should match - Is Pinned.",
+                    new boolean[] {tab.getIsPinned()},
+                    multiTabMetadata.isPinned);
         } else {
             assertEquals(
                     "The EXTRA_URL_SOURCE intent extra value should match.",
