@@ -478,6 +478,7 @@ robolectric_library("junit") {
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement:feature_engagement_java",
+    "//components/omnibox/common:features_java",
     "//components/prefs/android:java",
     "//components/search_engines/android:java",
     "//components/segmentation_platform/public/proto:segmentation_platform_proto_java",

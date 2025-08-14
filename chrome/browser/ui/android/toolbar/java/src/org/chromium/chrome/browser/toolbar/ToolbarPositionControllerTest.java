@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarPositionController.StateTransi
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -614,7 +615,6 @@ public class ToolbarPositionControllerTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     @DisableFeatures(ChromeFeatureList.MINI_ORIGIN_BAR)
     public void testCalculateStateTransition() {
-        boolean formFieldStateChanged = false;
         boolean prefStateChanged = false;
         boolean ntpShowing = false;
         boolean tabSwitcherShowing = false;
@@ -626,7 +626,6 @@ public class ToolbarPositionControllerTest {
         assertEquals(
                 StateTransition.NONE,
                 ToolbarPositionController.calculateStateTransition(
-                        formFieldStateChanged,
                         prefStateChanged,
                         ntpShowing,
                         tabSwitcherShowing,
@@ -639,7 +638,6 @@ public class ToolbarPositionControllerTest {
         assertEquals(
                 StateTransition.SNAP_TO_TOP,
                 ToolbarPositionController.calculateStateTransition(
-                        formFieldStateChanged,
                         prefStateChanged,
                         true,
                         tabSwitcherShowing,
@@ -652,7 +650,6 @@ public class ToolbarPositionControllerTest {
         assertEquals(
                 StateTransition.SNAP_TO_TOP,
                 ToolbarPositionController.calculateStateTransition(
-                        formFieldStateChanged,
                         prefStateChanged,
                         ntpShowing,
                         true,
@@ -665,7 +662,6 @@ public class ToolbarPositionControllerTest {
         assertEquals(
                 StateTransition.SNAP_TO_TOP,
                 ToolbarPositionController.calculateStateTransition(
-                        formFieldStateChanged,
                         prefStateChanged,
                         ntpShowing,
                         true,
@@ -678,7 +674,6 @@ public class ToolbarPositionControllerTest {
         assertEquals(
                 StateTransition.SNAP_TO_TOP,
                 ToolbarPositionController.calculateStateTransition(
-                        formFieldStateChanged,
                         prefStateChanged,
                         ntpShowing,
                         tabSwitcherShowing,
@@ -691,7 +686,6 @@ public class ToolbarPositionControllerTest {
         assertEquals(
                 StateTransition.SNAP_TO_TOP,
                 ToolbarPositionController.calculateStateTransition(
-                        formFieldStateChanged,
                         prefStateChanged,
                         ntpShowing,
                         tabSwitcherShowing,
@@ -704,7 +698,6 @@ public class ToolbarPositionControllerTest {
         assertEquals(
                 StateTransition.SNAP_TO_TOP,
                 ToolbarPositionController.calculateStateTransition(
-                        formFieldStateChanged,
                         prefStateChanged,
                         ntpShowing,
                         tabSwitcherShowing,
@@ -717,7 +710,6 @@ public class ToolbarPositionControllerTest {
         assertEquals(
                 StateTransition.SNAP_TO_BOTTOM,
                 ToolbarPositionController.calculateStateTransition(
-                        formFieldStateChanged,
                         prefStateChanged,
                         ntpShowing,
                         tabSwitcherShowing,
@@ -730,7 +722,6 @@ public class ToolbarPositionControllerTest {
         assertEquals(
                 StateTransition.SNAP_TO_BOTTOM,
                 ToolbarPositionController.calculateStateTransition(
-                        true,
                         prefStateChanged,
                         ntpShowing,
                         tabSwitcherShowing,
@@ -746,7 +737,6 @@ public class ToolbarPositionControllerTest {
         assertEquals(
                 StateTransition.ANIMATE_TO_BOTTOM,
                 ToolbarPositionController.calculateStateTransition(
-                        formFieldStateChanged,
                         true,
                         ntpShowing,
                         tabSwitcherShowing,
@@ -762,7 +752,6 @@ public class ToolbarPositionControllerTest {
         assertEquals(
                 StateTransition.SNAP_TO_BOTTOM,
                 ToolbarPositionController.calculateStateTransition(
-                        formFieldStateChanged,
                         true,
                         ntpShowing,
                         tabSwitcherShowing,
@@ -777,7 +766,6 @@ public class ToolbarPositionControllerTest {
         assertEquals(
                 StateTransition.ANIMATE_TO_TOP,
                 ToolbarPositionController.calculateStateTransition(
-                        formFieldStateChanged,
                         true,
                         ntpShowing,
                         tabSwitcherShowing,
@@ -792,7 +780,6 @@ public class ToolbarPositionControllerTest {
         assertEquals(
                 StateTransition.SNAP_TO_TOP,
                 ToolbarPositionController.calculateStateTransition(
-                        formFieldStateChanged,
                         true,
                         ntpShowing,
                         tabSwitcherShowing,
@@ -801,6 +788,30 @@ public class ToolbarPositionControllerTest {
                         isFormFieldFocusedWithKeyboardVisible,
                         true,
                         ControlsPosition.BOTTOM));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testForceBottomForFocusedOmnibox() {
+        boolean prefStateChanged = false;
+        boolean ntpShowing = false;
+        boolean tabSwitcherShowing = false;
+        boolean isOmniboxFocused = true;
+        boolean isFindInPageShowing = false;
+        boolean isFormFieldFocusedWithKeyboardVisible = false;
+        boolean doesUserPreferTopToolbar = false;
+
+        assertEquals(
+                StateTransition.SNAP_TO_BOTTOM,
+                ToolbarPositionController.calculateStateTransition(
+                        prefStateChanged,
+                        ntpShowing,
+                        tabSwitcherShowing,
+                        isOmniboxFocused,
+                        isFindInPageShowing,
+                        isFormFieldFocusedWithKeyboardVisible,
+                        doesUserPreferTopToolbar,
+                        ControlsPosition.TOP));
     }
 
     @Test

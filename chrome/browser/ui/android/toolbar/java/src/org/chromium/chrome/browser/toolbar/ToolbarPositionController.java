@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -215,10 +216,10 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mIsTabSwitcherFinishedShowingObserver = (showing) -> updateCurrentPosition();
         mIsOmniboxFocusedObserver = (focused) -> updateCurrentPosition();
         mIsFormFieldFocusedObserver =
-                (focused) -> updateCurrentPosition(/* formFieldStateChanged= */ true, false);
+                (focused) -> updateCurrentPosition(/* prefStateChanged= */ false);
         mIsFindInPageShowingObserver = (showing) -> updateCurrentPosition();
         mKeyboardVisibilityListener =
-                (showing) -> updateCurrentPosition(/* formFieldStateChanged= */ true, false);
+                (showing) -> updateCurrentPosition(/* prefStateChanged= */ false);
 
         mIsNtpWithFakeboxShowingSupplier.addObserver(mIsNtpShowingObserver);
         mIsTabSwitcherFinishedShowingSupplier.addObserver(mIsTabSwitcherFinishedShowingObserver);
@@ -418,7 +419,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             // Re-set placement to retrieve it from prefs upon next access.
             sToolbarShouldShowOnTop = null;
             recordPrefChange(isToolbarConfiguredToShowOnTop());
-            updateCurrentPosition(false, /* prefStateChanged= */ true);
+            updateCurrentPosition(/* prefStateChanged= */ true);
         }
     }
 
@@ -431,10 +432,10 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     }
 
     private void updateCurrentPosition() {
-        updateCurrentPosition(false, false);
+        updateCurrentPosition(/* prefStateChanged= */ false);
     }
 
-    private void updateCurrentPosition(boolean formFieldStateChanged, boolean prefStateChanged) {
+    private void updateCurrentPosition(boolean prefStateChanged) {
         boolean ntpShowing = mIsNtpWithFakeboxShowingSupplier.get();
         boolean tabSwitcherShowing = mIsTabSwitcherFinishedShowingSupplier.get();
         boolean isOmniboxFocused = mIsOmniboxFocusedSupplier.get();
@@ -446,7 +447,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         @StateTransition
         int stateTransition =
                 calculateStateTransition(
-                        formFieldStateChanged,
                         prefStateChanged,
                         ntpShowing,
                         tabSwitcherShowing,
@@ -555,7 +555,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
     @VisibleForTesting
     static @StateTransition int calculateStateTransition(
-            boolean formFieldStateChanged,
             boolean prefStateChanged,
             boolean ntpShowing,
             boolean tabSwitcherShowing,
@@ -567,13 +566,16 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         boolean miniOriginBarEnabled = ChromeFeatureList.sMiniOriginBar.isEnabled();
         boolean allowBottomAnchoredFocusedOmnibox =
                 ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled();
+        boolean forceBottomForFocusedOmnibox =
+                OmniboxFeatures.sOmniboxMultimodalInput.isEnabled() && isOmniboxFocused;
         @ControlsPosition int newControlsPosition;
-        if (ntpShowing
-                || tabSwitcherShowing
-                || (isOmniboxFocused && !allowBottomAnchoredFocusedOmnibox)
-                || isFindInPageShowing
-                || (isFormFieldFocusedWithKeyboardVisible && !miniOriginBarEnabled)
-                || doesUserPreferTopToolbar) {
+        if (!forceBottomForFocusedOmnibox
+                && (ntpShowing
+                        || tabSwitcherShowing
+                        || (isOmniboxFocused && !allowBottomAnchoredFocusedOmnibox)
+                        || isFindInPageShowing
+                        || (isFormFieldFocusedWithKeyboardVisible && !miniOriginBarEnabled)
+                        || doesUserPreferTopToolbar)) {
             newControlsPosition = ControlsPosition.TOP;
         } else {
             newControlsPosition = ControlsPosition.BOTTOM;
@@ -671,7 +673,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                         && !tab.isIncognitoBranded();
 
         return calculateStateTransition(
-                        /* formFieldStateChanged= */ false,
                         /* prefStateChanged= */ false,
                         /* ntpShowing= */ isRegularNtp,
                         /* tabSwitcherShowing= */ false,
