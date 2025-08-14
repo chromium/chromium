@@ -179,11 +179,15 @@ class PdfCaretTest : public testing::Test {
         .WillRepeatedly(Return(std::move(rects)));
   }
 
+  void SetUpPagesWithCharCounts(const std::vector<uint32_t>& char_counts) {
+    for (size_t i = 0; i < char_counts.size(); ++i) {
+      EXPECT_CALL(client(), GetCharCount(i))
+          .WillRepeatedly(Return(char_counts[i]));
+    }
+  }
+
   void SetUpMultiPageTest() {
-    EXPECT_CALL(client(), GetCharCount(0)).WillRepeatedly(Return(1));
-    EXPECT_CALL(client(), GetCharCount(1)).WillRepeatedly(Return(2));
-    EXPECT_CALL(client(), GetCharCount(2)).WillRepeatedly(Return(0));
-    EXPECT_CALL(client(), GetCharCount(3)).WillRepeatedly(Return(1));
+    SetUpPagesWithCharCounts({1, 2, 0, 1});
     SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
     SetUpChar({1, 0}, 'b', {kTestMultiPage1Char0ScreenRect});
     SetUpChar({1, 1}, 'c', {kTestMultiPage1Char1ScreenRect});
@@ -197,7 +201,7 @@ class PdfCaretTest : public testing::Test {
 };
 
 TEST_F(PdfCaretTest, NonTextPage) {
-  EXPECT_CALL(client(), GetCharCount(0)).WillRepeatedly(Return(0));
+  SetUpPagesWithCharCounts({0});
   constexpr gfx::Rect kDefaultCaret{10, 10, 1, 12};
   SetUpChar(kTestChar0, '\0', {kDefaultCaret});
   InitializeCaretAtChar(kTestChar0);
@@ -208,7 +212,7 @@ TEST_F(PdfCaretTest, NonTextPage) {
 }
 
 TEST_F(PdfCaretTest, SetVisibility) {
-  EXPECT_CALL(client(), GetCharCount(0)).WillRepeatedly(Return(1));
+  SetUpPagesWithCharCounts({1});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
   InitializeCaretAtChar(kTestChar0);
 
@@ -228,7 +232,7 @@ TEST_F(PdfCaretTest, SetVisibility) {
 }
 
 TEST_F(PdfCaretTest, SetBlinkIntervalWhileNotVisible) {
-  EXPECT_CALL(client(), GetCharCount(0)).WillRepeatedly(Return(1));
+  SetUpPagesWithCharCounts({1});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
   InitializeCaretAtChar(kTestChar0);
 
@@ -258,7 +262,7 @@ TEST_F(PdfCaretTest, SetBlinkIntervalWhileNotVisible) {
 }
 
 TEST_F(PdfCaretTest, SetBlinkIntervalWhileVisible) {
-  EXPECT_CALL(client(), GetCharCount(0)).WillRepeatedly(Return(1));
+  SetUpPagesWithCharCounts({1});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
   InitializeCaretAtChar(kTestChar0);
 
@@ -289,7 +293,7 @@ TEST_F(PdfCaretTest, SetBlinkIntervalWhileVisible) {
 }
 
 TEST_F(PdfCaretTest, SetBlinkIntervalNegative) {
-  EXPECT_CALL(client(), GetCharCount(0)).WillRepeatedly(Return(1));
+  SetUpPagesWithCharCounts({1});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
   InitializeCaretAtChar(kTestChar0);
 
@@ -308,7 +312,7 @@ TEST_F(PdfCaretTest, SetBlinkIntervalNegative) {
 }
 
 TEST_F(PdfCaretTest, MaybeDrawCaret) {
-  EXPECT_CALL(client(), GetCharCount(0)).WillRepeatedly(Return(1));
+  SetUpPagesWithCharCounts({1});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
   InitializeCaretAtChar(kTestChar0);
 
@@ -336,7 +340,7 @@ TEST_F(PdfCaretTest, MaybeDrawCaret) {
 }
 
 TEST_F(PdfCaretTest, Blink) {
-  EXPECT_CALL(client(), GetCharCount(0)).WillRepeatedly(Return(2));
+  SetUpPagesWithCharCounts({2});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
   InitializeCaretAtChar(kTestChar0);
 
@@ -377,7 +381,7 @@ TEST_F(PdfCaretTest, Blink) {
 }
 
 TEST_F(PdfCaretTest, OnGeometryChanged) {
-  EXPECT_CALL(client(), GetCharCount(0)).WillRepeatedly(Return(1));
+  SetUpPagesWithCharCounts({1});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
   InitializeCaretAtChar(kTestChar0);
 
@@ -427,7 +431,7 @@ TEST_F(PdfCaretTest, OnGeometryChanged) {
 }
 
 TEST_F(PdfCaretTest, SetChar) {
-  EXPECT_CALL(client(), GetCharCount(0)).WillRepeatedly(Return(2));
+  SetUpPagesWithCharCounts({2});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
   // Set up second char two pixels to the right of the first char.
   SetUpChar({0, 1}, 'b', {gfx::Rect(24, 10, 12, 14)});
@@ -455,7 +459,7 @@ TEST_F(PdfCaretTest, SetChar) {
 }
 
 TEST_F(PdfCaretTest, SetCharSpecialChars) {
-  EXPECT_CALL(client(), GetCharCount(0)).WillRepeatedly(Return(4));
+  SetUpPagesWithCharCounts({4});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
   InitializeCaretAtChar(kTestChar0);
   caret().SetVisibility(true);
