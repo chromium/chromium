@@ -13,7 +13,6 @@
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
@@ -343,9 +342,7 @@ class FingerprintingProtectionFilterBrowserTestPerformanceMeasurementsEnabled
         {{features::kEnableFingerprintingProtectionFilter,
           {{"activation_level", "enabled"},
            {"performance_measurement_rate", "1.0"}}}},
-        /*disabled_features=*/{
-            {features::kEnableFingerprintingProtectionFilterInIncognito},
-            {privacy_sandbox::kFingerprintingProtectionUx}});
+        /*disabled_features=*/{});
   }
 
  private:
@@ -587,10 +584,8 @@ class
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kEnableFingerprintingProtectionFilterInIncognito,
-          {{"performance_measurement_rate", "1.0"}}},
-         {privacy_sandbox::kFingerprintingProtectionUx, {}}},
-        /*disabled_features=*/{
-            {features::kEnableFingerprintingProtectionFilter}});
+          {{"performance_measurement_rate", "1.0"}}}},
+        /*disabled_features=*/{});
   }
 
  protected:
@@ -688,7 +683,7 @@ class FPFRefreshHeuristicExceptionBrowserTestParamEnabledOnlyNonIncognito
         {{features::kEnableFingerprintingProtectionFilter,
           {{features::kRefreshHeuristicExceptionThresholdParam, "2"}}},
          {features::kEnableFingerprintingProtectionFilterInIncognito, {}}},
-        /*disabled_features=*/{{privacy_sandbox::kFingerprintingProtectionUx}});
+        /*disabled_features=*/{});
   }
 
  private:
@@ -826,7 +821,7 @@ class FPFRefreshHeuristicExceptionBrowserTestParamEnabledOnlyIncognito
         {{features::kEnableFingerprintingProtectionFilterInIncognito,
           {{features::kRefreshHeuristicExceptionThresholdParam, "2"}}},
          {features::kEnableFingerprintingProtectionFilter, {}}},
-        /*disabled_features=*/{{privacy_sandbox::kFingerprintingProtectionUx}});
+        /*disabled_features=*/{});
   }
 
  private:
@@ -963,7 +958,7 @@ class FPFRefreshHeuristicExceptionBrowserTestParamEnabledBoth
           {{features::kRefreshHeuristicExceptionThresholdParam, "2"}}},
          {features::kEnableFingerprintingProtectionFilterInIncognito,
           {{features::kRefreshHeuristicExceptionThresholdParam, "2"}}}},
-        /*disabled_features=*/{{privacy_sandbox::kFingerprintingProtectionUx}});
+        /*disabled_features=*/{});
   }
 
  private:
@@ -1134,7 +1129,7 @@ class FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth
         /*enabled_features=*/
         {{features::kEnableFingerprintingProtectionFilter, {}},
          {features::kEnableFingerprintingProtectionFilterInIncognito, {}}},
-        /*disabled_features=*/{{privacy_sandbox::kFingerprintingProtectionUx}});
+        /*disabled_features=*/{});
   }
 
  private:

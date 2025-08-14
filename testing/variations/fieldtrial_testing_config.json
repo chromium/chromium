@@ -10909,6 +10909,32 @@
                     },
                     "enable_features": [
                         "EnableFingerprintingProtectionFilter"
+                    ],
+                    "disable_features": [
+                        "FingerprintingProtectionUx"
+                    ]
+                }
+            ]
+        }
+    ],
+    "FingerprintingProtectionFilterIncognito": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250416",
+                    "params": {
+                        "enable_console_logging": "true",
+                        "performance_measurement_rate": "1.0"
+                    },
+                    "enable_features": [
+                        "EnableFingerprintingProtectionFilterInIncognito"
                     ]
                 }
             ]
@@ -22688,29 +22714,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ScrimForTabModal"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ScriptBlockingIncognito": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20250812",
-                    "params": {
-                        "performance_measurement_rate": "1.0"
-                    },
-                    "enable_features": [
-                        "EnableFingerprintingProtectionFilterInIncognito",
-                        "FingerprintingProtectionUx"
                     ]
                 }
             ]
