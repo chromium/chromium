@@ -262,8 +262,8 @@ bool CookieCraving::IsSatisfiedBy(
   // cookie to come from the same URL (and the source host does not matter as
   // long as the Domain attribute value matches), so it doesn't make sense to
   // compare the source scheme and port either.
-  // TODO(chlily): Decide more carefully how nonced partition keys should be
-  // compared.
+  // TODO(crbug.com/353772143): Decide more carefully how nonced partition keys
+  // should be compared.
   auto make_required_members_tuple = [](const CookieBase& c) {
     return std::make_tuple(c.Name(), c.Domain(), c.Path(), c.SecureAttribute(),
                            c.IsHttpOnly(), c.SameSite(), c.PartitionKey());
