@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "components/pdf/common/constants.h"
 #include "components/tabs/public/tab_interface.h"
@@ -346,6 +347,25 @@ class PageContextFetcher : public content::WebContentsObserver {
       std::move(callback_).Run(base::unexpected(FetchPageContextErrorDetails{
           FetchPageContextError::kWebContentsChanged, "web contents changed"}));
       return;
+    }
+
+    auto* eligibility = optimization_guide::PageContextEligibility::Get();
+    if (pending_result_->annotated_page_content_result && eligibility) {
+      // TODO(gklassen): Switch this to a shared helper to use the precursor
+      // origin if the committed origin is opaque.
+      const auto url =
+          web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
+      const auto metadata = optimization_guide::GetFrameMetadataFromPageContent(
+          *pending_result_->annotated_page_content_result);
+      const bool is_eligible = optimization_guide::IsPageContextEligible(
+          url.host(), url.path(), metadata, eligibility);
+
+      if (!is_eligible) {
+        std::move(callback_).Run(base::unexpected(FetchPageContextErrorDetails{
+            FetchPageContextError::kPageContextNotEligible,
+            "page context is not eligible for sharing"}));
+        return;
+      }
     }
 
     std::move(callback_).Run(base::ok(std::move(pending_result_)));

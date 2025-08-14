@@ -37,6 +37,11 @@ GlicGetContextResult TransformFetcherResult(
     case page_content_annotations::FetchPageContextError::kWebContentsChanged:
       glic_error_code = GlicGetContextFromFocusedTabError::kWebContentsChanged;
       break;
+    case page_content_annotations::FetchPageContextError::
+        kPageContextNotEligible:
+      glic_error_code =
+          GlicGetContextFromFocusedTabError::kPageContextNotEligible;
+      break;
   }
   return base::unexpected(
       GlicGetContextError{glic_error_code, result.error().message});

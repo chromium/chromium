@@ -68,6 +68,8 @@ struct FetchPageContextResult {
 enum class FetchPageContextError {
   kUnknown,
   kWebContentsChanged,
+  // The context is not eligible for sharing.
+  kPageContextNotEligible,
 };
 
 struct FetchPageContextErrorDetails {

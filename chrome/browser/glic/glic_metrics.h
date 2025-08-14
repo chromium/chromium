@@ -206,7 +206,8 @@ enum class GlicGetContextFromFocusedTabError {
   kPermissionDeniedContextPermissionNotEnabled = 3,
   kPermissionDenied = 4,
   kWebContentsChanged = 5,
-  kMaxValue = kWebContentsChanged,
+  kPageContextNotEligible = 6,
+  kMaxValue = kPageContextNotEligible,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicGetContextFromFocusedTabError)
 
