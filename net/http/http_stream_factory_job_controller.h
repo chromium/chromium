@@ -237,13 +237,11 @@ class HttpStreamFactory::JobController
   void ResetErrorStatusForJobs();
 
   AlternativeServiceInfo GetAlternativeServiceInfoFor(
-      const GURL& http_request_info_url,
       const StreamRequestInfo& request_info,
       HttpStreamRequest::Delegate* delegate,
       HttpStreamRequest::StreamType stream_type);
 
   AlternativeServiceInfo GetAlternativeServiceInfoInternal(
-      const GURL& http_request_info_url,
       const StreamRequestInfo& request_info,
       HttpStreamRequest::Delegate* delegate,
       HttpStreamRequest::StreamType stream_type);
@@ -383,10 +381,6 @@ class HttpStreamFactory::JobController
 
   State next_state_ = STATE_RESOLVE_PROXY;
   std::unique_ptr<ProxyResolutionRequest> proxy_resolve_request_;
-  // The URL from the input `http_request_info`.
-  // TODO(crbug.com/40070729): Is this still useful? Should we remove this in
-  // and use request_info_.url directly?
-  const GURL origin_url_;
   const StreamRequestInfo request_info_;
   ProxyInfo proxy_info_;
   const std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;

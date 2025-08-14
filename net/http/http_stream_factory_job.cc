@@ -109,7 +109,6 @@ HttpStreamFactory::Job::Job(
     const ProxyInfo& proxy_info,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     url::SchemeHostPort destination,
-    GURL origin_url,
     NextProto alternative_protocol,
     quic::ParsedQuicVersion quic_version,
     bool is_websocket,
@@ -127,17 +126,16 @@ HttpStreamFactory::Job::Job(
       connection_(std::make_unique<ClientSocketHandle>()),
       session_(session),
       destination_(std::move(destination)),
-      origin_url_(std::move(origin_url)),
       is_websocket_(is_websocket),
       try_websocket_over_http2_(is_websocket_ &&
-                                origin_url_.SchemeIs(url::kWssScheme)),
+                                request_info_.url.SchemeIs(url::kWssScheme)),
       // Only support IP-based pooling for non-proxied streams.
       enable_ip_based_pooling_for_h2_(enable_ip_based_pooling_for_h2 &&
                                       proxy_info.is_direct()),
       delegate_(delegate),
       job_type_(job_type),
-      using_ssl_(origin_url_.SchemeIs(url::kHttpsScheme) ||
-                 origin_url_.SchemeIs(url::kWssScheme)),
+      using_ssl_(request_info_.url.SchemeIs(url::kHttpsScheme) ||
+                 request_info_.url.SchemeIs(url::kWssScheme)),
       using_quic_(
           alternative_protocol == NextProto::kProtoQUIC ||
           session->ShouldForceQuic(destination_, proxy_info, is_websocket_) ||
@@ -146,11 +144,10 @@ HttpStreamFactory::Job::Job(
       expect_spdy_(alternative_protocol == NextProto::kProtoHTTP2 &&
                    !using_quic_),
       quic_request_(session_->quic_session_pool()),
-      spdy_session_key_(using_quic_
-                            ? SpdySessionKey()
-                            : GetSpdySessionKey(proxy_info_.proxy_chain(),
-                                                origin_url_,
-                                                request_info_)),
+      spdy_session_key_(
+          using_quic_
+              ? SpdySessionKey()
+              : GetSpdySessionKey(proxy_info_.proxy_chain(), request_info_)),
       management_config_(management_config) {
   // Websocket `destination` schemes should be converted to HTTP(S).
   DCHECK(base::EqualsCaseInsensitiveASCII(destination_.scheme(),
@@ -185,7 +182,7 @@ HttpStreamFactory::Job::Job(
   }
 
   if (expect_spdy_) {
-    DCHECK(origin_url_.SchemeIs(url::kHttpsScheme));
+    DCHECK(request_info_.url.SchemeIs(url::kHttpsScheme));
   }
   if (using_quic_) {
     DCHECK(session_->IsQuicEnabled());
@@ -194,9 +191,9 @@ HttpStreamFactory::Job::Job(
     DCHECK(request_info_.socket_tag == SocketTag());
   }
   if (is_websocket_) {
-    DCHECK(origin_url_.SchemeIsWSOrWSS());
+    DCHECK(request_info_.url.SchemeIsWSOrWSS());
   } else {
-    DCHECK(!origin_url_.SchemeIsWSOrWSS());
+    DCHECK(!request_info_.url.SchemeIsWSOrWSS());
   }
 }
 
@@ -232,7 +229,7 @@ void HttpStreamFactory::Job::Start(HttpStreamRequest::StreamType stream_type) {
         source.AddToEventParameters(dict);
       }
       dict.Set("logical_destination",
-               url::SchemeHostPort(origin_url_).Serialize());
+               url::SchemeHostPort(request_info_.url).Serialize());
       dict.Set("destination", destination_.Serialize());
       dict.Set("expect_spdy", expect_spdy_);
       dict.Set("using_quic", using_quic_);
@@ -259,9 +256,9 @@ int HttpStreamFactory::Job::Preconnect(int num_streams) {
   bool connect_one_stream =
       base::FeatureList::IsEnabled(kLimitEarlyPreconnectsExperiment) &&
       !http_server_properties->IsInitialized() &&
-      origin_url_.SchemeIsCryptographic();
+      request_info_.url.SchemeIsCryptographic();
   if (connect_one_stream || http_server_properties->SupportsRequestPriority(
-                                url::SchemeHostPort(origin_url_),
+                                url::SchemeHostPort(request_info_.url),
                                 request_info_.network_anonymization_key)) {
     num_streams_ = 1;
   } else {
@@ -335,7 +332,7 @@ bool HttpStreamFactory::Job::HasAvailableQuicSession() const {
       (job_type_ == DNS_ALPN_H3) || (job_type_ == PRECONNECT_DNS_ALPN_H3);
 
   QuicSessionKey quic_session_key(
-      HostPortPair::FromURL(origin_url_), request_info_.privacy_mode,
+      HostPortPair::FromURL(request_info_.url), request_info_.privacy_mode,
       proxy_info_.proxy_chain(), SessionUsage::kDestination,
       request_info_.socket_tag, request_info_.network_anonymization_key,
       request_info_.secure_dns_policy, require_dns_https_alpn,
@@ -400,7 +397,7 @@ bool HttpStreamFactory::Job::CanUseExistingSpdySession() const {
   DCHECK(!using_quic_);
 
   if (session_->http_server_properties()->RequiresHTTP11(
-          url::SchemeHostPort(origin_url_),
+          url::SchemeHostPort(request_info_.url),
           request_info_.network_anonymization_key)) {
     return false;
   }
@@ -409,14 +406,14 @@ bool HttpStreamFactory::Job::CanUseExistingSpdySession() const {
     return try_websocket_over_http2_;
   }
 
-  DCHECK(origin_url_.SchemeIsHTTPOrHTTPS());
+  DCHECK(request_info_.url.SchemeIsHTTPOrHTTPS());
 
   // We need to make sure that if a HTTP/2 session was created for
   // https://somehost/ then we do not use that session for http://somehost:443/.
   // The only time we can use an existing session is if the request URL is
   // https (the normal case) or if we are connecting to an HTTPS proxy to make
   // a GET request for an HTTP destination. https://crbug.com/133176
-  if (origin_url_.SchemeIs(url::kHttpsScheme)) {
+  if (request_info_.url.SchemeIs(url::kHttpsScheme)) {
     return true;
   }
   if (!proxy_info_.is_empty()) {
@@ -656,7 +653,7 @@ int HttpStreamFactory::Job::StartInternal() {
 int HttpStreamFactory::Job::DoStart() {
   // Don't connect to restricted ports.
   if (!IsPortAllowedForScheme(destination_.port(),
-                              origin_url_.scheme_piece())) {
+                              request_info_.url.scheme_piece())) {
     return ERR_UNSAFE_PORT;
   }
 
@@ -869,8 +866,8 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
       SessionUsage::kDestination, request_info_.privacy_mode, priority_,
       request_info_.socket_tag, request_info_.network_anonymization_key,
       request_info_.secure_dns_policy, require_dns_https_alpn,
-      server_cert_verifier_flags, origin_url_, net_log_, &net_error_details_,
-      initiator, management_config_,
+      server_cert_verifier_flags, request_info_.url, net_log_,
+      &net_error_details_, initiator, management_config_,
       base::BindOnce(&Job::OnFailedOnDefaultNetwork, ptr_factory_.GetWeakPtr()),
       io_callback_);
   if (rv == OK) {
@@ -964,7 +961,7 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
       // Only connections that use TLS (either to the origin or via a GET to a
       // secure proxy) can negotiate ALPN.
       bool get_to_secure_proxy =
-          IsGetToProxy(proxy_info_.proxy_chain(), origin_url_) &&
+          IsGetToProxy(proxy_info_.proxy_chain(), request_info_.url) &&
           proxy_info_.proxy_chain().Last().is_secure_http_like();
       DCHECK(using_ssl_ || get_to_secure_proxy);
       negotiated_protocol_ = connection_->socket()->GetNegotiatedProtocol();
@@ -1264,7 +1261,6 @@ HttpStreamFactory::JobFactory::CreateJob(
     const ProxyInfo& proxy_info,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     url::SchemeHostPort destination,
-    GURL origin_url,
     bool is_websocket,
     bool enable_ip_based_pooling_for_h2,
     NetLog* net_log,
@@ -1273,9 +1269,9 @@ HttpStreamFactory::JobFactory::CreateJob(
     std::optional<ConnectionManagementConfig> management_config) {
   return std::make_unique<HttpStreamFactory::Job>(
       delegate, job_type, session, request_info, priority, proxy_info,
-      allowed_bad_certs, std::move(destination), origin_url,
-      alternative_protocol, quic_version, is_websocket,
-      enable_ip_based_pooling_for_h2, management_config, net_log);
+      allowed_bad_certs, std::move(destination), alternative_protocol,
+      quic_version, is_websocket, enable_ip_based_pooling_for_h2,
+      management_config, net_log);
 }
 
 bool HttpStreamFactory::Job::ShouldThrottleConnectForSpdy() const {

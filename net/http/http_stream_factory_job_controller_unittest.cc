@@ -283,8 +283,8 @@ class JobControllerPeer {
       HttpStreamRequest::Delegate* delegate,
       HttpStreamRequest::StreamType stream_type) {
     return job_controller->GetAlternativeServiceInfoFor(
-        request_info.url, HttpStreamFactory::StreamRequestInfo(request_info),
-        delegate, stream_type);
+        HttpStreamFactory::StreamRequestInfo(request_info), delegate,
+        stream_type);
   }
 
   static quic::ParsedQuicVersion SelectQuicVersion(

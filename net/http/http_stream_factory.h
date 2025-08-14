@@ -82,6 +82,10 @@ class NET_EXPORT HttpStreamFactory {
 
     ~StreamRequestInfo();
 
+    // At this layer and below, only PAC scripts need the full URL. Everything
+    // else wants, at most, the SchemeHostPort.
+    GURL url;
+
     std::string method;
     NetworkAnonymizationKey network_anonymization_key;
     MutableNetworkTrafficAnnotationTag traffic_annotation;
@@ -99,7 +103,6 @@ class NET_EXPORT HttpStreamFactory {
   // Calculates an appropriate SPDY session key for the given parameters.
   static SpdySessionKey GetSpdySessionKey(
       const ProxyChain& proxy_chain,
-      const GURL& origin_url,
       const StreamRequestInfo& request_info);
 
   // Returns whether an appropriate SPDY session would correspond to either a

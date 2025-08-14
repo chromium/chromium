@@ -25,7 +25,6 @@ MockHttpStreamFactoryJob::MockHttpStreamFactoryJob(
     ProxyInfo proxy_info,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     url::SchemeHostPort destination,
-    GURL origin_url,
     NextProto alternative_protocol,
     quic::ParsedQuicVersion quic_version,
     bool is_websocket,
@@ -40,7 +39,6 @@ MockHttpStreamFactoryJob::MockHttpStreamFactoryJob(
                              proxy_info,
                              allowed_bad_certs,
                              std::move(destination),
-                             origin_url,
                              alternative_protocol,
                              quic_version,
                              is_websocket,
@@ -69,7 +67,6 @@ std::unique_ptr<HttpStreamFactory::Job> TestJobFactory::CreateJob(
     const ProxyInfo& proxy_info,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     url::SchemeHostPort destination,
-    GURL origin_url,
     bool is_websocket,
     bool enable_ip_based_pooling_for_h2,
     NetLog* net_log,
@@ -80,9 +77,9 @@ std::unique_ptr<HttpStreamFactory::Job> TestJobFactory::CreateJob(
         std::nullopt) {
   auto job = std::make_unique<MockHttpStreamFactoryJob>(
       delegate, job_type, session, request_info, priority, proxy_info,
-      allowed_bad_certs, std::move(destination), origin_url,
-      alternative_protocol, quic_version, is_websocket,
-      enable_ip_based_pooling_for_h2, management_config, net_log);
+      allowed_bad_certs, std::move(destination), alternative_protocol,
+      quic_version, is_websocket, enable_ip_based_pooling_for_h2,
+      management_config, net_log);
 
   // Keep raw pointer to Job but pass ownership.
   switch (job_type) {
