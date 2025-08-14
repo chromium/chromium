@@ -13,6 +13,10 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
+namespace bwg {
+enum class EntryPoint;
+}  // namespace bwg
+
 // UMA histogram key for IOS.Gemini.Eligibility.
 extern const char kEligibilityHistogram[];
 
@@ -134,5 +138,8 @@ void RecordSessionFirstPrompt(bool had_first_prompt);
 
 // Records that the user clicked a URL in a BWG session.
 void RecordURLOpened();
+
+// Records entry point metrics with context about whether FRE is shown.
+void RecordBWGEntryPointClick(bwg::EntryPoint entry_point, bool is_fre_flow);
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_

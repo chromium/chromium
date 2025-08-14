@@ -24119,11 +24119,28 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiEntryPointAutomatic">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Records the automatic promo entry point for Gemini. iOS only.
+  </description>
+</action>
+
 <action name="MobileGeminiEntryPointImpression">
   <owner>kanouche@google.com</owner>
   <description>
     Reported when the user sees the Gemini entry point impression during
     eligibility checking. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiEntryPointTapped">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Records the entry point used to access Gemini, includes all entry points
+    whether they lead to FRE or regular BWG flow. iOS only.
   </description>
 </action>
 

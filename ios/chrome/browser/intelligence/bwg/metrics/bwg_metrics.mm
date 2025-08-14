@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 
 namespace {
 // Minimum time between FRE entry point impression logs.
@@ -165,4 +166,17 @@ void RecordSessionFirstPrompt(bool had_first_prompt) {
 
 void RecordURLOpened() {
   base::RecordAction(base::UserMetricsAction("MobileGeminiURLOpened"));
+}
+
+void RecordBWGEntryPointClick(bwg::EntryPoint entry_point, bool is_fre_flow) {
+  if (entry_point == bwg::EntryPoint::Promo) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileGeminiEntryPointAutomatic"));
+  } else {
+    base::RecordAction(base::UserMetricsAction("MobileGeminiEntryPointTapped"));
+  }
+  base::UmaHistogramEnumeration(kEntryPointHistogram, entry_point);
+  if (is_fre_flow) {
+    base::UmaHistogramEnumeration(kFREEntryPointHistogram, entry_point);
+  }
 }

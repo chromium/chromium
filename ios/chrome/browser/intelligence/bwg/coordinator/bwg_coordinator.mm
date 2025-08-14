@@ -79,6 +79,10 @@ const CGFloat kPromoMaxImpressionCount = 3;
   _prefService = self.profile->GetPrefs();
   CHECK(_prefService);
 
+  BOOL willShowFRE = [self shouldShowBWGConsent];
+  // Record entry point with FRE context.
+  RecordBWGEntryPointClick(_entryPoint, willShowFRE);
+
   if (_entryPoint == bwg::EntryPoint::AIHub) {
     feature_engagement::TrackerFactory::GetForProfile(self.profile)
         ->NotifyEvent(feature_engagement::events::kIOSPageActionMenuIPHUsed);
@@ -131,15 +135,10 @@ const CGFloat kPromoMaxImpressionCount = 3;
   // TODO(crbug.com/414768296): Move business logic to the mediator.
   BOOL showConsent = [self shouldShowBWGConsent];
   if (!showConsent) {
-    // Record the entry point metrics for the non-FRE case.
-    base::UmaHistogramEnumeration(kEntryPointHistogram, _entryPoint);
-
     return NO;
   }
 
   BOOL showPromo = [self shouldShowBWGPromo];
-
-  base::UmaHistogramEnumeration(kFREEntryPointHistogram, _entryPoint);
 
   if (showPromo) {
     _prefService->SetInteger(
