@@ -2980,44 +2980,39 @@ class WebMediaPlayerImplBackgroundBehaviorTest
 
 TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, AudioOnly) {
   SCOPED_TRACE(testing::Message() << PrintValues());
-  if (base::FeatureList::IsEnabled(media::kPauseBackgroundMutedAudio)) {
-    // Audio only players should pause if they are muted and not captured.
-    EXPECT_CALL(client_, WasAlwaysMuted()).WillRepeatedly(Return(true));
-    SetMetadata(true, false);
+  // Audio only players should pause if they are muted and not captured.
+  EXPECT_CALL(client_, WasAlwaysMuted()).WillRepeatedly(Return(true));
+  SetMetadata(true, false);
+  EXPECT_TRUE(ShouldPausePlaybackWhenHidden());
+  EXPECT_FALSE(ShouldDisableVideoWhenHidden());
+
+  auto provider = wmpi_->GetAudioSourceProvider();
+  provider->SetClient(this);
+  if (IsFrameHiddenAndShouldPauseWhenHidden()) {
     EXPECT_TRUE(ShouldPausePlaybackWhenHidden());
-    EXPECT_FALSE(ShouldDisableVideoWhenHidden());
-
-    auto provider = wmpi_->GetAudioSourceProvider();
-    provider->SetClient(this);
-    if (IsFrameHiddenAndShouldPauseWhenHidden()) {
-      EXPECT_TRUE(ShouldPausePlaybackWhenHidden());
-    } else {
-      EXPECT_FALSE(ShouldPausePlaybackWhenHidden());
-    }
-    EXPECT_FALSE(ShouldDisableVideoWhenHidden());
-
-    provider->SetClient(nullptr);
-    EXPECT_TRUE(ShouldPausePlaybackWhenHidden());
-    EXPECT_FALSE(ShouldDisableVideoWhenHidden());
-
-    provider->SetCopyAudioCallback(base::DoNothing());
-    if (IsFrameHiddenAndShouldPauseWhenHidden()) {
-      EXPECT_TRUE(ShouldPausePlaybackWhenHidden());
-    } else {
-      EXPECT_FALSE(ShouldPausePlaybackWhenHidden());
-    }
-    EXPECT_FALSE(ShouldDisableVideoWhenHidden());
-
-    provider->ClearCopyAudioCallback();
-    EXPECT_TRUE(ShouldPausePlaybackWhenHidden());
-    EXPECT_FALSE(ShouldDisableVideoWhenHidden());
-
-    testing::Mock::VerifyAndClearExpectations(&client_);
-    SetPiPExpectations();
   } else {
-    // Never optimize or pause an audio-only player.
-    SetMetadata(true, false);
+    EXPECT_FALSE(ShouldPausePlaybackWhenHidden());
   }
+  EXPECT_FALSE(ShouldDisableVideoWhenHidden());
+
+  provider->SetClient(nullptr);
+  EXPECT_TRUE(ShouldPausePlaybackWhenHidden());
+  EXPECT_FALSE(ShouldDisableVideoWhenHidden());
+
+  provider->SetCopyAudioCallback(base::DoNothing());
+  if (IsFrameHiddenAndShouldPauseWhenHidden()) {
+    EXPECT_TRUE(ShouldPausePlaybackWhenHidden());
+  } else {
+    EXPECT_FALSE(ShouldPausePlaybackWhenHidden());
+  }
+  EXPECT_FALSE(ShouldDisableVideoWhenHidden());
+
+  provider->ClearCopyAudioCallback();
+  EXPECT_TRUE(ShouldPausePlaybackWhenHidden());
+  EXPECT_FALSE(ShouldDisableVideoWhenHidden());
+
+  testing::Mock::VerifyAndClearExpectations(&client_);
+  SetPiPExpectations();
 
   if (IsFrameHiddenAndShouldPauseWhenHidden()) {
     EXPECT_TRUE(ShouldPausePlaybackWhenHidden());
@@ -3070,29 +3065,25 @@ TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, AudioVideo) {
     should_pause = true;
   }
 
-  if (base::FeatureList::IsEnabled(media::kPauseBackgroundMutedAudio)) {
-    EXPECT_CALL(client_, WasAlwaysMuted()).WillRepeatedly(Return(true));
-    SetMetadata(true, true);
-    EXPECT_EQ(should_pause, ShouldPausePlaybackWhenHidden());
+  EXPECT_CALL(client_, WasAlwaysMuted()).WillRepeatedly(Return(true));
+  SetMetadata(true, true);
+  EXPECT_EQ(should_pause, ShouldPausePlaybackWhenHidden());
 
-    auto provider = wmpi_->GetAudioSourceProvider();
-    provider->SetClient(this);
-    EXPECT_EQ(always_pause, ShouldPausePlaybackWhenHidden());
+  auto provider = wmpi_->GetAudioSourceProvider();
+  provider->SetClient(this);
+  EXPECT_EQ(always_pause, ShouldPausePlaybackWhenHidden());
 
-    provider->SetClient(nullptr);
-    EXPECT_EQ(should_pause, ShouldPausePlaybackWhenHidden());
+  provider->SetClient(nullptr);
+  EXPECT_EQ(should_pause, ShouldPausePlaybackWhenHidden());
 
-    provider->SetCopyAudioCallback(base::DoNothing());
-    EXPECT_EQ(always_pause, ShouldPausePlaybackWhenHidden());
+  provider->SetCopyAudioCallback(base::DoNothing());
+  EXPECT_EQ(always_pause, ShouldPausePlaybackWhenHidden());
 
-    provider->ClearCopyAudioCallback();
-    EXPECT_EQ(should_pause, ShouldPausePlaybackWhenHidden());
+  provider->ClearCopyAudioCallback();
+  EXPECT_EQ(should_pause, ShouldPausePlaybackWhenHidden());
 
-    testing::Mock::VerifyAndClearExpectations(&client_);
-    SetPiPExpectations();
-  } else {
-    SetMetadata(true, true);
-  }
+  testing::Mock::VerifyAndClearExpectations(&client_);
+  SetPiPExpectations();
 
   // Only pause audible videos if both media suspend and resume background
   // videos is on and background video playback is disabled. Background video

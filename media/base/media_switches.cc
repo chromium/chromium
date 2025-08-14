@@ -297,11 +297,6 @@ BASE_FEATURE(kOverlayFullscreenVideo,
              "overlay-fullscreen-video",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Pauses muted (and uncaptured) playbacks in the background.
-BASE_FEATURE(kPauseBackgroundMutedAudio,
-             "PauseBackgroundMutedAudio",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // We plan to remove the background pause timer feature from WebMediaPlayerImpl.
 // We received reports that suggest that this feature's codepath hasn't been
 // exercised for a long time. This is a finch killswitch to rollback to the

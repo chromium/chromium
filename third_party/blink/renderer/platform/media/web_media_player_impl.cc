@@ -498,8 +498,6 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
           is_background_video_playback_enabled),
       is_background_video_track_optimization_supported_(
           is_background_video_track_optimization_supported),
-      should_pause_background_muted_audio_(
-          base::FeatureList::IsEnabled(media::kPauseBackgroundMutedAudio)),
       simple_watch_timer_(
           WTF::BindRepeating(&WebMediaPlayerImpl::OnSimpleWatchTimerTick,
                              WTF::Unretained(this)),
@@ -3679,11 +3677,7 @@ bool WebMediaPlayerImpl::ShouldPausePlaybackWhenHidden() const {
     return true;
   }
 
-  const bool preserve_audio =
-      should_pause_background_muted_audio_
-          ? HasUnmutedAudio() || audio_source_provider_->IsAudioBeingCaptured()
-          : HasAudio();
-
+  const bool preserve_audio = HasUnmutedAudio() || audio_source_provider_->IsAudioBeingCaptured();
   // Audio only stream is allowed to play when in background.
   if (!HasVideo() && preserve_audio)
     return false;
