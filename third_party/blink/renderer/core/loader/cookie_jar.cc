@@ -11,6 +11,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -184,7 +185,8 @@ String CookieJar::Cookies() {
 
   // This can affect the result of the IPCNeeded() call below, so needs to be
   // done first.
-  RequestRestrictedCookieManagerIfNeeded();
+  const RequestCookieManagerPipeState pipe_state =
+      RequestRestrictedCookieManagerIfNeeded();
 
   String value = g_empty_string;
 
@@ -230,6 +232,20 @@ String CookieJar::Cookies() {
     base::UmaHistogramCustomCounts("Blink.CookiesTime.IpcNeeded2",
                                    elapsed.InMicroseconds(), kMinTimeMicros,
                                    kMaxTimeMicros, 50);
+
+    // Temporary histograms to investigate https://crbug.com/414748254.
+    switch (pipe_state) {
+      case RequestCookieManagerPipeState::kNoOldPipe:
+        base::UmaHistogramTimes("Blink.CookiesTime.NoOldPipe", elapsed);
+        break;
+      case RequestCookieManagerPipeState::kDisconnectedOldPipe:
+        base::UmaHistogramTimes("Blink.CookiesTime.DisconnectedOldPipe",
+                                elapsed);
+        break;
+      case RequestCookieManagerPipeState::kConnectedOldPipe:
+        base::UmaHistogramTimes("Blink.CookiesTime.ConnectedOldPipe", elapsed);
+        break;
+    }
   } else {
     base::UmaHistogramCustomCounts("Blink.CookiesTime.IpcNotNeeded2",
                                    elapsed.InMicroseconds(), kMinTimeMicros,
@@ -329,8 +345,16 @@ bool CookieJar::IPCNeeded(bool should_apply_devtools_overrides) {
   return false;
 }
 
-void CookieJar::RequestRestrictedCookieManagerIfNeeded() {
+CookieJar::RequestCookieManagerPipeState
+CookieJar::RequestRestrictedCookieManagerIfNeeded() {
+  RequestCookieManagerPipeState pipe_state =
+      RequestCookieManagerPipeState::kConnectedOldPipe;
   if (!backend_.is_bound() || !backend_.is_connected()) {
+    if (!backend_.is_bound()) {
+      pipe_state = RequestCookieManagerPipeState::kNoOldPipe;
+    } else {
+      pipe_state = RequestCookieManagerPipeState::kDisconnectedOldPipe;
+    }
     backend_.reset();
 
     // Either the backend was never bound or it became unbound. In case we're in
@@ -341,6 +365,7 @@ void CookieJar::RequestRestrictedCookieManagerIfNeeded() {
         backend_.BindNewPipeAndPassReceiver(
             document_->GetTaskRunner(TaskType::kInternalDefault)));
   }
+  return pipe_state;
 }
 
 void CookieJar::UpdateCacheAfterGetRequest(const KURL& cookie_url,

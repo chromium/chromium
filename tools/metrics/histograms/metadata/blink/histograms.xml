@@ -898,6 +898,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Blink.CookiesTime.{PipeState}" units="ms"
+    expires_after="2025-12-28">
+  <owner>mmenke@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the time it takes to perform a Cookies operation, given the state
+    of the restricted cookie manager pipe owned by CookieJar when the call was
+    made. This is intended to be a short-lived histogram to specifically
+    investigate occasional hangs when fetching cookies.
+  </summary>
+  <token key="PipeState">
+    <variant name="ConnectedOldPipe"/>
+    <variant name="DisconnectedOldPipe"/>
+    <variant name="NoOldPipe"/>
+  </token>
+</histogram>
+
 <histogram name="Blink.CSSStyleSheetResource.ParseTime" units="microseconds"
     expires_after="2026-01-04">
   <owner>gjc@chromium.org</owner>
