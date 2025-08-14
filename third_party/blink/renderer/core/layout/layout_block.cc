@@ -198,6 +198,7 @@ void LayoutBlock::AddChildBeforeDescendant(LayoutObject* new_child,
                                            LayoutObject* before_descendant) {
   NOT_DESTROYED();
   DCHECK(!IsLayoutBlockFlow());
+  DCHECK(!new_child->IsTablePart());
   DCHECK_NE(before_descendant->Parent(), this);
 
   LayoutObject* before_descendant_container = before_descendant->Parent();
@@ -214,12 +215,6 @@ void LayoutBlock::AddChildBeforeDescendant(LayoutObject* new_child,
   // Insert the child into the anonymous block box instead of here.
   if (new_child->IsInline() &&
       before_descendant_container->IsAnonymousBlockFlow()) {
-    before_descendant_container->AddChild(new_child, before_descendant);
-    return;
-  }
-
-  // Insert into the anonymous table.
-  if (new_child->IsTablePart()) {
     before_descendant_container->AddChild(new_child, before_descendant);
     return;
   }
