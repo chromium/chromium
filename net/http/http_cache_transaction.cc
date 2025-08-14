@@ -2933,8 +2933,7 @@ ValidationType HttpCache::Transaction::RequiresValidation() {
   //  - make sure we have a matching request method
   //  - watch out for cached responses that depend on authentication
 
-  if (!(effective_load_flags_ & LOAD_SKIP_VARY_CHECK) &&
-      response_.vary_data.is_valid() &&
+  if (response_.vary_data.is_valid() &&
       !response_.vary_data.MatchesRequest(*request_,
                                           *response_.headers.get())) {
     vary_mismatch_ = true;
